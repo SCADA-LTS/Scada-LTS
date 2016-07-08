@@ -1,0 +1,71 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				parseWidgets: false,
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.event.topic");
+
+			sub1 = null;
+			sub2 = null;
+			function Subscriber(displayNode, subId, doUnsubscribe){
+				this.subId = subId;
+				this.doUnsubscribe = doUnsubscribe;
+				this.displayNode = displayNode;
+	
+				this.update = function(message) {
+						this.displayNode.innerHTML = this.subId + ": " + message;
+						if(this.doUnsubscribe){
+							dojo.event.topic.unsubscribe("testTopic1", this, "update");
+							this.displayNode.innerHTML += "<br>" + this.subId + " has unsubscribed";
+						}
+				};
+			}
+
+			var clickCount = 0;
+
+			function sendMessage1() {
+				dojo.event.topic.publish("testTopic1", "Message " + (++clickCount));
+			}
+
+			dojo.addOnLoad(function(){
+				sub1 = new Subscriber(document.getElementById("subscriber1"), "subscriber1", true);
+				sub2 = new Subscriber(document.getElementById("subscriber2"), "subscriber2", false);
+
+				dojo.event.topic.subscribe("testTopic1", sub1, "update");
+				dojo.event.topic.subscribe("testTopic1", sub2, "update");
+			});
+		</script>
+	</head>
+	<body>
+		<h1>Unsubscribe during a topic message notification</h2>
+		<p>This test sees if it is possible for a subscriber to unsubscribe from a topic during notification
+		of a topic message. Unsubscribing should not affect other subscribers from receiving the topic
+		message.</p>
+		
+		<p>After pressing the button, the output should be:<br>
+		<i>subscriber1: Message 1<br>
+		subscriber1 has unsubscribed<br>
+		subscriber2: Message 1<br></i>
+		</p>
+
+		<div style="font-weight: bold">Test</div>
+		<div id="subscriber1" style="border: 1px solid black">
+			subscriber1:
+		</div>
+
+		<div id="subscriber2" style="border: 1px solid black">
+			subscriber2:
+		</div>
+
+		<button id="publisher" onclick="sendMessage1();">
+			Publish a message on Topic1
+		</button>
+    </body>
+</html>

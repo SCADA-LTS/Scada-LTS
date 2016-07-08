@@ -1,0 +1,44 @@
+Use the following values to do crypto testing with the Dojo crypto library.
+
+Message/plaintext:
+--------------------------------------------------------------------------
+The rain in Spain falls mainly on the plain.
+
+Key
+--------------------------------------------------------------------------
+foobar
+
+--------------------------------------------------------------------------
+CRYPTO ALGORITHMS
+Values derived from XCrypt test application, C#.
+--------------------------------------------------------------------------
+MD5
+OUhxbVZ1Mtmu4zx9LzS5cA== (C#)
+OUhxbVZ1Mtmu4zx9LzS5cA== (Python)
+3948716d567532d9aee33c7d2f34b970 (PHP, "hex" encoded)
+
+Rijndael/AES
+QHHcLxph2PC89j0l4XueIvqprjgUaTvCooK31/9fS+SgoLfF1Cns3RD5du5BHF6I
+
+SHA
+HvPtEggatVBJuWnrPnDKqpWL36E=
+
+SHA256
+Vt7FG/uDGhzhEE8FFG22iBL4AS5eq3F4agWMFTAEwxE=
+
+Blowfish
+WI5J5BPPVBuiTniVcl7KlIyNMmCosmKTU6a/ueyQuoUXyC5dERzwwdzfFsiU4vBw
+
+try:
+iCVey/kTNHdsi8Tfi/zNzUU2G7PnCqjk
+using foobar as the key.  Should the result == "plain"?
+
+Twofish
+qKUdEEEY40lXRK3chIzU9hYsckwmylct3O03Xmi0/WO42941GQGkyQst6Nflf2IS
+
+>>>>>>>>>>>>>>>>>>>
+Triple DES
+p2nGIq6efA3PcUGojUbKn0wmfNqD3dINE0VBLSH7YgCTEHf3t1Re5xou3yy1CZ++
+
+DES
+HEnTJP4nt91oV2pAYVRf6yIevMGq9X4qgs4C8vKCb+oWRet5EH4ECTzrkujrRXcU

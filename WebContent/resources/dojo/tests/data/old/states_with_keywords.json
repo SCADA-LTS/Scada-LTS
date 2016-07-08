@@ -1,0 +1,6 @@
+[
+	{ abbr: "WA", population: 5894121, 'name': "Washington" },
+	{ abbr: "WV", population: 1808344, 'name': "West Virginia" },
+	{ abbr: "WI", population: 5453896, 'name': "Wisconsin" },
+	{ abbr: "WY", population:  493782, 'name': "Wyoming" } 
+]

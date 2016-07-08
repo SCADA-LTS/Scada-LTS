@@ -1,0 +1,36 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+
+<p>A chart renderer is used to provide the aggregate historical state of a point over either some period of time or some number of values. The aggregate information that can be provided depend upon the data type of values to be rendered. As such, only the renderer types that apply to the current point's data type are listed in the <b>Type</b> selection.</p>
+
+<p><b>Note!</b> Chart renderers depend upon <i>logged data</i>. If your point has a logging type of "Do not log", your chart renderer may not display as expected. The potential exception is the Table chart, which is able to use point values cached in memory, but only if such values are available. The restart of the system clears all point value caches.</p>
+
+<h1>Table charts</h1>
+<p>This chart renderer displays a given number (the <b>Limit</b>) of most recent historical values for the point. Values are displayed in a table providing the (text-rendered) value, the value time, and any applicable annotation. This chart is available to all data types.</p>
+
+<h1>Statistics charts</h1>
+<p>This chart displays a table of statistical information calculated from the historical point values for the given <b>Time period</b>. The actual data displayed depends upon the data type of the point. This chart is available to all data types.</p>
+<p><b>Binary and Multistate</b>: These data types produce a list of "start and runtime" statistics for each state that the point experienced during the time period. Each start and runtime item provides the number of times the state was entered ("starts"), the total amount of time the point was in the state ("runtime"), and the percentage of the total period time that the runtime represents.</p>
+<p><b>Numeric</b>: Numeric points produces the following statistical values for the time period: minimum value and the time at which it occurred, maximum value and the time at which it occurred, average, and sum (suitable for pulse counting).</p>
+<p><b>Alphanumeric</b>: The number of times the point changed over the period is provided.</p>
+
+
+<h1>Image charts</h1>
+<p>This chart displays a line bar graph of the points values over the given period. It is available to points with numeric or multistate data types.</p>

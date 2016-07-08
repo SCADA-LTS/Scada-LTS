@@ -1,0 +1,72 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<p>-->
+<!--  Regular Expressions (or RegEx) are a powerful and concise way of parsing textual data. Although their definitions -->
+<!--  initially appear arcane, with only a little experience a large number of text parsing problems become easily solvable. -->
+<!--  Different implementation of RegEx sometime have slightly differing implementations of its functions. A tutorial on -->
+<!--  the Java RegEx implementation can be found -->
+<!--  <a href="http://java.sun.com/docs/books/tutorial/essential/regex/" target="_blank">here</a>.-->
+<!--</p>-->
+<p>Express&otilde;es Regulares (ou RegEx) representam uma maneira
+poderosa e concisa de analisar dados textuais. Apesar de suas
+defini&ccedil;&otilde;es iniciais parecerem arcanas, com apenas um pouco
+de experi&ecirc;ncia um grande n&uacute;mero de an&aacute;lise de problemas de texto
+se tornam facilmente solucion&aacute;veis. Implementa&ccedil;&otilde;es
+diferentes de RegEx &agrave;s vezes t&ecirc;m
+implementa&ccedil;&otilde;es ligeiramente diferentes de suas
+fun&ccedil;&otilde;es. Um tutorial a respeito da
+implementa&ccedil;&atilde;o de RegEx em Java pode ser acessado <a
+    href="http://java.sun.com/docs/books/tutorial/essential/regex/"
+    target="_blank">aqui</a>.</p>
+
+<!--<p>Many RegEx patterns used in ScadaBR are similar. Typically the-->
+<!--intension is to locate a particular value in some text. As such, the-->
+<!--pattern will consist of prefix and suffix strings that uniquely identify-->
+<!--the value, and a group pattern that extracts the value. For example, the-->
+<!--text to parse may look like this:</p>-->
+
+<p>Muitos padr&otilde;es de RegEx usados no ScadaBR s&atilde;o
+similares. Tipicamente a inten&ccedil;&atilde;o &eacute; achar um valor
+particular em algum texto. Dessa maneira, o padr&atilde;o consiste de um
+prefixo e um sufixo de caracteres que identificam unicamente o valor e
+um padr&atilde;o de agrupamento que extrai o valor. Por exemplo, o texto
+a analisar pode parecer com:</p>
+
+<pre>This is the text to parse with my value of 1234 embedded in the middle,</pre>
+
+<!--<p>If the desired value is the "1234", a RegEx pattern that works-->
+<!--may be:</p>-->
+
+<p>Se o valor desejado for "1234", um padr&atilde;o RegEx pode ser:</p>
+
+<pre>my value of (.*?) embedded</pre>
+
+<!--<p>The important point is that the prefix (i.e. "my value of ") and-->
+<!--the suffix (" embedded") never change betwen new instances of the text,-->
+<!--and that they uniquely define the location of the desired value. At the-->
+<!--extreme, note that the prefix "f " and suffix " " also work in this-->
+<!--case, but are less like to work in larger texts, or if the text changes-->
+<!--significantly.</p>-->
+
+<p>O ponto importante &eacute; que o prefixo ("my value of ") e o
+sufixo (" embedded") nunca mudam entre novas inst&acirc;ncias do texto e
+que elas definem a localiza&ccedil;&atilde;o do valor desejado. De
+maneira extrema, o prefixo "f" e o sufixo " " tamb&eacute;m funcionam
+neste caso, mas t&ecirc;m menor probabilidade de funcionarem em textos
+maiores ou se o texto muda significativamente.</p>

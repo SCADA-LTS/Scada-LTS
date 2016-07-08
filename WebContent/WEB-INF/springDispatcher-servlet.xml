@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+  - Application context definition for DispatcherServlet.
+  -->
+<beans>
+  
+  <!-- View resolver -->
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
+    <property name="prefix"><value>/WEB-INF/jsp/</value></property>
+    <property name="suffix"><value>.jsp</value></property>
+  </bean>
+  
+  <!-- Default message code resolver -->
+  <bean id="defaultMessageCodeResolver" class="com.serotonin.propertyEditor.DefaultMessageCodesResolver"/>
+  
+  <!-- 
+      URL mappings to controllers
+  -->
+  <bean id="publicUrlMappings" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <props>
+        <!-- All user URLs -->
+        <prop key="/compound_events.shtm">compoundEventsController</prop>
+        <prop key="/data_point_details.shtm">dataPointDetailsController</prop>
+        <prop key="/data_point_edit.shtm">dataPointEditController</prop>
+        <prop key="/data_source_edit.shtm">dataSourceEditController</prop>
+        <prop key="/data_sources.shtm">dataSourceListController</prop>
+        <prop key="/emport.shtm">emportController</prop>
+        <prop key="/event_handlers.shtm">eventHandlersController</prop>
+        <prop key="/events.shtm">eventsController</prop>
+        <prop key="/help.shtm">helpController</prop>
+        <prop key="/login.htm">loginController</prop>
+        <prop key="/logout.htm">logoutController</prop>
+        <prop key="/mailing_lists.shtm">mailingListsController</prop>
+        <prop key="/maintenance_events.shtm">maintenanceEventsController</prop>
+        <prop key="/point_hierarchy.shtm">pointHierarchyController</prop>
+        <prop key="/point_links.shtm">pointLinksController</prop>
+        <prop key="/public_view.htm">publicViewController</prop>
+        <prop key="/publisher_edit.shtm">publisherEditController</prop>
+        <prop key="/publishers.shtm">publisherListController</prop>
+        <prop key="/reports.shtm">reportsController</prop>
+        <prop key="/reportChart.shtm">reportChartController</prop>
+        <prop key="/scheduled_events.shtm">scheduledEventsController</prop>
+        <prop key="/scripting.shtm">scriptingController</prop>
+        <prop key="/sql.shtm">sqlController</prop>
+        <prop key="/system_settings.shtm">systemSettingsController</prop>
+        <prop key="/users.shtm">usersController</prop>
+        <prop key="/usersProfiles.shtm">usersProfilesController</prop>
+        <prop key="/views.shtm">viewsController</prop>
+        <prop key="/view_edit.shtm">viewEditController</prop>
+        <prop key="/watch_list.shtm">watchListController</prop>
+        <prop key="/webcam_live_feed.htm">webcamLiveFeedController</prop>
+        <prop key="/export_project.htm">projectExporterController</prop>
+        <prop key="/import_project.htm">projectImporterController</prop>
+        
+        <!-- Mobile user URLs -->
+        <prop key="/mobile_login.htm">mobileLoginController</prop>
+        <prop key="/mobile_logout.htm">mobileLogoutController</prop>
+        <prop key="/mobile_watch_list.shtm">mobileWatchListController</prop>
+      </props>
+    </property>
+    
+    <property name="interceptors">
+      <list>
+        <ref bean="commonData"/>
+      </list>
+    </property>
+  </bean>
+  
+  <!--
+     Controllers
+  -->
+  <!-- Public Controllers -->
+  
+  <bean id="projectExporterController" class="br.org.scadabr.web.mvc.controller.ProjectExporterController">
+  </bean>
+  <bean id="projectImporterController" class="br.org.scadabr.web.mvc.controller.ProjectImporterController">
+  </bean>
+  
+  <bean id="compoundEventsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>compoundEvents</value></property>
+  </bean>
+
+  <bean id="dataPointDetailsController" class="com.serotonin.mango.web.mvc.controller.DataPointDetailsController">
+    <property name="viewName"><value>dataPointDetails</value></property>
+  </bean>
+  
+  <bean id="dataPointEditController" class="com.serotonin.mango.web.mvc.controller.DataPointEditController">
+    <property name="commandName"><value>form</value></property>
+    <property name="commandClass"><value>com.serotonin.mango.vo.DataPointVO</value></property>
+    <property name="formView"><value>dataPointEdit</value></property>
+    <property name="successView"><value>data_point_edit.shtm</value></property>
+    <property name="messageCodesResolver"><ref bean="defaultMessageCodeResolver"/></property>
+  </bean>
+  
+  <bean id="dataSourceEditController" class="com.serotonin.mango.web.mvc.controller.DataSourceEditController">
+    <property name="viewName"><value>dataSourceEdit</value></property>
+  </bean>
+  
+  <bean id="dataSourceListController" class="com.serotonin.mango.web.mvc.controller.DataSourceListController">
+    <property name="viewName"><value>dataSourceList</value></property>
+    <property name="commandName"><value>paging</value></property>
+    <property name="commandClass"><value>com.serotonin.web.util.PagingDataForm</value></property>
+  </bean>
+  
+  <bean id="emportController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>emport</value></property>
+  </bean>
+  
+  <bean id="eventHandlersController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>eventHandlers</value></property>
+  </bean>
+  
+  <bean id="eventsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>events</value></property>
+  </bean>
+  
+  <bean id="helpController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>help</value></property>
+  </bean>
+  
+  <bean id="loginController" class="com.serotonin.mango.web.mvc.controller.LoginController">
+    <property name="commandName"><value>login</value></property>
+    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.LoginForm</value></property>
+    <property name="formView"><value>login</value></property>
+    <property name="successUrl"><value>watch_list.shtm</value></property>
+    <property name="newUserUrl"><value>help.shtm</value></property>
+    <property name="bindOnNewForm"><value>true</value></property>
+  </bean>
+  
+  <bean id="logoutController" class="com.serotonin.mango.web.mvc.controller.LogoutController">
+    <property name="redirectUrl"><value>login.htm</value></property>
+  </bean>
+  
+  <bean id="mobileLoginController" class="com.serotonin.mango.web.mvc.controller.LoginController">
+    <property name="commandName"><value>login</value></property>
+    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.LoginForm</value></property>
+    <property name="formView"><value>mobile/login</value></property>
+    <property name="mobile"><value>true</value></property>
+    <property name="successUrl"><value>mobile_watch_list.shtm</value></property>
+    <property name="bindOnNewForm"><value>true</value></property>
+  </bean>
+  
+  <bean id="mobileLogoutController" class="com.serotonin.mango.web.mvc.controller.LogoutController">
+    <property name="redirectUrl"><value>mobile_login.htm</value></property>
+  </bean>
+  
+  <bean id="mobileWatchListController" class="com.serotonin.mango.web.mvc.controller.MobileWatchListController">
+    <property name="viewName"><value>mobile/watchList</value></property>
+  </bean>
+  
+  <bean id="mailingListsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>mailingLists</value></property>
+  </bean>
+  
+  <bean id="maintenanceEventsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>maintenanceEvents</value></property>
+  </bean>
+  
+  <bean id="pointHierarchyController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>pointHierarchy</value></property>
+  </bean>
+
+  <bean id="pointLinksController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>pointLinks</value></property>
+  </bean>
+
+  <bean id="publicViewController" class="com.serotonin.mango.web.mvc.controller.PublicViewController">
+    <property name="viewName"><value>publicView</value></property>
+  </bean>
+  
+  <bean id="publisherEditController" class="com.serotonin.mango.web.mvc.controller.PublisherEditController">
+    <property name="viewName"><value>publisherEdit</value></property>
+  </bean>
+  
+  <bean id="publisherListController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>publisherList</value></property>
+  </bean>
+  
+  <bean id="reportChartController" class="com.serotonin.mango.web.mvc.controller.ReportChartController"/>
+
+  <bean id="reportsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>reports</value></property>
+  </bean>
+
+  <bean id="scheduledEventsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>scheduledEvents</value></property>
+  </bean>
+  
+  <bean id="scriptingController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>scripting</value></property>
+  </bean>
+
+  <bean id="sqlController" class="com.serotonin.mango.web.mvc.controller.SqlController">
+    <property name="commandName"><value>form</value></property>
+    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.SqlForm</value></property>
+    <property name="formView"><value>sql</value></property>
+  </bean>
+  
+  <bean id="systemSettingsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>systemSettings</value></property>
+  </bean>
+  
+  <bean id="usersController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>users</value></property>
+  </bean>
+  
+  <bean id="usersProfilesController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>usersProfiles</value></property>
+  </bean>
+  
+  <bean id="viewsController" class="com.serotonin.mango.web.mvc.controller.ViewsController">
+    <property name="viewName"><value>views</value></property>
+  </bean>
+  
+  <bean id="viewEditController" class="com.serotonin.mango.web.mvc.controller.ViewEditController">
+    <property name="commandName"><value>form</value></property>
+    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.ViewEditForm</value></property>
+    <property name="formView"><value>viewEdit</value></property>
+    <property name="successUrl"><value>views.shtm</value></property>
+    <property name="uploadDirectory"><value>uploads/</value></property>
+  </bean>
+  
+  <bean id="watchListController" class="com.serotonin.mango.web.mvc.controller.WatchListController">
+    <property name="viewName"><value>watchList</value></property>
+  </bean>
+  
+  <bean id="webcamLiveFeedController" class="com.serotonin.mango.web.mvc.controller.WebcamLiveFeedController">
+    <property name="viewName"><value>webcamLiveFeed</value></property>
+  </bean>
+  
+  
+  
+  <!-- Multipart resolver -->
+  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="maxUploadSize"><value>100000000</value></property>
+  </bean>
+  
+  <!-- Interceptors -->
+  <bean id="commonData" class="com.serotonin.mango.web.mvc.interceptor.CommonDataInterceptor"/>
+</beans>

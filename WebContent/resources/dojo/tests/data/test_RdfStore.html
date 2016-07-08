@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<title>dojo.data.RdfStore Tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true,
+				debugAtAllCosts: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+		if (djConfig.debugAtAllCosts) {
+			dojo.hostenv.writeIncludes(); // needed when using "debugAtAllCosts: true"
+		}
+		</script>
+
+		<script type="text/javascript" src="../jsunit_browser.js"></script>
+		<script type="text/javascript" src="../MockXmlHttpRequest.js"></script>
+		<script type="text/javascript" src="test_RdfStore.js"></script>
+		<script type="text/javascript">
+			dojo.hostenv.writeIncludes(); 
+
+			function init(){
+				run_all_data_rdf_tests();
+				dojo.debug("If you see this message, everything worked!");
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
+

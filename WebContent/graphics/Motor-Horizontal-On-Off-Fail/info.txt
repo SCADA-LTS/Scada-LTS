@@ -1,0 +1,6 @@
+name=Motor Industrial (horizontal) on/off/fail
+type=imageSet
+#width=70
+#height=70
+text.x=14
+text.y=2

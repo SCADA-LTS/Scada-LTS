@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<script type="text/javascript">
+	var djConfig = {
+	//	debugAtAllCosts: true,
+		isDebug: true
+	};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Menu2");
+	dojo.require("dojo.widget.SplitContainer");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body>
+
+<div style="padding: 0 5em; position: relative;">
+
+	<div style="background-color: yellow; display: block; width: 200px;" id="test1">
+
+		Statically positioned block
+
+		<div dojoType="PopupMenu2" targetNodeIds="test1">
+			<div dojoType="MenuItem2" caption="MENU1-Item 1"></div>
+			<div dojoType="MenuItem2" caption="MENU1-Item 2"></div> 
+		</div>
+	</div>
+
+	<br />
+	<br />
+
+	<div dojoType="SplitContainer"
+		orientation="horizontal"
+		sizerWidth="5"
+		activeSizing="1"
+		style="border: 2px solid black; width: 400px; height: 150px;"
+	>
+		<div dojoType="ContentPane" sizeMin="20" sizeShare="20" id="pane1">
+			ContentPane 1
+		</div>
+		<div dojoType="ContentPane" sizeMin="50" sizeShare="50" id="pane2">
+			ContentPane 2
+
+			<div dojoType="PopupMenu2" targetNodeIds="pane1;pane2">
+				<div dojoType="MenuItem2" caption="MENU2-Item 1"></div>
+				<div dojoType="MenuItem2" caption="MENU2-Item 2"></div> 
+			</div>
+		</div>
+	</div>
+
+	<br />
+	<br />
+
+	<div style="background-color: lime; display: block; width: 200px; position: relative; left: 100px;" id="test2">
+
+		Relatively positioned block
+
+		<div dojoType="PopupMenu2" targetNodeIds="test2">
+			<div dojoType="MenuItem2" caption="MENU3-Item 1"></div>
+			<div dojoType="MenuItem2" caption="MENU3-Item 2"></div> 
+		</div>
+	</div>
+
+	<br />
+	<br />
+
+	<div style="position: relative">
+		<div style="background-color: pink; display: block; width: 200px; position: absolute; left: 100px;" id="test3">
+
+			Absolute positioned block
+
+			<div dojoType="PopupMenu2" targetNodeIds="test3">
+				<div dojoType="MenuItem2" caption="MENU4-Item 1"></div>
+				<div dojoType="MenuItem2" caption="MENU4-Item 2"></div> 
+			</div>
+		</div>
+	</div>
+
+	<br />
+	<br />
+
+	<iframe id="embed" src="../test_html_content.html" width="50%" height="200px" ></iframe>
+
+<script type="text/javascript">
+	function attachMenu(){
+		var contentWin = dojo.byId("embed").contentWindow;
+		
+		var menu = dojo.widget.createWidget("PopupMenu2", {id: "menu",
+		contextMenuForWindow: false } );
+		
+		   menu.addChild(dojo.widget.createWidget("MenuItem2", {id: "item1",
+		caption: "Item 1"}));
+		   menu.addChild(dojo.widget.createWidget("MenuItem2", {id: "item2",
+		caption: "Item 2", submenuId: "SubMenu"}));
+		
+		
+		   var SubMenu = dojo.widget.createWidget("PopupMenu2", {id: "SubMenu"});
+		   SubMenu.addChild(dojo.widget.createWidget("MenuItem2", {id: "item3",
+		caption: "SubMenu-Item 1"}));
+		   SubMenu.addChild(dojo.widget.createWidget("MenuItem2", {id: "item4",
+		caption: "SubMenu-Item 2", submenuId: "NestedMenu"}));
+		
+		
+		   var NestedMenu = dojo.widget.createWidget("PopupMenu2", {id:
+		"NestedMenu"});
+		   NestedMenu.addChild(dojo.widget.createWidget("MenuItem2", {id:
+		"item5", caption: "Nested(SubMenu)-Item 1"}));
+		   NestedMenu.addChild(dojo.widget.createWidget("MenuItem2", {id:
+		"item6", caption: "Nested(SubMenu)-Item 2"}));
+		
+		document.body.appendChild(menu.domNode);
+		document.body.appendChild(SubMenu.domNode);
+		document.body.appendChild(NestedMenu.domNode);
+		menu.bindDomNode("embed");
+	}
+	dojo.addOnLoad(function(){
+		dojo.event.connect(dojo.byId("embed"), "onload", attachMenu);
+	});
+</script>
+</div>
+
+<div style="clear: both">&nbsp;</div>
+
+<p>This page tests the positioning of popup menus defined within other containers. The yellow box is a padded div, the split pane contains two ContentPane's, the lime box is relatively positioned and the pink box is absolutely positioned.</p>
+
+<p>Right-clicking (or control clicking for mac or opera users) in any of these boxes should show a content menu at the cursor.</p>
+
+</body>
+</html>

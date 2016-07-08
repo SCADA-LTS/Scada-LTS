@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+<!-- used from test_RemotePane.html -->
+<html>
+<head>
+
+<title>Manual Require Acme Button Test</title>
+
+<script type="text/javascript">
+	var djC = "djConfig"; // this isnt allowed! becomes var djC = "";
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+	djConfig.debugAtAllCosts = false; var a=0;var b=0;var c=0;
+	if (a<b || b>c){	
+		aksd = 65/87;
+	}
+	djConfig.baseScriptUri = "../../../"; //for xdomain testing.
+</script>
+
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.event.*");
+	dojo.require("dojo.string.extras");	
+</script>
+
+<script>
+	// Load custom button
+	
+	// 1. Map acme module to a path relative to the dojo/ directory.
+	dojo.registerModulePath("acme", "tests/widget/acme");
+	
+	// 2. load the user defined button
+	dojo.require("acme.Button");
+</script>
+
+<style>
+	/* group multiple buttons in a row */
+	.box {
+		display: block;
+		text-align: center;
+	}
+	.box .dojoButton {
+		float: left;
+		margin-right: 10px;
+	}
+	
+</style>
+</head>
+<body>
+
+<h2>User defined button</h2>
+<p>Dojo users can extend the button class and define their own background images.
+Here's an example:</p>
+<style>
+  .dc {
+  	font-size: x-large;
+  	padding-top: 10px;
+  	padding-bottom: 10px;
+  }
+</style>
+<div class="box">
+	<button dojoType="acme:Button" onclick='dojo.debug("short");'>
+		<div class="dc">short</div>
+	</button>
+	<button dojoType="acme:Button" onclick='dojo.debug("longer");'>
+		<div class="dc">bit longer</div>
+	</button>
+	<button dojoType="acme:Button" onclick='dojo.debug("longer yet");'>
+		<div class="dc">ridiculously long</div>
+	</button>
+	<div style="clear: both;"></div>
+</div>
+</body>
+</html>

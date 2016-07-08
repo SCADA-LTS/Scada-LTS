@@ -1,0 +1,6 @@
+name=Misturador 3D enchendo/vazio
+type=imageSet
+#width=394
+#height=557
+text.x=5
+text.y=25

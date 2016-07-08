@@ -1,0 +1,28 @@
+<!--
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html>
+<head>
+	<script>
+		var djConfig = {isDebug: true};
+	</script>
+	<script src="../../dojo.js"></script>
+	<script>
+		dojo.require("dojo.io.BrowserIO");
+		dojo.addOnLoad(function(){
+			dojo.io.updateNode("updateMe1", "updateNode.txt");
+			dojo.io.updateNode(dojo.byId("updateMe2"), {url:"updateNode.txt"});
+		});
+	</script>
+</head>
+<body>
+	<h3>Test dojo.io.UpdateNode</h3>
+	dojo.io.updateNode("updateMe1", "updateNode.txt");
+	<div id="updateMe1" style="border: 1px solid red;">Initial content</div><br/><br/>
+	dojo.io.updateNode(dojo.byId("updateMe2"), {url:"updateNode.txt", cacheContent: false});
+	<div id="updateMe2" style="border: 1px solid red;">Initial content</div><br/><br/>
+</body>
+</html>

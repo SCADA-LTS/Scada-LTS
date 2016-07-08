@@ -1,0 +1,64 @@
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<p>
+  El ScadaBR actualmente permite el uso de dos Manejadores de Sistemas de Bases de Datos (DBMS): <b>Derby</b> y <b>MySQL</b>.
+</p>
+
+<p>
+  La Base de Datos predefinida del sistema es <b>Derby</b>. En el caso que requiera realizar cambios sobre la configuraci&oacute;n inicial,
+  debe modificar el archivo ubicado en <b>"ScadaBR*/WEB-INF/classes/env.properties"</b> y en <b>"ScadaBR*/WEB-INF/classes/env.properties.derby"</b>.
+</p>
+
+<p>
+  Para utilizar <b>MySQL</b>, es requerido que configure la informaci&oacute;n para su correcto funcionamiento. En este caso debe modificar el contenido de 
+  <b>"ScadaBR*/WEB-INF/classes/env.properties.mysql"</b>. B&aacute;sicamente debe configurar los siguientes par&aacute;metros:
+  	<p>
+	  <b>db.username: </b> Nombre de Usuario.
+  	</p>
+	<p>
+	  <b>db.password: </b> Contraseña del Usuario.
+  	</p>
+  
+ Para este cambio es requerido elegir la opci&oacute;n <b>MySQL</b> y posteriormente hacer clic en el icono de guardar. Finalmente debe reiniciar el servidor de aplicaci&oacute;n  web (p.e: Tomcat). 
+</p>
+
+<p>
+  <b>ScadaBR*: </b> La ubicaci&oacute;n del servidor de aplicaci&oacute;n web del ScadaBR (p.e: "Pasta_Tomcat/webapps/ScadaBR"). 
+</p>

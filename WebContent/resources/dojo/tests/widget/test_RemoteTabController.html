@@ -1,0 +1,125 @@
+
+<meta http-equiv="Context-Type" content="text/html; charset=UTF-8">
+<!--
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>TabContainer Demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+
+<script type="text/javascript">
+	var djConfig = { isDebug: true };
+</script>
+
+<link rel="stylesheet" type="text/css" href="testRemoteTabController.css" />
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../../src/widget/TabController.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.TabContainer");
+	dojo.require("dojo.widget.Tooltip");
+	dojo.require("dojo.widget.LinkPane");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.Button");
+</script>
+
+<style type="text/css">
+body {
+	font-family : sans-serif;
+}
+
+/* add padding to each contentpane inside the tab container, and scrollbar if necessary */
+.dojoTabPane {
+  padding : 10px 10px 10px 10px;
+  overflow: auto;
+}
+
+</style>
+<script type="text/javascript">
+function boo(panel, node) {
+	node.innerHTML = "Handlers override grabbing from URLs. They run in context of the widget, so 'this' refers to the tab widget.";
+}
+function testClose(pane,tab) {
+  return confirm("Please confirm that you want tab "+tab.label+" closed");
+}
+</script>
+</head>
+
+<body>
+	<p>First should be a TabController, then some text, then the tabs</p>
+	<div id="before1" dojoType="TabController" containerId="mainTabContainer"></div>
+	<br>
+	<p>These tabs are made up of local and external content. Tab 1 and Tab 2 are loading
+	files tab1.html and tab2.html. Tab 3 and Another Tab are using content that is already
+	part of this page.</p>
+
+	<div id="mainTabContainer" dojoType="TabContainer" style="width: 100%; height: 20em;" selectedChild="tab2">
+	
+		<div id="tab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
+		
+		<div id="tab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
+		
+		<div dojoType="ContentPane" label="Tab 3">
+			<h1>I am tab 3</h1>
+			<p>And I was already part of the page! That's cool, no?</p>
+			<p id="foo">tooltip on this paragraph</p>
+			<div dojoType="Tooltip" connectId="foo">I'm a tooltip!</div>
+			<button dojoType="Button">I'm a button</button>
+			<br>
+			<button dojoType="Button">So am I!</button>
+			<p>
+			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+			semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
+			porta rutrum lacus. Etiam consequat scelerisque quam. Nulla facilisi.
+			Maecenas luctus venenatis nulla. In sit amet dui non mi semper iaculis.
+			Sed molestie tortor at ipsum. Morbi dictum rutrum magna. Sed vitae
+			risus.
+			</p>
+			<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+			imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+			nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+			massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+			pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+			quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+			felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+			quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+			rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+			semper velit ante id metus. Praesent massa dolor, porttitor sed,
+			pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+			tortor pharetra congue. Suspendisse pulvinar.
+			</p>
+		</div>
+		
+		<div dojoType="LinkPane" label="Handler tab" handler="boo"></div>
+
+		<div dojoType="ContentPane" label="Another Tab">
+			<h1>I love local content</h1>
+			<p>And I'm not ashamed to admit it.</p>
+			<p>venga venga venga venga venga venga venga venga venga venga venga venga
+			venga venga venga venga venga venga venga venga venga venga venga venga
+			venga venga venga venga venga venga venga venga venga venga venga venga
+			venga venga venga venga venga venga venga venga venga venga venga venga
+			venga venga venga venga venga venga venga venga venga venga venga venga
+			venga venga venga venga venga venga venga venga venga venga venga venga
+			venga venga venga venga venga venga venga venga venga venga venga venga</p>
+		</div>
+
+		<div id="subTabContainer" dojoType="TabContainer" label="Sub TabContainer">	
+			<a dojoType="LinkPane" href="tab1.html">SubTab 1</a>		
+			<a dojoType="LinkPane" href="tab2.html" selected="true">SubTab 2</a>
+		</div>
+
+	</div>
+
+	<p>some text here</p>
+
+	 <div id="after1" dojoType="TabController" containerId="mainTabContainer" class="controller1" ></div>
+	<br>
+	 <div id="after2" dojoType="TabController" containerId="mainTabContainer" class="controller2" ></div>
+	 end!!!
+</body>
+</html>

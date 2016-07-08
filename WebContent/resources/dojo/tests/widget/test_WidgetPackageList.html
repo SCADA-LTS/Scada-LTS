@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<title>Dojo getWidgetPackageList Test</title>
+
+<script type="text/javascript">
+	var djConfig = { isDebug: true };
+</script>
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.event.*");
+	dojo.require("dojo.widget.Button");
+</script>
+
+<script type="text/javascript">
+	function init(){
+		dojo.debug('packages:');
+		var packages = dojo.widget.manager.getWidgetPackageList();
+		for (var i in packages){
+			dojo.debug(packages[i]);
+		}
+	}
+
+	dojo.addOnLoad(init);
+</script>
+

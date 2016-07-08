@@ -1,0 +1,60 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>PageContainer Demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<script type="text/javascript">
+	var djConfig = { isDebug: true, debugAtAllCosts: true };
+</script>
+<style>
+	h1 { font-family: cursive; font-size: 24pt; }
+	p { font-family: cursive; font-size: 14pt; }
+
+	/* set style for page controller */
+	.dojoPageController .item { margin: 0px 5px 0px 5px; }
+	.dojoPageController .selectButton { text-decoration: underline; cursor: pointer; margin-right: 3px;}
+	.dojoPageController .closeButton { cursor: pointer; };
+	.dojoPageController .item { color: #333366; }
+	.dojoPageController .current { color: blue; font: bold;}
+</style>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.event.topic");
+	dojo.require("dojo.widget.PageContainer");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+	function selected(page){
+		dojo.debug("page selected " + page.widgetId);
+		var widget=dojo.widget.byId("myPageContainer");
+		dojo.byId("previous").disabled = page.isFirstChild;
+		dojo.byId("next").disabled = page.isLastChild;
+		dojo.byId("previous2").disabled = page.isFirstChild;
+		dojo.byId("next2").disabled = page.isLastChild;
+	}
+	dojo.addOnLoad(function(){
+		dojo.event.topic.subscribe("myPageContainer-selectChild", selected);
+		// TODO: if someone removes the first or last page have to disable the previous/next buttons */
+	});
+</script>
+</head>
+
+<body>
+	<h1>A Tale Of Two Cities</h1>
+
+	<button id="previous" onClick="dojo.widget.byId('myPageContainer').back()">&lt;</button>
+	<span dojoType="PageController" containerId="myPageContainer"></span>
+	<button id="next" onClick="dojo.widget.byId('myPageContainer').forward()">&gt;</button>
+
+	<div id="myPageContainer" dojoType="PageContainer" style="width: 100%; height: 20em; border: 3px dashed aqua; margin: 1em 0 1em 0;">
+		<p id="page1" dojoType="ContentPane" label="page 1">IT WAS the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair, we had everything before us, we had nothing before us, we were all going direct to Heaven, we were all going direct the other way -- in short, the period was so far like the present period, that some of its noisiest authorities insisted on its being received, for good or for evil, in the superlative degree of comparison only</p>
+		<p id="page2" dojoType="ContentPane" label="page 2">There were a king with a large jaw and a queen with a plain face, on the throne of England; there were a king with a large jaw and a queen with a fair face, on the throne of France. In both countries it was clearer than crystal to the lords of the State preserves of loaves and fishes, that things in general were settled for ever.</p>
+		<p id="page3" dojoType="ContentPane" label="page 3">It was the year of Our Lord one thousand seven hundred and seventy- five. Spiritual revelations were conceded to England at that favoured period, as at this. Mrs. Southcott had recently attained her five-and- twentieth blessed birthday, of whom a prophetic private in the Life Guards had heralded the sublime appearance by announcing that arrangements were made for the swallowing up of London and Westminster. Even the Cock-lane ghost had been laid only a round dozen of years, after rapping out its messages, as the spirits of this very year last past (supernaturally deficient in originality) rapped out theirs. Mere messages in the earthly order of events had lately come to the English Crown and People, from a congress of British subjects in America:</p>
+	</div>
+
+	<button id="previous2" onClick="dojo.widget.byId('myPageContainer').back()">&lt;</button>
+	<span dojoType="PageController" containerId="myPageContainer"></span>
+	<button id="next2" onClick="dojo.widget.byId('myPageContainer').forward()">&gt;</button>
+	
+</body>
+</html>

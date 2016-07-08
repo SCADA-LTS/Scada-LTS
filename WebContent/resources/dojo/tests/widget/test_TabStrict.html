@@ -1,0 +1,47 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html xmlns="http://www.w3.org/1999/xhtml"" xml:lang="en" lang="en">
+ <head>
+ <title>TabContainer Demo</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+
+ <script type="text/javascript">
+         var djConfig = { isDebug: true };
+ </script>
+ <script type="text/javascript" src="../../dojo.js"></script>
+  <script type="text/javascript">
+         dojo.require("dojo.widget.TabContainer");
+         dojo.require("dojo.widget.Tooltip");
+         dojo.require("dojo.widget.LinkPane");
+         dojo.require("dojo.widget.ContentPane");
+ </script>
+
+
+ <script type="text/javascript">
+ function testClose(pane,tab) {
+ 	debugger;
+   return confirm("Please confirm that you want tab "+tab.label+" closed");
+ }
+ </script>
+ </head>
+
+ <body>
+
+	<p>
+		This is a strict XHTML file and was failing on IE.
+		The close icons weren't showing up.
+	</p>
+
+	<div id="ttabs" dojoType="TabContainer" labelPosition="top"
+ style="width: 100%; height: 10em;" selectedChild="ttab2">
+		<div id="ttab1" dojoType="ContentPane" href="tab1.html"
+ label="Tab 1" closable="true"></div>
+		<div id="ttab2" dojoType="ContentPane" href="tab2.html"
+ refreshOnShow="true" label="Tab 2" closable="true"></div>
+		<div dojoType="ContentPane" label="Tab 3" onClose="testClose" closable="true">
+			<h1>I am tab 3</h1>
+			<p>And I was already part of the page! That's cool, no?</p>
+		</div>
+	</div>
+
+ </body>
+ </html>

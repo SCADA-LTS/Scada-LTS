@@ -1,0 +1,90 @@
+<html>
+	<head>
+		<title>dojo.behavior Tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.profile = null;
+			dojo.require("dojo.profile");
+			dojo.require("dojo.behavior");
+
+			dojo.addOnLoad(function(){
+				dojo.behavior.add({
+					"border": function(elem){
+						with(elem.style){
+							border = "3px solid blue";
+							padding = "5px";
+							margin = "5px";
+						}
+					},
+					"clickSet": {
+						"onclick": function(evt){
+							alert("clicked!");
+						}
+					},
+					"topicClickSet": { "onclick": "/foo/bar" },
+					"addNodesButton": { "onclick": function(evt){
+						var tNode = document.createElement("div");
+						tNode.id = "border";
+						document.body.appendChild(tNode);
+						tNode.innerHTML = "this should get a border when you hit the re-apply button";
+	
+						tNode = document.createElement("div");
+						tNode.id = "clickSet";
+						document.body.appendChild(tNode);
+						tNode.innerHTML = "this will become clickable when you hit the re-apply button";
+	
+					} },
+					"reApplyButton": { "onclick": { targetObj: dojo.behavior, targetFunc: "apply" } }
+				});
+	
+				dojo.event.topic.subscribe("/foo/bar", function(){
+					alert("event handled via the /foo/bar topic");
+				});
+	
+	
+				dojo.event.connect(dojo.behavior, "apply", function(){
+					dojo.profile.dump(true);
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span>
+		<span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span>
+		<span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span>
+		<span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span>
+		<span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span>
+		<span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span>
+		<span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span>
+		<span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span>
+		<div id="border">
+			this should be given a border
+		</div>
+		<div id="clickSet">
+			this should cause an alert when you click it
+		</div>
+		<div id="border">
+			this should be given a border
+		</div>
+		<div id="topicClickSet">
+			clicking here should dispatch an alert via a topic
+		</div>
+		</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+		</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+		</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+		</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+		</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+		</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+		</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+		</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+		<button id="addNodesButton">Add More Behavior Nodes</button>
+		<button id="reApplyButton">Re-Apply The Behaviors</button>
+	</body>
+</html>
+

@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>SplitContainer Widget Demo</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.SplitContainer");
+	dojo.require("dojo.widget.LayoutContainer");
+</script>
+
+<style>
+	html, body {
+		width: 100%;
+		height: 100%;
+		margin: 0px;
+		padding: 0px;
+		overflow: hidden;
+	}
+
+	#layout {
+		width: 100%;
+		height: 100%;
+		border:2px solid black;
+	}
+
+</style>
+
+<script language="JavaScript" type="text/javascript" >
+	dojo.addOnLoad(function(){
+		split = dojo.widget.createWidget("SplitContainer",{layoutAlign: "client", orientation: "vertical"});
+		testContent = dojo.widget.createWidget("ContentPane",{href: "doc0.html", sizeShare:3});
+		testContent.domNode.style.overflow="auto";
+		testContent2 = dojo.widget.createWidget("ContentPane",{href: "doc1.html", sizeShare: 7});
+		testContent2.domNode.style.overflow="auto";
+		split.addChild(testContent);
+		split.addChild(testContent2);
+		dojo.widget.byId("layout").addChild(split);
+	});
+</script>
+</head>
+<body>
+
+
+<div dojoType="LayoutContainer" id="layout" layoutChildPriority="top-bottom">
+	<div dojoType="ContentPane" layoutAlign="left" style="width: 200px; border: 2px solid green">Left</div>
+	<div dojoType="ContentPane" layoutAlign="right" style="width: 200px; border: 2px solid red">Right</div>
+	<div dojoType="ContentPane" layoutAlign="top" style="height: 30px; border: 2px solid blue">Top</div>
+	<div dojoType="ContentPane" layoutAlign="bottom" style="height: 30px; border: 2px solid yellow">Bottom</div>
+</div>
+
+</body>
+</html>

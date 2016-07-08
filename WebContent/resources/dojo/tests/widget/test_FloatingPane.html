@@ -1,0 +1,154 @@
+<html>
+<head>
+
+<title>FloatingPane Widget Demo</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.FloatingPane");
+	dojo.require("dojo.widget.ComboBox");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.TabContainer");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+</script>
+</head>
+<body>
+
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam facilisis enim. Pellentesque in elit et lacus euismod dignissim. Aliquam dolor pede, convallis eget, dictum a, blandit ac, urna. Pellentesque sed nunc ut justo volutpat egestas. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. In erat. Suspendisse potenti. Fusce faucibus nibh sed nisi. Phasellus faucibus, dui a cursus dapibus, mauris nulla euismod velit, a lobortis turpis arcu vel dui. Pellentesque fermentum ultrices pede. Donec auctor lectus eu arcu. Curabitur non orci eget est porta gravida. Aliquam pretium orci id nisi. Duis faucibus, mi non adipiscing venenatis, erat urna aliquet elit, eu fringilla lacus tellus quis erat. Nam tempus ornare lorem. Nullam feugiat.</p>
+
+<p>Sed congue. Aenean blandit sollicitudin mi. Maecenas pellentesque. Vivamus ac urna. Nunc consequat nisi vitae quam. Suspendisse sed nunc. Proin suscipit porta magna. Duis accumsan nunc in velit. Nam et nibh. Nulla facilisi. Cras venenatis urna et magna. Aenean magna mauris, bibendum sit amet, semper quis, aliquet nec, sapien. Aliquam aliquam odio quis erat. Etiam est nisi, condimentum non, lacinia ac, vehicula laoreet, elit. Sed interdum augue sit amet quam dapibus semper. Nulla facilisi. Pellentesque lobortis erat nec quam.</p>
+
+<textarea>
+Testing to make sure floating panes appear above textareas...
+</textarea>
+
+<div dojoType="FloatingPane"
+	title="Outer window"
+	constrainToContainer="true"
+	iconSrc="images/check.gif"
+	style="width: 300px; height: 200px; left: 500px; top: 200px;"
+>
+		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
+		(to check we're copying children around properly).<br />
+
+		<select dojoType="combobox">
+			<option value="1">foo</option>
+			<option value="2">bar</option>
+			<option value="3">baz</option>
+		</select>
+
+		Here's some text that comes AFTER the combo box. This checks we don't set the contained widget to position: absolute.
+
+	<div dojoType="FloatingPane"
+		title="Inner window"
+		constrainToContainer="true"
+		iconSrc="images/graph.gif"
+		style="left: 20px; top: 60px; width: 120px; height: 80px;"
+	>
+		weird, huh?
+	</div>
+
+</div>
+
+
+<div dojoType="FloatingPane"
+	title="Resizable window w/shadow"
+	constrainToContainer="true"
+	hasShadow="true"
+	resizable="true"
+	displayMinimizeAction="true"
+	displayMaximizeAction="true"
+	displayCloseAction="true"
+	iconSrc="images/note.gif"
+	style="width: 300px; height: 200px; left: 600px; top: 400px;"
+>
+		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
+		(to check we're copying children around properly).<br />
+
+	<div dojoType="FloatingPane"
+		title="Inner window"
+		constrainToContainer="1"
+		style="left: 20px; top: 60px; width: 120px; height: 80px;"
+	>
+		weirder, huh?
+	</div>
+
+</div>
+
+<div dojoType="FloatingPane"
+	title="Layout window w/shadow"
+	constrainToContainer="true"
+	hasShadow="true"
+	resizable="true"
+	displayMinimizeAction="true"
+	displayMaximizeAction="true"
+	iconSrc="images/flatScreen.gif"
+	style="width: 300px; height: 200px; top: 600px; left: 400px;"
+>
+	<div dojoType="ContentPane" layoutAlign="top" style="border: solid white;">TOP</div>
+	<div dojoType="ContentPane" layoutAlign="bottom" style="border: solid white;">BOTTOM</div>
+	<div dojoType="ContentPane" layoutAlign="left" style="border: solid white;">LEFT</div>
+	<div dojoType="ContentPane" layoutAlign="right" style="border: solid white;">RIGHT</div>
+	<div dojoType="ContentPane" layoutAlign="client" style="border: solid white;">CENTER</div>
+</div>
+
+<div dojoType="FloatingPane" style="width: 300px; height: 300px; left: 100px; top: 100px;"
+	href="doc0.html" executeScripts="true" title="externally loaded"></div>
+
+<div dojoType="FloatingPane" id="tfp" title="Tabbed Floating Pane" hasShadow="true" resizable="true"
+	style="width: 300px; height: 300px; left: 300px; top: 300px;">
+	<div dojoType="TabContainer" id="tabs" layoutAlign="client">
+		<div dojoType="ContentPane" label="tab1">Tab1 Content</div>
+		<div dojoType="ContentPane" label="tab2">Tab2 Content</div>
+	</div>
+</div>
+
+<div dojoType="FloatingPane"
+	title="Content pane is tree"
+	constrainToContainer="true"
+	hasShadow="true"
+	resizable="true"
+	displayMinimizeAction="true"
+	displayMaximizeAction="true"
+	contentWrapper="none"
+	style="width: 300px; height: 200px; top: 100px; left: 400px;"
+>
+	<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
+	<div dojoType="TreeV3" listeners="controller" publishSelectionTopic="treeSelected" toggle="fade" widgetId="firstTree">
+	    <div dojoType="TreeNodeV3" title="Item 1">
+	        <div dojoType="TreeNodeV3" title="Item 1.1"><br/></div>
+	        <div dojoType="TreeNodeV3" title="Item 1.2">
+	            <div dojoType="TreeNodeV3" title="Item 1.2.1"></div>
+	            <div dojoType="TreeNodeV3" title="Item 1.2.2"></div>
+	        </div>
+	        <div dojoType="TreeNodeV3" title="Item 1.3">
+	            <div dojoType="TreeNodeV3" title="Item 1.3.1"></div>
+	            <div dojoType="TreeNodeV3" title="Item 1.3.2"></div>
+	        </div>
+	        <div dojoType="TreeNodeV3" title="Item 1.4">
+	            <div dojoType="TreeNodeV3" title="Item 1.4.1"></div>
+	        </div>
+	    </div>
+	</div>
+</div>
+
+<p>Sed arcu magna, molestie at, fringilla in, sodales eu, elit. Curabitur mattis lorem et est. Quisque et tortor. Integer bibendum vulputate odio. Nam nec ipsum. Vestibulum mollis eros feugiat augue. Integer fermentum odio lobortis odio. Nullam mollis nisl non metus. Maecenas nec nunc eget pede ultrices blandit. Ut non purus ut elit convallis eleifend. Fusce tincidunt, justo quis tempus euismod, magna nulla viverra libero, sit amet lacinia odio diam id risus. Ut varius viverra turpis. Morbi urna elit, imperdiet eu, porta ac, pharetra sed, nisi. Etiam ante libero, ultrices ac, faucibus ac, cursus sodales, nisl. Praesent nisl sem, fermentum eu, consequat quis, varius interdum, nulla. Donec neque tortor, sollicitudin sed, consequat nec, facilisis sit amet, orci. Aenean ut eros sit amet ante pharetra interdum.</p>
+
+<h2>for ie bleed through testing...</h2>
+<select style="margin-left: 200px;">
+	<option value="1">foo</option>
+	<option value="2">bar</option>
+	<option value="3">baz</option>
+</select>
+	
+<p>Fusce rutrum pede eget quam. Praesent purus. Aenean at elit in sem volutpat facilisis. Nunc est augue, commodo at, pretium a, fermentum at, quam. Nam sit amet enim. Suspendisse potenti. Cras hendrerit rhoncus justo. Integer libero. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam erat volutpat. Sed adipiscing mi vel ipsum.</p>
+
+<p>Sed aliquam, quam consectetuer condimentum bibendum, neque libero commodo metus, non consectetuer magna risus vitae eros. Pellentesque mollis augue id libero. Morbi nonummy hendrerit dui. Morbi nisi felis, fringilla ac, euismod vitae, dictum mollis, pede. Integer suscipit, est sed posuere ullamcorper, ipsum lectus interdum nunc, quis blandit erat eros hendrerit pede. Vestibulum varius, elit id mattis mattis, nulla est feugiat ante, eget vestibulum augue eros ut odio. Maecenas euismod purus quis felis. Ut hendrerit tincidunt est. Fusce euismod, nunc eu tempus tempor, purus ligula volutpat tellus, nec lacinia sapien enim id risus. Aliquam orci turpis, condimentum sed, sollicitudin vel, placerat in, purus. Proin tortor nisl, blandit quis, imperdiet quis, scelerisque at, nisl. Maecenas suscipit fringilla erat. Curabitur consequat, dui blandit suscipit dictum, felis lectus imperdiet tellus, sit amet ornare risus mauris non ipsum. Fusce a purus. Vestibulum sodales. Sed porta ultrices nibh. Vestibulum metus.</p>
+
+</body>
+</html>

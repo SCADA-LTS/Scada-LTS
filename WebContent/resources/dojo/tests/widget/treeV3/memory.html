@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.profile");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	var nodeCount = 1000;
+	
+	function addChildren() {
+		dojo.profile.start("addChildren")
+		var tree = dojo.widget.manager.getWidgetById("tree");
+		var children = []
+		for (var i=1; i<=nodeCount; i++) {
+			children.push(dojo.widget.TreeNodeV3.prototype.createSimple({title: 'node', tree: tree}))
+		}
+		tree.setChildren(children)
+		dojo.profile.end("addChildren")
+		
+		dojo.debug("Node count "+nodeCount);
+		
+		dojo.profile.dump(true);
+		
+		
+	}
+	
+		
+
+</script>
+</head>
+<body>
+
+<h4>Test creation memory footprint for many single-level nodes</h4>
+
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
+
+<div dojoType="TreeV3" widgetId="tree" listeners="controller">
+</div>
+
+<input type="button" value="make lots of nodes" onclick="addChildren()"/>
+
+</body>
+</html>

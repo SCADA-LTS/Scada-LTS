@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+<title>Dojo Custom Widget Test</title>
+	<link rel="stylesheet" type="text/css" href="css/demos.css" />
+<script type="text/javascript">
+	//var djConfig = {isDebug: true };
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+
+	// Use the above line to see files with their filenames in the the debugger.
+	// Normally you see eval or anonymous as the 'filename' which makes debugging harder!
+	// Comment the above code out to go back to normal dojo loading functionality.
+	
+	// debugAtAllCosts Implementation: files are loaded using XMLHttp first and
+	// the text is recursively scanned for dojo.require dependencies. This is then
+	// used to create an ordered list of script includes which actually load the
+	// code into the runtime environment. Neat huh?
+
+	// To debug, you may find it easier to build your own package with full source code.
+
+	// The debugAtAllCosts feature helps when using FireBug or Venkman with FireFox.
+	
+	// In IE you may get an exception on load if you are loading the page 
+	// directly from your file system:
+	//		A Runtime error has occured.
+	//		Do you wish to debug?
+	//		Line: 1
+	//		Error: Invalid character
+	// This is because dojo has put in a script tag for a src file that doesnt exist e.g. src="..\..\src\__packages__.js"
+	// Just click OK, and get on with it.
+</script>
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../../../src/ns.js"></script>
+
+<script type="text/javascript">
+	dojo.require("dojo.widget.Button");
+	dojo.require("dojo.widget.Menu2");
+	dojo.require("dojo.widget.Manager");
+	// Use true as a parameter if you are going to call dojo.hostenv.writeIncludes() 
+	// a second time.
+	dojo.hostenv.writeIncludes(true);
+// You must close the script tag here so the scripts get loaded (due to how document.write works!).
+</script>
+
+<script>
+	// Load user custom button
+
+	// 1. set directory for acme package (which contains widgets)
+	// The path is relative to the dojo/ directory, so typically
+	// it's something like "../acme"
+	dojo.registerModulePath('acme', 'tests/widget/acme');
+	
+	// 2. load the user defined button
+	dojo.require("acme.Button");
+
+	function widgetClick() {
+		dojo.debug('widget [' + this.widgetId + '] was clicked');
+	}
+	
+	dojo.hostenv.writeIncludes();
+</script>
+
+
+<style>
+	/* group multiple buttons in a row */
+	.box {
+		display: block;
+		text-align: center;
+	}
+	.box .dojoButton {
+		float: left;
+		margin-right: 10px;
+	}
+	.dojoButton .dojoButtonContents {
+		font-size: medium;
+	}
+
+	.dc {
+		font-size: x-large;
+		padding-top: 10px;
+		padding-bottom: 10px;
+  	}
+</style>
+</head>
+
+<body>
+
+<h1>Example Of Using debugAtAllCosts w/Custom Widget</h1>
+
+<div class="box">
+	<button dojoType="acme:Button" onclick='dojo.debug("short");'>
+		<div class="dc">short</div>
+	</button>
+	<button dojoType="acme:Button" onclick='dojo.debug("longer");'>
+		<div class="dc">bit longer</div>
+	</button>
+	<button dojoType="acme:Button" onclick='dojo.debug("longer yet");'>
+		<div class="dc">ridiculously long</div>
+	</button>
+	<div style="clear: both;"></div>
+</div>
+<p>See comments in the page source code for details on how to debug custom widgets.</p>
+
+</body>
+</html>

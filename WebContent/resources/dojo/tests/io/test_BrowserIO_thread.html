@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<script type="text/javascript">
+    var djConfig = {isDebug: true};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+    dojo.require("dojo.io.*");
+</script>
+<script>
+
+	// do our own custom painter
+	dojo.debugPaint = function(color, msgObj){
+		dojo.debug(msgObj);
+		var console = document.getElementById(djConfig.debugContainerId ?
+				djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId);
+		if(!console) { console = dojo.body(); }
+		console.lastChild.style.backgroundColor = color;
+	}
+	// colors
+	var adc = ["#3399CC","#CCFF00","#FFCC66", "#66FFCC", "#33FFCC", "#FFCC33", "#FFCC99",
+					"#FF00FF", "#99FFFF", "#33FFFF", "#FFFF33", "#FFFF00", "#FFFF66"];
+	var sdc = ["","#99FF00","#FF00FF", "#FF00CC","#FF0099", "#FF0066", "#FF0033"];
+
+	var asyncCalls = 0;
+	var gtAsyncCalls = 0;
+	var syncCalls = 0;
+	var gtSyncCalls = 0;
+	var inFlightCount = 0;
+	var maxInFlight = 0;
+	var requestCount = 0;
+	var failure = false;
+
+	// get this filename (something to bind to)
+	var url = location.href;
+	var pos = location.href.lastIndexOf("/") || location.href.lastIndexOf("\\");
+	var url = url.substr(pos + 1);
+
+	var aSafe = 0;
+	function bindAsync(){
+		count(1,1)
+		var c = ++aSafe;
+		var p = inFlightCount.toString();
+		p = p.charAt(p.length - 1);
+		p = adc[p];
+		dojo.debugPaint(p,c+" async start download");
+		return dojo.io.bind({
+			url: url,
+			useCache: 1,
+			sync: false,
+			load: function(type, data){
+				count(0,1);
+				dojo.debugPaint(p,c+" async downloaded");
+				if(c<10){
+					bindAsync();
+					init();
+					if(c>5){
+						getTextSync();
+					}else{
+						bindSync();
+					}
+				}else{
+					check();
+				}
+			},
+			error: function(type, err){
+				dojo.debug("Error getting "+urlFast);
+				dojo.debugShallow(err);
+			}
+		});
+	}
+	var timestop = 0;
+
+	function bindSync(){
+		var c = count(1,2);
+		dojo.debugPaint(sdc[c],c+" sync start download");
+		dojo.io.bind({
+			url: url,
+			useCache: false,
+			sync: true,
+			load: function(type, data){
+				dojo.debugPaint(sdc[c],c+" sync downloaded");
+				if(c!=1){
+					dojo.debugPaint("red","Thread failure, inFlightCount: "+inFlightCount);
+					failure = true;
+					check();throw "Error not thread safe";
+				}
+				count(0,2);
+			},
+			error: function(type, err){
+				dojo.debug("Error getting "+urlSlow);
+				dojo.debugShallow(err);
+			}
+		});
+	}
+
+	function getTextSync(){
+		var c = count(1,3);
+		dojo.debugPaint(sdc[c],c+" getTextSync start download");
+		var response = dojo.hostenv.getText(url); // sync call as used by widgetsystem
+		if(response){
+			dojo.debugPaint(sdc[c],c+" getTextSync downloaded");
+			if(c!=1){
+				dojo.debugPaint("red","Thread failure, inFlightCount: "+inFlightCount+" maxInFlight: "+maxInFlight);
+				failure = true;
+				check();throw "Error not thread safe";
+			}
+		}
+		count(0,3);
+	}
+
+	var gtAsafe = 0;
+	function getTextAsync(){
+		count(1, 4);
+		var c = ++gtAsafe;
+		var p = inFlightCount.toString();
+		p = p.charAt(p.length - 1);
+		p = adc[p];
+		dojo.debugPaint(p,c+" getTextAsync start downLoad");
+		dojo.hostenv.getText(url, function(){
+			count(0, 4);
+			dojo.debugPaint(p,c+" getTextAsync downloaded");
+			if(c<10){
+				getTextAsync();
+				init()
+				if(c>5){
+					getTextSync();
+				}else{
+					bindSync();
+				}
+			}else{
+				check();
+			}
+		});
+	}
+
+	function count(add, type){
+		if(add){
+			requestCount++;
+			inFlightCount++;
+			maxInFlight = (maxInFlight<inFlightCount) ? inFlightCount : maxInFlight;
+		}else{
+			inFlightCount--;
+		}
+		switch(type){
+		case 1:
+			return (add) ? ++asyncCalls : --asyncCalls ;
+			break;
+		case 2:
+			return (add) ? ++syncCalls : --syncCalls ;
+			break;
+		case 3:
+			return (add) ? ++gtSyncCalls : --gtSyncCalls ;
+			break;
+		case 4:
+			return (add) ? ++gtAsyncCalls : --gtAsyncCalls ;
+			break;
+		}
+	}
+
+	function check(){
+		var div = dojo.byId("check");
+		if(!failure){
+			if(inFlightCount == 0){
+				div.style.backgroundColor = "green";
+				div.firstChild.nodeValue = "Test succeded!  maximum requests in flight at the same time: "+maxInFlight
+										+" in "+requestCount+" requests";
+			}else if(inFlightCount < 0){
+				// make sure we did get all responses exactly as many times as we called
+				var str = "";
+				if(asyncCalls < 0){ str = "Async dropped a callback"; }
+				if(gtAsyncCalls < 0){ str = "getText async gained a callback"; }
+				if(syncCalls < 0){ str = "getText sync gained a callback"; }
+				if(gtSyncCalls < 0){ str = "getText sync gained a callback";}
+				if(!str){
+					str = "inFlightCount below zero, unknown why";
+				}
+				failure = str;
+				return check();
+			}
+		}else{
+			var str = "Thread failure, inFlightCount: "+inFlightCount
+					+" maxInFlight: "+maxInFlight +" in "+requestCount+" requests";
+			str = (typeof failure == "string") ? failure : str;
+			div.style.backgroundColor = "red";
+			div.firstChild.nodeValue = str;
+		}
+	}
+
+	function init(){
+		bindAsync();
+		bindSync();
+		getTextSync();
+		getTextAsync();
+
+		bindAsync();
+		getTextSync();
+		getTextAsync();
+		bindSync();
+
+		bindAsync();
+		getTextAsync();
+		bindSync();
+		getTextSync();
+
+
+		getTextAsync();
+		bindAsync();
+		getTextSync();
+		bindSync();
+
+		bindAsync();
+		bindSync();
+		getTextSync();
+		getTextAsync();
+
+		bindAsync();
+		getTextSync();
+		getTextAsync();
+		bindSync();
+
+		bindAsync();
+		getTextAsync();
+		bindSync();
+		getTextSync();
+
+		getTextAsync();
+		bindAsync();
+		getTextSync();
+		bindSync();
+
+		bindAsync();
+		bindSync();
+		getTextSync();
+		getTextAsync();
+
+		getTextAsync();
+		bindAsync();
+	}
+
+	dojo.addOnLoad(init);
+</script>
+</head>
+<body>
+	<h2>Check thread safety in XmlHttpRequest, mostly important in Khtml</h2>
+	<h3>Test relates to both dojo.io.bind and dojo.hostenv.getText as it is the combination of these that is  causing the browser hang.</h3>
+	<pre>
+		Propose of this test is to test for thread safety in XHR
+		The problem is if you start 2 async requests, and the content of one
+		these start a sync request, this sync request can be interupted
+		by the other async request. That hangs the browser indefinetly.
+		It should wait with the async callback until the sync exits
+	</pre>
+	<div id="check" style="background-color: yellow; text-align:center; font-size: 2em;">Probing... please wait!</div><br/><br/>
+</body>
+</html>

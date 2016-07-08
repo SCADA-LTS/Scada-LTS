@@ -1,0 +1,6 @@
+name=Leds24
+type=imageSet
+#width=24
+#height=24
+text.x=0
+text.y=24

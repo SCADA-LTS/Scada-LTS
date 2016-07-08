@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+    var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+    dojo.require("dojo.widget.*");
+    dojo.require("dojo.widget.TreeV3");
+    dojo.require("dojo.widget.TreeNodeV3");
+    dojo.require("dojo.widget.TreeBasicControllerV3");
+    dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body>
+    
+<h3>Markup tree with basic controller attached, multiline content and empty folder</h3>
+
+    
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>  
+
+<div dojoType="TreeV3" listeners="controller">
+    <div dojoType="TreeNodeV3" 
+title="<input type='checkbox' class='TreeIcon' /><div style='background-color:green;border:1px red solid;width:200px;height:200px'><span>Rich HTML node</span><div style='border:1px blue solid'>Body Body</div></div>" 
+ widgetId="Item 1">
+        <div dojoType="TreeNodeV3" title="Item 1.1" widgetId="Item 1.1"></div>
+        <div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2"></div>
+    </div>
+
+    <div dojoType="TreeNodeV3" title="Item 2<br/>title long yeah" widgetId="Item 2">
+        <div dojoType="TreeNodeV3" title="Item 2.1" widgetId="Item 2.1"></div>
+    </div>
+
+    <div dojoType="TreeNodeV3" title="Empty Folder" isFolder="true" widgetId="Item 3"></div>
+    <div dojoType="TreeNodeV3" title="Item 4" widgetId="Item 4"></div>
+</div>
+
+
+</body>
+</html>

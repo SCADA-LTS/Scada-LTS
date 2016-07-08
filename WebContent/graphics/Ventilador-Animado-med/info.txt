@@ -1,0 +1,6 @@
+name=Ventilador Animado Simples (Medio)
+type=imageSet
+#width=190
+#height=186
+text.x=14
+text.y=2

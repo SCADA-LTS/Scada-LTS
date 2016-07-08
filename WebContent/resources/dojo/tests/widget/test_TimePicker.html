@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+<title>Dojo Time Picker Widget Test</title>
+
+<script type="text/javascript">
+//	var djConfig = {isDebug: true, debugAtAllCosts: true};
+	var djConfig = {isDebug: true, extraLocale: ["en-us","de-de"]};
+</script>
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.TimePicker");
+</script>
+</head>
+<body>
+Normal English-US timepicker:
+<div dojoType="timepicker" lang="en-us"></div>
+<br>
+And with a border (just for testing):
+<div dojoType="timepicker" lang="en-us" style="border:2px solid red;padding:1px;"></div>
+<br>
+Normal German timepicker:
+<div dojoType="timepicker" lang="de-de"></div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>ScadaBR supports four types of point value logging</p>
+
+<p>
+  <b>When point value changes</b> is the default logging setting. The point value and its time of occurrence is written 
+  to the database only if the value of the point actually changes. This setting provides the best compromise of quality 
+  of historical information vs storage space efficiency. For Numeric points, a <b>Tolerance</b>, or "deadband", can 
+  also be provided; the value will be logged if the absolute value of the difference between the present value and the 
+  previous value equals or exceeds the given tolerance.
+</p>
+
+<p>
+  The <b>All data</b> setting causes every point update to be saved to the database. Only use this setting if knowledge 
+  of every update is definitely required since a great deal of data can be accumulated very quickly, which over time 
+  can cause serious performance degradation.
+</p>
+
+<p>
+  The <b>Do not log</b> setting prevents any historical data for the point from being stored in the database. Please 
+  note that chart renderers typically require logged data to function properly. Only use "Do not log" when certain that 
+  the value history is not needed.
+</p>
+
+<p>
+  The <b>Interval</b> setting allows the collection of data via the data source to be separated from its logging. Use
+  this when the data source is collecting data very frequently (say, for event detector purposes), but all the data is
+  not required to be logged. The <b>Value type</b> may be chosen with this option. "Instant" means that the current
+  value of the point is logged, while the other options will cause a statistic of the points values over the period to
+  be logged.
+</p>
+
+<p>
+  The <b>When point timestamp changes</b> setting. This is similar in behaviour to the on value change setting, but
+  the timestamp of the sample is compared instead of the value.
+</p>
+
+<p>
+  Value discarding can be set to deal with equipment that can occasionally send errant values. When <b>Discard extreme 
+  values</b> is set, the <b>Discard low limit</b> and <b>Discard high limit</b> text boxes are enabled. Values less
+  than the low limit or higher than the high limit are thereafter discarded. Any existing values already stored will
+  remain.
+</p>
+
+<p>
+  The <b>Purge</b> settings determine how long a point's historical values should be kept in the database. Values can 
+  be practically kept as long as necessary, but note that performance degradation may occur if the history for a given 
+  point becomes too large. (Actually performance of the system depends strongly upon the host hardware.) The purge 
+  process runs automatically every morning at 3:05am local time.
+</p>
+
+<p>
+  The <b>Default cache size</b> is the number of values that will be stored in memory. This setting is especially 
+  important when a logging method other than "All data" is used. Values that are stored in memory are collated with 
+  those stored to the database when necessary. Setting this value very high may improve system performance (since it 
+  may prevent a database query), but caution should be used since memory is consumed by the cache, and out of memory
+  conditions may occur. The "Reset cache" is normally not necessary to use, but may be convenient in cases where manual 
+  deletes of point values have been done (say, using the SQL functionality). 
+</p>

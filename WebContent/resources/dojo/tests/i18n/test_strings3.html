@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<title>Tests for test_strings.html</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true,
+				debugAtAllCosts: false,
+				xdWaitSeconds: 5,
+				baseScriptUri: "../../" //for xdomain testing.
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript" src="../_bootstrap.js"></script>
+		<script type="text/javascript">
+
+			dojo.require('tests.i18n.testmod');
+			dojo.hostenv.writeIncludes();
+		</script>
+
+		<script type="text/javascript">
+		//TODO: Need to rework this to use jum
+			function init() {
+				dojo.debug("STARTING INIT");
+				var salutations_default = tests.i18n.testmod.salutations; 
+				dojo.debug("In the local language: "+salutations_default.hello);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+	<p>This is a test case for <a href="http://trac.dojotoolkit.org/ticket/2775">Trac #2775</a>: 
+	In xd loading, a local i18n bundle from inside a local module causes errors.</p>
+	
+	<p>To test, run the buildscripts/convertTestsToXDomain.js script to point to an xd dojo.js
+	and run the test. Be sure to try <b>debugAtAllCosts</b> as true and false.</p>
+	
+	<p>Success case prints <i>In the local language: Hello</i> below. Wait for the djConfig.xdWaitSeconds
+	timeout to make sure there are not lots of "Could not load cross domain module" errors.</p>
+
+		<p class="msg"></p>
+	</body>
+</html>
+

@@ -1,0 +1,77 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  Point links are used to update target points based upon the value of source points. They keep two points in "sync", 
+  according to an optional transformation formula that can be defined. Practically speaking, point linking can be used
+  to read the values in one system (from one or more data sources) and immediately set the values in another system
+  (to one or more data sources).
+</p>
+<p>
+  Point linking can also be achieved by using a change or update event detector on source points, and then creating an
+  set point event handler for each to have the value set in a target point. However, point linking serves this purpose
+  better for a few reasons:
+</p>
+<ul>
+  <li>Point links do not raise events, creating less system overhead, and so result in better performance</li>
+  <li>Point links allow for an optional script to be defined that can transform the source value in arbitrary ways</li>
+  <li>The point link interface is contained in a single page, making them much easier to set up</li>
+</ul>
+<p>
+  <b>Note:</b> point links can be set up such that infinite loops of setting can occur. ScadaBR will detect such loops at
+  runtime, stop the propagation, and raise a recurrsion failure event.
+</p>
+
+<h1>Point link list</h1>
+<p>
+  To add a new point link, click the <img src="images/link_add.png"/> icon. To edit an existing link, click the link's 
+  description in the "Point links" list.
+</p>
+
+<h1>Editing point link details</h1>
+<p>
+  The <b>Export ID</b> is the value used to identify the point link across multiple ScadaBR instances. It is used by the
+  Import/Export facility. This value must be unique among point links. A unique and random value is automatically 
+  generated, but it can be changed to be more intuitive.
+</p>
+<p>
+  The <b>Source point</b> is the point that will be monitored for value. It is the point <i>from</i> which values come.
+</p>
+<p>The <b>Target point</b> is the point that will be set with values. It is the point <i>to</i> which values go.</p>
+<p>
+  The <b>Script</b> is an optional value that will transform the source value as necessary. More information on 
+  scripting can be found in the Meta point properties documentation. The context variable name is "source". So, a 
+  script such as "return source.value / 2;" will set the target point with half the value of the source point. Note that
+  data type transformations can also be done, such as "if (source.value &gt; 0) return true; return false;", which would
+  convert a numeric source value to a binary target value. Use the <img src="images/accept.png"/> icon to validate your
+  script (the source point must be available).
+</p>
+<p>
+  <b>Event</b> determines if the target point is set whenever the source point is updated (i.e. receives a new 
+  timestamp but not necessarily a new value), or only when it is changed (i.e. receives a new timestamp and value).
+</p>
+<p>
+  A point link can be <b>Disabled</b> so that it does not run. This can be useful if you do not wish to delete the 
+  link, but also do not currently want it enabled.
+</p>
+
+<p>
+  To save a point link, click the <img src="images/save.png"/> icon at the top right. To delete an existing link, 
+  click the <img src="images/delete.png"/> icon.
+</p>

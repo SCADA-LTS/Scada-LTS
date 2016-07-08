@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- used from test_RemotePane.html -->
+<html>
+<head>
+
+<title>ContentPane External javascript evalerror test</title>
+
+<script>
+	// needs executescripts true
+	
+	if(1==2;) doNothing(); // error here
+
+</script>
+<script type="text/javascript" src="badurl.js"></script>
+</head>
+<body>
+	This test should generate 2 errors upon initialization
+</body>
+</html>

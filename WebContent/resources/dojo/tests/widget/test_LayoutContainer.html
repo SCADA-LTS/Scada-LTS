@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>LayoutContainer Widget Demo</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+	//djConfig.debugAtAllCosts = true;
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.LayoutContainer");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.ComboBox");
+</script>
+</head>
+<body>
+
+<p>Basic layout</p>
+
+<div dojoType="LayoutContainer"
+	layoutChildPriority='left-right'
+	style="border: 2px solid black; width: 90%; height: 300px; padding: 10px;"
+>
+	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #b39b86; ">
+		top bar
+	</div>
+	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #b39b86;">
+		bottom bar
+	</div>
+	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #acb386; width: 100px;">
+		left
+	</div>
+	<div dojoType="ContentPane" layoutAlign="right" style="background-color: #acb386;">
+		right
+	</div>
+	<div dojoType="ContentPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;">
+		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
+		(to check we're copying children around properly).<br />
+		<select dojoType="combobox">
+			<option value="1">foo</option>
+			<option value="2">bar</option>
+			<option value="3">baz</option>
+		</select>
+		Here's some text that comes AFTER the combo box.
+	</div>
+</div>
+
+<p>Advanced layout:</p>
+<div dojoType="LayoutContainer"
+	layoutChildPriority='none'
+	style="border: 2px solid black; width: 90%; height: 300px; padding: 10px;"
+>
+	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #acb386; width: 100px; margin: 5px;">
+		left
+	</div>
+	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #b39b86;  margin: 5px;">
+		top bar
+	</div>
+	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #b39b86; margin: 5px;">
+		bottom bar
+	</div>
+	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #eeeeee; width: 100px; margin: 5px;">
+		inner left
+	</div>
+	<div dojoType="ContentPane" layoutAlign="right" style="background-color: #eeeeee; width: 100px; margin: 5px;">
+		inner right
+	</div>
+	<div dojoType="ContentPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px; margin: 5px;">
+		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
+		(to check we're copying children around properly).<br />
+		<select dojoType="combobox">
+			<option value="1">foo</option>
+			<option value="2">bar</option>
+			<option value="3">baz</option>
+		</select>
+		Here's some text that comes AFTER the combo box.
+	</div>
+</div>
+
+<p>Goofy spiral layout:</p>
+<div dojoType="LayoutContainer"
+	layoutChildPriority='none'
+	style="border: 2px solid black; width: 90%; height: 300px; padding: 10px;"
+>
+	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #663333; color: white; width: 100px;">
+		outer left
+	</div>
+	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #333366; color: white; height: 50px;">
+		outer top
+	</div>
+	<div dojoType="ContentPane" layoutAlign="right" style="background-color: #663333; color: white; width: 100px;">
+		outer right
+	</div>
+	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #333366; color: white; height: 50px;">
+		outer bottom
+	</div>
+	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #99CC99; width: 100px;">
+		inner left
+	</div>
+	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #999966; height: 50px;">
+		inner top
+	</div>
+	<div dojoType="ContentPane" layoutAlign="right" style="background-color: #99CC99; width: 100px;">
+		inner right
+	</div>
+	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #999966; height: 50px;">
+		inner bottom
+	</div>
+	<div dojoType="ContentPane" layoutAlign="client" style="padding: 10px;">
+		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
+		(to check we're copying children around properly).<br />
+		<select dojoType="combobox">
+			<option value="1">foo</option>
+			<option value="2">bar</option>
+			<option value="3">baz</option>
+		</select>
+		Here's some text that comes AFTER the combo box.
+	</div>
+</div>
+
+</body>
+</html>

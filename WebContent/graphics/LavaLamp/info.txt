@@ -1,0 +1,6 @@
+name=Lava lamp
+type=imageSet
+#width=50
+#height=120
+text.x=5
+text.y=95

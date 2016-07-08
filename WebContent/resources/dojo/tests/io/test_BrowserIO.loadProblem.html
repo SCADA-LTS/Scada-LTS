@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>Dojo bind exception problem</title>
+
+<script type="text/javascript">
+
+	var djConfig = {isDebug: true};
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.io.BrowserIO");
+</script>
+
+<script type="text/javascript">
+	var testvar = 0;
+
+	function firstBind() {
+		dojo.io.bind({
+			url: 'frag.xml',
+			method: 'get',
+			load: firstBindReply,
+			error: errorHandler
+		});
+	}
+
+	function firstBindReply(type, data, transport, bindArgs) {
+		testvar++;
+		dojo.debug("Error bind: testvar is now: " + testvar + ". About to throw an error now.");
+		throw new Error('ohhhh, an error happened!');
+	}
+
+	function secondBind() {
+		dojo.io.bind({
+			url: 'frag.xml',
+			method: 'get',
+			load: secondBindReply,
+			error: errorHandler
+		});
+	}
+
+	function secondBindReply(type, data, transport, bindArgs) {
+		testvar++;
+		dojo.debug("Safe bind: testvar is now: " + testvar);
+	}
+
+	function errorHandler(type, data, transport, bindArgs) {
+		var error = data;
+		if(data.message){
+			error = data.message;
+		}
+		dojo.debug("errorHandler called with error: " + error);
+	}
+</script>
+
+</head>
+<body style="padding: 50px;">
+<p>
+This test makes sure that throwing an exception in the load callback will not stop further
+dojo.io.bind() requests from proceeding. If <b>Error bind</b> is pressed, an exception
+will be thrown in the load handler. <b>Safe bind</b> does not throw an error. In all cases,
+the value of <b>testvar</b> should increase by 1 any time either button is pressed.
+</p>
+
+<input id="asdf" type="button" value="Error bind (throws error)" onclick="firstBind()">
+<input type="button" value="Safe bind (does not throw error)" onclick="secondBind()">
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+    var djConfig = {isDebug: true};
+    //var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+    dojo.require("dojo.lang.*");
+    dojo.require("dojo.widget.*");
+    dojo.require("dojo.widget.Tree");
+    dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body>
+
+<h2>Show root expanders, show gridlines, with icons (fade). Also node with HTML title.</h2>
+
+<div dojoType="Tree" toggle="fade">
+    <div dojoType="TreeNode" title="<span style='color:blue;font-style:italic'>HTML title</span>" childIconSrc="../../../src/widget/templates/images/treenode_node.gif">
+        <div dojoType="TreeNode" title="Item 1.1" childIconSrc="../../../src/widget/templates/images/treenode_node.gif"></div>
+        <div dojoType="TreeNode" title="Item 1.2" childIconSrc="../../../src/widget/templates/images/treenode_node.gif">
+            <div dojoType="TreeNode" title="Item 1.2.1" childIconSrc="../../../src/widget/templates/images/treenode_node.gif">
+                <div dojoType="TreeNode" title="Item 1.2.1.1" childIconSrc="../../../src/widget/templates/images/treenode_node.gif"></div>
+            </div>
+            <div dojoType="TreeNode" title="Item 1.2.2" childIconSrc="../../../src/widget/templates/images/treenode_node.gif"></div>
+        </div>
+        <div dojoType="TreeNode" title="Item 1.3" childIconSrc="../../../src/widget/templates/images/treenode_node.gif">
+            <div dojoType="TreeNode" title="Item 1.3.1" childIconSrc="../../../src/widget/templates/images/treenode_node.gif"></div>
+            <div dojoType="TreeNode" title="Item 1.3.2" childIconSrc="../../../src/widget/templates/images/treenode_node.gif"></div>
+        </div>
+        <div dojoType="TreeNode" title="Item 1.4" childIconSrc="../../../src/widget/templates/images/treenode_node.gif">
+            <div dojoType="TreeNode" title="Item 1.4.1" childIconSrc="../../../src/widget/templates/images/treenode_node.gif"></div>
+        </div>
+    </div>
+    <div dojoType="TreeNode" title="Item 2" childIconSrc="../../../src/widget/templates/images/treenode_node.gif"></div>
+</div>
+
+<h2>Hide root expanders, show gridlines</h2>
+
+<div dojoType="Tree" showRootGrid="false">
+    <div dojoType="TreeNode" title="Item 1">
+        <div dojoType="TreeNode" title="Item 1.1">
+            <div dojoType="TreeNode" title="Item 1.2"></div>
+        </div>
+    </div>
+    <div dojoType="TreeNode" title="Item 2">
+        <div dojoType="TreeNode" title="Item 2.1"></div>
+    </div>
+
+    <div dojoType="TreeNode" title="Item 3"></div>
+</div>
+
+<h2>Show root expanders, hide gridlines (wipe)</h2>
+
+<div dojoType="Tree" showGrid="false" toggle="wipe" toggleDuration="500">
+    <div dojoType="TreeNode" title="Item 1">
+        <div dojoType="TreeNode" title="Item 1.1">
+            <div dojoType="TreeNode" title="Item 1.2"></div>
+        </div>
+    </div>
+    <div dojoType="TreeNode" title="Item 2">
+        <div dojoType="TreeNode" title="Item 2.1"></div>
+        <div dojoType="TreeNode" title="Item 2.2"></div>
+        <div dojoType="TreeNode" title="Item 2.3"></div>
+        <div dojoType="TreeNode" title="Item 2.4"></div>
+        <div dojoType="TreeNode" title="Item 2.5"></div>
+    </div>
+    <div dojoType="TreeNode" title="Item 3"></div>
+</div>
+
+
+<h2>Hide root expanders, hide gridlines</h2>
+
+<div dojoType="Tree" showGrid="false" showRootGrid="false">
+    <div dojoType="TreeNode" title="Item 1">
+        <div dojoType="TreeNode" title="Item 1.1">
+            <div dojoType="TreeNode" title="Item 1.2"></div>
+        </div>
+    </div>
+    <div dojoType="TreeNode" title="Item 2">
+        <div dojoType="TreeNode" title="Item 2.1"></div>
+    </div>
+    <div dojoType="TreeNode" title="Item 3"></div>
+</div>
+
+</body>
+</html>

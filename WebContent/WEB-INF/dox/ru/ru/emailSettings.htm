@@ -1,0 +1,25 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>Настройки Email используются для всех действий, связанных с отправкой и приемом электронных сообщений в данной версии программы.</p>
+<p>SMTP host – это имя хоста, к которому обращается Ваш почтовый агент. Если Ваш хост требует авторизации, поставьте флажок в окошке Использовать авторизацию и заполните поля Имя пользователя и Пароль. Поставьте флажок в окне Включить TLS, если это нужно для Вашего сервера. </p>
+<p>Адрес отправителя – это адрес, который будет использоваться в качестве адреса отправителя каждого сообщения. Адрес отправителя является полем, необязательным для заполнения. В нем можно указать псевдоним или собственное имя.</p>
+<p>Чтобы выбрать тип содержимого, нужного Вам в электронных сообщениях Mango, используйте окошко выбора Типа содержимого. По умолчанию выставляется HTML и текст, в этих случаях Mango создает составное (multipart) MIME-сообщение, состоящее из частей &quot;текст/html&quot; и &quot;текст/текст&quot;. Если выбрать тип Только HTML, сообщение также может быть составным, если в нем есть приложения или встроенное содержимое, но в остальных случаях оно будет состоять из одной части. Если выбран тип Только текст, сообщение всегда будет состоять из одной части. Примечание: запланированные сообщения-отчеты всегда отправляются в виде Только HTML из-за их содержимого. </p>
+<p>После выполнения настроек, вы можете проверить их, нажав на пиктограмму <img src="images/email_go.png"/>. При этом на Ваш электронный адрес будет выслано тестовое сообщение со всеми настройками, которые вы произвели. </p>
+<p>&nbsp;
+</p>

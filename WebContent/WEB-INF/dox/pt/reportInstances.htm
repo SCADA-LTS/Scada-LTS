@@ -1,0 +1,152 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Resumo</h1>
+<p>
+Os relat&oacute;rios no ScadaBR t&ecirc;m 2 conceitos principais: 
+<b>modelos</b>, que definem o "formato" do relat&oacute;rio e <b>inst&acirc;ncias</b>
+que s&atilde;o o resultado da gera&ccedil;&atilde;o do relat&oacute;rio usando o modelo definido.
+Resumindo, o sistema gera inst&acirc;ncias de relat&oacute;rios a partir dos modelos.
+Um modelo tem atributos como: um nome, uma lista de pontos e um
+intervalo de tempo de onde busca os pontos. Uma inst&acirc;ncia ir&aacute; herdar seu
+nome do modelo, mas tem seus pr&oacute;prios atributos como uma anota&ccedil;&atilde;o do
+instante de tempo em que foi gerado, quanto tempo levou para ser gerado,
+o n&uacute;mero de registros que cont&eacute;m e, obviamente, os dados.</p>
+
+<p>
+Uma inst&acirc;ncia pode ser considerada como uma "foto" dos dados no
+momento que foi gerada e seus atributos n&atilde;o podem ser modificados.
+Tamb&eacute;m, os dados que o relat&oacute;rio apresenta existem apenas pela dura&ccedil;&atilde;o
+da inst&acirc;ncia (sobrevive ao descarte do dados originais). Por essa raz&atilde;o
+&eacute; importante descartar inst&acirc;ncias de relat&oacute;rios &mdash; especialmente as
+muito grandes &mdash; quando n&atilde;o s&atilde;o mais necess&aacute;rias por que podem
+consumir bastante espa&ccedil;o de armazenamento.</p>
+<p>Modelos de relat&oacute;rios &mdash; e suas inst&acirc;ncias &mdash; pertencem
+ao usu&aacute;rio que as criou. N&atilde;o podem ser explicitamente compartilhadas
+pelo sistema, mas podem ser compartilhadas implicitamente. Veja a
+documenta&ccedil;&atilde;o de "Modelos de relat&oacute;rios" para mais informa&ccedil;&atilde;o.
+</p>
+
+<!--<h1>Overview</h1>-->
+<!--<p>Reports in ScadaBR have two representations: <b>templates</b> which-->
+<!--define the content of a report, and <b>instances</b> which are the-->
+<!--result of running a report with a given template. Simply: the report-->
+<!--engine creates instances from templates. A template has attributes like-->
+<!--a name, a list of points that it includes, and the date range of values-->
+<!--it extracts. An instance will inherit its name from the template, but-->
+<!--have its own attributes such as the time it ran, the run duration, the-->
+<!--number of records it includes, and, of course, the data.</p>-->
+<!--<p>An instance can be considered a snapshot of the data at the time-->
+<!--it was run. Instance attributes cannot be changed. Also, the data that-->
+<!--the instance reports exists as long as the instance exists. (I.e. it-->
+<!--survives the purging of the source data.) For this reason, it is-->
+<!--important to purge report instances&mdash;especially large-->
+<!--instances&mdash;when they are no longer needed since they can consume-->
+<!--large amounts of storage.</p>-->
+<!--<p>Report templates&mdash;and the instances they create&mdash;belong-->
+<!--to the user that created them. They cannot be explicitly shared within-->
+<!--the system, but may be shared implicitly. See the "Report templates"-->
+<!--documentation for more information.</p>-->
+
+<h1>Fila de relat&oacute;rios</h1>
+<p>
+A Fila de relat&oacute;rios lista todas as inst&acirc;ncias de relat&oacute;rios para
+o usu&aacute;rio em quest&atilde;o. Esta lista n&atilde;o &eacute; atualizada automaticamente. Uma
+atualiza&ccedil;&atilde;o pode ser invocada ao clicar no &iacute;cone <img
+    src="images/control_play_blue.png" />. Alguns eventos, entretanto,
+tamb&eacute;m ir&atilde;o invocar uma atualiza&ccedil;&atilde;o desta lista, como a gera&ccedil;&atilde;o de um
+relat&oacute;rio.
+</p>
+<p>
+Inst&acirc;ncias de relat&oacute;rios em qualquer estado ser&atilde;o listadas,
+estejam completos ou em execu&ccedil;&atilde;o. As colunas da lista ir&atilde;o refletir o
+estado atual da inst&acirc;ncia.
+</p>
+
+<!--<h1>Report queue</h1>-->
+<!--<p>The Report queue lists all of the report instances for the-->
+<!--current user. This list does not automatically refresh itself. A manual-->
+<!--list refresh can be triggered by clicking the <img-->
+<!--    src="images/control_play_blue.png" /> icon. Certain events, however,-->
+<!--will also trigger a list refresh, such as running a report.</p>-->
+<!--<p>Report instances in any state will be listed, whether they be-->
+<!--completed or still running. The columns of the list will reflect the-->
+<!--current state of the instance.</p>-->
+
+<p>As colunas da lista t&ecirc;m as seguintes defini&ccedil;&otilde;es:</p>
+<ul>
+    <li><b>Nome do relat&oacute;rio</b>: o nome herdado do modelo de
+    relat&oacute;rio. Uma vez criada a inst&acirc;ncia, o nome do relat&oacute;rio n&atilde;o &eacute;
+    alterado mesmo se o nome do modelo mudar.</li>
+    <li><b>Iniciado em</b>: o momento de tempo em que a inst&acirc;ncia
+    come&ccedil;ou a ser gerada.</li>
+    <li><b>Dura&ccedil;&atilde;o</b>: quanto tempo a gera&ccedil;&atilde;o da inst&acirc;ncia consumiu.</li>
+    <li><b>Tempo inicial</b>: o tempo a partir do qual os registros
+    foram selecionados..</li>
+    <li><b>Tempo final</b>: o tempo at&eacute; o qual os registros foram
+    selecioados.</li>
+    <li><b>Registros</b>: o n&uacute;mero total de registros selecionados.</li>
+</ul>
+
+<!--<p>The columns of the list have the following definitions:</p>-->
+<!--<ul>-->
+<!--    <li><b>Report name</b>: the name inherited from the report-->
+<!--    template. Once the instance is created the report name does not change-->
+<!--    even if the name of the template is changed.</li>-->
+<!--    <li><b>Run time start</b>: the time that the report engine began-->
+<!--    creating the report instance</li>-->
+<!--    <li><b>Run duration</b>: the amount of time it took to create the-->
+<!--    instance</li>-->
+<!--    <li><b>From</b>: the time from which report records were selected-->
+<!--    (inclusive)</li>-->
+<!--    <li><b>To</b>: the time until which report records were selected-->
+<!--    (exclusive)</li>-->
+<!--    <li><b>Records</b>: the total number of records selected</li>-->
+<!--</ul>-->
+
+<p>A caixa <b>N&atilde;o Descartar</b> permite que usu&aacute;rios previnam que
+inst&acirc;ncias de relat&oacute;rios importantes sejam descartadas (veja a
+documenta&ccedil;&atilde;o "Outras configura&ccedil;&otilde;es" para mais informa&ccedil;&otilde;es a respeito do
+processo de descarte de relat&oacute;rios). Esta funcionalidade deve apenas ser
+usada quando estritamente necess&aacute;ria, pois as inst&acirc;ncias de relat&oacute;rios
+podem consumir quantidades consider&aacute;veis de armazenamento.</p>
+<p>A coluna final da tabela oferece controles para o gerenciamento
+das inst&acirc;ncias. O &iacute;cone <img src="images/bullet_down.png" /> inicia o
+download de um arquivo CSV com os dados do relat&oacute;rio, para importa&ccedil;&atilde;o em
+softwares de planilha eletr&ocirc;nica. O &iacute;cone <img
+    src="images/icon_chart.png" /> abre uma nova janela do navegador
+exibindo informa&ccedil;&otilde;es da inst&acirc;ncia de relat&oacute;rio, dados estat&iacute;sticos e uma
+imagem do gr&aacute;fico dos dados do relat&oacute;rio. Clicar no &iacute;cone <img
+    src="images/bullet_delete.png" /> a inst&acirc;ncia do relat&oacute;rio &eacute; apagada.
+Inst&acirc;ncias de relat&oacute;rio particularmente grandes podem levar algum tempo
+para serem apagadas.</p>
+
+<!--<p>The <b>Do not purge</b> checkbox allows users to prevent-->
+<!--important report instances from being deleted by the scheduled purge-->
+<!--process. (See the "Other settings" documentation for more information on-->
+<!--report purging.) This feature should only be used when necessary since-->
+<!--report instances can potentially consume large amounts of storage.</p>-->
+<!--<p>The final column in the table provides controls for managing-->
+<!--instances. The <img src="images/bullet_down.png" /> icon initiates the-->
+<!--download of a CSV file of the report's data, suitable for loading into-->
+<!--spreadsheet software. The <img src="images/icon_chart.png" /> icon-->
+<!--opens a new browser window displaying report instance information, data-->
+<!--statistics, and an image chart of the report data. Clicking the <img-->
+<!--    src="images/bullet_delete.png" /> icon deletes the report instance.-->
+<!--Note that large report instances may take some time to delete.</p>-->

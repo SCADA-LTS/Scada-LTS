@@ -1,0 +1,81 @@
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+
+<h1>Descripci&oacute;n General</h1>
+<p>Las vistas gr&aacute;ficas son similares a las listas de supervisi&oacute;n, excepto que en estas se provee una representaci&oacute;n gr&aacute;fica 
+de los puntos seleccionados. Los valores de los putos y sus estampas de tiempo son autom&aacute;ticamente actualizados
+&mdash;no es necesario refrescar la p&aacute;gina. (De hecho la aplicaci&oacute;n opera m&aacute;s eficientemente si no hace refrescamientos.)</p>
+
+<h1>Seleccionando una vista gr&aacute;fica</h1>
+<p>
+  Un usuario puede tener m&uacute;ltiple vistas gr&aacute;ficas, aunque s&oacute;lo puede ver una por vez. Utilice la lista desplegable 
+  para seleccionar la vista a mostrar. Para crear una nueva vista, haga clic en el icono (<img src="images/icon_view_new.png"/>) 
+  en la secci&oacute;n de Vistas Gr&aacute;ficas. Para editar una vista, haga clic en el icono (<img src="images/icon_view_edit.png"/>). 
+  En ambos casos, la p&aacute;gina de <b>Edici&oacute;n de vista gr&aacute;fica</b> se mostrar&aacute;.
+</p>
+
+<p>
+  Es posible que pueda seleccionar en su lista de vistas, alguna que no ha creado. Esto sucede cuando otro usuario le ha "compartido" 
+  una vista. Cuando esto sucede, podr&aacute; ver el contenido de la vista, y podr&aacute; enviar valores a las variables si el usuario que le comparti&oacute; 
+  la vista le di&oacute; el permiso de "Modificar". En el caso que no quiera continuar manteniendo una vista compartida en su lista de vistas, 
+  utilice el icono de eliminar(<img src="images/icon_view_delete.png"/>) para "no compartir" la vista. (Esta acci&oacute;n no elimina la vista 
+  del sistema, s&oacute;lo de su lista de vistas.)
+</p>
+
+<h1>Imagenes de fondo</h1>
+<p>Las vistas gr&aacute;ficas tienen la opci&oacute;n de ser presentada con una imagen de fondo. Las im&aacute;genes de fondo se configuran
+  cuando se est&aacute; en la p&aacute;gina de edici&oacute;n de la vista gr&aacute;fica.</p>
+
+<h1>Puntos en las vistas gr&aacute;ficas</h1>
+<p>Un punto puede pertenecer a m&uacute;ltiples vistas gr&aacute;ficas, esto le permite crear vistas gr&aacute;ficas tan espec&iacute;ficas como requiera.</p>
+<p>
+  La representaci&oacute;n de cada punto en una vista gr&aacute;fica depende de la configuraci&oacute;n del punto. Los puntos pueden mostrar simplemente su valor, 
+  o pueden utilizar un conjunto de iconos visuales para representar su valor. Para mostrar los controles de un punto posicione el puntero 
+  del rat&oacute;n sobre un punto (puede configurar el punto para que no se muestren). Los controles mostrados dependen de la configuraci&oacute;n del punto. 
+  Pase el muntero del rat&oacute;n  sobre el icono de informaci&oacute;n (<img src="images/information.png"/>) y se mostrar&aacute; el actual valor del punto 
+  y la estampa de tiempo del &uacute;ltimo cambio. Los puntos que pueden ser ajustados (cambiarles su valor desde la aplicaci&oacute;n) y para los cuales 
+  el permiso de escritura est&eacute; habilitado, mostrar&aacute;n el icono (<img src="images/icon_edit.png"/>). El puntero del rat&oacute;n sobre &eacute;ste icono
+  presentar&aacute; las opciones configuradas del punto. Los puntos configurados para ser graficados mostrar&aacute;n el icono (<img src="images/icon_chart.png"/>). 
+  Haga clic en este icono para mostrar su actual comportamiento gr&aacute;fico. Las representaciones gr&aacute;ficas son autom&aacute;ticamente actualizadas, 
+  esto sucede igualmente con sus valores y sus estampas de tiempo. Al presentarse un nuevo dato, &eacute;ste es autom&aacute;ticamente representado y 
+  actualizado en el gr&aacute;fico. Un icono de advertencia (<img src="images/warn.png"/>) se mostrar&aacute; junto a un punto, cuando este punto est&eacute; inactivo, 
+  ya sea que &eacute;l o su fuente de datos, est&eacute;n deshabilitados. Un indicador de espera (<img src="images/hourglass.png"/>) 
+  indica que el punto actualmente no tiene valor, y que probablemente est&aacute; a la espera de recibirlo.
+</p>

@@ -1,0 +1,58 @@
+<html>
+	<head>
+		<title>Tests for test_strings.html</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true,
+				locale: 'en-us-hawaii',
+				baseScriptUri: "../../", //for xdomain testing.
+				extraLocale: ['ar', 'cs', 'de', 'el', 'en', 'en-au',
+					'en-us-new_york-brooklyn', 'en-us-texas',
+					'es', 'fa', 'fr', 'he', 'hi', 'it', 'ja', 'ko', 'pl',
+					'pt', 'ru', 'sw', 'th', 'tr', 'yi', 'zh-cn', 'zh-tw']
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript" src="../_bootstrap.js"></script>
+		<script type="text/javascript">
+			dojo.requireLocalization("tests.i18n","salutations");
+
+			dojo.require('dojo.i18n.common');
+			dojo.require('dojo.string.extras');
+		</script>
+
+		<script type="text/javascript">
+		//TODO: Need to rework this to use jum
+			function init() {
+				var salutations_default = dojo.i18n.getLocalization("tests.i18n", "salutations");
+				dojo.debug("In the local language: "+salutations_default.hello);
+
+				var salutations_en = dojo.i18n.getLocalization("tests.i18n", "salutations", "en");
+
+				for (i in djConfig.extraLocale) {
+					var l = djConfig.extraLocale[i];
+					var salutations = dojo.i18n.getLocalization("tests.i18n", "salutations", l);
+					var language_as_english = salutations_en[l];
+					var language_as_native = salutations[l];
+					var hello_dojo = dojo.string.substituteParams(salutations.hello_dojo, salutations);
+					if (!dojo.i18n.isLTR(l)) {
+						var RLE = "\u202b";
+						var PDF = "\u202c";
+						hello_dojo = RLE + hello_dojo + PDF;					
+					}
+					dojo.debug(hello_dojo
+						+"\tLocale "+l+"="
+						+ language_as_english
+						+" ("+language_as_native+") ");
+				}
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<p>This test overrides the user's locale with a setting of <b><script>document.write(djConfig.locale)</script></b></p>
+	</body>
+</html>
+

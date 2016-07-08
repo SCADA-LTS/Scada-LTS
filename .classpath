@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/wsdl4j-1.5.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/wss4j-1.5.8.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/opc-driver.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dnp34j.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/iec101.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/rts.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/bacnet4J.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/alpha24j.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0">
+		<attributes>
+			<attribute name="owner.project.facets" value="#system#;jst.web"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/mockito-all-1.9.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/joda-time-2.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_45">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

@@ -1,0 +1,65 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  <b>Users</b> represent individuals who use the system. Various privileges can be assigned to users to grant them the 
+  ability to read and alter data and system behaviour.
+</p>
+
+<p>
+  There are two basic user levels: administrators (<img src="images/user_suit.png"/>), and other users 
+  (<img src="images/user_green.png"/>). Administrators have access to all system functionality. Other users have 
+  various privileges based upon configuration.
+</p>
+
+<h1>Editing users</h1>
+<p>
+  To add a new user, click the <img src="images/user_add.png"/> icon. The user will not actually be added until it is 
+  successfully saved. To edit an existing user, click the user's name in the "Users" list.
+</p>
+<p>
+  Passwords are not retrievable once they have been saved; they can only be reset by specifying a new password.
+</p>
+<p>
+  A disabled user is not allowed to log in. To delete a user, click the <img src="images/delete.png"/> icon.
+</p>
+<p>
+  To test a user's email address, click the <img src="images/email_go.png"/> icon. This will cause an email to be sent 
+  to the specified email address.
+</p>
+<p>
+  Users may have alarm notification emails sent to their email addresses without explicitly being specified on an email 
+  event handler. Selecting a <b>Send alarm emails</b> alarm level above "none" will cause these notifications to be 
+  sent when the event's alarm level is greater than or equal to the user's minimum alarm level, but only when the event 
+  is raised (i.e. no escalation or inactive notifications). Note also that if the user is already specified on an email 
+  event handler, they will not be sent multiple emails.
+</p>
+
+<h1>User privileges</h1>
+<p>The <b>Administrator</b> checkbox determines if this user is an administrator.</p>
+<p>
+  If the user is not an administrator, all data sources for the customer will be listed. Checking the box next to the 
+  data source name indicates that the user can alter the data source settings, as well as access all data produced by 
+  that data source.
+</p>
+<p>
+  If the data source is not checked, a list of all points within the data source will be displayed. Each point can be 
+  individually set for no access, read access, or&mdash;if the point is settable&mdash;write access. (Having write 
+  access implies have read access.)
+</p>

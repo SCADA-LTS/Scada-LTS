@@ -1,0 +1,37 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  The JMX data source is used to monitor values exposed by a JMX server, either local to the instance or remote. The
+  values that are available vary widely depending on the applications running in the JVM instance, but there are always
+  common values, such as those associated with JVM memory.
+</p>
+
+<h1>Configuration</h1>
+<p>
+  Every data source requires a <b>Name</b>, which can be any description. The <b>Use local JMX server</b> checkbox
+  indicates whether the JMX server in the local JVM should be used. Otherwise, the <b>Remote JMX server address</b>
+  can be specified.
+</p>
+
+<p>
+  The <b>Update period</b> determines how often the JMX server is polled for data. Checking <b>Quantize</b> will cause 
+  the data source startup to be delayed so that pollings occur at a "rounded" point in time (e.g. if polling is every 
+  10 seconds, polls will occur on the 10th second, the 20th second, etc). Otherwise, polling will begin immediately. 
+</p>

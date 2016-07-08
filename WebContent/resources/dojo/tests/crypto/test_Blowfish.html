@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<title>Blowfish Test</title>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../jsunit_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" src="test_Blowfish.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			function init(){
+				test_Blowfish_encryption();
+				test_Blowfish_decryption();
+			}
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

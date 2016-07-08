@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Version-Number: ${env.VERSION_NUMBER}
+Build-Number:${env.BUILD_NUMBER}

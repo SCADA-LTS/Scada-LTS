@@ -1,0 +1,82 @@
+/*
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+html > body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #000000;
+	background-color: #FFFFFF;
+	margin: 0px;
+	padding: 0px;
+}
+a, a:visited, a:link, .link {
+	color: #804000;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+	font-size: 11px;
+}
+a:hover {
+	/*color: #F07800;*/
+	color: #39B54A;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+	font-size: 11px;
+}
+.footer {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #333333;
+	font-size: 9px;
+}
+
+/**
+ * Form styles
+ */
+.formLabel, .formLabelRequired, .formField, .formError, select, input, textarea {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+.formLabel, .formLabelRequired {
+	color: #333333;
+	padding-right: 10px;
+	text-align: right;
+	white-space: nowrap;
+	padding-top: 5px;
+	vertical-align: top;
+}
+.formLabelRequired, .formError {
+	font-weight: bold;
+}
+.formField {
+	padding: 2px;
+	color: #333333;
+}
+.formError {
+	color: #FF0000;
+	padding-left: 10px;
+}
+select, input, textarea {
+	color: #333333;
+	/*border: 1px solid #F07800;*/
+	border: 1px solid #39B54A;
+	padding: 2px;
+}
+input[type="checkbox"], input[type="radio"] {
+	/*color: #F07800;*/
+	color: #39B54A;
+	border: 0;
+}

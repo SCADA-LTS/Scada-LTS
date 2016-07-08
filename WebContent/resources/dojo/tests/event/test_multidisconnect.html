@@ -1,0 +1,103 @@
+<html>
+	<head>
+		<title>Disconnect multiple events from the same trigger</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.event.*");
+
+		/*****  after advice *******/
+			var a = {
+				click: function(e) {
+					// all event connects here
+					dojo.debug("---------------------------------------------");
+					dojo.debug("After button clicked");
+				},
+				disc1: function(){ 
+					dojo.debug("disconnect after 1");
+					dojo.event.disconnect("after", a, "click", a, "disc1");
+				},
+				disc2: function(){
+					dojo.debug("disconnect after 2");
+					dojo.event.disconnect("after", a, "click", a, "disc2");
+				},
+				disc3: function(){ 
+					dojo.debug("disconnect after 3");
+					dojo.event.disconnect("after", a, "click", a, "disc3");
+				},
+				disc4: function(){ 
+					dojo.debug("disconnect after 4");
+					dojo.event.disconnect("after", a, "click", a, "disc4");
+				},
+				disc5: function(){ 
+					dojo.debug("disconnect after 5"); 
+					dojo.event.disconnect("after", a, "click", a, "disc5");
+				}
+			};
+
+			dojo.addOnLoad(function(){
+				dojo.event.connect("after", a, "click", a, "disc1");
+				dojo.event.connect("after", a, "click", a, "disc2");
+				dojo.event.connect("after", a, "click", a, "disc3");
+				dojo.event.connect("after", a, "click", a, "disc4");
+				dojo.event.connect("after", a, "click", a, "disc5");
+			});
+
+		/**** before advice ********/
+			var b = {
+				click: function(e) {
+					// all event connects here
+					dojo.debug("Before button clicked");
+					dojo.debug("---------------------------------------------");
+				},
+				disc1: function(){ 
+					dojo.debug("disconnect before 1");
+					dojo.event.disconnect("before", b, "click", b, "disc1");
+				},
+				disc2: function(){
+					dojo.debug("disconnect before 2");
+					dojo.event.disconnect("before", b, "click", b, "disc2");
+				},
+				disc3: function(){ 
+					dojo.debug("disconnect before 3");
+					dojo.event.disconnect("before", b, "click", b, "disc3");
+				},
+				disc4: function(){ 
+					dojo.debug("disconnect before 4");
+					dojo.event.disconnect("before", b, "click", b, "disc4");
+				},
+				disc5: function(){ 
+					dojo.debug("disconnect before 5"); 
+					dojo.event.disconnect("before", b, "click", b, "disc5");
+				}
+			};
+
+			dojo.addOnLoad(function(){
+				dojo.event.connect("before", b, "click", b, "disc1");
+				dojo.event.connect("before", b, "click", b, "disc2");
+				dojo.event.connect("before", b, "click", b, "disc3");
+				dojo.event.connect("before", b, "click", b, "disc4");
+				dojo.event.connect("before", b, "click", b, "disc5");
+			});
+
+		</script>
+	</head>
+	<body>
+		<h3>Disconnect many events from the trigger function</h3>
+		<h4>You shouldnt get any 'Null argument to unrollAdvice()' when clicking buttons</h4>
+		Test passes if it outputs like below, but only on first click<br/>
+		disconnect [after|before] 1<br/>
+		disconnect [after|before] 2<br/>
+		disconnect [after|before] 3<br/>
+		disconnect [after|before] 4<br/>
+		disconnect [after|before] 5<br/>
+		<button onclick="a.click();">Disconnect 5 (after) listeners in one click</button><br>
+		<button onclick="b.click();">Disconnect 5 (before) listeners in one click</button> 
+	</body>
+</html>

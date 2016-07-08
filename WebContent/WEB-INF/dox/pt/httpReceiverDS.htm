@@ -1,0 +1,322 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>The HTTP receiver data source is used to accept data delivered to-->
+<!--the system using HTTP GET or POST methods. Data can be delivered by-->
+<!--anything that can act as an HTTP client, the most obvious example of-->
+<!--which is a web browser, although there are many others.</p>-->
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>O data source receptor de requisi&ccedil;&otilde;es HTTP &eacute;
+usado para aceitar dados entregues ao sistema usando os m&eacute;todos
+GET e POST do protocolo HTTP. Dados podem ser entregues por qualquer
+coisa que pode agir como um cliente HTTP, o exemplo mais &oacute;bvio
+&eacute; um navegador we, apesar de existirem muitos outros.</p>
+
+<!--<p>Multiple HTTP receiver data sources can be configured, each of-->
+<!--which optionally listens for different data (e.g. device IDs or source-->
+<!--IP addresses).</p>-->
+<p>M&uacute;ltiplos data sources receptores de
+requisi&ccedil;&otilde;es HTTP podem ser configurados, cada um
+opcionalmente aguarda diferentes dados (por exemplo, IDs de dispositivos
+ou endere&ccedil;os IP de origem).</p>
+
+<!--<p>Data is received at the path <b>httpds</b>. So, if your system is-->
+<!--accessible at, for example, 'http://localhost/', data should be directed-->
+<!--to 'http://localhost/httpds'. <a href="httpds?testKey=testValue"-->
+<!--	target="_blank">Try it now</a>. This link sends a parameter called-->
+<!--'testKey' with the value 'testValue'. Because there is likely no-->
+<!--receiver listening for this parameter name, you will probably see the-->
+<!--message 'Unconsumed key: testKey'. This is normal; the message is a-->
+<!--convenience to indicate to users that data is being sent that is not-->
+<!--being used.</p>-->
+<p>Os dados s&atilde;o recebidos no caminho <b>httpds</b>.
+Ent&atilde;o, se o sistema for acess&iacute;vel em, por exemplo,
+'http://localhost/', os dados devem ser direcionados para
+'http://localhost/httpds'.<a href="httpds?testKey=testValue"
+	target="_blank">Teste agora</a>. Como provalvelmente nenhum auditor
+est&aacute; escutando este par&acirc;metro, provavelmente ser&aacute;
+exibida a mensagem 'Unconsumed key: testKey'. Isto &eacute; normal; a
+mensagem &eacute; um conforto para indicar aos usu&aacute;rios que os
+dados enviados n&atilde;o est&atilde;o sendo usados.</p>
+
+<!--<h1>Configuration</h1>-->
+<!--<p>Every data source requires a <b>Name</b>, which can be any-->
+<!--description.</p>-->
+<h1>Configura&ccedil;&atilde;o</h1>
+<p>Todo data source requer um <b>Nome</b>, que pode conter qualquer
+descri&ccedil;&atilde;o.</p>
+
+<!--<p>The <b>Remote IP white list</b> is a security feature that-->
+<!--instructs the data source to ignore requests with a source IP address-->
+<!--that does not match any of the given IP address masks. See below for-->
+<!--more information on mask formatting.</p>-->
+<p>A <b>Lista branca de IPs remotos</b> &eacute; uma funcionalidade
+de seguran&ccedil;a que instrui o data source a ignorar
+requisi&ccedil;&otilde;es com um endere&ccedil;o IP de origem que
+n&atilde;o corresponde a qualquer m&aacute;scaras de endere&ccedil;o IP
+fornecidas.</p>
+
+<!--<p>The <b>Device ID white list</b> provides additional security as-->
+<!--well as data routing by allowing the specification of the devices for-->
+<!--which this data source listens. Device ID matching is not case-->
+<!--sensitive. Also, the '*' can be used to end a device ID mask. For-->
+<!--example, the mask 'site10*' will match device IDs 'site10',-->
+<!--'SITE10temp', 'site10HUM', etc. The device ID is specified in the HTTP-->
+<!--request with the parameter name <b>__device</b> (with two underscores).-->
+<!--For information on other request parameters, see the Request parameters-->
+<!--below</p>-->
+<p>A <b>Lista branca de ID do dispositivo</b> proporciona
+seguran&ccedil;a adicional bem como roteamento de dados atrav&eacute;s
+da permiss&atilde;o dos dispositivos para os quais este data source
+escuta. A correspond&ecirc;ncia ao ID do dispositivo independe de
+mai&uacute;sculas e min&uacute;sculas em seu nome. Tamb&eacute;m, um '*'
+pode ser usado no t&eacute;rmino de uma m&aacute;scara de ID de
+dispositivos. Por exemplo, a m&aacute;scara 'site10*' ir&aacute;
+corresponder aos IDs de dispositivos 'site10', 'site10temp',
+'site10HUM', etc. O ID do dispositivo &eacute; especificado na
+requisi&ccedil;&atilde;o HTTP com o nome do par&acirc;metro <b>__dispositivo</b>
+(com dois sublinhados). Abaixo seguem informa&ccedil;&otilde;es a
+respeito de outros par&acirc;metros de requisi&ccedil;&atilde;o.</p>
+
+<!--<p>'White lists', which are lists of elements to allow, are used-->
+<!--because they are inherently more secure than 'black lists', which are-->
+<!--lists of elements not to allow. To add a value to a white list, enter it-->
+<!--in the appropriate text box and click the accompanying <img-->
+<!--	src="images/add.png" /> icon. To remove a value, click the <img-->
+<!--	src="images/bullet_delete.png" /> icon beside the value.</p>-->
+<p>'Listas brancas', que s&atilde;o listas de elementos a permitir,
+s&atilde;o usadas por que s&atilde;o inerentemente mais seguras que
+'listas negras', que s&atilde;o listas de elementos a n&atilde;o
+permitir. Para adicionar um valor a uma lista branca, insira o valor na
+caixa de texto apropriada e clique no &iacute;cone <img
+	src="images/add.png" /> correspondente. Para remover um valor, clique
+no &iacute;cone <img src="images/bullet_delete.png" /> ao lado do
+valor.</p>
+
+<!--<h1>IP address masks</h1>-->
+<!--<p>A 'mask' is an IP address that may include wild cards ('*') or-->
+<!--number ranges. IP addresses are specified using the IPv4 format, which-->
+<!--consists of four dot-separated values each of which is a number between-->
+<!--0 and 255 (e.g. '192.168.0.10'). Each of the four parts of the mask can-->
+<!--be either a specific number that must be matched, a '*' indicating that-->
+<!--any number is a match, or a number range given as two valid numbers-->
+<!--separated with a '-' character. For example, a valid mask is-->
+<!--'192.168.10-15.*', which means that the first number must be 192, the-->
+<!--second must be 168, the third can be any number between 10 and 15-->
+<!--inclusive, and the fourth can be any number (between 0 and 255). The-->
+<!--default mask of '*.*.*.*' means that any IP address is accepted.</p>-->
+<h1>M&aacute;scaras de endere&ccedil;os IP</h1>
+<p>Uma 'm&aacute;scara' &eacute; um endere&ccedil;o IP que pode
+conter coringas ('*') ou faixas de n&uacute;meros. Endere&ccedil;os IPs
+s&atilde;o especificados usando o formato IPv4, que consiste em quatro
+valores separados por pontos, onde cada valor &eacute; um n&uacute;mero
+entre 0 e 255 (por exemplo, '192.168.0.10'). Cada uma das quatro partes
+da m&aacute;scara pode ser tanto um n&uacute;mero espec&iacute;fico que
+deve ser correspondido, um '*' indicando que qualquer n&uacute;mero pode
+corresponder ou uma faixa num&eacute;rica dada por dois n&uacute;meros
+v&aacute;lidos separados por um caracter '-'. Uma m&aacute;scara
+v&aacute;lida &eacute;, por exemplo, '192.168.10-15.*', que significa
+que o primeiro n&uacute;mero deve ser 192, o segundo deve ser 168, o
+terceiro qualquer n&uacute;mero igual ou entre 10 e 15 e o quarto pode
+ser qualquer n&uacute;mero (entre 0 e 255). A m&aacute;scara
+padr&atilde;o '*.*.*.*' significa que qualquer endere&ccedil;o IP
+&eacute; aceito.</p>
+
+<!--<h1>Request parameters</h1>-->
+<!--<p>Requests are delivered using normal HTTP parameterized request-->
+<!--formats. When using the GET method, the format is 'http://&lt;domain-->
+<!--name and port&gt;/&lt;optional-->
+<!--path&gt;/httpds?param1=value1&amp;param2=value2'. Request sent with the-->
+<!--POST method typically require a specialized client; please refer to the-->
+<!--client's documentation if you wish to use POST.</p>-->
+<h1>Par&acirc;metros de requisi&ccedil;&atilde;o</h1>
+<p>Requisi&ccedil;&otilde;es s&atilde;o entregues usando formatos
+parametrizados de requisi&ccedil;&otilde;es HTTP normais. Quando usando
+o m&eacute;todo GET, o formato &eacute; 'http://&lt;domainname and
+port&gt;/&lt;optional path&gt;/httpds?param1=value1&amp;param2=value2'.
+Requisi&ccedil;&otilde;es enviadas com o m&eacute;todo POST tipicamente
+requerem um cliente especializado. Consulte a documenta&ccedil;&atilde;o
+do cliente para utiliza&ccedil;&atilde;o do m&eacute;todo POST.</p>
+
+<!--<p>Point values can be specified in two ways. The first is with the-->
+<!--'pointName=pointValue' format. The second is by providing the key and-->
+<!--value as two separate parameters using the key prefixes '__point' and-->
+<!--'__value'. For example, '__pointFoo=pointName&amp;__valueFoo=pointValue'-->
+<!--(collated by matching the 'Foo' that follows the prefix) has the same-->
+<!--effect as 'pointName=pointValue'.</p>-->
+<p>Valores de pontos podem ser especificados de duas maneiras. A
+primeira &eacute; com o formato 'nomeDoPonto=valorDoPonto'. A segunda
+&eacute; providenciar a chave e o valor como dois par&acirc;metros
+separados usando os prefixos chave '__ponto' e '__valor'. Por exemplo,
+'__pontoFoo=nomeDoPonto&amp;__valorFoo=valorDoPonto' (onde o nome do
+ponto 'Foo' &eacute; unido aos prefixos) tem o mesmo efeito de
+'nomeDoPonto=valorDoPonto'.</p>
+
+<!--<p>The order in which parameters are provided in the request is not-->
+<!--significant.</p>-->
+<!--<p>The following special parameter keys are recognized. Note that-->
+<!--all begin with two underscores. All are optional.</p>-->
+<p>A ordem com que os par&acirc;metros s&atilde;o fornecidos na
+requisi&ccedil;&atilde;o n&atilde;o &eacute; significante.</p>
+<p>As seguintes chaves especiais de par&acirc;metros s&atilde;o
+reconhecidas. Todas iniciam com dois sublinhados e todas s&atilde;o
+opcionais.</p>
+<!--<ul>-->
+<!--	<li><b>__device</b> &ndash; the device ID of the sender</li>-->
+<!--	<li><b>__time</b> &ndash; the time override where the value is in-->
+<!--	'yyyyMMddHHmmss' format. 'MM' is the month value from '01' to '12'.-->
+<!--	'HH' is the hour value from '00' to '23'. (See the "Date/time formats"-->
+<!--	documentation for more information.)</li>-->
+<!--	<li><b>__point</b> &ndash; the prefix which provides an with which-->
+<!--	an alternate method of providing a point name. The characters following-->
+<!--	the prefix must match the characters that follow a '__value' parameter-->
+<!--	prefix. The characters that follow the prefix are used for matching-->
+<!--	only, and are otherwise insignificant.</li>-->
+<!--	<li><b>__value</b> &ndash; the prefix which provides the-->
+<!--	corresponding value for a key given with a '__point' prefix.</li>-->
+<!--</ul>-->
+<ul>
+	<li><b>__device</b> &ndash; o ID do dispositivo rementente</li>
+	<li><b>__time</b> &ndash; o tempo a substituir onde o valor
+	&eacute; no formato 'yyyyMMddHHmmss'. 'MM' &eacute; o valor do
+	m&ecirc;s de '01' a '12'. 'HH' &eacute; o valor da hora de '00' a '23'.
+	Veja a documenta&ccedil;&atilde;o sobre "formatos de data e tempo" para
+	maiores informa&ccedil;&otilde;es</li>
+	<li><b>__point</b> &ndash; o prefixo utilizado para um
+	m&eacute;todo alternativo para nomear pontos. Os caracteres seguindo o
+	prefixo deve corresponder como os caracteres que seguem o prefixo do
+	par&acirc;metro '__valor'. Os caracteres que seguem esse prefixo
+	s&atilde;o utilizados para correspond&ecirc;ncia apenas e s&atilde;o,
+	de outra maneira, insignificantes.</li>
+	<li><b>__valor</b> &ndash; o prefixo que oferece o valor
+	correspondente ao valor para uma chave dada pelo prefixo '__ponto'.</li>
+</ul>
+
+<!--<h1>Testing with the HTTP receiver listener</h1>-->
+<!--<p>You can examine the data that your system is receiving by-->
+<!--clicking the 'Listen for HTTP data' button. Note that the current white-->
+<!--list configuration parameters will be used to filter requests; to see-->
+<!--all incoming data, add the IP address mask '*.*.*.*' and the device ID-->
+<!--mask '*'.</p>-->
+<h1>Testando com o auditor do receptor HTTP</h1>
+<p>&Eacute; possivel examinar os dados que o sistema est&aacute;
+recebendo clicando no bot&atilde;o 'Escutar dados HTTP'. Os
+par&acirc;metros vigentes de configura&ccedil;&atilde;o de lista branca
+ser&atilde;o utilizados para filtrar as requisi&ccedil;&otilde;es; para
+visualizar todos os dados de entrada, adicione a m&aacute;scara de
+endere&ccedil;os IP '*.*.*.*' e a m&aacute;scara do ID do dispositivo.</p>
+
+<!--<p>As data is received, its specifics will be displayed in the-->
+<!--listener box. The first line of results provides the source IP address-->
+<!--(which can thereafter be used in the IP address white list if-->
+<!--appropriate). The second line shows the device ID, or '(none)' if the-->
+<!--parameter was not present.</p>-->
+<p>&Agrave; medida que os dados s&atilde;o recebidos, suas
+especificidades ser&atilde;o mostradas na caixa de escuta. A primeira
+linha de resultados proporciona o endere&ccedil;o IP da origem (que pode
+ser usado, se apropriado, mais tarde na lista branca de endere&ccedil;os
+IP). A segunda linha mostra o ID do dispositivo ou '(nenhum)' se o
+par&acirc;metro n&atilde;o estiver presente.</p>
+
+<!--<p>The third line shows the time of the request. The time defaults-->
+<!--to the system time, but can be overridden by providing the <b>__time</b>-->
+<!--parameter.</p>-->
+<p>A terceira linha mostra o tempo da requisi&ccedil;&atilde;o, cujo
+valor padr&atilde;o &eacute; o tempo do sistema, mas pode ser
+sobrescrito usando o par&acirc;metro <b>__time</b>.</p>
+
+<!--<p>The remaining lines of data specify the individual parameter keys-->
+<!--and values that were received, in the format 'key=value'.</p>-->
+<p>As linhas remanescentes de dados especificam as chaves
+individuais de par&acirc;metros e valores que foram recebidos, no
+formato 'chave=valor'.</p>
+
+<!--<p>The listener will continue to listen for requests until 'Cancel'-->
+<!--is pressed, or the page is unloaded.</p>-->
+<p>O auditor ir&aacute; continuar a escutar por
+requisi&ccedil;&otilde;es at&eacute; que o bot&atilde;o 'Cancelar' seja
+pressionad ou a p&aacute;gina for descarregada.</p>
+
+<!--<h1>Examples</h1>-->
+<!--<p>Domain names have been omitted for brevity</p>-->
+<h1>Exemplos</h1>
+<p>Nomes de dom&iacute;nio foram omitidos por brevidade.</p>
+<p><b>httpds?__device=boilerA&amp;temp=215.5&amp;hum=77.4&amp;state=running</b>
+<br />
+has the same result as<br />
+<b>httpds?__device=boilerA&amp;__point1=temp&amp;__value1=215.5&amp;__pointFoo=hum&amp;__valueFoo=77.4&amp;__pointBar=state&amp;__valueBar=running</b>
+</p>
+<p><b>httpds?presents=true&amp;__time=20071225073000</b></p>
+
+<!--<h1>HTTP Responses</h1>-->
+<!--<p>Successful requests sent to the receiver will receive a '200 OK'-->
+<!--response. Requests that result in errors or warnings will receive the-->
+<!--following potential error or warning messages in the HTTP response-->
+<!--content:</p>-->
+<h1>Respostas HTTP</h1>
+<p>Requisi&ccedil;&otilde;es bem sucedidas enviadas ao receptor
+recebem uma resposta '200 OK'. Requisi&ccedil;&otilde;es que resultam em
+erros ou avisos recebem as seguintes potenciais mensagens de erro ou
+alerta no conte&uacute;do da resposta HTTP.</p>
+<!--<ul>-->
+<!--	<li>'Time override parse error' indicating that the given time-->
+<!--	override was not correctly formatted. The request will have been-->
+<!--	processed using the system time.</li>-->
+<!--	<li>'Unconsumed key' indicating that the given parameter key was-->
+<!--	not used by any HTTP receiver data point.</li>-->
+<!--	<li>'Value not found for paired point key' indicating that a-->
+<!--	parameter key specified using the '__point/__value' mechanism was not-->
+<!--	matched with a value. The parameter will not have been included in the-->
+<!--	request processing.</li>-->
+<!--</ul>-->
+<ul>
+	<li>'Erro de an&aacute;lise de sobrescrita de tempo' indica que o
+	tempo declarado para sobrescrita n&atilde;o estava corretamente
+	formatado. A requisi&ccedil;&atilde;o ser&aacute; processada usando o
+	tempo do sistema.</li>
+	<li>'Chave n&atilde;o consumida' indica que o par&acirc;metro
+	fornecido para chave n&atilde;o foi utilizado por qualquer ponto HTTP
+	receptor.</li>
+	<li>'Valor n&atilde;o encontrado para a chave de ponto pareada'
+	indica que uma chave de par&acirc;metro usando o mecanismo
+	'__point/__value' especificada n&atilde;o foi correspondido por
+	qualquer valor. O par&acirc;metro n&atilde;o ser&aacute;
+	inclu&iacute;do no processamento da requisi&ccedil;&atilde;o.</li>
+</ul>
+
+<!--<p>By default only the above error or warning messages are returned-->
+<!--in the HTTP response. If you require additional content to be returned-->
+<!--you can specify static content as the prologue (written before error and-->
+<!--warning messages) and epilogue (written after error and warning-->
+<!--messages). Use the following insert statements (or analogous update-->
+<!--statements if the keys already exist) to specify your customized-->
+<!--content:</p>-->
+<p>Por padr&atilde;o apenas o erro acima ou mensagens de alerta
+s&atilde;o retornados em uma resposta HTTP. Caso seja necess&aacute;rio
+retornar conte&uacute;do adicional, &eacute; poss&iacute;vel especificar
+conte&uacute;do est&aacute;tico com um pr&oacute;logo (escrito antes do
+erro e mensagens de alerta) e um ep&iacute;logo (escrito ap&oacute;s o
+erro e mensagens de alerta). Utilize as seguintes
+declara&ccedil;&otilde;es SQL (ou declara&ccedil;&otilde;es de
+atualiza&ccedil;&atilde;o an&aacute;logas, caso j&aacute; existam) para
+especificar o conte&uacute;do personalizado:</p>
+<pre>
+  insert into systemSettings (settingName, settingValue) values ('httpdsPrologue', 'conte&uacute;do do pr&oacute;logo')
+  insert into systemSettings (settingName, settingValue) values ('httpdsEpilogue', 'conte&uacute;do do ep&iacute;logo')
+</pre>

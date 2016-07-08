@@ -1,0 +1,108 @@
+<html>
+	<head>
+		<style type="text/css">
+			#Mover {
+				position : absolute;
+				background : #ccc;
+				left : 200px;
+				top : 200px;
+			}
+
+			#Repeat1 {
+				position : absolute;
+				background : red;
+				top : 100px;
+				left : 100px;
+			}
+
+			#circ {
+				position : absolute;
+				width : 4px;
+				height : 4px;
+				line-height : 1px;
+				overflow : hidden;
+				margin : -2px 0 0 -2px;
+				background : #333;
+				-moz-border-radius : 4px;
+			}
+		</style>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.animation.*");
+			dojo.require("dojo.html.display");
+			dojo.require("dojo.event.*");
+
+			function init(){
+				Line = dojo.math.curves.Line;
+				Circle = dojo.math.curves.Circle;
+				Anim = dojo.animation.Animation;
+
+				var line = new Line([200,200], [400, 20]);
+				a = new Anim(line, 1000, 0);
+				var mover = document.getElementById("Mover");
+				a.handler = function(e) {
+					switch(e.type) {
+						case "play":
+							dojo.html.setOpacity(mover, 1);
+							break;
+						case "animate":
+							mover.style.left = e.x + "px";
+							mover.style.top = e.y + "px";
+							break;
+						case "end":
+							break;
+					}
+				}
+
+				b = new Anim(new Line([1],[0]), 500, 0);
+				b.onAnimate = function(e) {
+					if(e.x){
+						dojo.html.setOpacity(mover, e.x);
+					}
+				}
+
+				q = new dojo.animation.AnimationSequence();
+				q.add(a, b);
+
+				r = new Anim(new dojo.math.curves.Bezier([[100,100], [80,80], [200,200], [400,30], [100,100]]), 2000, 0, 3);
+				r.onAnimate = function(e) {
+					with(document.getElementById("Repeat1").style) {
+						left = e.x + "px";
+						top = e.y + "px";
+					}
+				}
+
+				// repeats forever (4th arg of -1)
+				c = new dojo.animation.Animation(new Circle([500,120], 40), 1000, 0, -1);
+				dojo.event.connect(c, "onAnimate", function(e) {
+					with(document.getElementById("circ").style) {
+						left = e.x + "px";
+						top = e.y + "px";
+					}
+				});
+				c.play(true);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<p>This demo kinda sucks, but you can see what goes on.</p>
+		<a href="javascript:q.playPause()">Play/Pause</a> (sequence)
+		|
+		<a href="javascript:a.gotoPercent(35, true)">Goto 35% and play</a> (move animation)
+		<div id="Mover">I'm a mover</div>
+		<div id="Repeat1" onclick="r.play()">I repeat a few times!</div>
+		<br />
+		<div id="circ"></div>
+		<a href="javascript:c.playPause()">Play/Pause</a> (circle, repeats forever)
+	</body>
+</html>
+

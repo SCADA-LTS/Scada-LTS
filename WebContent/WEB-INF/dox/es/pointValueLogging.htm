@@ -1,0 +1,97 @@
+﻿<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+
+<p>El ScadaBR soporta cuatro tipos de registro de valores de punto</p>
+
+<p>
+  La configuraci&oacute;n predeterminada del registro es <b>Cuando cambie su valor</b>. El valor del punto y su hora de ocurrencia
+ ser&aacute;n escritos solamente cuando el valor del punto ha cambiado. Esta configuraci&oacute;n proporciona la mejor relaci&oacute;n de calidad de la informaci&oacute;n
+ hist&oacute;rica frente a la eficiencia en el uso del espacio de almacenamiento. Para puntos num&eacute;ricos, su <b>Tolerancia</b>, o "banda muerta",
+ pueden ser definida; el valor ser&aacute; registrado cuando el valor absoluto de la diferencia entre el valor del punto actual y su valor previo
+ es igual o excede la tolerancia definida.
+</p>
+
+<p>
+  La configuraci&oacute;n <b>Toda la data</b> causa que cada actualizaci&oacute;n del punto ser&aacute; almacenada en la base de datos. Unicamente utilice 
+ esta configuraci&oacute;n cuando requiera registrar cada actualizaci&oacute;n del punto, ya que esta configuraci&oacute;n genera grandes cantidades de datos
+ que ser&aacute;n almacenados de forma constante y r&aacute;pida, y con el tiempo puede causar serios problemas de degradaci&oacute;n del rendimiento del sistema.
+</p>
+
+<p>
+  La configuraci&oacute;n <b>No registrar</b> omite la escritura de cualquier valor hist&oacute;rico del punto en la base de datos. Por favor
+ note que la generaci&oacute;n de gr&aacute;ficos requieren de la data guardada en la base de datos para funcionar correctamente. S&oacute;lo utilice opci&oacute;n "No registrar"
+ cuando tenga certeza de que los valores hist&oacute;ricos no ser&aacute;n requeridos.
+</p>
+
+<p>
+  La configuraci&oacute;n <b>Intervalo</b> permite el recolectar la data de la fuente de datos de forma separada a como se registra.
+ Utilice esta opci&oacute;n cuando la fuente de datos recolecta la informaci&oacute;n de sus puntos de forma muy frecuente (por ejemplo,
+ para ser utilizado por detectores de eventos), pero no requiere que toda la data que sea generada sea almacenada.
+ En esta opci&oacute;n tambi&eacute;n puede elegir el <b>Tipo del valor</b>. "Instant&aacute;neo" que el actual valor de punto ser&aacute; registrado,
+ a diferencia de las otras opciones que utilizan m&eacute;todos estad&iacute;sticos sobre los valores del punto en el per&iacute;odo de tiempo del registro.
+</p>
+
+<p>
+  La configuraci&oacute;n <b>Cuando cambie su estampa de tiempo</b> tiene un comportamiento similar al del cambio del valor del punto
+ pero se compara la estampa de tiempo en lugar del valor.
+</p>
+
+<p>
+  Puede configurar valores a descartar para interactuar con equipos que ocasionalmente puedan enviar valores errados. Al activar
+ <b>Descartar valores extremos</b>, las casillas del <b>L&iacute;mite inferior de descarte</b> y <b>L&iacute;mite superior de descarte</b> ser&aacute;n activadas.
+ Los valores por debajo del limite inferior o mayores al l&iacute;mite superior ser&aacute;n descartados. Nota: Los valores almacenados previamente a esta definici&oacute;n 
+ permanecer&aacute;n en la base de datos.
+</p>
+
+<p>
+  La configuraci&oacute;n <b>Purgar</b> determina cuanto tiempo permanecer&aacute; almacenado un valor hist&oacute;rico en la base de datos.
+ Los valores pueden permanecer tanto tiempo como sea necesario, pero note que puede ocurrir una degradaci&oacute;n del rendimiento del sistema
+ si el hist&oacute;rico de un punto se torna muy extenso. (El rendimiento del sistema depende de manera directa con las caracter&iacute;sticas
+ del hardware del servidor.) El proceso de purga es realizado autom&aacute;ticamente cada ma&ntilde;ana a las 3:05am hora local.
+</p>
+
+<p>
+  El <b>Tama&ntilde;o de cach&eacute; predefinido</b> es el n&uacute;mero de valores a ser registrados en memoria. Esta configuraci&oacute;n es especialmente importante
+ cuando es utilizado un m&eacute;todo de registro diferente a "Toda la data". Los valores almacenados en memoria ser&aacute;n cotejados con los almacenados
+ en la base de datos cuando sea necesario. Configurar este valor muy alto puede afectar en el rendimiento del sistema (puede evitar una consulta
+ a la base de datos), pero se debe tener precauci&oacute;n con la memoria es consumida por el cach&eacute; y con posibles fallos que en esta ocurran.
+ Normalmente no es necesaria utilizar la opci&oacute;n  La opci&oacute;n , pero puede ser &uacute;til en casos donde se realiz&oacute; una limpieza manual de los valores del punto
+ (por ejemplo, utilizando una funcionalidad de SQL). 
+</p>

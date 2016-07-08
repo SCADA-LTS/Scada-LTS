@@ -1,0 +1,53 @@
+<html>
+
+<script type="text/javascript">
+	var djConfig = {
+		isDebug: true,
+		debugAtAllCosts: false
+	};
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+
+<script type="text/javascript">
+	delete dojo["profile"]; // hack!
+	dojo.require("dojo.profile");
+	dojo.require("dojo.math");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Button");
+	dojo.require("dojo.widget.html.Button");
+	// dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+	function foo(){
+		dojo.debug("foo");
+	}
+
+	function init(){
+		var tdb = dojo.widget.getWidgetsByType("Button")[0];
+		for(var x = 0; x<100; x++){
+			dojo.profile.start("copy");
+			var tcn = tdb.domNode.cloneNode(true)
+			document.body.appendChild(tcn);
+			tcn.innerHTML = "clone "+x;
+			tcn.onmouseover = foo;
+			tcn.onclick = foo;
+			// dojo.event.connect(tcn, "onclick", "foo");
+			dojo.profile.end("copy");
+		}
+
+		for(var x = 0; x<100; x++){
+			dojo.profile.start("build");
+			document.body.appendChild(dojo.widget.createWidget("Button", {label: "button "+x }).domNode);
+			dojo.profile.end("build");
+		}
+		dojo.profile.dump(true);
+	}
+
+	dojo.addOnLoad(init);
+</script>
+
+<button id="testDojoButton" dojoType="button" label="this is a test button!" 
+	onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
+	you shouldn't be seeing this
+</button>
+</html>

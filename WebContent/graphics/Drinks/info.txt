@@ -1,0 +1,6 @@
+name=Drinks
+type=imageSet
+#width=16
+#height=16
+text.x=1
+text.y=15

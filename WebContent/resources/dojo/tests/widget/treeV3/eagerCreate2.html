@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.profile");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	
+	dojo.addOnLoad(function(){
+		var depth = 0;
+		
+		function addChildren(title,nodeOrTree) {
+			//dojo.debug("addChildren to "+nodeOrTree+" depth" + depth)
+			depth++;
+			
+			var children = [];
+			for (var i=1; i<=10; i++) {
+				var t = title+'.'+i
+				dojo.profile.start("createWidget");
+				var node = dojo.widget.TreeNodeV3.prototype.createSimple({title: t, tree: tree})
+				// slow generic method (1.5-3x diff)
+				//var node = dojo.widget.createWidget("TreeNodeV3", {title: t, tree:tree.widgetId});
+				dojo.profile.end("createWidget");
+				
+				if (depth<3) {
+					addChildren(t, node);
+				}
+				
+				children.push(node);				
+			}
+			nodeOrTree.setChildren(children)
+			//dojo.debug("out "+nodeOrTree);
+			
+			depth--;
+			
+		}	
+
+		dojo.profile.start("createController");
+		var controller = dojo.widget.createWidget("TreeBasicControllerV3");
+		dojo.profile.end("createController");
+		
+		dojo.profile.start("createTree");
+		var tree = dojo.widget.createWidget("TreeV3", {listeners: [controller.widgetId]});	
+		dojo.profile.end("createTree");
+				
+		document.body.appendChild(tree.domNode);
+
+	
+		dojo.profile.start("createNodes");		
+		addChildren('node', tree)		
+		dojo.profile.end("createNodes");
+		
+		var nodeCount = 0;
+		dojo.lang.forEach(tree.getDescendants(), function() { nodeCount++  });
+		
+		dojo.debug("Nodes total: "+nodeCount);
+			
+		dojo.profile.dump(true);
+		
+	});
+
+</script>
+</head>
+<body>
+
+
+
+<h4>Test/profile fast nested nodes generation and adoptation</h4>
+
+
+<input type=button value="profile" onClick="dojo.profile.dump(true);"/>
+
+
+</body>
+</html>

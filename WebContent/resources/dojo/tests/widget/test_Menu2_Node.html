@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<script type="text/javascript">
+	var djConfig = {
+	//	debugAtAllCosts: true,
+		isDebug: true
+	};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Menu2");
+	dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body>
+<h1>Test of Context Menus Specific To Individual Nodes</h1>
+<h3 id="test1" style="background-color: gray; display: block; width: 200px;text-align: center;">Right click here!</h3> 
+
+<div dojoType="PopupMenu2" targetNodeIds="test1"><!--Note no spaces between nodeIds-->
+    <div dojoType="MenuItem2" caption="MENU1 Right click here!"></div> 
+	<div dojoType="MenuItem2" caption="MENU1-Item 1"></div>
+    <div dojoType="MenuItem2" caption="MENU1-Item 2"></div> 
+</div>
+
+<div dojoType="PopupMenu2" targetNodeIds="test2"><!--Note no spaces between nodeIds-->
+    <div dojoType="MenuItem2" caption="MENU2 Or here!"></div> 
+	<div dojoType="MenuItem2" caption="MENU2-Item 1"> </div>
+	<div dojoType="MenuItem2" caption="MENU2-Item 2"> </div>
+</div>
+
+<div dojoType="PopupMenu2" targetNodeIds="testwithindiv"><!--Note no spaces between nodeIds-->
+    <div dojoType="MenuItem2" caption="MENU3 Testing from within a DIV"> </div> 
+	<div dojoType="MenuItem2" caption="MENU3-Item 1"> </div>
+    <div dojoType="MenuItem2" caption="MENU3-Item 2"> </div> 
+</div>
+
+<h3 id="test2" style="background-color: #C1C1C1;display: block; width: 200px;text-align: center;">Or here!</h3><br /><br /> 
+
+<div style="display: inline; width; 250px; background-color: navy; text-align: center; padding: 1em;"> 
+    <h3 style="background-color: #B2B2B2; display: inline;" id="testwithindiv">Testing from within a DIV</h3> 
+</div><br /><br /><br /> 
+
+<h4 id="multi_1" style="background-color: #C1C1C1;display: inline;text-align: center;">One menu, 2 targetNodeIds, same as --></h4> &nbsp; &nbsp; 
+<h4 id="multi_2" style="background-color: #C1C1C1;display: inline;text-align: center;">One menu, 2 targetNodeIds, same as <--</h4> 
+ 
+<div dojoType="PopupMenu2" targetNodeIds="multi_1;multi_2"><!--Note no spaces between nodeIds--> 
+    <div dojoType="MenuItem2" caption="MENU4 One menu, 2 targetNodeIds"></div> 
+    <div dojoType="MenuItem2" caption="MENU4-Item 1"></div> 
+    <div dojoType="MenuItem2" caption="MENU4-Item 2"></div> 
+</div>
+
+ 
+<H2 style="color: blue;">All non gray areas in this page should have the browsers default contextmenu</H2><br />
+
+Example of using targetNodeIds property to just listen to `some` dom nodes, default behaviour is to popup everywhere in the document. 
+
+<h3 style="color: blue;">In Opera, press ctrl-button while clicking. This is needed as opera doesn't support right-click events</h3> 
+
+</body>
+</html>

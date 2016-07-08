@@ -1,0 +1,76 @@
+<html>
+<script type="text/javascript" src="../dojo.js"></script>
+<script type="text/javascript">
+dojo.require('dojo.html.common');
+dojo.require('dojo.html.style');
+dojo.require("dojo.event");
+dojo.require("dojo.lang.declare");
+
+function $ (id) { return dojo.byId(id); }
+function makeGreen (nodes) { for (var i = 0; node = nodes[i]; i++) { node.style.color = "green"; } }
+
+
+var contentWin;
+dojo.addOnLoad(function(){
+	contentWin = $("embed").contentWindow;
+	dojo.event.connect($("updateScroll"), "onclick", updateScroll);
+	dojo.event.connect($("updateScrollOffset"), "onclick", updateScrollOffset);
+	dojo.event.connect($("updateViewport"), "onclick", updateViewport);
+	dojo.event.connect($("init"), "onclick", init);
+});
+
+function updateScroll() {
+	dojo.withGlobal(contentWin, function() {
+		var scroll = dojo.html.getScroll();
+		$("scrollTop").firstChild.nodeValue = scroll.top;
+		$("scrollLeft").firstChild.nodeValue = scroll.left;
+	});
+}
+
+function updateScrollOffset() {
+	dojo.withGlobal(contentWin, function() {
+		var offset = dojo.html.getScroll().offset;
+		$("scrollOffsetX").firstChild.nodeValue = offset.x;
+		$("scrollOffsetY").firstChild.nodeValue = offset.y;
+	});
+}
+
+//use object context to invoke a member function of an object
+var ViewPort = {};
+ViewPort.update = function(msg){
+	var viewport = dojo.html.getViewport();
+	$("viewportWidth").firstChild.nodeValue = viewport.width;
+	$("viewportHeight").firstChild.nodeValue = viewport.height;
+	$("viewportSize").firstChild.nodeValue = viewport + msg;
+}
+
+function updateViewport() {
+	dojo.withGlobal(contentWin, "update", ViewPort, " updateViewport is clicked" );
+}
+
+function init() {
+	makeGreen(dojo.html.getElementsByClass("foo1 bar1"));
+	makeGreen(dojo.html.getElementsByClass("foo2", null, null, dojo.html.classMatchType.ContainsAll));
+	makeGreen(dojo.html.getElementsByClass("foo3 bar3", null, null, dojo.html.classMatchType.IsOnly));
+	makeGreen(dojo.html.getElementsByClass("foo4", null, null, dojo.html.classMatchType.IsOnly));
+}
+
+//use around to wrap a function to work in the embed window
+dojo.event.connect("around", this, "init", this, "withEmbed");
+function withEmbed(mi) {
+	dojo.withGlobal(contentWin, function() { mi.proceed(); });
+}
+
+</script>
+<head>
+</head>
+<body>
+<p>This text is before the iframe</p>
+<iframe id="embed" src="test_html_content.html" width="50%" height="200px"></iframe>
+<p><input type="button" id="init" value="Init green text">
+<input type="button" id="updateScroll" value="Update Scroll Values">
+<input type="button" id="updateScrollOffset" value="Update Scroll Values">
+<input type="button" id="updateViewport" value="Update Size Values"></p>
+<p style="height: 700px"></p>
+</body>
+</html>

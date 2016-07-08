@@ -1,0 +1,6 @@
+name=Encanamento em S - 3D Modelo C vazio/enchendo
+type=imageSet
+#width=562
+#height=290
+text.x=14
+text.y=2

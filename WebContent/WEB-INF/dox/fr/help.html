@@ -1,0 +1,178 @@
+<pre>
+    ScadaBR - Open-Source Data Acquisition System - <a
+	href="http://www.scadabr.org.br">http://www.scadabr.org.br</a>
+    Copyright (C) 2010 Funda&ccedil;&atilde;o Certi.
+    Release 0.8 powered by Mango M2M - <a
+	href="http://mango.serotoninsoftware.com">http://mango.serotoninsoftware.com</a>.
+    
+   Ce programme est un logiciel libre: vous pouvez le redistribuer et/ou le modifier
+    conform&#233;ment aux disposition de la Licence Publique G&#233;n&#233;rale GNU, telle que publi&#233;e
+    par la Free Software Foundation; version 3 de la licence, ou encore (&#224; votre choix)
+    toute version ult&#233;rieure.
+
+    Ce programme est distribu&#233; dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE; sans m&#234;me la garantie implicite de 
+	COMMERCIALISATION ou D'ADAPTATION A UN OBJET PARTICULIER.
+	Pour plus de d&#233;tail, voir la Licence Publique G&#233;n&#233;rale GNU.
+
+    Un exemplaire de a Licence Publique G&#233;n&#233;rale GNU doit &#234;tre fourni avec ce programme;
+    Si ce n'est pas le cas  <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+</pre>
+<br/>
+<br/>
+
+<p>ceci est une vue d'ensemble du fonctionnement de l'application et des concepts ergonomiques que doivent connaitre les utilisateurs. Tous les d&#233;tails utils  
+peuvent etre trouv&#233;s en utilisant les aides contextuelles de l'application, indiqu&#233;es par l'icone Aide 
+(<img src="images/help.png">). Un clic sur cette icone affichera des informations suppl&#233;mentaires des fonctionnalit&#233; en cours d'utilisation.</p>
+
+<h1>Vue d'ensemble de l'application</h1>
+<p>Les fonctionnalit&#233;s de cette application sont accessibles par les commandes de l'en-t&#234;te. En fonction des privil&#232;ges de votre compte utilisateur plusieurs icones
+ seront affich&#233;es en dessous du logo de l'application. 
+ En survolant la souris sur ces icones vous afficherez dans une infobulle une courte description de la fonctionnalit&#233; de l'icone.</p>
+<p>En haut et &#224; droite de l'en-t&#234;te de contr&#244;le s'affiche le nom de l'utilisateur connect&#233;.</p>
+<p>Si votre application dispose d'une alarme active, vous verrez au  centre de l'en-t&#234;te l'icone d'un drapeau clignotant (<img src="images/flag_white.png"/>)
+ainsi que la description de l'alarme. La couleur de l'icone indique la gravit&#233; de l'alarme:</p>
+<ul style="list-style-type:none;">
+  <li><img src="images/flag_blue.png"> Information</li>
+  <li><img src="images/flag_yellow.png"> Urgent</li>
+  <li><img src="images/flag_orange.png"> Critique</li>
+  <li><img src="images/flag_red.png"> S&#233;curit&#233; des personnes</li>
+</ul>
+<p>Vous pouvez cliquer sur l'ic&#244;ne ou sa description pour afficher la liste des alarmes actives.</p>
+
+<h1>Types de donn&#233;es</h1>
+<p>Il existe cinq types de donn&#233;es support&#233;es:</p>
+<ul>
+  <li>les valeurs <b>Binaire</b> (ou bool&#233;en) ne peuvent avoir que deux &#233;tats inscrits dans le syst&#232;me, la valeur <b>zero</b> et la valeur
+ <b>un</b>. Vous pouvez utiliser des convertisseurs pour afficher les valeurs binaires sous d'autre libell&#233;s comme, 
+   "on/off", "haut/bas", "d&#233;marr&#233;/arret&#233;", etc.</li>
+  <li>les valeurs <b>Multistate</b> peuvent prendre plusieurs &#233;tats distincts. (Strictement parlant, le type binaire fait parti des types
+   multistate.) Les valeurs sont principalement repr&#233;sent&#233;es par des entiers (ie. 0, 1, 2, 7, ...), mais, comme les valeurs binaires, 
+  Vous pouvez utiliser des convertisseurs pour afficher les valeurs binaires sous d'autre libell&#233;s comme "on/off/d&#233;sactiv&#233;",
+  "froid/chaud/off", ou tout autre chose.</li>
+  <li>Les valeurs <b>Numerique</b> (analogique) sont des valeurs d&#233;cimales represent&#233;es dans le systeme par une variable &#224; virgule flottante. 
+  Temp&#233;rature, humidit&#233;, prix, et altitude sont des exemples de valeurs numeriques. Des formats de texte peuvent &#234;tre appliqu&#233;s pour d&#233;terminer
+  les caract&#233;ristiques d'affichage comme, le nombre de decimales &#224; afficher, les s&#233;parateurs de milliers (avec point ou virgule), l'affichage 
+  des suffixes (ie &deg;F, kW/h, moles, etc). Des formats de texte peuvent &#234;tre utilis&#233;s pour convertir des valeurs num&#233;riques en libell&#233;
+  .</li>
+  <li>Les valeurs <b>Alphanumerique</b> sont de simples chaines, comme la description  O/S d'une source SNMP.</li>
+  <li>Les valeurs <b>Image</b> sont des repr&#233;sentations binaires de donn&#233;es image. Elles sont stock&#233;es dans le syst&#232;me de fichier du serveur hote
+  (i.e. pas dans la base de donn&#233;es) et mise en cache de la memoire pour des besoins de performance. Des formats peuvent &#234;tre utilis&#233;s pour cr&#233;er
+  des images &#224; l'&#233;chelle - comme des vignettes - pour la pr&#233;sentation.</li>
+</ul>
+
+
+<h1>Sources de données</h1>
+<p>Les sources de données sont fondamentales pour le fonctionnement de cette application. Une <b>source de données</b> est l'endroit qui reçoit données. Presque tout peut être une source de données, du moment que le protocole de communication peut supporter une requête. Quelques exemples: </p>
+<ul>
+  <li>Si vous avez un réseau accessible par Modbus RS232, RS485, TCP / IP ou UDP / IP, vous pouvez créer une source de données Modbus qui interroge le réseau à  intervalle défini </li>
+  <li>Si vous avez du matériel ou des applications qui peuvent envoyer des données sur HTTP, vous pouvez créer une source de données HTTP récepteur qui écoutera les connexions entrantes et transmettra des données aux endroits appropriés </li>
+  <li>Pour le matériel supportant le SNMP, démarrez la source de données. Les valeurs peuvent être lues à intervalles réguliers et les alertes peuvent être collectées pour des rapports d'anomalies.</li>
+  <li>Les données peuvent être lues et mises à jour dans un système de base de données SQL externe </li>
+  <li>Les données peuvent être générés de manière aléatoire ou programmée en utilisant une source de données virtuelle </li>
+</ul>
+<p>Les valeurs des données reçues ou collectées par une source de données sont stockées dans des points de données.</p>
+
+<h1>Points de données</h1>
+<p>un <b>point de données</b> Un point de données est une série de valeurs historiques associées. Par exemple, un point particulier peut être une lecture de la température d'une pièce, tandis qu'une autre section pourrait être la lecture de la humidité de la pièce même. Les points peuvent également être des valeurs de contrôle, comme un indicateur pour activer un dispositif </p>
+<p>De nombreux attributs sont utilisés pour contrôler le comportement des points. Au départ il y a le concept de 
+<b>localisation de point</b>. Les Localisations sont utilisées par les sources de données afin de déterminer comment «trouver» les données pour un point particulier..
+ Par exemple, une source de données SQL a des attributs, savoir où trouver l'instance de la base de données, rechercher les point de la source de données, indiquer le nom de la table et les champs où des valeurs spécifiques peuvent être trouvées. La séparation logique de source de données et du point de données dépend du protocole de communication en question.</p>
+<p>Les attributs de points de données peuvent également déterminer de nombreux autres aspects du point, comme son nom, comment doit-il être enregistré (toutes les données, uniquement les modifications de la valeur, ou aucune), la durée de conservation des données, comment mettre en forme les données pour l'affichage des tableaux et des graphiques. </p>
+<p>Vous pouvez également configurer des points de données avec des <b>détecteurs d'évènement</b>, qui seront utiles pour détecter les valeurs remarquables des points (valeur trop élevée pendant trop longtemps, ou trop faible, qui change trop souvent, ou ne change jamais) 
+all, etc).</p>
+<p>On peut classer les points dans une organisation ou arborescence, pour simplifier leur utilisation et leur visualisation en utilisant la fonction Organisation de points.</p>
+
+<h1>Surveillance</h1>
+<p>Il existe 2 facons d'effectuer la surveillance des points à l'intérieur du système. Vous pouvez utiliser les <b>listes de surveillance</b> pour créer
+des listes dynamiques de points avec leurs valeurs, les dates de dernière mise à jour, et des graphiques reprenant l'historique des informations (si 
+la configuration du point le permet). Les valeurs et graphiques sont mis à jour en temps réel sans avoir besoin de rafraîchir le navigateur.
+Les graphiques représentant de multiple points peuvent aussi être affichés à la demande.</p>
+<p>Vous pouvez aussi créer des <b>vues graphiques</b> de points en utilisant des fonctions de glisser-déposer pour placer les points dans la vue 
+sur l'image de fond de votre choix. Des images animées peuvent être utilisées pour obtenir une vision dynamique du comprtement du système, 
+ comme les listes de surveillance les valeurs sont mises à jour sans avoir besoin de rafraîchir le navigateur. Ces vues peuvent ensuite être marquées comme "public", afin d'être réulisées sur des sites web publics.</p>
+
+<h1>Contrôle</h1>
+<p>Les systèmes de contrôle externes peuvent être utilisés pour les points "règlables" (autorisés en écriture ou en sortie). Un point 
+<b>règlable</b> peut être paramètré par une valeur définie par l'utilisateur, comme la configuration d'un thermostat ou la position d'un interrupteur.
+Les listes de surveillance et les vues graphiques fournissent un moyen simple de déterminer les valeurs d'entrée. Le localisateur de point pour un point reglable détermine comment la source de données
+définit la valeur au sein de l'équipement externe.</p>
+
+<h1>Evènements</h1>
+<p>
+  Un <b>évènement</b> est l'occurence d'une condition définie dans le système. Elle peut être définie par le système ou par l'utilisateur. 
+  Les évènements définis par le système comprennent les erreurs des sources de donnée, les connexions des utilisateurs, et les arrêts et démarrages du système. 
+  Les évènements définis par l'utilisateurs comprennent les détecteurs d'évènements des points, les évènements programmés, et les évènements composés
+  qui détectent les conditions de nombreux points à l'aide d'états logiques. Il y a aussi les "évènements d'audit", qui surviennent lorsque l'utilisateur modifie (ajouts, modifications, suppressions) to runtime-affecting objects
+  including data sources, data points, point event detectors, scheduled events, compound event detectors, and event
+  handlers.
+</p>
+<p>
+  Une fois qu'un évènement est détecté, il est pris en charge par les gestionneaires. Un <b>gestionnaire d'évènement</b> est une action définie par l'utilisateur qui sera déclenchée après
+  un évènement particulier, cette action peut-être l'envoi de'un mail ou le changement de valeur d'un point réglable.
+  
+</p>
+
+<h1>Icônes des applications</h1>
+<ul style="list-style-type:none;">
+  <li><img src="images/icon_ds.png"> Source de données</li>
+  <li><img src="images/icon_comp.png"> Point de donnée</li>
+  <li><img src="images/icon_chart.png"> Graphique</li>
+  <li><img src="images/icon_edit.png"> Règlage du point</li>
+  <li><img src="images/eye.png"> Liste de surveillance</li>
+  <li><img src="images/icon_view.png"> Vue graphique</li>
+  <li><img src="images/control_repeat_blue.png"> Actualiser</li>
+  <li><img src="images/bell.png"> Détecteur d'évènement</li>
+  <li><img src="images/multi_bell.png"> Evènement composé</li>
+  <li><img src="images/clock.png"> Evènement programmé</li>
+  <li><img src="images/cog.png"> Gestionnaire d'évènement</li>
+  <li><img src="images/flag_white.png"> Alarme</li>
+  <li><img src="images/user.png"> Utilisateur</li>
+  <li><img src="images/comment.png"> commentaire utilisateur</li>
+  <li><img src="images/report.png"> Rapport</li>
+  <li><img src="images/book.png"> Liste de diffusion</li>
+  <li><img src="images/transmit.png"> Publication</li>
+  <li><img src="images/warn.png"> Avis</li>
+  <li><img src="images/control_stop_blue.png"> Déconnexion</li>
+</ul>
+
+<h1>Sons des alarmes</h1>
+<p>ScadaBR peut émettre des sons lorsque les alarmes sont actives . Par défaut, les sons d'alarme sont joués pour les alarmes de sécurité, urgentes, critiques et sécurité des personnes  (mais pas pour les alarmes d'information), mais les sons de chaque type d'alarme peuvent  être contrôlés individuellement. Pour activer des sons d'alarme particulier, les fichiers mp3 doivent être stockés aux endroits suivants: </p>
+<ul>
+  <li>&lt;mango_home&gt;/audio/information.mp3</li>
+  <li>&lt;mango_home&gt;/audio/urgent.mp3</li>
+  <li>&lt;mango_home&gt;/audio/critical.mp3</li>
+  <li>&lt;mango_home&gt;/audio/lifesafety.mp3</li>
+</ul>
+<p>Pour désactiver un son, supprimez le fichier son associé. Une bibliothèque de sons est disponible dans le dossier <ScadaBR_home> / Audio / lib </p>
+
+<h1>Images</h1>
+<p>ScadaBR inclut une petite bibliothèque d'images stockée dans le dossier <ScadaBR_home> / graphics. Chaque sous-dossier contient toutes les images du fichier de définition d'image et un document facultatif nommé <b>info.txt</b>. Ce fichier contient les propriétés des attributs suivants (tous optionnels):</p>
+<ul>
+  <li><b>name</b>: Le nom qui sera utilisé pour décrire l'image dans l'interface utilisateur. S'il n'est pas fourni, les valeurs par défaut l'image du nom du dossier.</li>
+  <li><b>width</b>: La largeur de l'image. Par défaut, toutes les images sont de la même taille. S'il n'est pas renseigné, la largeur de la première image sera utilisée</li>
+  <li><b>height</b>: La hauteur de l'image. Par défaut, toutes les images sont de la même taille. S'il n'est pas fourni, la hauteur de la première image sera utilisée .</li>
+  <li><b>text.x</b>: La position du texte sur le bord gauche de l'image en pixels. S'il n'est pas fourni, la valeur par défaut est de 5 .</li>
+  <li><b>text.y</b>: La position du texte sur la limite supérieure de l'image en pixels. S'il n'est pas fourni, la valeur par défaut est de 5 .</li>
+</ul>
+<p><b>Lorsque vous utilisez des images, ne renommez plus les dossiers!</b> Le nom du dossier est utilisé en interne comme l'identifiant de la définition de l'image.</p>
+<p>Les fichiers images sont classées par ordre alphabétique de nom et est sensible à la casse. Paires nom / valeur sont séparés par des '='. Les lignes commençant par '#' sont considérées comme des commentaires. Archives "thumbs.db" sont ignorés. Les fichiers compressés (zip, gz, tar, etc) ne peuvent pas être utilisé parce que les fichiers images doivent être accessibles par le serveur web. Les paramètres de l'image sont chargés au démarrage, de sorte que toute modification nécessitera un redémarrage.</p>
+<p>Pour enrichir les futures versions de ScadaBR , vous pouvez envoyer vos propres images au projet ScadaBR. </p>
+
+<h1>Vues distantes</h1>
+<p>Les vues publiques peuvent être consulté à partir d'autres sites en ajoutant simplement uen iframe dans vos pages. Par exemple,
+la page d'accueil de Mango utilises le code suivant pour afficher la vue d'un petit thermostat:</p>
+<pre>&lt;div style="position:relative;width:80px;height:150px"&gt;
+&lt;iframe frameBorder="0" style="position:absolute;width:450px;height:300px" scrolling="no" allowTransparency="true"
+        src="http://mango.serotoninsoftware.com/test/public_view.htm?viewId=3"&gt;&lt;/iframe&gt;
+&lt;/div&gt;</pre>
+<p>Absolute positioning and transparency is used to allow the display of charts and component controls without 
+scrolling or HTML adjustment, but is optional. The 'viewId' parameter is the internally generated id of the view to 
+be displayed, but can be substituted with the 'viewName' parameter and the view's name as the value. (However, do not
+subsequently alter the name of the view without updating this reference.)</p>
+
+<h1>Custom views</h1>
+<p>
+  Custom views are publically accessible views that are written by the user, using a JSP tag library to easily add
+  components. For more information see the example in customViewExample.jsp.
+</p>

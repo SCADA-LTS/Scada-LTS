@@ -1,0 +1,6 @@
+name=Leds32
+type=imageSet
+#width=32
+#height=32
+text.x=0
+text.y=32

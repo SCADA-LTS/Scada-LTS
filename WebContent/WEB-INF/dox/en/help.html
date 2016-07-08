@@ -1,0 +1,227 @@
+<pre>
+    ScadaBR - Open-Source Data Acquisition System - <a
+	href="http://www.scadabr.org.br">http://www.scadabr.org.br</a>
+    Copyright (C) 2010 Funda&ccedil;&atilde;o Certi.
+    Release 1.0.0 powered by Mango M2M - <a
+	href="http://mango.serotoninsoftware.com">http://mango.serotoninsoftware.com</a>.
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+</pre>
+<br/>
+<br/>
+
+<p>Below is a general overview of how this application works, and design concepts that users should know. Helpful 
+details can be found throughout the application using contextual help, indicated by the help icon 
+(<img src="images/help.png">). Click on this icon wherever it appears to get more information on the feature you are 
+using.</p>
+
+<h1>Application overview</h1>
+<p>Functionality in this application is primarily accessed using the controls in the header. Depending on the 
+permissions granted to your user account, you will see various icons underneath the application logo. When you hover
+over these icons with your mouse, you will see an overlay message with a short description of what the icon is 
+for.</p>
+<p>Beside the header controls at the right-hand side of the header is the username of the user who is currently 
+logged in.</p>
+<p>When your application has an active alarm, you will see a flashing flag icon (<img src="images/flag_white.png"/>)
+and an associated description near the center of the header area. The colour of the icon will indicate the severity
+of the alarm:</p>
+<ul style="list-style-type:none;">
+  <li><img src="images/flag_blue.png"> Information</li>
+  <li><img src="images/flag_yellow.png"> Urgent</li>
+  <li><img src="images/flag_orange.png"> Critical</li>
+  <li><img src="images/flag_red.png"> Life safety</li>
+</ul>
+<p>You can click on the icon or the description to go to the list of active alarms.</p>
+
+<h1>Data types</h1>
+<p>There are five supported data types:</p>
+<ul>
+  <li><b>Binary</b> (aka boolean) values have only two states, referred to in the system as the <b>zero</b> value
+  and the <b>one</b> value. You can use a text renderer to convert the display of binary values to whatever alternate
+  labels you need, such as "on/off", "high/low", "started/stopped", etc.</li>
+  <li><b>Multistate</b> values have multiple distinct states. (Strictly speaking, the binary type is a special case
+  of a multistate.) Values are primitively represented as integers (e.g. 0, 1, 2, 7, ...), but, like binary values, 
+  you can use a text renderer to convert these values to appropriate text representations such as "on/off/disabled",
+  "cool/heat/off", or anything else.</li>
+  <li><b>Numeric</b> (aka analog) values are decimal values represented in the system with a floating point variable. 
+  Temperature, humidity, price, and altitude are examples of numeric values. Text renderers can be used to determine
+  display features like how many decimals places to display, whether to separate thousands (with commas or dots), and 
+  whether a suffix should be displayed (e.g. &deg;F, kW/h, moles, etc). Range renderers can be used to convert ranges
+  of numeric values into text labels.</li>
+  <li><b>Alphanumeric</b> values are simply strings of characters, such as the O/S description of an SNMP source.</li>
+  <li><b>Image</b> values are binary representations of image data. They are stored in files on the host file system
+  (i.e. not in the database) and are cached in memory as necessary for performance purposes. Renderers can be used to
+  create scaled images - such as thumbnails - for presentation.</li>
+</ul>
+
+
+<h1>Data sources</h1>
+<p>Data sources are fundamental to the operation of this application. A <b>data source</b> is a "place" from which 
+data is received. Virtually anything can be a data source, insofar as the communications protocol is supported by the
+application. Here are some examples:</p>
+<ul>
+  <li>If you have a Modbus network accessible via RS232, RS485, TCP/IP, or UDP/IP, you can create a Modbus data 
+  source that will poll the network for data on an interval you can define.</li>
+  <li>If you have equipment or an application that can send data over HTTP you can start an HTTP receiver data source
+  that will listen for incoming connections and route the data to the appropriate points.</li>
+  <li>For hardware that supports SNMP, start an SNMP data source. Values can be polled on an interval schedule, or 
+  traps can be received for report-on-exception.</li>
+  <li>Data can be read and updated in a SQL data base external to the system.</li>
+  <li>Data can be generated either randomly or predictively using a Virtual data source.</li>
+</ul>
+<p>Data values that are received or collected by a data source are stored within data points.</p>
+
+<h1>Data points</h1>
+<p>A <b>data point</b> is a collection of associated historical values. For example, a particular point might be a 
+temperature reading from a room, while another point could be the humidity reading from the same room. Points can 
+also be control values, such as a switch to turn a piece of equipment on or off.</p>
+<p>There are many attributes that are used to control the behaviour of points. Primarily, there is the concept of a 
+<b>point locator</b>. Locators are used by data source to determine how to "find" the data for the particular point.
+For instance, a SQL data source has attributes including where to find the database instance; point locators for the 
+data source indicate the table and field names with which to find specific values. The logical separation of data 
+source and data point attributes depends on the communication protocol in question.</p>
+<p>Data points attributes also determine many other aspects of the point, such as its name, how it should be logged 
+(all data, changes in value only, or not at all), how long to keep logged data, how to format values for display,
+and how to chart values.</p>
+<p>You can also configure data points with <b>event detectors</b>, which are used to detect conditions of interest 
+in the point's values (eg. value has been too high for too long, is too low, changes too often, doesn't change at 
+all, etc).</p>
+<p>Points can be arranged into a hierarchy, or tree, to simplify management and display by using the Point Hierarchy 
+functionality.</p>
+
+<h1>Monitoring</h1>
+<p>Monitoring of points within the system can be done in two ways. You can use the <b>watch list</b> to dynamically
+create tabular lists of points including their values, last update times, and charts of historical information (if 
+the point is configured to support this). Values and charts are updated in real time without having to refresh your
+browser window. Charts of multiple points can also be displayed on demand.</p>
+<p>You can also create <b>graphical views</b> of points using drag and drop functionality to position graphical 
+representations of points on an arbitrary background image. Animated images can be used to create highly dynamic 
+visualization of system behaviour, and, like the watch lists, values are updated in real time without a browser 
+refresh. These views can subsequently be marked as "public", so that they can be reused on public web sites.</p>
+
+<h1>Control</h1>
+<p>Control of external systems can also be acheived for points that can be set (aka writable or output). A 
+<b>settable</b> point can be set to a user-defined value, such as a thermostat setting or equipment control switch.
+Both watch lists and graphical views provide simple means by which to input a value to set. The point locator for the
+settable point determines how the data source sets the value within the external equipment.</p>
+
+<h1>Events</h1>
+<p>
+  An <b>event</b> is the occurance of a defined condition within the system. Both system-defined and user-defined 
+  events are available. System-defined events include data source operation errors, user logins, and system 
+  startup/shutdown. User-defined events include point event detectors (see "event detectors" above), scheduled events,
+  and compound events which detect conditions over multiple points using logical statements. There are also "audit 
+  events", which are raised when users make changes (additions, modifications, deletions) to runtime-affecting objects
+  including data sources, data points, point event detectors, scheduled events, compound event detectors, and event
+  handlers.
+</p>
+<p>
+  Once an event has been detected, it is acted upon by handlers. An <b>event handler</b> is a user-defined behaviour
+  that is to be performed upon the raising of a particular event, such as sending an email or setting the value of a 
+  settable point.
+</p>
+
+<h1>Application icons</h1>
+<ul style="list-style-type:none;">
+  <li><img src="images/icon_ds.png"> Data source</li>
+  <li><img src="images/icon_comp.png"> Data point</li>
+  <li><img src="images/icon_chart.png"> Chart</li>
+  <li><img src="images/icon_edit.png"> Set point</li>
+  <li><img src="images/eye.png"> Watch list</li>
+  <li><img src="images/icon_view.png"> Graphical view</li>
+  <li><img src="images/control_repeat_blue.png"> Refresh</li>
+  <li><img src="images/bell.png"> Event detector</li>
+  <li><img src="images/multi_bell.png"> Compound detector</li>
+  <li><img src="images/clock.png"> Scheduled event</li>
+  <li><img src="images/cog.png"> Event handler</li>
+  <li><img src="images/flag_white.png"> Alarm</li>
+  <li><img src="images/user.png"> User</li>
+  <li><img src="images/comment.png"> User comment</li>
+  <li><img src="images/report.png"> Report</li>
+  <li><img src="images/book.png"> Mailing list</li>
+  <li><img src="images/transmit.png"> Publisher</li>
+  <li><img src="images/warn.png"> Warning</li>
+  <li><img src="images/control_stop_blue.png"> Logout</li>
+</ul>
+
+<h1>Alarm sounds</h1>
+<p>ScadaBR can play sounds when alarms are active. By default, alarm sounds are played for urgent, critical, and life
+safety alarms (i.e. not for information alarms), but sounds for each alarm type can be controlled individually. To 
+enable particular alarm sounds, valid mp3 files must exist at the following locations:</p>
+<ul>
+  <li>&lt;mango_home&gt;/audio/information.mp3</li>
+  <li>&lt;mango_home&gt;/audio/urgent.mp3</li>
+  <li>&lt;mango_home&gt;/audio/critical.mp3</li>
+  <li>&lt;mango_home&gt;/audio/lifesafety.mp3</li>
+</ul>
+<p>To disable a sound, remove the associated sound file. A library of sounds can be found in the 
+&lt;mango_home&gt;/audio/lib folder.</p>
+
+<h1>Graphics</h1>
+<p>ScadaBR ships with a small graphics library which can be found in the &lt;mango_home&gt;/graphics folder. Each
+sub-folder represents an image set. The contents of the sub-folder include all of the images in the image set, as 
+well as an optional properties file called <b>info.txt</b>. (Examples can be found in the graphics directories that
+ship with ScadaBR.) This property file contains name/value pairs with the following names (all of which are 
+optional):</p>
+<ul>
+  <li><b>name</b>: The name that will be used to describe the image set in the user interface. If not provided this
+  will default to the folder name.</li>
+  <li><b>width</b>: The width of the images. (All images are expected to be the same size.) If not provided the width 
+  of the first image will be used.</li>
+  <li><b>height</b>: The height of the images. (All images are expected to be the same size.) If not provided the 
+  height of the first image will be used.</li>
+  <li><b>text.x</b>: The position of text relative to the left edge of the image, in pixels. If not provided this 
+  defaults to 5.</li>
+  <li><b>text.y</b>: The position of text relative to the top edge of the image, in pixels. If not provided this 
+  defaults to 5.</li>
+</ul>
+<p><b>Once you are using an image set in your views do not rename its folder!</b> The folder name is used internally
+as the identifier of the image set.</p>
+<p>Image files are sorted alphabetically by name. Names are case sensitive. Name/value pairs are separated with '='. 
+Lines beginning with '#' are considered comments. 'Thumbs.db' files are ignored. Archive files (zip, gz, tar, etc)
+cannot be used since the images files have to be accessible to the web server. Image sets are loaded upon system 
+startup, so any changes require a restart.</p>
+<p>To have future versions of ScadaBR ship with your preferred graphics, please contribute them to Serotonin 
+Software. Please support open source software.</p>
+
+<h1>Remote views</h1>
+<p>Public mango views can be accessed from other web sites by simply putting an iframe into your pages. For example,
+the Mango home page uses the following code to display a small thermostat view:</p>
+<pre>&lt;div style="position:relative;width:80px;height:150px"&gt;
+&lt;iframe frameBorder="0" style="position:absolute;width:450px;height:300px" scrolling="no" allowTransparency="true"
+        src="http://mango.serotoninsoftware.com/test/public_view.htm?viewId=3"&gt;&lt;/iframe&gt;
+&lt;/div&gt;</pre>
+<p>Absolute positioning and transparency is used to allow the display of charts and component controls without 
+scrolling or HTML adjustment, but is optional. The 'viewId' parameter is the internally generated id of the view to 
+be displayed, but can be substituted with the 'viewName' parameter and the view's name as the value. (However, do not
+subsequently alter the name of the view without updating this reference.)</p>
+
+<h1>Custom views</h1>
+<p>
+  Custom views are publically accessible views that are written by the user, using a JSP tag library to easily add
+  components. For more information see the example in customViewExample.jsp.
+</p>
+
+<h1>Database Configuration</h1>
+
+<p>The ScadaBR currently supports two database management systems
+Database: <b>Derby</b> and <b>MySQL</b>. The file <b> ScadaBR.war </b> comes
+configured with the default Derby for reasons of ease
+to the user, because it runs and does not require embedded
+DBMS installation or configuration
+parameters such as login and password. </p>
+
+<p>To change the database, go to <b>System Settings</b> and choose the database
+of your choice in <b>Database Configuration</b>. 
+</p>

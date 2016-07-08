@@ -1,0 +1,48 @@
+﻿<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+
+<h1>Descripci&oacute;n General</h1>
+
+<p>A los publicadores se les puede considerar un opuesto a las fuentes de datos. En lugar recolectar datos en el sistema, los editores distribuyen los datos hacia afuera. Esto es &uacute;til cuando se utiliza Mango para recopilar informaci&oacute;n de sistemas diferentes para modificar, limpiar, o administrarlos, y enviarlos en un &uacute;nico formato a otros sistemas. De esta manera, Mango es m&aacute;s que un simple M2M, es un M2M2M. Los publicadores tienen la capacidad de ser utilizados para enviar datos a otras instancias de Mango, permitiendo la consolidaci&oacute;n de los datos entre las diferentes instancias consiguiendo una administraci&oacute;n desde un servidor central. De hecho, una instancia de Mango puede utilizar publicadores para controlar otras instancias en muchas formas.</p>
+
+<h1>Configuraciones comunes de un Publicador</h1>
+<p>Cada publicador tiene un <b>Nombre</b> que es utilizado para identificarse en su lista. se recomienda que este nombre sea &uacute;nico, pero no es limitante. La casilla <b>Habilitado</b> permite la activaci&oacute;n o desactivaci&oacute;n de un publicador.</p>
+<p>Los publicadores utilizan memorias cach&eacute;s para asegurar que todos los puntos actualizados son entregados a su destino. Cuando el destino no acepta la entrega, por tiempo prolongado, el cach&eacute; aumentar&aacute; su tama&ntilde;o. Un punto sin entregarse nunca ser&aacute; purgado de este cach&eacute; (excepto cuando se deshabilite su publicador). En estos casos una <b>Advertencia por el tama&ntilde;o del cach&eacute;</b> puede definirse, y as&iacute; una alarma se activar&aacute; cuando el tama&ntilde;o exceda lo definido. El estado alarmado regresar&aacute; a normal cuando el cach&eacute; disminuya su tama&ntilde;o y ya no exceda el tama&ntilde;o de advertencia definido, o cuando se deshabilite el publicador.</p>
+<p>El valor del <b>evento de actualizaci&oacute;n</b> determina si los puntos ser&aacute;n entregados al actualizarse, o &uacute;nicamente cuando presenten cambios.</p>

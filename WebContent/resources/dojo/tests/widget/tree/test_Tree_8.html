@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Tree");
+	dojo.require("dojo.widget.TreeLoadingController");
+	dojo.require("dojo.widget.TreeControllerExtension");
+	dojo.hostenv.writeIncludes();
+
+	dojo.addOnLoad(function() {
+		// add extensions to controller
+		dojo.lang.mixin(dojo.widget.byId('treeController'), dojo.widget.TreeControllerExtension.prototype);
+	});
+
+	function saveExpandedIndices() {
+		// You can save this object as tree persistent state
+		indices = dojo.widget.byId('treeController').saveExpandedIndices(
+			dojo.widget.byId('firstTree')
+		);
+	}
+
+	function restoreExpandedIndices() {
+		dojo.widget.byId('treeController').restoreExpandedIndices(
+			dojo.widget.byId('firstTree'), indices
+		);
+	}
+
+	function printExpandedIndices() {
+		if (!dojo.lang.isFunction(indices.toSource)) {
+			dojo.raise("Use Mozilla Firefox or other browser that supports Object.toSource()");
+		}
+		dojo.debug(indices.toSource());
+	}
+
+</script>
+
+
+</head>
+<body>
+
+<ul>
+<li>New nodes are loaded dynamically.
+<li>Save/expand indices working.
+</ul>
+
+<div dojoType="TreeLoadingController" widgetId="treeController" RPCUrl="local"></div>
+
+
+<div dojoType="Tree" widgetId="firstTree" controller="treeController">
+    <div dojoType="TreeNode" title="Node 1"></div>
+    <div dojoType="TreeNode" title="Node 2">
+        <div dojoType="TreeNode" title="Node 2.1"></div>
+        <div dojoType="TreeNode" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNode" title="Node 3" isFolder="true">
+    </div>
+
+</div>
+
+<input type="button" value="Save expanded" onClick="saveExpandedIndices()"/>
+<input type="button" value="Restore expanded" onClick="restoreExpandedIndices()"/>
+<input type="button" value="Print expanded" onClick="printExpandedIndices()"/>
+
+
+
+</body>
+</html>

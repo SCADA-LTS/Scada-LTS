@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>ContentPane executeScripts Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.LayoutContainer");
+	dojo.require("dojo.widget.LinkPane");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.FloatingPane");
+
+	// the floatingpane in this page tests global scripts
+	var str = "<scr"+"ipt>"
+		+"var testGlobalString = 'success!';"
+		+"function globalFunc(){"
+		+"	alert(testGlobalString);"
+		+"};"
+		+"</scr"+"ipt>"
+		+"<h3>scriptSeparation=false</h3>"
+		+"by setting this flag we eval scripts in global, "
+		+"please note that we loose all separation between scripts "
+		+"(one var with the same name will overwrite the other) "
+		+"and we loose the _container_ variable as that cant be unique for our script<br/>"
+		+"<a href='#' onclick='alert(testGlobalString);'>global var</a><br/>"
+		+"<a href='#' onclick='globalFunc();'>global function</a><br/>"
+		+"<a href='javascript:alert(testGlobalString);'>global var</a><br/>"
+	dojo.addOnLoad(function(){
+		dojo.widget.byType('floatingpane')[0].setContent(str);
+	});
+</script>
+
+</head>
+<body>
+This is a test for ContentPanes executeScripts, all the controll scripts are evaled contained in linkPane's scriptScope property
+<p>HTML before</p>
+<p>HTML before</p>
+<p>HTML before</p>
+
+<div dojoType="LayoutContainer"
+	layoutChildPriority='none'
+	style="border: 2px solid black; width: 90%; height: 300px; padding: 10px;">
+	<div dojoType="LinkPane" id='linkPane' layoutAlign="left" style="background-color: #b39b86; height: 250px; width: 200px;" executeScripts="true" href="scriptScope.html">
+	</div>
+	<div dojoType="ContentPane" id="docpane" layoutAlign="client" style="background-color: beige;" executeScripts="true">
+
+	</div>
+</div>
+
+<div dojoType="FloatingPane" style="width: 300px; height: 300px;"
+	title="Scripts evaled in global"  executeScripts="true" scriptSeparation="false"></div>
+
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+
+</body>
+</html>

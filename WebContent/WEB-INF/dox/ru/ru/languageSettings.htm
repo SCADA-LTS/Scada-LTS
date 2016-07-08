@@ -1,0 +1,28 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>Чтобы изменить язык, используемый в системе по умолчанию, воспользуйтесь настройкой Языка системы. К примеру, отчеты и электронные сообщения либо не связаны с конкретным пользователем, либо связаны с несколькими пользователями. Как раз в таких ситуациях будет использоваться системный язык. Обратите внимание, что ScadaBR использует много инструментов, и даже таких, которые не 
+  поддерживают i18n, поэтому, возможно, иногда вы будете получать сообщения только на английском языке.
+</p>
+<h1>Перевод на другой язык </h1>
+<p>ScadaBR является многоязычной системой. Если ScadaBR не поставлена Вам на нужном языке, можно просто создать файл перевода так, чтобы Ваше приложение работало на понятном Вам языке. Чтобы добавить язык, сначала отредактируйте файл &quot;WEB-INF/classes/i18n.properties&quot;, добавив информацию о языке, который вы хотите добавить. Формат данных: &quot;&lt;language code&gt;=&lt;language name&gt;&quot; (&quot;&lt;код языка&gt;=&lt;имя языка&gt;&quot;), где «код языка» соответствует стандартному коду языка по ISO 639-1, а «имя языка» соответствует написанию языка на родном языке. Язык будет добавлен в список языков, известных системе.
+</p>
+<p>Затем необходимо подготовить список дословных переводов. Создайте новый файл с именем &quot;messages_&lt;language code&gt;.properties&quot; в папке &quot;WEB-INF/classes/&quot;. Чтобы упростить процедуру можно скопировать содержание файла для английского языка и выполнить перевод.</p>
+<p>В завершение, Вам необходимо перевести контекстную документацию (например, этот документ). Чтобы сделать это, в папке &quot;WEB-INF/dox/&quot; создайте новую папку с именем, соответствующим коду языка и выполните перевод всей документации, которая расположена в папке английского языка (&quot;en&quot;).</p>
+<p>
+  Чтобы Ваш файл с переведенной документацией был загружен в основной модуль системы и был доступен в новых версиях ScadaBR, направьте его разработчикам системы.. </p>

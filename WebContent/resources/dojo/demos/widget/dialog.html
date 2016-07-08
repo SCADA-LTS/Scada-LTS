@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Dialog");
+	dojo.require("dojo.widget.Button");
+</script>
+
+<script type="text/javascript">
+var dlg0, dlg1, dlg2, dlg3;
+function init(e) {
+	dlg0 = dojo.widget.byId("dialog0");
+	var btn = document.getElementById("hider0");
+	dlg0.setCloseControl(btn);
+
+	dlg1 = dojo.widget.byId("dialog1");
+	var timer = document.getElementById("timer1");
+	dlg1.setTimerNode(timer);
+	var btn = document.getElementById("hider1");
+	dlg1.setCloseControl(btn);
+
+	dlg2 = dojo.widget.byId("dialog2");
+	timer = document.getElementById("timer2");
+	dlg2.setTimerNode(timer);
+	btn = document.getElementById("hider2");
+	dlg2.setCloseControl(btn);
+	
+	dlg3 = dojo.widget.byId("dialog3");
+	timer = document.getElementById("timer3");
+	dlg3.setTimerNode(timer);
+	btn = document.getElementById("hider3");
+	dlg3.setCloseControl(btn);
+}
+dojo.addOnLoad(init);
+
+</script>
+
+<style type="text/css">
+	body { font-family : sans-serif; }
+	.dojoDialog {
+		background : #eee;
+		border : 1px solid #999;
+		-moz-border-radius : 5px;
+		padding : 4px;
+	}
+	
+	form {
+		margin-bottom : 0;
+	}
+
+	/* group multiple buttons in a row */
+	.box {
+		display: block;
+		text-align: center;
+	}
+	.box .dojoButton {
+		float: left;
+		margin-right: 10px;
+	}
+	.dojoButton .dojoButtonContents {
+		font-size: medium;
+	}
+
+</style>
+
+<p>Click the buttons below to display dojo's modal dialog widget:</p>
+
+<div class="box">
+	<button dojoType="button" onclick="dlg0.show()">Form</button>
+	<button dojoType="button" onclick="dlg1.show()">Non-blocking, 5 seconds</button>
+	<button dojoType="button" onclick="dlg2.show()">Blocking, 2 seconds</button>
+	<button dojoType="button" onclick="dlg3.show()">Blocking, 2 seconds of 5 seconds</button>
+</div>
+<br clear=both>
+<br>
+<br>
+
+<div dojoType="dialog" id="dialog0" bgColor="white" bgOpacity="0.5" toggle="fade" toggleDuration="250">
+	<form onsubmit="return false;">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Location:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Description:</td>
+				<td><input type="text"></td>
+			</tr>
+			<tr>
+				<td>Location:</td>
+				<td><input type="file"></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center">
+					<input type="button" id="hider0" value="OK"></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+
+<div dojoType="dialog" id="dialog1" bgColor="red" bgOpacity="0.1" toggle="fade" toggleDuration="250" lifetime="5000">
+	Disappearing in <span id="timer1">3</span>... <a id="hider1" href="#">[X]</a>
+</div>
+
+<div dojoType="dialog" id="dialog2" bgColor="blue" bgOpacity="0.3" toggle="fade" toggleDuration="250" lifetime="2000" blockDuration="2000">
+	Disappearing in <span id="timer2">3</span>... <a id="hider2" href="#">[X]</a>
+</div>
+
+
+<div dojoType="dialog" id="dialog3" bgColor="green" bgOpacity="0.5" toggle="fade" toggleDuration="250" lifetime="5000" blockDuration="2000">
+	Disappearing in <span id="timer3">3</span>... <a id="hider3" href="#">[X]</a>
+</div>
+
+<p>
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
+porta rutrum lacus. Etiam consequat scelerisque quam. Nulla facilisi.
+Maecenas luctus venenatis nulla. In sit amet dui non mi semper iaculis.
+Sed molestie tortor at ipsum. Morbi dictum rutrum magna. Sed vitae
+risus.
+</p>
+<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+semper velit ante id metus. Praesent massa dolor, porttitor sed,
+pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+tortor pharetra congue. Suspendisse pulvinar.
+</p>
+<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
+ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
+nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
+lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
+est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
+dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
+nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
+pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
+sociosqu ad litora torquent per conubia nostra, per inceptos
+hymenaeos.
+</p>
+<form>
+	<center>
+		<select>
+			<option>1
+			<option>2
+		</select>
+	</center>
+</form>
+<p>Mauris pharetra lorem sit amet sapien. Nulla libero metus, tristique
+et, dignissim a, tempus et, metus. Ut libero. Vivamus tempus purus vel
+ipsum. Quisque mauris urna, vestibulum commodo, rutrum vitae, ultrices
+vitae, nisl. Class aptent taciti sociosqu ad litora torquent per
+conubia nostra, per inceptos hymenaeos. Nulla id erat sit amet odio
+luctus eleifend. Proin massa libero, ultricies non, tincidunt a,
+vestibulum non, tellus. Nunc nunc purus, lobortis a, pulvinar at,
+egestas a, mi. Cras adipiscing velit a mauris. Morbi felis. Etiam at
+felis. Cras eget eros et justo mattis pulvinar. Nullam at justo id
+risus porttitor dignissim. Vestibulum sed velit vel metus tincidunt
+tempus. Nunc euismod nisl id dolor tristique tincidunt. Nullam placerat
+turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
+consectetuer dapibus eros. Aliquam nisl.
+</p>
+
+<p>
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
+porta rutrum lacus. Etiam consequat scelerisque quam. Nulla facilisi.
+Maecenas luctus venenatis nulla. In sit amet dui non mi semper iaculis.
+Sed molestie tortor at ipsum. Morbi dictum rutrum magna. Sed vitae
+risus.
+</p>
+<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+semper velit ante id metus. Praesent massa dolor, porttitor sed,
+pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+tortor pharetra congue. Suspendisse pulvinar.
+</p>
+<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
+ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
+nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
+lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
+est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
+dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
+nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
+pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
+sociosqu ad litora torquent per conubia nostra, per inceptos
+hymenaeos.
+</p>
+<form>
+	<center>
+		<select>
+			<option>1
+			<option>2
+		</select>
+	</center>
+</form>
+<p>Mauris pharetra lorem sit amet sapien. Nulla libero metus, tristique
+et, dignissim a, tempus et, metus. Ut libero. Vivamus tempus purus vel
+ipsum. Quisque mauris urna, vestibulum commodo, rutrum vitae, ultrices
+vitae, nisl. Class aptent taciti sociosqu ad litora torquent per
+conubia nostra, per inceptos hymenaeos. Nulla id erat sit amet odio
+luctus eleifend. Proin massa libero, ultricies non, tincidunt a,
+vestibulum non, tellus. Nunc nunc purus, lobortis a, pulvinar at,
+egestas a, mi. Cras adipiscing velit a mauris. Morbi felis. Etiam at
+felis. Cras eget eros et justo mattis pulvinar. Nullam at justo id
+risus porttitor dignissim. Vestibulum sed velit vel metus tincidunt
+tempus. Nunc euismod nisl id dolor tristique tincidunt. Nullam placerat
+turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
+consectetuer dapibus eros. Aliquam nisl.
+</p>
+
+<p>
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
+porta rutrum lacus. Etiam consequat scelerisque quam. Nulla facilisi.
+Maecenas luctus venenatis nulla. In sit amet dui non mi semper iaculis.
+Sed molestie tortor at ipsum. Morbi dictum rutrum magna. Sed vitae
+risus.
+</p>
+<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+semper velit ante id metus. Praesent massa dolor, porttitor sed,
+pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+tortor pharetra congue. Suspendisse pulvinar.
+</p>
+<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
+ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
+nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
+lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
+est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
+dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
+nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
+pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
+sociosqu ad litora torquent per conubia nostra, per inceptos
+hymenaeos.
+</p>
+<p>Mauris pharetra lorem sit amet sapien. Nulla libero metus, tristique
+et, dignissim a, tempus et, metus. Ut libero. Vivamus tempus purus vel
+ipsum. Quisque mauris urna, vestibulum commodo, rutrum vitae, ultrices
+vitae, nisl. Class aptent taciti sociosqu ad litora torquent per
+conubia nostra, per inceptos hymenaeos. Nulla id erat sit amet odio
+luctus eleifend. Proin massa libero, ultricies non, tincidunt a,
+vestibulum non, tellus. Nunc nunc purus, lobortis a, pulvinar at,
+egestas a, mi. Cras adipiscing velit a mauris. Morbi felis. Etiam at
+felis. Cras eget eros et justo mattis pulvinar. Nullam at justo id
+risus porttitor dignissim. Vestibulum sed velit vel metus tincidunt
+tempus. Nunc euismod nisl id dolor tristique tincidunt. Nullam placerat
+turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
+consectetuer dapibus eros. Aliquam nisl.
+</p>
+
+<p>
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
+porta rutrum lacus. Etiam consequat scelerisque quam. Nulla facilisi.
+Maecenas luctus venenatis nulla. In sit amet dui non mi semper iaculis.
+Sed molestie tortor at ipsum. Morbi dictum rutrum magna. Sed vitae
+risus.
+</p>
+<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+semper velit ante id metus. Praesent massa dolor, porttitor sed,
+pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+tortor pharetra congue. Suspendisse pulvinar.
+</p>
+<p>Vestibulum convallis eros ac justo. Proin dolor. Etiam aliquam. Nam
+ornare elit vel augue. Suspendisse potenti. Etiam sed mauris eu neque
+nonummy mollis. Vestibulum vel purus ac pede semper accumsan. Vivamus
+lobortis, sem vitae nonummy lacinia, nisl est gravida magna, non cursus
+est quam sed urna. Phasellus adipiscing justo in ipsum. Duis sagittis
+dolor sit amet magna. Suspendisse suscipit, neque eu dictum auctor,
+nisi augue tincidunt arcu, non lacinia magna purus nec magna. Praesent
+pretium sollicitudin sapien. Suspendisse imperdiet. Class aptent taciti
+sociosqu ad litora torquent per conubia nostra, per inceptos
+hymenaeos.
+</p>
+<p>Mauris pharetra lorem sit amet sapien. Nulla libero metus, tristique
+et, dignissim a, tempus et, metus. Ut libero. Vivamus tempus purus vel
+ipsum. Quisque mauris urna, vestibulum commodo, rutrum vitae, ultrices
+vitae, nisl. Class aptent taciti sociosqu ad litora torquent per
+conubia nostra, per inceptos hymenaeos. Nulla id erat sit amet odio
+luctus eleifend. Proin massa libero, ultricies non, tincidunt a,
+vestibulum non, tellus. Nunc nunc purus, lobortis a, pulvinar at,
+egestas a, mi. Cras adipiscing velit a mauris. Morbi felis. Etiam at
+felis. Cras eget eros et justo mattis pulvinar. Nullam at justo id
+risus porttitor dignissim. Vestibulum sed velit vel metus tincidunt
+tempus. Nunc euismod nisl id dolor tristique tincidunt. Nullam placerat
+turpis sed odio. Curabitur in est id nibh tempus ultrices. Aliquam
+consectetuer dapibus eros. Aliquam nisl.
+</p>

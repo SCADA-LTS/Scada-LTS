@@ -1,0 +1,25 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Обзор</h1>
+<p>Этот источник данных используется для сбора обобщенной информации из электронных сообщений, полученных в заданные почтовые ящики по POP3-протоколу. Сообщения могут поступать в почтовые ящики из любого источника. При помощи механизмов, аналогичных механизмам клиента электронной почты, источник данных устанавливает соединение с почтовым ящиком по протоколу POP3 и индивидуально обрабатывает каждое сообщение, найденное в нем. После обработки сообщения удаляются. Для выборки требуемой информации используются регулярные выражения. Этот источник данных работает в режиме опроса.</p>
+
+<h1>Конфигурация</h1>
+<p>Каждый источник данных должен иметь произвольно заданное Имя. Значение поля Период проверки входящей почты задает частоту проверки почтового ящика на наличие входящих сообщений. Сервер POP3 – это имя домена или IP-адрес сервера, на котором размещается почтовый ящик. Для соединения используется стандартный порт 110. Для входа требуется ввести Имя пользователя входящей почты и Пароль входящей почты. </p>
+
+<p>В поле Проверить содержимое можно ввести тестовое электронное сообщение, чтобы проверить регулярное выражение объекта. Более подробная информация приводится в разделе «Свойства объекта POP3».</p>

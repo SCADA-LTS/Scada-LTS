@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Layout Demo</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+	//djConfig.debugAtAllCosts = true;
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.LayoutContainer");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.LinkPane");
+	dojo.require("dojo.widget.SplitContainer");
+	dojo.require("dojo.widget.ColorPalette");
+	dojo.require("dojo.widget.TabContainer");
+	dojo.require("dojo.widget.Tree");
+	dojo.hostenv.writeIncludes();
+</script>
+  <style>
+    html, body{	
+		width: 100%;	/* make the body expand to fill the visible window */
+		height: 100%;
+		overflow: hidden;	/* erase window level scrollbars */
+		padding: 0 0 0 0;
+		margin: 0 0 0 0;
+    }
+	.dojoSplitPane{
+		margin: 5px;
+	}
+	#rightPane {
+		margin: 0;
+	}
+   </style>
+</head>
+<body>
+<div dojoType="LayoutContainer"
+	layoutChildPriority='top-bottom'
+	style="width: 100%; height: 100%;">
+	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #274383; color: white;">
+		top bar
+	</div>
+	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #274383; color: white;">
+		bottom bar
+	</div>
+	<div dojoType="SplitContainer"
+		orientation="horizontal"
+		sizerWidth="5"
+		activeSizing="0"
+		layoutAlign="client"
+	>
+		<div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade"
+			 sizeMin="20" sizeShare="20">
+		    <div dojoType="TreeNode" title="Item 1">
+		        <div dojoType="TreeNode" title="Item 1.1"><br/></div>
+		        <div dojoType="TreeNode" title="Item 1.2">
+		            <div dojoType="TreeNode" title="Item 1.2.1"></div>
+		            <div dojoType="TreeNode" title="Item 1.2.2"></div>
+		        </div>
+		        <div dojoType="TreeNode" title="Item 1.3">
+		            <div dojoType="TreeNode" title="Item 1.3.1"></div>
+		            <div dojoType="TreeNode" title="Item 1.3.2"></div>
+		        </div>
+		        <div dojoType="TreeNode" title="Item 1.4">
+		            <div dojoType="TreeNode" title="Item 1.4.1"></div>
+		        </div>
+		    </div>
+		</div>
+
+		<div dojoType="SplitContainer"
+			id="rightPane"
+			orientation="vertical"
+			sizerWidth="5"
+			activeSizing="0"
+			sizeMin="50" sizeShare="80"
+		>
+			<div id="mainTabContainer" dojoType="TabContainer" sizeMin="20" sizeShare="70">
+			
+				<a id="tab1" dojoType="LinkPane" href="tab1.html">Tab 1</a>
+				
+				<a id="tab2" dojoType="LinkPane" href="tab2.html">Tab 2</a>
+			</div>
+			<div dojoType="ContentPane" sizeMin="20" sizeShare="30">
+				This is just a test of the various containers nested inside each other.
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+
+<meta http-equiv="Context-Type" content="text/html; charset=UTF-8">
+<!--
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>TabContainer Demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+
+<script type="text/javascript">
+	var djConfig = { isDebug: true, debugAtAllCosts: true };
+</script>
+
+<link rel="stylesheet" type="text/css" href="testRemoteTabController.css" />
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.debug.console");
+	dojo.require("dojo.widget.TabContainer");
+	dojo.require("dojo.widget.Tooltip");
+	dojo.require("dojo.widget.LinkPane");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.Button");
+	dojo.hostenv.writeIncludes();
+</script>
+
+<style type="text/css">
+body {
+	font-family : sans-serif;
+}
+
+/* add padding to each contentpane inside the tab container, and scrollbar if necessary */
+.dojoTabPane {
+  padding : 10px 10px 10px 10px;
+  overflow: auto;
+}
+
+</style>
+<script type="text/javascript">
+
+	dojo.addOnLoad(function() {
+		tabs = dojo.widget.createWidget("dojo:PageContainer",{widgetId: "content"},dojo.byId("content"));
+		remote = dojo.widget.createWidget("dojo:TabController",{containerId: tabs.widgetId, "class": "controller1" });
+		document.body.appendChild(remote.domNode);
+		
+		//add tabs after remote exists for valid test
+		tabs.addChild(dojo.widget.createWidget("dojo:ContentPane",{label: "Tab1", href: "tab1.html"}));
+		tabs.addChild(dojo.widget.createWidget("dojo:ContentPane",{label: "Tab2", href: "tab2.html" }));
+	});
+</script>
+</head>
+<body>
+	<div id="content" style="width: 400px; height: 200px;">
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<site generate="1" id="site_root" index_page="c951648369" label="Home" name="DEMO" snailtrail="1" status="editorial" xmlns="http://livestoryboard.com/schemas/lsb" xsl="default">
+  <page generate="1" id="p144010271" label="New page 1" name="one.html" onnav="1" status="editorial"/>
+  <page generate="1" id="p196006706" label="Component Tester Page" name="TesterPage.html" status="editorial"/>
+  <page generate="1" id="p1937413208" label="ATOM sample page" name="atom-sample.html" onnav="1" status="editorial"/>
+  <page generate="1" id="p1981283613" label="tester page" name="test1.html" onnav="1" status="editorial"/>
+  <page generate="1" id="site_ind" label="Welcome to windsandwater" name="Welcome.html" onnav="1" status="editorial"/>
+  <topic atom="1" generate="1" id="t1144370219" label="Topic 1" name="topic1" onnav="1" pager="1" snailtrail="1" status="editorial" xsl="topics">
+    <content generate="1" id="c1091500873" label="Article 1" name="article1.html" onnav="1" status="editorial" xsl="default"/>
+    <content generate="1" id="c1938698882" label="callout 1" name="c111.html" onnav="1" status="editorial"/>
+    <content generate="1" id="c363801141" label="FAQ 1" name="faq1.html" onnav="1" status="editorial" xsl="default"/>
+    <content generate="1" id="c1547554406" label="New content" name="nycontent.html" onnav="1" status="editorial"/>
+    <content generate="1" id="c840080268" label="glossary item 1" name="c840080268.html" onnav="1" status="editorial"/>
+    <content generate="1" id="c424677499" label="sample project" name="c424677499.html" onnav="1" status="editorial"/>
+    <content id="c2126696075" label="section 1" name="c2126696075.html" status="editorial"/>
+    <content id="c56891850" label="web resource 1" name="c56891850.html" status="editorial"/>
+  </topic>
+  <folder generate="1" id="f611591524" index_page="p1211385515" label="Sailing" name="Sailing" onnav="1" snailtrail="1" status="editorial">
+    <page generate="1" id="p1211385515" label="Sailing Page" name="sailing.html" onnav="1" status="editorial"/>
+    <page generate="1" id="p1963667045" label="Sailing page 2" name="sailing2.html" onnav="1" status="editorial"/>
+  </folder>
+  <folder generate="1" id="f1034364271" index_page="p1958461133" label="Destinations" name="Destinations" onnav="1" snailtrail="1" status="editorial">
+    <page generate="1" id="p1958461133" label="Introduction to Destinations" name="destinations.html" onnav="1" status="editorial"/>
+  </folder>
+  <folder generate="1" id="f1122432422" index_page="p1996966148" label="Boats" name="Boats" onnav="1" status="editorial">
+    <page generate="1" id="p1996966148" label="Introduction to Boats" name="boats.html" status="editorial"/>
+  </folder>
+  <page generate="1" id="p2060988449" label="Sitemap" name="Sitemap.html" onnav="1" status="editorial"/>
+  <page generate="1" id="p1726247888" label="Search Results" name="search.jsp" status="editorial" xsl="jsp_default"/>
+  <content generate="1" id="c951648369" label="sample glossary term" name="definition1.html" onnav="1" status="editorial"/>
+  <topic generate="1" id="t339321861" label="Articles" name="articles" onnav="1" snailtrail="1" status="editorial" xsl="topics">
+    <content generate="1" id="c682201793" label="intro" name="tester.html" onnav="1" status="editorial"/>
+    <content id="c891726307" label="TEST1" name="c891726307.html" status="editorial"/>
+    <content id="c780459541" label="about" name="placeholder.html" status="editorial"/>
+    <content id="c807589041" label="event highlight" name="c807589041.html" status="editorial"/>
+    <topic id="t1789649015" label="New topic" name="t1789649015" status="editorial" xsl="topics">
+      <content id="c1446243420" label="New content" name="c1446243420.html" status="editorial" xsl="topics"/>
+      <content generate="1" id="c1786730872" label="New content" name="c1786730872.html" status="editorial"/>
+      <content id="c842471334" label="New content" name="c842471334.html" status="editorial"/>
+      <content id="c206087315" label="abc" name="c206087315.html" status="editorial"/>
+    </topic>
+  </topic>
+  <content generate="1" id="c1174714823" label="lang test 誌協会" name="c1174714823.html" status="editorial"/>
+</site>

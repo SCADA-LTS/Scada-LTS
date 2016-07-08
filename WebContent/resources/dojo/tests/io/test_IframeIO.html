@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true,
+				dojoIframeHistoryUrl: "../../iframe_history.html" //for xdomain testing.
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.io.IframeIO");
+
+			var ctr = 0;
+			var foo;
+
+			function sendIt(){
+				var bindArgs = {
+					formNode: document.getElementById("uploadForm"),
+					mimetype: "text/javascript",
+					content: {
+						increment: ctr++,
+						fileFields: "ul1"
+					},
+					handler: function(type, data, evt){
+						dojo.debug("Type:", type);
+						dojo.debug("Response:", data);
+						foo = evt; // to get at afterwards
+					}
+				};
+				var request = dojo.io.bind(bindArgs);
+			}
+		</script>
+	</head>
+	<body>
+		<p>
+		<b>Note:</b> This test makes a form POST to upload.cgi. This cgi needs to be made executable for this test to work, and it won't work from local disk.
+		</p>
+		<form action="upload.cgi" id="uploadForm" 
+			method="POST"  enctype="multipart/form-data">
+			<input type="text" name="foo" value="bar">
+			<input type="file" name="ul1">
+			<input type="button" onclick="sendIt();" value="send it!">
+		</form>
+	</body>
+</html>
+

@@ -1,0 +1,98 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  This facility can be used to export and import various aspects of your Mango configuration. This ability provides 
+  several benefits:
+</p>
+<dl>
+  <dt><b>Backup and restore</b></dt>
+  <dd>
+    Export your entire configuration, and save the resulting text in a safe place. If your Mango instance suffers a 
+    catastrophic failure you can create a new instance and import your configuration file to quickly recreate the
+    instance.
+  </dd>
+  <dt><b>Create and maintain identical instances</b></dt>
+  <dd>
+    Export the elements of your configuration that are common across all of your instances. To create a new similar
+    instance, import the common configuration and then tweak as necessary. To make changes across all of your instances
+    simply change the configuration file and import into all of you instances. Or, change one instance, export, and 
+    then import that result into all of the other instances.
+  </dd>
+  <dt><b>Maintain large, complex configurations</b></dt>
+  <dd>
+    Although widely praised for its asthetics and ease of use, the Mango user interface was not designed to handle
+    extremely large and complex configurations. In such a case the export files can be used as an alternate means to
+    manage your configuration. Make your changes directly in the configuration file, and then import into your 
+    instances.
+  </dd>
+</dl>
+
+<h1>Exporting</h1>
+<p>
+  You can choose to export your entire configuration by checking each of the options within <b>Select what you would 
+  like to export</b>. Or, you can choose to only export portions as required. The result of the export operation will
+  be displayed in the <b>Data</b> text area, from which you can copy and paste elsewhere, or make direct changes.
+</p>
+
+<h1>Importing</h1>
+<p>
+  Similar to how users can select what to export, you may also choose to import only a small portion of your entire
+  configuration. For the most part any information that is excluded from your import file will remain unchanged. For 
+  example, if your import data does not include the "eventDetectors" attribute within a data point, that point's event
+  detectors list will remain unchanged. However, if the attribute is included the list will be replaced with the 
+  contents of the attribute.
+</p>
+<p>
+  In general, any Mango object that has a unique identifier is capable of being created and updated&mdash;but not 
+  deleted. Such objects that are supported by this facility will have and <b>Export Id, or XID</b>. This attribute is
+  specifically designated to provide unique indentification of objects between Mango instances. This is similar to a
+  database-generated primary key, but primary keys cannot be made to match over multiple Mango instances. When an 
+  object&mdash;such as a data source&mdash;is created using the Mango interface it is automatically given an 
+  instance-unique XID. Although it cannot be guaranteed to be unique across all of your Mango instances, there is a 
+  high probability that it will be. You may change the XID to any 50 character value you like as long as the value is 
+  still unique for that object type within the instance.
+</p>
+<p>
+  Imports may fail for multiple reasons:
+</p>
+<ul>
+  <li>
+    If the format of you JSON is incorrect, the entire import will fail and you will be provided with an error message
+    describing the cause and the location of the likely problem within your data.
+  </li>
+  <li>
+    If a required data element is missing or invalid, the import of the associated object will fail, but other objects 
+    may still import successfully. You will be provided with a list of all objects whose import succeeded, and a list
+    of descriptive errors messages for failures.
+  </li>
+</ul>
+
+<h1>Format</h1>
+<p>
+  The import/export facility uses the JSON format (see <a href="http://www.json.org/" target="_blank">http://www.json.org/</a>
+  for more information) as the data format for configuration files. JSON is a very simlar data format that is easy to 
+  understand and use. (For users familiar with Javascript JSON will be immediately familiar.) JSON was chosen over the
+  more common XML format because it provides better mapping to the actual Mango object structure, and is also more
+  compact.
+</p>
+<p>
+  Mango will automatically create "pretty" JSON export files, i.e. it will format the output with appropriate line 
+  breaks and indenting. The amount of indenting can be controlled with the <b>Indent level</b> attribute.
+</p>

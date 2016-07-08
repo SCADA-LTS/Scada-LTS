@@ -1,0 +1,48 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  The Pachube publisher sends each point update (or change, as appropriate) to Pachube using the given API key, feed 
+  ID, and data stream ID as a separate HTTP request.
+</p>
+
+<h1>Properties</h1>
+<p>
+  The <b>API Key</b> is needed to update private data. You can find it in the "my settings" area when you log in to 
+  your Pachube account. <b>Timeout</b> and <b>Retries</b> parameters are used to handle failures.
+</p>
+
+<h1>HTTP response</h1>
+<p>
+  Any other response code than a "200 OK" is considered an error, and an alarm will be raised. Note that - depending on 
+  your account with Pachube - API request restrictions may apply. See 
+  <a href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a> for details.
+</p>
+
+<h1>Published points</h1>
+<p>
+  The <b>Points</b> section lists the points to be published. Point publishing can be enabled 
+  (<img src="images/brick_go.png"/>) or disabled (<img src="images/brick_stop.png"/>). Disabling a point allows it to 
+  not be used without having to explicitly delete it. The <b>Feed ID</b> and <b>Data stream ID</b> values determine 
+  the data stream that will be updated.
+</p>
+<p>
+  To add a point to the point list, select it in the points list and click the <img src="images/icon_comp_add.png"/> 
+  icon. To delete an existing point, click its associated <img src="images/bullet_delete.png"/> icon.
+</p>

@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<title>dojo: Clock demo</title>
+		<script type="text/javascript">
+			var djConfig = { isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.widget.Clock");
+			dojo.addOnLoad(init);
+			var clock;
+			function init(){
+				clock = dojo.widget.createWidget("dojo:clock", {timeZoneOffset:-9,label:"-9hr offset"}, dojo.byId("programClock"));
+			}
+		</script>
+	</head>
+	<body style="background-color:#efeffe;">
+		<h1>Dojo Clock</h1>
+		<p>The following only works on browsers that support inline SVG (FF1.5+ and Opera 9) and Internet Explorer.</p>
+		<p>This widget is a demonstration of the new dojo.gfx library.</p>
+		<div id="clock1" dojoType="clock"></div>
+		<div id="clock2" dojoType="clock" label="With offset" timeZoneOffset="4"></div>
+		<h1>Dojo Clock via createWidget</h1>
+		<div id="programClock"></div>
+	</body>
+</html>

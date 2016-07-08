@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<script type="text/javascript">
+	djConfig = { 
+		isDebug: true,
+		parseWidgets: false
+	};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Button");
+	
+	function doClick() {
+		alert(this.domNode.innerHTML);	
+	}
+</script>
+
+<button id="testDojoButton" dojoType="Button" 
+	onClick="doClick" onFoo="dojo.debug('onFoo');">
+	nice soria button
+</button>
+<br>
+<button dojoType="Button" 
+	onClick="alert(this.innerHTML)" onFoo="dojo.debug('onFoo');">
+	plain vanilla button
+</button>
+<br><br>
+<div id="pn">
+	<button dojoType="Button" 
+		onClick="doClick" onFoo="dojo.debug('onFoo');">
+		nice soria button 2
+	</button>
+	<br>
+	<button dojoType="Button" 
+		onClick="doClick" onFoo="dojo.debug('onFoo');">
+		nice soria button 3
+	</button>
+</div>
+
+<script>
+	djConfig.searchIds.push("testDojoButton", "pn");
+</script>

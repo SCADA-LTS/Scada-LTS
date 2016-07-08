@@ -1,0 +1,6 @@
+name=Bomba 3D
+type=imageSet
+#width=163
+#height=130
+text.x=14
+text.y=2

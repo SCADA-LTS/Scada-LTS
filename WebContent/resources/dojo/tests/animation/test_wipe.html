@@ -1,0 +1,90 @@
+<html>
+	<head>
+		<style type="text/css">
+		</style>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.lfx.*");
+
+			function wipeOut(elId){
+				dojo.lfx.wipeOut(elId, 300).play();
+			}
+			
+			function wipeIn(elId) {
+				dojo.lfx.wipeIn(elId, 300).play();
+			}
+		</script>
+	</head>
+	<body>
+		<p>Note that the code currently does not support wiping table rows or table cells directly.</p>
+		<p>If you want to wipe a row you will need to do so by wiping a contained element such as a div.</p>
+
+
+		<table border="1" width=800>
+			<tr>
+				<td>I'm a row</td>
+				<td>I have 3 cells</td>
+				<td>yes i do</td>
+			</tr>
+			<tr id="testrow">
+				<td colspan="3">
+					<div>
+						<div>Lots of content crammed into a cell.</div>
+						<div>Lots of content crammed into a cell.</div>
+						<div>Lots of content crammed into a cell.</div>
+						<div>Lots of content crammed into a cell.</div>
+						<div>Lots of content crammed into a cell.</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+		<br/>
+		<button type="button" onclick="wipeOut('testrow')">Wipe Out Row</button><br/>
+		<button type="button" onclick="wipeIn('testrow')">Wipe In Row</button><br/>		
+		<br/>
+		<br/>
+
+		<table border="1" width=800>
+			<tr>
+				<td>I'm a row</td>
+				<td>I have 3 cells</td>
+				<td>yes i do</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<div id="testrowcontent">
+						<div>Lots of content crammed into a cell.</div>
+						<div>Lots of content crammed into a cell.</div>
+						<div>Lots of content crammed into a cell.</div>
+						<div>Lots of content crammed into a cell.</div>
+						<div>Lots of content crammed into a cell.</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+		<br/>
+		<button type="button" onclick="wipeOut('testrowcontent')">Wipe Out "Row"</button><br/>
+		<button type="button" onclick="wipeIn('testrowcontent')">Wipe In "Row"</button><br/>		
+		<br/>
+		<br/>
+		
+		<div id="testdiv" style="border:1px solid blue; width:600px">
+			<div>A test div.A test div.A test div.A test div.A test div.A test div.A test div.</div>
+			<div>A test div.A test div.A test div.A test div.A test div.A test div.A test div.</div>
+			<div>A test div.A test div.A test div.A test div.A test div.A test div.A test div.</div>
+			<div>A test div.A test div.A test div.A test div.A test div.A test div.A test div.</div>
+			<div>A test div.A test div.A test div.A test div.A test div.A test div.A test div.</div>
+		</div>			
+		<br/>
+		<button type="button" onclick="wipeOut('testdiv')">Wipe Out Div</button><br/>
+		<button type="button" onclick="wipeIn('testdiv')">Wipe In Div</button><br/>
+
+	</body>
+</html>

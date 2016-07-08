@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>lfx</title>
+
+<style>
+	.box {
+		width: 300px;
+		height: 300px;
+		border: 2px solid black;
+		background-color: #455bae;
+		position: absolute;
+	}
+</style>
+<script type="text/javascript">
+	var djConfig = { isDebug: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.lfx.*");
+		dojo.require("dojo.event.*");
+</script>
+<script type="text/javascript">
+	dojo.addOnLoad(function(){
+		// squeeze two nodes and fade
+		var anim = dojo.lfx.propertyAnimation(
+			["foo"],
+			[
+				{ property: "height", end:1},
+				{ property: "opacity", end: 0} ,
+				{ property: "top", end: 0},
+				{ property: "left", end: 0},
+				{ property: "width", end: 0}
+			],
+			1000,
+			dojo.lfx.easeInOut
+		).play(1000);
+		// dojo.event.connect(anim, "onEnd", function(){ alert("WTF?"); });
+	});
+</script>
+
+<div id="foo" style="left: 100px; top: 100px;" class="box"></div>
+<div id="bar" style="left: 500px; top: 100px;" class="box"></div>

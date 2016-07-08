@@ -1,0 +1,36 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  The <b>Data type</b> is the Mango representation of the value. Received data is automatically converted to the 
+  required data type.
+</p>
+
+<p>
+  The <b>Feed ID</b> and <b>Data stream ID</b> are used to uniquely identify a data stream. Requests for multiple 
+  streams within a single feed are consolidated for efficiency.
+</p>
+
+<p>
+  For the binary data type, the <b>Binary 0 value</b> can be defined. If the value found in the content matches it, the 
+  point will be updated with 0. Otherwise, the point is updated with 1.
+</p>
+
+<p>
+  To ensure that your data stream exists, click the associated <img src="images/accept.png"/> icon.
+</p>

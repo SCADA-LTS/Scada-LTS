@@ -1,0 +1,67 @@
+<html>
+	<head>
+		<style type="text/css">
+			.mover {
+				position : absolute;
+				background : red;
+				top : 100px;
+				left : 100px;
+				width: 4px;
+				height: 4px;
+				font-size: 1px;				
+			}
+
+			p {
+				font: normal 10px verdana;
+				width: 350px;
+			}
+		</style>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: false
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+
+			dojo.require("dojo.animation.*");
+			dojo.require("dojo.xml.*");
+
+			function init(){
+				// define animations for acc between -1 and 1
+				for(var i=-1;i<=1.2;i+=0.2) {
+					var line = new dojo.math.curves.Line([i*200+250,75], [i*200+250, 500]);
+					var a;
+					if(i<=1) a = new dojo.animation.Animation(line, 2000, i);
+					else a = new dojo.animation.Animation(line, 2000, new dojo.math.curves.Bezier([[0],[0.05],[0.1],[0.9],[0.95],[1]]));
+					
+					var mover = document.createElement("div");
+					mover.className = "mover";
+					a.mover = mover;	// ikky hack
+					document.getElementsByTagName("body")[0].appendChild(mover);
+
+					a.handler = function(e) {
+						switch(e.type) {
+							case "animate":
+								e.animation.mover.style.left = parseInt(e.x) + "px";
+								e.animation.mover.style.top = parseInt(e.y) + "px";
+								break;
+							case "end":
+								break;
+						}						
+					}
+					a.play();
+				}
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<p>The first 11 dots have accellerations betweem -1 and 1.  Negatives gradually speed up; positives slow down.  The last
+		dot uses a custom accelleration curve based on a Bezier, this causes it to gradually speed up, then slow down.</p>
+	</body>
+</html>
+

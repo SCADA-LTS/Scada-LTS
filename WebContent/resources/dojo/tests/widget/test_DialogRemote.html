@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Dialog");
+</script>
+
+<style type="text/css">
+body { font-family : sans-serif; }
+.dojoDialog {
+	background : #eee;
+	border : 1px solid #999;
+	-moz-border-radius : 5px;
+	padding : 4px;
+}
+
+form {
+	margin-bottom : 0;
+}
+</style>
+
+<script type="text/javascript">
+var dlg;
+function init(e) {
+	dlg = dojo.widget.byId("DialogContent");
+}
+dojo.addOnLoad(init);
+</script>
+
+<a href="javascript:dlg.show()">Show</a>
+
+<a dojoType="dialog" id="DialogContent" toggle="wipe" toggleDuration="250"
+	executeScripts="true" href="dialogContents.html"></a>
+
+
+<p><b>
+This is a test of a dialog remote loading.  (Dialog contents are specified in another file.)
+</b></p>
+
+<p>
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
+porta rutrum lacus. Etiam consequat scelerisque quam. Nulla facilisi.
+Maecenas luctus venenatis nulla. In sit amet dui non mi semper iaculis.
+Sed molestie tortor at ipsum. Morbi dictum rutrum magna. Sed vitae
+risus.
+</p>
+<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+semper velit ante id metus. Praesent massa dolor, porttitor sed,
+pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+tortor pharetra congue. Suspendisse pulvinar.
+</p>

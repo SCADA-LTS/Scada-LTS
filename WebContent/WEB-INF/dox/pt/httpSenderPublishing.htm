@@ -1,0 +1,126 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>The HTTP sender publisher sends each point update (or change, as-->
+<!--appropriate) to a given destination URL with a separate HTTP request.</p>-->
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>O publicador HTTP sender envia cada atualiza&ccedil;&atilde;o de
+ponto (ou altera&ccedil;&atilde;o, como for conveniente) para um dado
+URL de destino com uma requisi&ccedil;&atilde;o HTTP a parte.</p>
+
+<!--<h1>HTTP sender properties</h1>-->
+<!--<p>The <b>Method</b> selection determines which HTTP method type-->
+<!--will be used to deliver the data. The data sent is either case is-->
+<!--identical; the difference is a matter of message structure. The <b>URL</b>-->
+<!--defines the resource to which to send the data. Valid schemes include-->
+<!--"http" and "https". The server can be a domain name or an IP address.-->
+<!--Paths and query strings are also valid.</p>-->
+<h1>Propriedades do HTTP sender</h1>
+<p>O <b>M&eacute;todo</b> determina qual m&eacute;todo HTTP
+ser&aacute; usado para entregar os dados. Os dados enviados em ambos os
+casos s&atilde;o id&ecirc;nticos; a diferen&ccedil;a &eacute; uma
+quest&atilde;o de estrutura de mensagem. O <b>URL</b> define o destino
+para o qual enviar os dados. Esquemas v&aacute;lidos incluem "http" e
+"https". O servidor pode ser um nome de dom&iacute;nio ou um
+endere&ccedil;o IP. Caminhos e strings de consulta tamb&eacute;m
+s&atilde;o v&aacute;lidos.</p>
+
+<!--<p>A list of <b>Static parameters</b> can also be added. These-->
+<!--parameters are included with every request sent to the URL. As such,-->
+<!--this is an appropriate place to include authorization credentials or-->
+<!--other identifying artifacts. To add a static parameter, enter its key-->
+<!--and value, and click the <img src="images/add.png" /> icon. To delete-->
+<!--and existing static parameter, click the <img-->
+<!--	src="images/bullet_delete.png" /> icon associated with the parameter.</p>-->
+<p>Uma lista de <b>Par&acirc;metros est&aacute;ticos</b>
+tamb&eacute;m podem ser adicionados. Estes par&acirc;metros s&atilde;o
+inclu&iacute;dos em toda requisi&ccedil;&atilde;o enviada &agrave; URL.
+Desta maneira, este &eacute; um local apropriado para incluir
+credenciais de autoriza&ccedil;&atilde;o ou outros artefatos de
+identifica&ccedil;&atilde;o. Para adicionar um par&acirc;metro
+est&aacute;tico, digite sua chave e valor, e clique no &iacute;cone <img
+	src="images/add.png" />. Para deletar um par&acirc;metro
+est&aacute;tico existente, clique no &iacute;cone <img
+	src="images/bullet_delete.png" /> associado com o par&acirc;metro.</p>
+
+<!--<h1>HTTP response</h1>-->
+<!--<p>Any other response code than a "200 OK" is considered an error,-->
+<!--and an alarm will be raised. In addition, any response content included-->
+<!--with an OK response is considered to be warning information. The <b>Raise-->
+<!--result warning</b> setting controls whether the existence of any response-->
+<!--content causes an information alarm to be raised including the content-->
+<!--in the event message.</p>-->
+<h1>Resposta HTTP</h1>
+<p>Qualquer outro c&oacute;digo de resposta que n&atilde;o seja um
+"200 OK" &eacute; considerado um erro, e um alarme ser&aacute;
+disparado. Al&eacute;m disso, qualquer resposta contendo uma resposta
+"OK" &eacute; considerada uma informa&ccedil;&atilde;o de aviso. A
+configura&ccedil;&atilde;o <b>Disparar aviso de resultado</b> controla
+se a exist&ecirc;ncia de qualquer resposta causa o disparo de um alarme
+de informa&ccedil;&atilde;o incluindo o conte&uacute;do da resposta na
+mensagem do evento.</p>
+
+<!--<h1>Configuration testing</h1>-->
+<!--<p>A test request can be sent&mdash;using the given configuration-->
+<!--but including only static parameters&mdash;by clicking the "Send static-->
+<!--parameters" button. The result of the send attempt will be displayed-->
+<!--below the buttons. To cancel a test before it times out on its own,-->
+<!--click the "Cancel" button.</p>-->
+<h1>Testar configura&ccedil;&atilde;o</h1>
+<p>Uma requisi&ccedil;&atilde;o de teste pode ser enviada &mdash;
+usando a cofigura&ccedil;&atilde;o definida mas incluindo somente
+par&acirc;metros est&aacute;ticos &mdash; clicando no bot&atilde;o
+"Enviar par&acirc;metros est&aacute;ticos". O resultado da tentativa de
+envio ser&aacute; mostrado abaixo dos bot&otilde;es. Para cancelar um
+teste antes que ele termine, clique no bot&atilde;o "Cancelar".</p>
+
+<!--<h1>Published points</h1>-->
+<!--<p>The <b>Points</b> section lists the points to be published. Point-->
+<!--publishing can be enabled (<img src="images/brick_go.png" />) or-->
+<!--disabled (<img src="images/brick_stop.png" />). Disabling a point-->
+<!--allows it to not be used without having to explicitly delete it. The <b>Parameter-->
+<!--name</b> is the key that will be used for the point in the request-->
+<!--parameters. The value will be the present value of the point. Select <b>Include-->
+<!--timestamp</b> to include a parameter in the request that contains the update-->
+<!--time for the value. The key for the time will be "__time", and the date-->
+<!--will be encoded using the format pattern "yyyyMMddHHmmss". (See the-->
+<!--"Date/time formats" documentation for more information.)</p>-->
+<!--<p>To add a point to the point list, select it in the points list-->
+<!--and click the <img src="images/icon_comp_add.png" /> icon. To delete an-->
+<!--existing point, click its associated <img src="images/bullet_delete.png" />-->
+<!--icon.</p>-->
+<h1>Pontos publicados</h1>
+<p>A &aacute;rea <b>Pontos</b> lista os pontos a serem publicados. A
+publica&ccedil;&atilde;o de pontos pode ser habilitada (<img
+	src="images/brick_go.png" />) ou desabilitada (<img
+	src="images/brick_stop.png" />). Desabilitar um ponto permite que ele
+n&atilde;o seja usado sem ter que explicitamente delet&aacute;-lo. O <b>Nome
+do par&acirc;metro</b> &eacute; a chave que ser&aacute; usada para o ponto
+nos par&acirc;metros da requisi&ccedil;&atilde;o. O valor ser&aacute; o
+valor presente do ponto. Selecione <b>Incluir timestamp</b> para incluir
+um par&acirc;metro na requisi&ccedil;&atilde;o que contenha o tempo de
+atualiza&ccedil;&atilde;o para o valor. A chave para o tempo ser&aacute;
+"__time", e a data ser&aacute; codificada usando o formato padr&atilde;o
+"yyyMMddHHmmss". (veja a documenta&ccedil;&atilde;o
+"Formata&ccedil;&atilde;o de Data/hora" para maiores
+informa&ccedil;&otilde;es.)</p>
+<p>Para adicionar um ponto na lista de pontos, selecione-o na lista
+de pontos e clique no &iacute;cone <img src="images/icon_comp_add.png" />.
+Para deletar um ponto existente, clique em seu &iacute;cone <img
+	src="images/bullet_delete.png" /> associado.</p>

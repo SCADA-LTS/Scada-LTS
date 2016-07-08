@@ -1,0 +1,93 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  Report templates provides the definition of how to create report instances. For a description of templates vs 
+  instances see the "Report instances" documentation.
+</p>
+
+<h1>Report template list</h1>
+<p>
+  To add a new report template, click the <img src="images/report_add.png"/> icon. To edit an existing template, click 
+  the template's name in the "Report templates" list.
+</p>
+
+<h1>Editing report template details</h1>
+<p>
+  The template's <b>name</b> is used to visually reference the template. It is recommended that a unique name be used 
+  for each detector, but it is not required.
+</p>
+<p>
+  Use the <b>Points</b> list to select the points to include in the report. To add a point, select it from the list and 
+  click the <img src="images/add.png"/> icon. To delete an existing point, click the 
+  <img src="images/bullet_delete.png"/> icon associated with the point.
+</p>
+<p>
+  <b>Colour</b> values can be an HTML-style hex, or any colour name in the HTML specification. For example, "#2468AC",
+  "red", and "dodgerblue" are all valid values.
+</p>
+<p>
+  The <b>Date range</b> is used to determine what values to select for the report. The range can be relative or 
+  absolute. In most cases a relative range is appropriate. Relative date ranges can be either based upon "previous" 
+  data or "past" data. A <b>past</b> range includes the given time period ending now. A <b>previous</b> range also 
+  includes the given time period, but its end time is quantized to correspond to the period type. For example, if the 
+  period type is "Hour(s)" and number of periods is 1, and the report runs at 18:05, the time span that will be used is 
+  from 17:00 (inclusive) to 18:00 (exclusive). If the number of periods were, say, 3, the time span would be from 15:00 
+  to 18:00. Similarly, "Month(s)" starts the time span at midnight on the first day of the previous month and ends it 
+  on the last day of the previous month (when the number of periods is 1). Other period types work the same. A week 
+  starts on Monday at midnight in accordance with ISO standards.
+</p>
+
+<h1>Report scheduling</h1>
+<p>
+  Reports can be <b>schedule</b>d to run automatically. Use the <b>Run every...</b> selection to determine a simple 
+  time event upon which it should run, or define a cron pattern for more specific control. (See the "Cron patterns" 
+  documentation for more information.) Time events occur at the beginning of the given period. Weeks start on Monday in 
+  accordance with ISO standards. A <b>Run delay</b> can be applied if data expected on the report tends to be collected 
+  later than the absolute run time.
+</p>
+<p>
+  Scheduled reports for disabled users do not run.
+</p>
+
+<h1>Report emailing</h1>
+<p>
+  Although reports cannot be explicitly shared with the system, the can be implicitly shared by creating a mailing list 
+  to which to send the generated report instance. The content of the email is the same as the "report chart" window 
+  opened from within the Report queue panel. To include the CSV export file with the email, check the <b>Include 
+  tabular data</b> box.
+</p>
+<p>
+  Select the <b>Email recipients</b> to which to send the report email. Recipients can be mailing lists, system users, 
+  or free-form email addresses. Click the <img src="images/email_go.png"/> icon to send a test message to the selected 
+  recipients.
+</p>
+<p>
+  <b>Important</b>: Report instances that are emailed are automatically deleted immediately after being sent.
+</p>
+
+<h1>Template management</h1>
+<p>
+  To save a report template click the <img src="images/save.png"/> icon at the top right of the Report criteria panel. 
+  To delete an existing template, click the <img src="images/delete.png"/> icon. To run a report template immediately, 
+  click the <img src="images/report_go.png"/> icon. Note that some report templates may include a great deal of 
+  information, and so may take a long time to run. As such, all reports are run asynchronously to user interface. When 
+  a the icon is clicked, the report instance will be added to the report queue where the user can monitor its progress.
+  To make a copy of a report template, click the <img src="images/report_add.png"/> icon.
+</p>

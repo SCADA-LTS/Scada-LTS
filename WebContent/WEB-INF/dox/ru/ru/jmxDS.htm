@@ -1,0 +1,26 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Обзор</h1>
+<p>Источник данных JMX используется для отслеживания значений, выдаваемых сервером JMX, либо локальным, либо удаленным. Имеющиеся значения очень сильно отличаются друг от друга в зависимости от приложений, работающих в JVM. Но всегда есть общие значения, например, значения, связанные с памятью JVM.</p>
+
+<h1>Конфигурация</h1>
+<p>
+  Каждый источник данных должен иметь произвольно заданное Имя. В окошке метки Использовать локальный JMX-сервер задается требование использовать JMX-сервер в локальной JVM. Если флажок не проставлен, то необходимо указать Адрес удаленного JMX-сервера. </p>
+
+<p>Период обновления определяет частоту опросов JMX-сервера. Если поставить флажок Отсчет, то запуск источника данных будет происходить с задержкой, равной «округленному» значению времени. (например, если период опроса равен 10 секундам, то запросы будут отправляться на 10-ой секунде, затем на 20-ой секунде и т.д.). В противном случае опрос будет начинаться без задержки. </p>

@@ -1,0 +1,6 @@
+name=Nivel de Tanque (Grande)
+type=imageSet
+#width=300
+#height=390
+text.x=5
+text.y=115

@@ -1,0 +1,6 @@
+name=Helice 3D Animada start/stop
+type=imageSet
+#width=133
+#height=110
+text.x=5
+text.y=25

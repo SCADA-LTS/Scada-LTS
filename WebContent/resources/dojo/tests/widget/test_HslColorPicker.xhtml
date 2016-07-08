@@ -1,0 +1,52 @@
+<?xml version='1.0'?>
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dojo="http://dojotoolkit.org/2006/dojoml" xml:lang="en" lang="en">
+	<head>
+		<title>dojo: HslColorPicker demo</title>
+		<script type="text/javascript"><![CDATA[
+			var djConfig = { isDebug: true };
+		//]]></script>
+		<!--<script type="text/javascript" src="../../release/dojo/dojo.js"></script>-->
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript"><![CDATA[
+			dojo.require("dojo.widget.svg.HslColorPicker");
+			dojo.require("dojo.event.topic");
+			dojo.addOnLoad(function(){
+				dojo.event.topic.subscribe("/colorPicker/setStoredColor", window, "setColorSwatch");
+				function setColorSwatch(evt) {
+					document.getElementById("colorSwatch").style.backgroundColor = dojo.widget.getWidgetById("colorPicker").getStoredColor();
+				}
+			});
+		//]]></script>
+	</head>
+	<body>
+		<svg:svg xmlns="http://www.w3.org/2000/svg"
+				 xmlns:xlink="http://www.w3.org/1999/xlink"
+				 version="1.1"
+				 baseProfile="full" height="160px">
+				 	<defs>
+					<linearGradient id="colorGradient" dojoAttachPoint="colorGradientNode" x1="0" x2="131" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+						<stop id="leftGradientColor" dojoAttachPoint="leftGradientColorNode" offset="0%" stop-color="#828282"/>
+						<stop id="rightGradientColor" dojoAttachPoint="rightGradientColorNode" offset="100%" stop-color="#053fff"/>
+					</linearGradient>
+					<linearGradient id="verticalGradient" x1="0" x2="0" y1="0" y2="131" gradientUnits="userSpaceOnUse">
+						<stop offset="0%" style="stop-color:#000000;"/>
+						<stop offset="50%" style="stop-color:#000000;stop-opacity:0;"/>
+						<stop offset="50%" style="stop-color:#ffffff;stop-opacity:0;"/>
+						<stop offset="100%" style="stop-color:#ffffff;"/>
+					</linearGradient>
+					<linearGradient id="sliderGradient">
+						<stop offset="0%" style="stop-color:#000000;"/>
+						<stop offset="15%" style="stop-color:#ffffff;"/>
+						<stop offset="30%" style="stop-color:#000000;"/>
+						<stop offset="45%" style="stop-color:#ffffff;"/>
+						<stop offset="60%" style="stop-color:#000000;"/>
+						<stop offset="75%" style="stop-color:#ffffff;"/>
+						<stop offset="90%" style="stop-color:#000000;"/>
+					</linearGradient>
+				</defs>
+				 <!--<g dojoType="hslcolorpicker"/>-->
+				 <dojo:hslcolorpicker dojo:storedColor="#828282" dojo:widgetId="colorPicker" />
+		</svg:svg><div id="colorSwatch" style="width:60px;height:20px;border:1px solid black;"></div>
+		<p>The above example works <strong>only</strong> with a browser capable of inline SVG--that means Firefox 1.5 as of 01-Jan-2006.  Sliders don't work yet, color calculations are a bit off, but you can click to select different colors.  Lots of bugs and issues, but a decent start.</p>
+	</body>
+</html>

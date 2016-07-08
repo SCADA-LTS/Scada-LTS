@@ -1,0 +1,6 @@
+name=Ventilador Industrial on/off/fail
+type=imageSet
+#width=176
+#height=96
+text.x=14
+text.y=2

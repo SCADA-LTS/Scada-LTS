@@ -1,0 +1,87 @@
+<?xml version='1.0'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
+	"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" 	
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:dojo="http://dojotoolkit.org/dojoml"
+	onload="dojo.hostenv.modulesLoaded();">
+	<style type="text/css">
+		<![CDATA[
+			ellipse, rect, circle {
+				fill: url(#buttonGradient);
+				stroke:black;
+				stroke-width:1;
+			}
+		]]>
+	</style>
+	<script type="text/ecmascript"><![CDATA[
+		// Dojo configuration
+		window.djConfig = { 
+			baseRelativePath: "../../../",
+			baseScriptUri: "../../../",
+			isDebug: true,
+			ignoreClassNames: true
+		};
+		// libraryScriptUri : "../../../hostenv_adobesvg.js",
+	]]></script>
+	<script type="text/ecmascript" xlink:href="../../../src/bootstrap1.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/hostenv_svg.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/bootstrap2.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/alg/Alg.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/uri/Uri.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/lang/Lang.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/event/Event.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/event/Topic.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/math/Math.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/math/points.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/math/Curves.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/animation/Animation.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/xml/Parse.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/xml/domUtil.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/text/String.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/graphics/color.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/widget/Manager.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/widget/Widget.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/widget/DomWidget.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/widget/SvgWidget.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/widget/Parse.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/widget/Button.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/widget/SvgButton.js" />
+	<script type="text/ecmascript"><![CDATA[
+		dojo.require("dojo.xml.Parse");
+		dojo.require("dojo.widget.Parse");
+		dojo.require("dojo.widget.Button");
+		dojo.require("dojo.widget.SVGButton");
+		
+		dojo.hostenv.modulesLoadedListeners.push(function(){ 
+		var parser = new dojo.xml.Parse();
+		var fragParser = new dojo.widget.Parse();
+			try{
+				var frag = parser.parseElement(window.document.documentElement);
+				fragParser.createComponents(frag);
+				alert("fragParser: "+fragParser);
+			}catch(e){
+				alert(e); 
+			}
+		});
+	]]></script>
+	<defs>
+		<!--<radialGradient id="buttonGradient" cx="0" cy="0" fx="0%" fy="0%" r="100%">
+			<stop offset="0%" style="stop-color:#555555"/>
+			<stop offset="100%" style="stop-color:#f0f0f0"/>
+		</radialGradient>
+		-->
+		<linearGradient id="buttonGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+			<stop offset="0%" style="stop-color:#ffffff"/>
+			<stop offset="100%" style="stop-color:#c0c0c0"/>
+		</linearGradient>
+		-->
+	</defs>
+	<g>
+		<text x="20" y="20" style="stroke:none;fill:#000000;">Check your javascript log; the scripts were all loaded in the head.</text>
+		<text x="20" y="35" dojoType="button" label="this is a test button!" onClick="alert(this.domNode);">
+			you shouldn't be seeing this
+		</text>
+	</g>
+</svg>
+

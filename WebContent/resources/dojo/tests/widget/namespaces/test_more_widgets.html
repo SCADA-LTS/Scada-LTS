@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Widgets and Namespaces Test</title>
+<script>djConfig = { isDebug: true };</script>
+<script src="../../../dojo.js"></script>
+<script>
+	dojo.require("dojo.widget.*");
+	//
+	// old style button with no namespace awareness
+	dojo.widget.defineWidget("my.widget.OldButton", dojo.widget.HtmlWidget, {
+		fillInTemplate: function() {
+			this.domNode.innerHTML = "Old Button";
+			dojo.event.connect(this.domNode, 'onclick', function() {
+				alert("Old!");
+			});
+		}
+	});
+	//
+	// conventional namespaced button
+	dojo.widget.defineWidget("my.widget.Button", dojo.widget.HtmlWidget, {
+		fillInTemplate: function() {
+			this.domNode.innerHTML = "New Button";
+			dojo.event.connect(this.domNode, 'onclick', function() {
+				alert("New!");
+			});
+		}
+	});
+	//
+	// button in a custom module
+	dojo.widget.defineWidget("foo.bar.Button", dojo.widget.HtmlWidget, {
+		fillInTemplate: function() {
+			this.domNode.innerHTML = "Foo Button";
+			dojo.event.connect(this.domNode, 'onclick', function() {
+				alert("Foo!");
+			});
+		}
+	});
+	// register the mapping from 'foo' namespace to our custom module
+	dojo.registerNamespace("foo", "foo.bar");
+
+</script>
+</head>
+<body>
+	<p>This tests three kinds of namespaces for widgets.  Three buttons should show up.</p>
+	<table border=2>
+		<tr>
+			<th>Description</th>
+			<th>Class</th>
+			<th>Declaration</th>
+			<th>Result</th>
+		</tr>
+		<tr>
+			<td>old style button with no namespace awareness</td>
+			<td>my.widget.OldButton</td>
+			<td>&lt;button dojoType="Oldbutton"&gt;</td>
+			<td><button dojoType="OldButton">Problem Creating Old Button</button></td>
+		</tr>
+		<tr>
+			<td>conventional namespaced button</td>
+			<td>my.widget.Button</td>
+			<td>&lt;button dojoType="my:button"&gt;</td>
+			<td><button dojoType="my:button">Problem Creating Old Button</button></td>
+		</tr>
+		<tr>
+			<td>button in a custom module</td>
+			<td>foo.bar.Button</td>
+			<td>&lt;button dojoType="foo:button"&gt;</td>
+			<td><button dojoType="foo:button">Problem Creating Old Button</button></td>
+		</tr>
+	</table>
+	<br/>
+</body>
+</html>

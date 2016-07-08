@@ -1,0 +1,59 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				preventBackButtonFix: false,
+				debugAtAllCosts: true,
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.io.*");
+			dojo.require("dojo.undo.browser");
+			dojo.require("dojo.io.XhrIframeProxy");
+			dojo.hostenv.writeIncludes();
+
+			function init(){
+				var initialState = {
+					back: function(){
+						alert("We are BACK at initial state.");
+					},
+					forward: function(){
+						alert("We are FORWARD at initial state (you should never see this alert.");
+					}
+				};
+
+				dojo.undo.browser.setInitialState(initialState);
+				
+				var bindArgs = {
+					iframeProxyUrl: "../../../src/io/xip_server.html",
+					url: "../../tests/io/DOES_NOT_EXIST.txt",
+					handle: function(type, data, evt){
+						dojo.debug("callback type: [" + type + "], data: [" + data + "], evt: [" + evt + "]");
+						// we could just set mimetype: "text/javascript" to
+						// have it auto-eval, but that's not as interesting
+						// dj_eval(data); 
+					}
+				};
+				var canBind = dojo.io.bind(bindArgs);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<p>This test will not work in Safari if it is loaded from local disk. Apparently
+		Safari won't let us change the iframe src to a local file.</p>
+
+		<p>Expected result: You should see a message that starts with: <i>DEBUG: callback type: [error]...</i></p>
+		
+		
+	</body>
+</html>
+

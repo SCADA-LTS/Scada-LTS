@@ -1,0 +1,51 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" >
+<head>
+<title>Testing image</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript">djConfig = { isDebug: true };</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">dojo.require("dojo.debug.console");</script>
+<!--<script type="text/javascript" src="../../src/gfx/vml.js"></script>-->
+<!--<script type="text/javascript" src="../../src/gfx/svg.js"></script>-->
+<script type="text/javascript">
+dojo.require("dojo.event.*");
+dojo.require("dojo.gfx.*");
+
+var image = null;
+
+makeShapes = function(){
+	var surface = dojo.gfx.createSurface("test", 800, 600);
+    image = surface.createImage({width: 319, height: 95, src: "http://dojotoolkit.org/img/header-downloads.png"});
+    dojo.event.connect(image.getEventSource(), "onclick", function(){ alert("You didn't expect a download, did you?"); });
+};
+
+transformImage = function(){
+	var radio = document.getElementsByName("switch");
+	if(radio[0].checked){
+        image.setTransform({});
+	}else if(radio[1].checked){
+        image.setTransform(dojo.gfx.matrix.translate(100,100));
+	}else if(radio[2].checked){
+        image.setTransform([dojo.gfx.matrix.translate(100,0), dojo.gfx.matrix.rotateg(-45)]);
+	}else if(radio[3].checked){
+        image.setTransform([dojo.gfx.matrix.translate(70,90), dojo.gfx.matrix.scale({x:1.5, y:0.5})]);
+	}else if(radio[4].checked){
+        image.setTransform([dojo.gfx.matrix.rotateg(-15), dojo.gfx.matrix.skewXg(30)]);
+	}
+};
+dojo.addOnLoad(makeShapes);
+
+</script>
+</head>
+<body>
+<p>Testing image:<br />
+<input type="radio" name="switch" id="r1_reset" checked onclick="transformImage()" /><label for="r1_reset">Reset Image</label><br />
+<input type="radio" name="switch" id="r1_move" onclick="transformImage()" /><label for="r1_move">Move Image</label><br />
+<input type="radio" name="switch" id="r1_rotate" onclick="transformImage()" /><label for="r1_rotate">Rotate Image</label><br />
+<input type="radio" name="switch" id="r1_scale" onclick="transformImage()" /><label for="r1_scale">Scale Image</label><br />
+<input type="radio" name="switch" id="r1_skew" onclick="transformImage()" /><label for="r1_skew">Skew Image</label><br />
+</p>
+<div id="test"></div>
+<p>That's all Folks!</p>
+</body>
+</html>

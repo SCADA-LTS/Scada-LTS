@@ -1,0 +1,43 @@
+<h1>Overview</h1>
+
+<p>
+Scripts are procedures that automate the execution of tasks, enabling control of data sources and data points. 
+Scripts don't have a return value, but they allow to set a value to a data point, since it is settable.
+</p>
+
+<h1>JavaScript / ECMAScript</h1>
+<p>Scripts require some knowledge of JavaScript, also known as ECMAScript. 
+(The full specification for ECMAScript is available <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">here</a>.) 
+JavaScript is arguably the most popular scripting language in use today, it being the only language 
+available for use in every popular web browser. The result is that, by far the common usage of JavaScript 
+is in web pages. The context within the Meta data source is of course different, there being no 
+"window" or "document" objects, among other more subtle differences. Contextual differences aside, 
+a full and complete implementation of ECMAScript is available within this data source. Specifically, 
+the <a href="http://www.mozilla.org/rhino/" target="_blank">Rhino</a> implementation is used.</p>
+
+<h1>Script configuration</h1>
+
+<p>The <b>Script context</b> defines the points that will be available to the script when it executes. 
+Each point that is added must be given a <b>Var</b>, which is the variable name the point data will be 
+assigned to in the script. These script var names must be valid ECMAScript variable names: they must start 
+with either a letter or an underscore, and may not contain spaces. Other constraints may apply. You will 
+receive validation or script execution exceptions if script var names are not correctly defined. To add a 
+point to the context, select it from the list and click the <img src="images/add.png"/> icon. To delete an 
+existing point from the context click the <img src="images/bullet_delete.png"/> icon associated with the 
+point. Points that are not needed in the script should not be added to the context since some overhead 
+is involved in preparing the data for the script. Also, unnecessary script vars may cause unintended 
+script executions. (See "Script execution" below.) However, the contrary may also be true: it may be useful 
+to include a script var in a context in order to cause script execution.</p>
+
+<p>
+The <b>context objects</b> control data sources and data points. As in context points, a <b>Var</b> name must be set, 
+ and the checkbox enables the object to the context. 
+</p>
+
+<h1>Script execution</h1>
+<p>
+Execution can be manual, by clicking on the icon <img src="images/cog_go.png"/>, or automated, through event handlers.
+In manual execution, a message will be displayed indicating an error or success. The script must be saved before an execution. 
+</p>
+
+

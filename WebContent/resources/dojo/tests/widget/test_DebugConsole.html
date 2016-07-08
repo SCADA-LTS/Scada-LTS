@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>DebugConsole Widget Demo</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.DebugConsole");
+</script>
+
+<script type="text/javascript" >
+	var dc;
+	function generateSomeDebuggingInfo() {
+		for (var x=0; x<10; x++) {
+			dojo.debug(x + ": Here is some debugging info, should be 10 new lines");
+		}
+	}
+	dojo.addOnLoad(init);
+	function init(){
+		dc = dojo.widget.createWidget("dojo:debugConsole", {title:"programically created console"}, dojo.byId("progDebug"));
+	}
+</script>
+</head>
+<body>
+
+<p>Debugging Console.  This widget, once loaded, will have djConfig output all debugging information to its floating pane.  Some debugging information won't go to the debugConsole before it loads, but there isn't much that can be done about that.  If you set djConfig = {isDebug:true}  it will log to the bottom of the screen (or some div if you set that) until the debugConsole finishes loading.</p> 
+<button id="go" onClick="generateSomeDebuggingInfo();">Generate Debugging info
+</button>
+
+<div dojoType="DebugConsole"
+	title="Debug Console"
+	iconSrc="images/flatScreen.gif";
+	constrainToContainer="1"
+	style="width: 700px; height: 500px; left: 200px;"
+	hasShadow="true"
+	resizable="true"
+	displayCloseAction="true"
+	layoutAlign="client"
+>
+</div>
+<br>
+<p>Debugging Console. Created by createWidget</p>
+<div id="progDebug" style="width: 700px; height: 200px; left: 400px;">This is used to programatically create a debugConsole<br>It will not work due to the first console declared.</div>
+</body>
+</html>

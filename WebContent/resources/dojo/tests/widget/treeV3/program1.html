@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	dojo.addOnLoad(function(){
+
+		var controller = dojo.widget.createWidget("TreeBasicControllerV3");		
+		var tree = dojo.widget.createWidget("TreeV3", {listeners:[controller.widgetId]});
+		
+		document.body.appendChild(tree.domNode);
+
+		var rootNode = dojo.widget.createWidget("TreeNodeV3", {title: "Root Node", tree: tree.widgetId});
+		
+		tree.addChild(rootNode);
+
+
+		var node1 = dojo.widget.createWidget("TreeNodeV3", {title: "Node 1", tree: tree.widgetId});
+		rootNode.addChild(node1);
+
+
+		var node2 = dojo.widget.createWidget("TreeNodeV3", {title: "Node 1.2", tree: tree.widgetId});
+		node1.addChild(node2, null, "after");
+
+
+		rootNode.addChild(dojo.widget.createWidget("TreeNodeV3", {title: "Node 2", tree: tree.widgetId}));
+
+		var node3 = dojo.widget.createWidget("TreeNodeV3", {title: "Node 3<br>multiline", tree: tree.widgetId});
+		rootNode.addChild(node3);
+		var node3_1 = dojo.widget.createWidget("TreeNodeV3", {title: "Node 3.1", tree: tree.widgetId});
+		node3.addChild(node3_1);
+		node3_1.addChild(dojo.widget.createWidget("TreeNodeV3", {title: "Node 3.1.1", tree: tree.widgetId}))
+
+
+		// Add some nodes the first element (rather than the last element) just for testing
+		for(var i=1;i<5;i++) {
+			node1.addChild(dojo.widget.createWidget("TreeNodeV3", {title: "Node 1."+i, tree: tree.widgetId}));
+		}
+
+		tree.addChild(dojo.widget.createWidget("TreeNodeV3", {title: "Root Node 2", tree: tree.widgetId}));
+
+	});
+
+</script>
+</head>
+<body>
+
+<h4>Create tree programmatically</h4>
+
+
+</body>
+</html>

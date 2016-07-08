@@ -1,0 +1,23 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>IP удаленного устройства - это IP-адрес, по которому можно найти устройство. Порт удаленного устройства – это номер порта, который прослушивает запросы.</p>
+<p>Тип объекта – это тип объекта, которому отправляются запросы на получение значений. Номер экземпляра объекта – это уникальный идентификатор объекта/типа, с которого запрашиваются значения. Объекты запрашивают текущее значение экземпляра объекта.</p>
+<p>Значение поля Использовать подписку на получение COV определяет, будет ли Mango пытаться установить подписку на COV-события объекта устройства. Не все объекты поддерживают подписку на получение COV, и не все устройства поддерживают подписку, даже если объект этого устройства обычно ее поддерживает.</p>
+<p>Для того, чтобы дать пользователю права на ввод значений для обновления объекта, используйте критерий Настраиваемый объект. Настраиваемыми могут быть только выходные значения.</p>
+<p>Поле Тип данных определяет, какой тип данных Mango будет иметь значение объекта. Значения, полученные из сети BACnet, будут автоматически преобразованы в требуемый тип. </p>

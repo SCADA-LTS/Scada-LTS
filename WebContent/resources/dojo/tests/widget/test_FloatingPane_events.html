@@ -1,0 +1,56 @@
+<html>
+<head>
+
+<title>FloatingPane Widget Event Demo</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.FloatingPane");
+
+	dojo.addOnLoad(function() {
+		dojo.event.topic.subscribe("floatingPaneMove",
+			 function (info){
+				var pos = dojo.html.getAbsolutePosition(info.source.domNode);
+				if (info.source.widgetId == 'pane1'){
+					document.getElementById('p1status').innerHTML = 'pane 1 : '+pos.x+','+pos.y;
+				}
+				if (info.source.widgetId == 'pane2'){
+					document.getElementById('p2status').innerHTML = 'pane 2 : '+pos.x+','+pos.y;
+				}
+			}
+		);
+	});
+
+</script>
+</head>
+<body>
+
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam facilisis enim. Pellentesque in elit et lacus euismod dignissim. Aliquam dolor pede, convallis eget, dictum a, blandit ac, urna. Pellentesque sed nunc ut justo volutpat egestas. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. In erat. Suspendisse potenti. Fusce faucibus nibh sed nisi. Phasellus faucibus, dui a cursus dapibus, mauris nulla euismod velit, a lobortis turpis arcu vel dui. Pellentesque fermentum ultrices pede. Donec auctor lectus eu arcu. Curabitur non orci eget est porta gravida. Aliquam pretium orci id nisi. Duis faucibus, mi non adipiscing venenatis, erat urna aliquet elit, eu fringilla lacus tellus quis erat. Nam tempus ornare lorem. Nullam feugiat.</p>
+
+<div dojoType="FloatingPane"
+	widgetId="pane1"
+	title="Outer window"
+	constrainToContainer="true"
+	style="width: 300px; height: 200px; left: 200px; top: 100px"
+>
+	a floating pane
+</div>
+
+<div dojoType="FloatingPane"
+	title="Outer window"
+	widgetId="pane2"
+	constrainToContainer="true"
+	style="width: 300px; height: 200px; left: 400px; top: 200px;"
+>
+
+	another floating pane
+</div>
+
+<p id="p1status">pane 1 hasn't moved</p>
+<p id="p2status">pane 2 hasn't moved</p>
+
+</body>
+</html>

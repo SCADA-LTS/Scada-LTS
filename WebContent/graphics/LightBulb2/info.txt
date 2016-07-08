@@ -1,0 +1,6 @@
+name=Light bulb 2
+type=imageSet
+#width=22
+#height=32
+text.x=5
+text.y=32

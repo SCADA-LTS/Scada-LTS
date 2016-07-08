@@ -1,0 +1,24 @@
+<html>
+<head>
+<script type="text/javascript">djConfig = { isDebug: true };</script>
+
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript" src="../../_bootstrap.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	
+	function doit(){
+		var progWidget1 = dojo.byId("progWidget1");
+		dojo.widget.createWidget("dojo:Button", null, progWidget1);
+	}
+</script>
+	
+</head>
+<body>
+	<p>Press go to create a namespaced widget dynamically (from the "blahblah" div below").</p>
+	<input type="button" value="go" onClick="doit()">
+	<br/><br/>
+	<div id="progWidget1">blahblah</div>
+	<br/>
+</body>
+</html>

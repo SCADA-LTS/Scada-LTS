@@ -1,0 +1,6 @@
+name=Nivel de Tanque (Pequeno)
+type=imageSet
+#width=50
+#height=65
+text.x=5
+text.y=115

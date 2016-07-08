@@ -1,0 +1,34 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>The <b>Data type</b> is the Mango representation of the value. Received data is automatically converted to the required data type.  The <b>Value RegEx</b> determines where in the message to find the point value. See the "Regular Expressions" documentation for more information. Note that only the <i>first instance</i> of the expression found in the message is used.</p>
+
+<p>For the binary data type, the <b>Binary 0 value</b> can be defined. If the value found in the content matches it, the point will be updated with 0. Otherwise, the point is updated with 1. For the numeric data type a <b>Number format</b> can be defined, which provides information on how the text value found by the RegEx should be parsed. See the "Number formats" documentation for more information.</p>
+
+<p>A <b>Time RegEx</b> can be defined to locate the value's time stamp in the message content. If the RegEx is defined, a <b>Time format</b> must also be entered, which provides information on how the text time found by the RegEx should be parsed. See the "Date/time formats" documentation for more information.</p>
+
+<p>You may test your RegEx by entering a sample message into the <b>Regex test message</b> area and clicking the associated <img src="images/accept.png"/> icon.</p>
+
+<h1>Example</h1>
+<p>Say the target message looks like this (envelope removed):</p>
+<pre>GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,</pre>
+<p>... and you want the ninth field (or "545.4", counting after the "GPGGA"), you would use this regex:</p>
+<pre>GPGGA,.*?,.*?,.*?,.*?,.*?,.*?,.*?,.*?,(.*?),.*</pre>
+<p>This approach allows the arbitrarily selection of messages according to other content. For example, if the "123519" part indicates a particular weather station id (assuming you had multiple), your regex to only select messages from this station would be:</p>
+<pre>GPGGA,123519,.*?,.*?,.*?,.*?,.*?,.*?,.*?,(.*?),.*</pre>
+<p>All other GPGGA messages from other stations would be ignored.</p>

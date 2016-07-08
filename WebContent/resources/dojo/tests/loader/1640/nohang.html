@@ -1,0 +1,33 @@
+<html>
+<head>
+<script>
+djConfig = { delayMozLoadingFix: true, isDebug: true };
+
+</script>
+<script src="../../../dojo.js"></script>
+<script> 
+
+function docLoaded() {
+var http = dojo.hostenv.getXmlhttpObject(); http.open('GET',"bigtext.txt", false);
+dojo.debug("Calling sync XMLHttpRequest - it's gonna freeze ...");
+http.send(null);
+dojo.debug("Well, i guess they've fixed it, response (first fragment ) is " + http.responseText.substring(0, 255));
+}
+
+dojo.addOnLoad(docLoaded);
+
+</script>
+</head>
+<body>
+<p>
+Serve this test from a web server to test the hang scenario.
+</p>
+
+<img src="img1.jpg" width="100" />
+<img src="img2.jpg" width="100" />
+<img src="img3.jpg" width="100" />
+<img src="img4.jpg" width="100" />
+<img src="img5.jpg" width="100" />
+</body>
+</html>
+

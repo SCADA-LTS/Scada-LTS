@@ -1,0 +1,104 @@
+﻿<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+
+
+
+<h1>Descripci&oacute;n General</h1>
+
+
+<p>
+Los Scripts son procedimientos que autom&aacute;ticamente ejecutan tareas, habilitando el control de las fuentes de datos 
+y de los puntos. 
+Los Scripts no retornan un valor al finalizar, pero permiten establecer el valor de un punto (si es modificable).
+
+</p>
+
+
+
+<h1>JavaScript / ECMAScript</h1>
+
+<p>Los Scripts requieren de alg&uacute;n conocimiento de JavaScript, al igual que de ECMAScript.(Las especificaciones completas 
+de ECMAScript se encuentran en <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">aqu&iacute;</a>.) 
+
+Para muchos, JavaScript es el lenguaje m&aacute;s popular para la programaci&oacute;n de scripts de hoy en d&iacute;a, es el &uacute;nico lenguaje disponible
+para 
+todos los navegadores populares. Como resultado esta popularidad es el uso com&uacute;n del JavaScript en las p&aacute;ginas webs. 
+El contexto 
+dentro de las fuente de datos Meta es diferente, no hay objetos "ventana" o "documentos", adem&aacute;s de otras diferencias. 
+
+Junto a las diferencias contextuales, una implementaci&oacute;n completa de ECMAScript est&aacute; disponible en las fuentes de datos. 
+Espec&iacute;ficamente la implementaci&oacute;n <a href="http://www.mozilla.org/rhino/" target="_blank">Rhino</a> es utilizada.</p>
+
+
+
+<h1>Configuraci&oacute;n del Script</h1>
+
+
+<p>El <b>contexto del Script</b> define los puntos que estar&aacute;n disponibles para el script en el momento que el se ejecute. 
+
+Cada punto que es a&ntilde;adido debe tener un nombre de variable <b>Var</b>, que ser&aacute; el nombre con el que se le identificar&aacute; 
+dentro del script. 
+Ese nombre var debe ser un nombre v&aacute;lido para variables ECMAScripts: Debe comenzar con cualquier letra 
+o con un underscore (_) ,y no podr&aacute; contener 
+espacios (pueden haber otras restricciones). Cuando defina un nombre de variable 
+para ser usado dentro del script, recibir&aacute; una validaci&oacute;n o una excepci&oacute;n de ejecuci&oacute;n del script si no est&aacute; correctamente definido. 
+Para adicionar un punto en el contesto, selecci&oacute;nelo de la lista y haga clic en el icono <img src="images/add.png"/>. 
+Para eliminar un punto existente del contexto haga clic en el icono <img src="images/bullet_delete.png"/> 
+que est&aacute; junto al punto a eliminar. Los puntos que no son necesarios en el script no deber&iacute;an ser agregados al contexto 
+ya que puede implicar sobrecarga en la preparaci&oacute;n de los datos de preparaci&oacute;n del script . De igual forma, 
+variables innecesarias en el script pueden ocasionar ejecuciones no esperadas del script. (Vea "Ejecutando un script") 
+De cualquier forma, lo contrario tambi&eacute;n puede ser cierto: puede ser &uacute;til incluir en el contexto del script una variable para que ese se ejecute.</p>
+
+<p>
+Los <b>objetos de contexto</b> son para el control de una fuente de datos o de sus puntos. Entonces en el contexto de los puntos, 
+un nombre de variable <b>Var</b> debe configurarse, y su correspondiente habilitaci&oacute;n debe ser activada. 
+</p>
+
+
+
+<h1>Ejecutando un Script</h1>
+<p>
+Su ejecuci&oacute;n puede ser manual, al hacer clic en el icono <img src="images/cog_go.png"/>, o autom&aacute;tica, utilizando manejadores de eventos.
+
+Al realizar una ejecuci&oacute;n manual se genera un mensaje indicando que se realiz&oacute; correctamente o que ocurri&oacute; un error. Para poder ejecutar 
+un script debe haberlo guardado primero. 
+</p>
+
+

@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<title>dojo.widget.defineWidget test</title>
+
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	
+	// standard defines 
+	
+	dojo.widget.defineWidget('test.html.FooA', dojo.widget.HtmlWidget, {
+		declaration: 'no initializer',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+	
+	dojo.widget.defineWidget('test.html.FooB', dojo.widget.HtmlWidget, 
+		function() {
+			this.declaration = 'initializer as parameter';
+		},{
+		declaration: '[init failed]',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+	
+	dojo.widget.defineWidget('test.html.FooC', dojo.widget.HtmlWidget, {
+		initializer: function() {
+			this.declaration = 'initializer as property';
+		},
+		declaration: '[init failed]',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+
+	test.html.FooD = function() {
+		this.declaration = 'initializer as faux-constructor';
+	}	
+	dojo.widget.defineWidget('test.html.FooD', dojo.widget.HtmlWidget, {
+		declaration: '[init failed]',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+	
+	// multi-class defines
+	
+	dojo.declare('base.foo', null, {
+		fillInTemplate: function() {
+			this.domNode.innerHTML = 'mixin-superclass and ' + this.declaration;
+		}
+	});
+			
+	dojo.widget.defineWidget('test.html.Foo2A', [dojo.widget.HtmlWidget, base.foo], {
+		declaration: 'no initializer'
+	});
+	
+	dojo.widget.defineWidget('test.html.Foo2B', [dojo.widget.HtmlWidget, base.foo], 
+		function() {
+			this.declaration = 'initializer as parameter';
+		},{
+		declaration: '[init failed]'
+	});
+	
+	dojo.widget.defineWidget('test.html.Foo2C', [dojo.widget.HtmlWidget, base.foo], {
+		initializer: function() {
+			this.declaration = 'initializer as property';
+		},
+		declaration: '[init failed]'
+	});
+
+	test.html.Foo2D = function() {
+		this.declaration = 'initializer as faux-constructor';
+	}	
+	dojo.widget.defineWidget('test.html.Foo2D', [dojo.widget.HtmlWidget, base.foo], {
+		declaration: '[init failed]'
+	});
+	
+	// default renderer defines (deprecated)
+	
+	dojo.widget.defineWidget('test.DefaultFooA', dojo.widget.HtmlWidget, {
+		declaration: 'default renderer, no initializer',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+	
+	dojo.widget.defineWidget('test.DefaultFooB', dojo.widget.HtmlWidget, 
+		function() {
+			this.declaration = 'default renderer, initializer as parameter';
+		},{
+		declaration: '[init failed]',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+	
+	// old-style defines (deprecated)
+	
+	dojo.widget.defineWidget('test.HtmlFooOld', dojo.widget.HtmlWidget, {
+		declaration: '[init failed]',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	}, 
+	'', 
+	function() {
+		this.declaration = 'simple deprecated';
+	});
+	
+	dojo.widget.defineWidget('test.html.fooOld', dojo.widget.HtmlWidget, {
+		declaration: '[init failed]',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	}, 
+	'html', 
+	function() {
+		this.declaration = 'deprecated';
+	});
+
+	// explicit renderer 
+	
+	dojo.widget.defineWidget('test.html.Foo3A', 'html', dojo.widget.HtmlWidget, {
+		declaration: 'explicit renderer, no initializer',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+	
+	dojo.widget.defineWidget('test.html.Foo3B', 'html', dojo.widget.HtmlWidget, 
+		function() {
+			this.declaration = 'explicit renderer, initializer as parameter';
+		},{
+		declaration: '[init failed]',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+	
+	dojo.widget.defineWidget('test.html.Foo3C', 'html', dojo.widget.HtmlWidget, {
+		initializer: function() {
+			this.declaration = 'explicit renderer, initializer as property';
+		},
+		declaration: '[init failed]',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+
+	test.html.Foo3D = function() {
+		this.declaration = 'explicit renderer, initializer as faux-constructor';
+	}	
+	dojo.widget.defineWidget('test.html.Foo3D', 'html', dojo.widget.HtmlWidget, {
+		declaration: '[init failed]',
+		fillInTemplate: function() {
+			this.domNode.innerHTML = this.declaration;
+		}
+	});
+	
+</script>
+
+<script type="text/javascript">
+</script>
+
+<style type="text/css">
+body { 
+	font-family : sans-serif; 
+}
+</style>
+
+<h3><b>Foo</b> Widgets with Varying Define Syntaxes</h4>
+ERROR or [init failed] text below indicates a failure in <em>dojo.widget.defineWidget</em> or <em>dojo.lang.declare</em>.<br>
+<br>
+<b>html.FooA</b> uses <em><span dojoType="FooA">ERROR</span></em><br>
+<b>html.FooB</b> uses <em><span dojoType="FooB">ERROR</span></em><br>
+<b>html.FooC</b> uses <em><span dojoType="FooC">ERROR</span></em><br>
+<b>html.FooD</b> uses <em><span dojoType="FooD">ERROR</span></em><br>
+<br>
+<b>html.Foo2A</b> uses <em><span dojoType="Foo2A">ERROR</span></em><br>
+<b>html.Foo2B</b> uses <em><span dojoType="Foo2B">ERROR</span></em><br>
+<b>html.Foo2C</b> uses <em><span dojoType="Foo2C">ERROR</span></em><br>
+<b>html.Foo2D</b> uses <em><span dojoType="Foo2D">ERROR</span></em><br>
+<br>
+<b>html.Foo3A</b> uses <em><span dojoType="Foo3A">ERROR</span></em><br>
+<b>html.Foo3B</b> uses <em><span dojoType="Foo3B">ERROR</span></em><br>
+<b>html.Foo3C</b> uses <em><span dojoType="Foo3C">ERROR</span></em><br>
+<b>html.Foo3D</b> uses <em><span dojoType="Foo3D">ERROR</span></em><br>
+<br>
+<b>DefaultFooA</b> uses <em><span dojoType="DefaultFooA">ERROR</span></em><br>
+<b>DefaultFooB</b> uses <em><span dojoType="DefaultFooB">ERROR</span></em><br>
+<br>
+<b>HtmlFooOld</b> uses <em><span dojoType="HtmlFooOld">ERROR</span></em><br>
+<b>html.fooOld</b> uses <em><span dojoType="fooOld">ERROR</span></em><br>

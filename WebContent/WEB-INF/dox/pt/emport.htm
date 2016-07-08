@@ -1,0 +1,194 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Resumo</h1>
+<!--<h1>Overview</h1>-->
+<p>Esta funcionalidade pode ser usada para exportar e importar
+v&aacute;rios aspectos da configura&ccedil;&atilde;o do ScadaBR, proporcionando v&aacute;rios
+benef&iacute;cios:</p>
+<!--<p>-->
+<!--  This facility can be used to export and import various aspects of your ScadaBR configuration. This ability provides -->
+<!--  several benefits:-->
+<!--</p>-->
+<dl>
+	<dt><b>Backup e recupera&ccedil;&atilde;o</b></dt>
+	<dd>Exporte sua configura&ccedil;&atilde;o por completo e salve o arquivo texto
+	resultante em um local seguro. Se sua inst&acirc;ncia do ScadaBR sofrer uma
+	falha catastr&oacute;fica &eacute; poss&iacute;vel criar uma nova inst&acirc;ncia e rapidamente
+	importar as configura&ccedil;&otilde;es salvas e rapidamente restaurar a inst&acirc;ncia
+	original.</dd>
+	<!--  <dt><b>Backup and restore</b></dt>-->
+	<!--  <dd>-->
+	<!--    Export your entire configuration, and save the resulting text in a safe place. If your ScadaBR instance suffers a -->
+	<!--    catastrophic failure you can create a new instance and import your configuration file to quickly recreate the-->
+	<!--    instance.-->
+	<!--  </dd>-->
+	<dt><b>Criar e manter inst&acirc;ncias id&ecirc;nticas</b></dt>
+	<dd>Exporte os elementos de sua configura&ccedil;&atilde;o que s&atilde;o comuns em
+	todas suas inst&acirc;ncias. Para criar uma nova inst&acirc;ncia similar, importe a
+	configura&ccedil;&atilde;o comum e a customize como preferir. Para efetuar mudan&ccedil;as
+	em todas as inst&acirc;ncias, simplesmente altere o arquivo de configura&ccedil;&atilde;o e
+	importe a nova configura&ccedil;&atilde;o em todas as inst&acirc;ncias. Ou, altere uma
+	inst&acirc;ncia, exporte as configura&ccedil;&otilde;es e importe esse resultado em todas
+	as outras inst&acirc;ncias.</dd>
+	<!--	<dt><b>Create and maintain identical instances</b></dt>-->
+	<!--	<dd>Export the elements of your configuration that are common-->
+	<!--	across all of your instances. To create a new similar instance, import-->
+	<!--	the common configuration and then tweak as necessary. To make changes-->
+	<!--	across all of your instances simply change the configuration file and-->
+	<!--	import into all of you instances. Or, change one instance, export, and-->
+	<!--	then import that result into all of the other instances.</dd>-->
+	<dt><b>Manter configura&ccedil;&otilde;es grandes e complexas</b></dt>
+	<dd>Apesar de sua renomada est&eacute;tica e facilidade de uso, a
+	interface de usu&aacute;rio do ScadaBR n&atilde;o foi projetada para manipular
+	configura&ccedil;&otilde;es de tamanho e complexidade extremos. Em situa&ccedil;&otilde;es como
+	essa os arquivos de exporta&ccedil;&atilde;o podem ser usados como alternativa para
+	gerenciar suas configura&ccedil;&atilde;o. Fa&ccedil;a as altera&ccedil;&otilde;es diretamente no arquivo
+	de configura&ccedil;&atilde;o e importe o arquivo modificado nas inst&acirc;ncias.</dd>
+	<!--	<dt><b>Maintain large, complex configurations</b></dt>-->
+	<!--	<dd>Although widely praised for its asthetics and ease of use, the-->
+	<!--	ScadaBR user interface was not designed to handle extremely large and-->
+	<!--	complex configurations. In such a case the export files can be used as-->
+	<!--	an alternate means to manage your configuration. Make your changes-->
+	<!--	directly in the configuration file, and then import into your-->
+	<!--	instances.</dd>-->
+</dl>
+
+<h1>Exportando</h1>
+<p>Voc&ecirc; pode escolher exportar sua configura&ccedil;&atilde;o completa
+selecionando todas as op&ccedil;&otilde;es em <b>Select what you would like to
+export</b>. Ou, voc&ecirc; pode escolher exportar apenas algumas partes. O
+resultado da opera&ccedil;&atilde;o de exporta&ccedil;&atilde;o ser&aacute; exibido na &aacute;rea de texto <b>Data</b>,
+de onde voc&ecirc; poder&aacute; copiar e colar em outra aplica&ccedil;&atilde;o ou fazer
+altera&ccedil;&otilde;es diretamente.</p>
+
+<!--<h1>Exporting</h1>-->
+<!--<p>You can choose to export your entire configuration by checking-->
+<!--each of the options within <b>Select what you would like to export</b>.-->
+<!--Or, you can choose to only export portions as required. The result of-->
+<!--the export operation will be displayed in the <b>Data</b> text area,-->
+<!--from which you can copy and paste elsewhere, or make direct changes.</p>-->
+
+<h1>Importando</h1>
+<p>De maneira similar a como usu&aacute;rios podem selecionar o que
+exportar, tamb&eacute;m &eacute; poss&iacute;vel escolher importar apenas uma pequena por&ccedil;&atilde;o
+de toda sua configura&ccedil;&atilde;o. A maior parte da informa&ccedil;&atilde;o que for exclu&iacute;da
+do arquivo de configura&ccedil;&atilde;o n&atilde;o ser&aacute; alterada. Por exemplo, se os dados
+importados n&atilde;o incluem o atributo "eventDetectors" em um data point, os
+"eventDetectors" daquele ponto n&atilde;o ser&atilde;o alterados. Entretanto se o
+atributo for inclu&iacute;do, a lista ser&aacute; substitu&iacute;da com o conte&uacute;do do
+atributo.</p>
+<p>De maneira geral, qualquer objeto do ScadaBR que tem um
+identificador &uacute;nico &eacute; capaz de ser criado e atualizado &mdash; mas n&atilde;o
+apagado. Objetos que s&atilde;o suportados por essa funcionalidade ter&atilde;o um <b>Export
+Id, or XID</b>. Este atributo &eacute; especificamente projetado para proporcionar
+uma identifica&ccedil;&atilde;o &uacute;nica de objetos entre inst&acirc;ncias do ScadaBR. Essa
+abordagem &eacute; similar a uma chave prim&aacute;ria gerada por uma base de dados,
+mas chaves prim&aacute;rias n&atilde;o podem ser &uacute;nicas em m&uacute;ltiplas inst&acirc;ncias do
+ScadaBR. Quando um objeto &mdash; como um data source &mdash; &eacute; criado
+usando a interface do ScadaBR recebe automaticamente um XID &uacute;nico para a
+inst&acirc;ncia. Apesar de existir garantia de que esse valer ser&aacute; &uacute;nico em
+todas as inst&acirc;ncias do ScadaBR &eacute; bastante prov&aacute;vel que seja. Tamb&eacute;m &eacute;
+poss&iacute;vel alterar o XID para qualquer valor de 50 caracteres desde que
+este valor permane&ccedil;a &uacute;nico para aquele tipo de objeto dentro da
+inst&acirc;ncia.</p>
+
+<!--<h1>Importing</h1>-->
+<!--<p>Similar to how users can select what to export, you may also-->
+<!--choose to import only a small portion of your entire configuration. For-->
+<!--the most part any information that is excluded from your import file-->
+<!--will remain unchanged. For example, if your import data does not include-->
+<!--the "eventDetectors" attribute within a data point, that point's event-->
+<!--detectors list will remain unchanged. However, if the attribute is-->
+<!--included the list will be replaced with the contents of the attribute.</p>-->
+<!--<p>In general, any ScadaBR object that has a unique identifier is-->
+<!--capable of being created and updated&mdash;but not deleted. Such objects-->
+<!--that are supported by this facility will have and <b>Export Id, or-->
+<!--XID</b>. This attribute is specifically designated to provide unique-->
+<!--indentification of objects between ScadaBR instances. This is similar to a-->
+<!--database-generated primary key, but primary keys cannot be made to match-->
+<!--over multiple ScadaBR instances. When an object&mdash;such as a data-->
+<!--source&mdash;is created using the ScadaBR interface it is automatically-->
+<!--given an instance-unique XID. Although it cannot be guaranteed to be-->
+<!--unique across all of your ScadaBR instances, there is a high probability-->
+<!--that it will be. You may change the XID to any 50 character value you-->
+<!--like as long as the value is still unique for that object type within-->
+<!--the instance.</p>-->
+
+<p>Importa&ccedil;&otilde;es podem falhar por v&aacute;rias raz&otilde;es:</p>
+<ul>
+	<li>Se o formato de seu JSON &eacute; incorreto, a toda a importa&ccedil;&atilde;o ir&aacute;
+	falhar e voc&ecirc; receber&aacute; uma mensagem de erro descrevendo a causa e a
+	localiza&ccedil;&atilde;o prov&aacute;vel do problema dentro de seus dados.</li>
+	<li>Se os dados de um elemento obrigat&oacute;rio n&atilde;o s&atilde;o fornecidos ou
+	s&atilde;o inv&aacute;lidos, a importa&ccedil;&atilde;o daquele objeto ir&aacute; falhar, mas outros
+	objetos ainda podem ser importados corretamente. Ao final da importa&ccedil;&atilde;o
+	voc&ecirc; receber&aacute; uma lista de todos os objetos importados com sucesso e
+	uma lista descritiva de mensagens de erros para falhas.</li>
+</ul>
+
+<!--<p>Imports may fail for multiple reasons:</p>-->
+<!--<ul>-->
+<!--    <li>If the format of you JSON is incorrect, the entire import will-->
+<!--    fail and you will be provided with an error message describing the-->
+<!--    cause and the location of the likely problem within your data.</li>-->
+<!--    <li>If a required data element is missing or invalid, the import-->
+<!--    of the associated object will fail, but other objects may still import-->
+<!--    successfully. You will be provided with a list of all objects whose-->
+<!--    import succeeded, and a list of descriptive errors messages for-->
+<!--    failures.</li>-->
+<!--</ul>-->
+
+<!--<p>Imports may fail for multiple reasons:</p>-->
+<!--<ul>-->
+<!--	<li>If the format of you JSON is incorrect, the entire import will-->
+<!--	fail and you will be provided with an error message describing the-->
+<!--	cause and the location of the likely problem within your data.</li>-->
+<!--	<li>If a required data element is missing or invalid, the import-->
+<!--	of the associated object will fail, but other objects may still import-->
+<!--	successfully. You will be provided with a list of all objects whose-->
+<!--	import succeeded, and a list of descriptive errors messages for-->
+<!--	failures.</li>-->
+<!--</ul>-->
+
+<h1>Formata&ccedil;&atilde;o</h1>
+<p>A funcionalidade de importa&ccedil;&atilde;o/exporta&ccedil;&atilde;o usa o formato JSON
+(acesse <a href="http://www.json.org/" target="_blank">http://www.json.org/</a>
+para maiores informa&ccedil;&otilde;es) como o formato de dados para os arquivos de
+configura&ccedil;&atilde;o. JSON &eacute; um formato de dados muito similar e f&aacute;cil de
+entender e usar JSON foi escolhido sobre documentos em XML por sua
+proximidade com a estrutura de objetos do ScadaBR e por ser mais compacto.</p>
+
+<!--<h1>Format</h1>-->
+<!--<p>The import/export facility uses the JSON format (see <a-->
+<!--	href="http://www.json.org/" target="_blank">http://www.json.org/</a>-->
+<!--for more information) as the data format for configuration files. JSON-->
+<!--is a very simlar data format that is easy to understand and use. (For-->
+<!--users familiar with Javascript JSON will be immediately familiar.) JSON-->
+<!--was chosen over the more common XML format because it provides better-->
+<!--mapping to the actual ScadaBR object structure, and is also more compact.-->
+<!--</p>-->
+
+<p>ScadaBR ir&aacute; automaticamente criar arquivos de exporta&ccedil;&atilde;o JSON
+"bonitos", por exemplo ir&aacute; formatar a sa&iacute;da com quebras de linha e
+indenta&ccedil;&atilde;o apropriadas. A quantidade de indenta&ccedil;&atilde;o pode ser controloada
+com o atributo <b>Indent level</b>.</p>
+<!--<p>ScadaBR will automatically create "pretty" JSON export files, i.e.-->
+<!--it will format the output with appropriate line breaks and indenting.-->
+<!--The amount of indenting can be controlled with the <b>Indent level</b>-->
+<!--attribute.</p>-->

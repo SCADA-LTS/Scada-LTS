@@ -1,0 +1,133 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>HTML Effects</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<style type="text/css">
+		#fadeElm {
+			padding : 10px;
+			width : 70%;
+			background : #666;
+			color : #eee;
+		}
+
+		#slider {
+			position : absolute;
+			padding : 5px;
+			background : #ccc;
+			left : 400px;
+			top : 300px;
+		}
+
+		#flash {
+		}
+
+		#wiper {
+			position : absolute;
+			left : 100px;
+			top : 250px;
+			width : 200px;
+			background : #ccc;
+			-moz-opacity: 0.9999;
+		}
+
+		#wiper2 {
+			position : absolute;
+			left : 350px;
+			top : 200px;
+			width : 200px;
+			background : #ccc;
+			-moz-opacity: 0.9999;
+		}
+
+		#explode {
+			position : absolute;
+			left : 200px;
+			top : 100px;
+			background : #ddd;
+			width : 400px;
+			height : 300px;
+			text-align : center;
+			display : none;
+		}
+	</style>
+	<script language="JavaScript" type="text/javascript">
+		// Dojo configuration
+		djConfig = { 
+			isDebug: true
+		};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+	dojo.require("dojo.lfx.*");
+
+	var fadeElem, flash, unflash, wiper;
+	dojo.addOnLoad(function() {
+		dojo.lfx.html.highlight("flash", [230, 230, 180], 500).play(1500);
+
+		dojo.lfx.html.unhighlight("unflash", [255, 200, 180], 500).play(1500);
+
+		dojo.lfx.html.wipeIn("wiper", 750).play();
+	});
+
+	function testExplode(start){
+		dojo.lfx.explode(start, "explode", 250).play();
+	}
+
+	function testImplode(start){
+		dojo.lfx.implode("explode", start, 250).play();
+	}
+
+	function wowi(node) {
+		var wipeOut = dojo.lfx.wipeOut(node, null, null, function(n) {
+			n.innerHTML = "I have been replaced "
+				+ "with something completely different "
+				+ "in the middle of the wipe effects.";
+			dojo.lfx.wipeIn(n).play();
+		});
+		wipeOut.play();
+	}
+	</script>
+</head>
+<body>
+	<a href="javascript:void(dojo.lfx.html.fadeOut('fadeElm', 300).play())">Fade out</a>
+	|
+	<a href="javascript:void(dojo.lfx.html.fadeIn('fadeElm', 300).play())">Fade in</a>
+	|
+	<a href="javascript:void(dojo.html.setOpacity(dojo.byId('fadeElm'), 0.5))">Set opacity = 50%</a>
+
+	<div id="fadeElm">Element to fade</div>
+
+	<a href="javascript:void(dojo.lfx.html.slideTo('slider', { top: 200, left: 200 }, 300).play())">Slide to: 200, 200</a>
+	|
+	<a href="javascript:void(dojo.lfx.html.slideBy('slider', { top: 50, left: 50 } , 300).play())">Slide by: 50, 50</a>
+	|
+	<a href="javascript:void(dojo.lfx.html.slideTo('slider', { top: 300, left: 400 }, 300).play())">Reset</a>
+	<div id="slider">I slide</div>
+
+	<div id="flash">I fade to my BG!</div>
+	<div id="unflash">I fade from my BG!</div>
+
+	<div id="wiper">
+		<a href="javascript:void(dojo.lfx.html.wipeOut('wiper', 400).play())">Wipe out</a> wipe wipe. It is so fun to...
+		Wipe wipe wipe. It is so fun to...
+		Wipe wipe wipe. It is so fun to...
+		Wipe wipe wipe. It is so fun to...
+	</div>
+
+	<div id="wiper2">
+		This one does a wipeOut+wipeIn that you could use
+		to replace the content. Go ahead, give it a
+		<a href="javascript:;" onclick="wowi(this.parentNode)">try</a>
+	</div>
+
+	<div>Non-wipe...</div>
+
+	<div id="explode">EXPLODE!!!</div>
+	<a href="javascript:;" onclick="testExplode(this)">Explode!</a>
+	<a href="javascript:;" onclick="testImplode(this)">Implode!</a>
+</body>
+</html>

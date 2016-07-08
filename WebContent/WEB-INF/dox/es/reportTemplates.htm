@@ -1,0 +1,115 @@
+﻿<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<h1>Descripci&oacute;n General</h1>
+<p>
+  Las Plantillas de reporte suministran las definiciones de como se crear&aacute;n las instancias. Para una descripci&oacute;n de Plantillas e instancias
+  vea la documentaci&oacute;n de "Reporte de Instancias".
+</p>
+
+<h1>Lista de Plantillas de Reportes</h1>
+<p>
+  Para agregar una nueva plantilla de reporte, haga clic en el icono <img src="images/report_add.png"/>. Para editar una plantilla existente,
+  haga clic en el nombre del reporte en la lista de "Plantillas de Reportes".
+</p>
+
+<h1>Editando los detalles de la plantilla de reporte</h1>
+<p>
+  El <b>nombre</b> de la plantilla del reporte se utiliza para hacer una referencia visual a la plantilla. Se recomienda que sea un nombre &uacute;nico
+ para cada detector, aunque no es limitante.
+</p>
+<p>
+  Utilice la lista de <b>Puntos</b> para seleccionar los puntos a incluir en el reporte. Para agregar un punto, selecci&oacute;nelo de la lista
+ y haga clic en el icono <img src="images/add.png"/>. Para eliminar un reporte existente, haga clic en el icono <img src="images/bullet_delete.png"/>
+  asociado al punto .
+</p>
+<p>
+  Los valores del campo <b>Color</b> pueden ser asignados utilizando estilos HEX de HTML, o utilizando su nombre en HTML. Por ejemplo: "#2468AC",
+  "red", y "dodgerblue" son valores v&aacute;lidos.
+</p>
+<p>
+  El <b>Rango de fecha</b> se utiliza para determinar que valores conformar&aacute;n el reporte. El rango puede ser relativo o 
+  absoluto. En la mayor&iacute;a de los casos un rango relativo es apropiado. Rangos de fechas relativas pueden ser basadas en
+  datos "previos" o "pasados". un rango de datos <b>pasados</b> incluyen el tiempo de finalizaci&oacute;n actual. Un rango <b>previo</b> incluye 
+  un per&iacute;odo de tiempo dado, pero su finalizaci&oacute;n pero este es medido para corresponder a un per&iacute;odo espec&iacute;fico. Por ejemplo, si el rango
+  de tiempo seleccionado corresponde a "Hora(s)" con un n&uacute;mero de per&iacute;odo igual a 1, y el reporte se ejecuta a las 18:05,
+  El tiempo tomado para genera el reporte corresponder&aacute; a una hora previa a su ejecuci&oacute;n: desde las 17:00 hasta las 18:00.
+  En cambio, al fijar el rango en 3, el tiempo para realizar el muestreo de la data corresponder&aacute; a las tres horas previas: desde las 15:00 
+  hasta las 18:00. El comportamiento es similar para las dem&aacute;s alternativas selecionables. P.e si toma un "mes" comenzar&aacute; a media noche del
+  primer d&iacute;a del mes anterior y terminar&aacute; el &uacute;ltimo d&iacute;a de ese mes. Todos los dem&aacute;s rangos trabajan de la misma manera. (Una semana comienza
+  un Lunes a media noche seg&uacute;n los est&aacute;ndares ISO).
+</p>
+
+<h1>Planificaci&oacute;n de Reportes</h1>
+<p>
+  Los reportes pueden ser <b>planificados</b> para ser generados de forma autom&aacute;tica. Utilice la selecci&oacute;n <b>Ejecutar cada...</b>
+ para determinar un evento simple en el tiempo en el que debe ejecutarse, o definir un patr&oacute;n de cron para un control m&aacute;s espec&iacute;fico.
+ (Vea la documentaci&oacute;n "Patrones cron" para m&aacute;s informaci&oacute;n.) Los eventos de tiempo ocurren en el inicio del rango especificado. Las semanas
+ inician el Lunes de acuerdo a los est&aacute;ndares ISO. Una <b>Demora de ejecuci&oacute;n</b> puede aplicarse cuando los datos esperados en el informe
+ tienden a ser recolectados luego del tiempo absoluto funcionamiento.</p>
+<p>
+  Los reportes deshabilitados para los usuarios no se ejecutar&aacute;n.
+</p>
+
+<h1>Enviando por correo los reportes</h1>
+<p>
+  Los reportes no pueden ser compartidos de forma expl&iacute;cita con el sistema, pero pueden ser compartidos mediante 
+ la creaci&oacute;n de una lista de correos a la cual les sea enviado la instancia del reporte. El contenido del correo
+ corresponde como en el mostrado en la ventana "gr&aacute;fico del reporte" abierta desde el panel de la cola de reportes.
+ Para incluir un archivo exportado de tipo CSV en el correo, habilite la casilla <b>Incluir datos tabulados</b>.
+</p>
+<p>
+  Seleccione los <b>destinatarios de correo</b> a los cuales les ser&aacute;n enviados los reportes por correo. Los destinatarios pueden ser
+ una lista de correos del sistema, usuarios del sistema, o simples direcciones de correo. Haga clic en el icono <img src="images/email_go.png"/>
+ para enviar un mensaje de prueba a los destinatarios seleccionados.
+</p>
+<p>
+  <b>Importante</b>: Las instancias de los reportes que son enviadas, se eliminan de forma autom&aacute;tica al finalizar el env&iacute;o.
+</p>
+
+<h1>Administraci&oacute;n de plantillas</h1>
+<p>
+  Para guardar una plantilla de reporte haga clic en el icono <img src="images/save.png"/> en la parte superior derecha
+ del Panel de Criterios del Reporte. Para eliminar una plantilla existente, haga clic en el icono <img src="images/delete.png"/>.
+ Para ejecutar manualmente una plantilla de reporte, haga clic en el icono <img src="images/report_go.png"/>. Note que
+ algunos reportes pueden incluir gran cantidad revisi&oacute;n de informaci&oacute;n, y pueden tomar intervalos de tiempo prolongados para ejecutarse.
+ De esta manera, todos los informes se ejecutan de forma as&iacute;ncrona a la interfaz de usuario. Cuando se realiza el clic sobre el icono,
+ se crea una instancia de la plantilla de reporte, y se a&ntilde;ade a la cola de reportes donde podr&aacute; revisar su progreso. Si desea hacer una copia
+ de una plantilla de reporte, haga clic en el icono <img src="images/report_add.png"/>.
+</p>

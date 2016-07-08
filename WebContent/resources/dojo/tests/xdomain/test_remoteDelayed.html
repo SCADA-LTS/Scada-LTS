@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true,
+				useXDomain: true,
+				baseScriptUri: "../../",
+				xdWaitSeconds: 10
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="http://tagneto.org/dojo/xd/dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.registerModulePath("dojo", "http://tagneto.org/dojo/xd/src");
+
+			dojo.require("dojo.event.*");
+
+			function collectionsLoaded(){
+				var d = new dojo.collections.Dictionary();
+				d.add("foo",{test:"bar"});
+				d.add("baz","fab");
+				d.add("buck","shot");
+				dojo.debug("Collections loaded successfully");
+			}
+
+			function click1(){
+				dojo.require("dojo.collections.*");
+				dojo.addOnLoad(collectionsLoaded);
+			}
+
+			function init(){
+				dojo.debug("init was called.");
+				var clickNode = document.getElementById("testButton1");
+				dojo.event.connect(clickNode, "onclick", "click1");
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<h1>XDomain Delayed Test Page</h1>
+		<p>
+		This test should succeed. If you click on the Test Button, it will load
+		the collections package(s) and wait for a callback. Once callback is received,
+		it will try to use the collections code.
+		</p>
+		<p><b>IMPORTANT:</b> Change the domain name in the source of this file
+		to be the domain name that you want to test. You can change the paths too.
+		In this file /dojo/xd refers to a dojo installation that has run the xdgen
+		build command to build cross-domain compatible packages.
+		<p>
+				<button id="testButton1">Load Collection</button>
+		</p>
+	</body>
+</html>

@@ -1,0 +1,171 @@
+
+<meta http-equiv="Context-Type" content="text/html; charset=utf-8">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<title>Dojo: Test of style.js: test insertCss[Text|File] & fixPathsInCssText</title>
+<script type="text/javascript">
+	var djConfig = { 
+// 		debugAtAllCosts: true,
+		isDebug: true 
+	};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.html.style");
+	dojo.require("dojo.uri.*");
+
+	// Argh all dojo.debug gets last implement our own
+	function debug(str, color){
+		var div = document.createElement("div");
+		var br = document.createElement("br");
+		var txt = document.createTextNode(str);
+		div.appendChild(txt);
+		div.appendChild(br);
+		document.body.appendChild(div);
+		if(typeof color!=undefined){
+			div.style.color = color;
+		}
+	}
+</script>
+<style type="text/css"> 
+body { cursor: wait; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; }
+h2, h3 { font-size: 1em; margin-top: 2.5em; } h3 { color: black; font-weight: normal; font-style: italic; } 
+.test { border: 1px solid green; }
+pre { border: 1px solid black; background: lightblue;}
+.bar { background-color:#FFCCFF; height: 8px; overflow: hidden }
+.success { background-color:lightgreen;  }
+.failure { background-color:#FFCECE;  }
+#report { white-space: nowrap; font-family: "Courier New", Courier, mono; font-size: 11px; }
+</style>
+</head>
+<body>
+<!---------------------------------------------------------------------------->
+<h2><code>fixPathsInCssText</code></h2>
+
+Cleans and fixes any relative url() calls.
+Usefull when parsing pages from another directory, ie contentPane load external
+
+css before url fix
+<pre id="cssBefore"></pre>
+<br /><br />
+css after url fix
+<pre id="cssAfter"></pre>
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	var success = true;
+	var css = '/*css before change*/\r\n'
+		 +'.easy{ background-image:url(images/image.png) }\r\n'
+		 +'.dontReplaceEasy{ background-image:url(images/images/image.png) }\r\n'
+		 +'.hardurl{background-image:url(\t "../../source/test/%20t\'e(s)t.gif("1\')?foo=bar11103&bar=baz-foo"  \t);}body{};\r\n'
+		 +'.file{background-image: url(file:///home/nobody/image.png);}\r\n'
+		 +'.http{background-image: url(http://dojotoolkit.org/image.png);}\r\n'
+		 +'.https{background-image: url(https://dojotoolkit.org/image.png);}\r\n';
+
+	var preBef = dojo.byId("cssBefore");
+	preBef.innerHTML = css;
+
+	var cssStr = [];
+// 	var URI = dojo.uri.Uri("foo/images/test.css").toString(); // in  real life
+	var URI = "foo/images/test.css";// for test
+	cssStr = dojo.html.fixPathsInCssText (css, URI);
+	
+	var preAft = dojo.byId("cssAfter");
+	preAft.innerHTML = cssStr;
+	
+	var cssA = cssStr.split("\n");
+
+	function checkPaths(){
+		if(cssA[0]!="/*css before change*/\r"){ return false; }
+		if(cssA[1]!=".easy{ background-image:url(foo/images/images/image.png) }\r"){ return false; }
+		if(cssA[2]!=".dontReplaceEasy{ background-image:url(foo/images/images/images/image.png) }\r"){ return false; }
+		if(cssA[3]!=".hardurl{background-image:url(source/test/%20t\'e(s)t.gif(\"1')?foo=bar11103&bar=baz-foo);}body{};\r"){ return false; }
+		if(cssA[4]!=".file{background-image: url(file:///home/nobody/image.png);}\r"){ return false; }
+		if(cssA[5]!=".http{background-image: url(http://dojotoolkit.org/image.png);}\r"){ return false; }
+		if(cssA[6]!=".https{background-image: url(https://dojotoolkit.org/image.png);}\r"){ return false; }
+		return true;
+	}
+
+	if(checkPaths()){
+		debug("Paths fixed correctly!", "green");
+		
+		// speedtest
+		var times =  8;
+		for(var i = 0; i<times; i++){
+			css += css;
+		}
+		var timestamp = new Date();
+		css = dojo.html.fixPathsInCssText(css, URI);
+		var newTimestamp = new Date();
+		debug("REGEXP SPEED TEST! Fixed paths on "+(css.match(/url\(/g).length)+" url(..)'s in "+(newTimestamp-timestamp)+"ms", "blue");
+		
+	} else {
+		debug("Failure css path fix", "red");
+		success = 0;
+	}
+
+	
+	if(success){
+		debug("Success in all test for fixPathsInCssText", "green");
+	}
+});
+</script>
+
+<!---------------------------------------------------------------------------->
+
+<span id="insertCssText"/></span>
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	var success = true;
+	var span = dojo.byId("insertCssText");
+	span.innerHTML = '<h2><code>insertCssText</code></h2>inserts CssText into document<br />'
+			+'<span id="cssText" style="border: 1px solid black;">Should be blue text and yellow background</span>'
+			+' &nbsp; <span style="border: 1px solid black;color: blue; background: yellow;">&lt;- left one should look like this</span>'
+			+'<br /><br /><span id="cssBgImage" style="border: 1px solid black;">Should get background image</span>'
+			+' &nbsp; <span style="border: 1px solid black; background-image: url(../../src/widget/templates/images/tab_top_right.gif);">&lt;- left one should look like this</span>';
+	var cssStr = "#cssText{color: blue; background: yellow;}"
+	if(!dojo.html.insertCssText(cssStr)){
+		debug("Failure insertCssText from string", "red");
+		success = 0;
+	}
+
+	var URI = new dojo.uri.Uri("../../src/widget/").toString();
+	if(!dojo.html.insertCssText("#cssBgImage{ background-image: url(templates/images/tab_top_right.gif);}", document,URI)){
+		debug("Failure insertCssText with backgroundImage", "red");
+		success = 0;
+	}
+
+	if(success){
+		debug("Success in all test for insertCssText", "green");
+	}
+});
+</script>
+<!---------------------------------------------------------------------------->
+<span id="insertCssFile"></span>
+<script type="text/javascript">
+dojo.addOnLoad(function(){	
+	var success = true;
+	var span = dojo.byId("insertCssFile");
+	span.innerHTML = '<h2><code>insertCssFile</code></h2>'
+			+'download and insert a css file using sync load<br />'
+			+'<span class="toolbarContainer" style="border: 1px solid black;">Gets toolbar background image and fonts, font color etc..</span>'
+			+' &nbsp; <span style="border: 1px solid black; background-color: #def; color: ButtonText;  font: Menu; background-image: url(../../src/widget/templates/images/toolbar-bg.gif);">&lt;- left one should look like this</span>';
+	var URI = new dojo.uri.Uri("../../src/widget/templates/HtmlToolbar.css").toString();
+	var ret = dojo.html.insertCssFile(URI);
+	if(!ret){
+		debug("failure returning style node ref in insertCssFile", "red");
+	}
+
+	ret = dojo.html.insertCssFile(URI, document, true);
+	if(ret){
+		debug("failure in insertCssFile, inserts file twice dispite checkDuplicates=true", "red");
+	}
+	
+	if(success){
+		debug("Success in all test for insertCssFile", "green");
+	}
+	document.body.style.cursor = "default";
+});
+</script>
+
+</body></html>

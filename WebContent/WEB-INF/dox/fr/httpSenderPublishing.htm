@@ -1,0 +1,73 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  The HTTP sender publisher sends each point update (or change, as appropriate) to a given destination URL.
+</p>
+
+<h1>HTTP sender properties</h1>
+<p>
+  The <b>Method</b> selection determines which HTTP method type will be used to deliver the data. The data sent is 
+  either case is identical; the difference is a matter of message structure. The <b>URL</b> defines the resource to 
+  which to send the data. Valid schemes include "http" and "https". The server can be a domain name or an IP address. 
+  Paths and query strings are also valid.
+</p>
+<p>
+  A list of <b>Static headers</b> and <b>Static parameters</b> can also be added. These data are included with every 
+  request sent to the URL. As such, this is an appropriate place to include authorization credentials or other 
+  identifying artifacts. To add a static headers and parameter, enter its key and value, and click the 
+  <img src="images/add.png"/> icon. To delete any existing static header or parameter, click the 
+  <img src="images/bullet_delete.png"/> icon associated with the entry.
+</p>
+<p>
+  The <b>Date format</b> selection determines how the publisher will format timestamps associated with point values. The
+  "basic" format is of the form "yyyyMMddHHmmss". "Time zone" is similar, but includes more information regarding the 
+  locale of the timestamp. It is of the form "yyyy-MM-dd'T'HH:mm:ss'Z'". "UTC" uses a numeric value that represents the
+  number of milliseconds elapsed since midnight on Jan 1, 1970.  
+</p>
+
+<h1>HTTP response</h1>
+<p>
+  Any other response code than a "200 OK" is considered an error, and an alarm will be raised. In addition, any response 
+  content included with an OK response is considered to be warning information. The <b>Raise result warning</b> setting 
+  controls whether the existence of any response content causes an information alarm to be raised including the content 
+  in the event message.
+</p>
+
+<h1>Configuration testing</h1>
+<p>
+  A test request can be sent&mdash;using the given configuration but including only static parameters&mdash;by clicking 
+  the "Send static parameters" button. The result of the send attempt will be displayed below the buttons. To cancel a 
+  test before it times out on its own, click the "Cancel" button.
+</p>
+
+<h1>Published points</h1>
+<p>
+  The <b>Points</b> section lists the points to be published. Point publishing can be enabled 
+  (<img src="images/brick_go.png"/>) or disabled (<img src="images/brick_stop.png"/>). Disabling a point allows it to 
+  not be used without having to explicitly delete it. The <b>Parameter name</b> is the key that will be used for the 
+  point in the request parameters. The value will be the present value of the point. Select <b>Include timestamp</b> to 
+  include a parameter in the request that contains the update time for the value. The key for the time will be "__time", 
+  and the date will be encoded according to the date format value. (See the "Date/time formats" documentation for 
+  more information.)
+</p>
+<p>
+  To add a point to the point list, select it in the points list and click the <img src="images/icon_comp_add.png"/> 
+  icon. To delete an existing point, click its associated <img src="images/bullet_delete.png"/> icon.
+</p>

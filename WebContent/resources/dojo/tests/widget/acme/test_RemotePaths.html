@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- used from test_RemotePane.html -->
+<html>
+<head>
+
+<title>ContentPane External pathsfixes Test</title>
+
+<link rel="stylesheet" href="test_RemotePaths.css" />
+<script type="text/javascript">
+	djConfig = {
+		isDebug: true
+	};
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.event.*");
+
+//--------------------------------test setting private vars to execScope ----------------------------
+
+	//set up event listeners
+	var connected = false;
+	function connect(){
+		var dec = connected ? dojo.event.disconnect : dojo.event.connect;
+		dojo.debug((connected ? "disconnect" : "connect")+" eventlisteners");
+		connected = true;
+
+		// connect to links using the new array syntax
+		dec(["https", "http", "ftps", "ftp", "news", "file", "mailto","javascript", "relative"],
+			"onclick",
+			obj,
+			"isPathFixed");
+
+		// connect to toggle clicks
+		dec(dojo.byId("inFileToggler"), "onclick", obj, "inFileScriptToggle");
+		dec(dojo.byId("extToggler"), "onclick", obj, "extScriptToggle");
+	}
+
+	var obj = {
+		// toggle 
+		inFileScriptToggle: function(){
+			var a = document.getElementById("inFileToggler");
+			var txt = a.firstChild.nodeValue;
+			if(txt == "In file scripttest, Released"){
+				txt = "In file scripttest, Pushed";
+			}else{
+				txt = "In file scripttest, Released";
+			}
+			a.firstChild.nodeValue = txt;
+		},
+
+		//checks if paths are set up correctly
+		isPathFixed: function (evt){
+			var node = evt.currentTarget;
+			dojo.event.browser.stopEvent(evt);
+	
+			var fail = false;
+			var href = node.href.replace(/\/$/, ""); // strip after slash that browsers seem to append
+			var shouldBe = node.firstChild.nodeValue; // linktext is our guide of what paths should be
+	
+			if(node.id=="file" || node.id=="javascript"){
+				href = href.toLowerCase().replace(/%20/g, ' '); // FF and Opera replaces Document to document
+				href = href.substr(0,7) + href.substr(7 ,href.length).replace(/\//g, '\\'); // IE replaces to / in wine
+				shouldBe = shouldBe.toLowerCase();
+			}else if(node.id=="relative"){
+				// translate path to be relative to this folder
+				shouldBe = new dojo.uri.Uri(location, shouldBe.substr(3)).toString();
+			}
+	
+			// do the check
+			if(href == shouldBe){
+				alert("Test passed for "+node.id+"!");
+			}else{
+				alert("Failure in "+node.id+"\n"+href+"\n should be \n"+shouldBe);
+			}
+		}
+	};
+
+//-------------------------- test setting objects to global scope -------------------------------------------
+	// this function gets set onto window object, notice the absence of var!
+	globalVar = "Hello from a global string!";
+	globalFunction = function(){ // same as window.globalFunction
+		alert(globalVar);
+	}
+
+	// NOTE: this function gets cleared by the garbage collect when we fill with new content
+	//		But only in KHTML, Presto, and possibly Webcore.
+	isGlobalSticky = function(back){ 
+		var pane = dojo.widget.byId("docpane");
+		if(pane){
+			if(back){
+				pane.setUrl("acme/test_RemotePaths.html");
+			}else{
+				var content = "<h3>The content in this page comes from a global function set by test_RemotePaths.html</h3>"
+							+" If everything works you should be able to get back by clicking"
+							+" <a href='javascript:isGlobalSticky(true)'>here</a>";
+				pane.setContent(content);
+			}
+		}
+	}
+
+//----------------------------- set up onload and onUnLoad listeners --------------------------------------
+if(typeof _container_ == 'undefined'){ // browsing page as standalone
+	dojo.addOnLoad(obj.connect);
+}else{
+	_container_.addOnLoad(connect);
+	_container_.addOnUnload(connect);
+}
+
+</script>
+<script type="text/javascript" src="RemotePaths_test.js"></script>
+
+</head>
+<body>
+<style type="text/css">
+	/*!!!note not in head on purpose, should get ripped out of content before _setContent and inserted to document head*/
+	#bgstyleimagetest{
+		background-image: url(../images/tools.gif);
+	}
+	.border{
+		border: 1px solid black;
+	}
+	.linkSimulants{
+		cursor: pointer;
+		text-decoration:underline;
+		color: blue;
+	}
+</style>
+	<a name="top"><a href="#bottom">Test anchor tags</a></a>
+	<h3>Image and css paths</h3>
+	<img class="border" src="../images/tools.gif"/>&lt;-image path test, should be a tool image<br/>
+
+	<span class="border" id="bgimagetest">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&lt;-remote css file test, background should be toolimage (may be cut)<br/>
+
+	<span class="border" style="background-image: url(../images/tools.gif);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&lt;-inline css test, background should be toolimage (may be cut)<br/>
+
+	<span class="border" id="bgstyleimagetest">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&lt;-stylenode css test, background should be toolimage (may be cut)<br/><br/>
+
+	<h3/>External link paths, should'nt be clobbered by pathsfix mechanism</h3>
+	<a href="https://some.secure.site" id="https">https://some.secure.site</a><br/>
+
+	<a href="http://some.ordinary.site" id="http">http://some.ordinary.site</a><br/>
+
+	<a href="ftps://some.secure.ftp" id="ftps">ftps://some.secure.ftp</a><br/>
+
+	<a href="ftp://some.ordinary.ftp" id="ftp">ftp://some.ordinary.ftp</a><br/>
+
+	<a href="file://C:\Document and settings\All users\local.html" id="file">file://C:\Document and settings\All users\local.html</a><br/>
+
+	<a href="news:dojotoolkit.org" id="news">news:dojotoolkit.org</a><br/>
+
+	<a href="mailto:nospam@dojotoolkit.org" id="mailto" correctPath="mailto:nospam@dojotoolkit.org">mailto:nospam@dojotoolkit.org</a><br/>
+
+	<a href="javascript:myFunc(1, 2, 3);" id="javascript">javascript:myFunc(1, 2, 3);</a><br/><br/>
+
+	<h3>Fixed linkpaths, should get repointed relative to this path.</h3>
+	why anyone would ever want to do ordinary links in a ajax app is beyond me, but here it goes.<br/>
+	<a href="../test_Button.html?key=value&value=key" id="relative">../test_Button.html?key=value&value=key</a><br/>
+
+	<h3>Inline eventhandlers</h3>
+	<a href="javascript:globalFunction();">Click for a global string</a><br/>
+	<a href="javascript:isGlobalSticky();">Click to test if global remains in memory after new content.</a> WARNING! It is allways better to include global code in the root page
+
+	<h3><a name="bottom">Scrips, needs executescripts=true</a></h3>
+	<span class="linkSimulants" id="inFileToggler">In file scripttest, Released</span><br/>
+
+	<span class="linkSimulants" id="extToggler">Ext. js file scripttest, Released</span><br/><br/>
+
+	<a href="#top">To top!</a>
+</body>
+</html>

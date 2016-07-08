@@ -1,0 +1,112 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				parseWidgets: false,
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.event.*");
+
+			var lastEvt;
+			function dump(evt){
+				var result = '';
+				for(var x in evt){
+					//Using String() wrapper appeases Safari 2.0.4.
+					var value = String(evt[x]);
+					if(!value){
+						value = "undefined";
+					}
+					result += (x+": "+value+"<br>");
+				}
+				return result;
+			}
+			function logMe(evt){
+				// FIXME: it appears that we're not actually getting this passed from IE!?!
+				//if(!evt){ evt = window.event; }
+				dojo.debug(evt.type + ' was fired');
+				lastEvt = dump(evt);
+				/*
+				for(var x in evt){
+					dojo.debug(x+": "+evt[x]);
+				}
+				dojo.debug("some event was fired");
+				*/
+			}
+			function dumpLast(){
+				(lastEvt ? dojo.debug(lastEvt) : dojo.debug('no event yet'));
+			}
+
+			function click1(){
+				dojo.debug("click1");
+			}
+
+			function click2(){
+				dojo.debug("click2");
+			}
+
+			function click3(){
+				dojo.debug("click3");
+			}
+			
+			function testMouseOver(evt){
+				dojo.debug("mouseover relatedTarget: " + evt.relatedTarget);
+			}
+			
+			function testMouseOut(evt){
+				dojo.debug("mouseout relatedTarget: " + evt.relatedTarget);				
+			}
+
+			function init(){
+				var clickNode = document.getElementById("click");
+				dojo.event.connect(clickNode, "onclick", dj_global, "logMe");
+
+				var dblNode = document.getElementById("dblClick");
+				dojo.event.connect(dblNode, "ondblclick", dj_global, "logMe");
+
+				var overNode = document.getElementById("mouseOver");
+				dojo.event.connect(overNode, "onmouseover", dj_global, "logMe");
+				//dojo.event.connect(overNode, "onmouseover", dj_global, "testMouseOver");
+				//dojo.event.connect(overNode, "onmouseout", dj_global, "testMouseOut");
+
+				var click2Node = document.getElementById("click2");
+				var c1fp = dojo.event.browser.addListener(click2Node, "onclick", click1);
+				var c2fp = dojo.event.browser.addListener(click2Node, "onclick", click2);
+				var c3fp = dojo.event.browser.addListener(click2Node, "onclick", click3);
+				dojo.event.browser.removeListener(click2Node, "onclick", c2fp);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		Check your javascript log; the scripts were all loaded in the head.
+
+		<div id="dblClick">
+			double-click test
+		</div>
+
+		<button id="click">
+			click test
+		</button>
+
+		<table id="mouseOver">
+			<tbody>
+				<tr>
+					<td>
+						mouseOver test
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<button id="click2">should output only click1/click3 (except on IE)</button>
+		<br><br>
+		<button onclick="dumpLast()">show entire most recent event object</button>
+		<br><br>
+	</body>
+</html>

@@ -1,0 +1,117 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>A chart renderer is used to provide the aggregate historical state of a point-->
+<!--over either some period of time or some number of values. The aggregate-->
+<!--information that can be provided depend upon the data type of values to be-->
+<!--rendered. As such, only the renderer types that apply to the current point's-->
+<!--data type are listed in the <b>Type</b> selection.</p>-->
+
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>Um processador de gr&aacute;ficos &eacute; utilizado para
+proporcionar o estado hist&oacute;rico agregado de um ponto ao longo de
+um per&iacute;odo de tempo ou de um n&uacute;mero de valores. A
+informa&ccedil;&atilde;o agregada que pode ser providenciada depende do
+tipo de dado dos valores a serem processados. Assim, apenas os tipos que
+podem ser processados para o tipo de dado em quest&aatilde;o
+ser&atilde;o mostrados na sele&ccedil;&atilde;o do <b>Tipo</b>.</p>
+
+<!--<p><b>Note!</b> Chart renderers depend upon <i>logged data</i>. If your point-->
+<!--has a logging type of "Do not log", your chart renderer may not display as-->
+<!--expected. The potential exception is the Table chart, which is able to use point-->
+<!--values cached in memory, but only if such values are available. The restart of-->
+<!--the system clears all point value caches.</p>-->
+
+<p><b>Aten&ccedil;&atilde;o!</b> Processadores de gr&aacute;ficos
+dependem dos <i>dados registrados</i>. Se o ponto tiver um tipo de
+registro "Do not log", o processador de gr&aacute; pode n&atilde;o
+exibir o gr&aacute;fico conforme esperado. A exce&ccedil;&atilde;o
+potencial &eacute; o gr&acute;fico Tabela, que pode exibir valores
+armazenados em mem&oacute;ria, mas apenas se estes valores estiverem
+dispon&iacute;veis. Reiniciar o sistema elimina todos os valores de
+pontos armazenados em mem&oacute;ria.</p>
+
+<!--<h1>Table charts</h1>-->
+<!--<p>This chart renderer displays a given number (the <b>Limit</b>) of most recent-->
+<!--historical values for the point. Values are displayed in a table providing the-->
+<!--(text-rendered) value, the value time, and any applicable annotation. This chart-->
+<!--is available to all data types.</p>-->
+
+<h1>Tabela</h1>
+<p>Este processador de gr&aacute;ficos mostra um determinado
+n&uacute;mero (o <b>Limite</b>) dos valores hist&oacute;ricos mais
+recentes para o ponto. Valores s&atilde;o mostrados em uma tabela
+fornecendo o valor (processado como texto), o tempo relacionado ao valor
+e qualquer anota&ccedil;&atilde;o aplic&aacute;vel. Este gr&aacute;fico
+est&aacute; dispon&iacute;vel a todos os tipos de dados.</p>
+
+<!--<h1>Statistics charts</h1>-->
+<!--<p>This chart displays a table of statistical information calculated from the-->
+<!--historical point values for the given <b>Time period</b>. The actual data-->
+<!--displayed depends upon the data type of the point. This chart is available to-->
+<!--all data types.</p>-->
+
+<h1>Gr&aacute;ficos estat&iacute;sticos</h1>
+<p>Este gr&aacute;fico mostra uma tabela de
+informa&ccedil;&otilde;es estat&iacute;sticas calculadas a partir dos
+valores hist&oacute;ricos do ponto para o <b>Per&iacute;odo de tempo</b>
+determinado. Os dados reais mostrados dependem do tipo de dado do ponto.
+Este gr&aacute;fico est&aacute; dispon&iacute;vel a todos os tipos de
+dados.</p>
+
+<!--<p><b>Binary and Multistate</b>: These data types produce a list of "start and-->
+<!--runtime" statistics for each state that the point experienced during the time-->
+<!--period. Each start and runtime item provides the number of times the state was-->
+<!--entered ("starts"), the total amount of time the point was in the state-->
+<!--("runtime"), and the percentage of the total period time that the runtime-->
+<!--represents.</p>-->
+
+<p><b>Bin&aacute;rio and Multi-estado</b>: Estes tipos de dados
+produzem uma lista de estat&iacute;sticas do tipo "in&iacute;cio e
+execu&ccedil;&atilde;o" para cada estado que o ponto experimentou
+durante o per&iacute;odo. Cada &iacute;tem in&iacute;cio e
+execu&ccedil;&atilde;o proporciona o n&uacute;mero de vezes que o estado
+("in&iacute;cio") foi atingido, o tempo total em que o ponto esteve no
+estado ("execu&ccedil;&atilde;o") e o percentual do tempo total do
+per&iacute;odo que o estado execu&ccedil;&atilde;orepresenta.</p>
+
+<!--<p><b>Numeric</b>: Numeric points produces the following statistical values for-->
+<!--the time period: minimum value and the time at which it occurred, maximum value-->
+<!--and the time at which it occurred, average, and sum (suitable for pulse-->
+<!--counting).</p>-->
+<!--<p><b>Alphanumeric</b>: The number of times the point changed over the period is-->
+<!--provided.</p>-->
+
+<p><b>Num&eacute;rico</b>: Pontos num&eacute;ricos produzem os
+seguintes valores estat&iacute;sticos para o per&iacute;odo de tempo:
+valor m&icaute;nimo e o momento (tempo) em que ocorreu, valor
+m&acaute;ximo e o momento (tempo) em que ocorreu, m&eacute;dia e soma
+(aplic&aacute;vel para contagem de pulsos).</p>
+<p><b>Alfanum&eacute;rico</b>: O n&uacute;mero de vezes que o ponto
+mudou de valor ao longo do tempo &eacute; fornecido..</p>
+
+<!--<h1>Image charts</h1>-->
+<!--<p>This chart displays a line bar graph of the points values over the given-->
+<!--period. It is available to points with numeric or multistate data types.</p>-->
+
+<h1>Gr&acute;ficos de Imagens</h1>
+<p>Este gr&acute;fico mostra uma This chart displays a
+gr&aacute;fico de barras em linha dos valores dos pontos ao longo do
+per&iacute;odo determinado. Pode ser utilizado para pontos com tipo de
+dados num&eacute;rico ou multi-estado.</p>

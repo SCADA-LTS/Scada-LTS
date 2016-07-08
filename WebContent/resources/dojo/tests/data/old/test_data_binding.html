@@ -1,0 +1,65 @@
+<html>
+	<head>
+		<title>dojo.data -- data-binding tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../../../dojo.js"></script>
+		<script type="text/javascript" src="../../jsunit_browser.js"></script>
+		<script type="text/javascript" src="BindingHack.js"></script>
+		<script type="text/javascript" src="test_data_binding.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.data.old.*");
+
+			function init(){
+				data_binding_init();
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+		<style type="text/css">
+			/***
+				The following is just an example of how to use the table.
+				You can override any class names to be used if you wish.
+			***/
+			table {
+				font-family:Lucida Grande, Verdana;
+				font-size:0.8em;
+				border:1px solid #ccc;
+				cursor:default;
+			}
+			table tr td { padding:0.2em; }
+			table thead { background-color:#ccc; }
+			table thead tr td{ }
+			table thead tr td.selected { background-color:#999; }
+			table tbody {
+				/* Seems like only FF/Moz respects this, that's too bad. */
+				height:18em;
+				overflow:auto;
+				overflow-x:hidden;
+			}
+			table tbody tr.alt { background-color:#ede; }
+			table tbody tr.selected,
+			table tbody tr.selected:hover { background-color:#ff3; }
+			table tbody tr:hover,
+			table tbody tr.alt:hover { background-color:#cfc; }
+		</style>
+	</head>
+	<body>
+		<p>The following works <strong>only</strong> with a browser capable of 
+		inline SVG--that means Firefox 1.5 as of 22-Nov-2005.</p>
+		<div id="putChartHere"></div>
+		<p>&nbsp;</p>
+		<p>Click the button to change an individual data item.
+		The two widgets (the Chart above and SortableTable below) will
+		automatically be notified of the change and will redisplay.
+		<button onClick="subtractFromItemFive()">Subtract: in item 5 let Y1 = Y1 - 15</button></p>
+		<p>&nbsp;</p>
+		<div id="putSortableTableHere"></div>
+	</button>
+	</body>
+</html>
+

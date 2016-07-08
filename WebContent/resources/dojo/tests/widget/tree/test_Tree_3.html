@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Tree");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	dojo.addOnLoad(function(){
+
+		var tree = dojo.widget.createWidget("Tree", {toggle: "wipe", expandLevel: 2});
+		document.body.appendChild(tree.domNode);
+
+		var rootNode = dojo.widget.createWidget("TreeNode", {title: "Root Node"});
+		tree.addChild(rootNode);
+
+		var node1 = dojo.widget.createWidget("TreeNode", {title: "Node 1"});
+		rootNode.addChild(node1);
+
+
+		var node2 = dojo.widget.createWidget("TreeNode", {title: "Node 2"});
+		node1.addChild(node2);
+
+
+		rootNode.addChild(dojo.widget.createWidget("TreeNode", {title: "Node 2"}));
+		var node3 = dojo.widget.createWidget("TreeNode", {title: "Node 3"});
+		rootNode.addChild(node3);
+		var node3_1 = dojo.widget.createWidget("TreeNode", {title: "Node 3.1"});
+		node3.addChild(node3_1);
+		node3_1.addChild(dojo.widget.createWidget("TreeNode", {title: "Node 3.1.1"}))
+
+
+		// Add some nodes the first element (rather than the last element) just for testing
+		for(var i=1;i<5;i++) {
+			node1.addChild(dojo.widget.createWidget("TreeNode", {title: "Node 1."+i}));
+		}
+
+		tree.addChild(dojo.widget.createWidget("TreeNode", {title: "Root Node 2"}));
+
+	});
+
+</script>
+</head>
+<body>
+
+<h4>Create tree programmatically</h4>
+
+
+</body>
+</html>

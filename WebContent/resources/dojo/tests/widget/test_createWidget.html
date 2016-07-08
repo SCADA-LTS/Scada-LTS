@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Non-markup widgets via createWidget</title>
+		<script type="text/javascript">
+			var djConfig = { isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.string.*");
+			dojo.require("dojo.widget.Button");
+			dojo.registerModulePath("acme", "tests/widget/acme");
+			dojo.require("acme.widget.Button");
+			//
+			// Normal tests
+			//
+			dojo.addOnLoad(function() {
+				var w;
+				w = dojo.widget.createWidget("dojo:Button", { caption: "Created as dojo:Button" });
+				dojo.byId("vanilla").appendChild(w.domNode);
+				w = dojo.widget.createWidget("Button", { caption: "Created as Button" });
+				dojo.byId("vanilla").appendChild(w.domNode);
+				
+				// Cannot create components via createWidget
+				//var w = dojo.widget.createWidget("dojo:foo");
+			});
+
+			//
+			// Test auto-load
+			//	
+			/* Commented out to support xdomain loading.
+			dojo.registerNamespace("acme", "acme.widget", 
+				function(name){ 
+						return "acme."+dojo.string.capitalize(name);
+			});
+			*/
+			dojo.addOnLoad(function() {
+				var w = dojo.widget.createWidget("acme:Button", { caption: "Created with auto-require as acme:Button" });
+				dojo.byId("al").appendChild(w.domNode);
+			});
+
+			//
+			// Test passing a dom node as the first argument to createWidget()
+			//
+
+		</script>
+	</head>
+	<body>
+		<h1>Test createWidget()</h1>
+		<div id="vanilla"></div>
+
+		<h1>Test createWidget()/auto-loading</h1>
+		<p>
+			This tests the ability for createWidget() to automatically load the code for a widget,
+			even though the user hasn't done a dojo.require() for the widget.
+		</p>
+		<div id="al"></div>
+	</body>
+</html>

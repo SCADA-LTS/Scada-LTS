@@ -1,0 +1,4 @@
+name=SmallDial
+type=dynamic
+text.x=5
+text.y=68

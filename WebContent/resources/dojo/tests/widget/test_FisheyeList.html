@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>FisheyeList Widget Demo</title>
+
+<script type="text/javascript">
+
+	var djConfig = { isDebug: true };
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.FisheyeList");
+
+	var counter = 1;
+	function addToFirstList(){
+		var fl = dojo.widget.byType("FisheyeList")[0];
+		var item = dojo.widget.createWidget("FisheyeListItem", { 
+				caption: "Dynamically Added "+counter,
+				iconSrc: "images/fisheye_"+counter+".png"
+			}
+		);
+		counter++;
+		fl.addChild(item);
+	}
+</script>
+</head>
+<body style="padding-left: 150px;">
+
+<p>HTML before</p>
+<p>HTML before</p>
+<button onclick="addToFirstList();">Add a new item to the first list</button>
+<p>HTML before</p>
+<p>Liberal trigger: move the mouse anywhere near the menu and it will start to expand:</p>
+<div dojoType="FisheyeList"
+	itemWidth="40" itemHeight="40"
+	itemMaxWidth="150" itemMaxHeight="150"
+	orientation="horizontal"
+	effectUnits="2"
+	itemPadding="10"
+	attachEdge="center"
+	labelEdge="bottom"
+>
+
+	<div dojoType="FisheyeListItem"
+		id="item1"
+		onclick="alert('click on' + this.caption + '(from widget id ' + this.widgetId + ')!');"
+		caption="Item 1"
+		iconsrc="images/fisheye_1.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Item 2"
+		iconsrc="images/fisheye_2.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Item 3"
+		iconsrc="images/fisheye_3.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_4.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Really Long Item Label"
+		iconsrc="images/fisheye_3.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_2.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_1.png">
+	</div>
+</div>
+
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>This was has strict triggering, so you actually have to mouse over the menu to make it start moving:</p>
+<div dojoType="FisheyeList"
+	itemWidth="40" itemHeight="40"
+	itemMaxWidth="150" itemMaxHeight="150"
+	orientation="horizontal"
+	effectUnits="2"
+	itemPadding="10"
+	attachEdge="center"
+	labelEdge="bottom"
+	conservativeTrigger="true"
+>
+
+	<div dojoType="FisheyeListItem"
+		id="item1b"
+		onclick="alert('click on' + this.caption + '(from widget id ' + this.widgetId + ')!');"
+		caption="Item 1"
+		iconsrc="images/fisheye_1.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Item 2"
+		iconsrc="images/fisheye_2.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Item 3"
+		iconsrc="images/fisheye_3.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_4.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Really Long Item Label"
+		iconsrc="images/fisheye_3.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_2.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_1.png">
+	</div>
+</div>
+</body>
+</html>

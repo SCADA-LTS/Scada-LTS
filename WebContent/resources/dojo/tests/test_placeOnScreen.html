@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" lang="en">
+	<head>
+		<title>placeOnScreen &amp; placeOnScreenPoint</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.html.util");
+			dojo.require("dojo.event.*");
+			function init() {
+				dojo.event.connect(document, "onclick", function(e) {
+					dojo.html.placeOnScreen("test", e.clientX, e.clientY, 5, false, ['TL', 'TR', 'BL', 'BR']);
+					dojo.html.placeOnScreen("test2", e.clientX, e.clientY, 0, false);
+				});
+			}
+			dojo.addOnLoad(init);
+		</script>
+		<style type="text/css">
+			html, body {
+				font-family : sans-serif;
+				cursor : crosshair;
+			}
+
+			#lipsum {
+				color : #ddd;
+			}
+
+			#test, #test2 {
+				position : absolute;
+				width : 200px;
+				height : 135px;
+				border : 1px solid;
+				color : blue;
+				font-weight : bold;
+			}
+
+			#test2 {
+				color : red;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="test">
+			placeOnScreenPoint
+		</div>
+		<div id="test2">
+			placeOnScreen
+		</div>
+
+		<div id="lipsum">
+			<h1>Demo of <code>keepOnScreen</code> and <code>keepOnScreenPoint</code></h1>
+			<p>
+			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nunc
+			lobortis nulla vel ante molestie facilisis. Fusce nec mauris. Integer
+			in velit. Suspendisse tellus. Nulla fermentum. Aliquam sapien erat,
+			vulputate vel, imperdiet eu, fringilla id, dui. Fusce in elit. Duis
+			condimentum tellus nec sem. Mauris hendrerit. Ut tortor lacus, volutpat
+			eu, auctor sed, porta eu, ipsum. Fusce ornare, diam blandit fermentum
+			imperdiet, nunc est posuere lacus, eget dignissim lacus velit porta mi.
+			Nullam sed tellus a est volutpat mattis. Nulla cursus erat ut enim.
+			Fusce nisi est, tempus id, facilisis eu, auctor a, quam. In feugiat
+			venenatis orci. Praesent sed est. Mauris sapien metus, consequat eu,
+			tincidunt eu, dapibus ut, massa. Nam nunc. Sed suscipit, diam non
+			commodo pretium, felis augue sollicitudin quam, ut gravida urna urna
+			nec sapien.
+			</p>
+			<p>Nunc eget purus. Vivamus pellentesque erat id massa. Ut nisi. Fusce
+			tincidunt nulla vel neque. Nulla facilisi. Maecenas molestie. Morbi
+			erat massa, pellentesque sit amet, mollis nec, sagittis nec, turpis.
+			Etiam non felis. Donec diam dui, posuere eget, pulvinar in, vestibulum
+			cursus, nulla. Aenean fringilla diam. In accumsan fringilla metus.
+			Pellentesque porta, mauris sed dictum blandit, orci augue fringilla
+			ante, sed sodales dui erat nec lacus. Vivamus felis elit, hendrerit
+			vel, dapibus vitae, euismod eget, velit.
+			</p>
+			<p>Nullam vitae justo placerat nunc elementum tempus. Suspendisse
+			molestie ligula nec pede. Mauris in nisi sit amet lectus ultrices
+			adipiscing. Mauris ante eros, lacinia sed, aliquam a, laoreet vel,
+			pede. Etiam sed nisl. Proin risus turpis, consectetuer sit amet, porta
+			et, laoreet at, nulla. Lorem ipsum dolor sit amet, consectetuer
+			adipiscing elit. Quisque placerat, lectus vitae consequat tempus,
+			ligula nunc tincidunt est, nec aliquam metus quam et sem. Vivamus
+			eleifend, tortor vel ultricies porta, urna sem interdum lectus, et
+			fermentum pede erat quis lacus. Phasellus volutpat, diam sit amet
+			volutpat sodales, felis diam volutpat mi, ac viverra nibh nibh ac
+			metus. Suspendisse potenti. Phasellus nisl magna, lacinia non, pretium
+			quis, dictum eget, risus. Sed rutrum. Phasellus at ipsum. Pellentesque
+			lacus lorem, porttitor eu, hendrerit eu, sodales id, lacus. Nunc nibh.
+			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nunc
+			porttitor.
+			</p>
+			<p>Etiam viverra pede in elit. Nunc accumsan fermentum arcu. In aliquet
+			nisl ac mauris. Nunc dolor. Etiam dapibus vestibulum lectus. Nulla quis
+			est nec lorem imperdiet porttitor. Morbi a ligula vitae leo feugiat
+			elementum. Vivamus augue sem, egestas nec, ultricies vitae,
+			consectetuer non, metus. Vestibulum ante ipsum primis in faucibus orci
+			luctus et ultrices posuere cubilia Curae; Quisque risus diam, ultricies
+			at, tempus ac, rutrum ac, nisl. Quisque non augue. Nullam a diam sit
+			amet magna volutpat porttitor. Donec convallis elit at tortor. Etiam
+			vulputate, libero sed placerat tincidunt, arcu erat auctor lacus, ac
+			adipiscing quam nibh eu quam. Fusce commodo pede eu velit. Aenean sit
+			amet nunc. Phasellus justo dui, congue in, pretium a, hendrerit in,
+			ante. Mauris ut dolor quis massa luctus interdum. Mauris quis libero.
+			Aenean accumsan tellus sed nunc.
+			</p>
+			<p>Nullam dictum pulvinar diam. In nisi leo, interdum eget, vestibulum
+			sit amet, blandit lacinia, justo. Donec nisi. Suspendisse at lacus. In
+			sit amet lorem. Sed pretium, leo sed pulvinar rhoncus, sapien urna
+			pulvinar urna, nec porta odio arcu eget quam. Cras varius condimentum
+			elit. Phasellus massa dolor, dictum adipiscing, ultricies et, rhoncus
+			eu, ligula. Nunc placerat ultrices ante. Praesent ac tortor. Quisque
+			suscipit, mauris sed scelerisque placerat, felis justo venenatis dui,
+			sit amet sodales lacus lorem ac diam. Lorem ipsum dolor sit amet,
+			consectetuer adipiscing elit.
+			</p>
+			<p>
+			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nunc
+			lobortis nulla vel ante molestie facilisis. Fusce nec mauris. Integer
+			in velit. Suspendisse tellus. Nulla fermentum. Aliquam sapien erat,
+			vulputate vel, imperdiet eu, fringilla id, dui. Fusce in elit. Duis
+			condimentum tellus nec sem. Mauris hendrerit. Ut tortor lacus, volutpat
+			eu, auctor sed, porta eu, ipsum. Fusce ornare, diam blandit fermentum
+			imperdiet, nunc est posuere lacus, eget dignissim lacus velit porta mi.
+			Nullam sed tellus a est volutpat mattis. Nulla cursus erat ut enim.
+			Fusce nisi est, tempus id, facilisis eu, auctor a, quam. In feugiat
+			venenatis orci. Praesent sed est. Mauris sapien metus, consequat eu,
+			tincidunt eu, dapibus ut, massa. Nam nunc. Sed suscipit, diam non
+			commodo pretium, felis augue sollicitudin quam, ut gravida urna urna
+			nec sapien.
+			</p>
+			<p>Nunc eget purus. Vivamus pellentesque erat id massa. Ut nisi. Fusce
+			tincidunt nulla vel neque. Nulla facilisi. Maecenas molestie. Morbi
+			erat massa, pellentesque sit amet, mollis nec, sagittis nec, turpis.
+			Etiam non felis. Donec diam dui, posuere eget, pulvinar in, vestibulum
+			cursus, nulla. Aenean fringilla diam. In accumsan fringilla metus.
+			Pellentesque porta, mauris sed dictum blandit, orci augue fringilla
+			ante, sed sodales dui erat nec lacus. Vivamus felis elit, hendrerit
+			vel, dapibus vitae, euismod eget, velit.
+			</p>
+			<p>Nullam vitae justo placerat nunc elementum tempus. Suspendisse
+			molestie ligula nec pede. Mauris in nisi sit amet lectus ultrices
+			adipiscing. Mauris ante eros, lacinia sed, aliquam a, laoreet vel,
+			pede. Etiam sed nisl. Proin risus turpis, consectetuer sit amet, porta
+			et, laoreet at, nulla. Lorem ipsum dolor sit amet, consectetuer
+			adipiscing elit. Quisque placerat, lectus vitae consequat tempus,
+			ligula nunc tincidunt est, nec aliquam metus quam et sem. Vivamus
+			eleifend, tortor vel ultricies porta, urna sem interdum lectus, et
+			fermentum pede erat quis lacus. Phasellus volutpat, diam sit amet
+			volutpat sodales, felis diam volutpat mi, ac viverra nibh nibh ac
+			metus. Suspendisse potenti. Phasellus nisl magna, lacinia non, pretium
+			quis, dictum eget, risus. Sed rutrum. Phasellus at ipsum. Pellentesque
+			lacus lorem, porttitor eu, hendrerit eu, sodales id, lacus. Nunc nibh.
+			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nunc
+			porttitor.
+			</p>
+			<p>Etiam viverra pede in elit. Nunc accumsan fermentum arcu. In aliquet
+			nisl ac mauris. Nunc dolor. Etiam dapibus vestibulum lectus. Nulla quis
+			est nec lorem imperdiet porttitor. Morbi a ligula vitae leo feugiat
+			elementum. Vivamus augue sem, egestas nec, ultricies vitae,
+			consectetuer non, metus. Vestibulum ante ipsum primis in faucibus orci
+			luctus et ultrices posuere cubilia Curae; Quisque risus diam, ultricies
+			at, tempus ac, rutrum ac, nisl. Quisque non augue. Nullam a diam sit
+			amet magna volutpat porttitor. Donec convallis elit at tortor. Etiam
+			vulputate, libero sed placerat tincidunt, arcu erat auctor lacus, ac
+			adipiscing quam nibh eu quam. Fusce commodo pede eu velit. Aenean sit
+			amet nunc. Phasellus justo dui, congue in, pretium a, hendrerit in,
+			ante. Mauris ut dolor quis massa luctus interdum. Mauris quis libero.
+			Aenean accumsan tellus sed nunc.
+			</p>
+			<p>Nullam dictum pulvinar diam. In nisi leo, interdum eget, vestibulum
+			sit amet, blandit lacinia, justo. Donec nisi. Suspendisse at lacus. In
+			sit amet lorem. Sed pretium, leo sed pulvinar rhoncus, sapien urna
+			pulvinar urna, nec porta odio arcu eget quam. Cras varius condimentum
+			elit. Phasellus massa dolor, dictum adipiscing, ultricies et, rhoncus
+			eu, ligula. Nunc placerat ultrices ante. Praesent ac tortor. Quisque
+			suscipit, mauris sed scelerisque placerat, felis justo venenatis dui,
+			sit amet sodales lacus lorem ac diam. Lorem ipsum dolor sit amet,
+			consectetuer adipiscing elit.
+			</p>
+		</div>
+
+	</body>
+</html>

@@ -1,0 +1,50 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  Use o <b> idioma do sistema</b> para alterar o idioma (padr&atilde;o) que o sistema usar&aacute; no caso em que a linguagem &eacute; desconhecida. Por exemplo, 
+  para relat&oacute;rios e e-mails que n&atilde;o estejam associados a usu&aacute;rios espec&iacute;ficos a linguagem padr&atilde;o aqui definida ser&aacute; utilizada.
+</p>
+
+<p>
+  O ScadaBR utiliza algumas ferramentas que n&atilde;o s&atilde;o i18n, ent&atilde;o voc&ecirc; ainda poder&aacute; receber algumas raras mensagens que s&oacute; aparecem em ingl&ecirc;s.
+</p>
+
+<h1>Criando um novo idioma</h1>
+<p>
+  O ScadaBR &eacute; internacionaliz&aacute;vel. Se o sistema n&atilde;o est&aacute; em seu idioma, &eacute; facil criar uma nova tradu&ccedil;&atilde;o:
+  Primeiramente, edite o arquivo "WEB-INF/classes/i18n.properties", adicionando a informa&ccedil;&atilde;o sobre a linguagem que vc gostaria 
+  de adicionar. O formato do dado &eacute; "&lt;c&oacute;digo do idioma&gt;=&lt;nome do idioma&gt;", onde "c&oacute;digo da linguagem" &eacute; o c&oacute;digo ISO 639-1 do idioma,
+  e "nome do idioma" &eacute; o nome conhecido do idioma. Isto adicionar&aacute; esta linguagem na lista de linguagens suportadas pelo sistema.
+</p>
+
+<p>
+  Agora, uma lista com as mensagens principais (padr&otilde;es) precisa ser preparada. Crie um novo arquivo no diret&oacute;rio "WEB-INF/classes/"
+  chamado "messages_&lt;c&oacute;digodoidioma&gt;.properties". Para simplificar o processo, pode-se copiar o arquivo j&aacute; existente de ingl&ecirc;s, renome&aacute;-lo
+  e depois fazer as tradu&ccedil;&otilde;es necess&aacute;rias.
+</p>
+
+<p>
+  Finalmente, voc&ecirc; deve traduzir os textos da documenta&ccedil;&atilde;o. Para faz&ecirc;-lo, crie um novo diret&oacute;rio sob o diret&oacute;rio "WEB-INF/dox/"
+   com o nome do c&oacute;digo da linguagem e fa&ccedil;a uma tradu&ccedil;&atilde;o de todos os documentos que est&atilde;o sobre o diret&oacute;rio "WEB-INF/dox/en/".
+</p>
+
+<p>
+  Para garantir que sua tradu&ccedil;&atilde;o persista nas novas vers&atilde;o do ScadaBR, por favor contribua conosco nos enviando os arquivos traduzidos
+  para que possamos adicion&aacute;-los nas novas vers&otilde;es.
+</p>

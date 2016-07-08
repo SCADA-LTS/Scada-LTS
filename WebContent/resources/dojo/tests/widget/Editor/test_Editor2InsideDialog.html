@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html>
+<head>
+<title>Editor2 Inside Dialog Dojo Test</title>
+<script type="text/javascript">
+	djConfig = {
+		isDebug: true,
+		dojoRichTextFrameUrl: "../../../src/widget/templates/richtextframe.html" //for xdomain
+	};
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Editor2");
+	dojo.require("dojo.widget.RichText");
+	dojo.require("dojo.widget.Dialog");
+</script>
+
+<script type="text/javascript">
+var dlg;
+function init(e) {
+	dlg = dojo.widget.byId("DialogContent");
+	dlg2 = dojo.widget.byId("DialogContent2");
+	
+}
+dojo.addOnLoad(init);
+
+</script>
+<style type="text/css">
+body { font-family : sans-serif; }
+.dojoDialog {
+	background : #eee;
+	border : 1px solid #999;
+	-moz-border-radius : 5px;
+	padding : 4px;
+}
+
+form {
+	margin-bottom : 0;
+}
+</style>
+</head>
+<body>
+<a href="javascript:dlg.show()">show dialog with editor2 inside it</a>
+<a href="javascript:dlg2.show()">show dialog with RichText inside it</a>
+
+<div dojoType="dialog" id="DialogContent" bgColor="red" bgOpacity="0.1" toggle="fade" toggleDuration="250">
+
+    <textarea dojoType="Editor2" name="editorContent"> some content
+
+    </textarea> 
+
+</div>
+
+<div dojoType="dialog" id="DialogContent2" bgColor="red" bgOpacity="0.1" toggle="fade" toggleDuration="250">
+
+    <textarea dojoType="RichText" name="editorContent"> some content
+
+    </textarea> 
+
+</div>
+
+</body>
+</html>

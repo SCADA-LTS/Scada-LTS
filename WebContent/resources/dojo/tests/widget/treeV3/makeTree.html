@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.profile");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	start = new Date();
+
+	dojo.addOnLoad(function() {
+		dojo.debug(new Date() - start);
+	});
+	
+</script>
+
+</head>
+<body>
+
+<h3>This test is benchmark of markup creation. Tree does NOT expand, because it has no controller</h3>
+
+<div dojoType="TreeV3">
+<div dojoType='TreeNodeV3' title='node.1' widgetId='node.1'>
+<div dojoType='TreeNodeV3' title='node.1.1' widgetId='node.1.1'>
+<div dojoType='TreeNodeV3' title='node.1.1.1' widgetId='node.1.1.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.1.2' widgetId='node.1.1.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.1.3' widgetId='node.1.1.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.1.4' widgetId='node.1.1.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.1.5' widgetId='node.1.1.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.2' widgetId='node.1.2'>
+<div dojoType='TreeNodeV3' title='node.1.2.1' widgetId='node.1.2.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.2.2' widgetId='node.1.2.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.2.3' widgetId='node.1.2.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.2.4' widgetId='node.1.2.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.2.5' widgetId='node.1.2.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.3' widgetId='node.1.3'>
+<div dojoType='TreeNodeV3' title='node.1.3.1' widgetId='node.1.3.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.3.2' widgetId='node.1.3.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.3.3' widgetId='node.1.3.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.3.4' widgetId='node.1.3.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.3.5' widgetId='node.1.3.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.4' widgetId='node.1.4'>
+<div dojoType='TreeNodeV3' title='node.1.4.1' widgetId='node.1.4.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.4.2' widgetId='node.1.4.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.4.3' widgetId='node.1.4.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.4.4' widgetId='node.1.4.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.4.5' widgetId='node.1.4.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.5' widgetId='node.1.5'>
+<div dojoType='TreeNodeV3' title='node.1.5.1' widgetId='node.1.5.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.5.2' widgetId='node.1.5.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.5.3' widgetId='node.1.5.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.5.4' widgetId='node.1.5.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.1.5.5' widgetId='node.1.5.5'>
+</div>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.2' widgetId='node.2'>
+<div dojoType='TreeNodeV3' title='node.2.1' widgetId='node.2.1'>
+<div dojoType='TreeNodeV3' title='node.2.1.1' widgetId='node.2.1.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.1.2' widgetId='node.2.1.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.1.3' widgetId='node.2.1.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.1.4' widgetId='node.2.1.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.1.5' widgetId='node.2.1.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.2' widgetId='node.2.2'>
+<div dojoType='TreeNodeV3' title='node.2.2.1' widgetId='node.2.2.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.2.2' widgetId='node.2.2.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.2.3' widgetId='node.2.2.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.2.4' widgetId='node.2.2.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.2.5' widgetId='node.2.2.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.3' widgetId='node.2.3'>
+<div dojoType='TreeNodeV3' title='node.2.3.1' widgetId='node.2.3.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.3.2' widgetId='node.2.3.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.3.3' widgetId='node.2.3.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.3.4' widgetId='node.2.3.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.3.5' widgetId='node.2.3.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.4' widgetId='node.2.4'>
+<div dojoType='TreeNodeV3' title='node.2.4.1' widgetId='node.2.4.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.4.2' widgetId='node.2.4.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.4.3' widgetId='node.2.4.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.4.4' widgetId='node.2.4.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.4.5' widgetId='node.2.4.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.5' widgetId='node.2.5'>
+<div dojoType='TreeNodeV3' title='node.2.5.1' widgetId='node.2.5.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.5.2' widgetId='node.2.5.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.5.3' widgetId='node.2.5.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.5.4' widgetId='node.2.5.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.2.5.5' widgetId='node.2.5.5'>
+</div>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.3' widgetId='node.3'>
+<div dojoType='TreeNodeV3' title='node.3.1' widgetId='node.3.1'>
+<div dojoType='TreeNodeV3' title='node.3.1.1' widgetId='node.3.1.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.1.2' widgetId='node.3.1.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.1.3' widgetId='node.3.1.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.1.4' widgetId='node.3.1.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.1.5' widgetId='node.3.1.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.2' widgetId='node.3.2'>
+<div dojoType='TreeNodeV3' title='node.3.2.1' widgetId='node.3.2.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.2.2' widgetId='node.3.2.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.2.3' widgetId='node.3.2.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.2.4' widgetId='node.3.2.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.2.5' widgetId='node.3.2.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.3' widgetId='node.3.3'>
+<div dojoType='TreeNodeV3' title='node.3.3.1' widgetId='node.3.3.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.3.2' widgetId='node.3.3.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.3.3' widgetId='node.3.3.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.3.4' widgetId='node.3.3.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.3.5' widgetId='node.3.3.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.4' widgetId='node.3.4'>
+<div dojoType='TreeNodeV3' title='node.3.4.1' widgetId='node.3.4.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.4.2' widgetId='node.3.4.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.4.3' widgetId='node.3.4.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.4.4' widgetId='node.3.4.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.4.5' widgetId='node.3.4.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.5' widgetId='node.3.5'>
+<div dojoType='TreeNodeV3' title='node.3.5.1' widgetId='node.3.5.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.5.2' widgetId='node.3.5.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.5.3' widgetId='node.3.5.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.5.4' widgetId='node.3.5.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.3.5.5' widgetId='node.3.5.5'>
+</div>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.4' widgetId='node.4'>
+<div dojoType='TreeNodeV3' title='node.4.1' widgetId='node.4.1'>
+<div dojoType='TreeNodeV3' title='node.4.1.1' widgetId='node.4.1.1'>
+</div>
+<div dojoType='TreeNodeV3' title='node.4.1.2' widgetId='node.4.1.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.4.1.3' widgetId='node.4.1.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.4.1.4' widgetId='node.4.1.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.4.1.5' widgetId='node.4.1.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.4.2' widgetId='node.4.2'>
+</div>
+<div dojoType='TreeNodeV3' title='node.4.3' widgetId='node.4.3'>
+</div>
+<div dojoType='TreeNodeV3' title='node.4.4' widgetId='node.4.4'>
+</div>
+<div dojoType='TreeNodeV3' title='node.4.5' widgetId='node.4.5'>
+</div>
+</div>
+<div dojoType='TreeNodeV3' title='node.5' widgetId='node.5'>
+</div>
+		
+</div>
+
+Total nodes: 105</body>
+</html>
+
+
+
+	

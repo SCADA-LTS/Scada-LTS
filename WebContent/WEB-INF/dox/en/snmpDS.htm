@@ -1,0 +1,26 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>The SNMP data source is used to gather data from device that implement the SNMP protocol. This data source performs polling and also accepts SNMP traps.</p>
+
+<h1>Configuration</h1>
+<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Update period</b> determines how often the SNMP points will be polled for data. The remainder of the fields are needed to configure the details of SNMP communication.</p>
+
+<h1>SNMP host testing</h1>
+<p>The host testing can be used to test both the data source configuration and the existence and value of a given OID (Object IDentifier). Enter the OID to test and click "Get OID value". The current configuration settings will be used to sent an SNMP get request. If successful, the OID value will be displayed. Otherwise, a message describing the error will be provided.</p>

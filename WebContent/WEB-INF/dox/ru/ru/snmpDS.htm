@@ -1,0 +1,26 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Обзор</h1>
+<p>Источник данных SNMP используется для сбора данных с устройства, которое реализует протокол SNMP. Этот источник данных выполняет опрос, а также принимает SNMP-ловушки.</p>
+
+<h1>Конфигурация</h1>
+<p>Каждый источник данных должен иметь произвольно заданное Имя. Значение поля Период обновления определяет частоту опроса объектов SNMP. Остальные поля нужны для редактирования настроек связи SNMP.</p>
+
+<h1>Проверка хоста SNMP </h1>
+<p>Проверка хоста может быть использована для проверки конфигурации источника данных, а также проверки наличия и значения заданного Идентификатора объекта (OID). Введите OID, который необходимо протестировать, и нажмите кнопку «Получить значение OID». Текущие настройки конфигурации будут использования для отправки SNMP-запроса. При успешном выполнении запроса, на экране выводится значение OID. В противном случае, выводится сообщение с описанием ошибки. </p>

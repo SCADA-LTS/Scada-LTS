@@ -1,0 +1,47 @@
+<html>
+<head>
+	<script type="text/javascript">
+		var djConfig = { isDebug: true,
+						baseScriptUri: "../../",
+						useXDomain: true,
+						xdWaitSeconds: 10,
+						 extraLocale: ['en-us', 'de', 'nl', 'ja', 'zh-cn', 'zh-tw']
+						};
+	</script>
+	<script type="text/javascript" src="http://www.tagneto.org/dojo/xd/dojo.js"></script>
+	<script type="text/javascript">
+		dojo.registerModulePath("dojo", "http://www.tagneto.org/dojo/xd/src");
+		dojo.require("dojo.widget.DropdownDatePicker");
+		dojo.require("dojo.widget.Button");
+		function outputValues(form){
+			for(var i=0;i<form.elements.length;i++){
+				var e = form.elements[i];
+				dojo.debug("submit: name="+e.name+" id="+e.id+" value="+e.value);
+			}
+			return false;
+		}
+	</script>
+
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+<h1> DropDownDatePicker tests </h1>
+<p>
+Here are some date pickers positioned statically.
+Drop down should appear below the input box.
+</p>
+Explode:
+<input dojoType="dropdowndatepicker" value="06/28/2006" containerToggle="explode" containerToggleDuration="500">
+
+
+<div><select><option>taking up space</option></select></div>
+
+
+	<div dojoType="button">Submit</div>
+</body>
+</html>

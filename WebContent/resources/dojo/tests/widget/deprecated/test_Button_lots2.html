@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.widget.*");
+			dojo.require("dojo.widget.Button");
+			
+			function outputObjectInfo(x, tid){
+				if(!tid){
+					tid = 0;
+				}
+				/*
+				if(!indent){ indent = 0; }
+				var pa = [];
+				for(var x=0; x<indent; x++){
+					pa.push(".");
+				}
+				indent++;
+				var prefix = pa.join("");
+				alert("WTF?"+x);
+				*/
+				tid++;
+				var prefix = ".";
+				for(var blah=0; blah<tid; blah++){
+					prefix+=".";
+				}
+				for(var y in x){
+					if((typeof x[y] == "object")&&(x[y] != x.nodeRef)){
+						if(!(x instanceof Array && !isNaN(parseInt(y)))){
+							dojo.hostenv.println(prefix+" "+y+": "+x[y]);
+						}
+						outputObjectInfo(x[y], tid);
+					} else {
+						dojo.hostenv.println(prefix+" "+y+": "+x[y]);
+					}
+				}
+			}
+
+			function init(){
+				// var start = new Date();
+				var start = new Date();
+				var last = null;
+				for(var x = 0; x<100; x++){
+					dojo.widget.createWidget("Button", { label: "button "+x }, document.body, "last");
+				}
+				dojo.debug("constructing ", x, " items took ", (new Date())-start, "ms");
+			}
+
+			dojo.event.connect(dojo.hostenv, "loaded", dj_global, "init");
+		</script>
+	</head>
+	<body>
+		Check your javascript log; the scripts were all loaded in the head.
+
+		<button id="testDojoButton" dojoType="button" label="this is a test button!" 
+			onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
+			you shouldn't be seeing this
+		</button>
+	</body>
+</html>

@@ -1,0 +1,75 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  The Modbus serial data source is used to gather data from a local modbus network, accessible via RS232 or RS485 
+  (requires adapter) communication. This is a polling data source.
+</p>
+
+<h1>Configuration</h1>
+<p>
+  Every data source requires a <b>Name</b>, which can be any description. The <b>Update period</b> determines how often 
+  the Modbus equipment is polled for data. Checking <b>Quantize</b> will cause the data source startup to be delayed
+  so that pollings occur at a "rounded" point in time (e.g. if polling is every 10 seconds, polls will occur on the 10th 
+  second, the 20th second, etc). Otherwise, polling will begin immediately. The <b>Timeout</b> and <b>Retries</b> fields 
+  determine the system behaviour in the case of a polling failure. The data source waits the given number of timeout 
+  milliseconds for a response from the network. If it is not received the request will be retried the given number of 
+  times.
+</p>
+<p>
+  The <b>Contiguous batches only</b> checkbox can be used to specify that the modbus implementation should not attempt
+  to optimize disparate value requests into a single request. Checking this field will cause the implementation to only
+  make requests for multiple values when those value form contiguous register space.
+</p>
+<p>
+  The <b>Create slave monitor points</b> checkbox indicates whether slave monitor points should automatically be 
+  created by the data source. A slave monitor point is a binary point that indicates the current status of a slave. If a
+  polling request to a slave fails due to timeout or error, the slave is considered off line. These points can then be 
+  used for control just like other points.
+</p>
+<p>
+  The <b>Max read bit count</b>, <b>Max read register count</b>, and <b>Max write register count</b> count fields 
+  control how large batch requests can be. The Modbus specification provides defaults for these values, but some 
+  hardware may impose different limits.
+</p>
+<p>
+  Serial communication is controlled with the <b>Baud rate</b>, <b>Flow control in</b>, <b>Flow control out</b>, 
+  <b>Data bits</b>, <b>Stop bits</b>, and <b>Parity</b> values. The <b>Echo</b> setting can be used with RS485 networks 
+  as appropriate.
+</p>
+<p>
+  The <b>Encoding</b> value determines how Modbus requests are formatted. Most production hardware uses RTU formatted 
+  messages. See the Modbus documentation for your equipment to determine how to set this field.
+</p>
+<p>
+  The <b>Concurrency</b> value determines how Modbus requests are synchronized. A value of <b>Transport</b> means that
+  any request must complete before the next can begin. <b>Slave</b> means that any request to a slave must complete 
+  before another for the same slave can begin, but requests to separate slaves can occur concurrently. <b>Function</b>
+  means that any request of a particular slave/function must complete before another with the same slave/function can
+  begin. The Function value allows the highest level of concurrency possible in modbus serial, but may cause data 
+  corruption in some networks depending on duplexing.
+</p>
+
+<h1>Node scanning</h1>
+<p>
+  Networks can be scanned for slave nodes using the scan utility. This feature iterates from slave id 1 to 240, sending 
+  each a ReadExceptionStatus (function code 7). If a response is received (using the given timeout and retries 
+  settings), the node is considered available. Note that not all equipment supports this function code, so false 
+  negatives are possible.
+</p>

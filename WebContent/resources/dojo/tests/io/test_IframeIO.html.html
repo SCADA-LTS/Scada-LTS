@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true,
+				dojoIframeHistoryUrl: "../../iframe_history.html" //for xdomain testing.
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.io.*");
+			dojo.require("dojo.io.IframeIO");
+
+			var ctr = 0;
+			var foo;
+
+			function sendIt(){
+				var bindArgs = {
+					formNode: document.getElementById("uploadForm"),
+					mimetype: "text/html",
+					transport: "IframeTransport",
+					content: {
+						increment: ctr++,
+						fileFields: "ul1"
+					},
+					handler: function(type, data, evt){
+						dojo.debug("Type:", type);
+						dojo.debug("First H1 tag text:", data.getElementsByTagName("h1")[0].innerHTML);
+						foo = evt; // to get at afterwards
+					}
+				};
+				var request = dojo.io.bind(bindArgs);
+			}
+		</script>
+	</head>
+	<body>
+		<form action="IframeIOResponse.html" id="uploadForm" 
+			method="GET">
+			<input type="text" name="foo" value="bar">
+			<input type="button" onclick="sendIt();" value="send it!">
+		</form>
+		<p>
+			Successful response should be something like <i>"This is a SUCCESSFUL HTML response for an IframeIO request."</i>
+		</p>
+	</body>
+</html>

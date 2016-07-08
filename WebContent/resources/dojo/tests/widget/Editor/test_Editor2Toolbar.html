@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<title>Dojo Editor Toolbar Test</title>
+
+<script type="text/javascript">
+	var djConfig = { isDebug: true };
+</script>
+
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Editor2Toolbar");
+
+	dojo.addOnLoad(function(){
+		// alert(dojo.widget.byId("toolbar").domNode);
+	});
+</script>
+<h1>EXPERIMENTAL: THIS IS NOT WORKING YET</h2>
+this is text above the toolbar
+<div dojoType="Editor2Toolbar" widgetId="toolbar"></div>
+this is text after the toolbar
+<br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+this is more text

@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>Dojo: Test of style.js: test get[Margin|Border|Content]Box[Width|Height]</title>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+
+dojo.require("dojo.html.layout");
+dojo.require("dojo.event");
+</script>
+<style type="text/css"> 
+body { cursor: wait; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; }
+h2, h3 { font-size: 1em; margin-top: 2.5em; } h3 { color: black; font-weight: normal; font-style: italic; } 
+.test { border: 1px solid green; }  
+.bar { background-color:#FFCCFF; height: 8px; overflow: hidden }
+.success { background-color:lightgreen;  }
+.failure { background-color:#FFCECE;  }
+#report { white-space: nowrap; font-family: "Courier New", Courier, mono; font-size: 11px; }
+</style>
+
+<!---------------------------------------------------------------------------->
+<h2><code>getBoxSizing</code></h2>
+
+For browsers that support box-sizing or -moz-box-sizing) styles (not IE).
+<p class="test" id="contentBox" style="border: 1px solid green"></p>
+<p class="test" id="borderBox" style="-moz-box-sizing: border-box; box-sizing: border-box;"></p>
+
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	var contentBox = document.getElementById('contentBox');
+	contentBox.innerHTML = 'ASSERT content-box == ' + dojo.html.getBoxSizing(contentBox);
+	
+	var borderBox = document.getElementById('borderBox');
+	borderBox.innerHTML = 'ASSERT border-box == ' + dojo.html.getBoxSizing(borderBox);
+});
+</script>
+
+<!---------------------------------------------------------------------------->
+<h2><code>get[content|inner|outer][Width|Height]</code></h2>
+
+<ul>
+  <li>Colored bars bracket test boxes to reveal exterior margins</li>
+  <li>NaN indicates a value that could not be calculated</li>
+  <li>Styles are all specified inline. Other tests should be run with other style specifications.</li>
+  <li>Test boxes are DIVs. Other tests should be run on other elements. </li>
+</ul>
+
+<h3>Test Report</h3>
+<pre>
+<div id="report"></div>
+</pre>
+<div id="pacify"><h1>Working...</h1></div>
+
+<h3>Test Boxes</h3>
+<div id="boxTests"></div>
+
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+
+var sizes = [ '', 'width: auto; height: auto;', 'width: 450px; height: 80px;', 'width: 15em; height: 6em;' ];
+var margins = [ '', 'margin: 0;', 'margin: auto;', 'margin: 8px;', 'margin: 1em;' ];
+var paddings = [ '', 'padding: 8px;', 'padding: 1em;' ];
+var borders = [ '', 'border: 1px solid green;', 'border: 0.5em solid green;' ];
+var boxes = [ '', '-moz-box-sizing: border-box; box-sizing: border-box;' ];
+var positionAbs = [ 0, 1 ];
+
+var h = '';
+var styles = [ ];
+var results = [ ];
+var index = 0;
+
+for (abs in positionAbs) 
+{
+	if (abs == 1){
+		var pre_amble = '<div class="bar">&nbsp;</div><div style="position: relative; height: 70px;">';
+		var post_amble = '</div><div class="bar">&nbsp;</div>';
+		var positionStyle = 'position: absolute;';
+
+		results.push('<h4>Test position: absolute</h4>');
+	}else{
+
+		var pre_amble = '<div class="bar">&nbsp;</div>';
+		var post_amble = '<div class="bar">&nbsp;</div>';
+		var positionStyle = '';
+
+		results.push('<h4>Test position: relative</h4>');
+	}
+
+	for (bx in boxes) 
+	{
+		results.push('<h4>Test box-sizing: ' + (boxes[bx] ? boxes[bx] : '(none)') + '</h4>');
+		for (var bo in borders) 
+		{
+			results.push('<h4>Test border: ' + (borders[bo] ? borders[bo] : '(none)') + '</h4>');
+			for (var pa in paddings)
+			{
+				results.push('<h4>Test padding: ' + (paddings[pa] ? paddings[pa] : '(none)') + '</h4>');
+				for (var si in sizes)
+				{
+					results.push('<h4>Test size: ' + (sizes[si] ? sizes[si] : '(none)') + '</h4>');
+					for (var ma in margins)
+					{
+						var style = [ paddings[pa], margins[ma], sizes[si], borders[bo], boxes[bx], positionStyle ].join(' ');
+						styles.push(style);
+						h = '<div id="box-' + index + '" style="' + style + '">' + 'Box: ' + style + '</div>';
+						results.push(pre_amble + h + post_amble);
+						index++;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+var count = index;
+
+results.push(h);
+document.getElementById('boxTests').innerHTML = results.join('');
+
+window.setTimeout(processMetrics, 500);
+
+function reportHtml(inTest, inStyle, inFail)
+{
+	//return '<div class="' + (inFail ? 'failure' : 'success') + '">' + inTest + (inFail ? ' FAILED (returned NaN)' : ' succeeded') + ' for style ' + inStyle + '</div>';
+	return '<div>' + inTest + ' <span class="' + (inFail ? 'failure' : 'success') + '">' + (inFail ? 'FAILED (returned NaN)' : 'succeeded') + '</span> for style [' + inStyle + ']</div>';
+}
+
+function processMetrics()
+{
+	var boxes = new Array(count);
+	for (var i=0; i<index; i++){
+		boxes[i] = document.getElementById('box-' + i);
+	}
+	var results = [ ];
+	for (var i=0; i<index; i++)	{
+		var mbox = dojo.html.getMarginBox(boxes[i]);
+		var bbox = dojo.html.getBorderBox(boxes[i]);
+		var cbox = dojo.html.getContentBox(boxes[i]);
+		results.push(reportHtml('getMarginBox&nbsp;', styles[i], 
+			isNaN(mbox.width || mbox.height)));
+		results.push(reportHtml('getBorderBox&nbsp;', styles[i], 
+			isNaN(bbox.width || bbox.height)));
+		results.push(reportHtml('getContentBox', styles[i], 
+			isNaN(cbox.width || cbox.height)));
+	}
+	document.getElementById('pacify').innerHTML = '';
+	document.getElementById('report').innerHTML = results.join('');
+	document.body.style.cursor = 'default';
+}
+
+function dumpMetrics(node)
+{
+	var content = dojo.html.getContentBox(node);
+	var inner = dojo.html.getBorderBox(node);
+	var outer = dojo.html.getMarginBox(node);
+	var metrics = [
+		'content: ' + content.width + ', ' + content.height,
+		'inner:   ' + inner.width + ', ' + inner.height,
+		'outer:   ' + outer.width + ', ' + outer.height
+//	,'margin-left: ' + dojo.html.getComputedStyle(node, 'margin-left')
+//	,'getMarginWidth: ' + dojo.html.getMarginWidth(node)
+//		,'margin-top: ' + dojo.html.getStyle(node, 'margin-top')
+//		,'getMarginHeight: ' + dojo.html.getMarginHeight(node)
+//		,'padding-left: ' + dojo.html.getStyle(node, 'padding-left')
+//		,'padding-top: ' + dojo.html.getStyle(node, 'padding-top')
+//		,'getPaddingWidth: ' + dojo.html.getPaddingWidth(node)
+//		,'getPaddingHeight: ' + dojo.html.getPaddingHeight(node)
+//		,'border-left-width: ' + dojo.html.getStyle(node, 'border-left-width')
+//		,'border-top-width: ' + dojo.html.getStyle(node, 'border-top-width')
+//		,'border-top-style: ' + dojo.html.getStyle(node, 'border-top-style')
+//		,'getBorderWidth: ' + dojo.html.getBorderWidth(node)
+//		,'getBorderHeight: ' + dojo.html.getBorderHeight(node)
+//		,'offsetHeight: ' + node.offsetHeight
+//		,'clientHeight: ' + node.clientHeight
+//		,'scrollHeight: ' + node.scrollHeight
+//		,'offsetWidth: ' + node.offsetWidth,
+//		'clientWidth: ' + node.clientWidth,
+//		'paddingWidth: ' + dojo.html.getPaddingWidth(node)
+	];
+	return '<pre>' + metrics.join('<br>') + '</pre>';
+}
+});
+</script>
+
+

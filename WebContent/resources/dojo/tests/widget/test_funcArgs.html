@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+	<title>Widget function parameter test</title>
+		<link rel="stylesheet" type="text/css" href="css/demos.css" />
+	<script type="text/javascript">
+		var djConfig = {isDebug: true /*, debugAtAllCosts: true*/ };
+	</script>
+	
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.Button");
+		dojo.hostenv.writeIncludes();
+	</script>
+	
+	<script>
+		function widgetClick() {
+			dojo.debug('widget [' + this.widgetId + '] was clicked');
+		}
+		dojo.addOnLoad(function(){
+			dojo.widget.Button.prototype.onClick=function(){dojo.debug("default click handler"); }
+		});
+	</script>
+</head>
+
+<body>
+<h1>Widget function parameter test</h1>
+	<p>This tests specifying a function name as a parameter to a widget.
+	In this case, the specified function will override the function inside the
+	widget, rather than connecting (dojo.event.connect) after.
+	<p>
+	Clicking this button should cause both the "default click handler" and the custom handler to fire.
+	<button dojoType="Button" onclick='dojo.debug("connected");'>
+			connected
+	</button>
+	<p>
+	If you click this button, only the widgetClick handler should fire:
+	<button dojoType="Button" onclick='widgetClick'>
+			replaced
+	</button>
+</body>
+</html>

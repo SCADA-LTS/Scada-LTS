@@ -1,0 +1,217 @@
+<html>
+<head>
+<title>Dojo ComboBox Widget Test</title>
+
+<script type="text/javascript"> 
+	var djConfig = {
+		isDebug: true};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.ComboBox");
+	function setVal1(val){
+		dojo.byId('value1').value=val;
+	}
+	function setVal2(val){
+		dojo.byId('value2').value=val;
+	}
+	function setVal3(val){
+		dojo.byId('value3').value=val;
+	}
+	var combo;
+	dojo.addOnLoad(init);
+	function init(){
+		combo = dojo.widget.createWidget("dojo:ComboBox", {name:"prog",autocomplete:false,dataUrl:"comboBoxData.js"}, dojo.byId("progCombo"));
+	}
+</script>
+<script>
+	function toggleDisabled(button, widget){
+		widget = dojo.widget.byId(widget);
+		button = dojo.byId(button);
+		widget.disabled ? widget.enable() : widget.disable();
+		button.innerHTML= widget.disabled ? "Enable" : "Disable";
+	}
+</script>
+
+</head>
+
+<body>
+<h1>Dojo ComboBox Widget Test</h1>
+<p>
+A combobox is like a text &lt;input&gt; field (ie, you can input any value you want),
+but it also has a list of suggested values that you can choose from.
+The drop down list is filtered by the data you have already typed in.
+</p>
+<form action="#" method="GET">
+ 
+    <p>ComboBox #1: inlined data, autocomplete=false, default value of CA (California)</p>
+	<select name="state" dojoType="combobox" style="width: 300px;" name="foo.bar1" autocomplete="false"
+		onValueChanged="setVal1"
+	>
+		<option value="AL">Alabama</option>
+		<option value="AK">Alaska</option>
+		<option value="AS">American Samoa</option>
+		<option value="AZ">Arizona</option>
+		<option value="AR">Arkansas</option>
+		<option value="AE">Armed Forces Europe</option>
+		<option value="AP">Armed Forces Pacific</option>
+		<option value="AA">Armed Forces the Americas</option>
+		<option value="CA" selected>California</option>
+		<option value="CO">Colorado</option>
+		<option value="CT">Connecticut</option>
+		<option value="DE">Delaware</option>
+		<option value="DC">District of Columbia</option>
+		<option value="FM">Federated States of Micronesia</option>
+		<option value="FL">Florida</option>
+		<option value="GA">Georgia</option>
+		<option value="GU">Guam</option>
+		<option value="HI">Hawaii</option>
+		<option value="ID">Idaho</option>
+		<option value="IL">Illinois</option>
+		<option value="IN">Indiana</option>
+		<option value="IA">Iowa</option>
+		<option value="KS">Kansas</option>
+		<option value="KY">Kentucky</option>
+		<option value="LA">Louisiana</option>
+		<option value="ME">Maine</option>
+		<option value="MH">Marshall Islands</option>
+		<option value="MD">Maryland</option>
+		<option value="MA">Massachusetts</option>
+		<option value="MI">Michigan</option>
+		<option value="MN">Minnesota</option>
+		<option value="MS">Mississippi</option>
+		<option value="MO">Missouri</option>
+		<option value="MT">Montana</option>
+		<option value="NE">Nebraska</option>
+		<option value="NV">Nevada</option>
+		<option value="NH">New Hampshire</option>
+		<option value="NJ">New Jersey</option>
+		<option value="NM">New Mexico</option>
+		<option value="NY">New York</option>
+		<option value="NC">North Carolina</option>
+		<option value="ND">North Dakota</option>
+		<option value="MP">Northern Mariana Islands</option>
+		<option value="OH">Ohio</option>
+		<option value="OK">Oklahoma</option>
+		<option value="OR">Oregon</option>
+		<option value="PA">Pennsylvania</option>
+		<option value="PR">Puerto Rico</option>
+		<option value="RI">Rhode Island</option>
+		<option value="SC">South Carolina</option>
+		<option value="SD">South Dakota</option>
+		<option value="TN">Tennessee</option>
+		<option value="TX">Texas</option>
+		<option value="UT">Utah</option>
+		<option value="VT">Vermont</option>
+		<option value="VI">Virgin Islands, U.S.</option>
+		<option value="VA">Virginia</option>
+		<option value="WA">Washington</option>
+		<option value="WV">West Virginia</option>
+		<option value="WI">Wisconsin</option>
+		<option value="WY">Wyoming</option>
+	</select>    
+	<br>
+	<div>Value: <input id="value1" disabled></div>
+	<hr>
+
+	<p>ComboBox #2: dataUrl, autocomplete=true:</p>
+	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
+		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar"
+		onValueChanged="setVal2"
+	>
+	<br>
+	<div>Value: <input id="value2" disabled></div>
+	<hr>
+		
+    <p>ComboBox #3: initially disabled, dataUrl, autocomplete=false:</p>
+ 	<input id="combo3" dojoType="ComboBox" value="this should never be seen - it is replaced!"
+		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar" autocomplete="false"
+		onValueChanged="setVal3" disabled
+	>
+	<br>
+	<div>Value: <input id="value3" disabled></div>
+	<div>
+		<button id="but" onclick='toggleDisabled("but", "combo3")'>Enable</button>
+	</div>
+	<hr>
+
+	<p>Remote mode combobox</p>
+	<p>
+	Clicking any letter in the box below will display a select-list generated from user specified java code.
+	Note that the same select-list is always displayed.
+	This isn't a dojo bug; it's just because remoteComboBoxData.js (our dummy test code)
+	isn't filtering based on the search string like it should.
+	</p>
+	
+	<input dojoType="combobox" value="this should be replaced!"
+				dataUrl="remoteComboBoxData.js?search=%{searchString}" mode="remote">
+	<hr>
+	
+	<p>Key value JSON object</p>
+	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
+		dataUrl="comboBoxDataKeyValue.js" style="width: 300px;" name="foo.bar">
+	<hr>
+
+    <p>Multiple combo boxes on a single line:</p>
+ 	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
+		dataUrl="comboBoxData.js" style="width: 200px;" name="foo.bar" autocomplete="false"
+	>
+ 	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
+		dataUrl="comboBoxData.js" style="width: 200px;" name="foo.bar" autocomplete="false"
+	>
+	<hr>
+
+	<p>A combo created by createWidget</p>
+	<input id="progCombo">
+	<hr>
+
+	<input type="submit">
+	
+</form>
+<p>
+this is some text below the combo boxes. It shouldn't get pushed out of the way when search results get returned.
+also: adding a simple combo box to test IE bleed through problem:
+</p>
+
+<select>
+  <option>test for</option>
+  <option>IE bleed through</option>
+  <option>problem</option>
+</select>
+<h3>Some tests:</h3>
+<ol>
+<li>Note: This is not really a ComboBox - it is actually an AutoCompleter.</li>
+<li>Type in D - dropdown shows Delaware and District of columbia. [Would be nice if it bolded the D's in the dropdown list!]</li>
+<li>Type in DX - input box shows DX and no dropdown.</li>
+<li>Open dropdown, click an item, it selects and closes dropdown.</li>
+<li>Click triangle icon - dropdown shows. Click it again - dropdown goes.</li>
+<li>Check that you can type in more than required (e.g. alaba for alabama) and it still correctly shows alabama</li>
+<li>Tab into the combo works, list should not apear.</li>
+<li>Tab out of the combo works - closes dropdown and goes to next control (focus should not go to the dropdown because tabindex="-1").</li>
+<li>Do the dropdown and click outside of it - the dropdown disappears.</li>
+<li>Javascript disabled -> fallback to old style combo?</li>
+<li>Can you paste in the start of a match? [no]</li>
+<li>Backspace to start - dropdown shows all all items</li>
+<li>Backspace deselects last character [Borked: currently you have to backspace twice]</li>
+<li>Press down key to open dropdown</li>
+<li>Down and up keys select previous/next in dropdown.</li>
+<li>Non-alpha keys (F12, ctrl-c, whatever) should not affect dropdown.</li>
+<li>Press down arrow to highlight an item, pressing enter selects it and closes dropdown.</li>
+<li>Press down arrow to highlight an item, pressing space selects it and closes dropdown.</li>
+<li>Check that pressing escape undoes the previous action and closes the dropdown</li>
+<li>Check that pressing escape again clears the input box.</li>
+<li>In IE, mouse scroll wheel scrolls through the list. Scrolls by 1 item per click even if user has set mouse to scroll more than 1 in mouse settings. Only scrolls if text input has focus (page scrolling works as normal otherwise)</li>
+<li>In IE, dropdown list does not go behind the second combo (special code to manage this).</li>
+<li>Check dropdown is aligned correctly with bottom of the text input</li>
+<li>Probably should try the combo in a relative div or absolute div and see where the dropdown ends up. (Strongly suspect problems in this area in IE - boo)</li>
+<li>Try repeatably droppingdown and closing the dropdown. Shouldnt get hung [sometimes flicks closed just after opening due to timers, but not a biggie]</li>
+<li>Check that default selection of the text makes sense. e.g. text is selected after picking an item, on tabbing in to text input etc)</li>
+<li>Check that dropdown is smooth [looks uggy on second keypress in FF - hides then shows]</li>
+<li>Clear the field. Type in A and then tab *very quickly* and see if the results make sense (the dropdown is on a timer - searchTimer)</li>
+<li>Clear the field and enter an invalid entry and tab out e.g. Qualude. Does that make sense given the combobox setup options?</li>
+<li>(Add any other tests here)</li>
+</ol>
+<!-- maintain state of combo box if user presses back/forward button -->
+<form name="_dojo_form" style="display:none" disabled="true"><textarea name="stabile" cols="80" rows="10"></textarea></form>
+</body>
+</html>

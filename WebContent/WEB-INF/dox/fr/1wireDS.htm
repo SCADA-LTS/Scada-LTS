@@ -1,0 +1,27 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Vue d'ensemble</h1>
+<p>Une source de donn&eacute;es 1-wire est utilis&eacute;e pour collecter les donn&eacute;es d'un r&eacute;seau local de communication 1-wire accessible via RS232 ou RS485 (n&eacute;cessite un adaptateur). C'est une source de donn&eacute;es de type polling.</p>
+<p>La source de donn&eacute;es supporte les changements physique de configuration du r&eacute;seau. Pour chaque modification topographique de r&eacute;seau d&eacute;tect&eacute;e, un nouveau scan est r&eacute;alis&eacute; . Si tous les points sont encore localisables apr&egrave;s le scan, aucun &eacute;v&egrave;nement n'est remont&eacute;.</p>
+
+<h1>Configuration</h1>
+<p>Chaque source de donn&eacute;es exige un <b>Nom</b>, librement choisi. La s&eacute;lection du <b>Port</b> fournit la liste de tous les ports s&eacute;rie disponibles du mat&eacute;riel H&ocirc;te. Cela correspond au port sur lequel le 1-wire est connect&eacute;. <b>Mise &agrave; jour</b> d&eacute;termine la fr&eacute;quence d'interrogation du r&eacute;seau.</p>
+
+<h1>Scan du r&eacute;seau</h1>
+<p>Les r&eacute;seaux peuvent &ecirc;tre scann&eacute;es pour rechercher tous les p&eacute;riph&eacute;riques pr&eacute;sents (si le mat&eacute;riel le permet) . Cette fonction va localiser &agrave; travers les mailles coupl&eacute;es tous les &eacute;quipement du r&eacute;seau. Les r&eacute;sultats seront repr&eacute;sent&eacute;s dans un tableau comprenant l'adresse et la description de l'appareil, pour ajouter rapidement un dispositif en tant que point cliquez sur l'ic&ocirc;ne <img src="images/icon_comp_add.png"/>. Un nouveau point sera cr&eacute;e avec les attributs par d&eacute;faut de l'appareil.</p>

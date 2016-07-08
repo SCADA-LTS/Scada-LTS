@@ -1,0 +1,78 @@
+<!--
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+-->
+<title>Editor Test (RichText + Toolbar)</title>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript" src="../../../src/profile.js"></script>
+<script type="text/javascript">
+	// delete dojo["profile"]; // hack!
+	dojo.require("dojo.profile");
+	dojo.require("dojo.event.*");
+	dojo.require("dojo.widget.Editor");
+	dojo.profile.start("init");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+/*
+// If we wanted to do this pragmatically...
+dojo.addOnLoad(function(){
+	var div = document.getElementById("editable");
+	var editor = dojo.widget.createWidget("RichText", {}, div);
+});
+*/
+dojo.addOnLoad(function(){
+	dojo.profile.end("init");
+	dojo.profile.dump(true);
+});
+</script>
+
+<div id="editable" dojoType="Editor" widgetId="editdiv" items="formatblock;|;insertunorderedlist;insertorderedlist;|;bold;italic;underline;strikethrough;|;createLink;"><!-- don't want space here
+
+--><h1>Lorem Ipsum</h1>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
+<h2>More Ipsum...</h2>
+<p>Sed sollicitudin suscipit risus. Nam ullamcorper. Sed nisl lectus, pellentesque nec, malesuada eget, ornare a, libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+<ul>
+	<li>list item one
+		<ol>
+			<li>sub list item two
+			<li>this is a sub item two
+		</ol>
+	<li>more wonderful list items
+	<li>and a last one for every list fan out there
+</ul>
+<p>In lacinia varius odio. Fusce elementum dolor at massa. Suspendisse ullamcorper arcu vitae enim feugiat ultrices. Duis neque metus, gravida sit amet, mollis at, nonummy id, eros. Mauris aliquet quam quis nibh. Curabitur sit amet arcu et erat commodo tincidunt.
+</div>
+
+<hr>
+
+<div id="foo">
+	I'm not editable! (Yet?)
+</div>
+
+<script type="text/javascript">
+	dojo.event.connect(document.getElementById("foo"), "ondblclick", "editDiv");
+	function editDiv(e) {
+		var editor = dojo.widget.manager.getWidgetById("editdiv");
+		//alert(editor._richText);
+		var rte = dojo.widget.createWidget("RichText", {}, e.target);
+		editor.setRichText(rte);
+		dojo.event.disconnect(document.getElementById("foo"), "ondblclick", "editDiv");
+	}
+</script>
+
+<hr>
+
+<div dojoType="Editor">
+<p>An editable area with a full toolbar</p>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
+<h2>More Ipsum...</h2>
+<p>Sed sollicitudin suscipit risus. Nam ullamcorper. Sed nisl lectus, pellentesque nec, malesuada eget, ornare a, libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+
+<img src="http://tmp.x/5.php">
+
+</div>
+

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+    var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+    delete dojo["profile"];
+    dojo.require("dojo.profile");
+
+    dojo.require("dojo.widget.*");
+    dojo.require("dojo.widget.TreeV3");
+    dojo.require("dojo.widget.TreeNodeV3");
+    dojo.require("dojo.widget.TreeDocIconExtension");
+    dojo.require("dojo.widget.TreeDisableWrapExtension");
+    dojo.require("dojo.widget.TreeBasicControllerV3");
+    dojo.hostenv.writeIncludes();
+</script>
+<style>
+* {
+    font-size:16px;
+}
+</style>
+</head>
+<body>
+    
+
+<h2>Simplest tree</h2>
+
+<div style="display:none">  
+    <img src="../../../src/widget/templates/images/TreeV3/i.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/i_half.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/expand_plus.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/i_long.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/document.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/open.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/closed.gif">
+</div>  
+
+
+<!-- Prevent div from collapsing beyond table width. This ensures there's enough space for all
+HTML elements in the tree -->
+<!-- Use table because it collapses to the content width.
+If use div it will be 100% width and CSS expression above will only make the width of
+the above div constant, no matter what body width is. Only initial body width will be used to
+set the width of the tree. After that it will remain the same.
+Table changes it's width to allow content to fit inside, this fixes the problem -->
+<!-- btw, there can be no comment between div and table, or firstChild is invalid -->
+
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>
+
+<div dojoType="TreeDocIconExtension" widgetId="docIcons"></div>
+<div dojoType="TreeDisableWrapExtension" widgetId="disableWrap"></div>
+
+
+<div dojoType="TreeV3" listeners="docIcons;controller;disableWrap" expandLevel="2">
+    <div dojoType="TreeNodeV3" title="Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong title">
+        <div dojoType="TreeNodeV3" title="Item 1.1<br/>multiline<br/>test">
+            <div dojoType="TreeNodeV3" title="Item 1.1.1<br/>blas"></div>
+    </div>
+        <div dojoType="TreeNodeV3"
+title="<div style='border:1px red solid;width:700px;height:200px'><span>Rich HTML node</span><div style='border:1px blue solid'>Body Body</div></div>" 
+>
+            <div dojoType="TreeNodeV3" title="Item 1.2.1">
+                <div dojoType="TreeNodeV3" title="Item 1.2.1.1"></div>
+            </div>
+            <div dojoType="TreeNodeV3" title="Item 1.2.2"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Item 1.3">
+            <div dojoType="TreeNodeV3" isFolder="true" title="Empty folder"></div>
+            <div dojoType="TreeNodeV3" title="Item 1.3.2"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Item 1.4">
+            <div dojoType="TreeNodeV3" title="Item 1.4.1"></div>
+        </div>
+    <div dojoType="TreeNodeV3" title="Item 2"></div>
+    </div>
+</div>
+
+<input type="button" value="Profile dump" onclick="dojo.profile.dump(true)">
+
+</body>
+</html>

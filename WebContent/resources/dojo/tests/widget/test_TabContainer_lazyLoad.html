@@ -1,0 +1,55 @@
+
+<meta http-equiv="Context-Type" content="text/html; charset=UTF-8">
+<!--
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>TabContainer Demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+
+<script type="text/javascript">
+	var djConfig = { isDebug: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.TabContainer");
+	dojo.require("dojo.widget.Tooltip");
+	dojo.require("dojo.widget.LinkPane");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.Button");
+</script>
+
+<style type="text/css">
+body {
+	font-family : sans-serif;
+}
+
+/* add padding to each contentpane inside the tab container, and scrollbar if necessary */
+.dojoTabPane {
+  padding : 10px 10px 10px 10px;
+  overflow: auto;
+}
+
+</style>
+</head>
+
+<body>
+	<h1>Test for tab lazy loading</h1>
+	<ol>
+		<li>Watch the debug messages below the tab container to make sure
+		that the lazy-load tab isn't loaded until you click it.
+		<li>Also check that the "refresh on show" tab is reloaded every time you click it
+	</ol>
+	<div id="mainTabContainer" dojoType="TabContainer" style="width: 100%; height: 20em;">
+		<div id="initialTab" dojoType="ContentPane" href="tab1.html" label="Initial Tab"></div>
+		<div id="refreshTab" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Refresh On Show Tab" onload="dojo.debug('loaded refresh-on-show-tab');"></div>
+		<div id="preloadTab" dojoType="ContentPane" href="doc0.html" label="Preload Tab" onload="dojo.debug('loaded preload tab');"></div>
+		<div id="lazyTab" style="display: none;" dojoType="ContentPane" href="doc1.html" label="Lazy Load Tab" onload="dojo.debug('loaded lazy tab');"></div>
+	</div>
+
+</body>
+</html>

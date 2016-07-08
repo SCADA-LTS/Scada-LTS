@@ -1,0 +1,25 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Обзор</h1>
+<p>Данный источник используется для сбора обобщенной информации с устройств Pachube. В Pachube данные организованы в виде лент, которые являются совокупностью потоков данных. При создании в ScadaBR точка Pachube задается указанием ленты и идентификатора потока. Этот источник данных работает в режиме опроса.</p>
+<h1>Конфигурация</h1>
+<p>
+  Каждый источник данных должен иметь произвольно заданное Имя. Значение Периода обновления задает частоту HTTP-запросов к Pachube. Обратите внимание, что, в зависимости от Вашей учетной записи в Pachube, могут быть ограничения API-запросов. Подробное описание смотрите по ссылке: <a href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a>
+</p>
+<p>Для доступа к частным данным необходимо API-ключ. Вы можете найти его в разделе «Мои настройки» при входе в учетную запись Pachube. Значения полей Время ожидания и Повторы определяют время ожидания данных с сервера и количество повторных попыток в случае ошибки подключения. Если заданное количество повторов исчерпано, генерируется событие об исключительной ошибке источника данных.</p>

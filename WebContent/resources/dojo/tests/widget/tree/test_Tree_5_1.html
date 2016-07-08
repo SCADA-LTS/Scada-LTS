@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Tree");
+	dojo.require("dojo.widget.TreeLoadingController");
+	dojo.hostenv.writeIncludes();
+</script>
+
+
+</head>
+<body>
+
+<ul>
+<li>New nodes are loaded dynamically.
+<li>Tree is expanded to level 1, some nodes are autoexpanded also.
+<li>DND is working in between mode.
+</ul>
+
+<div dojoType="TreeLoadingController" RPCUrl="http://tmp.x/5.php" widgetId="treeController" DNDcontroller="create"></div>
+
+
+
+<div dojoType="Tree" expandLevel="1" widgetId="firstTree" controller="treeController" DNDMode="between" DNDAcceptTypes="firstTree">
+    <div dojoType="TreeNode" title="Node 1"></div>
+    <div dojoType="TreeNode" expandLevel="1" title="Expanded to level 1">
+        <div dojoType="TreeNode" title="Node 2.1"></div>
+        <div dojoType="TreeNode" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNode" expandLevel="2" title="Expanded to level 2" isFolder="true">
+    </div>
+
+</div>
+
+
+</body>
+</html>

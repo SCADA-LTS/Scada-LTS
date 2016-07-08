@@ -1,0 +1,124 @@
+<html>
+<head>
+	<script type="text/javascript">
+		var djConfig = { isDebug: true,
+						baseScriptUri: "../../",
+						useXDomain: true,
+						xdWaitSeconds: 10,
+						 extraLocale: ['en-us', 'de', 'nl', 'ja', 'zh-cn', 'zh-tw']
+						};
+	</script>
+	<script type="text/javascript" src="http://www.tagneto.org/dojo/xd/dojo.js"></script>
+	<script type="text/javascript">
+		dojo.registerModulePath("dojo", "http://www.tagneto.org/dojo/xd/src");
+		dojo.require("dojo.widget.DropdownDatePicker");
+		dojo.require("dojo.widget.Button");
+		function outputValues(form){
+			for(var i=0;i<form.elements.length;i++){
+				var e = form.elements[i];
+				dojo.debug("submit: name="+e.name+" id="+e.id+" value="+e.value);
+			}
+			return false;
+		}
+	</script>
+
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+<h1> DropDownDatePicker tests </h1>
+<p>
+Here are some date pickers positioned statically.
+Drop down should appear below the input box.
+</p>
+Wipe: with value="today" startDate="2006-10-01"
+<input dojoType="dropdowndatepicker" value="today" startDate="2006-10-01" containerToggle="wipe" containerToggleDuration="300">
+Explode:
+<input dojoType="dropdowndatepicker" value="06/28/2006" containerToggle="explode" containerToggleDuration="500">
+Fade:
+<input dojoType="dropdowndatepicker" value="06/30/2006" containerToggle="fade" containerToggleDuration="500">
+	
+<p>There are also tests for menu positioning in the corners of this page (upper right,
+lower left, lower right</p>
+<div style="position: absolute; right: 0; top: 0;">
+	<input dojoType="dropdowndatepicker" value="07/10/2006" containerToggle="fade">
+</div>
+<div style="position: absolute; left: 0; bottom: 0;">
+	<input dojoType="dropdowndatepicker" value="07/10/2006" containerToggle="fade">
+</div>
+<div style="position: absolute; right: 0; bottom: 0;">
+	<input dojoType="dropdowndatepicker" value="07/10/2006" containerToggle="fade">
+</div>
+
+<div><select><option>taking up space</option></select></div>
+
+<div style="border:3px solid blue;padding:1px;">
+	<p>Some localized DropdatePickers inside a form</p>
+	<form onSubmit="return outputValues(this);">
+		<p>Parser is barfing here in Eclipse+Safari.  Why? value="today"</p>
+			<input name="dddp1" dojoType="dropdowndatepicker" value="today" />
+		<p>US format, empty</p>
+			<input name="dddp2" dojoType="dropdowndatepicker" lang="en-us" />
+		<p>US format with initial date of 2006-06-26</p>
+			<input name="dddp3" dojoType="dropdowndatepicker" value="2006-06-26" lang="en-us" />
+		<p>US format with initial date of 6/26/2006 (deprecated - input must be RFC3339 in the future)</p>
+			<input name="dddp4" dojoType="dropdowndatepicker" value="06/26/2006" lang="en-us" />
+		<p>With initial date of 1969-04-25 and a custom format dd/MM/yyyy</p>
+			<input name="dddp5" dojoType="dropdowndatepicker" inputName="mydate1" value="1969-04-25" displayFormat="dd/MM/yyyy" />
+		<p>With initial date of 1969-04-25 and a custom format %d/%m/%y (posix style dateFormat attribute deprecated in 0.4)</p>
+			<input name="dddp6" dojoType="dropdowndatepicker" inputName="mydate2" value="1969-04-25" dateformat="%d/%m/%Y" />
+		<p>In German:</p>
+			<input name="dddp7" dojoType="dropdowndatepicker" value="2006-06-28" lang="de" />
+		<p>In Dutch:</p>
+			<input name="dddp8" dojoType="dropdowndatepicker" value="2006-06-28" lang="nl" />
+		<p>In Japanese:</p>
+			<input name="dddp9" dojoType="dropdowndatepicker" value="2006-06-28" lang="ja" />
+		<p>In Chinese (PRC):</p>
+			<input name="dddp10" dojoType="dropdowndatepicker" value="2006-06-28" lang="zh-cn" />
+		<p>In Chinese (Taiwan):</p>
+			<input name="dddp11" dojoType="dropdowndatepicker" value="2006-06-28" lang="zh-tw" />
+		<p>US format with initial date of 2006-06-26 and long formatting (parse not supported)</p>
+			<input name="dddp12" dojoType="dropdowndatepicker" value="2006-06-26" formatLength="long" lang="en-us" />
+		<p>German format with initial date of 2006-06-26 and long formatting (parse not supported)</p>
+			<input name="dddp13" dojoType="dropdowndatepicker" value="2006-06-26" formatLength="long" lang="de" />
+		<p>Value sent as RFC3339</p>
+			<input name="dddp14" dojoType="dropdowndatepicker" saveFormat="rfc" value="2006-06-26" lang="en-us" />
+		<p>Custom save format: yyyy!dd!mm</p>
+			<input name="dddp15" dojoType="dropdowndatepicker" saveFormat="yyyy!dd!MM" value="2006-06-26" lang="en-us" />
+		<p>Value sent as time since Unix Epoch</p>
+			<input name="dddp16" dojoType="dropdowndatepicker" saveFormat="posix" value="2006-06-26" lang="en-us" />
+		<br />
+		<input type="submit" />
+	</form>
+</div>	
+Wipe:
+	<input dojoType="dropdowndatepicker" value="06/26/2006" containerToggle="wipe">
+Explode:
+	<input dojoType="dropdowndatepicker" value="06/28/2006" containerToggle="explode">
+Fade:
+	<input dojoType="dropdowndatepicker" value="06/30/2006" containerToggle="fade">
+	<input dojoType="dropdowndatepicker" value="06/28/2006" containerToggle="explode">
+	
+	<p>The quick brown fox jumped over the lazy dog.</p>
+	<p>The quick brown fox jumped over the lazy dog.</p>
+	<p>The quick brown fox jumped over the lazy dog.</p>
+	<p>The quick brown fox jumped over the lazy dog.</p>
+	<p>The quick brown fox jumped over the lazy dog.</p>
+	<p>The quick brown fox jumped over the lazy dog.</p>
+	<p>The quick brown fox jumped over the lazy dog.</p>
+	<p>The quick brown fox jumped over the lazy dog.</p>
+	
+Wipe:
+	<input dojoType="dropdowndatepicker" value="06/26/2006" containerToggle="wipe">
+Explode:
+	<input dojoType="dropdowndatepicker" value="06/28/2006" containerToggle="explode">
+Fade:
+	<input dojoType="dropdowndatepicker" value="06/30/2006" containerToggle="fade">
+
+	<div dojoType="button">Submit</div>
+</body>
+</html>

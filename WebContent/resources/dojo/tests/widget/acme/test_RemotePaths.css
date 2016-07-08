@@ -1,0 +1,9 @@
+/* only for testing remote css content loading into contentPane*/
+
+#bgimagetest{
+	background-image: url(../images/tools.gif);
+}
+
+#bgcolortest{
+	background-color: navy;
+}

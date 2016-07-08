@@ -1,0 +1,166 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Vis&atilde;o Geral</h1>
+<p>Detectores de eventos compostos s&atilde;o utilizados para detectar
+condi&ccedil;&otilde;es entre m&uacute;ltiplos eventos ao mesmo tempo. Ao inv&eacute;s de detectar
+quando um valor se encontra muito alto ou baixo, se determinado
+dispositivo est&aacute; num dado estado ou se encontra-se em determinado dia da
+semana, detectores compostos permitem definir rela&ccedil;&otilde;es de l&oacute;gicas entre
+v&aacute;rios eventos. Por exemplo, voc&ecirc; pode detectar situa&ccedil;&otilde;es quando um
+valor est&aacute; muito alto ou baixo e outro dispositivo est&aacute; em determinado
+estado, mas n&atilde;o em um determinado dia da semana.</p>
+
+<!--<h1>Overview</h1>-->
+<!--<p>Compound event detectors are used to detect conditions among-->
+<!--multiple events at the same time. Instead of only noting when a value is-->
+<!--too high or low, a device is in a given state, or if it is a given day-->
+<!--of the week, compound detectors allow you to define logical-->
+<!--relationships among all of these things. For example, you can detect-->
+<!--situations when a value is too high or low and another device is in a-->
+<!--given state, but not on a given day of the week.</p>-->
+
+<p>Detectores compostos agem como detectores de condi&ccedil;&otilde;es l&oacute;gicas
+entre os detectores simples j&aacute; existentes. Assim, todos os detectores
+necess&aacute;rios &agrave; logica em quest&atilde;o devem existir no sistema e j&aacute; terem sido
+configurados. Veja detectores de data points e eventos agendados para
+mais informa&ccedil;&otilde;es.</p>
+
+<!--<p>Compound detectors act as detectors of logical conditions among-->
+<!--existing simple detectors. As such, all of the simple detectors that you-->
+<!--want to build relationships among must already exist. See Event-->
+<!--Detectors and Scheduled Events for more information.</p>-->
+
+<p>Note que embora existem muitos outros tipos de eventos, somente
+detectores de data points e eventos agendados podem ser utilizados na
+contru&ccedil;&atilde;o de detectores compostos.</p>
+
+<!--<p>Note that although there are many event types, only point event-->
+<!--detectors and scheduled events may be used in the construction of-->
+<!--compound event detectors.</p>-->
+
+<h1>Lista de Detectores Compostos</h1>
+<p>Para adicionar um novo, clique no &iacute;cone <img
+	src="images/multi_bell_add.png" />. Para editar um existente, clique
+no nome do detector na lista.</p>
+
+<!--<h1>Compound detector list</h1>-->
+<!--<p>To add a new compound detector, click the <img-->
+<!--	src="images/multi_bell_add.png" /> icon. To edit an existing detector,-->
+<!--click the detector's name in the "Compound event detectors" list.</p>-->
+
+<h1>Configura&ccedil;&otilde;es</h1>
+<p>O <b>nome</b> do detector &eacute; usado para referenciar o mesmo quando
+na ocorr&ecirc;ncia de alarmes, ou como fonte de um tratador de eventos. &Eacute;
+recomendado (mas n&atilde;o obrigat&oacute;rio) que um nome &uacute;nico seja dado a cada
+detector.</p>
+
+<!--<h1>Editing compound detectors details</h1>-->
+<!--<p>The detector's <b>name</b> is used to visually reference the-->
+<!--detector during alarm conditions, or as the source for an event handler.-->
+<!--It is recommended that a unique name be used for each detector, but it-->
+<!--is not required.</p>-->
+
+<p>O <b>N&iacute;vel de alarme</b> determina se o evento iniciar&aacute; um alarme
+quando for ativado e, caso afirmativo, sua gravidade. Veja a p&aacute;gina de
+ajuda para mais informa&ccedil;&otilde;es sobre Alarmes.</p>
+
+<!--<p>The <b>Alarm level</b> determines whether the detector raises an-->
+<!--alarm when active, and if so the severity of the alarm. See the general-->
+<!--help page for information on Alarms.</p>-->
+
+<p>A sele&ccedil;&atilde;o da op&ccedil;&atilde;o <b>Retornar ao normal</b> determina que o
+alarme iniciado pelo evento automaticamente retornar&aacute; ao normal quando
+se tornar inativo. Se esta op&ccedil;&atilde;o n&atilde;o for selecionada, qualquer alarme
+iniciado dever&aacute; ser manualmente reconhecido.</p>
+
+<!--<p>Selecting <b>Return to normal</b> determines if the alarm raised-->
+<!--when the detector is active is automatically returned to normal when the-->
+<!--detector becomes inactive. If Return to normal is not selected, any-->
+<!--alarms raised will need to be manually acknowledged.</p>-->
+
+<p>Um detector composto pode ser <b>Desabilitado</b> para que n&atilde;o
+seja executado. Isto pode ser &uacute;til caso voc&ecirc; n&atilde;o queira apagar o
+detector, mas tamb&eacute;m n&atilde;o tenha interesse em sua opera&ccedil;&atilde;o naquele
+momento. O sistema automaticamente desabilita detectores compostos caso
+os detectores simples associados ao mesmo sejam desabilitados ou
+exclu&iacute;dos.</p>
+
+<!--<p>A compound detector can be <b>Disabled</b> so that it does not-->
+<!--run. This can be useful if you do not wish to delete the detector, but-->
+<!--also do not currently want it enabled. Also, the system may-->
+<!--automatically disable a detector if the point detectors or scheduled-->
+<!--events that it depends upon are deleted or disabled.</p>-->
+
+<p>Para salvar um detector composto, clique no &iacute;cone <img
+	src="images/save.png" />. Para apagar, clique em <img
+	src="images/delete.png" />.</p>
+
+<!--<p>To save a compound detector, click the <img src="images/save.png" />-->
+<!--icon at the top right. To delete an existing detector, click the <img-->
+<!--	src="images/delete.png" /> icon.</p>-->
+
+<h1>Condi&ccedil;&otilde;es</h1>
+<p>As condi&ccedil;&otilde;es s&atilde;o argumentos l&oacute;gicos constru&iacute;dos a partir de
+detectores simples (detectores de data points e de eventos agendados).
+S&atilde;o utilizados os tipos mais simples de elementos de l&oacute;gicas, como a
+opera&ccedil;&atilde;o E (&amp;&amp;), OU (||) e N&Atilde;O (!). S&atilde;o utilizados s&iacute;mbolos e
+n&atilde;o palavras pada evitar ambiguidades. Podem ser utilizados par&ecirc;nteses
+para agrupamento de l&oacute;gicas.</p>
+
+<!--<h1>Condition building</h1>-->
+<!--<p>Conditions are logical statements built from existing simple-->
+<!--detectors (i.e. point detectors or scheduled events). Typical logical-->
+<!--operators are used to define the overall condition, including and-->
+<!--(&amp;&amp;), or (||), and not (!). Symbols are used instead of words in-->
+<!--order to avoid ambiguity. Parentheses may be used to group sections of-->
+<!--the statement.</p>-->
+
+<p>Detectores de data points e eventos agendados s&atilde;o referenciados
+por um caractere &uacute;nico ("P" e "S", respectivamente) seguidos por um
+n&uacute;mero de identifica&ccedil;&atilde;o interna do item. Por conveni&ecirc;ncia, a lista dos
+detectores simples que podem ser utilizados &eacute; fornecida. Clicar sobre o
+nome dos mesmos ir&aacute; inser&iacute;-los na l&oacute;gica no lugar em que o cursor se
+encontra.</p>
+
+<!--<p>Point detectors and scheduled events are referenced using a-->
+<!--shorthand derived from a type indicator ("P" for point detector, "S" for-->
+<!--scheduled event), and the internal identification number of the item.-->
+<!--For convenience, the list of all available simple detectors is provided-->
+<!--in a tree below the compound detector details. The detector names are-->
+<!--suffixed with the shorthand id that will be used. Clicking on the-->
+<!--detector name will cause the identifier to be inserted into the-->
+<!--condition statement at the current cursor location.</p>-->
+
+<p>Um clique no &iacute;cone <img src="images/accept.png" /> ir&aacute; chamar a
+rotina de valida&ccedil;&atilde;o da l&oacute;gica criada.</p>
+
+<!--<p>Clicking the <img src="images/accept.png" /> icon causes the-->
+<!--condition statement to be validated.</p>-->
+
+<h1>Ordem de proced&ecirc;ncia</h1>
+<p>Os operadoes l&oacute;gicos tem a seguinte ordem de preced&ecirc;ncia:
+par&ecirc;nteses, N&Atilde;O, E, OU. Para mais informa&ccedil;&otilde;es sobre as regras de
+preced&ecirc;ncia, veja a se&ccedil;&atilde;o: "Mathematical precedence" <a
+	href="http://en.wikipedia.org/wiki/Order_of_operations" target="_blank">aqui</a>.</p>
+
+<!--<h1>Operator precedence</h1>-->
+<!--<p>Logical operators have the following order of precedence:-->
+<!--parentheses, not, and, or. For more information on precedence rules, see-->
+<!--the "Mathematical precedence" section <a-->
+<!--	href="http://en.wikipedia.org/wiki/Order_of_operations" target="_blank">here</a>.</p>-->

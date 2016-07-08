@@ -1,0 +1,453 @@
+
+<html>
+
+<head>
+	<title>ScriptSrcIO Page</title>
+	<style>
+		.sectionTest{
+			display: none;
+		}
+	</style>
+	<script language="JavaScript" type="text/javascript">
+		// Dojo configuration
+		djConfig = { 
+			// preventBackButtonFix: true,
+			//debugAtAllCosts: true,
+			isDebug: true
+		};
+	</script>
+	<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+	<!-- script language="JavaScript" type="text/javascript" src="../../src/io/ScriptSrcIO.js">< / script -->
+	<script language="JavaScript" type="text/javascript">
+		dojo.require("dojo.io.*");
+		dojo.require("dojo.io.ScriptSrcIO");
+		//dojo.hostenv.writeIncludes();
+		
+		var simpleTestPage = "scriptsrc/Test.js";
+		
+		dojo.addOnLoad(function(){
+			//Notice this is a global variable.
+			transport = dojo.io.ScriptSrcTransport;
+		});
+
+		window.onload = function(){
+			transport = dojo.io.ScriptSrcTransport;
+		}
+
+		function getForceSingleRequestValue(){
+			return gi("forceSingleRequestCheckbox").checked;
+		}
+
+		function getPreventCacheValue(){
+			return gi("preventCacheCheckbox").checked;
+		}
+
+		function getContentValue(){
+			if(gi("contentCheckbox").checked){
+				return { content1: "value1", content2: "value2", content3: "value3" };
+			}else{
+				return null;
+			}
+		}
+
+		function insertLotsOfParams(){
+			gi("myQuery").value = "paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four&paramOne=one&paramTwo=two&paramThree=three&paramFour=four";
+		}
+
+		function createSimpleKwArgs(){
+			return {
+				url: simpleTestPage,
+				mimetype: "text/javascript",
+				transport: "ScriptSrcTransport",
+				load: loadFinished,
+				error: loadError,
+				timeout: loadTimeout,
+				timeoutSeconds: 10,
+				forceSingleRequest: getForceSingleRequestValue(),
+				preventCache: getPreventCacheValue(),
+				content: getContentValue()
+			};
+		}
+
+		function testLoad(){
+			transport.removeScripts();
+			
+			var kwArgs = createSimpleKwArgs();
+			kwArgs.checkString = "myTasks";
+			
+			dojo.io.bind(kwArgs);
+		}
+		
+		function testBadLoad(){
+			transport.removeScripts();
+			
+			var kwArgs = createSimpleKwArgs();
+			kwArgs.checkString = "myTasks2";
+			
+			dojo.io.bind(kwArgs);
+		}
+		
+		function testEndlessLoad(){
+			transport.removeScripts();
+			
+			var kwArgs = createSimpleKwArgs();
+			kwArgs.checkString = "myTasks2";
+			kwArgs.timeoutSeconds = 0;
+			kwArgs.timeout = function() {alert("This function should not be called.")};
+			
+			dojo.io.bind(kwArgs);
+		}
+		
+		function testEndlessLoadWithNoCheckStringOrListener(){
+			transport.removeScripts();
+			
+			var kwArgs = createSimpleKwArgs();
+			kwArgs.timeoutSeconds = 0;
+			kwArgs.load = function() {alert("load: This function should not be called.")};
+			kwArgs.error = function() {alert("error: This function should not be called.")};
+			kwArgs.timeout = function() {alert("timeout: This function should not be called.")};
+			kwArgs.timeoutSeconds = 0;
+			
+			dojo.io.bind(kwArgs);
+		}
+		
+		function testJsonp(){
+			transport.removeScripts();
+			
+			var url = gi("myJsonpUrl").value;
+			if(!url){
+				alert("Please enter a URL for the test");
+				return;
+			}
+			
+			var query = gi("myJsonpQuery").value;
+			if(query){
+				query = "?" + query;
+			}else{
+				query = "";
+			}
+
+			var kwArgs = createSimpleKwArgs();
+
+			kwArgs.url = url + query;
+			if(dojo.byId("useJsonCallback").checked){
+				kwArgs.jsonParamName = "callback";
+			}else{
+				kwArgs.jsonParamName = "jsonp";
+			}
+
+			kwArgs.load = handleJsonpAnimalType;
+			dojo.io.bind(kwArgs);
+		}
+		
+		function testJsonpBad(){
+			transport.removeScripts();
+
+			var query = gi("myJsonpQuery").value;
+			if(query){
+				query = "?" + query;
+			}else{
+				query = "";
+			}
+
+			var kwArgs = createSimpleKwArgs();
+
+			kwArgs.url = "Bad.js" + query;
+			if(dojo.byId("useJsonCallback").checked){
+				kwArgs.jsonParamName = "callback";
+			}else{
+				kwArgs.jsonParamName = "jsonp";
+			}
+
+			kwArgs.load = handleJsonpAnimalType;
+			dojo.io.bind(kwArgs);
+		}
+
+		function handleJsonpAnimalType(type, data, evt, kwArgs){
+			output("JSONP callback OK. animalType is: " + data.animalType);
+		}
+
+		function testMultipart(testServerParamChange){
+			transport.removeScripts();
+			
+			var url = gi("myUrl").value;
+			if(!url){
+				alert("Please enter a URL for the test");
+				return;
+			}
+			
+			var query = gi("myQuery").value;
+			if(query){
+				query = "?" + query;
+			}else{
+				query = "";
+			}
+
+			var constantParams = gi("myConstParams").value;
+			if(!constantParams){
+				constantParams = null;
+			}
+
+			if(testServerParamChange){
+				if(constantParams){
+					constantParams += "&TESTSERVERPARAMCHANGE=TRUE";
+				}else{
+					constantParams = "TESTSERVERPARAMCHANGE=TRUE";
+				}
+			}
+			
+			var kwArgs = createSimpleKwArgs();
+			kwArgs.url = url + query;
+			kwArgs.constantParams = constantParams;
+			kwArgs.useRequestId = true;
+			
+			dojo.io.bind(kwArgs);
+		}
+		
+		function testBadMultipart(){
+			transport.removeScripts();
+			var query = gi("myQuery").value;
+			if(query){
+				query = "?" + query;
+			}else{
+				query = "";
+			}
+			
+			var constantParams = gi("myConstParams").value;
+			if(!constantParams){
+				constantParams = null;
+			}
+
+			var kwArgs = createSimpleKwArgs();
+			kwArgs.url = "Bad.js" + query;
+			kwArgs.constantParams = constantParams;
+			kwArgs.useRequestId = true;
+			
+			dojo.io.bind(kwArgs);
+		}
+		
+		function loadTimeout(){
+			output("Script timeout!");
+		}
+		
+		function loadError(type, data, event){
+			output("Error! Exception: " + event.status + ", " + event.statusText + ", " + event.response);
+		}
+		
+		function loadFinished(type, data, event){
+			if(data == null){
+				output("Script is loaded. First task is: " + myTasks[0]);
+			}else{
+				output("<br />Multipart script finished loading. Data:<br><pre>" + htmlEscape(data) + "</pre>");
+			}
+		}
+		
+		function htmlEscape(message){
+			return message.replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\&/g, "&amp;");
+		}
+		function output(message){
+			gi("output").innerHTML += message + "<br />";
+		}
+
+		function gi(id){
+			return document.getElementById(id);
+		}
+		
+		function hideAll(){
+			gi("howTo").style.display = "none";
+			gi("simpleTests").style.display = "none";
+			gi("jsonpTests").style.display = "none";
+			gi("multipartTests").style.display = "none";
+		}
+
+		function showHowTo(){ hideAll();gi('howTo').style.display = 'block'; }
+		function showSimple(){ hideAll();gi('simpleTests').style.display = 'block'; }
+		function showJsonp(){ hideAll();gi('jsonpTests').style.display = 'block'; }
+		function showDsr(){ hideAll();gi('multipartTests').style.display = 'block'; }
+
+		function printScriptUrls(){
+			var scripts = document.getElementsByTagName('script');
+			var scriptUrls = new Array(); 
+			output("ScriptSrcTransport URLs:");
+			for(var i = 0; scripts && i < scripts.length; i++){
+				var scriptTag = scripts[i];
+				if (scriptTag.className == 'ScriptSrcTransport'){
+					output("<pre>" + scriptTag.src + "</pre>");
+				}
+			}
+			return scriptUrls;
+		}
+
+		window.onerror = function(message) {alert(message);};
+	</script>
+</head>
+<body>
+<b>ScriptSrcIO test page:</b>
+<a href="javascript:void(0);" onclick="showHowTo()">How To</a> |
+<a href="javascript:void(0);" onclick="showSimple()">Simple and Polling Tests</a> |
+<a href="javascript:void(0);" onclick="showJsonp()">JSONP And JSON Callback Tests</a> |
+<a href="javascript:void(0);" onclick="showDsr()">DSR ID/Multipart Tests</a>
+<hr>
+
+<div>
+	<input type="checkbox" id="preventCacheCheckbox">Prevent Cache
+	<input type="checkbox" id="forceSingleRequestCheckbox">Force Single Request
+	<input type="checkbox" id="contentCheckbox">Add Content Parameters
+	
+	<button onclick="printScriptUrls();">Show ScriptSrcTransport URLs</button>
+	<button onclick="gi('output').innerHTML = '';">Clear Output</button>
+</div>
+
+<hr>
+
+<div id="simpleTests" class="sectionTest">
+	<h2>Simple and Polling (checkString) Tests</h2>
+	<ul>
+	<li><a href="javascript:testEndlessLoadWithNoCheckStringOrListener()">Simple: Test no checkString and no timeout. So basically does nothing except add the script src element.</a></li>
+	<li><a href="javascript:testLoad()">Polling: Test loading</a> (Should say first task is take out trash)</li>
+	<li><a href="javascript:testBadLoad()">Polling: Test bad loading (timeout)</a></li>
+	<li><a href="javascript:testEndlessLoad()">Polling: Test checkString with no timeout (bad checkString, so it will never finish polling, but no messages).</a></li>
+	</ul>
+</div>
+<div id="jsonpTests" class="sectionTest">
+	<p><b>JSONP and JSON Callback Tests</b></p>
+
+	<input type="checkbox" id="useJsonCallback"> Use "callback" as JSON callback parameter instead of "jsonp"<br>
+	URL: <input type="text" size="50" id="myJsonpUrl" value="scriptsrc/TestJsonp.js"><br>
+	Query Params (should be proper name=urlEncodedValue&name=urlEncodedValue... syntax):
+	<br><textarea id="myJsonpQuery" cols="50" rows="10"></textarea><br>
+
+	<button onclick="testJsonp(false)">Test</button> (Should print out "animalType is mammal")<br>
+	<button onclick="testJsonpBad()">Test Bad URL (Timeout)</button> (May see error message since it is a bogus URL)<br>
+</div>
+<div id="multipartTests" class="sectionTest">
+	<p><b>DSR ID/Multipart Tests</b></p>
+
+	URL: <input type="text" size="50" id="myUrl" value="scriptsrc/TestMultipart.js"><br>
+	Constant Params: <input type="text" size="50" id="myConstParams"><br>
+	Query Params (should be proper name=urlEncodedValue&name=urlEncodedValue... syntax):
+	<br><textarea id="myQuery" cols="50" rows="10"></textarea><br>
+	
+	<button onclick="insertLotsOfParams()">Insert Lots of Query Params</button><br>
+	
+	<button onclick="testMultipart(false)">Test</button>
+	<button onclick="testBadMultipart()">Test Bad URL (Timeout)</button> (May see error message since it is a bogus URL)<br>
+	<button onclick="testMultipart(true)">Test Server param change<br>(adds a TESTSERVERPARAMCHANGE=TRUE URL parameter)</button>
+
+</div>
+
+<div id="howTo">
+<p><b>How to Use ScriptSrcIO/ScriptSrcTransport</b></p>
+
+<p>ScriptSrcIO (which provides ScriptSrcTransport) allows for four basic types of requests:</p>
+
+<ul>
+	<li><a href="#Simple">Simple</a></li>
+	<li><a href="#Polling">Polling</a></li>
+	<li><a href="#JSONP">JSONP and JSON Callbacks</a></li>
+	<li><a href="#DSR">DSR/Multipart</a></li>
+</ul>
+
+<p>Each type uses &lt;script src="url"&gt;&lt;/script&gt; to
+accomplish the request. To use ScriptSrcIO, use the following require statements:</p>
+<ul>
+	<li>dojo.require("dojo.io.*");</li>
+	<li>dojo.require("dojo.io.ScriptSrcIO");</li>
+</ul>
+
+<p>and use the normal dojo.io.bind() method. To force a ScriptSrcTransport request, use <b>transport: "ScriptSrcTransport"</b> in
+the keyword arguments to dojo.io.bind(). ScriptSrcTransport also implements the transport.canHandle() method, but
+since the requirements for ScriptSrcTransport are a subset of XMLHTTPTransport, and XMLHTTPTransport will be registered
+as a transport before ScriptSrcTransport (ScriptSrcTransport depends on BrowserIO.js, which will register XMLHTTPTransport),
+it is unlikely that ScriptSrcTransport's canHandle() will be called. So, the explicit transport argument is suggested.</p>
+
+<p><a href="#CommonArgs">Here is a list of bind() keyword arguments</a> that are supported for all types of requests. The four types of transport requests are:</p>
+
+<p><a name="Simple"></a><b><a href="javascript:void(0)" onclick="showSimple()">Simple</a></b><br>
+Simply adds a script element with a src. Does not do any polling and does not expect a callback. Also does not
+support any timeouts. Example:</p>
+
+<p><pre>
+dojo.io.bind({
+	url: "http://the.script.url/goes/here",
+	transport: "ScriptSrcTransport"
+});
+</pre></p>
+
+<p><a name="Polling"></a><b><a href="javascript:void(0)" onclick="showSimple()">Polling</a></b><br>
+Adds a script element with a src. It will poll to see if a typeof expression does not equal undefined. When the
+typeof check succeeds, a load callback is called. Timeout and error callbacks are supported with this type of
+request. Example:</p>
+
+<p><pre>
+dojo.io.bind({
+	url: "http://the.script.url/goes/here",
+	transport: "ScriptSrcTransport",
+	checkString: "foo", //This means (typeof(foo) != undefined) indicates that the script loaded.
+	load: function(type, data, event, kwArgs) { /* type will be "load", data and event null, , and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
+	error: function(type, data, event, kwArgs) { /* type will be "error", data and event will have the error, , and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
+	timeout: function() { /* Called if there is a timeout */},
+	timeoutSeconds: 10 //The number of seconds to wait until firing timeout callback in case of timeout.
+});
+</pre></p>
+
+<p><a name="JSONP"></a><b><a href="javascript:void(0)" onclick="showJsonp()">JSONP and JSON Callbacks</a></b><br>
+Adds a script element with a src. This sort of usage allows using services that use the
+<a href="http://bob.pythonmac.org/archives/2005/12/05/remote-json-jsonp/" target="_blank">JSONP
+convention</a> to specify the callback that the server will use. 
+Specify the name of the JSONP callback parameter using <i>jsonParamName</i>. 
+<a href="http://developer.yahoo.net/common/json.html">Yahoo! Web Services</a> use a jsonParamName of "callback". 
+Some other services use jsonParamName of "jsonp". Timeouts are supported with this type of request.
+Example for a data service that uses "callback" as the URL parameter:</p>
+
+<p><pre>
+dojo.io.bind({
+	url: "http://the.script.url/goes/here",
+	transport: "ScriptSrcTransport",
+	jsonParamName: "callback",
+	load: function(type, data, event, kwArgs) { /* type will be "load", data will be response data,  event will null, and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
+	error: function(type, data, event, kwArgs) { /* type will be "error", data will be response data,  event will null, and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
+	timeout: function() { /* Called if there is a timeout */},
+	timeoutSeconds: 10 //The number of seconds to wait until firing timeout callback in case of timeout.
+});
+</pre></p>
+
+<p><a name="DSR"></a><b><a href="javascript:void(0)" onclick="showDsr()">DSR/Multipart</a></b><br>
+Adds a script element with a src. Uses the <a href="http://tagneto.org/how/reference/js/DynamicScriptRequest.html" target="_blank">Dynamic Script Request convention</a> to specify the callback
+that the server will use. Multipart requests (splitting a long request across multiple GET requests)
+is supported. Timeout and error callbacks are supported with this type of request. Example:</p>
+
+<p><pre>
+dojo.io.bind({
+	url: "http://the.script.url/goes/here",
+	transport: "ScriptSrcTransport",
+	useRequestId: true, //adds the _dsrId to request with a generated ID. If a specific request ID is wanted, use apiId: "myId" instead
+	//optional: forceSingleRequest: true, //Will not segment the request to multipart requests even if it is a long URL.
+	constantParams: "name1=value1&name2=value2" //params to be sent with each request that is part of a multipart request. See spec.
+	load: function(type, data, event, kwArgs) { /* type will be "load", data will be response data, event will be onscriptload event, and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
+	error: function(type, data, event, kwArgs) { /* type will be "error", data will be response data, event will be onscriptload event, and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
+	timeout: function() { /* Called if there is a timeout */},
+	timeoutSeconds: 10 //The number of seconds to wait until firing timeout callback in case of timeout.
+});
+</pre></p>
+
+<p><a name="CommonArgs"></a><b><a href="javascript:void(0)" onclick="showSimple()">Common bind() arguments</a></b><br>
+ScriptSrcTransport supports the following arguments across all types of requests. In general, all of these
+arguments have the same meaning and use in XMLHTTPTransport.</p>
+
+<ul>
+	<li><b>formNode</b>: Uses a form to generate query parameters. </li>
+	<li><b>backButton</b>, back, forward, forwardButton, changeUrl: used to register a back/forward handler. See dojo.undo.browser for more info.</li>
+	<li><b>content</b>: a JS object that gets turned into query parameters.</li>
+	<li><b>postContent</b>: Adds raw name=value parameters to query parameters.</li>
+	<li><b>sendTransport</b>: Adds <i>dojo.transport=scriptsrc</i> to query parameters.</li>
+	<li><b>preventCache</b>: Adds <i>dojo.preventCache=[unique ID]</i> to bypass browser cache and force a fresh GET.</li>
+	<li><b>handle</b>: A function that accepts the following arguments: function(type, data, event) {}. This can be used instead of specifying a separate load, error and timeout handler. The <i>type</i> parameter will be a string that specifies the callback type ("load", "error", "timeout").</li>
+</ul>
+
+</div>
+
+<hr>
+<span id="output"></span>
+</body>
+</html>

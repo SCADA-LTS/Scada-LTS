@@ -1,0 +1,45 @@
+<html>
+<head>
+<script type="text/javascript">
+	var djConfig = { isDebug: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+    dojo.require("dojo.widget.*");
+    dojo.require("dojo.debug.console");
+</script>
+</head>
+<body>
+	<h1>Testcase for bug <a href="http://trac.dojotoolkit.org/ticket/1950">1950</a></h1>
+    <div dojoType="SplitContainer"
+          id="split"
+          orientation="horizontal"
+          sizerWidth="4"
+          activeSizing="1"
+          style="border: 2px solid red; height: 300px; width: 100%">
+        <div dojoType="LayoutContainer" id="layout" sizeMin="50" sizeShare="20" style="border: 4px solid gray">
+			<div dojoType="AccordionContainer" allowCollapse="false" id="accordion" layoutAlign="client">
+           		<!-- The content inside the accordion -->
+           			<div dojoType="ContentPane" label="Foo">
+						    <ol style="padding-left: 25px">
+						        <li>One</li>
+						        <li>Two</li>
+						        <li>Three</li>
+							</ol>
+					</div>
+					<div dojoType="ContentPane" label="Bar">
+						    <ol style="padding-left: 25px">
+						        <li>Four</li>
+						        <li>Five</li>
+						        <li>Six</li>
+							</ol>
+					</div>
+			</div>
+        </div>
+        
+        <div dojoType="ContentPane" id="content" sizeMin="50" sizeShare="80" style="border: 4px solid green">
+            RIGHT
+        </div>
+    </div>
+</body>
+</html>

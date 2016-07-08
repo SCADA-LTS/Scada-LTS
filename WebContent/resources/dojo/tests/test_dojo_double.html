@@ -1,0 +1,13 @@
+<html>
+<head>
+<script language="JavaScript" type="text/javascript" src="../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+dojo.hostenv.howManyDefines = "Single";
+</script>
+<script language="JavaScript" type="text/javascript" src="../dojo.js"></script>
+</head>
+<body onload="document.getElementById('output').innerHTML = dojo.hostenv.howManyDefines;">
+<p>Checking if only define dojo once, even if with multiple dojo.js includes. dojo.hostenv.howManyDefines should be of value "Single".</p>
+<p><b>dojo.hostenv.howManyDefines: </b><span id="output"></span></p>
+</body>
+</html>

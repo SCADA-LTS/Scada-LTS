@@ -1,0 +1,62 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<p>The attributes used to configure SQL data source points differ-->
+<!--slightly depending upon whether the query is row-based or column-based.-->
+<!--In both cases the <b>Data type</b> determines the data type of the-->
+<!--ScadaBR data point. Values from the result set are automatically-->
+<!--converted to this type.</p>-->
+<p>Os atributos utilizados para configurar pontos do data source SQL
+diferemThe attributes used to configure SQL data source points differ
+levemente dependendo de se a query &eacute; <i>row-based</i> ou <i>column-based</i>.
+Em ambos os casos, o <b>Tipo de dado</b> determina o tipo de dado do
+data point no ScadaBR. Valores do <i>result set</i> s&atilde;o automaticamente
+convertidos a esse tipo.</p>
+
+<!--<p>For row-based queries, the <b>Row identifier</b> is matched-->
+<!--against the first column of the result set to find the row or rows that-->
+<!--contain values (the second column) for this point. Time overrides are-->
+<!--taken from the third column if it exists.</p>-->
+<p>Para <i>row-based queries</i>, o <b>Identificador de linha</b> &eacute;
+comparado &agrave; primeira coluna do <i>result set</i> para encontrar a linha
+ou as linhas que contem valores (a segunda coluna) para este ponto.
+Tempos de sobreposi&ccedil;&atilde;o s&atilde;o tomados da terceira coluna (se existir).</p>
+
+<!--<p>For column-based queries, the <b>Column name</b> corresponds to-->
+<!--the column name in the result set from which the point's value is-->
+<!--extracted. The <b>Time override column</b> (optional) specifies the-->
+<!--column to use as the point's time override. Note that multiple points-->
+<!--can use the same time override if appropriate.</p>-->
+<p>Para <i>column-based queries</i>, o <b>Nome da coluna</b>
+corresponde ao nome da coluna no <i>result set</i> do qual o valor do
+ponto &eacute; extra&iacute;do. A coluna <b>Tempo de sobreposi&ccedil;&atilde;o</b> (opcional) faz
+com que a coluna use tal tempo como o tempo do ponto. Observe que
+m&uacute;ltiplos pontos podem usar o mesmo tempo de sobreposi&ccedil;&atilde;o se for
+apropriado.</p>
+
+<!--<h1>Update statements</h1>-->
+<!--<p>An <b>Update statement</b> can optionally be defined for a point,-->
+<!--which determines how the point's value can be set in the database. This-->
+<!--is a standard SQL statement using "update" or "insert". If this-->
+<!--statement is not defined the point will be considered non-settable.</p>-->
+<h1>Instru&ccedil;&otilde;es de atualiza&ccedil;&atilde;o</h1>
+<p>Uma <b>Instru&ccedil;&atilde;o de atualiza&ccedil;&atilde;o</b> pode ser opcionalmente
+definida para um ponto, a qual determina como o valor do ponto pode ser
+configurado na base de dados. Trata-se de uma instru&ccedil;&atilde;o padr&atilde;o SQL
+usando "update" ou "insert". Se esta instru&ccedil;&atilde;o n&atilde;o for definida, o ponto
+ser&aacute; considerado n&atilde;o-configur&aacute;vel.</p>

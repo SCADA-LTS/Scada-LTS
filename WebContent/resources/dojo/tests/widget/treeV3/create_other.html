@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+    var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+    dojo.require("dojo.widget.*");
+    dojo.require("dojo.widget.TreeV3");
+    dojo.require("dojo.widget.TreeNodeV3");
+    dojo.require("dojo.widget.TreeBasicControllerV3");
+    dojo.hostenv.writeIncludes();
+
+    function createByName() {
+        var tree = dojo.widget.byId('tree')
+        var data = {widgetName:'dojo:TreeNodeV3', title:'new node'}
+        dojo.widget.byId('controller').createChild(tree,0,data)
+    }
+</script>
+</head>
+<body>
+    
+<h3>Create a node by full widget name</h3>
+
+    
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>  
+
+<div dojoType="TreeV3" listeners="controller" widgetId="tree">
+    <div dojoType="TreeNodeV3" title="Item 1" widgetId="Item 1">
+        <div dojoType="TreeNodeV3" title="Item 1.1" widgetId="Item 1.1"></div>
+        <div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2"></div>
+    </div>
+
+    <div dojoType="TreeNodeV3" title="Item 2<br/>title long yeah" widgetId="Item 2">
+        <div dojoType="TreeNodeV3" title="Item 2.1" widgetId="Item 2.1"></div>
+    </div>
+
+    <div dojoType="TreeNodeV3" title="Empty Folder" isFolder="true" widgetId="Item 3"></div>
+    <div dojoType="TreeNodeV3" title="Item 4" widgetId="Item 4"></div>
+</div>
+
+<input type="button" value="create widget by name" onclick="createByName()"/>
+
+
+</body>
+</html>

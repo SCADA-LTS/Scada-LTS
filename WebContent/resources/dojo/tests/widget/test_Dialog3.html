@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html>
+<head>
+<title>Dialog Widget Dojo Tests</title>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Dialog");
+</script>
+
+<script type="text/javascript">
+var dlg, dlg2, dlg3;
+function init(e) {
+	dlg = dojo.widget.byId("DialogContent");
+	var timer = document.getElementById("timer");
+	dlg.setTimerNode(timer);
+	var btn = document.getElementById("hider");
+	dlg.setCloseControl(btn);
+	
+	dlg2 = dojo.widget.byId("DialogContentBlocking");
+	timer = document.getElementById("timer2");
+	dlg2.setTimerNode(timer);
+	btn = document.getElementById("hider2");
+	dlg2.setCloseControl(btn);
+	
+	dlg3 = dojo.widget.byId("DialogContentTempBlocking");
+	timer = document.getElementById("timer3");
+	dlg3.setTimerNode(timer);
+	btn = document.getElementById("hider3");
+	dlg3.setCloseControl(btn);
+}
+dojo.addOnLoad(init);
+
+</script>
+<style type="text/css">
+body { font-family : sans-serif; }
+.dojoDialog {
+	background : #eee;
+	border : 1px solid #999;
+	-moz-border-radius : 5px;
+	padding : 4px;
+}
+
+form {
+	margin-bottom : 0;
+}
+</style>
+</head>
+<body>
+<a href="javascript:dlg.show()">Non-blocking, 5 seconds</a>
+
+<div dojoType="dialog" id="DialogContent" bgColor="red" bgOpacity="0.1" toggle="fade" toggleDuration="250" lifetime="5000">
+	Disappearing in <span id="timer">3</span>... <a id="hider" href="#">[X]</a>
+</div>
+
+<br><a href="javascript:dlg2.show()">Blocking, 2 seconds</a>
+
+<div dojoType="dialog" id="DialogContentBlocking" bgColor="blue" bgOpacity="0.3" toggle="fade" toggleDuration="250" lifetime="2000" blockDuration="2000">
+	Disappearing in <span id="timer2">3</span>... <a id="hider2" href="#">[X]</a>
+</div>
+
+<br><a href="javascript:dlg3.show()">Blocking, 2 seconds of 5 seconds</a>
+
+<div dojoType="dialog" id="DialogContentTempBlocking" bgColor="green" bgOpacity="0.5" toggle="fade" toggleDuration="250" lifetime="5000" blockDuration="2000">
+	Disappearing in <span id="timer3">3</span>... <a id="hider3" href="#">[X]</a>
+</div>
+
+<p style="font-weight: bold;">
+
+This is a test of two new tags:
+<ul>
+  <li>lifetime: specifies the duration (in millis) for the dialog to stay up</li>
+  <li>blockingDuration: The duration (in millis) of the lifetime to block the page</li>
+</ul>
+
+It also tests a new function and a change in an old function
+<ul>
+	<li>setTimerNode: Set a node that will have its innerHTML updated to represent the # of seconds remaining in the dialog lifetime</li>
+	<li>setCloseControl: Set a node that now hides (if blockingDuration is less than lifetime) until blockingDuration is up, or is removed if a blockingDuration is present</li>
+</ul>
+
+</p>
+
+<p>
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
+porta rutrum lacus. Etiam consequat scelerisque quam. Nulla facilisi.
+Maecenas luctus venenatis nulla. In sit amet dui non mi semper iaculis.
+Sed molestie tortor at ipsum. Morbi dictum rutrum magna. Sed vitae
+risus.
+</p>
+<p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
+nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean id mi in
+massa bibendum suscipit. Integer eros. Nullam suscipit mauris. In
+pellentesque. Mauris ipsum est, pharetra semper, pharetra in, viverra
+quis, tellus. Etiam purus. Quisque egestas, tortor ac cursus lacinia,
+felis leo adipiscing nisi, et rhoncus elit dolor eget eros. Fusce ut
+quam. Suspendisse eleifend leo vitae ligula. Nulla facilisi. Nulla
+rutrum, erat vitae lacinia dictum, pede purus imperdiet lacus, ut
+semper velit ante id metus. Praesent massa dolor, porttitor sed,
+pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
+tortor pharetra congue. Suspendisse pulvinar.
+</p>
+</body>
+</html>

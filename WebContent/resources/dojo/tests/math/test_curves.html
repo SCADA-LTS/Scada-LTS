@@ -1,0 +1,62 @@
+<html>
+	<head>
+		<title>Path test</title>
+		<style type="text/css">
+			.pixel {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				overflow: hidden;
+				background: #000;
+			}
+
+			.red { background: red; }
+			.blue { background: blue; }
+		</style>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.math.*");
+			function drawCurve(curve,steps,className) {
+				if(!className) className = "pixel";
+				if(!steps) steps = 100;
+				this.pixels = new Array(steps)
+				for(var i=0;i<steps;i++) {
+					var pt = curve.getValue(i/steps);
+					this.pixels[i] = document.createElement("div");
+					this.pixels[i].className = className;
+					this.pixels[i].style.left = pt[0];
+					this.pixels[i].style.top = pt[1];
+					document.body.appendChild(this.pixels[i]);
+				}
+			}
+
+			function init(){
+				var c = dojo.math.curves;
+				var p = new c.Path();
+				p.add(new c.Line([10,10], [100,100]), 5);
+				p.add(new c.Line([0,0], [20,0]), 2);
+				p.add(new c.CatmullRom([[0,0], [400,400], [200,200], [500,50]]), 50);
+				p.add(new c.Arc([0,0], [100,100]), 20);
+				p.add(new c.Arc([0,0], [100,100], true), 20);
+				drawCurve(p, 200, "pixel");
+
+				//drawCurve(new c.Line([0,250], [800,250]), 50, "pixel red");
+				//drawCurve(new c.Line([500,0], [500,600]), 50, "pixel red");
+				//drawCurve(new c.Arc([300,300], [700,200]), 50, "pixel");
+				//drawCurve(new c.Arc([200,200], [100,100], false), 50, "pixel blue");
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
+

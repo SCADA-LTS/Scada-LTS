@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+    var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+    dojo.require("dojo.widget.*");
+    dojo.require("dojo.widget.TreeV3");
+    dojo.require("dojo.widget.TreeNodeV3");
+    dojo.require("dojo.widget.TreeBasicControllerV3");
+    dojo.require("dojo.widget.TreeSelectorV3");
+    dojo.require("dojo.widget.TreeEmphasizeOnSelect");
+    dojo.require("dojo.widget.TreeExpandOnSelect");
+    dojo.hostenv.writeIncludes();
+
+    var reporter = function(widget, eventName) {
+    
+        return function(message) {
+            var rep = [ widget + " -- event: "+eventName ];
+            for(i in message) rep.push(i+": "+message[i]);
+            dojo.debug(rep.join(', '));
+            dojo.debug("Selected nodes:");
+            dojo.debug(widget.selectedNodes);
+        }
+    }
+
+
+    dojo.addOnLoad(function(){
+
+        /* Add debug print for all controller events */
+        var selector = dojo.widget.manager.getWidgetById('selector');
+        for(eventName in selector.eventNames) {
+            dojo.event.topic.subscribe(selector.eventNames[eventName], reporter(selector, eventName));
+        }
+    });
+
+
+</script>
+
+</head>
+<body> 
+
+<h2>Markup tree with basic controller and multiline content</h2>
+
+
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>  
+<div dojoType="TreeSelectorV3" allowedMulti="false" widgetId="selector"></div>  
+<div dojoType="TreeEmphasizeOnSelect" selector="selector"></div>
+
+<div dojoType="TreeV3" listeners="controller;selector">
+    <div dojoType="TreeNodeV3" title="Item 1">
+        <div dojoType="TreeNodeV3" title="Item 1.1">
+            <div dojoType="TreeNodeV3" title="Item 1.1.2"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Item 1.2"></div>
+    </div>
+    <div dojoType="TreeNodeV3" title="Item 2<br/>title long yeah">
+        <div dojoType="TreeNodeV3" title="Item 2.1" widgetId="2.1">
+            <div dojoType="TreeNodeV3" title="Item 2.1.1" widgetId="2.1.1">
+            </div>
+        </div>
+    </div>
+
+    <div dojoType="TreeNodeV3" title="Item 3"></div>
+</div>
+
+<input type="button" value="select 2.1.1" onClick="dojo.widget.byId('selector').select(dojo.widget.byId('2.1.1'))"/>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>dojo.io.bind mimetype text/javascript test</title>
+<script type="text/javascript">
+djConfig = { 
+	isDebug: true,
+	debugAtAllCosts: true,
+	dummyValue: 0
+};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+dojo.require("dojo.io.*");
+dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+function doit() {
+	var kw = {
+		url: "data.js",
+		mimetype: "text/javascript",
+		load: function(type, js, http) {
+			dojo.debug("http:", http);
+			dojo.debug("response:", http.responseText);
+			dojo.debug("state:", http.readyState);
+			dojo.debug("--------");
+			dojo.debug("js:", js);
+			dojo.debug("--------");
+			for(var key in js) {
+				dojo.debug(key, ":", js[key]);
+			}
+		}
+	};
+	dojo.io.bind(kw);
+}
+
+dojo.addOnLoad(doit);
+</script>
+</head>
+
+<body>
+	Stuff shoulda happened.
+</body>
+</html>
+

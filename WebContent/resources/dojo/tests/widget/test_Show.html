@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.widget.Show");
+			dojo.require("dojo.widget.ShowSlide");
+			dojo.require("dojo.widget.ShowAction");
+			dojo.require("dojo.widget.FloatingPane");
+			
+		</script>
+	</head>
+	<body>
+		<div dojoType="FloatingPane" id="debugPane" title="Debug" displayCloseAction="true" style="width: 300px; height: 200px; bottom: 10px; right: 10px"></div>
+		<div dojoType="show" debugPane="debugPane">
+			<div dojoType="showslide" title="Introduction">
+				<p>This is a brief overview of what the show widget is capable of</p>
+			</div>
+			<div dojoType="showslide" title="Basic Actions">
+				<p>There is more content on this page. Click, use the arrow keys, or press the button to see them</p>
+				<ul>
+					<li as="1">It can do simple content toggling</li>
+					<li as="2">fading in of content</li>
+					<li><span as="3">it can fly things in</span></li>
+					<li><span as="3">(multiple items as once)</span></li>
+					<li as="thiscanbetext">and even wipe!</li>
+					<li as="4">how about some colorization (note multi-action)</li>
+				</ul>
+				<div dojoType="showaction" on="1" action="show"></div>
+				<div dojoType="showaction" on="2" action="fade" duration="500"></div>
+				<div dojoType="showaction" on="3" action="fly" from="left"></div>
+				<!-- Note: It's good to use fly on an inline element, as block elements are very wide -->
+				<div dojoType="showaction" on="thiscanbetext" action="wipe"></div>
+				<div dojoType="showaction" on="4" action="color" from="#aaa" to="#D12222" duration="500"></div>
+				<div dojoType="showaction" on="4" action="bgcolor" to="#aaa"></div>
+			</div>
+			<div dojoType="showslide" title="Automatically Advance">
+				<p as="1">First you see me</p>
+				<p as="2">Then you see me</p>
+				<div dojoType="showaction" on="1" action="remove"></div>
+				<div dojoType="showaction" on="2" action="show" auto="true"></div>
+			</div>
+			<div dojoType="showslide" title="Check Event Blocking">
+				<p>We don't want the slideshow to interfere with contents on the page. This includes links, input boxes,
+				and items with events associated with them</p>
+				<ul>
+					<li><a href="#">This shouldn't advance</a></li>
+					<li><input value="This shouldn't advance"></li>
+					<li><span onclick="">This shouldn't advance</span></li>
+				</ul>
+			</div>
+			<div dojoType="showslide" title="Debug Window" debug="true">
+				<p>This slide should have a debug window. It is set by the debug attribute of the showslide widget</p>
+			</div>
+			<div dojoType="showslide" title="Click Blocking" noClick="true">
+				<p>In this window, clicking won't work at all (the noClick attribute). This can also be applied to the whole show</p>
+			</div>
+			<div dojoType="showslide" title="The End">
+				<p>Thanks for checking out the show widget</p>
+			</div>
+		</div>
+	</body>
+</html>

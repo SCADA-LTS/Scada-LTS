@@ -1,0 +1,6 @@
+name=Nivel de Tanque (Medio)
+type=imageSet
+#width=150
+#height=195
+text.x=5
+text.y=115

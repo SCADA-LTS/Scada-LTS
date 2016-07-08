@@ -1,0 +1,193 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>Meta points are configured by creating a "context" of existing points, 
+which become available for access within the script when it executes. 
+These context points can be any point saved in Mango at the time, including 
+the current point being edited. (The current point must be saved&mdash;i.e. 
+cannot be "new"&mdash;before it will appear in the context point list.)</p>
+
+<h1>Point configuration</h1>
+<p>The <b>Data type</b> determines the type that will be expected to be returned from the script. 
+The point attempts to convert the returned value to this type.</p>
+<p>The <b>Script context</b> defines the points that will be available to the script when it executes. 
+Each point that is added must be given a <b>Var</b>, which is the variable name the point data will be 
+assigned to in the script. These script var names must be valid ECMAScript variable names: they must start 
+with either a letter or an underscore, and may not contain spaces. Other constraints may apply. You will 
+receive validation or script execution exceptions if script var names are not correctly defined. To add a 
+point to the context, select it from the list and click the <img src="images/add.png"/> icon. To delete an 
+existing point from the context click the <img src="images/bullet_delete.png"/> icon associated with the 
+point. Points that are not needed in the script should not be added to the context since some overhead 
+is involved in preparing the data for the script. Also, unnecessary script vars may cause unintended 
+script executions. (See "Script execution" below.) However, the contrary may also be true: it may be useful 
+to include a script var in a context in order to cause script execution.</p>
+
+<h1>Scripts</h1>
+<p>The <b>Script</b> area is where the script to execute is entered. Scripts can be any valid ECMAScript that would be written within a function, and <b>must always return a value</b>. A simple script may look like this:</p>
+<pre>return x.value;</pre>
+<p>... where x is a script var name defined in the context. The value returned from this script is the present value of the point that 'x' refers to. Typical mathematical functions can be performed. Here is a more complex example:</p>
+<pre>return Math.sqrt(x.value * 3);</pre>
+<p>This returns the square root of the present value of the point 'x' multiplied by 3. (Note: the Math object is defined by JavaScript. Please refer to the ECMAScript documentation for more information.) More complex scripts can also be written including locally defined variables, loops, and logical structures. For example:</p>
+<pre>var t = x.value + y.value;
+if (b.value) {
+    for (var i=0; i&lt;5; i++) {
+        tmp += x.value - y.value;
+    }
+}
+else {
+    tmp = -tmp;
+}
+return tmp;</pre>
+<p>The above is not intended to calculate any useful value, but rather to show the potential for script complexity.</p>
+<p>In addition to the ECMAScript context, Mango also defines a few useful global functions including max(), min(), avg(), and sum(). (These functions are implemented in a script file located at WEB-INF/scripts/scriptFunctions.js. This file can be altered or extended as necessary to implement your own global functions. The file is loaded once per Mango runtime, and so to deploy changes a system restart is required.) To use them, simply call them from your script, for example:</p>
+<pre>return max(x.value, y.value, z.value);</pre>
+<p>This returns the maximum of the present values of 'x', 'y', and 'z'. Any number of parameters can be provided to any of these global functions.</p>
+<p>Once the script has been entered, click the <img src="images/accept.png"/> icon to execute it and attempt to calculate the result.</p>
+
+<h1>Time values</h1>
+<p>The timestamp of the latest value is also available to the script. The following fields can be use:</p>
+<dl>
+  <dt>p.time</dt>
+  <dd>returns the timestamp of the value in milliseconds since the epoch</dd>
+  <dt>p.millis</dt>
+  <dd>0-999 the millisecond portion of p.time</dd>
+  <dt>p.second</dt>
+  <dd>0-60</dd>
+  <dt>p.minute</dt>
+  <dd>0-60</dd>
+  <dt>p.hour</dt>
+  <dd>0-23</dd>
+  <dt>p.day</dt>
+  <dd>1-28,31</dd>
+  <dt>p.dayOfWeek</dt>
+  <dd>1-7 where 1 is Sunday</dd>
+  <dt>p.dayOfYear</dt>
+  <dd>1-365,366</dd>
+  <dt>p.month</dt>
+  <dd>1-12</dd>
+  <dt>p.year</dt>
+  <dd>four digits</dd>
+</dl>
+<p>
+  To explicitly set the timestamp of a value, set the TIMESTAMP context variable before your return statement. The 
+  value to which to set this variable must be milliseconds since the epoch (not a native date). For example:
+</p>
+<pre>TIMESTAMP = new Date().getTime();
+return p.value + 1;
+</pre>
+
+<h1>Context objects</h1>
+<p>The script var that represents a point in a script is actually an 'object', in JavaScript terminology. An object is a container of values and functions that can be referenced by their property names. To get a description of the properties available for use in a script var, use the help property, e.g.:</p>
+<pre>return x.help;</pre>
+<p>This script works best if the data type is set to alphanumeric, but this is not required. The help property is identical to the toString() function, which is available on all context objects (i.e. not just script vars).</p>
+<p>The <b>value</b> property is the present value of the point. The JavaScript type of the value is analogous to its Mango type: Binary become boolean, Numeric becomes float, Multistate becomes integer, and Alphanumeric becomes string.</p>
+<p>Each script var also implements four functions. The objects returned by these functions depend upon the data type of the point the var refers to. Again, the help property can be used to get a description of the returned object's properties. For the "periodType" parameter in all of the functions below, the following pre-defined global variables can be used: SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, and YEAR.</p>
+<p>The <b>ago()</b> function returns the value that the point had the given amount of time ago. For example, the call "x.ago(HOUR, 3)" returns the point's value exactly 3 hours ago.</p>
+<p>The <b>past()</b> function returns an object containing statistics over the given period ending now. See below for a description of the various statistics objects.</p>
+<p>The <b>prev()</b> and <b>previous()</b> functions are identical; the latter is provided for its linguistic completeness. The functions return the same statistically object as past(), but over a different time span. The start and end times are quantized such that they correspond to the period type. For example, if the period type is HOURLY and periods is 1, and the function runs at 18:05, the time span that will be used is from 17:00 (inclusive) to 18:00 (exclusive). If the periods were, say, 3, the time span would be from 15:00 to 18:00. Similarly, MONTH starts the time span at midnight on the first day of the previous month and ends it on the last day of the previous month (when periods is 1). Other period types work the same. A WEEK starts on Monday at midnight in accordance with ISO standards.</p>
+
+<h1>Statistics objects</h1>
+<p>Statistics objects are returned from the past(), prev(), and previous() functions. (See "Context objects" above.) The properties of the object returned depend upon the data type of point upon which they were generated. Time values in objects are stored as integers, but but represent the number of milliseconds since midnight Jan 1, 1970.</p>
+<p>
+  The <b>AnalogStatistics</b> object is returned by Numeric points. It contains the following properties:
+</p>
+<ul>
+  <li><b>minimum</b>: (float) the minimum value the point reached over the period</li>
+  <li><b>minimum time</b>: (integer) the time at which the minimum value was reached</li>
+  <li><b>maximum</b>: (float) the maximum value the point reached over the period</li>
+  <li><b>maximum time</b>: (integer) the time at which the maximum value was reached</li>
+  <li><b>average</b>: (float) the average value of the point over the period</li>
+  <li><b>sum</b>: (float) the sum of all value updates over the period (appropriate for pulse counting)</li>
+  <li><b>count</b>: (integer) the number of updates over the period</li>
+  <li><b>noData</b>: (boolean) whether the period contained any data (true if the period precedes the point's first known value)</li>
+  <li><b>realStart</b>: (integer) the actual start time used for calculations (in case the start time precedes the point's first known value)</li>
+  <li><b>end</b>: (integer) the end time used for calculations</li>
+</ul>
+<p>
+  For example, the following returns the minimum value of 'n' over the past hour:
+</p>
+<pre>return n.past(HOUR).minimum;</pre>
+
+<p>
+  The <b>StartsAndRuntimeList</b> object is returned by Binary and Multistate points. It contains the following 
+  properties:
+</p>
+<ul>
+  <li><b>realStart</b>: (integer) the actual start time used for calculations (in case the start time precedes the point's first known value)</li>
+  <li><b>end</b>: (integer) the end time used for calculations</li>
+  <li><b>data</b>: (array) the list of individual StartAndRuntime objects.</li>
+</ul>
+Each StartAndRuntime object has the following properties:
+<ul>
+  <li><b>value</b>: (boolean for Binary, integer for Multistate) the point state to which the remaining properties apply</li>
+  <li><b>starts</b>: (integer) the number of times the state was entered over the period</li>
+  <li><b>runtime</b>: (integer) the amount of time in milliseconds the point was in the state over the period</li>
+  <li><b>proportion</b>: (float) the proportion of the period the point was in the state (runtime / real duration)</li>
+  <li><b>percentage</b>: (float) proportion * 100</li>
+</ul>
+
+<p>
+  To access a specific StartAndRuntime object in the list, use the get() function. For example, the following returns the proportion of time that 'b' was in state 'false' over the previous 2 months.
+</p>
+<pre>return b.past(MONTH, 2).get(false).proportion;</pre>
+
+<p>The <b>ValueChangeCounter</b> object is returned by Alphanumeric points. It contains the single property <b>changes</b>, which is the number of times the point changed during the period. For example, the following returns the number of times 'a' changed during the previous 45 minutes.
+</p>
+<pre>return b.previous(MINUTE, 45);</pre>
+
+<p>For convenience, if a script var object is returned by a script, it's present value will be used. Thus, the following script will return the present value of 'x':</p>
+<pre>return x;</pre>
+<p>However, this script will not return the sum of 'x' and 'y':</p>
+<pre>return x + y;</pre>
+<p>... but this script would:</p>
+<pre>return x.value + y.value;</pre>
+
+<h1>Script execution</h1>
+<p>Each time a point's script is run, the result is assigned to the point as a value update. 
+The times at which a script gets executed can be controlled with the <b>Update event</b> value. 
+The "Context update" setting causes the script to be run whenever a point within its context is updated. 
+The other setting cause the script to run at the indicated time event.</p>
+<p>The <b>Execution delay</b> setting can be used to prevent unwanted multiple executions of a script. 
+Often, a script's context will use multiple points, but&mdash;when using "Context update" 
+execution&mdash;because each point's update causes a script execution, the update of all points each, 
+say, hour, will cause the script to run as many times as it has points each hour. Similarly, for time-based 
+script runs, the script may execute slightly before its context points are updated, and so may yield spurious 
+results. The execution delay can be used to have scripts execute more as intended. When using "Context update" 
+execution, the script will not run following a context update until the given number of seconds has passed without 
+a subsequent update. For time-based execution, the script will run the given number of seconds after the given 
+time event.</p>
+
+<h1>More examples</h1>
+<p>The following script calculates the rolling hourly average of points 'n1' and 'n2':</p>
+<pre>return avg(b1.past(HOUR).average, b2.past(HOUR).average);</pre>
+
+<p>This script calculates the daily number of pulses from an increasing pulse counter 'pulse' (when executed on "Start of day"):</p>
+<pre>return pulse.value - pulse.ago(DAY);</pre>
+
+<p>This next script is not very practically useful, but is interesting nonetheless. It cycles through the numbers 1, 2, and 3, but only changes randomly 1 in 100 executions.</p>
+<pre>var r = Math.random();
+if (r &gt; 0.01)
+    return x.value;
+
+if (x.value == 3)
+    return 1;
+return x.value + 1;</pre>
+
+<p>This script returns the sum of the integer values of two numeric points 'r' and 't':</p>
+<pre>return parseInt(t.value) + parseInt(r.value);</pre>

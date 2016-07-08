@@ -1,0 +1,6 @@
+name=Valvula Simples on/off
+type=imageSet
+#width=50
+#height=26
+text.x=14
+text.y=2

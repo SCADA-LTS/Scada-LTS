@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>Style size function tests</title>
+
+<script type="text/javascript">
+
+	var djConfig = {isDebug: true};
+
+	//djConfig.debugAtAllCosts = true;
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.html.layout");
+	dojo.hostenv.writeIncludes();
+</script>
+<script>
+
+function onLoad(){
+	var tests = [
+		{ name: "outer size", func: dojo.html.getMarginBox, expected: { w: 110, h: 60 } },	
+		{ name: "inner size", func: dojo.html.getBorderBox, expected: { w: 100, h: 50 } },	
+		{ name: "content size", func: dojo.html.getContentBox, expected: { w: 80, h: 30 } }
+	];
+	var objNames = [ "mytable", "mydiv" ];
+	for(var on=0; on<objNames.length; on++) {
+		var objName = objNames[on];
+		dojo.debug("---" + objName + "---");
+		var obj = dojo.byId(objName);
+		dojo.html.setMarginBox(obj, { width: 110, height: 60 });
+		for(var i=0;i<tests.length;i++){
+			var test=tests[i];
+			var actual = test.func(obj);
+			dojo.debug(test.name + ": actual=["+ actual.width + ", " + actual.height + "], expected=[" + test.expected.w + ", " + test.expected.h + ", " + "]");
+		}
+	}
+}
+dojo.addOnLoad(onLoad);
+</script>
+</head>
+<body>
+
+<p>HTML before</p>
+<p>HTML before</p>
+<table id="mytable" style="margin: 5px 5px 5px 5px; padding: 7px 7px 7px 7px; border: 3px solid blue;">
+<tr><td>table</td></tr>
+</table>
+
+<div id="mydiv" style="margin: 5px 5px 5px 5px; padding: 7px 7px 7px 7px; border: 3px solid blue;">
+div
+</div>
+<p>HTML after</p>
+<p>HTML after</p>
+
+</body>
+</html>

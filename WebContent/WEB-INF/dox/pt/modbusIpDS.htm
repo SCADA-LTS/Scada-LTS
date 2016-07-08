@@ -1,0 +1,150 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>The Modbus IP data source is used to gather data from Modbus-->
+<!--equipment accessible over an I/P network. Equipment can be in a local-->
+<!--network or intranet, or could also be anywhere in the internet. This is-->
+<!--a polling data source.</p>-->
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>O data source Modbus serial &eacute; usado para adquirir dados de
+um equipamento Modbus acess&iacute;vel em uma rede I/P. O equipamento
+pode estar em uma rede local ou intranet, ou pode ainda estar em
+qualquer lugar na internet. Trata-se de um <i>polling data source</i>.</p>
+
+<!--<h1>Configuration</h1>-->
+<!--<p>Every data source requires a <b>Name</b>, which can be any-->
+<!--description. The <b>Update period</b> determines how often the Modbus-->
+<!--equipment is polled for data. The <b>Timeout</b> and <b>Retries</b>-->
+<!--fields determine the system behaviour in the case of a polling failure.-->
+<!--The data source waits the given number of timeout milliseconds for a-->
+<!--response from the equipment. If it is not received the request will be-->
+<!--retried the given number of times.</p>-->
+<h1>Configura&ccedil;&atilde;o</h1>
+<p>Todo data source requer um <b>Nome</b>, o qual pode ser qualquer
+descri&ccedil;&atilde;o. O <b>Per&iacute;odo de
+atualiza&ccedil;&atilde;o</b> determina com que frequ&ecirc;ncia o
+equipamento Modbus ser&aacute; consultada por dados. Os campos <b>Timeout</b>
+e <b>Retries</b> determinam o comportamento do sistema no caso de uma
+falha em uma consulta. O data source aguarda um determinado
+n&uacute;mero de milisegundos por uma resposta do equipamento. Se
+nenhuma resposta for recebida, a requisi&ccedil;&atilde;o ser&aacute;
+refeita um dado n&uacute;mero de vezes.</p>
+
+<!--<p>The <b>Contiguous batches only</b> checkbox can be used to-->
+<!--specify that the modbus implementation should not attempt to optimize-->
+<!--disparate value requests into a single request. Checking this field will-->
+<!--cause the implementation to only make requests for multiple values when-->
+<!--those value form contiguous register space.</p>-->
+<p>A op&ccedil;&atilde;o <b>Apenas lotes cont&iacute;nuos</b> pode
+ser usado para especificar que a implementa&ccedil;&atilde;o modbus
+n&atilde;o deve tentar otimizar diferentes requisi&ccedil;&atilde;o de
+valores em uma &uacute;nica requisi&ccedil;&atilde;o. Selecionar esta
+op&ccedil;&atilde;o far&aacute; com que a implementa&ccedil;&atilde;o
+somente fa&ccedil;a requisi&ccedil;&otilde;es para m&uacute;ltiplos
+valores quando esses valores formarem um espa&ccedil;o de registro
+cont&iacute;nuo.</p>
+
+<p>A op&ccedil;&atilde;o <b>Quantifica&ccedil;&atilde;o</b> pode
+ser usado para for&ccedil;ar a aquisi&ccedil;&atilde;o dos 
+dados deste os datasources em intervalos cheios.</p>
+
+<!--<p>Three <b>Transport type</b>s are supported. See the documentation-->
+<!--for you equipment to determine which setting can be used.</p>-->
+<p>Quatro <b>Tipos de transporte</b>s&atilde;o suportados. Veja
+a documenta&ccedil;&atilde;o de seu equipamento para determinar qual
+configura&ccedil;&atilde;o pode ser usada.</p>
+<!--<ul>-->
+<!--	<li>The <b>TCP</b> setting uses a new TCP socket for each poll.-->
+<!--	(The given retry value applies when connection exceptions occur while-->
+<!--	opening the socket. The timeout used for connection depends upon the-->
+<!--	TCP stack being used.) This setting is useful if the equipment is-->
+<!--	polled infrequently.</li>-->
+<!--	<li>The <b>TCP with keep-alive</b> setting creates a TCP-->
+<!--	connection upon the first poll, which is left open for reuse. If the-->
+<!--	connection is closed for any reason, a new one is created when needed.-->
+<!--	Connection exception behaviour for this option is the same as that for-->
+<!--	TCP. This is the recommended setting for most users since it provides-->
+<!--	efficient and robust communication while avoiding many configuration-->
+<!--	issues typical to UDP.</li>-->
+<!--	<li>The <b>UDP</b> setting uses UDP packets for communication.-->
+<!--	This setting provides the greatest network efficiency, but typically-->
+<!--	requires more network configuration since both ScadaBR and the-->
+<!--	equipment need to be visible on the network (as opposed to TCP where-->
+<!--	ScadaBR can be behind a firewall).</li>-->
+<!--</ul>-->
+<ul>
+	<li>A configura&ccedil;&atilde;o <b>TCP</b> utiliza um novo socket
+	TCP para cada poll. (O valor de retry definido aplica-se quando
+	exce&ccedil;&otilde;es na conex&atilde;o ocorrem durante a abertura do
+	socket. O valor de timeout usado para a conex&atilde;o depende de se a
+	pilha TCP est&aacute; sendo usada.) Esta configura&ccedil;&atilde;o
+	&eacute; &uacute;til caso o equipamento seja <i>polled</i> com pouca
+	frequ&ecirc;ncia.</li>
+	<li>A configura&ccedil;&atilde;o <b>TCP com <i>keep-alive</i></b>
+	cria uma conex&atilde;o TCP no primeiro <i>poll</i>, a qual &eacute;
+	mantida aberta para reuso. Se a conex&atilde;o &eacute; fechada por
+	qualquer raz&atilde;o, uma nova &eacute; criada quando
+	necess&aacute;rio. O comportamento para exce&ccedil;&otilde;es de
+	conex&atilde;o para esta op&ccedil;&atilde;o &eacute; a mesma que a do
+	TCP. Esta configura&ccedil;&atilde;o &eacute; recomendada para a
+	maioria dos usu&aacute;rios, j&aacute; que ela fornece uma
+	comunica&ccedil;&atilde;o eficiente e robusta enquando evita muitos
+	problemas t&iacute;picos de configura&ccedil;&atilde;o de uma
+	comunica&ccedil;&atilde;o UDP.</li>
+	<li>A configura&ccedil;&atilde;o <b>TCP <i>Listener</i></b>
+	cria um servidor de conex&atilde;o TCP, o qual aguarda a conex&atilde;o 
+	por parte do cliente, opera&ccedil;&atilde;o comum em modems GPRS.
+	Se a conex&atilde;o &eacute; fechada por qualquer raz&atilde;o, uma nova 
+	&eacute; criada quando necess&aacute;rio.</li>
+	<li>A configura&ccedil;&atilde;o <b>UDP</b> usa pacotes UDP para
+	comunica&ccedil;&atilde;o. Esta configura&ccedil;&atilde;o fornece a
+	maior efici&ecirc;ncia de rede, mas tipicamente requer maiores
+	configura&ccedil;&otilde;es de rede, j&aacute; que ambos, ScadaBR e o
+	equipamento precisam estar vis&iacute;veis na rede (ao contr&aacute;rio
+	do TCP, onde o ScadaBR pode estar por tr&aacute;s de um firewall).</li>
+</ul>
+
+<!--<p>The <b>Host</b> and <b>Port</b> settings determine how to find-->
+<!--the Modbus equipment on the network. The host can be a domain name or an-->
+<!--IP address.</p>-->
+<p>As configura&ccedil;&otilde;es de <b>Host</b> e <b>Porta</b>
+determinam como encontrar o equipamento Modbus na rede. O Host pode ser
+um nome de dom&iacute;nio ou um endere&ccedil;o IP.</p>
+
+<p>A opção <b>Criar ponto monitor de conex&atilde;o</b> verifica se o 
+escravo modbus está conectado via protocolo TCP. Caso o Tipo de Transporte 
+seja <b>UDP</b> ou <b>TCP</b> (sem <i>keep-alive</i>), a conex&atilde;o não é 
+mantida aberta ou não existe.</p>
+
+<!--<h1>Node scanning</h1>-->
+<!--<p>Networks can be scanned for slave nodes using the scan utility.-->
+<!--This feature iterates from slave id 1 to 240, sending each a-->
+<!--ReadExceptionStatus (function code 7). If a response is received (using-->
+<!--the given timeout and retries settings), the node is considered-->
+<!--available. Note that not all equipment supports this function code, so-->
+<!--false negatives are possible.</p>-->
+<h1>Pesquisar n&oacute;s</h1>
+<p>Pode-se pesquisar n&oacute;s escravos nas redes utilizando-se a
+fun&ccedil;&atilde;o de scan. Esta funcionalidade itera entre os ids dos
+escravos de 1 a 240, enviando a cada um uma ReadExceptionStatus (<i>function
+code</i> 7). Se uma resposta for recebida (usando as
+configura&ccedil;&otilde;es de timeout e retries definidas), o n&oacute;
+&eacute; considerado dispon&iacute;vel. Note que nem todo equipamento
+suporta este <i>function code</i>, ent&atilde;o falsos negativos
+s&atilde;o poss&iacute;veis.</p>

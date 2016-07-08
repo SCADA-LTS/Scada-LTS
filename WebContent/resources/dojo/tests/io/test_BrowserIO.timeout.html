@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.io.*");
+
+			function init(){
+				var bindArgs = {
+					url: "/cgi-bin/timeout.cgi",
+					load: function(type, data, evt){
+						dojo.debug("Load was called. This should not happen. There should be a timeout message.");
+					},
+					error: function(type, data, evt){
+						dojo.debug("Error was called. This should not happen. There should be a timeout message. Error: " + data);
+					},
+					timeoutSeconds: 2,
+					timeout: function(){
+						dojo.debug("Got a timeout callback (expcected result).");
+					}
+				};
+				var canBind = dojo.io.bind(bindArgs);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<p>
+		Check your javascript log; the scripts were all loaded in the head.
+		</p>
+		<p>
+		<b>Note:</b> This test makes a request to /cgi-bin/timeout.cgi. That cgi needs to be made executable for this test to work, and it won't work from local disk.
+		</p>
+	</body>
+</html>
+

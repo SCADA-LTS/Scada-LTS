@@ -1,0 +1,63 @@
+<h1>Vis&atilde;o Geral</h1>
+<p>
+Scripts s&atilde;o procedimentos que automatizam a execu&ccedil;&atilde;o de tarefas, permitindo o controle dos data sources 
+e data points. Os scripts n&atilde;o possuem valor de retorno, no entanto permitem configurar o valor de
+um data point do sistema, se o mesmo for configur&aacute;vel. 
+</p>
+
+<h1>JavaScript / ECMAScript</h1>
+<p>Os scripts requerem algum conhecimento de JavaScript,
+tamb&eacute;m conhecido como ECMAScript. (A especifica&ccedil;&atilde;o
+completa para ECMAScript est&aacute; disponível <a
+	href="http://www.ecma-international.org/publications/standards/Ecma-262.htm"
+	target="_blank">aqui</a>.) JavaScript &eacute; provavelmente a mais
+popular linguagem de scripts da atualidade e a &uacute;nica linguagem
+disponível para uso em todos os navegadores web mais populares. Como
+resultado, se percebe o uso comum de JavaScript em p&aacute;ginas web. O
+contexto do Meta data source &eacute; um pouco diferente, pois
+n&atilde;o existem objetos "janela" e "documento" entre outras
+diferen&ccedil;as sutis. Desconsiderando as diferen&ccedil;as
+contextuais, este data source oferece uma completa
+implementa&ccedil;&atilde;o de ECMAScript. Especificamente, a
+implementa&ccedil;&atilde;o <a href="http://www.mozilla.org/rhino/"
+	target="_blank">Rhino</a> &eacute; utilizada.</p>
+	
+
+<h1>Configura&ccedil;&atilde;o dos scripts</h1>
+
+<p>O <b>Contexto do script</b> define os pontos que estar&atilde;o
+dispon&iacute;veis para o script quando for executado. Cada ponto
+adicionado deve receber um nome de vari&aacute;vel, chamado de <b>Var</b>,
+que referencia o ponto no script. Estes nomes var devem ser nomes
+v&aacute;lidos de vari&aacute;veis de acordo com a linguagem ECMAScript:
+devem iniciar com tanto uma letra ou com um sublinhado e n&atilde;o
+devem conter espa&ccedil;os. Outras restri&ccedil;&otilde;es podem
+existir. Ser&aacute; exibida uma valida&ccedil;&atilde;o ou
+exce&ccedil;&otilde;es de execu&ccedil;&atilde;o do script se os nomes
+das vari&aacute;veis n&atilde;o estiverem definidos corretamente. Para
+adicionar um ponto ao contexto, selecione o mesmo na lista e clique no
+&iacute;cone <img src="images/add.png" />. Para apagar um ponto
+existente do contexto clique no &iacute;cone <img
+	src="images/bullet_delete.png" /> associado ao ponto. Pontos que
+n&atilde;o s&atilde;o necess&aacute;rios no script n&atilde;o devem ser
+adicionados ao contexto, pois existe um consumo de mem&oacute;ria na
+prepara&ccedil;&atilde;o dos dados. Tamb&eacute;m &eacute;
+poss&iacute;vel que vari&aacute;veis desnecess&aacute;rias causem
+execu&ccedil;&otilde;es n&atilde;o intencionais do script. (Veja
+"Execu&ccedil;&atilde;o do script" abaixo.) Entretanto, o
+contr&aacute;rio tamb&eacute;m pode ser verdade: pode ser importante
+incluir uma vari&aacute;vel no contexto para que a
+execu&ccedil;&atilde;o do script ocorra.</p>
+
+<p>
+Os <b>objetos de contexto</b> são os controladores dos data sources e datapoints. Da mesma forma que nos pontos 
+do contexto, é necessário atribuir um nome <b>Var</b> e habilitar o mesmo no checkbox ao lado. 
+</p>
+
+<h1>Execu&ccedil;&atilde;o de scripts</h1>
+A execução de scripts pode ser feita de forma manual, clicando no &iacute;cone 
+<img src="images/cog_go.png" />, ou de forma autom&aacute;tica atrav&eacute;s do tratador de eventos. 
+Executando de forma manual, o usu&aacute;rio ver&aacute; uma mensagem de erro ou de sucesso abaixo 
+da caixa de texto do script, e assim validar o c&oacute;digo. 
+
+

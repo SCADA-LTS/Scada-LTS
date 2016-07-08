@@ -1,0 +1,49 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.io.*");
+			dojo.require("dojo.io.XhrIframeProxy");
+
+			function init(){
+				var bindArgs = {
+					iframeProxyUrl: "../../../src/io/xip_server.html",
+					url: "/cgi-bin/timeout.cgi",
+					load: function(type, data, evt){
+						dojo.debug("Load was called. This should not happen. There should be a timeout message.");
+					},
+					error: function(type, data, evt){
+						dojo.debug("Error was called. This should not happen. There should be a timeout message. Error: " + data);
+					},
+					timeoutSeconds: 2,
+					timeout: function(){
+						dojo.debug("Got a timeout callback (expcected result).");
+					}
+				};
+				var canBind = dojo.io.bind(bindArgs);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<p>This test will not work in Safari if it is loaded from local disk. Apparently
+		Safari won't let us change the iframe src to a local file.</p>
+		<p>
+		<b>Note:</b> This test makes a request to /cgi-bin/timeout.cgi. That cgi needs to be made executable for this test to work, and it won't work from local disk.
+		</p>
+		
+		<p>Expected result: In about 2 seconds, you should see a message like this below: <i>DEBUG: Got a timeout callback (expcected result).</i></p>
+	</body>
+</html>
+

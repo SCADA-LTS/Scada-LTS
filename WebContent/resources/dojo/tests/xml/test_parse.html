@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" lang="en">
+	<head>
+		<title>Dojo: Static Test of Parse.js</title>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.xml.Parse");
+			dojo.require("dojo.widget.Parse");
+			dojo.require("dojo.widget.Button");
+		</script>
+		<style type="text/css">
+			#output {
+				font-family:monospace;
+				border: 3px solid #000000;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript"><!--
+			dojo.addOnLoad(window, "testHandler");
+			function testHandler() {
+				var testObjects = new dojo.xml.Parse();
+				testItems = testObjects.parseElement(document.getElementById("test"));
+				outputObjectInfo(testItems,0,document.getElementById("output"));
+			}
+			
+			function outputObjectInfo(x,indentationCounter, outputElement) {
+				indentationCounter++;
+				for (var y in x) {
+					if (typeof x[y] == "object" && x[y] != x.nodeRef) {
+						if (!(x instanceof Array && !isNaN(parseInt(y)))) {
+							for(var i=0; i<indentationCounter; i++) {
+								outputElement.appendChild(document.createTextNode("-"));
+							}
+							outputElement.appendChild(document.createTextNode(y));
+							outputElement.appendChild(document.createElement("br"));
+						} else
+						{
+							// need some way to fix this indentation setup as this is hacky
+						}
+						outputObjectInfo(x[y],indentationCounter,outputElement);
+					} else
+					{
+						for(var i=0; i<indentationCounter;i++) {
+							outputElement.appendChild(document.createTextNode("-"));
+						}
+						outputElement.appendChild(document.createTextNode(y+":" +x[y]));
+						outputElement.appendChild(document.createElement("br"));
+					}
+				}
+			} //-->
+		</script>
+		<pre>
+&lt;div id="test"&gt;
+	&lt;div id="test1" dojo:testAttribute="blank1" xlink:href="http://www.dojotoolkit.org"&gt;element 1&lt;/div&gt;
+	&lt;div id="test2" dojo:testAttribute="blank2" xlink:href="http://www.dojotoolkit.org"&gt;element 2&lt;/div&gt;
+	&lt;div id="test3" dojo:testAttribute="blank3" xlink:href="http://www.dojotoolkit.org"&gt;&lt;dojo:button id="test3a"&gt;element 3/3a&lt;/dojo:button&gt;&lt;dojoButton id="test3b"&gt;element 3/3b&lt;/dojoButton&gt;&lt;span dojoType="button" id="test3c"&gt;element 3/3c&lt;/span&gt;&lt;button dojo:type="button" id="test3d"&gt;element 3/3d&lt;/button&gt;&lt;button id="test3e"&gt;element 3/3e&lt;/button&gt;&lt;/div&gt;
+&lt;/div&gt;
+		</pre>
+		
+		<div id="test">
+			<div id="test1" dojo:testAttribute="blank1" xlink:href="http://www.dojotoolkit.org" dojo:propertyProviderList="testPropertyList">element 1</div>
+			<div id="test2" dojo:testAttribute="blank2" xlink:href="http://www.dojotoolkit.org">element 2</div>
+			<div id="test3" dojo:testAttribute="blank3" xlink:href="http://www.dojotoolkit.org"><dojo:Button id="test3a">element 3/3a</dojo:Button><dojoButton id="test3b">element 3/3b</dojoButton><span dojoType="Button" id="test3c">element 3/3c</span><button id="test3d" dojo:type="Button">element 3/3d</button><button id="test3e">element 3/3e</button></div>
+			<dojo:propertySet id="testPropertyList" property1="test">
+				<property2>test2</property2>
+			</dojo:propertySet>
+			<select>
+				<option>foo</option>
+				<option>bar</option>
+				<option>baz</option>
+			</select>
+			<!-- the following won't be parsed -->
+			<select parseWidgets="false">
+				<option>foo</option>
+				<option>bar</option>
+				<option>baz</option>
+			</select>
+		</div>
+		<div id="output">
+		
+		</div>
+		<div id="attributeCount"></div>
+	</body>
+</html>

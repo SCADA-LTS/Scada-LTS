@@ -1,0 +1,142 @@
+<html>
+<head>
+<title>Form test</title>
+</head>
+<script type="text/javascript">
+        var djConfig = {isDebug: true};
+        djConfig.debugAtAllCosts = true;
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+ dojo.require("dojo.json");
+ dojo.require("dojo.widget.Form");
+ dojo.require("dojo.widget.LayoutContainer");
+ dojo.require("dojo.widget.ContentPane");
+ dojo.require("dojo.widget.ComboBox");
+ dojo.require("dojo.widget.Checkbox");
+ dojo.require("dojo.widget.DropdownDatePicker");
+        dojo.hostenv.writeIncludes();
+ var obj = null;
+ function changeIgnore() {
+   var myForm = dojo.widget.byId('myForm');
+   myForm.ignoreNullValues=!myForm.ignoreNullValues;
+   dojo.debug("Changing ignoreNullValues to " + myForm.ignoreNullValues);
+ }
+
+ function getValues() {
+   this.obj = dojo.widget.byId('myForm').getValues();
+   dojo.debug("Object is: " + dojo.json.serialize(this.obj));
+ }
+
+ function setValues() {
+   if (this.obj == null) {
+    this.obj ={};
+    this.obj.testF='testi';
+   }
+   dojo.debug("Object is: " + dojo.json.serialize(this.obj));
+   dojo.widget.byId('myForm').setValues(this.obj);
+ }
+</script>
+<body>
+<h1>Form Widget Test</h1>
+<p>
+The form widget takes data in a form and serializes/deserializes it,
+so it can be submitted as a JSON string of nested objects.
+</p>
+<form dojoType="Form" id="myForm" action="showPost.php">
+<p>Just HTML text</p>
+<table border=2>
+<tr><th>Description</th><th>Name</th><th>Form node/widget</th></tr>
+<tr><td>text</td><td>testF</td><td><input type="text" name="testF" value="bar1" /></td></tr>
+<tr><td>password</td><td>passwordF</td><td><input type="password" name="passwordF" value="bar4" /></td></tr>
+<tr><td>hidden</td><td>hiddenF</td><td><input type="hidden" name="hiddenF" value="bar4" /></td></tr>
+<tr><td>select</td><td>plop.noncombo</td><td>
+<div class="group">
+	<select name="plop.noncombo">
+	 <option value="1">one</option>
+	 <option value="2">two</option>
+	 <option value="3">three</option>
+	</select>
+</div>
+
+</td></tr>
+<tr><td>DropdownDatePicker inside contentpane</td><td>foo.bar.baz.quux</td><td>
+<div dojoType="ContentPane" layoutAlign="left">
+<input type="text" name="foo.bar.baz.quux" dojoType="dropdowndatepicker" displayFormat="dd.MM.yyyy" date="2007-12-30" />
+</div>
+</td></tr>
+<tr><td>Layoutcontainer</td><td>
+<div dojoType="LayoutContainer">
+</div>
+</td></tr>
+<tr>
+<td>Dropdowndatepicker 1</td><td>available.from</td><td>
+<input type="text" name="available.from" dojoType="dropdowndatepicker" displayFormat="dd.MM.yyyy" />
+</td>
+</tr>
+<tr>
+<td>Dropdowndatepicker 2</td><td>available.to</td><td>
+<input type="text" name="available.to" dojoType="dropdowndatepicker" displayFormat="dd.MM.yyyy" date="2006-01-02" />
+</td>
+</tr>
+
+<tr><td>Combobox</td><td>plop.combo</td>
+<td>
+<select name="plop.combo" dojoType="ComboBox">
+ <option value="1">one</option>
+ <option value="2">two</option>
+ <option value="3">three</option>
+</select>
+</td></tr>
+<tr>
+<td>textarea</td><td>myTextArea</td>
+<td>
+<textarea name="myTextArea">
+text text text """ \\\/
+</textarea>
+</td>
+</tr>
+<tr>
+<td>Checkbox</td><td>cb1</td>
+<td>
+<input type="checkbox" name="cb1" value="1" /> 1
+<input type="checkbox" name="cb1" value="2" checked="checked" /> 2
+<input type="checkbox" name="cb1" value="3" checked="checked" /> 3
+<input type="checkbox" name="cb1" value="4" /> 4
+</td>
+</tr>
+
+<tr>
+<td>Checkbox widget</td><td>cb2</td>
+<td>
+<input dojotype="checkbox" type="checkbox" name="cb2" value="1" /> 1
+<input dojotype="checkbox" type="checkbox" name="cb2" value="2" checked="checked" /> 2
+<input dojotype="checkbox" type="checkbox" name="cb2" value="3" checked="checked" /> 3
+<input dojotype="checkbox" type="checkbox" name="cb2" value="4" /> 4
+</td>
+</tr>
+<tr>
+<td>radio</td><td>r1</td>
+<td>
+<input type="radio" name="r1" value="1" /> 1
+<input type="radio" name="r1" value="2" /> 2
+<input type="radio" name="r1" value="3" /> 3
+<input type="radio" name="r1" value="4" /> 4
+</td>
+</tr>
+</table>
+
+<input type="checkbox" name="ignoreNullValues" value="true" onChange="changeIgnore();" /> Ignore null values<br />
+<input type="button" onClick="getValues();" value="Get Values from form!" />
+<input type="button" onClick="setValues();" value="Set Values to form!" />
+</form>
+
+<p>Widgets that are not yet supported:
+<ul>
+<li>Editor</li>
+<li>Tree</li>
+<li>Others?</li>
+</ul>
+</p>
+</body>
+</html>

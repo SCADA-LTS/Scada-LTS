@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+	<title>Dojo Tooltip Widget Test</title>
+	
+	<script type="text/javascript">
+	var djConfig = {
+			isDebug: true,
+			baseScriptUri: "../../",
+			useXDomain: true,
+			xdWaitSeconds: 10
+	};
+	</script>
+	
+	<script type="text/javascript" src="http://tagneto.org/dojo/xd/dojo.js"></script>
+	<script type="text/javascript">
+		dojo.registerModulePath("dojo", "http://tagneto.org/dojo/xd/src");
+		dojo.require("dojo.widget.Tooltip");
+	</script>
+	
+	<style>
+		.tt { border-bottom: 1px dotted black; cursor: pointer; }
+		body .dojoTooltip { color: blue; }
+	</style>
+</head>
+
+<body>
+	<h1>Tooltip test</h1>
+	<p>Mouse-over the items below to test tooltips:</p>
+	<p>
+		<span id="one" class="tt">text</span>
+		<span dojoType="tooltip" connectId="one">
+			<b>
+				<span style="color: blue;">rich formatting</span>
+				<span style="color: red; font-size: x-large;"><i>!</i></span>
+			</b>
+		</span>
+		
+		<a id="three" href="#bogus">anchor</a>
+		<span dojoType="tooltip" connectId="three" caption="inline caption w/fade in" toggle="fade"></span>
+	</p>
+	
+	<button id="four">button</button>
+	<span dojoType="tooltip" connectId="four" caption="tooltip on button"></span>
+	
+	<img id="five" src="images/question.gif"></img>
+	<span dojoType="tooltip" connectId="five" toggle="explode" toggleDuration="250">
+		exploding tooltip
+	</span>
+	<img id="six" src="images/question.gif"></img>
+	<span dojoType="tooltip" connectId="six" toggle="explode" toggleDuration="500">
+		slowly exploding tooltip
+	</span>
+
+    <select id="seven">
+      <option value="alpha">Alpha</option>
+      <option value="beta">Beta</option>
+      <option value="gamma">Gamma</option>
+      <option value="delta">Delta</option>
+    </select>
+	<a dojoType="tooltip" connectId="seven" href="doc0.html" executeScripts="true"></a>
+
+<p></p>
+
+	<form>
+		<input type="input" id="id1" value="0"/><br>
+		<input type="input" id="id2" value="1"/><br>
+		<input type="input" id="id3" value="2"/><br>
+
+		<input type="input" id="id4" value="3"/><br>
+    	<input type="input" id="id5" value="4"/><br>
+		<input type="input" id="id6" value="5"/><br>
+	</form>
+	<br>
+
+<div style="overflow: auto; height: 100px; position: relative; border: solid blue 3px;">
+	<span id="s1">text</span><br><br><br>
+	<span id="s2">text</span><br><br><br>
+	<span id="s3">text</span><br><br><br>
+	<span id="s4">text</span><br><br><br>
+	<span id="s5">text</span><br><br><br>
+</div>
+
+	<span dojoType="tooltip" connectId="id1" delay="100" toggle="explode">some text 1</span>
+	<span dojoType="tooltip" connectId="id2" delay="100" toggle="explode">some text 2</span>
+	<span dojoType="tooltip" connectId="id3" delay="100" toggle="explode">some text 3</span>
+	<span dojoType="tooltip" connectId="id4" delay="100" toggle="explode">some text 4</span>
+	<span dojoType="tooltip" connectId="id5" delay="100" toggle="explode">some text 5</span>
+	<span dojoType="tooltip" connectId="id6" toggle="explode">some text </span>
+
+	<span dojoType="tooltip" connectId="s1" delay="100" toggle="explode">some text 6</span>
+	<span dojoType="tooltip" connectId="s2" delay="100" toggle="explode">some text 7</span>
+	<span dojoType="tooltip" connectId="s3" delay="100" toggle="explode">some text 8</span>
+	<span dojoType="tooltip" connectId="s4" delay="100" toggle="explode">some text 9</span>
+	<span dojoType="tooltip" connectId="s5" delay="100" toggle="explode">some text 10</span>
+
+	<div style="position: absolute; bottom: 0">
+		Test tooltips on stuff on bottom of screen.  Should appear above the element.
+		<span id="b1" class="tt">text</span>
+		<span dojoType="tooltip" connectId="b1">
+			<b>
+				<span style="color: blue;">rich formatting</span>
+				<span style="color: red; font-size: x-large;"><i>!</i></span>
+			</b>
+		</span>
+	    <select id="b2">
+	      <option value="alpha">Alpha</option>
+	      <option value="beta">Beta</option>
+	      <option value="gamma">Gamma</option>
+	      <option value="delta">Delta</option>
+	    </select>
+		<a dojoType="tooltip" connectId="b2" href="doc0.html" executeScripts="true"></a>
+	</div>
+		
+</body>
+</html>
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" lang="en">
+	<head>
+		<title>Dojo: Test of dojo.dom</title>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.dom");
+			dojo.addOnLoad(function(e) {
+				var xmlText = '<response status="ok" />';
+				var xml = dojo.dom.createDocumentFromText(xmlText);
+				dojo.debug(xml);
+				if(xml) dojo.debug(xml.document);
+				else dojo.debug("no xml.document");
+				if(xml) dojo.debug(xml.firstChild);
+				else dojo.debug("no xml.firstChild");
+				if(xml && xml.firstChild) dojo.debug(xml.firstChild.tagName);
+				else dojo.debug("no xml.firstChild.tagName");
+			});
+		</script>
+		<style type="text/css">
+		</style>
+	</head>
+	<body>
+		<div id="test">
+		</div>
+	</body>
+</html>

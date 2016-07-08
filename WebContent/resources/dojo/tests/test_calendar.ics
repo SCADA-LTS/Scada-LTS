@@ -1,0 +1,3034 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+METHOD:PUBLISH
+PRODID:-//Virginia Tech//VTCalendar//EN
+X-WR-CALNAME;VALUE=TEXT:VT_Event_Calendar
+EGIN:VEVENT
+DTSTAMP:20060119T150000Z
+UID:1136387796152@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060119T150000Z
+DTEND:20060119T160000Z
+SUMMARY:Managing Your Time Seminar
+DESCRIPTION:
+ Good time management is associated with academic 
+ success, however developing effective time 
+ management skills is an ongoing challenge for 
+ many college students. Successful students 
+ know that time management allows them to take 
+ control of their time by consciously planning 
+ and choosing how to use their time. Time management 
+ helps students find the time to accomplish 
+ everything they need to do and still have 
+ time for the things they want to do. \n
+   
+ \n
+ This seminar will help you get organized for 
+ the semester and provides tips for making the 
+ most of your time in class and with your books. 
+ Learn how to stay on top of your academic 
+ responsibilities while maintaining a healthy 
+ balance between academic and non-academic 
+ activities. \n
+ \n
+ \n
+ \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu\n
+LOCATION:111 Femoyer
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060119T173000Z
+UID:1135806667850-0001@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060119T173000Z
+DTEND:20060120T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference Desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060119T220000Z
+UID:1124223460911@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060119T220000Z
+DTEND:20060120T000000Z
+SUMMARY:Ice Cream Special
+DESCRIPTION:
+  Sponsor: Student Programs\n
+ Homepage: http://www.studentprograms.vt.edu/\n
+ Contact: Heather Riley Chadwick\n
+ Phone: (540) 231-8068\n
+ E-Mail:: hrchadwi@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.studentprograms.vt.edu\n
+LOCATION:D2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060120T000000Z
+UID:1127767949956-0017@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060120T000000Z
+DTEND:20060120T045900Z
+SUMMARY:Go Club Weekly Meeting
+DESCRIPTION:
+ Drop by and play or some go. Beginners welcome! 
+ We have members of all ranks, and will gladly 
+ teach if you want to learn more.\n\n
+ Price: Free\n
+ Sponsor: Very Tricky Go/Baduk/Weiqi Club\n
+ Homepage: http://www.vtgo.org.vt.edu/\n
+ Contact: Alpha Chen\n
+ Phone: (540) 818-3692\n
+ E-Mail:: alchen@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtgo.org.vt.edu/\n
+LOCATION:Suffolk Room, Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060120T050000Z
+UID:1128438924202@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060120
+DTEND;VALUE=DATE:20060121
+SUMMARY:Free Fitness Week Ends
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060120T193000Z
+UID:1126631963331@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060120T193000Z
+DTEND:20060120T203000Z
+SUMMARY:Developmental Science Colloquium
+DESCRIPTION:
+ Megan McIlreavy, Virginia Tech\n\n
+ Price: free\n
+ Sponsor: Developmental Science Initiative\n
+ Contact: Dr. Isabel Bradburn\n
+ Phone: 231-1063\n
+ E-Mail:: isbrad@vt.edu\n
+LOCATION:Fralin Auditorium
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060120T200000Z
+UID:1123781823074-0001@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060120T200000Z
+DTEND:20060121T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060120T203000Z
+UID:1135121340444@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060120T203000Z
+DTEND:20060121T045900Z
+SUMMARY:Dr. Richard Norris, UC-SD, Scripps Institution of Oceanography
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060120T210000Z
+UID:1135806916721-0001@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060120T210000Z
+DTEND:20060121T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060120T233000Z
+UID:1106542248686-0022@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060120T233000Z
+DTEND:20060121T045900Z
+SUMMARY:Free Food Friday
+DESCRIPTION:
+ Need we say more\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:Chi Alpha House
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060121T000000Z
+UID:1122838073285-0022@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060121T000000Z
+DTEND:20060121T045900Z
+SUMMARY:VPI Cave Club Meeting
+DESCRIPTION:
+ Weekly meeting to discuss club business, share 
+ stories of trips taken and make plans for trips 
+ for the weekend. Post meeting activities 
+ announced at the end each meeting. Meeting may 
+ include a cave-related program/presentation.\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.calendar.vt.edu/caveclub/\n
+ Contact: Geoff Lewis\n
+ E-Mail:: vp@vpicaveclub.org\n
+ for more info visit the web at:\n 
+ http://www.vpicaveclub.org\n
+LOCATION:Smyth 146
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060121T003000Z
+UID:1127497291024-0018@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060121T003000Z
+DTEND:20060121T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired!\n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060121T050000Z
+UID:1132759310789@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART;VALUE=DATE:20060121
+DTEND;VALUE=DATE:20060122
+SUMMARY:Landowners' Woods & Wildlife Conference
+DESCRIPTION:
+ This 4th annual conference is an all day program 
+ for individuals, families, managers and interested 
+ persons to learn about woods, wildlife 
+ and other natural resources.  The day will 
+ provide participants with multiple links to 
+ information, new ideas to implement, and a better 
+ understanding of their natural resources. 
+ \n
+ \n
+ A variety of topics will be presented including: 
+ Emerging forest health issues, Landowner 
+ liability, Bird habitat enhancement, Christmas 
+ tree growing, Selling timber to improve 
+ woodlands, Small wild-game management, Woodlands 
+ safety and more!\n
+ \n
+ Pre-registration is 
+ required.  For registration information, a 
+ conference brochure or more program information 
+ contact Virginia Cooperative Extension at 
+ 540-948-6881, by-e-mail at slillard@vt.edu\n\n
+ Price: $40.00/person, $70.00/couple\n
+ Sponsor: Adam Downing\n
+ Contact: Sandy Lillard\n
+ Phone: 540-948-6881\n
+ E-Mail:: slillard@vt.edu\n
+LOCATION:Manassas
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060121T150000Z
+UID:1123083519591@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060121T150000Z
+DTEND:20060122T045900Z
+SUMMARY:Polar Bear Plunge
+DESCRIPTION:
+ See if you dare to jump in the extra COLD McComas 
+ Hall pool to benefit the American Red Cross. 
+  Registration includes all these activities: 
+ TCBY Brain Freeze Ice Cream Eating Contest, 
+ the Frozen Ducky Race, the Eleven West Frozen 
+ T-Shirt Contest & the Polar Bear Plunge. 
+ This invigorating event is open to VT students, 
+ faculty, staff, and the general public. Sponsored 
+ by Eleven West and TCBY, participating 
+ sponsor Student Crew.\n\n
+ Price: Pre-Registration $10 per person; Day of Event 
+ $15 per person\n
+ Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ Contact: Cathy Kropff\n
+ Phone: 231-6184\n
+ E-Mail:: ckropff@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+LOCATION:McComas Pool
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060122T010000Z
+UID:1133556909564@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060122T010000Z
+DTEND:20060122T045900Z
+SUMMARY:Gamma Gala 2006
+DESCRIPTION:
+ "An Night To Remember"\n
+ \n
+ A formal evening of 
+ dinner, dancing, and a live jazz band.  See a 
+ Gamma for tickets.\n\n
+ Price: Singles: $12.00, Couples: $20.00\n
+ Sponsor: Administration\n
+ Homepage: http://www.phigammagamma.org.vt.edu\n
+ E-Mail:: thaney@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.phigammagamma.org.vt.edu/Events/Gamma%20Gala%2006.html\n
+LOCATION:Radford Heth Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060123T000000Z
+UID:1128439041215@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060123T000000Z
+DTEND:20060123T045900Z
+SUMMARY:IM Basketball Officials Training
+DESCRIPTION:
+ Begins on 1-22-06 @ 7pm.\n
+ Will begin at 6pm for 
+ 1/23, 1/24, and 1/25.\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060123T050000Z
+UID:1128439091990@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060123
+DTEND;VALUE=DATE:20060124
+SUMMARY:Last Day to add classes
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060123T050000Z
+UID:1128439271259@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060123
+DTEND;VALUE=DATE:20060124
+SUMMARY:IM Registration Deadline: Bowling & Darts
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060123T203000Z
+UID:1136253631806@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060123T203000Z
+DTEND:20060124T045900Z
+SUMMARY:Dr. Elizabeth S. Cochran, Scripps Institution of Oceanography
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060123T230000Z
+UID:1134500963237@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060123T230000Z
+DTEND:20060124T045900Z
+SUMMARY:Weighing In:  Physical and Financial Health in the Black Community
+DESCRIPTION:
+ Part one of a two- part series.  The program will 
+ include a presentation by a health care professional 
+ discussing health issues plaguing 
+ the Black community.  The focus will be on diabetes, 
+ hypertension, obesity, etc. The program 
+ will emphasize the importance of preventive 
+ care for Blacks.\n\n
+ Price: FREE\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: Vernetta Watts\n
+ Phone: vwatts@radford.edu\n
+ E-Mail::  540-639-0593\n
+LOCATION:Blacksburg Public Library Community Room
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060124T000000Z
+UID:1123083651761@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060124T000000Z
+DTEND:20060124T045900Z
+SUMMARY:YogaFusion
+DESCRIPTION:
+ Try this NEW exciting exercise class with your 
+ friends.  It's Yoga with a TWIST!  First 100 
+ participants receive a FREE T-shirt and FREE 
+ Subway 6" sub coupon.  Doorprizes include Student 
+ Crew cards and Student Crew cardholders 
+ receive an extra 100 points (bring your card).\n
+ \n
+ This 
+ event is FREE and open to VT Students, 
+ faculty, and staff.  \n\n
+ Price: FREE to VT students, faculty and staff\n
+ Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ Contact: Ali Arner\n
+ Phone: (540) 231-6856\n
+ E-Mail:: aarner@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+LOCATION:McComas Gym
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060124T050000Z
+UID:1128439338421@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060124
+DTEND;VALUE=DATE:20060125
+SUMMARY:IM Registration Begins
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.signup.recsports.vt.edu/\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060124T113000Z
+UID:1134501519691@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060124T113000Z
+DTEND:20060125T045900Z
+SUMMARY:Black Organizations Council Interest Meeting
+DESCRIPTION:
+ Calling all freshman, sophomores, and juniors! 
+  Do you have leadership experience?   Would 
+ you like to work towards creating a greater sense 
+ of community amongst Black students? The 
+ Black Organizations Council Executive board 
+ may be for you!  Come learn about openings for 
+ the 2006-07 year.   \n\n
+ Price: Free\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: David Jones\n
+ Phone: 757-592-3013\n
+ E-Mail:: dajones7@vt.edu\n
+LOCATION:Black Cultural Center, 126 Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060124T180000Z
+UID:1136387824406@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060124T180000Z
+DTEND:20060124T190000Z
+SUMMARY:Managing Your Time Seminar
+DESCRIPTION:
+ Good time management is associated with academic 
+ success, however developing effective time 
+ management skills is an ongoing challenge for 
+ many college students. Successful students 
+ know that time management allows them to take 
+ control of their time by consciously planning 
+ and choosing how to use their time. Time management 
+ helps students find the time to accomplish 
+ everything they need to do and still have 
+ time for the things they want to do. \n
+   
+ \n
+ This seminar will help you get organized for 
+ the semester and provides tips for making the 
+ most of your time in class and with your books. 
+ Learn how to stay on top of your academic 
+ responsibilities while maintaining a healthy 
+ balance between academic and non-academic 
+ activities. \n
+ \n
+ \n
+ \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu\n
+LOCATION:111 Femoyer
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060125T003000Z
+UID:1127497418472-0019@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060125T003000Z
+DTEND:20060125T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired! \n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060125T200000Z
+UID:1136387845149@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060125T200000Z
+DTEND:20060125T210000Z
+SUMMARY:Managing Your Time Seminar
+DESCRIPTION:
+ Good time management is associated with academic 
+ success, however developing effective time 
+ management skills is an ongoing challenge for 
+ many college students. Successful students 
+ know that time management allows them to take 
+ control of their time by consciously planning 
+ and choosing how to use their time. Time management 
+ helps students find the time to accomplish 
+ everything they need to do and still have 
+ time for the things they want to do. \n
+   
+ \n
+ This seminar will help you get organized for 
+ the semester and provides tips for making the 
+ most of your time in class and with your books. 
+ Learn how to stay on top of your academic 
+ responsibilities while maintaining a healthy 
+ balance between academic and non-academic 
+ activities. \n
+ \n
+ \n
+ \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu\n
+LOCATION:111 Femoyer
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060125T200000Z
+UID:1136387845250@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060125T200000Z
+DTEND:20060125T210000Z
+SUMMARY:Managing Your Time Seminar
+DESCRIPTION:
+ Good time management is associated with academic 
+ success, however developing effective time 
+ management skills is an ongoing challenge for 
+ many college students. Successful students 
+ know that time management allows them to take 
+ control of their time by consciously planning 
+ and choosing how to use their time. Time management 
+ helps students find the time to accomplish 
+ everything they need to do and still have 
+ time for the things they want to do. \n
+   
+ \n
+ This seminar will help you get organized for 
+ the semester and provides tips for making the 
+ most of your time in class and with your books. 
+ Learn how to stay on top of your academic 
+ responsibilities while maintaining a healthy 
+ balance between academic and non-academic 
+ activities. \n
+ \n
+ \n
+ \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu\n
+LOCATION:111 Femoyer
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060125T210000Z
+UID:1127307081119@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060125T210000Z
+DTEND:20060125T220000Z
+SUMMARY:Engineering Science and Mechanics Seminar
+DESCRIPTION:
+ Professor Sohail Murad from the Dept. of Chemical 
+ Engineering, University of Illinois, Chicago, 
+ IL gives a presentation about "Molecular 
+ Simulations of Membrane Based Separation Processes".\n\n
+ Price: Free\n
+ Sponsor: ESM Administration\n
+ Homepage: http://www.esm.vt.edu/\n
+ Contact: Prof. I. K. Puri\n
+ Phone: (540) 231-3243\n
+ E-Mail:: ikpuri@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.esm.vt.edu/php/getAbstract.php?id=Molecular+Simulations+of+Membrane+Based+Separation+Proc\n
+LOCATION:Room 126, McBryde Hall
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060125T223000Z
+UID:1135809926047-0002@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060125T223000Z
+DTEND:20060126T003000Z
+SUMMARY:Reiki
+DESCRIPTION:
+ Free "treatments" and "attunements" for all interested 
+ in experiencing and/or learning to practice 
+ Reiki - regarding relaxation, healing, 
+ and/or spiritual development.\n
+ \n\n
+ Price: free\n
+ Sponsor: Reiki Club\n
+ Contact: Jamie Woytasik\n
+ Phone: (540) 230-2742\n
+ E-Mail:: jwoytasi@vt.edu\n
+ for more info visit the web at:\n 
+ https://filebox.vt.edu/users/reiki/\n
+LOCATION:Squires Norfolk Room
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060126T000000Z
+UID:1106542013736-0023@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060126T000000Z
+DTEND:20060126T020000Z
+SUMMARY:Word and Worship
+DESCRIPTION:
+ Chi Alpha main service\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:War Memorial Chapel
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060126T003000Z
+UID:1134501934530@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060126T003000Z
+DTEND:20060126T045900Z
+SUMMARY:Founder's Day Celebration
+DESCRIPTION:
+ An event designed to commemorate and remember 
+ some of the most distinguished members of Phi 
+ Beta Sigma Fraternity, Inc.    \n
+ \n\n
+ Price: Free\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: Thomas Williams\n
+ Phone: 540-961-4803\n
+ E-Mail:: twill@vt.edu\n
+LOCATION:236 Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060126T010000Z
+UID:1133556625235@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060126T010000Z
+DTEND:20060126T014500Z
+SUMMARY:Alpha Delta Interest Meeting
+DESCRIPTION:
+ All are welcome to attend.\n\n
+ Price: FREE\n
+ Sponsor: Administration\n
+ Homepage: http://www.phigammagamma.org.vt.edu\n
+ Contact: Thomas Haney\n
+ Phone: (540) 557 -7974\n
+ E-Mail:: thaney@vt.edu\n
+LOCATION:Squires Yorktown Room
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060126T020000Z
+UID:1136402503467-0003@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060126T020000Z
+DTEND:20060126T043000Z
+SUMMARY:Wednesday Night Salsa Massive
+DESCRIPTION:
+ Open dance floor at Burruss Square Tavern sponsored 
+ by Salsatech. Come dance to a mix of the 
+ illest salsa and merengue...a perfect way to 
+ practice what you learned from our Monday lessons! 
+  Seriously, this night is hot. Don't 
+ miss it, for many a legend was born on Wednesday 
+ nights here...\n
+ \n
+ ALL ARE WELCOME.\n
+ (Burruss 
+ Square Tavern is located in downtown Blacksburg 
+ on Draper Road, across from Sheesha and 
+ next to the Rivermill)\n\n
+ Price: free\n
+ Sponsor: Salsaclub (SalsaTech)\n
+ Homepage: http://www.salsaclub.org.vt.edu\n
+ E-Mail:: tchilton@vt.edu, classic@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.salsaclub.org.vt.edu\n
+LOCATION:Burruss Square Tavern
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060126T173000Z
+UID:1135806667850-0002@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060126T173000Z
+DTEND:20060127T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference Desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060126T190000Z
+UID:1136477022214@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060126T190000Z
+DTEND:20060127T045900Z
+SUMMARY:Dr. Ying Zhou, California Institute of Technology
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060126T220000Z
+UID:1116864861859@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060126T220000Z
+DTEND:20060127T000000Z
+SUMMARY:Milkshake Madness
+DESCRIPTION:
+  Sponsor: Student Programs\n
+ Homepage: http://www.studentprograms.vt.edu/\n
+ Phone: (540) 231-8068\n
+ E-Mail:: hrchadwi@vt.edu\n
+LOCATION:Shultz Dining Center
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060126T220000Z
+UID:1128439458191@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060126T220000Z
+DTEND:20060127T045900Z
+SUMMARY:IM Basketball Captain's Meeting
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu/intramurals/sports/basketball.php\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060127T000000Z
+UID:1127767949956-0018@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060127T000000Z
+DTEND:20060127T045900Z
+SUMMARY:Go Club Weekly Meeting
+DESCRIPTION:
+ Drop by and play or some go. Beginners welcome! 
+ We have members of all ranks, and will gladly 
+ teach if you want to learn more.\n\n
+ Price: Free\n
+ Sponsor: Very Tricky Go/Baduk/Weiqi Club\n
+ Homepage: http://www.vtgo.org.vt.edu/\n
+ Contact: Alpha Chen\n
+ Phone: (540) 818-3692\n
+ E-Mail:: alchen@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtgo.org.vt.edu/\n
+LOCATION:Suffolk Room, Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060127T000000Z
+UID:1135004434828@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060127T000000Z
+DTEND:20060127T045900Z
+SUMMARY:Step Afrika
+DESCRIPTION:
+ Step Afrika celebrates stepping, an art form at 
+ African American fraterniites and based in 
+ African traditions.  As the first professional 
+ company dedicted to stepping, Step Afrika's 
+ intricate kicks, stomps, and rhythms mixed with 
+ spoken word pound the floor and fill the 
+ air.  We step to entertain but also to raise 
+ awareness for the culture that created stepping. 
+  \n\n
+ Price: FREE\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: Sharika Nichols\n
+ Phone: 540-961-0336\n
+ E-Mail:: sjnichol@vt.edu\n
+LOCATION:Burruss Auditorium
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060127T050000Z
+UID:1128439556868@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060127
+DTEND;VALUE=DATE:20060128
+SUMMARY:IM Registration Deadline
+DESCRIPTION:
+ ENDS AT NOON\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.signup.recsports.vt.edu/\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060127T130000Z
+UID:1136478521316@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060127T130000Z
+DTEND:20060128T045900Z
+SUMMARY:Grain Producers Marketing Grain in Eastern Virginia
+DESCRIPTION:
+ Join us for Marketing Update #1 for 2006.  Keith 
+ Balderson and David Moore will look at breakeven 
+ prices for 2006, discuss pricing possibilities 
+ for 2006, and go through some "what 
+ if" pricing scenarios using 2005 prices.  This 
+ is the first of three marketing updates scheduled 
+ for this winter.  Breakfast will be served. 
+  Call to give us a count by January 25, 
+ 2006. (804)758-4120\n
+ \n\n
+ Sponsor: Dianne Richmond\n
+ Contact: David Moore\n
+ Phone: (804) 758-4120\n
+ E-Mail:: damoore3@vt.edu\n
+LOCATION:Nick's Restaurant in Shackelfords
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060127T200000Z
+UID:1123781823074-0002@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060127T200000Z
+DTEND:20060128T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060127T210000Z
+UID:1135806916721-0002@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060127T210000Z
+DTEND:20060128T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060127T220000Z
+UID:1128439647748@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060127T220000Z
+DTEND:20060128T045900Z
+SUMMARY:IM USOA Basketball Captain's Mtg.
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060127T233000Z
+UID:1106542248686-0023@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060127T233000Z
+DTEND:20060128T045900Z
+SUMMARY:Free Food Friday
+DESCRIPTION:
+ Need we say more\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:Chi Alpha House
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060128T000000Z
+UID:1122838073285-0023@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060128T000000Z
+DTEND:20060128T045900Z
+SUMMARY:VPI Cave Club Meeting
+DESCRIPTION:
+ Weekly meeting to discuss club business, share 
+ stories of trips taken and make plans for trips 
+ for the weekend. Post meeting activities 
+ announced at the end each meeting. Meeting may 
+ include a cave-related program/presentation.\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.calendar.vt.edu/caveclub/\n
+ Contact: Geoff Lewis\n
+ E-Mail:: vp@vpicaveclub.org\n
+ for more info visit the web at:\n 
+ http://www.vpicaveclub.org\n
+LOCATION:Smyth 146
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060128T003000Z
+UID:1127497291024-0019@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060128T003000Z
+DTEND:20060128T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired!\n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060129T000000Z
+UID:1133209156531@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060129T000000Z
+DTEND:20060129T045900Z
+SUMMARY:Free Winter Swing Dance
+DESCRIPTION:
+ Come learn to swing dance with Solely Swing! The 
+ lesson starts at 7 and the dance is at 8. 
+ Everything is free so come out and try it!\n\n
+ Price: free\n
+ Sponsor: Solely Swing\n
+ Homepage: http://www.swingin.org.vt.edu\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.swingin.org.vt.edu\n
+LOCATION:Squires Commonwealth
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060130T000000Z
+UID:1128439725396@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060130T000000Z
+DTEND:20060130T045900Z
+SUMMARY:IM Innertube Water Polo Officials training
+DESCRIPTION:
+ Begins 1-30-06 and ends 2-2-06\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060130T050000Z
+UID:1128439784948@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060130
+DTEND;VALUE=DATE:20060131
+SUMMARY:IM Registration Begins for many sports
+DESCRIPTION:
+ See IM Web Schedule\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.signup.recsports.vt.edu/\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060130T203000Z
+UID:1136477192710@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060130T203000Z
+DTEND:20060131T045900Z
+SUMMARY:Dr. Linda Warren, Carnegie Institution of Washington
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060130T230000Z
+UID:1135959215147@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060130T230000Z
+DTEND:20060131T003000Z
+SUMMARY:Washington Semester 2006 Information Meeting
+DESCRIPTION:
+ The Washington Semester, a 12-hour extended summer 
+ session program held at the Alexandria, 
+ Va., campus, combines study of politics and public 
+ policy with a professional internship in 
+ a public or nonprofit organization. Open to 
+ all students in good standing with at least 
+ 60 credit hours.\n\n
+ Sponsor: College of Architecture and Urban Studies\n
+ Homepage: http://www.arch.vt.edu/\n
+ Contact: Krystal Wright\n
+ Phone: (540) 231-2291\n
+ E-Mail:: krystal@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.spia.vt.edu/WashSem.htm\n
+LOCATION:Architecture Annex, Room 109
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060131T050000Z
+UID:1129121649518@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060131
+DTEND;VALUE=DATE:20060201
+SUMMARY:IM Registration Deadline Day
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.signup.recsports.vt.edu/\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060131T160000Z
+UID:1136388064949@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060131T160000Z
+DTEND:20060131T170000Z
+SUMMARY:How to Tackle Your Textbooks - Keys to Effective Reading
+DESCRIPTION:
+ Are you tired of spending a lot of time reading 
+ assignments but not remembering what you read? 
+ \n
+ \n
+ Are you easily distracted or have trouble 
+ concentrating while reading? \n
+ \n
+ Are you 
+ falling asleep with your textbook in hand? \n
+  
+  \n
+ If you answered yes to any of these questions 
+ then you should attend this seminar. This 
+ seminar provides techniques to help you increase 
+ your concentration and develop effective 
+ reading techniques so that you remember more 
+ of what you read, the first time and in less 
+ time. \n
+ \n
+ \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu\n
+LOCATION:111 Femoyer
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060201T003000Z
+UID:1127497418472-0020@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060201T003000Z
+DTEND:20060201T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired! \n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060201T160000Z
+UID:1136388092095@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060201T160000Z
+DTEND:20060201T170000Z
+SUMMARY:How to Tackle Your Textbooks - Keys to Effective Reading
+DESCRIPTION:
+ Are you tired of spending a lot of time reading 
+ assignments but not remembering what you read? 
+ \n
+ \n
+ Are you easily distracted or have trouble 
+ concentrating while reading? \n
+ \n
+ Are you 
+ falling asleep with your textbook in hand? \n
+  
+  \n
+ If you answered yes to any of these questions 
+ then you should attend this seminar. This 
+ seminar provides techniques to help you increase 
+ your concentration and develop effective 
+ reading techniques so that you remember more 
+ of what you read, the first time and in less 
+ time. \n
+ \n
+ \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu\n
+LOCATION:111 Femoyer
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060201T223000Z
+UID:1135809926047-0003@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060201T223000Z
+DTEND:20060202T003000Z
+SUMMARY:Reiki
+DESCRIPTION:
+ Free "treatments" and "attunements" for all interested 
+ in experiencing and/or learning to practice 
+ Reiki - regarding relaxation, healing, 
+ and/or spiritual development.\n
+ \n\n
+ Price: free\n
+ Sponsor: Reiki Club\n
+ Contact: Jamie Woytasik\n
+ Phone: (540) 230-2742\n
+ E-Mail:: jwoytasi@vt.edu\n
+ for more info visit the web at:\n 
+ https://filebox.vt.edu/users/reiki/\n
+LOCATION:Squires Norfolk Room
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060202T000000Z
+UID:1106542013736-0024@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060202T000000Z
+DTEND:20060202T020000Z
+SUMMARY:Word and Worship
+DESCRIPTION:
+ Chi Alpha main service\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:War Memorial Chapel
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060202T000000Z
+UID:1134502454005@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060202T000000Z
+DTEND:20060202T045900Z
+SUMMARY:Mammy Would Like to Thank the Academy 
+DESCRIPTION:
+ This program features a discussion on the stereotypes 
+ of Black women in the media. Oscar winner 
+ and sorror Hattie McDaniel is the focal 
+ point and foundation for this discussion. \n
+ \n
+ \n\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: Alicia Brown\n
+ Phone: 540-204-2622\n
+ E-Mail:: asbrwn@vt.edu\n
+LOCATION:Black Cultural Center
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060202T020000Z
+UID:1136402503467-0004@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060202T020000Z
+DTEND:20060202T043000Z
+SUMMARY:Wednesday Night Salsa Massive
+DESCRIPTION:
+ Open dance floor at Burruss Square Tavern sponsored 
+ by Salsatech. Come dance to a mix of the 
+ illest salsa and merengue...a perfect way to 
+ practice what you learned from our Monday lessons! 
+  Seriously, this night is hot. Don't 
+ miss it, for many a legend was born on Wednesday 
+ nights here...\n
+ \n
+ ALL ARE WELCOME.\n
+ (Burruss 
+ Square Tavern is located in downtown Blacksburg 
+ on Draper Road, across from Sheesha and 
+ next to the Rivermill)\n\n
+ Price: free\n
+ Sponsor: Salsaclub (SalsaTech)\n
+ Homepage: http://www.salsaclub.org.vt.edu\n
+ E-Mail:: tchilton@vt.edu, classic@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.salsaclub.org.vt.edu\n
+LOCATION:Burruss Square Tavern
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060202T173000Z
+UID:1135806667850-0003@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060202T173000Z
+DTEND:20060203T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference Desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060202T190000Z
+UID:1136477260720@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060202T190000Z
+DTEND:20060203T045900Z
+SUMMARY:Dr. Scott King, Purdue University
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060202T220000Z
+UID:1116865012626@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060202T220000Z
+DTEND:20060203T000000Z
+SUMMARY:Ice Cream Sundaes
+DESCRIPTION:
+  Sponsor: Student Programs\n
+ Homepage: http://www.studentprograms.vt.edu/\n
+ Phone: (540) 231-8068\n
+ E-Mail:: hrchadwi@vt.edu\n
+LOCATION:D2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060202T220000Z
+UID:1129122019288@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060202T220000Z
+DTEND:20060203T045900Z
+SUMMARY:IM Innertube Water Polo Captain's Meeting
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu/intramurals/links/captains_meeting_information.php\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060202T230000Z
+UID:1129122066623@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060202T230000Z
+DTEND:20060203T045900Z
+SUMMARY:IM USOA 3-on-3 BB Captain's Meeting
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu/intramurals/links/captains_meeting_information.php\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060203T000000Z
+UID:1127767949956-0019@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060203T000000Z
+DTEND:20060203T045900Z
+SUMMARY:Go Club Weekly Meeting
+DESCRIPTION:
+ Drop by and play or some go. Beginners welcome! 
+ We have members of all ranks, and will gladly 
+ teach if you want to learn more.\n\n
+ Price: Free\n
+ Sponsor: Very Tricky Go/Baduk/Weiqi Club\n
+ Homepage: http://www.vtgo.org.vt.edu/\n
+ Contact: Alpha Chen\n
+ Phone: (540) 818-3692\n
+ E-Mail:: alchen@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtgo.org.vt.edu/\n
+LOCATION:Suffolk Room, Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060203T000000Z
+UID:1134502925642@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060203T000000Z
+DTEND:20060203T045900Z
+SUMMARY:Gangs gone Good
+DESCRIPTION:
+ Gangs gone Good is an informative discussion about 
+ the transformation of the Vice Lords from 
+ a street gang into a powerful organization 
+ dedicated to empowering the Black community in 
+ Lawndale, IL. Their widely overlooked accomplishments 
+ show how young Blacks can unite to 
+ work towards a better future.\n
+ \n\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: Rachel Collins\n
+ Phone: 804-691-0225\n
+ E-Mail:: rcollins@vt.edu\n
+LOCATION:147 Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060203T200000Z
+UID:1123781823074-0003@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060203T200000Z
+DTEND:20060204T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060203T210000Z
+UID:1135806916721-0003@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060203T210000Z
+DTEND:20060204T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060203T230000Z
+UID:1134503116447@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060203T230000Z
+DTEND:20060204T045900Z
+SUMMARY:Spades Competition
+DESCRIPTION:
+ This competition features poker, spades, and blackjack. 
+ The event will be entirely social and 
+ a night for students to have fun and win a 
+ sponsored prize at the end of the night.\n
+ \n
+ \n\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: Annette Booker\n
+ Phone: 540-231-1686\n
+ E-Mail:: acbooker@vt.edu\n
+LOCATION:Graduate Life Center
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060203T233000Z
+UID:1106542248686-0024@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060203T233000Z
+DTEND:20060204T045900Z
+SUMMARY:Free Food Friday
+DESCRIPTION:
+ Need we say more\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:Chi Alpha House
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060204T000000Z
+UID:1122838073285-0024@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060204T000000Z
+DTEND:20060204T045900Z
+SUMMARY:VPI Cave Club Meeting
+DESCRIPTION:
+ Weekly meeting to discuss club business, share 
+ stories of trips taken and make plans for trips 
+ for the weekend. Post meeting activities 
+ announced at the end each meeting. Meeting may 
+ include a cave-related program/presentation.\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.calendar.vt.edu/caveclub/\n
+ Contact: Geoff Lewis\n
+ E-Mail:: vp@vpicaveclub.org\n
+ for more info visit the web at:\n 
+ http://www.vpicaveclub.org\n
+LOCATION:Smyth 146
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060204T003000Z
+UID:1127497291024-0020@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060204T003000Z
+DTEND:20060204T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired!\n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060204T050000Z
+UID:1132759431060@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART;VALUE=DATE:20060204
+DTEND;VALUE=DATE:20060205
+SUMMARY:Landowners' Woods & Wildlife Conference
+DESCRIPTION:
+ This 4th annual conference is an all day program 
+ for individuals, families, managers and interested 
+ persons to learn about woods, wildlife 
+ and other natural resources.  The day will 
+ provide participants with multiple links to 
+ information, new ideas to implement, and a better 
+ understanding of their natural resources. 
+ \n
+ \n
+ A variety of topics will be presented including: 
+ Emerging forest health issues, Landowner 
+ liability, Bird habitat enhancement, Christmas 
+ tree growing, Selling timber to improve 
+ woodlands, Small wild-game management, Woodlands 
+ safety and more!\n
+ \n
+ Pre-registration is 
+ required.  For registration information, a 
+ conference brochure or more program information 
+ contact Virginia Cooperative Extension at 
+ 540-948-6881, by-e-mail at slillard@vt.edu\n\n
+ Price: $40.00/person, $70/couple\n
+ Sponsor: Adam Downing\n
+ Contact: Sandy Lillard\n
+ Phone: 540-948-6881\n
+ E-Mail:: slillard@vt.edu\n
+LOCATION:Charlottesville
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060205T010000Z
+UID:1121971923425@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060205T010000Z
+DTEND:20060205T045900Z
+SUMMARY:Woodwind Works
+DESCRIPTION:
+  The VT woodwind faculty, David Jacobsen, David 
+ Widder, John Husser, and guest performers Tracy 
+ Cowden, piano, Alan Weinstein, cello, and 
+ Julie Verret, oboe, will perform pieces by 
+ Beethoven, Gaubert, and Poulenc.  A University 
+ Chamber Music series concert\n\n
+ Price: $12 Adult; $8 Student/Senior\n
+ Sponsor: School of the Arts Management\n
+ Phone: Tickets: (540) 231-5615; Information: (540) 231-5200\n
+ E-Mail:: sotanews@vt.edu\n
+LOCATION:Squires Recital Salon
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060205T200000Z
+UID:1121971960445@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060205T200000Z
+DTEND:20060206T045900Z
+SUMMARY:Woodwind Works
+DESCRIPTION:
+  The VT woodwind faculty, David Jacobsen, David 
+ Widder, John Husser, and guest performers Tracy 
+ Cowden, piano, Alan Weinstein, cello, and 
+ Julie Verret, oboe, will perform pieces by 
+ Beethoven, Gaubert, and Poulenc.  A University 
+ Chamber Music Series concert.\n\n
+ Price: $12 Adult; $8 Student/Senior\n
+ Sponsor: School of the Arts Management\n
+ Phone: Tickets: (540) 231-5615; Information: (540) 231-5200\n
+ E-Mail:: sotanews@vt.edu\n
+LOCATION:Squires Recital Salon
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060206T050000Z
+UID:1135004794673@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060206
+DTEND;VALUE=DATE:20060207
+SUMMARY:17th National African American Read-In
+DESCRIPTION:
+ Join over a million readers nationally in a celebration 
+ of African American Literature.  To 
+ preregister for a guaranteed 15 minute spot 
+ to read, call or stop by the Writing Center. 
+  Walk in participants--readers and listeners--welcomed! 
+  \n\n
+ Price: free\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: Jennifer Lawrence\n
+ Phone: 540-231-9453\n
+ E-Mail:: jlwrnc@vt.edu\n
+LOCATION:The Writing Center, 340 Shanks Hall
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060207T050000Z
+UID:1128309452127@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060207
+DTEND;VALUE=DATE:20060208
+SUMMARY:IM Registration Deadline Day
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060207T180000Z
+UID:1135004983374@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060207T180000Z
+DTEND:20060207T220000Z
+SUMMARY:P.A.T.H. Campaign Booths
+DESCRIPTION:
+ The PATH campaign is our effort to encourage the 
+ campus and broader community to STOP HATIN'. 
+  Through this campaign, we want to encourage 
+ acceptance of all people, discourage prejudice 
+ and discrimination, and promote respecting 
+ the dignity of all.  In support of this campaign, 
+ individuals can sign our P.A.T.H pledge 
+ and in return receive a P.A.T.H card and wrist 
+ band as a visual promotion of the campaign. 
+  (Booths will also be available at the same 
+ time and location on 2/13 and 2/20).  \n\n
+ Price: FREE\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: Majeeda Bey\n
+ Phone: 084-614-7636\n
+ E-Mail:: mbey@vt.edu\n
+LOCATION:Booths A & B, Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060207T180000Z
+UID:1136388166923@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060207T180000Z
+DTEND:20060207T190000Z
+SUMMARY:How to Tackle Your Textbooks - Keys to Effective Reading
+DESCRIPTION:
+ Are you tired of spending a lot of time reading 
+ assignments but not remembering what you read? 
+ \n
+ \n
+ Are you easily distracted or have trouble 
+ concentrating while reading? \n
+ \n
+ Are you 
+ falling asleep with your textbook in hand? \n
+  
+  \n
+ If you answered yes to any of these questions 
+ then you should attend this seminar. This 
+ seminar provides techniques to help you increase 
+ your concentration and develop effective 
+ reading techniques so that you remember more 
+ of what you read, the first time and in less 
+ time. \n
+ \n
+ \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu\n
+LOCATION:111 Femoyer
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060208T003000Z
+UID:1127497418472-0021@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060208T003000Z
+DTEND:20060208T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired! \n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060208T200000Z
+UID:1136388189855@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060208T200000Z
+DTEND:20060208T210000Z
+SUMMARY:How to Tackle Your Textbooks - Keys to Effective Reading
+DESCRIPTION:
+ Are you tired of spending a lot of time reading 
+ assignments but not remembering what you read? 
+ \n
+ \n
+ Are you easily distracted or have trouble 
+ concentrating while reading? \n
+ \n
+ Are you 
+ falling asleep with your textbook in hand? \n
+  
+  \n
+ If you answered yes to any of these questions 
+ then you should attend this seminar. This 
+ seminar provides techniques to help you increase 
+ your concentration and develop effective 
+ reading techniques so that you remember more 
+ of what you read, the first time and in less 
+ time. \n
+ \n
+ \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu\n
+LOCATION:111 Femoyer
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060208T220000Z
+UID:1123083763931@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060208T220000Z
+DTEND:20060209T045900Z
+SUMMARY:Ginger's Jewelry Diamond Dive
+DESCRIPTION:
+ Snorkel for a chance to win a Ginger's Jewelry 
+ diamond, bracelet, earrings and/or cubic zirconias 
+ as well as gift certificates from one 
+ of our participating sponsors: Student Crew, 
+ Applebee's, The Farmhouse Restaurant, Texas Steakhouse, 
+ Pizza Hut, Backstreets, Famous Anthony's, 
+ Blockbuster, Squeaky's Laser Car Wash, 
+ TCBY and Shell Rapid Lube.  This sparkling 
+ and splashy event is open to VT students, faculty, 
+ staff and the general public. Participants 
+ snorkel or dive to retrieve 3 plastic prize 
+ eggs.\n\n
+ Price: $10 Per Person for 3 Prize Eggs\n
+ Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ Contact: Cathy Kropff\n
+ Phone: 231-6184\n
+ E-Mail:: ckropff@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+LOCATION:McComas Pool
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060208T223000Z
+UID:1135809926047-0004@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060208T223000Z
+DTEND:20060209T003000Z
+SUMMARY:Reiki
+DESCRIPTION:
+ Free "treatments" and "attunements" for all interested 
+ in experiencing and/or learning to practice 
+ Reiki - regarding relaxation, healing, 
+ and/or spiritual development.\n
+ \n\n
+ Price: free\n
+ Sponsor: Reiki Club\n
+ Contact: Jamie Woytasik\n
+ Phone: (540) 230-2742\n
+ E-Mail:: jwoytasi@vt.edu\n
+ for more info visit the web at:\n 
+ https://filebox.vt.edu/users/reiki/\n
+LOCATION:Squires Norfolk Room
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060209T000000Z
+UID:1106542013736-0025@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060209T000000Z
+DTEND:20060209T020000Z
+SUMMARY:Word and Worship
+DESCRIPTION:
+ Chi Alpha main service\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:War Memorial Chapel
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060209T000000Z
+UID:1135005199513@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060209T000000Z
+DTEND:20060209T045900Z
+SUMMARY:Exploring Black Civic Responsiblity & Participation
+DESCRIPTION:
+ In this 2-part series of panel discussions, the 
+ history of Black Civic responsibility and participation 
+ will be explored with special emphasis 
+ on the New River Valley.  The intersection 
+ between economics, education, health & social 
+ services, and religion through social justice 
+ initiatives will be highlighted. Sessions 
+ will include members of the Caucus as well 
+ as local business owners, professionals and 
+ community activists and leaders. \n\n
+ Price: FREE\n
+ Sponsor: Multicultural Programs\n
+ Homepage: http://www.mcp.vt.edu/\n
+ Contact: Ed McPherson\n
+ Phone: 540-231-8029\n
+ E-Mail:: ejay@vt.edu\n
+LOCATION:Christiansburg Community Center
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060209T020000Z
+UID:1136402503467-0005@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060209T020000Z
+DTEND:20060209T043000Z
+SUMMARY:Wednesday Night Salsa Massive
+DESCRIPTION:
+ Open dance floor at Burruss Square Tavern sponsored 
+ by Salsatech. Come dance to a mix of the 
+ illest salsa and merengue...a perfect way to 
+ practice what you learned from our Monday lessons! 
+  Seriously, this night is hot. Don't 
+ miss it, for many a legend was born on Wednesday 
+ nights here...\n
+ \n
+ ALL ARE WELCOME.\n
+ (Burruss 
+ Square Tavern is located in downtown Blacksburg 
+ on Draper Road, across from Sheesha and 
+ next to the Rivermill)\n\n
+ Price: free\n
+ Sponsor: Salsaclub (SalsaTech)\n
+ Homepage: http://www.salsaclub.org.vt.edu\n
+ E-Mail:: tchilton@vt.edu, classic@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.salsaclub.org.vt.edu\n
+LOCATION:Burruss Square Tavern
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060209T173000Z
+UID:1135806667850-0004@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060209T173000Z
+DTEND:20060210T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference Desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060209T190000Z
+UID:1136477358159@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060209T190000Z
+DTEND:20060210T045900Z
+SUMMARY:Dr. Jonathan Ajo-Franklin, Massachusetts Institute of Technology
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060209T220000Z
+UID:1116865083088@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060209T220000Z
+DTEND:20060210T000000Z
+SUMMARY:Decadent Desserts
+DESCRIPTION:
+  Sponsor: Student Programs\n
+ Homepage: http://www.studentprograms.vt.edu/\n
+ Phone: (540) 231-8068\n
+ E-Mail:: hrchadwi@vt.edu\n
+LOCATION:D2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060209T220000Z
+UID:1129122167535@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060209T220000Z
+DTEND:20060210T045900Z
+SUMMARY:IM Bowling Captain's Meeting
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu/intramurals/links/captains_meeting_information.php\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060209T230000Z
+UID:1129122222830@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060209T230000Z
+DTEND:20060210T045900Z
+SUMMARY:Im Darts Captain's Meeting
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu/intramurals/links/captains_meeting_information.php\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060210T000000Z
+UID:1127767949956-0020@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060210T000000Z
+DTEND:20060210T045900Z
+SUMMARY:Go Club Weekly Meeting
+DESCRIPTION:
+ Drop by and play or some go. Beginners welcome! 
+ We have members of all ranks, and will gladly 
+ teach if you want to learn more.\n\n
+ Price: Free\n
+ Sponsor: Very Tricky Go/Baduk/Weiqi Club\n
+ Homepage: http://www.vtgo.org.vt.edu/\n
+ Contact: Alpha Chen\n
+ Phone: (540) 818-3692\n
+ E-Mail:: alchen@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtgo.org.vt.edu/\n
+LOCATION:Suffolk Room, Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060210T200000Z
+UID:1123781823074-0004@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060210T200000Z
+DTEND:20060211T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060210T210000Z
+UID:1135806916721-0004@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060210T210000Z
+DTEND:20060211T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060210T233000Z
+UID:1106542248686-0025@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060210T233000Z
+DTEND:20060211T045900Z
+SUMMARY:Free Food Friday
+DESCRIPTION:
+ Need we say more\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:Chi Alpha House
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060211T000000Z
+UID:1122838073285-0025@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060211T000000Z
+DTEND:20060211T045900Z
+SUMMARY:VPI Cave Club Meeting
+DESCRIPTION:
+ Weekly meeting to discuss club business, share 
+ stories of trips taken and make plans for trips 
+ for the weekend. Post meeting activities 
+ announced at the end each meeting. Meeting may 
+ include a cave-related program/presentation.\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.calendar.vt.edu/caveclub/\n
+ Contact: Geoff Lewis\n
+ E-Mail:: vp@vpicaveclub.org\n
+ for more info visit the web at:\n 
+ http://www.vpicaveclub.org\n
+LOCATION:Smyth 146
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060211T003000Z
+UID:1127497291024-0021@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060211T003000Z
+DTEND:20060211T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired!\n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060213T000000Z
+UID:1129122673386@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060213T000000Z
+DTEND:20060213T045900Z
+SUMMARY:IM Official Wiffleball Training
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu/intramurals/links/I_Wiffleball_USOA.php\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060213T171500Z
+UID:1129561878474@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060213T171500Z
+DTEND:20060214T045900Z
+SUMMARY:Paula Mathieu on the Public Turn in English Composition
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.english.vt.edu/\n
+LOCATION:Shanks 370-380
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060213T203000Z
+UID:1136477441211@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060213T203000Z
+DTEND:20060214T045900Z
+SUMMARY:Dr. Chester Weiss, Sandia National Laboratories
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060214T000000Z
+UID:1123083879715@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060214T000000Z
+DTEND:20060214T045900Z
+SUMMARY:Partner Yoga
+DESCRIPTION:
+ Celebrate Valentine's Day with a friend or a special 
+ someone while doing partner yoga!  First 
+ 100 participants receive a FREE T-shirt and 
+ FREE Subway 6" sub coupon.  Doorprizes include 
+ Student Crew cards and cardholders receive 
+ an extra 100 points (bring your card).\n
+ \n
+ This 
+ class is FREE and open to VT students, faculty, 
+ and staff.\n\n
+ Price: FREE to VT Students, Faculty and Staff\n
+ Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ Contact: Ali Arner\n
+ Phone: (540) 231-6856\n
+ E-Mail:: aarner@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+LOCATION:McComas Fitness Studios
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060214T003000Z
+UID:1124749394870@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060214T003000Z
+DTEND:20060214T045900Z
+SUMMARY:A Broadway Valentine
+DESCRIPTION:
+ A collection of various Broadway love songs and 
+ ballads. Perfect for a romantic, Valentine's 
+ Day date!\n\n
+ Sponsor: Student Activities\n
+ Homepage: http://www.uusa.vt.edu/studentActivities/saHome.htm\n
+ Contact: Kristina Dragland\n
+ Phone: 231-7117\n
+ E-Mail:: livelyarts@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtu.org\n
+LOCATION:Burruss Hall Auditorium
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060214T050000Z
+UID:1128309493730@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060214
+DTEND;VALUE=DATE:20060215
+SUMMARY:IM Registration Deadline Day
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060214T160000Z
+UID:1136388294788@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060214T160000Z
+DTEND:20060214T170000Z
+SUMMARY:"How to Be a Successful HOKIE"
+DESCRIPTION:
+ Okay, so you were a star in high school ? maybe 
+ never cracked a book! But being successful 
+ in high school does not automatically mean you 
+ will be successful in college. Not only do 
+ you need the brains to succeed, you need the 
+ ?know how?. This seminar is designed to help 
+ you develop the ?know how? without sacrificing 
+ everything else in your life. Topics covered 
+ include note-taking and study skills, effective 
+ reading techniques, how to be a good listener, 
+ working with professors, and more! Don't 
+ be satisfied with just getting by - learn 
+ how you to excel in your academics. \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu/programs/academicsuccess.html\n
+LOCATION:111 Femoyer Hall
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060214T220000Z
+UID:1116865480872@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060214T220000Z
+DTEND:20060215T000000Z
+SUMMARY:Chocolate Lover's Delight
+DESCRIPTION:
+ Special chocolate treat for Valentine's Day\n\n
+ Sponsor: Student Programs\n
+ Homepage: http://www.studentprograms.vt.edu/\n
+ Phone: (540) 231-8068\n
+ E-Mail:: hrchadwi@vt.edu\n
+LOCATION:D2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060214T220000Z
+UID:1116865236705@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060214T220000Z
+DTEND:20060215T000000Z
+SUMMARY:Chef Series IV: Truffle Making
+DESCRIPTION:
+ The chefs of Virginia Tech's on-campus dining 
+ centers present a fun, hands-on cooking experience.\n\n
+ Sponsor: Student Programs\n
+ Homepage: http://www.studentprograms.vt.edu/\n
+ Phone: (540) 231-8068\n
+ E-Mail:: hrchadwi@vt.edu\n
+LOCATION:D2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060215T003000Z
+UID:1127497418472-0022@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060215T003000Z
+DTEND:20060215T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired! \n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060215T160000Z
+UID:1136388311693@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060215T160000Z
+DTEND:20060215T170000Z
+SUMMARY:"How to Be a Successful HOKIE"
+DESCRIPTION:
+ Okay, so you were a star in high school ? maybe 
+ never cracked a book! But being successful 
+ in high school does not automatically mean you 
+ will be successful in college. Not only do 
+ you need the brains to succeed, you need the 
+ ?know how?. This seminar is designed to help 
+ you develop the ?know how? without sacrificing 
+ everything else in your life. Topics covered 
+ include note-taking and study skills, effective 
+ reading techniques, how to be a good listener, 
+ working with professors, and more! Don't 
+ be satisfied with just getting by - learn 
+ how you to excel in your academics. \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu/programs/academicsuccess.html\n
+LOCATION:111 Femoyer Hall
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060215T223000Z
+UID:1135809926047-0005@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060215T223000Z
+DTEND:20060216T003000Z
+SUMMARY:Reiki
+DESCRIPTION:
+ Free "treatments" and "attunements" for all interested 
+ in experiencing and/or learning to practice 
+ Reiki - regarding relaxation, healing, 
+ and/or spiritual development.\n
+ \n\n
+ Price: free\n
+ Sponsor: Reiki Club\n
+ Contact: Jamie Woytasik\n
+ Phone: (540) 230-2742\n
+ E-Mail:: jwoytasi@vt.edu\n
+ for more info visit the web at:\n 
+ https://filebox.vt.edu/users/reiki/\n
+LOCATION:Squires Norfolk Room
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060215T230000Z
+UID:1129122885471@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060215T230000Z
+DTEND:20060216T045900Z
+SUMMARY:IM Official Wiffleball Training
+DESCRIPTION:
+ Time subject to change.\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu/intramurals/links/I_Wiffleball_USOA.php\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060216T000000Z
+UID:1106542013736-0026@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060216T000000Z
+DTEND:20060216T020000Z
+SUMMARY:Word and Worship
+DESCRIPTION:
+ Chi Alpha main service\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:War Memorial Chapel
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060216T003000Z
+UID:1064818293904-0038@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060216T003000Z
+DTEND:20060216T020000Z
+SUMMARY:EMSAT
+DESCRIPTION:
+ Televised satelite training providing CE hours 
+ to Virginia's EMS providers.\n\n
+ Sponsor: Virginia Tech Rescue Squad\n
+ Homepage: http://www.rescue.vt.edu/\n
+ Contact: Training Lt.\n
+ Phone: 231-7138\n
+ for more info visit the web at:\n 
+ http://www.vdh.state.va.us/oems/EMSAT/emsat.htm\n
+LOCATION:Virginia Tech Rescue Squad, Military Building
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060216T020000Z
+UID:1136402503467-0006@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060216T020000Z
+DTEND:20060216T043000Z
+SUMMARY:Wednesday Night Salsa Massive
+DESCRIPTION:
+ Open dance floor at Burruss Square Tavern sponsored 
+ by Salsatech. Come dance to a mix of the 
+ illest salsa and merengue...a perfect way to 
+ practice what you learned from our Monday lessons! 
+  Seriously, this night is hot. Don't 
+ miss it, for many a legend was born on Wednesday 
+ nights here...\n
+ \n
+ ALL ARE WELCOME.\n
+ (Burruss 
+ Square Tavern is located in downtown Blacksburg 
+ on Draper Road, across from Sheesha and 
+ next to the Rivermill)\n\n
+ Price: free\n
+ Sponsor: Salsaclub (SalsaTech)\n
+ Homepage: http://www.salsaclub.org.vt.edu\n
+ E-Mail:: tchilton@vt.edu, classic@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.salsaclub.org.vt.edu\n
+LOCATION:Burruss Square Tavern
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060216T173000Z
+UID:1135806667850-0005@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060216T173000Z
+DTEND:20060217T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference Desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060216T190000Z
+UID:1136477566465@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060216T190000Z
+DTEND:20060217T045900Z
+SUMMARY:Dr. Wen-Lu Zhu, Woods Hole Oceanographic Institution
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060216T220000Z
+UID:1129122957927@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060216T220000Z
+DTEND:20060217T045900Z
+SUMMARY:USOA Wiffleball Captain's Mtg.
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu/intramurals/links/captains_meeting_information.php\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060217T000000Z
+UID:1127767949956-0021@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060217T000000Z
+DTEND:20060217T045900Z
+SUMMARY:Go Club Weekly Meeting
+DESCRIPTION:
+ Drop by and play or some go. Beginners welcome! 
+ We have members of all ranks, and will gladly 
+ teach if you want to learn more.\n\n
+ Price: Free\n
+ Sponsor: Very Tricky Go/Baduk/Weiqi Club\n
+ Homepage: http://www.vtgo.org.vt.edu/\n
+ Contact: Alpha Chen\n
+ Phone: (540) 818-3692\n
+ E-Mail:: alchen@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtgo.org.vt.edu/\n
+LOCATION:Suffolk Room, Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060217T193000Z
+UID:1126632155478@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060217T193000Z
+DTEND:20060217T203000Z
+SUMMARY:Developmental Science Colloquium
+DESCRIPTION:
+ Tom Ollendick, Virginia Tech\n\n
+ Price: free\n
+ Sponsor: Developmental Science Initiative\n
+ Contact: Dr. Isabel Bradburn\n
+ Phone: 231-1063\n
+ E-Mail:: isbrad@vt.edu\n
+LOCATION:Fralin Auditorium
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060217T200000Z
+UID:1123781823074-0005@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060217T200000Z
+DTEND:20060218T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060217T210000Z
+UID:1135806916721-0005@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060217T210000Z
+DTEND:20060218T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060217T233000Z
+UID:1106542248686-0026@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060217T233000Z
+DTEND:20060218T045900Z
+SUMMARY:Free Food Friday
+DESCRIPTION:
+ Need we say more\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:Chi Alpha House
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060218T000000Z
+UID:1122838073285-0026@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060218T000000Z
+DTEND:20060218T045900Z
+SUMMARY:VPI Cave Club Meeting
+DESCRIPTION:
+ Weekly meeting to discuss club business, share 
+ stories of trips taken and make plans for trips 
+ for the weekend. Post meeting activities 
+ announced at the end each meeting. Meeting may 
+ include a cave-related program/presentation.\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.calendar.vt.edu/caveclub/\n
+ Contact: Geoff Lewis\n
+ E-Mail:: vp@vpicaveclub.org\n
+ for more info visit the web at:\n 
+ http://www.vpicaveclub.org\n
+LOCATION:Smyth 146
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060218T003000Z
+UID:1127497291024-0022@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060218T003000Z
+DTEND:20060218T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired!\n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060219T000000Z
+UID:1133209297557@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060219T000000Z
+DTEND:20060219T045900Z
+SUMMARY:Valentine's Swing Dance With the Boilermakers
+DESCRIPTION:
+ Come out to the 2nd Chance Valentines Dance and 
+ learn to swing. There is a lesson at 7 and 
+ the dance starts at 8 with the Boilermaker Jazz 
+ Band!\n\n
+ Price: TBA\n
+ Sponsor: Solely Swing\n
+ Homepage: http://www.swingin.org.vt.edu\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.swingin.org.vt.edu\n
+LOCATION:Squires Commonwealth
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060220T050000Z
+UID:1087924075000-0002@www.calendar.vt.edu
+CATEGORIES:Break/Holiday
+DTSTART;VALUE=DATE:20060220
+DTEND;VALUE=DATE:20060221
+SUMMARY:Presidents' Day
+DESCRIPTION:
+ Classified Staff Holiday\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.calendar.vt.edu/administration/\n
+ for more info visit the web at:\n 
+ http://www.ps.vt.edu/employeescorner/holidays/\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060220T050000Z
+UID:1128309650110@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART;VALUE=DATE:20060220
+DTEND;VALUE=DATE:20060221
+SUMMARY:IM Registration Begins: Softball
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060220T203000Z
+UID:1136477622771@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060220T203000Z
+DTEND:20060221T045900Z
+SUMMARY:Dr. David Goldsby, Brown University
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060221T180000Z
+UID:1136388346322@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060221T180000Z
+DTEND:20060221T190000Z
+SUMMARY:"How to Be a Successful HOKIE"
+DESCRIPTION:
+ Okay, so you were a star in high school ? maybe 
+ never cracked a book! But being successful 
+ in high school does not automatically mean you 
+ will be successful in college. Not only do 
+ you need the brains to succeed, you need the 
+ ?know how?. This seminar is designed to help 
+ you develop the ?know how? without sacrificing 
+ everything else in your life. Topics covered 
+ include note-taking and study skills, effective 
+ reading techniques, how to be a good listener, 
+ working with professors, and more! Don't 
+ be satisfied with just getting by - learn 
+ how you to excel in your academics. \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu/programs/academicsuccess.html\n
+LOCATION:111 Femoyer Hall
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060222T003000Z
+UID:1118689502493@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060222T003000Z
+DTEND:20060222T023000Z
+SUMMARY:Engineering Distinguished Lecture Series
+DESCRIPTION:
+ A free public lecture by Mr. Elon Musk, chairman 
+ and CEO of SpaceX.  He will discuss the future 
+ of space research from the perspective of 
+ the rising new space buisnesses.  Space X is 
+ developing a family of Falcon launch vehicles 
+ intended to reduce the cost and increase the 
+ reliability of access to space ultimately 
+ by a factor of 10.\n\n
+ Price: free\n
+ Sponsor: College of Engineering \n
+ Homepage: http://www.eng.vt.edu\n
+ Contact: Linda L. Stroh\n
+ Phone: 5402315753\n
+ E-Mail:: lstroh@vt.edu\n
+LOCATION:Burruss Auditorium
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060222T003000Z
+UID:1127497418472-0023@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060222T003000Z
+DTEND:20060222T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired! \n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060222T200000Z
+UID:1136388363008@www.calendar.vt.edu
+CATEGORIES:Academic
+DTSTART:20060222T200000Z
+DTEND:20060222T210000Z
+SUMMARY:"How to Be a Successful HOKIE"
+DESCRIPTION:
+ Okay, so you were a star in high school ? maybe 
+ never cracked a book! But being successful 
+ in high school does not automatically mean you 
+ will be successful in college. Not only do 
+ you need the brains to succeed, you need the 
+ ?know how?. This seminar is designed to help 
+ you develop the ?know how? without sacrificing 
+ everything else in your life. Topics covered 
+ include note-taking and study skills, effective 
+ reading techniques, how to be a good listener, 
+ working with professors, and more! Don't 
+ be satisfied with just getting by - learn 
+ how you to excel in your academics. \n\n
+ Price: no charge\n
+ Sponsor: Administration\n
+ Homepage: http://www.caee.vt.edu\n
+ Contact: Barbara Weimerskirch\n
+ Phone: 231-5499\n
+ E-Mail:: bmweimer@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.caee.vt.edu/programs/academicsuccess.html\n
+LOCATION:111 Femoyer Hall
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060222T223000Z
+UID:1135809926047-0006@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060222T223000Z
+DTEND:20060223T003000Z
+SUMMARY:Reiki
+DESCRIPTION:
+ Free "treatments" and "attunements" for all interested 
+ in experiencing and/or learning to practice 
+ Reiki - regarding relaxation, healing, 
+ and/or spiritual development.\n
+ \n\n
+ Price: free\n
+ Sponsor: Reiki Club\n
+ Contact: Jamie Woytasik\n
+ Phone: (540) 230-2742\n
+ E-Mail:: jwoytasi@vt.edu\n
+ for more info visit the web at:\n 
+ https://filebox.vt.edu/users/reiki/\n
+LOCATION:Squires Norfolk Room
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060223T000000Z
+UID:1106542013736-0027@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060223T000000Z
+DTEND:20060223T020000Z
+SUMMARY:Word and Worship
+DESCRIPTION:
+ Chi Alpha main service\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:War Memorial Chapel
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060223T010000Z
+UID:1121971328667-0001@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060223T010000Z
+DTEND:20060223T045900Z
+SUMMARY:New Play Festival
+DESCRIPTION:
+  Price: $8 Adult, $6 Student/Senior\n
+ Sponsor: School of the Arts Management\n
+ Phone: Tickets: (540) 231-5615; Information: (540) 231-5200\n
+ E-Mail:: sotanews@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.theatre.vt.edu\n
+LOCATION:Squires Studio Theatre
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060223T020000Z
+UID:1136402503467-0007@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060223T020000Z
+DTEND:20060223T043000Z
+SUMMARY:Wednesday Night Salsa Massive
+DESCRIPTION:
+ Open dance floor at Burruss Square Tavern sponsored 
+ by Salsatech. Come dance to a mix of the 
+ illest salsa and merengue...a perfect way to 
+ practice what you learned from our Monday lessons! 
+  Seriously, this night is hot. Don't 
+ miss it, for many a legend was born on Wednesday 
+ nights here...\n
+ \n
+ ALL ARE WELCOME.\n
+ (Burruss 
+ Square Tavern is located in downtown Blacksburg 
+ on Draper Road, across from Sheesha and 
+ next to the Rivermill)\n\n
+ Price: free\n
+ Sponsor: Salsaclub (SalsaTech)\n
+ Homepage: http://www.salsaclub.org.vt.edu\n
+ E-Mail:: tchilton@vt.edu, classic@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.salsaclub.org.vt.edu\n
+LOCATION:Burruss Square Tavern
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060223T173000Z
+UID:1135806667850-0006@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060223T173000Z
+DTEND:20060224T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference Desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060223T190000Z
+UID:1136477760775@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060223T190000Z
+DTEND:20060224T045900Z
+SUMMARY:Dr. Steven Jacobsen, Carnegie Institution of Washington
+DESCRIPTION:
+  Price: Free\n
+ Sponsor: Geosciences\n
+ Homepage: http://www.geol.vt.edu/\n
+ Contact: Ellen Mathena\n
+ Phone: 540-231-6729\n
+ E-Mail:: mathena@vt.edu\n
+LOCATION:4069 Derring
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060224T000000Z
+UID:1127767949956-0022@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060224T000000Z
+DTEND:20060224T045900Z
+SUMMARY:Go Club Weekly Meeting
+DESCRIPTION:
+ Drop by and play or some go. Beginners welcome! 
+ We have members of all ranks, and will gladly 
+ teach if you want to learn more.\n\n
+ Price: Free\n
+ Sponsor: Very Tricky Go/Baduk/Weiqi Club\n
+ Homepage: http://www.vtgo.org.vt.edu/\n
+ Contact: Alpha Chen\n
+ Phone: (540) 818-3692\n
+ E-Mail:: alchen@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtgo.org.vt.edu/\n
+LOCATION:Suffolk Room, Squires
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060224T010000Z
+UID:1121971328667-0002@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060224T010000Z
+DTEND:20060224T045900Z
+SUMMARY:New Play Festival
+DESCRIPTION:
+  Price: $8 Adult, $6 Student/Senior\n
+ Sponsor: School of the Arts Management\n
+ Phone: Tickets: (540) 231-5615; Information: (540) 231-5200\n
+ E-Mail:: sotanews@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.theatre.vt.edu\n
+LOCATION:Squires Studio Theatre
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060224T200000Z
+UID:1123781823074-0006@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060224T200000Z
+DTEND:20060225T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060224T210000Z
+UID:1135806916721-0006@www.calendar.vt.edu
+CATEGORIES:Seminar/Conference
+DTSTART:20060224T210000Z
+DTEND:20060225T045900Z
+SUMMARY:Newman Library tour
+DESCRIPTION:
+ This 30-45 minute tour of Newman Library covers 
+ major service points and collection locations. 
+ Meet in the lobby near the Reference desk.\n\n
+ Price: free\n
+ Sponsor: Libraries' Instruction Group\n
+ Contact: Robert Sebek\n
+ Phone: 231-1849\n
+ E-Mail:: library.tours@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.lib.vt.edu/research/libinst/toursked.html\n
+LOCATION:Newman Library
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060224T233000Z
+UID:1106542248686-0027@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060224T233000Z
+DTEND:20060225T045900Z
+SUMMARY:Free Food Friday
+DESCRIPTION:
+ Need we say more\n\n
+ Price: free\n
+ Sponsor: Administration\n
+ Homepage: http://www.xa.org.vt.edu\n
+ for more info visit the web at:\n 
+ http://www.vtxa.com/events.php\n
+LOCATION:Chi Alpha House
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060225T000000Z
+UID:1122838073285-0027@www.calendar.vt.edu
+CATEGORIES:Club
+DTSTART:20060225T000000Z
+DTEND:20060225T045900Z
+SUMMARY:VPI Cave Club Meeting
+DESCRIPTION:
+ Weekly meeting to discuss club business, share 
+ stories of trips taken and make plans for trips 
+ for the weekend. Post meeting activities 
+ announced at the end each meeting. Meeting may 
+ include a cave-related program/presentation.\n\n
+ Sponsor: Administration\n
+ Homepage: http://www.calendar.vt.edu/caveclub/\n
+ Contact: Geoff Lewis\n
+ E-Mail:: vp@vpicaveclub.org\n
+ for more info visit the web at:\n 
+ http://www.vpicaveclub.org\n
+LOCATION:Smyth 146
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060225T003000Z
+UID:1127497291024-0023@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060225T003000Z
+DTEND:20060225T040000Z
+SUMMARY:Weekly Swing Dance
+DESCRIPTION:
+ Weekly swing dance at the Upstairs Ballroom at 
+ Squared Away Storage on North Main St. Lesson 
+ at 7:30, dance at 8:30. The dance will last 
+ until you get tired!\n\n
+ Price: 2$\n
+ Sponsor: SVSDS\n
+ Homepage: http://civic.bev.net/swingdance/\n
+ E-Mail:: swingin@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.swingin.org.vt.edu\n
+LOCATION:Upstairs Ballroom
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060225T010000Z
+UID:1121971328667-0003@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060225T010000Z
+DTEND:20060225T045900Z
+SUMMARY:New Play Festival
+DESCRIPTION:
+  Price: $8 Adult, $6 Student/Senior\n
+ Sponsor: School of the Arts Management\n
+ Phone: Tickets: (540) 231-5615; Information: (540) 231-5200\n
+ E-Mail:: sotanews@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.theatre.vt.edu\n
+LOCATION:Squires Studio Theatre
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060225T150000Z
+UID:1128309597008@www.calendar.vt.edu
+CATEGORIES:Special Event
+DTSTART:20060225T150000Z
+DTEND:20060226T045900Z
+SUMMARY:Bench Press Competition
+DESCRIPTION:
+  Sponsor: Administration\n
+ Homepage: http://www.recsports.vt.edu/\n
+ for more info visit the web at:\n 
+ http://www.recsports.vt.edu\n
+LOCATION:War Memorial Hall
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20060226T010000Z
+UID:1121971328667-0004@www.calendar.vt.edu
+CATEGORIES:Music/Theatre/Dance
+DTSTART:20060226T010000Z
+DTEND:20060226T045900Z
+SUMMARY:New Play Festival
+DESCRIPTION:
+  Price: $8 Adult, $6 Student/Senior\n
+ Sponsor: School of the Arts Management\n
+ Phone: Tickets: (540) 231-5615; Information: (540) 231-5200\n
+ E-Mail:: sotanews@vt.edu\n
+ for more info visit the web at:\n 
+ http://www.theatre.vt.edu\n
+LOCATION:Squires Studio Theatre
+END:VEVENT
+END:VCALENDAR

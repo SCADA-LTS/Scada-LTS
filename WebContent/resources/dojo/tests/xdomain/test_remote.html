@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true,
+				useXDomain: true,
+				baseLoaderUri: "http://tagneto.org/dojo/xd/",
+				xdWaitSeconds: 10
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="http://tagneto.org/dojo/xd/dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.registerModulePath("dojo", "http://tagneto.org/dojo/xd/src");
+
+			function click1(){
+				dojo.debug("click1");
+			}
+
+			function init(){
+				dojo.debug("init was called.");
+				var clickNode = document.getElementById("testButton1");
+				dojo.event.connect(clickNode, "onclick", "click1");
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<h1>XDomain Success Test Page</h1>
+		<p>
+		This test should succeed. If you click on the Test Button, there should be
+		a debug message saying "click1".
+		</p>
+		<p><b>IMPORTANT:</b> Change the domain name in the source of this file
+		to be the domain name that you want to test. You can change the paths too.
+		In this file /dojo/xd refers to a dojo installation that has run the xdgen
+		build command to build cross-domain compatible packages.
+		<p>
+				<button id="testButton1">Test Button</button>
+		</p>
+	</body>
+</html>

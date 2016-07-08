@@ -1,0 +1,4 @@
+name=Vertical level
+type=dynamic
+text.x=0
+text.y=99

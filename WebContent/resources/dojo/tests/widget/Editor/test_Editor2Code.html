@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+	<title>Dojo Editor2 Test</title>
+	<script type="text/javascript">
+		var djConfig = {
+			isDebug: true,
+			dojoRichTextFrameUrl: "../../../src/widget/templates/richtextframe.html" //for xdomain
+		};
+	</script>
+
+	<script type="text/javascript" src="../../../dojo.js"></script>
+	<script type="text/javascript">
+	dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
+	dojo.require("dojo.widget.Editor2");
+	</script>
+	<script type="text/javascript">
+		function editorTest() {
+			this.editor0 = dojo.widget.createWidget("Editor2", {toolbarTemplatePath: dojo.uri.dojoUri("tests/widget/Editor/EditorToolbarLight.html"), height: 100, shareToolbar: false}, document.getElementById("fooTest"));
+			dojo.event.connect(this.editor0, "editorOnLoad", dojo.lang.hitch(this, function() { this.editor0Loaded=true; }));
+			dojo.event.connect(this.editor0, "save", dojo.lang.hitch(this, function() {
+				dojo.debug("editor0");
+			}));
+			this.editor1 = dojo.widget.createWidget("Editor2", {toolbarTemplatePath: "../../../tests/widget/Editor/EditorToolbarLight.html", height: 100, shareToolbar: false}, document.getElementById("barTest"));
+			dojo.event.connect(this.editor1, "editorOnLoad", dojo.lang.hitch(this, function() { this.editor1Loaded=true; }));
+			dojo.event.connect(this.editor1, "save", dojo.lang.hitch(this, function() {
+				dojo.debug("editor1");
+			}));
+		}
+		dojo.addOnLoad(function() {
+				editorTest();
+			}
+		);
+	</script>
+</head>
+<body bgcolor="white">
+	<div id="fooTest"></div>
+	<div id="barTest"></div>
+</body>
+</html>

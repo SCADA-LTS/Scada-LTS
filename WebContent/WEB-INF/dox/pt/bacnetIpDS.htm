@@ -1,0 +1,149 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>The BACnet I/P data source is used to gather data from BACnet I/P compatible-->
+<!--devices accessible over an I/P network. Equipment can be in a local network or-->
+<!--intranet, or could also be anywhere in the internet. This data source uses both-->
+<!--polling and COV (Change Of Value) subscriptions for updating as applicable.</p>-->
+
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>O data source BACnet I/P &eacute; utilizado para obter dados de
+dispositivos compat&iacute;veis com o protocolo BACnet I/P acessados em
+uma rede I/P. Os equipamentos podem estar em uma rede local ou intranet,
+ou tamb&eacute;m podem ser acessados na internet. Este data source
+utiliza tanto atualiza&catilde;o por <i>polling</i> como
+subscri&ccedil;&atilde;o COV (Change Of Value).</p>
+
+<!--<h1>Configuration</h1>-->
+<!--<p>Every data source requires a <b>Name</b>, which can be any-->
+<!--description. The <b>Update period</b> determines how often the BACnet-->
+<!--equipment is polled for data. Polling is only used if a desired object-->
+<!--does not support COV subscriptions. The device is automatically queried-->
+<!--for its supported services to make this determination.</p>-->
+
+<h1>Configura&ccedil;&atilde;o</h1>
+<p>Todo data source necessita de um <b>Nome</b>, que pode ser
+qualquer descri&ccedil;&atilde;o. O <b>Per&iacute;odo de
+atualiza&ccedil;&atilde;o</b> determina a freq&uuml;&ecirc;ncia com que os
+equipamentos BACnet s&atiolde;o pesquisados por dados. <i>Polling</i>
+&eacute; apenas usado se o objeto em quest&atilde;o n&atilde;o suporta
+subscri&ccedil;&atilde;o COV. O dispositivo &eacute; automaticamente
+consultado por seus servi&ccedil;o suportados para fazer essa
+determina&ccedil;&atilde;o.</p>
+
+<!--<p>The <b>Device ID</b> is the identifier that ScadaBR will provide to other-->
+<!--equipment in its IAm message. An IAm message is automatically sent upon startup-->
+<!--of the data source to declare its presence to the network, and is also sent in-->
+<!--response to appropriate WhoIs requests.</p>-->
+
+<p>A <b>ID do dispositivo</b> &eacute; o identificador que o ScadaBR
+ir&aacute; fornecer a outro equipamento em sua mensagem IAm. Uma
+mensagem IAm &eacute; automaticaticamente enviada ao iniciar o data
+source para declarar sua presen&ccedil;a na rede e tamb&eacute;m
+&eacute; enviada como resposta a solicita&ccedil;&otilde;es WhoIs
+apropriadas.</p>
+
+
+<!--<p>The <b>Broadcast address</b> is the IP address for broadcast-->
+<!--messages. Your network administrator will provide you with an-->
+<!--appropriate value to use. The <b>Port</b> is the port number upon which-->
+<!--ScadaBR will listen for incoming messages. Note that ScadaBR supports-->
+<!--situations where other equipment within the BACnet network listens on-->
+<!--other ports, but broadcases messages will only be sent to the port-->
+<!--number that ScadaBR listens on.</p>-->
+
+<p>O <b>Endere&ccedil;o de broadcast</b> &eacute; o endere&ccedil;o
+IP para broadcast de mensagens. Consulte o administrador da rede para um
+valor apropriado. A <b>Porta</b> &eacute; 0 n&uacute;mero da porta que o
+ScadaBR ir&aacute; escutar por mensagens. Observe que o ScadaBR
+possibilita situa&ccedil;&otilde;es ondeo outro equipamento dentro da
+rede BACnet escute em outras portas, mas as mensagens de broadcast
+somente ser&atilde;o enviadas para a porta em que o ScadaBR escuta.</p>
+
+<!--<p>The <b>Timeout</b>, <b>Segment timeout</b>, <b>Segment window</b>,-->
+<!--and <b>Retries</b> values are BACnet messaging attributes. In most cases-->
+<!--the given default values should be appropriate. Consult the BACnet I/P-->
+<!--documentation or your network administrator to determine if other values-->
+<!--should be used for your network.</p>-->
+
+<p>Os valores <b>Timeout</b>, <b>Segment timeout</b>, <b>Segment
+window</b>, e <b>Retries</b> s&atilde;p atributos de mensagens do BACnet. Na
+maioria dos casos, os valores padronizados ser&atilde;o apropriados.
+Consulte a documenta&ccedil;&atilde;o do BACnet I/P ou o administrador
+da rede para determinar se outros valores devem ser utilizados.</p>
+
+<!--<p>The <b>COV lease time</b> is the number of minutes that ScadaBR-->
+<!--will request to hold a COV lease. ScadaBR will automatically attempt to-->
+<!--refresh its COV subscriptions after half of the given time has elapsed.-->
+<!--So, if the least time is 60 minutes, ScadaBR will request the device-->
+<!--honour the lease for 60 minutes, and will resubscribe after 30.</p>-->
+
+<p>O <b>Tempo de concess&atilde;o de COV</b> &eacute; o
+n&uacute;mero de minutos que o ScadaBR ir&aacute; armazenar uma
+concess&atilde;o de COV. O ScadaBR ir&aacute; tentar atualizar
+automaticamente suas subscri&ccedil;&otilde;es de COV ap&oacute;s metade
+deste tempo ter passado. Ent&aacute;o, se o tempo de concess&atilde;o de
+COV for de 60 minutos, o ScadaBR ir&aacute; requisitar que o dispositivo
+honre a concess&atilde;o por 60 minutos e ir&aacute; re-subscrever
+ap&oacute;s 30 minutos.</p>
+
+<!--<p>Where COV subscriptions are not available, polling at the given-->
+<!--rate is used instead. Devices are polled individually. Devices that-->
+<!--support ReadPropertyMultiple requests are sent this message, partitioned-->
+<!--to contain no more than 200 properties in a single request if necessary.-->
+<!--Otherwise, individual ReadProperty requests are sent.</p>-->
+
+<p>Onde subscri&ccedil;&otilde;es de COV n&aatilde;o forem
+dispon&iacute;veis, ser&aacute; adotada a estrat&eacute;gia de <i>polling</i>
+no mesmo intervalo, com os dispositivos sendo pesquisados (<i>polled</i>)
+individualmente. Para dispositivos que suportam
+requisi&ccedil;&otilde;es ReadPropertyMultiple ser&aacute; enviada esta
+mensagem, particionada para conter n&atilde;o mais que 200 propriedades
+em uma &uacute;requisi&ccedil;o se necess&aacute;rio. De outra maneira,
+requisi&ccedil;&otilde;es s&atilde;o enviadas.</p>
+
+<!--<h1>BACnet I/P discovery</h1>-->
+<!--<p>BACnet I/P networks can be discovered automatically by-->
+<!--broadcasting WhoIs messages. Devices are required to respond with an IAm-->
+<!--message, which contains some basic information about the device. To test-->
+<!--configuration settings and determine what devices are available for-->
+<!--points, enter the <b>Port</b> number to which to broadcast and click the-->
+<!--"Send WhoIs" button. (If the port number is not provided, the value from-->
+<!--the configuration is used.) A single WhoIs message will be sent, and-->
+<!--then the device will listen for IAm messages indefinitely. (Clicking-->
+<!--"Cancel" will stop the listener.) As IAm messages are received,-->
+<!--information about the devices will be displayed in the table below-->
+<!--button. The information can be used for the creation of points.</p>-->
+
+<h1>Descobrimento BACnet I/P</h1>
+<p>Redes BACnet I/P podem ser descobertas automaticamente ao fazer
+broadcast de mensagens WhoIs. Os dispositivos devem responder com uma
+mensagem IAm, que cont&eacute;m alguma informa&ccedil;&atilde;o
+b&aacute;sica sobre o dispositivo. Para testar as
+defini&ccedil;&otilde;es de configura&ccedil;&atilde;o e determinar
+quais dispositivos est&atilde;o dispon&iacute;veis para pontos, entre a
+<b>Porta</b> e clique no bot&aatilde;o "Send WhoIs" (se o n&uacute;mero
+da porta n&atilde;o for fornecido, o valor da configura&ccedil;&atilde;o
+ser&aacute; utilizado). Uma &uacute;nica mensagem WhoIs ser&aacute;
+enviada e o dispositivo ir&aacute; escutar por mensagens IAm
+indefinidamente (clicar em "Cancel" ir&aacute; parar a escuta). &Agrave;
+medida que mensagens IAm forem recebidas, informa&ccedil;&otilde;es dos
+dispositivos ser&atilde;o mostradas na tabela abaixo do bot&atilde;o.
+Estas informa&ccedil;&otilde;es podem ser usadas na
+cria&ccedil;&atilde;o de pontos.</p>

@@ -1,0 +1,136 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<p>ScadaBR supports four types of point value logging</p>-->
+<p>O ScadaBR suporta quatro tipos de registro de valores do ponto.</p>
+
+<!--<p><b>When point value changes</b> is the default logging setting.-->
+<!--The point value and its time of occurrence is written to the database-->
+<!--only if the value of the point actually changes. This setting provides-->
+<!--the best compromise of quality of historical information vs storage-->
+<!--space efficiency. For Numeric points, a <b>Tolerance</b>, or "deadband",-->
+<!--can also be provided; the value will be logged if the absolute value of-->
+<!--the difference between the present value and the previous value equals-->
+<!--or exceeds the given tolerance.</p>-->
+<p><b>Quando o valor do data point muda</b> &eacute; a
+configura&ccedil;&atilde;o padr&atilde;o de registro. O valor do ponto e
+seu tempo de ocorr&ecirc;ncia &eacute; escrito na base de dados somente
+se o valor do ponto realmente mudou. Esta configura&ccedil;&atilde;o
+fornece o melhor compromisso de qualidade de informa&ccedil;&atilde;o
+hist&oacute;rica vs efici&ecirc;ncia de espa&ccedil;o de armazenamento.
+Para pontos Num&eacute;ricos, uma <b>Toler&acirc;ncia</b> ou "banda
+morta", pode tamb&eacute;m ser definida; o valor ser&aacute; registrado
+se o valor absoluto da diferen&ccedil;a entre o valor atual e o valor
+anterior for igual ou maior que a toler&acirc;ncia definida.</p>
+
+<!--<p>The <b>All data</b> setting causes every point update to be saved-->
+<!--to the database. Only use this setting if knowledge of every update is-->
+<!--definitely required since a great deal of data can be accumulated very-->
+<!--quickly, which over time can cause serious performance degradation.</p>-->
+<p>A op&ccedil;&atilde;o <b>Todos os dados</b> faz com que toda
+atualiza&ccedil;&atilde;o do ponto seja salva na base de dados. Somente
+use esta op&ccedil;&atilde;o se o conhecimento de toda
+atualiza&ccedil;&atilde;o &eacute; definitivamente requerida, j&aacute;
+que uma grande quantidade de dados pode ser acumulado muito rapidamente,
+o qual com o tempo, pode causar serias degrada&ccedil;&otilde;es na
+performance do sistema.</p>
+
+<!--<p>The <b>Do not log</b> setting prevents any historical data for-->
+<!--the point from being stored in the database. Please note that chart-->
+<!--renderers typically require logged data to function properly. Only use-->
+<!--"Do not log" when certain that the value history is not needed.</p>-->
+<p>A op&ccedil;&atilde;o <b>N&atilde;o registrar</b> previne
+qualquer dado hist&oacute;rico do ponto de ser armazenada na base de
+dados. Por favor note que o renderizador de gr&aacute;fico tipicamente
+requer dados registrados para fucnionar apropriadamente. Somente use a
+op&ccedil;&atilde;o "N&atilde;o registrar" quando tiver certeza de que o
+valor hist&oacute;rico n&atilde;o &eacute; necess&aacute;rio.</p>
+
+<!--<p>The <b>Interval</b> setting allows the collection of data via the-->
+<!--data source to be separated from its logging. Use this when the data-->
+<!--source is collecting data very frequently (say, for event detector-->
+<!--purposes), but all the data is not required to be logged. The <b>Value-->
+<!--type</b> may be chosen with this option. "Instant" means that the current-->
+<!--value of the point is logged, while the other options will cause a-->
+<!--statistic of the points values over the period to be logged.</p>-->
+<p>A op&ccedil;&atilde;o <b>Intervalo</b> permite que a
+cole&ccedil;&atilde;o de dados via data source seja separada de seu
+registro. Use esta op&ccedil;&atilde;o quando o data source estiver
+coletando dados muito frequentemenet (por exemplo, para
+prop&oacute;sitos de detec&ccedil;&atilde;o de eventos), mas todos os
+dados n&atilde;o precisam ser registrados. O <b>Tipo de valor</b> pode
+ser escolhido com essa op&ccedil;&atilde;o. "Instant&acirc;neo"
+significa que o valor atual do ponto &eacute; registrado, enquando as
+outras op&ccedil;&otilde;es calculam estatisticas dos valores do ponto
+sobre o per&iacute;odo de registro.</p>
+
+<!--<p>The <b>When point timestamp changes</b> setting. This is similar-->
+<!--in behaviour to the on value change setting, but the timestamp of the-->
+<!--sample is compared instead of the value.</p>-->
+<p>A op&ccedil;&atilde;o <b>Quando o valor do timestamp muda</b> tem
+comportamento similar ao "Quando o valor do data point muda, mas o
+timestamp da amostra &eacute; comparado ao inv&eacute;s do valor.</p>
+
+<!--<p>Value discarding can be set to deal with equipment that can-->
+<!--occasionally send errant values. When <b>Discard extreme values</b> is-->
+<!--set, the <b>Discard low limit</b> and <b>Discard high limit</b> text-->
+<!--boxes are enabled. Values less than the low limit or higher than the-->
+<!--high limit are thereafter discarded. Any existing values already stored-->
+<!--will remain.</p>-->
+<p>O descarte de valores podem ser definido para lidar com
+equipamentos que ocasionamente enviam valores errados. Quando <b>Descartar
+valores extremos</b> &eacute; selecionado, os campos <b>Descartar limite
+inferior</b> e <b>Descartar limite superior</b> s&atilde;o abilitados.
+Valores menores que o limite inferior ou maiores que o limite superior
+surgidos posteriormente ser&atilde;o descartados. Qualquer valor
+existente j&aacute; armazenado ser&aacute; mantido.</p>
+
+<!--<p>The <b>Purge</b> settings determine how long a point's historical-->
+<!--values should be kept in the database. Values can be practically kept as-->
+<!--long as necessary, but note that performance degradation may occur if-->
+<!--the history for a given point becomes too large. (Actually performance-->
+<!--of the system depends strongly upon the host hardware.) The purge-->
+<!--process runs automatically every morning at 3:05am local time.</p>-->
+<p>A op&ccedil;&atilde;o <b>Descartar</b> determina quanto tempo os
+valores hist&oacute;ricos do ponto devem ser mantidos na base de dados.
+Os valores podem ser mantidos praticamente quanto tempo for
+necess&aacute;rio, mas note que uma degrada&ccedil;&atilde;o na
+performance do sistema pode ocorrer se o hist&oacute;rico de um dado
+ponto se tornar muito grande. (Na verdade, a performance do sistema
+depende fortemente do hardware do host.) O processo de descarte &eacute;
+executado automaticamente toda manh&atilde; &agrave;s 3:05am do tempo
+local.</p>
+
+<!--<p>The <b>Default cache size</b> is the number of values that will-->
+<!--be stored in memory. This setting is especially important when a logging-->
+<!--method other than "All data" is used. Values that are stored in memory-->
+<!--are collated with those stored to the database when necessary. Setting-->
+<!--this value very high may improve system performance (since it may-->
+<!--prevent a database query), but caution should be used since memory is-->
+<!--consumed by the cache, and out of memory conditions may occur.</p>-->
+<p>O <b>Tamanho de armazenamento padr&atilde;o</b> &eacute; o
+n&uacute;mero de valores que ser&atilde;o armazenados na mem&oacute;ria.
+Esta configura&ccedil;&atilde;o &eacute; especialmente importante quando
+um m&eacute;todo que n&atilde;o "Todos os dados" &eacute; usado. Valores
+que s&atilde;o armazenados na mem&oacute;ria s&atilde;o confrontados os
+armazenados na base de dados quando necess&aacute;rio. Definir um valor
+muito alto para esta configura&ccedil;&atilde;o pode melhorar a
+performance do sistema (visto que ela pode prevenir um acesso &agrave;
+base de dados), mas deve-se ter cuidado pois a mem&oacute;ria &eacute;
+consumida pela cache, e problemas relacionados &agrave; falta de
+mem&oacute;ria podem ocorrer.</p>

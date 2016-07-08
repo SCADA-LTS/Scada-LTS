@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<opml version="1.1">
+	<head>   
+		<title>A Dozen RSS Feeds</title>
+		<dateCreated>Sat, 11 Nov 2006 04:27:03 +0100</dateCreated>
+	</head>
+	<body>
+		<outline text="Main Folder"><outline title="share.opml.org/wp-content/themes/syo/style.css" text="share.opml.org/wp-content/themes/syo/style.css" type="rss" xmlUrl="http://share.opml.org/wp-content/themes/syo/style.css" />
+			<outline title="share.opml.org/blog/feed/" text="share.opml.org/blog/feed/" type="rss" xmlUrl="http://share.opml.org/blog/feed/" />
+			<outline title="www.techcrunch.com" text="www.techcrunch.com" type="rss" xmlUrl="http://www.techcrunch.com" />
+			<outline title="feeds.feedburner.com/Techcrunch" text="feeds.feedburner.com/Techcrunch" type="rss" xmlUrl="http://feeds.feedburner.com/Techcrunch" />
+			<outline title="slashdot.org/" text="slashdot.org/" type="rss" xmlUrl="http://slashdot.org/" />
+			<outline title="googleblog.blogspot.com" text="googleblog.blogspot.com" type="rss" xmlUrl="http://googleblog.blogspot.com" />
+			<outline title="scobleizer.wordpress.com" text="scobleizer.wordpress.com" type="rss" xmlUrl="http://scobleizer.wordpress.com" />
+			<outline title="www.engadget.com" text="www.engadget.com" type="rss" xmlUrl="http://www.engadget.com" />
+			<outline title="digg.com/rss/index.xml" text="digg.com/rss/index.xml" type="rss" xmlUrl="http://digg.com/rss/index.xml" />
+			<outline title="www.boingboing.net/" text="www.boingboing.net/" type="rss" xmlUrl="http://www.boingboing.net/" />
+			<outline title="feeds.feedburner.com/boingboing/iBag" text="feeds.feedburner.com/boingboing/iBag" type="rss" xmlUrl="http://feeds.feedburner.com/boingboing/iBag" />
+			<outline title="www.scripting.com/rss.xml" text="www.scripting.com/rss.xml" type="rss" xmlUrl="http://www.scripting.com/rss.xml" />
+		</outline>
+	</body>
+</opml>

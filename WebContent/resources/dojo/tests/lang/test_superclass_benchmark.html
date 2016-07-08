@@ -1,0 +1,373 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>declare benchmark / comparison Test</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+	<style type="text/css">
+		body {
+			font-family: Tahoma, Arial, Helvetica, sans-serif;
+			font-size: 11px;
+		}
+		
+		.loading {
+			display:block;
+			height:6em;
+			width:40em;
+			text-align:center;
+			padding:1.5em;
+			font-weight:bold;
+			background: #efefef;
+			-moz-border-radius:10px;
+		}
+	</style>
+	<script>djConfig = { isDebug: true, debugContainerId:"debug" }</script>
+	<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		dojo.require("dojo.lang.declare");
+		dojo.require("dojo.lang.assert");
+		dojo.require("dojo.profile");
+			
+			var TIMEOUT=40;
+			var pr=dojo.profile;
+			
+			var objects={};
+			
+			function createObjects(objtype, objname, number, testname){
+				dojo.debug("started: " + testname + " ..");
+				var ret=[];
+				for (var i=0; i < number; i++){
+					pr.start(testname)
+					ret.push(new objtype(objname));
+					pr.end(testname);
+				}
+				return ret;
+			}
+			
+			function callAdd(object,number){
+				dojo.debug("started: " + object._name + " ..");
+				for(var i=0; i<number;i++) {
+					pr.start(object._name);
+					object.add(1,2);
+					pr.end(object._name);
+				}
+			}
+			
+			// define base slim object
+			pr.start("basic base definition");
+			function TestBase(name){
+				this._name=name;
+				this._calls=0;
+				this._total=0;
+			}
+			dojo.lang.extend(TestBase,{
+				add:function(num1, num2){
+					this._total += num1 + num2;
+					this._calls++;
+				},
+				toString:function(){
+					return 'TestBase [name="'+this._name
+						+'", calls='+this._calls+', total='+this._total+']';
+				}
+			});
+			pr.end("basic base definition");
+			
+			pr.start("basic Test definition");
+			function Test(name){
+				TestBase.call(this, name);
+				this._name+="-Test";
+				this._subCalls=0;
+				this._subTotal=0;
+			}
+			dojo.lang.inherits(Test, TestBase);
+			dojo.lang.extend(Test,{
+				add:function(num1, num2){
+					TestBase.prototype.add.call(this, num1, num2);
+					this._subTotal += num1 + num2;
+					this._subCalls++;
+				},
+				toString:function(){
+					return 'Test [subCalls='+this._subCalls
+						+', subTotal='+this._subTotal
+						+'->' +TestBase.prototype.toString.call(this);
+				}
+			});
+			pr.end("basic Test definition");
+			
+			pr.start("ext Test definition");
+			function TestExt(name){
+				Test.call(this, name);
+				this._extTotal=0;
+				this._extCalls=0;
+			}
+			dojo.lang.inherits(TestExt, Test);
+			dojo.lang.extend(TestExt,{
+				add:function(num1, num2){
+					Test.prototype.add.call(this, num1, num2);
+					this._extTotal += num1 + num2;
+					this._extCalls++;
+				}
+			});
+			pr.end("ext Test definition");
+			// END Basic OOP
+			
+			// Dojo OOP
+			pr.start("dojo base definition");
+			function DojoTestBase(name){
+				this._name=name;
+				this._calls=0;
+				this._total=0;
+			}
+			dojo.lang.extend(DojoTestBase,{
+				add:function(num1, num2){
+					this._total += num1 + num2;
+					this._calls++;
+				},
+				toString:function(){
+					return 'DojoTestBase [name="'+this._name
+						+'", calls='+this._calls+', total='+this._total+']';
+				}
+			});
+			pr.end("dojo base definition");
+			
+			pr.start("dojo test definition");
+			function DojoTest(name){
+				DojoTestBase.call(this,name);
+				this._name+="-Test";
+				this._subCalls=0;
+				this._subTotal=0;
+			}
+			dojo.lang.inherits(DojoTest,DojoTestBase);
+			dojo.lang.extend(DojoTest,{
+				add:function(num1, num2){
+					DojoTest.superclass.add.call(this, arguments);
+					this._subTotal += num1 + num2;
+					this._subCalls++;
+				},
+				toString:function(){
+					return 'Test [subCalls='+this._subCalls
+					+', subTotal='+this._subTotal
+					+'->' +DojoTest.superclass.toString.call(this);
+				}
+			});
+			pr.end("dojo test definition");
+			
+			pr.start("dojo ext test definition");
+			function DojoTestExt(name){
+				DojoTest.call(this,name);
+				this._extCalls=0;
+				this._extTotal=0;
+			}
+			dojo.lang.inherits(DojoTestExt,DojoTest);
+			dojo.lang.extend(DojoTestExt, {
+				add:function(num1, num2){
+					DojoTestExt.superclass.add.call(this,arguments);
+					this._extTotal += num1 + num2;
+					this._extCalls++;
+				}
+			});
+			pr.end("dojo ext test definition");
+			// END Dojo OOP
+			
+			// BEGIN OBJECT CREATION TESTS
+			function t100DojoBase(){
+				objects.dbase100=createObjects(DojoTestBase,"DojoTestBase 100",100,"create 100 DojoTestBase objects");
+				setTimeout("t100TestBase()", TIMEOUT);
+			}
+			function t100TestBase(){
+				objects.tbase100=createObjects(TestBase,"TestBase 100",100,"create 100 TestBase objects");
+				setTimeout("t100DojoTest()", TIMEOUT);
+			}
+			function t100DojoTest(){
+				objects.d100=createObjects(DojoTest,"DojoTest 100",100,"create 100 DojoTest objects");
+				setTimeout("t100Test()", TIMEOUT);
+			}
+			function t100Test(){
+				objects.t100=createObjects(Test,"Test 100",100,"create 100 Test objects");
+				setTimeout("t100DojoTestExt()", TIMEOUT);
+			}
+			function t100DojoTestExt(){
+				objects.dext100=createObjects(DojoTestExt,"DojoTestExt 100",100,"create 100 DojoTestExt objects");
+				setTimeout("t100TestExt()", TIMEOUT);
+			}
+			function t100TestExt(){
+				objects.text100=createObjects(TestExt,"TestExt 100",100,"create 100 TestExt objects");
+				setTimeout("t1000DojoBase()", TIMEOUT);
+			}
+			
+			
+			function t1000DojoBase(){
+				objects.dbase1000=createObjects(DojoTestBase,"DojoTestBase 1000",1000,"create 1,000 DojoTestBase objects");
+				setTimeout("t1000TestBase()", TIMEOUT);
+			}
+			function t1000TestBase(){
+				objects.tbase1000=createObjects(TestBase,"TestBase 1000",1000,"create 1,000 TestBase objects");
+				setTimeout("t1000DojoTest()", TIMEOUT);
+			}
+			function t1000DojoTest(){
+				objects.d1000=createObjects(DojoTest,"DojoTest 1000",1000,"create 1,000 DojoTest objects");
+				setTimeout("t1000Test()", TIMEOUT);
+			}
+			function t1000Test(){
+				objects.t1000=createObjects(Test,"Test 1000",1000,"create 1,000 Test objects");
+				setTimeout("t1000DojoTestExt()", TIMEOUT);
+			}
+			function t1000DojoTestExt(){
+				objects.dext1000=createObjects(DojoTestExt,"DojoTestExt 1000",1000,"create 1,000 DojoTestExt objects");
+				setTimeout("t1000TestExt()", TIMEOUT);
+			}
+			function t1000TestExt(){
+				objects.text1000=createObjects(TestExt,"TestExt 1000",1000,"create 1,000 TestExt objects");
+				setTimeout("t10000DojoBase()", TIMEOUT);
+			}
+			
+			function t10000DojoBase(){
+				objects.dbase10000=createObjects(DojoTestBase,"DojoTestBase 10000",10000,"create 10,000 DojoTestBase objects");
+				setTimeout("t10000TestBase()", TIMEOUT);
+			}
+			function t10000TestBase(){
+				objects.tbase10000=createObjects(TestBase,"TestBase 10000",10000,"create 10,000 TestBase objects");
+				setTimeout("t10000DojoTest()", TIMEOUT);
+			}
+			function t10000DojoTest(){
+				objects.d10000=createObjects(DojoTest,"DojoTest 10000",10000,"create 10,000 DojoTest objects");
+				setTimeout("t10000Test()", TIMEOUT);
+			}
+			function t10000Test(){
+				objects.t10000=createObjects(Test,"Test 10000",10000,"create 10,000 Test objects");
+				setTimeout("t10000DojoTestExt()", TIMEOUT);
+			}
+			function t10000DojoTestExt(){
+				objects.dext10000=createObjects(DojoTestExt,"DojoTestExt 10000",10000,"create 10,000 DojoTestExt objects");
+				setTimeout("t10000TestExt()", TIMEOUT);
+			}
+			function t10000TestExt(){
+				objects.text10000=createObjects(TestExt,"TestExt 10000",10000,"create 10,000 TestExt objects");
+				setTimeout("dojoBaseAdd100()", TIMEOUT);
+			}
+			// END OBJECT CREATION TESTS
+			
+			
+			// BEGIN FUNCTION DELEGATE TESTS
+			function dojoBaseAdd100(){
+				var obj=new DojoTestBase("call DojoTestBase.add 100 times");
+				callAdd(obj, 100);
+				setTimeout("tBaseAdd100()", TIMEOUT);
+			}
+			function tBaseAdd100(){
+				var obj=new TestBase("call TestBase.add 100 times");
+				callAdd(obj, 100);
+				setTimeout("dojoAdd100()", TIMEOUT);
+			}
+			function dojoAdd100(){
+				var obj=new DojoTest("call DojoTest.add 100 times");
+				callAdd(obj, 100);
+				setTimeout("tAdd100()", TIMEOUT);
+			}
+			function tAdd100(){
+				var obj=new Test("call Test.add 100 times");
+				callAdd(obj, 100);
+				
+				setTimeout("dojoExtAdd100()", TIMEOUT);
+			}
+			function dojoExtAdd100(){
+				var obj=new DojoTestExt("call DojoTestExt.add 100 times");
+				callAdd(obj, 100);
+				setTimeout("tExtAdd100()", TIMEOUT);
+			}
+			function tExtAdd100(){
+				var obj=new TestExt("call TestExt.add 100 times");
+				callAdd(obj, 100);
+				
+				setTimeout("dojoBaseAdd1000()", TIMEOUT);
+			}
+			
+			
+			function dojoBaseAdd1000(){
+				var obj=new DojoTestBase("call DojoTestBase.add 1000 times");
+				callAdd(obj, 1000);
+				setTimeout("tBaseAdd1000()", TIMEOUT);
+			}
+			function tBaseAdd1000(){
+				var obj=new TestBase("call TestBase.add 1000 times");
+				callAdd(obj, 1000);
+				setTimeout("dojoAdd1000()", TIMEOUT);
+			}
+			function dojoAdd1000(){
+				var obj=new DojoTest("call DojoTest.add 1000 times");
+				callAdd(obj, 1000);
+				setTimeout("tAdd1000()", TIMEOUT);
+			}
+			function tAdd1000(){
+				var obj=new Test("call Test.add 1000 times");
+				callAdd(obj, 1000);
+				setTimeout("dojoExtAdd1000()", TIMEOUT);
+			}
+			function dojoExtAdd1000(){
+				var obj=new DojoTestExt("call DojoTestExt.add 1000 times");
+				callAdd(obj, 1000);
+				setTimeout("tExtAdd1000()", TIMEOUT);
+			}
+			function tExtAdd1000(){
+				var obj=new TestExt("call TestExt.add 1000 times");
+				callAdd(obj, 1000);
+				setTimeout("dojoBaseAdd10000()", TIMEOUT);
+			}
+			
+			
+			function dojoBaseAdd10000(){
+				var obj=new DojoTestBase("call DojoTestBase.add 10000 times");
+				callAdd(obj, 10000);
+				setTimeout("tBaseAdd10000()", TIMEOUT);
+			}
+			function tBaseAdd10000(){
+				var obj=new TestBase("call TestBase.add 10000 times");
+				callAdd(obj, 10000);
+				setTimeout("dojoAdd10000()", TIMEOUT);
+			}
+			function dojoAdd10000(){
+				var obj=new DojoTest("call DojoTest.add 10000 times");
+				callAdd(obj, 10000);
+				setTimeout("tAdd10000()", TIMEOUT);
+			}
+			function tAdd10000(){
+				var obj=new Test("call Test.add 10000 times");
+				callAdd(obj, 10000);
+				setTimeout("dojoExtAdd10000()", TIMEOUT);
+			}
+			function dojoExtAdd10000(){
+				var obj=new DojoTestExt("call DojoTestExt.add 10000 times");
+				callAdd(obj, 10000);
+				setTimeout("tExtAdd10000()", TIMEOUT);
+			}
+			function tExtAdd10000(){
+				var obj=new TestExt("call TestExt.add 10000 times");
+				callAdd(obj, 10000);
+				
+				document.getElementById("debug").innerHTML="";
+				pr.dump(true);
+				document.getElementById("loader").style.display="none";
+			}
+			// END FUNCTION DELEGATE TESTS
+			
+		dojo.addOnLoad(function(){
+		setTimeout(function(){
+			
+			// Basic OOP
+			t100DojoBase();
+		}, 100);
+		});
+	</script>
+</head>
+<body> 
+	<p id="loader" class="loading">
+		This may take a while to run, be patient and it'll finish eventually..
+	</p>
+	<h2>Benchmarking Tests</h2>
+	<p>
+		Tests and benchmarks different types of javascript inheritance schemes.
+	</p>
+	<p id="debug">
+	
+	</p>
+</body>
+</html>

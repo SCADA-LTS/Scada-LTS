@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.io.*");
+			dojo.require("dojo.io.XhrIframeProxy");
+
+			onload = function() {
+				dojo.io.bind({
+					iframeProxyUrl: "../../../src/io/xip_server.html",
+					url: "../../tests/io/frag.xml",
+					mimetype: "text/xml",
+					load: function(type, xml, e) {
+						// add the HTML
+						var html = xml.getElementsByTagName("html").item(0);
+						document.body.innerHTML += html.firstChild.nodeValue;
+
+						// run the script
+						var script = xml.getElementsByTagName("script").item(0);
+						dj_eval(script.firstChild.nodeValue);
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		View Source
+	</body>
+</html>

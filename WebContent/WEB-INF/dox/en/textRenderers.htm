@@ -1,0 +1,59 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+
+<p>A text renderer's purpose is to convert a raw value into a form that is more recognizable and informative to a human user. The ways to render raw values depend upon the data type of value to be rendered. As such, only the renderer types that apply to the current point's data type are listed in the <b>Type</b> selection.</p>
+
+<h1>Binary</h1>
+<p>The <b>Binary</b> renderer allows the user to define a text label to represent each of the two binary states (i.e. 0 and 1). Any labels can be provided. Also, a distinctive colour may be defined for each state. Typical examples of labels include off/on, stopped/running, or false/true, but any text can be entered.</p>
+
+<p>The <b>Plain</b> renderer is the default binary renderer. Displays the unaltered raw value, i.e. 0 and 1.</p>
+
+<h1>Numeric</h1>
+<p>
+  The <b>Analog</b> renderer allows the user to define a <b>Format</b> used to determine things like the number of 
+  decimal places to display, and whether thousands should be delimited. (See the "Number format" documentation). A 
+  <b>Suffix</b> can also be added to display the units of the value. Suffixes can contain HTML entities such as &deg; 
+  (written as '&amp;deg;') for display within HTML pages. See 
+  <a href="http://www.w3.org/TR/REC-html40/sgml/entities.html" target="_blank">http://www.w3.org/TR/REC-html40/sgml/entities.html</a> 
+  for more information on HTML entities.
+</p>
+
+<p>The <b>Plain</b> renderer is the default numeric renderer. Displays the unaltered raw value.</p>
+
+<p>The <b>Range</b> renderer allows the user to define a number <b>Format</b> (see the "Number format" documentation for more information), as well as an arbitrary number of textual values to represent various numeric from/to ranges. Each of these ranges can also be assigned a distinctive colour. The number format is only used if the value does not fall within a defined range. For example, the range "cold", "normal", and "hot" may be defined for a temperature point, with appropriate colours for each.</p>
+
+<p>
+  The <b>Time</b> renderer allows the user to define a <b>Format</b> (see the "date/time format" documentation for more 
+  information). A typical date format would be "MMM d, yyyy". A typical time would be "HH:mm:ss". Date and time formats 
+  can be combined as necessary. A millisecond conversion exponent can also be defined. This is a power of 10 exponent
+  that will be used to convert a given value to the equivalent millisecond value. For example, to convert from seconds 
+  use 3, from microseconds use -3. If the value is already in milliseconds, use 0. Time values are assumed to start a 0 
+  on January 1, 1970 at midnight.
+</p>
+
+<h1>Multistate</h1>
+
+<p>The <b>Plain</b> renderer is the default multistate renderer. Displays the unaltered raw value.</p>
+
+<p>The <b>Multistate</b> renderer allows the user to define an arbitrary number of textual values to represent various point states. Each of these states can also be assigned a distinctive colour. If a state occurs which is not assigned to a label, the raw value is displayed. Typical label sets include on/off/disabled, or off/warm/cool.</p>
+
+<h1>Alphanumeric</h1>
+
+<p>The <b>Plain</b> renderer is the only alphanumeric renderer. Displays the unaltered raw value, including an optional <b>Suffix</b>.</p>

@@ -1,0 +1,183 @@
+<html>
+	<head>
+		<title>Dojo Charting Engine, general tests</title>
+		<script>
+			djConfig={ 
+				isDebug:true 
+			}</script>
+		<script src="../../dojo.js"></script>
+		<script>
+			dojo.require("dojo.collections.Store");
+			dojo.require("dojo.charting.Chart");
+			dojo.require('dojo.json');
+
+			dojo.addOnLoad(function(){
+				//	our sample data for our line chart.
+				var json = [
+					{ x: 0, y: 110, size:20, x2:20, high:110, low: 80, open:90, close:96 },
+					{ x: 10, y: 24, size:4, x2: 25, high:56, low: 43, open:43, close:54 },
+					{ x: 15, y:63, size:32, x2: 30, high: 100, low: 40, open:56, close: 96 },
+					{ x: 25, y: 5, size:13, x2: 35, high: 40, low: 36, open:40, close:36 },
+					{ x: 40, y: 98, size:7, x2: 40, high: 86, low: 66, open: 80, close: 70 },
+					{ x: 45, y: 54, size:18, x2: 45, high: 50, low: 0, open: 42, close: 4 }
+				];
+				var store = new dojo.collections.Store();
+				store.setData(json);
+	
+				//	define the chart.
+				var s1 = new dojo.charting.Series({
+					dataSource:store,
+					bindings:{ x:"x", y:"y", size:"size" },
+					label:"The Main Series"
+				});
+				var s2 = new dojo.charting.Series({
+					dataSource:store,
+					bindings:{ x:"y", y:"size" },
+					label:"Series 2"
+				});
+				var s3 = new dojo.charting.Series({ 
+					dataSource:store, 
+					bindings:{ x: "x2", high:"high", low:"low", open:"open", close:"close" }, 
+					label: "Series 3" 
+				});
+				var s4 = new dojo.charting.Series({
+					dataSource:store,
+					bindings:{ x:"y", y:"low" },
+					label:"Series 4"
+				});
+				var s5 = new dojo.charting.Series({
+					dataSource:store,
+					bindings:{ x:"y", y:"open" },
+					label:"Series 5"
+				});
+	
+				//	set up some bars for a test.
+				var b0 = new dojo.collections.Store();
+				b0.setData([
+					{ x:43, y:88, z:42, a:66, b:34 },
+					{ x:15, y:68, z:14, a:10, b:69 },
+					{ x:92, y:82, z:4, a:52, b:21 },
+					{ x:100, y:47, z:83, a:40, b:35 },
+					{ x:3, y:97, z:3, a:83, b:6 },
+					{ x:70, y:89, z:87, a:88, b:30 },
+					{ x:26, y:100, z:78, a:32, b:36 },
+					{ x:20, y:36, z:28, a:3, b:13 },
+					{ x:39, y:69, z:28, a:31, b:77 },
+					{ x:9, y:97, z:80, a:5, b:9 },
+					{ x:98, y:76, z:12, a:23, b:52 }
+				]);
+				var bar0 = new dojo.charting.Series({ dataSource:b0, bindings:{ y:"x", high:"y", low:"a" }, label: "Bar 0" });
+				var bar1 = new dojo.charting.Series({ dataSource:b0, bindings:{ y:"y", high:"z", low:"b" }, label: "Bar 1" });
+				var bar2 = new dojo.charting.Series({ dataSource:b0, bindings:{ y:"z", high:"a", low:"x" }, label: "Bar 2" });
+				var bar3 = new dojo.charting.Series({ dataSource:b0, bindings:{ y:"a", high:"b", low:"y" }, label: "Bar 3" });
+				var bar4 = new dojo.charting.Series({ dataSource:b0, bindings:{ y:"b", high:"x", low:"z" }, label: "Bar 4" });
+				
+				//	test the evaluate
+				/*
+				var data = s1.evaluate();
+				var a=[];
+				for(var i=0; i<data.length; i++){
+					a.push("{ x:"+data[i].x +", y:"+data[i].y + "}");
+				}
+				alert("Data evaluation:\n"+a.join("\n"));
+				*/
+				
+				//	keep going.
+				var xA = new dojo.charting.Axis();
+				xA.range={upper:130, lower:0};
+				xA.origin="max";
+				xA.showTicks = true;
+				xA.label = "A Range of Things";
+				xA.labels = [ 0, 20, 40, 60, 80, 100 ];
+	
+				var yA = new dojo.charting.Axis();
+				yA.range={upper:180,lower:0};
+				yA.showLines = true;
+				yA.showTicks = true;
+				yA.labels = [ {label:"min", value:0 }, { label:"35",value:35 }, { label:"max", value:120 } ];
+				yA.label = "Areas"
+	
+				var p = new dojo.charting.Plot(xA, yA);
+				p.addSeries({ data:s1, plotter: dojo.charting.Plotters.CurvedLine });
+				var pA = new dojo.charting.Plot(xA, yA);
+				pA.renderType = dojo.charting.RenderPlotSeries.Grouped;
+				pA.addSeries({ data:s2, plotter: dojo.charting.Plotters.StackedCurvedArea });
+				pA.addSeries({ data:s4, plotter: dojo.charting.Plotters.StackedCurvedArea });
+				pA.addSeries({ data:s5, plotter: dojo.charting.Plotters.StackedCurvedArea });
+	
+				var pa = new dojo.charting.PlotArea();
+				pa.size={width:700,height:170};
+				pa.padding={top:20, right:20, bottom:30, left:50 };
+				pa.plots.push(p);
+				pa.plots.push(pA);
+	
+				//	auto assign colors, and increase the step (since we've only 2 series)
+				s1.color = pa.nextColor();
+				s2.color = pa.nextColor();
+				s3.color = pa.nextColor();
+				s4.color = pa.nextColor();
+				s5.color = pa.nextColor();
+	
+				//////////////////////
+				var xB = new dojo.charting.Axis();
+				xB.range={upper:100, lower:0};
+				xB.origin="max";
+				xB.showTicks = true;
+				xB.showLines = true;
+				xB.labels = [ 0, 20, 40, 60, 80, 100 ];
+	
+				var yB = new dojo.charting.Axis();
+				yB.range={upper:120,lower:0};
+				yB.origin="min";
+				yB.showLines = true;
+	
+				var yB2 = new dojo.charting.Axis();
+				yB2.range={upper:100,lower:0};
+				yB2.origin="max";
+				yB2.label = "Gantt Time Period";
+	
+				var p2 = new dojo.charting.Plot(xB, yB);
+				p2.addSeries({ data:s1, plotter: dojo.charting.Plotters.CurvedLine });
+	
+				var p3 = new dojo.charting.Plot(xB, yB2);
+				p3.renderType = dojo.charting.RenderPlotSeries.Grouped;
+				p3.addSeries({ data:bar0, plotter: dojo.charting.Plotters.Gantt });
+				p3.addSeries({ data:bar1, plotter: dojo.charting.Plotters.Gantt });
+				p3.addSeries({ data:bar2, plotter: dojo.charting.Plotters.Gantt });
+				p3.addSeries({ data:bar3, plotter: dojo.charting.Plotters.Gantt });
+				p3.addSeries({ data:bar4, plotter: dojo.charting.Plotters.HorizontalBar });
+				
+				var pa2 = new dojo.charting.PlotArea();
+				pa2.plots.push(p3);
+				pa2.plots.push(p2);
+				pa2.size={width:700,height:400};
+				pa2.padding={top:20, right:40, bottom:30, left:30 };
+				
+				bar0.color = pa2.nextColor();
+				bar1.color = pa2.nextColor();
+				bar2.color = pa2.nextColor();
+				bar3.color = pa2.nextColor();
+				bar4.color = pa2.nextColor();
+				
+				var chart = new dojo.charting.Chart(null, "Test chart", "This is a potential description");
+				chart.addPlotArea({ x:50,y:50, plotArea:pa });
+				chart.addPlotArea({ x:50,y:250, plotArea:pa2 });
+			
+				chart.node = dojo.byId("chartTest1");
+				chart.render();
+			});
+		</script>
+		<style>
+			#chartTest1 {
+				margin:12px;
+				width:800px;
+				height:700px;
+				background-color:#dedeed;
+				border:1px solid #999;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="chartTest1"></div>
+	</body>
+</html>

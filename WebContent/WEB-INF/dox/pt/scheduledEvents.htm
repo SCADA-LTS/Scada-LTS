@@ -1,0 +1,123 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Vis&atilde;o Geral</h1>
+<p>Eventos agendados s&atilde;o usados para iniciar eventos em momentos
+definidos de tempo. S&atilde;o similares aos detectores, mas s&atilde;o baseados no
+tempo e n&atilde;o nos valores dos data points.</p>
+
+<!--<h1>Overview</h1>-->
+<!--<p>Scheduled events are used to raise events at specified moments in-->
+<!--time. The are similar to event detectors (in that they raise events),-->
+<!--but are time-based rather than point-based.</p>-->
+
+<h1>Lista de Eventos Agendados</h1>
+<p>Para adicionar um novo evento agendado, clique sobre o &iacute;cone <img
+	src="images/clock_add.png" />. Para editar, clique na descri&ccedil;&atilde;o do
+evento na lista.</p>
+
+<!--<h1>Scheduled events list</h1>-->
+<!--<p>To add a new scheduled event, click the <img-->
+<!--    src="images/clock_add.png" /> icon. To edit an existing scheduled-->
+<!--event, click the event's description in the "Scheduled events" list.</p>-->
+
+<h1>Editando detalhes de eventos agendados</h1>
+<p>O <b>Alias</b> &eacute; um valor opcional que ser&aacute; usado como uma
+descri&ccedil;&atilde;o do evento. Caso n&atilde;o seja especificado, uma descri&ccedil;&atilde;o gerada
+automaticamente ser&aacute; utilizada.</p>
+
+<!--<h1>Editing scheduled event details</h1>-->
+<!--<p>The <b>Alias</b> is an optional value that will be used as the-->
+<!--description for the event throughout the system if it is provided.-->
+<!--Otherwise, the automatically generated description will be used.</p>-->
+
+<p>O <b>N&iacute;vel do Alarme</b> determina se o evento agendado iniciar&aacute;
+um alarme quando for ativado e sua gravidade. Veja a p&aacute;gina de ajuda
+para mais informa&ccedil;&otilde;es sobre Alarmes.</p>
+
+<!--<p>The <b>Alarm level</b> determines whether the scheduled event-->
+<!--raises an alarm when active, and if so the severity of the alarm. See-->
+<!--the general help page for information on Alarms.</p>-->
+
+<p>O <b>Tipo do Agendamento</b> determina o per&iacute;odo base do evento,
+como: hor&aacute;rio, semanal, mensal, etc. Se um agendamento que deve iniciar
+2 vezes por dia for necess&aacute;rio, por exemplo, ser&aacute; preciso definir dois
+eventos di&aacute;rios. &Eacute;, contudo, poss&iacute;vel definir um padr&atilde;o cron para ativar
+os eventos. (veja a documenta&ccedil;&atilde;o de "cron patterns" para mais
+informa&ccedil;&otilde;es)</p>
+
+<!--<p>The <b>Schedule type</b> determines the basis period of the-->
+<!--event. These types include hourly, daily, etc. For example, a schedule-->
+<!--type of hourly will run once every hour. If a schedule that runs, say,-->
+<!--twice a day is needed, it is necessary to define two daily scheduled-->
+<!--events, one for each time. It is however possible to define a cron-->
+<!--pattern that runs multiple times within a period. (See the "cron-->
+<!--pattern" documentation for more information.)</p>-->
+
+<p>A sele&ccedil;&atilde;o de <b>Retorno ao normal</b> indica queo alarme
+iniciado pelo evento retornar&aacute; automaticamente ao normal quando o evento
+se tornar inativo. Se esta op&ccedil;&atilde;o for selecionada, &eacute; necess&aacute;rio definir o
+hor&aacute;rio em que o evento se tornar&aacute; inativo.</p>
+
+<!--<p>Selecting <b>Return to normal</b> determines if the alarm raised-->
+<!--when the event is active is automatically returned to normal when the-->
+<!--event becomes inactive. If Return to normal is selected, it is necessary-->
+<!--to define the time at which the event becomes inactive.</p>-->
+
+<p>Um evento agendado pode ser <b>Desabilitado</b> para que o mesmo
+n&atilde;o seja executado. Isto pode ser &uacute;til caso voc&ecirc; n&atilde;o queira deletar o
+evento, mas tamb&eacute;m n&atilde;o deseja sua ativa&ccedil;&atilde;o no momento.</p>
+
+<!--<p>A scheduled event can be <b>Disabled</b> so that it does not run.-->
+<!--This can be useful if you do not wish to delete the event, but also do-->
+<!--not currently want it enabled.</p>-->
+
+<h1>Ativo/Inativo</h1>
+<p>Os campos dispon&iacute;veis para configurar os tempos de ativa&ccedil;&atilde;o e
+desativa&ccedil;&atilde;o dependem do tipo do evento escolhido. A maioria dos campos
+n&atilde;o requerem maiores explica&ccedil;&otilde;es: s&atilde;o baseados no calend&aacute;rio Gregoriano.
+Para mais informa&ccedil;&otilde;es sobre os padr&otilde;es cron, consulte a documenta&ccedil;&atilde;o
+espec&iacute;fica.</p>
+
+<!--<h1>Active/Inactive times</h1>-->
+<!--<p>The fields available for editing active and inactive times depend-->
+<!--upon the schedule type chosen. Most fields should require no explanation-->
+<!--beyond that they are exclusively based upon the Gregorian calendar. For-->
+<!--more information on cron patterns, see the "Cron pattern" documentation.</p>-->
+
+<p>Intervalos de ativa&ccedil;&atilde;o e n&atilde;o-ativa&ccedil;&atilde;o podem extrapolar o per&iacute;odo
+definido. Por exemplo, um agendamenho hor&aacute;rio pode se tornar ativo aos
+55 minutos e ser desativado aos 05 minutos da hora seguinte, sendo ativo
+por 10 minutos. &Eacute; poss&iacute;vel, por&eacute;m n&atilde;o muito &uacute;til, definir um padr&atilde;o cron
+que n&atilde;o ative ou desative eventos de maneira ordeira (por exemplo, podem
+ser ativados diversas vezes antes de desativados, e vice versa).</p>
+
+<!--<p>Active/inactive times can straddle the given time period. For-->
+<!--example, an hourly schedule can become active at 55:00 and inactive at-->
+<!--05:00 (thus active for 10 minutes). Note that it is possible, though not-->
+<!--very useful, to define cron patterns that do not neatly activate and-->
+<!--inactivate (i.e. they may activate multiple times before inactivating-->
+<!--and vice versa).</p>-->
+
+<p>Para salvar um evento agendado, clique no &iacute;cone <img
+	src="images/save.png" />. Para remover, clique no &iacute;cone <img
+	src="images/delete.png" />.</p>
+
+<!--<p>To save a scheduled event, click the <img src="images/save.png" />-->
+<!--icon at the top right. To delete an existing event, click the <img-->
+<!--	src="images/delete.png" /> icon.</p>-->

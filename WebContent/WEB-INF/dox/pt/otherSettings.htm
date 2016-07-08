@@ -1,0 +1,46 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  A performance da UI representa a responsividade da interface de usu&aacute;rio. Isso inclui todas as atividades que s&atilde;o gerenciadas
+  pelo mecanismo de polling, como os indicadores de alarmes, updates da watch list, updates dos eventos, etc.
+  Se o host do mango possui um CPU muito limitado, voc&ecirc; pode diminuir a performance da UI para prevenir que o browser dos usu&aacute;rios consuma
+  muito a CPU do host. 
+</p>
+
+<p>
+  Se "Enviar erros para Serotonin" est&aacute; habilitado, exce&ccedil;&otilde;es que ocorram em seu ScadaBR ser&atilde;o enviadas para a Serotonin para revis&atilde;o.
+  Se voc&ecirc; est&aacute; modificando o c&oacute;digo fonte do ScadaBR para seus pr&oacute;prios prop&oacute;sitos, por favor desabilite esta op&ccedil;&atilde;o.
+</p>
+
+<p>
+  Use a op&ccedil;&atilde;o "remover eventos" para especificar um tempo de vida m&aacute;ximo de um evento para que ele seja exclu&iacute;do do banco de dados.
+  Essa exclus&atilde;o remover&aacute; permanentemente o evento assim como qualquer coment&aacute;rio de usu&aacute;rio associado ao mesmo.
+</p>
+
+<p>
+  Use a op&ccedil;&atilde;o "remover relat&oacute;rios" para especificar um tempo de vida m&aacute;ximo de um relat&oacute;rio para que ele seja exclu&iacute;do do banco de dados.
+  Essa exclus&atilde;o remover&aacute; permanentemente o relat&oacute;rio. &Eacute; recomendado que este valor seja especificado o menor poss&iacute;vel, pois 
+  os relat&oacute;rios consomem muito espa&ccedil;o em disco.Purging can be prevented by setting the 
+  "prevent purge" attribute on the report instance.
+</p>
+
+<p>
+  Clique no bot&atilde;o <b>remover todos dados</b> para permanentemente remover todos os valores de data points do banco de dados.
+  Isto pode ser &uacute;til para dar ao seu ScadaBR um "fresh start".
+</p>

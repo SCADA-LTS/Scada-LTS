@@ -1,0 +1,70 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>ScadaBR supporte quatre types d'enregistrement de la valeur d'un point</p>
+
+<p>
+  <b>Quand la valeur change</b> qui est le param&egrave;tre par d&eacute;faut. La valeur et son occurence de temps sont enregistr&eacute;s dans la base  
+  seulement si la valeur su point change. Ce r&egrave;glage offre le meilleur rapport qualit&eacute; (de l'historique)/espace de stockage. 
+  Pour les valeurs num&eacute;riques, une <b>Tolerance</b>, ou "zone morte", peut &eacute;galement &ecirc;tre d&eacute;finie; 
+  la valeur sera enregistr&eacute;e si la diff&eacute;rence entre la valeur actuelle et la valeur pr&eacute;c&eacute;dente est sup&eacute;rieure ou &eacute;gale &agrave; la tol&eacute;rance d&eacute;finie.
+  
+</p>
+
+<p>
+  Le param&egrave;tre <b>Toutes les donn&eacute;es</b> provoque l'enregistrement dans la base de donn&eacute;es de toutes les mises &agrave; jour des donn&eacute;es. Utilisez ce param&egrave;tre uniquement lorsque vos contraintes l'exigent 
+  car cel&agrave; va entrainer rapidement une grande accumulation de donn&eacute;es et ralentira tr&egrave;s s&eacute;rieusement les performances.
+</p>
+
+<p>
+  Le param&egrave;tre <b>Ne pas enregistrer</b> emp&ecirc;che tout enregistrement de ce point dans la base. Notez que dans ce cas vous ne pourrez pas 
+  appliquer de rendu graphique pour ce point. Utilisez "Ne pas enregistrer" lorsque vous etes certain de ne pas avoir besoin de l'historique des donn&eacute;es.
+</p>
+
+<p>
+  Le param&egrave;tre <b>Intervalle</b> le nombre d'acc&egrave;s &agrave; la valeur du point sont diff&eacute;rents du nombre d'enregistrement dans la base.
+  Utilisez ce param&egrave;tre lorsque des donn&eacute;es doivent &ecirc;tre fr&eacute;quemment consult&eacute;es (par exemple pour des d&eacute;tections d'&eacute;v&egrave;nement), mais qu'il n'est pas obligatoire 
+  de toutes les enregistrer. <b>Type valeur</b> vous permet de choisir la valeur qui ser enregistr&eacute;e. "Instant" la valeur actuelle du point, les autres options sont des statistiques sur la valeur du point durant la p&eacute;riode d&eacute;finie.
+  </p>
+
+<p>
+  Le param&egrave;tre <b>au changement de timestamp</b>. Comparable au param&egrave;tre <b>Quand la valeur change</b>, mais c'est l'horodatage qui est compar&eacute;
+  et non la valeur.
+</p>
+
+<p>
+  <b>Rejeter les valeurs ext&ecirc;mes</b> est utilis&eacute; pour les appareils pouvant occasionnellemnt diffus&eacute;e des valeurs erron&eacute;es.  
+  Lorsque <b>Rejeter les valeurs ext&ecirc;mes</b> est s&eacute;lectionn&eacute;, les boites de dialogues  <b>rejeter limite basse</b> et <b>rejeter limite haute</b> sont activ&eacute;es. 
+  Toutes les valeurs d&egrave;j&agrave; enregistr&eacute;es seront conserv&eacute;es.
+</p>
+
+<p>
+  Le param&egrave;tre <b>Purge</b> determine la dur&eacute;e d'historisation de la valeur du point dans la base de donn&eacute;e.
+  Les valeurs peuvent en pratique &ecirc;tre conserv&eacute;es aussi longtemps que n&eacute;cessaire, mais notez que ceci peut engendrer des d&eacute;gradation de performance du syst&egrave;me
+  si l'historique d'un point devient trop important. (En fait, la performance du syst&egrave;me d&eacute;pent en grande partie du mat&eacute;riel h&ocirc;te.) 
+  Le processus de purge se lance chaque jour &agrave; 3h 05 heure locale.
+</p>
+
+<p>
+  
+  <b>Taille par d&eacute;faut du cache</b> est le nombre de valeur qui seront enregistr&eacute;es en m&eacute;moire. Ce param&egrave;tre est important 
+  quand une m&eacute;thode autre que "Toutes les donn&eacute;es" est choisie. Les valeurs en m&eacute;moire seront &eacute;ventuellement compar&eacute;es aux valeurs enregistr&eacute;es dans la base. 
+  Une valeur &eacute;lev&eacute;e pour la taille du cache peut am&eacute;liorer les performances du syst&egrave;me (car cela peut emp&ecirc;cher les requ&ecirc;tes sur la base), 
+  mais la m&eacute;moire est alors consomm&eacute;e par le cache, et des probl&egrave;mes li&eacute;s au manque de m&eacute;moire peuvent survenir. "Vider le cache" n'est pas n&eacute;cessaire en th&eacute;orie, mais peut &ecirc;tre utile en cas de suppression manuelle de point 
+  (en utilisant les fonctions SQL par exemple). 
+</p>

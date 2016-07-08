@@ -1,0 +1,132 @@
+	<html>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeRpcControllerV3");
+	dojo.require("dojo.widget.TreeDndControllerV3");
+	dojo.require("dojo.widget.TreeEditor");
+	dojo.require("dojo.widget.TreeContextMenuV3");	
+	dojo.require("dojo.widget.TreeSelectorV3");
+	dojo.require("dojo.widget.TreeEmphasizeOnSelect");	
+	dojo.require("dojo.widget.TreeDeselectOnDblselect");
+	dojo.require("dojo.widget.TreeDemo");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	dojo.addOnLoad(function(){
+					
+		/* bind demo actions to menu-tree */ 
+		dojo.addOnLoad(function() { dojo.widget.TreeDemo.bindDemoMenu(dojo.widget.byId('controller')) });
+
+	});
+
+</script>
+</head>
+<body>
+
+<div dojoType="TreeSelectorV3" widgetId="selector"></div>	
+
+<!-- selector extensions -->
+<div dojoType="TreeDeselectOnDblselect" selector="selector"></div>
+<div dojoType="TreeEmphasizeOnSelect" selector="selector"></div>
+
+<div dojoType="TreeEditor" widgetId="editor"></div>
+
+<div dojoType="TreeRpcControllerV3" widgetId="controller" editor="editor" RpcUrl="rpc.php"></div>
+
+<div dojoType="TreeDndControllerV3" controller="controller" widgetId="dndcontroller"></div>
+
+
+<div dojoType="TreeContextMenuV3" toggle="explode" contextMenuForWindow="false" widgetId="contextMenu">
+	<div dojoType="TreeMenuItemV3" treeActions="addChild" iconSrc="../images/createsmall.gif" widgetId="treeContextMenuCreate" caption="Create"></div>
+	<div dojoType="TreeMenuItemV3" treeActions="remove" iconSrc="../images/removesmall.gif" caption="Remove" widgetId="treeContextMenuDestroy"></div>
+	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/downsmall.png" caption="Up" widgetId="treeContextMenuUp"></div>
+	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/upsmall.png" caption="Down" widgetId="treeContextMenuDown"></div>
+	<div dojoType="TreeMenuItemV3" treeActions="edit" caption="Edit" widgetId="treeContextMenuEdit"></div>
+</div>
+
+
+<div style="display:none">
+	<!-- IE has a bug: it reloads all dynamically resolved images, no matter, is it
+	new Image() or CSS background. If you don't specify images like that,
+	it will reload them every time a node is expanded -->
+	<img src="../../../src/widget/templates/images/TreeV3/i.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_half.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_plus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_long.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/document.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/open.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/closed.gif">
+</div>	
+
+<style>
+.treeTable {
+	width:100%;
+}
+
+.treeColumn {
+	width:25%;
+	vertical-align: top;
+	text-align: middle;
+	border:1px black dashed;
+}
+</style>
+
+<h3>
+Tree with menu, selector, dnd and full operations set.
+</h3>
+
+
+<table class="treeTable" cellspacing="0px">
+<TR>
+<td style="width:25%"></td>
+<TD class="treeColumn">
+
+
+<div dojoType="TreeV3" DndMode="between;onto" DndAcceptTypes="firstTree" widgetId="firstTree" listeners="controller;dndcontroller;selector;contextMenu">
+    <div dojoType="TreeNodeV3" title="Node 1"></div>
+    <div dojoType="TreeNodeV3" title="Node 2">
+        <div dojoType="TreeNodeV3" title="Node 2.1"></div>
+        <div dojoType="TreeNodeV3" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNodeV3" title="Node 3" isFolder="true">
+    </div>
+
+</div>
+
+</TD>
+<TD class="treeColumn">
+
+
+<div dojoType="TreeV3" DndMode="between;onto" DndAcceptTypes="firstTree;secondTree" widgetId="secondTree" listeners="controller;dndcontroller;selector;contextMenu">
+    <div dojoType="TreeNodeV3" title="Node 1"></div>
+    <div dojoType="TreeNodeV3" title="Node 2">
+        <div dojoType="TreeNodeV3" title="Node 2.1"></div>
+        <div dojoType="TreeNodeV3" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNodeV3" title="Node 3" isFolder="true">
+    </div>
+
+</div>
+
+</TD>
+<td style="width:25%"></td>
+</tr>
+
+</table>
+
+
+
+
+</body>
+</html>

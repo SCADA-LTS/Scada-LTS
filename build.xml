@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<project name="ScadaBR" basedir="." default="package">
+
+	<property file="build.properties" />
+
+	<property name="wcCopy.dir" value="" />
+
+	<property name="src.dir" value="src" />
+	<property name="test.dir" value="test" />
+	<property name="web.dir" value="WebContent" />
+	<property name="templates.dir" value="templates" />
+	<property name="temp.lib.dir" value="${web.dir}/WEB-INF/tmp-lib" />
+	<property name="build.dir" value="target" />
+	<property name="compile.dir" value="${build.dir}/classes/src" />
+	<property name="compile.tests.dir" value="${build.dir}/classes/tests" />
+	<property name="war-file-name" value="ScadaBR.war" />
+	<property name="deb-file-name" value="ScadaBR.deb" />
+	<property name="reports.dir" value="${build.dir}/test-reports" />
+
+	<property name="version.number" value="0.6" />
+
+	<property name="libdir" location="lib" />
+	<path id="svnant.classpath">
+		<fileset dir="/opt/svnant/lib" includes="*.jar" />
+	</path>
+	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svnant.classpath" />
+
+	<path id="master-classpath">
+		<fileset dir="${web.dir}/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+		<!-- We need the servlet API classes:        -->
+		<!--   for Tomcat 4.1 use servlet.jar        -->
+		<!--   for Tomcat 5.0 use servlet-api.jar    -->
+		<!--   for Other app server - check the docs -->
+		<fileset dir="${temp.lib.dir}">
+			<include name="servlet*.jar" />
+			<include name="jsp*.jar" />
+			<include name="comm.jar" />
+		</fileset>
+		<pathelement path="${build.dir}" />
+	</path>
+
+	<path id="classpath.test">
+		<pathelement location="{web.dir}/WEB-INF/lib/*.jar" />
+		<pathelement location="${compile.dir}" />
+		<pathelement location="${compile.tests.dir}" />
+		<path refid="master-classpath" />
+	</path>
+
+	<target name="testSVNant">
+		<svn svnkit="true" javahl="false">
+			<wcVersion path="${wcCopy.dir}" />
+		</svn>
+		<echo message="Subversion repository url: ${repository.url}" />
+	</target>
+
+	<!-- xxxxxxxxx CLEAN xxxxxxxxx -->
+	<target name="clean" description="Clean output directories">
+		<echo> Cleaning...</echo>
+		<mkdir dir="${build.dir}" />
+		<delete>
+			<fileset dir="${build.dir}">
+				<include name="**/*" />
+			</fileset>
+		</delete>
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<!-- xxxxxxxxx CONFIGURE xxxxxxxxx -->
+	<target name="configure">
+		<echo> Creating config files...</echo>
+		<copy file="${templates.dir}/log4j.xml" todir="${web.dir}/WEB-INF/classes" overwrite="true">
+			<filterchain>
+				<replacetokens>
+					<token key="tomcathome" value="${hudson.integration-tests}" />
+					<token key="logThreshold" value="${log4j.xml.logThreshold}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+
+		<copy file="${templates.dir}/env.properties" todir="${web.dir}/WEB-INF/classes" overwrite="true">
+			<filterchain>
+				<replacetokens>
+					<token key="db.type" value="${db.type}" />
+					<token key="db.url" value="${db.url}" />
+					<token key="db.username" value="${db.username}" />
+					<token key="db.password" value="${db.password}" />
+					<token key="convert.db.type" value="${convert.db.type}" />
+					<token key="convert.db.url" value="${convert.db.url}" />
+					<token key="convert.db.username" value="${convert.db.username}" />
+					<token key="convert.db.password" value="${convert.db.password}" />
+					<token key="grove.url" value="${grove.url}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+	</target>
+
+	<target name="compile" description="Compile main source tree java files">
+		<echo> Compiling...</echo>
+		<property environment="env" />
+		<mkdir dir="${compile.dir}" />
+		<javac destdir="${compile.dir}" debug="true" debuglevel="lines,vars,source" deprecation="false" optimize="false" failonerror="true">
+			<src path="${src.dir}" />
+			<classpath refid="master-classpath" />
+		</javac>
+		<manifest file="${web.dir}/META-INF/MANIFEST.MF">
+			<attribute name="Build-Number" value="${env.BUILD_NUMBER}" />
+			<attribute name="Version-Number" value="${version.number}" />
+		</manifest>
+	</target>
+
+	<!-- xxxxxxxxx UNIT-TESTS xxxxxxxxx -->
+	<target name="unit-tests" description="Run unit tests" depends="compile">
+		<echo> Running unit tests...</echo>
+		<mkdir dir="${compile.tests.dir}" />
+		<mkdir dir="${reports.dir}" />
+
+		<javac srcdir="${test.dir}" destdir="${compile.tests.dir}">
+			<classpath refid="classpath.test" />
+		</javac>
+
+		<junit haltonfailure="true">
+			<classpath refid="classpath.test" />
+			<formatter type="brief" usefile="false" />
+
+			<batchtest haltonfailure="true" todir="${reports.dir}">
+				<formatter type="xml" />
+				<fileset dir="${compile.tests.dir}">
+					<include name="**/*Test*.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<!-- xxxxxxxxx PACKAGE xxxxxxxxx -->
+	<target name="package" description="Package ScadaBR in a War file" depends="clean,configure,unit-tests">
+		<echo> Packaging...</echo>
+		<delete file="${build.dir}/${war-file-name}" />
+		<war destfile="${build.dir}/${war-file-name}" webxml="${web.dir}/WEB-INF/web.xml" basedir="${web.dir}">
+			<lib dir="${web.dir}/WEB-INF/lib" />
+			<classes dir="${compile.dir}" />
+		</war>
+	</target>
+
+</project>
