@@ -85,8 +85,7 @@ public class ViewEditController extends SimpleFormRedirectController {
 	}
 
 	@Override
-	protected Map referenceData(HttpServletRequest request, Object command,
-			Errors errors) {
+	protected Map referenceData(HttpServletRequest request, Object command, Errors errors) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("imageSets", Common.ctx.getImageSets());
 		model.put("dynamicImages", Common.ctx.getDynamicImages());
@@ -94,8 +93,8 @@ public class ViewEditController extends SimpleFormRedirectController {
 	}
 
 	@Override
-	protected void onBindAndValidate(HttpServletRequest request,
-			Object command, BindException errors) throws Exception {
+	protected void onBindAndValidate(HttpServletRequest request, Object command, BindException errors)
+			throws Exception {
 
 		ViewEditForm form = (ViewEditForm) command;
 
@@ -104,9 +103,7 @@ public class ViewEditController extends SimpleFormRedirectController {
 				byte[] bytes = form.getBackgroundImageMP().getBytes();
 				if (bytes != null && bytes.length > 0) {
 					// Create the path to the upload directory.
-					String path = request.getSession().getServletContext()
-							.getRealPath(uploadDirectory);
-
+					String path = request.getSession().getServletContext().getRealPath("/" + uploadDirectory);
 					// Make sure the directory exists.
 					File dir = new File(path);
 					dir.mkdirs();
@@ -116,20 +113,16 @@ public class ViewEditController extends SimpleFormRedirectController {
 
 					// Create the image file name.
 					String filename = Integer.toString(imageId);
-					int dot = form.getBackgroundImageMP().getOriginalFilename()
-							.lastIndexOf('.');
+					int dot = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.');
 					if (dot != -1)
-						filename += form.getBackgroundImageMP()
-								.getOriginalFilename().substring(dot);
+						filename += form.getBackgroundImageMP().getOriginalFilename().substring(dot);
 
 					// Save the file.
-					FileOutputStream fos = new FileOutputStream(new File(dir,
-							filename));
+					FileOutputStream fos = new FileOutputStream(new File(dir, filename));
 					fos.write(bytes);
 					fos.close();
 
-					form.getView().setBackgroundFilename(
-							uploadDirectory + filename);
+					form.getView().setBackgroundFilename(uploadDirectory + filename);
 				}
 			}
 		}
@@ -146,14 +139,12 @@ public class ViewEditController extends SimpleFormRedirectController {
 
 	@Override
 	protected boolean isFormChangeRequest(HttpServletRequest request) {
-		return hasSubmitParameter(request, SUBMIT_UPLOAD)
-				|| hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE);
+		return hasSubmitParameter(request, SUBMIT_UPLOAD) || hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE);
 	}
 
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request,
-			HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+			BindException errors) throws Exception {
 		ViewEditForm form = (ViewEditForm) command;
 		ViewDao viewDao = new ViewDao();
 
@@ -192,8 +183,7 @@ public class ViewEditController extends SimpleFormRedirectController {
 							if (dot == -1)
 								index = Integer.parseInt(names[i]);
 							else
-								index = Integer.parseInt(names[i].substring(0,
-										dot));
+								index = Integer.parseInt(names[i].substring(0, dot));
 							if (index >= nextImageId)
 								nextImageId = index + 1;
 						} catch (NumberFormatException e) { /* no op */

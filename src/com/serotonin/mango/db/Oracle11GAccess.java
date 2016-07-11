@@ -91,17 +91,15 @@ public class Oracle11GAccess extends BasePooledAccess {
 			e1.printStackTrace();
 		}
 		try {
-			Connection con = DriverManager.getConnection(Common
-					.getEnvironmentProfile().getString("db.url"), Common
-					.getEnvironmentProfile().getString("db.username"), Common
-					.getEnvironmentProfile().getString("db.password"));
+			Connection con = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
+					Common.getEnvironmentProfile().getString("db.username"),
+					Common.getEnvironmentProfile().getString("db.password"));
 
 			// Initialize object for ScripRunner
 			ScriptRunner sr = new ScriptRunner(con, false, false);
 
 			// Give the input file to Reader
-			Reader reader = new BufferedReader(new InputStreamReader(
-					ctx.getResourceAsStream(scriptFile)));
+			Reader reader = new BufferedReader(new InputStreamReader(ctx.getResourceAsStream(scriptFile)));
 
 			// Exctute script
 			sr.runScript(reader);
@@ -114,13 +112,13 @@ public class Oracle11GAccess extends BasePooledAccess {
 	@Override
 	protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
 		try {
+			ejt.execute("ALTER SESSION SET NLS_SORT = BINARY");
 			ejt.execute("select count(*) from users");
 		} catch (DataAccessException e) {
 			if (e.getCause() instanceof SQLException) {
 				SQLException se = (SQLException) e.getCause();
 				if ("42000".equals(se.getSQLState())
-						|| se.getErrorCode() == ErrorCode.TableOrViewDoesNotExist
-								.getCode()) {
+						|| se.getErrorCode() == ErrorCode.TableOrViewDoesNotExist.getCode()) {
 					// This state means a missing table. Assume that the schema
 					// needs to be created.
 					createSchema(CREATE_SCHEMA_SCRIPT_PATH);
@@ -166,8 +164,8 @@ public class Oracle11GAccess extends BasePooledAccess {
 	 *         auto-generated key designated by the generated column name.
 	 * 
 	 */
-	public PreparedStatement prepareStatement(Connection connection,
-			String sql, String generatedKey) throws SQLException {
+	public PreparedStatement prepareStatement(Connection connection, String sql, String generatedKey)
+			throws SQLException {
 		return connection.prepareStatement(sql, new String[] { generatedKey });
 	}
 

@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import br.org.scadabr.rt.scripting.ScriptRT;
-
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -17,13 +15,13 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 
-public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
-		JsonSerializable {
+import br.org.scadabr.rt.scripting.ScriptRT;
+
+public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable, JsonSerializable {
 	abstract public Type getType();
 
 	abstract public ScriptRT createScriptRT();
@@ -150,8 +148,7 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 	}
 
 	@SuppressWarnings("unchecked")
-	private void readObject(ObjectInputStream in) throws IOException,
-			ClassNotFoundException {
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		// int ver = in.readInt();
 		// Switch on the version of the class so that version changes can be
 		// elegantly handled.
@@ -161,17 +158,16 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 	}
 
 	@Override
-	public void jsonDeserialize(JsonReader reader, JsonObject object)
-			throws JsonException {
+	public void jsonDeserialize(JsonReader reader, JsonObject object) throws JsonException {
 		String username = object.getString("user");
-		User user = new UserDao().getUser(username);
+		User user = Common.ctx.getUserCache().getUserDao().getUser(username);
 		this.userId = user.getId();
 	}
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		map.put("type", getType().name());
-		map.put("user", new UserDao().getUser(userId).getUsername());
+		map.put("user", Common.ctx.getUserCache().getUserDao().getUser(userId).getUsername());
 	}
 
 	public static ScriptVO<?> createScriptVO(int typeId) {

@@ -33,78 +33,87 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 public class MetaDataSourceRT extends DataSourceRT {
-    public static final int EVENT_TYPE_CONTEXT_POINT_DISABLED = 1;
-    public static final int EVENT_TYPE_SCRIPT_ERROR = 2;
-    public static final int EVENT_TYPE_RESULT_TYPE_ERROR = 3;
+	public static final int EVENT_TYPE_CONTEXT_POINT_DISABLED = 1;
+	public static final int EVENT_TYPE_SCRIPT_ERROR = 2;
+	public static final int EVENT_TYPE_RESULT_TYPE_ERROR = 3;
 
-    private final List<DataPointRT> points = new CopyOnWriteArrayList<DataPointRT>();
-    private boolean contextPointDisabledEventActive;
+	private final List<DataPointRT> points = new CopyOnWriteArrayList<DataPointRT>();
+	private boolean contextPointDisabledEventActive;
 
-    public MetaDataSourceRT(MetaDataSourceVO vo) {
-        super(vo);
-    }
+	public MetaDataSourceRT(MetaDataSourceVO vo) {
+		super(vo);
+	}
 
-    @Override
-    public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source) {
-        dataPoint.setPointValue(valueTime, source);
-    }
+	@Override
+	public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime,
+			SetPointSource source) {
+		dataPoint.setPointValue(valueTime, source);
+	}
 
-    @Override
-    public void addDataPoint(DataPointRT dataPoint) {
-        synchronized (pointListChangeLock) {
-            remove(dataPoint);
+	@Override
+	public void addDataPoint(DataPointRT dataPoint) {
+		synchronized (pointListChangeLock) {
+			remove(dataPoint);
 
-            MetaPointLocatorRT locator = dataPoint.getPointLocator();
-            points.add(dataPoint);
-            locator.initialize(Common.timer, this, dataPoint);
-            checkForDisabledPoints();
-        }
-    }
+			MetaPointLocatorRT locator = dataPoint.getPointLocator();
+			points.add(dataPoint);
+			locator.initialize(Common.timer, this, dataPoint);
+			checkForDisabledPoints();
+		}
+	}
 
-    @Override
-    public void removeDataPoint(DataPointRT dataPoint) {
-        synchronized (pointListChangeLock) {
-            remove(dataPoint);
-            checkForDisabledPoints();
-        }
-    }
+	@Override
+	public void removeDataPoint(DataPointRT dataPoint) {
+		synchronized (pointListChangeLock) {
+			remove(dataPoint);
+			checkForDisabledPoints();
+		}
+	}
 
-    private void remove(DataPointRT dataPoint) {
-        MetaPointLocatorRT locator = dataPoint.getPointLocator();
-        locator.terminate();
-        points.remove(dataPoint);
-    }
+	private void remove(DataPointRT dataPoint) {
+		MetaPointLocatorRT locator = dataPoint.getPointLocator();
+		locator.terminate();
+		points.remove(dataPoint);
+	}
 
-    synchronized void checkForDisabledPoints() {
-        DataPointRT problemPoint = null;
+	synchronized void checkForDisabledPoints() {
+		DataPointRT problemPoint = null;
 
-        for (DataPointRT dp : points) {
-            MetaPointLocatorRT locator = dp.getPointLocator();
-            if (!locator.isContextCreated()) {
-                problemPoint = dp;
-                break;
-            }
-        }
+		for (DataPointRT dp : points) {
+			MetaPointLocatorRT locator = dp.getPointLocator();
+			if (!locator.isContextCreated()) {
+				problemPoint = dp;
+				break;
+			}
+		}
 
-        if (contextPointDisabledEventActive != (problemPoint != null)) {
-            contextPointDisabledEventActive = problemPoint != null;
-            if (contextPointDisabledEventActive)
-                // A context point has been terminated, was never enabled, or not longer exists.
-                raiseEvent(EVENT_TYPE_CONTEXT_POINT_DISABLED, System.currentTimeMillis(), true, new LocalizableMessage(
-                        "event.meta.pointUnavailable", problemPoint.getVO().getName()));
-            else
-                // Everything is good
-                returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, System.currentTimeMillis());
-        }
-    }
+		if (contextPointDisabledEventActive != (problemPoint != null)) {
+			contextPointDisabledEventActive = problemPoint != null;
+			if (contextPointDisabledEventActive)
+				// A context point has been terminated, was never enabled, or
+				// not longer exists.
+				raiseEvent(EVENT_TYPE_CONTEXT_POINT_DISABLED,
+						System.currentTimeMillis(), true,
+						new LocalizableMessage("event.meta.pointUnavailable",
+								problemPoint.getVO().getName()));
+			else
+				// Everything is good
+				returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED,
+						System.currentTimeMillis());
+		}
+	}
 
-    public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
-        raiseEvent(EVENT_TYPE_SCRIPT_ERROR, runtime, false, new LocalizableMessage("event.meta.scriptError", dataPoint
-                .getVO().getName(), message));
-    }
+	public void raiseScriptError(long runtime, DataPointRT dataPoint,
+			LocalizableMessage message) {
+		raiseEvent(EVENT_TYPE_SCRIPT_ERROR, runtime, false,
+				new LocalizableMessage("event.meta.scriptError", dataPoint
+						.getVO().getName(), message));
+	}
 
-    public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
-        raiseEvent(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, false, new LocalizableMessage("event.meta.typeError",
-                dataPoint.getVO().getName(), message));
-    }
+	public void raiseResultTypeError(long runtime, DataPointRT dataPoint,
+			LocalizableMessage message) {
+		raiseEvent(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, false,
+				new LocalizableMessage("event.meta.typeError", dataPoint
+						.getVO().getName(), message));
+	}
 }

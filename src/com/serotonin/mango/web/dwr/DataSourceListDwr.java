@@ -31,7 +31,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.SystemSettingsDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -52,12 +51,10 @@ public class DataSourceListDwr extends BaseDwr {
 			for (DataSourceVO.Type type : DataSourceVO.Type.values()) {
 				// Allow customization settings to overwrite the default display
 				// value.
-				boolean display = SystemSettingsDao.getBooleanValue(type.name()
-						+ SystemSettingsDao.DATASOURCE_DISPLAY_SUFFIX,
-						type.isDisplay());
+				boolean display = SystemSettingsDao
+						.getBooleanValue(type.name() + SystemSettingsDao.DATASOURCE_DISPLAY_SUFFIX, type.isDisplay());
 				if (display)
-					translatedTypes.add(new IntValuePair(type.getId(),
-							getMessage(type.getKey())));
+					translatedTypes.add(new IntValuePair(type.getId(), getMessage(type.getKey())));
 			}
 			response.addData("types", translatedTypes);
 		}
@@ -87,8 +84,7 @@ public class DataSourceListDwr extends BaseDwr {
 
 	public DwrResponseI18n toggleDataPoint(int dataPointId) {
 		DataPointVO dataPoint = new DataPointDao().getDataPoint(dataPointId);
-		Permissions.ensureDataSourcePermission(Common.getUser(),
-				dataPoint.getDataSourceId());
+		Permissions.ensureDataSourcePermission(Common.getUser(), dataPoint.getDataSourceId());
 
 		RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
 		dataPoint.setEnabled(!dataPoint.isEnabled());
@@ -102,9 +98,8 @@ public class DataSourceListDwr extends BaseDwr {
 
 	public int copyDataSource(int dataSourceId) {
 		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
-		int dsId = new DataSourceDao().copyDataSource(dataSourceId,
-				getResourceBundle());
-		new UserDao().populateUserPermissions(Common.getUser());
+		int dsId = new DataSourceDao().copyDataSource(dataSourceId, getResourceBundle());
+		Common.ctx.getUserCache().getUserDao().populateUserPermissions(Common.getUser());
 		return dsId;
 	}
 }

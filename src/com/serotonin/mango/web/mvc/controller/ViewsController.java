@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.web.mvc.controller;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,44 +40,76 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+
 public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);
 
 	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ViewDao viewDao = new ViewDao();
 		User user = Common.getUser(request);
+		UsersProfileDao usersProfiles = new UsersProfileDao();
+		LOG.trace("User " + user.getUsername());
 		List<IntValuePair> views;
 
 		if (user.isAdmin()) { // Admin user has access to all views
 			views = viewDao.getAllViewNames();
 			LOG.debug("Views: " + views.size());
+			Collections.sort(views, new Comparator<IntValuePair>() {
+				@Override
+				public int compare(IntValuePair ivp1, IntValuePair ivp2) {
+
+					return ivp1.getValue().compareTo(ivp2.getValue());
+				}
+			});
 			model.put("views", views);
 
 		} else {
-			views = viewDao.getViewNamesWithReadOrWritePermissions(
-					user.getId(), user.getUserProfile());
+			UsersProfileVO userProfile = usersProfiles.getUserProfileByUserId(user.getId());
+			if (userProfile != null) {
+				LOG.trace("Got UserProfile...");
+				views = viewDao.getViewNamesWithReadOrWritePermissions(user.getId(), userProfile.getId());
+				LOG.debug("Views: " + views.size());
+			} else {
+				LOG.trace("Got no UserProfile...");
+				views = viewDao.getViewNamesWithReadOrWritePermissions(user.getId(), -1);
+				LOG.debug("Views: " + views.size());
+			}
+			Collections.sort(views, new Comparator<IntValuePair>() {
+				@Override
+				public int compare(IntValuePair ivp1, IntValuePair ivp2) {
+
+					return ivp1.getValue().compareTo(ivp2.getValue());
+				}
+			});
 			model.put("views", views);
 		}
 
+		LOG.trace("CurrentView...");
 		// Set the current view.
 		View currentView = null;
 		String vid = request.getParameter("viewId");
 		try {
 			currentView = viewDao.getView(Integer.parseInt(vid));
+			LOG.trace("CurrentView: " + currentView.getName());
 		} catch (NumberFormatException e) {
 			// no op
 		}
 
+		LOG.trace("get views...");
 		if (currentView == null && views.size() > 0)
 			currentView = viewDao.getView(views.get(0).getKey());
 
 		if (currentView != null) {
-			if (!user.isAdmin())
+			if (!user.isAdmin()) {
+				LOG.trace("Here we are going to ensure...");
+				LOG.trace(" User: " + user.getUsername());
 				Permissions.ensureViewPermission(user, currentView);
-
+			}
 			// Make sure the owner still has permission to all of the points in
 			// the view, and that components are
 			// otherwise valid.
@@ -83,9 +117,14 @@ public class ViewsController extends ParameterizableViewController {
 
 			// Add the view to the session for the dwr access stuff.
 			model.put("currentView", currentView);
-			model.put("owner",
-					currentView.getUserAccess(user) == ShareUser.ACCESS_OWNER);
+			model.put("owner", currentView.getUserAccess(user) == ShareUser.ACCESS_OWNER);
 			user.setView(currentView);
+
+			// Define if user can add new views
+			// LOG.error("userAddedViews: " +
+			// Common.getEnvironmentProfile().getBoolean("mango.views.useradd",
+			// true));
+			model.put("userAddedViews", Common.getEnvironmentProfile().getBoolean("mango.views.useradd", true));
 		}
 
 		return new ModelAndView(getViewName(), model);

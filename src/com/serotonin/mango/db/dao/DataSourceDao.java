@@ -59,14 +59,12 @@ public class DataSourceDao extends BaseDao {
 	private final Log LOG = LogFactory.getLog(DataSourceDao.class);
 
 	public List<DataSourceVO<?>> getDataSources() {
-		List<DataSourceVO<?>> dss = query(DATA_SOURCE_SELECT,
-				new DataSourceRowMapper());
+		List<DataSourceVO<?>> dss = query(DATA_SOURCE_SELECT, new DataSourceRowMapper());
 		Collections.sort(dss, new DataSourceNameComparator());
 		return dss;
 	}
 
-	static class DataSourceNameComparator implements
-			Comparator<DataSourceVO<?>> {
+	static class DataSourceNameComparator implements Comparator<DataSourceVO<?>> {
 		public int compare(DataSourceVO<?> ds1, DataSourceVO<?> ds2) {
 			if (StringUtils.isEmpty(ds1.getName()))
 				return -1;
@@ -75,26 +73,21 @@ public class DataSourceDao extends BaseDao {
 	}
 
 	public DataSourceVO<?> getDataSource(int id) {
-		return queryForObject(DATA_SOURCE_SELECT + " where id=?",
-				new Object[] { id }, new DataSourceRowMapper(), null);
+		return queryForObject(DATA_SOURCE_SELECT + " where id=?", new Object[] { id }, new DataSourceRowMapper(), null);
 	}
 
 	public DataSourceVO<?> getDataSource(String xid) {
-		return queryForObject(DATA_SOURCE_SELECT + " where xid=?",
-				new Object[] { xid }, new DataSourceRowMapper(), null);
+		return queryForObject(DATA_SOURCE_SELECT + " where xid=?", new Object[] { xid }, new DataSourceRowMapper(),
+				null);
 	}
 
 	class DataSourceRowMapper implements GenericRowMapper<DataSourceVO<?>> {
-		public DataSourceVO<?> mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
+		public DataSourceVO<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
 			DataSourceVO<?> ds;
-			if (Common.getEnvironmentProfile().getString("db.type")
-					.equals("postgres")) {
-				ds = (DataSourceVO<?>) SerializationHelper.readObject(rs
-						.getBinaryStream(4));
+			if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
+				ds = (DataSourceVO<?>) SerializationHelper.readObject(rs.getBinaryStream(4));
 			} else {
-				ds = (DataSourceVO<?>) SerializationHelper.readObject(rs
-						.getBlob(4).getBinaryStream());
+				ds = (DataSourceVO<?>) SerializationHelper.readObject(rs.getBlob(4).getBinaryStream());
 			}
 			ds.setId(rs.getInt(1));
 			ds.setXid(rs.getString(2));
@@ -120,18 +113,12 @@ public class DataSourceDao extends BaseDao {
 	}
 
 	private void insertDataSource(final DataSourceVO<?> vo) {
-		if (Common.getEnvironmentProfile().getString("db.type")
-				.equals("postgres")) {
+		if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
 			try {
 				// id = doInsert(EVENT_INSERT, args, EVENT_INSERT_TYPES);
-				Connection conn = DriverManager
-						.getConnection(
-								Common.getEnvironmentProfile().getString(
-										"db.url"),
-								Common.getEnvironmentProfile().getString(
-										"db.username"),
-								Common.getEnvironmentProfile().getString(
-										"db.password"));
+				Connection conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
+						Common.getEnvironmentProfile().getString("db.username"),
+						Common.getEnvironmentProfile().getString("db.password"));
 				PreparedStatement preStmt = conn
 						.prepareStatement("insert into dataSources (xid, name, dataSourceType, data) values (?,?,?,?)");
 				preStmt.setString(1, vo.getXid());
@@ -140,8 +127,7 @@ public class DataSourceDao extends BaseDao {
 				preStmt.setBytes(4, SerializationHelper.writeObjectToArray(vo));
 				preStmt.executeUpdate();
 
-				ResultSet resSEQ = conn.createStatement().executeQuery(
-						"SELECT currval('datasources_id_seq')");
+				ResultSet resSEQ = conn.createStatement().executeQuery("SELECT currval('datasources_id_seq')");
 				resSEQ.next();
 				int id = resSEQ.getInt(1);
 
@@ -154,16 +140,11 @@ public class DataSourceDao extends BaseDao {
 				vo.setId(0);
 			}
 		} else {
-			vo.setId(doInsert(
-					"insert into dataSources (xid, name, dataSourceType, data) values (?,?,?,?)",
-					new Object[] { vo.getXid(), vo.getName(),
-							vo.getType().getId(),
-							SerializationHelper.writeObject(vo) }, new int[] {
-							Types.VARCHAR,
-							Types.VARCHAR,
-							Types.INTEGER,
-							Common.getEnvironmentProfile().getString("db.type")
-									.equals("postgres") ? Types.BINARY
+			vo.setId(doInsert("insert into dataSources (xid, name, dataSourceType, data) values (?,?,?,?)",
+					new Object[] { vo.getXid(), vo.getName(), vo.getType().getId(),
+							SerializationHelper.writeObject(vo) },
+					new int[] { Types.VARCHAR, Types.VARCHAR, Types.INTEGER,
+							Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY
 									: Types.BLOB }));
 		}
 
@@ -173,21 +154,16 @@ public class DataSourceDao extends BaseDao {
 	@SuppressWarnings("unchecked")
 	private void updateDataSource(final DataSourceVO<?> vo) {
 		DataSourceVO<?> old = getDataSource(vo.getId());
-		ejt.update(
-				"update dataSources set xid=?, name=?, data=? where id=?",
-				new Object[] { vo.getXid(), vo.getName(),
-						SerializationHelper.writeObject(vo), vo.getId() },
-				new int[] {
-						Types.VARCHAR,
-						Types.VARCHAR,
-						Common.getEnvironmentProfile().getString("db.type")
-								.equals("postgres") ? Types.BINARY : Types.BLOB,
+		ejt.update("update dataSources set xid=?, name=?, data=? where id=?",
+				new Object[] { vo.getXid(), vo.getName(), SerializationHelper.writeObject(vo), vo.getId() },
+				new int[] { Types.VARCHAR, Types.VARCHAR,
+						Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY
+								: Types.BLOB,
 						Types.INTEGER });
 		LOG.debug("Start updating DS!");
 		// if datasource's name has changed, update datapoints
 		if (!vo.getName().equals(old.getName())) {
-			List<DataPointVO> dpList = new DataPointDao().getDataPoints(
-					vo.getId(), null);
+			List<DataPointVO> dpList = new DataPointDao().getDataPoints(vo.getId(), null);
 			for (DataPointVO dp : dpList) {
 				LOG.debug("Updating DP: " + dp.getName());
 				dp.setDataSourceName(vo.getName());
@@ -197,8 +173,7 @@ public class DataSourceDao extends BaseDao {
 
 		}
 
-		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_DATA_SOURCE, old,
-				(ChangeComparable<DataSourceVO<?>>) vo);
+		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_DATA_SOURCE, old, (ChangeComparable<DataSourceVO<?>>) vo);
 	}
 
 	public void deleteDataSource(final int dataSourceId) {
@@ -208,128 +183,99 @@ public class DataSourceDao extends BaseDao {
 		new DataPointDao().deleteDataPoints(dataSourceId);
 
 		if (vo != null) {
-			getTransactionTemplate().execute(
-					new TransactionCallbackWithoutResult() {
-						@Override
-						protected void doInTransactionWithoutResult(
-								TransactionStatus status) {
-							new MaintenanceEventDao()
-									.deleteMaintenanceEventsForDataSource(dataSourceId);
-							ejt2.update(
-									"delete from eventHandlers where eventTypeId="
-											+ EventType.EventSources.DATA_SOURCE
-											+ " and eventTypeRef1=?",
-									new Object[] { dataSourceId });
-							ejt2.update(
-									"delete from dataSourceUsers where dataSourceId=?",
-									new Object[] { dataSourceId });
-							ejt2.update("delete from dataSources where id=?",
-									new Object[] { dataSourceId });
-						}
-					});
+			getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					new MaintenanceEventDao().deleteMaintenanceEventsForDataSource(dataSourceId);
+					ejt2.update("delete from eventHandlers where eventTypeId=" + EventType.EventSources.DATA_SOURCE
+							+ " and eventTypeRef1=?", new Object[] { dataSourceId });
+					ejt2.update("delete from dataSourceUsers where dataSourceId=?", new Object[] { dataSourceId });
+					ejt2.update("delete from dataSources where id=?", new Object[] { dataSourceId });
+				}
+			});
 
-			AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_DATA_SOURCE,
-					vo);
+			AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_DATA_SOURCE, vo);
 		}
 	}
 
-	public void copyPermissions(final int fromDataSourceId,
-			final int toDataSourceId) {
-		final List<Integer> userIds = queryForList(
-				"select userId from dataSourceUsers where dataSourceId=?",
+	public void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
+		final List<Integer> userIds = queryForList("select userId from dataSourceUsers where dataSourceId=?",
 				new Object[] { fromDataSourceId }, Integer.class);
 
-		ejt.batchUpdate("insert into dataSourceUsers values (?,?)",
-				new BatchPreparedStatementSetter() {
-					@Override
-					public int getBatchSize() {
-						return userIds.size();
-					}
+		ejt.batchUpdate("insert into dataSourceUsers values (?,?)", new BatchPreparedStatementSetter() {
+			@Override
+			public int getBatchSize() {
+				return userIds.size();
+			}
 
-					@Override
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, toDataSourceId);
-						ps.setInt(2, userIds.get(i));
-					}
-				});
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ps.setInt(1, toDataSourceId);
+				ps.setInt(2, userIds.get(i));
+			}
+		});
 	}
 
-	public int copyDataSource(final int dataSourceId,
-			final ResourceBundle bundle) {
-		return getTransactionTemplate().execute(
-				new GenericTransactionCallback<Integer>() {
-					@Override
-					public Integer doInTransaction(TransactionStatus status) {
-						DataPointDao dataPointDao = new DataPointDao();
+	public int copyDataSource(final int dataSourceId, final ResourceBundle bundle) {
+		return (int) getTransactionTemplate().execute(new GenericTransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				DataPointDao dataPointDao = new DataPointDao();
 
-						DataSourceVO<?> dataSource = getDataSource(dataSourceId);
+				DataSourceVO<?> dataSource = getDataSource(dataSourceId);
 
-						// Copy the data source.
-						DataSourceVO<?> dataSourceCopy = dataSource.copy();
-						dataSourceCopy.setId(Common.NEW_ID);
-						dataSourceCopy.setXid(generateUniqueXid());
-						dataSourceCopy.setEnabled(false);
-						dataSourceCopy.setName(StringUtils.truncate(
-								LocalizableMessage.getMessage(bundle,
-										"common.copyPrefix",
-										dataSource.getName()), 40));
-						saveDataSource(dataSourceCopy);
+				// Copy the data source.
+				DataSourceVO<?> dataSourceCopy = dataSource.copy();
+				dataSourceCopy.setId(Common.NEW_ID);
+				dataSourceCopy.setXid(generateUniqueXid());
+				dataSourceCopy.setEnabled(false);
+				dataSourceCopy.setName(StringUtils.truncate(
+						LocalizableMessage.getMessage(bundle, "common.copyPrefix", dataSource.getName()), 40));
+				saveDataSource(dataSourceCopy);
 
-						// Copy permissions.
-						copyPermissions(dataSource.getId(),
-								dataSourceCopy.getId());
+				// Copy permissions.
+				copyPermissions(dataSource.getId(), dataSourceCopy.getId());
 
-						// Copy the points.
-						for (DataPointVO dataPoint : dataPointDao
-								.getDataPoints(dataSourceId, null)) {
-							DataPointVO dataPointCopy = dataPoint.copy();
-							dataPointCopy.setId(Common.NEW_ID);
-							dataPointCopy.setXid(dataPointDao
-									.generateUniqueXid());
-							dataPointCopy.setName(dataPoint.getName());
-							dataPointCopy.setDataSourceId(dataSourceCopy
-									.getId());
-							dataPointCopy.setDataSourceName(dataSourceCopy
-									.getName());
-							dataPointCopy.setDeviceName(dataSourceCopy
-									.getName());
-							dataPointCopy.setEnabled(dataPoint.isEnabled());
-							dataPointCopy.getComments().clear();
+				// Copy the points.
+				for (DataPointVO dataPoint : dataPointDao.getDataPoints(dataSourceId, null)) {
+					DataPointVO dataPointCopy = dataPoint.copy();
+					dataPointCopy.setId(Common.NEW_ID);
+					dataPointCopy.setXid(dataPointDao.generateUniqueXid());
+					dataPointCopy.setName(dataPoint.getName());
+					dataPointCopy.setDataSourceId(dataSourceCopy.getId());
+					dataPointCopy.setDataSourceName(dataSourceCopy.getName());
+					dataPointCopy.setDeviceName(dataSourceCopy.getName());
+					dataPointCopy.setEnabled(dataPoint.isEnabled());
+					dataPointCopy.getComments().clear();
 
-							// Copy the event detectors
-							for (PointEventDetectorVO ped : dataPointCopy
-									.getEventDetectors()) {
-								ped.setId(Common.NEW_ID);
-								ped.njbSetDataPoint(dataPointCopy);
-							}
-
-							dataPointDao.saveDataPoint(dataPointCopy);
-
-							// Copy permissions
-							dataPointDao.copyPermissions(dataPoint.getId(),
-									dataPointCopy.getId());
-						}
-
-						return dataSourceCopy.getId();
+					// Copy the event detectors
+					for (PointEventDetectorVO ped : dataPointCopy.getEventDetectors()) {
+						ped.setId(Common.NEW_ID);
+						ped.njbSetDataPoint(dataPointCopy);
 					}
-				});
+
+					dataPointDao.saveDataPoint(dataPointCopy);
+
+					// Copy permissions
+					dataPointDao.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
+				}
+
+				return dataSourceCopy.getId();
+			}
+		});
 	}
 
 	public Object getPersistentData(int id) {
-		return query("select rtdata from dataSources where id=?",
-				new Object[] { id },
+		return query("select rtdata from dataSources where id=?", new Object[] { id },
 				new GenericResultSetExtractor<Serializable>() {
 					@Override
-					public Serializable extractData(ResultSet rs)
-							throws SQLException, DataAccessException {
+					public Serializable extractData(ResultSet rs) throws SQLException, DataAccessException {
 						if (!rs.next())
 							return null;
 
 						InputStream is;
 
-						if (Common.getEnvironmentProfile().getString("db.type")
-								.equals("postgres")) {
+						if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
 							Blob blob = rs.getBlob(1);
 							is = blob.getBinaryStream();
 							if (blob == null)
@@ -340,19 +286,15 @@ public class DataSourceDao extends BaseDao {
 								return null;
 						}
 
-						return (Serializable) SerializationHelper
-								.readObjectInContext(is);
+						return (Serializable) SerializationHelper.readObjectInContext(is);
 					}
 				});
 	}
 
 	public void savePersistentData(int id, Object data) {
-		ejt.update(
-				"update dataSources set rtdata=? where id=?",
+		ejt.update("update dataSources set rtdata=? where id=?",
 				new Object[] { SerializationHelper.writeObject(data), id },
-				new int[] {
-						Common.getEnvironmentProfile().getString("db.type")
-								.equals("postgres") ? Types.BINARY : Types.BLOB,
-						Types.INTEGER });
+				new int[] { Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY
+						: Types.BLOB, Types.INTEGER });
 	}
 }

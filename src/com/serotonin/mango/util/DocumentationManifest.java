@@ -32,30 +32,30 @@ import com.serotonin.util.XmlUtils;
  * @author Matthew Lohbihler
  */
 public class DocumentationManifest {
-    private final List<DocumentationItem> items = new ArrayList<DocumentationItem>();
+	private final List<DocumentationItem> items = new ArrayList<DocumentationItem>();
 
-    public DocumentationManifest() throws Exception {
-        // Read the documentation manifest file.
-        XmlUtils utils = new XmlUtils();
+	public DocumentationManifest() throws Exception {
+		// Read the documentation manifest file.
+		XmlUtils utils = new XmlUtils();
 
-        Document document = utils.parse(new File(Common.getDocPath() + "manifest.xml"));
+		Document document = utils.parse(new File(Common.getDocPath() + File.separator + "manifest.xml"));
 
-        Element root = document.getDocumentElement();
-        for (Element item : utils.getElementsByTagName(root, "item")) {
-            DocumentationItem di = new DocumentationItem(item.getAttribute("id"));
+		Element root = document.getDocumentElement();
+		for (Element item : utils.getElementsByTagName(root, "item")) {
+			DocumentationItem di = new DocumentationItem(item.getAttribute("id"));
 
-            for (Element relation : utils.getElementsByTagName(item, "relation"))
-                di.addRelated(relation.getAttribute("id"));
+			for (Element relation : utils.getElementsByTagName(item, "relation"))
+				di.addRelated(relation.getAttribute("id"));
 
-            items.add(di);
-        }
-    }
+			items.add(di);
+		}
+	}
 
-    public DocumentationItem getItem(String id) {
-        for (DocumentationItem di : items) {
-            if (id.equals(di.getId()))
-                return di;
-        }
-        return null;
-    }
+	public DocumentationItem getItem(String id) {
+		for (DocumentationItem di : items) {
+			if (id.equals(di.getId()))
+				return di;
+		}
+		return null;
+	}
 }

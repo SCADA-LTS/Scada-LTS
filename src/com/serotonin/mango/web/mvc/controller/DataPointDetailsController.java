@@ -33,7 +33,6 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.chart.ImageChartRenderer;
@@ -44,10 +43,12 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 
+import br.org.scadabr.vo.userCache.UserCache;
+
 public class DataPointDetailsController extends ParameterizableViewController {
 	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
 		User user = Common.getUser(request);
 
@@ -63,8 +64,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 				// Check if an XID was provided.
 				String xid = request.getParameter("dpxid");
 				if (xid == null)
-					throw new ShouldNeverHappenException(
-							"One of dpid, dpxid, or pedid must be provided for this view");
+					throw new ShouldNeverHappenException("One of dpid, dpxid, or pedid must be provided for this view");
 
 				model.put("currentXid", xid);
 				point = dataPointDao.getDataPoint(xid);
@@ -86,8 +86,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			model.put("point", point);
 
 			// Get the views for this user that contain this point.
-			List<View> userViews = new ViewDao().getViews(user.getId(),
-					user.getUserProfile());
+			List<View> userViews = new ViewDao().getViews(user.getId(), user.getUserProfile());
 			List<View> views = new LinkedList<View>();
 			for (View view : userViews) {
 				view.validateViewComponents(false);
@@ -97,13 +96,14 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			model.put("views", views);
 
 			// Get the users that have access to this point.
-			List<User> allUsers = new UserDao().getUsers();
+			UserCache userCache = Common.ctx.getUserCache();
+			List<User> allUsers = userCache.getPermissionedUsers();
+
 			List<Map<String, Object>> users = new LinkedList<Map<String, Object>>();
 			Map<String, Object> userData;
 			int accessType;
 			for (User mangoUser : allUsers) {
-				accessType = Permissions.getDataPointAccessType(mangoUser,
-						point);
+				accessType = Permissions.getDataPointAccessType(mangoUser, point);
 				if (accessType != Permissions.DataPointAccessTypes.NONE) {
 					userData = new HashMap<String, Object>();
 					userData.put("user", mangoUser);
@@ -114,35 +114,27 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			model.put("users", users);
 
 			// Determine whether the link to edit the point should be displayed
-			model.put(
-					"pointEditor",
-					Permissions.hasDataSourcePermission(user,
-							point.getDataSourceId()));
+			model.put("pointEditor", Permissions.hasDataSourcePermission(user, point.getDataSourceId()));
 
 			// Put the events in the model.
-			model.put("events",
-					new EventDao().getEventsForDataPoint(id, user.getId()));
+			model.put("events", new EventDao().getEventsForDataPoint(id, user.getId()));
 
 			// Put the default history table count into the model. Default to
 			// 10.
 			int historyLimit = 10;
 			if (point.getChartRenderer() instanceof TableChartRenderer)
-				historyLimit = ((TableChartRenderer) point.getChartRenderer())
-						.getLimit();
+				historyLimit = ((TableChartRenderer) point.getChartRenderer()).getLimit();
 			else if (point.getChartRenderer() instanceof ImageFlipbookRenderer)
-				historyLimit = ((ImageFlipbookRenderer) point
-						.getChartRenderer()).getLimit();
+				historyLimit = ((ImageFlipbookRenderer) point.getChartRenderer()).getLimit();
 			model.put("historyLimit", historyLimit);
 
 			// Determine our image chart rendering capabilities.
-			if (ImageChartRenderer.getDefinition().supports(
-					point.getPointLocator().getDataTypeId())) {
+			if (ImageChartRenderer.getDefinition().supports(point.getPointLocator().getDataTypeId())) {
 				// This point can render an image chart. Carry on...
 				int periodType = Common.TimePeriods.DAYS;
 				int periodCount = 1;
 				if (point.getChartRenderer() instanceof ImageChartRenderer) {
-					ImageChartRenderer r = (ImageChartRenderer) point
-							.getChartRenderer();
+					ImageChartRenderer r = (ImageChartRenderer) point.getChartRenderer();
 					periodType = r.getTimePeriod();
 					periodCount = r.getNumberOfPeriods();
 				}
@@ -151,8 +143,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			}
 
 			// Determine out flipbook rendering capabilities
-			if (ImageFlipbookRenderer.getDefinition().supports(
-					point.getPointLocator().getDataTypeId()))
+			if (ImageFlipbookRenderer.getDefinition().supports(point.getPointLocator().getDataTypeId()))
 				model.put("flipbookLimit", 10);
 
 			model.put("currentXid", point.getXid());

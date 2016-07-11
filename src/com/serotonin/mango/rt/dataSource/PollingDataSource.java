@@ -36,106 +36,105 @@ import com.serotonin.timer.TimerTask;
 import com.serotonin.web.taglib.DateFunctions;
 
 abstract public class PollingDataSource extends DataSourceRT implements TimeoutClient {
-    private final Log LOG = LogFactory.getLog(PollingDataSource.class);
+	private final Log LOG = LogFactory.getLog(PollingDataSource.class);
 
-    private final DataSourceVO<?> vo;
-    protected List<DataPointRT> dataPoints = new ArrayList<DataPointRT>();
-    protected boolean pointListChanged = false;
-    private long pollingPeriodMillis = 300000; // Default to 5 minutes just to have something here
-    private boolean quantize;
-    private TimerTask timerTask;
-    private volatile Thread jobThread;
-    private long jobThreadStartTime;
+	private final DataSourceVO<?> vo;
+	protected List<DataPointRT> dataPoints = new ArrayList<DataPointRT>();
+	protected boolean pointListChanged = false;
+	private long pollingPeriodMillis = 300000; // Default to 5 minutes just to
+												// have something here
+	private boolean quantize;
+	private TimerTask timerTask;
+	private volatile Thread jobThread;
+	private long jobThreadStartTime;
 
-    public PollingDataSource(DataSourceVO<?> vo) {
-        super(vo);
-        this.vo = vo;
-    }
+	public PollingDataSource(DataSourceVO<?> vo) {
+		super(vo);
+		this.vo = vo;
+	}
 
-    public void setPollingPeriod(int periodType, int periods, boolean quantize) {
-        pollingPeriodMillis = Common.getMillis(periodType, periods);
-        this.quantize = quantize;
-    }
+	public void setPollingPeriod(int periodType, int periods, boolean quantize) {
+		pollingPeriodMillis = Common.getMillis(periodType, periods);
+		this.quantize = quantize;
+	}
 
-    public void scheduleTimeout(long fireTime) {
-        if (jobThread != null) {
-            // There is another poll still running, so abort this one.
-            LOG.warn(vo.getName() + ": poll at " + DateFunctions.getFullSecondTime(fireTime)
-                    + " aborted because a previous poll started at "
-                    + DateFunctions.getFullSecondTime(jobThreadStartTime) + " is still running");
-            return;
-        }
+	public void scheduleTimeout(long fireTime) {
+		if (jobThread != null) {
+			// There is another poll still running, so abort this one.
+			LOG.trace(vo.getName() + ": poll at " + DateFunctions.getFullSecondTime(fireTime)
+					+ " aborted because a previous poll started at "
+					+ DateFunctions.getFullSecondTime(jobThreadStartTime) + " is still running");
+			return;
+		}
 
-        try {
-            jobThread = Thread.currentThread();
-            jobThreadStartTime = fireTime;
+		try {
+			jobThread = Thread.currentThread();
+			jobThreadStartTime = fireTime;
 
-            // Check if there were changes to the data points list.
-            synchronized (pointListChangeLock) {
-                updateChangedPoints();
-                doPoll(fireTime);
-            }
-        }
-        finally {
-            jobThread = null;
-        }
-    }
+			// Check if there were changes to the data points list.
+			synchronized (pointListChangeLock) {
+				updateChangedPoints();
+				doPoll(fireTime);
+			}
+		} finally {
+			jobThread = null;
+		}
+	}
 
-    abstract protected void doPoll(long time);
+	abstract protected void doPoll(long time);
 
-    protected void updateChangedPoints() {
-        synchronized (pointListChangeLock) {
-            if (addedChangedPoints.size() > 0) {
-                // Remove any existing instances of the points.
-                dataPoints.removeAll(addedChangedPoints);
-                dataPoints.addAll(addedChangedPoints);
-                addedChangedPoints.clear();
-                pointListChanged = true;
-            }
-            if (removedPoints.size() > 0) {
-                dataPoints.removeAll(removedPoints);
-                removedPoints.clear();
-                pointListChanged = true;
-            }
-        }
-    }
+	protected void updateChangedPoints() {
+		synchronized (pointListChangeLock) {
+			if (addedChangedPoints.size() > 0) {
+				// Remove any existing instances of the points.
+				dataPoints.removeAll(addedChangedPoints);
+				dataPoints.addAll(addedChangedPoints);
+				addedChangedPoints.clear();
+				pointListChanged = true;
+			}
+			if (removedPoints.size() > 0) {
+				dataPoints.removeAll(removedPoints);
+				removedPoints.clear();
+				pointListChanged = true;
+			}
+		}
+	}
 
-    //
-    //
-    // Data source interface
-    //
-    @Override
-    public void beginPolling() {
-        // Quantize the start.
-        long delay = 0;
-        if (quantize)
-            delay = pollingPeriodMillis - (System.currentTimeMillis() % pollingPeriodMillis);
-        timerTask = new TimeoutTask(new FixedRateTrigger(delay, pollingPeriodMillis), this);
-        super.beginPolling();
-    }
+	//
+	//
+	// Data source interface
+	//
+	@Override
+	public void beginPolling() {
+		// Quantize the start.
+		long delay = 0;
+		if (quantize)
+			delay = pollingPeriodMillis - (System.currentTimeMillis() % pollingPeriodMillis);
+		timerTask = new TimeoutTask(new FixedRateTrigger(delay, pollingPeriodMillis), this);
+		super.beginPolling();
+	}
 
-    @Override
-    public void terminate() {
-        if (timerTask != null)
-            timerTask.cancel();
-        super.terminate();
-    }
+	@Override
+	public void terminate() {
+		if (timerTask != null)
+			timerTask.cancel();
+		super.terminate();
+	}
 
-    @Override
-    public void joinTermination() {
-        super.joinTermination();
+	@Override
+	public void joinTermination() {
+		super.joinTermination();
 
-        Thread localThread = jobThread;
-        if (localThread != null) {
-            try {
-                localThread.join(30000); // 30 seconds
-            }
-            catch (InterruptedException e) { /* no op */
-            }
-            if (jobThread != null) {
-                throw new ShouldNeverHappenException("Timeout waiting for data source to stop: id=" + getId()
-                        + ", type=" + getClass() + ", stackTrace=" + Arrays.toString(localThread.getStackTrace()));
-            }
-        }
-    }
+		Thread localThread = jobThread;
+		if (localThread != null) {
+			try {
+				localThread.join(30000); // 30 seconds
+			} catch (InterruptedException e) { /* no op */
+			}
+			if (jobThread != null) {
+				throw new ShouldNeverHappenException("Timeout waiting for data source to stop: id=" + getId()
+						+ ", type=" + getClass() + ", stackTrace=" + Arrays.toString(localThread.getStackTrace()));
+			}
+		}
+	}
 }

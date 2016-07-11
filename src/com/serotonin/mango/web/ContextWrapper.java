@@ -36,6 +36,7 @@ import com.serotonin.mango.util.DocumentationManifest;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImageSet;
 
+import br.org.scadabr.vo.userCache.UserCache;
 import freemarker.template.Configuration;
 
 public class ContextWrapper {
@@ -50,8 +51,7 @@ public class ContextWrapper {
 	}
 
 	public DatabaseAccess getDatabaseAccess() {
-		return (DatabaseAccess) ctx
-				.getAttribute(Common.ContextKeys.DATABASE_ACCESS);
+		return (DatabaseAccess) ctx.getAttribute(Common.ContextKeys.DATABASE_ACCESS);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -68,8 +68,7 @@ public class ContextWrapper {
 
 	@SuppressWarnings("unchecked")
 	public List<DynamicImage> getDynamicImages() {
-		return (List<DynamicImage>) ctx
-				.getAttribute(Common.ContextKeys.DYNAMIC_IMAGES);
+		return (List<DynamicImage>) ctx.getAttribute(Common.ContextKeys.DYNAMIC_IMAGES);
 	}
 
 	public List<String> getDynamicImageIds() {
@@ -98,28 +97,27 @@ public class ContextWrapper {
 	}
 
 	public RuntimeManager getRuntimeManager() {
-		return (RuntimeManager) ctx
-				.getAttribute(Common.ContextKeys.RUNTIME_MANAGER);
+		return (RuntimeManager) ctx.getAttribute(Common.ContextKeys.RUNTIME_MANAGER);
 	}
 
 	public EventManager getEventManager() {
-		return (EventManager) ctx
-				.getAttribute(Common.ContextKeys.EVENT_MANAGER);
+		return (EventManager) ctx.getAttribute(Common.ContextKeys.EVENT_MANAGER);
+	}
+
+	public UserCache getUserCache() {
+		return (UserCache) ctx.getAttribute(Common.ContextKeys.USER_CACHE);
 	}
 
 	public Configuration getFreemarkerConfig() {
-		return (Configuration) ctx
-				.getAttribute(Common.ContextKeys.FREEMARKER_CONFIG);
+		return (Configuration) ctx.getAttribute(Common.ContextKeys.FREEMARKER_CONFIG);
 	}
 
 	public BackgroundProcessing getBackgroundProcessing() {
-		return (BackgroundProcessing) ctx
-				.getAttribute(Common.ContextKeys.BACKGROUND_PROCESSING);
+		return (BackgroundProcessing) ctx.getAttribute(Common.ContextKeys.BACKGROUND_PROCESSING);
 	}
 
 	public HttpReceiverMulticaster getHttpReceiverMulticaster() {
-		return (HttpReceiverMulticaster) ctx
-				.getAttribute(Common.ContextKeys.HTTP_RECEIVER_MULTICASTER);
+		return (HttpReceiverMulticaster) ctx.getAttribute(Common.ContextKeys.HTTP_RECEIVER_MULTICASTER);
 	}
 
 	public Integer getDataPointByName(String dataPointQualifiedName) {
@@ -137,8 +135,7 @@ public class ContextWrapper {
 	}
 
 	public DocumentationManifest getDocumentationManifest() {
-		DocumentationManifest dm = (DocumentationManifest) ctx
-				.getAttribute(Common.ContextKeys.DOCUMENTATION_MANIFEST);
+		DocumentationManifest dm = (DocumentationManifest) ctx.getAttribute(Common.ContextKeys.DOCUMENTATION_MANIFEST);
 
 		if (dm == null) {
 			try {

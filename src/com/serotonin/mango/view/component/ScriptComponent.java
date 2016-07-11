@@ -31,7 +31,6 @@ import org.mozilla.javascript.Scriptable;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.view.ImplDefinition;
@@ -45,10 +44,8 @@ import com.serotonin.util.SerializationHelper;
  */
 @JsonRemoteEntity
 public class ScriptComponent extends PointComponent {
-	public static ImplDefinition DEFINITION = new ImplDefinition("script",
-			"SCRIPT", "graphic.script", new int[] { DataTypes.BINARY,
-					DataTypes.MULTISTATE, DataTypes.NUMERIC,
-					DataTypes.ALPHANUMERIC });
+	public static ImplDefinition DEFINITION = new ImplDefinition("script", "SCRIPT", "graphic.script",
+			new int[] { DataTypes.BINARY, DataTypes.MULTISTATE, DataTypes.NUMERIC, DataTypes.ALPHANUMERIC });
 
 	private static final String SCRIPT_PREFIX = "function __scriptRenderer__() {";
 	private static final String SCRIPT_SUFFIX = "\r\n}\r\n__scriptRenderer__();";
@@ -79,7 +76,6 @@ public class ScriptComponent extends PointComponent {
 			// Create the script engine.
 			// ScriptEngineManager manager;
 			Context cx = Context.enter();
-			cx.setOptimizationLevel(Common.getEnvironmentProfile().getInt("js.optimizationlevel", 0));
 			/*
 			 * try { manager = new ScriptEngineManager(); } catch (Exception e)
 			 * { throw new ScriptException(e); }
@@ -87,27 +83,23 @@ public class ScriptComponent extends PointComponent {
 			try {
 				Scriptable scope = cx.initStandardObjects();
 				// ScriptEngine engine = manager.getEngineByName("JavaScript");
-				// engine.getContext().setErrorWriter(new PrintWriter(System.err));
+				// engine.getContext().setErrorWriter(new
+				// PrintWriter(System.err));
 				// engine.getContext().setWriter(new PrintWriter(System.out));
 
 				DataPointVO point = tgetDataPoint();
 
 				// Put the values into the engine scope.
 				scope.put("value", scope, value.getValue().getObjectValue());
-				scope.put("htmlText", scope,
-						Functions.getHtmlText(point, value));
-				scope.put("renderedText", scope,
-						Functions.getRenderedText(point, value));
+				scope.put("htmlText", scope, Functions.getHtmlText(point, value));
+				scope.put("renderedText", scope, Functions.getRenderedText(point, value));
 				scope.put("time", scope, value.getTime());
 				scope.put("pointComponent", scope, this);
 				scope.put("point", scope, point);
 				// Copy properties from the model into the engine scope.
-				scope.put(BaseDwr.MODEL_ATTR_EVENTS, scope,
-						model.get(BaseDwr.MODEL_ATTR_EVENTS));
-				scope.put(BaseDwr.MODEL_ATTR_HAS_UNACKED_EVENT, scope,
-						model.get(BaseDwr.MODEL_ATTR_HAS_UNACKED_EVENT));
-				scope.put(BaseDwr.MODEL_ATTR_RESOURCE_BUNDLE, scope,
-						model.get(BaseDwr.MODEL_ATTR_RESOURCE_BUNDLE));
+				scope.put(BaseDwr.MODEL_ATTR_EVENTS, scope, model.get(BaseDwr.MODEL_ATTR_EVENTS));
+				scope.put(BaseDwr.MODEL_ATTR_HAS_UNACKED_EVENT, scope, model.get(BaseDwr.MODEL_ATTR_HAS_UNACKED_EVENT));
+				scope.put(BaseDwr.MODEL_ATTR_RESOURCE_BUNDLE, scope, model.get(BaseDwr.MODEL_ATTR_RESOURCE_BUNDLE));
 
 				// Create the script.
 				String evalScript = SCRIPT_PREFIX + script + SCRIPT_SUFFIX;
@@ -115,16 +107,16 @@ public class ScriptComponent extends PointComponent {
 				// Execute.
 				try {
 					// Object o = engine.eval(evalScript);
-					Object o = cx.evaluateString(scope, evalScript, "<cmd>", 1,
-							null);
+					Object o = cx.evaluateString(scope, evalScript, "<cmd>", 1, null);
 					if (o == null)
 						result = null;
 					else
 						result = o.toString();
 				} catch (Exception e) {
-					result = ScriptExecutor.prettyScriptMessage(
-							new ScriptException(e)).getMessage();
+					result = ScriptExecutor.prettyScriptMessage(new ScriptException(e)).getMessage();
 				}
+			} catch (Exception e) {
+				result = ScriptExecutor.prettyScriptMessage(new ScriptException(e)).getMessage();
 			} finally {
 				Context.exit();
 			}

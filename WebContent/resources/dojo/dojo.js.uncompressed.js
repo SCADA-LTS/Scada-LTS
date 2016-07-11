@@ -19687,13 +19687,18 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	getPosition: function(e, DNDMode) {
 		var node = dojo.byId(this.treeNode.labelNode);
 		var mousey = e.pageY || e.clientY + dojo.body().scrollTop;
+		console.log("mousey: " + p);
 		var nodey = dojo.html.getAbsolutePosition(node).y;
+		console.log("nodey: " + p);
 		var height = dojo.html.getBorderBox(node).height;
+		console.log("height: " + p);
 
 		var relY = mousey - nodey;
+		console.log("relY: " + p);
 		var p = relY / height;
-
+		console.log("percent: " + p);
 		var position = ""; // "" <=> forbidden
+		console.log("DNDMode: " + DNDMode);
 		if (DNDMode & dojo.widget.Tree.prototype.DNDModes.ONTO
 		  && DNDMode & dojo.widget.Tree.prototype.DNDModes.BETWEEN) {
 			if (p<=0.3) {
@@ -19703,15 +19708,18 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 			} else {
 				position = "after";
 			}
+			console.log("position: " + position);
 		} else if (DNDMode & dojo.widget.Tree.prototype.DNDModes.BETWEEN) {
 			if (p<=0.5) {
 				position = "before";
 			} else {
 				position = "after";
 			}
+			console.log("position: " + position);
 		}
 		else if (DNDMode & dojo.widget.Tree.prototype.DNDModes.ONTO) {
 			position = "onto";
+			console.log("position: " + position);
 		}
 
 

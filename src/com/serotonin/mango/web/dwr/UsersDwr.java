@@ -31,13 +31,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
+import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
@@ -52,6 +51,9 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+
 public class UsersDwr extends BaseDwr {
 	public Log LOG = LogFactory.getLog(UsersDwr.class);
 
@@ -62,16 +64,13 @@ public class UsersDwr extends BaseDwr {
 		if (Permissions.hasAdmin(user)) {
 			// Users
 			initData.put("admin", true);
-			initData.put("users", new UserDao().getUsers());
-			initData.put("usersProfiles",
-					new UsersProfileDao().getUsersProfiles());
+			initData.put("users", Common.ctx.getUserCache().getUserDao().getUsers());
+			initData.put("usersProfiles", new UsersProfileDao().getUsersProfiles());
 
 			// Data sources
-			List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
-					.getDataSources();
+			List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao().getDataSources();
 
-			List<Map<String, Object>> dataSources = new ArrayList<Map<String, Object>>(
-					dataSourceVOs.size());
+			List<Map<String, Object>> dataSources = new ArrayList<Map<String, Object>>(dataSourceVOs.size());
 			Map<String, Object> ds, dp;
 			List<Map<String, Object>> points;
 			DataPointDao dataPointDao = new DataPointDao();
@@ -80,8 +79,7 @@ public class UsersDwr extends BaseDwr {
 				ds.put("id", dsvo.getId());
 				ds.put("name", dsvo.getName());
 				points = new LinkedList<Map<String, Object>>();
-				for (DataPointVO dpvo : dataPointDao.getDataPoints(
-						dsvo.getId(), DataPointNameComparator.instance)) {
+				for (DataPointVO dpvo : dataPointDao.getDataPoints(dsvo.getId(), DataPointNameComparator.instance)) {
 					dp = new HashMap<String, Object>();
 					dp.put("id", dpvo.getId());
 					dp.put("name", dpvo.getName());
@@ -106,37 +104,34 @@ public class UsersDwr extends BaseDwr {
 			user.setDataSourcePermissions(new ArrayList<Integer>(0));
 			user.setDataPointPermissions(new ArrayList<DataPointAccess>(0));
 		} else {
-			user = new UserDao().getUser(id);
+			user = Common.ctx.getUserCache().getUser(id);
 
 			UsersProfileDao usersProfileDao = new UsersProfileDao();
-			if (usersProfileDao.getUserProfileByUserId(user.getId()) != null) {
-				user.setUserProfile(usersProfileDao.getUserProfileByUserId(user
-						.getId()));
+			UsersProfileVO profileVo = usersProfileDao.getUserProfileByUserId(user.getId());
+			if (profileVo != null) {
+				user.setUserProfile(profileVo);
 			}
 		}
 		return user;
 
 	}
 
-	public DwrResponseI18n saveUserAdmin(int id, String username,
-			String password, String email, String phone, boolean admin,
-			boolean disabled, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
-			List<DataPointAccess> dataPointPermissions, int usersProfileId) {
+	public DwrResponseI18n saveUserAdmin(int id, String username, String password, String email, String phone,
+			boolean admin, boolean disabled, int receiveAlarmEmails, boolean receiveOwnAuditEvents,
+			List<Integer> dataSourcePermissions, List<DataPointAccess> dataPointPermissions, int usersProfileId) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
 		// appropriate error message.
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		User currentUser = Common.getUser(request);
-		UserDao userDao = new UserDao();
+		UserDao userDao = Common.ctx.getUserCache().getUserDao();
 
 		User user;
 		if (id == Common.NEW_ID)
 			user = new User();
 		else
-			user = userDao.getUser(id);
+			user = Common.ctx.getUserCache().getUser(id);
 		user.setUsername(username);
 		if (!StringUtils.isEmpty(password))
 			user.setPassword(Common.encrypt(password));
@@ -153,36 +148,33 @@ public class UsersDwr extends BaseDwr {
 		user.validate(response);
 
 		// Check if the username is unique.
-		User dupUser = userDao.getUser(username);
+		User dupUser = Common.ctx.getUserCache().getUser(username);
 		if (id == Common.NEW_ID && dupUser != null)
-			response.addMessage(new LocalizableMessage(
-					"users.validate.usernameUnique"));
+			response.addMessage(new LocalizableMessage("users.validate.usernameUnique"));
 		else if (dupUser != null && id != dupUser.getId())
-			response.addMessage(new LocalizableMessage(
-					"users.validate.usernameInUse"));
+			response.addMessage(new LocalizableMessage("users.validate.usernameInUse"));
 
 		// Cannot make yourself disabled or not admin
 		if (currentUser.getId() == id) {
 			if (!admin)
-				response.addMessage(new LocalizableMessage(
-						"users.validate.adminInvalid"));
+				response.addMessage(new LocalizableMessage("users.validate.adminInvalid"));
 			if (disabled)
-				response.addMessage(new LocalizableMessage(
-						"users.validate.adminDisable"));
+				response.addMessage(new LocalizableMessage("users.validate.adminDisable"));
 		}
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(user);
 
 			UsersProfileDao profilesDao = new UsersProfileDao();
-			if (usersProfileId != Common.NEW_ID) {
+			ViewDao viewDao = new ViewDao();
+			if (usersProfileId > 0) {
 				// apply profile
-				UsersProfileVO profile = profilesDao
-						.getUserProfileById(usersProfileId);
+				UsersProfileVO profile = profilesDao.getUserProfileById(usersProfileId);
 				profile.apply(user);
 				userDao.saveUser(user);
 				profilesDao.resetUserProfile(user);
 				profilesDao.updateUsersProfile(profile);
+				viewDao.updateViewUsersPermissions(user.getId(), user.getUserProfile());
 			} else {
 				profilesDao.resetUserProfile(user);
 			}
@@ -200,23 +192,21 @@ public class UsersDwr extends BaseDwr {
 
 			response.addData("userId", user.getId());
 		}
+		Common.ctx.getUserCache().updateUser(user);
 
 		return response;
 	}
 
-	public DwrResponseI18n saveUser(int id, String password, String email,
-			String phone, int receiveAlarmEmails,
+	public DwrResponseI18n saveUser(int id, String password, String email, String phone, int receiveAlarmEmails,
 			boolean receiveOwnAuditEvents, int usersProfileId) {
 
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		User user = Common.getUser(request);
 		if (user.getId() != id)
-			throw new PermissionException("Cannot update a different user",
-					user);
+			throw new PermissionException("Cannot update a different user", user);
 
-		UserDao userDao = new UserDao();
-		User updateUser = userDao.getUser(id);
+		UserDao userDao = Common.ctx.getUserCache().getUserDao();
+		User updateUser = Common.ctx.getUserCache().getUser(id);
 		if (!StringUtils.isEmpty(password))
 			updateUser.setPassword(Common.encrypt(password));
 		updateUser.setEmail(email);
@@ -230,6 +220,7 @@ public class UsersDwr extends BaseDwr {
 		if (!response.getHasMessages()) {
 			userDao.saveUser(updateUser);
 			Common.setUser(request, updateUser);
+			Common.ctx.getUserCache().updateUser(updateUser);
 		}
 
 		return response;
@@ -241,14 +232,11 @@ public class UsersDwr extends BaseDwr {
 		try {
 			ResourceBundle bundle = Common.getBundle();
 			Map<String, Object> model = new HashMap<String, Object>();
-			model.put("message", new LocalizableMessage("ftl.userTestEmail",
-					username));
-			MangoEmailContent cnt = new MangoEmailContent("testEmail", model,
-					bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"),
-					Common.UTF8);
+			model.put("message", new LocalizableMessage("ftl.userTestEmail", username));
+			MangoEmailContent cnt = new MangoEmailContent("testEmail", model, bundle,
+					I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
 			EmailWorkItem.queueEmail(email, cnt);
-			result.put("message", new LocalizableMessage(
-					"common.testEmailSent", email));
+			result.put("message", new LocalizableMessage("common.testEmailSent", email));
 		} catch (Exception e) {
 			result.put("exception", e.getMessage());
 		}
@@ -262,10 +250,11 @@ public class UsersDwr extends BaseDwr {
 
 		if (currentUser.getId() == id)
 			// You can't delete yourself.
-			response.addMessage(new LocalizableMessage(
-					"users.validate.badDelete"));
-		else
-			new UserDao().deleteUser(id);
+			response.addMessage(new LocalizableMessage("users.validate.badDelete"));
+		else {
+			Common.ctx.getUserCache().getUserDao().deleteUser(id);
+			new EventDao().removeUserFromHandlers(id);
+		}
 
 		return response;
 	}

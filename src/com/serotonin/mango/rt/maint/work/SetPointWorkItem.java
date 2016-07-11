@@ -21,62 +21,83 @@ package com.serotonin.mango.rt.maint.work;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.rt.RTException;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.vo.DataPointVO;
 
 /**
  * @author Matthew Lohbihler
  */
 public class SetPointWorkItem implements WorkItem {
-    private static final ThreadLocal<List<String>> threadLocal = new ThreadLocal<List<String>>();
-    private static final int MAX_RECURSION = 10;
+	private static final ThreadLocal<List<String>> threadLocal = new ThreadLocal<List<String>>();
+	private static final int MAX_RECURSION = 10;
+	private static Log LOG = LogFactory.getLog(SetPointWorkItem.class);
 
-    private final int targetPointId;
-    private final PointValueTime pvt;
-    private final SetPointSource source;
-    private final List<String> sourceIds;
+	private final int targetPointId;
+	private final PointValueTime pvt;
+	private final SetPointSource source;
+	private final List<String> sourceIds;
+	private DataPointDao dpdao = new DataPointDao();
+	private DataPointVO targetVo;
 
-    public SetPointWorkItem(int targetPointId, PointValueTime pvt, SetPointSource source) {
-        this.targetPointId = targetPointId;
-        this.pvt = pvt;
-        this.source = source;
+	public SetPointWorkItem(int targetPointId, PointValueTime pvt,
+			SetPointSource source) {
+		this.targetPointId = targetPointId;
+		this.pvt = pvt;
+		this.source = source;
+		this.targetVo = dpdao.getDataPoint(targetPointId);
+		LOG.debug("Creating SPWorkItem - source: "
+				+ source.getSetPointSourceId() + ", target: "
+				+ targetVo.getName());
 
-        if (threadLocal.get() == null)
-            sourceIds = new ArrayList<String>();
-        else
-            sourceIds = threadLocal.get();
-    }
+		if (threadLocal.get() == null)
+			sourceIds = new ArrayList<String>();
+		else
+			sourceIds = threadLocal.get();
+	}
 
-    @Override
-    public void execute() {
-        String sourceId = Integer.toString(source.getSetPointSourceType()) + "-"
-                + Integer.toString(source.getSetPointSourceId());
+	@Override
+	public void execute() {
+		LOG.debug("Executing SPWorkItem, target: " + targetVo.getName());
 
-        // Check if we've reached the maximum number of hits for this point
-        int count = 0;
-        for (String id : sourceIds) {
-            if (id.equals(sourceId))
-                count++;
-        }
+		String sourceId = Integer.toString(source.getSetPointSourceType())
+				+ "-" + Integer.toString(source.getSetPointSourceId());
 
-        if (count > MAX_RECURSION) {
-            source.raiseRecursionFailureEvent();
-            return;
-        }
+		// Check if we've reached the maximum number of hits for this point
+		int count = 0;
+		for (String id : sourceIds) {
+			if (id.equals(sourceId))
+				count++;
+		}
 
-        sourceIds.add(sourceId);
-        threadLocal.set(sourceIds);
-        try {
-            Common.ctx.getRuntimeManager().setDataPointValue(targetPointId, pvt, source);
-        }
-        finally {
-            threadLocal.remove();
-        }
-    }
+		if (count > MAX_RECURSION) {
+			source.raiseRecursionFailureEvent();
+			LOG.debug("Max recursions!");
+			return;
+		}
 
-    @Override
-    public int getPriority() {
-        return WorkItem.PRIORITY_HIGH;
-    }
+		sourceIds.add(sourceId);
+		threadLocal.set(sourceIds);
+		try {
+			Common.ctx.getRuntimeManager().setDataPointValue(targetPointId,
+					pvt, source);
+		} catch (RTException rte) {
+			LOG.debug("Exception while setting point value to dp: "
+					+ targetVo.getName() + ", message: " + rte.getMessage());
+		} finally {
+			LOG.debug("Removing thread");
+			threadLocal.remove();
+		}
+	}
+
+	@Override
+	public int getPriority() {
+		return WorkItem.PRIORITY_HIGH;
+	}
 }

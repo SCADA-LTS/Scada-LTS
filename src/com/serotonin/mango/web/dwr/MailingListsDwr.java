@@ -31,9 +31,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
@@ -49,7 +50,7 @@ public class MailingListsDwr extends BaseDwr {
 	public DwrResponseI18n init() {
 		DwrResponseI18n response = new DwrResponseI18n();
 		response.addData("lists", new MailingListDao().getMailingLists());
-		response.addData("users", new UserDao().getUsers());
+		response.addData("users", Common.ctx.getUserCache().getUserDao().getUsers());
 		return response;
 	}
 
@@ -64,8 +65,7 @@ public class MailingListsDwr extends BaseDwr {
 		return new MailingListDao().getMailingList(id);
 	}
 
-	public DwrResponseI18n saveMailingList(int id, String xid, String name,
-			List<RecipientListEntryBean> entryBeans,
+	public DwrResponseI18n saveMailingList(int id, String xid, String name, List<RecipientListEntryBean> entryBeans,
 			List<Integer> inactiveIntervals) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		MailingListDao mailingListDao = new MailingListDao();
@@ -91,12 +91,23 @@ public class MailingListsDwr extends BaseDwr {
 		return response;
 	}
 
-	public void deleteMailingList(int mlId) {
+	public boolean deleteMailingList(int mlId) {
+		for (EventHandlerVO ev : new EventDao().getEventHandlers()) {
+			if (ev.getActiveRecipients() != null && !ev.getActiveRecipients().isEmpty()) {
+				for (RecipientListEntryBean rleb : ev.getActiveRecipients()) {
+					if (rleb.getRecipientType() == EmailRecipient.TYPE_MAILING_LIST) {
+						if (rleb.getReferenceId() == mlId) {
+							return false;
+						}
+					}
+				}
+			}
+		}
 		new MailingListDao().deleteMailingList(mlId);
+		return true;
 	}
 
-	public DwrResponseI18n sendTestEmail(int id, String name,
-			List<RecipientListEntryBean> entryBeans) {
+	public DwrResponseI18n sendTestEmail(int id, String name, List<RecipientListEntryBean> entryBeans) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		MailingList ml = createMailingList(id, null, name, entryBeans);
@@ -109,10 +120,8 @@ public class MailingListsDwr extends BaseDwr {
 		try {
 			ResourceBundle bundle = Common.getBundle();
 			Map<String, Object> model = new HashMap<String, Object>();
-			model.put("message",
-					new LocalizableMessage("ftl.userTestEmail", ml.getName()));
-			MangoEmailContent cnt = new MangoEmailContent("ftl.testEmail",
-					model, bundle,
+			model.put("message", new LocalizableMessage("ftl.userTestEmail", ml.getName()));
+			MangoEmailContent cnt = new MangoEmailContent("ftl.testEmail", model, bundle,
 					I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
 			EmailWorkItem.queueEmail(toAddrs, cnt);
 		} catch (Exception e) {
@@ -128,16 +137,14 @@ public class MailingListsDwr extends BaseDwr {
 	// / Private helper methods
 	// /
 	//
-	private MailingList createMailingList(int id, String xid, String name,
-			List<RecipientListEntryBean> entryBeans) {
+	private MailingList createMailingList(int id, String xid, String name, List<RecipientListEntryBean> entryBeans) {
 		// Convert the incoming information into more useful types.
 		MailingList ml = new MailingList();
 		ml.setId(id);
 		ml.setXid(xid);
 		ml.setName(name);
 
-		List<EmailRecipient> entries = new ArrayList<EmailRecipient>(
-				entryBeans.size());
+		List<EmailRecipient> entries = new ArrayList<EmailRecipient>(entryBeans.size());
 		for (RecipientListEntryBean bean : entryBeans) {
 			entries.add(bean.createEmailRecipient());
 		}

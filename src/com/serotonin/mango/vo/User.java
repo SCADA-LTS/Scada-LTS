@@ -26,9 +26,6 @@ import java.util.Map;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import br.org.scadabr.vo.exporter.ZIPProjectManager;
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
@@ -58,9 +55,12 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import br.org.scadabr.vo.exporter.ZIPProjectManager;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+
 @JsonRemoteEntity
-public class User implements SetPointSource, HttpSessionBindingListener,
-		JsonSerializable {
+public class User implements SetPointSource, HttpSessionBindingListener, JsonSerializable {
+
 	private int id = Common.NEW_ID;
 	@JsonRemoteProperty
 	private String username;
@@ -90,7 +90,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	// for convenience.
 	//
 	@JsonRemoteProperty
-	private int userProfile = Common.NEW_ID;
+	private int userProfile;
 
 	private transient View view;
 	private transient WatchList watchList;
@@ -141,18 +141,15 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	//
 	public void valueBound(HttpSessionBindingEvent evt) {
 		// User is bound to a session when logged in. Notify the event manager.
-		SystemEventType.raiseEvent(new SystemEventType(
-				SystemEventType.TYPE_USER_LOGIN, id), System
-				.currentTimeMillis(), true, new LocalizableMessage(
-				"event.login", username));
+		SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_USER_LOGIN, id), System.currentTimeMillis(),
+				true, new LocalizableMessage("event.login", username));
 	}
 
 	public void valueUnbound(HttpSessionBindingEvent evt) {
 		// User is unbound from a session when logged out or the session
 		// expires.
-		SystemEventType.returnToNormal(new SystemEventType(
-				SystemEventType.TYPE_USER_LOGIN, id), System
-				.currentTimeMillis());
+		SystemEventType.returnToNormal(new SystemEventType(SystemEventType.TYPE_USER_LOGIN, id),
+				System.currentTimeMillis());
 
 		// Terminate any testing utility
 		if (testingUtility != null)
@@ -284,8 +281,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		return dataPointPermissions;
 	}
 
-	public void setDataPointPermissions(
-			List<DataPointAccess> dataPointPermissions) {
+	public void setDataPointPermissions(List<DataPointAccess> dataPointPermissions) {
 		this.dataPointPermissions = dataPointPermissions;
 	}
 
@@ -333,8 +329,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		return editPublisher;
 	}
 
-	public void setEditPublisher(
-			PublisherVO<? extends PublishedPointVO> editPublisher) {
+	public void setEditPublisher(PublisherVO<? extends PublishedPointVO> editPublisher) {
 		this.editPublisher = editPublisher;
 	}
 
@@ -374,8 +369,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		return dataExportDefinition;
 	}
 
-	public void setDataExportDefinition(
-			DataExportDefinition dataExportDefinition) {
+	public void setDataExportDefinition(DataExportDefinition dataExportDefinition) {
 		this.dataExportDefinition = dataExportDefinition;
 	}
 
@@ -383,8 +377,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		return eventExportDefinition;
 	}
 
-	public void setEventExportDefinition(
-			EventExportDefinition eventExportDefinition) {
+	public void setEventExportDefinition(EventExportDefinition eventExportDefinition) {
 		this.eventExportDefinition = eventExportDefinition;
 	}
 
@@ -403,25 +396,19 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void validate(DwrResponseI18n response) {
 		if (StringUtils.isEmpty(username))
-			response.addMessage("username", new LocalizableMessage(
-					"validate.required"));
+			response.addMessage("username", new LocalizableMessage("validate.required"));
 		if (StringUtils.isEmpty(email))
-			response.addMessage("email", new LocalizableMessage(
-					"validate.required"));
+			response.addMessage("email", new LocalizableMessage("validate.required"));
 		if (id == Common.NEW_ID && StringUtils.isEmpty(password))
-			response.addMessage("password", new LocalizableMessage(
-					"validate.required"));
+			response.addMessage("password", new LocalizableMessage("validate.required"));
 
 		// Check field lengths
 		if (StringUtils.isLengthGreaterThan(username, 40))
-			response.addMessage("username", new LocalizableMessage(
-					"validate.notLongerThan", 40));
+			response.addMessage("username", new LocalizableMessage("validate.notLongerThan", 40));
 		if (StringUtils.isLengthGreaterThan(email, 255))
-			response.addMessage("email", new LocalizableMessage(
-					"validate.notLongerThan", 255));
+			response.addMessage("email", new LocalizableMessage("validate.notLongerThan", 255));
 		if (StringUtils.isLengthGreaterThan(phone, 40))
-			response.addMessage("phone", new LocalizableMessage(
-					"validate.notLongerThan", 40));
+			response.addMessage("phone", new LocalizableMessage("validate.notLongerThan", 40));
 	}
 
 	//
@@ -436,14 +423,12 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		// points need to be certain to exist before we can resolve the xids.
 	}
 
-	public void jsonDeserializePermissions(JsonReader reader, JsonObject json)
-			throws JsonException {
+	public void jsonDeserializePermissions(JsonReader reader, JsonObject json) throws JsonException {
 		if (admin) {
 			dataSourcePermissions.clear();
 			dataPointPermissions.clear();
 		} else {
-			JsonArray jsonDataSources = json
-					.getJsonArray("dataSourcePermissions");
+			JsonArray jsonDataSources = json.getJsonArray("dataSourcePermissions");
 			if (jsonDataSources != null) {
 				dataSourcePermissions.clear();
 				DataSourceDao dataSourceDao = new DataSourceDao();
@@ -452,8 +437,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 					String xid = jv.toJsonString().getValue();
 					DataSourceVO<?> ds = dataSourceDao.getDataSource(xid);
 					if (ds == null)
-						throw new LocalizableJsonException(
-								"emport.error.missingSource", xid);
+						throw new LocalizableJsonException("emport.error.missingSource", xid);
 					dataSourcePermissions.add(ds.getId());
 				}
 			}
@@ -465,16 +449,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 				DataPointDao dataPointDao = new DataPointDao();
 				List<Integer> permittedPoints = new ArrayList<Integer>();
 				for (Integer dsId : dataSourcePermissions) {
-					for (DataPointVO dp : dataPointDao
-							.getDataPoints(dsId, null))
+					for (DataPointVO dp : dataPointDao.getDataPoints(dsId, null))
 						permittedPoints.add(dp.getId());
 				}
 
 				dataPointPermissions.clear();
 
 				for (JsonValue jv : jsonPoints.getElements()) {
-					DataPointAccess access = reader.readPropertyValue(jv,
-							DataPointAccess.class, null);
+					DataPointAccess access = reader.readPropertyValue(jv, DataPointAccess.class, null);
 					if (!permittedPoints.contains(access.getDataPointId()))
 						// The user doesn't already have access to the point.
 						dataPointPermissions.add(access);
@@ -537,7 +519,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	public void resetUserProfile() {
-		this.userProfile = Common.NEW_ID;
+		this.userProfile = 0;
 	}
 
 	@Override

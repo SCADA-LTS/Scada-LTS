@@ -57,7 +57,9 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
+import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.web.dwr.EventsDwr;
+import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -75,10 +77,8 @@ public class EventDao extends BaseDao {
 
 	private static final String EVENT_INSERT = "insert into events (typeId, typeRef1, typeRef2, activeTs, rtnApplicable, rtnTs, rtnCause, "
 			+ "  alarmLevel, message, ackTs) " + "values (?,?,?,?,?,?,?,?,?,?)";
-	private static final int[] EVENT_INSERT_TYPES = { Types.INTEGER,
-			Types.INTEGER, Types.INTEGER, Types.BIGINT, Types.CHAR,
-			Types.BIGINT, Types.INTEGER, Types.INTEGER, Types.VARCHAR,
-			Types.BIGINT };
+	private static final int[] EVENT_INSERT_TYPES = { Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.BIGINT,
+			Types.CHAR, Types.BIGINT, Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.BIGINT };
 
 	private void insertEvent(EventInstance event) {
 		try {
@@ -102,34 +102,25 @@ public class EventDao extends BaseDao {
 			}
 
 			int id;
-			if (Common.getEnvironmentProfile().getString("db.type")
-					.equals("postgres")) {
-				Connection conn = DriverManager
-						.getConnection(
-								Common.getEnvironmentProfile().getString(
-										"db.url"),
-								Common.getEnvironmentProfile().getString(
-										"db.username"),
-								Common.getEnvironmentProfile().getString(
-										"db.password"));
+			if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
+				Connection conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
+						Common.getEnvironmentProfile().getString("db.username"),
+						Common.getEnvironmentProfile().getString("db.password"));
 				PreparedStatement preStmt = conn.prepareStatement(EVENT_INSERT);
 				preStmt.setInt(1, type.getEventSourceId());
 				preStmt.setInt(2, type.getReferenceId1());
 				preStmt.setInt(3, type.getReferenceId2());
 				preStmt.setLong(4, event.getActiveTimestamp());
 				preStmt.setString(5, boolToChar(event.isRtnApplicable()));
-				preStmt.setLong(6, !event.isActive() ? event.getRtnTimestamp()
-						: 0);
+				preStmt.setLong(6, !event.isActive() ? event.getRtnTimestamp() : 0);
 				preStmt.setInt(7, !event.isActive() ? event.getRtnCause() : 0);
 				preStmt.setInt(8, event.getAlarmLevel());
 				preStmt.setString(9, event.getMessage().serialize());
-				preStmt.setLong(10,
-						!event.isAlarm() ? event.getAcknowledgedTimestamp() : 0);
+				preStmt.setLong(10, !event.isAlarm() ? event.getAcknowledgedTimestamp() : 0);
 
 				preStmt.executeUpdate();
 
-				ResultSet resSEQ = conn.createStatement().executeQuery(
-						"SELECT currval('events_id_seq')");
+				ResultSet resSEQ = conn.createStatement().executeQuery("SELECT currval('events_id_seq')");
 				resSEQ.next();
 				id = resSEQ.getInt(1);
 
@@ -147,20 +138,16 @@ public class EventDao extends BaseDao {
 	private static final String EVENT_UPDATE = "update events set rtnTs=?, rtnCause=? where id=?";
 
 	private void updateEvent(EventInstance event) {
-		ejt.update(EVENT_UPDATE,
-				new Object[] { event.getRtnTimestamp(), event.getRtnCause(),
-						event.getId() });
+		ejt.update(EVENT_UPDATE, new Object[] { event.getRtnTimestamp(), event.getRtnCause(), event.getId() });
 		updateCache(event);
 	}
 
 	private static final String EVENT_ACK = "update events set ackTs=?, ackUserId=?, alternateAckSource=? where id=? and (ackTs is null or ackTs = 0) ";
 	private static final String USER_EVENT_ACK = "update userEvents set silenced=? where eventId=?";
 
-	public void ackEvent(int eventId, long time, int userId,
-			int alternateAckSource) {
+	public void ackEvent(int eventId, long time, int userId, int alternateAckSource) {
 		// Ack the event
-		ejt.update(EVENT_ACK, new Object[] { time, userId == 0 ? null : userId,
-				alternateAckSource, eventId });
+		ejt.update(EVENT_ACK, new Object[] { time, userId == 0 ? null : userId, alternateAckSource, eventId });
 		// Silence the user events
 		ejt.update(USER_EVENT_ACK, new Object[] { boolToChar(true), eventId });
 		// Clear the cache
@@ -169,8 +156,8 @@ public class EventDao extends BaseDao {
 
 	private static final String USER_EVENTS_INSERT = "insert into userEvents (eventId, userId, silenced) values (?,?,?)";
 
-	public void insertUserEvents(final int eventId,
-			final List<Integer> userIds, final boolean alarm) {
+	public void insertUserEvents(final int eventId, final List<Integer> userIds, final boolean alarm) {
+
 		ejt.batchUpdate(USER_EVENTS_INSERT, new BatchPreparedStatementSetter() {
 			@Override
 			public int getBatchSize() {
@@ -178,8 +165,7 @@ public class EventDao extends BaseDao {
 			}
 
 			@Override
-			public void setValues(PreparedStatement ps, int i)
-					throws SQLException {
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
 				ps.setInt(1, eventId);
 				ps.setInt(2, userIds.get(i));
 				ps.setString(3, boolToChar(!alarm));
@@ -193,12 +179,11 @@ public class EventDao extends BaseDao {
 	}
 
 	private static final String BASIC_EVENT_SELECT = "select e.id, e.typeId, e.typeRef1, e.typeRef2, e.activeTs, e.rtnApplicable, e.rtnTs, e.rtnCause, "
-			+ "  e.alarmLevel, e.message, e.ackTs, e.ackUserId, u.username, e.alternateAckSource "
-			+ "from events e " + "  left join users u on e.ackUserId=u.id ";
+			+ "  e.alarmLevel, e.message, e.ackTs, e.ackUserId, u.username, e.alternateAckSource " + "from events e "
+			+ "  left join users u on e.ackUserId=u.id ";
 
 	public List<EventInstance> getActiveEvents() {
-		List<EventInstance> results = query(BASIC_EVENT_SELECT
-				+ "where e.rtnApplicable=? and e.rtnTs is null",
+		List<EventInstance> results = query(BASIC_EVENT_SELECT + "where e.rtnApplicable=? and e.rtnTs is null",
 				new Object[] { boolToChar(true) }, new EventInstanceRowMapper());
 		attachRelationalInfo(results);
 		return results;
@@ -206,22 +191,19 @@ public class EventDao extends BaseDao {
 
 	private static final String EVENT_SELECT_WITH_USER_DATA = "select e.id, e.typeId, e.typeRef1, e.typeRef2, e.activeTs, e.rtnApplicable, e.rtnTs, e.rtnCause, "
 			+ "  e.alarmLevel, e.message, e.ackTs, e.ackUserId, u.username, e.alternateAckSource, ue.silenced "
-			+ "from events e "
-			+ "  left join users u on e.ackUserId=u.id "
+			+ "from events e " + "  left join users u on e.ackUserId=u.id "
 			+ "  left join userEvents ue on e.id=ue.eventId ";
 
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
-		List<EventInstance> results = query(EVENT_SELECT_WITH_USER_DATA
-				+ "where e.typeId=" + EventType.EventSources.DATA_POINT
-				+ "  and e.typeRef1=? " + "  and ue.userId=? "
-				+ "order by e.activeTs desc", new Object[] { dataPointId,
-				userId }, new UserEventInstanceRowMapper());
+		List<EventInstance> results = query(
+				EVENT_SELECT_WITH_USER_DATA + "where e.typeId=" + EventType.EventSources.DATA_POINT
+						+ "  and e.typeRef1=? " + "  and ue.userId=? " + "order by e.activeTs desc",
+				new Object[] { dataPointId, userId }, new UserEventInstanceRowMapper());
 		attachRelationalInfo(results);
 		return results;
 	}
 
-	public List<EventInstance> getPendingEventsForDataPoint(int dataPointId,
-			int userId) {
+	public List<EventInstance> getPendingEventsForDataPoint(int dataPointId, int userId) {
 		// Check the cache
 		List<EventInstance> userEvents = getFromCache(userId);
 		if (userEvents == null) {
@@ -254,23 +236,16 @@ public class EventDao extends BaseDao {
 
 		@Override
 		public void run() {
-			addToCache(
-					userId,
-					getPendingEvents(EventType.EventSources.DATA_POINT, -1,
-							userId));
+			addToCache(userId, getPendingEvents(EventType.EventSources.DATA_POINT, -1, userId));
 		}
 	}
 
-	public List<EventInstance> getPendingEventsForDataSource(int dataSourceId,
-			int userId) {
-		return getPendingEvents(EventType.EventSources.DATA_SOURCE,
-				dataSourceId, userId);
+	public List<EventInstance> getPendingEventsForDataSource(int dataSourceId, int userId) {
+		return getPendingEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
 	}
 
-	public List<EventInstance> getPendingEventsForPublisher(int publisherId,
-			int userId) {
-		return getPendingEvents(EventType.EventSources.PUBLISHER, publisherId,
-				userId);
+	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
+		return getPendingEvents(EventType.EventSources.PUBLISHER, publisherId, userId);
 	}
 
 	List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId) {
@@ -286,11 +261,11 @@ public class EventDao extends BaseDao {
 			params = new Object[] { typeId, typeRef1, userId, boolToChar(true) };
 		}
 		sb.append("  and ue.userId=? ");
-		sb.append("  and ((e.ackTs is null or e.ackTs = 0)  or (e.rtnApplicable=? and e.rtnTs is null and e.alarmLevel > 0)) ");
+		sb.append(
+				"  and ((e.ackTs is null or e.ackTs = 0)  or (e.rtnApplicable=? and e.rtnTs is null and e.alarmLevel > 0)) ");
 		sb.append("order by e.activeTs desc");
 
-		List<EventInstance> results = query(sb.toString(), params,
-				new UserEventInstanceRowMapper());
+		List<EventInstance> results = query(sb.toString(), params, new UserEventInstanceRowMapper());
 		attachRelationalInfo(results);
 		return results;
 	}
@@ -299,33 +274,29 @@ public class EventDao extends BaseDao {
 		List<EventInstance> results = query(
 				EVENT_SELECT_WITH_USER_DATA
 						+ "where ue.userId=? and (e.ackTs is null or e.ackTs = 0) order by e.activeTs desc",
-				new Object[] { userId }, new UserEventInstanceRowMapper(),
-				MAX_PENDING_EVENTS);
+				new Object[] { userId }, new UserEventInstanceRowMapper(), MAX_PENDING_EVENTS);
 		attachRelationalInfo(results);
 		return results;
 	}
 
 	private EventInstance getEventInstance(int eventId) {
-		return queryForObject(BASIC_EVENT_SELECT + "where e.id=?",
-				new Object[] { eventId }, new EventInstanceRowMapper());
+		return queryForObject(BASIC_EVENT_SELECT + "where e.id=?", new Object[] { eventId },
+				new EventInstanceRowMapper());
 	}
 
-	public static class EventInstanceRowMapper implements
-			GenericRowMapper<EventInstance> {
-		public EventInstance mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
+	public static class EventInstanceRowMapper implements GenericRowMapper<EventInstance> {
+		public EventInstance mapRow(ResultSet rs, int rowNum) throws SQLException {
 			EventType type = createEventType(rs, 2);
 
 			LocalizableMessage message;
 			try {
 				message = LocalizableMessage.deserialize(rs.getString(10));
 			} catch (LocalizableMessageParseException e) {
-				message = new LocalizableMessage("common.default",
-						rs.getString(10));
+				message = new LocalizableMessage("common.default", rs.getString(10));
 			}
 
-			EventInstance event = new EventInstance(type, rs.getLong(5),
-					charToBool(rs.getString(6)), rs.getInt(9), message, null);
+			EventInstance event = new EventInstance(type, rs.getLong(5), charToBool(rs.getString(6)), rs.getInt(9),
+					message, null);
 			event.setId(rs.getInt(1));
 			long rtnTs = rs.getLong(7);
 			if (!rs.wasNull())
@@ -345,8 +316,7 @@ public class EventDao extends BaseDao {
 
 	class UserEventInstanceRowMapper extends EventInstanceRowMapper {
 		@Override
-		public EventInstance mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
+		public EventInstance mapRow(ResultSet rs, int rowNum) throws SQLException {
 			EventInstance event = super.mapRow(rs, rowNum);
 			event.setSilenced(charToBool(rs.getString(15)));
 			if (!rs.wasNull())
@@ -355,34 +325,27 @@ public class EventDao extends BaseDao {
 		}
 	}
 
-	static EventType createEventType(ResultSet rs, int offset)
-			throws SQLException {
+	static EventType createEventType(ResultSet rs, int offset) throws SQLException {
 		int typeId = rs.getInt(offset);
 		EventType type;
 		if (typeId == EventType.EventSources.DATA_POINT)
-			type = new DataPointEventType(rs.getInt(offset + 1),
-					rs.getInt(offset + 2));
+			type = new DataPointEventType(rs.getInt(offset + 1), rs.getInt(offset + 2));
 		else if (typeId == EventType.EventSources.DATA_SOURCE)
-			type = new DataSourceEventType(rs.getInt(offset + 1),
-					rs.getInt(offset + 2));
+			type = new DataSourceEventType(rs.getInt(offset + 1), rs.getInt(offset + 2));
 		else if (typeId == EventType.EventSources.SYSTEM)
-			type = new SystemEventType(rs.getInt(offset + 1),
-					rs.getInt(offset + 2));
+			type = new SystemEventType(rs.getInt(offset + 1), rs.getInt(offset + 2));
 		else if (typeId == EventType.EventSources.COMPOUND)
 			type = new CompoundDetectorEventType(rs.getInt(offset + 1));
 		else if (typeId == EventType.EventSources.SCHEDULED)
 			type = new ScheduledEventType(rs.getInt(offset + 1));
 		else if (typeId == EventType.EventSources.PUBLISHER)
-			type = new PublisherEventType(rs.getInt(offset + 1),
-					rs.getInt(offset + 2));
+			type = new PublisherEventType(rs.getInt(offset + 1), rs.getInt(offset + 2));
 		else if (typeId == EventType.EventSources.AUDIT)
-			type = new AuditEventType(rs.getInt(offset + 1),
-					rs.getInt(offset + 2));
+			type = new AuditEventType(rs.getInt(offset + 1), rs.getInt(offset + 2));
 		else if (typeId == EventType.EventSources.MAINTENANCE)
 			type = new MaintenanceEventType(rs.getInt(offset + 1));
 		else
-			throw new ShouldNeverHappenException("Unknown event type: "
-					+ typeId);
+			throw new ShouldNeverHappenException("Unknown event type: " + typeId);
 		return type;
 	}
 
@@ -392,44 +355,35 @@ public class EventDao extends BaseDao {
 	}
 
 	private static final String EVENT_COMMENT_SELECT = UserCommentRowMapper.USER_COMMENT_SELECT
-			+ "where uc.commentType= "
-			+ UserComment.TYPE_EVENT
-			+ " and uc.typeKey=? " + "order by uc.ts";
+			+ "where uc.commentType= " + UserComment.TYPE_EVENT + " and uc.typeKey=? " + "order by uc.ts";
 
 	void attachRelationalInfo(EventInstance event) {
-		event.setEventComments(query(EVENT_COMMENT_SELECT,
-				new Object[] { event.getId() }, new UserCommentRowMapper()));
+		event.setEventComments(query(EVENT_COMMENT_SELECT, new Object[] { event.getId() }, new UserCommentRowMapper()));
 	}
 
 	public EventInstance insertEventComment(int eventId, UserComment comment) {
-		new UserDao().insertUserComment(UserComment.TYPE_EVENT, eventId,
-				comment);
+		Common.ctx.getUserCache().getUserDao().insertUserComment(UserComment.TYPE_EVENT, eventId, comment);
 		return getEventInstance(eventId);
 	}
 
 	public int purgeEventsBefore(final long time) {
 		// Find a list of event ids with no remaining acknowledgements pending.
 		final ExtendedJdbcTemplate ejt2 = ejt;
-		int count = getTransactionTemplate().execute(
-				new GenericTransactionCallback<Integer>() {
-					@Override
-					public Integer doInTransaction(TransactionStatus status) {
-						int count = ejt2
-								.update("delete from events "
-										+ "where activeTs<? "
-										+ "  and ackTs is not null "
-										+ "  and (rtnApplicable=? or (rtnApplicable=? and rtnTs is not null))",
-										new Object[] { time, boolToChar(false),
-												boolToChar(true) });
+		int count = (int) getTransactionTemplate().execute(new GenericTransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				int count = ejt2.update(
+						"delete from events " + "where activeTs<? " + "  and ackTs is not null "
+								+ "  and (rtnApplicable=? or (rtnApplicable=? and rtnTs is not null))",
+						new Object[] { time, boolToChar(false), boolToChar(true) });
 
-						// Delete orphaned user comments.
-						ejt2.update("delete from userComments where commentType="
-								+ UserComment.TYPE_EVENT
-								+ "  and typeKey not in (select id from events)");
+				// Delete orphaned user comments.
+				ejt2.update("delete from userComments where commentType=" + UserComment.TYPE_EVENT
+						+ "  and typeKey not in (select id from events)");
 
-						return count;
-					}
-				});
+				return count;
+			}
+		});
 
 		clearCache();
 
@@ -440,9 +394,8 @@ public class EventDao extends BaseDao {
 		return ejt.queryForInt("select count(*) from events");
 	}
 
-	public List<EventInstance> searchOld(int eventId, int eventSourceType,
-			String status, int alarmLevel, final String[] keywords,
-			final int maxResults, int userId, final ResourceBundle bundle) {
+	public List<EventInstance> searchOld(int eventId, int eventSourceType, String status, int alarmLevel,
+			final String[] keywords, final int maxResults, int userId, final ResourceBundle bundle) {
 		List<String> where = new ArrayList<String>();
 		List<Object> params = new ArrayList<Object>();
 
@@ -490,8 +443,7 @@ public class EventDao extends BaseDao {
 
 		ejt.query(sql.toString(), params.toArray(), new ResultSetExtractor() {
 			@Override
-			public Object extractData(ResultSet rs) throws SQLException,
-					DataAccessException {
+			public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
 				while (rs.next()) {
 					EventInstance e = rowMapper.mapRow(rs, 0);
 					attachRelationalInfo(e);
@@ -508,8 +460,7 @@ public class EventDao extends BaseDao {
 						String[] values = text.toString().split("\\s+");
 
 						for (String keyword : keywords) {
-							if (!StringUtils.globWhiteListMatchIgnoreCase(
-									values, keyword)) {
+							if (!StringUtils.globWhiteListMatchIgnoreCase(values, keyword)) {
 								add = false;
 								break;
 							}
@@ -531,19 +482,15 @@ public class EventDao extends BaseDao {
 		return results;
 	}
 
-	public List<EventInstance> search(int eventId, int eventSourceType,
-			String status, int alarmLevel, final String[] keywords, int userId,
-			final ResourceBundle bundle, final int from, final int to,
+	public List<EventInstance> search(int eventId, int eventSourceType, String status, int alarmLevel,
+			final String[] keywords, int userId, final ResourceBundle bundle, final int from, final int to,
 			final Date date) {
-		return search(eventId, eventSourceType, status, alarmLevel, keywords,
-				-1, -1, userId, bundle, from, to, date);
+		return search(eventId, eventSourceType, status, alarmLevel, keywords, -1, -1, userId, bundle, from, to, date);
 	}
 
-	public List<EventInstance> search(int eventId, int eventSourceType,
-			String status, int alarmLevel, final String[] keywords,
-			long dateFrom, long dateTo, int userId,
-			final ResourceBundle bundle, final int from, final int to,
-			final Date date) {
+	public List<EventInstance> search(int eventId, int eventSourceType, String status, int alarmLevel,
+			final String[] keywords, long dateFrom, long dateTo, int userId, final ResourceBundle bundle,
+			final int from, final int to, final Date date) {
 		List<String> where = new ArrayList<String>();
 		List<Object> params = new ArrayList<Object>();
 
@@ -603,8 +550,7 @@ public class EventDao extends BaseDao {
 
 		ejt.query(sql.toString(), params.toArray(), new ResultSetExtractor() {
 			@Override
-			public Object extractData(ResultSet rs) throws SQLException,
-					DataAccessException {
+			public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
 				int row = 0;
 				long dateTs = date == null ? -1 : date.getTime();
 				int startRow = -1;
@@ -626,14 +572,12 @@ public class EventDao extends BaseDao {
 
 						for (String keyword : keywords) {
 							if (keyword.startsWith("-")) {
-								if (StringUtils.globWhiteListMatchIgnoreCase(
-										values, keyword.substring(1))) {
+								if (StringUtils.globWhiteListMatchIgnoreCase(values, keyword.substring(1))) {
 									add = false;
 									break;
 								}
 							} else {
-								if (!StringUtils.globWhiteListMatchIgnoreCase(
-										values, keyword)) {
+								if (!StringUtils.globWhiteListMatchIgnoreCase(values, keyword)) {
 									add = false;
 									break;
 								}
@@ -643,8 +587,7 @@ public class EventDao extends BaseDao {
 
 					if (add) {
 						if (date != null) {
-							if (e.getActiveTimestamp() <= dateTs
-									&& results.size() < to - from) {
+							if (e.getActiveTimestamp() <= dateTs && results.size() < to - from) {
 								if (startRow == -1)
 									startRow = row;
 								results.add(e);
@@ -694,24 +637,20 @@ public class EventDao extends BaseDao {
 	}
 
 	public EventType getEventHandlerType(int handlerId) {
-		return queryForObject(
-				"select eventTypeId, eventTypeRef1, eventTypeRef2 from eventHandlers where id=?",
+		return queryForObject("select eventTypeId, eventTypeRef1, eventTypeRef2 from eventHandlers where id=?",
 				new Object[] { handlerId }, new GenericRowMapper<EventType>() {
-					public EventType mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
+					public EventType mapRow(ResultSet rs, int rowNum) throws SQLException {
 						return createEventType(rs, 1);
 					}
 				});
 	}
 
 	public List<EventHandlerVO> getEventHandlers(EventType type) {
-		return getEventHandlers(type.getEventSourceId(),
-				type.getReferenceId1(), type.getReferenceId2());
+		return getEventHandlers(type.getEventSourceId(), type.getReferenceId1(), type.getReferenceId2());
 	}
 
 	public List<EventHandlerVO> getEventHandlers(EventTypeVO type) {
-		return getEventHandlers(type.getTypeId(), type.getTypeRef1(),
-				type.getTypeRef2());
+		return getEventHandlers(type.getTypeId(), type.getTypeRef1(), type.getTypeRef2());
 	}
 
 	public List<EventHandlerVO> getEventHandlers() {
@@ -724,35 +663,31 @@ public class EventDao extends BaseDao {
 	 * login events, rather than have to individually define them for each user.
 	 */
 	private List<EventHandlerVO> getEventHandlers(int typeId, int ref1, int ref2) {
-		return query(EVENT_HANDLER_SELECT
-				+ "where eventTypeId=? and eventTypeRef1=? "
-				+ "  and (eventTypeRef2=? or eventTypeRef2=0)", new Object[] {
-				typeId, ref1, ref2 }, new EventHandlerRowMapper());
+		return query(
+				EVENT_HANDLER_SELECT + "where eventTypeId=? and eventTypeRef1=? "
+						+ "  and (eventTypeRef2=? or eventTypeRef2=0)",
+				new Object[] { typeId, ref1, ref2 }, new EventHandlerRowMapper());
 	}
 
 	public EventHandlerVO getEventHandler(int eventHandlerId) {
-		return queryForObject(EVENT_HANDLER_SELECT + "where id=?",
-				new Object[] { eventHandlerId }, new EventHandlerRowMapper());
+		return queryForObject(EVENT_HANDLER_SELECT + "where id=?", new Object[] { eventHandlerId },
+				new EventHandlerRowMapper());
 	}
 
 	public EventHandlerVO getEventHandler(String xid) {
-		return queryForObject(EVENT_HANDLER_SELECT + "where xid=?",
-				new Object[] { xid }, new EventHandlerRowMapper(), null);
+		return queryForObject(EVENT_HANDLER_SELECT + "where xid=?", new Object[] { xid }, new EventHandlerRowMapper(),
+				null);
 	}
 
 	private static final String EVENT_HANDLER_SELECT = "select id, xid, alias, data from eventHandlers ";
 
 	class EventHandlerRowMapper implements GenericRowMapper<EventHandlerVO> {
-		public EventHandlerVO mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
+		public EventHandlerVO mapRow(ResultSet rs, int rowNum) throws SQLException {
 			EventHandlerVO h;
-			if (Common.getEnvironmentProfile().getString("db.type")
-					.equals("postgres")) {
-				h = (EventHandlerVO) SerializationHelper.readObject(rs
-						.getBinaryStream(4));
+			if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
+				h = (EventHandlerVO) SerializationHelper.readObject(rs.getBinaryStream(4));
 			} else {
-				h = (EventHandlerVO) SerializationHelper.readObject(rs.getBlob(
-						4).getBinaryStream());
+				h = (EventHandlerVO) SerializationHelper.readObject(rs.getBlob(4).getBinaryStream());
 			}
 			h.setId(rs.getInt(1));
 			h.setXid(rs.getString(2));
@@ -761,66 +696,50 @@ public class EventDao extends BaseDao {
 		}
 	}
 
-	public EventHandlerVO saveEventHandler(final EventType type,
-			final EventHandlerVO handler) {
+	public EventHandlerVO saveEventHandler(final EventType type, final EventHandlerVO handler) {
 		if (type == null)
 			return saveEventHandler(0, 0, 0, handler);
-		return saveEventHandler(type.getEventSourceId(),
-				type.getReferenceId1(), type.getReferenceId2(), handler);
+		return saveEventHandler(type.getEventSourceId(), type.getReferenceId1(), type.getReferenceId2(), handler);
 	}
 
-	public EventHandlerVO saveEventHandler(final EventTypeVO type,
-			final EventHandlerVO handler) {
+	public EventHandlerVO saveEventHandler(final EventTypeVO type, final EventHandlerVO handler) {
 		if (type == null)
 			return saveEventHandler(0, 0, 0, handler);
-		return saveEventHandler(type.getTypeId(), type.getTypeRef1(),
-				type.getTypeRef2(), handler);
+		return saveEventHandler(type.getTypeId(), type.getTypeRef1(), type.getTypeRef2(), handler);
 	}
 
-	private EventHandlerVO saveEventHandler(final int typeId,
-			final int typeRef1, final int typeRef2, final EventHandlerVO handler) {
-		getTransactionTemplate().execute(
-				new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(
-							TransactionStatus status) {
-						if (handler.getId() == Common.NEW_ID)
-							insertEventHandler(typeId, typeRef1, typeRef2,
-									handler);
-						else
-							updateEventHandler(handler);
-					}
-				});
+	private EventHandlerVO saveEventHandler(final int typeId, final int typeRef1, final int typeRef2,
+			final EventHandlerVO handler) {
+		getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				if (handler.getId() == Common.NEW_ID)
+					insertEventHandler(typeId, typeRef1, typeRef2, handler);
+				else
+					updateEventHandler(handler);
+			}
+		});
 		return getEventHandler(handler.getId());
 	}
 
-	void insertEventHandler(int typeId, int typeRef1, int typeRef2,
-			EventHandlerVO handler) {
-		if (Common.getEnvironmentProfile().getString("db.type")
-				.equals("postgres")) {
+	void insertEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
+		if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
 			try {
 				// id = doInsert(EVENT_INSERT, args, EVENT_INSERT_TYPES);
-				Connection conn = DriverManager
-						.getConnection(
-								Common.getEnvironmentProfile().getString(
-										"db.url"),
-								Common.getEnvironmentProfile().getString(
-										"db.username"),
-								Common.getEnvironmentProfile().getString(
-										"db.password"));
-				PreparedStatement preStmt = conn
-						.prepareStatement("insert into eventHandlers (xid, alias, eventTypeId, eventTypeRef1, eventTypeRef2, data) values (?,?,?,?,?,?)");
+				Connection conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
+						Common.getEnvironmentProfile().getString("db.username"),
+						Common.getEnvironmentProfile().getString("db.password"));
+				PreparedStatement preStmt = conn.prepareStatement(
+						"insert into eventHandlers (xid, alias, eventTypeId, eventTypeRef1, eventTypeRef2, data) values (?,?,?,?,?,?)");
 				preStmt.setString(1, handler.getXid());
 				preStmt.setString(2, handler.getAlias());
 				preStmt.setInt(3, typeId);
 				preStmt.setInt(3, typeRef1);
 				preStmt.setInt(3, typeRef2);
-				preStmt.setBytes(3,
-						SerializationHelper.writeObjectToArray(handler));
+				preStmt.setBytes(3, SerializationHelper.writeObjectToArray(handler));
 				preStmt.executeUpdate();
 
-				ResultSet resSEQ = conn.createStatement().executeQuery(
-						"SELECT currval('eventhandlers_id_seq')");
+				ResultSet resSEQ = conn.createStatement().executeQuery("SELECT currval('eventhandlers_id_seq')");
 				resSEQ.next();
 				int id = resSEQ.getInt(1);
 
@@ -835,46 +754,31 @@ public class EventDao extends BaseDao {
 		} else {
 			handler.setId(doInsert(
 					"insert into eventHandlers (xid, alias, eventTypeId, eventTypeRef1, eventTypeRef2, data) values (?,?,?,?,?,?)",
-					new Object[] { handler.getXid(), handler.getAlias(),
-							typeId, typeRef1, typeRef2,
+					new Object[] { handler.getXid(), handler.getAlias(), typeId, typeRef1, typeRef2,
 							SerializationHelper.writeObject(handler) },
-					new int[] {
-							Types.VARCHAR,
-							Types.VARCHAR,
-							Types.INTEGER,
-							Types.INTEGER,
-							Types.INTEGER,
-							Common.getEnvironmentProfile().getString("db.type")
-									.equals("postgres") ? Types.BINARY
+					new int[] { Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.INTEGER, Types.INTEGER,
+							Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY
 									: Types.BLOB }));
 		}
-		AuditEventType.raiseAddedEvent(AuditEventType.TYPE_EVENT_HANDLER,
-				handler);
+		AuditEventType.raiseAddedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
 	}
 
 	void updateEventHandler(EventHandlerVO handler) {
 		EventHandlerVO old = getEventHandler(handler.getId());
-		ejt.update(
-				"update eventHandlers set xid=?, alias=?, data=? where id=?",
-				new Object[] { handler.getXid(), handler.getAlias(),
-						SerializationHelper.writeObject(handler),
+		ejt.update("update eventHandlers set xid=?, alias=?, data=? where id=?",
+				new Object[] { handler.getXid(), handler.getAlias(), SerializationHelper.writeObject(handler),
 						handler.getId() },
-				new int[] {
-						Types.VARCHAR,
-						Types.VARCHAR,
-						Common.getEnvironmentProfile().getString("db.type")
-								.equals("postgres") ? Types.BINARY : Types.BLOB,
+				new int[] { Types.VARCHAR, Types.VARCHAR,
+						Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY
+								: Types.BLOB,
 						Types.INTEGER });
-		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_EVENT_HANDLER,
-				old, handler);
+		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_EVENT_HANDLER, old, handler);
 	}
 
 	public void deleteEventHandler(final int handlerId) {
 		EventHandlerVO handler = getEventHandler(handlerId);
-		ejt.update("delete from eventHandlers where id=?",
-				new Object[] { handlerId });
-		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER,
-				handler);
+		ejt.update("delete from eventHandlers where id=?", new Object[] { handlerId });
+		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
 	}
 
 	//
@@ -882,29 +786,24 @@ public class EventDao extends BaseDao {
 	// / User alarms
 	// /
 	//
-	private static final String SILENCED_SELECT = "select ue.silenced "
-			+ "from events e " + "  join userEvents ue on e.id=ue.eventId "
-			+ "where e.id=? " + "  and ue.userId=? "
+	private static final String SILENCED_SELECT = "select ue.silenced " + "from events e "
+			+ "  join userEvents ue on e.id=ue.eventId " + "where e.id=? " + "  and ue.userId=? "
 			+ "  and (e.ackTs is null or e.ackTs = 0)";
 
 	public boolean toggleSilence(int eventId, int userId) {
-		String result = ejt.queryForObject(SILENCED_SELECT, new Object[] {
-				eventId, userId }, String.class, null);
+		String result = ejt.queryForObject(SILENCED_SELECT, new Object[] { eventId, userId }, String.class, null);
 		if (result == null)
 			return true;
 
 		boolean silenced = !charToBool(result);
-		ejt.update(
-				"update userEvents set silenced=? where eventId=? and userId=?",
+		ejt.update("update userEvents set silenced=? where eventId=? and userId=?",
 				new Object[] { boolToChar(silenced), eventId, userId });
 		return silenced;
 	}
 
 	public int getHighestUnsilencedAlarmLevel(int userId) {
-		return ejt.queryForInt("select max(e.alarmLevel) from userEvents u "
-				+ "  join events e on u.eventId=e.id "
-				+ "where u.silenced=? and u.userId=?", new Object[] {
-				boolToChar(false), userId });
+		return ejt.queryForInt("select max(e.alarmLevel) from userEvents u " + "  join events e on u.eventId=e.id "
+				+ "where u.silenced=? and u.userId=?", new Object[] { boolToChar(false), userId });
 	}
 
 	//
@@ -950,8 +849,7 @@ public class EventDao extends BaseDao {
 	}
 
 	public static void updateCache(EventInstance event) {
-		if (event.isAlarm()
-				&& event.getEventType().getEventSourceId() == EventType.EventSources.DATA_POINT)
+		if (event.isAlarm() && event.getEventType().getEventSourceId() == EventType.EventSources.DATA_POINT)
 			pendingEventCache.clear();
 	}
 
@@ -962,4 +860,51 @@ public class EventDao extends BaseDao {
 	public static void clearCache() {
 		pendingEventCache.clear();
 	}
+
+	//
+	// EventHandler Recipients protection
+	//
+	public void removeUserFromHandlers(int id) {
+		List<EventHandlerVO> ehs = this.getEventHandlers();
+		for (EventHandlerVO eh : ehs) {
+			if (eh.getHandlerType() == EventHandlerVO.TYPE_EMAIL) {
+
+				List<RecipientListEntryBean> acRecpList = eh.getActiveRecipients();
+				for (int i = 0; i < acRecpList.size(); i++) {
+					if (acRecpList.get(i).getRecipientType() == EmailRecipient.TYPE_USER) {
+						if (acRecpList.get(i).getReferenceId() == id) {
+							acRecpList.remove(acRecpList.get(i));
+							i--;
+						}
+					}
+				}
+				eh.setActiveRecipients(acRecpList);
+
+				List<RecipientListEntryBean> inacRecpList = eh.getInactiveRecipients();
+				for (int i = 0; i < inacRecpList.size(); i++) {
+					if (inacRecpList.get(i).getRecipientType() == EmailRecipient.TYPE_USER) {
+						if (inacRecpList.get(i).getReferenceId() == id) {
+							inacRecpList.remove(inacRecpList.get(i));
+							i--;
+						}
+					}
+				}
+				eh.setInactiveRecipients(inacRecpList);
+
+				List<RecipientListEntryBean> agrRecpList = eh.getEscalationRecipients();
+				for (int i = 0; i < agrRecpList.size(); i++) {
+					if (agrRecpList.get(i).getRecipientType() == EmailRecipient.TYPE_USER) {
+						if (agrRecpList.get(i).getReferenceId() == id) {
+							agrRecpList.remove(agrRecpList.get(i));
+							i--;
+						}
+					}
+				}
+				eh.setEscalationRecipients(agrRecpList);
+
+				updateEventHandler(eh);
+			}
+		}
+	}
+
 }

@@ -28,7 +28,7 @@ public class ConfigurationDB {
 
 		String fileSeparator = System.getProperty("file.separator");
 
-		String path = Common.ctx.getServletContext().getRealPath("");
+		String path = Common.ctx.getServletContext().getRealPath("/");
 
 		boolean win = false;
 
@@ -80,7 +80,7 @@ public class ConfigurationDB {
 
 		String fileSeparator = System.getProperty("file.separator");
 
-		String path = Common.ctx.getServletContext().getRealPath("");
+		String path = Common.ctx.getServletContext().getRealPath("/");
 
 		boolean win = false;
 
@@ -133,22 +133,18 @@ public class ConfigurationDB {
 
 		String fileSeparator = System.getProperty("file.separator");
 
-		String path = Common.ctx.getServletContext().getRealPath("");
+		String path = Common.ctx.getServletContext().getRealPath("/");
 
-		path = path + fileSeparator + "WEB-INF" + fileSeparator + "classes"
-				+ fileSeparator;
+		path = path + fileSeparator + "WEB-INF" + fileSeparator + "classes" + fileSeparator;
 		File envFile = new File(path + fileSeparator + "env.properties");
 
 		// TODO VANIA
-		System.out.println("envFile: " + path + fileSeparator
-				+ "env.properties");
+		System.out.println("envFile: " + path + fileSeparator + "env.properties");
 
 		if (envFile.exists()) {
-			File oracleFile = new File(path + fileSeparator
-					+ "env.properties.oracle11g");
+			File oracleFile = new File(path + fileSeparator + "env.properties.oracle11g");
 			// TODO VANIA
-			System.out.println("oracleFile: " + path + fileSeparator
-					+ "env.properties.oracle11g");
+			System.out.println("oracleFile: " + path + fileSeparator + "env.properties.oracle11g");
 
 			if (oracleFile.exists()) {
 				try {

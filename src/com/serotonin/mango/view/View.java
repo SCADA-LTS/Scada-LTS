@@ -35,7 +35,6 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.component.CompoundComponent;
@@ -47,8 +46,13 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+
 @JsonRemoteEntity
 public class View implements Serializable, JsonSerializable {
+
 	public static final String XID_PREFIX = "GV_";
 
 	private int id = Common.NEW_ID;
@@ -106,8 +110,7 @@ public class View implements Serializable, JsonSerializable {
 				if (vc.getId().equals(viewComponentId))
 					return ((PointComponent) vc).tgetDataPoint();
 			} else if (vc.isCompoundComponent()) {
-				PointComponent pc = ((CompoundComponent) vc)
-						.findPointComponent(viewComponentId);
+				PointComponent pc = ((CompoundComponent) vc).findPointComponent(viewComponentId);
 				if (pc != null)
 					return pc.tgetDataPoint();
 			}
@@ -121,6 +124,27 @@ public class View implements Serializable, JsonSerializable {
 
 		if (userId == user.getId() || user.isAdmin())
 			return ShareUser.ACCESS_OWNER;
+
+		// LOG.trace(" User: " + user);
+		// Check if view is configured in user profile.
+		UsersProfileDao profileDao = new UsersProfileDao();
+		// LOG.trace(" UserProfileId: " + user.getUserProfile());
+		UsersProfileVO profileVO = profileDao.getUserProfileByUserId(user.getId());
+
+		if (profileVO != null) {
+			// LOG.trace(" User Profile: " + profileVO.getName());
+			List<ViewAccess> viewsAccess = profileVO.getViewPermissions();
+			for (ViewAccess va : viewsAccess) {
+				if (va.getId() == this.id) {
+					// LOG.trace(" ViewAccess: " + va.getId() + ", permission: "
+					// + va.getPermission());
+					if (va.getPermission() == ShareUser.ACCESS_NONE) {
+						break; // Check SharedUser then...
+					}
+					return va.getPermission();
+				}
+			}
+		}
 
 		for (ShareUser vu : viewUsers) {
 			if (vu.getUserId() == user.getId())
@@ -136,7 +160,7 @@ public class View implements Serializable, JsonSerializable {
 	 * the components that render them
 	 */
 	public void validateViewComponents(boolean makeReadOnly) {
-		User owner = new UserDao().getUser(userId);
+		User owner = Common.ctx.getUserCache().getUser(userId);
 		for (ViewComponent viewComponent : viewComponents)
 			viewComponent.validateDataPoint(owner, makeReadOnly);
 	}
@@ -204,21 +228,16 @@ public class View implements Serializable, JsonSerializable {
 	public void validate(DwrResponseI18n response) {
 
 		if (StringUtils.isEmpty(name))
-			response.addMessage("name", new LocalizableMessage(
-					"validate.required"));
+			response.addMessage("name", new LocalizableMessage("validate.required"));
 		else if (StringUtils.isLengthGreaterThan(name, 100))
-			response.addMessage("name", new LocalizableMessage(
-					"validate.notLongerThan", 100));
+			response.addMessage("name", new LocalizableMessage("validate.notLongerThan", 100));
 
 		if (StringUtils.isEmpty(xid))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.required"));
+			response.addMessage("xid", new LocalizableMessage("validate.required"));
 		else if (StringUtils.isLengthGreaterThan(xid, 50))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.notLongerThan", 50));
+			response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
 		else if (!new ViewDao().isXidUnique(xid, id))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.xidUsed"));
+			response.addMessage("xid", new LocalizableMessage("validate.xidUsed"));
 
 		for (ViewComponent vc : viewComponents)
 			vc.validate(response);
@@ -238,30 +257,25 @@ public class View implements Serializable, JsonSerializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void readObject(ObjectInputStream in) throws IOException,
-			ClassNotFoundException {
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		int ver = in.readInt();
 
 		// Switch on the version of the class so that version changes can be
 		// elegantly handled.
 		if (ver == 1) {
-			viewComponents = new CopyOnWriteArrayList<ViewComponent>(
-					(List<ViewComponent>) in.readObject());
+			viewComponents = new CopyOnWriteArrayList<ViewComponent>((List<ViewComponent>) in.readObject());
 		}
 	}
 
 	@Override
-	public void jsonDeserialize(JsonReader reader, JsonObject json)
-			throws JsonException {
+	public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
 		if (isNew()) {
 			String username = json.getString("user");
 			if (StringUtils.isEmpty(username))
-				throw new LocalizableJsonException("emport.error.missingValue",
-						"user");
-			User user = new UserDao().getUser(username);
+				throw new LocalizableJsonException("emport.error.missingValue", "user");
+			User user = Common.ctx.getUserCache().getUserDao().getUser(username);
 			if (user == null)
-				throw new LocalizableJsonException("emport.error.missingUser",
-						username);
+				throw new LocalizableJsonException("emport.error.missingUser", username);
 			userId = user.getId();
 		}
 
@@ -269,16 +283,14 @@ public class View implements Serializable, JsonSerializable {
 		if (components != null) {
 			viewComponents.clear();
 			for (JsonValue jv : components.getElements())
-				addViewComponent(reader.readPropertyValue(jv,
-						ViewComponent.class, null));
+				addViewComponent(reader.readPropertyValue(jv, ViewComponent.class, null));
 		}
 
 		String text = json.getString("anonymousAccess");
 		if (text != null) {
 			anonymousAccess = ShareUser.ACCESS_CODES.getId(text);
 			if (anonymousAccess == -1)
-				throw new LocalizableJsonException("emport.error.invalid",
-						"anonymousAccess", text,
+				throw new LocalizableJsonException("emport.error.invalid", "anonymousAccess", text,
 						ShareUser.ACCESS_CODES.getCodeList());
 		}
 
@@ -287,8 +299,7 @@ public class View implements Serializable, JsonSerializable {
 			viewUsers.clear();
 
 			for (JsonValue jv : jsonSharers.getElements()) {
-				ShareUser shareUser = reader.readPropertyValue(jv,
-						ShareUser.class, null);
+				ShareUser shareUser = reader.readPropertyValue(jv, ShareUser.class, null);
 				if (shareUser.getUserId() != userId)
 					// No need for the owning user to be in this list.
 					viewUsers.add(shareUser);
@@ -298,9 +309,8 @@ public class View implements Serializable, JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("user", new UserDao().getUser(userId).getUsername());
-		map.put("anonymousAccess",
-				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
+		map.put("user", Common.ctx.getUserCache().getUserDao().getUser(userId).getUsername());
+		map.put("anonymousAccess", ShareUser.ACCESS_CODES.getCode(anonymousAccess));
 		map.put("viewComponents", viewComponents);
 		map.put("sharingUsers", viewUsers);
 	}

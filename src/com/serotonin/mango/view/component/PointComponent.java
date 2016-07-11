@@ -39,182 +39,201 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 abstract public class PointComponent extends ViewComponent {
-    private DataPointVO dataPoint;
-    @JsonRemoteProperty
-    private String nameOverride;
-    @JsonRemoteProperty
-    private boolean settableOverride;
-    @JsonRemoteProperty
-    private String bkgdColorOverride;
-    @JsonRemoteProperty
-    private boolean displayControls;
+	private DataPointVO dataPoint;
+	@JsonRemoteProperty
+	private String nameOverride;
+	@JsonRemoteProperty
+	private boolean settableOverride;
+	@JsonRemoteProperty
+	private String bkgdColorOverride;
+	@JsonRemoteProperty
+	private boolean displayControls;
 
-    // Runtime attributes
-    private boolean valid;
-    private boolean visible;
+	// Runtime attributes
+	private boolean valid;
+	private boolean visible;
+	private boolean unreliable;
+	private boolean disconnected;
 
-    @Override
-    public boolean isPointComponent() {
-        return true;
-    }
+	@Override
+	public boolean isPointComponent() {
+		return true;
+	}
 
-    abstract public void addDataToModel(Map<String, Object> model, PointValueTime pointValue);
+	abstract public void addDataToModel(Map<String, Object> model, PointValueTime pointValue);
 
-    abstract public String snippetName();
+	abstract public String snippetName();
 
-    @Override
-    public void validateDataPoint(User user, boolean makeReadOnly) {
-        if (dataPoint == null) {
-            valid = false;
-            visible = false;
-        }
-        else {
-            visible = Permissions.hasDataPointReadPermission(user, dataPoint);
-            valid = definition().supports(dataPoint.getPointLocator().getDataTypeId());
-        }
+	@Override
+	public void validateDataPoint(User user, boolean makeReadOnly) {
+		if (dataPoint == null) {
+			valid = false;
+			visible = false;
+		} else {
+			visible = Permissions.hasDataPointReadPermission(user, dataPoint);
+			valid = definition().supports(dataPoint.getPointLocator().getDataTypeId());
+		}
 
-        if (makeReadOnly)
-            settableOverride = false;
-    }
+		if (makeReadOnly)
+			settableOverride = false;
+	}
 
-    @Override
-    public boolean isValid() {
-        return valid;
-    }
+	@Override
+	public boolean isValid() {
+		return valid;
+	}
 
-    @Override
-    public boolean isVisible() {
-        return visible;
-    }
+	@Override
+	public boolean isVisible() {
+		return visible;
+	}
 
-    @Override
-    public boolean containsValidVisibleDataPoint(int dataPointId) {
-        if (!valid || !visible)
-            return false;
+	public boolean isDisconnected() {
+		return disconnected;
+	}
 
-        return dataPoint.getId() == dataPointId;
-    }
+	public void setDisconnected(boolean disconnected) {
+		this.disconnected = disconnected;
+	}
 
-    public int[] getSupportedDataTypes() {
-        return definition().getSupportedDataTypes();
-    }
+	@Override
+	public boolean isUnreliable() {
+		return unreliable;
+	}
 
-    public String getTypeName() {
-        return definition().getName();
-    }
+	public void setUnreliable(boolean unreliable) {
+		this.unreliable = unreliable;
+	}
 
-    public LocalizableMessage getDisplayName() {
-        return new LocalizableMessage(definition().getNameKey());
-    }
+	@Override
+	public boolean containsValidVisibleDataPoint(int dataPointId) {
+		if (!valid || !visible)
+			return false;
 
-    public String getName() {
-        if (!StringUtils.isEmpty(nameOverride))
-            return nameOverride;
-        if (dataPoint == null)
-            return "(unknown)";
-        return dataPoint.getName();
-    }
+		return dataPoint.getId() == dataPointId;
+	}
 
-    public boolean isSettable() {
-        if (dataPoint == null)
-            return false;
-        if (!dataPoint.getPointLocator().isSettable())
-            return false;
-        return settableOverride;
-    }
+	public int[] getSupportedDataTypes() {
+		return definition().getSupportedDataTypes();
+	}
 
-    public boolean isChartRenderer() {
-        if (dataPoint == null)
-            return false;
-        return dataPoint.getChartRenderer() != null;
-    }
+	public String getTypeName() {
+		return definition().getName();
+	}
 
-    public DataPointVO tgetDataPoint() {
-        return dataPoint;
-    }
+	public LocalizableMessage getDisplayName() {
+		return new LocalizableMessage(definition().getNameKey());
+	}
 
-    public void tsetDataPoint(DataPointVO dataPoint) {
-        this.dataPoint = dataPoint;
-    }
+	public String getName() {
+		if (!StringUtils.isEmpty(nameOverride))
+			return nameOverride;
+		if (dataPoint == null)
+			return "(unknown)";
+		return dataPoint.getName();
+	}
 
-    public int getDataPointId() {
-        if (dataPoint == null)
-            return 0;
-        return dataPoint.getId();
-    }
+	public boolean isSettable() {
+		if (dataPoint == null)
+			return false;
+		if (!dataPoint.getPointLocator().isSettable())
+			return false;
+		return settableOverride;
+	}
 
-    public String getNameOverride() {
-        return nameOverride;
-    }
+	public boolean isChartRenderer() {
+		if (dataPoint == null)
+			return false;
+		return dataPoint.getChartRenderer() != null;
+	}
 
-    public void setNameOverride(String nameOverride) {
-        this.nameOverride = nameOverride;
-    }
+	public DataPointVO tgetDataPoint() {
+		return dataPoint;
+	}
 
-    public boolean isSettableOverride() {
-        return settableOverride;
-    }
+	public void tsetDataPoint(DataPointVO dataPoint) {
+		this.dataPoint = dataPoint;
+	}
 
-    public void setSettableOverride(boolean settableOverride) {
-        this.settableOverride = settableOverride;
-    }
+	public int getDataPointId() {
+		if (dataPoint == null)
+			return 0;
+		return dataPoint.getId();
+	}
 
-    public String getBkgdColorOverride() {
-        return bkgdColorOverride;
-    }
+	public String getNameOverride() {
+		return nameOverride;
+	}
 
-    public void setBkgdColorOverride(String bkgdColorOverride) {
-        this.bkgdColorOverride = bkgdColorOverride;
-    }
+	public void setNameOverride(String nameOverride) {
+		this.nameOverride = nameOverride;
+	}
 
-    public boolean isDisplayControls() {
-        return displayControls;
-    }
+	public boolean isSettableOverride() {
+		return settableOverride;
+	}
 
-    public void setDisplayControls(boolean displayControls) {
-        this.displayControls = displayControls;
-    }
+	public void setSettableOverride(boolean settableOverride) {
+		this.settableOverride = settableOverride;
+	}
 
-    //
-    // /
-    // / Serialization
-    // /
-    //
-    private static final long serialVersionUID = -1;
-    private static final int version = 1;
+	public String getBkgdColorOverride() {
+		return bkgdColorOverride;
+	}
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(version);
+	public void setBkgdColorOverride(String bkgdColorOverride) {
+		this.bkgdColorOverride = bkgdColorOverride;
+	}
 
-        writeDataPoint(out, dataPoint);
-        SerializationHelper.writeSafeUTF(out, nameOverride);
-        out.writeBoolean(settableOverride);
-        SerializationHelper.writeSafeUTF(out, bkgdColorOverride);
-        out.writeBoolean(displayControls);
-    }
+	public boolean isDisplayControls() {
+		return displayControls;
+	}
 
-    private void readObject(ObjectInputStream in) throws IOException {
-        int ver = in.readInt();
+	public void setDisplayControls(boolean displayControls) {
+		this.displayControls = displayControls;
+	}
 
-        // Switch on the version of the class so that version changes can be elegantly handled.
-        if (ver == 1) {
-            dataPoint = readDataPoint(in);
-            nameOverride = SerializationHelper.readSafeUTF(in);
-            settableOverride = in.readBoolean();
-            bkgdColorOverride = SerializationHelper.readSafeUTF(in);
-            displayControls = in.readBoolean();
-        }
-    }
+	//
+	// /
+	// / Serialization
+	// /
+	//
+	private static final long serialVersionUID = -1;
+	private static final int version = 1;
 
-    @Override
-    public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
-        super.jsonDeserialize(reader, json);
-        jsonDeserializeDataPoint(json.getValue("dataPointXid"), this);
-    }
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeInt(version);
 
-    @Override
-    public void jsonSerialize(Map<String, Object> map) {
-        super.jsonSerialize(map);
-        jsonSerializeDataPoint(map, "dataPointXid", this);
-    }
+		writeDataPoint(out, dataPoint);
+		SerializationHelper.writeSafeUTF(out, nameOverride);
+		out.writeBoolean(settableOverride);
+		SerializationHelper.writeSafeUTF(out, bkgdColorOverride);
+		out.writeBoolean(displayControls);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException {
+		int ver = in.readInt();
+
+		// Switch on the version of the class so that version changes can be
+		// elegantly handled.
+		if (ver == 1) {
+			dataPoint = readDataPoint(in);
+			nameOverride = SerializationHelper.readSafeUTF(in);
+			settableOverride = in.readBoolean();
+			bkgdColorOverride = SerializationHelper.readSafeUTF(in);
+			displayControls = in.readBoolean();
+		}
+	}
+
+	@Override
+	public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
+		super.jsonDeserialize(reader, json);
+		jsonDeserializeDataPoint(json.getValue("dataPointXid"), this);
+	}
+
+	@Override
+	public void jsonSerialize(Map<String, Object> map) {
+		super.jsonSerialize(map);
+		jsonSerializeDataPoint(map, "dataPointXid", this);
+	}
 }

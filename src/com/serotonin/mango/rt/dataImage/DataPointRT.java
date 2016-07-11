@@ -80,7 +80,9 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	public DataPointRT(DataPointVO vo, PointLocatorRT pointLocator) {
 		this.vo = vo;
 		this.pointLocator = pointLocator;
+		LOG.trace("Create valueCache...");
 		valueCache = new PointValueCache(vo.getId(), vo.getDefaultCacheSize());
+		LOG.trace("Created valueCache!");
 	}
 
 	public List<PointValueTime> getLatestPointValues(int limit) {
@@ -106,13 +108,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	}
 
 	public List<PointValueTime> getPointValues(long since) {
-		List<PointValueTime> result = new PointValueDao().getPointValues(
-				vo.getId(), since);
+		List<PointValueTime> result = new PointValueDao().getPointValues(vo.getId(), since);
 
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
 			if (pvt.getTime() >= since) {
-				int index = Collections.binarySearch(result, pvt,
-						pvtTimeComparator);
+				int index = Collections.binarySearch(result, pvt, pvtTimeComparator);
 				if (index < 0)
 					result.add(-index - 1, pvt);
 			}
@@ -122,13 +122,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	}
 
 	public List<PointValueTime> getPointValuesBetween(long from, long to) {
-		List<PointValueTime> result = new PointValueDao()
-				.getPointValuesBetween(vo.getId(), from, to);
+		List<PointValueTime> result = new PointValueDao().getPointValuesBetween(vo.getId(), from, to);
 
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
 			if (pvt.getTime() >= from && pvt.getTime() < to) {
-				int index = Collections.binarySearch(result, pvt,
-						pvtTimeComparator);
+				int index = Collections.binarySearch(result, pvt, pvtTimeComparator);
 				if (index < 0)
 					result.add(-index - 1, pvt);
 			}
@@ -170,8 +168,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 			savePointValue(newValue, source, false);
 	}
 
-	private void savePointValue(PointValueTime newValue, SetPointSource source,
-			boolean async) {
+	private void savePointValue(PointValueTime newValue, SetPointSource source, boolean async) {
 		// Null values are not very nice, and since they don't have a specific
 		// meaning they are hereby ignored.
 		if (newValue == null)
@@ -180,41 +177,32 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		// Check the data type of the value against that of the locator, just
 		// for fun.
 		int valueDataType = DataTypes.getDataType(newValue.getValue());
-		if (valueDataType != DataTypes.UNKNOWN
-				&& valueDataType != vo.getPointLocator().getDataTypeId())
+		if (valueDataType != DataTypes.UNKNOWN && valueDataType != vo.getPointLocator().getDataTypeId())
 			// This should never happen, but if it does it can have serious
 			// downstream consequences. Also, we need
 			// to know how it happened, and the stack trace here provides the
 			// best information.
-			throw new ShouldNeverHappenException(
-					"Data type mismatch between new value and point locator: newValue="
-							+ DataTypes.getDataType(newValue.getValue())
-							+ ", locator="
-							+ vo.getPointLocator().getDataTypeId());
+			throw new ShouldNeverHappenException("Data type mismatch between new value and point locator: newValue="
+					+ DataTypes.getDataType(newValue.getValue()) + ", locator=" + vo.getPointLocator().getDataTypeId());
 
 		// Check if this value qualifies for discardation.
-		if (vo.isDiscardExtremeValues()
-				&& DataTypes.getDataType(newValue.getValue()) == DataTypes.NUMERIC) {
+		if (vo.isDiscardExtremeValues() && DataTypes.getDataType(newValue.getValue()) == DataTypes.NUMERIC) {
 			double newd = newValue.getDoubleValue();
-			if (newd < vo.getDiscardLowLimit()
-					|| newd > vo.getDiscardHighLimit())
+			if (newd < vo.getDiscardLowLimit() || newd > vo.getDiscardHighLimit())
 				// Discard the value
 				return;
 		}
 
-		if (newValue.getTime() > System.currentTimeMillis()
-				+ SystemSettingsDao.getFutureDateLimit()) {
+		if (newValue.getTime() > System.currentTimeMillis() + SystemSettingsDao.getFutureDateLimit()) {
 			// Too far future dated. Toss it. But log a message first.
 			LOG.warn(
-					"Future dated value detected: pointId=" + vo.getId()
-							+ ", value=" + newValue.getStringValue()
-							+ ", type=" + vo.getPointLocator().getDataTypeId()
-							+ ", ts=" + newValue.getTime(), new Exception());
+					"Future dated value detected: pointId=" + vo.getId() + ", value=" + newValue.getStringValue()
+							+ ", type=" + vo.getPointLocator().getDataTypeId() + ", ts=" + newValue.getTime(),
+					new Exception());
 			return;
 		}
 
-		boolean backdated = pointValue != null
-				&& newValue.getTime() < pointValue.getTime();
+		boolean backdated = pointValue != null && newValue.getTime() < pointValue.getTime();
 
 		// Determine whether the new value qualifies for logging.
 		boolean logValue;
@@ -243,8 +231,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 					} else
 						logValue = false;
 				} else
-					logValue = !ObjectUtils.isEqual(newValue.getValue(),
-							pointValue.getValue());
+					logValue = !ObjectUtils.isEqual(newValue.getValue(), pointValue.getValue());
 			}
 
 			saveValue = logValue;
@@ -288,8 +275,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 				return;
 
 			intervalLoggingTask = new TimeoutTask(new FixedRateTrigger(0,
-					Common.getMillis(vo.getIntervalLoggingPeriodType(),
-							vo.getIntervalLoggingPeriod())), this);
+					Common.getMillis(vo.getIntervalLoggingPeriodType(), vo.getIntervalLoggingPeriod())), this);
 
 			intervalValue = pointValue;
 			if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.AVERAGE) {
@@ -339,21 +325,18 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 				value = PointValueTime.getValue(intervalValue);
 				intervalValue = pointValue;
 			} else if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.AVERAGE) {
-				AnalogStatistics stats = new AnalogStatistics(intervalValue,
-						averagingValues, intervalStartTime, fireTime);
+				AnalogStatistics stats = new AnalogStatistics(intervalValue, averagingValues, intervalStartTime,
+						fireTime);
 				value = new NumericValue(stats.getAverage());
 
 				intervalValue = pointValue;
 				averagingValues.clear();
 				intervalStartTime = fireTime;
 			} else
-				throw new ShouldNeverHappenException(
-						"Unknown interval logging type: "
-								+ vo.getIntervalLoggingType());
+				throw new ShouldNeverHappenException("Unknown interval logging type: " + vo.getIntervalLoggingType());
 
 			if (value != null)
-				valueCache.logPointValueAsync(new PointValueTime(value,
-						fireTime), null);
+				valueCache.logPointValueAsync(new PointValueTime(value, fireTime), null);
 		}
 	}
 
@@ -440,13 +423,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	// / Listeners
 	// /
 	//
-	private void fireEvents(PointValueTime oldValue, PointValueTime newValue,
-			boolean set, boolean backdate) {
+	private void fireEvents(PointValueTime oldValue, PointValueTime newValue, boolean set, boolean backdate) {
 		DataPointListener l = rm.getDataPointListeners(vo.getId());
 		if (l != null)
-			Common.ctx.getBackgroundProcessing().addWorkItem(
-					new EventNotifyWorkItem(l, oldValue, newValue, set,
-							backdate));
+			Common.ctx.getBackgroundProcessing()
+					.addWorkItem(new EventNotifyWorkItem(l, oldValue, newValue, set, backdate));
 	}
 
 	class EventNotifyWorkItem implements WorkItem {
@@ -456,8 +437,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		private final boolean set;
 		private final boolean backdate;
 
-		EventNotifyWorkItem(DataPointListener listener,
-				PointValueTime oldValue, PointValueTime newValue, boolean set,
+		EventNotifyWorkItem(DataPointListener listener, PointValueTime oldValue, PointValueTime newValue, boolean set,
 				boolean backdate) {
 			this.listener = listener;
 			this.oldValue = oldValue;

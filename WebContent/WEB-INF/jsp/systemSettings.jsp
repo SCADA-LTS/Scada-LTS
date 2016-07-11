@@ -646,6 +646,7 @@
             <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
             <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
             <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
+            <option value="20000"><fmt:message key="systemSettings.uiPerformance.lowest"/></option>
           </select>
         </td>
       </tr>

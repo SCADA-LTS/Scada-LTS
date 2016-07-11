@@ -6,12 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import br.org.scadabr.api.exception.DAOException;
-import br.org.scadabr.db.dao.UsersProfileDao;
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -28,6 +22,12 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
 
+import br.org.scadabr.api.exception.DAOException;
+import br.org.scadabr.db.dao.UsersProfileDao;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+
 public class UsersProfileImporter {
 
 	private Map<Integer, ShareUser> oldViewPermissions;
@@ -42,27 +42,22 @@ public class UsersProfileImporter {
 		oldWatchlistPermissions = new HashMap<Integer, ShareUser>();
 	}
 
-	public void importUsersProfile(JsonObject profileJson,
-			DwrResponseI18n response, JsonReader reader, ImportTask task)
+	public void importUsersProfile(JsonObject profileJson, DwrResponseI18n response, JsonReader reader, ImportTask task)
 			throws DAOException, JsonException {
 
 		UsersProfileVO newProfile = new UsersProfileVO();
 		newProfile.setXid(profileJson.getString("xid"));
 		newProfile.setName(profileJson.getString("name"));
 
-		newProfile
-				.setDataSourcePermissions(getDataSourcePermissions(profileJson));
-		newProfile.setDataPointPermissions(getDataPointPermissions(profileJson,
-				reader));
+		newProfile.setDataSourcePermissions(getDataSourcePermissions(profileJson));
+		newProfile.setDataPointPermissions(getDataPointPermissions(profileJson, reader));
 		newProfile.setViewPermissions(getViewPermissions(profileJson, reader));
-		newProfile.setWatchlistPermissions(getWatchlistPermissions(profileJson,
-				reader));
+		newProfile.setWatchlistPermissions(getWatchlistPermissions(profileJson, reader));
 
 		createOrUpdateProfile(newProfile);
 
 		UserDao usersDao = new UserDao();
-		UsersProfileVO savedProfile = usersProfileDao
-				.getUserProfileByXid(newProfile.getXid());
+		UsersProfileVO savedProfile = usersProfileDao.getUserProfileByXid(newProfile.getXid());
 
 		for (User user : getUsers(profileJson)) {
 			copyUsersOldAdditionalPermissions(user, savedProfile);
@@ -74,22 +69,17 @@ public class UsersProfileImporter {
 
 	}
 
-	private void createOrUpdateProfile(UsersProfileVO profile)
-			throws DAOException {
+	private void createOrUpdateProfile(UsersProfileVO profile) throws DAOException {
 
 		if (usersProfileDao.userProfileExists(profile.getXid())) {
-			UsersProfileVO savedProfile = usersProfileDao
-					.getUserProfileByXid(profile.getXid());
+			UsersProfileVO savedProfile = usersProfileDao.getUserProfileByXid(profile.getXid());
 			profile.setId(savedProfile.getId());
-			usersProfileDao.updateProfile(profile);
-		} else {
 			usersProfileDao.saveUsersProfileWithoutNameConstraint(profile);
 		}
 
 	}
 
-	private void copyUsersOldAdditionalPermissions(User user,
-			UsersProfileVO profile) {
+	private void copyUsersOldAdditionalPermissions(User user, UsersProfileVO profile) {
 
 		copyViewPermissions(user, profile);
 		copyWatchlistPermissions(user, profile);
@@ -119,8 +109,7 @@ public class UsersProfileImporter {
 			for (ShareUser oldPermission : view.getViewUsers()) {
 
 				if (user.getId() == oldPermission.getUserId()) {
-					ShareUser oldPermissionCopy = copyPermission(view.getId(),
-							oldPermission);
+					ShareUser oldPermissionCopy = copyPermission(view.getId(), oldPermission);
 					oldViewPermissions.put(view.getId(), oldPermissionCopy);
 				}
 
@@ -135,10 +124,8 @@ public class UsersProfileImporter {
 			for (ShareUser oldPermission : watchlist.getWatchListUsers()) {
 
 				if (user.getId() == oldPermission.getUserId()) {
-					ShareUser oldPermissionCopy = copyPermission(
-							watchlist.getId(), oldPermission);
-					oldWatchlistPermissions.put(watchlist.getId(),
-							oldPermissionCopy);
+					ShareUser oldPermissionCopy = copyPermission(watchlist.getId(), oldPermission);
+					oldWatchlistPermissions.put(watchlist.getId(), oldPermissionCopy);
 				}
 
 			}
@@ -153,8 +140,7 @@ public class UsersProfileImporter {
 		return oldPermissionCopy;
 	}
 
-	private void restoreUsersOldAdditionalPermissions(User user,
-			UsersProfileVO profile) {
+	private void restoreUsersOldAdditionalPermissions(User user, UsersProfileVO profile) {
 		restoreOldViewPermissions(profile);
 		restoreOldWatchlistPermissions(profile);
 		restoreOldDatasourcePermissions(profile, user);
@@ -174,14 +160,11 @@ public class UsersProfileImporter {
 					ViewDao viewDao = new ViewDao();
 					View viewToUpdate = viewDao.getView(viewId);
 
-					for (Iterator<ShareUser> iterator = viewToUpdate
-							.getViewUsers().iterator(); iterator.hasNext();) {
+					for (Iterator<ShareUser> iterator = viewToUpdate.getViewUsers().iterator(); iterator.hasNext();) {
 						ShareUser viewPermission = iterator.next();
 
-						if (viewPermission.getUserId() == oldViewPermissions
-								.get(viewId).getUserId()) {
-							int oldPermission = oldViewPermissions.get(viewId)
-									.getAccessType();
+						if (viewPermission.getUserId() == oldViewPermissions.get(viewId).getUserId()) {
+							int oldPermission = oldViewPermissions.get(viewId).getAccessType();
 
 							if (viewPermission.getAccessType() == ShareUser.ACCESS_NONE) {
 								viewPermission.setAccessType(oldPermission);
@@ -203,29 +186,24 @@ public class UsersProfileImporter {
 		for (Integer watchlistId : oldWatchlistPermissions.keySet()) {
 
 			boolean shouldUpdateWatchlist = false;
-			for (WatchListAccess newWatchlistPermissions : profile
-					.getWatchlistPermissions()) {
+			for (WatchListAccess newWatchlistPermissions : profile.getWatchlistPermissions()) {
 				if (newWatchlistPermissions.getId() == watchlistId
 						&& newWatchlistPermissions.getPermission() == ShareUser.ACCESS_NONE) {
 
 					shouldUpdateWatchlist = true;
 
 					WatchListDao watchlistDao = new WatchListDao();
-					WatchList watchlistToUpdate = watchlistDao
-							.getWatchList(watchlistId);
+					WatchList watchlistToUpdate = watchlistDao.getWatchList(watchlistId);
 
-					for (Iterator<ShareUser> iterator = watchlistToUpdate
-							.getWatchListUsers().iterator(); iterator.hasNext();) {
+					for (Iterator<ShareUser> iterator = watchlistToUpdate.getWatchListUsers().iterator(); iterator
+							.hasNext();) {
 						ShareUser watchlistPermission = iterator.next();
 
-						if (watchlistPermission.getUserId() == oldWatchlistPermissions
-								.get(watchlistId).getUserId()) {
-							int oldPermission = oldWatchlistPermissions.get(
-									watchlistId).getAccessType();
+						if (watchlistPermission.getUserId() == oldWatchlistPermissions.get(watchlistId).getUserId()) {
+							int oldPermission = oldWatchlistPermissions.get(watchlistId).getAccessType();
 
 							if (watchlistPermission.getAccessType() == ShareUser.ACCESS_NONE) {
-								watchlistPermission
-										.setAccessType(oldPermission);
+								watchlistPermission.setAccessType(oldPermission);
 							}
 						}
 
@@ -240,14 +218,12 @@ public class UsersProfileImporter {
 		}
 	}
 
-	private void restoreOldDatasourcePermissions(UsersProfileVO profile,
-			User user) {
+	private void restoreOldDatasourcePermissions(UsersProfileVO profile, User user) {
 
 		for (int dataSourceId : oldDataSourcePermissions) {
 
 			boolean dataSourceFound = false;
-			for (int profileDataSourcePermission : profile
-					.getDataSourcePermissions()) {
+			for (int profileDataSourcePermission : profile.getDataSourcePermissions()) {
 
 				if (profileDataSourcePermission == dataSourceId) {
 					dataSourceFound = true;
@@ -256,8 +232,7 @@ public class UsersProfileImporter {
 
 			if (!dataSourceFound) {
 				List<Integer> newDataSourcePermissions = new ArrayList<Integer>();
-				newDataSourcePermissions
-						.addAll(user.getDataSourcePermissions());
+				newDataSourcePermissions.addAll(user.getDataSourcePermissions());
 				newDataSourcePermissions.add(dataSourceId);
 				user.setDataSourcePermissions(newDataSourcePermissions);
 				new UserDao().saveUser(user);
@@ -267,17 +242,14 @@ public class UsersProfileImporter {
 
 	}
 
-	private void restoreOldDatapointPermissions(UsersProfileVO profile,
-			User user) {
+	private void restoreOldDatapointPermissions(UsersProfileVO profile, User user) {
 
 		for (DataPointAccess oldPermission : oldDataPointPermissions) {
 
 			boolean dataPointFound = false;
-			for (DataPointAccess newDataPointPermission : profile
-					.getDataPointPermissions()) {
+			for (DataPointAccess newDataPointPermission : profile.getDataPointPermissions()) {
 
-				if (newDataPointPermission.getDataPointId() == oldPermission
-						.getDataPointId()) {
+				if (newDataPointPermission.getDataPointId() == oldPermission.getDataPointId()) {
 					dataPointFound = true;
 				}
 			}
@@ -294,12 +266,10 @@ public class UsersProfileImporter {
 
 	}
 
-	private List<Integer> getDataSourcePermissions(JsonObject profileJson)
-			throws JsonException {
+	private List<Integer> getDataSourcePermissions(JsonObject profileJson) throws JsonException {
 		List<Integer> dataSourcePermissions = new ArrayList<Integer>();
 
-		JsonArray jsonDataSources = profileJson
-				.getJsonArray("dataSourcePermissions");
+		JsonArray jsonDataSources = profileJson.getJsonArray("dataSourcePermissions");
 
 		if (jsonDataSources != null) {
 			for (JsonValue jv : jsonDataSources.getElements()) {
@@ -310,15 +280,14 @@ public class UsersProfileImporter {
 		return dataSourcePermissions;
 	}
 
-	private List<DataPointAccess> getDataPointPermissions(
-			JsonObject profileJson, JsonReader reader) throws JsonException {
+	private List<DataPointAccess> getDataPointPermissions(JsonObject profileJson, JsonReader reader)
+			throws JsonException {
 		JsonArray jsonPoints = profileJson.getJsonArray("dataPointPermissions");
 		List<DataPointAccess> dataPointPermissions = new ArrayList<DataPointAccess>();
 		List<Integer> permittedPoints = new ArrayList<Integer>();
 
 		for (JsonValue jv : jsonPoints.getElements()) {
-			DataPointAccess access = reader.readPropertyValue(jv,
-					DataPointAccess.class, null);
+			DataPointAccess access = reader.readPropertyValue(jv, DataPointAccess.class, null);
 
 			if (!permittedPoints.contains(access.getDataPointId())) {
 				dataPointPermissions.add(access);
@@ -329,16 +298,14 @@ public class UsersProfileImporter {
 		return dataPointPermissions;
 	}
 
-	private List<ViewAccess> getViewPermissions(JsonObject profileJson,
-			JsonReader reader) throws JsonException {
+	private List<ViewAccess> getViewPermissions(JsonObject profileJson, JsonReader reader) throws JsonException {
 		List<ViewAccess> viewPermissions = new ArrayList<ViewAccess>();
 		List<Integer> permittedViews = new ArrayList<Integer>();
 
 		JsonArray viewsJson = profileJson.getJsonArray("viewPermissions");
 
 		for (JsonValue jv : viewsJson.getElements()) {
-			ViewAccess access = reader.readPropertyValue(jv, ViewAccess.class,
-					null);
+			ViewAccess access = reader.readPropertyValue(jv, ViewAccess.class, null);
 			if (!permittedViews.contains(access.getId())) {
 				viewPermissions.add(access);
 				permittedViews.add(access.getId());
@@ -348,8 +315,8 @@ public class UsersProfileImporter {
 		return viewPermissions;
 	}
 
-	private List<WatchListAccess> getWatchlistPermissions(
-			JsonObject profileJson, JsonReader reader) throws JsonException {
+	private List<WatchListAccess> getWatchlistPermissions(JsonObject profileJson, JsonReader reader)
+			throws JsonException {
 
 		List<WatchListAccess> watchlistPermissions = new ArrayList<WatchListAccess>();
 		List<Integer> permittedWatchlist = new ArrayList<Integer>();
@@ -357,8 +324,7 @@ public class UsersProfileImporter {
 		JsonArray viewsJson = profileJson.getJsonArray("watchlistPermissions");
 
 		for (JsonValue jv : viewsJson.getElements()) {
-			WatchListAccess access = reader.readPropertyValue(jv,
-					WatchListAccess.class, null);
+			WatchListAccess access = reader.readPropertyValue(jv, WatchListAccess.class, null);
 			if (!permittedWatchlist.contains(access.getId())) {
 				watchlistPermissions.add(access);
 				permittedWatchlist.add(access.getId());

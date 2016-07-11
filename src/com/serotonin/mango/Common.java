@@ -18,8 +18,6 @@
  */
 package com.serotonin.mango;
 
-import gnu.io.CommPortIdentifier;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -65,6 +63,8 @@ import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
 
+import gnu.io.CommPortIdentifier;
+
 public class Common {
 	private static final String SESSION_USER = "sessionUser";
 	private static final String ANON_VIEW_KEY = "anonymousViews";
@@ -100,6 +100,7 @@ public class Common {
 		String RUNTIME_MANAGER = "RUNTIME_MANAGER";
 		String SCHEDULER = "SCHEDULER";
 		String EVENT_MANAGER = "EVENT_MANAGER";
+		String USER_CACHE = "USER_CACHE";
 		String FREEMARKER_CONFIG = "FREEMARKER_CONFIG";
 		String BACKGROUND_PROCESSING = "BACKGROUND_PROCESSING";
 		String HTTP_RECEIVER_MULTICASTER = "HTTP_RECEIVER_MULTICASTER";
@@ -119,6 +120,7 @@ public class Common {
 	}
 
 	public static ExportCodes TIME_PERIOD_CODES = new ExportCodes();
+
 	static {
 		TIME_PERIOD_CODES.addElement(TimePeriods.MILLISECONDS, "MILLISECONDS");
 		TIME_PERIOD_CODES.addElement(TimePeriods.SECONDS, "SECONDS");
@@ -165,13 +167,11 @@ public class Common {
 		case TimePeriods.YEARS:
 			return Period.years(periods);
 		default:
-			throw new ShouldNeverHappenException("Unsupported time period: "
-					+ periodType);
+			throw new ShouldNeverHappenException("Unsupported time period: " + periodType);
 		}
 	}
 
-	public static LocalizableMessage getPeriodDescription(int periodType,
-			int periods) {
+	public static LocalizableMessage getPeriodDescription(int periodType, int periods) {
 		String periodKey;
 		switch (periodType) {
 		case TimePeriods.MILLISECONDS:
@@ -199,12 +199,10 @@ public class Common {
 			periodKey = "common.tp.years";
 			break;
 		default:
-			throw new ShouldNeverHappenException("Unsupported time period: "
-					+ periodType);
+			throw new ShouldNeverHappenException("Unsupported time period: " + periodType);
 		}
 
-		return new LocalizableMessage("common.tp.description", periods,
-				new LocalizableMessage(periodKey));
+		return new LocalizableMessage("common.tp.description", periods, new LocalizableMessage(periodKey));
 	}
 
 	//
@@ -258,8 +256,7 @@ public class Common {
 	//
 	// Anonymous views
 	public static View getAnonymousView(int id) {
-		return getAnonymousView(
-				WebContextFactory.get().getHttpServletRequest(), id);
+		return getAnonymousView(WebContextFactory.get().getHttpServletRequest(), id);
 	}
 
 	public static View getAnonymousView(HttpServletRequest request, int id) {
@@ -317,24 +314,22 @@ public class Common {
 	}
 
 	public static String getGroveUrl(String servlet) {
-		String grove = getEnvironmentProfile().getString("grove.url",
-				"http://mango.serotoninsoftware.com/servlet");
+		String grove = getEnvironmentProfile().getString("grove.url", "http://mango.serotoninsoftware.com/servlet");
 		return grove + "/" + servlet;
 	}
 
 	public static String getDocPath() {
-		return ctx.getServletContext().getRealPath("WEB-INF/dox") + "/";
+		String path = ctx.getServletContext().getRealPath("/WEB-INF/dox/");
+		return path;
 	}
 
 	private static String lazyFiledataPath = null;
 
 	public static String getFiledataPath() {
 		if (lazyFiledataPath == null) {
-			String name = SystemSettingsDao
-					.getValue(SystemSettingsDao.FILEDATA_PATH);
+			String name = SystemSettingsDao.getValue(SystemSettingsDao.FILEDATA_PATH);
 			if (name.startsWith("~"))
-				name = ctx.getServletContext().getRealPath(name.substring(1));
-
+				name = ctx.getServletContext().getRealPath("/" + name.substring(1));
 			File file = new File(name);
 			if (!file.exists())
 				file.mkdirs();
@@ -344,8 +339,7 @@ public class Common {
 		return lazyFiledataPath;
 	}
 
-	public static CronTimerTrigger getCronTrigger(int periodType,
-			int delaySeconds) {
+	public static CronTimerTrigger getCronTrigger(int periodType, int delaySeconds) {
 		int delayMinutes = 0;
 		if (delaySeconds >= 60) {
 			delayMinutes = delaySeconds / 60;
@@ -358,30 +352,23 @@ public class Common {
 		try {
 			switch (periodType) {
 			case TimePeriods.MILLISECONDS:
-				throw new ShouldNeverHappenException(
-						"Can't create a cron trigger for milliseconds");
+				throw new ShouldNeverHappenException("Can't create a cron trigger for milliseconds");
 			case TimePeriods.SECONDS:
 				return new CronTimerTrigger("* * * * * ?");
 			case TimePeriods.MINUTES:
 				return new CronTimerTrigger(delaySeconds + " * * * * ?");
 			case TimePeriods.HOURS:
-				return new CronTimerTrigger(delaySeconds + " " + delayMinutes
-						+ " * * * ?");
+				return new CronTimerTrigger(delaySeconds + " " + delayMinutes + " * * * ?");
 			case TimePeriods.DAYS:
-				return new CronTimerTrigger(delaySeconds + " " + delayMinutes
-						+ " 0 * * ?");
+				return new CronTimerTrigger(delaySeconds + " " + delayMinutes + " 0 * * ?");
 			case TimePeriods.WEEKS:
-				return new CronTimerTrigger(delaySeconds + " " + delayMinutes
-						+ " 0 ? * MON");
+				return new CronTimerTrigger(delaySeconds + " " + delayMinutes + " 0 ? * MON");
 			case TimePeriods.MONTHS:
-				return new CronTimerTrigger(delaySeconds + " " + delayMinutes
-						+ " 0 1 * ?");
+				return new CronTimerTrigger(delaySeconds + " " + delayMinutes + " 0 1 * ?");
 			case TimePeriods.YEARS:
-				return new CronTimerTrigger(delaySeconds + " " + delayMinutes
-						+ " 0 1 JAN ?");
+				return new CronTimerTrigger(delaySeconds + " " + delayMinutes + " 0 1 JAN ?");
 			default:
-				throw new ShouldNeverHappenException(
-						"Invalid cron period type: " + periodType);
+				throw new ShouldNeverHappenException("Invalid cron period type: " + periodType);
 			}
 		} catch (ParseException e) {
 			throw new ShouldNeverHappenException(e);
@@ -390,8 +377,7 @@ public class Common {
 
 	//
 	// Misc
-	public static List<CommPortProxy> getCommPorts()
-			throws CommPortConfigException {
+	public static List<CommPortProxy> getCommPorts() throws CommPortConfigException {
 		try {
 			List<CommPortProxy> ports = new LinkedList<CommPortProxy>();
 			Enumeration<?> portEnum = CommPortIdentifier.getPortIdentifiers();
@@ -412,18 +398,15 @@ public class Common {
 
 	public synchronized static String encrypt(String plaintext) {
 		try {
-			String alg = getEnvironmentProfile().getString(
-					"security.hashAlgorithm", "SHA");
+			String alg = getEnvironmentProfile().getString("security.hashAlgorithm", "SHA");
 			if ("NONE".equals(alg))
 				return plaintext;
 
 			MessageDigest md = MessageDigest.getInstance(alg);
 			if (md == null)
-				throw new ShouldNeverHappenException(
-						"MessageDigest algorithm "
-								+ alg
-								+ " not found. Set the 'security.hashAlgorithm' property in env.properties appropriately. "
-								+ "Use 'NONE' for no hashing.");
+				throw new ShouldNeverHappenException("MessageDigest algorithm " + alg
+						+ " not found. Set the 'security.hashAlgorithm' property in env.properties appropriately. "
+						+ "Use 'NONE' for no hashing.");
 			md.update(plaintext.getBytes(UTF8_CS));
 			byte raw[] = md.digest();
 			String hash = new String(Base64.encodeBase64(raw));
@@ -453,29 +436,18 @@ public class Common {
 		client.getHttpConnectionManager().setParams(managerParams);
 		client.setParams(params);
 
-		if (SystemSettingsDao
-				.getBooleanValue(SystemSettingsDao.HTTP_CLIENT_USE_PROXY)) {
-			String proxyHost = SystemSettingsDao
-					.getValue(SystemSettingsDao.HTTP_CLIENT_PROXY_SERVER);
-			int proxyPort = SystemSettingsDao
-					.getIntValue(SystemSettingsDao.HTTP_CLIENT_PROXY_PORT);
+		if (SystemSettingsDao.getBooleanValue(SystemSettingsDao.HTTP_CLIENT_USE_PROXY)) {
+			String proxyHost = SystemSettingsDao.getValue(SystemSettingsDao.HTTP_CLIENT_PROXY_SERVER);
+			int proxyPort = SystemSettingsDao.getIntValue(SystemSettingsDao.HTTP_CLIENT_PROXY_PORT);
 
 			// Set up the proxy configuration.
 			client.getHostConfiguration().setProxy(proxyHost, proxyPort);
 
 			// Set up the proxy credentials. All realms and hosts.
-			client.getState()
-					.setProxyCredentials(
-							AuthScope.ANY,
-							new UsernamePasswordCredentials(
-									SystemSettingsDao
-											.getValue(
-													SystemSettingsDao.HTTP_CLIENT_PROXY_USERNAME,
-													""),
-									SystemSettingsDao
-											.getValue(
-													SystemSettingsDao.HTTP_CLIENT_PROXY_PASSWORD,
-													"")));
+			client.getState().setProxyCredentials(AuthScope.ANY,
+					new UsernamePasswordCredentials(
+							SystemSettingsDao.getValue(SystemSettingsDao.HTTP_CLIENT_PROXY_USERNAME, ""),
+							SystemSettingsDao.getValue(SystemSettingsDao.HTTP_CLIENT_PROXY_PASSWORD, "")));
 		}
 
 		return client;
@@ -503,15 +475,11 @@ public class Common {
 		if (systemLanguage == null) {
 			synchronized (i18nLock) {
 				if (systemLanguage == null) {
-					systemLanguage = SystemSettingsDao
-							.getValue(SystemSettingsDao.LANGUAGE);
+					systemLanguage = SystemSettingsDao.getValue(SystemSettingsDao.LANGUAGE);
 					Locale locale = findLocale(systemLanguage);
 					if (locale == null)
-						throw new IllegalArgumentException(
-								"Locale for given language not found: "
-										+ systemLanguage);
-					systemBundle = Utf8ResourceBundle.getBundle("messages",
-							locale);
+						throw new IllegalArgumentException("Locale for given language not found: " + systemLanguage);
+					systemBundle = Utf8ResourceBundle.getBundle("messages", locale);
 				}
 			}
 		}
@@ -524,8 +492,7 @@ public class Common {
 
 	public static void setSystemLanguage(String language) {
 		if (findLocale(language) == null)
-			throw new IllegalArgumentException(
-					"Locale for given language not found: " + language);
+			throw new IllegalArgumentException("Locale for given language not found: " + language);
 		new SystemSettingsDao().setValue(SystemSettingsDao.LANGUAGE, language);
 		systemLanguage = null;
 		systemBundle = null;

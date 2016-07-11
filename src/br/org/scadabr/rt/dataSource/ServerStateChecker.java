@@ -8,10 +8,10 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 
-import br.org.scadabr.api.constants.ServerStateCode;
-
-import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+
+import br.org.scadabr.api.constants.ServerStateCode;
 
 public class ServerStateChecker implements org.quartz.SchedulerListener, Job {
 
@@ -77,7 +77,7 @@ public class ServerStateChecker implements org.quartz.SchedulerListener, Job {
 	private static boolean isDatabaseRunning() {
 		boolean result = true;
 		try {
-			List<User> users = new UserDao().getUsers();
+			List<User> users = Common.ctx.getUserCache().getUserDao().getUsers();
 			if (users.size() < 1)
 				result = false;
 		} catch (Exception e) {

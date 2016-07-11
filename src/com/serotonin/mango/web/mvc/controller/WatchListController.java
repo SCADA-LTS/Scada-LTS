@@ -26,6 +26,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -42,10 +44,10 @@ import com.serotonin.web.i18n.I18NUtils;
 public class WatchListController extends ParameterizableViewController {
 	public static final String KEY_WATCHLISTS = "watchLists";
 	public static final String KEY_SELECTED_WATCHLIST = "selectedWatchList";
+	private static Log LOG = LogFactory.getLog(WatchListController.class);
 
 	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse response) {
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
 		return new ModelAndView(getViewName(), createModel(request));
 	}
 
@@ -57,34 +59,32 @@ public class WatchListController extends ParameterizableViewController {
 		// make sure the watch lists are correct.
 		WatchListDao watchListDao = new WatchListDao();
 		List<WatchList> watchLists;
+		LOG.debug("way before shananigas");
 		if (!user.isAdmin()) {
-			watchLists = watchListDao.getWatchLists(user.getId(),
-					user.getUserProfile());
+			LOG.debug("before shananigas");
+			watchLists = watchListDao.getWatchLists(user.getId(), user.getUserProfile());
+			LOG.debug("after shananigas");
 		} else {
 			watchLists = watchListDao.getWatchLists();
 		}
+		LOG.debug("finally shananigas");
 
 		if (watchLists.size() == 0) {
 			// Add a default watch list if none exist.
 			WatchList watchList = new WatchList();
-			watchList.setName(I18NUtils.getMessage(
-					ControllerUtils.getResourceBundle(request),
-					"common.newName"));
-			watchLists.add(watchListDao.createNewWatchList(watchList,
-					user.getId()));
+			watchList.setName(I18NUtils.getMessage(ControllerUtils.getResourceBundle(request), "common.newName"));
+			watchLists.add(watchListDao.createNewWatchList(watchList, user.getId()));
 		}
 
 		int selected = user.getSelectedWatchList();
 		boolean found = false;
 
-		List<IntValuePair> watchListNames = new ArrayList<IntValuePair>(
-				watchLists.size());
+		List<IntValuePair> watchListNames = new ArrayList<IntValuePair>(watchLists.size());
 		for (WatchList watchList : watchLists) {
 			if (watchList.getId() == selected)
 				found = true;
 
-			if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER
-					|| user.isAdmin()) {
+			if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER || user.isAdmin()) {
 				// If this is the owner or admin, check that the user still has
 				// access to
 				// the points. If not, remove the
@@ -93,9 +93,7 @@ public class WatchListController extends ParameterizableViewController {
 				List<DataPointVO> list = watchList.getPointList();
 				List<DataPointVO> copy = new ArrayList<DataPointVO>(list);
 				for (DataPointVO point : copy) {
-					if (point == null
-							|| !Permissions.hasDataPointReadPermission(user,
-									point)) {
+					if (point == null || !Permissions.hasDataPointReadPermission(user, point)) {
 						list.remove(point);
 						changed = true;
 					}
@@ -105,8 +103,7 @@ public class WatchListController extends ParameterizableViewController {
 					watchListDao.saveWatchList(watchList);
 			}
 
-			watchListNames.add(new IntValuePair(watchList.getId(), watchList
-					.getName()));
+			watchListNames.add(new IntValuePair(watchList.getId(), watchList.getName()));
 		}
 
 		if (!found) {
@@ -122,6 +119,7 @@ public class WatchListController extends ParameterizableViewController {
 		model.put(KEY_WATCHLISTS, watchListNames);
 		model.put(KEY_SELECTED_WATCHLIST, selected);
 
+		LOG.debug("returning model");
 		return model;
 	}
 }

@@ -160,7 +160,7 @@ create table dataPointUsers (
   userId int not null,
   permission int not null
 ) ENGINE=InnoDB;
-alter table dataPointUsers add constraint dataPointUsersFk1 foreign key (dataPointId) references dataPoints(id);
+alter table dataPointUsers add constraint dataPointUsersFk1 foreign key (dataPointId) references dataPoints(id) on delete cascade;
 alter table dataPointUsers add constraint dataPointUsersFk2 foreign key (userId) references users(id) on delete cascade;
 
 
@@ -238,7 +238,7 @@ create table watchListPoints (
   sortOrder int not null
 ) ENGINE=InnoDB;
 alter table watchListPoints add constraint watchListPointsFk1 foreign key (watchListId) references watchLists(id) on delete cascade;
-alter table watchListPoints add constraint watchListPointsFk2 foreign key (dataPointId) references dataPoints(id);
+alter table watchListPoints add constraint watchListPointsFk2 foreign key (dataPointId) references dataPoints(id) on delete cascade;
 
 create table watchListUsers (
   watchListId int not null,
@@ -250,7 +250,7 @@ alter table watchListUsers add constraint watchListUsersFk1 foreign key (watchLi
 alter table watchListUsers add constraint watchListUsersFk2 foreign key (userId) references users(id) on delete cascade;
 
 
---
+--s
 --
 -- Point event detectors
 --

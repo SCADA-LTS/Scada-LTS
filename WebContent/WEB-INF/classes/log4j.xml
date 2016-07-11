@@ -86,12 +86,19 @@
   </appender>
   
 <!-- Normal Logging -->
-  <category name="org.directwebremoting"><level value="warn"/></category>
-  <category name="org"><level value="warn"/></category>
+<!--   <category name="org.directwebremoting"><level value="warn"/></category> -->
+  <category name="org"><level value="error"/></category>
+  <category name="br.org.scadabr"><level value="info"/></category>
+  <category name="br.org.scadabr.vo"><level value="trace"/></category>
   <category name="org.springframework.web.servlet.FrameworkServlet"><level value="error"/></category>
   <category name="com.serotonin.db.spring.ExtendedJdbcTemplate"><level value="error"/></category>
-  <category name="com.serotonin.mango"><level value="info"/></category>
-
+  <category name="com.serotonin.mango"><level value="warn"/></category>
+  <category name="com.serotonin.mango.db.dao.UserDao"><level value="trace"/></category>
+  <category name="com.serotonin.mango.rt.maint"><level value="error"/></category>
+  <category name="com.serotonin.mango.web.dwr.UsersDwr"><level value="trace"/></category>
+  <category name="com.serotonin.mango.web.mvc.controller.LoginController"><level value="trace"/></category>
+  <category name="com.serotonin.mango.MangoContextListener"><level value="info"/></category>
+  
 
 <!-- Modbus Logging -->
   <category name="com.serotonin.modbus4j.ip.listener" additivity="false">
@@ -127,20 +134,20 @@
 <!--   </category> -->
 
 <!-- Dao Logging -->
-  <category name="com.serotonin.mango.db.dao.DataSourceDao" additivity="false">
-    <level value="debug"/>
-    <appender-ref ref="daoasync"/>
-  </category>
+<!--   <category name="com.serotonin.mango.db.dao.DataSourceDao" additivity="false"> -->
+<!--     <level value="debug"/> -->
+<!--     <appender-ref ref="daoasync"/> -->
+<!--   </category> -->
 
-  <category name="com.serotonin.mango.rt.RuntimeManager" additivity="false">
-    <level value="debug"/>
-    <appender-ref ref="daoasync"/>
-  </category>
+<!--   <category name="br.org.scadabr.db.dao" additivity="false"> -->
+<!--     <level value="debug"/> -->
+<!--     <appender-ref ref="daoasync"/> -->
+<!--   </category> -->
 
-  <category name="com.serotonin.mango.web.dwr.DataSourceEditDwr" additivity="false">
-    <level value="debug"/>
-    <appender-ref ref="daoasync"/>
-  </category>
+<!--   <category name="com.serotonin.mango.db.dao.UserDao" additivity="false"> -->
+<!--     <level value="debug"/> -->
+<!--     <appender-ref ref="daoasync"/> -->
+<!--   </category> -->
 
 <!-- Root Log -->
   <root>

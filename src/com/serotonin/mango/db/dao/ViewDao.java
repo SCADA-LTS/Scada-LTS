@@ -43,7 +43,6 @@ import com.serotonin.db.spring.IntValuePairRowMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
 
 public class ViewDao extends BaseDao {
@@ -55,64 +54,65 @@ public class ViewDao extends BaseDao {
 	// /
 	//
 	private static final String VIEW_SELECT = "select data, id, xid, name, background, userId, anonymousAccess from mangoViews";
-	private static final String USER_ID_COND = " where userId=? or "
+	private static final String PROFILE_USER_ID_COND = " where userId=? or "
 			+ "id in (select mangoViewId from mangoViewUsers where userId=? and accessType>?) or "
-			+ "id in (select viewId from viewUsersProfiles where userProfileId=?)";
+			+ "id in (select viewId from viewUsersProfiles where userProfileId=? and permission>?)";
+	private static final String USER_ID_COND = " where userId=? or "
+			+ "id in (select mangoViewId from mangoViewUsers where userId=? and accessType>?)";
 
 	public List<View> getViews() {
-		List<View> views = query(VIEW_SELECT + " order by name",
-				new ViewRowMapper());
+		List<View> views = query(VIEW_SELECT + " order by name", new ViewRowMapper());
 		setViewUsers(views);
 		return views;
 	}
 
 	public List<View> getViews(int userId, int userProfileId) {
-		List<View> views = query(VIEW_SELECT + USER_ID_COND + " order by name",
-				new Object[] { userId, userId, ShareUser.ACCESS_NONE,
-						userProfileId }, new ViewRowMapper());
+		List<View> views = query(VIEW_SELECT + PROFILE_USER_ID_COND + " order by name",
+				new Object[] { userId, userId, ShareUser.ACCESS_NONE, userProfileId, ShareUser.ACCESS_NONE },
+				new ViewRowMapper());
 		setViewUsers(views);
 		return views;
 	}
 
 	public List<IntValuePair> getViewNames(int userId, int userProfileId) {
-		return query("select id, name from mangoViews" + USER_ID_COND
-				+ " order by name", new Object[] { userId, userId,
-				ShareUser.ACCESS_NONE, userProfileId },
+		return query("select id, name from mangoViews" + PROFILE_USER_ID_COND + " order by name",
+				new Object[] { userId, userId, ShareUser.ACCESS_NONE, userProfileId, ShareUser.ACCESS_NONE },
 				new IntValuePairRowMapper());
+	}
+
+	public List<IntValuePair> getViewNames(int userId) {
+		return query("select id, name from mangoViews" + USER_ID_COND + " order by name",
+				new Object[] { userId, userId, ShareUser.ACCESS_NONE }, new IntValuePairRowMapper());
 	}
 
 	public List<IntValuePair> getAllViewNames() {
-		return query("select id, name from mangoViews order by name",
-				new IntValuePairRowMapper());
+		return query("select id, name from mangoViews order by name", new IntValuePairRowMapper());
 	}
 
-	public List<IntValuePair> getViewNamesWithReadOrWritePermissions(
-			int userId, int userProfileId) {
+	public List<IntValuePair> getViewNamesWithReadOrWritePermissions(int userId, int userProfileId) {
 		List<IntValuePair> allPermissions = usersPermissions.get(userId);
-		if (allPermissions == null) {
+		if (allPermissions == null || allPermissions.isEmpty()) {
 			allPermissions = updateViewUsersPermissions(userId, userProfileId);
+		}
+		LOG.trace("Let´s see what we´ve got...");
+		Iterator<IntValuePair> iter = allPermissions.iterator();
+		while (iter.hasNext()) {
+			iter.next();
+			LOG.trace(iter.toString());
 		}
 		return allPermissions;
 	}
 
-	private List<IntValuePair> updateViewUsersPermissions(int userId,
-			int userProfileId) {
+	public List<IntValuePair> updateViewUsersPermissions(int userId, int userProfileId) {
 		List<IntValuePair> allPermissions;
-		allPermissions = getViewNames(userId, userProfileId);
-
-		User user = new UserDao().getUser(userId);
-
-		for (Iterator<IntValuePair> iterator = allPermissions.iterator(); iterator
-				.hasNext();) {
-
-			IntValuePair idDaViewComView = (IntValuePair) iterator.next();
-
-			View view = getView(idDaViewComView.getKey());
-
-			if (view.getUserAccess(user) == ShareUser.ACCESS_NONE) {
-				iterator.remove();
-			}
+		if (userProfileId > 0) {
+			allPermissions = getViewNames(userId, userProfileId);
+		} else {
+			allPermissions = getViewNames(userId);
 		}
+		LOG.trace("Replacing? " + usersPermissions.containsKey(userId));
+		if (usersPermissions.containsKey(userId))
+			usersPermissions.remove(userId);
 		usersPermissions.put(userId, allPermissions);
 		return allPermissions;
 	}
@@ -131,8 +131,7 @@ public class ViewDao extends BaseDao {
 	}
 
 	public View getView(String name) {
-		return getSingleView(VIEW_SELECT + " where name=?",
-				new Object[] { name });
+		return getSingleView(VIEW_SELECT + " where name=?", new Object[] { name });
 	}
 
 	private View getSingleView(String sql, Object[] params) {
@@ -147,8 +146,7 @@ public class ViewDao extends BaseDao {
 	class ViewRowMapper implements GenericRowMapper<View> {
 		public View mapRow(ResultSet rs, int rowNum) throws SQLException {
 			View v;
-			if (Common.getEnvironmentProfile().getString("db.type")
-					.equals("postgres")) {
+			if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
 				InputStream is = rs.getBinaryStream(1);
 				if (is == null)
 					// This can happen during upgrade
@@ -161,8 +159,7 @@ public class ViewDao extends BaseDao {
 					// This can happen during upgrade
 					v = new View();
 				else
-					v = (View) SerializationHelper.readObject(blob
-							.getBinaryStream());
+					v = (View) SerializationHelper.readObject(blob.getBinaryStream());
 			}
 
 			v.setId(rs.getInt(2));
@@ -197,48 +194,38 @@ public class ViewDao extends BaseDao {
 
 	public void saveView(final View view) {
 		LOG.debug("View name: " + view.getName());
-		getTransactionTemplate().execute(
-				new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(
-							TransactionStatus status) {
-						// Decide whether to insert or update.
-						if (view.getId() == Common.NEW_ID)
-							insertView(view);
-						else
-							updateView(view);
-
-						saveViewUsers(view);
-					}
-				});
 		usersPermissions.clear();
+		getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// Decide whether to insert or update.
+				if (view.getId() == Common.NEW_ID)
+					insertView(view);
+				else
+					updateView(view);
+
+				saveViewUsers(view);
+			}
+		});
 	}
 
 	void insertView(View view) {
-		if (Common.getEnvironmentProfile().getString("db.type")
-				.equals("postgres")) {
+		if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
 			try {
-				Connection conn = DriverManager
-						.getConnection(
-								Common.getEnvironmentProfile().getString(
-										"db.url"),
-								Common.getEnvironmentProfile().getString(
-										"db.username"),
-								Common.getEnvironmentProfile().getString(
-										"db.password"));
-				PreparedStatement preStmt = conn
-						.prepareStatement("insert into mangoViews (xid, name, background, userId, anonymousAccess, data) values (?,?,?,?,?,?)");
+				Connection conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
+						Common.getEnvironmentProfile().getString("db.username"),
+						Common.getEnvironmentProfile().getString("db.password"));
+				PreparedStatement preStmt = conn.prepareStatement(
+						"insert into mangoViews (xid, name, background, userId, anonymousAccess, data) values (?,?,?,?,?,?)");
 				preStmt.setString(1, view.getXid());
 				preStmt.setString(2, view.getName());
 				preStmt.setString(3, view.getBackgroundFilename());
 				preStmt.setInt(4, view.getUserId());
 				preStmt.setInt(5, view.getAnonymousAccess());
-				preStmt.setBytes(6,
-						SerializationHelper.writeObjectToArray(view));
+				preStmt.setBytes(6, SerializationHelper.writeObjectToArray(view));
 				preStmt.executeUpdate();
 
-				ResultSet resSEQ = conn.createStatement().executeQuery(
-						"SELECT currval('mangoviews_id_seq')");
+				ResultSet resSEQ = conn.createStatement().executeQuery("SELECT currval('mangoviews_id_seq')");
 				resSEQ.next();
 				view.setId(resSEQ.getInt(1));
 
@@ -250,35 +237,21 @@ public class ViewDao extends BaseDao {
 		} else {
 			view.setId(doInsert(
 					"insert into mangoViews (xid, name, background, userId, anonymousAccess, data) values (?,?,?,?,?,?)",
-					new Object[] { view.getXid(), view.getName(),
-							view.getBackgroundFilename(), view.getUserId(),
-							view.getAnonymousAccess(),
-							SerializationHelper.writeObject(view) }, new int[] {
-							Types.VARCHAR,
-							Types.VARCHAR,
-							Types.VARCHAR,
-							Types.INTEGER,
-							Types.INTEGER,
-							Common.getEnvironmentProfile().getString("db.type")
-									.equals("postgres") ? Types.BINARY
+					new Object[] { view.getXid(), view.getName(), view.getBackgroundFilename(), view.getUserId(),
+							view.getAnonymousAccess(), SerializationHelper.writeObject(view) },
+					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.INTEGER,
+							Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY
 									: Types.BLOB }));
 		}
 	}
 
 	void updateView(View view) {
-		ejt.update(
-				"update mangoViews set xid=?, name=?, background=?, anonymousAccess=?, data=? where id=?",
-				new Object[] { view.getXid(), view.getName(),
-						view.getBackgroundFilename(),
-						view.getAnonymousAccess(),
+		ejt.update("update mangoViews set xid=?, name=?, background=?, anonymousAccess=?, data=? where id=?",
+				new Object[] { view.getXid(), view.getName(), view.getBackgroundFilename(), view.getAnonymousAccess(),
 						SerializationHelper.writeObject(view), view.getId() },
-				new int[] {
-						Types.VARCHAR,
-						Types.VARCHAR,
-						Types.VARCHAR,
-						Types.INTEGER,
-						Common.getEnvironmentProfile().getString("db.type")
-								.equals("postgres") ? Types.BINARY : Types.BLOB,
+				new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER,
+						Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY
+								: Types.BLOB,
 						Types.INTEGER });
 	}
 
@@ -293,8 +266,7 @@ public class ViewDao extends BaseDao {
 	// /
 	//
 	private void setViewUsers(View view) {
-		view.setViewUsers(query(
-				"select userId, accessType from mangoViewUsers where mangoViewId=?",
+		view.setViewUsers(query("select userId, accessType from mangoViewUsers where mangoViewId=?",
 				new Object[] { view.getId() }, new ViewUserRowMapper()));
 	}
 
@@ -308,8 +280,7 @@ public class ViewDao extends BaseDao {
 	}
 
 	private void deleteViewUsers(int viewId) {
-		ejt.update("delete from mangoViewUsers where mangoViewId=?",
-				new Object[] { viewId });
+		ejt.update("delete from mangoViewUsers where mangoViewId=?", new Object[] { viewId });
 	}
 
 	void saveViewUsers(final View view) {
@@ -317,27 +288,24 @@ public class ViewDao extends BaseDao {
 		deleteViewUsers(view.getId());
 
 		// Add in all of the entries.
-		ejt.batchUpdate("insert into mangoViewUsers values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					@Override
-					public int getBatchSize() {
-						return view.getViewUsers().size();
-					}
+		ejt.batchUpdate("insert into mangoViewUsers values (?,?,?)", new BatchPreparedStatementSetter() {
+			@Override
+			public int getBatchSize() {
+				return view.getViewUsers().size();
+			}
 
-					@Override
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ShareUser vu = view.getViewUsers().get(i);
-						ps.setInt(1, view.getId());
-						ps.setInt(2, vu.getUserId());
-						ps.setInt(3, vu.getAccessType());
-					}
-				});
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ShareUser vu = view.getViewUsers().get(i);
+				ps.setInt(1, view.getId());
+				ps.setInt(2, vu.getUserId());
+				ps.setInt(3, vu.getAccessType());
+			}
+		});
 
 		// Update cache
 		List<ShareUser> shareUsers = view.getViewUsers();
-		for (Iterator<ShareUser> iterator = shareUsers.iterator(); iterator
-				.hasNext();) {
+		for (Iterator<ShareUser> iterator = shareUsers.iterator(); iterator.hasNext();) {
 			ShareUser shareUser = iterator.next();
 			usersPermissions.remove(shareUser.getUserId());
 			// updateViewUsersPermissions(shareUser.getUserId());
@@ -345,8 +313,7 @@ public class ViewDao extends BaseDao {
 	}
 
 	public void removeUserFromView(int viewId, int userId) {
-		ejt.update(
-				"delete from mangoViewUsers where mangoViewId=? and userId=?",
-				new Object[] { viewId, userId });
+		ejt.update("delete from mangoViewUsers where mangoViewId=? and userId=?", new Object[] { viewId, userId });
 	}
+
 }

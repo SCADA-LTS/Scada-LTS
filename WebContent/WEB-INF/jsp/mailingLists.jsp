@@ -249,11 +249,15 @@
     }
     
     function deleteMailingList() {
-        MailingListsDwr.deleteMailingList(editingMailingList.id, function() {
-            stopImageFader($("ml"+ editingMailingList.id +"Img"));
-            $("mailingListsTable").removeChild($("ml"+ editingMailingList.id));
-            hide($("mailingListDetails"));
-            editingMailingList = null;
+        MailingListsDwr.deleteMailingList(editingMailingList.id, function(result) {
+        	if (result){
+	            stopImageFader($("ml"+ editingMailingList.id +"Img"));
+	            $("mailingListsTable").removeChild($("ml"+ editingMailingList.id));
+	            hide($("mailingListDetails"));
+	            editingMailingList = null;
+        	}else{
+                setUserMessage("<fmt:message key="mailingLists.notDeleted"/>");
+        	}
         });
     }
     

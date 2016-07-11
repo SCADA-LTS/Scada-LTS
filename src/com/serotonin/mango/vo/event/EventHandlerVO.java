@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
@@ -50,6 +53,7 @@ import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.SerializationHelper;
@@ -58,8 +62,8 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 @JsonRemoteEntity
-public class EventHandlerVO implements Serializable,
-		ChangeComparable<EventHandlerVO>, JsonSerializable {
+public class EventHandlerVO implements Serializable, ChangeComparable<EventHandlerVO>, JsonSerializable {
+	private static Log log = LogFactory.getLog(EventHandlerVO.class);
 	public static final String XID_PREFIX = "EH_";
 
 	public static final int TYPE_SET_POINT = 1;
@@ -68,14 +72,12 @@ public class EventHandlerVO implements Serializable,
 	public static final int TYPE_SCRIPT = 4;
 
 	public static ExportCodes TYPE_CODES = new ExportCodes();
+
 	static {
-		TYPE_CODES.addElement(TYPE_SET_POINT, "SET_POINT",
-				"eventHandlers.type.setPoint");
+		TYPE_CODES.addElement(TYPE_SET_POINT, "SET_POINT", "eventHandlers.type.setPoint");
 		TYPE_CODES.addElement(TYPE_EMAIL, "EMAIL", "eventHandlers.type.email");
-		TYPE_CODES.addElement(TYPE_PROCESS, "PROCESS",
-				"eventHandlers.type.process");
-		TYPE_CODES.addElement(TYPE_SCRIPT, "SCRIPT",
-				"eventHandlers.type.script");
+		TYPE_CODES.addElement(TYPE_PROCESS, "PROCESS", "eventHandlers.type.process");
+		TYPE_CODES.addElement(TYPE_SCRIPT, "SCRIPT", "eventHandlers.type.script");
 	}
 
 	public static final int RECIPIENT_TYPE_ACTIVE = 1;
@@ -83,13 +85,12 @@ public class EventHandlerVO implements Serializable,
 	public static final int RECIPIENT_TYPE_INACTIVE = 3;
 
 	public static ExportCodes RECIPIENT_TYPE_CODES = new ExportCodes();
+
 	static {
-		RECIPIENT_TYPE_CODES.addElement(RECIPIENT_TYPE_ACTIVE, "ACTIVE",
-				"eventHandlers.recipientType.active");
-		RECIPIENT_TYPE_CODES.addElement(RECIPIENT_TYPE_ESCALATION,
-				"ESCALATION", "eventHandlers.recipientType.escalation");
-		RECIPIENT_TYPE_CODES.addElement(RECIPIENT_TYPE_INACTIVE, "INACTIVE",
-				"eventHandlers.recipientType.inactive");
+		RECIPIENT_TYPE_CODES.addElement(RECIPIENT_TYPE_ACTIVE, "ACTIVE", "eventHandlers.recipientType.active");
+		RECIPIENT_TYPE_CODES.addElement(RECIPIENT_TYPE_ESCALATION, "ESCALATION",
+				"eventHandlers.recipientType.escalation");
+		RECIPIENT_TYPE_CODES.addElement(RECIPIENT_TYPE_INACTIVE, "INACTIVE", "eventHandlers.recipientType.inactive");
 	}
 
 	public static final int SET_ACTION_NONE = 0;
@@ -97,13 +98,11 @@ public class EventHandlerVO implements Serializable,
 	public static final int SET_ACTION_STATIC_VALUE = 2;
 
 	public static ExportCodes SET_ACTION_CODES = new ExportCodes();
+
 	static {
-		SET_ACTION_CODES.addElement(SET_ACTION_NONE, "NONE",
-				"eventHandlers.action.none");
-		SET_ACTION_CODES.addElement(SET_ACTION_POINT_VALUE, "POINT_VALUE",
-				"eventHandlers.action.point");
-		SET_ACTION_CODES.addElement(SET_ACTION_STATIC_VALUE, "STATIC_VALUE",
-				"eventHandlers.action.static");
+		SET_ACTION_CODES.addElement(SET_ACTION_NONE, "NONE", "eventHandlers.action.none");
+		SET_ACTION_CODES.addElement(SET_ACTION_POINT_VALUE, "POINT_VALUE", "eventHandlers.action.point");
+		SET_ACTION_CODES.addElement(SET_ACTION_STATIC_VALUE, "STATIC_VALUE", "eventHandlers.action.static");
 	}
 
 	// Common fields
@@ -153,8 +152,7 @@ public class EventHandlerVO implements Serializable,
 		case TYPE_SCRIPT:
 			return new ScriptHandlerRT(this);
 		}
-		throw new ShouldNeverHappenException("Unknown handler type: "
-				+ handlerType);
+		throw new ShouldNeverHappenException("Unknown handler type: " + handlerType);
 	}
 
 	public LocalizableMessage getMessage() {
@@ -289,8 +287,7 @@ public class EventHandlerVO implements Serializable,
 		return activeRecipients;
 	}
 
-	public void setActiveRecipients(
-			List<RecipientListEntryBean> activeRecipients) {
+	public void setActiveRecipients(List<RecipientListEntryBean> activeRecipients) {
 		this.activeRecipients = activeRecipients;
 	}
 
@@ -314,8 +311,7 @@ public class EventHandlerVO implements Serializable,
 		return escalationRecipients;
 	}
 
-	public void setEscalationRecipients(
-			List<RecipientListEntryBean> escalationRecipients) {
+	public void setEscalationRecipients(List<RecipientListEntryBean> escalationRecipients) {
 		this.escalationRecipients = escalationRecipients;
 	}
 
@@ -347,8 +343,7 @@ public class EventHandlerVO implements Serializable,
 		return inactiveRecipients;
 	}
 
-	public void setInactiveRecipients(
-			List<RecipientListEntryBean> inactiveRecipients) {
+	public void setInactiveRecipients(List<RecipientListEntryBean> inactiveRecipients) {
 		this.inactiveRecipients = inactiveRecipients;
 	}
 
@@ -381,77 +376,59 @@ public class EventHandlerVO implements Serializable,
 			else {
 				int dataType = dp.getPointLocator().getDataTypeId();
 
-				if (activeAction == SET_ACTION_NONE
-						&& inactiveAction == SET_ACTION_NONE)
-					response
-							.addGenericMessage("eventHandlers.noSetPointAction");
+				if (activeAction == SET_ACTION_NONE && inactiveAction == SET_ACTION_NONE)
+					response.addGenericMessage("eventHandlers.noSetPointAction");
 
 				// Active
-				if (activeAction == SET_ACTION_STATIC_VALUE
-						&& dataType == DataTypes.MULTISTATE) {
+				if (activeAction == SET_ACTION_STATIC_VALUE && dataType == DataTypes.MULTISTATE) {
 					try {
 						Integer.parseInt(activeValueToSet);
 					} catch (NumberFormatException e) {
-						response
-								.addGenericMessage("eventHandlers.invalidActiveValue");
+						response.addGenericMessage("eventHandlers.invalidActiveValue");
 					}
 				}
 
-				if (activeAction == SET_ACTION_STATIC_VALUE
-						&& dataType == DataTypes.NUMERIC) {
+				if (activeAction == SET_ACTION_STATIC_VALUE && dataType == DataTypes.NUMERIC) {
 					try {
 						Double.parseDouble(activeValueToSet);
 					} catch (NumberFormatException e) {
-						response
-								.addGenericMessage("eventHandlers.invalidActiveValue");
+						response.addGenericMessage("eventHandlers.invalidActiveValue");
 					}
 				}
 
 				if (activeAction == SET_ACTION_POINT_VALUE) {
-					DataPointVO dpActive = new DataPointDao()
-							.getDataPoint(activePointId);
+					DataPointVO dpActive = new DataPointDao().getDataPoint(activePointId);
 
 					if (dpActive == null)
-						response
-								.addGenericMessage("eventHandlers.invalidActiveSource");
-					else if (dataType != dpActive.getPointLocator()
-							.getDataTypeId())
-						response
-								.addGenericMessage("eventHandlers.invalidActiveSourceType");
+						response.addGenericMessage("eventHandlers.invalidActiveSource");
+					else if (dataType != dpActive.getPointLocator().getDataTypeId())
+						response.addGenericMessage("eventHandlers.invalidActiveSourceType");
 				}
 
 				// Inactive
-				if (inactiveAction == SET_ACTION_STATIC_VALUE
-						&& dataType == DataTypes.MULTISTATE) {
+				if (inactiveAction == SET_ACTION_STATIC_VALUE && dataType == DataTypes.MULTISTATE) {
 					try {
 						Integer.parseInt(inactiveValueToSet);
 					} catch (NumberFormatException e) {
-						response
-								.addGenericMessage("eventHandlers.invalidInactiveValue");
+						response.addGenericMessage("eventHandlers.invalidInactiveValue");
 					}
 				}
 
-				if (inactiveAction == SET_ACTION_STATIC_VALUE
-						&& dataType == DataTypes.NUMERIC) {
+				if (inactiveAction == SET_ACTION_STATIC_VALUE && dataType == DataTypes.NUMERIC) {
 					try {
 						Double.parseDouble(inactiveValueToSet);
 					} catch (NumberFormatException e) {
-						response
-								.addGenericMessage("eventHandlers.invalidInactiveValue");
+						response.addGenericMessage("eventHandlers.invalidInactiveValue");
 					}
 				}
 
 				if (inactiveAction == SET_ACTION_POINT_VALUE) {
-					DataPointVO dpInactive = new DataPointDao()
-							.getDataPoint(inactivePointId);
+					DataPointVO dpInactive = new DataPointDao().getDataPoint(inactivePointId);
 
 					if (dpInactive == null)
-						response
-								.addGenericMessage("eventHandlers.invalidInactiveSource");
-					else if (dataType != dpInactive.getPointLocator()
-							.getDataTypeId())
-						response
-								.addGenericMessage("eventHandlers.invalidInactiveSourceType");
+						response.addGenericMessage("eventHandlers.invalidInactiveSource");
+					else if (dataType != dpInactive.getPointLocator().getDataTypeId())
+						response.addGenericMessage("eventHandlers.invalidInactiveSourceType");
 				}
 			}
 		} else if (handlerType == TYPE_EMAIL) {
@@ -460,20 +437,17 @@ public class EventHandlerVO implements Serializable,
 
 			if (sendEscalation) {
 				if (escalationDelay <= 0)
-					response.addContextualMessage("escalationDelay",
-							"eventHandlers.escalDelayError");
+					response.addContextualMessage("escalationDelay", "eventHandlers.escalDelayError");
 				if (escalationRecipients.isEmpty())
 					response.addGenericMessage("eventHandlers.noEscalRecips");
 			}
 
 			if (sendInactive && inactiveOverride) {
 				if (inactiveRecipients.isEmpty())
-					response
-							.addGenericMessage("eventHandlers.noInactiveRecips");
+					response.addGenericMessage("eventHandlers.noInactiveRecips");
 			}
 		} else if (handlerType == TYPE_PROCESS) {
-			if (StringUtils.isEmpty(activeProcessCommand)
-					&& StringUtils.isEmpty(inactiveProcessCommand))
+			if (StringUtils.isEmpty(activeProcessCommand) && StringUtils.isEmpty(inactiveProcessCommand))
 				response.addGenericMessage("eventHandlers.invalidCommands");
 		} else if (handlerType == TYPE_SCRIPT) {
 			if (activeScriptCommand < 1 && inactiveScriptCommand < 1)
@@ -486,171 +460,132 @@ public class EventHandlerVO implements Serializable,
 		DataPointDao dataPointDao = new DataPointDao();
 		AuditEventType.addPropertyMessage(list, "common.xid", xid);
 		AuditEventType.addPropertyMessage(list, "eventHandlers.alias", alias);
-		AuditEventType.addPropertyMessage(list, "eventHandlers.type",
-				getTypeMessage(handlerType));
+		AuditEventType.addPropertyMessage(list, "eventHandlers.type", getTypeMessage(handlerType));
 		AuditEventType.addPropertyMessage(list, "common.disabled", disabled);
 		if (handlerType == TYPE_SET_POINT) {
 			AuditEventType.addPropertyMessage(list, "eventHandlers.target",
 					dataPointDao.getExtendedPointName(targetPointId));
-			AuditEventType.addPropertyMessage(list,
-					"eventHandlers.activeAction",
-					getSetActionMessage(activeAction));
+			AuditEventType.addPropertyMessage(list, "eventHandlers.activeAction", getSetActionMessage(activeAction));
 			if (activeAction == SET_ACTION_POINT_VALUE)
-				AuditEventType.addPropertyMessage(list,
-						"eventHandlers.action.point", dataPointDao
-								.getExtendedPointName(activePointId));
+				AuditEventType.addPropertyMessage(list, "eventHandlers.action.point",
+						dataPointDao.getExtendedPointName(activePointId));
 			else if (activeAction == SET_ACTION_STATIC_VALUE)
-				AuditEventType.addPropertyMessage(list,
-						"eventHandlers.action.static", activeValueToSet);
+				AuditEventType.addPropertyMessage(list, "eventHandlers.action.static", activeValueToSet);
 
-			AuditEventType.addPropertyMessage(list,
-					"eventHandlers.inactiveAction",
+			AuditEventType.addPropertyMessage(list, "eventHandlers.inactiveAction",
 					getSetActionMessage(inactiveAction));
 			if (inactiveAction == SET_ACTION_POINT_VALUE)
-				AuditEventType.addPropertyMessage(list,
-						"eventHandlers.action.point", dataPointDao
-								.getExtendedPointName(inactivePointId));
+				AuditEventType.addPropertyMessage(list, "eventHandlers.action.point",
+						dataPointDao.getExtendedPointName(inactivePointId));
 			else if (inactiveAction == SET_ACTION_STATIC_VALUE)
-				AuditEventType.addPropertyMessage(list,
-						"eventHandlers.action.static", inactiveValueToSet);
+				AuditEventType.addPropertyMessage(list, "eventHandlers.action.static", inactiveValueToSet);
 		} else if (handlerType == TYPE_EMAIL) {
-			AuditEventType.addPropertyMessage(list,
-					"eventHandlers.emailRecipients",
+			AuditEventType.addPropertyMessage(list, "eventHandlers.emailRecipients",
 					createRecipientMessage(activeRecipients));
-			AuditEventType.addPropertyMessage(list, "eventHandlers.escal",
-					sendEscalation);
+			AuditEventType.addPropertyMessage(list, "eventHandlers.escal", sendEscalation);
 			if (sendEscalation) {
-				AuditEventType.addPeriodMessage(list,
-						"eventHandlers.escalPeriod", escalationDelayType,
+				AuditEventType.addPeriodMessage(list, "eventHandlers.escalPeriod", escalationDelayType,
 						escalationDelay);
-				AuditEventType.addPropertyMessage(list,
-						"eventHandlers.escalRecipients",
+				AuditEventType.addPropertyMessage(list, "eventHandlers.escalRecipients",
 						createRecipientMessage(escalationRecipients));
 			}
-			AuditEventType.addPropertyMessage(list,
-					"eventHandlers.inactiveNotif", sendInactive);
+			AuditEventType.addPropertyMessage(list, "eventHandlers.inactiveNotif", sendInactive);
 			if (sendInactive) {
-				AuditEventType.addPropertyMessage(list,
-						"eventHandlers.inactiveOverride", inactiveOverride);
+				AuditEventType.addPropertyMessage(list, "eventHandlers.inactiveOverride", inactiveOverride);
 				if (inactiveOverride)
-					AuditEventType.addPropertyMessage(list,
-							"eventHandlers.inactiveRecipients",
+					AuditEventType.addPropertyMessage(list, "eventHandlers.inactiveRecipients",
 							createRecipientMessage(inactiveRecipients));
 			}
 		} else if (handlerType == TYPE_PROCESS) {
-			AuditEventType.addPropertyMessage(list,
-					"eventHandlers.activeCommand", activeProcessCommand);
-			AuditEventType.addPropertyMessage(list,
-					"eventHandlers.inactiveCommand", inactiveProcessCommand);
+			AuditEventType.addPropertyMessage(list, "eventHandlers.activeCommand", activeProcessCommand);
+			AuditEventType.addPropertyMessage(list, "eventHandlers.inactiveCommand", inactiveProcessCommand);
 		} else if (handlerType == TYPE_SCRIPT) {
-			AuditEventType.addPropertyMessage(list,
-					"eventHandlers.activeCommand", activeScriptCommand);
-			AuditEventType.addPropertyMessage(list,
-					"eventHandlers.inactiveCommand", inactiveScriptCommand);
+			AuditEventType.addPropertyMessage(list, "eventHandlers.activeCommand", activeScriptCommand);
+			AuditEventType.addPropertyMessage(list, "eventHandlers.inactiveCommand", inactiveScriptCommand);
 		}
 	}
 
 	@Override
-	public void addPropertyChanges(List<LocalizableMessage> list,
-			EventHandlerVO from) {
+	public void addPropertyChanges(List<LocalizableMessage> list, EventHandlerVO from) {
 		DataPointDao dataPointDao = new DataPointDao();
-		AuditEventType.maybeAddPropertyChangeMessage(list, "common.xid",
-				from.xid, xid);
-		AuditEventType.maybeAddPropertyChangeMessage(list,
-				"eventHandlers.alias", from.alias, alias);
-		AuditEventType.maybeAddPropertyChangeMessage(list, "common.disabled",
-				from.disabled, disabled);
+		AuditEventType.maybeAddPropertyChangeMessage(list, "common.xid", from.xid, xid);
+		AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.alias", from.alias, alias);
+		AuditEventType.maybeAddPropertyChangeMessage(list, "common.disabled", from.disabled, disabled);
 		if (handlerType == TYPE_SET_POINT) {
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.target", dataPointDao
-							.getExtendedPointName(from.targetPointId),
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.target",
+					dataPointDao.getExtendedPointName(from.targetPointId),
 					dataPointDao.getExtendedPointName(targetPointId));
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.activeAction",
-					getSetActionMessage(from.activeAction),
-					getSetActionMessage(activeAction));
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.action.point", dataPointDao
-							.getExtendedPointName(from.activePointId),
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.activeAction",
+					getSetActionMessage(from.activeAction), getSetActionMessage(activeAction));
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.action.point",
+					dataPointDao.getExtendedPointName(from.activePointId),
 					dataPointDao.getExtendedPointName(activePointId));
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.action.static", from.activeValueToSet,
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.action.static", from.activeValueToSet,
 					activeValueToSet);
 
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.inactiveAction",
-					getSetActionMessage(from.inactiveAction),
-					getSetActionMessage(inactiveAction));
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.action.point", dataPointDao
-							.getExtendedPointName(from.inactivePointId),
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.inactiveAction",
+					getSetActionMessage(from.inactiveAction), getSetActionMessage(inactiveAction));
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.action.point",
+					dataPointDao.getExtendedPointName(from.inactivePointId),
 					dataPointDao.getExtendedPointName(inactivePointId));
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.action.static", from.inactiveValueToSet,
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.action.static", from.inactiveValueToSet,
 					inactiveValueToSet);
 		} else if (handlerType == TYPE_EMAIL) {
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.emailRecipients",
-					createRecipientMessage(from.activeRecipients),
-					createRecipientMessage(activeRecipients));
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.escal", from.sendEscalation, sendEscalation);
-			AuditEventType.maybeAddPeriodChangeMessage(list,
-					"eventHandlers.escalPeriod", from.escalationDelayType,
+			log.debug("Email Handler!");
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.emailRecipients",
+					createRecipientMessage(from.activeRecipients), createRecipientMessage(activeRecipients));
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.escal", from.sendEscalation,
+					sendEscalation);
+			AuditEventType.maybeAddPeriodChangeMessage(list, "eventHandlers.escalPeriod", from.escalationDelayType,
 					from.escalationDelay, escalationDelayType, escalationDelay);
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.escalRecipients",
-					createRecipientMessage(from.escalationRecipients),
-					createRecipientMessage(escalationRecipients));
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.inactiveNotif", from.sendInactive,
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.escalRecipients",
+					createRecipientMessage(from.escalationRecipients), createRecipientMessage(escalationRecipients));
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.inactiveNotif", from.sendInactive,
 					sendInactive);
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.inactiveOverride", from.inactiveOverride,
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.inactiveOverride", from.inactiveOverride,
 					inactiveOverride);
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.inactiveRecipients",
-					createRecipientMessage(from.inactiveRecipients),
-					createRecipientMessage(inactiveRecipients));
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.inactiveRecipients",
+					createRecipientMessage(from.inactiveRecipients), createRecipientMessage(inactiveRecipients));
 		} else if (handlerType == TYPE_PROCESS) {
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.activeCommand", from.activeProcessCommand,
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.activeCommand", from.activeProcessCommand,
 					activeProcessCommand);
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.inactiveCommand",
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.inactiveCommand",
 					from.inactiveProcessCommand, inactiveProcessCommand);
 		} else if (handlerType == TYPE_SCRIPT) {
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.activeCommand", from.activeScriptCommand,
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.activeCommand", from.activeScriptCommand,
 					activeScriptCommand);
-			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.inactiveCommand",
+			AuditEventType.maybeAddPropertyChangeMessage(list, "eventHandlers.inactiveCommand",
 					from.inactiveScriptCommand, inactiveScriptCommand);
 		}
 	}
 
-	private static LocalizableMessage createRecipientMessage(
-			List<RecipientListEntryBean> recipients) {
+	private static LocalizableMessage createRecipientMessage(List<RecipientListEntryBean> recipients) {
 		MailingListDao mailingListDao = new MailingListDao();
-		UserDao userDao = new UserDao();
+		UserDao userDao = Common.ctx.getUserCache().getUserDao();
 		ArrayList<LocalizableMessage> params = new ArrayList<LocalizableMessage>();
+		if (recipients == null || recipients.size() == 0)
+			log.debug("recipients null or zeroed! " + recipients.size());
+
 		for (RecipientListEntryBean recip : recipients) {
 			LocalizableMessage msg;
+			if (recip != null)
+				log.debug("recip: " + recip.getReferenceId());
+
 			if (recip.getRecipientType() == EmailRecipient.TYPE_MAILING_LIST)
 				msg = new LocalizableMessage("event.audit.recip.mailingList",
-						mailingListDao.getMailingList(recip.getReferenceId())
-								.getName());
-			else if (recip.getRecipientType() == EmailRecipient.TYPE_USER)
-				msg = new LocalizableMessage("event.audit.recip.user", userDao
-						.getUser(recip.getReferenceId()).getUsername());
-			else
-				msg = new LocalizableMessage("event.audit.recip.address", recip
-						.getReferenceAddress());
+						mailingListDao.getMailingList(recip.getReferenceId()).getName());
+			else if (recip.getRecipientType() == EmailRecipient.TYPE_USER) {
+				User user = userDao.getUser(recip.getReferenceId());
+				if (user == null)
+					continue;
+				log.debug("recip user: " + user.getUsername());
+				msg = new LocalizableMessage("event.audit.recip.user", user.getUsername());
+			} else
+				msg = new LocalizableMessage("event.audit.recip.address", recip.getReferenceAddress());
 			params.add(msg);
 		}
 
-		return new LocalizableMessage(
-				"event.audit.recip.list." + params.size(), params.toArray());
+		return new LocalizableMessage("event.audit.recip.list." + params.size(), params.toArray());
 	}
 
 	//
@@ -692,8 +627,7 @@ public class EventHandlerVO implements Serializable,
 	}
 
 	@SuppressWarnings("unchecked")
-	private void readObject(ObjectInputStream in) throws IOException,
-			ClassNotFoundException {
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		int ver = in.readInt();
 
 		// Switch on the version of the class so that version changes can be
@@ -710,13 +644,11 @@ public class EventHandlerVO implements Serializable,
 				inactiveValueToSet = SerializationHelper.readSafeUTF(in);
 				inactivePointId = in.readInt();
 			} else if (handlerType == TYPE_EMAIL) {
-				activeRecipients = (List<RecipientListEntryBean>) in
-						.readObject();
+				activeRecipients = (List<RecipientListEntryBean>) in.readObject();
 				sendEscalation = in.readBoolean();
 				escalationDelayType = in.readInt();
 				escalationDelay = in.readInt();
-				escalationRecipients = (List<RecipientListEntryBean>) in
-						.readObject();
+				escalationRecipients = (List<RecipientListEntryBean>) in.readObject();
 				sendInactive = in.readBoolean();
 				inactiveOverride = false;
 				inactiveRecipients = new ArrayList<RecipientListEntryBean>();
@@ -736,17 +668,14 @@ public class EventHandlerVO implements Serializable,
 				inactiveValueToSet = SerializationHelper.readSafeUTF(in);
 				inactivePointId = in.readInt();
 			} else if (handlerType == TYPE_EMAIL) {
-				activeRecipients = (List<RecipientListEntryBean>) in
-						.readObject();
+				activeRecipients = (List<RecipientListEntryBean>) in.readObject();
 				sendEscalation = in.readBoolean();
 				escalationDelayType = in.readInt();
 				escalationDelay = in.readInt();
-				escalationRecipients = (List<RecipientListEntryBean>) in
-						.readObject();
+				escalationRecipients = (List<RecipientListEntryBean>) in.readObject();
 				sendInactive = in.readBoolean();
 				inactiveOverride = in.readBoolean();
-				inactiveRecipients = (List<RecipientListEntryBean>) in
-						.readObject();
+				inactiveRecipients = (List<RecipientListEntryBean>) in.readObject();
 			} else if (handlerType == TYPE_PROCESS) {
 				activeProcessCommand = SerializationHelper.readSafeUTF(in);
 				inactiveProcessCommand = SerializationHelper.readSafeUTF(in);
@@ -763,17 +692,14 @@ public class EventHandlerVO implements Serializable,
 				inactiveValueToSet = SerializationHelper.readSafeUTF(in);
 				inactivePointId = in.readInt();
 			} else if (handlerType == TYPE_EMAIL) {
-				activeRecipients = (List<RecipientListEntryBean>) in
-						.readObject();
+				activeRecipients = (List<RecipientListEntryBean>) in.readObject();
 				sendEscalation = in.readBoolean();
 				escalationDelayType = in.readInt();
 				escalationDelay = in.readInt();
-				escalationRecipients = (List<RecipientListEntryBean>) in
-						.readObject();
+				escalationRecipients = (List<RecipientListEntryBean>) in.readObject();
 				sendInactive = in.readBoolean();
 				inactiveOverride = in.readBoolean();
-				inactiveRecipients = (List<RecipientListEntryBean>) in
-						.readObject();
+				inactiveRecipients = (List<RecipientListEntryBean>) in.readObject();
 			} else if (handlerType == TYPE_PROCESS) {
 				activeProcessCommand = SerializationHelper.readSafeUTF(in);
 				inactiveProcessCommand = SerializationHelper.readSafeUTF(in);
@@ -817,8 +743,7 @@ public class EventHandlerVO implements Serializable,
 			map.put("activeRecipients", activeRecipients);
 			map.put("sendEscalation", sendEscalation);
 			if (sendEscalation) {
-				map.put("escalationDelayType", Common.TIME_PERIOD_CODES
-						.getCode(escalationDelayType));
+				map.put("escalationDelayType", Common.TIME_PERIOD_CODES.getCode(escalationDelayType));
 				map.put("escalationDelay", escalationDelay);
 				map.put("escalationRecipients", escalationRecipients);
 			}
@@ -838,17 +763,15 @@ public class EventHandlerVO implements Serializable,
 	}
 
 	@SuppressWarnings("unchecked")
-	public void jsonDeserialize(JsonReader reader, JsonObject json)
-			throws JsonException {
+	public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
 		DataPointDao dataPointDao = new DataPointDao();
 
 		String text = json.getString("handlerType");
 		if (text != null) {
 			handlerType = TYPE_CODES.getId(text);
 			if (!TYPE_CODES.isValidId(handlerType))
-				throw new LocalizableJsonException(
-						"emport.error.eventHandler.invalid", "handlerType",
-						text, TYPE_CODES.getCodeList());
+				throw new LocalizableJsonException("emport.error.eventHandler.invalid", "handlerType", text,
+						TYPE_CODES.getCodeList());
 		}
 
 		if (handlerType == TYPE_SET_POINT) {
@@ -856,8 +779,7 @@ public class EventHandlerVO implements Serializable,
 			if (xid != null) {
 				DataPointVO vo = dataPointDao.getDataPoint(xid);
 				if (vo == null)
-					throw new LocalizableJsonException(
-							"emport.error.missingPoint", xid);
+					throw new LocalizableJsonException("emport.error.missingPoint", xid);
 				targetPointId = vo.getId();
 			}
 
@@ -866,10 +788,8 @@ public class EventHandlerVO implements Serializable,
 			if (text != null) {
 				activeAction = SET_ACTION_CODES.getId(text);
 				if (!SET_ACTION_CODES.isValidId(activeAction))
-					throw new LocalizableJsonException(
-							"emport.error.eventHandler.invalid",
-							"activeAction", text, SET_ACTION_CODES
-									.getCodeList());
+					throw new LocalizableJsonException("emport.error.eventHandler.invalid", "activeAction", text,
+							SET_ACTION_CODES.getCodeList());
 			}
 
 			if (activeAction == SET_ACTION_POINT_VALUE) {
@@ -877,8 +797,7 @@ public class EventHandlerVO implements Serializable,
 				if (xid != null) {
 					DataPointVO vo = dataPointDao.getDataPoint(xid);
 					if (vo == null)
-						throw new LocalizableJsonException(
-								"emport.error.missingPoint", xid);
+						throw new LocalizableJsonException("emport.error.missingPoint", xid);
 					activePointId = vo.getId();
 				}
 			} else if (activeAction == SET_ACTION_STATIC_VALUE) {
@@ -892,10 +811,8 @@ public class EventHandlerVO implements Serializable,
 			if (text != null) {
 				inactiveAction = SET_ACTION_CODES.getId(text);
 				if (!SET_ACTION_CODES.isValidId(inactiveAction))
-					throw new LocalizableJsonException(
-							"emport.error.eventHandler.invalid",
-							"inactiveAction", text, SET_ACTION_CODES
-									.getCodeList());
+					throw new LocalizableJsonException("emport.error.eventHandler.invalid", "inactiveAction", text,
+							SET_ACTION_CODES.getCodeList());
 			}
 
 			if (inactiveAction == SET_ACTION_POINT_VALUE) {
@@ -903,8 +820,7 @@ public class EventHandlerVO implements Serializable,
 				if (xid != null) {
 					DataPointVO vo = dataPointDao.getDataPoint(xid);
 					if (vo == null)
-						throw new LocalizableJsonException(
-								"emport.error.missingPoint", xid);
+						throw new LocalizableJsonException("emport.error.missingPoint", xid);
 					inactivePointId = vo.getId();
 				}
 			} else if (inactiveAction == SET_ACTION_STATIC_VALUE) {
@@ -913,11 +829,9 @@ public class EventHandlerVO implements Serializable,
 					inactiveValueToSet = text;
 			}
 		} else if (handlerType == TYPE_EMAIL) {
-			JsonArray jsonActiveRecipients = json
-					.getJsonArray("activeRecipients");
+			JsonArray jsonActiveRecipients = json.getJsonArray("activeRecipients");
 			if (jsonActiveRecipients != null)
-				activeRecipients = reader.readPropertyValue(
-						jsonActiveRecipients, List.class,
+				activeRecipients = reader.readPropertyValue(jsonActiveRecipients, List.class,
 						RecipientListEntryBean.class);
 
 			Boolean b = json.getBoolean("sendEscalation");
@@ -929,20 +843,17 @@ public class EventHandlerVO implements Serializable,
 				if (text != null) {
 					escalationDelayType = Common.TIME_PERIOD_CODES.getId(text);
 					if (escalationDelayType == -1)
-						throw new LocalizableJsonException(
-								"emport.error.invalid", "escalationDelayType",
-								text, Common.TIME_PERIOD_CODES.getCodeList());
+						throw new LocalizableJsonException("emport.error.invalid", "escalationDelayType", text,
+								Common.TIME_PERIOD_CODES.getCodeList());
 				}
 
 				Integer i = json.getInt("escalationDelay");
 				if (i != null)
 					escalationDelay = i;
 
-				JsonArray jsonEscalationRecipients = json
-						.getJsonArray("escalationRecipients");
+				JsonArray jsonEscalationRecipients = json.getJsonArray("escalationRecipients");
 				if (jsonEscalationRecipients != null)
-					escalationRecipients = reader.readPropertyValue(
-							jsonEscalationRecipients, List.class,
+					escalationRecipients = reader.readPropertyValue(jsonEscalationRecipients, List.class,
 							RecipientListEntryBean.class);
 			}
 
@@ -956,11 +867,9 @@ public class EventHandlerVO implements Serializable,
 					inactiveOverride = b;
 
 				if (inactiveOverride) {
-					JsonArray jsonInactiveRecipients = json
-							.getJsonArray("inactiveRecipients");
+					JsonArray jsonInactiveRecipients = json.getJsonArray("inactiveRecipients");
 					if (jsonInactiveRecipients != null)
-						inactiveRecipients = reader.readPropertyValue(
-								jsonInactiveRecipients, List.class,
+						inactiveRecipients = reader.readPropertyValue(jsonInactiveRecipients, List.class,
 								RecipientListEntryBean.class);
 				}
 			}

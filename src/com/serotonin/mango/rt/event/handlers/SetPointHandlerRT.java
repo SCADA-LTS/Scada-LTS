@@ -45,19 +45,22 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 
 	@Override
 	public void eventRaised(EventInstance evt) {
-		if (vo.getActiveAction() == EventHandlerVO.SET_ACTION_NONE)
+		if (vo.getActiveAction() == EventHandlerVO.SET_ACTION_NONE) {
 			return;
+		}
 
 		// Validate that the target point is available.
 		DataPointRT targetPoint = Common.ctx.getRuntimeManager().getDataPoint(
 				vo.getTargetPointId());
 		if (targetPoint == null) {
+			LOG.debug("Target point is invalid");
 			raiseFailureEvent(new LocalizableMessage(
 					"event.setPoint.targetPointMissing"), evt.getEventType());
 			return;
 		}
 
 		if (!targetPoint.getPointLocator().isSettable()) {
+			LOG.debug("Target point is not settable");
 			raiseFailureEvent(new LocalizableMessage(
 					"event.setPoint.targetNotSettable"), evt.getEventType());
 			return;
@@ -72,6 +75,7 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 			DataPointRT sourcePoint = Common.ctx.getRuntimeManager()
 					.getDataPoint(vo.getActivePointId());
 			if (sourcePoint == null) {
+				LOG.debug("source is null");
 				raiseFailureEvent(new LocalizableMessage(
 						"event.setPoint.activePointMissing"),
 						evt.getEventType());
@@ -80,12 +84,14 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 
 			PointValueTime valueTime = sourcePoint.getPointValue();
 			if (valueTime == null) {
+				LOG.debug("No value in source");
 				raiseFailureEvent(new LocalizableMessage(
 						"event.setPoint.activePointValue"), evt.getEventType());
 				return;
 			}
 
 			if (DataTypes.getDataType(valueTime.getValue()) != targetDataType) {
+				LOG.debug("Different data types!");
 				raiseFailureEvent(new LocalizableMessage(
 						"event.setPoint.activePointDataType"),
 						evt.getEventType());
@@ -96,11 +102,13 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 		} else if (vo.getActiveAction() == EventHandlerVO.SET_ACTION_STATIC_VALUE) {
 			value = MangoValue.stringToValue(vo.getActiveValueToSet(),
 					targetDataType);
-		} else
+		} else {
+			LOG.debug("Unknown Active Action");
 			throw new ShouldNeverHappenException("Unknown active action: "
 					+ vo.getActiveAction());
-
+		}
 		// Queue a work item to perform the set point.
+		LOG.debug("Queue a work item to pId" + vo.getTargetPointId());
 		Common.ctx.getBackgroundProcessing().addWorkItem(
 				new SetPointWorkItem(vo.getTargetPointId(), new PointValueTime(
 						value, evt.getActiveTimestamp()), this));
@@ -115,12 +123,14 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 		DataPointRT targetPoint = Common.ctx.getRuntimeManager().getDataPoint(
 				vo.getTargetPointId());
 		if (targetPoint == null) {
+			LOG.debug("Target point is invalid");
 			raiseFailureEvent(new LocalizableMessage(
 					"event.setPoint.targetPointMissing"), evt.getEventType());
 			return;
 		}
 
 		if (!targetPoint.getPointLocator().isSettable()) {
+			LOG.debug("Target point is not settable");
 			raiseFailureEvent(new LocalizableMessage(
 					"event.setPoint.targetNotSettable"), evt.getEventType());
 			return;
@@ -135,6 +145,7 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 			DataPointRT sourcePoint = Common.ctx.getRuntimeManager()
 					.getDataPoint(vo.getInactivePointId());
 			if (sourcePoint == null) {
+				LOG.debug("source is null");
 				raiseFailureEvent(new LocalizableMessage(
 						"event.setPoint.inactivePointMissing"),
 						evt.getEventType());
@@ -143,6 +154,7 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 
 			PointValueTime valueTime = sourcePoint.getPointValue();
 			if (valueTime == null) {
+				LOG.debug("No value in source");
 				raiseFailureEvent(new LocalizableMessage(
 						"event.setPoint.inactivePointValue"),
 						evt.getEventType());
@@ -150,6 +162,7 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 			}
 
 			if (DataTypes.getDataType(valueTime.getValue()) != targetDataType) {
+				LOG.debug("Different data types!");
 				raiseFailureEvent(new LocalizableMessage(
 						"event.setPoint.inactivePointDataType"),
 						evt.getEventType());
@@ -157,13 +170,16 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 			}
 
 			value = valueTime.getValue();
-		} else if (vo.getInactiveAction() == EventHandlerVO.SET_ACTION_STATIC_VALUE)
+		} else if (vo.getInactiveAction() == EventHandlerVO.SET_ACTION_STATIC_VALUE) {
+			LOG.debug("Set to static value");
 			value = MangoValue.stringToValue(vo.getInactiveValueToSet(),
 					targetDataType);
-		else
+		} else {
+			LOG.debug("Unknown active action");
 			throw new ShouldNeverHappenException("Unknown active action: "
 					+ vo.getInactiveAction());
-
+		}
+		LOG.debug("Queue a work item to pId" + vo.getTargetPointId());
 		Common.ctx.getBackgroundProcessing().addWorkItem(
 				new SetPointWorkItem(vo.getTargetPointId(), new PointValueTime(
 						value, evt.getRtnTimestamp()), this));

@@ -68,6 +68,8 @@ import com.serotonin.util.LifecycleException;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import br.org.scadabr.vo.userCache.UserCache;
+
 public class RuntimeManager {
 	private static final Log LOG = LogFactory.getLog(RuntimeManager.class);
 
@@ -110,19 +112,24 @@ public class RuntimeManager {
 	 */
 	private final List<MaintenanceEventRT> maintenanceEvents = new CopyOnWriteArrayList<MaintenanceEventRT>();
 
+	/**
+	 * Store of User Permissions
+	 */
+	private final UserCache userCache = new UserCache();
+
 	private boolean started = false;
 
 	//
 	// Lifecycle
 	synchronized public void initialize(boolean safe) {
 		if (started)
-			throw new ShouldNeverHappenException(
-					"RuntimeManager already started");
+			throw new ShouldNeverHappenException("RuntimeManager already started");
 
 		// Set the started indicator to true.
 		started = true;
 
 		// Initialize data sources that are enabled.
+		LOG.trace("Initializing Datasources");
 		DataSourceDao dataSourceDao = new DataSourceDao();
 		List<DataSourceVO<?>> configs = dataSourceDao.getDataSources();
 		List<DataSourceVO<?>> pollingRound = new ArrayList<DataSourceVO<?>>();
@@ -131,11 +138,14 @@ public class RuntimeManager {
 				if (safe) {
 					config.setEnabled(false);
 					dataSourceDao.saveDataSource(config);
-				} else if (initializeDataSource(config))
+				} else if (initializeDataSource(config)) {
+					LOG.trace("Initializing " + config.getName());
 					pollingRound.add(config);
+				}
 			}
 		}
 
+		LOG.trace("Initializing PointLinks");
 		// Set up point links.
 		PointLinkDao pointLinkDao = new PointLinkDao();
 		for (PointLinkVO vo : pointLinkDao.getPointLinks()) {
@@ -143,8 +153,10 @@ public class RuntimeManager {
 				if (safe) {
 					vo.setDisabled(true);
 					pointLinkDao.savePointLink(vo);
-				} else
+				} else {
+					LOG.trace("Initializing " + vo.getXid());
 					startPointLink(vo);
+				}
 			}
 		}
 
@@ -152,68 +164,77 @@ public class RuntimeManager {
 		// gives the data points a chance to
 		// initialize such that point listeners in meta points and set point
 		// handlers can run properly.
-		for (DataSourceVO<?> config : pollingRound)
+		LOG.trace("Initializing Datasources Polling");
+		for (DataSourceVO<?> config : pollingRound) {
+			LOG.trace("Initializing " + config.getName());
 			startDataSourcePolling(config);
+		}
 
 		// Initialize the scheduled events.
+		LOG.trace("Initializing Scheduled Events");
 		ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
-		List<ScheduledEventVO> scheduledEvents = scheduledEventDao
-				.getScheduledEvents();
+		List<ScheduledEventVO> scheduledEvents = scheduledEventDao.getScheduledEvents();
 		for (ScheduledEventVO se : scheduledEvents) {
 			if (!se.isDisabled()) {
 				if (safe) {
 					se.setDisabled(true);
 					scheduledEventDao.saveScheduledEvent(se);
-				} else
+				} else {
+					LOG.trace("Initializing " + se.getAlias());
 					startScheduledEvent(se);
+				}
 			}
 		}
 
 		// Initialize the compound events.
+		LOG.trace("Initializing Compound Events");
 		CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
-		List<CompoundEventDetectorVO> compoundDetectors = compoundEventDetectorDao
-				.getCompoundEventDetectors();
+		List<CompoundEventDetectorVO> compoundDetectors = compoundEventDetectorDao.getCompoundEventDetectors();
 		for (CompoundEventDetectorVO ced : compoundDetectors) {
 			if (!ced.isDisabled()) {
 				if (safe) {
 					ced.setDisabled(true);
 					compoundEventDetectorDao.saveCompoundEventDetector(ced);
 				} else
-					startCompoundEventDetector(ced);
+					LOG.trace("Initializing " + ced.getName());
+				startCompoundEventDetector(ced);
 			}
 		}
 
 		// Start the publishers that are enabled
+		LOG.trace("Initializing Publishers");
 		PublisherDao publisherDao = new PublisherDao();
-		List<PublisherVO<? extends PublishedPointVO>> publishers = publisherDao
-				.getPublishers();
+		List<PublisherVO<? extends PublishedPointVO>> publishers = publisherDao.getPublishers();
 		for (PublisherVO<? extends PublishedPointVO> vo : publishers) {
 			if (vo.isEnabled()) {
 				if (safe) {
 					vo.setEnabled(false);
 					publisherDao.savePublisher(vo);
 				} else
-					startPublisher(vo);
+					LOG.trace("Initializing " + vo.getName());
+				startPublisher(vo);
 			}
 		}
 
 		// Start the maintenance events that are enabled
+		LOG.trace("Initializing Scheduled Events");
 		MaintenanceEventDao maintenanceEventDao = new MaintenanceEventDao();
 		for (MaintenanceEventVO vo : maintenanceEventDao.getMaintenanceEvents()) {
 			if (!vo.isDisabled()) {
 				if (safe) {
 					vo.setDisabled(true);
 					maintenanceEventDao.saveMaintenanceEvent(vo);
-				} else
+				} else {
+					LOG.trace("Initializing " + vo.getAlias());
 					startMaintenanceEvent(vo);
+				}
 			}
 		}
 	}
 
 	synchronized public void terminate() {
 		if (!started)
-			throw new ShouldNeverHappenException(
-					"RuntimeManager not yet started");
+			throw new ShouldNeverHappenException("RuntimeManager not yet started");
 
 		started = false;
 		for (MaintenanceEventRT me : maintenanceEvents)
@@ -282,23 +303,23 @@ public class RuntimeManager {
 	}
 
 	public void saveDataSource(DataSourceVO<?> vo) {
-		LOG.debug("Stoping DS: " + vo.getName());
+		LOG.trace("Stoping DS: " + vo.getName());
 		// If the data source is running, stop it.
 		stopDataSource(vo.getId());
-		LOG.debug("DS Stoped!");
+		LOG.trace("DS Stoped!");
 
 		// In case this is a new data source, we need to save to the database
 		// first so that it has a proper id.
-		LOG.debug("Saving DS: " + vo.getName());
+		LOG.trace("Saving DS: " + vo.getName());
 		new DataSourceDao().saveDataSource(vo);
-		LOG.debug("DS saved!");
+		LOG.trace("DS saved!");
 		// If the data source is enabled, start it.
 		if (vo.isEnabled()) {
-			LOG.debug("Starting DS: " + vo.getName());
+			LOG.trace("Starting DS: " + vo.getName());
 			if (initializeDataSource(vo)) {
-				LOG.debug("DS Started!");
+				LOG.trace("DS Started!");
 				startDataSourcePolling(vo);
-				LOG.debug("DS polling Started!");
+				LOG.trace("DS polling Started!");
 			}
 		}
 	}
@@ -313,21 +334,27 @@ public class RuntimeManager {
 			Assert.isTrue(vo.isEnabled());
 
 			// Create and initialize the runtime version of the data source.
+			LOG.trace("Creating DS... " + vo.getName());
 			DataSourceRT dataSource = vo.createDataSourceRT();
+			LOG.trace(vo.getName() + " created!");
+			LOG.trace("Initializing DS... " + vo.getName());
 			dataSource.initialize();
+			LOG.trace(vo.getName() + " initialized!");
 
 			// Add it to the list of running data sources.
+			LOG.trace("Add to running... ");
 			runningDataSources.add(dataSource);
+			LOG.trace("Added!");
 
 			// Add the enabled points to the data source.
-			List<DataPointVO> dataSourcePoints = new DataPointDao()
-					.getDataPoints(vo.getId(), null);
+			LOG.trace("Start DataPoints...");
+			List<DataPointVO> dataSourcePoints = new DataPointDao().getDataPoints(vo.getId(), null);
 			for (DataPointVO dataPoint : dataSourcePoints) {
 				if (dataPoint.isEnabled())
 					startDataPoint(dataPoint);
 			}
 
-			LOG.info("Data source '" + vo.getName() + "' initialized");
+			LOG.trace("Data source '" + vo.getName() + "' initialized");
 
 			return true;
 		}
@@ -372,20 +399,17 @@ public class RuntimeManager {
 		int dataType = point.getPointLocator().getDataTypeId();
 
 		// Chart renderer
-		if (point.getChartRenderer() != null
-				&& !point.getChartRenderer().getDef().supports(dataType))
+		if (point.getChartRenderer() != null && !point.getChartRenderer().getDef().supports(dataType))
 			// Return to a default renderer
 			point.setChartRenderer(null);
 
 		// Text renderer
-		if (point.getTextRenderer() != null
-				&& !point.getTextRenderer().getDef().supports(dataType))
+		if (point.getTextRenderer() != null && !point.getTextRenderer().getDef().supports(dataType))
 			// Return to a default renderer
 			point.defaultTextRenderer();
 
 		// Event detectors
-		Iterator<PointEventDetectorVO> peds = point.getEventDetectors()
-				.iterator();
+		Iterator<PointEventDetectorVO> peds = point.getEventDetectors().iterator();
 		while (peds.hasNext()) {
 			PointEventDetectorVO ped = peds.next();
 			if (!ped.getDef().supports(dataType))
@@ -410,24 +434,33 @@ public class RuntimeManager {
 		synchronized (dataPoints) {
 			Assert.isTrue(vo.isEnabled());
 
+			LOG.trace("Get DsRT... ");
 			// Only add the data point if its data source is enabled.
 			DataSourceRT ds = getRunningDataSource(vo.getDataSourceId());
 			if (ds != null) {
+				LOG.trace("Got DsRT");
+				LOG.trace("Create DpRT...");
 				// Change the VO into a data point implementation.
-				DataPointRT dataPoint = new DataPointRT(vo, vo
-						.getPointLocator().createRuntime());
+				DataPointRT dataPoint = new DataPointRT(vo, vo.getPointLocator().createRuntime());
+				LOG.trace("DpRT Created");
 
+				LOG.trace("put DpRT into array");
 				// Add/update it in the data image.
 				dataPoints.put(dataPoint.getId(), dataPoint);
 
+				LOG.trace("Init DpRT");
 				// Initialize it.
 				dataPoint.initialize();
+
+				LOG.trace("Inform Dp listeners");
 				DataPointListener l = getDataPointListeners(vo.getId());
 				if (l != null)
 					l.pointInitialized();
 
+				LOG.trace("update in DS");
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
+				LOG.trace("DS updated");
 			}
 		}
 	}
@@ -459,13 +492,11 @@ public class RuntimeManager {
 
 	public void addDataPointListener(int dataPointId, DataPointListener l) {
 		DataPointListener listeners = dataPointListeners.get(dataPointId);
-		dataPointListeners.put(dataPointId,
-				DataPointEventMulticaster.add(listeners, l));
+		dataPointListeners.put(dataPointId, DataPointEventMulticaster.add(listeners, l));
 	}
 
 	public void removeDataPointListener(int dataPointId, DataPointListener l) {
-		DataPointListener listeners = DataPointEventMulticaster.remove(
-				dataPointListeners.get(dataPointId), l);
+		DataPointListener listeners = DataPointEventMulticaster.remove(dataPointListeners.get(dataPointId), l);
 		if (listeners == null)
 			dataPointListeners.remove(dataPointId);
 		else
@@ -478,14 +509,11 @@ public class RuntimeManager {
 
 	//
 	// Point values
-	public void setDataPointValue(int dataPointId, MangoValue value,
-			SetPointSource source) {
-		setDataPointValue(dataPointId,
-				new PointValueTime(value, System.currentTimeMillis()), source);
+	public void setDataPointValue(int dataPointId, MangoValue value, SetPointSource source) {
+		setDataPointValue(dataPointId, new PointValueTime(value, System.currentTimeMillis()), source);
 	}
 
-	public void setDataPointValue(int dataPointId, PointValueTime valueTime,
-			SetPointSource source) {
+	public void setDataPointValue(int dataPointId, PointValueTime valueTime, SetPointSource source) {
 		DataPointRT dataPoint = dataPoints.get(dataPointId);
 		if (dataPoint == null)
 			throw new RTException("Point is not enabled");
@@ -538,10 +566,8 @@ public class RuntimeManager {
 		return count;
 	}
 
-	public long purgeDataPointValues(int dataPointId, int periodType,
-			int periodCount) {
-		long before = DateUtils.minus(System.currentTimeMillis(), periodType,
-				periodCount);
+	public long purgeDataPointValues(int dataPointId, int periodType, int periodCount) {
+		long before = DateUtils.minus(System.currentTimeMillis(), periodType, periodCount);
 		return purgeDataPointValues(dataPointId, before);
 	}
 
@@ -552,8 +578,7 @@ public class RuntimeManager {
 	}
 
 	public long purgeDataPointValues(int dataPointId, long before) {
-		long count = new PointValueDao().deletePointValuesBefore(dataPointId,
-				before);
+		long count = new PointValueDao().deletePointValuesBefore(dataPointId, before);
 		if (count > 0)
 			updateDataPointValuesRT(dataPointId);
 		return count;
@@ -611,8 +636,7 @@ public class RuntimeManager {
 
 	public void removePointEventDetector(String pointEventDetectorKey) {
 		synchronized (simpleEventDetectors) {
-			SimpleEventDetector sed = simpleEventDetectors
-					.remove(pointEventDetectorKey);
+			SimpleEventDetector sed = simpleEventDetectors.remove(pointEventDetectorKey);
 			if (sed != null)
 				sed.terminate();
 		}
@@ -647,21 +671,17 @@ public class RuntimeManager {
 			compoundEventDetectors.put(ced.getId(), rt);
 			return true;
 		} catch (LifecycleException e) {
-			rt.raiseFailureEvent(new LocalizableMessage(
-					"event.compound.exceptionFailure", ced.getName(),
-					((LocalizableException) e.getCause())
-							.getLocalizableMessage()));
+			rt.raiseFailureEvent(new LocalizableMessage("event.compound.exceptionFailure", ced.getName(),
+					((LocalizableException) e.getCause()).getLocalizableMessage()));
 		} catch (Exception e) {
-			rt.raiseFailureEvent(new LocalizableMessage(
-					"event.compound.exceptionFailure", ced.getName(), e
-							.getMessage()));
+			rt.raiseFailureEvent(
+					new LocalizableMessage("event.compound.exceptionFailure", ced.getName(), e.getMessage()));
 		}
 		return false;
 	}
 
 	public void stopCompoundEventDetector(int compoundEventDetectorId) {
-		CompoundEventDetectorRT rt = compoundEventDetectors
-				.remove(compoundEventDetectorId);
+		CompoundEventDetectorRT rt = compoundEventDetectors.remove(compoundEventDetectorId);
 		if (rt != null)
 			rt.terminate();
 	}
@@ -810,8 +830,7 @@ public class RuntimeManager {
 
 	public boolean isActiveMaintenanceEvent(int dataSourceId) {
 		for (MaintenanceEventRT rt : maintenanceEvents) {
-			if (rt.getVo().getDataSourceId() == dataSourceId
-					&& rt.isEventActive())
+			if (rt.getVo().getDataSourceId() == dataSourceId && rt.isEventActive())
 				return true;
 		}
 		return false;

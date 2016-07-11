@@ -11938,21 +11938,22 @@ this.controller=_aa9;
 dojo.dnd.HtmlDropTarget.apply(this,[_aa8,type]);
 };
 dojo.inherits(dojo.dnd.TreeDropTarget,dojo.dnd.HtmlDropTarget);
-dojo.lang.extend(dojo.dnd.TreeDropTarget,{autoExpandDelay:1500,autoExpandTimer:null,position:null,indicatorStyle:"2px black solid",showIndicator:function(_aac){
+dojo.lang.extend(dojo.dnd.TreeDropTarget,{autoExpandDelay:1000,autoExpandTimer:null,position:null,indicatorStyle:"2px black solid",showIndicator:function(_aac){
+	//console.log(_aac);
+	////console.log(this.treeNode.labelNode.innerHTML);
 if(this.position==_aac){
 return;
 }
 this.hideIndicator();
 this.position=_aac;
-if(_aac=="before"){
-this.treeNode.labelNode.style.borderTop=this.indicatorStyle;
+if(_aac=="onto"){
+this.treeNode.markSelected();
 }else{
 if(_aac=="after"){
 this.treeNode.labelNode.style.borderBottom=this.indicatorStyle;
 }else{
-if(_aac=="onto"){
-this.treeNode.markSelected();
-}
+if(_aac=="before"){
+this.treeNode.labelNode.style.borderTop=this.indicatorStyle;}
 }
 }
 },hideIndicator:function(){
@@ -11991,14 +11992,18 @@ this.autoExpandTimer=dojo.lang.setTimeout(_ab3,_ab2.autoExpandDelay);
 return this.treeNode.tree.DNDMode;
 },getAcceptPosition:function(e,_ab5){
 var _ab6=this.getDNDMode();
+////console.log("_ab6: " +  _ab6);
 if(_ab6&dojo.widget.Tree.prototype.DNDModes.ONTO&&!(!this.treeNode.actionIsDisabled(dojo.widget.TreeNode.prototype.actions.ADDCHILD)&&_ab5.parent!==this.treeNode&&this.controller.canMove(_ab5,this.treeNode))){
+	//console.log("disable onto! ");
 _ab6&=~dojo.widget.Tree.prototype.DNDModes.ONTO;
 }
 var _ab7=this.getPosition(e,_ab6);
+//console.log("set position: " + _ab7);
 if(_ab7=="onto"||(!this.isAdjacentNode(_ab5,_ab7)&&this.controller.canMove(_ab5,this.treeNode.parent))){
 return _ab7;
 }else{
-return false;
+	//console.log("false...");
+	return false;
 }
 },onDragOut:function(e){
 this.clearAutoExpandTimer();
@@ -12012,6 +12017,7 @@ this.autoExpandTimer=null;
 var _abb=_aba[0].treeNode;
 var _abc=this.getAcceptPosition(e,_abb);
 if(_abc){
+	//console.log(_abc);
 this.showIndicator(_abc);
 }
 },isAdjacentNode:function(_abd,_abe){
@@ -12027,10 +12033,11 @@ return true;
 return false;
 },getPosition:function(e,_ac0){
 var node=dojo.byId(this.treeNode.labelNode);
-var _ac2=e.pageY||e.clientY+dojo.body().scrollTop;
+var mouse_scroll=e.pageY+dojo.body().scrollTop;
+var _ac2=e.pageY;
 var _ac3=dojo.html.getAbsolutePosition(node).y;
 var _ac4=dojo.html.getBorderBox(node).height;
-var relY=_ac2-_ac3;
+var relY=_ac2-_ac3-+dojo.body().scrollTop;
 var p=relY/_ac4;
 var _ac7="";
 if(_ac0&dojo.widget.Tree.prototype.DNDModes.ONTO&&_ac0&dojo.widget.Tree.prototype.DNDModes.BETWEEN){

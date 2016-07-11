@@ -32,7 +32,6 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -60,18 +59,15 @@ public class WatchListDwr extends BaseDwr {
 
 		PointHierarchy ph = dataPointDao.getPointHierarchy().copyFoldersOnly();
 		User user = Common.getUser();
-		List<DataPointVO> points = dataPointDao.getDataPoints(
-				DataPointExtendedNameComparator.instance, false);
+		List<DataPointVO> points = dataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false);
 		for (DataPointVO point : points) {
 			if (Permissions.hasDataPointReadPermission(user, point))
-				ph.addDataPoint(point.getId(), point.getPointFolderId(),
-						point.getExtendedName());
+				ph.addDataPoint(point.getId(), point.getPointFolderId(), point.getExtendedName());
 		}
 
 		ph.parseEmptyFolders();
 
-		WatchList watchList = new WatchListDao().getWatchList(user
-				.getSelectedWatchList());
+		WatchList watchList = new WatchListDao().getWatchList(user.getSelectedWatchList());
 		prepareWatchList(watchList, user);
 		user.setWatchList(watchList);
 
@@ -98,15 +94,13 @@ public class WatchListDwr extends BaseDwr {
 		if (watchList == null)
 			return new ArrayList<WatchListState>();
 
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		User user = Common.getUser(request);
 
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
 		WatchListState state;
-		List<WatchListState> states = new ArrayList<WatchListState>(watchList
-				.getPointList().size());
+		List<WatchListState> states = new ArrayList<WatchListState>(watchList.getPointList().size());
 		Map<String, Object> model = new HashMap<String, Object>();
 		for (DataPointVO point : watchList.getPointList()) {
 			// Create the watch list state.
@@ -135,11 +129,9 @@ public class WatchListDwr extends BaseDwr {
 			watchList = new WatchList();
 			watchList.setName(getMessage("common.newName"));
 		} else {
-			watchList = new WatchListDao().getWatchList(user
-					.getSelectedWatchList());
+			watchList = new WatchListDao().getWatchList(user.getSelectedWatchList());
 			watchList.setId(Common.NEW_ID);
-			watchList.setName(getMessage(new LocalizableMessage(
-					"common.copyPrefix", watchList.getName())));
+			watchList.setName(getMessage(new LocalizableMessage("common.copyPrefix", watchList.getName())));
 		}
 		watchList.setUserId(user.getId());
 		watchList.setXid(watchListDao.generateUniqueXid());
@@ -162,15 +154,12 @@ public class WatchListDwr extends BaseDwr {
 		if (watchList == null || watchListId != watchList.getId())
 			watchList = watchListDao.getWatchList(watchListId);
 
-		if (watchList == null
-				|| watchListDao.getWatchLists(user.getId(),
-						user.getUserProfile()).size() == 1)
+		if (watchList == null || watchListDao.getWatchLists(user.getId(), user.getUserProfile()).size() == 1)
 			// Only one watch list left. Leave it.
 			return;
 
 		// Allow the delete.
-		if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER
-				|| user.isAdmin())
+		if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER || user.isAdmin())
 			watchListDao.deleteWatchList(watchListId);
 		else
 			watchListDao.removeUserFromWatchList(watchListId, user.getId());
@@ -199,8 +188,7 @@ public class WatchListDwr extends BaseDwr {
 	}
 
 	public WatchListState addToWatchList(int pointId) {
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		User user = Common.getUser();
 		DataPointVO point = new DataPointDao().getDataPoint(pointId);
 		if (point == null)
@@ -215,11 +203,10 @@ public class WatchListDwr extends BaseDwr {
 		watchList.getPointList().add(point);
 		new WatchListDao().saveWatchList(watchList);
 		updateSetPermission(point, watchList.getUserAccess(user),
-				new UserDao().getUser(watchList.getUserId()));
+				Common.ctx.getUserCache().getUserDao().getUser(watchList.getUserId()));
 
 		// Return the watch list state for it.
-		return createWatchListState(request, point,
-				Common.ctx.getRuntimeManager(), new HashMap<String, Object>(),
+		return createWatchListState(request, point, Common.ctx.getRuntimeManager(), new HashMap<String, Object>(),
 				user);
 	}
 
@@ -278,17 +265,16 @@ public class WatchListDwr extends BaseDwr {
 	/**
 	 * Convenience method for creating a populated view state.
 	 */
-	private WatchListState createWatchListState(HttpServletRequest request,
-			DataPointVO pointVO, RuntimeManager rtm, Map<String, Object> model,
-			User user) {
+	private WatchListState createWatchListState(HttpServletRequest request, DataPointVO pointVO, RuntimeManager rtm,
+			Map<String, Object> model, User user) {
 		// Get the data point status from the data image.
 		DataPointRT point = rtm.getDataPoint(pointVO.getId());
 
 		WatchListState state = new WatchListState();
 		state.setId(Integer.toString(pointVO.getId()));
 
-		PointValueTime pointValue = prepareBasePointState(
-				Integer.toString(pointVO.getId()), state, pointVO, point, model);
+		PointValueTime pointValue = prepareBasePointState(Integer.toString(pointVO.getId()), state, pointVO, point,
+				model);
 		setEvents(pointVO, user, model);
 		if (pointValue != null && pointValue.getValue() instanceof ImageValue) {
 			// Text renderers don't help here. Create a thumbnail.
@@ -306,12 +292,10 @@ public class WatchListDwr extends BaseDwr {
 		return state;
 	}
 
-	private void setImageText(HttpServletRequest request, WatchListState state,
-			DataPointVO pointVO, Map<String, Object> model,
-			PointValueTime pointValue) {
+	private void setImageText(HttpServletRequest request, WatchListState state, DataPointVO pointVO,
+			Map<String, Object> model, PointValueTime pointValue) {
 		if (!ObjectUtils.isEqual(pointVO.lastValue(), pointValue)) {
-			state.setValue(generateContent(request, "imageValueThumbnail.jsp",
-					model));
+			state.setValue(generateContent(request, "imageValueThumbnail.jsp", model));
 			if (pointValue != null)
 				state.setTime(Functions.getTime(pointValue));
 			pointVO.updateLastValue(pointValue);
@@ -321,15 +305,11 @@ public class WatchListDwr extends BaseDwr {
 	/**
 	 * Method for creating image charts of the points on the watch list.
 	 */
-	public String getImageChartData(int[] pointIds, int fromYear,
-			int fromMonth, int fromDay, int fromHour, int fromMinute,
-			int fromSecond, boolean fromNone, int toYear, int toMonth,
-			int toDay, int toHour, int toMinute, int toSecond, boolean toNone,
-			int width, int height) {
-		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour,
-				fromMinute, fromSecond, fromNone);
-		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute,
-				toSecond, toNone);
+	public String getImageChartData(int[] pointIds, int fromYear, int fromMonth, int fromDay, int fromHour,
+			int fromMinute, int fromSecond, boolean fromNone, int toYear, int toMonth, int toDay, int toHour,
+			int toMinute, int toSecond, boolean toNone, int width, int height) {
+		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour, fromMinute, fromSecond, fromNone);
+		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute, toSecond, toNone);
 
 		StringBuilder htmlData = new StringBuilder();
 		htmlData.append("<img src=\"achart/ft_");
@@ -341,8 +321,7 @@ public class WatchListDwr extends BaseDwr {
 
 		boolean pointsFound = false;
 		// Add the list of points that are numeric.
-		List<DataPointVO> watchList = Common.getUser().getWatchList()
-				.getPointList();
+		List<DataPointVO> watchList = Common.getUser().getWatchList().getPointList();
 		for (DataPointVO dp : watchList) {
 			int dtid = dp.getPointLocator().getDataTypeId();
 			if ((dtid == DataTypes.NUMERIC || dtid == DataTypes.BINARY || dtid == DataTypes.MULTISTATE)
@@ -392,7 +371,7 @@ public class WatchListDwr extends BaseDwr {
 		}
 
 		access = watchList.getUserAccess(user);
-		User owner = new UserDao().getUser(watchList.getUserId());
+		User owner = Common.ctx.getUserCache().getUser(watchList.getUserId());
 		for (DataPointVO point : watchList.getPointList())
 			updateSetPermission(point, access, owner);
 	}
@@ -458,14 +437,11 @@ public class WatchListDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void getChartData(int[] pointIds, int fromYear, int fromMonth,
-			int fromDay, int fromHour, int fromMinute, int fromSecond,
-			boolean fromNone, int toYear, int toMonth, int toDay, int toHour,
-			int toMinute, int toSecond, boolean toNone) {
-		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour,
-				fromMinute, fromSecond, fromNone);
-		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute,
-				toSecond, toNone);
+	public void getChartData(int[] pointIds, int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute,
+			int fromSecond, boolean fromNone, int toYear, int toMonth, int toDay, int toHour, int toMinute,
+			int toSecond, boolean toNone) {
+		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour, fromMinute, fromSecond, fromNone);
+		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute, toSecond, toNone);
 		DataExportDefinition def = new DataExportDefinition(pointIds, from, to);
 		Common.getUser().setDataExportDefinition(def);
 	}

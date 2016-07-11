@@ -26,13 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import br.org.scadabr.view.component.AlarmListComponent;
-import br.org.scadabr.view.component.ButtonComponent;
-import br.org.scadabr.view.component.ChartComparatorComponent;
-import br.org.scadabr.view.component.FlexBuilderComponent;
-import br.org.scadabr.view.component.LinkComponent;
-import br.org.scadabr.view.component.ScriptButtonComponent;
-
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -51,6 +44,13 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import br.org.scadabr.view.component.AlarmListComponent;
+import br.org.scadabr.view.component.ButtonComponent;
+import br.org.scadabr.view.component.ChartComparatorComponent;
+import br.org.scadabr.view.component.FlexBuilderComponent;
+import br.org.scadabr.view.component.LinkComponent;
+import br.org.scadabr.view.component.ScriptButtonComponent;
 
 /**
  * @author Matthew Lohbihler
@@ -87,14 +87,11 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 	}
 
 	public static ViewComponent newInstance(String name) {
-		ImplDefinition def = ImplDefinition.findByName(getImplementations(),
-				name);
+		ImplDefinition def = ImplDefinition.findByName(getImplementations(), name);
 		try {
 			return resolveClass(def).newInstance();
 		} catch (Exception e) {
-			throw new ShouldNeverHappenException(
-					"Error finding component with name '" + name + "': "
-							+ e.getMessage());
+			throw new ShouldNeverHappenException("Error finding component with name '" + name + "': " + e.getMessage());
 		}
 	}
 
@@ -175,6 +172,10 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 		return false;
 	}
 
+	public boolean isUnreliable() {
+		return false;
+	}
+
 	public boolean isCompoundComponent() {
 		return false;
 	}
@@ -242,11 +243,9 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 
 	public void validate(DwrResponseI18n response) {
 		if (x < 0)
-			response.addMessage("x", new LocalizableMessage(
-					"validate.cannotBeNegative"));
+			response.addMessage("x", new LocalizableMessage("validate.cannotBeNegative"));
 		if (y < 0)
-			response.addMessage("y", new LocalizableMessage(
-					"validate.cannotBeNegative"));
+			response.addMessage("y", new LocalizableMessage("validate.cannotBeNegative"));
 	}
 
 	//
@@ -278,16 +277,14 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 		}
 	}
 
-	protected void writeDataPoint(ObjectOutputStream out, DataPointVO dataPoint)
-			throws IOException {
+	protected void writeDataPoint(ObjectOutputStream out, DataPointVO dataPoint) throws IOException {
 		if (dataPoint == null)
 			out.writeInt(0);
 		else
 			out.writeInt(dataPoint.getId());
 	}
 
-	protected DataPointVO readDataPoint(ObjectInputStream in)
-			throws IOException {
+	protected DataPointVO readDataPoint(ObjectInputStream in) throws IOException {
 		return new DataPointDao().getDataPoint(in.readInt());
 	}
 
@@ -295,8 +292,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 	 * @throws JsonException
 	 */
 	@Override
-	public void jsonDeserialize(JsonReader reader, JsonObject json)
-			throws JsonException {
+	public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
 		// no op
 	}
 
@@ -305,8 +301,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 		map.put("type", definition().getExportName());
 	}
 
-	protected void jsonSerializeDataPoint(Map<String, Object> map, String key,
-			PointComponent comp) {
+	protected void jsonSerializeDataPoint(Map<String, Object> map, String key, PointComponent comp) {
 		DataPointVO dataPoint = comp.tgetDataPoint();
 		if (dataPoint == null)
 			map.put(key, null);
@@ -314,8 +309,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			map.put(key, dataPoint.getXid());
 	}
 
-	protected void jsonDeserializeDataPoint(JsonValue jsonXid,
-			PointComponent comp) throws JsonException {
+	protected void jsonDeserializeDataPoint(JsonValue jsonXid, PointComponent comp) throws JsonException {
 		if (jsonXid != null) {
 			if (jsonXid.isNull())
 				comp.tsetDataPoint(null);
@@ -323,12 +317,9 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 				String xid = jsonXid.toJsonString().getValue();
 				DataPointVO dataPoint = new DataPointDao().getDataPoint(xid);
 				if (dataPoint == null)
-					throw new LocalizableJsonException(
-							"emport.error.missingPoint", xid);
-				if (!comp.definition().supports(
-						dataPoint.getPointLocator().getDataTypeId()))
-					throw new LocalizableJsonException(
-							"emport.error.component.incompatibleDataType", xid,
+					throw new LocalizableJsonException("emport.error.missingPoint", xid);
+				if (!comp.definition().supports(dataPoint.getPointLocator().getDataTypeId()))
+					throw new LocalizableJsonException("emport.error.component.incompatibleDataType", xid,
 							definition().getExportName());
 				comp.tsetDataPoint(dataPoint);
 			}
@@ -342,18 +333,15 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 
 			String type = json.getString("type");
 			if (type == null)
-				throw new LocalizableJsonException(
-						"emport.error.component.missing", "type",
-						getExportTypes());
+				throw new LocalizableJsonException("emport.error.component.missing", "type", getExportTypes());
 
-			ImplDefinition def = ImplDefinition.findByExportName(
-					getImplementations(), type);
+			ImplDefinition def = ImplDefinition.findByExportName(getImplementations(), type);
 
 			if (def == null)
-				throw new LocalizableJsonException("emport.error.text.invalid",
-						"type", type, getExportTypes());
+				throw new LocalizableJsonException("emport.error.text.invalid", "type", type, getExportTypes());
 
 			return resolveClass(def);
 		}
 	}
+
 }

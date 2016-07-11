@@ -42,23 +42,30 @@ import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.web.taglib.Functions;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+
 public class UserDao extends BaseDao {
 	private static final String USER_SELECT = "select id, username, password, email, phone, admin, disabled, selectedWatchList, homeUrl, lastLogin, "
 			+ "  receiveAlarmEmails, receiveOwnAuditEvents " + "from users ";
+
 	private final Log LOG = LogFactory.getLog(UserDao.class);
 
 	public User getUser(int id) {
-		User user = queryForObject(USER_SELECT + "where id=?",
-				new Object[] { id }, new UserRowMapper(), null);
+		User user = queryForObject(USER_SELECT + "where id=?", new Object[] { id }, new UserRowMapper(), null);
 		populateUserPermissions(user);
 		return user;
 	}
 
 	public User getUser(String username) {
-		User user = queryForObject(USER_SELECT + "where lower(username)=?",
-				new Object[] { username.toLowerCase() }, new UserRowMapper(),
-				null);
-		populateUserPermissions(user);
+
+		User user = queryForObject(USER_SELECT + "where lower(username)=?", new Object[] { username.toLowerCase() },
+				new UserRowMapper(), null);
+		if (user != null) {
+			LOG.trace(" found user: " + user.getId());
+			populateUserPermissions(user);
+			LOG.trace(" returning user: " + user.getEmail());
+		}
 		return user;
 	}
 
@@ -83,22 +90,36 @@ public class UserDao extends BaseDao {
 	}
 
 	public List<User> getUsers() {
-		List<User> users = query(USER_SELECT + "order by username",
-				new Object[0], new UserRowMapper());
+		LOG.trace(" Getting users ");
+		List<User> users = query(USER_SELECT + "order by username", new Object[0], new UserRowMapper());
+		// populateUserPermissions(users);
+		return users;
+	}
+
+	public List<User> getPermissionedUsers() {
+		LOG.trace(" Getting permissioned users ");
+		List<User> users = query(USER_SELECT + "order by username", new Object[0], new UserRowMapper());
 		populateUserPermissions(users);
 		return users;
 	}
 
 	public List<User> getActiveUsers() {
-		List<User> users = query(USER_SELECT + "where disabled=?",
-				new Object[] { boolToChar(false) }, new UserRowMapper());
+		LOG.trace(" Getting active users ");
+		List<User> users = query(USER_SELECT + "where disabled=?", new Object[] { boolToChar(false) },
+				new UserRowMapper());
 		populateUserPermissions(users);
 		return users;
 	}
 
 	private void populateUserPermissions(List<User> users) {
-		for (User user : users)
+		LOG.trace(" Populating all users permissions ");
+		for (User user : users) {
+			UsersProfileVO profile = new UsersProfileDao().getUserProfileByUserId(user.getId());
+			if (profile != null)
+				user.setUserProfile(profile);
 			populateUserPermissions(user);
+		}
+		LOG.trace(" Got All users permissions ");
 	}
 
 	private static final String SELECT_DATA_SOURCE_PERMISSIONS = "select dataSourceId from dataSourceUsers where userId=?";
@@ -108,14 +129,15 @@ public class UserDao extends BaseDao {
 		if (user == null)
 			return;
 
-		user.setDataSourcePermissions(queryForList(
-				SELECT_DATA_SOURCE_PERMISSIONS, new Object[] { user.getId() },
-				Integer.class));
-		user.setDataPointPermissions(query(SELECT_DATA_POINT_PERMISSIONS,
-				new Object[] { user.getId() },
+		LOG.trace(" ==================================================== ");
+		for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+			LOG.trace(ste.getClassName() + "." + ste.getMethodName() + ":" + ste.getLineNumber());
+		}
+		user.setDataSourcePermissions(
+				queryForList(SELECT_DATA_SOURCE_PERMISSIONS, new Object[] { user.getId() }, Integer.class));
+		user.setDataPointPermissions(query(SELECT_DATA_POINT_PERMISSIONS, new Object[] { user.getId() },
 				new GenericRowMapper<DataPointAccess>() {
-					public DataPointAccess mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
+					public DataPointAccess mapRow(ResultSet rs, int rowNum) throws SQLException {
 						DataPointAccess a = new DataPointAccess();
 						a.setDataPointId(rs.getInt(1));
 						a.setPermission(rs.getInt(2));
@@ -125,20 +147,18 @@ public class UserDao extends BaseDao {
 	}
 
 	public void saveUser(final User user) {
-		getTransactionTemplate().execute(
-				new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(
-							TransactionStatus status) {
-						if (user.getId() == Common.NEW_ID) {
-							LOG.debug("insert user...");
-							insertUser(user);
-						} else {
-							LOG.debug("update user...");
-							updateUser(user);
-						}
-					}
-				});
+		getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				if (user.getId() == Common.NEW_ID) {
+					LOG.debug("insert user...");
+					insertUser(user);
+				} else {
+					LOG.debug("update user...");
+					updateUser(user);
+				}
+			}
+		});
 	}
 
 	private static final String USER_INSERT = "insert into users ("
@@ -148,17 +168,12 @@ public class UserDao extends BaseDao {
 	void insertUser(User user) {
 		try {
 			int id;
-			if (Common.getEnvironmentProfile().getString("db.type")
-					.equals("postgres")) {
+			if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
 				try {
-					Connection conn = DriverManager.getConnection(
-							Common.getEnvironmentProfile().getString("db.url"),
-							Common.getEnvironmentProfile().getString(
-									"db.username"),
-							Common.getEnvironmentProfile().getString(
-									"db.password"));
-					PreparedStatement preStmt = conn
-							.prepareStatement(USER_INSERT);
+					Connection conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
+							Common.getEnvironmentProfile().getString("db.username"),
+							Common.getEnvironmentProfile().getString("db.password"));
+					PreparedStatement preStmt = conn.prepareStatement(USER_INSERT);
 					preStmt.setString(1, user.getUsername());
 					preStmt.setString(2, user.getPassword());
 					preStmt.setString(3, user.getEmail());
@@ -167,12 +182,10 @@ public class UserDao extends BaseDao {
 					preStmt.setString(6, boolToChar(user.isDisabled()));
 					preStmt.setString(7, user.getHomeUrl());
 					preStmt.setInt(8, user.getReceiveAlarmEmails());
-					preStmt.setString(9,
-							boolToChar(user.isReceiveOwnAuditEvents()));
+					preStmt.setString(9, boolToChar(user.isReceiveOwnAuditEvents()));
 					preStmt.executeUpdate();
 
-					ResultSet resSEQ = conn.createStatement().executeQuery(
-							"SELECT currval('users_id_seq')");
+					ResultSet resSEQ = conn.createStatement().executeQuery("SELECT currval('users_id_seq')");
 					resSEQ.next();
 					id = resSEQ.getInt(1);
 
@@ -182,19 +195,12 @@ public class UserDao extends BaseDao {
 					id = 0;
 				}
 			} else {
-				id = doInsert(
-						USER_INSERT,
-						new Object[] { user.getUsername(), user.getPassword(),
-								user.getEmail(), user.getPhone(),
-								boolToChar(user.isAdmin()),
-								boolToChar(user.isDisabled()),
-								user.getHomeUrl(),
-								user.getReceiveAlarmEmails(),
-								boolToChar(user.isReceiveOwnAuditEvents()) },
-						new int[] { Types.VARCHAR, Types.VARCHAR,
-								Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-								Types.VARCHAR, Types.VARCHAR, Types.INTEGER,
-								Types.VARCHAR });
+				id = doInsert(USER_INSERT,
+						new Object[] { user.getUsername(), user.getPassword(), user.getEmail(), user.getPhone(),
+								boolToChar(user.isAdmin()), boolToChar(user.isDisabled()), user.getHomeUrl(),
+								user.getReceiveAlarmEmails(), boolToChar(user.isReceiveOwnAuditEvents()) },
+						new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+								Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR });
 			}
 			user.setId(id);
 			saveRelationalData(user);
@@ -214,18 +220,12 @@ public class UserDao extends BaseDao {
 			user.setHomeUrl("");
 
 		try {
-			ejt.update(
-					USER_UPDATE,
-					new Object[] { user.getUsername(), user.getPassword(),
-							user.getEmail(), user.getPhone(),
-							boolToChar(user.isAdmin()),
-							boolToChar(user.isDisabled()), user.getHomeUrl(),
-							user.getReceiveAlarmEmails(),
-							boolToChar(user.isReceiveOwnAuditEvents()),
-							user.getId() }, new int[] { Types.VARCHAR,
-							Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-							Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-							Types.INTEGER, Types.VARCHAR, Types.INTEGER });
+			ejt.update(USER_UPDATE,
+					new Object[] { user.getUsername(), user.getPassword(), user.getEmail(), user.getPhone(),
+							boolToChar(user.isAdmin()), boolToChar(user.isDisabled()), user.getHomeUrl(),
+							user.getReceiveAlarmEmails(), boolToChar(user.isReceiveOwnAuditEvents()), user.getId() },
+					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+							Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.INTEGER });
 			saveRelationalData(user);
 		} catch (DataIntegrityViolationException e) {
 			// Log some information about the user object.
@@ -236,79 +236,68 @@ public class UserDao extends BaseDao {
 
 	private void saveRelationalData(final User user) {
 		// Delete existing permissions.
-		ejt.update("delete from dataSourceUsers where userId=?",
-				new Object[] { user.getId() });
-		ejt.update("delete from dataPointUsers where userId=?",
-				new Object[] { user.getId() });
+		ejt.update("delete from dataSourceUsers where userId=?", new Object[] { user.getId() });
+		ejt.update("delete from dataPointUsers where userId=?", new Object[] { user.getId() });
 
-		// Save the new ones.
-		ejt.batchUpdate(
-				"insert into dataSourceUsers (dataSourceId, userId) values (?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return user.getDataSourcePermissions().size();
-					}
+		// Only Save the new ones if there is no Profile assigned.
+		LOG.debug("UserProfileId: " + user.getUserProfile());
+		if (user.getUserProfile() == 0) {
+			ejt.batchUpdate("insert into dataSourceUsers (dataSourceId, userId) values (?,?)",
+					new BatchPreparedStatementSetter() {
+						public int getBatchSize() {
+							return user.getDataSourcePermissions().size();
+						}
 
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, user.getDataSourcePermissions().get(i));
-						ps.setInt(2, user.getId());
-					}
-				});
-		ejt.batchUpdate(
-				"insert into dataPointUsers (dataPointId, userId, permission) values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return user.getDataPointPermissions().size();
-					}
+						public void setValues(PreparedStatement ps, int i) throws SQLException {
+							ps.setInt(1, user.getDataSourcePermissions().get(i));
+							ps.setInt(2, user.getId());
+						}
+					});
+			ejt.batchUpdate("insert into dataPointUsers (dataPointId, userId, permission) values (?,?,?)",
+					new BatchPreparedStatementSetter() {
+						public int getBatchSize() {
+							return user.getDataPointPermissions().size();
+						}
 
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, user.getDataPointPermissions().get(i)
-								.getDataPointId());
-						ps.setInt(2, user.getId());
-						ps.setInt(3, user.getDataPointPermissions().get(i)
-								.getPermission());
-					}
-				});
+						public void setValues(PreparedStatement ps, int i) throws SQLException {
+							ps.setInt(1, user.getDataPointPermissions().get(i).getDataPointId());
+							ps.setInt(2, user.getId());
+							ps.setInt(3, user.getDataPointPermissions().get(i).getPermission());
+						}
+					});
+		}
 	}
 
 	public void deleteUser(final int userId) {
-		getTransactionTemplate().execute(
-				new TransactionCallbackWithoutResult() {
-					@SuppressWarnings("synthetic-access")
-					@Override
-					protected void doInTransactionWithoutResult(
-							TransactionStatus status) {
-						Object[] args = new Object[] { userId };
-						ejt.update(
-								"update userComments set userId=null where userId=?",
-								args);
-						ejt.update(
-								"delete from mailingListMembers where userId=?",
-								args);
-						ejt.update(
-								"update pointValueAnnotations set sourceId=null where sourceId=? and sourceType="
-										+ SetPointSource.Types.USER, args);
-						ejt.update("delete from userEvents where userId=?",
-								args);
-						ejt.update(
-								"update events set ackUserId=null, alternateAckSource="
-										+ EventInstance.AlternateAcknowledgementSources.DELETED_USER
-										+ " where ackUserId=?", args);
-						ejt.update("delete from users where id=?", args);
-					}
-				});
+		getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
+			@SuppressWarnings("synthetic-access")
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				Object[] args = new Object[] { userId };
+				ejt.update("update userComments set userId=null where userId=?", args);
+				ejt.update("delete from mailingListMembers where userId=?", args);
+				ejt.update("update pointValueAnnotations set sourceId=null where sourceId=? and sourceType="
+						+ SetPointSource.Types.USER, args);
+				ejt.update("delete from userEvents where userId=?", args);
+				ejt.update(
+						"update events set ackUserId=null, alternateAckSource="
+								+ EventInstance.AlternateAcknowledgementSources.DELETED_USER + " where ackUserId=?",
+						args);
+				ejt.update("delete from users where id=?", args);
+			}
+		});
 	}
 
 	public void recordLogin(int userId) {
-		ejt.update("update users set lastLogin=? where id=?", new Object[] {
-				System.currentTimeMillis(), userId });
+		ejt.update("update users set lastLogin=? where id=?", new Object[] { System.currentTimeMillis(), userId });
 	}
 
 	public void saveHomeUrl(int userId, String homeUrl) {
-		ejt.update("update users set homeUrl=? where id=?", new Object[] {
-				homeUrl, userId });
+		ejt.update("update users set homeUrl=? where id=?", new Object[] { homeUrl, userId });
+
+		if (Common.getUser().getId() == userId) {
+			Common.getUser().setHomeUrl(homeUrl);
+		}
 	}
 
 	//
@@ -318,10 +307,9 @@ public class UserDao extends BaseDao {
 	private static final String USER_COMMENT_INSERT = "insert into userComments (userId, commentType, typeKey, ts, commentText) "
 			+ "values (?,?,?,?,?)";
 
-	public void insertUserComment(int typeId, int referenceId,
-			UserComment comment) {
+	public void insertUserComment(int typeId, int referenceId, UserComment comment) {
 		comment.setComment(Functions.truncate(comment.getComment(), 1024));
-		ejt.update(USER_COMMENT_INSERT, new Object[] { comment.getUserId(),
-				typeId, referenceId, comment.getTs(), comment.getComment() });
+		ejt.update(USER_COMMENT_INSERT,
+				new Object[] { comment.getUserId(), typeId, referenceId, comment.getTs(), comment.getComment() });
 	}
 }

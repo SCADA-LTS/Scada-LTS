@@ -38,7 +38,6 @@ import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -67,8 +66,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class EventHandlersDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(EventHandlersDwr.class);
 
-	private final ResourceBundle setPointSnippetMap = ResourceBundle
-			.getBundle("setPointSnippetMap");
+	private final ResourceBundle setPointSnippetMap = ResourceBundle.getBundle("setPointSnippetMap");
 
 	public Map<String, Object> getInitData() {
 		User user = Common.getUser();
@@ -76,15 +74,12 @@ public class EventHandlersDwr extends BaseDwr {
 
 		EventDao eventDao = new EventDao();
 		Map<String, Object> model = new HashMap<String, Object>();
-
 		// Get the data points
 		List<DataPointBean> allPoints = new ArrayList<DataPointBean>();
 		List<EventSourceBean> dataPoints = new ArrayList<EventSourceBean>();
-		List<DataPointVO> dps = new DataPointDao().getDataPoints(
-				DataPointExtendedNameComparator.instance, true);
+		List<DataPointVO> dps = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, true);
 		for (DataPointVO dp : dps) {
-			if (!Permissions
-					.hasDataSourcePermission(user, dp.getDataSourceId()))
+			if (!Permissions.hasDataSourcePermission(user, dp.getDataSourceId()))
 				continue;
 
 			allPoints.add(new DataPointBean(dp));
@@ -106,8 +101,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 		// Get the scheduled events
 		List<EventTypeVO> scheduledEvents = new ArrayList<EventTypeVO>();
-		List<ScheduledEventVO> ses = new ScheduledEventDao()
-				.getScheduledEvents();
+		List<ScheduledEventVO> ses = new ScheduledEventDao().getScheduledEvents();
 		for (ScheduledEventVO se : ses) {
 			EventTypeVO et = se.getEventType();
 			et.setHandlers(eventDao.getEventHandlers(et));
@@ -117,8 +111,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 		// Get the compound event detectors
 		List<EventTypeVO> compoundEvents = new ArrayList<EventTypeVO>();
-		List<CompoundEventDetectorVO> ceds = new CompoundEventDetectorDao()
-				.getCompoundEventDetectors();
+		List<CompoundEventDetectorVO> ceds = new CompoundEventDetectorDao().getCompoundEventDetectors();
 		for (CompoundEventDetectorVO ced : ceds) {
 			EventTypeVO et = ced.getEventType();
 			et.setHandlers(eventDao.getEventHandlers(et));
@@ -168,8 +161,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 			// Get the maintenance events
 			List<EventTypeVO> maintenanceEvents = new ArrayList<EventTypeVO>();
-			List<MaintenanceEventVO> mes = new MaintenanceEventDao()
-					.getMaintenanceEvents();
+			List<MaintenanceEventVO> mes = new MaintenanceEventDao().getMaintenanceEvents();
 			for (MaintenanceEventVO me : mes) {
 				EventTypeVO et = me.getEventType();
 				et.setHandlers(eventDao.getEventHandlers(et));
@@ -198,7 +190,7 @@ public class EventHandlersDwr extends BaseDwr {
 		model.put("mailingLists", new MailingListDao().getMailingLists());
 
 		// Get the users.
-		model.put("users", new UserDao().getUsers());
+		model.put("users", Common.ctx.getUserCache().getUserDao().getUsers());
 
 		model.put("allPoints", allPoints);
 		model.put("dataPoints", dataPoints);
@@ -207,35 +199,26 @@ public class EventHandlersDwr extends BaseDwr {
 		return model;
 	}
 
-	public String createSetValueContent(int pointId, String valueStr,
-			String idSuffix) {
+	public String createSetValueContent(int pointId, String valueStr, String idSuffix) {
 		DataPointVO pointVO = new DataPointDao().getDataPoint(pointId);
-		Permissions.ensureDataSourcePermission(Common.getUser(),
-				pointVO.getDataSourceId());
+		Permissions.ensureDataSourcePermission(Common.getUser(), pointVO.getDataSourceId());
 
-		MangoValue value = MangoValue.stringToValue(valueStr, pointVO
-				.getPointLocator().getDataTypeId());
+		MangoValue value = MangoValue.stringToValue(valueStr, pointVO.getPointLocator().getDataTypeId());
 
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("point", pointVO);
 		model.put("idSuffix", idSuffix);
-		model.put("text",
-				pointVO.getTextRenderer()
-						.getText(value, TextRenderer.HINT_FULL));
-		model.put("rawText",
-				pointVO.getTextRenderer().getText(value, TextRenderer.HINT_RAW));
+		model.put("text", pointVO.getTextRenderer().getText(value, TextRenderer.HINT_FULL));
+		model.put("rawText", pointVO.getTextRenderer().getText(value, TextRenderer.HINT_RAW));
 
-		String snippet = setPointSnippetMap.getString(pointVO.getTextRenderer()
-				.getClass().getName());
-		return generateContent(WebContextFactory.get().getHttpServletRequest(),
-				snippet, model);
+		String snippet = setPointSnippetMap.getString(pointVO.getTextRenderer().getClass().getName());
+		return generateContent(WebContextFactory.get().getHttpServletRequest(), snippet, model);
 	}
 
-	public DwrResponseI18n saveSetPointEventHandler(int eventSourceId,
-			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
-			String alias, boolean disabled, int targetPointId,
-			int activeAction, String activeValueToSet, int activePointId,
-			int inactiveAction, String inactiveValueToSet, int inactivePointId) {
+	public DwrResponseI18n saveSetPointEventHandler(int eventSourceId, int eventTypeRef1, int eventTypeRef2,
+			int handlerId, String xid, String alias, boolean disabled, int targetPointId, int activeAction,
+			String activeValueToSet, int activePointId, int inactiveAction, String inactiveValueToSet,
+			int inactivePointId) {
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_SET_POINT);
 		handler.setTargetPointId(targetPointId);
@@ -245,18 +228,13 @@ public class EventHandlersDwr extends BaseDwr {
 		handler.setInactiveAction(inactiveAction);
 		handler.setInactiveValueToSet(inactiveValueToSet);
 		handler.setInactivePointId(inactivePointId);
-		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler,
-				handlerId, xid, alias, disabled);
+		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler, handlerId, xid, alias, disabled);
 	}
 
-	public DwrResponseI18n saveEmailEventHandler(int eventSourceId,
-			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
-			String alias, boolean disabled,
-			List<RecipientListEntryBean> activeRecipients,
-			boolean sendEscalation, int escalationDelayType,
-			int escalationDelay,
-			List<RecipientListEntryBean> escalationRecipients,
-			boolean sendInactive, boolean inactiveOverride,
+	public DwrResponseI18n saveEmailEventHandler(int eventSourceId, int eventTypeRef1, int eventTypeRef2, int handlerId,
+			String xid, String alias, boolean disabled, List<RecipientListEntryBean> activeRecipients,
+			boolean sendEscalation, int escalationDelayType, int escalationDelay,
+			List<RecipientListEntryBean> escalationRecipients, boolean sendInactive, boolean inactiveOverride,
 			List<RecipientListEntryBean> inactiveRecipients) {
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
@@ -268,39 +246,32 @@ public class EventHandlersDwr extends BaseDwr {
 		handler.setSendInactive(sendInactive);
 		handler.setInactiveOverride(inactiveOverride);
 		handler.setInactiveRecipients(inactiveRecipients);
-		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler,
-				handlerId, xid, alias, disabled);
+		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler, handlerId, xid, alias, disabled);
 	}
 
-	public DwrResponseI18n saveProcessEventHandler(int eventSourceId,
-			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
-			String alias, boolean disabled, String activeProcessCommand,
+	public DwrResponseI18n saveProcessEventHandler(int eventSourceId, int eventTypeRef1, int eventTypeRef2,
+			int handlerId, String xid, String alias, boolean disabled, String activeProcessCommand,
 			String inactiveProcessCommand) {
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_PROCESS);
 		handler.setActiveProcessCommand(activeProcessCommand);
 		handler.setInactiveProcessCommand(inactiveProcessCommand);
-		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler,
-				handlerId, xid, alias, disabled);
+		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler, handlerId, xid, alias, disabled);
 	}
 
-	public DwrResponseI18n saveScriptEventHandler(int eventSourceId,
-			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
-			String alias, boolean disabled, int activeScriptCommand,
+	public DwrResponseI18n saveScriptEventHandler(int eventSourceId, int eventTypeRef1, int eventTypeRef2,
+			int handlerId, String xid, String alias, boolean disabled, int activeScriptCommand,
 			int inactiveScriptCommand) {
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_SCRIPT);
 		handler.setActiveScriptCommand(activeScriptCommand);
 		handler.setInactiveScriptCommand(inactiveScriptCommand);
-		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler,
-				handlerId, xid, alias, disabled);
+		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler, handlerId, xid, alias, disabled);
 	}
 
-	private DwrResponseI18n save(int eventSourceId, int eventTypeRef1,
-			int eventTypeRef2, EventHandlerVO vo, int handlerId, String xid,
-			String alias, boolean disabled) {
-		EventTypeVO type = new EventTypeVO(eventSourceId, eventTypeRef1,
-				eventTypeRef2);
+	private DwrResponseI18n save(int eventSourceId, int eventTypeRef1, int eventTypeRef2, EventHandlerVO vo,
+			int handlerId, String xid, String alias, boolean disabled) {
+		EventTypeVO type = new EventTypeVO(eventSourceId, eventTypeRef1, eventTypeRef2);
 		Permissions.ensureEventTypePermission(Common.getUser(), type);
 		EventDao eventDao = new EventDao();
 
@@ -322,8 +293,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 	public void deleteEventHandler(int handlerId) {
 		EventDao eventDao = new EventDao();
-		Permissions.ensureEventTypePermission(Common.getUser(),
-				eventDao.getEventHandlerType(handlerId));
+		Permissions.ensureEventTypePermission(Common.getUser(), eventDao.getEventHandlerType(handlerId));
 		eventDao.deleteEventHandler(handlerId);
 	}
 

@@ -43,6 +43,7 @@
       mango.view.initNormalView();
     </c:if>
     
+    
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
     var browserName  = navigator.appName;
@@ -198,25 +199,34 @@
 					<!-- <input type="button" name="buttonFull" value="Full Screen" onClick="fullScreen();" /> -->
 				</td>
 			</c:if>
-			<td align="right"><sst:select value="${currentView.id}"
-					onchange="window.location='?viewId='+ this.value;">
+			<td width="50"></td>
+			<td align="right">
+				<sst:select value="${currentView.id}" onchange="window.location='?viewId='+ this.value;">
 					<c:forEach items="${views}" var="aView">
 						<sst:option value="${aView.key}">${sst:escapeLessThan(aView.value)}</sst:option>
 					</c:forEach>
-				</sst:select> <c:if test="${!empty currentView}">
+				</sst:select>
+				<c:if test="${!empty currentView}">
 					<c:choose>
 						<c:when test="${owner}">
+							</td><td width="50"></td><td>
 							<a href="view_edit.shtm?viewId=${currentView.id}"><tag:img
 									png="icon_view_edit" title="viewEdit.editView" /> </a>
 						</c:when>
 						<c:otherwise>
+							</td><td width="50"></td><td>
 							<!-- Apenas Admin pode remover compartilhamento
 							 <tag:img png="icon_view_delete" title="viewEdit.deleteView"
 								onclick="unshare()" />-->
 						</c:otherwise>
 					</c:choose>
-				</c:if> <a href="view_edit.shtm"><tag:img png="icon_view_new"
-						title="views.newView" /> </a></td>
+				</c:if> 
+				
+				<c:if test="${sessionUser.admin || userAddedViews}">
+					<a href="view_edit.shtm"><tag:img png="icon_view_new" title="views.newView" /></a>
+				</c:if>
+			</td>
+						
 		</tr>
 		
 	</table>
@@ -230,9 +240,7 @@
 	</table>
 	
 	<script type="text/javascript">
-	
 		checkFullScreen();
-	
 	</script>
 
 	<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />

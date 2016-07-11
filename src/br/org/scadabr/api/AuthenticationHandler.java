@@ -33,8 +33,7 @@ public class AuthenticationHandler extends BasicHandler {
 	private static final long serialVersionUID = 1L;
 
 	private boolean isSecurityEnabled() {
-		String sec = Common.getEnvironmentProfile().getString(
-				"api.authentication", "enabled");
+		String sec = Common.getEnvironmentProfile().getString("api.authentication", "enabled");
 
 		if (sec.equals("disabled"))
 			return false;
@@ -63,18 +62,14 @@ public class AuthenticationHandler extends BasicHandler {
 					}
 				}
 			} catch (SOAPException e) {
-				throw new AxisFault(
-						"Failed to retrieve the SOAP Header or it's details properly.",
-						e);
+				throw new AxisFault("Failed to retrieve the SOAP Header or it's details properly.", e);
 			}
 
 			if (!processedHeader)
 				throw new AxisFault("No API authentication on header!");
 		} else {
-			String username = Common.getEnvironmentProfile().getString(
-					"api.username", "admin");
-			String password = Common.getEnvironmentProfile().getString(
-					"api.password", "admin");
+			String username = Common.getEnvironmentProfile().getString("api.username", "admin");
+			String password = Common.getEnvironmentProfile().getString("api.password", "admin");
 
 			User user = new UserDao().getUser(username);
 			if (user == null)
@@ -92,7 +87,7 @@ public class AuthenticationHandler extends BasicHandler {
 		String username = getUsername(hel);
 		String password = getPassword(hel);
 
-		User user = new UserDao().getUser(username);
+		User user = Common.ctx.getUserCache().getUser(username);
 
 		if (user == null)
 			throw new AxisFault("Invalid Username!");

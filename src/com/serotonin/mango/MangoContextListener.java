@@ -37,8 +37,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import br.org.scadabr.api.utils.APIUtils;
-
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -68,9 +66,12 @@ import com.serotonin.mango.vo.report.ReportJob;
 import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.ContextWrapper;
 import com.serotonin.mango.web.dwr.BaseDwr;
+import com.serotonin.util.LifecycleException;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import br.org.scadabr.api.utils.APIUtils;
+import br.org.scadabr.vo.userCache.UserCache;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
@@ -90,40 +91,51 @@ public class MangoContextListener implements ServletContextListener {
 		Common.ctx = new ContextWrapper(ctx);
 
 		// Initialize the timer
-		Common.timer.init(new ThreadPoolExecutor(0, 1000, 30L,
-				TimeUnit.SECONDS, new SynchronousQueue<Runnable>()));
+		int maxThreads = Common.getEnvironmentProfile().getInt("main.maxthreadlimit");
+		log.info("Max threads: " + maxThreads);
+		log.trace("Init timer...");
+		Common.timer.init(
+				new ThreadPoolExecutor(0, maxThreads, 1, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>()));
 
 		// Create all the stuff we need.
+		log.trace("Init constants...");
 		constantsInitialize(ctx);
+		log.trace("Init freemarker...");
 		freemarkerInitialize(ctx);
+		log.trace("Init images...");
 		imageSetInitialize(ctx);
+		log.trace("Init database...");
 		databaseInitialize(ctx);
+		log.trace("Init dataPoints Mapping...");
 		dataPointsNameToIdMapping(ctx);
 
+		log.trace("Check Servlet Context Path...");
 		// Check if the known servlet context path has changed.
-		String knownContextPath = SystemSettingsDao
-				.getValue(SystemSettingsDao.SERVLET_CONTEXT_PATH);
+		String knownContextPath = SystemSettingsDao.getValue(SystemSettingsDao.SERVLET_CONTEXT_PATH);
 		if (knownContextPath != null) {
 			String contextPath = ctx.getContextPath();
 			if (!StringUtils.isEqual(knownContextPath, contextPath))
-				log.warn("Mango's known servlet context path has changed from "
-						+ knownContextPath + " to " + contextPath
-						+ ". Are there two instances of Mango running?");
+				log.warn("Mango's known servlet context path has changed from " + knownContextPath + " to "
+						+ contextPath + ". Are there two instances of Mango running?");
 		}
-		new SystemSettingsDao().setValue(
-				SystemSettingsDao.SERVLET_CONTEXT_PATH, ctx.getContextPath());
+		new SystemSettingsDao().setValue(SystemSettingsDao.SERVLET_CONTEXT_PATH, ctx.getContextPath());
 
+		log.trace("Init utilitie...");
 		utilitiesInitialize(ctx);
+		log.trace("Init user cache...");
+		userCacheInitialize(ctx);
+		log.trace("Init event manager...");
 		eventManagerInitialize(ctx);
+		log.trace("Init runtime Manager...");
 		runtimeManagerInitialize(ctx);
+		log.trace("Init reports...");
 		reportsInitialize();
+		log.trace("Init maintenance...");
 		maintenanceInitialize();
 
 		// Notify the event manager of the startup.
-		SystemEventType.raiseEvent(new SystemEventType(
-				SystemEventType.TYPE_SYSTEM_STARTUP), System
-				.currentTimeMillis(), false, new LocalizableMessage(
-				"event.system.startup"));
+		SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_SYSTEM_STARTUP), System.currentTimeMillis(),
+				false, new LocalizableMessage("event.system.startup"));
 
 		log.info("Mango context started");
 
@@ -134,10 +146,8 @@ public class MangoContextListener implements ServletContextListener {
 
 		if (Common.ctx.getEventManager() != null) {
 			// Notify the event manager of the shutdown.
-			SystemEventType.raiseEvent(new SystemEventType(
-					SystemEventType.TYPE_SYSTEM_SHUTDOWN), System
-					.currentTimeMillis(), false, new LocalizableMessage(
-					"event.system.shutdown"));
+			SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_SYSTEM_SHUTDOWN),
+					System.currentTimeMillis(), false, new LocalizableMessage("event.system.shutdown"));
 		}
 
 		// Get a handle on the context.
@@ -146,6 +156,7 @@ public class MangoContextListener implements ServletContextListener {
 		// Stop everything.
 		runtimeManagerTerminate(ctx);
 		eventManagerTerminate(ctx);
+		userCacheTerminate(ctx);
 		utilitiesTerminate(ctx);
 		databaseTerminate(ctx);
 
@@ -159,20 +170,16 @@ public class MangoContextListener implements ServletContextListener {
 
 	private void dataPointsNameToIdMapping(ServletContext ctx) {
 		PointHierarchy pH = new DataPointDao().getPointHierarchy();
-		List<DataPointVO> datapoints = new DataPointDao().getDataPoints(null,
-				false);
+		List<DataPointVO> datapoints = new DataPointDao().getDataPoints(null, false);
 
 		Map<String, Integer> mapping = new HashMap<String, Integer>();
 
 		for (DataPointVO dataPointVO : datapoints) {
-			String completeName = APIUtils.getCompletePath(
-					dataPointVO.getPointFolderId(), pH)
-					+ dataPointVO.getName();
+			String completeName = APIUtils.getCompletePath(dataPointVO.getPointFolderId(), pH) + dataPointVO.getName();
 			mapping.put(completeName, dataPointVO.getId());
 		}
 
-		Common.ctx.getServletContext().setAttribute(
-				Common.ContextKeys.DATA_POINTS_NAME_ID_MAPPING, mapping);
+		Common.ctx.getServletContext().setAttribute(Common.ContextKeys.DATA_POINTS_NAME_ID_MAPPING, mapping);
 
 	}
 
@@ -186,171 +193,97 @@ public class MangoContextListener implements ServletContextListener {
 		ctx.setAttribute("constants.DataTypes.BINARY", DataTypes.BINARY);
 		ctx.setAttribute("constants.DataTypes.MULTISTATE", DataTypes.MULTISTATE);
 		ctx.setAttribute("constants.DataTypes.NUMERIC", DataTypes.NUMERIC);
-		ctx.setAttribute("constants.DataTypes.ALPHANUMERIC",
-				DataTypes.ALPHANUMERIC);
+		ctx.setAttribute("constants.DataTypes.ALPHANUMERIC", DataTypes.ALPHANUMERIC);
 		ctx.setAttribute("constants.DataTypes.IMAGE", DataTypes.IMAGE);
 
-		ctx.setAttribute("constants.DataSourceVO.Types.VIRTUAL",
-				DataSourceVO.Type.VIRTUAL.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.MODBUS_SERIAL",
-				DataSourceVO.Type.MODBUS_SERIAL.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.MODBUS_IP",
-				DataSourceVO.Type.MODBUS_IP.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.SNMP",
-				DataSourceVO.Type.SNMP.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.SQL",
-				DataSourceVO.Type.SQL.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.HTTP_RECEIVER",
-				DataSourceVO.Type.HTTP_RECEIVER.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.ONE_WIRE",
-				DataSourceVO.Type.ONE_WIRE.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.META",
-				DataSourceVO.Type.META.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.BACNET",
-				DataSourceVO.Type.BACNET.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.HTTP_RETRIEVER",
-				DataSourceVO.Type.HTTP_RETRIEVER.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.POP3",
-				DataSourceVO.Type.POP3.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.NMEA",
-				DataSourceVO.Type.NMEA.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.GALIL",
-				DataSourceVO.Type.GALIL.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.HTTP_IMAGE",
-				DataSourceVO.Type.HTTP_IMAGE.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.EBI25",
-				DataSourceVO.Type.EBI25.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.VMSTAT",
-				DataSourceVO.Type.VMSTAT.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.VICONICS",
-				DataSourceVO.Type.VICONICS.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.M_BUS",
-				DataSourceVO.Type.M_BUS.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.OPEN_V_4_J",
-				DataSourceVO.Type.OPEN_V_4_J.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.DNP3_IP",
-				DataSourceVO.Type.DNP3_IP.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.DNP3_SERIAL",
-				DataSourceVO.Type.DNP3_SERIAL.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.PACHUBE",
-				DataSourceVO.Type.PACHUBE.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.NODAVE_S7",
-				DataSourceVO.Type.NODAVE_S7.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.ALPHA_2",
-				DataSourceVO.Type.ALPHA_2.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.OPC",
-				DataSourceVO.Type.OPC.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.ASCII_FILE",
-				DataSourceVO.Type.ASCII_FILE.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.ASCII_SERIAL",
-				DataSourceVO.Type.ASCII_SERIAL.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.DR_STORAGE_HT5B",
-				DataSourceVO.Type.DR_STORAGE_HT5B.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.PERSISTENT",
-				DataSourceVO.Type.PERSISTENT.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.IEC101_SERIAL",
-				DataSourceVO.Type.IEC101_SERIAL.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.IEC101_ETHERNET",
-				DataSourceVO.Type.IEC101_ETHERNET.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.INTERNAL",
-				DataSourceVO.Type.INTERNAL.getId());
-		ctx.setAttribute("constants.DataSourceVO.Types.JMX",
-				DataSourceVO.Type.JMX.getId());
-		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE",
-				Permissions.DataPointAccessTypes.NONE);
-		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.READ",
-				Permissions.DataPointAccessTypes.READ);
-		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.SET",
-				Permissions.DataPointAccessTypes.SET);
-		ctx.setAttribute(
-				"constants.Permissions.DataPointAccessTypes.DATA_SOURCE",
+		ctx.setAttribute("constants.DataSourceVO.Types.VIRTUAL", DataSourceVO.Type.VIRTUAL.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.MODBUS_SERIAL", DataSourceVO.Type.MODBUS_SERIAL.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.MODBUS_IP", DataSourceVO.Type.MODBUS_IP.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.SNMP", DataSourceVO.Type.SNMP.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.SQL", DataSourceVO.Type.SQL.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.HTTP_RECEIVER", DataSourceVO.Type.HTTP_RECEIVER.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.ONE_WIRE", DataSourceVO.Type.ONE_WIRE.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.META", DataSourceVO.Type.META.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.BACNET", DataSourceVO.Type.BACNET.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.HTTP_RETRIEVER", DataSourceVO.Type.HTTP_RETRIEVER.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.POP3", DataSourceVO.Type.POP3.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.NMEA", DataSourceVO.Type.NMEA.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.GALIL", DataSourceVO.Type.GALIL.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.HTTP_IMAGE", DataSourceVO.Type.HTTP_IMAGE.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.EBI25", DataSourceVO.Type.EBI25.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.VMSTAT", DataSourceVO.Type.VMSTAT.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.VICONICS", DataSourceVO.Type.VICONICS.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.M_BUS", DataSourceVO.Type.M_BUS.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.OPEN_V_4_J", DataSourceVO.Type.OPEN_V_4_J.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.DNP3_IP", DataSourceVO.Type.DNP3_IP.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.DNP3_SERIAL", DataSourceVO.Type.DNP3_SERIAL.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.PACHUBE", DataSourceVO.Type.PACHUBE.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.NODAVE_S7", DataSourceVO.Type.NODAVE_S7.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.ALPHA_2", DataSourceVO.Type.ALPHA_2.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.OPC", DataSourceVO.Type.OPC.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.ASCII_FILE", DataSourceVO.Type.ASCII_FILE.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.ASCII_SERIAL", DataSourceVO.Type.ASCII_SERIAL.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.DR_STORAGE_HT5B", DataSourceVO.Type.DR_STORAGE_HT5B.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.PERSISTENT", DataSourceVO.Type.PERSISTENT.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.IEC101_SERIAL", DataSourceVO.Type.IEC101_SERIAL.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.IEC101_ETHERNET", DataSourceVO.Type.IEC101_ETHERNET.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.INTERNAL", DataSourceVO.Type.INTERNAL.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.JMX", DataSourceVO.Type.JMX.getId());
+		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE", Permissions.DataPointAccessTypes.NONE);
+		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.READ", Permissions.DataPointAccessTypes.READ);
+		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.SET", Permissions.DataPointAccessTypes.SET);
+		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.DATA_SOURCE",
 				Permissions.DataPointAccessTypes.DATA_SOURCE);
-		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.ADMIN",
-				Permissions.DataPointAccessTypes.ADMIN);
+		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.ADMIN", Permissions.DataPointAccessTypes.ADMIN);
 
-		ctx.setAttribute("constants.EventType.EventSources.DATA_POINT",
-				EventType.EventSources.DATA_POINT);
-		ctx.setAttribute("constants.EventType.EventSources.DATA_SOURCE",
-				EventType.EventSources.DATA_SOURCE);
-		ctx.setAttribute("constants.EventType.EventSources.SYSTEM",
-				EventType.EventSources.SYSTEM);
-		ctx.setAttribute("constants.EventType.EventSources.COMPOUND",
-				EventType.EventSources.COMPOUND);
-		ctx.setAttribute("constants.EventType.EventSources.SCHEDULED",
-				EventType.EventSources.SCHEDULED);
-		ctx.setAttribute("constants.EventType.EventSources.PUBLISHER",
-				EventType.EventSources.PUBLISHER);
-		ctx.setAttribute("constants.EventType.EventSources.AUDIT",
-				EventType.EventSources.AUDIT);
-		ctx.setAttribute("constants.EventType.EventSources.MAINTENANCE",
-				EventType.EventSources.MAINTENANCE);
-		ctx.setAttribute("constants.SystemEventType.TYPE_SYSTEM_STARTUP",
-				SystemEventType.TYPE_SYSTEM_STARTUP);
-		ctx.setAttribute("constants.SystemEventType.TYPE_SYSTEM_SHUTDOWN",
-				SystemEventType.TYPE_SYSTEM_SHUTDOWN);
-		ctx.setAttribute(
-				"constants.SystemEventType.TYPE_MAX_ALARM_LEVEL_CHANGED",
+		ctx.setAttribute("constants.EventType.EventSources.DATA_POINT", EventType.EventSources.DATA_POINT);
+		ctx.setAttribute("constants.EventType.EventSources.DATA_SOURCE", EventType.EventSources.DATA_SOURCE);
+		ctx.setAttribute("constants.EventType.EventSources.SYSTEM", EventType.EventSources.SYSTEM);
+		ctx.setAttribute("constants.EventType.EventSources.COMPOUND", EventType.EventSources.COMPOUND);
+		ctx.setAttribute("constants.EventType.EventSources.SCHEDULED", EventType.EventSources.SCHEDULED);
+		ctx.setAttribute("constants.EventType.EventSources.PUBLISHER", EventType.EventSources.PUBLISHER);
+		ctx.setAttribute("constants.EventType.EventSources.AUDIT", EventType.EventSources.AUDIT);
+		ctx.setAttribute("constants.EventType.EventSources.MAINTENANCE", EventType.EventSources.MAINTENANCE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_SYSTEM_STARTUP", SystemEventType.TYPE_SYSTEM_STARTUP);
+		ctx.setAttribute("constants.SystemEventType.TYPE_SYSTEM_SHUTDOWN", SystemEventType.TYPE_SYSTEM_SHUTDOWN);
+		ctx.setAttribute("constants.SystemEventType.TYPE_MAX_ALARM_LEVEL_CHANGED",
 				SystemEventType.TYPE_MAX_ALARM_LEVEL_CHANGED);
-		ctx.setAttribute("constants.SystemEventType.TYPE_USER_LOGIN",
-				SystemEventType.TYPE_USER_LOGIN);
+		ctx.setAttribute("constants.SystemEventType.TYPE_USER_LOGIN", SystemEventType.TYPE_USER_LOGIN);
 		// ctx.setAttribute("constants.SystemEventType.TYPE_VERSION_CHECK",
 		// SystemEventType.TYPE_VERSION_CHECK);
-		ctx.setAttribute(
-				"constants.SystemEventType.TYPE_COMPOUND_DETECTOR_FAILURE",
+		ctx.setAttribute("constants.SystemEventType.TYPE_COMPOUND_DETECTOR_FAILURE",
 				SystemEventType.TYPE_COMPOUND_DETECTOR_FAILURE);
-		ctx.setAttribute(
-				"constants.SystemEventType.TYPE_SET_POINT_HANDLER_FAILURE",
+		ctx.setAttribute("constants.SystemEventType.TYPE_SET_POINT_HANDLER_FAILURE",
 				SystemEventType.TYPE_SET_POINT_HANDLER_FAILURE);
-		ctx.setAttribute("constants.SystemEventType.TYPE_EMAIL_SEND_FAILURE",
-				SystemEventType.TYPE_EMAIL_SEND_FAILURE);
-		ctx.setAttribute("constants.SystemEventType.TYPE_POINT_LINK_FAILURE",
-				SystemEventType.TYPE_POINT_LINK_FAILURE);
-		ctx.setAttribute("constants.SystemEventType.TYPE_PROCESS_FAILURE",
-				SystemEventType.TYPE_PROCESS_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_EMAIL_SEND_FAILURE", SystemEventType.TYPE_EMAIL_SEND_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_POINT_LINK_FAILURE", SystemEventType.TYPE_POINT_LINK_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_PROCESS_FAILURE", SystemEventType.TYPE_PROCESS_FAILURE);
 
-		ctx.setAttribute("constants.AuditEventType.TYPE_DATA_SOURCE",
-				AuditEventType.TYPE_DATA_SOURCE);
-		ctx.setAttribute("constants.AuditEventType.TYPE_DATA_POINT",
-				AuditEventType.TYPE_DATA_POINT);
+		ctx.setAttribute("constants.AuditEventType.TYPE_DATA_SOURCE", AuditEventType.TYPE_DATA_SOURCE);
+		ctx.setAttribute("constants.AuditEventType.TYPE_DATA_POINT", AuditEventType.TYPE_DATA_POINT);
 		ctx.setAttribute("constants.AuditEventType.TYPE_POINT_EVENT_DETECTOR",
 				AuditEventType.TYPE_POINT_EVENT_DETECTOR);
-		ctx.setAttribute(
-				"constants.AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR",
+		ctx.setAttribute("constants.AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR",
 				AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR);
-		ctx.setAttribute("constants.AuditEventType.TYPE_SCHEDULED_EVENT",
-				AuditEventType.TYPE_SCHEDULED_EVENT);
-		ctx.setAttribute("constants.AuditEventType.TYPE_EVENT_HANDLER",
-				AuditEventType.TYPE_EVENT_HANDLER);
-		ctx.setAttribute("constants.AuditEventType.TYPE_POINT_LINK",
-				AuditEventType.TYPE_POINT_LINK);
+		ctx.setAttribute("constants.AuditEventType.TYPE_SCHEDULED_EVENT", AuditEventType.TYPE_SCHEDULED_EVENT);
+		ctx.setAttribute("constants.AuditEventType.TYPE_EVENT_HANDLER", AuditEventType.TYPE_EVENT_HANDLER);
+		ctx.setAttribute("constants.AuditEventType.TYPE_POINT_LINK", AuditEventType.TYPE_POINT_LINK);
 
-		ctx.setAttribute("constants.PublisherVO.Types.HTTP_SENDER",
-				PublisherVO.Type.HTTP_SENDER.getId());
-		ctx.setAttribute("constants.PublisherVO.Types.PACHUBE",
-				PublisherVO.Type.PACHUBE.getId());
-		ctx.setAttribute("constants.PublisherVO.Types.PERSISTENT",
-				PublisherVO.Type.PERSISTENT.getId());
-		ctx.setAttribute("constants.UserComment.TYPE_EVENT",
-				UserComment.TYPE_EVENT);
-		ctx.setAttribute("constants.UserComment.TYPE_POINT",
-				UserComment.TYPE_POINT);
+		ctx.setAttribute("constants.PublisherVO.Types.HTTP_SENDER", PublisherVO.Type.HTTP_SENDER.getId());
+		ctx.setAttribute("constants.PublisherVO.Types.PACHUBE", PublisherVO.Type.PACHUBE.getId());
+		ctx.setAttribute("constants.PublisherVO.Types.PERSISTENT", PublisherVO.Type.PERSISTENT.getId());
+		ctx.setAttribute("constants.UserComment.TYPE_EVENT", UserComment.TYPE_EVENT);
+		ctx.setAttribute("constants.UserComment.TYPE_POINT", UserComment.TYPE_POINT);
 
-		String[] codes = { "common.access.read", "common.access.set",
-				"common.alarmLevel.none", "common.alarmLevel.info",
-				"common.alarmLevel.urgent", "common.alarmLevel.critical",
-				"common.alarmLevel.lifeSafety", "common.disabled",
-				"common.administrator", "common.user", "js.disabledSe",
-				"scheduledEvents.se", "js.disabledCed",
-				"compoundDetectors.compoundEventDetector",
-				"common.disabledToggle", "common.enabledToggle",
-				"common.maximize", "common.minimize", "js.help.loading",
-				"js.help.error", "js.help.related", "js.help.lastUpdated",
-				"common.sendTestEmail", "js.email.noRecipients",
-				"js.email.addMailingList", "js.email.addUser",
-				"js.email.addAddress", "js.email.noRecipForEmail",
-				"js.email.testSent", "events.silence", "events.unsilence",
-				"js.disabledPointLink", "pointLinks.pointLink", "header.mute",
-				"header.unmute", };
+		String[] codes = { "common.access.read", "common.access.set", "common.alarmLevel.none",
+				"common.alarmLevel.info", "common.alarmLevel.urgent", "common.alarmLevel.critical",
+				"common.alarmLevel.lifeSafety", "common.disabled", "common.administrator", "common.user",
+				"js.disabledSe", "scheduledEvents.se", "js.disabledCed", "compoundDetectors.compoundEventDetector",
+				"common.disabledToggle", "common.enabledToggle", "common.maximize", "common.minimize",
+				"js.help.loading", "js.help.error", "js.help.related", "js.help.lastUpdated", "common.sendTestEmail",
+				"js.email.noRecipients", "js.email.addMailingList", "js.email.addUser", "js.email.addAddress",
+				"js.email.noRecipForEmail", "js.email.testSent", "events.silence", "events.unsilence",
+				"js.disabledPointLink", "pointLinks.pointLink", "header.mute", "header.unmute", };
 
 		Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
 		for (String code : codes)
@@ -363,8 +296,7 @@ public class MangoContextListener implements ServletContextListener {
 	// Database.
 	//
 	private void databaseInitialize(ServletContext ctx) {
-		DatabaseAccess databaseAccess = DatabaseAccess
-				.createDatabaseAccess(ctx);
+		DatabaseAccess databaseAccess = DatabaseAccess.createDatabaseAccess(ctx);
 		ctx.setAttribute(Common.ContextKeys.DATABASE_ACCESS, databaseAccess);
 		databaseAccess.initialize();
 	}
@@ -388,8 +320,7 @@ public class MangoContextListener implements ServletContextListener {
 		ctx.setAttribute(Common.ContextKeys.BACKGROUND_PROCESSING, bp);
 
 		// HTTP receiver multicaster
-		ctx.setAttribute(Common.ContextKeys.HTTP_RECEIVER_MULTICASTER,
-				new HttpReceiverMulticaster());
+		ctx.setAttribute(Common.ContextKeys.HTTP_RECEIVER_MULTICASTER, new HttpReceiverMulticaster());
 
 		BaseDwr.initialize();
 	}
@@ -399,6 +330,29 @@ public class MangoContextListener implements ServletContextListener {
 		if (bp != null) {
 			bp.terminate();
 			bp.joinTermination();
+		}
+	}
+
+	//
+	//
+	// User Cache
+	//
+	private void userCacheInitialize(ServletContext ctx) {
+		UserCache uc = new UserCache();
+		ctx.setAttribute(Common.ContextKeys.USER_CACHE, uc);
+		uc.initialize();
+	}
+
+	private void userCacheTerminate(ContextWrapper ctx) {
+		UserCache uc = ctx.getUserCache();
+		if (uc != null) {
+			try {
+				uc.terminate();
+			} catch (LifecycleException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			uc.joinTermination();
 		}
 	}
 
@@ -429,26 +383,33 @@ public class MangoContextListener implements ServletContextListener {
 		ctx.setAttribute(Common.ContextKeys.RUNTIME_MANAGER, rtm);
 
 		// Check for safe mode.
-		File safeFile = new File(ctx.getRealPath("SAFE"));
+		File safeFile;
 		boolean safe = false;
-		if (safeFile.exists() && safeFile.isFile()) {
-			// Indicate that we're in safe mode.
-			StringBuilder sb = new StringBuilder();
-			sb.append("\r\n");
-			sb.append("*********************************************************\r\n");
-			sb.append("*                    NOTE                               *\r\n");
-			sb.append("*********************************************************\r\n");
-			sb.append("* Mango M2M is starting in safe mode. All data sources, *\r\n");
-			sb.append("* point links, scheduled events, compound events, and   *\r\n");
-			sb.append("* publishers will be disabled. To disable safe mode,    *\r\n");
-			sb.append("* remove the SAFE file from the Mango M2M application   *\r\n");
-			sb.append("* directory.                                            *\r\n");
-			sb.append("*                                                       *\r\n");
-			sb.append("* To find all objects that were automatically disabled, *\r\n");
-			sb.append("* search for Audit Events on the alarms page.           *\r\n");
-			sb.append("*********************************************************");
-			log.warn(sb.toString());
-			safe = true;
+		String path;
+		try {
+			safeFile = new File(ctx.getRealPath("/SAFE"));
+			if (safeFile.exists() && safeFile.isFile()) {
+				// Indicate that we're in safe mode.
+				StringBuilder sb = new StringBuilder();
+				sb.append("\r\n");
+				sb.append("*********************************************************\r\n");
+				sb.append("*                    NOTE                               *\r\n");
+				sb.append("*********************************************************\r\n");
+				sb.append("* Mango M2M is starting in safe mode. All data sources, *\r\n");
+				sb.append("* point links, scheduled events, compound events, and   *\r\n");
+				sb.append("* publishers will be disabled. To disable safe mode,    *\r\n");
+				sb.append("* remove the SAFE file from the Mango M2M application   *\r\n");
+				sb.append("* directory.                                            *\r\n");
+				sb.append("*                                                       *\r\n");
+				sb.append("* To find all objects that were automatically disabled, *\r\n");
+				sb.append("* search for Audit Events on the alarms page.           *\r\n");
+				sb.append("*********************************************************");
+				log.warn(sb.toString());
+				safe = true;
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			// e1.printStackTrace();
 		}
 
 		try {
@@ -479,15 +440,13 @@ public class MangoContextListener implements ServletContextListener {
 		ViewGraphicLoader loader = new ViewGraphicLoader();
 		List<ImageSet> imageSets = new ArrayList<ImageSet>();
 		List<DynamicImage> dynamicImages = new ArrayList<DynamicImage>();
-
-		for (ViewGraphic g : loader.loadViewGraphics(ctx.getRealPath(""))) {
+		for (ViewGraphic g : loader.loadViewGraphics(ctx.getRealPath("/"))) {
 			if (g.isImageSet())
 				imageSets.add((ImageSet) g);
 			else if (g.isDynamicImage())
 				dynamicImages.add((DynamicImage) g);
 			else
-				throw new ShouldNeverHappenException(
-						"Unknown view graphic type");
+				throw new ShouldNeverHappenException("Unknown view graphic type");
 		}
 
 		ctx.setAttribute(Common.ContextKeys.IMAGE_SETS, imageSets);
@@ -502,21 +461,17 @@ public class MangoContextListener implements ServletContextListener {
 		Configuration cfg = new Configuration();
 		try {
 			List<TemplateLoader> loaders = new ArrayList<TemplateLoader>();
-
 			// Add the override template dir
 			try {
-				loaders.add(new FileTemplateLoader(new File(ctx
-						.getRealPath("/WEB-INF/ftl-override"))));
+				loaders.add(new FileTemplateLoader(new File(ctx.getRealPath("/WEB-INF/ftl-override"))));
 			} catch (FileNotFoundException e) {
 				// ignore
 			}
 
 			// Add the default template dir
-			loaders.add(new FileTemplateLoader(new File(ctx
-					.getRealPath("/WEB-INF/ftl"))));
+			loaders.add(new FileTemplateLoader(new File(ctx.getRealPath("/WEB-INF/ftl"))));
 
-			cfg.setTemplateLoader(new MultiTemplateLoader(loaders
-					.toArray(new TemplateLoader[loaders.size()])));
+			cfg.setTemplateLoader(new MultiTemplateLoader(loaders.toArray(new TemplateLoader[loaders.size()])));
 		} catch (IOException e) {
 			log.error("Exception defining Freemarker template directories", e);
 		}

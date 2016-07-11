@@ -41,7 +41,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.ReportDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -72,7 +71,7 @@ public class ReportWorkItem implements WorkItem {
 		LOG.info("Queuing report with id " + report.getId());
 
 		// Verify that the user is not disabled.
-		User user = new UserDao().getUser(report.getUserId());
+		User user = Common.ctx.getUserCache().getUser(report.getUserId());
 		if (user.isDisabled())
 			return;
 
@@ -91,8 +90,7 @@ public class ReportWorkItem implements WorkItem {
 		item.reportInstance = reportInstance;
 		Common.ctx.getBackgroundProcessing().addWorkItem(item);
 
-		LOG.info("Queued report with id " + report.getId() + ", instance id "
-				+ reportInstance.getId());
+		LOG.info("Queued report with id " + report.getId() + ", instance id " + reportInstance.getId());
 	}
 
 	ReportVO reportConfig;
@@ -102,8 +100,7 @@ public class ReportWorkItem implements WorkItem {
 	List<File> filesToDelete = new ArrayList<File>();
 
 	public void execute() {
-		LOG.info("Running report with id " + reportConfig.getId()
-				+ ", instance id " + reportInstance.getId());
+		LOG.info("Running report with id " + reportConfig.getId() + ", instance id " + reportInstance.getId());
 
 		reportInstance.setRunStartTime(System.currentTimeMillis());
 		reportDao.saveReportInstance(reportInstance);
@@ -111,34 +108,27 @@ public class ReportWorkItem implements WorkItem {
 
 		// Create a list of DataPointVOs to which the user has permission.
 		DataPointDao dataPointDao = new DataPointDao();
-		List<ReportDao.PointInfo> points = new ArrayList<ReportDao.PointInfo>(
-				reportConfig.getPoints().size());
+		List<ReportDao.PointInfo> points = new ArrayList<ReportDao.PointInfo>(reportConfig.getPoints().size());
 		for (ReportPointVO reportPoint : reportConfig.getPoints()) {
-			DataPointVO point = dataPointDao.getDataPoint(reportPoint
-					.getPointId());
-			if (point != null
-					&& Permissions.hasDataPointReadPermission(user, point)) {
+			DataPointVO point = dataPointDao.getDataPoint(reportPoint.getPointId());
+			if (point != null && Permissions.hasDataPointReadPermission(user, point)) {
 				String colour = null;
 				try {
 					if (!StringUtils.isEmpty(reportPoint.getColour()))
-						colour = ColorUtils
-								.toHexString(reportPoint.getColour())
-								.substring(1);
+						colour = ColorUtils.toHexString(reportPoint.getColour()).substring(1);
 				} catch (InvalidArgumentException e) {
 					// Should never happen since the colour would have been
 					// validated on save, so just let it go
 					// as null.
 				}
-				points.add(new ReportDao.PointInfo(point, colour, reportPoint
-						.isConsolidatedChart()));
+				points.add(new ReportDao.PointInfo(point, colour, reportPoint.isConsolidatedChart()));
 			}
 		}
 
 		int recordCount = 0;
 		try {
 			if (!points.isEmpty())
-				recordCount = reportDao.runReport(reportInstance, points,
-						bundle);
+				recordCount = reportDao.runReport(reportInstance, points, bundle);
 		} catch (RuntimeException e) {
 			recordCount = -1;
 			throw e;
@@ -152,38 +142,32 @@ public class ReportWorkItem implements WorkItem {
 		}
 
 		if (reportConfig.isEmail()) {
-			String inlinePrefix = "R" + System.currentTimeMillis() + "-"
-					+ reportInstance.getId() + "-";
+			String inlinePrefix = "R" + System.currentTimeMillis() + "-" + reportInstance.getId() + "-";
 
 			// We are creating an email from the result. Create the content.
 			final ReportChartCreator creator = new ReportChartCreator(bundle);
-			creator.createContent(reportInstance, reportDao, inlinePrefix,
-					reportConfig.isIncludeData());
+			creator.createContent(reportInstance, reportDao, inlinePrefix, reportConfig.isIncludeData());
 
 			// Create the to list
-			Set<String> addresses = new MailingListDao().getRecipientAddresses(
-					reportConfig.getRecipients(),
+			Set<String> addresses = new MailingListDao().getRecipientAddresses(reportConfig.getRecipients(),
 					new DateTime(reportInstance.getReportStartTime()));
 			String[] toAddrs = addresses.toArray(new String[0]);
 
 			// Create the email content object.
-			EmailContent emailContent = new EmailContent(null,
-					creator.getHtml(), Common.UTF8);
+			EmailContent emailContent = new EmailContent(null, creator.getHtml(), Common.UTF8);
 
 			// Add the consolidated chart
 			if (creator.getImageData() != null)
-				emailContent.addInline(new EmailInline.ByteArrayInline(
-						inlinePrefix + ReportChartCreator.IMAGE_CONTENT_ID,
-						creator.getImageData(), ImageChartUtils
-								.getContentType()));
+				emailContent
+						.addInline(new EmailInline.ByteArrayInline(inlinePrefix + ReportChartCreator.IMAGE_CONTENT_ID,
+								creator.getImageData(), ImageChartUtils.getContentType()));
 
 			// Add the point charts
 			for (PointStatistics pointStatistics : creator.getPointStatistics()) {
 				if (pointStatistics.getImageData() != null)
-					emailContent.addInline(new EmailInline.ByteArrayInline(
-							inlinePrefix + pointStatistics.getChartName(),
-							pointStatistics.getImageData(), ImageChartUtils
-									.getContentType()));
+					emailContent
+							.addInline(new EmailInline.ByteArrayInline(inlinePrefix + pointStatistics.getChartName(),
+									pointStatistics.getImageData(), ImageChartUtils.getContentType()));
 			}
 
 			// Add optional images used by the template.
@@ -192,12 +176,9 @@ public class ReportWorkItem implements WorkItem {
 
 			// Check if we need to attach the data.
 			if (reportConfig.isIncludeData()) {
-				addFileAttachment(emailContent, reportInstance.getName()
-						+ ".csv", creator.getExportFile());
-				addFileAttachment(emailContent, reportInstance.getName()
-						+ "Events.csv", creator.getEventFile());
-				addFileAttachment(emailContent, reportInstance.getName()
-						+ "Comments.csv", creator.getCommentFile());
+				addFileAttachment(emailContent, reportInstance.getName() + ".csv", creator.getExportFile());
+				addFileAttachment(emailContent, reportInstance.getName() + "Events.csv", creator.getEventFile());
+				addFileAttachment(emailContent, reportInstance.getName() + "Comments.csv", creator.getCommentFile());
 			}
 
 			Runnable[] postEmail = null;
@@ -208,8 +189,7 @@ public class ReportWorkItem implements WorkItem {
 					public void run() {
 						for (File file : filesToDelete) {
 							if (!file.delete())
-								LOG.warn("Temp file " + file.getPath()
-										+ " not deleted");
+								LOG.warn("Temp file " + file.getPath() + " not deleted");
 						}
 					}
 				};
@@ -217,11 +197,8 @@ public class ReportWorkItem implements WorkItem {
 			}
 
 			try {
-				LocalizableMessage lm = new LocalizableMessage(
-						"ftl.scheduledReport", reportConfig.getName());
-				EmailWorkItem
-						.queueEmail(toAddrs, lm.getLocalizedMessage(bundle),
-								emailContent, postEmail);
+				LocalizableMessage lm = new LocalizableMessage("ftl.scheduledReport", reportConfig.getName());
+				EmailWorkItem.queueEmail(toAddrs, lm.getLocalizedMessage(bundle), emailContent, postEmail);
 			} catch (AddressException e) {
 				LOG.error(e);
 			}
@@ -231,23 +208,20 @@ public class ReportWorkItem implements WorkItem {
 			// user.getId());
 		}
 
-		LOG.info("Finished running report with id " + reportConfig.getId()
-				+ ", instance id " + reportInstance.getId());
+		LOG.info("Finished running report with id " + reportConfig.getId() + ", instance id " + reportInstance.getId());
 	}
 
 	private void addImage(EmailContent emailContent, String imagePath) {
-		emailContent.addInline(new EmailInline.FileInline(imagePath, Common.ctx
-				.getServletContext().getRealPath(imagePath)));
+		emailContent.addInline(
+				new EmailInline.FileInline(imagePath, Common.ctx.getServletContext().getRealPath(imagePath)));
 	}
 
-	private void addFileAttachment(EmailContent emailContent, String name,
-			File file) {
+	private void addFileAttachment(EmailContent emailContent, String name, File file) {
 		if (file != null) {
 			if (reportConfig.isZipData()) {
 				try {
 					File zipFile = File.createTempFile("tempZIP", ".zip");
-					ZipOutputStream zipOut = new ZipOutputStream(
-							new FileOutputStream(zipFile));
+					ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile));
 					zipOut.putNextEntry(new ZipEntry(name));
 
 					FileInputStream in = new FileInputStream(file);
@@ -257,17 +231,14 @@ public class ReportWorkItem implements WorkItem {
 					zipOut.closeEntry();
 					zipOut.close();
 
-					emailContent
-							.addAttachment(new EmailAttachment.FileAttachment(
-									name + ".zip", zipFile));
+					emailContent.addAttachment(new EmailAttachment.FileAttachment(name + ".zip", zipFile));
 
 					filesToDelete.add(zipFile);
 				} catch (IOException e) {
 					LOG.error("Failed to create zip file", e);
 				}
 			} else
-				emailContent.addAttachment(new EmailAttachment.FileAttachment(
-						name, file));
+				emailContent.addAttachment(new EmailAttachment.FileAttachment(name, file));
 
 			filesToDelete.add(file);
 		}

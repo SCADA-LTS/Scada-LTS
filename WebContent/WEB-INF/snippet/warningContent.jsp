@@ -16,9 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%><%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<c:if test="${!empty invalid || !empty disabled || !empty events || pointRT.attributes.UNRELIABLE}">
+<c:if test="${!empty invalid || !empty disabled || !empty events || pointRT.attributes.UNRELIABLE || pointRT.attributes.DISCONNECT}">
+<%-- <c:if test="${!empty invalid || !empty disabled || !empty events }"> --%>
   <table width="200" cellspacing="0" cellpadding="0">
     <c:choose>
+      <c:when test="${pointRT.attributes.DISCONNECTED}">
+        <tr>
+          <td valign="top"><tag:img png="disconnect" title="common.noConnection"/></td>
+          <td colspan="3"><fmt:message key="common.noConnection"/></td>
+        </tr>
+      </c:when>
       <c:when test="${!empty invalid}">
         <tr>
           <td valign="top"><tag:img png="warn" title="common.warning"/></td>
@@ -31,16 +38,16 @@
           <td colspan="3"><fmt:message key="common.pointWarning"/></td>
         </tr>
       </c:when>
+      <c:when test="${pointRT.attributes.UNRELIABLE}">
+		<tr>
+	      <td><tag:img png="warn" title="common.valueUnreliable"/></td>
+	      <td style="white-space:nowrap;" colspan="3">
+	      <fmt:message key="common.valueUnreliable"/>
+	      <tag:img png="arrow_refresh" title="common.refresh" onclick="WatchListDwr.forcePointRead(${point.id})" style="display:inline"/>
+	      </td>
+	    </tr>
+	  </c:when>
     </c:choose>
-    <c:if test="${pointRT.attributes.UNRELIABLE}">
-      <tr>
-        <td><tag:img png="exclamation" title="common.valueUnreliable"/></td>
-        <td style="white-space:nowrap;" colspan="3">
-          <fmt:message key="common.valueUnreliable"/>
-          <tag:img png="arrow_refresh" title="common.refresh" onclick="WatchListDwr.forcePointRead(${point.id})" style="display:inline"/>
-        </td>
-      </tr>
-    </c:if>
     <c:if test="${!empty events}">
       <c:forEach items="${events}" var="event">
         <tr>

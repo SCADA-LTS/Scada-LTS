@@ -47,7 +47,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.SystemSettingsDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
@@ -86,8 +85,7 @@ public class MiscDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		if (user != null) {
-			boolean result = new EventDao()
-					.toggleSilence(eventId, user.getId());
+			boolean result = new EventDao().toggleSilence(eventId, user.getId());
 			resetLastAlarmLevelChange();
 			response.addData("silenced", result);
 		} else
@@ -118,8 +116,7 @@ public class MiscDwr extends BaseDwr {
 	public int acknowledgeEvent(int eventId) {
 		User user = Common.getUser();
 		if (user != null) {
-			new EventDao().ackEvent(eventId, System.currentTimeMillis(),
-					user.getId(), 0);
+			new EventDao().ackEvent(eventId, System.currentTimeMillis(), user.getId(), 0);
 			resetLastAlarmLevelChange();
 		}
 		return eventId;
@@ -154,8 +151,7 @@ public class MiscDwr extends BaseDwr {
 			result.put("error", getMessage("dox.notFound"));
 		else {
 			// Read the content.
-			String filename = Common.getDocPath() + "/" + getMessage("dox.dir")
-					+ "/" + documentId + ".htm";
+			String filename = Common.getDocPath() + "/" + getMessage("dox.dir") + "/" + documentId + ".htm";
 			try {
 				Reader in = new FileReader(filename);
 				StringWriter out = new StringWriter();
@@ -176,38 +172,30 @@ public class MiscDwr extends BaseDwr {
 			} catch (FileNotFoundException e) {
 				result.put("error", getMessage("dox.notFound") + " " + filename);
 			} catch (IOException e) {
-				result.put("error", getMessage("dox.readError") + " "
-						+ e.getClass().getName() + ": " + e.getMessage());
+				result.put("error", getMessage("dox.readError") + " " + e.getClass().getName() + ": " + e.getMessage());
 			}
 		}
 
 		return result;
 	}
 
-	private void addDocumentationItem(Map<String, Object> map,
-			DocumentationItem di) {
+	private void addDocumentationItem(Map<String, Object> map, DocumentationItem di) {
 		map.put("id", di.getId());
 		map.put("title", getMessage("dox." + di.getId()));
 	}
 
-	public void jsError(String desc, String page, String line,
-			String browserName, String browserVersion, String osName,
+	public void jsError(String desc, String page, String line, String browserName, String browserVersion, String osName,
 			String location) {
-		LOG.warn("Javascript error\r\n" + "   Description: " + desc + "\r\n"
-				+ "   Page: " + page + "\r\n" + "   Line: " + line + "\r\n"
-				+ "   Browser name: " + browserName + "\r\n"
-				+ "   Browser version: " + browserVersion + "\r\n"
-				+ "   osName: " + osName + "\r\n" + "   location: " + location);
+		LOG.warn("Javascript error\r\n" + "   Description: " + desc + "\r\n" + "   Page: " + page + "\r\n" + "   Line: "
+				+ line + "\r\n" + "   Browser name: " + browserName + "\r\n" + "   Browser version: " + browserVersion
+				+ "\r\n" + "   osName: " + osName + "\r\n" + "   location: " + location);
 	}
 
 	@MethodFilter
-	public DwrResponseI18n sendTestEmail(
-			List<RecipientListEntryBean> recipientList, String prefix,
-			String message) {
+	public DwrResponseI18n sendTestEmail(List<RecipientListEntryBean> recipientList, String prefix, String message) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
-		String[] toAddrs = new MailingListDao().getRecipientAddresses(
-				recipientList, null).toArray(new String[0]);
+		String[] toAddrs = new MailingListDao().getRecipientAddresses(recipientList, null).toArray(new String[0]);
 		if (toAddrs.length == 0)
 			response.addGenericMessage("js.email.noRecipForEmail");
 		else {
@@ -215,11 +203,9 @@ public class MiscDwr extends BaseDwr {
 				ResourceBundle bundle = Common.getBundle();
 				Map<String, Object> model = new HashMap<String, Object>();
 				model.put("user", Common.getUser());
-				model.put("message", new LocalizableMessage("common.default",
-						message));
-				MangoEmailContent cnt = new MangoEmailContent("testEmail",
-						model, bundle, I18NUtils.getMessage(bundle,
-								"ftl.testEmail"), Common.UTF8);
+				model.put("message", new LocalizableMessage("common.default", message));
+				MangoEmailContent cnt = new MangoEmailContent("testEmail", model, bundle,
+						I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
 				EmailWorkItem.queueEmail(toAddrs, cnt);
 			} catch (Exception e) {
 				response.addGenericMessage("common.default", e.getMessage());
@@ -239,16 +225,14 @@ public class MiscDwr extends BaseDwr {
 		LocaleEditor localeEditor = new LocaleEditor();
 		localeEditor.setAsText(locale);
 
-		localeResolver.setLocale(webContext.getHttpServletRequest(),
-				webContext.getHttpServletResponse(),
+		localeResolver.setLocale(webContext.getHttpServletRequest(), webContext.getHttpServletResponse(),
 				(Locale) localeEditor.getValue());
 	}
 
 	@MethodFilter
 	public void setHomeUrl(String url) {
 		// Remove the scheme, domain, and context if there.
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 
 		// Remove the scheme.
 		url = url.substring(request.getScheme().length() + 3);
@@ -258,8 +242,7 @@ public class MiscDwr extends BaseDwr {
 
 		// Remove the port
 		if (url.charAt(0) == ':')
-			url = url.substring(Integer.toString(request.getServerPort())
-					.length() + 1);
+			url = url.substring(Integer.toString(request.getServerPort()).length() + 1);
 
 		// Remove the context
 		url = url.substring(request.getContextPath().length());
@@ -269,7 +252,7 @@ public class MiscDwr extends BaseDwr {
 			url = url.substring(1);
 
 		// Save the result
-		new UserDao().saveHomeUrl(Common.getUser().getId(), url);
+		Common.ctx.getUserCache().getUserDao().saveHomeUrl(Common.getUser().getId(), url);
 	}
 
 	@MethodFilter
@@ -285,8 +268,7 @@ public class MiscDwr extends BaseDwr {
 	// / Long poll
 	// /
 	//
-	public Map<String, Object> initializeLongPoll(int pollSessionId,
-			LongPollRequest request) {
+	public Map<String, Object> initializeLongPoll(int pollSessionId, LongPollRequest request) {
 		LongPollData data = getLongPollData(pollSessionId, true);
 		data.setRequest(request);
 		return doLongPoll(pollSessionId);
@@ -294,12 +276,12 @@ public class MiscDwr extends BaseDwr {
 
 	public Map<String, Object> doLongPoll(int pollSessionId) {
 		Map<String, Object> response = new HashMap<String, Object>();
-		HttpServletRequest httpRequest = WebContextFactory.get()
-				.getHttpServletRequest();
+		HttpServletRequest httpRequest = WebContextFactory.get().getHttpServletRequest();
 		User user = Common.getUser(httpRequest);
 		EventManager eventManager = Common.ctx.getEventManager();
 		EventDao eventDao = new EventDao();
 
+		LOG.trace(">>>>>>> Start poll");
 		LongPollData data = getLongPollData(pollSessionId, false);
 		data.updateTimestamp();
 
@@ -307,8 +289,7 @@ public class MiscDwr extends BaseDwr {
 
 		long expireTime = System.currentTimeMillis() + 60000; // One minute
 		LongPollState state = data.getState();
-		int waitTime = SystemSettingsDao
-				.getIntValue(SystemSettingsDao.UI_PERFORAMANCE);
+		int waitTime = SystemSettingsDao.getIntValue(SystemSettingsDao.UI_PERFORAMANCE);
 
 		// For users that log in on multiple machines (or browsers), reset the
 		// last alarm timestamp so that it always
@@ -316,37 +297,41 @@ public class MiscDwr extends BaseDwr {
 		// user-specific event change tracking code.
 		state.setLastAlarmLevelChange(0);
 
-		while (!pollRequest.isTerminated()
-				&& System.currentTimeMillis() < expireTime) {
+		while (!pollRequest.isTerminated() && System.currentTimeMillis() < expireTime) {
+			LOG.trace("Start poll while ");
 			if (pollRequest.isMaxAlarm() && user != null) {
 				// Check the max alarm. First check if the events have changed
 				// since the last time this request checked.
+				LOG.trace("Get last Alarm - ");
 				long lastEMUpdate = eventManager.getLastAlarmTimestamp();
+				LOG.trace("last Alarm ts - " + lastEMUpdate + " - ");
 				if (state.getLastAlarmLevelChange() < lastEMUpdate) {
+					LOG.trace("Set Alarm ts - ");
 					state.setLastAlarmLevelChange(lastEMUpdate);
 
 					// The events have changed. See if the user's particular max
 					// alarm level has changed.
-					int maxAlarmLevel = eventDao
-							.getHighestUnsilencedAlarmLevel(user.getId());
-					LOG.trace(toString() + " maxAlarmLevel: " + maxAlarmLevel);
+					LOG.trace("Get Highest unsilenced Alarm - ");
+					int maxAlarmLevel = eventDao.getHighestUnsilencedAlarmLevel(user.getId());
+					LOG.trace("Got Highest unsilenced Alarm - ");
 					if (maxAlarmLevel != state.getMaxAlarmLevel()) {
-						response.put("highestUnsilencedAlarmLevel",
-								maxAlarmLevel);
+						response.put("highestUnsilencedAlarmLevel", maxAlarmLevel);
+						LOG.trace("Set Max Alarm - ");
 						state.setMaxAlarmLevel(maxAlarmLevel);
 					}
 				}
 			}
 
 			if (pollRequest.isWatchList() && user != null) {
+				LOG.trace("WatchList - ");
 				synchronized (state) {
-					List<WatchListState> newStates = watchListDwr
-							.getPointData();
+					LOG.trace("GetPointData - ");
+					List<WatchListState> newStates = watchListDwr.getPointData();
 					List<WatchListState> differentStates = new ArrayList<WatchListState>();
 
+					LOG.trace("SetStates - ");
 					for (WatchListState newState : newStates) {
-						WatchListState oldState = state
-								.getWatchListState(newState.getId());
+						WatchListState oldState = state.getWatchListState(newState.getId());
 						if (oldState == null)
 							differentStates.add(newState);
 						else {
@@ -356,17 +341,21 @@ public class MiscDwr extends BaseDwr {
 								differentStates.add(copy);
 						}
 					}
+					LOG.trace("End SetStates - ");
 
 					if (!differentStates.isEmpty()) {
 						response.put("watchListStates", differentStates);
 						state.setWatchListStates(newStates);
 					}
 				}
+				LOG.trace("End WatchList - ");
 			}
 
 			if (pollRequest.isPointDetails() && user != null) {
+				LOG.trace("Get PointDetails - ");
 				WatchListState newState = dataPointDetailsDwr.getPointData();
 				WatchListState responseState;
+				LOG.trace("Get PointDetailsState - ");
 				WatchListState oldState = state.getPointDetailsState();
 
 				if (oldState == null)
@@ -380,23 +369,24 @@ public class MiscDwr extends BaseDwr {
 					response.put("pointDetailsState", responseState);
 					state.setPointDetailsState(newState);
 				}
+				LOG.trace("End PointDetails - ");
 			}
 
-			if ((pollRequest.isView() && user != null)
-					|| (pollRequest.isViewEdit() && user != null)
+			if ((pollRequest.isView() && user != null) || (pollRequest.isViewEdit() && user != null)
 					|| pollRequest.getAnonViewId() > 0) {
+				LOG.trace("View - ");
+
 				List<ViewComponentState> newStates;
 				if (pollRequest.getAnonViewId() > 0)
-					newStates = viewDwr.getViewPointDataAnon(pollRequest
-							.getAnonViewId());
+					newStates = viewDwr.getViewPointDataAnon(pollRequest.getAnonViewId());
 				else
-					newStates = viewDwr.getViewPointData(pollRequest
-							.isViewEdit());
+					newStates = viewDwr.getViewPointData(pollRequest.isViewEdit());
 				List<ViewComponentState> differentStates = new ArrayList<ViewComponentState>();
+				LOG.trace("Got ViewPointData - ");
 
+				LOG.trace("Get ViewComponentStates - ");
 				for (ViewComponentState newState : newStates) {
-					ViewComponentState oldState = state
-							.getViewComponentState(newState.getId());
+					ViewComponentState oldState = state.getViewComponentState(newState.getId());
 					if (oldState == null)
 						differentStates.add(newState);
 					else {
@@ -406,21 +396,22 @@ public class MiscDwr extends BaseDwr {
 							differentStates.add(copy);
 					}
 				}
+				LOG.trace("Got ViewComponentStates - ");
 
 				if (!differentStates.isEmpty()) {
 					response.put("viewStates", differentStates);
 					state.setViewComponentStates(newStates);
 				}
+				LOG.trace("End View - ");
 			}
 
 			if (pollRequest.isCustomView()) {
-				List<CustomComponentState> newStates = customViewDwr
-						.getViewPointData();
+
+				List<CustomComponentState> newStates = customViewDwr.getViewPointData();
 				List<CustomComponentState> differentStates = new ArrayList<CustomComponentState>();
 
 				for (CustomComponentState newState : newStates) {
-					CustomComponentState oldState = state
-							.getCustomViewState(newState.getId());
+					CustomComponentState oldState = state.getCustomViewState(newState.getId());
 					if (oldState == null)
 						differentStates.add(newState);
 					else {
@@ -438,25 +429,26 @@ public class MiscDwr extends BaseDwr {
 			}
 
 			if (pollRequest.isPendingAlarms() && user != null) {
+
 				// Create the list of most current pending alarm content.
 				Map<String, Object> model = new HashMap<String, Object>();
 				model.put("events", eventDao.getPendingEvents(user.getId()));
 				model.put("pendingEvents", true);
 				model.put("noContentWhenEmpty", true);
-				String currentContent = generateContent(httpRequest,
-						"eventList.jsp", model);
+				String currentContent = generateContent(httpRequest, "eventList.jsp", model);
 				currentContent = StringUtils.trimWhitespace(currentContent);
 
-				if (!StringUtils.isEqual(currentContent,
-						state.getPendingAlarmsContent())) {
+				if (!StringUtils.isEqual(currentContent, state.getPendingAlarmsContent())) {
 					response.put("pendingAlarmsContent", currentContent);
 					state.setPendingAlarmsContent(currentContent);
 				}
 			}
 
-			if (!response.isEmpty())
+			if (!response.isEmpty()) {
 				break;
+			}
 
+			LOG.trace("wait... - ");
 			synchronized (pollRequest) {
 				try {
 					pollRequest.wait(waitTime);
@@ -464,12 +456,13 @@ public class MiscDwr extends BaseDwr {
 					// no op
 				}
 			}
-
 		}
 
 		if (pollRequest.isTerminated())
 			response.put("terminated", true);
 
+		LOG.trace("<<<<<<<<< Responding - ");
+		// LOG.debug("response: " + response.toString());
 		return response;
 	}
 
@@ -529,8 +522,7 @@ public class MiscDwr extends BaseDwr {
 		return data;
 	}
 
-	private LongPollData getDataFromList(List<LongPollData> dataList,
-			int pollSessionId) {
+	private LongPollData getDataFromList(List<LongPollData> dataList, int pollSessionId) {
 		for (LongPollData data : dataList) {
 			if (data.getPollSessionId() == pollSessionId)
 				return data;
@@ -542,12 +534,10 @@ public class MiscDwr extends BaseDwr {
 	private List<LongPollData> getLongPollData() {
 		HttpSession session = WebContextFactory.get().getSession();
 
-		List<LongPollData> data = (List<LongPollData>) session
-				.getAttribute(LONG_POLL_DATA_KEY);
+		List<LongPollData> data = (List<LongPollData>) session.getAttribute(LONG_POLL_DATA_KEY);
 		if (data == null) {
 			synchronized (session) {
-				data = (List<LongPollData>) session
-						.getAttribute(LONG_POLL_DATA_KEY);
+				data = (List<LongPollData>) session.getAttribute(LONG_POLL_DATA_KEY);
 				if (data == null) {
 					data = new ArrayList<LongPollData>();
 					session.setAttribute(LONG_POLL_DATA_KEY, data);
@@ -556,8 +546,7 @@ public class MiscDwr extends BaseDwr {
 		}
 
 		// Check for old data objects.
-		Long lastTimeoutCheck = (Long) session
-				.getAttribute(LONG_POLL_DATA_TIMEOUT_KEY);
+		Long lastTimeoutCheck = (Long) session.getAttribute(LONG_POLL_DATA_TIMEOUT_KEY);
 		if (lastTimeoutCheck == null)
 			lastTimeoutCheck = 0L;
 		long cutoff = System.currentTimeMillis() - (1000 * 60 * 5); // Five
@@ -572,8 +561,7 @@ public class MiscDwr extends BaseDwr {
 				}
 			}
 
-			session.setAttribute(LONG_POLL_DATA_TIMEOUT_KEY,
-					System.currentTimeMillis());
+			session.setAttribute(LONG_POLL_DATA_TIMEOUT_KEY, System.currentTimeMillis());
 		}
 
 		return data;

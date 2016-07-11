@@ -38,101 +38,108 @@ import com.serotonin.mango.vo.mailingList.UserEntry;
 
 @JsonRemoteEntity
 public class RecipientListEntryBean implements Serializable, JsonSerializable {
-    private static final long serialVersionUID = -1;
+	private static final long serialVersionUID = -1;
 
-    private int recipientType;
-    private int referenceId;
-    private String referenceAddress;
+	private int recipientType;
+	private int referenceId;
+	private String referenceAddress;
 
-    public EmailRecipient createEmailRecipient() {
-        switch (recipientType) {
-        case EmailRecipient.TYPE_MAILING_LIST:
-            MailingList ml = new MailingList();
-            ml.setId(referenceId);
-            return ml;
-        case EmailRecipient.TYPE_USER:
-            UserEntry u = new UserEntry();
-            u.setUserId(referenceId);
-            return u;
-        case EmailRecipient.TYPE_ADDRESS:
-            AddressEntry a = new AddressEntry();
-            a.setAddress(referenceAddress);
-            return a;
-        }
-        throw new ShouldNeverHappenException("Unknown email recipient type: " + recipientType);
-    }
+	public EmailRecipient createEmailRecipient() {
+		switch (recipientType) {
+		case EmailRecipient.TYPE_MAILING_LIST:
+			MailingList ml = new MailingList();
+			ml.setId(referenceId);
+			return ml;
+		case EmailRecipient.TYPE_USER:
+			UserEntry u = new UserEntry();
+			u.setUserId(referenceId);
+			return u;
+		case EmailRecipient.TYPE_ADDRESS:
+			AddressEntry a = new AddressEntry();
+			a.setAddress(referenceAddress);
+			return a;
+		}
+		throw new ShouldNeverHappenException("Unknown email recipient type: " + recipientType);
+	}
 
-    public String getReferenceAddress() {
-        return referenceAddress;
-    }
+	public String getReferenceAddress() {
+		return referenceAddress;
+	}
 
-    public void setReferenceAddress(String address) {
-        referenceAddress = address;
-    }
+	public void setReferenceAddress(String address) {
+		referenceAddress = address;
+	}
 
-    public int getRecipientType() {
-        return recipientType;
-    }
+	public int getRecipientType() {
+		return recipientType;
+	}
 
-    public void setRecipientType(int typeId) {
-        recipientType = typeId;
-    }
+	public void setRecipientType(int typeId) {
+		recipientType = typeId;
+	}
 
-    public int getReferenceId() {
-        return referenceId;
-    }
+	public int getReferenceId() {
+		return referenceId;
+	}
 
-    public void setReferenceId(int refId) {
-        referenceId = refId;
-    }
+	public void setReferenceId(int refId) {
+		referenceId = refId;
+	}
 
-    public void jsonSerialize(Map<String, Object> map) {
-        map.put("recipientType", EmailRecipient.TYPE_CODES.getCode(recipientType));
-        if (recipientType == EmailRecipient.TYPE_MAILING_LIST)
-            map.put("mailingList", new MailingListDao().getMailingList(referenceId).getXid());
-        else if (recipientType == EmailRecipient.TYPE_USER)
-            map.put("username", new UserDao().getUser(referenceId).getUsername());
-        else if (recipientType == EmailRecipient.TYPE_ADDRESS)
-            map.put("address", referenceAddress);
-    }
+	public void jsonSerialize(Map<String, Object> map) {
+		map.put("recipientType", EmailRecipient.TYPE_CODES.getCode(recipientType));
+		if (recipientType == EmailRecipient.TYPE_MAILING_LIST) {
+			map.put("mailingList", new MailingListDao().getMailingList(referenceId).getXid());
+		} else if (recipientType == EmailRecipient.TYPE_USER) {
+			try {
+				User user = new UserDao().getUser(referenceId);
+				if (user != null) {
+					map.put("username", user.getUsername());
+				}
+			} catch (Exception e) {
+				// do stuff
+				e.printStackTrace();
+			}
+		} else if (recipientType == EmailRecipient.TYPE_ADDRESS) {
+			map.put("address", referenceAddress);
+		}
+	}
 
-    public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
-        String text = json.getString("recipientType");
-        if (text == null)
-            throw new LocalizableJsonException("emport.error.recipient.missing", "recipientType",
-                    EmailRecipient.TYPE_CODES.getCodeList());
+	public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
+		String text = json.getString("recipientType");
+		if (text == null)
+			throw new LocalizableJsonException("emport.error.recipient.missing", "recipientType",
+					EmailRecipient.TYPE_CODES.getCodeList());
 
-        recipientType = EmailRecipient.TYPE_CODES.getId(text);
-        if (recipientType == -1)
-            throw new LocalizableJsonException("emport.error.recipient.invalid", "recipientType", text,
-                    EmailRecipient.TYPE_CODES.getCodeList());
+		recipientType = EmailRecipient.TYPE_CODES.getId(text);
+		if (recipientType == -1)
+			throw new LocalizableJsonException("emport.error.recipient.invalid", "recipientType", text,
+					EmailRecipient.TYPE_CODES.getCodeList());
 
-        if (recipientType == EmailRecipient.TYPE_MAILING_LIST) {
-            text = json.getString("mailingList");
-            if (text == null)
-                throw new LocalizableJsonException("emport.error.recipient.missing.reference", "mailingList");
+		if (recipientType == EmailRecipient.TYPE_MAILING_LIST) {
+			text = json.getString("mailingList");
+			if (text == null)
+				throw new LocalizableJsonException("emport.error.recipient.missing.reference", "mailingList");
 
-            MailingList ml = new MailingListDao().getMailingList(text);
-            if (ml == null)
-                throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "mailingList", text);
+			MailingList ml = new MailingListDao().getMailingList(text);
+			if (ml == null)
+				throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "mailingList", text);
 
-            referenceId = ml.getId();
-        }
-        else if (recipientType == EmailRecipient.TYPE_USER) {
-            text = json.getString("username");
-            if (text == null)
-                throw new LocalizableJsonException("emport.error.recipient.missing.reference", "username");
+			referenceId = ml.getId();
+		} else if (recipientType == EmailRecipient.TYPE_USER) {
+			text = json.getString("username");
+			if (text == null)
+				throw new LocalizableJsonException("emport.error.recipient.missing.reference", "username");
 
-            User user = new UserDao().getUser(text);
-            if (user == null)
-                throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "user", text);
+			User user = new UserDao().getUser(text);
+			if (user == null)
+				throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "user", text);
 
-            referenceId = user.getId();
-        }
-        else if (recipientType == EmailRecipient.TYPE_ADDRESS) {
-            referenceAddress = json.getString("address");
-            if (referenceAddress == null)
-                throw new LocalizableJsonException("emport.error.recipient.missing.reference", "address");
-        }
-    }
+			referenceId = user.getId();
+		} else if (recipientType == EmailRecipient.TYPE_ADDRESS) {
+			referenceAddress = json.getString("address");
+			if (referenceAddress == null)
+				throw new LocalizableJsonException("emport.error.recipient.missing.reference", "address");
+		}
+	}
 }

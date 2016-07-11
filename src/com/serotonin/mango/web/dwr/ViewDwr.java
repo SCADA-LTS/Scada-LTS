@@ -29,21 +29,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
-
-import br.org.scadabr.api.vo.FlexProject;
-import br.org.scadabr.db.dao.FlexProjectDao;
-import br.org.scadabr.db.dao.ScriptDao;
-import br.org.scadabr.rt.scripting.ScriptRT;
-import br.org.scadabr.view.component.AlarmListComponent;
-import br.org.scadabr.view.component.ButtonComponent;
-import br.org.scadabr.view.component.ChartComparatorComponent;
-import br.org.scadabr.view.component.CustomComponent;
-import br.org.scadabr.view.component.FlexBuilderComponent;
-import br.org.scadabr.view.component.LinkComponent;
-import br.org.scadabr.view.component.ScriptButtonComponent;
-import br.org.scadabr.vo.scripting.ScriptVO;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.db.KeyValuePair;
@@ -86,6 +75,20 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 
+import br.org.scadabr.api.vo.FlexProject;
+import br.org.scadabr.db.dao.FlexProjectDao;
+import br.org.scadabr.db.dao.ScriptDao;
+import br.org.scadabr.db.dao.UsersProfileDao;
+import br.org.scadabr.rt.scripting.ScriptRT;
+import br.org.scadabr.view.component.AlarmListComponent;
+import br.org.scadabr.view.component.ButtonComponent;
+import br.org.scadabr.view.component.ChartComparatorComponent;
+import br.org.scadabr.view.component.CustomComponent;
+import br.org.scadabr.view.component.FlexBuilderComponent;
+import br.org.scadabr.view.component.LinkComponent;
+import br.org.scadabr.view.component.ScriptButtonComponent;
+import br.org.scadabr.vo.scripting.ScriptVO;
+
 /**
  * This class is so not threadsafe. Do not use class fields except for the
  * resource bundle stuff.
@@ -93,6 +96,8 @@ import com.serotonin.web.dwr.MethodFilter;
  * @author mlohbihler
  */
 public class ViewDwr extends BaseDwr {
+	public static Log LOG = LogFactory.getLog(ViewDwr.class);
+
 	//
 	//
 	// /
@@ -107,19 +112,16 @@ public class ViewDwr extends BaseDwr {
 		return getViewPointData(null, view, false);
 	}
 
-	public String setViewPointAnon(int viewId, String viewComponentId,
-			String valueStr) {
+	public String setViewPointAnon(int viewId, String viewComponentId, String valueStr) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
 			throw new PermissionException("View is not in session", null);
 
 		if (view.getAnonymousAccess() != ShareUser.ACCESS_SET)
-			throw new PermissionException("Point is not anonymously settable",
-					null);
+			throw new PermissionException("Point is not anonymously settable", null);
 
 		// Allow the set.
-		setPointImpl(view.findDataPoint(viewComponentId), valueStr,
-				new AnonymousUser());
+		setPointImpl(view.findDataPoint(viewComponentId), valueStr, new AnonymousUser());
 
 		return viewComponentId;
 	}
@@ -127,11 +129,11 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public List<IntValuePair> getViews() {
 		ViewDao viewDao = new ViewDao();
+		UsersProfileDao usersProfileDao = new UsersProfileDao();
 		User user = Common.getUser();
 
 		List<IntValuePair> views = viewDao.getViewNames(user.getId(),
-				user.getUserProfile());
-
+				usersProfileDao.getUserProfileByUserId(user.getId()).getId());
 		return views;
 	}
 
@@ -158,8 +160,7 @@ public class ViewDwr extends BaseDwr {
 		return getViewPointData(user, user.getView(), edit);
 	}
 
-	private List<ViewComponentState> getViewPointData(User user, View view,
-			boolean edit) {
+	private List<ViewComponentState> getViewPointData(User user, View view, boolean edit) {
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
 		List<ViewComponentState> states = new ArrayList<ViewComponentState>();
@@ -167,17 +168,14 @@ public class ViewDwr extends BaseDwr {
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
 		for (ViewComponent viewComponent : view.getViewComponents()) {
-			if (viewComponent.isCompoundComponent()
-					&& (edit || viewComponent.isVisible())) {
+			if (viewComponent.isCompoundComponent() && (edit || viewComponent.isVisible())) {
 				CompoundComponent compoundComponent = (CompoundComponent) viewComponent;
 
 				boolean imageChart = compoundComponent instanceof ImageChartComponent;
 
 				// Add states for each of the children
-				for (CompoundChild child : compoundComponent
-						.getChildComponents())
-					addPointComponentState(child.getViewComponent(), rtm,
-							model, request, view, user, states, edit,
+				for (CompoundChild child : compoundComponent.getChildComponents())
+					addPointComponentState(child.getViewComponent(), rtm, model, request, view, user, states, edit,
 							!imageChart);
 
 				// Add a state for the compound component.
@@ -187,18 +185,15 @@ public class ViewDwr extends BaseDwr {
 				model.clear();
 				model.put("compoundComponent", compoundComponent);
 				List<Map<String, Object>> childData = new ArrayList<Map<String, Object>>();
-				for (CompoundChild child : compoundComponent
-						.getChildComponents()) {
+				for (CompoundChild child : compoundComponent.getChildComponents()) {
 					if (child.getViewComponent().isPointComponent()) {
-						DataPointVO point = ((PointComponent) child
-								.getViewComponent()).tgetDataPoint();
+						DataPointVO point = ((PointComponent) child.getViewComponent()).tgetDataPoint();
 						if (point != null) {
 							Map<String, Object> map = new HashMap<String, Object>();
 							if (imageChart)
 								map.put("name", point.getName());
 							else
-								map.put("name",
-										getMessage(child.getDescription()));
+								map.put("name", getMessage(child.getDescription()));
 							map.put("point", point);
 							map.put("pointValue", point.lastValue());
 							childData.add(map);
@@ -208,15 +203,12 @@ public class ViewDwr extends BaseDwr {
 				model.put("childData", childData);
 
 				if (compoundComponent.hasInfo())
-					state.setInfo(generateContent(request,
-							"compoundInfoContent.jsp", model));
+					state.setInfo(generateContent(request, "compoundInfoContent.jsp", model));
 
 				if (imageChart)
-					state.setContent(((ImageChartComponent) compoundComponent)
-							.getImageChartData(getResourceBundle()));
+					state.setContent(((ImageChartComponent) compoundComponent).getImageChartData(getResourceBundle()));
 				else if (!edit)
-					state.setChart(compoundComponent
-							.getImageChartData(getResourceBundle()));
+					state.setChart(compoundComponent.getImageChartData(getResourceBundle()));
 
 				if (viewComponent instanceof ImageChartComponent) {
 					state.setGraph(true);
@@ -225,45 +217,45 @@ public class ViewDwr extends BaseDwr {
 				states.add(state);
 
 			} else if (viewComponent.isPointComponent())
-				addPointComponentState(viewComponent, rtm, model, request,
-						view, user, states, edit, true);
+				addPointComponentState(viewComponent, rtm, model, request, view, user, states, edit, true);
 			else if (viewComponent.isCustomComponent())
-				addCustomComponentState(viewComponent, rtm, model, request,
-						view, user, states, edit, true);
+				addCustomComponentState(viewComponent, rtm, model, request, view, user, states, edit, true);
 		}
 
 		return states;
 	}
 
-	private void addPointComponentState(ViewComponent viewComponent,
-			RuntimeManager rtm, Map<String, Object> model,
-			HttpServletRequest request, View view, User user,
-			List<ViewComponentState> states, boolean edit, boolean add) {
+	private void addPointComponentState(ViewComponent viewComponent, RuntimeManager rtm, Map<String, Object> model,
+			HttpServletRequest request, View view, User user, List<ViewComponentState> states, boolean edit,
+			boolean add) {
 
-		if (viewComponent.isPointComponent()
-				&& (edit || viewComponent.isVisible())) {
+		if (viewComponent.isPointComponent() && (edit || viewComponent.isVisible())) {
 			PointComponent pointComponent = (PointComponent) viewComponent;
 
 			DataPointRT dataPointRT = null;
 			if (pointComponent.tgetDataPoint() != null)
-				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint()
-						.getId());
+				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint().getId());
 
-			ViewComponentState state = preparePointComponentState(
-					pointComponent, user, dataPointRT, model, request);
+			if (dataPointRT != null) {
+				if (dataPointRT.getAttribute("UNRELIABLE") != null)
+					pointComponent.setUnreliable((boolean) dataPointRT.getAttribute("UNRELIABLE"));
+				if (dataPointRT.getAttribute("DISCONNECTED") != null) {
+					LOG.trace("DataPoint(" + dataPointRT.getId() + ").disconnected: "
+							+ dataPointRT.getAttribute("DISCONNECTED"));
+					pointComponent.setDisconnected((boolean) dataPointRT.getAttribute("DISCONNECTED"));
+				}
+			}
+			ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
 			if (!edit) {
 				if (pointComponent.isSettable()) {
 					int access = view.getUserAccess(user);
-					if (access == ShareUser.ACCESS_OWNER
-							|| access == ShareUser.ACCESS_SET)
-						setChange(pointComponent.tgetDataPoint(), state,
-								dataPointRT, request, model);
+					if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+						setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
 				}
 
 				if (pointComponent.tgetDataPoint() != null)
-					setChart(pointComponent.tgetDataPoint(), state, request,
-							model);
+					setChart(pointComponent.tgetDataPoint(), state, request, model);
 			}
 
 			if (add)
@@ -276,14 +268,12 @@ public class ViewDwr extends BaseDwr {
 	/**
 	 * Shared convenience method for creating a populated view component state.
 	 */
-	private ViewComponentState preparePointComponentState(
-			PointComponent pointComponent, User user, DataPointRT point,
+	private ViewComponentState preparePointComponentState(PointComponent pointComponent, User user, DataPointRT point,
 			Map<String, Object> model, HttpServletRequest request) {
 		ViewComponentState state = new ViewComponentState();
 		state.setId(pointComponent.getId());
 
-		PointValueTime pointValue = prepareBasePointState(
-				pointComponent.getId(), state, pointComponent.tgetDataPoint(),
+		PointValueTime pointValue = prepareBasePointState(pointComponent.getId(), state, pointComponent.tgetDataPoint(),
 				point, model);
 
 		model.put("pointComponent", pointComponent);
@@ -296,11 +286,10 @@ public class ViewDwr extends BaseDwr {
 			model.put("invalid", "true");
 		else {
 			// Add the rendered text as a convenience to the snippets.
-			model.put("text", pointComponent.tgetDataPoint().getTextRenderer()
-					.getText(pointValue, TextRenderer.HINT_FULL));
+			model.put("text",
+					pointComponent.tgetDataPoint().getTextRenderer().getText(pointValue, TextRenderer.HINT_FULL));
 
-			state.setContent(generateContent(request,
-					pointComponent.snippetName() + ".jsp", model));
+			state.setContent(generateContent(request, pointComponent.snippetName() + ".jsp", model));
 			pointComponent.tgetDataPoint().updateLastValue(pointValue);
 		}
 
@@ -310,10 +299,9 @@ public class ViewDwr extends BaseDwr {
 		return state;
 	}
 
-	private void addCustomComponentState(ViewComponent viewComponent,
-			RuntimeManager rtm, Map<String, Object> model,
-			HttpServletRequest request, View view, User user,
-			List<ViewComponentState> states, boolean edit, boolean add) {
+	private void addCustomComponentState(ViewComponent viewComponent, RuntimeManager rtm, Map<String, Object> model,
+			HttpServletRequest request, View view, User user, List<ViewComponentState> states, boolean edit,
+			boolean add) {
 
 		CustomComponent customComponent = (CustomComponent) viewComponent;
 
@@ -397,13 +385,11 @@ public class ViewDwr extends BaseDwr {
 		// View component types
 		List<KeyValuePair> components = new ArrayList<KeyValuePair>();
 		for (ImplDefinition impl : ViewComponent.getImplementations())
-			components.add(new KeyValuePair(impl.getName(), getMessage(impl
-					.getNameKey())));
+			components.add(new KeyValuePair(impl.getName(), getMessage(impl.getNameKey())));
 		result.put("componentTypes", components);
 
 		// Available points
-		List<DataPointVO> allPoints = new DataPointDao().getDataPoints(
-				DataPointExtendedNameComparator.instance, false);
+		List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
 		List<DataPointBean> availablePoints = new ArrayList<DataPointBean>();
 		for (DataPointVO dataPoint : allPoints) {
 			if (Permissions.hasDataPointReadPermission(user, dataPoint))
@@ -439,22 +425,19 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n setPointComponentSettings(String pointComponentId,
-			int dataPointId, String name, boolean settable,
-			String bkgdColorOverride, boolean displayControls) {
+	public DwrResponseI18n setPointComponentSettings(String pointComponentId, int dataPointId, String name,
+			boolean settable, String bkgdColorOverride, boolean displayControls) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		PointComponent pc = (PointComponent) getViewComponent(pointComponentId);
 		User user = Common.getUser();
 
 		DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
 		if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
-			response.addContextualMessage("settingsPointList",
-					"validate.required");
+			response.addContextualMessage("settingsPointList", "validate.required");
 		else {
 			pc.tsetDataPoint(dp);
 			pc.setNameOverride(name);
-			pc.setSettableOverride(settable
-					&& Permissions.hasDataPointSetPermission(user, dp));
+			pc.setSettableOverride(settable && Permissions.hasDataPointSetPermission(user, dp));
 			pc.setBkgdColorOverride(bkgdColorOverride);
 			pc.setDisplayControls(displayControls);
 
@@ -491,8 +474,7 @@ public class ViewDwr extends BaseDwr {
 			// Check that setting is allowed.
 			int access = view.getUserAccess(user);
 			if (!(access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET))
-				throw new PermissionException("Not allowed to set this point",
-						user);
+				throw new PermissionException("Not allowed to set this point", user);
 
 			// Try setting the point.
 			setPointImpl(point, valueStr, user);
@@ -511,8 +493,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveLinkComponent(String viewComponentId,
-			String text, String link) {
+	public DwrResponseI18n saveLinkComponent(String viewComponentId, String text, String link) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
 			response.addContextualMessage("linkText", "validate.required");
@@ -529,12 +510,10 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveScriptButtonComponent(String viewComponentId,
-			String text, String scriptXid) {
+	public DwrResponseI18n saveScriptButtonComponent(String viewComponentId, String text, String scriptXid) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
-			response.addContextualMessage("scriptButtonText",
-					"validate.required");
+			response.addContextualMessage("scriptButtonText", "validate.required");
 		if (StringUtils.isEmpty(scriptXid))
 			response.addContextualMessage("scriptsList", "validate.required");
 
@@ -548,19 +527,17 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveAnalogGraphicComponent(String viewComponentId,
-			double min, double max, boolean displayText, String imageSetId) {
+	public DwrResponseI18n saveAnalogGraphicComponent(String viewComponentId, double min, double max,
+			boolean displayText, String imageSetId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		// Validate
 		if (min >= max)
-			response.addContextualMessage("graphicRendererAnalogMin",
-					"viewEdit.graphic.invalidMinMax");
+			response.addContextualMessage("graphicRendererAnalogMin", "viewEdit.graphic.invalidMinMax");
 
 		ImageSet imageSet = getImageSet(imageSetId);
 		if (imageSet == null)
-			response.addContextualMessage("graphicRendererAnalogImageSet",
-					"viewEdit.graphic.missingImageSet");
+			response.addContextualMessage("graphicRendererAnalogImageSet", "viewEdit.graphic.missingImageSet");
 
 		if (!response.getHasMessages()) {
 			AnalogGraphicComponent c = (AnalogGraphicComponent) getViewComponent(viewComponentId);
@@ -575,23 +552,20 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveBinaryGraphicComponent(String viewComponentId,
-			int zeroImage, int oneImage, boolean displayText, String imageSetId) {
+	public DwrResponseI18n saveBinaryGraphicComponent(String viewComponentId, int zeroImage, int oneImage,
+			boolean displayText, String imageSetId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		// Validate
 		ImageSet imageSet = getImageSet(imageSetId);
 		if (imageSet == null)
-			response.addContextualMessage("graphicRendererBinaryImageSet",
-					"viewEdit.graphic.missingImageSet");
+			response.addContextualMessage("graphicRendererBinaryImageSet", "viewEdit.graphic.missingImageSet");
 		else {
 			if (zeroImage == -1)
-				response.addContextualMessage(
-						"graphicRendererBinaryImageSetZeroMsg",
+				response.addContextualMessage("graphicRendererBinaryImageSetZeroMsg",
 						"viewEdit.graphic.missingZeroImage");
 			if (oneImage == -1)
-				response.addContextualMessage(
-						"graphicRendererBinaryImageSetOneMsg",
+				response.addContextualMessage("graphicRendererBinaryImageSetOneMsg",
 						"viewEdit.graphic.missingOneImage");
 		}
 
@@ -608,19 +582,17 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveDynamicGraphicComponent(String viewComponentId,
-			double min, double max, boolean displayText, String dynamicImageId) {
+	public DwrResponseI18n saveDynamicGraphicComponent(String viewComponentId, double min, double max,
+			boolean displayText, String dynamicImageId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		// Validate
 		if (min >= max)
-			response.addContextualMessage("graphicRendererDynamicMin",
-					"viewEdit.graphic.invalidMinMax");
+			response.addContextualMessage("graphicRendererDynamicMin", "viewEdit.graphic.invalidMinMax");
 
 		DynamicImage dynamicImage = getDynamicImage(dynamicImageId);
 		if (dynamicImage == null)
-			response.addContextualMessage("graphicRendererDynamicImage",
-					"viewEdit.graphic.missingDynamicImage");
+			response.addContextualMessage("graphicRendererDynamicImage", "viewEdit.graphic.missingDynamicImage");
 
 		if (!response.getHasMessages()) {
 			DynamicGraphicComponent c = (DynamicGraphicComponent) getViewComponent(viewComponentId);
@@ -635,16 +607,14 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveMultistateGraphicComponent(
-			String viewComponentId, List<IntValuePair> imageStates,
+	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<IntValuePair> imageStates,
 			int defaultImage, boolean displayText, String imageSetId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		// Validate
 		ImageSet imageSet = getImageSet(imageSetId);
 		if (imageSet == null)
-			response.addContextualMessage("graphicRendererMultistateImageSet",
-					"viewEdit.graphic.missingImageSet");
+			response.addContextualMessage("graphicRendererMultistateImageSet", "viewEdit.graphic.missingImageSet");
 
 		if (!response.getHasMessages()) {
 			MultistateGraphicComponent c = (MultistateGraphicComponent) getViewComponent(viewComponentId);
@@ -659,13 +629,11 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveScriptComponent(String viewComponentId,
-			String script) {
+	public DwrResponseI18n saveScriptComponent(String viewComponentId, String script) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 		if (StringUtils.isEmpty(script))
-			response.addContextualMessage("graphicRendererScriptScript",
-					"viewEdit.graphic.missingScript");
+			response.addContextualMessage("graphicRendererScriptScript", "viewEdit.graphic.missingScript");
 
 		if (!response.getHasMessages()) {
 			ScriptComponent c = (ScriptComponent) getViewComponent(viewComponentId);
@@ -677,8 +645,8 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveSimplePointComponent(String viewComponentId,
-			boolean displayPointName, String styleAttribute) {
+	public DwrResponseI18n saveSimplePointComponent(String viewComponentId, boolean displayPointName,
+			String styleAttribute) {
 		SimplePointComponent c = (SimplePointComponent) getViewComponent(viewComponentId);
 		c.setDisplayPointName(displayPointName);
 		c.setStyleAttribute(styleAttribute);
@@ -688,15 +656,12 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveThumbnailComponent(String viewComponentId,
-			int scalePercent) {
+	public DwrResponseI18n saveThumbnailComponent(String viewComponentId, int scalePercent) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		// Validate
 		if (scalePercent < 1)
-			response.addContextualMessage(
-					"graphicRendererThumbnailScalePercent",
-					"viewEdit.graphic.invalidScale");
+			response.addContextualMessage("graphicRendererThumbnailScalePercent", "viewEdit.graphic.invalidScale");
 
 		if (!response.getHasMessages()) {
 			ThumbnailComponent c = (ThumbnailComponent) getViewComponent(viewComponentId);
@@ -708,8 +673,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId,
-			String name, String backgroundColour,
+	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour,
 			List<KeyValuePair> childPointIds) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -724,8 +688,7 @@ public class ViewDwr extends BaseDwr {
 		}
 
 		if (StringUtils.parseInt(leadPointId, 0) <= 0)
-			response.addContextualMessage("compoundPointSelect"
-					+ SimpleCompoundComponent.LEAD_POINT,
+			response.addContextualMessage("compoundPointSelect" + SimpleCompoundComponent.LEAD_POINT,
 					"dsEdit.validate.required");
 
 		if (!response.getHasMessages()) {
@@ -739,24 +702,19 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveImageChartComponent(String viewComponentId,
-			String name, int width, int height, int durationType,
-			int durationPeriods, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height,
+			int durationType, int durationPeriods, List<KeyValuePair> childPointIds) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
 		if (width < 1)
-			response.addContextualMessage("imageChartWidth",
-					"validate.greaterThanZero");
+			response.addContextualMessage("imageChartWidth", "validate.greaterThanZero");
 		if (height < 1)
-			response.addContextualMessage("imageChartHeight",
-					"validate.greaterThanZero");
+			response.addContextualMessage("imageChartHeight", "validate.greaterThanZero");
 		if (!Common.TIME_PERIOD_CODES.isValidId(durationType))
-			response.addContextualMessage("imageChartDurationType",
-					"validate.invalidValue");
+			response.addContextualMessage("imageChartDurationType", "validate.invalidValue");
 		if (durationPeriods <= 0)
-			response.addContextualMessage("imageChartDurationPeriods",
-					"validate.greaterThanZero");
+			response.addContextualMessage("imageChartDurationPeriods", "validate.greaterThanZero");
 
 		if (!response.getHasMessages()) {
 			ImageChartComponent c = (ImageChartComponent) getViewComponent(viewComponentId);
@@ -772,8 +730,8 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveCompoundComponent(String viewComponentId,
-			String name, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name,
+			List<KeyValuePair> childPointIds) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
@@ -788,23 +746,19 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveButtonComponent(String viewComponentId,
-			String whenOnLabel, String whenOffLabel, int width, int height) {
+	public DwrResponseI18n saveButtonComponent(String viewComponentId, String whenOnLabel, String whenOffLabel,
+			int width, int height) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
 		if (width < 0)
-			response.addContextualMessage("graphicRendererButtonWidth",
-					"validate.cannotBeNegative");
+			response.addContextualMessage("graphicRendererButtonWidth", "validate.cannotBeNegative");
 		if (height < 0)
-			response.addContextualMessage("graphicRendererButtonHeight",
-					"validate.cannotBeNegative");
+			response.addContextualMessage("graphicRendererButtonHeight", "validate.cannotBeNegative");
 		if (StringUtils.isEmpty(whenOnLabel))
-			response.addContextualMessage("graphicRendererButtonWhenOnLabel",
-					"validate.required");
+			response.addContextualMessage("graphicRendererButtonWhenOnLabel", "validate.required");
 		if (StringUtils.isEmpty(whenOffLabel))
-			response.addContextualMessage("graphicRendererButtonWhenOffLabel",
-					"validate.required");
+			response.addContextualMessage("graphicRendererButtonWhenOffLabel", "validate.required");
 
 		if (!response.getHasMessages()) {
 			ButtonComponent c = (ButtonComponent) getViewComponent(viewComponentId);
@@ -853,8 +807,7 @@ public class ViewDwr extends BaseDwr {
 	// }
 
 	@MethodFilter
-	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId,
-			int width, int height) {
+	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -874,9 +827,8 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveFlexComponent(String viewComponentId, int width,
-			int height, boolean projectDefined, String projectsSource,
-			int projectId, boolean runtimeMode) {
+	public DwrResponseI18n saveFlexComponent(String viewComponentId, int width, int height, boolean projectDefined,
+			String projectsSource, int projectId, boolean runtimeMode) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -907,20 +859,16 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveAlarmListComponent(String viewComponentId,
-			int minAlarmLevel, int maxListSize, int width,
-			boolean hideIdColumn, boolean hideAlarmLevelColumn,
-			boolean hideTimestampColumn, boolean hideInactivityColumn,
-			boolean hideAckColumn) {
+	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, int maxListSize, int width,
+			boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn,
+			boolean hideInactivityColumn, boolean hideAckColumn) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
 		if (maxListSize < 1)
-			response.addContextualMessage("customEditorAlarmListMaxListSize",
-					"validate.greaterThanZero");
+			response.addContextualMessage("customEditorAlarmListMaxListSize", "validate.greaterThanZero");
 		if (width < 0)
-			response.addContextualMessage("customEditorAlarmListWidth",
-					"validate.cannotBeNegative");
+			response.addContextualMessage("customEditorAlarmListWidth", "validate.cannotBeNegative");
 
 		if (!response.getHasMessages()) {
 			AlarmListComponent c = (AlarmListComponent) getViewComponent(viewComponentId);
@@ -940,12 +888,10 @@ public class ViewDwr extends BaseDwr {
 
 	private void validateCompoundComponent(DwrResponseI18n response, String name) {
 		if (StringUtils.isEmpty(name))
-			response.addContextualMessage("compoundName",
-					"dsEdit.validate.required");
+			response.addContextualMessage("compoundName", "dsEdit.validate.required");
 	}
 
-	private void saveCompoundPoints(CompoundComponent c,
-			List<KeyValuePair> childPointIds) {
+	private void saveCompoundPoints(CompoundComponent c, List<KeyValuePair> childPointIds) {
 		User user = Common.getUser();
 
 		for (KeyValuePair kvp : childPointIds) {
@@ -1009,9 +955,8 @@ public class ViewDwr extends BaseDwr {
 		return false;
 	}
 
-	public String[] getChartData(List<Integer> dataPoints,
-			String fromDateString, String toDateString, String fromDateString2,
-			String toDateString2, int width, int height) {
+	public String[] getChartData(List<Integer> dataPoints, String fromDateString, String toDateString,
+			String fromDateString2, String toDateString2, int width, int height) {
 
 		Format formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		try {
@@ -1035,8 +980,7 @@ public class ViewDwr extends BaseDwr {
 		return new String[] { "", "" };
 	}
 
-	private String createChartSrc(Date fromDate, Date toDate,
-			List<DataPointVO> dataPoints, int width, int height) {
+	private String createChartSrc(Date fromDate, Date toDate, List<DataPointVO> dataPoints, int width, int height) {
 		StringBuilder htmlData = new StringBuilder();
 		try {
 
