@@ -73,6 +73,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			d.add(ThumbnailComponent.DEFINITION);
 			d.add(SimpleCompoundComponent.DEFINITION);
 			d.add(ImageChartComponent.DEFINITION);
+			d.add(EnhancedImageChartComponent.DEFINITION);
 			d.add(WirelessTempHumSensor.DEFINITION);
 			d.add(ButtonComponent.DEFINITION);
 			d.add(LinkComponent.DEFINITION);
@@ -121,6 +122,8 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			return SimpleCompoundComponent.class;
 		if (def == ImageChartComponent.DEFINITION)
 			return ImageChartComponent.class;
+		if (def == EnhancedImageChartComponent.DEFINITION)
+			return EnhancedImageChartComponent.class;
 		if (def == WirelessTempHumSensor.DEFINITION)
 			return WirelessTempHumSensor.class;
 		if (def == ButtonComponent.DEFINITION)

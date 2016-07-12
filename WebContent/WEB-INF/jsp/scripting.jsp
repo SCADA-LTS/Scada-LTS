@@ -24,7 +24,38 @@
 <c:set var="NEW_ID"><%= Common.NEW_ID %></c:set>
 
 <tag:page dwr="ScriptsDwr,DataSourceEditDwr" onload="init">
+  
+  
   <script type="text/javascript">
+  
+  	var pathArray = location.href.split( '/' );
+  	var protocol = pathArray[0];
+  	var host = pathArray[2];
+  	var port = location.port;
+   	var appScada = pathArray[3];
+  	var url = protocol + '//' + host;
+  	var myLocation;
+  	if (!myLocation) {
+   		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
+  	}
+  	console.log(myLocation);
+    function executeScript(){
+    	var xid = jQuery("#xid");
+    	// saveScript() nie zdarzy zapisac !!! 
+    	jQuery.ajax({
+    		url: myLocation+"/script/execute/"+xid[0].value, 
+    		type:"POST", 
+    		success: function(){
+              setUserMessage("<fmt:message key="script.execute.success"/> ")
+        	},
+        	error: function(XMLHttpRequest, textStatus, errorThrown) {
+        		console.log(textStatus);
+        		console.log(XMLHttpRequest);
+        		setUserMessage("<fmt:message key="script.execute.error"/> "+XMLHttpRequest.responseText);
+        	}
+    	});    	
+    };
+
     var pointsArray = new Array();
     var contextArray = new Array();
     var objectsContextArray = new Array();
@@ -32,6 +63,13 @@
     function init() {
         ScriptsDwr.getScripts(initCB);
         ScriptsDwr.getPoints(getPointsCB);
+        
+        jQuery("#allPointsList").chosen({
+       		allow_single_deselect: true,
+			placeholder_text_single: " ",
+			search_contains: true,
+			width: "400px"
+		});              
     }
     
     function initCB(scripts) {
@@ -97,7 +135,10 @@
         }
         else {
         	 show($("deleteScriptImg"));
-        	 show($("executeScriptImg")); 
+        	 show($("executeScriptImg"));
+        	 jQuery('#executeScriptImg').click(function() {
+        		 executeScript();
+        	 });
         }
            
     }
@@ -115,7 +156,10 @@
 		                    appendScript(editingScript.id);
 		                    startImageFader($("se"+ editingScript.id +"Img"));
 		                    show($("deleteScriptImg"));
-		                    show($("executeScriptImg")); 
+		                    show($("executeScriptImg"));
+		                    jQuery('#executeScriptImg').click(function() {
+		                    	executeScriptImg();
+		                	});
 		                }
 		                setUserMessage("<fmt:message key="scripts.saved"/>");
 		                ScriptsDwr.getScript(editingScript.id, updateScript);
@@ -131,19 +175,6 @@
             hide($("scriptDetails"));
             editingScript = null;
         });
-    }
-
-    function executeScript() {
-    	setUserMessage("");
-        ScriptsDwr.executeScript(editingScript.id, function(response) {
-          	if(response){
-          		setUserMessage("<fmt:message key='scripts.execution.success'/>");
-          	}
-          	else{
-          		setUserMessage("<fmt:message key='scripts.execution.scriptError'/>");
-          	}
-        });
-        
     }
     
     function addPointToContext() {
@@ -217,11 +248,11 @@
                     break;
                 }
             }
-            
             if (!found)
                 availPoints[availPoints.length] = pointsArray[i];
         }
         dwr.util.addOptions("allPointsList", availPoints, "id", "name");
+        jQuery("#allPointsList").trigger('chosen:updated');
     }
     
     function updateScriptVarName(pointId, scriptVarName) {
@@ -303,8 +334,21 @@
         else
             hide($("userMessage"));
     }
+    
+    jQuery(document).ready(function(){    
+    	(function($) {
+			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
+			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+    	})(jQuery);
+    });
+    
      
   </script>
+  
+  <script type="text/javascript">
+  	
+  </script>  
+    
     
   <table>
     <tr>
@@ -337,7 +381,7 @@
             <tr>
               <td><span class="smallTitle"><fmt:message key="scripts.seDetails"/></span></td>
               <td align="right">
-                <%-- <tag:img id="executeScriptImg" png="exclamation" onclick="executeScript();" title="common.run"/> --%>
+                <%-- <tag:img id="executeScriptImg" png="exclamation" title="common.run"/> --%>
                 <tag:img png="save" onclick="saveScript();" title="common.save"/>
                 <tag:img id="deleteScriptImg" png="delete" onclick="deleteScript();" title="common.delete"/>
               </td>
@@ -408,7 +452,8 @@
             
     			<td class="formLabelRequired">
       				<fmt:message key="dsEdit.meta.script"/> 
-      				<tag:img id="executeScriptImg" png="cog_go" onclick="executeScript();" title="common.run"/>
+      				
+      				<tag:img id="executeScriptImg" png="cog_go" title="common.run"/>
       				<%-- <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/> --%> 
     			</td>
     		

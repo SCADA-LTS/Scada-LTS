@@ -35,77 +35,79 @@ import com.serotonin.util.SerializationHelper;
  */
 @JsonRemoteEntity
 public class SimplePointComponent extends PointComponent {
-    public static ImplDefinition DEFINITION = new ImplDefinition("simple", "SIMPLE", "graphic.simple", new int[] {
-            DataTypes.BINARY, DataTypes.MULTISTATE, DataTypes.NUMERIC, DataTypes.ALPHANUMERIC });
+	public static ImplDefinition DEFINITION = new ImplDefinition("simple",
+			"SIMPLE", "graphic.simple", new int[] { DataTypes.BINARY,
+					DataTypes.MULTISTATE, DataTypes.NUMERIC,
+					DataTypes.ALPHANUMERIC });
 
-    @JsonRemoteProperty
-    private boolean displayPointName;
+	@JsonRemoteProperty
+	protected boolean displayPointName;
 
-    @JsonRemoteProperty
-    private String styleAttribute;
+	@JsonRemoteProperty
+	protected String styleAttribute;
 
-    public boolean isDisplayPointName() {
-        return displayPointName;
-    }
+	public boolean isDisplayPointName() {
+		return displayPointName;
+	}
 
-    public void setDisplayPointName(boolean displayPointName) {
-        this.displayPointName = displayPointName;
-    }
+	public void setDisplayPointName(boolean displayPointName) {
+		this.displayPointName = displayPointName;
+	}
 
-    public String getStyleAttribute() {
-        return styleAttribute;
-    }
+	public String getStyleAttribute() {
+		return styleAttribute;
+	}
 
-    public void setStyleAttribute(String styleAttribute) {
-        this.styleAttribute = styleAttribute;
-    }
+	public void setStyleAttribute(String styleAttribute) {
+		this.styleAttribute = styleAttribute;
+	}
 
-    @Override
-    public String snippetName() {
-        return "basicContent";
-    }
+	@Override
+	public String snippetName() {
+		return "basicContent";
+	}
 
-    @Override
-    public void addDataToModel(Map<String, Object> model, PointValueTime pointValue) {
-        model.put("displayPointName", displayPointName);
-        model.put("styleAttribute", styleAttribute);
-    }
+	@Override
+	public void addDataToModel(Map<String, Object> model,
+			PointValueTime pointValue) {
+		model.put("displayPointName", displayPointName);
+		model.put("styleAttribute", styleAttribute);
+	}
 
-    @Override
-    public ImplDefinition definition() {
-        return DEFINITION;
-    }
+	@Override
+	public ImplDefinition definition() {
+		return DEFINITION;
+	}
 
-    //
-    // /
-    // / Serialization
-    // /
-    //
-    private static final long serialVersionUID = -1;
-    private static final int version = 3;
+	//
+	// /
+	// / Serialization
+	// /
+	//
+	private static final long serialVersionUID = -1;
+	private static final int version = 3;
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(version);
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeInt(version);
 
-        out.writeBoolean(displayPointName);
-        SerializationHelper.writeSafeUTF(out, styleAttribute);
-    }
+		out.writeBoolean(displayPointName);
+		SerializationHelper.writeSafeUTF(out, styleAttribute);
+	}
 
-    private void readObject(ObjectInputStream in) throws IOException {
-        int ver = in.readInt();
+	private void readObject(ObjectInputStream in) throws IOException {
+		int ver = in.readInt();
 
-        // Switch on the version of the class so that version changes can be elegantly handled.
-        if (ver == 1) {
-            displayPointName = false;
-            styleAttribute = "";
-        }
-        else if (ver == 2) {
-            displayPointName = in.readBoolean();
-            styleAttribute = "";
-        }
-        else if (ver == 3) {
-            displayPointName = in.readBoolean();
-            styleAttribute = SerializationHelper.readSafeUTF(in);
-        }
-    }
+		// Switch on the version of the class so that version changes can be
+		// elegantly handled.
+		if (ver == 1) {
+			displayPointName = false;
+			styleAttribute = "";
+		} else if (ver == 2) {
+			displayPointName = in.readBoolean();
+			styleAttribute = "";
+		} else if (ver == 3) {
+			displayPointName = in.readBoolean();
+			styleAttribute = SerializationHelper.readSafeUTF(in);
+		}
+	}
 }

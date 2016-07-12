@@ -18,6 +18,9 @@
  */
 package com.serotonin.mango.db.dao;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,6 +35,10 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.quartz.SchedulerException;
+import org.scada_lts.cache.EventDetectorsCache;
+import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -56,8 +63,6 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.Tuple;
-import java.sql.Connection;
-import java.sql.DriverManager;
 
 public class DataPointDao extends BaseDao {
     public DataPointDao() {
@@ -179,9 +184,12 @@ public class DataPointDao extends BaseDao {
                     insertDataPoint(dp);
                     // Reset the point hierarchy so that the new point gets included.
                     cachedPointHierarchy = null;
+                    MangoPointHierarchy.getInst().addDataPoint(dp);
                 }
-                else
+                else {
                     updateDataPoint(dp);
+                    MangoPointHierarchy.getInst().updateDataPoint(dp);
+                }
             }
         });
     }
@@ -249,6 +257,8 @@ public class DataPointDao extends BaseDao {
         ejt.update("update dataPoints set xid=?, data=? where id=?",
                 new Object[] { dp.getXid(), SerializationHelper.writeObject(dp), dp.getId() }, new int[] {
                         Types.VARCHAR, Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB, Types.INTEGER });
+        
+        //TODO aktualizacja cacha hierarchii
     }
 
     public void deleteDataPoints(final int dataSourceId) {
@@ -321,16 +331,20 @@ public class DataPointDao extends BaseDao {
     }
 
     void deleteDataPointImpl(String dataPointIdList) {
-        dataPointIdList = "(" + dataPointIdList + ")";
+    	
+    	// very Dummy
+        String adataPointIdList = "(" + dataPointIdList + ")";
         ejt.update("delete from eventHandlers where eventTypeId=" + EventType.EventSources.DATA_POINT
-                + " and eventTypeRef1 in " + dataPointIdList);
-        ejt.update("delete from userComments where commentType=2 and typeKey in " + dataPointIdList);
-        ejt.update("delete from pointEventDetectors where dataPointId in " + dataPointIdList);
-        ejt.update("delete from dataPointUsers where dataPointId in " + dataPointIdList);
-        ejt.update("delete from watchListPoints where dataPointId in " + dataPointIdList);
-        ejt.update("delete from dataPoints where id in " + dataPointIdList);
+                + " and eventTypeRef1 in " + adataPointIdList);
+        ejt.update("delete from userComments where commentType=2 and typeKey in " + adataPointIdList);
+        ejt.update("delete from pointEventDetectors where dataPointId in " + adataPointIdList);
+        ejt.update("delete from dataPointUsers where dataPointId in " + adataPointIdList);
+        ejt.update("delete from watchListPoints where dataPointId in " + adataPointIdList);
+        ejt.update("delete from dataPoints where id in " + adataPointIdList);
 
-        cachedPointHierarchy = null;
+        cachedPointHierarchy = null;        
+        MangoPointHierarchy.getInst().deleteDataPoint(dataPointIdList);
+        
     }
 
     //
@@ -368,12 +382,35 @@ public class DataPointDao extends BaseDao {
     }
 
     private List<PointEventDetectorVO> getEventDetectors(DataPointVO dp) {
-        return query(
-                "select id, xid, alias, detectorType, alarmLevel, stateLimit, duration, durationType, binaryState, " //
-                        + "  multistateState, changeCount, alphanumericState, weight " //
-                        + "from pointEventDetectors " //
-                        + "where dataPointId=? " // 
-                        + "order by id", new Object[] { dp.getId() }, new EventDetectorRowMapper(dp));
+    	
+    	EventDetectorsCache.LOG.trace("getEventDetectors() dpId:"+dp.getId());
+		long startTime = 0;
+		if (EventDetectorsCache.LOG.isTraceEnabled())
+		  startTime = System.currentTimeMillis();
+		
+		List<PointEventDetectorVO> result = null;
+		try {
+			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
+			if (cacheEnable) {
+			  result = EventDetectorsCache.getInstance().getEventDetectors(dp);
+			} else {
+				result = query(
+						"select id, xid, alias, detectorType, alarmLevel, stateLimit, duration, durationType, binaryState, " //
+                        	+ "  multistateState, changeCount, alphanumericState, weight " //
+                        	+ "from pointEventDetectors " //
+                        	+ "where dataPointId=? " // 
+                        	+ "order by id", new Object[] { dp.getId() }, new EventDetectorRowMapper(dp));
+			}
+		} catch (SchedulerException | IOException e) {
+			EventDetectorsCache.LOG.error(e);	
+		}
+		long endTime = 0;
+		if (EventDetectorsCache.LOG.isTraceEnabled())
+		  endTime =	System.currentTimeMillis();
+		EventDetectorsCache.LOG.trace("TimeExecute:"+(endTime-startTime)+ " getEventDetectors() dpId:"+dp.getId());
+		
+		return result;
+    	
     }
 
     class EventDetectorRowMapper implements GenericRowMapper<PointEventDetectorVO> {
@@ -545,7 +582,7 @@ public class DataPointDao extends BaseDao {
     //
     // Point hierarchy
     //
-    static PointHierarchy cachedPointHierarchy;
+    public static PointHierarchy cachedPointHierarchy;
 
     public PointHierarchy getPointHierarchy() {
         if (cachedPointHierarchy == null) {
@@ -596,7 +633,7 @@ public class DataPointDao extends BaseDao {
         getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                // Dump the hierarchy table.
+                // Dumb the hierarchy table.
                 ejt2.update("delete from pointHierarchy");
 
                 // Save the point folders.

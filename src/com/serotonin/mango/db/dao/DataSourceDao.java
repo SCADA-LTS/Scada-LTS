@@ -34,15 +34,17 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.mango.adapter.MangoPointHierarchyCacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.db.spring.GenericResultSetExtractor;
 import com.serotonin.db.spring.GenericRowMapper;
-import com.serotonin.db.spring.GenericTransactionCallback;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -113,10 +115,12 @@ public class DataSourceDao extends BaseDao {
 
 	public void saveDataSource(final DataSourceVO<?> vo) {
 		// Decide whether to insert or update.
-		if (vo.getId() == Common.NEW_ID)
+		if (vo.getId() == Common.NEW_ID) { 
 			insertDataSource(vo);
-		else
-			updateDataSource(vo);
+		} else { 
+		  updateDataSource(vo);
+		  MangoPointHierarchy.getInst().changeDataSource(vo);
+		}
 	}
 
 	private void insertDataSource(final DataSourceVO<?> vo) {
@@ -258,7 +262,7 @@ public class DataSourceDao extends BaseDao {
 	public int copyDataSource(final int dataSourceId,
 			final ResourceBundle bundle) {
 		return getTransactionTemplate().execute(
-				new GenericTransactionCallback<Integer>() {
+				new TransactionCallback<Integer>() {
 					@Override
 					public Integer doInTransaction(TransactionStatus status) {
 						DataPointDao dataPointDao = new DataPointDao();

@@ -66,10 +66,11 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
 
 public class Common {
-	private static final String SESSION_USER = "sessionUser";
+	
 	private static final String ANON_VIEW_KEY = "anonymousViews";
 	private static final String CUSTOM_VIEW_KEY = "customView";
 
+	public static final String SESSION_USER = "sessionUser";
 	public static final String UTF8 = "UTF-8";
 	public static final Charset UTF8_CS = Charset.forName(UTF8);
 

@@ -58,6 +58,15 @@ function errorToString(e) {
     }
 }
 
+function isBlank(str){
+  return (!str || /^\s*$/.test(str));
+};
+	
+function defaultIfBlank(str, defaultStr) {
+  return (isBlank(str) ? defaultStr: str);
+};
+
+
 //
 // Long poll
 //

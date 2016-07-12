@@ -20,8 +20,11 @@
 <%@include file="/WEB-INF/tags/decl.tagf"%>
 <%@attribute name="styles" fragment="true" %>
 <%@attribute name="dwr" %>
+<%@attribute name="css" %>
 <%@attribute name="js" %>
 <%@attribute name="onload" %>
+<%@attribute name="jqplugins" %>
+
 
 <html>
 <head>
@@ -32,21 +35,35 @@
   
   <!-- Meta -->
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="Copyright" content="ScadaBR &copy;©2009-2011 Fundação Certi, MCA Sistemas, Unis Sistemas, Conetec, Todos os direitos reservados."/>
-  <meta name="DESCRIPTION" content="ScadaBR Software"/>
-  <meta name="KEYWORDS" content="ScadaBR Software"/>
+  <meta http-equiv="Content-Style-Type" content="text/css" />  
+  <meta name="Copyright" content="ScadaLTS &copy;©2015"/>
+  <meta name="DESCRIPTION" content="ScadaLTS Software"/>
+  <meta name="KEYWORDS" content="ScadaLTS Software"/>
   
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link href="resources/common.css" type="text/css" rel="stylesheet"/>
+  <c:forTokens items="${css}" var="cssfile" delims=", ">
+    <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
+  </c:forTokens>
   <jsp:invoke fragment="styles"/>
   
   <!-- Scripts -->
-  <script type="text/javascript">var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };</script>
+  <script type="text/javascript">
+  	var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };
+  	var ctxPath = "<%=request.getContextPath()%>";
+  </script>
   <!-- script type="text/javascript" src="http://o.aolcdn.com/dojo/0.4.2/dojo.js"></script -->
   <script type="text/javascript" src="resources/dojo/dojo.js"></script>
+  <script type="text/javascript" src="resources/jQuery/jquery-1.10.2.min.js"></script>
+  <c:forTokens items="${jqplugins}" var="plugin" delims=", ">
+    <script type="text/javascript" src="resources/jQuery/plugins/${plugin}.js"></script>
+  </c:forTokens>
+  <script type="text/javascript">
+	var jQuery = $; 
+	$ = null;
+  </script> 
   <script type="text/javascript" src="dwr/engine.js"></script>
   <script type="text/javascript" src="dwr/util.js"></script>
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
@@ -54,8 +71,8 @@
   <script type="text/javascript" src="resources/common.js"></script>
   <c:forEach items="${dwr}" var="dwrname">
     <script type="text/javascript" src="dwr/interface/${dwrname}.js"></script></c:forEach>
-  <c:forEach items="${js}" var="jsname">
-    <script type="text/javascript" src="resources/${jsname}.js"></script></c:forEach>
+  <c:forTokens items="${js}" var="jsname" delims=", ">
+    <script type="text/javascript" src="resources/${jsname}.js"></script></c:forTokens>
   <script type="text/javascript">
     mango.i18n = <sst:convert obj="${clientSideMessages}"/>;
   </script>
@@ -86,7 +103,7 @@
 <body>
 <table width="100%" cellspacing="0" cellpadding="0" border="0" id="mainHeader">
   <tr>
-    <td><img src="images/scadabrLogoMed.png" alt="Logo"/></td>
+    <td><img src="builder/assets/images/logos/SCADA-LTS.png" alt="Logo"/></td>
     <c:if test="${!simple}">
       <td align="center" width="99%" id="eventsRow">
         <a href="events.shtm">
@@ -114,7 +131,7 @@
           <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
                 
           <c:if test="${sessionUser.dataSourcePermission}">
-            <img src="images/menu_separator.png"/>
+            <img src="images/menu_separator.png" class="separator"/>
             <tag:menuItem href="event_handlers.shtm" png="cog" key="header.eventHandlers"/>
             <tag:menuItem href="data_sources.shtm" png="icon_ds" key="header.dataSources"/>
             <tag:menuItem href="scheduled_events.shtm" png="clock" key="header.scheduledEvents"/>
@@ -123,12 +140,12 @@
             <tag:menuItem href="scripting.shtm" png="script_gear" key="header.scripts"/>
           </c:if>
           
-          <img src="images/menu_separator.png"/>
+          <img src="images/menu_separator.png" class="separator"/>
           <tag:menuItem href="users.shtm" png="user" key="header.users"/>
           
           <c:if test="${sessionUser.admin}">
 	        <tag:menuItem href="usersProfiles.shtm" png="user_ds" key="header.usersProfiles"/>
-            <tag:menuItem href="point_hierarchy.shtm" png="folder_brick" key="header.pointHierarchy"/>
+            <tag:menuItem href="pointHierarchySLTS" png="folder_brick" key="header.pointHierarchy"/>
             <tag:menuItem href="mailing_lists.shtm" png="book" key="header.mailingLists"/>
             <tag:menuItem href="publishers.shtm" png="transmit" key="header.publishers"/>
             <tag:menuItem href="maintenance_events.shtm" png="hammer" key="header.maintenanceEvents"/>
@@ -137,7 +154,7 @@
             <tag:menuItem href="sql.shtm" png="script" key="header.sql"/>
           </c:if>
           
-          <img src="images/menu_separator.png"/>
+          <img src="images/menu_separator.png" class="separator"/>
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
         </c:if>
@@ -173,7 +190,7 @@
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr><td colspan="2">&nbsp;</td></tr>
   <tr>
-    <td colspan="2" class="footer" align="center">&copy;2009-2011 Funda&ccedil;&atilde;o Certi, MCA Sistemas, Unis Sistemas, Conetec. <fmt:message key="footer.rightsReserved"/></td>
+     <td colspan="2" class="footer" align="center">&copy;2012-2016 Scada-LTS <fmt:message key="footer.rightsReserved"/></td>
   </tr>
 </table>
 <c:if test="${!empty onload}">

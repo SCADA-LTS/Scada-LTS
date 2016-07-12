@@ -36,6 +36,9 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mozilla.javascript.ContextFactory;
+import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.scripting.SandboxContextFactory;
 
 import br.org.scadabr.api.utils.APIUtils;
 
@@ -118,6 +121,8 @@ public class MangoContextListener implements ServletContextListener {
 		runtimeManagerInitialize(ctx);
 		reportsInitialize();
 		maintenanceInitialize();
+		
+		scriptContextInitialize();
 
 		// Notify the event manager of the startup.
 		SystemEventType.raiseEvent(new SystemEventType(
@@ -125,7 +130,14 @@ public class MangoContextListener implements ServletContextListener {
 				.currentTimeMillis(), false, new LocalizableMessage(
 				"event.system.startup"));
 
+		
 		log.info("Mango context started");
+		try {
+			PointHierarchyCache.getInstance();
+			log.info("Cache point hierarchy initialized");
+		} catch (Exception e) {
+			log.error(e);
+		}
 
 	}
 
@@ -155,6 +167,13 @@ public class MangoContextListener implements ServletContextListener {
 		Common.ctx = null;
 
 		log.info("Mango context terminated");
+	}
+	
+	/**
+	 * Set global permission for the ScriptEngine 
+	 */
+	private void scriptContextInitialize() {
+		ContextFactory.initGlobal(new SandboxContextFactory());
 	}
 
 	private void dataPointsNameToIdMapping(ServletContext ctx) {

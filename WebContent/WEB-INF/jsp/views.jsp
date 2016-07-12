@@ -17,10 +17,13 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp"%>
-<tag:page dwr="ViewDwr" js="view">
-	<script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
-	<script type="text/javascript" src="resources/shortcut.js"></script>
-	<script type="text/javascript" src="resources/jquery.js"></script>
+<tag:page dwr="ViewDwr"
+	js="view,dygraphs/dygraph-dev,dygraph-extra,dygraphsSplineUtils,dygraphsCharts"
+	css="jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min,jQuery/plugins/datetimepicker/jquery-ui-timepicker-addon,jQuery/plugins/jpicker/css/jPicker-1.1.6.min" 
+	jqplugins="jquery-ui/js/jquery-ui-1.10.3.custom.min,jpicker/jpicker-1.1.6.min,datetimepicker/jquery-ui-timepicker-addon" >
+  <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
+  <script type="text/javascript" src="resources/shortcut.js"></script>
+  <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
 	
 	<script type="text/javascript">
 	

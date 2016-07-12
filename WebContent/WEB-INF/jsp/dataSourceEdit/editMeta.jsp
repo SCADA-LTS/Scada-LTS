@@ -34,6 +34,14 @@
       </c:forEach>
       
       createContextualMessageNode("contextContainer", "context");
+      
+	  jQuery("#allPointsList").chosen({
+      	allow_single_deselect: true,
+		placeholder_text_single: " ",
+		search_contains: true,
+		width: "400px"
+	  });       
+      
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
@@ -72,6 +80,7 @@
       $set("executionDelaySeconds", locator.executionDelaySeconds);
       
       updateEventChanged();
+	        
   }
   
   function savePointImpl(locator) {
@@ -157,11 +166,11 @@
                   break;
               }
           }
-          
           if (!found)
               availPoints[availPoints.length] = pointsArray[i];
       }
       dwr.util.addOptions("allPointsList", availPoints, "id", "name");
+      jQuery("#allPointsList").trigger('chosen:updated');
   }
   
   function updateScriptVarName(pointId, scriptVarName) {
@@ -194,6 +203,13 @@
   function updateEventChanged() {
       display("updateCronPatternRow", $get("updateEvent") == <%= MetaPointLocatorVO.UPDATE_EVENT_CRON %>);
   }
+  
+  jQuery(document).ready(function(){    
+  	(function($) {
+		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
+		loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+  	})(jQuery);
+  });
 </script>
 
 <c:set var="dsDesc"><fmt:message key="dsEdit.meta.desc"/></c:set>

@@ -59,6 +59,7 @@
       var owner;
       var pointNames = {};
       var watchlistChangeId = 0;
+      var isChartLive = false;
       
       function init() {
           WatchListDwr.init(function(data) {
@@ -75,6 +76,12 @@
               for (i=0; i<rootFolder.points.length; i++)
                   addPoint(rootFolder.points[i], tree);
               
+              /*  addPointsToSelectList(rootFolder, "");
+              jQuery("#dpSelector").chosen({
+            	  placeholder_text_single: " ",
+            	  search_contains: true
+              });  */
+              
               hide("loadingImg");
               show("treeDiv");
               
@@ -90,6 +97,23 @@
           dojo.event.topic.subscribe("tree/expand", handler, 'expand');
       }
       
+      //
+      // Populating filterable data point list
+      //
+      function addPointsToSelectList(rootFolder, path){
+    	  var options = "";
+    	  for (var i=0; i<rootFolder.points.length; i++){
+              options += "<option value=" + rootFolder.points[i].key + ">" + path + rootFolder.points[i].value + "</option>";
+    	  }
+    	  $("dpSelector").innerHTML += options;
+    	  for (var i=0; i<rootFolder.subfolders.length; i++){
+    		  addPointsToSelectList(rootFolder.subfolders[i], path + rootFolder.subfolders[i].name + "/");
+    	  }
+      }
+      
+      //
+      // Populating data point hierarchy list
+      //
       function addPointNames(folder) {
           var i;
           for (i=0; i<folder.points.length; i++)
@@ -273,6 +297,13 @@
               hideLayer("usersEdit");
       }
       
+      function addSelectedToWatchList(){
+    	  var pointId = $("dpSelector").value;
+    	  if(pointId > 0){
+    	      addToWatchList(pointId);
+    	  }
+      }
+      
       
       //
       // Watch list membership
@@ -411,12 +442,16 @@
       // Image chart
       //
       function getImageChart() {
+    	  isChartLive=false;
+    	  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
           var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
+          var height = dojo.html.getContentBox($("chartContainer")).height - 80;
+    	  height = height < 200 ? 200 : height;
           startImageFader($("imageChartImg"));
           WatchListDwr.getImageChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"), 
         		  $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"), 
         		  $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"), 
-        		  width, 350, function(data) {
+        		  width, height, function(data) {
               $("imageChartDiv").innerHTML = data;
               stopImageFader($("imageChartImg"));
               
@@ -424,6 +459,27 @@
               // make sure the rendering gets done.
               setTimeout('dojo.widget.manager.getWidgetById("splitContainer").onResized()', 2000);
           });
+      }
+      
+      function getImageChartLive(period) {    	  
+    	  var dataT;
+    	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
+    	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
+    	  height = height < 200 ? 200 : height;
+    	  $("imageChartDiv").height=height;
+    	  var sourcet = "\"chart/"+Date.now()+"_"+period;    	  
+    	  var pointIds = $get("chartCB");    	  
+    	  if(isChartLive){
+          	for (var i=0; i<pointIds.length; i++) {
+          	    if (pointIds[i] == "_TEMPLATE_") {                  
+          	    }else{
+          	    	sourcet +="_"+pointIds[i];
+          	    }
+          	}          
+    	  	sourcet += ".png?w="+width+"&h="+height+"\"";
+    	  	dataT = "<img id=chartTemp src="+sourcet+" onload=\"switchChart()\"/>";
+    	  	$("temp").innerHTML = dataT;    	  	
+    	  }   
       }
       
       function getChartData() {
@@ -452,21 +508,119 @@
           return pointIds;
       }
       
+      // change from static to live
+      function switchChartMode(){    	  
+    	  if(isChartLive){
+    		  isChartLive=false;
+    		  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
+    	   } else {
+    		  isChartLive=true;   
+    		  jQuery("#imageChartLiveImg").attr('src', 'images/control_stop_blue.png');
+    		  getImageChartLive(calculatePeriod());
+    	  }
+      }    
+      
+      // insert new (loaded) chart
+      function switchChart(){
+    	  if(isChartLive){
+    	  	var datan = "<img src="+jQuery("#chartTemp").attr('src')+"/>"; 
+	  	  	$("imageChartDiv").innerHTML = datan; 
+	  	  	setTimeout(function(){getImageChartLive(calculatePeriod());}, 2500);
+	  	  }
+      }
+      
+      // calculate period for live chart
+      function calculatePeriod(){
+    	  var period=$get("prevPeriodCount")*1000*60;
+    	  var type=$get("prevPeriodType");
+    	  
+    	  if(type>2)
+			  period*=60;
+		  if(type>3)
+			  period*=24;
+		  if(type==5)
+			  period*=7;
+		  else if(type==6)
+			  period*=30;
+		  else if(type==7)
+			  period*=365; 
+		  
+		  return period;
+      }
+      
       //
       // Create report
+      //
       function createReport() {
           window.location = "reports.shtm?wlid="+ $get("watchListSelect");
       }
+      
+      //
+      // Cookies handling
+      //
+      function setCookie(cname, cvalue) {
+    	    document.cookie = cname + "=" + cvalue + ";";
+   	  }
+      
+      function getCookie(cname) {
+    	    var name = cname + "=";
+    	    var ca = document.cookie.split(';');
+    	    for(var i=0; i<ca.length; i++) {
+    	        var c = ca[i];
+    	        while (c.charAt(0)==' ') c = c.substring(1);
+    	        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+    	    }
+    	    return "";
+      }
+      
+      function saveDivHeightsToCookieOnChange(){
+    	  if(splitContainerHeight != jQuery("#splitContainer").height()){
+    		  setCookie("split_container_height", jQuery("#splitContainer").height());
+    		  splitContainerHeight = jQuery("#splitContainer").height();
+  		  }
+    	  if(chartContainerHeight != jQuery("#chartContainer").height()){
+    		  setCookie("chart_container_height", jQuery("#chartContainer").height());
+    		  chartContainerHeight = jQuery("#chartContainer").height();
+  		  }
+      }
+      
+      var splitContainerHeight;
+      var chartContainerHeight;
+      
+      jQuery(document).ready(function(){    
+    	  (function($) {
+    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
+    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+    		
+    		splitContainerHeight = parseInt(getCookie("split_container_height"));
+    		if(splitContainerHeight != null){
+    			jQuery("#splitContainer").height(splitContainerHeight);
+    		}
+    		chartContainerHeight = parseInt(getCookie("chart_container_height"));
+    		if(chartContainerHeight != null){
+    			jQuery("#chartContainer").height(chartContainerHeight);
+    		}
+    		
+    		window.setInterval(saveDivHeightsToCookieOnChange, 2000);
+   	  	})(jQuery);
+   	  });
     </script>
     
     <table width="100%">
     <tr><td>
-      <div dojoType="SplitContainer" orientation="horizontal" sizerWidth="3" activeSizing="true" class="borderDiv"
-              widgetId="splitContainer" style="width: 100%; height: 500px;">
+      <div id="splitContainer" dojoType="SplitContainer" orientation="horizontal" sizerWidth="3" activeSizing="true" class="borderDiv"
+              widgetId="splitContainer" style="width: 100%; height: 500px; resize:vertical;">
         <div dojoType="ContentPane" sizeMin="20" sizeShare="20" style="overflow:auto;padding:2px;">
           <span class="smallTitle"><fmt:message key="watchlist.points"/></span> <tag:help id="watchListPoints"/><br/>
-          <img src="images/hourglass.png" id="loadingImg"/>
-          <div id="treeDiv" style="display:none;"><div dojoType="Tree" widgetId="tree"></div></div>
+        <!-- <div style="margin:5px 0 10px 5px;">
+          <select id="dpSelector" data-placeholder="Choose data point ..." class="chosen-select" style="width:80%;margin-bottom:10px;">
+          	<option></option>
+          </select>
+          <img title="Add to watch list" src="images/bullet_go.png" onclick="addSelectedToWatchList()" style="cursor:pointer;">
+        </div>
+        <div class="horzSeparator" style="margin-bottom:10px;"></div> -->
+        <img src="images/hourglass.png" id="loadingImg"/>
+        <div id="treeDiv" style="display:none;"><div dojoType="Tree" widgetId="tree"></div></div>
         </div>
         <div dojoType="ContentPane" sizeMin="50" sizeShare="50" style="overflow:auto; padding:2px 10px 2px 2px;">
           <table cellpadding="0" cellspacing="0" width="100%">
@@ -560,10 +714,18 @@
     </td></tr>
     
     <tr><td>
-      <div class="borderDiv" style="width: 100%;">
+      <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden;">
         <table width="100%">
           <tr>
             <td class="smallTitle"><fmt:message key="watchlist.chart"/> <tag:help id="watchListCharts"/></td>
+            <td align="right"><input type="text" id="prevPeriodCount" class="formVeryShort"/>
+            	<select id="prevPeriodType">
+                	<tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
+            	</select>
+            </td>                            
+            <td  align="left"><tag:img id="imageChartLiveImg" png="control_play_blue" title="watchlist.imageChartLiveButton"
+                      onclick="switchChartMode()"/><br/></td>
+            <td class="vertSeparator"></td>
             <td align="right"><tag:dateRange/></td>
             <td>
               <tag:img id="imageChartImg" png="control_play_blue" title="watchlist.imageChartButton"
@@ -572,7 +734,8 @@
 <!--                       onclick="getChartData()"/> -->
             </td>
           </tr>
-          <tr><td colspan="3" id="imageChartDiv"></td></tr>
+          <tr><td colspan="6" id="imageChartDiv"></td></tr>
+          <tr><td colspan="6" id="temp" style="display:none"></td></tr>
         </table>
       </div>
     </td></tr>

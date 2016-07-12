@@ -19,9 +19,14 @@
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="com.serotonin.mango.view.ShareUser"%>
 
-<tag:page dwr="ViewDwr" onload="doOnload" js="view">
+<tag:page dwr="ViewDwr" onload="doOnload"
+	js="view,dygraph-combined,dygraph-extra,dygraphsSplineUtils,dygraphsCharts"
+	css="jQuery/plugins/chosen/chosen,jQuery/plugins/jpicker/css/jPicker-1.1.6.min,jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min" 
+	jqplugins="chosen/chosen.jquery.min,jpicker/jpicker-1.1.6.min,jquery-ui/js/jquery-ui-1.10.3.custom.min" >
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
+  <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
   <script type="text/javascript">
+
     mango.view.initEditView();
     mango.share.dwr = ViewDwr;
     
@@ -56,6 +61,8 @@
             content = $("pointTemplate").cloneNode(true);
         else if (viewComponent.defName == 'imageChart')
             content = $("imageChartTemplate").cloneNode(true);
+        else if (viewComponent.defName == 'enhancedImageChart')
+        	content = $("enhancedImageChartTemplate").cloneNode(true);
         else if (viewComponent.compoundComponent)
             content = $("compoundTemplate").cloneNode(true);
         else if(viewComponent.customComponent)
@@ -72,6 +79,9 @@
         }
         else if (viewComponent.defName == 'imageChart')
             ;
+        else if (viewComponent.defName == 'enhancedImageChart') {
+        	dygraphsCharts[viewComponent.id] = new DygraphsChart(null, viewComponent.id, false, true, viewComponent);
+        }
         else if (viewComponent.compoundComponent) {
             // Compound components only have their static content set at page load.
             $set(content.id +"Content", viewComponent.staticContent);
@@ -462,6 +472,25 @@
             </div>
           </div>
             
+          <div id="enhancedImageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+                  onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
+                  style="position:absolute;left:0px;top:0px;display:none;">
+            <div id="c_TEMPLATE_Content" style="display: none;"></div>
+            <div id="c_TEMPLATE_Graph" class="enhancedImageChart"></div>
+            <div id="c_TEMPLATE_LegendBox" class="enhancedImageChartLegend">
+            	<b><fmt:message key="graphic.enhancedImageChart.legend"/></b>
+				<div id="c_TEMPLATE_Legend"></div>
+            </div>
+            <div id="c_TEMPLATE_Controls" class="controlsDiv">
+              <table cellpadding="0" cellspacing="1">
+                <tr><td><tag:img png="plugin_edit" onclick="openCompoundEditor(getViewComponentId(this))"
+                        title="viewEdit.editPointView"/></td></tr>
+                <tr><td><tag:img png="plugin_delete" onclick="deleteViewComponent(getViewComponentId(this))"
+                        title="viewEdit.deletePointView"/></td></tr>
+              </table>
+            </div>
+          </div>
+          
           <div id="compoundTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">

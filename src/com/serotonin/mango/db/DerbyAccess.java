@@ -183,7 +183,7 @@ public class DerbyAccess extends DatabaseAccess {
      * prevents cases where inserts are attempted with identities that already exist.
      */
     private void updateIndentityStarts(ExtendedJdbcTemplate ejt) {
-        List<IdentityStart> starts = ejt.query("select t.tablename, c.columnname, c.autoincrementvalue " + //
+       /* List<IdentityStart> starts = ejt.query("select t.tablename, c.columnname, c.autoincrementvalue " + //
                 "from sys.syscolumns c join sys.systables t on c.referenceid = t.tableid " + //
                 "where t.tabletype='T' and c.autoincrementvalue is not null", new GenericRowMapper<IdentityStart>() {
             @Override
@@ -200,7 +200,7 @@ public class DerbyAccess extends DatabaseAccess {
             int maxId = ejt.queryForInt("select max(" + is.column + ") from " + is.table);
             if (is.aiValue <= maxId)
                 ejt.execute("alter table " + is.table + " alter column " + is.column + " restart with " + (maxId + 1));
-        }
+        }*/
     }
 
     class IdentityStart {

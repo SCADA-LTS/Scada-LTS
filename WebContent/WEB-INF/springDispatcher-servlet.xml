@@ -1,44 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<!--
-  - Application context definition for DispatcherServlet.
-  -->
-<beans>
+	<context:component-scan base-package="org.scada_lts" />
+	<mvc:annotation-driven />
+	
+	<context:annotation-config />	
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+     <property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
+     <property name="prefix"><value>/WEB-INF/jsp/</value></property>
+     <property name="suffix"><value>.jsp</value></property>
+    </bean>
   
-  <!-- View resolver -->
-  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-    <property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
-    <property name="prefix"><value>/WEB-INF/jsp/</value></property>
-    <property name="suffix"><value>.jsp</value></property>
-  </bean>
   
-  <!-- Default message code resolver -->
-  <bean id="defaultMessageCodeResolver" class="com.serotonin.propertyEditor.DefaultMessageCodesResolver"/>
+   <!-- Default message code resolver -->
+   <bean id="defaultMessageCodeResolver" class="com.serotonin.propertyEditor.DefaultMessageCodesResolver"/>
   
-  <!-- 
+   <!-- 
       URL mappings to controllers
-  -->
-  <bean id="publicUrlMappings" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+   -->
+   <bean id="publicUrlMappings" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <props>
         <!-- All user URLs -->
@@ -55,7 +44,9 @@
         <prop key="/logout.htm">logoutController</prop>
         <prop key="/mailing_lists.shtm">mailingListsController</prop>
         <prop key="/maintenance_events.shtm">maintenanceEventsController</prop>
+        <!-- 
         <prop key="/point_hierarchy.shtm">pointHierarchyController</prop>
+        -->
         <prop key="/point_links.shtm">pointLinksController</prop>
         <prop key="/public_view.htm">publicViewController</prop>
         <prop key="/publisher_edit.shtm">publisherEditController</prop>
@@ -74,11 +65,11 @@
         <prop key="/webcam_live_feed.htm">webcamLiveFeedController</prop>
         <prop key="/export_project.htm">projectExporterController</prop>
         <prop key="/import_project.htm">projectImporterController</prop>
-        
         <!-- Mobile user URLs -->
         <prop key="/mobile_login.htm">mobileLoginController</prop>
         <prop key="/mobile_logout.htm">mobileLogoutController</prop>
         <prop key="/mobile_watch_list.shtm">mobileWatchListController</prop>
+        
       </props>
     </property>
     
@@ -96,6 +87,7 @@
   
   <bean id="projectExporterController" class="br.org.scadabr.web.mvc.controller.ProjectExporterController">
   </bean>
+  
   <bean id="projectImporterController" class="br.org.scadabr.web.mvc.controller.ProjectImporterController">
   </bean>
   
@@ -179,9 +171,11 @@
     <property name="viewName"><value>maintenanceEvents</value></property>
   </bean>
   
+  <!-- 
   <bean id="pointHierarchyController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>pointHierarchy</value></property>
   </bean>
+  -->
 
   <bean id="pointLinksController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>pointLinks</value></property>
@@ -242,16 +236,22 @@
     <property name="successUrl"><value>views.shtm</value></property>
     <property name="uploadDirectory"><value>uploads/</value></property>
   </bean>
-  
+    
   <bean id="watchListController" class="com.serotonin.mango.web.mvc.controller.WatchListController">
     <property name="viewName"><value>watchList</value></property>
   </bean>
   
+  <!-- SCADA LTS -->
+  <!-- 
+  <bean id="pointHierarchy" class="org.lts.scada.web.mvc.controller.PointHierarchyController">
+  </bean>
+  -->
+  
+  <!-- END SCADA LTS -->
+  
   <bean id="webcamLiveFeedController" class="com.serotonin.mango.web.mvc.controller.WebcamLiveFeedController">
     <property name="viewName"><value>webcamLiveFeed</value></property>
   </bean>
-  
-  
   
   <!-- Multipart resolver -->
   <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

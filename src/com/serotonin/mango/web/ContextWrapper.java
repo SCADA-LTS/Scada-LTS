@@ -39,6 +39,7 @@ import com.serotonin.mango.view.ImageSet;
 import freemarker.template.Configuration;
 
 public class ContextWrapper {
+
 	private final ServletContext ctx;
 
 	public ContextWrapper(ServletContext ctx) {

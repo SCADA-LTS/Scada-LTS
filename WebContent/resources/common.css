@@ -96,11 +96,11 @@ a.titleLink:hover {
 #__header__alarmLevelText {
 	font-weight: bold;
 	font-size: 14px;
-	color: #FFFFFF
+	color: #25AB9B
 }
 #mainHeader {
 	padding-top: 5px;
-	background-color: #25AB9B;
+	background-color: #d6d5d5;
 }
 #subHeader {
 	background-color: #F0F0F0;
@@ -469,5 +469,51 @@ html > body .dojoTreeNodeLabelSelected {
 	display:none;
 	max-height:100px;
 	overflow:auto;
+}
+
+/**
+ * Enhanced image chart
+ */
+.enhancedImageChart {
+	background-color: white;
+}
+.enhancedImageChartLegend {
+	position:static !important;
+	background-color: white;	
+	padding: 5px;
+	display: inline-block;
+}
+.enhancedImageChartLegend > div {
+	margin-top: 2px;
+}
+.enhancedImageChartConfig {
+	position: absolute !important;
+	top: 0px !important;
+	left: 100% !important;
+	float: right;
+	padding-left: 5px;
+	display: block;
+	background-color: white;
+	width: 240px;
+	border: 1px outset #39B54A;
+	z-index: 1;	
+}
+
+.enhancedImageChartConfig > div {
+	width: 100%;
+	display: inline-block;
+}
+.enhancedImageChartConfig div.margin1{
+	margin-top: 15px;
+}
+.enhancedImageChartConfig div.margin2{
+	margin: 5px 0px;
+}
+.enhancedImageChartConfig label.margin{
+	margin: 0px 5px;
+}
+.enhancedImageChartConfig span{
+	font-weight: bold;
+	margin: 5px 0;
 }
 
