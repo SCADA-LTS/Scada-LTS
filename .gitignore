@@ -8,6 +8,9 @@ target/
 # Package Files #
 *.war
 *.ear
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+=======
 *.db
 *~
 ######################
@@ -48,9 +51,6 @@ local.properties
 # External tool builders
 .externalToolBuilders/
 /WebContent/resources/app/bower_components
-/WebContent/resources/dygraphs
-/WebContent/resources/jQuery
-/WebContent/resources/dygraph*
 # Locally stored "Eclipse launch configurations"
 *.launch
 # CDT-specific
