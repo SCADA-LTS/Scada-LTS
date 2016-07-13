@@ -41,13 +41,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.db.MappedRowCallback;
 import com.serotonin.db.spring.GenericIntValuePairRowMapper;
 import com.serotonin.db.spring.GenericRowMapper;
-import com.serotonin.db.spring.GenericTransactionCallback;
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -149,7 +149,7 @@ public class PointValueDao extends BaseDao {
 
 				// Create a transaction within which to do the insert.
 				id = getTransactionTemplate().execute(
-						new GenericTransactionCallback<Long>() {
+						new TransactionCallback<Long>() {
 							public Long doInTransaction(TransactionStatus status) {
 								return savePointValue(pointId, dataType,
 										dvalueFinal, pointValue.getTime(),

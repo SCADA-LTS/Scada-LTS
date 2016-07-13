@@ -17,9 +17,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-<beans>
   <!-- DWR -->
   <bean id="CompoundEventsDwr" class="com.serotonin.mango.web.dwr.CompoundEventsDwr"/>
   <bean id="CustomViewDwr" class="com.serotonin.mango.web.dwr.CustomViewDwr"/>
@@ -47,9 +55,13 @@
   <bean id="UsersProfilesDwr" class="br.org.scadabr.web.dwr.UsersProfilesDwr"/>
   
   <!-- i18n -->
-  <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+  <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+  	<property name="defaultLocale" value="en"/>
+  </bean>
   
   <bean id="messageSource" class="com.serotonin.web.i18n.Utf8ResourceBundleMessageSource">
     <property name="basename"><value>messages</value></property>
   </bean>
+  
+  
 </beans>

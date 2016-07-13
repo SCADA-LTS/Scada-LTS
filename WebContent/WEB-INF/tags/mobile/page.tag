@@ -32,7 +32,7 @@
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr>
-    <td class="footer" align="center">&copy;2006-2010 Serotonin Software Technologies Inc., <fmt:message key="footer.rightsReserved"/></td>
+    <td class="footer" align="center">&copy;2016<fmt:message key="footer.rightsReserved"/></td>
   </tr>
 </table>
 

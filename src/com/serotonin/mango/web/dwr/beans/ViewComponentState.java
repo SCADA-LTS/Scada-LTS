@@ -31,6 +31,7 @@ public class ViewComponentState extends BasePointState {
 	private String content;
 	private String info;
 	private boolean graph = false;
+	private String data;
 
 	public String getInfo() {
 		return info;
@@ -66,6 +67,8 @@ public class ViewComponentState extends BasePointState {
 			content = null;
 		if (StringUtils.isEqual(info, that.info))
 			info = null;
+		if (StringUtils.isEqual(data, that.data))
+			data = null;
 	}
 
 	@Override
@@ -79,6 +82,14 @@ public class ViewComponentState extends BasePointState {
 
 	public void setGraph(boolean graph) {
 		this.graph = graph;
+	}
+
+	public String getData() {
+		return data;
+	}
+
+	public void setData(String data) {
+		this.data = data;
 	}
 
 }

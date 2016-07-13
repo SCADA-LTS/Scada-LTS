@@ -700,13 +700,13 @@ alter table usersUsersProfiles add constraint usersUsersProfilesFk1 foreign key 
 alter table usersUsersProfiles add constraint usersUsersProfilesFk2 foreign key (userId) references users(id) on delete cascade;
 
 -- Watchlist permissions
-create table watchListUsersProfiles (
+create table watchlistUsersProfiles (
   watchlistId number(10) not null,
   userProfileId number(10) not null,
   permission number(10) not null
 ) ;
-alter table watchListUsersProfiles add constraint watchListUsersProfilesFk1 foreign key (watchlistId) references watchLists(id) on delete cascade;
-alter table watchListUsersProfiles add constraint watchListUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;
+alter table watchlistUsersProfiles add constraint watchlistUsersProfilesFk1 foreign key (watchlistId) references watchLists(id) on delete cascade;
+alter table watchlistUsersProfiles add constraint watchlistUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;
 
 -- Watchlist permissions
 create table viewUsersProfiles (

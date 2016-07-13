@@ -17,6 +17,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
+<%@page import="com.serotonin.mango.Common"%>
 <script type="text/javascript">
   var dataTypeId = ${form.pointLocator.dataTypeId};
 </script>
@@ -35,6 +36,20 @@
   function doSaveForm() {
       document.forms[0].submit();
   }
+  jQuery(document).ready(function(){
+	  (function($) {
+			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
+			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+	  	})(jQuery);	  
+  });
+  window.onload = function() {
+	  jQuery("#allPointsList").chosen({
+	      	allow_single_deselect: true,
+			placeholder_text_single: " ",
+			search_contains: true,
+			width: "400px"
+	  });
+  }
 </script>
 
 <table width="100%">
@@ -50,7 +65,7 @@
     </td>
     <td valign="top" align="right">
       <fmt:message key="pointEdit.name.goto"/>:&nbsp;
-      <sst:select value="${form.id}" onchange="window.location='data_point_edit.shtm?dpid='+ this.value;">
+      <sst:select id="allPointsList" value="${form.id}" onchange="window.location='data_point_edit.shtm?dpid='+ this.value;">
         <c:forEach items="${userPoints}" var="point">
           <sst:option value="${point.id}">${point.extendedName}</sst:option>
         </c:forEach>

@@ -19,6 +19,7 @@
 package com.serotonin.mango.web.filter;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -28,9 +29,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.session.HttpSessionListenerImpl;
+import org.scada_lts.session.SessionInfo;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
@@ -71,6 +75,8 @@ abstract public class LoggedInFilter implements Filter {
             return;
         }
 
+        putLogOnIpAddr(request);
+        
         // Continue with the chain.
         filterChain.doFilter(servletRequest, servletResponse);
     }
@@ -79,5 +85,30 @@ abstract public class LoggedInFilter implements Filter {
         // no op
     }
 
-    abstract protected boolean checkAccess(User user);
+    /**
+	 * update ip address and user name, when user sign in  
+	 * @param httpRequest
+	 */
+	private void putLogOnIpAddr(HttpServletRequest httpRequest) {
+		final HttpSession session = httpRequest.getSession(false);
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) httpRequest
+					.getServletContext().getAttribute(
+							HttpSessionListenerImpl.SERVLET_CONTEXT_MAP);
+
+			SessionInfo sessionInfo = (SessionInfo) map.get(session.getId());
+			if (!sessionInfo.haveLogOnIPAddr()) {
+				
+				final String logOnIpAddr = httpRequest.getRemoteHost();
+				sessionInfo.setLogOnIpAddr(logOnIpAddr);
+			}
+		} catch (Exception e) {
+			// no info on tomcat
+			LOGGER.debug("Remote user set in list sessions:", e);
+		}
+
+	}
+
+	abstract protected boolean checkAccess(User user);
 }

@@ -222,7 +222,13 @@
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.mbus.SecondaryAddressingSearch" javascript="SecondaryAddressingSearch"/>
     <convert converter="enum" match="com.serotonin.dataframes.MBusMedium" />
     <convert converter="enum" match="com.serotonin.MBusAddressing" />
+    
     <!-- End MBus4J stuff-->
+    
+    <!-- EnhancedImageChart -->
+    <convert converter="enum" match="com.serotonin.mango.view.component.EnhancedImageChartType"/>
+    <convert converter="enum" match="com.serotonin.mango.view.component.EnhancedPointLineType"/>
+    <!-- End EnhancedImageChart -->
 
     <!-- Fhz4J stuff- ->
     <convert converter="bean" match="net.sf.fhz4j.FhzProperty" />

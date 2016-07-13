@@ -21,6 +21,7 @@
 
 <tag:page dwr="DataPointDetailsDwr" js="view" onload="init">
   <script type="text/javascript">
+
     mango.view.initPointDetails();
     
     function init() {
@@ -33,6 +34,13 @@
         </c:if>
         <c:if test="${!empty flipbookLimit}">getFlipbookChart();</c:if>
         getStatsChart();
+        
+        jQuery("#datPointDetailsPointSelect").chosen({
+			allow_single_deselect: true,
+			placeholder_text_single: " ",
+			search_contains: true,
+			width: "400px"
+       	});
     }
     
     //
@@ -144,18 +152,25 @@
     function swapFlipbookImage(uri) {
         $("flipbookImage").src = uri;
     }
+    
+    jQuery(document).ready(function(){
+    	(function($) {
+    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
+			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+		})(jQuery);
+    });
   </script>
   
   <table width="100%">
     <tr>
       <td valign="top" align="right">
         <fmt:message key="pointDetails.goto"/>:&nbsp;
-        <sst:select value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;">
+        <sst:select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;">
           <c:forEach items="${userPoints}" var="point">
             <sst:option value="${point.id}">${point.extendedName}</sst:option>
           </c:forEach>
         </sst:select>
-        
+
         <c:if test="${!empty prevId}">
           <tag:img png="bullet_go_left" title="pagination.previous"
                   onclick="window.location='data_point_details.shtm?dpid=${prevId}'"/>

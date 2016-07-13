@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.db.dao;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -33,16 +34,22 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.quartz.SchedulerException;
+import org.scada_lts.cache.PendingEventsCache;
+import org.scada_lts.cache.UnsilencedAlarmCache;
+import org.scada_lts.config.ScadaConfig;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.db.spring.GenericRowMapper;
-import com.serotonin.db.spring.GenericTransactionCallback;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -64,6 +71,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.LocalizableMessageParseException;
 
 public class EventDao extends BaseDao {
+	
+	private static final Log LOG = LogFactory.getLog(EventDao.class);
 	private static final int MAX_PENDING_EVENTS = 100;
 
 	public void saveEvent(EventInstance event) {
@@ -296,12 +305,22 @@ public class EventDao extends BaseDao {
 	}
 
 	public List<EventInstance> getPendingEvents(int userId) {
-		List<EventInstance> results = query(
-				EVENT_SELECT_WITH_USER_DATA
-						+ "where ue.userId=? and (e.ackTs is null or e.ackTs = 0) order by e.activeTs desc",
-				new Object[] { userId }, new UserEventInstanceRowMapper(),
-				MAX_PENDING_EVENTS);
-		attachRelationalInfo(results);
+		List<EventInstance> results = null;
+		try {
+			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
+			if (cacheEnable) {
+			  results = PendingEventsCache.getInstance().getPendingEvents(userId);
+			} else {
+				results = query(
+						EVENT_SELECT_WITH_USER_DATA
+								+ "where ue.userId=? and (e.ackTs is null or e.ackTs = 0) order by e.activeTs desc",
+						new Object[] { userId }, new UserEventInstanceRowMapper(),
+						MAX_PENDING_EVENTS);
+				attachRelationalInfo(results);
+			}
+		} catch (SchedulerException | IOException e) {
+			LOG.error(e);	
+		}
 		return results;
 	}
 
@@ -386,7 +405,7 @@ public class EventDao extends BaseDao {
 		return type;
 	}
 
-	private void attachRelationalInfo(List<EventInstance> list) {
+	public void attachRelationalInfo(List<EventInstance> list) {
 		for (EventInstance e : list)
 			attachRelationalInfo(e);
 	}
@@ -411,7 +430,7 @@ public class EventDao extends BaseDao {
 		// Find a list of event ids with no remaining acknowledgements pending.
 		final ExtendedJdbcTemplate ejt2 = ejt;
 		int count = getTransactionTemplate().execute(
-				new GenericTransactionCallback<Integer>() {
+				new TransactionCallback<Integer>() {
 					@Override
 					public Integer doInTransaction(TransactionStatus status) {
 						int count = ejt2
@@ -900,11 +919,22 @@ public class EventDao extends BaseDao {
 		return silenced;
 	}
 
-	public int getHighestUnsilencedAlarmLevel(int userId) {
-		return ejt.queryForInt("select max(e.alarmLevel) from userEvents u "
-				+ "  join events e on u.eventId=e.id "
-				+ "where u.silenced=? and u.userId=?", new Object[] {
-				boolToChar(false), userId });
+	public int getHighestUnsilencedAlarmLevel(int userId) {		
+		int result = -1;
+		try {
+			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
+			if (cacheEnable) {
+			  result = UnsilencedAlarmCache.getInstance().getHighestUnsilencedAlarmLevel(userId);
+			} else {
+				result = ejt.queryForInt("select max(e.alarmLevel) from userEvents u "
+						   + "  join events e on u.eventId=e.id "
+						   + "where u.silenced=? and u.userId=?", new Object[] {
+						   boolToChar(false), userId });
+			}
+		} catch (SchedulerException | IOException e) {
+			LOG.error(e);	
+		}		
+		return result;
 	}
 
 	//

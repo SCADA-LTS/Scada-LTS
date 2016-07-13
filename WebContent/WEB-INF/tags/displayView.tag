@@ -66,6 +66,45 @@
         </div>
       </c:when>
       
+       <c:when test="${vc.defName == 'enhancedImageChart'}">
+		<div id="c${vc.id}"
+			style="position:absolute;left:${vc.x}px;top:${vc.y}px;background-color:white;">
+			<tag:enhancedImageChartConfig componentId="${vc.id}"/>
+			<tag:enhancedImageChartPointConfig componentId="${vc.id}"/>
+			<tag:enhancedImageChartSeriesConfig vc="${vc}"/>
+			
+			<div id="c${vc.id}Graph" class="enhancedImageChart" onclick="jQuery('#c${vc.id}ConfigButtonDiv').toggle();"></div>
+			<div id="c${vc.id}LegendBox" class="enhancedImageChartLegend" onclick="jQuery('#c${vc.id}SeriesConfig').show()">
+				<div id="c${vc.id}Legend"></div>
+			</div>
+			<img id="c${vc.id}ExportImage" style="display: none;"/>
+			
+			
+			
+		</div>
+		<script type="text/javascript">
+			var pointProps = new Array();
+			<c:forEach var="childComponent" items="${vc.childComponents}">
+				<c:if test="${not empty childComponent.viewComponent.extendedName}">
+					pointProps.push({
+						pointName: "${childComponent.viewComponent.extendedName}",
+	        			alias: "${childComponent.viewComponent.alias}",
+	        			color: "${childComponent.viewComponent.color}",
+	        			strokeWidth: ${childComponent.viewComponent.strokeWidth},
+	        			lineType: "${childComponent.viewComponent.lineType}",
+	        			showPoints: ${childComponent.viewComponent.showPoints}
+					});
+				</c:if>
+			</c:forEach>
+			dygraphsCharts[${vc.id}] = new DygraphsChart(${view.id}, ${vc.id}, true, false);
+			dygraphsCharts[${vc.id}].updateOptions(${vc.width}, ${vc.height}, ${vc.durationType}, ${vc.durationPeriods},
+					"${vc.enhancedImageChartType}", pointProps);
+			dygraphsCharts[${vc.id}].initConfigControls();
+			
+			jQuery('#c${vc.id}ConfigButtonDiv').hide().css("position", "absolute");
+		</script>
+      </c:when>
+      
       <c:when test="${vc.compoundComponent}">
         <div id="c${vc.id}" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
                   onmouseover="vcOver('c${vc.id}', 5);" onmouseout="vcOut('c${vc.id}');">

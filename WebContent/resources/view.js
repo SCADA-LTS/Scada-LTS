@@ -54,6 +54,7 @@ mango.view.setData = function(stateArr) {
         }
         
         mango.view.setMessages(state);
+        mango.view.setChartData(state);
     }
 };
 
@@ -247,6 +248,7 @@ mango.view.edit.setData = function(stateArr) {
                 node.innerHTML = state.info;
         }
         mango.view.setMessages(state);
+        mango.view.setChartData(state);
     }
 };
 
@@ -312,6 +314,12 @@ mango.view.watchList.setDataImpl = function(state) {
         //else
         //    $("p"+ state.id +"Messages").innerHTML = "";
     }
+};
+
+mango.view.setChartData = function(state) {
+	if(!isBlank(state.data) && typeof dygraphsCharts[state.id] != "undefined") {
+			dygraphsCharts[state.id].updateData(state.data);
+	}
 };
 
 mango.view.watchList.safeRemoveClass = function(nodeId, className) {

@@ -71,8 +71,11 @@ public class ScriptExecutor {
 		for (IntValuePair contextEntry : context) {
 			DataPointRT point = rtm.getDataPoint(contextEntry.getKey());
 			if (point == null) {
-				LOG.error("Error DataPointRT null "	+ new Exception("key:" + contextEntry.getKey() + " value:" + contextEntry.getValue()));
-				throw new DataPointStateException(contextEntry.getKey(), new LocalizableMessage("event.meta.pointMissing"));
+				LOG.error("Error DataPointRT null "
+						+ new Exception("key:" + contextEntry.getKey()
+								+ " value:" + contextEntry.getValue()));
+				throw new DataPointStateException(contextEntry.getKey(),
+						new LocalizableMessage("event.meta.pointMissing"));
 			}
 			converted.put(contextEntry.getValue(), point);
 		}
@@ -91,17 +94,17 @@ public class ScriptExecutor {
 		 * try { manager = new ScriptEngineManager(); } catch (Exception e) {
 		 * throw new ScriptException(e); }
 		 */
+
 		Context cx = Context.enter();
-		cx.setOptimizationLevel(Common.getEnvironmentProfile().getInt("js.optimizationlevel", 0));
-		
+		cx.setOptimizationLevel(Common.getEnvironmentProfile().getInt(
+				"js.optimizationlevel", 0));
+
 		Scriptable scope = null;
 		Object result = null;
 
+		// Execute.
 		try {
 			scope = cx.initStandardObjects();
-			// ScriptEngine engine = manager.getEngineByName("JavaScript");
-			// engine.getContext().setErrorWriter(new PrintWriter(System.err));
-			// engine.getContext().setWriter(new PrintWriter(System.out));
 
 			// Create the wrapper object context.
 			WrapperContext wrapperContext = new WrapperContext(runtime);
@@ -121,8 +124,11 @@ public class ScriptExecutor {
 				IDataPoint point = context.get(varName);
 				int dt = point.getDataTypeId();
 
-				LOG.debug("Var: "+ varName +
-						", value: "	+ (point.getPointValue() == null ? "null" : point.getPointValue().toString()));
+				LOG.debug("Var: "
+						+ varName
+						+ ", value: "
+						+ (point.getPointValue() == null ? "null" : point
+								.getPointValue().toString()));
 
 				if (dt == DataTypes.BINARY) {
 					scope.put(varName, scope, new BinaryPointWrapper(point,
@@ -134,11 +140,11 @@ public class ScriptExecutor {
 					scope.put(varName, scope, new NumericPointWrapper(point,
 							wrapperContext));
 				} else if (dt == DataTypes.ALPHANUMERIC) {
-					scope.put(varName, scope, new AlphanumericPointWrapper(point, 
-							wrapperContext));
+					scope.put(varName, scope, new AlphanumericPointWrapper(
+							point, wrapperContext));
 				} else
-					throw new ShouldNeverHappenException("Unknown data type id: "
-							+ point.getDataTypeId());
+					throw new ShouldNeverHappenException(
+							"Unknown data type id: " + point.getDataTypeId());
 			}
 
 			// Create the script.
@@ -147,18 +153,22 @@ public class ScriptExecutor {
 				// optimization level -1
 				script = SCRIPT_PREFIX + script + SCRIPT_SUFFIX;
 				try {
-					Object o = cx.evaluateString(scope, script, "<cmd>", 1,	null);
-					if (o == null) {
+
+					Object o = cx.evaluateString(scope, script, "<cmd>", 1,
+							null);
+					if (o == null)
 						result = null;
-					} else {
+					else {
 						if (!(o instanceof AbstractPointWrapper)) {
 							result = o.toString();
 						} else {
 							result = o;
 						}
 					}
+
 				} catch (Exception e) {
-					LOG.error("Error evaluating string (script): " + e.getMessage());
+					LOG.error("Error evaluating string (script): "
+							+ e.getMessage());
 					throw new ScriptException(e.getMessage());
 				}
 
@@ -184,7 +194,7 @@ public class ScriptExecutor {
 						value = null;
 				} else if (result instanceof AbstractPointWrapper) {
 					value = ((AbstractPointWrapper) result).getValueImpl();
-					
+					// See if the type matches.
 				} else if (dataTypeId == DataTypes.BINARY) {
 					Boolean b = Boolean.parseBoolean(strResult);
 					value = new BinaryValue(b);
@@ -209,58 +219,60 @@ public class ScriptExecutor {
 
 				return new PointValueTime(value, timestamp);
 			} else {
-			script = SCRIPT_PREFIX + script + SCRIPT_SUFFIX + FUNCTIONS;
+				script = SCRIPT_PREFIX + script + SCRIPT_SUFFIX + FUNCTIONS;
 
-			try {
-				result = cx.evaluateString(scope, script, "<cmd>", 1, null);
-			} catch (Exception e) {
-					LOG.error("Error evaluating string (script): " + e.getMessage());
+				try {
+					result = cx.evaluateString(scope, script, "<cmd>", 1, null);
+				} catch (Exception e) {
+					LOG.error("Error evaluating string (script): "
+							+ e.getMessage());
 					throw new ScriptException(e.getMessage());
+				}
+
+				Object ts = scope.get("TIMESTAMP", scope);
+				if (ts != null) {
+					if (ts instanceof Number)
+						timestamp = ((Number) ts).longValue();
+				}
+
+				MangoValue value;
+				if (result == null) {
+					if (dataTypeId == DataTypes.BINARY)
+						value = new BinaryValue(false);
+					else if (dataTypeId == DataTypes.MULTISTATE)
+						value = new MultistateValue(0);
+					else if (dataTypeId == DataTypes.NUMERIC)
+						value = new NumericValue(0);
+					else if (dataTypeId == DataTypes.ALPHANUMERIC)
+						value = new AlphanumericValue("");
+					else
+						value = null;
+				} else if (result instanceof AbstractPointWrapper) {
+					value = ((AbstractPointWrapper) result).getValueImpl();
+				} else if (dataTypeId == DataTypes.BINARY
+						&& result instanceof Boolean) {
+					value = new BinaryValue((Boolean) result);
+					LOG.debug("Result: " + value.getBooleanValue());
+				} else if (dataTypeId == DataTypes.MULTISTATE
+						&& result instanceof Number) {
+					value = new MultistateValue(((Number) result).intValue());
+					LOG.debug("Result: " + value.getIntegerValue());
+				} else if (dataTypeId == DataTypes.NUMERIC
+						&& result instanceof Number) {
+					value = new NumericValue(((Number) result).doubleValue());
+					LOG.debug("Result: " + value.getDoubleValue());
+				} else if (dataTypeId == DataTypes.ALPHANUMERIC
+						&& result instanceof String) {
+					value = new AlphanumericValue((String) result);
+					LOG.debug("Result: " + value.getStringValue());
+				} else
+					throw new ResultTypeException(new LocalizableMessage(
+							"event.script.convertError", result,
+							DataTypes.getDataTypeMessage(dataTypeId)));
+
+				return new PointValueTime(value, timestamp);
 			}
-
-		Object ts = scope.get("TIMESTAMP", scope);
-		if (ts != null) {
-			if (ts instanceof Number)
-				timestamp = ((Number) ts).longValue();
-		}
-
-		MangoValue value;
-		if (result == null) {
-			if (dataTypeId == DataTypes.BINARY)
-				value = new BinaryValue(false);
-			else if (dataTypeId == DataTypes.MULTISTATE)
-				value = new MultistateValue(0);
-			else if (dataTypeId == DataTypes.NUMERIC)
-				value = new NumericValue(0);
-			else if (dataTypeId == DataTypes.ALPHANUMERIC)
-				value = new AlphanumericValue("");
-			else
-				value = null;
-		} else if (result instanceof AbstractPointWrapper) {
-			value = ((AbstractPointWrapper) result).getValueImpl();
-					
-		} else if (dataTypeId == DataTypes.BINARY && result instanceof Boolean) {
-			value = new BinaryValue((Boolean) result);
-			LOG.debug("Result: " + value.getBooleanValue());
-				} else if (dataTypeId == DataTypes.MULTISTATE && result instanceof Number) {
-			value = new MultistateValue(((Number) result).intValue());
-			LOG.debug("Result: " + value.getIntegerValue());
-		} else if (dataTypeId == DataTypes.NUMERIC && result instanceof Number) {
-			value = new NumericValue(((Number) result).doubleValue());
-			LOG.debug("Result: " + value.getDoubleValue());
-				} else if (dataTypeId == DataTypes.ALPHANUMERIC	&& result instanceof String) {
-			value = new AlphanumericValue((String) result);
-			LOG.debug("Result: " + value.getStringValue());
-		} else
-			throw new ResultTypeException(new LocalizableMessage(
-					"event.script.convertError", result,
-					DataTypes.getDataTypeMessage(dataTypeId)));
-
-		return new PointValueTime(value, timestamp);
-				
-	}
 		} finally {
-			// Exit from the context.
 			Context.exit();
 		}
 	}
