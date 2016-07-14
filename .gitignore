@@ -57,3 +57,5 @@ local.properties
 .cproject
 # PDT-specific
 .buildpath
+# seroUtils.jar
+seroUtils.jar
