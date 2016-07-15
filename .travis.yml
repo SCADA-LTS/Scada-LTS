@@ -1,0 +1,18 @@
+before_install: 
+    - sudo apt-get install tomcat7
+    - sudo apt-get install nodejs
+    - sudo apt-get install npm
+before_script:
+    - npm install -g bower
+    - cd ./WebContent/resources/app; bower update;
+language: java
+jdk:
+    - openjdk8
+script: ant war
+branches:
+  only:
+    - /^PROC-1-.*$/
+notifications:
+  email: false
+env:
+    -CATALINA_HOME=/var/lib/tomcat7
