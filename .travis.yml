@@ -4,6 +4,7 @@ before_install:
     - sudo apt-get install npm
 before_script:
     - npm install -g bower
+    - chmod +x ./get_seroUtils.sh
     - ./get_seroUtils.sh
     - cd ./WebContent/resources/app; bower update;
 language: java
