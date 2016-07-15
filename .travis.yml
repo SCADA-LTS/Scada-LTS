@@ -6,9 +6,6 @@ before_script:
     - ./get_seroUtils.sh
     - cd ./WebContent/resources/app; bower update;
     - cd ../../..
-    - echo $CATALINA_HOME
-    - export CATALINA_HOME=/var/lib/tomcat7
-    - echo $CATALINA_HOME
 language: java
 jdk:
     - oraclejdk8
@@ -19,4 +16,4 @@ branches:
 notifications:
   email: false
 env:
-    - CATALINA_HOME=/var/lib/tomcat7
+    - CATALINA_HOME=/opt/tomcat
