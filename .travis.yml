@@ -8,7 +8,7 @@ before_script:
     - ./get_seroUtils.sh
 language: java
 jdk:
-    - openjdk8
+    - oraclejdk8
 script: ant war
 branches:
   only:
@@ -16,4 +16,4 @@ branches:
 notifications:
   email: false
 env:
-    -CATALINA_HOME=/var/lib/tomcat7
+    - CATALINA_HOME=/var/lib/tomcat7
