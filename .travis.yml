@@ -6,6 +6,7 @@ before_script:
     - ./get_seroUtils.sh
     - cd ./WebContent/resources/app; bower update;
     - cd ../../..
+    - find / -name tomcat7 
 language: java
 jdk:
     - oraclejdk8
