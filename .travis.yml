@@ -5,6 +5,7 @@ before_install:
 before_script:
     - npm install -g bower
     - cd ./WebContent/resources/app; bower update;
+    - ./get_seroUtils.sh
 language: java
 jdk:
     - openjdk8
