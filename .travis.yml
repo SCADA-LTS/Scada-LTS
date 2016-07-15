@@ -8,7 +8,7 @@ before_script:
     - cd ../../..
 language: java
 jdk:
-    - oraclejdk8
+    - openjdk7
 script: ant war
 branches:
   only:
