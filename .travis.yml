@@ -1,13 +1,14 @@
 before_install: 
     - sudo apt-get install tomcat7
-    - sudo apt-get install nodejs
-    - sudo apt-get install npm
 before_script:
     - npm install -g bower
     - chmod +x ./get_seroUtils.sh
     - ./get_seroUtils.sh
     - cd ./WebContent/resources/app; bower update;
     - cd ../../..
+    - echo $CATALINA_HOME
+    - export CATALINA_HOME=/var/lib/tomcat7
+    - echo $CATALINA_HOME
 language: java
 jdk:
     - oraclejdk8
