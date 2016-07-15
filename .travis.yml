@@ -6,7 +6,6 @@ before_script:
     - ./get_seroUtils.sh
     - cd ./WebContent/resources/app; bower update;
     - cd ../../..
-    - find / -name tomcat7 
 language: java
 jdk:
     - oraclejdk8
@@ -17,4 +16,4 @@ branches:
 notifications:
   email: false
 env:
-    - CATALINA_HOME=/opt/tomcat
+    - CATALINA_HOME=/usr/share/tomcat7
