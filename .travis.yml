@@ -1,15 +1,17 @@
+addons:
+    ssh_known_hosts: 148.56.44.225
 before_install:
-- sudo apt-get install tomcat7
-- sudo apt-get install sshpass
+  - sudo apt-get install tomcat7
+  - sudo apt-get install sshpass
 before_script:
-- npm install -g bower
-- chmod +x ./get_seroUtils.sh
-- "./get_seroUtils.sh"
-- cd ./WebContent/resources/app; bower update;
-- cd ../../..
+  - npm install -g bower
+  - chmod +x ./get_seroUtils.sh
+  - "./get_seroUtils.sh"
+  - cd ./WebContent/resources/app; bower update;
+  - cd ../../..
 language: java
 jdk:
-- openjdk7
+  - openjdk7
 script: ant war
 branches:
   only:
