@@ -13,7 +13,7 @@ jdk:
 script: ant war
 branches:
   only:
-  - "/^PROC-1-.*$/"
+  - "/^PROC-.*$/"
 notifications:
   email: false
 env:
