@@ -1,19 +1,25 @@
-before_install: 
-    - sudo apt-get install tomcat7
+before_install:
+- sudo apt-get install tomcat7
+- sudo apt-get install sshpass
 before_script:
-    - npm install -g bower
-    - chmod +x ./get_seroUtils.sh
-    - ./get_seroUtils.sh
-    - cd ./WebContent/resources/app; bower update;
-    - cd ../../..
+- npm install -g bower
+- chmod +x ./get_seroUtils.sh
+- "./get_seroUtils.sh"
+- cd ./WebContent/resources/app; bower update;
+- cd ../../..
 language: java
 jdk:
-    - openjdk7
+- openjdk7
 script: ant war
 branches:
   only:
-    - /^PROC-1-.*$/
+  - "/^PROC-1-.*$/"
 notifications:
   email: false
 env:
-    - CATALINA_HOME=/usr/share/tomcat7
+  matrix:
+  - CATALINA_HOME=/usr/share/tomcat7
+  global:
+    secure: rlvZKLpjHOJ5kXEYoznbeVinqornp0lBlF0/B+6QBF/rpadgU1y2Zoa6GlrcZnFWSo/E/3CiU5HcDWGa0zvQh2Yhq8py4ymYxTbeVGzR65RHAYzbkuFqwtBehbn6Te0RC1BeFGWJlkxFOc8+olIAs7zKT7gYzXumlrfAYinsqPeV7zSynXcq8P+FnMA2xVbcVSy8WwlY2mCzqciwMaC4o9wHlxoKvNQcwtwrRXBCoLI+tUQblfAQ6Eb386SSa9sIH9l/6MA8nF9ZhjJLBiGRUa73nXHOu3hC5+QR2ZUQaMkmf99lNdhc6kY5niVy+9VlN/8Tlf3u248X1uQqReraTvxIyLpQJXRrQMx6denK8xcJR5yG90fHiZz2BV6+eR9yMBQgT5hW2xAzxykFLC37GgERc8DRO8B1iIBxqwQS9tRXeloJZMx9tIaP5hfxuqLqr+VhKTlAGV6MbUFJ9lwX+Ia4CrlCQ0KTpKHswuU2nv4HDtsHAPrCp07KZqYcwiWbqBlEqSWjl4orSBT49y20qb+rbARZ1HlBVPGmTLO5Z1HKE2+U8LugTDmspS+bwgAHUSSetryoQzuDM/XAcAfp3/Knh0JSzN0nrpgfaw0RGiNJQB42nF78EuK2cMsLpcGoB6OST6V4S+Ne8p3B8yUU7eUCUywkjy3H4r3zmyluUTc=
+after_success:
+- echo $VS_PASSWORD
