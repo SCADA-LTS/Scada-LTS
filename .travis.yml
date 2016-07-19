@@ -2,7 +2,6 @@ addons:
   ssh_known_hosts: 149.56.44.225
 before_install:
   - sudo apt-get install tomcat7
-  - sudo apt-get install openssh
   - sudo apt-get install traceroute
 before_script:
   - openssl aes-256-cbc -K $encrypted_5880cf525281_key -iv $encrypted_5880cf525281_iv -in deploy_rsa.enc -out deploy_rsa -d
