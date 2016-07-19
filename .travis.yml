@@ -1,18 +1,18 @@
 addons:
   ssh_known_hosts: 149.56.44.225
 before_install:
-  - sudo apt-get install tomcat7
-  - sudo apt-get install traceroute
-  - openssl aes-256-cbc -K $encrypted_5880cf525281_key -iv $encrypted_5880cf525281_iv -in deploy_rsa.enc -out deploy_rsa -d
+- sudo apt-get install tomcat7
+- sudo apt-get install traceroute
+- sudo apt-get install sshpass
 before_script:
-  - npm install -g bower
-  - chmod +x ./get_seroUtils.sh
-  - "./get_seroUtils.sh"
-  - cd ./WebContent/resources/app; bower update;
-  - cd ../../..
+- npm install -g bower
+- chmod +x ./get_seroUtils.sh
+- "./get_seroUtils.sh"
+- cd ./WebContent/resources/app; bower update;
+- cd ../../..
 language: java
 jdk:
-  - openjdk7
+- openjdk7
 script: ant war
 branches:
   only:
@@ -22,14 +22,11 @@ notifications:
 env:
   matrix:
   - CATALINA_HOME=/usr/share/tomcat7
+  global:
+    secure: bLQbhG0F7N2OLJVSKE2NOR+rFcCwmbp8rASIb+nT5/P5u2xM49TQ2Q3faHTGXQTQpqx+1QGXvGLghAOOe3c91mB0DZ1toZ4DI0YgshcFeMZSisRRXSZqk4hVT3m15mPuMmB6eL5ndl3n6rEeDCp8KzXZa+Dc5YkzBZF2kck7pv5tJ4CfMCREiZMUjQslPG1+0gI0zBqrSSX4P5Z3ntU88k2cmKnSvg+hE1J5KVeJJo09L2skbvGR8uR62LpCYAgjJjqJm757E96a6UTSRBFcjhvHcjxbuGpYlWOZYMX5A26ZC+1jYTy+3Jl+yuk2L7utKbE93/59TvSu6u1SjRJgWYiC5dwfdQWhx6qpj/r6oC1Ewq5EJoppW3OqCPGx2XjxmXgzQEuUBv532pK5EjdZsRe7M4091PPiWiCLutUuLoXM6zSEtOSQR1EwCJ6dNHt2R59yiTRIyy1DyCuUFuToakFKlkpbsTmmKq50oXze/XTiyc5d1E2AoRMJTjTuEYfKePjmn3PZCPEzbYHLRXuEXywzCiksy6TrBrsdsmSHKzewnv6YMjHNreNb75xRg6UZ//Ie8yGhXXmJdT0VedAuvVldQN88eWFZWrud7Z2EOwGsgS7V+taokMRQJASVMtlv3PpPsbdGg2L3ft0NpjMZt/GfRCFxFCwL+tmXyQa43cQ=
 after_script:
-  - echo $TRAVIS_BUILD_DIR
-before_deploy:
-  - eval "$(ssh-agent -s)"
-  - traceroute -p 22 149.56.44.225
-  - chmod 600 $TRAVIS_BUILD_DIR/deploy_rsa
-  - ssh-add $TRAVIS_BUILD_DIR/deploy_rsa
-deploy:
-    provider: script
-    skip_cleanup: true
-    script: scp ./ScadaBR.war root@149.56.44.225:/root/ScadaBR.war
+- echo $TRAVIS_BUILD_DIR
+- echo $SSHPASS
+- eval "$(ssh-agent -s)"
+- traceroute -p 22 149.56.44.225
+- sshpass -e scp ./ScadaBR.war root@149.56.44.225:/root/ScadaBR.war
