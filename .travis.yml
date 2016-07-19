@@ -17,6 +17,7 @@ script: ant war
 branches:
   only:
   - "/^PROC-.*$/"
+  - "/^develop-sdtabilit.*$/"
 notifications:
   email: false
 env:
