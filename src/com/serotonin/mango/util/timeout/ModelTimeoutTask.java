@@ -27,7 +27,7 @@ public class ModelTimeoutTask<T> extends TimerTask {
     }
 
     @Override
-    protected void run(long runtime) {
+    public void run(long runtime) {
         client.scheduleTimeout(model, runtime);
     }
 }

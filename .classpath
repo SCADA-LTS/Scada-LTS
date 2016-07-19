@@ -6,12 +6,7 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
 		<attributes>
-			<attribute name="owner.project.facets" value="jst.web;#system#"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
+			<attribute name="owner.project.facets" value="#system#;jst.web"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activation.jar"/>
@@ -86,8 +81,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/rts.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/RXTXcomm.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/saaj.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/serotonin-timer.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/seroUtils.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-1.5.11.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-log4j12-1.5.11.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/SNMP4J.jar"/>
@@ -111,5 +104,12 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xfire-aegis-1.2.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xfire-core-1.2.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_71">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/serotonin-timer.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/seroUtils.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

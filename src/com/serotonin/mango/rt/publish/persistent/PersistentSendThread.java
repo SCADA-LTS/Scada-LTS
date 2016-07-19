@@ -383,7 +383,7 @@ class PersistentSendThread extends SendThread {
         }
 
         @Override
-        protected void run(long runtime) {
+        public void run(long runtime) {
             startSync();
         }
     }

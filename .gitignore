@@ -57,3 +57,8 @@ local.properties
 .cproject
 # PDT-specific
 .buildpath
+# seroUtils.jar
+seroUtils.jar
+*deploy_rsa
+*deploy_rsa.pub
+*.exe
