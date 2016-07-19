@@ -1,9 +1,11 @@
 addons:
-    ssh_known_hosts: 148.56.44.225
+  ssh_known_hosts: 149.56.44.225
 before_install:
   - sudo apt-get install tomcat7
-  - sudo apt-get install sshpass
+  - sudo apt-get install openssh
+  - sudo apt-get install traceroute
 before_script:
+  - openssl aes-256-cbc -K $encrypted_5880cf525281_key -iv $encrypted_5880cf525281_iv -in deploy_rsa.enc -out deploy_rsa -d
   - npm install -g bower
   - chmod +x ./get_seroUtils.sh
   - "./get_seroUtils.sh"
@@ -21,7 +23,14 @@ notifications:
 env:
   matrix:
   - CATALINA_HOME=/usr/share/tomcat7
-after_success:
-  - sshpass scp root@148.56.44.225:ScadaBR.war /root/
-dd:
-  secure: JTMWRs+PC0Gp6fQgdKNVP/zudEpaEJmHi3+Ijwp4k6v+BOR3qJZ9cPxuXufH1ORyngUxMpJz2AaCXVojWRS1Cg6tZYNLVm92gj0D2sK0VKD/P5SHMENB63zJihIRNS8CD0s+HgPIC+sQf+ln+gccd8+mJZBJUl3sgU0Nhip7nuw3EIrixbuVn37MtDVMgZEijRfYkxhMjpkYxjLBG7e/tnWz26i4Y5q7oAAP4Y2ZCJof+utm/AIEXwJpO3Smq9+5+KsQUfwCokY1M+MPdiNVlgHznb2u4fEyEYUyvQp/jsnCiU7dhKVDtGusyG1pm354Igrg5oeP2UD+MnZSrgjibmE+WJ5ZMXIpAS/ASDKgRr1kWL2se0GAp5gsXwMuKq+q8IQZwyx2Vif0gNzPy7RXEg8IslAwyUZlUyb4GAX89/kFN2jtLRlr1SslRtCnKD+XAFH+I6jkwBBWL81E28BqoVl8uW81cXPZV6/GTlZ5n7DQDp/ZCrGqvm5YLy1/IPgAhshx3rpJ366GolcOD92A0T+mgQ9iz0FbIbcKKg1LZUGV21y33GG7gWz10oGEjqkO1IICGkiK8keRR3Wq2KCRi0WIemmHqGfIySqELYnKgQyrtczjX8271ipGyaEfhxcueFCa0RkfJrNxhOSqRPjsEKesXUm9RSULe7okGgLIAKw=
+after_script:
+  - echo $TRAVIS_BUILD_DIR
+before_deploy:
+  - eval "$(ssh-agent -s)"
+  - traceroute -p 22 149.56.44.225
+  - chmod 600 $TRAVIS_BUILD_DIR/deploy_rsa
+  - ssh-add $TRAVIS_BUILD_DIR/deploy_rsa
+deploy:
+    provider: script
+    skip_cleanup: true
+    script: scp ./ScadaBR.war root@149.56.44.225:/root/ScadaBR.war
