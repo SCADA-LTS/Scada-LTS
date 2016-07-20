@@ -44,7 +44,7 @@ public class EventDetectorsDAO {
 	private final static String  COLUMN_NAME_ALIAS = "alias";
 	private final static String  COLUMN_NAME_DETECTOR_TYPE = "detectorType";
 	private final static String  COLUMN_NAME_ALARM_LEVEL = "alarmLevel";
-	//private final static String  COLUMN_NAME_STATE_LIMIT = "stateLimit";
+	private final static String  COLUMN_NAME_STATE_LIMIT = "stateLimit";
 	private final static String  COLUMN_NAME_DURATION = "duration";
 	private final static String  COLUMN_NAME_DURATION_TYPE = "durationType";
 	private final static String  COLUMN_NAME_BINARY_STATE = "binaryState";
@@ -62,7 +62,7 @@ public class EventDetectorsDAO {
 				+ "alias, "
 				+ "detectorType, "
 				+ "alarmLevel, "
-		//		+ "stateLimit, "
+				+ "stateLimit, "
 				+ "duration, "
 				+ "durationType, "
 				+ "binaryState,   "
@@ -92,7 +92,7 @@ public class EventDetectorsDAO {
 					eventDetector.setAlias(rs.getString(COLUMN_NAME_ALIAS));
 					eventDetector.setDetectorType(rs.getInt(COLUMN_NAME_DETECTOR_TYPE));
 					eventDetector.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
-					//eventDetector.setStateLimit
+					eventDetector.setLimit(rs.getDouble(COLUMN_NAME_STATE_LIMIT));
 					eventDetector.setDuration(rs.getInt(COLUMN_NAME_DURATION));
 					eventDetector.setDurationType(rs.getInt(COLUMN_NAME_DURATION_TYPE));
 					eventDetector.setBinaryState(rs.getBoolean(COLUMN_NAME_BINARY_STATE));
