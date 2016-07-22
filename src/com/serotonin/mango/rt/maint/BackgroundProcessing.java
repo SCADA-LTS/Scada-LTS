@@ -89,7 +89,7 @@ public class BackgroundProcessing implements ILifecycle {
 	}
 
 	public void initialize() {
-		mediumPriorityService = new ThreadPoolExecutor(3, 30, 60L,
+		mediumPriorityService = new ThreadPoolExecutor(3, 100, 60L,
 				TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		mediumPriorityService.allowCoreThreadTimeOut(true);
 		lowPriorityService = Executors.newSingleThreadExecutor();
