@@ -43,7 +43,7 @@
     		float: left;
     		background: #2fb34a;
     		margin: 0 5px;
-    		height: 21px;
+    		height: 37px;
     		width: 1px;
 		}
 		#mainHeader {
@@ -55,6 +55,19 @@
 		}
 		.logo {
 			margin: 5px;
+		}
+		
+		.margin_nav {
+  			margin-top: 5px;
+  			line-height:20px;
+  			margin-bottom: 5px;
+  			
+		}
+		.nav-pills > li > a {
+    		line-height: 1px;
+    		margin-right: 2px;
+    		padding-left: 12px;
+    		padding-right: 12px;
 		}
 
 </style>
@@ -82,105 +95,108 @@
 		 	</tr>
 		</table>
 	</div>
+	
 	<div class="row">
 		<div class="col-md-12">
-  			<div class="btn-group menu">
-  				<a href="watch_list.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.watchlists.tooltip"/> /><img src="images/eye.png"/></a>
-  				<c:if test="${!empty sessionUser}">
-    				<a href="views.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.graphicalviews.tooltip"/>><img src="images/icon_view.png" ></a>
-    				<a href="events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.alarms.tooltip"/>><img src="images/flag_white.png" ></a>
-    				<a href="reports.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.reports.tooltip"/>><img src="images/report.png" ></a>            
-          			<c:if test="${sessionUser.dataSourcePermission}">
-          			    <span class="btn-separator"></span>
-            			<a href="event_handlers.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.event_handlers.tooltip"/>><img src="images/cog.png"/></a>
-            			<a href="data_sources.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.data_source.tooltip"/>><img src="images/icon_ds.png"/></a>
-            			<a href="scheduled_events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.scheduled_events.tooltip"/>><img src="images/clock.png"/></a>
-            			<a href="compound_events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.compound_event_detectors.tooltip"/>><img src="images/multi_bell.png"/></a>
-            			<a href="point_links.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.point_links.tooltip"/>><img src="images/link.png"/></a>
-            			<a href="scripting.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.scripting.tooltip"/>><img src="images/script_gear.png"/></a>
-            			<span class="btn-separator"></span>
-          			</c:if>
-          			<a href="users.shtm" data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.users.tooltip"/>><img src="images/user.png"/></a>
-          			<c:if test="${sessionUser.admin}">
-	        			<a href="usersProfiles.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.users_profiles.tooltip"/>><img src="images/user_ds.png"/></a>
-            			<a href="pointHierarchySLTS" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.point_hierarchy.tooltip"/>><img src="images/folder_brick.png"/></a>
-            			<a href="mailing_lists.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.mailing_lists.tooltip"/>><img src="images/book.png"/></a>
-            			<a href="publishers.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.publishers.tooltip"/>><img src="images/transmit.png"/></a>
-            			<a href="maintenance_events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.maintenance_events.tooltip"/>><img src="images/hammer.png"/></a>
-            			<a href="system_settings.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.system_setings.tooltip"/>><img src="images/application_form.png"/></a>
-            			<a href="emport.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.import_export.tooltip"/>><img src="images/script_code.png"/></a>
-            			<a href="sql.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.sql.tooltip"/>><img src="images/script.png"/></a>
-            			<span class="btn-separator"></span>
-          			</c:if>
+		    <nav>
+		    	<ul class="nav nav-pills margin_nav">
+		    		<c:if test="${!empty sessionUser}">
+		    		
+		    			<li role="presentation"><a href="watch_list.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.watchlists.tooltip"/>'><img src="resources/app/menu_icons/eye.png" ></a></li>
+  						<li role="presentation"><a href="views.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.graphicalviews.tooltip"/>'><img src="resources/app/menu_icons/icon_view.png" ></a></li>
+  						<li role="presentation"><a href="events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.alarms.tooltip"/>'><img src="resources/app/menu_icons/flag_white.png" ></a></li>	
+  						<li role="presentation"><a href="reports.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.reports.tooltip"/>'><img src="resources/app/menu_icons/report.png" ></a></li>
+  						
+  						<c:if test="${sessionUser.dataSourcePermission}">
+          			    	<span class="btn-separator"></span>
+            				<li role="presentation"><a href="event_handlers.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.event_handlers.tooltip"/>'><img src="resources/app/menu_icons/cog.png"/></a></li>
+            				<li role="presentation"><a href="data_sources.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.data_source.tooltip"/>'><img src="resources/app/menu_icons/icon_ds.png"/></a></li>
+            				<li role="presentation"><a href="scheduled_events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.scheduled_events.tooltip"/>'><img src="resources/app/menu_icons/clock.png"/></a></li>
+            				<li role="presentation"><a href="compound_events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.compound_event_detectors.tooltip"/>'><img src="resources/app/menu_icons/multi_bell.png"/></a></li>
+            				<li role="presentation"><a href="point_links.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_links.tooltip"/>'><img src="resources/app/menu_icons/link.png"/></a></li>
+            				<li role="presentation"><a href="scripting.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.scripting.tooltip"/>'><img src="resources/app/menu_icons/script_gear.png"/></a></li>
+            				<span class="btn-separator"></span>
+          				</c:if>
+          				
+          				<li role="presentation"><a href="users.shtm" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.users.tooltip"/>'><img src="resources/app/menu_icons/user.png"/></a></li>
+          				<c:if test="${sessionUser.admin}">
+	        				<li role="presentation"><a href="usersProfiles.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.users_profiles.tooltip"/>'><img src="resources/app/menu_icons/user_ds.png"/></a></li>
+            				<li role="presentation" class="active"><a href="pointHierarchySLTS" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.tooltip"/>'><img src="resources/app/menu_icons/folder_brick.png"/></a></li>
+            				<li role="presentation"><a href="mailing_lists.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.mailing_lists.tooltip"/>'><img src="resources/app/menu_icons/book.png"/></a></li>
+            				<li role="presentation"><a href="publishers.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.publishers.tooltip"/>'><img src="resources/app/menu_icons/transmit.png"/></a></li>
+            				<li role="presentation"><a href="maintenance_events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.maintenance_events.tooltip"/>'><img src="resources/app/menu_icons/hammer.png"/></a></li>
+            				<li role="presentation"><a href="system_settings.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.system_setings.tooltip"/>'><img src="resources/app/menu_icons/application_form.png"/></a></li>
+            				<li role="presentation"><a href="emport.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.import_export.tooltip"/>'><img src="resources/app/menu_icons/script_code.png"/></a></li>
+            				<li role="presentation"><a href="sql.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.sql.tooltip"/>'><img src="resources/app/menu_icons/script.png"/></a></li>
+            				<span class="btn-separator"></span>
+          				</c:if>
           			
-          			<a href="logout.htm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.logout.tooltip"/>><img src="images/control_stop_blue.png"></a>
-          			<a href="help.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.help.tooltip"/>><img src="images/help.png"></a>
-        		</c:if>
-        		<c:if test="${empty sessionUser}">
-          			<a href="login.htm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title=<fmt:message key="menu.login.tooltip"/>><img src="images/control_play_blue.png"></a>
-        		</c:if>
-        	</div>
-        	<div class="btn-group pull-right menu">
-				<button class="btn dropdown-toggle btn-xs" data-toggle="dropdown">
-					<img src="images/world.png" alt="" title="Change language" >
-					<span class="caret"/>
-				</button>
-				<ul class="dropdown-menu dropdown-menu-right">
- 			    		<li><a onclick="setLocale('de')">Deutsch</a></li>
-               		<li><a onclick="setLocale('ru')">Руссиан</a></li>
-             			<li><a onclick="setLocale('fi')">Suomi</a></li>
-           			<li><a onclick="setLocale('pt')">Português</a></li>
-           			<li><a onclick="setLocale('en')">English</a></li>
-             			<li><a onclick="setLocale('lu')">Luxembourgeois</a></li>
-					<li><a onclick="setLocale('fr')">Francais</a></li>
-					<li><a onclick="setLocale('zh')">中文</a></li>
-					<li><a onclick="setLocale('nl')">Nederlands</a></li>
-					<li><a onclick="setLocale('es')">Español</a></li>
- 				</ul>
-  			</div>
-          	<div class="btn-group pull-right menu">
-            	<c:if test="${!empty sessionUser}">
+          				<li role="presentation"><a href="logout.htm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.logout.tooltip"/>'><img src="resources/app/menu_icons/control_stop_blue.png"></a></li>
+          				<li role="presentation"><a href="help.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.help.tooltip"/>'><img src="resources/app/menu_icons/help.png"></a></li>
+		    		</c:if>
+        			<c:if test="${empty sessionUser}">
+          				<li role="presentation"><a href="login.htm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.login.tooltip"/>'><img src="resources/app/menu_icons/control_play_blue.png"></a></li>
+        			</c:if>
+        			<div class="btn-group pull-right menu">
+						<button class="btn dropdown-toggle btn-xs" data-toggle="dropdown" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.change_language.tooltip"/>'>
+							<img src="resources/app/menu_icons/world.png" alt="" >
+							<span class="caret"/>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right">
+ 			    			<li><a onclick="setLocale('de')">Deutsch</a></li>
+               				<li><a onclick="setLocale('ru')">Руссиан</a></li>
+             				<li><a onclick="setLocale('fi')">Suomi</a></li>
+           					<li><a onclick="setLocale('pt')">Português</a></li>
+           					<li><a onclick="setLocale('en')">English</a></li>
+             				<li><a onclick="setLocale('lu')">Luxembourgeois</a></li>
+							<li><a onclick="setLocale('fr')">Francais</a></li>
+							<li><a onclick="setLocale('zh')">中文</a></li>
+							<li><a onclick="setLocale('nl')">Nederlands</a></li>
+							<li><a onclick="setLocale('es')">Español</a></li>
+ 						</ul>
+  					</div>
+  					<div class="btn-group pull-right menu">
+            			<c:if test="${!empty sessionUser}">
+            				<a href="" class="btn btn-xs"><span><fmt:message key="header.user"/>: <b>${sessionUser.username}</b></mark></span></a>
             	  
-            		<a href="" class="btn btn-xs"><span><fmt:message key="header.user"/>: <b>${sessionUser.username}</b></mark></span></a>
-            	  
-            		<!-- TODO REST MiscDwr.toggleUserMuted(setUserMuted)
-            			<img id="userMutedImg" class="ptr" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')" border="0" src="images/sound_none.png" title="Mute" alt="Mute" style="display: inline;">
-            		-->
-            		<!-- TODO goHomeUrl()
-            			<img src="images/house.png" alt="" title="Go to my default page" class="ptr" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')" border="0">
-            		-->
-            		<!-- TODO setHomeUrl()
-            			<img src="images/house_link.png" alt="" title="Make this my default page" class="ptr" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')" border="0">
-            		-->
-          		</c:if>
-          	</div>
-          	
+            			<!-- TODO REST MiscDwr.toggleUserMuted(setUserMuted)
+            				<img id="userMutedImg" class="ptr" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')" border="0" src="images/sound_none.png" title="Mute" alt="Mute" style="display: inline;">
+            			-->
+            			<!-- TODO goHomeUrl()
+            				<img src="images/house.png" alt="" title="Go to my default page" class="ptr" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')" border="0">
+            			-->
+            			<!-- TODO setHomeUrl()
+            				<img src="images/house_link.png" alt="" title="Make this my default page" class="ptr" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')" border="0">
+            			-->
+          				</c:if>
+          			</div>
+				</ul>
+		    </nav>          	
 		  </div>
-		</div>
 	</div>
 
-  <div class="row">
+  	<div class="row">
 		<div class="col-md-12">
   			<c:if test="${!empty sessionUser}">
-  				<div class="panel panel-default" style="margin:10px">
+  				<div class="panel panel-default" >
 					<div class="panel-heading help">
-						<b><fmt:message key="pointHierarchySLTS.pointHierarchy"/></b> <span class="glyphicon glyphicon-question-sign"></span> <span class="label label-danger">preview version of the view</span>
+						<b><fmt:message key="pointHierarchySLTS.pointHierarchy"/></b> <span class="glyphicon glyphicon-question-sign"></span> <span class="label label-warning">rc version of the view</span>
 	     			</div>
 	     			<div class="menu panel-heading help">
 						<div class="btn-group">
-			  				<button id="addNode" class="btn btn-success">
+			  				<button id="addNode" class="btn btn-success" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.add.tooltip"/>'>
 			    				<span class="glyphicon glyphicon-plus"></span>
 			  				</button>
-			  				<button id="editNode" class="btn btn-warning">
+			  				<button id="editNode" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.edit.tooltip"/>'>
 			    				<span class="glyphicon glyphicon-pencil"></span>
 			  				</button>
-			  				<button  id="deleteNode" class="btn btn-danger">
+			  				<button  id="deleteNode" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.delete.tooltip"/>'>
 			    				<span class="glyphicon glyphicon-minus"></span>
 			  				</button>
-			  				<button id="reloadNode" class="btn btn-primary">
+			  				<button id="reloadNode" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.refresh.tooltip"/>'>
 			    				<span class="glyphicon glyphicon-refresh"></span>
 			  				</button>
-			  				<button id="infoNode" class="btn btn-primary">
+			  				<button id="infoNode" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.info.tooltip"/>'>
 			    				<span class="glyphicon glyphicon-info-sign"></span>
 			  				</button>
 						</div>
@@ -413,8 +429,11 @@ var messages = {
     	$("button#addNode").click(()=>{
     		BootstrapDialog.show({
  		      title: messages.folder,
+ 		      onshown: function(dialog) {
+ 		    	 dialog.getModalBody().find('input').focus();
+ 		      },
  		      message: function(dialog) {
- 		        var $content = $('<div>'+messages.title+': <input type="text" class="form-control"></div>');
+ 		        var $content = $('<div>'+messages.title+': <input type="text" class="form-control" maxlength="100"></div>');
  		        dialog.setType(BootstrapDialog.TYPE_SUCCESS);
  		        return $content;
  		      },
@@ -483,7 +502,7 @@ var messages = {
                     });
     				return;
     			} else {
-    				if (nodeActivate.isFolder()) {
+    				if ( (nodeActivate != undefined) && (nodeActivate.isFolder()) ) {
 		 		      BootstrapDialog.show({
 				       title: messages.removeFolder +':'+nodeActivate.title,
 				       message: function(dialog) {
@@ -610,7 +629,7 @@ var messages = {
     	   }
 		});
     	$("button#editNode").click(()=>{
-    		if (!nodeActivate.isFolder()) {
+    		if ( (nodeActivate != undefined) && (!nodeActivate.isFolder())) {
     			BootstrapDialog.show({
                     type: BootstrapDialog.TYPE_WARNING,
                     title: messages.warning,
@@ -623,11 +642,14 @@ var messages = {
                     }]
                 });  
     			return;
-    		} else if (nodeActivate != undefined && nodeActivate.isFolder() ) {
+    		} else if ( (nodeActivate != undefined) && (nodeActivate.isFolder()) ) {
  		      BootstrapDialog.show({
 		       title: messages.editFolder+':'+nodeActivate.title,
+		       onshown: function(dialog) {
+	 		    	 dialog.getModalBody().find('input').focus();
+	 		   },
 		       message: function(dialog) {
-		          var $content = $('<div>'+messages.titleEdit+': <input type="text" class="form-control" value="'+nodeActivate.title+'"><ul><li>'+messages.key+':'+nodeActivate.key+'</li></ul></div>');
+		          var $content = $('<div>'+messages.titleEdit+': <input type="text" class="form-control" value="'+nodeActivate.title+'" maxlength="100"><ul><li>'+messages.key+':'+nodeActivate.key+'</li></ul></div>');
 		          dialog.setType(BootstrapDialog.TYPE_WARNING);
 		          return $content;
 		       },
