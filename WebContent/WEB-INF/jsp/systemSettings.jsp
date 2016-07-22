@@ -742,7 +742,7 @@
   <div class="borderDiv marB marR" style="clear:left;float:left">
     <table>
     <tr>
-      <td>ScadaLU: #Major.#Minor.#Release.#Build </td>
+      <td>ScadaLTS: #Major.#Minor.#Release.#Build </td>
     </tr>
     </table>
   </div>
