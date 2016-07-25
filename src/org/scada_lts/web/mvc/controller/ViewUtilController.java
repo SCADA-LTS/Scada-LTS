@@ -17,6 +17,7 @@
  */
 package org.scada_lts.web.mvc.controller;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.config.ScadaConfig;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,6 +55,28 @@ public class ViewUtilController {
 		localeResolver.setLocale(request, response,  (Locale) localeEditor.getValue());
 		
 		return "true";
+	}
+	
+	@RequestMapping(value = "/viewutil/pathToLogo", method = RequestMethod.GET)
+	public @ResponseBody String getPathToCustomLogo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		LOG.debug("/viewutil/customlogo");
+		String customLogo=ScadaConfig.getInstance().getProperty(ScadaConfig.PATH_TO_CUSTOM_LOGO);
+		if (customLogo != null) {
+			return customLogo;
+		} else {
+			return ScadaConfig.VALUE_DEFAULT_PATH_TO_LOGO;
+		}
+	}
+	
+	@RequestMapping(value = "/viewutil/pathToCommonsCSS", method = RequestMethod.GET)
+	public @ResponseBody String getPathToCustomCSS(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		LOG.debug("/viewutil/customlogo");
+		String customLogo=ScadaConfig.getInstance().getProperty(ScadaConfig.PATH_TO_CUSTOM_CSS);
+		if (customLogo != null) {
+			return customLogo;
+		} else {
+			return ScadaConfig.VALUE_DEFAULT_PATH_TO_CSS;
+		}
 	}
 
 }

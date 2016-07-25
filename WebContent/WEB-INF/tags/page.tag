@@ -79,6 +79,59 @@
   <c:if test="${!simple}">
     <script type="text/javascript" src="resources/header.js"></script>
     <script type="text/javascript">
+    
+	    function loadjscssfile(filename, filetype){
+			if (filetype=="js"){ //if filename is a external JavaScript file
+	    		var fileref=document.createElement('script')
+	    		fileref.setAttribute("type","text/javascript")
+	    		fileref.setAttribute("src", filename)
+			} else if (filetype=="css"){ //if filename is an external CSS file
+	    		var fileref=document.createElement("link")
+	    		fileref.setAttribute("rel", "stylesheet")
+	    		fileref.setAttribute("type", "text/css")
+	    		fileref.setAttribute("href", filename)
+			}
+			if (typeof fileref!="undefined")
+	    		document.getElementsByTagName("head")[0].appendChild(fileref)
+		};
+	    jQuery((function () {
+	    	
+	    	
+			var pathArray = location.href.split( '/' );
+		  	var protocol = pathArray[0];
+		  	var host = pathArray[2];
+		  	var port = location.port;
+		   	var appScada = pathArray[3];
+		  	var url = protocol + '//' + host;
+		  	var myLocation;
+		  	if (!myLocation) {
+		   		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
+		  	}
+		  	jQuery.ajax({
+		            type: "GET",
+		        	url:myLocation+'/viewutil/pathToLogo', 
+		        	success: function(msg){
+		        		console.log(msg);
+		        		jQuery("#logo").attr("src", msg);
+		        	},
+		        	error: function(XMLHttpRequest, textStatus, errorThrown) {
+		        		jQuery("#logo").attr("src", 'builder/assets/images/logos/SCADA-LTS.png'); 
+		        	}
+		    });
+		  	jQuery.ajax({
+		            type: "GET",
+		        	url:myLocation+'/viewutil/pathToCommonsCSS', 
+		        	success: function(msg){
+		        		console.log(msg);
+		        		loadjscssfile(msg,"css"); 
+		        		
+		        	},
+		        	error: function(XMLHttpRequest, textStatus, errorThrown) {
+		        		loadjscssfile('/resources/common.css','css');
+		        	}
+		    });
+		}));
+    
       dwr.util.setEscapeHtml(false);
       <c:if test="${!empty sessionUser}">
         dojo.addOnLoad(mango.header.onLoad);

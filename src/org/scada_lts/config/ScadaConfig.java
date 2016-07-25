@@ -75,11 +75,32 @@ public class ScadaConfig {
 	 */
 	public static final String CRONE_UPDATE_CACHE_POINT_HIERARCHY = "abilit.CRONE_UPDATE_CACHE_POINT_HIERARCHY";
 	
+	/**
+	 * Uploads personalized logo in views.
+	 */
+	public static final String PATH_TO_CUSTOM_LOGO = "scadalts.custom_logo";
+	
+	/**
+	 * Default value path to image logo scada-lts
+	 */
+	public static final String VALUE_DEFAULT_PATH_TO_LOGO = "builder/assets/images/logos/SCADA-LTS.png";
+	
+	
+	/**
+	 * Upload personalized CSS in views.
+	 */
+	public static final String PATH_TO_CUSTOM_CSS = "scadalts.custom_css";
+	
+	/**
+	 * Default value path to common.css
+	 */
+	public static final String VALUE_DEFAULT_PATH_TO_CSS="/resources/common.css";
+	
+	
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
 	private static ScadaConfig instance = null;
 	private Properties conf;
 	
-
 	public static ScadaConfig getInstance() throws IOException {
 		if (instance == null) {
 			instance = new ScadaConfig();
