@@ -62,3 +62,5 @@ seroUtils.jar
 *deploy_rsa
 *deploy_rsa.pub
 *.exe
+*client*.png
+*client*.css

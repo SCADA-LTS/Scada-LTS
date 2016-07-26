@@ -78,7 +78,7 @@
 	<div class="row">
 		 <table width="100%" cellspacing="0" cellpadding="0" border="0" id="mainHeader">
 		 	<tr>
-		   	<td><img class="logo" src="builder/assets/images/logos/SCADA-LTS.png" alt="Logo"/></td>
+		   	<td><img id="logo" class="logo" src="" alt="Logo"/></td>
 		   	<c:if test="${!simple}">
 		     		<td align="center" width="99%" id="eventsRow">
 		       		<a href="events.shtm">
@@ -284,6 +284,24 @@ var messages = {
 	var nodeActivate;
 	var nodeDragAndDrop;
 	var newNode;
+	
+	function loadjscssfile(filename, filetype){
+		if (filetype=="js"){ //if filename is a external JavaScript file
+    		var fileref=document.createElement('script')
+    		fileref.setAttribute("type","text/javascript")
+    		fileref.setAttribute("src", filename)
+		} else if (filetype=="css"){ //if filename is an external CSS file
+    		var fileref=document.createElement("link")
+    		fileref.setAttribute("rel", "stylesheet")
+    		fileref.setAttribute("type", "text/css")
+    		fileref.setAttribute("href", filename)
+		}
+		if (typeof fileref!="undefined")
+    		document.getElementsByTagName("head")[0].appendChild(fileref)
+	};
+    
+	
+	
     $(function () {
     	$('[data-toggle="tooltip"]').tooltip();
     	
@@ -297,6 +315,30 @@ var messages = {
         if (!myLocation) {
      	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
         }
+        
+      	$.ajax({
+            type: "GET",
+        	url:myLocation+'/viewutil/pathToLogo', 
+        	success: function(msg){
+        		$("#logo").attr("src", msg);
+        	},
+        	error: function(XMLHttpRequest, textStatus, errorThrown) {
+        		$("#logo").attr("src", 'builder/assets/images/logos/SCADA-LTS.png'); 
+        	}
+    	});
+  		$.ajax({
+            type: "GET",
+        	url:myLocation+'/viewutil/pathToCommonsCSSForNewViews', 
+        	success: function(msg){
+        		if (msg.length>0) {
+        			loadjscssfile(msg,"css");
+        		}
+        	},
+        	error: function(XMLHttpRequest, textStatus, errorThrown) {
+        		//not loaded additional css
+        	}
+    	});
+
     	var getParentId = function(node) {
     		if (node != undefined) {
       		  var parentId=0;

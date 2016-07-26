@@ -38,7 +38,6 @@
   	if (!myLocation) {
    		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
   	}
-  	console.log(myLocation);
     function executeScript(){
     	var xid = jQuery("#xid");
     	// saveScript() nie zdarzy zapisac !!! 
