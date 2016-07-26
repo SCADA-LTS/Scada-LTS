@@ -156,7 +156,7 @@
 <body>
 <table width="100%" cellspacing="0" cellpadding="0" border="0" id="mainHeader">
   <tr>
-    <td><img src="builder/assets/images/logos/SCADA-LTS.png" alt="Logo"/></td>
+    <td><img id="logo" src="builder/assets/images/logos/SCADA-LTS.png" alt="Logo"/></td>
     <c:if test="${!simple}">
       <td align="center" width="99%" id="eventsRow">
         <a href="events.shtm">

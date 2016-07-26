@@ -320,21 +320,22 @@ var messages = {
             type: "GET",
         	url:myLocation+'/viewutil/pathToLogo', 
         	success: function(msg){
-        		jQuery("#logo").attr("src", msg);
+        		$("#logo").attr("src", msg);
         	},
         	error: function(XMLHttpRequest, textStatus, errorThrown) {
-        		jQuery("#logo").attr("src", 'builder/assets/images/logos/SCADA-LTS.png'); 
+        		$("#logo").attr("src", 'builder/assets/images/logos/SCADA-LTS.png'); 
         	}
     	});
   		$.ajax({
             type: "GET",
-        	url:myLocation+'/viewutil/pathToCommonsCSS', 
+        	url:myLocation+'/viewutil/pathToCommonsCSSForNewViews', 
         	success: function(msg){
-        		loadjscssfile(msg,"css"); 
-        		
+        		if (msg.length>0) {
+        			loadjscssfile(msg,"css");
+        		}
         	},
         	error: function(XMLHttpRequest, textStatus, errorThrown) {
-        		loadjscssfile('/resources/common.css','css');
+        		//not loaded additional css
         	}
     	});
 

@@ -58,24 +58,50 @@ public class ViewUtilController {
 	}
 	
 	@RequestMapping(value = "/viewutil/pathToLogo", method = RequestMethod.GET)
-	public @ResponseBody String getPathToCustomLogo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public @ResponseBody String getPathToCustomLogo(HttpServletRequest request, HttpServletResponse response) {
 		LOG.debug("/viewutil/customlogo");
-		String customLogo=ScadaConfig.getInstance().getProperty(ScadaConfig.PATH_TO_CUSTOM_LOGO);
-		if (customLogo != null) {
-			return customLogo;
+		String pathToLogo;
+		try {
+			pathToLogo=ScadaConfig.getInstance().getProperty(ScadaConfig.PATH_TO_CUSTOM_LOGO);
+		} catch (IOException e) {
+			return ScadaConfig.VALUE_DEFAULT_PATH_TO_LOGO;
+		}
+		if (pathToLogo != null) {
+			return pathToLogo;
 		} else {
 			return ScadaConfig.VALUE_DEFAULT_PATH_TO_LOGO;
 		}
 	}
 	
 	@RequestMapping(value = "/viewutil/pathToCommonsCSS", method = RequestMethod.GET)
-	public @ResponseBody String getPathToCustomCSS(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public @ResponseBody String getPathToCustomCSS(HttpServletRequest request, HttpServletResponse response) {
 		LOG.debug("/viewutil/customlogo");
-		String customLogo=ScadaConfig.getInstance().getProperty(ScadaConfig.PATH_TO_CUSTOM_CSS);
-		if (customLogo != null) {
-			return customLogo;
+		String pathToCommonsCSS;
+		try {
+			pathToCommonsCSS=ScadaConfig.getInstance().getProperty(ScadaConfig.PATH_TO_CUSTOM_CSS);
+		} catch (IOException e) {
+			return ScadaConfig.VALUE_DEFAULT_PATH_TO_CSS;
+		}
+		if (pathToCommonsCSS != null) {
+			return pathToCommonsCSS;
 		} else {
 			return ScadaConfig.VALUE_DEFAULT_PATH_TO_CSS;
+		}
+	}
+	
+	@RequestMapping(value = "/viewutil/pathToCommonsCSSForNewViews", method = RequestMethod.GET)
+	public @ResponseBody String getPathToCustomCSSForNew(HttpServletRequest request, HttpServletResponse response) {
+		String pathToCommonsCSSForNewViews;
+		LOG.debug("/viewutil/pathToCommonsCSSForNewViews");
+		try {
+			pathToCommonsCSSForNewViews=ScadaConfig.getInstance().getProperty(ScadaConfig.PATH_TO_CUSTOM_CSS_FOR_NEW_VIEWS);
+		} catch (IOException e) {
+			return ScadaConfig.VALUE_DEFAULT_PATH_TO_CSS_FOR_NEW_VIEWS;
+		}
+		if (pathToCommonsCSSForNewViews != null) {
+			return pathToCommonsCSSForNewViews;
+		} else {
+			return ScadaConfig.VALUE_DEFAULT_PATH_TO_CSS_FOR_NEW_VIEWS;
 		}
 	}
 

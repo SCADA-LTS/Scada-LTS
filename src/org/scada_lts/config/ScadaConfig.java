@@ -96,6 +96,16 @@ public class ScadaConfig {
 	 */
 	public static final String VALUE_DEFAULT_PATH_TO_CSS="/resources/common.css";
 	
+	/**
+	 * Upload personalized CSS in new views of scada-lts (*LTS.jsp).
+	 */
+	public static final String PATH_TO_CUSTOM_CSS_FOR_NEW_VIEWS = "scadalts.custom_css_for_new_views";
+	
+	/**
+	 * Default value path to common.css  for new views of scada-lts (*LTS.jsp).
+	 */
+	public static final String VALUE_DEFAULT_PATH_TO_CSS_FOR_NEW_VIEWS="";
+	
 	
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
 	private static ScadaConfig instance = null;
