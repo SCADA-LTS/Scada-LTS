@@ -43,7 +43,7 @@
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
-  <link href="resources/common.css" type="text/css" rel="stylesheet"/>
+  <link href="assets/common.css" type="text/css" rel="stylesheet"/>
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
@@ -94,43 +94,6 @@
 			if (typeof fileref!="undefined")
 	    		document.getElementsByTagName("head")[0].appendChild(fileref)
 		};
-	    jQuery((function () {
-	    	
-	    	
-			var pathArray = location.href.split( '/' );
-		  	var protocol = pathArray[0];
-		  	var host = pathArray[2];
-		  	var port = location.port;
-		   	var appScada = pathArray[3];
-		  	var url = protocol + '//' + host;
-		  	var myLocation;
-		  	if (!myLocation) {
-		   		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
-		  	}
-		  	jQuery.ajax({
-		            type: "GET",
-		        	url:myLocation+'/viewutil/pathToLogo', 
-		        	success: function(msg){
-		        		console.log(msg);
-		        		jQuery("#logo").attr("src", msg);
-		        	},
-		        	error: function(XMLHttpRequest, textStatus, errorThrown) {
-		        		jQuery("#logo").attr("src", 'builder/assets/images/logos/SCADA-LTS.png'); 
-		        	}
-		    });
-		  	jQuery.ajax({
-		            type: "GET",
-		        	url:myLocation+'/viewutil/pathToCommonsCSS', 
-		        	success: function(msg){
-		        		console.log(msg);
-		        		loadjscssfile(msg,"css"); 
-		        		
-		        	},
-		        	error: function(XMLHttpRequest, textStatus, errorThrown) {
-		        		loadjscssfile('/resources/common.css','css');
-		        	}
-		    });
-		}));
     
       dwr.util.setEscapeHtml(false);
       <c:if test="${!empty sessionUser}">
@@ -156,7 +119,7 @@
 <body>
 <table width="100%" cellspacing="0" cellpadding="0" border="0" id="mainHeader">
   <tr>
-    <td><img id="logo" src="builder/assets/images/logos/SCADA-LTS.png" alt="Logo"/></td>
+    <td><img id="logo" src="assets/logo.png" alt="Logo"/></td>
     <c:if test="${!simple}">
       <td align="center" width="99%" id="eventsRow">
         <a href="events.shtm">

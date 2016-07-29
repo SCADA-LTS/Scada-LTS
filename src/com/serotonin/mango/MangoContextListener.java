@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
 import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
 
 import br.org.scadabr.api.utils.APIUtils;
@@ -85,12 +86,14 @@ public class MangoContextListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent evt) {
 		log.info("Mango context starting");
-
+		
 		// Get a handle on the context.
 		ServletContext ctx = evt.getServletContext();
 
 		// Create the common reference to the context
 		Common.ctx = new ContextWrapper(ctx);
+		
+		new MangoScadaConfig().init();
 
 		// Initialize the timer
 		Common.timer.init(new ThreadPoolExecutor(0, 1000, 30L,

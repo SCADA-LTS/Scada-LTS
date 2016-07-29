@@ -17,8 +17,11 @@
  */
 package org.scada_lts.config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -75,40 +78,14 @@ public class ScadaConfig {
 	 */
 	public static final String CRONE_UPDATE_CACHE_POINT_HIERARCHY = "abilit.CRONE_UPDATE_CACHE_POINT_HIERARCHY";
 	
-	/**
-	 * Uploads personalized logo in views.
-	 */
-	public static final String PATH_TO_CUSTOM_LOGO = "scadalts.custom_logo";
-	
-	/**
-	 * Default value path to image logo scada-lts
-	 */
-	public static final String VALUE_DEFAULT_PATH_TO_LOGO = "builder/assets/images/logos/SCADA-LTS.png";
-	
-	
-	/**
-	 * Upload personalized CSS in views.
-	 */
-	public static final String PATH_TO_CUSTOM_CSS = "scadalts.custom_css";
-	
-	/**
-	 * Default value path to common.css
-	 */
-	public static final String VALUE_DEFAULT_PATH_TO_CSS="/resources/common.css";
-	
-	/**
-	 * Upload personalized CSS in new views of scada-lts (*LTS.jsp).
-	 */
-	public static final String PATH_TO_CUSTOM_CSS_FOR_NEW_VIEWS = "scadalts.custom_css_for_new_views";
-	
-	/**
-	 * Default value path to common.css  for new views of scada-lts (*LTS.jsp).
-	 */
-	public static final String VALUE_DEFAULT_PATH_TO_CSS_FOR_NEW_VIEWS="";
-	
-	
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
+	private static final String FILE_NAME_LOGO="logo.png";
+	private static final String FILE_NAME_PROPERTIES="env.properties";
+	private static final String FILE_NAME_CUSTOM_CSS="common.css";
+	private static final String DIR_NAME_CUSTOM_CONFIG="assets";
+	
 	private static ScadaConfig instance = null;
+	
 	private Properties conf;
 	
 	public static ScadaConfig getInstance() throws IOException {
@@ -171,6 +148,45 @@ public class ScadaConfig {
 		return result;
 	}
 	
+	public static boolean isExistCustomLogo() {
+		File f = new File(getPathCustomConfig()+FILE_NAME_LOGO);
+		return (f.exists()) && (!f.isDirectory()); 
+	}
+	
+	public static boolean isExistCustomCSS() {
+		File f = new File(getPathCustomConfig()+FILE_NAME_CUSTOM_CSS);
+		return (f.exists()) && (!f.isDirectory());
+	}
+	
+	public static boolean isExistCustomEnvProperties() {
+		File f = new File(getPathCustomConfig()+FILE_NAME_PROPERTIES);
+		return (f.exists()) && (!f.isDirectory());
+	}
+	
+	public static void copyLogo() {
+		try {
+			Files.copy(Paths.get(getPathExistingLogo()), Paths.get(getPathCustomConfig()+FILE_NAME_LOGO));
+		} catch (IOException e) {
+			LOG.error(e);
+		}
+	}
+	
+	public static void copyCSS() {
+		try {
+			Files.copy(Paths.get(getPathExistingCSS()), Paths.get(getPathCustomConfig()+FILE_NAME_CUSTOM_CSS));
+		} catch (IOException e) {
+			LOG.error(e);
+		}
+	}
+	
+	public static void copyConfig() {
+		try {
+			Files.copy(Paths.get(getPathConfigFile() + System.getProperty("file.separator") + "env.properties"), Paths.get(getPathCustomConfig()+FILE_NAME_PROPERTIES));
+		} catch (IOException e) {
+			LOG.error(e);
+		}
+	}
+	
 	private ScadaConfig() {
 		try {
 		  conf = new Properties();
@@ -193,6 +209,48 @@ public class ScadaConfig {
 			path = path + "/" + "WEB-INF" + "/" + "classes" + "/";
 		}
 		return path;
+	}
+	
+	private static String getPathExistingLogo() {
+		String fileSeparator = System.getProperty("file.separator");
+		String path = Common.ctx.getServletContext().getRealPath("");
+
+		if (fileSeparator.equals("\\")) {
+			path = path + "\\builder\\assets\\images\\logos\\SCADA-LTS.png";
+		}
+		if (fileSeparator.equals("/")) {
+			path = path + "/builder/assets/images/logos/SCADA-LTS.png";
+		}
+		return path;
+	}
+	
+	private static String getPathExistingCSS() {
+		String fileSeparator = System.getProperty("file.separator");
+		String path = Common.ctx.getServletContext().getRealPath("");
+
+		if (fileSeparator.equals("\\")) {
+			path = path + "\\resources\\common.css";
+		}
+		if (fileSeparator.equals("/")) {
+			path = path + "/resources/common.css";
+		}
+		return path;
+	}
+	
+	private static String getPathCustomConfig() {
+		
+		String fileSeparator = System.getProperty("file.separator");
+		String path = Common.ctx.getServletContext().getRealPath("");
+
+		if (fileSeparator.equals("\\")) {
+			path = path + "\\" + DIR_NAME_CUSTOM_CONFIG + "\\";
+		}
+		if (fileSeparator.equals("/")) {
+			path = path + "/" + DIR_NAME_CUSTOM_CONFIG + "/";
+		}
+		return path;
+
+		
 	}
 
 	
