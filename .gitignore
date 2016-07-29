@@ -51,6 +51,9 @@ local.properties
 # External tool builders
 .externalToolBuilders/
 /WebContent/resources/app/bower_components
+/WebContent/assets/logo.png
+/WebContent/assets/evn.properties
+/WebContent/assets/commons.css
 # Locally stored "Eclipse launch configurations"
 *.launch
 # CDT-specific
@@ -64,3 +67,4 @@ seroUtils.jar
 *.exe
 *client*.png
 *client*.css
+*.vpp
