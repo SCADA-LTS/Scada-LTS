@@ -24,7 +24,16 @@ public class SqlForm {
     private String sqlString;
     private List<String> headers;
     private List<List<Object>> data;
-    private int updateResult = -1;
+    private String error;
+
+	private int updateResult = -1;
+    
+    public SqlForm () {
+    	this.sqlString = "";
+    }
+    public SqlForm (String sqlString){
+    	this.sqlString = sqlString;
+    }
 
     public List<List<Object>> getData() {
         return data;
@@ -57,4 +66,11 @@ public class SqlForm {
     public void setUpdateResult(int updateResult) {
         this.updateResult = updateResult;
     }
+    
+    public String getError() {
+		return error;
+	}
+	public void setError(String error) {
+		this.error = error;
+	}
 }

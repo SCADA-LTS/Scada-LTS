@@ -42,7 +42,7 @@
                 <td><textarea id="sqlString" name="sqlString" rows="8" cols="80">${status.value}</textarea></td>
               </tr>
               <tr>
-                <td colspan="2" class="formError">${status.errorMessage}</td>
+                <c:if test="${form.error != null}"><td colspan="2" class="formError">${form.error}</td></c:if>
               </tr>
             </spring:bind>
             
