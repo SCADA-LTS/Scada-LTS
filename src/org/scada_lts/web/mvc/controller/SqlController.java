@@ -50,13 +50,12 @@ import com.serotonin.mango.web.mvc.form.SqlForm;
 import com.serotonin.util.SerializationHelper;
 
 /**
- * Controller for SQL tab.
- * Based on SqlController by Mango.
+ * Controller for SQL tab
+ * Based on SqlController from Mango
  * 
  * @author Marcin Gołda
  */
 @Controller
-@RequestScoped
 public class SqlController {
 	
 	private static final Log LOG = LogFactory.getLog(SqlController.class);
@@ -64,13 +63,15 @@ public class SqlController {
 	@RequestMapping(value = "/sql.shtm", method = RequestMethod.GET)
 	protected ModelAndView doGet(HttpServletRequest request)
 			throws Exception {
-	
+		LOG.trace("/pointHierarchySLTS");
+		
 		Permissions.ensureAdmin(request);
 		return createModelAndView(new SqlForm());
 	}
 	
 	@RequestMapping(value = "/sql.shtm", method = RequestMethod.POST)
 	protected ModelAndView doPost(HttpServletRequest request, HttpServletResponse response){
+		LOG.trace("/sql.html");
 		Permissions.ensureAdmin(request);
 		
 		final SqlForm form = new SqlForm(request.getParameter("sqlString"));

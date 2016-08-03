@@ -26,11 +26,12 @@ public class SqlForm {
     private List<List<Object>> data;
     private String error;
 
-	private int updateResult = -1;
+    private int updateResult = -1;
     
     public SqlForm () {
     	this.sqlString = "";
     }
+    
     public SqlForm (String sqlString){
     	this.sqlString = sqlString;
     }
