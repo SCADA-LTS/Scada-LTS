@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.guice.RequestScoped;
 import org.scada_lts.web.mvc.form.SqlForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,14 +55,15 @@ import com.serotonin.util.SerializationHelper;
  * @author Marcin Gołda
  */
 @Controller
+@RequestMapping("/sql.shtm") 
 public class SqlController {
 	
 	private static final Log LOG = LogFactory.getLog(SqlController.class);
 
-	@RequestMapping(value = "/sql.shtm", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView createForm(HttpServletRequest request)
 			throws Exception {
-		LOG.trace("/pointHierarchySLTS");
+		LOG.trace("/sql.html");
 		
 		Permissions.ensureAdmin(request);
 		
@@ -72,7 +72,7 @@ public class SqlController {
 		return new ModelAndView("sql", model);
 	}
 	
-	@RequestMapping(value = "/sql.shtm", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView executeSQL(HttpServletRequest request, HttpServletResponse response){
 		LOG.trace("/sql.html");
 		Permissions.ensureAdmin(request);
