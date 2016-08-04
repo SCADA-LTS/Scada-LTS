@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.guice.RequestScoped;
+import org.scada_lts.web.mvc.form.SqlForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,12 +47,11 @@ import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.mvc.form.SqlForm;
 import com.serotonin.util.SerializationHelper;
 
 /**
  * Controller for SQL tab
- * Based on SqlController from Mango
+ * Based on SqlController from Mango by Matthew Lohbihler
  * 
  * @author Marcin Gołda
  */
@@ -61,26 +61,25 @@ public class SqlController {
 	private static final Log LOG = LogFactory.getLog(SqlController.class);
 
 	@RequestMapping(value = "/sql.shtm", method = RequestMethod.GET)
-	protected ModelAndView doGet(HttpServletRequest request)
+	protected ModelAndView createForm(HttpServletRequest request)
 			throws Exception {
 		LOG.trace("/pointHierarchySLTS");
 		
 		Permissions.ensureAdmin(request);
-		return createModelAndView(new SqlForm());
+		
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("form", new SqlForm());
+		return new ModelAndView("sql", model);
 	}
 	
 	@RequestMapping(value = "/sql.shtm", method = RequestMethod.POST)
-	protected ModelAndView doPost(HttpServletRequest request, HttpServletResponse response){
+	protected ModelAndView executeSQL(HttpServletRequest request, HttpServletResponse response){
 		LOG.trace("/sql.html");
 		Permissions.ensureAdmin(request);
 		
 		final SqlForm form = new SqlForm(request.getParameter("sqlString"));
 		executeCommand(form, request);
 
-		return createModelAndView(form);
-	}
-	
-	private ModelAndView createModelAndView(SqlForm form){
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("form", form);
 		return new ModelAndView("sql", model);
