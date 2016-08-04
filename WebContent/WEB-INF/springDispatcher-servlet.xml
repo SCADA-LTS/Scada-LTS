@@ -55,7 +55,6 @@
         <prop key="/reportChart.shtm">reportChartController</prop>
         <prop key="/scheduled_events.shtm">scheduledEventsController</prop>
         <prop key="/scripting.shtm">scriptingController</prop>
-        <prop key="/sql.shtm">sqlController</prop>
         <prop key="/system_settings.shtm">systemSettingsController</prop>
         <prop key="/users.shtm">usersController</prop>
         <prop key="/usersProfiles.shtm">usersProfilesController</prop>
@@ -205,12 +204,6 @@
   
   <bean id="scriptingController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>scripting</value></property>
-  </bean>
-
-  <bean id="sqlController" class="com.serotonin.mango.web.mvc.controller.SqlController">
-    <property name="commandName"><value>form</value></property>
-    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.SqlForm</value></property>
-    <property name="formView"><value>sql</value></property>
   </bean>
   
   <bean id="systemSettingsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
