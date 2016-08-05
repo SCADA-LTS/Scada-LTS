@@ -254,14 +254,6 @@
     <servlet-name>imageValue</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.ImageValueServlet</servlet-class>
   </servlet>
-  <!-- Rose disable gb: 2015/04/11 -->
-  <!-- 
-  <servlet> 
-    <servlet-name>RoseServlet</servlet-name>
-    <servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
-  </servlet>
-  -->
-  
   <servlet-mapping>
     <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.htm</url-pattern>

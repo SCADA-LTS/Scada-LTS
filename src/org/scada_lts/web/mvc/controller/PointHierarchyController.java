@@ -203,4 +203,42 @@ public class PointHierarchyController {
 			return "";
 		}
 	}
+	
+	@RequestMapping(value = "/pointHierarchy/find/{search}", method = RequestMethod.GET)
+	public @ResponseBody String find(@PathVariable("search") String search, HttpServletRequest request) throws Exception {
+		LOG.info("/pointHierarchy/find/{search} search:"+search);
+		User user = Common.getUser(request);
+		if (user.isAdmin()) {
+			List<PointHierarchyNode> lst = phService.search(search);
+			String json = "";
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				json = mapper.writeValueAsString(lst);
+			} catch (JsonProcessingException e) {
+				LOG.error(e);
+			}
+			return json;
+		} else {
+			return "";
+		}
+	}
+	
+	@RequestMapping(value = "/pointHierarchy/paths/{key}", method = RequestMethod.GET)
+	public @ResponseBody String find(@PathVariable("key") Integer key, HttpServletRequest request) throws Exception {
+		LOG.info("/pointHierarchy/paths/{key} key:"+key);
+		User user = Common.getUser(request);
+		if (user.isAdmin()) {
+			List<String> lst = phService.getPaths(key);
+			String json = "";
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				json = mapper.writeValueAsString(lst);
+			} catch (JsonProcessingException e) {
+				LOG.error(e);
+			}
+			return json;
+		} else {
+			return "";
+		}
+	}
 }

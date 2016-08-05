@@ -18,6 +18,8 @@
 
 package org.scada_lts.service;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
@@ -118,6 +120,25 @@ public class PointHierarchyService {
 		  }
 		}
 	   return res;
+	}
+	
+	/**
+	 * Search
+	 * @param key
+	 * @throws Exception 
+	 */
+	public List<PointHierarchyNode> search(String search) throws Exception {
+		return PointHierarchyCache.getInstance().getOnBaseName(search);	
+	}
+	
+	/**
+	 * Get paths 
+	 * @param key
+	 * @return
+	 * @throws Exception
+	 */
+	public List<String> getPaths(int key) throws Exception {
+		return PointHierarchyCache.getInstance().getPaths(key);
 	}
 	
 	/**

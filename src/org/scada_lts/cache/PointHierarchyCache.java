@@ -135,7 +135,7 @@ public class PointHierarchyCache {
 				return p;
 			}
 		}
-		return null;
+		return null; 
 	}
 	
 	public int checkIsAdded(PointHierarchyNode phn) {
@@ -156,7 +156,6 @@ public class PointHierarchyCache {
 		checkAndRootFolder();
 		
 		if (cache.get(phn.getParentId())!=null) {
-			// TODO sprawdzenie czy nie jestem juz dodany
 			if ( checkIsAdded(phn)<0) {
 				cache.get(phn.getParentId()).add(phn);
 				if (cache.get(phn.getKey())==null){
@@ -164,9 +163,6 @@ public class PointHierarchyCache {
 					cache.put(phn.getKey(),lst);
 				}
 			} 
-			//else {
-			//	throw new Exception("alredy added");
-			//}
 		} else {
 			checkAndCorrectOrphanedPointHierarchy(phn);
 			addFolder(phn);
@@ -212,6 +208,49 @@ public class PointHierarchyCache {
 		return cache.get(parentId);
 	}
 	
+	/**
+	 * Get hit for search hierarchi name or point name
+	 * @param name
+	 * @return
+	 */
+	public List<PointHierarchyNode> getOnBaseName(String name) {
+		
+		List<PointHierarchyNode> result = new ArrayList<PointHierarchyNode>();
+		for (Map.Entry<Integer, List<PointHierarchyNode>> entry : cache.entrySet()) {
+			List<PointHierarchyNode> list = entry.getValue();
+			for (PointHierarchyNode node : list) {
+				if (node.getTitle().toUpperCase().contains(name.toUpperCase())) {
+					result.add(node);
+				}
+			}
+		}
+		return result;
+	}
+	
+	private PointHierarchyNode search(int key){	
+		for (Map.Entry<Integer, List<PointHierarchyNode>> entry : cache.entrySet()) {
+			List<PointHierarchyNode> list = entry.getValue();
+			for (PointHierarchyNode node : list) {
+				if (node.getKey() == key) {
+					return node;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public List<String> getPaths(int key) {
+		PointHierarchyNode phn = null;
+		List<String> result = new ArrayList<String>();
+		do {
+		  phn = search(key);
+		  result.add(phn.getTitle());
+		} while ( 
+				(phn != null) &&
+				(phn.getParentId() != 0)); 
+		return result;
+	}
+	
 	public void deleteFolder(int parentId, int key) throws Exception {
 		if (LOG.isTraceEnabled()) {
 			  LOG.trace("before delete folder parentId:"+parentId+" key:"+key);
@@ -240,8 +279,7 @@ public class PointHierarchyCache {
 		  for(PointHierarchyNode p: cache.get(key)) {
 			p.setParentId(0);
 			cache.get(0).add(p);
-			//TODO put jesli jsest folder
-			}
+		  }
 		  cache.remove(key);
 	    }
 		if (LOG.isTraceEnabled()) {
@@ -358,7 +396,7 @@ public class PointHierarchyCache {
 			   List<PointHierarchyNode> children = new ArrayList<PointHierarchyNode>();
 			   cache.put(newParentId, children);
 		   }
-		   cache.get(newParentId).add(toMove); // nie ma w elementu trzeciego dziwne
+		   cache.get(newParentId).add(toMove);
 		   cache.get(oldParendId).remove(toMove);
 		 }
 		
