@@ -40,7 +40,6 @@
         <prop key="/event_handlers.shtm">eventHandlersController</prop>
         <prop key="/events.shtm">eventsController</prop>
         <prop key="/help.shtm">helpController</prop>
-        <prop key="/login.htm">loginController</prop>
         <prop key="/logout.htm">logoutController</prop>
         <prop key="/mailing_lists.shtm">mailingListsController</prop>
         <prop key="/maintenance_events.shtm">maintenanceEventsController</prop>
@@ -130,15 +129,6 @@
   
   <bean id="helpController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>help</value></property>
-  </bean>
-  
-  <bean id="loginController" class="com.serotonin.mango.web.mvc.controller.LoginController">
-    <property name="commandName"><value>login</value></property>
-    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.LoginForm</value></property>
-    <property name="formView"><value>login</value></property>
-    <property name="successUrl"><value>watch_list.shtm</value></property>
-    <property name="newUserUrl"><value>help.shtm</value></property>
-    <property name="bindOnNewForm"><value>true</value></property>
   </bean>
   
   <bean id="logoutController" class="com.serotonin.mango.web.mvc.controller.LogoutController">
