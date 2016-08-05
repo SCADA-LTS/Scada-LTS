@@ -63,7 +63,7 @@ public class SqlController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView createForm(HttpServletRequest request)
 			throws Exception {
-		LOG.trace("/sql.html");
+		LOG.trace("/sql.shtm");
 		
 		Permissions.ensureAdmin(request);
 		
@@ -74,7 +74,7 @@ public class SqlController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView executeSQL(HttpServletRequest request, HttpServletResponse response){
-		LOG.trace("/sql.html");
+		LOG.trace("/sql.shtm");
 		Permissions.ensureAdmin(request);
 		
 		final SqlForm form = new SqlForm(request.getParameter("sqlString"));
