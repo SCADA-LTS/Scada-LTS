@@ -64,7 +64,6 @@
         <prop key="/export_project.htm">projectExporterController</prop>
         <prop key="/import_project.htm">projectImporterController</prop>
         <!-- Mobile user URLs -->
-        <prop key="/mobile_login.htm">mobileLoginController</prop>
         <prop key="/mobile_logout.htm">mobileLogoutController</prop>
         <prop key="/mobile_watch_list.shtm">mobileWatchListController</prop>
         
@@ -135,17 +134,8 @@
     <property name="redirectUrl"><value>login.htm</value></property>
   </bean>
   
-  <bean id="mobileLoginController" class="com.serotonin.mango.web.mvc.controller.LoginController">
-    <property name="commandName"><value>login</value></property>
-    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.LoginForm</value></property>
-    <property name="formView"><value>mobile/login</value></property>
-    <property name="mobile"><value>true</value></property>
-    <property name="successUrl"><value>mobile_watch_list.shtm</value></property>
-    <property name="bindOnNewForm"><value>true</value></property>
-  </bean>
-  
   <bean id="mobileLogoutController" class="com.serotonin.mango.web.mvc.controller.LogoutController">
-    <property name="redirectUrl"><value>mobile_login.htm</value></property>
+    <property name="redirectUrl"><value>login.htm</value></property>
   </bean>
   
   <bean id="mobileWatchListController" class="com.serotonin.mango.web.mvc.controller.MobileWatchListController">

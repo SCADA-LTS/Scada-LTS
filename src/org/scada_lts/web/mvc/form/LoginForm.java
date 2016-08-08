@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.serotonin.mango.web.mvc.form;
+package org.scada_lts.web.mvc.form;
 
 public class LoginForm {
     private String username;

@@ -1,16 +1,14 @@
 package org.scada_lts.web.mvc.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.scada_lts.web.mvc.form.LoginForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +20,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.integration.CrowdUtils;
-import com.serotonin.mango.web.mvc.form.LoginForm;
 import com.serotonin.util.StringUtils;
-import com.serotonin.util.ValidationUtils;
 
 @Controller
 @RequestMapping("/login.htm") 
