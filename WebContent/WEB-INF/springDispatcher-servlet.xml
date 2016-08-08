@@ -33,7 +33,7 @@
         <!-- All user URLs -->
         <prop key="/compound_events.shtm">compoundEventsController</prop>
         <prop key="/data_point_details.shtm">dataPointDetailsController</prop>
-        <prop key="/data_point_edit.shtm">dataPointEditController</prop>
+        <!-- <prop key="/data_point_edit.shtm">dataPointEditController</prop> -->
         <prop key="/data_source_edit.shtm">dataSourceEditController</prop>
         <prop key="/data_sources.shtm">dataSourceListController</prop>
         <prop key="/emport.shtm">emportController</prop>
@@ -95,14 +95,14 @@
   <bean id="dataPointDetailsController" class="com.serotonin.mango.web.mvc.controller.DataPointDetailsController">
     <property name="viewName"><value>dataPointDetails</value></property>
   </bean>
-  
+  <!-- 
   <bean id="dataPointEditController" class="com.serotonin.mango.web.mvc.controller.DataPointEditController">
     <property name="commandName"><value>form</value></property>
     <property name="commandClass"><value>com.serotonin.mango.vo.DataPointVO</value></property>
     <property name="formView"><value>dataPointEdit</value></property>
     <property name="successView"><value>data_point_edit.shtm</value></property>
     <property name="messageCodesResolver"><ref bean="defaultMessageCodeResolver"/></property>
-  </bean>
+  </bean> -->
   
   <bean id="dataSourceEditController" class="com.serotonin.mango.web.mvc.controller.DataSourceEditController">
     <property name="viewName"><value>dataSourceEdit</value></property>
