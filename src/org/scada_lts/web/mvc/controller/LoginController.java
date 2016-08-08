@@ -24,6 +24,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.integration.CrowdUtils;
 import com.serotonin.mango.web.mvc.form.LoginForm;
 import com.serotonin.util.StringUtils;
+import com.serotonin.util.ValidationUtils;
 
 @Controller
 @RequestMapping("/login.htm") 
@@ -44,24 +45,33 @@ public class LoginController {
         
         List<String> errors = new ArrayList<>();
         
-        // Check if the user exists
-        User user = new UserDao().getUser(login.getUsername());
-        if (user == null)
-            errors.add("login.validation.noSuchUser");
-        else if (user.isDisabled())
-        	errors.add("login.validation.accountDisabled");
-        else {
-            if (CrowdUtils.isCrowdEnabled())
-                // First attempt authentication with Crowd.
-                crowdAuthenticated = CrowdUtils.authenticate(request, response, login.getUsername(),login.getPassword());
+        // Make sure there is a username
+        if (StringUtils.isEmpty(login.getUsername()))
+        	errors.add("login.validation.noUsername");
 
-            if (!crowdAuthenticated) {
-                String passwordHash = Common.encrypt(login.getPassword());
-
-                // Validating the password against the database.
-                if (!passwordHash.equals(user.getPassword()))
-                	errors.add("login.validation.invalidLogin");
-            }
+        // Make sure there is a password
+        if (StringUtils.isEmpty(login.getPassword()))
+        	errors.add("login.validation.noPassword");
+        
+        if (errors.isEmpty()){
+	        User user = new UserDao().getUser(login.getUsername());
+	        if (user == null)
+	            errors.add("login.validation.noSuchUser");
+	        else if (user.isDisabled())
+	        	errors.add("login.validation.accountDisabled");
+	        else {
+	            if (CrowdUtils.isCrowdEnabled())
+	                // First attempt authentication with Crowd.
+	                crowdAuthenticated = CrowdUtils.authenticate(request, response, login.getUsername(),login.getPassword());
+	
+	            if (!crowdAuthenticated) {
+	                String passwordHash = Common.encrypt(login.getPassword());
+	
+	                // Validating the password against the database.
+	                if (!passwordHash.equals(user.getPassword()))
+	                	errors.add("login.validation.invalidLogin");
+	            }
+	        }
         }
 
         ModelAndView mav;
