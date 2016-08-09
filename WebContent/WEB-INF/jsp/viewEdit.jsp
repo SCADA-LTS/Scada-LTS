@@ -278,7 +278,7 @@
     
   </script>
   
-  <form name="view" action="" method="post" enctype="multipart/form-data">
+  <form name="view" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
       <tr>
         <td valign="top">
