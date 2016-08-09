@@ -48,6 +48,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataPointSaveHandler;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import com.serotonin.propertyEditor.DecimalFormatEditor;
 import com.serotonin.propertyEditor.IntegerFormatEditor;
 import com.serotonin.util.StringUtils;
@@ -103,6 +104,7 @@ public class DataPointEditController {
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
+        ControllerUtils.addPointListDataToModel(user, id, model);
         model.addAttribute("form", dataPoint);
 		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
@@ -130,6 +132,7 @@ public class DataPointEditController {
         	executeUpdate(request, dataPoint, errors);
         }
         
+        ControllerUtils.addPointListDataToModel(user, dataPoint.getId(), model);
         model.addAttribute("form", dataPoint);
         model.addAttribute("error", errors);
 		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));

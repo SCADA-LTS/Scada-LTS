@@ -100,7 +100,7 @@
             <sst:option value="<%= Integer.toString(DataPointVO.LoggingTypes.ON_TS_CHANGE) %>"><fmt:message key="pointEdit.logging.type.tsChange"/></sst:option>
           </sst:select>
         </td>
-        <c:if test="${error.loggingType != null}"><td class="formError">${status.loggingType}</td></c:if>
+        <c:if test="${error.loggingType != null}"><td class="formError"><fmt:message key="${status.loggingType}"/></td></c:if>
       </tr>
     </spring:bind>
     
@@ -114,8 +114,8 @@
           </sst:select>
         </td>
         <td class="formError">
-          <c:if test="${error.intervalLoggingPeriodType != null}">${error.intervalLoggingPeriodType}<br/></c:if>
-          <c:if test="${error.intervalLoggingPeriod != null}">${error.intervalLoggingPeriod}</c:if>
+          <c:if test="${error.intervalLoggingPeriodType != null}"><fmt:message key="${error.intervalLoggingPeriodType}"/><br/></c:if>
+          <c:if test="${error.intervalLoggingPeriod != null}"><fmt:message key="${error.intervalLoggingPeriod}"/></c:if>
         </td>
       </tr>
       
@@ -130,7 +130,7 @@
               <sst:option value="<%= Integer.toString(DataPointVO.IntervalLoggingTypes.AVERAGE) %>"><fmt:message key="pointEdit.logging.valueType.average"/></sst:option>
             </sst:select>
           </td>
-          <c:if test="${error.intervalLoggingType != null}"><td class="formError">${error.intervalLoggingType}</td></c:if>
+          <c:if test="${error.intervalLoggingType != null}"><td class="formError"><fmt:message key="${error.intervalLoggingType}"/></td></c:if>
         </tr>
       </spring:bind>
     </tbody>
@@ -142,7 +142,7 @@
           <td class="formField">
             <input id="tolerance" type="text" name="tolerance" value="${status.value}" class="formShort"/>
           </td>
-          <c:if test="${error.tolerance != null}"><td class="formError">${error.tolerance}</td></c:if>
+          <c:if test="${error.tolerance != null}"><td class="formError"><fmt:message key="${error.tolerance}"/></td></c:if>
         </tr>
       </spring:bind>
     </tbody>
@@ -155,7 +155,7 @@
             <sst:checkbox id="discardExtremeValues" name="discardExtremeValues" selectedValue="${status.value}"
                     onclick="changeDiscard()"/>
           </td>
-          <c:if test="${error.discardExtremeValues != null}"><td class="formError">${error.discardExtremeValues}</td></c:if>
+          <c:if test="${error.discardExtremeValues != null}"><td class="formError"><fmt:message key="${error.discardExtremeValues}"/></td></c:if>
         </tr>
       </spring:bind>
       <spring:bind path="form.discardLowLimit">
@@ -164,7 +164,7 @@
           <td class="formField">
             <input id="discardLowLimit" type="text" name="discardLowLimit" value="${status.value}" class="formShort"/>
           </td>
-          <c:if test="${error.discardLowLimit != null}"><td class="formError">${error.discardLowLimit}</td></c:if>
+          <c:if test="${error.discardLowLimit != null}"><td class="formError"><fmt:message key="${error.discardLowLimit}"/></td></c:if>
         </tr>
       </spring:bind>
       <spring:bind path="form.discardHighLimit">
@@ -173,7 +173,7 @@
           <td class="formField">
             <input id="discardHighLimit" type="text" name="discardHighLimit" value="${status.value}" class="formShort"/>
           </td>
-          <c:if test="${error.discardHighLimit != null}"><td class="formError">${error.discardHighLimit}</td></c:if>
+          <c:if test="${error.discardHighLimit != null}"><td class="formError"><fmt:message key="${error.discardHighLimit}"/></td></c:if>
         </tr>
       </spring:bind>
     </tbody>
@@ -188,9 +188,9 @@
       </td>
       <td class="formError">
         <spring:bind path="form.purgeType">
-          <c:if test="${error.purgeType != null}"><td class="formError">${error.purgeType}</td><br/></c:if>
+          <c:if test="${error.purgeType != null}"><td class="formError"><fmt:message key="${error.purgeType}"/></td><br/></c:if>
         </spring:bind>
-        <spring:bind path="form.purgePeriod"><c:if test="${error.purgePeriod != null}"><td class="formError">${error.purgePeriod}</td></c:if></spring:bind>
+        <spring:bind path="form.purgePeriod"><c:if test="${error.purgePeriod != null}"><td class="formError"><fmt:message key="${error.purgePeriod}"/></td></c:if></spring:bind>
       </td>
     </tr>
       
@@ -201,7 +201,7 @@
           <input id="defaultCacheSize" type="text" name="defaultCacheSize" value="${status.value}" class="formShort"/>
           <input id="clearCacheBtn" type="button" value="<fmt:message key="pointEdit.logging.clearCache"/>" onclick="clearPointCache();"/>
         </td>
-         <c:if test="${error.defaultCacheSize != null}"><td class="formError">${error.defaultCacheSize}</td></c:if>
+         <c:if test="${error.defaultCacheSize != null}"><td class="formError"><fmt:message key="${error.defaultCacheSize}"/></td></c:if>
       </tr>
     </spring:bind>
   </table>
