@@ -24,22 +24,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.web.mvc.form.LoginForm;
-import org.scada_lts.web.mvc.form.SqlForm;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -54,7 +48,6 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataPointSaveHandler;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import com.serotonin.propertyEditor.DecimalFormatEditor;
 import com.serotonin.propertyEditor.IntegerFormatEditor;
 import com.serotonin.util.StringUtils;
@@ -70,23 +63,32 @@ import com.serotonin.util.StringUtils;
 public class DataPointEditController {
 	private static final Log LOG = LogFactory.getLog(LoginController.class);
 	
+	DataPointDao dataPointDao;
+	
     public static final String SUBMIT_SAVE = "save";
     public static final String SUBMIT_DISABLE = "disable";
     public static final String SUBMIT_ENABLE = "enable";
     public static final String SUBMIT_RESTART = "restart";
+    
+	@InitBinder("dataPointVO")
+	protected void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Double.TYPE, "tolerance", new DecimalFormatEditor(new DecimalFormat("#.##"), false));
+        binder.registerCustomEditor(Integer.TYPE, "purgePeriod", new IntegerFormatEditor(new DecimalFormat("#"), false));
+        binder.registerCustomEditor(Double.TYPE, "discardLowLimit", new DecimalFormatEditor(new DecimalFormat("#.##"),
+                false));
+        binder.registerCustomEditor(Double.TYPE, "discardHighLimit", new DecimalFormatEditor(new DecimalFormat("#.##"),
+                false));
+	}
 	
 	@RequestMapping(method = RequestMethod.GET)
-    public ModelAndView creatForm(HttpServletRequest request) {
+	public String showForm(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-        DataPointVO dataPoint;
+		
         User user = Common.getUser(request);
+        dataPointDao = new DataPointDao();
         int id;
-        DataPointDao dataPointDao = new DataPointDao();
-
-        // Get the id.
         String idStr = request.getParameter("dpid");
         if (idStr == null) {
-            // Check for pedid (point event detector id)
             String pedStr = request.getParameter("pedid");
             if (pedStr == null)
                 throw new ShouldNeverHappenException("dpid or pedid must be provided for this page");
@@ -97,25 +99,20 @@ public class DataPointEditController {
         else
             id = Integer.parseInt(idStr);
 
-        dataPoint = dataPointDao.getDataPoint(id);
-
-        // Save the point in the user object so that DWR calls have access to it.
+        DataPointVO dataPoint = dataPointDao.getDataPoint(id);
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
-        
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("form", dataPoint);
-		model.put("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
-		model.put("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
-		model.put("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-		model.put("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-        ControllerUtils.addPointListDataToModel(Common.getUser(request), dataPoint.getId(), model);
-		return new ModelAndView("dataPointEdit", model);
-    }
+        model.addAttribute("form", dataPoint);
+		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
+		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		return "dataPointEdit";
+	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-    protected ModelAndView onSubmit(HttpServletRequest request) throws Exception {
+	public String saveDataPoint(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
 		
         User user = Common.getUser(request);
@@ -126,32 +123,55 @@ public class DataPointEditController {
         
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);
         binder.bind(request);
+        Map<String, String> errors = new HashMap<String, String>();
+        validate(dataPoint, errors);
         
-        executeUpdate(request, dataPoint, new BindException(dataPoint, "dataPoint"));
+        if (errors.isEmpty()) {
+        	executeUpdate(request, dataPoint, errors);
+        }
         
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("form", dataPoint);
-		model.put("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
-		model.put("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
-		model.put("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-		model.put("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-        ControllerUtils.addPointListDataToModel(Common.getUser(request), dataPoint.getId(), model);
-		return new ModelAndView("dataPointEdit", model);
+        model.addAttribute("form", dataPoint);
+        model.addAttribute("error", errors);
+		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
+		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		return "dataPointEdit";
 	}
 	
-	@InitBinder
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) {
-        binder.registerCustomEditor(Double.TYPE, "tolerance", new DecimalFormatEditor(new DecimalFormat("#.##"), false));
-        binder.registerCustomEditor(Integer.TYPE, "purgePeriod", new IntegerFormatEditor(new DecimalFormat("#"), false));
-        binder.registerCustomEditor(Double.TYPE, "discardLowLimit", new DecimalFormatEditor(new DecimalFormat("#.##"),
-                false));
-        binder.registerCustomEditor(Double.TYPE, "discardHighLimit", new DecimalFormatEditor(new DecimalFormat("#.##"),
-                false));
+    private void executeUpdate(HttpServletRequest request, DataPointVO point, Map<String, String> errors) {
+            RuntimeManager rtm = Common.ctx.getRuntimeManager();
+
+            if (WebUtils.hasSubmitParameter(request, SUBMIT_DISABLE)) {
+                point.setEnabled(false);
+                errors.put("status", "confirmation.pointDisabled");
+            }
+            else if (WebUtils.hasSubmitParameter(request, SUBMIT_ENABLE)) {
+                point.setEnabled(true);
+                errors.put("status", "confirmation.pointEnabled");
+            }
+            else if (WebUtils.hasSubmitParameter(request, SUBMIT_RESTART)) {
+                point.setEnabled(false);
+                rtm.saveDataPoint(point);
+                point.setEnabled(true);
+                errors.put("status", "confirmation.pointRestarted");
+            }
+            else if (WebUtils.hasSubmitParameter(request, SUBMIT_SAVE)) {
+                DataPointSaveHandler saveHandler = point.getPointLocator().getDataPointSaveHandler();
+                if (saveHandler != null)
+                    saveHandler.handleSave(point);
+
+                errors.put("status", "confirmation.pointSaved");
+            }
+            else
+                throw new ShouldNeverHappenException("Submission task name type not provided");
+
+            rtm.saveDataPoint(point);
     }
-	
-    private void executeUpdate(HttpServletRequest request, DataPointVO point, Errors errors) {
+    
+    private void validate(DataPointVO point, Map<String, String> errors){
         if (StringUtils.isEmpty(point.getName()))
-            errors.rejectValue("name", "validate.required");
+            errors.put("name", "validate.required");
 
         // Logging properties validation
         if (point.getLoggingType() != DataPointVO.LoggingTypes.ON_CHANGE
@@ -159,79 +179,49 @@ public class DataPointEditController {
                 && point.getLoggingType() != DataPointVO.LoggingTypes.NONE
                 && point.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL
                 && point.getLoggingType() != DataPointVO.LoggingTypes.ON_TS_CHANGE)
-        	errors.rejectValue("loggingType", "validate.required");
+        	errors.put("loggingType", "validate.required");
 
         if (point.getLoggingType() == DataPointVO.LoggingTypes.INTERVAL) {
             if (point.getIntervalLoggingPeriod() <= 0)
-            	errors.rejectValue("intervalLoggingPeriod", "validate.greaterThanZero");
+            	errors.put("intervalLoggingPeriod", "validate.greaterThanZero");
         }
 
         if (point.getLoggingType() == DataPointVO.LoggingTypes.ON_CHANGE
                 && point.getPointLocator().getDataTypeId() == DataTypes.NUMERIC) {
             if (point.getTolerance() < 0)
-            	errors.rejectValue("tolerance", "validate.cannotBeNegative");
+            	errors.put("tolerance", "validate.cannotBeNegative");
         }
 
         if (point.isDiscardExtremeValues() && point.getDiscardHighLimit() <= point.getDiscardLowLimit())
-        	errors.rejectValue("discardHighLimit", "validate.greaterThanDiscardLow");
+        	errors.put("discardHighLimit", "validate.greaterThanDiscardLow");
 
         if (point.getLoggingType() != DataPointVO.LoggingTypes.NONE) {
             if (point.getPurgeType() != DataPointVO.PurgeTypes.DAYS
                     && point.getPurgeType() != DataPointVO.PurgeTypes.WEEKS
                     && point.getPurgeType() != DataPointVO.PurgeTypes.MONTHS
                     && point.getPurgeType() != DataPointVO.PurgeTypes.YEARS)
-            	errors.rejectValue("purgeType", "validate.required");
+            	errors.put("purgeType", "validate.required");
 
             if (point.getPurgePeriod() <= 0)
-            	errors.rejectValue("purgePeriod", "validate.greaterThanZero");
+            	errors.put("purgePeriod", "validate.greaterThanZero");
         }
 
         if (point.getDefaultCacheSize() < 0)
-        	errors.rejectValue("defaultCacheSize", "validate.cannotBeNegative");
+        	errors.put("defaultCacheSize", "validate.cannotBeNegative");
 
         // Make sure that xids are unique
         List<String> xids = new ArrayList<String>();
         for (PointEventDetectorVO ped : point.getEventDetectors()) {
             if (StringUtils.isEmpty(ped.getXid())) {
-            	errors.reject("validate.ped.xidMissing");
+            	errors.put("status", "validate.ped.xidMissing");
                 break;
             }
 
             if (xids.contains(ped.getXid())) {
-            	errors.reject("validate.ped.xidUsed", ped.getXid());
+            	errors.put(ped.getXid(), "validate.ped.xidUsed");
                 break;
             }
             xids.add(ped.getXid());
-        }
-
-        if (!errors.hasErrors()) {
-            RuntimeManager rtm = Common.ctx.getRuntimeManager();
-
-            if (WebUtils.hasSubmitParameter(request, SUBMIT_DISABLE)) {
-                point.setEnabled(false);
-                errors.reject("confirmation.pointDisabled");
-            }
-            else if (WebUtils.hasSubmitParameter(request, SUBMIT_ENABLE)) {
-                point.setEnabled(true);
-                errors.reject("confirmation.pointEnabled");
-            }
-            else if (WebUtils.hasSubmitParameter(request, SUBMIT_RESTART)) {
-                point.setEnabled(false);
-                rtm.saveDataPoint(point);
-                point.setEnabled(true);
-                errors.reject("confirmation.pointRestarted");
-            }
-            else if (WebUtils.hasSubmitParameter(request, SUBMIT_SAVE)) {
-                DataPointSaveHandler saveHandler = point.getPointLocator().getDataPointSaveHandler();
-                if (saveHandler != null)
-                    saveHandler.handleSave(point);
-
-                errors.reject("confirmation.pointSaved");
-            }
-            else
-                throw new ShouldNeverHappenException("Submission task name type not provided");
-
-            rtm.saveDataPoint(point);
-        }
+        }		
     }
 }
