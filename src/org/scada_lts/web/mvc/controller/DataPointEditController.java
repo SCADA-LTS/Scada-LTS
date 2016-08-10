@@ -143,6 +143,7 @@ public class DataPointEditController {
 	}
 	
     private void executeUpdate(HttpServletRequest request, DataPointVO point, Map<String, String> errors) {
+    	synchronized(point){
             RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
             if (WebUtils.hasSubmitParameter(request, SUBMIT_DISABLE)) {
@@ -156,12 +157,6 @@ public class DataPointEditController {
             else if (WebUtils.hasSubmitParameter(request, SUBMIT_RESTART)) {
                 point.setEnabled(false);
                 rtm.saveDataPoint(point);
-                try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					LOG.error(e.getStackTrace());
-					Thread.currentThread().interrupt();
-				}
                 point.setEnabled(true);
                 errors.put("status", "confirmation.pointRestarted");
             }
@@ -176,6 +171,7 @@ public class DataPointEditController {
                 throw new ShouldNeverHappenException("Submission task name type not provided");
 
             rtm.saveDataPoint(point);
+    	}
     }
     
     private void validate(DataPointVO point, Map<String, String> errors){
