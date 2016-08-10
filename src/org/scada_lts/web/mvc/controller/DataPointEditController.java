@@ -156,6 +156,12 @@ public class DataPointEditController {
             else if (WebUtils.hasSubmitParameter(request, SUBMIT_RESTART)) {
                 point.setEnabled(false);
                 rtm.saveDataPoint(point);
+                try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					LOG.error(e.getStackTrace());
+					Thread.currentThread().interrupt();
+				}
                 point.setEnabled(true);
                 errors.put("status", "confirmation.pointRestarted");
             }
