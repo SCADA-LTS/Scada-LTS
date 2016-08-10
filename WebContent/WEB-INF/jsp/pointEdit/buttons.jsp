@@ -17,7 +17,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<%@page import="com.serotonin.mango.web.mvc.controller.DataPointEditController"%>
+<%@page import="org.scada_lts.web.mvc.controller.DataPointEditController"%>
 <table>
   <tr>
     <td colspan="2" align="center">
