@@ -55,6 +55,8 @@ public class PointHierarchyCache {
 	public static final int ROOT=0;
 	public static final boolean IS_FOLDER=true;
 	public static final boolean IS_NOT_FOLDER=false;
+	public static final int ELEMENTS_ON_PAGE_HINT=10;
+	
 	private static PointHierarchyCache instance = null;
 	private TreeMap<Integer, List<PointHierarchyNode>> cache = new TreeMap<Integer, List<PointHierarchyNode>>();
 	
@@ -213,25 +215,37 @@ public class PointHierarchyCache {
 	 * @param name
 	 * @return
 	 */
-	public List<PointHierarchyNode> getOnBaseName(String name) {
-		
+	public List<PointHierarchyNode> getOnBaseName(String name, int page) {
+		int count=0;
+		int offset=ELEMENTS_ON_PAGE_HINT;
+		int pageStart=(page-1)*ELEMENTS_ON_PAGE_HINT;
+		int pageEnd=pageStart+offset;
 		List<PointHierarchyNode> result = new ArrayList<PointHierarchyNode>();
 		for (Map.Entry<Integer, List<PointHierarchyNode>> entry : cache.entrySet()) {
 			List<PointHierarchyNode> list = entry.getValue();
 			for (PointHierarchyNode node : list) {
-				if (node.getTitle().toUpperCase().contains(name.toUpperCase())) {
-					result.add(node);
+				count++;
+				if (count>pageEnd) {
+					break;
+				}
+				if (node.getTitle().toUpperCase().contains(name.toUpperCase()) ) {
+					if ( (pageStart<=count) && (count<=pageEnd)) {
+						result.add(node);
+					}
 				}
 			}
+		}
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("result:"+result.toString());
 		}
 		return result;
 	}
 	
-	private PointHierarchyNode search(int key){	
+	private PointHierarchyNode search(int key, boolean isFolder ){	
 		for (Map.Entry<Integer, List<PointHierarchyNode>> entry : cache.entrySet()) {
 			List<PointHierarchyNode> list = entry.getValue();
 			for (PointHierarchyNode node : list) {
-				if (node.getKey() == key) {
+				if (node.getKey() == key && (node.isFolder()==isFolder)) {
 					return node;
 				}
 			}
@@ -239,15 +253,23 @@ public class PointHierarchyCache {
 		return null;
 	}
 	
-	public List<String> getPaths(int key) {
+	public List<PointHierarchyNode> getPaths(int key, boolean isFolder) {
 		PointHierarchyNode phn = null;
-		List<String> result = new ArrayList<String>();
+		Integer keyA = key;
+		boolean isFolderA = isFolder;
+		Boolean searchNext = true;
+		List<PointHierarchyNode> result = new ArrayList<PointHierarchyNode>();
 		do {
-		  phn = search(key);
-		  result.add(phn.getTitle());
-		} while ( 
-				(phn != null) &&
-				(phn.getParentId() != 0)); 
+		  phn = search(keyA, isFolderA);
+		  result.add(phn);
+		  searchNext = (phn != null) &&	(phn.getParentId() != 0);
+		  if (searchNext) {
+		     keyA = phn.getParentId();
+		     isFolderA=true;
+		  } else {
+			  searchNext = false;
+		  }
+		} while ( searchNext ); 
 		return result;
 	}
 	
@@ -456,7 +478,6 @@ public class PointHierarchyCache {
 	private void cacheInitialize() throws SchedulerException, IOException, ParseException {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("cacheInitialize");
-			
 		}
 		JobDetail job = new JobDetail();
 		job.setName("UpdatePointHierarchyCache");

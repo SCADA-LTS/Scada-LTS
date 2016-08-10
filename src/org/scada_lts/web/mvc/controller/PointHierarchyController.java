@@ -204,12 +204,12 @@ public class PointHierarchyController {
 		}
 	}
 	
-	@RequestMapping(value = "/pointHierarchy/find/{search}", method = RequestMethod.GET)
-	public @ResponseBody String find(@PathVariable("search") String search, HttpServletRequest request) throws Exception {
-		LOG.info("/pointHierarchy/find/{search} search:"+search);
+	@RequestMapping(value = "/pointHierarchy/find/{search}/{page}", method = RequestMethod.GET)
+	public @ResponseBody String find(@PathVariable("search") String search, @PathVariable("page") int page, HttpServletRequest request) throws Exception {
+		LOG.info("/pointHierarchy/find/{search} search:"+search+" page:"+page);
 		User user = Common.getUser(request);
 		if (user.isAdmin()) {
-			List<PointHierarchyNode> lst = phService.search(search);
+			List<PointHierarchyNode> lst = phService.search(search, page);
 			String json = "";
 			ObjectMapper mapper = new ObjectMapper();
 			try {
@@ -223,12 +223,12 @@ public class PointHierarchyController {
 		}
 	}
 	
-	@RequestMapping(value = "/pointHierarchy/paths/{key}", method = RequestMethod.GET)
-	public @ResponseBody String find(@PathVariable("key") Integer key, HttpServletRequest request) throws Exception {
-		LOG.info("/pointHierarchy/paths/{key} key:"+key);
+	@RequestMapping(value = "/pointHierarchy/paths/{key}/{isFolder}", method = RequestMethod.GET)
+	public @ResponseBody String find(@PathVariable("key") int key, @PathVariable("isFolder") boolean isFolder, @PathVariable("interval") int interval, HttpServletRequest request) throws Exception {
+		LOG.info("/pointHierarchy/paths/{key}/{isFolder} key:"+key+" isFolder:"+isFolder+" interval:"+interval);
 		User user = Common.getUser(request);
 		if (user.isAdmin()) {
-			List<String> lst = phService.getPaths(key);
+			List<PointHierarchyNode> lst = phService.getPaths(key, isFolder);
 			String json = "";
 			ObjectMapper mapper = new ObjectMapper();
 			try {

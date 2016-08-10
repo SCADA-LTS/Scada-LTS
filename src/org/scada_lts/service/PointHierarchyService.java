@@ -127,8 +127,8 @@ public class PointHierarchyService {
 	 * @param key
 	 * @throws Exception 
 	 */
-	public List<PointHierarchyNode> search(String search) throws Exception {
-		return PointHierarchyCache.getInstance().getOnBaseName(search);	
+	public List<PointHierarchyNode> search(String search, int page) throws Exception {
+		return PointHierarchyCache.getInstance().getOnBaseName(search, page);	
 	}
 	
 	/**
@@ -137,8 +137,8 @@ public class PointHierarchyService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> getPaths(int key) throws Exception {
-		return PointHierarchyCache.getInstance().getPaths(key);
+	public List<PointHierarchyNode> getPaths(int key, boolean isFolder) throws Exception {
+		return PointHierarchyCache.getInstance().getPaths(key, isFolder);
 	}
 	
 	/**

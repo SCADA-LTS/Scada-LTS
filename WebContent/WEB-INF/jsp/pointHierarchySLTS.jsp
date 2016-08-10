@@ -87,6 +87,18 @@ div#tree {
 	padding-left: 12px;
 	padding-right: 12px;
 }
+
+table {
+    font-size: 12px;
+    border-color: white;
+    
+}
+
+thead th {
+    background-color: #006DCC;
+    color: white;
+}
+
 </style>
 
 </head>
@@ -277,6 +289,7 @@ div#tree {
 							</h3>
 						</div>
 						<div class="panel-body hidden-print">
+						  <div class="col-sm-6">
 
 							<input name="query" id="query" autocorrect="off"
 								autocomplete="off" placeholder="Enter Search Phrase" type="text">
@@ -287,25 +300,30 @@ div#tree {
 
 							<div class="collapse" id="searchResultPane">
 								<table tabindex="0" id="searchResultTree"
-									class="table table-striped table-hover table-condensed table-bordered fancytree-container fancytree-ext-table">
+									class="table table-striped table-hover table-condensed table-bordered fancytree-container fancytree-ext-table ">
 									<colgroup>
-										<col width="10em">
-										<col width="10em">
 										<col width="*">
-										
+										<!--<col width="100px">-->
+										<!--<col width="100px">-->
+										<col width="100px">
 									</colgroup>
 									<thead>
 										<tr>
-											<th>Key</th>
-											<th>Folder/Point</th>
-											<th>Name</th>
+										   <th>Name</th>
+										   <!-- <th>Actions</th> -->
+										   <!-- <th>Path</th> -->
+										   <th>Folder/Point</th>
 										</tr>
 									</thead>
 									<tbody>
 										
 									</tbody>
+									
 								</table>
 							</div>
+						   </div>
+						   <div class=".col-sm-6">
+						   </div>
 						</div>
 					</div>
 					<div class="panel panel-default">
@@ -446,25 +464,48 @@ var messages = {
  	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
     }
 	
-	/*function getPaths(key){
+	/* function selectTree(key, folder) {
+    	console.log("selectTree:"+key+" folder:"+folder);
+    	 //var tree = $("#tree").fancytree("getTree");
+         //var d = tree.toDict(true);
+         //alert(JSON.stringify(d));
     	$.ajax({
             type: "GET",
         	dataType: "json",
-        	url:myLocation+"/pointHierarchy/paths/"+key, 
+        	url:myLocation+"/pointHierarchy/paths/"+key+"/"+folder, 
         	success: function(msg){
-        	  console.log(msg);
+        		var path="/";
+        		if (msg.length>0) {
+        			console.log(msg);
+        			var node=undefined;
+        			for (var i=msg.length-1;i>=0;i--) {
+        				console.log(key);
+        		    	console.log(folder);
+        		    	console.log(msg[i]);
+        		    	if (node==undefined) {
+        		    		node = $("#tree").fancytree("getTree").activateKey(""+msg[i].key);
+        		    	} else {
+        		    		node.activateKey(""+msg[i].key)
+        		    	}
+        		    	if (node.isFolder) {
+        		    		node.toggleExpanded();
+        		    	}
+        		    }
+        		}
         	},
         	error: function(XMLHttpRequest, textStatus, errorThrown) {
         	  console.log(textStatus);
         	}
         });
-    };
-	
-	function selectTree(key, folder) {
-    	console.log("selectTree:"+key+" folder:"+folder);
-    	var paths=getPaths(key);
-    	console.log(key);
     };*/
+
+    var pageGlobal=1;
+    
+    function pages(page) {
+    	console.log(page);
+    	pageGlobal=page;
+    	$("#btnSearch").click();
+    };
     
     
     $(function () {
@@ -965,43 +1006,86 @@ var messages = {
     	};
     
 	    // search
-			
-        function updateControls() {
-        	var query = $.trim($("input[name=query]").val());
-        	$("#btnResetSearch")
-        		.attr("disabled", query.length === 0);
-        	$("#btnSearch")
-        		.attr("disabled", query.length < 2);
-        };
 	    
+	    var queryGlobal="";
+	    
+	    
+        function updateControls() {
+        	var queryGlobal = $.trim($("input[name=query]").val());
+        	$("#btnResetSearch")
+        		.attr("disabled", queryGlobal.length === 0);
+        	$("#btnSearch")
+        		.attr("disabled", queryGlobal.length < 2);
+        };
+        
+        function createPagination() {
+        	$('#searchResultTree > tbody').append('<tr><td colspan="2">'+
+        			'<nav aria-label="Page navigation">'+
+      	  				'<ul class="pagination" style="margin:0px;">'+
+      	    				'<li>'+
+      	      					'<a href="#" aria-label="Previous">'+
+      	        					'<span aria-hidden="true">&laquo;</span>'+
+      	      					'</a>'+
+      	    				'</li>'+
+      	    				'<li><a onclick="pages(1)">1</a></li>'+
+      	    				'<li><a onclick="pages(2)">2</a></li>'+
+      	    				'<li><a onclick="pages(3)">3</a></li>'+
+      	    				'<li><a onclick="pages(4)">4</a></li>'+
+      	    				'<li><a onclick="pages(5)">5</a></li>'+
+      	    				'<li>'+
+      	      					'<a href="#" aria-label="Next">'+
+      	        					'<span aria-hidden="true">&raquo;</span>'+
+      	      					'</a>'+
+      	    				'</li>'+
+      	  				'</ul>'+
+      				'</nav>'+
+      			'</td></tr>');	
+        }
+        
         function setElement(element, index, array) {
         	$('#searchResultTree > tbody > tr').remove();
         	for( var i=0; i<array.length;i++) {
-        		//$('#searchResultTree > tbody').append('<tr><td><button onclick="selectTree('+array[i].key+','+array[i].folder+')" class="btn btn-success">Select</button></td><td width="100px">'+array[i].key+'</td><td width="100px">'+array[i].folder+'</td><td>'+array[i].title+'</td></tr>');
-        		$('#searchResultTree > tbody').append('<tr><td width="100px">'+array[i].key+'</td><td width="100px">'+array[i].folder+'</td><td>'+array[i].title+'</td></tr>');
+        		var folderOrPoint="";
+        		if (array[i].folder) {
+        			folderOrPoint="Folder";
+        		} else {
+        			folderOrPoint="Point";
+        		}
+        		
+        		$('#searchResultTree > tbody').append('<tr>'+
+        				'<td>'+array[i].title+'</td>'+
+        				//'<td><button onclick="selectTree('+array[i].key+','+array[i].folder+')" class="btn btn-warning btn-xs">Select</button></td>'+
+        				//'<td id="path_'+array[i].key+'_'+array[i].folder+'"></td>'+
+        				'<td>'+folderOrPoint+'</td></tr>');
         	}
         };
+        
+        
         	            
-        function search(query) {
-        	query = $.trim(query);
-        	console.log(query);
+        function search(query, page) {
+        	queryGlobal=$.trim(query);
+        	console.log(queryGlobal);
+        	console.log(page);
         	$.ajax({
 	            type: "GET",
 	        	dataType: "json",
-	        	url:myLocation+"/pointHierarchy/find/"+query, 
+	        	url:myLocation+"/pointHierarchy/find/"+queryGlobal+"/"+page, 
 	        	success: function(msg){
 	        		
-	        	  	if(msg !== undefined) {
-	        		  msg.forEach(setElement);
-	        		  $("#searchResultPane").collapse("show");
+	        	  	if(msg !== undefined ) {
+	        	  		$("#searchResultTree").addClass("busy");
+	        	  		$('#searchResultTree > tbody > tr').remove();
+	        	  		msg.forEach(setElement);
+	        	  		createPagination();
+	        	  		$("#searchResultPane").collapse("show");
 	        	  	} else {
 	        	  		$('#searchResultTree > tbody > tr').remove();
-	                	$('#searchResultTree > tbody').append('<tr><td>empty</td><td>empty</td><td></td></tr>');
+	        	  		createPagination();
 	        	  	}
 	        	},
 	        	error: function(XMLHttpRequest, textStatus, errorThrown) {
 	        		$('#searchResultTree > tbody > tr').remove();
-                	$('#searchResultTree > tbody').append('<tr><td>empty</td><td>empty</td><td></td></tr>');
+                	$('#searchResultTree > tbody').append('<tr><td>empty</td><td></td><td>empty</td></tr>');
 	        	  	console.log(textStatus);
 	        	}
 	        }); 
@@ -1009,31 +1093,34 @@ var messages = {
         	$("#searchResultTree").addClass("busy");
         };
         
+        
+        
 	    $("input[name=query]").keyup(function(e){
 	    	
-	    	var query = $.trim($(this).val()), lastQuery = $(this).data("lastQuery");
+	    	queryGlobal = $.trim($(this).val()); 
+	    	var lastQuery = $(this).data("lastQuery");
 	
-	    	if(e && e.which === $.ui.keyCode.ESCAPE || query === ""){
+	    	if(e && e.which === $.ui.keyCode.ESCAPE || queryGlobal === ""){
 	    		$("#btnResetSearch").click();
 	    		console.log("btnResetSearch");
 	    		return;
 	    	}
-	    	if(e && e.which === $.ui.keyCode.ENTER && query.length >= 2){
+	    	if(e && e.which === $.ui.keyCode.ENTER && queryGlobal.length >= 2){
 	    		$("#btnSearch").click();
 	    		console.log("btnSearch.click");
 	    		return;
 	    	}
-	    	if( query === lastQuery || query.length < 2) {
-	    		console.log("Ignored query '" + query + "'");
+	    	if( queryGlobal === lastQuery || queryGlobal.length < 2) {
+	    		console.log("Ignored query '" + queryGlobal + "'");
 	    		return;
 	    	}
 	    	
-	    	$(this).data("lastQuery", query);
+	    	$(this).data("lastQuery", queryGlobal);
 	    	
 	    	$("#btnSearch").click();
 	    	
-	    	$("#btnResetSearch").attr("disabled", query.length === 0);
-	    	$("#btnSearch").attr("disabled", query.length < 2);
+	    	$("#btnResetSearch").attr("disabled", queryGlobal.length === 0);
+	    	$("#btnSearch").attr("disabled", queryGlobal.length < 2);
 	    	
 	    }).focus();
 	    
@@ -1045,7 +1132,8 @@ var messages = {
     	});
 
     	$("#btnSearch").click(function(event){
-    		search(	$("input[name=query]").val() );
+    		console.log(pageGlobal);
+    		search(	$("input[name=query]").val(), pageGlobal );
     	}).attr("disabled", true);
 
     });
