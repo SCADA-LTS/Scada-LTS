@@ -127,9 +127,11 @@ public class LoginController {
                 LOG.debug("User object added to session");
         }
 
-        if (user.isFirstLogin())
-            return new ModelAndView("help.shtm");
-        else if (!StringUtils.isEmpty(user.getHomeUrl()))
+////    TODO: There is problem when log into new, empty db schema ("page not found") - check HelpController?  
+//        if (user.isFirstLogin())
+//            return new ModelAndView("help.shtm");
+//        else 
+        if (!StringUtils.isEmpty(user.getHomeUrl()))
             return new ModelAndView(new RedirectView(user.getHomeUrl()));
         else
         	return new ModelAndView(new RedirectView("watch_list.shtm"));
