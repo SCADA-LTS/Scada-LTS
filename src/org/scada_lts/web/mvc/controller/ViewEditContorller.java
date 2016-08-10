@@ -1,3 +1,20 @@
+/*
+ * (c) 2016 Abil'I.T. http://abilit.eu/
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
 package org.scada_lts.web.mvc.controller;
 
 
@@ -8,21 +25,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-//import javax.validation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.web.mvc.validator.ViewEditValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.Validator;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,15 +40,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.WebUtils;
 
-import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.mvc.form.ViewEditForm;
-import com.serotonin.util.ValidationUtils;
-import com.serotonin.web.dwr.DwrResponseI18n;
 
 
 
@@ -59,11 +65,11 @@ public class ViewEditContorller {
     private static final String DYNAMIC_IMAGES_ATTRIBUTE = "dynamicImages";
     
 
-    // TODO: shall be injected by Spring
+    // TODO: these two shall be injected by Spring
     private String uploadDirectory= "uploads/";
     private String successUrl = "views.shtm";
-    private int nextImageId = -1;
     
+    private int nextImageId = -1;
     
     @Autowired
     Validator validator;
@@ -75,20 +81,13 @@ public class ViewEditContorller {
     public void setUploadDirectory(String uploadDirectory) {
         this.uploadDirectory = uploadDirectory;
     }
-
-
     
-//    @InitBinder
-//    protected void initBinder(WebDataBinder binder) {
-//        binder.addValidators(new ViewEditValidator());
-//    }
     
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.GET)
     protected ModelAndView showForm(HttpServletRequest request, @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
         View view;
         User user = Common.getUser(request);
 
-        //String viewIdStr = request.getParameter("viewId");
         if (viewIdStr != null) {
             // An existing view.
             view = new ViewDao().getView(Integer.parseInt(viewIdStr));
@@ -116,6 +115,7 @@ public class ViewEditContorller {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST)
     protected ModelAndView handleImage(HttpServletRequest request, HttpServletResponse response, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form)
     throws Exception{
+        LOG.debug("ViewEditController:showForm");
         if (WebUtils.hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE)) {
             User user = Common.getUser(request);
             View view = user.getView();
@@ -144,36 +144,19 @@ public class ViewEditContorller {
         LOG.debug("ViewEditController:save");
         User user = Common.getUser(request);
         View view = user.getView();
-        LOG.info("web form: name:"+form.getView().getName());
-        LOG.info("web form: xid:"+form.getView().getXid());
-        LOG.info("web form: id:"+form.getView().getId());
-        LOG.info("web form: anony:"+form.getView().getAnonymousAccess());
         copyViewProperties(view, form.getView());
         form.setView(view);
-        LOG.info("session: name:"+view.getName());
-        LOG.info("session: xid:"+view.getXid());
-        LOG.info("session: id:"+view.getId());
         
         validator.validate(form, result);
         if(result.hasErrors())
         {
-            LOG.info("ViewEditController:save: HAS ERRORS!");
-            for( FieldError err: result.getFieldErrors()) {
-                String message = err.getDefaultMessage();
-                LOG.info("\t"+err.getField()+": "+message);
-            }
+            LOG.debug("ViewEditController:save: HAS ERRORS.");
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(FORM_OBJECT_NAME, form);
             model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
             model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
             return new ModelAndView(FORM_VIEW, model);    
-            
         }
-        
-        //new ViewEditValidator().validate(view, result);
-        //DwrResponseI18n response = new DwrResponseI18n();
-        //form.getView().validate(response);
-        //ValidationUtils.reject(bindingResult, "view.", response);
         
         view.setUserId(Common.getUser(request).getId());
         new ViewDao().saveView(view);
@@ -280,7 +263,5 @@ public class ViewEditContorller {
 
         targetView.setAnonymousAccess(sourceView.getAnonymousAccess());
         targetView.setUserId(sourceView.getUserId());
-        //targetView.setId(sourceView.getId());
-        
     }
 }

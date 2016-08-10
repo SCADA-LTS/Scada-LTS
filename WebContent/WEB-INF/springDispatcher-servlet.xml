@@ -58,7 +58,6 @@
         <prop key="/users.shtm">usersController</prop>
         <prop key="/usersProfiles.shtm">usersProfilesController</prop>
         <prop key="/views.shtm">viewsController</prop>
-<!--         <prop key="/view_edit.shtm">viewEditController</prop> -->
         <prop key="/watch_list.shtm">watchListController</prop>
         <prop key="/webcam_live_feed.htm">webcamLiveFeedController</prop>
         <prop key="/export_project.htm">projectExporterController</prop>
@@ -202,13 +201,6 @@
     <property name="viewName"><value>views</value></property>
   </bean>
   
-<!--   <bean id="viewEditController" class="com.serotonin.mango.web.mvc.controller.ViewEditController"> -->
-<!--     <property name="commandName"><value>form</value></property> -->
-<!--     <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.ViewEditForm</value></property> -->
-<!--     <property name="formView"><value>viewEdit</value></property> -->
-<!--     <property name="successUrl"><value>views.shtm</value></property> -->
-<!--     <property name="uploadDirectory"><value>uploads/</value></property> -->
-<!--   </bean> -->
     
   <bean id="watchListController" class="com.serotonin.mango.web.mvc.controller.WatchListController">
     <property name="viewName"><value>watchList</value></property>

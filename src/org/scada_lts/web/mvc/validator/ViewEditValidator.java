@@ -17,7 +17,6 @@
  */
 package org.scada_lts.web.mvc.validator;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
