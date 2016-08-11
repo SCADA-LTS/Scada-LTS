@@ -34,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.util.SerializationHelper;
 
 /** 
  * DAO for point hierarchy (data points).
@@ -153,7 +152,8 @@ public class PointHierarchyDAO {
 					PointHierarchyNode phn=null;
 					try {
 					  DataPointVO dp = new DataPointVO();
-					  dp = (DataPointVO) SerializationHelper.readObject(rs.getBlob(SELECT_COLUMN_INDEX_DATA).getBinaryStream());
+					  SerializationData sd = new SerializationData();
+					  dp = (DataPointVO) sd.readObject(rs.getBlob(SELECT_COLUMN_INDEX_DATA).getBinaryStream());
 					  
 					  PointHierarchyDataSource phds = new PointHierarchyDataSource();
 					  phds.setId(rs.getInt(SELECT_COLUMN_INDEX_DATA_SOURCE_ID));
@@ -197,7 +197,8 @@ public class PointHierarchyDAO {
 			@Override
 			public DataPointVO mapRow(ResultSet rs, int rownumber) throws SQLException {
 				try {
-				  return (DataPointVO) SerializationHelper.readObject(rs.getBlob(SELECT_COLUMN_INDEX_DATA).getBinaryStream());
+					SerializationData sd = new SerializationData();
+				  return (DataPointVO) sd.readObject(rs.getBlob(SELECT_COLUMN_INDEX_DATA).getBinaryStream());
 				} catch (Exception e) {
 				  LOG.error(new PointHierarchyDaoException(e));
 				}
