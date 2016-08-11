@@ -1,6 +1,6 @@
 /*
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
     
     This program is free software: you can redistribute it and/or modify
@@ -16,24 +16,29 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.serotonin.mango.web.mvc.form;
+package org.scada_lts.web.mvc.form;
 
-import com.serotonin.web.util.PagingDataForm;
+import org.springframework.web.multipart.MultipartFile;
 
-public class EventsForm extends PagingDataForm {
-    private boolean inactive;
+import com.serotonin.mango.view.View;
 
-    public EventsForm() {
-        setItemsPerPage(20);
-        setSortField("time");
-        setSortDesc(true);
+public class ViewEditForm {
+    private View view;
+    private MultipartFile backgroundImageMP;
+
+    public MultipartFile getBackgroundImageMP() {
+        return backgroundImageMP;
     }
 
-    public boolean isInactive() {
-        return inactive;
+    public void setBackgroundImageMP(MultipartFile backgroundImageMP) {
+        this.backgroundImageMP = backgroundImageMP;
     }
 
-    public void setInactive(boolean inactive) {
-        this.inactive = inactive;
+    public View getView() {
+        return view;
+    }
+
+    public void setView(View view) {
+        this.view = view;
     }
 }

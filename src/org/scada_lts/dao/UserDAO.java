@@ -33,8 +33,7 @@ public class UserDAO {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			List<Integer> list = DAO.getInstance().getJdbcTemp().query(SQL, new RowMapper() {
 				@Override
-				public Integer mapRow(ResultSet rs, int rownumber) throws SQLException {
-					
+				public Integer mapRow(ResultSet rs, int rownumber) throws SQLException {	
 					return rs.getInt(COLUMN_NAME_ID);
 				}
 			});
@@ -44,6 +43,5 @@ public class UserDAO {
 			LOG.error(e);
 		}
 		return null;
-	}
-	
+	}	
 }

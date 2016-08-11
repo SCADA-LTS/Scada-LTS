@@ -34,7 +34,6 @@
         <prop key="/compound_events.shtm">compoundEventsController</prop>
         <prop key="/data_point_details.shtm">dataPointDetailsController</prop>
         <prop key="/data_source_edit.shtm">dataSourceEditController</prop>
-        <prop key="/data_sources.shtm">dataSourceListController</prop>
         <prop key="/emport.shtm">emportController</prop>
         <prop key="/event_handlers.shtm">eventHandlersController</prop>
         <prop key="/events.shtm">eventsController</prop>
@@ -42,9 +41,6 @@
         <prop key="/logout.htm">logoutController</prop>
         <prop key="/mailing_lists.shtm">mailingListsController</prop>
         <prop key="/maintenance_events.shtm">maintenanceEventsController</prop>
-        <!-- 
-        <prop key="/point_hierarchy.shtm">pointHierarchyController</prop>
-        -->
         <prop key="/point_links.shtm">pointLinksController</prop>
         <prop key="/public_view.htm">publicViewController</prop>
         <prop key="/publisher_edit.shtm">publisherEditController</prop>
@@ -98,12 +94,6 @@
     <property name="viewName"><value>dataSourceEdit</value></property>
   </bean>
   
-  <bean id="dataSourceListController" class="com.serotonin.mango.web.mvc.controller.DataSourceListController">
-    <property name="viewName"><value>dataSourceList</value></property>
-    <property name="commandName"><value>paging</value></property>
-    <property name="commandClass"><value>com.serotonin.web.util.PagingDataForm</value></property>
-  </bean>
-  
   <bean id="emportController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>emport</value></property>
   </bean>
@@ -139,12 +129,6 @@
   <bean id="maintenanceEventsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>maintenanceEvents</value></property>
   </bean>
-  
-  <!-- 
-  <bean id="pointHierarchyController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-    <property name="viewName"><value>pointHierarchy</value></property>
-  </bean>
-  -->
 
   <bean id="pointLinksController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>pointLinks</value></property>
@@ -196,14 +180,6 @@
   <bean id="watchListController" class="com.serotonin.mango.web.mvc.controller.WatchListController">
     <property name="viewName"><value>watchList</value></property>
   </bean>
-  
-  <!-- SCADA LTS -->
-  <!-- 
-  <bean id="pointHierarchy" class="org.lts.scada.web.mvc.controller.PointHierarchyController">
-  </bean>
-  -->
-  
-  <!-- END SCADA LTS -->
   
   <bean id="webcamLiveFeedController" class="com.serotonin.mango.web.mvc.controller.WebcamLiveFeedController">
     <property name="viewName"><value>webcamLiveFeed</value></property>

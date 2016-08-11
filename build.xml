@@ -97,9 +97,7 @@
         <pathelement location="WebContent/WEB-INF/lib/spring-jdbc-3.2.17.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-jdbc-4.3.2.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-tx-4.3.2.RELEASE.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/spring-web-3.2.17.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-web-4.3.2.RELEASE.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/spring-webmvc-3.2.17.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-webmvc-4.3.2.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/standard.jar"/>
