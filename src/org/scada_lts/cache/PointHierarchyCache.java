@@ -55,6 +55,8 @@ public class PointHierarchyCache {
 	public static final int ROOT=0;
 	public static final boolean IS_FOLDER=true;
 	public static final boolean IS_NOT_FOLDER=false;
+	public static final int ELEMENTS_ON_PAGE_HINT=10;
+	
 	private static PointHierarchyCache instance = null;
 	private TreeMap<Integer, List<PointHierarchyNode>> cache = new TreeMap<Integer, List<PointHierarchyNode>>();
 	
@@ -135,7 +137,7 @@ public class PointHierarchyCache {
 				return p;
 			}
 		}
-		return null;
+		return null; 
 	}
 	
 	public int checkIsAdded(PointHierarchyNode phn) {
@@ -156,7 +158,6 @@ public class PointHierarchyCache {
 		checkAndRootFolder();
 		
 		if (cache.get(phn.getParentId())!=null) {
-			// TODO sprawdzenie czy nie jestem juz dodany
 			if ( checkIsAdded(phn)<0) {
 				cache.get(phn.getParentId()).add(phn);
 				if (cache.get(phn.getKey())==null){
@@ -164,9 +165,6 @@ public class PointHierarchyCache {
 					cache.put(phn.getKey(),lst);
 				}
 			} 
-			//else {
-			//	throw new Exception("alredy added");
-			//}
 		} else {
 			checkAndCorrectOrphanedPointHierarchy(phn);
 			addFolder(phn);
@@ -212,6 +210,69 @@ public class PointHierarchyCache {
 		return cache.get(parentId);
 	}
 	
+	/**
+	 * Get hit for search hierarchi name or point name
+	 * @param name
+	 * @return
+	 */
+	public List<PointHierarchyNode> getOnBaseName(String name, int page) {
+		int count=0;
+		int offset=ELEMENTS_ON_PAGE_HINT;
+		int pageStart=(page-1)*ELEMENTS_ON_PAGE_HINT;
+		int pageEnd=pageStart+offset;
+		List<PointHierarchyNode> result = new ArrayList<PointHierarchyNode>();
+		for (Map.Entry<Integer, List<PointHierarchyNode>> entry : cache.entrySet()) {
+			List<PointHierarchyNode> list = entry.getValue();
+			for (PointHierarchyNode node : list) {
+				count++;
+				if (count>pageEnd) {
+					break;
+				}
+				if (node.getTitle().toUpperCase().contains(name.toUpperCase()) ) {
+					if ( (pageStart<=count) && (count<=pageEnd)) {
+						result.add(node);
+					}
+				}
+			}
+		}
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("result:"+result.toString());
+		}
+		return result;
+	}
+	
+	private PointHierarchyNode search(int key, boolean isFolder ){	
+		for (Map.Entry<Integer, List<PointHierarchyNode>> entry : cache.entrySet()) {
+			List<PointHierarchyNode> list = entry.getValue();
+			for (PointHierarchyNode node : list) {
+				if (node.getKey() == key && (node.isFolder()==isFolder)) {
+					return node;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public List<PointHierarchyNode> getPaths(int key, boolean isFolder) {
+		PointHierarchyNode phn = null;
+		Integer keyA = key;
+		boolean isFolderA = isFolder;
+		Boolean searchNext = true;
+		List<PointHierarchyNode> result = new ArrayList<PointHierarchyNode>();
+		do {
+		  phn = search(keyA, isFolderA);
+		  result.add(phn);
+		  searchNext = (phn != null) &&	(phn.getParentId() != 0);
+		  if (searchNext) {
+		     keyA = phn.getParentId();
+		     isFolderA=true;
+		  } else {
+			  searchNext = false;
+		  }
+		} while ( searchNext ); 
+		return result;
+	}
+	
 	public void deleteFolder(int parentId, int key) throws Exception {
 		if (LOG.isTraceEnabled()) {
 			  LOG.trace("before delete folder parentId:"+parentId+" key:"+key);
@@ -240,8 +301,7 @@ public class PointHierarchyCache {
 		  for(PointHierarchyNode p: cache.get(key)) {
 			p.setParentId(0);
 			cache.get(0).add(p);
-			//TODO put jesli jsest folder
-			}
+		  }
 		  cache.remove(key);
 	    }
 		if (LOG.isTraceEnabled()) {
@@ -358,7 +418,7 @@ public class PointHierarchyCache {
 			   List<PointHierarchyNode> children = new ArrayList<PointHierarchyNode>();
 			   cache.put(newParentId, children);
 		   }
-		   cache.get(newParentId).add(toMove); // nie ma w elementu trzeciego dziwne
+		   cache.get(newParentId).add(toMove);
 		   cache.get(oldParendId).remove(toMove);
 		 }
 		
@@ -418,7 +478,6 @@ public class PointHierarchyCache {
 	private void cacheInitialize() throws SchedulerException, IOException, ParseException {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("cacheInitialize");
-			
 		}
 		JobDetail job = new JobDetail();
 		job.setName("UpdatePointHierarchyCache");
