@@ -17,12 +17,12 @@
  */
 package org.scada_lts.web.mvc.validator;
 
+import org.scada_lts.web.mvc.form.ViewEditForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.web.mvc.form.ViewEditForm;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 
