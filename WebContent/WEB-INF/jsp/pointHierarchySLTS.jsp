@@ -500,6 +500,8 @@ var messages = {
     };*/
 
     var pageGlobal=1;
+    var pageStart=0;
+    
     
     function pages(page) {
     	console.log(page);
@@ -1023,23 +1025,25 @@ var messages = {
         			'<nav aria-label="Page navigation">'+
       	  				'<ul class="pagination" style="margin:0px;">'+
       	    				'<li>'+
-      	      					'<a href="#" aria-label="Previous">'+
+      	      					'<a onclick="if (pageStart>0) { pageStart=(parseInt(pageStart)-parseInt(5)); pages(5); }" aria-label="Previous">'+
       	        					'<span aria-hidden="true">&laquo;</span>'+
       	      					'</a>'+
       	    				'</li>'+
-      	    				'<li><a onclick="pages(1)">1</a></li>'+
-      	    				'<li><a onclick="pages(2)">2</a></li>'+
-      	    				'<li><a onclick="pages(3)">3</a></li>'+
-      	    				'<li><a onclick="pages(4)">4</a></li>'+
-      	    				'<li><a onclick="pages(5)">5</a></li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(1))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(1))+')">'+(parseInt(pageStart)+parseInt(1))+'</a></li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(2))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(2))+')">'+(parseInt(pageStart)+parseInt(2))+'</a></li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(3))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(3))+')">'+(parseInt(pageStart)+parseInt(3))+'</a></li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(4))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(4))+')">'+(parseInt(pageStart)+parseInt(4))+'</a></li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(5))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(5))+')">'+(parseInt(pageStart)+parseInt(5))+'</a></li>'+
       	    				'<li>'+
-      	      					'<a href="#" aria-label="Next">'+
+      	      					'<a onclick="pageStart=(parseInt(pageStart)+parseInt(5));pages(pageStart+1);" aria-label="Next">'+
       	        					'<span aria-hidden="true">&raquo;</span>'+
       	      					'</a>'+
       	    				'</li>'+
       	  				'</ul>'+
       				'</nav>'+
       			'</td></tr>');	
+        	$("li[id^=page]").removeClass("active");
+    		$('#page'+pageGlobal).addClass("active");
         }
         
         function setElement(element, index, array) {
@@ -1047,9 +1051,9 @@ var messages = {
         	for( var i=0; i<array.length;i++) {
         		var folderOrPoint="";
         		if (array[i].folder) {
-        			folderOrPoint="Folder";
+        			folderOrPoint="<span class='fancytree-custom-icon glyphicon glyphicon-book'></span>";
         		} else {
-        			folderOrPoint="Point";
+        			folderOrPoint="<span class='fancytree-icon glyphicon glyphicon-file'></span>";
         		}
         		
         		$('#searchResultTree > tbody').append('<tr>'+
@@ -1080,6 +1084,7 @@ var messages = {
 	        	  		$("#searchResultPane").collapse("show");
 	        	  	} else {
 	        	  		$('#searchResultTree > tbody > tr').remove();
+	        	  		$("li[id^=page]").removeClass("active");
 	        	  		createPagination();
 	        	  	}
 	        	},
@@ -1103,9 +1108,11 @@ var messages = {
 	    	if(e && e.which === $.ui.keyCode.ESCAPE || queryGlobal === ""){
 	    		$("#btnResetSearch").click();
 	    		console.log("btnResetSearch");
+	    		pageGlobal=1;
 	    		return;
 	    	}
 	    	if(e && e.which === $.ui.keyCode.ENTER && queryGlobal.length >= 2){
+	    		pageGlobal=1;
 	    		$("#btnSearch").click();
 	    		console.log("btnSearch.click");
 	    		return;
@@ -1114,7 +1121,7 @@ var messages = {
 	    		console.log("Ignored query '" + queryGlobal + "'");
 	    		return;
 	    	}
-	    	
+	    	pageGlobal=1;
 	    	$(this).data("lastQuery", queryGlobal);
 	    	
 	    	$("#btnSearch").click();
