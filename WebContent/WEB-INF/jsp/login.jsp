@@ -49,36 +49,27 @@
       <td>
         <form action="login.htm" method="post" onclick="nag()">
           <table>
-            <spring:bind path="login.username">
+          
               <tr>
                 <td class="formLabelRequired"><fmt:message key="login.userId"/></td>
                 <td class="formField">
-                  <input id="username" type="text" name="username" value="${status.value}" maxlength="40"/>
+                  <input id="username" type="text" name="username" value="${login.username}" maxlength="40"/>
                 </td>
-                <td class="formError">${status.errorMessage}</td>
               </tr>
-            </spring:bind>
             
-            <spring:bind path="login.password">
               <tr>
                 <td class="formLabelRequired"><fmt:message key="login.password"/></td>
                 <td class="formField">
-                  <input id="password" type="password" name="password" value="${status.value}" maxlength="20"/>
+                  <input id="password" type="password" name="password" value="${login.password}" maxlength="20"/>
                 </td>
-                <td class="formError">${status.errorMessage}</td>
               </tr>
-            </spring:bind>
                 
-            <spring:bind path="login">
-              <c:if test="${status.error}">
                 <td colspan="3" class="formError">
-                  <c:forEach items="${status.errorMessages}" var="error">
-                    <c:out value="${error}"/><br/>
+                  <c:forEach items="${errors}" var="error">
+                    <fmt:message key="${error}"/><br/>
                   </c:forEach>
                 </td>
-              </c:if>
-            </spring:bind>
-            
+                            
             <tr>
               <td colspan="2" align="center">
                 <input type="submit" value="<fmt:message key="login.loginButton"/>"/>

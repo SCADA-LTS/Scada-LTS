@@ -33,14 +33,12 @@
         <!-- All user URLs -->
         <prop key="/compound_events.shtm">compoundEventsController</prop>
         <prop key="/data_point_details.shtm">dataPointDetailsController</prop>
-        <prop key="/data_point_edit.shtm">dataPointEditController</prop>
         <prop key="/data_source_edit.shtm">dataSourceEditController</prop>
         <prop key="/data_sources.shtm">dataSourceListController</prop>
         <prop key="/emport.shtm">emportController</prop>
         <prop key="/event_handlers.shtm">eventHandlersController</prop>
         <prop key="/events.shtm">eventsController</prop>
         <prop key="/help.shtm">helpController</prop>
-        <prop key="/login.htm">loginController</prop>
         <prop key="/logout.htm">logoutController</prop>
         <prop key="/mailing_lists.shtm">mailingListsController</prop>
         <prop key="/maintenance_events.shtm">maintenanceEventsController</prop>
@@ -55,18 +53,15 @@
         <prop key="/reportChart.shtm">reportChartController</prop>
         <prop key="/scheduled_events.shtm">scheduledEventsController</prop>
         <prop key="/scripting.shtm">scriptingController</prop>
-        <prop key="/sql.shtm">sqlController</prop>
         <prop key="/system_settings.shtm">systemSettingsController</prop>
         <prop key="/users.shtm">usersController</prop>
         <prop key="/usersProfiles.shtm">usersProfilesController</prop>
         <prop key="/views.shtm">viewsController</prop>
-        <prop key="/view_edit.shtm">viewEditController</prop>
         <prop key="/watch_list.shtm">watchListController</prop>
         <prop key="/webcam_live_feed.htm">webcamLiveFeedController</prop>
         <prop key="/export_project.htm">projectExporterController</prop>
         <prop key="/import_project.htm">projectImporterController</prop>
         <!-- Mobile user URLs -->
-        <prop key="/mobile_login.htm">mobileLoginController</prop>
         <prop key="/mobile_logout.htm">mobileLogoutController</prop>
         <prop key="/mobile_watch_list.shtm">mobileWatchListController</prop>
         
@@ -99,14 +94,6 @@
     <property name="viewName"><value>dataPointDetails</value></property>
   </bean>
   
-  <bean id="dataPointEditController" class="com.serotonin.mango.web.mvc.controller.DataPointEditController">
-    <property name="commandName"><value>form</value></property>
-    <property name="commandClass"><value>com.serotonin.mango.vo.DataPointVO</value></property>
-    <property name="formView"><value>dataPointEdit</value></property>
-    <property name="successView"><value>data_point_edit.shtm</value></property>
-    <property name="messageCodesResolver"><ref bean="defaultMessageCodeResolver"/></property>
-  </bean>
-  
   <bean id="dataSourceEditController" class="com.serotonin.mango.web.mvc.controller.DataSourceEditController">
     <property name="viewName"><value>dataSourceEdit</value></property>
   </bean>
@@ -133,30 +120,12 @@
     <property name="viewName"><value>help</value></property>
   </bean>
   
-  <bean id="loginController" class="com.serotonin.mango.web.mvc.controller.LoginController">
-    <property name="commandName"><value>login</value></property>
-    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.LoginForm</value></property>
-    <property name="formView"><value>login</value></property>
-    <property name="successUrl"><value>watch_list.shtm</value></property>
-    <property name="newUserUrl"><value>help.shtm</value></property>
-    <property name="bindOnNewForm"><value>true</value></property>
-  </bean>
-  
   <bean id="logoutController" class="com.serotonin.mango.web.mvc.controller.LogoutController">
     <property name="redirectUrl"><value>login.htm</value></property>
   </bean>
   
-  <bean id="mobileLoginController" class="com.serotonin.mango.web.mvc.controller.LoginController">
-    <property name="commandName"><value>login</value></property>
-    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.LoginForm</value></property>
-    <property name="formView"><value>mobile/login</value></property>
-    <property name="mobile"><value>true</value></property>
-    <property name="successUrl"><value>mobile_watch_list.shtm</value></property>
-    <property name="bindOnNewForm"><value>true</value></property>
-  </bean>
-  
   <bean id="mobileLogoutController" class="com.serotonin.mango.web.mvc.controller.LogoutController">
-    <property name="redirectUrl"><value>mobile_login.htm</value></property>
+    <property name="redirectUrl"><value>login.htm</value></property>
   </bean>
   
   <bean id="mobileWatchListController" class="com.serotonin.mango.web.mvc.controller.MobileWatchListController">
@@ -206,12 +175,6 @@
   <bean id="scriptingController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>scripting</value></property>
   </bean>
-
-  <bean id="sqlController" class="com.serotonin.mango.web.mvc.controller.SqlController">
-    <property name="commandName"><value>form</value></property>
-    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.SqlForm</value></property>
-    <property name="formView"><value>sql</value></property>
-  </bean>
   
   <bean id="systemSettingsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>systemSettings</value></property>
@@ -229,13 +192,6 @@
     <property name="viewName"><value>views</value></property>
   </bean>
   
-  <bean id="viewEditController" class="com.serotonin.mango.web.mvc.controller.ViewEditController">
-    <property name="commandName"><value>form</value></property>
-    <property name="commandClass"><value>com.serotonin.mango.web.mvc.form.ViewEditForm</value></property>
-    <property name="formView"><value>viewEdit</value></property>
-    <property name="successUrl"><value>views.shtm</value></property>
-    <property name="uploadDirectory"><value>uploads/</value></property>
-  </bean>
     
   <bean id="watchListController" class="com.serotonin.mango.web.mvc.controller.WatchListController">
     <property name="viewName"><value>watchList</value></property>
