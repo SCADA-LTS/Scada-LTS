@@ -56,7 +56,7 @@ public class TestPointHierarchyCache {
 		}
 		return false;
 	};
-	
+		
 	private PointHierarchyNode findFolder(List<PointHierarchyNode> lst, int key){
 		for (PointHierarchyNode p: lst) {
 			if (p.getKey()==key && (p.isFolder()==true)) {
@@ -80,8 +80,6 @@ public class TestPointHierarchyCache {
 		boolean contain2 = containInCache(cache.getOnBaseParentId(keyFolder1),keyPoint1, PointHierarchyCache.IS_NOT_FOLDER);
 		assertEquals(true,  contain2 );
 		cache.printTreeInCash("", 0);
-
-		
 	}
 
 	@Test
@@ -285,6 +283,102 @@ public class TestPointHierarchyCache {
 		assertEquals("newTitle2", findFolder(cache.getOnBaseParentId(keyFolder1), keyFolder2).getTitle());
 		assertEquals("newTitle3", findFolder(cache.getOnBaseParentId(keyFolder2), keyFolder3).getTitle());
 		assertEquals("newTitle5", findFolder(cache.getOnBaseParentId(PointHierarchyCache.ROOT), keyFolder5).getTitle());
+	}
+	
+	@Test
+	public void getOnBaseName() throws Exception {
+		
+		PointHierarchyCache cache = new PointHierarchyCache(false);
+		
+		PointHierarchyNode testf = new PointHierarchyNode(keyFolder1, PointHierarchyCache.ROOT, "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(testf);
+		
+		PointHierarchyNode hlkjhd = new PointHierarchyNode(keyFolder2, testf.getKey(), "hlkjhd", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(hlkjhd);
+		
+		PointHierarchyNode testf1 = new PointHierarchyNode(keyFolder5, testf.getKey(), "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(testf1);
+				
+		PointHierarchyNode test = new PointHierarchyNode(keyPoint1, testf.getKey(), "test", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addPoint(test);
+		
+		PointHierarchyNode hlkjh = new PointHierarchyNode(keyFolder4, PointHierarchyCache.ROOT, "hlkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(hlkjh);
+		
+		PointHierarchyNode lkjh = new PointHierarchyNode(keyFolder3, PointHierarchyCache.ROOT, "lkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(lkjh);
+		
+		
+		List<PointHierarchyNode> result = cache.getOnBaseName("test", 1);
+		
+		assertEquals(true, containInCache(result, keyFolder1, PointHierarchyCache.IS_FOLDER ));
+		assertEquals(false, containInCache(result, keyFolder2, PointHierarchyCache.IS_FOLDER ));
+		assertEquals(true, containInCache(result, keyFolder5, PointHierarchyCache.IS_FOLDER ));
+		assertEquals(true, containInCache(result, keyPoint1, PointHierarchyCache.IS_NOT_FOLDER));
+		assertEquals(false, containInCache(result, keyFolder4, PointHierarchyCache.IS_FOLDER));
+		assertEquals(false, containInCache(result, keyFolder3, PointHierarchyCache.IS_FOLDER));
+
+		cache.printTreeInCash("", 0);
+		
+	}
+	
+	//TODO get page getOnBaseName
+	
+	
+	@Test
+	public void getPaths() throws Exception {
+		
+		PointHierarchyCache cache = new PointHierarchyCache(false);
+		
+		PointHierarchyNode testf = new PointHierarchyNode(keyFolder1, PointHierarchyCache.ROOT, "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(testf);
+		
+		PointHierarchyNode hlkjhd = new PointHierarchyNode(keyFolder2, testf.getKey(), "hlkjhd", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(hlkjhd);
+		
+		PointHierarchyNode testf1 = new PointHierarchyNode(keyFolder5, testf.getKey(), "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(testf1);
+				
+		PointHierarchyNode test = new PointHierarchyNode(keyPoint1, testf.getKey(), "test", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addPoint(test);
+		
+		PointHierarchyNode hlkjh = new PointHierarchyNode(keyFolder4, PointHierarchyCache.ROOT, "hlkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(hlkjh);
+		
+		PointHierarchyNode lkjh = new PointHierarchyNode(keyFolder3, PointHierarchyCache.ROOT, "lkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		cache.addFolder(lkjh);
+		
+		List<PointHierarchyNode> resultForFolder1 = cache.getPaths(keyFolder1, PointHierarchyCache.IS_FOLDER);
+		
+		// Poniewaz ma zwrocic sam siebie gdy jest folderem
+		Boolean okResultForFolder1 = (resultForFolder1.size()==1);
+		
+		assertEquals(true, okResultForFolder1);
+		
+		List<PointHierarchyNode> resultFolder2 = cache.getPaths(keyFolder2, PointHierarchyCache.IS_FOLDER);
+		
+		// Poniewazz ma zwrocic sam siebie i nadrzedny folder to size = 2
+		assertEquals(true, (resultFolder2.size()==2) && (resultFolder2.get(0).getTitle()=="hlkjhd"));
+		
+		List<PointHierarchyNode> resultForFolder5 = cache.getPaths(keyFolder5, PointHierarchyCache.IS_FOLDER);
+		
+		// Poniewazz ma zwrocic sam siebie i nadrzedny folder to size = 2
+		assertEquals(true, (resultForFolder5.size()==2) && (resultForFolder5.get(0).getTitle()=="test"));
+		
+		List<PointHierarchyNode> resultkeyPoint1 = cache.getPaths(keyPoint1, PointHierarchyCache.IS_NOT_FOLDER);
+		
+		assertEquals(true, (resultkeyPoint1.size()==2) && (resultkeyPoint1.get(0).getTitle()=="test"));
+		
+		List<PointHierarchyNode> resultkeyFolder4 = cache.getPaths(keyFolder4, PointHierarchyCache.IS_FOLDER);
+		
+		assertEquals(true, (resultkeyFolder4.size()==1) && (resultkeyFolder4.get(0).getTitle()=="hlkjh"));
+		
+		List<PointHierarchyNode> resultkeyFolder3 = cache.getPaths(keyFolder3, PointHierarchyCache.IS_FOLDER);
+		
+		assertEquals(true, (resultkeyFolder3.size()==1) && (resultkeyFolder3.get(0).getTitle()=="lkjh"));
+		
+		cache.printTreeInCash("", 0);	
+		
 	}
 	
 	//TODO test wczytanie danych ktore maja wskazanie na nieistniejacy folder
