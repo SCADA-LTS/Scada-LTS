@@ -34,7 +34,6 @@
         <prop key="/compound_events.shtm">compoundEventsController</prop>
         <prop key="/data_point_details.shtm">dataPointDetailsController</prop>
         <prop key="/data_source_edit.shtm">dataSourceEditController</prop>
-        <prop key="/data_sources.shtm">dataSourceListController</prop>
         <prop key="/emport.shtm">emportController</prop>
         <prop key="/event_handlers.shtm">eventHandlersController</prop>
         <prop key="/events.shtm">eventsController</prop>
@@ -93,12 +92,6 @@
   
   <bean id="dataSourceEditController" class="com.serotonin.mango.web.mvc.controller.DataSourceEditController">
     <property name="viewName"><value>dataSourceEdit</value></property>
-  </bean>
-  
-  <bean id="dataSourceListController" class="com.serotonin.mango.web.mvc.controller.DataSourceListController">
-    <property name="viewName"><value>dataSourceList</value></property>
-    <property name="commandName"><value>paging</value></property>
-    <property name="commandClass"><value>com.serotonin.web.util.PagingDataForm</value></property>
   </bean>
   
   <bean id="emportController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
