@@ -74,6 +74,16 @@ public class DAO {
 	}
 	
 	/**
+	 *  
+	 * @param b
+	 * @return
+	 */
+	public static String boolToChar(boolean b) {
+		return b ? "Y" : "N";
+	}
+
+	
+	/**
 	 * Return get jdbcTemplate
 	 * @return
 	 */

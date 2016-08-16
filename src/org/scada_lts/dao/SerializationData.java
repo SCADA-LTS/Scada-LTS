@@ -17,6 +17,7 @@
  */
 package org.scada_lts.dao;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
@@ -39,7 +40,7 @@ public class SerializationData {
 		if (is != null) {
 	        try {
 	            return new ObjectInputStream(is).readObject();
-	        } catch (Exception e) {
+	        } catch (ClassNotFoundException | IOException e) {
 	        	LOG.error(e);
 	            throw new StreamDaoException(e);
 	        }
