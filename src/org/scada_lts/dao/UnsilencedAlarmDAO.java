@@ -47,7 +47,7 @@ public class UnsilencedAlarmDAO {
 			    + "userEvents u "
 			    + "join events e on u.eventId=e.id "
 			+ "where "
-				+ "u.silenced='false' "
+				+ "u.silenced='N' "
 			+ "group by "
 				+ "userId";
 	// @formatter:on
@@ -62,7 +62,7 @@ public class UnsilencedAlarmDAO {
 				public UnsilencedAlarmLevelCache mapRow(ResultSet rs, int rownumber) throws SQLException {
 					UnsilencedAlarmLevelCache unsilencedAlarmLevel = new UnsilencedAlarmLevelCache();
 					unsilencedAlarmLevel.setAlarmLevel(rs.getInt(COLUMN_NAME_MAX));
-					unsilencedAlarmLevel.setAlarmLevel(rs.getInt(COLUMN_NAME_USERID));
+					unsilencedAlarmLevel.setUserId(rs.getInt(COLUMN_NAME_USERID));
 					return unsilencedAlarmLevel;
 				}
 			});
