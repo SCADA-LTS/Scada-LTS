@@ -31,6 +31,7 @@ import org.quartz.StatefulJob;
 import org.scada_lts.cache.UnsilencedAlarmCache;
 import org.scada_lts.dao.UnsilencedAlarmDAO;
 import org.scada_lts.dao.model.UnsilencedAlarmLevelCache;
+import org.scada_lts.service.UserHighestAlarmLevelService;
 
 /** 
  * Update data job for unsilenced alarm level in cache.
