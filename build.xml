@@ -99,6 +99,8 @@
         <pathelement location="WebContent/WEB-INF/lib/spring-tx-4.3.2.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-web-4.3.2.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-webmvc-4.3.2.RELEASE.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/spring-websocket-4.3.2.RELEASE.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/spring-messaging-4.3.2.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/standard.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/taglibs-log.jar"/>
