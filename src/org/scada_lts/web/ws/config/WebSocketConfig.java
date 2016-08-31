@@ -10,6 +10,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurationSupport;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
+import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 import org.springframework.web.socket.server.HandshakeHandler;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
@@ -52,6 +53,11 @@ public class WebSocketConfig extends WebSocketMessageBrokerConfigurationSupport 
     @Bean
     public HandshakeHandler handshakeHandler() {
         return new ScadaHandshakeHandler();
+    }
+    
+    @Bean
+    public WebSocketMessageBrokerStatsMonitor statsMonitor() {
+        return new WebSocketMessageBrokerStatsMonitor((SubProtocolWebSocketHandler) subProtocolWebSocketHandler(), clientOutboundChannelExecutor());
     }
     
     @Override

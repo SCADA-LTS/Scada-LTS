@@ -38,8 +38,8 @@ public class AlarmLevelController {
     @Resource
     private UserHighestAlarmLevelService userHighestAlarmLevelService;
     
-    @Resource
-    private WebSocketMessageBrokerStatsMonitor statsMonitor;
+    //@Resource
+    //private WebSocketMessageBrokerStatsMonitor statsMonitor;
     
     @Resource 
     private WebSocketConfig  config;
@@ -49,10 +49,7 @@ public class AlarmLevelController {
     	this.userHighestAlarmLevelService = userHighestAlarmLevelService;
     }
 
-    public void setStatsMonitor(WebSocketMessageBrokerStatsMonitor statsMonitor) {
-    	this.statsMonitor = statsMonitor;
-    }
-
+    
     public void setWebSocketConfig(WebSocketConfig config) {
     	this.config = config;
     }
