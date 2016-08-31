@@ -112,9 +112,12 @@ thead th {
 						alt="Logo" /></td>
 					<c:if test="${!simple}">
 						<td align="center" width="99%" id="eventsRow">
-<!-- 						<span id="__header__MemoryInfo" style="visibility:visible;"> -->
+						<span id="__header__MemoryInfo" style="visibility:visible;">
+							<input type="button" value="UserSessions" onclick="OnListUserSessions();">
+							<input type="button" value="SessonAttributes" onclick="OnListSessionsAttributes();">
+							<input type="button" value="WebsocketStats" onclick="OnListWebsocketStats();">
 							
-<!-- 						</span> -->
+						</span>
 						<a
 							href="events.shtm"> 
 <!-- 							<span id="__header__alarmLevelDiv" -->
@@ -409,14 +412,7 @@ header.onLoad = function() {
 
 
     
-function onloadHandler() {
-	// TODO: hardcoded url
-   connect('http://localhost:8080/ScadaBR/ws/alarmLevel');
- }
 
- function onunloadHandler() {
-   disconnect();
- }
 
  var headers = {
 		 login: 'admin',
@@ -538,6 +534,26 @@ function disconnect() {
 }
 
 
+function OnListUserSessions() {
+	stompClient.subscribe("/ws/listusers", function(message) {
+		console.log("message[/ws/listusers]:\n" + message.body);
+	} );
+}
+
+function OnListSessionsAttributes() {
+	stompClient.subscribe("/ws/session", function(message) {
+		console.log("message[/ws/session]:\n" + message.body);
+	} );
+}
+
+function OnListWebsocketStats() {
+	stompClient.send("/ws/websocketStats", function(message) {
+		console.log("message[/ws/websocketStats]:\n" + message.body);
+	} );
+}
+
+
+
 var messages = {
   move: "<fmt:message key="pointHierarchySLTS.move"/>",
   folderNotMove: "<fmt:message key="pointHierarchySLTS.folderNotMove"/>",
@@ -609,7 +625,18 @@ var messages = {
     if (!myLocation) {
  	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
     }
-	
+
+    
+    function onloadHandler() {
+    	// connecting to server websocket endpoint...
+       connect(myLocation + '/ws/alarmLevel');
+    }
+
+    function onunloadHandler() {
+   	   disconnect();
+   	}
+
+    
 	/* function selectTree(key, folder) {
     	console.log("selectTree:"+key+" folder:"+folder);
     	 //var tree = $("#tree").fancytree("getTree");
