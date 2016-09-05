@@ -150,6 +150,8 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 	@Override
 	protected void doPoll(long time) {
+		
+		
 
 		if (!modbusMaster.isInitialized()) {
 			if (vo.isCreateSlaveMonitorPoints()) {
@@ -335,8 +337,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 		// Add this as a listener to exceptions that occur in the
 		// implementation.
-		//TODO write own exceptionListener implements MessagingExceptionHandler;
-		modbusMaster.setExceptionHandler((com.serotonin.modbus4j.messaging.MessagingExceptionHandler) this);
+		modbusMaster.setExceptionHandler((MessagingExceptionHandler) this);
 
 		try {
 			modbusMaster.init();

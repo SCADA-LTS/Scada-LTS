@@ -36,7 +36,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class ModbusNodeScanListener implements NodeScanListener, TestingUtility {
     private final ResourceBundle bundle;
     private final ModbusMaster modbusMaster;
-    private com.serotonin.modbus4j.util.ProgressiveTask task;
+    private ProgressiveTask task;
     private final List<Integer> nodesFound = new LinkedList<Integer>();
     private String message = "";
 

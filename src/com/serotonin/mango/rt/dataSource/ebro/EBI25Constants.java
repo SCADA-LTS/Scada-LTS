@@ -164,7 +164,7 @@ public class EBI25Constants {
 		modbusMaster.setRetries(retries);
 		//TODO write own exceptionListener implements MessagingExceptionHandler;
 		if (exceptionListener != null)
-			modbusMaster.setExceptionHandler((com.serotonin.modbus4j.messaging.MessagingExceptionHandler) exceptionListener);
+			modbusMaster.setExceptionHandler((MessagingExceptionHandler) exceptionListener);
 
 		modbusMaster.init();
 
