@@ -102,7 +102,7 @@ thead th {
 </style>
 
 </head>
-<body>
+<body onload="onloadHandler();"  onunload="onunloadHandler();" >
 	<div class="container-fluid">
 		<div class="row">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0"
@@ -111,12 +111,24 @@ thead th {
 					<td><img id="logo" class="logo" src="assets/logo.png"
 						alt="Logo" /></td>
 					<c:if test="${!simple}">
-						<td align="center" width="99%" id="eventsRow"><a
-							href="events.shtm"> <span id="__header__alarmLevelDiv"
-								style="display: none;"> <img id="__header__alarmLevelImg"
-									src="images/spacer.gif" alt="" border="0" title="" /> <span
-									id="__header__alarmLevelText"></span>
-							</span>
+						<td align="center" width="99%" id="eventsRow">
+						<span id="__header__MemoryInfo" style="visibility:visible;">
+							<input type="button" value="UserSessions" onclick="OnListUserSessions();">
+							<input type="button" value="SessonAttributes" onclick="OnListSessionsAttributes();">
+							<input type="button" value="WebsocketStats" onclick="OnListWebsocketStats();">
+							
+						</span>
+						<a
+							href="events.shtm"> 
+<!-- 							<span id="__header__alarmLevelDiv" -->
+<!-- 								style="display: none;"> <img id="__header__alarmLevelImg" -->
+<!-- 									src="images/spacer.gif" alt="" border="0" title="" /> <span -->
+<!-- 									id="__header__alarmLevelText"></span> -->
+<!-- 							</span> -->
+		         			<span id="__header__alarmLevelDiv" style="visibility:visible;display:visible;">
+		           			<img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
+		           			<span id="__header__alarmLevelText">text</span>
+		         			</span>
 						</a></td>
 					</c:if>
 					<c:if test="${!empty instanceDescription}">
@@ -387,10 +399,160 @@ thead th {
 	src="resources/app/bower_components/fancytree/dist/jquery.fancytree-all.min.js"></script>
 <script
 	src="resources/app/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
+<script src="resources/sockjs-0.3.4.js"></script>
+<script src="resources/stomp.js"></script>
 
 <script>
-    
 "use strict";
+
+var header = { init: "1" };
+header.onLoad = function() {
+        //header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
+};
+
+
+    
+
+
+ var headers = {
+		 login: 'admin',
+		 passcode: 'passcode',
+		 client_id: '564389'
+ } ;
+ 
+var stompClient = null;
+
+
+
+
+var connectCallback = function(frame) {
+    	console.log('Connected: ' + frame);
+    	stompClient.subscribe('/topic/alarmLevel', function(message) {
+        	console.log("message[/topic/alarmLevel]:" + message.body);
+    	});
+    	stompClient.subscribe("/ws/alarmLevel/register", function(message) {
+    		console.log("message[/ws/alarmLevel/register]:" + message.body);
+    		stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
+    			var response = JSON.parse(message.body);
+    			var alarmLevel = parseInt(response.alarmlevel);
+    			console.log("response.alarmLevel: "+response.alarmlevel);
+   		        if (alarmLevel > 0) {
+   		            document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
+   		            setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
+   		            setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
+   		            document.getElementById("__header__alarmLevelDiv").style.visibility = "visible";
+   		        	document.getElementById("__header__alarmLevelImg").style.visibility = "visible";
+   		        }
+   		        else {
+   		            document.getElementById("__header__alarmLevelText").innerHTML = "";
+   		        	document.getElementById("__header__alarmLevelImg").style.visibility = "hidden";
+   		            document.getElementById("__header__alarmLevelDiv").style.visibility =  "hidden";
+   		        }
+    		})
+    		stompClient.send("/ws/alarmLevel", {priority: 1}, "Hello, Spring STOMP - gimme my alarmLevel");
+    	} );
+    	stompClient.send("/ws/alarmLevel", {priority: 9}, "Hello, Spring STOMP");
+    	
+    	stompClient.subscribe("/ws/listusers", function(message) {
+    		console.log("message[/ws/listusers]:" + message.body);
+    	} );
+
+    	stompClient.subscribe("/ws/session", function(message) {
+    		console.log("message[/ws/session]:" + message.body);
+    	} );
+
+};
+    
+    
+function setAlarmLevelImg(alarmLevel, imgNode) {
+    if (alarmLevel == 0)
+        updateImg(imgNode, "images/flag_green.png", "undef", false, "none");
+    else if (alarmLevel == 1)
+        updateImg(imgNode, "images/flag_blue.png", "undef", true, "visisble");
+    else if (alarmLevel == 2)
+        updateImg(imgNode, "images/flag_yellow.png", "undef", true, "visisble");
+    else if (alarmLevel == 3)
+        updateImg(imgNode, "images/flag_orange.png", "undef", true, "visisble");
+    else if (alarmLevel == 4)
+        updateImg(imgNode, "images/flag_red.png", "undef", true, "visisble");
+    else
+        updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
+}
+
+function setAlarmLevelText(alarmLevel, textNode) {
+    textNode = document.getElementById(textNode);
+    if (alarmLevel == 0)
+        textNode.innerHTML = "";
+    else if (alarmLevel == 1)
+        textNode.innerHTML = "info";
+    else if (alarmLevel == 2)
+        textNode.innerHTML = "urgent";
+    else if (alarmLevel == 3)
+        textNode.innerHTML = "critical";
+    else if (alarmLevel == 4)
+        textNode.innerHTML = "lifeSafety";
+    else
+        textNode.innerHTML = "Unknown: "+ alarmLevel;
+}
+    
+function updateImg(imgNode, src, text, visible, styleType) {
+    imgNode = document.getElementById(imgNode);
+    //if (visible) {
+        imgNode.style.display = styleType;
+        if (src)
+            imgNode.src = src;
+        if (text) {
+            imgNode.title = text;
+            imgNode.alt = text;
+        }
+    //}
+    //else
+    //    imgNode.style.display = 'none';
+}
+
+var errorCallback = function(error) {
+	alert("Connect error:" + error);
+}
+
+function connect(url) {
+    var socket = new SockJS(url);
+    stompClient = Stomp.over(socket);  
+    stompClient.heartbeat.outgoing = 20000;
+    stompClient.heartbeat.incoming = 0;
+    stompClient.connect(headers,  connectCallback, errorCallback);
+}
+
+function disconnect() {
+    if(stompClient != null) {
+    	console.log("Disconnecting...");
+        stompClient.disconnect(function(){
+        	console.log("Disconnected");
+        	alert("Disconnected");
+        	stompClient = null;
+        });
+    }
+}
+
+
+function OnListUserSessions() {
+	stompClient.subscribe("/ws/listusers", function(message) {
+		console.log("message[/ws/listusers]:\n" + message.body);
+	} );
+}
+
+function OnListSessionsAttributes() {
+	stompClient.subscribe("/ws/session", function(message) {
+		console.log("message[/ws/session]:\n" + message.body);
+	} );
+}
+
+function OnListWebsocketStats() {
+	stompClient.send("/ws/websocketStats", function(message) {
+		console.log("message[/ws/websocketStats]:\n" + message.body);
+	} );
+}
+
+
 
 var messages = {
   move: "<fmt:message key="pointHierarchySLTS.move"/>",
@@ -463,7 +625,18 @@ var messages = {
     if (!myLocation) {
  	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
     }
-	
+
+    
+    function onloadHandler() {
+    	// connecting to server websocket endpoint...
+       connect(myLocation + '/ws/alarmLevel');
+    }
+
+    function onunloadHandler() {
+   	   disconnect();
+   	}
+
+    
 	/* function selectTree(key, folder) {
     	console.log("selectTree:"+key+" folder:"+folder);
     	 //var tree = $("#tree").fancytree("getTree");
