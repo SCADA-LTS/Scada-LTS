@@ -37,8 +37,8 @@ import com.serotonin.modbus4j.BatchRead;
 import com.serotonin.modbus4j.BatchResults;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
-import com.serotonin.modbus4j.messaging.MessagingExceptionHandler;
-import com.serotonin.modbus4j.messaging.TimeoutException;
+import com.serotonin.modbus4j.sero.messaging.MessagingExceptionHandler;
+import com.serotonin.modbus4j.sero.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 /**

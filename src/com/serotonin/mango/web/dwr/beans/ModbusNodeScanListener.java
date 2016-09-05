@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.NodeScanListener;
 import com.serotonin.modbus4j.exception.ModbusInitException;
-import com.serotonin.util.ProgressiveTask;
+import com.serotonin.modbus4j.sero.util.ProgressiveTask;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -36,7 +36,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class ModbusNodeScanListener implements NodeScanListener, TestingUtility {
     private final ResourceBundle bundle;
     private final ModbusMaster modbusMaster;
-    private ProgressiveTask task;
+    private com.serotonin.modbus4j.util.ProgressiveTask task;
     private final List<Integer> nodesFound = new LinkedList<Integer>();
     private String message = "";
 
@@ -57,7 +57,6 @@ public class ModbusNodeScanListener implements NodeScanListener, TestingUtility 
                         .getLocalizedMessage(bundle);
             return;
         }
-
         task = modbusMaster.scanForSlaveNodes(this);
     }
 
