@@ -33,6 +33,7 @@ import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.UnsilencedAlarmDAO;
 import org.scada_lts.dao.model.UnsilencedAlarmLevelCache;
 import org.scada_lts.quartz.UpdateUnsilencedAlarmLevel;
+import org.scada_lts.service.UserHighestAlarmLevelService;
 
 /** 
  * Class responsible for buffering data of UnsilencedAlarm
@@ -81,6 +82,7 @@ public class UnsilencedAlarmCache extends UnsilencedAlarmDAO {
 	 */
 	public void setMapUnsilencedAlarmLevelForUser(TreeMap<Integer, Integer> mapUnsilencedAlarmLevelForUser) {
 		this.mapUnsilencedAlarmLevelForUser = mapUnsilencedAlarmLevelForUser;
+		UserHighestAlarmLevelService.getInstance().updateUserAlarmLevels(mapUnsilencedAlarmLevelForUser);
 	}
 
 	/**

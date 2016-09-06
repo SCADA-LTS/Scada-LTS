@@ -166,7 +166,7 @@ public class EventDao extends BaseDao {
 	private static final String USER_EVENT_ACK = "update userEvents set silenced=? where eventId=?";
 
 	public void ackEvent(int eventId, long time, int userId,
-			int alternateAckSource) {
+			int alternateAckSource, boolean signalAlarmLevelChange) {
 		// Ack the event
 		ejt.update(EVENT_ACK, new Object[] { time, userId == 0 ? null : userId,
 				alternateAckSource, eventId });
@@ -174,7 +174,17 @@ public class EventDao extends BaseDao {
 		ejt.update(USER_EVENT_ACK, new Object[] { boolToChar(true), eventId });
 		// Clear the cache
 		clearCache();
+		if( signalAlarmLevelChange ) {
+			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
+			Common.ctx.getEventManager().notifyEventAck(eventId,  userId);
+		}
 	}
+	
+	public void ackEvent(int eventId, long time, int userId,
+			int alternateAckSource) {
+		ackEvent(eventId, time, userId, alternateAckSource, true);
+	}
+
 
 	private static final String USER_EVENTS_INSERT = "insert into userEvents (eventId, userId, silenced) values (?,?,?)";
 
@@ -916,6 +926,8 @@ public class EventDao extends BaseDao {
 		ejt.update(
 				"update userEvents set silenced=? where eventId=? and userId=?",
 				new Object[] { boolToChar(silenced), eventId, userId });
+		Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
+		Common.ctx.getEventManager().notifyEventToggle(eventId,  userId, silenced);
 		return silenced;
 	}
 
