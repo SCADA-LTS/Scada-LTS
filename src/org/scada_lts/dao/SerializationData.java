@@ -17,14 +17,17 @@
  */
 package org.scada_lts.dao;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.exception.SerializationDataException;
 import org.scada_lts.exception.StreamDaoException;
-
-import com.serotonin.ShouldNeverHappenException;
 
 /** 
  * Serialization data from database
@@ -34,17 +37,36 @@ public class SerializationData {
 	
 	private static final Log LOG = LogFactory.getLog(SerializationData.class);
 	 
-	public Object readObject(final InputStream is) throws ShouldNeverHappenException {
+	public Object readObject(final InputStream is) {
         
 		if (is != null) {
 	        try {
 	            return new ObjectInputStream(is).readObject();
-	        } catch (Exception e) {
+	        } catch (ClassNotFoundException | IOException e) {
 	        	LOG.error(e);
 	            throw new StreamDaoException(e);
 	        }
 		}
 		return null;
-	}	    
+	}
+	
+	public ByteArrayInputStream writeObject(final Object o) {
+		if (o == null) {
+			return null;
+		}
+		
+		byte[] toWriteAsByte;
+		try {
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            new ObjectOutputStream(baos).writeObject(o);
+            toWriteAsByte = baos.toByteArray();
+        }
+        catch (IOException e) {
+            throw new SerializationDataException(e);
+        }
+		
+		return new ByteArrayInputStream(toWriteAsByte);
+	}
+	
 	 
 }

@@ -41,10 +41,14 @@ public class DAO {
 	private static DAO instance;
 	
 	private DAO() {
-		LOG.trace("Create DAO");
-		DataSource ds = Common.ctx.getDatabaseAccess().getDataSource();
-		namedParamJdbcTemplate = new NamedParameterJdbcTemplate(ds);
-		jdbcTemplate = new JdbcTemplate(ds);
+		try {
+			LOG.trace("Create DAO");
+			DataSource ds = Common.ctx.getDatabaseAccess().getDataSource();
+			namedParamJdbcTemplate = new NamedParameterJdbcTemplate(ds);
+			jdbcTemplate = new JdbcTemplate(ds);
+		} catch (Exception e) {
+			LOG.error(e);
+		}
 	}
 	
 	/**
@@ -74,6 +78,16 @@ public class DAO {
 	}
 	
 	/**
+	 *  
+	 * @param b
+	 * @return
+	 */
+	public static String boolToChar(boolean b) {
+		return b ? "Y" : "N";
+	}
+
+	
+	/**
 	 * Return get jdbcTemplate
 	 * @return
 	 */
@@ -81,6 +95,14 @@ public class DAO {
 		return jdbcTemplate;
 	}
 	
+	/**
+	 * Set jdbcTemplate
+	 * @see TestDAO
+	 * @param jdbcTemplate
+	 */
+	public void setJdbcTemp(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
 	/**
 	 * Return NamedParameterJdbcTemplate
 	 * @return
