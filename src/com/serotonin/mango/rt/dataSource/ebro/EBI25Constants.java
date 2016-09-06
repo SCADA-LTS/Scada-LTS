@@ -31,11 +31,12 @@ import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.code.DataType;
 import com.serotonin.modbus4j.code.RegisterRange;
 import com.serotonin.modbus4j.exception.ModbusInitException;
+import com.serotonin.modbus4j.sero.messaging.MessagingExceptionHandler;
 import com.serotonin.modbus4j.ip.IpParameters;
 import com.serotonin.modbus4j.locator.BaseLocator;
 import com.serotonin.modbus4j.locator.NumericLocator;
-import com.serotonin.modbus4j.messaging.MessagingExceptionHandler;
 
+//import com.serotonin.modbus4j.messaging.MessagingExceptionHandler;
 /**
  * @author Matthew Lohbihler
  */
@@ -161,8 +162,9 @@ public class EBI25Constants {
 				keepAlive);
 		modbusMaster.setTimeout(timeout);
 		modbusMaster.setRetries(retries);
+		//TODO write own exceptionListener implements MessagingExceptionHandler;
 		if (exceptionListener != null)
-			modbusMaster.setExceptionHandler(exceptionListener);
+			modbusMaster.setExceptionHandler((MessagingExceptionHandler) exceptionListener);
 
 		modbusMaster.init();
 

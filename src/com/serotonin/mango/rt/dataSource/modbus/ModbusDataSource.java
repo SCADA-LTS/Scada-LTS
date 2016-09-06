@@ -49,8 +49,8 @@ import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
 import com.serotonin.modbus4j.locator.BaseLocator;
-import com.serotonin.modbus4j.messaging.MessagingExceptionHandler;
-import com.serotonin.modbus4j.messaging.TimeoutException;
+import com.serotonin.modbus4j.sero.messaging.MessagingExceptionHandler;
+import com.serotonin.modbus4j.sero.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 abstract public class ModbusDataSource extends PollingDataSource implements
@@ -150,6 +150,8 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 	@Override
 	protected void doPoll(long time) {
+		
+		
 
 		if (!modbusMaster.isInitialized()) {
 			if (vo.isCreateSlaveMonitorPoints()) {
@@ -335,7 +337,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 		// Add this as a listener to exceptions that occur in the
 		// implementation.
-		modbusMaster.setExceptionHandler(this);
+		modbusMaster.setExceptionHandler((MessagingExceptionHandler) this);
 
 		try {
 			modbusMaster.init();

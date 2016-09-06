@@ -24,7 +24,7 @@ import gnu.io.SerialPort;
 
 import java.util.Enumeration;
 
-import com.serotonin.io.serial.SerialParameters;
+import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO.EncodingType;
