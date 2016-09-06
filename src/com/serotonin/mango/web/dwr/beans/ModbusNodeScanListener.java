@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.NodeScanListener;
 import com.serotonin.modbus4j.exception.ModbusInitException;
-import com.serotonin.util.ProgressiveTask;
+import com.serotonin.modbus4j.sero.util.ProgressiveTask;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -57,7 +57,6 @@ public class ModbusNodeScanListener implements NodeScanListener, TestingUtility 
                         .getLocalizedMessage(bundle);
             return;
         }
-
         task = modbusMaster.scanForSlaveNodes(this);
     }
 

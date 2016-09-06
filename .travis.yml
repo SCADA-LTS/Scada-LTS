@@ -18,6 +18,7 @@ branches:
   only:
   - "/^PROC-.*$/"
   - "/^develop-sdtabilit.*$/"
+  - "/SLTS-16.*$/"
 notifications:
   email: false
 env:
