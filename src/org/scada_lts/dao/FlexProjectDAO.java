@@ -14,6 +14,12 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+/**
+ * DAO for FlexProject.
+ *
+ * @author mateusz kapron Abil'I.T. development team, sdt@abilit.eu
+ */
+
 public class FlexProjectDAO {
 
 	private static final Log LOG = LogFactory.getLog(FlexProjectDAO.class);
