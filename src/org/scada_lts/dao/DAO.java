@@ -53,12 +53,10 @@ public class DAO {
 	
 	/**
 	 * Get id.
-	 * Deprecated because uses deprecated method in spring jdbc.
-	 * @return
-	 * @deprecated
+	 * @return Method queryForObject() can also return "null"
 	 */
 	protected int getId() {
-		return jdbcTemplate.queryForInt("select @@identity");
+		return jdbcTemplate.queryForObject("select @@identity", Integer.class);
 	}
 
 	public static DAO getInstance() {

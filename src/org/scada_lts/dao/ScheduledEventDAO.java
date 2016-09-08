@@ -1,8 +1,23 @@
 package org.scada_lts.dao;
 
-import com.dalsemi.onewire.application.tag.Event;
-import com.serotonin.mango.db.dao.BaseDao;
-import com.serotonin.mango.rt.event.type.AuditEventType;
+/*
+ * (c) 2016 Abil'I.T. http://abilit.eu/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import org.apache.commons.logging.Log;
@@ -14,13 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.List;
 
 /**
  * DAO for ScheduledEvent.
  *
- * @author mateusz kapron Abil'I.T. development team, sdt@abilit.eu
+ * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 
 public class ScheduledEventDAO {
@@ -132,6 +146,7 @@ public class ScheduledEventDAO {
 			+ "and eventTypeRef1=?";
 
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ScheduledEventVO getScheduledEvent(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -143,6 +158,7 @@ public class ScheduledEventDAO {
 		return (ScheduledEventVO) DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new ScheduledEventMapper());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ScheduledEventVO getScheduledEvent(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -154,6 +170,7 @@ public class ScheduledEventDAO {
 		return (ScheduledEventVO) DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {xid}, new ScheduledEventMapper());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<ScheduledEventVO> getScheduledEvents() {
 
 		if (LOG.isTraceEnabled()) {
@@ -199,7 +216,7 @@ public class ScheduledEventDAO {
 				}
 		);
 
-		return scheduledEventVO.getId();
+		return DAO.getInstance().getId();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -235,7 +252,7 @@ public class ScheduledEventDAO {
 				}
 		);
 
-		return scheduledEventVO.getId();
+		return DAO.getInstance().getId();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
