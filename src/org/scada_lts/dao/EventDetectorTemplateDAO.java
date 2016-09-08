@@ -57,7 +57,7 @@ public class EventDetectorTemplateDAO {
 	private final static String  COLUMN_NAME_CHANGE_COUNT = "changeCount";
 	private final static String  COLUMN_NAME_ALPHANUMERIC_STATE = "alphanumericState";
 	private final static String  COLUMN_NAME_WEIGHT = "weight";
-	private final static String  COLUMN_NAME_THRESHOLD = "treshold";
+	private final static String  COLUMN_NAME_THRESHOLD = "threshold";
 	private final static String  COLUMN_NAME_EVENT_DETECTOR_TEMPLATE_ID = "eventDetectorTemplateId";
 	
 	// @formatter:off
@@ -85,6 +85,7 @@ public class EventDetectorTemplateDAO {
 
 	private static final String DETECTORS_INSERT = ""
 			+ "insert into templatesDetectors ("
+			   // + COLUMN_NAME_ID + ", "
 				+ COLUMN_NAME_XID + ", "
 				+ COLUMN_NAME_ALIAS + ", "
 				+ COLUMN_NAME_DETECTOR_TYPE + ", "
@@ -101,6 +102,7 @@ public class EventDetectorTemplateDAO {
 				+ COLUMN_NAME_EVENT_DETECTOR_TEMPLATE_ID + " "
 			+") "
 			+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			
 
 	// @formatter:on
 	
@@ -195,7 +197,7 @@ public class EventDetectorTemplateDAO {
 	}
 	
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void insertEventDetectorTemplate(final EventDetectorTemplateVO eventDetectorTemplate) {
+	public int insertEventDetectorTemplate(final EventDetectorTemplateVO eventDetectorTemplate) {
 		
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(eventDetectorTemplate);
@@ -224,6 +226,8 @@ public class EventDetectorTemplateDAO {
 		
 		for (PointEventDetectorVO ped : eventDetectorTemplate.getEventDetectors()) {
 			DAO.getInstance().getJdbcTemp().update(DETECTORS_INSERT, new Object[]{
+					//TODO
+					//ped.getId(),
 					ped.getXid(), 
 					ped.getAlias(),
 					ped.getDetectorType(), 
@@ -232,9 +236,16 @@ public class EventDetectorTemplateDAO {
 					ped.getDuration(),
 					ped.getDurationType(),
 					DAO.boolToChar(ped.isBinaryState()),
-					ped.getMultistateState(), ped.getChangeCount(),
-					ped.getAlphanumericState(), ped.getWeight()});
+					ped.getMultistateState(), 
+					ped.getChangeCount(),
+					ped.getAlphanumericState(), 
+					ped.getWeight(),
+					//TODO
+					0.1,
+					1
+					});
 		}
+		return DAO.getInstance().getId();
 	}
 	
 }
