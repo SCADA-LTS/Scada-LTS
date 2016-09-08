@@ -1,3 +1,20 @@
+/*
+ * (c) 2015 Abil'I.T. http://abilit.eu/
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
 package org.scada_lts.cached;
 
 import static org.junit.Assert.assertEquals;
@@ -10,6 +27,12 @@ import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyDataSource;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 
+/** 
+ * Test EventDetectorTemplateDAO
+ * 
+ * @author grzegorz bylica, Marcin Gołda Abil'I.T. development team, sdt@abilit.eu
+ * 
+ */
 public class TestPointHierarchyCache {
 
 	private PointHierarchyCache cache;
@@ -350,19 +373,19 @@ public class TestPointHierarchyCache {
 		
 		List<PointHierarchyNode> resultForFolder1 = cache.getPaths(keyFolder1, PointHierarchyCache.IS_FOLDER);
 		
-		// Poniewaz ma zwrocic sam siebie gdy jest folderem
+		// Because return himself when folder 
 		Boolean okResultForFolder1 = (resultForFolder1.size()==1);
 		
 		assertEquals(true, okResultForFolder1);
 		
 		List<PointHierarchyNode> resultFolder2 = cache.getPaths(keyFolder2, PointHierarchyCache.IS_FOLDER);
 		
-		// Poniewazz ma zwrocic sam siebie i nadrzedny folder to size = 2
+		// Because return himself and parent folder when size = 2
 		assertEquals(true, (resultFolder2.size()==2) && (resultFolder2.get(0).getTitle()=="hlkjhd"));
 		
 		List<PointHierarchyNode> resultForFolder5 = cache.getPaths(keyFolder5, PointHierarchyCache.IS_FOLDER);
 		
-		// Poniewazz ma zwrocic sam siebie i nadrzedny folder to size = 2
+		// Because return himself and parent folder when size = 2
 		assertEquals(true, (resultForFolder5.size()==2) && (resultForFolder5.get(0).getTitle()=="test"));
 		
 		List<PointHierarchyNode> resultkeyPoint1 = cache.getPaths(keyPoint1, PointHierarchyCache.IS_NOT_FOLDER);
@@ -380,9 +403,6 @@ public class TestPointHierarchyCache {
 		cache.printTreeInCash("", 0);	
 		
 	}
-	
-	//TODO test wczytanie danych ktore maja wskazanie na nieistniejacy folder
-	
 	
 	
 }
