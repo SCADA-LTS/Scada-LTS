@@ -41,7 +41,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 
 /** 
- * Test EventDetectorTemplateDAO
+ * Test TestDAO
  * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 

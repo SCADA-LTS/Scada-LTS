@@ -30,7 +30,7 @@ import br.org.scadabr.vo.eventDetectorTemplate.EventDetectorTemplateVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-public class EventDetectorTemplateDAOTest extends TestDAO{
+public class EventDetectorTemplateDaoTest extends TestDAO{
 	
 	@Test
 	public void test() throws Exception {
@@ -46,7 +46,7 @@ public class EventDetectorTemplateDAOTest extends TestDAO{
 	 
 		eventDetectorTempVO.setName("test");
 		eventDetectorTempVO.setEventDetectors(lstPointsEventDetector);
-		// ane papulate data
+		// end papulate data
 		
 		// CRUD start
 		EventDetectorTemplateDAO eventDetectorTemplateDAO = new EventDetectorTemplateDAO();
@@ -55,7 +55,7 @@ public class EventDetectorTemplateDAOTest extends TestDAO{
 		int id = eventDetectorTemplateDAO.insertEventDetectorTemplate(eventDetectorTempVO);
 		eventDetectorTempVO.setId(id);
 		
-		//update (no op becouse not have update)
+		//update (no op because not have update)
 		
 		// select 
 		EventDetectorTemplateVO eventDetectorTempVOFromDB = eventDetectorTemplateDAO.getEventDetectorTemplate(id);
@@ -63,7 +63,7 @@ public class EventDetectorTemplateDAOTest extends TestDAO{
 		//check insert and select
 		assertEquals(true, eventDetectorTempVOFromDB.equals(eventDetectorTempVOFromDB));
 		
-		// delete (no op becouse not have delete)
+		// delete (no op because not have delete)
 		
 		// CRUD end
 		
