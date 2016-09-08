@@ -1,7 +1,24 @@
 package org.scada_lts.dao;
 
+/*
+ * (c) 2016 Abil'I.T. http://abilit.eu/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 import br.org.scadabr.api.vo.FlexProject;
-import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,7 +34,7 @@ import java.util.List;
 /**
  * DAO for FlexProject.
  *
- * @author mateusz kapron Abil'I.T. development team, sdt@abilit.eu
+ * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 
 public class FlexProjectDAO {
@@ -58,6 +75,20 @@ public class FlexProjectDAO {
 			+ "delete from flexProjects where"
 				+ COLUMN_NAME_ID + "=?";
 
+
+	private class FlexProjectRowMapper implements RowMapper<FlexProject> {
+
+		@Override
+		public FlexProject mapRow(ResultSet resultSet, int i) throws SQLException {
+			FlexProject fP = new FlexProject();
+			fP.setId(resultSet.getInt(COLUMN_NAME_ID));
+			fP.setName(resultSet.getString(COLUMN_NAME_NAME));
+			fP.setDescription(resultSet.getString(COLUMN_NAME_DESCRIPTION));
+			fP.setXmlConfig(resultSet.getString(COLUMN_NAME_XMLCONFIG));
+			return fP;
+		}
+	}
+
 	public FlexProject getFlexProject(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -66,21 +97,7 @@ public class FlexProjectDAO {
 
 		String templateSelectWhereId = FLEX_PROJECT_SELECT + " where " + COLUMN_NAME_ID + "=? ";
 
-		FlexProject flexProject = (FlexProject) DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[]{id},
-				new RowMapper() {
-					@Override
-					public FlexProject mapRow(ResultSet resultSet, int i) throws SQLException {
-						FlexProject fP = new FlexProject();
-						fP.setId(resultSet.getInt(COLUMN_NAME_ID));
-						fP.setName(resultSet.getString(COLUMN_NAME_NAME));
-						fP.setDescription(resultSet.getString(COLUMN_NAME_DESCRIPTION));
-						fP.setXmlConfig(resultSet.getString(COLUMN_NAME_XMLCONFIG));
-						return fP;
-					}
-				}
-		);
-
-		return flexProject;
+		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[]{id}, new FlexProjectRowMapper());
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -92,7 +109,7 @@ public class FlexProjectDAO {
 
 		DAO.getInstance().getJdbcTemp().update(FLEX_PROJECT_INSERT, new Object[] {name, description, xmlConfig},
 				new int [] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR});
-		return id;
+		return DAO.getInstance().getId();
 
 	}
 
@@ -105,7 +122,7 @@ public class FlexProjectDAO {
 
 		DAO.getInstance().getJdbcTemp().update(FLEX_PROJECT_UPDATE, new Object[] {name, description, xmlConfig, id},
 				new int [] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER});
-		return id;
+		return DAO.getInstance().getId();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -125,20 +142,6 @@ public class FlexProjectDAO {
 			LOG.trace("getFlexProjects()");
 		}
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		List<FlexProject> flexProjectList = DAO.getInstance().getJdbcTemp().query(FLEX_PROJECT_SELECT,
-				new RowMapper() {
-					@Override
-					public FlexProject mapRow(ResultSet rs, int rowNum) throws SQLException {
-						FlexProject fP = new FlexProject();
-						fP.setId(rs.getInt(COLUMN_NAME_ID));
-						fP.setName(rs.getString(COLUMN_NAME_NAME));
-						fP.setDescription(rs.getString(COLUMN_NAME_DESCRIPTION));
-						fP.setXmlConfig(rs.getString(COLUMN_NAME_XMLCONFIG));
-						return fP;
-					}
-				}) ;
-
-		return flexProjectList;
+		return DAO.getInstance().getJdbcTemp().query(FLEX_PROJECT_SELECT, new FlexProjectRowMapper());
 	}
 }
