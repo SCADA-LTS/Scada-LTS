@@ -145,8 +145,36 @@ public class ScheduledEventDAO {
 			+ EventType.EventSources.SCHEDULED
 			+ "and eventTypeRef1=?";
 
+	private class ScheduledEventRowMapper implements RowMapper<ScheduledEventVO> {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public ScheduledEventVO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			ScheduledEventVO scheduledEventVO = new ScheduledEventVO();
+			scheduledEventVO.setId(rs.getInt(COLUMN_NAME_ID));
+			scheduledEventVO.setXid(rs.getString(COLUMN_NAME_XID));
+			scheduledEventVO.setAlias(rs.getString(COLUMN_NAME_ALIAS));
+			scheduledEventVO.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
+			scheduledEventVO.setScheduleType(rs.getInt(COLUMN_NAME_SCHEDULE_TYPE));
+			scheduledEventVO.setReturnToNormal(DAO.charToBool(rs.getString(COLUMN_NAME_RETURN_TO_NORMAL)));
+			scheduledEventVO.setDisabled(DAO.charToBool(COLUMN_NAME_DISABLED));
+			scheduledEventVO.setActiveYear(rs.getInt(COLUMN_NAME_ACTIVE_YEAR));
+			scheduledEventVO.setActiveMonth(rs.getInt(COLUMN_NAME_ACTIVE_MONTH));
+			scheduledEventVO.setActiveDay(rs.getInt(COLUMN_NAME_ACTIVE_DAY));
+			scheduledEventVO.setActiveHour(rs.getInt(COLUMN_NAME_ACTIVE_HOUR));
+			scheduledEventVO.setActiveMinute(rs.getInt(COLUMN_NAME_ACTIVE_MINUTE));
+			scheduledEventVO.setActiveSecond(rs.getInt(COLUMN_NAME_ACTIVE_SECOND));
+			scheduledEventVO.setActiveCron(rs.getString(COLUMN_NAME_ACTIVE_CRON));
+			scheduledEventVO.setInactiveYear(rs.getInt(COLUMN_NAME_INACTIVE_YEAR));
+			scheduledEventVO.setInactiveMonth(rs.getInt(COLUMN_NAME_INACTIVE_MONTH));
+			scheduledEventVO.setInactiveDay(rs.getInt(COLUMN_NAME_INACTIVE_DAY));
+			scheduledEventVO.setInactiveHour(rs.getInt(COLUMN_NAME_INACTIVE_HOUR));
+			scheduledEventVO.setInactiveMinute(rs.getInt(COLUMN_NAME_INACTIVE_MINUTE));
+			scheduledEventVO.setInactiveSecond(rs.getInt(COLUMN_NAME_INACTIVE_SECOND));
+			scheduledEventVO.setInactiveCron(rs.getString(COLUMN_NAME_INACTIVE_CRON));
+			return scheduledEventVO;
+		}
+	}
+
 	public ScheduledEventVO getScheduledEvent(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -155,10 +183,9 @@ public class ScheduledEventDAO {
 
 		String templateSelectWhereId = SCHEDULED_EVENT_SELECT + "where " + COLUMN_NAME_ID + "=? ";
 
-		return (ScheduledEventVO) DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new ScheduledEventMapper());
+		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new ScheduledEventRowMapper());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ScheduledEventVO getScheduledEvent(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -167,10 +194,9 @@ public class ScheduledEventDAO {
 
 		String templateSelectWhereId = SCHEDULED_EVENT_SELECT + "where " + COLUMN_NAME_XID + "=? ";
 
-		return (ScheduledEventVO) DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {xid}, new ScheduledEventMapper());
+		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {xid}, new ScheduledEventRowMapper());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<ScheduledEventVO> getScheduledEvents() {
 
 		if (LOG.isTraceEnabled()) {
@@ -179,10 +205,7 @@ public class ScheduledEventDAO {
 
 		String templateSelectedOrderBy = SCHEDULED_EVENT_SELECT + " order by scheduleType";
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		List<ScheduledEventVO> scheduledEventVOList = DAO.getInstance().getJdbcTemp().query(templateSelectedOrderBy, new ScheduledEventMapper());
-
-		return scheduledEventVOList;
+		return DAO.getInstance().getJdbcTemp().query(templateSelectedOrderBy, new ScheduledEventRowMapper());
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -269,35 +292,5 @@ public class ScheduledEventDAO {
 			DAO.getInstance().getJdbcTemp().update(SCHEDULED_EVENT_DELETE, new Object[] {id});
 		}
 
-	}
-
-	private class ScheduledEventMapper implements RowMapper {
-
-		@Override
-		public ScheduledEventVO mapRow(ResultSet rs, int rowNum) throws SQLException {
-			ScheduledEventVO scheduledEventVO = new ScheduledEventVO();
-			scheduledEventVO.setId(rs.getInt(COLUMN_NAME_ID));
-			scheduledEventVO.setXid(rs.getString(COLUMN_NAME_XID));
-			scheduledEventVO.setAlias(rs.getString(COLUMN_NAME_ALIAS));
-			scheduledEventVO.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
-			scheduledEventVO.setScheduleType(rs.getInt(COLUMN_NAME_SCHEDULE_TYPE));
-			scheduledEventVO.setReturnToNormal(DAO.charToBool(rs.getString(COLUMN_NAME_RETURN_TO_NORMAL)));
-			scheduledEventVO.setDisabled(DAO.charToBool(COLUMN_NAME_DISABLED));
-			scheduledEventVO.setActiveYear(rs.getInt(COLUMN_NAME_ACTIVE_YEAR));
-			scheduledEventVO.setActiveMonth(rs.getInt(COLUMN_NAME_ACTIVE_MONTH));
-			scheduledEventVO.setActiveDay(rs.getInt(COLUMN_NAME_ACTIVE_DAY));
-			scheduledEventVO.setActiveHour(rs.getInt(COLUMN_NAME_ACTIVE_HOUR));
-			scheduledEventVO.setActiveMinute(rs.getInt(COLUMN_NAME_ACTIVE_MINUTE));
-			scheduledEventVO.setActiveSecond(rs.getInt(COLUMN_NAME_ACTIVE_SECOND));
-			scheduledEventVO.setActiveCron(rs.getString(COLUMN_NAME_ACTIVE_CRON));
-			scheduledEventVO.setInactiveYear(rs.getInt(COLUMN_NAME_INACTIVE_YEAR));
-			scheduledEventVO.setInactiveMonth(rs.getInt(COLUMN_NAME_INACTIVE_MONTH));
-			scheduledEventVO.setInactiveDay(rs.getInt(COLUMN_NAME_INACTIVE_DAY));
-			scheduledEventVO.setInactiveHour(rs.getInt(COLUMN_NAME_INACTIVE_HOUR));
-			scheduledEventVO.setInactiveMinute(rs.getInt(COLUMN_NAME_INACTIVE_MINUTE));
-			scheduledEventVO.setInactiveSecond(rs.getInt(COLUMN_NAME_INACTIVE_SECOND));
-			scheduledEventVO.setInactiveCron(rs.getString(COLUMN_NAME_INACTIVE_CRON));
-			return scheduledEventVO;
-		}
 	}
 }
