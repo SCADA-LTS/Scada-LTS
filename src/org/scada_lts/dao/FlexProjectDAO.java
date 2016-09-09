@@ -72,7 +72,7 @@ public class FlexProjectDAO {
 				+ COLUMN_NAME_ID + "=?";
 
 	private static final String FLEX_PROJECT_DELETE = ""
-			+ "delete from flexProjects where"
+			+ "delete from flexProjects where "
 				+ COLUMN_NAME_ID + "=?";
 
 
@@ -101,10 +101,10 @@ public class FlexProjectDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insert(int id, String name, String description, String xmlConfig) {
+	public int insert(String name, String description, String xmlConfig) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("insertFlexProject(int id, String name, String description, String xmlConfig) id:" + id + ", name" + name + ", description:" + description + ", xmlConfig" + xmlConfig);
+			LOG.trace("insertFlexProject(String name, String description, String xmlConfig) name" + name + ", description:" + description + ", xmlConfig" + xmlConfig);
 		}
 
 		DAO.getInstance().getJdbcTemp().update(FLEX_PROJECT_INSERT, new Object[] {name, description, xmlConfig},
