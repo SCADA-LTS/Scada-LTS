@@ -18,15 +18,22 @@ package org.scada_lts.dao;
  *
  */
 
+import com.mysql.jdbc.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -86,7 +93,7 @@ public class ScheduledEventDAO {
 				+ COLUMN_NAME_INACTIVE_MINUTE + ", "
 				+ COLUMN_NAME_INACTIVE_SECOND + ", "
 				+ COLUMN_NAME_INACTIVE_CRON + " "
-			+ "from scheduledEvents";
+			+ "from scheduledEvents ";
 
 	private static final String SCHEDULED_EVENT_INSERT = ""
 			+ "insert into scheduledEvents ("
@@ -110,7 +117,7 @@ public class ScheduledEventDAO {
 				+ COLUMN_NAME_INACTIVE_MINUTE + ", "
 				+ COLUMN_NAME_INACTIVE_SECOND + ", "
 				+ COLUMN_NAME_INACTIVE_CRON + " "
-			+ ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			+ ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 	private static final String SCHEDULED_EVENT_UPDATE = ""
 			+ "update scheduledEvents set "
@@ -139,11 +146,11 @@ public class ScheduledEventDAO {
 
 	private static final String SCHEDULED_EVENT_DELETE = ""
 			+ "delete from scheduledEvents where "
-				+ COLUMN_NAME_ID + "=?";
+				+ COLUMN_NAME_ID + "=? ";
 
 	private static final String TEMPLATE_EVENT_HANDLER_DELETE = "delete from eventHandlers where eventTypeId="
 			+ EventType.EventSources.SCHEDULED
-			+ "and eventTypeRef1=?";
+			+ " and eventTypeRef1=? ";
 
 	private class ScheduledEventRowMapper implements RowMapper<ScheduledEventVO> {
 
@@ -209,43 +216,49 @@ public class ScheduledEventDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insert(ScheduledEventVO scheduledEventVO) {
+	public int insert(final ScheduledEventVO scheduledEventVO) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insert(ScheduledEventVO scheduledEventVO) scheduledEventVO:" + scheduledEventVO.toString());
 		}
 
-		DAO.getInstance().getJdbcTemp().update(SCHEDULED_EVENT_INSERT,
-				new Object[] {
-					scheduledEventVO.getXid(),
-					scheduledEventVO.getAlarmLevel(),
-					scheduledEventVO.getAlias(),
-					scheduledEventVO.getScheduleType(),
-					DAO.boolToChar(scheduledEventVO.isReturnToNormal()),
-					DAO.boolToChar(scheduledEventVO.isDisabled()),
-					scheduledEventVO.getActiveYear(),
-					scheduledEventVO.getActiveMonth(),
-					scheduledEventVO.getActiveHour(),
-					scheduledEventVO.getActiveMinute(),
-					scheduledEventVO.getActiveSecond(),
-					scheduledEventVO.getActiveCron(),
-					scheduledEventVO.getInactiveYear(),
-					scheduledEventVO.getInactiveMonth(),
-					scheduledEventVO.getInactiveDay(),
-					scheduledEventVO.getInactiveHour(),
-					scheduledEventVO.getInactiveMinute(),
-					scheduledEventVO.getInactiveSecond(),
-					scheduledEventVO.getInactiveCron()
-				}
-		);
+		KeyHolder keyHolder = new GeneratedKeyHolder();
 
-		return DAO.getInstance().getId();
+		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement ps = connection.prepareStatement(SCHEDULED_EVENT_INSERT, Statement.RETURN_GENERATED_KEYS);
+				new ArgumentPreparedStatementSetter(new Object[] {
+						scheduledEventVO.getXid(),
+						scheduledEventVO.getAlias(),
+						scheduledEventVO.getAlarmLevel(),
+						scheduledEventVO.getScheduleType(),
+						DAO.boolToChar(scheduledEventVO.isReturnToNormal()),
+						DAO.boolToChar(scheduledEventVO.isDisabled()),
+						scheduledEventVO.getActiveYear(),
+						scheduledEventVO.getActiveMonth(),
+						scheduledEventVO.getActiveDay(),
+						scheduledEventVO.getActiveHour(),
+						scheduledEventVO.getActiveMinute(),
+						scheduledEventVO.getActiveSecond(),
+						scheduledEventVO.getActiveCron(),
+						scheduledEventVO.getInactiveYear(),
+						scheduledEventVO.getInactiveMonth(),
+						scheduledEventVO.getInactiveDay(),
+						scheduledEventVO.getInactiveHour(),
+						scheduledEventVO.getInactiveMinute(),
+						scheduledEventVO.getInactiveSecond(),
+						scheduledEventVO.getInactiveCron()
+				}).setValues(ps);
+				return ps;
+			}
+		}, keyHolder);
+
+		return keyHolder.getKey().intValue();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int update(ScheduledEventVO scheduledEventVO) {
-
-		ScheduledEventVO oldSE = getScheduledEvent(scheduledEventVO.getId());
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(ScheduledEventVO scheduledEventVO) scheduledEventVO:"+  scheduledEventVO.toString());
@@ -261,6 +274,7 @@ public class ScheduledEventDAO {
 					DAO.boolToChar(scheduledEventVO.isDisabled()),
 					scheduledEventVO.getActiveYear(),
 					scheduledEventVO.getActiveMonth(),
+					scheduledEventVO.getActiveDay(),
 					scheduledEventVO.getActiveHour(),
 					scheduledEventVO.getActiveMinute(),
 					scheduledEventVO.getActiveSecond(),
@@ -271,7 +285,8 @@ public class ScheduledEventDAO {
 					scheduledEventVO.getInactiveHour(),
 					scheduledEventVO.getInactiveMinute(),
 					scheduledEventVO.getInactiveSecond(),
-					scheduledEventVO.getInactiveCron()
+					scheduledEventVO.getInactiveCron(),
+					scheduledEventVO.getId()
 				}
 		);
 
