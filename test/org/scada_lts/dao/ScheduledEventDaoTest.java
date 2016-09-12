@@ -34,9 +34,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class ScheduledEventDaoTest extends TestDAO {
 
-	@Rule
-	public final ExpectedException expectedException = ExpectedException.none();
-
 	private static final String XID = "schedule xid";
 	private static final String ALIAS = "schedule alias";
 	private static final int ALARM_LEVEL = 2;

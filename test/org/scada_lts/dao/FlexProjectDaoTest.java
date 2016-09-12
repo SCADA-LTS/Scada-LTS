@@ -34,9 +34,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class FlexProjectDaoTest extends TestDAO {
 
-	@Rule
-	public final ExpectedException expectedException = ExpectedException.none();
-
 	private static final Integer ID = 1;
 	private static final String NAME = "flex name";
 	private static final String DESCRIPTION = "flex description";
