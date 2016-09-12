@@ -267,8 +267,8 @@ public class ScheduledEventDAO {
 		DAO.getInstance().getJdbcTemp().update(SCHEDULED_EVENT_UPDATE,
 				new Object[] {
 					scheduledEventVO.getXid(),
-					scheduledEventVO.getAlarmLevel(),
 					scheduledEventVO.getAlias(),
+					scheduledEventVO.getAlarmLevel(),
 					scheduledEventVO.getScheduleType(),
 					DAO.boolToChar(scheduledEventVO.isReturnToNormal()),
 					DAO.boolToChar(scheduledEventVO.isDisabled()),
