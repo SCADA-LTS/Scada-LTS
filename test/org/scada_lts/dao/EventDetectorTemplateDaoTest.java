@@ -1,5 +1,5 @@
 /*
- * (c) 2015 Abil'I.T. http://abilit.eu/
+ * (c) 2016 Abil'I.T. http://abilit.eu/
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,10 +55,16 @@ public class EventDetectorTemplateDaoTest extends TestDAO{
 		int id = eventDetectorTemplateDAO.insertEventDetectorTemplate(eventDetectorTempVO);
 		eventDetectorTempVO.setId(id);
 		
+		//next insert
+		eventDetectorTempVO.setName("nextTest");
+		int idNext = eventDetectorTemplateDAO.insertEventDetectorTemplate(eventDetectorTempVO);
+		eventDetectorTempVO.setId(idNext);
+				
+		
 		//update (no op because not have update)
 		
 		// select 
-		EventDetectorTemplateVO eventDetectorTempVOFromDB = eventDetectorTemplateDAO.getEventDetectorTemplate(id);
+		EventDetectorTemplateVO eventDetectorTempVOFromDB = eventDetectorTemplateDAO.getEventDetectorTemplate(idNext);
 		
 		//check insert and select
 		assertEquals(true, eventDetectorTempVOFromDB.equals(eventDetectorTempVOFromDB));
