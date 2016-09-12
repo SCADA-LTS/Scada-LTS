@@ -258,7 +258,7 @@ public class ScheduledEventDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int update(ScheduledEventVO scheduledEventVO) {
+	public void update(ScheduledEventVO scheduledEventVO) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(ScheduledEventVO scheduledEventVO) scheduledEventVO:"+  scheduledEventVO.toString());
@@ -289,8 +289,6 @@ public class ScheduledEventDAO {
 					scheduledEventVO.getId()
 				}
 		);
-
-		return DAO.getInstance().getId();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
