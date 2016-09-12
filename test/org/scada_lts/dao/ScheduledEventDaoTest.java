@@ -155,7 +155,7 @@ public class ScheduledEventDaoTest extends TestDAO {
 		int secondId = scheduledEventDAO.insert(secondScheduledEventVO);
 
 		//Select single object
-		ScheduledEventVO scheduledEventVoSelect = scheduledEventDAO.getScheduledEvent(2);
+		ScheduledEventVO scheduledEventVoSelect = scheduledEventDAO.getScheduledEvent(firstId);
 		assertTrue(scheduledEventVoSelect.getId() == firstId);
 		assertTrue(scheduledEventVoSelect.getXid().equals(XID));
 		assertTrue(scheduledEventVoSelect.getAlias().equals(ALIAS));
@@ -177,7 +177,6 @@ public class ScheduledEventDaoTest extends TestDAO {
 		assertTrue(scheduledEventVoSelect.getInactiveMinute() == INACTIVE_MINUTE);
 		assertTrue(scheduledEventVoSelect.getInactiveSecond() == INACTIVE_SECOND);
 		assertTrue(scheduledEventVoSelect.getInactiveCron().equals(INACTIVE_CRON));
-
 
 		//Select all objects
 		List<ScheduledEventVO> scheduledEventVOList = scheduledEventDAO.getScheduledEvents();
@@ -213,9 +212,9 @@ public class ScheduledEventDaoTest extends TestDAO {
 		scheduledEventDAO.update(scheduledEventVoUpdate);
 
 		//Delete
-		scheduledEventDAO.delete(1);
+		scheduledEventDAO.delete(firstId);
 		expectedException.expect(EmptyResultDataAccessException.class);
 		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		scheduledEventDAO.getScheduledEvent(scheduledEventVO.getId());
+		scheduledEventDAO.getScheduledEvent(firstId);
 	}
 }

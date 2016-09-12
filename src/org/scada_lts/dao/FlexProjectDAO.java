@@ -19,16 +19,21 @@ package org.scada_lts.dao;
  */
 
 import br.org.scadabr.api.vo.FlexProject;
+import com.mysql.jdbc.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.List;
 
 /**
@@ -107,10 +112,18 @@ public class FlexProjectDAO {
 			LOG.trace("insertFlexProject(String name, String description, String xmlConfig) name" + name + ", description:" + description + ", xmlConfig" + xmlConfig);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(FLEX_PROJECT_INSERT, new Object[] {name, description, xmlConfig},
-				new int [] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR});
-		return DAO.getInstance().getId();
+		KeyHolder keyHolder = new GeneratedKeyHolder();
 
+		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement ps = connection.prepareStatement(FLEX_PROJECT_INSERT, Statement.RETURN_GENERATED_KEYS);
+				new ArgumentPreparedStatementSetter(new Object[] {name, description, xmlConfig}).setValues(ps);
+				return ps;
+			}
+		}, keyHolder);
+
+		return keyHolder.getKey().intValue();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

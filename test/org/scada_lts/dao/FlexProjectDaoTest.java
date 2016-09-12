@@ -66,11 +66,10 @@ public class FlexProjectDaoTest extends TestDAO {
 		int firstId = flexProjectDAO.insert(NAME, DESCRIPTION, XML_CONFIG);
 		int secondId = flexProjectDAO.insert(SECOND_NAME, SECOND_DESCRIPTION, SECOND_XML_CONFIG);
 		flexProject.setId(firstId);
-//		assertTrue(ID.equals(id));
 
 		//Select single object
-		FlexProject flexProjectSelect = flexProjectDAO.getFlexProject(ID);
-		assertTrue(flexProjectSelect.getId().equals(ID));
+		FlexProject flexProjectSelect = flexProjectDAO.getFlexProject(firstId);
+		assertTrue(flexProjectSelect.getId().equals(firstId));
 		assertTrue(flexProjectSelect.getName().equals(NAME));
 		assertTrue(flexProjectSelect.getDescription().equals(DESCRIPTION));
 		assertTrue(flexProjectSelect.getXmlConfig().equals(XML_CONFIG));
@@ -80,21 +79,21 @@ public class FlexProjectDaoTest extends TestDAO {
 		//Check list size
 		assertTrue(flexProjectList.size() == LIST_SIZE);
 		//Check IDs
-//		assertTrue(flexProjectList.get(0).getId().equals(firstId));
-//		assertTrue(flexProjectList.get(1).getId().equals(secondId));
+		assertTrue(flexProjectList.get(0).getId().equals(firstId));
+		assertTrue(flexProjectList.get(1).getId().equals(secondId));
 
 		//Update
 		flexProjectDAO.update(ID, UPDATE_NAME, UPDATE_DESCRIPTION, UPDATE_XML_CONFIG);
-		FlexProject flexProjectUpdate = flexProjectDAO.getFlexProject(ID);
-		assertTrue(flexProjectUpdate.getId().equals(ID));
+		FlexProject flexProjectUpdate = flexProjectDAO.getFlexProject(firstId);
+		assertTrue(flexProjectUpdate.getId().equals(firstId));
 		assertTrue(flexProjectUpdate.getName().equals(UPDATE_NAME));
 		assertTrue(flexProjectUpdate.getDescription().equals(UPDATE_DESCRIPTION));
 		assertTrue(flexProjectUpdate.getXmlConfig().equals(UPDATE_XML_CONFIG));
 
 		//Delete
-		flexProjectDAO.delete(ID);
+		flexProjectDAO.delete(firstId);
 		expectedException.expect(EmptyResultDataAccessException.class);
 		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		flexProjectDAO.getFlexProject(ID);
+		flexProjectDAO.getFlexProject(firstId);
 	}
 }
