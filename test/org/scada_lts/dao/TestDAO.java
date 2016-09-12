@@ -34,6 +34,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -62,6 +64,10 @@ public class TestDAO {
 	private String database = "scadalts_test_";
 	private Connection conn = null;
 	private Statement stmt = null;
+	
+	@Rule
+	public final ExpectedException expectedException = ExpectedException.none();
+	
 	
 	@Before
 	public void setUp() throws ClassNotFoundException, SQLException {

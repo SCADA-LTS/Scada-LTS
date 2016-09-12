@@ -40,10 +40,7 @@ import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 public class ScriptDaoTest extends TestDAO {
 	
 	private final static int ADMIN_USER_ID=1;
-	
-	@Rule
-	public final ExpectedException expectedException = ExpectedException.none();
-	
+		
 	@Test
 	public void test() {
 		
@@ -60,7 +57,7 @@ public class ScriptDaoTest extends TestDAO {
 		String xid = "XID_0"+1;
 		scriptVO.setXid(xid);
 		
-		// end papulate data
+		// end populate data
 		
 		//CRUD
 		
