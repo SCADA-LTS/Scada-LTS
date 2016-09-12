@@ -628,3 +628,8 @@ create table viewUsersProfiles (
 ) ENGINE=InnoDB;
 alter table viewUsersProfiles add constraint viewUsersProfilesFk1 foreign key (viewId) references mangoViews(id) on delete cascade;
 alter table viewUsersProfiles add constraint viewUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;
+
+INSERT INTO users
+( username,password,email,admin,disabled,receiveAlarmEmails,receiveOwnAuditEvents)
+VALUES
+("admin","admin","admin_test.pl",'Y','N',0,'Y');
