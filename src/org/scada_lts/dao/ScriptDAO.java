@@ -18,13 +18,20 @@
 
 package org.scada_lts.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +44,7 @@ import br.org.scadabr.vo.scripting.ScriptVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-public class ScriptDAO {
+public class ScriptDAO  {
 	
 	private static final Log LOG = LogFactory.getLog(ScriptDAO.class);
 	
@@ -62,7 +69,7 @@ public class ScriptDAO {
 	
 	
 	private static final String SCRIPT_INSERT = ""
-			+ "insert scripts templatesDetectors ("
+			+ "insert scripts ("
 				+ COLUMN_NAME_XID + "," 
 				+ COLUMN_NAME_NAME + "," 
 				+ COLUMN_NAME_SCRIPT + "," 
@@ -74,9 +81,9 @@ public class ScriptDAO {
 	private static final String SCRIPT_UPDATE = ""
 			+ "update scripts set "
 				+ COLUMN_NAME_XID+"=?,"
-				+ COLUMN_NAME_NAME+"=?"
-				+ COLUMN_NAME_SCRIPT+"=?"
-				+ COLUMN_NAME_USERID+"=?"
+				+ COLUMN_NAME_NAME+"=?,"
+				+ COLUMN_NAME_SCRIPT+"=?,"
+				+ COLUMN_NAME_USERID+"=?,"
 				+ COLUMN_NAME_DATA+"=? "
 			+ "where "
 				+ COLUMN_NAME_ID+"=?";
@@ -90,7 +97,7 @@ public class ScriptDAO {
 	
 	private static final String SCRIPT_SELECT_ONE=""
 			+ SCRIPT_SELECT 
-			+ "where "
+			+ " where "
 			  + COLUMN_NAME_ID+"=?";
 	
 	private static final String SCRIPT_SELECT_BASE_ON_XID=""
@@ -104,7 +111,8 @@ public class ScriptDAO {
 	private class ScriptRowMapper implements RowMapper<ScriptVO<?>> {
 		public ScriptVO<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
             ScriptVO<?> script;
-            script = (ScriptVO<?>) new SerializationData().readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());                    
+            
+            script = (ScriptVO<?>) new SerializationData().readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
 			script.setId(rs.getInt(COLUMN_NAME_ID));
 			script.setXid(rs.getString(COLUMN_NAME_XID));
 			script.setName(rs.getString(COLUMN_NAME_NAME));
@@ -121,14 +129,25 @@ public class ScriptDAO {
 				LOG.trace(vo);
 			}
 			
-			DAO.getInstance().getJdbcTemp().update(SCRIPT_INSERT, new Object[] { 
-					vo.getXid(), 
-					vo.getName(), 
-					vo.getScript(), 
-					vo.getUserId(),
-					new SerializationData().writeObject(vo) });
+			KeyHolder keyHolder = new GeneratedKeyHolder();
 			
-			return DAO.getInstance().getId();
+			DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+				 			@Override
+				 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				 				PreparedStatement ps = connection.prepareStatement(SCRIPT_INSERT, Statement.RETURN_GENERATED_KEYS);
+				 				new ArgumentPreparedStatementSetter( new Object[] { 
+				 						vo.getXid(), 
+				 						vo.getName(), 
+				 						vo.getScript(), 
+				 						vo.getUserId(),
+				 						new SerializationData().writeObject(vo)
+				 				}).setValues(ps);
+				 				return ps;
+				 			}
+			}, keyHolder);
+			
+			return keyHolder.getKey().intValue();
+			
 	}
 	
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -145,7 +164,6 @@ public class ScriptDAO {
 					vo.getUserId(),
 					new SerializationData().writeObject(vo), 
 					vo.getId() });
-			
 	}
 
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -161,8 +179,7 @@ public class ScriptDAO {
 
 	public ScriptVO<?> getScript(int id) {
 		
-		return (ScriptVO<?>) DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_ONE, new Object[]  { 
-				id }, new ScriptRowMapper());
+		return (ScriptVO<?>) DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_ONE, new Object[]  { id }, new ScriptRowMapper());
 	}
 	
 	public List<ScriptVO<?>> getScripts() {

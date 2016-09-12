@@ -17,14 +17,21 @@
  */
 package org.scada_lts.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.exception.EventDetectorTemplateExceptionDAO;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -205,8 +212,7 @@ public class EventDetectorTemplateDAO {
 		
 		String templateSelectWhereName = TEMPLATES_SELECT +" where " + COLUMN_NAME_EVENT_DETEC_TEMPL_NAME + "=? ";
 		
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		List<EventDetectorTemplateVO> listEventDetectorTemplate = DAO.getInstance().getJdbcTemp().query(templateSelectWhereName, new String[]{eventDetectorTemplate.getName()}, new RowMapper() {
+		List<EventDetectorTemplateVO> listEventDetectorTemplate = DAO.getInstance().getJdbcTemp().query(templateSelectWhereName, new String[]{eventDetectorTemplate.getName()}, new RowMapper<EventDetectorTemplateVO>() {
 					@Override
 					public EventDetectorTemplateVO mapRow(ResultSet rs, int rownumber) throws SQLException {
 						
@@ -222,7 +228,20 @@ public class EventDetectorTemplateDAO {
 			throw new EventDetectorTemplateExceptionDAO();
 		}
 		
-		DAO.getInstance().getJdbcTemp().update(TEMPLATES_INSERT, new Object[]{eventDetectorTemplate.getName()});
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		
+		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+			 			@Override
+			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+			 				PreparedStatement ps = connection.prepareStatement(TEMPLATES_INSERT, Statement.RETURN_GENERATED_KEYS);
+			 				new ArgumentPreparedStatementSetter(new Object[] {
+			 						eventDetectorTemplate.getName()
+			 				}).setValues(ps);
+			 				return ps;
+			 			}
+		}, keyHolder);
+		
+		
 		
 		for (PointEventDetectorVO ped : eventDetectorTemplate.getEventDetectors()) {
 			DAO.getInstance().getJdbcTemp().update(DETECTORS_INSERT, new Object[]{
@@ -245,7 +264,8 @@ public class EventDetectorTemplateDAO {
 					1
 					});
 		}
-		return DAO.getInstance().getId();
+		
+		return keyHolder.getKey().intValue();
 	}
 	
 }
