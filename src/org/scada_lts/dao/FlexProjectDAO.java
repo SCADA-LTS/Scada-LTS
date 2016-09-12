@@ -106,7 +106,7 @@ public class FlexProjectDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insert(String name, String description, String xmlConfig) {
+	public int insert(final String name, final String description, final String xmlConfig) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insertFlexProject(String name, String description, String xmlConfig) name" + name + ", description:" + description + ", xmlConfig" + xmlConfig);

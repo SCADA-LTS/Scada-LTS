@@ -216,7 +216,7 @@ public class ScheduledEventDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insert(ScheduledEventVO scheduledEventVO) {
+	public int insert(final ScheduledEventVO scheduledEventVO) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insert(ScheduledEventVO scheduledEventVO) scheduledEventVO:" + scheduledEventVO.toString());
