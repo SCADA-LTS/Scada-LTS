@@ -18,9 +18,7 @@
 package org.scada_lts.dao;
 
 import com.serotonin.mango.vo.link.PointLinkVO;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
