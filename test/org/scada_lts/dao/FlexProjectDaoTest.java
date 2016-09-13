@@ -18,9 +18,7 @@
 package org.scada_lts.dao;
 
 import br.org.scadabr.api.vo.FlexProject;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
@@ -34,7 +32,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class FlexProjectDaoTest extends TestDAO {
 
-	private static final Integer ID = 1;
 	private static final String NAME = "flex name";
 	private static final String DESCRIPTION = "flex description";
 	private static final String XML_CONFIG = "flex xml config";
@@ -80,7 +77,7 @@ public class FlexProjectDaoTest extends TestDAO {
 		assertTrue(flexProjectList.get(1).getId().equals(secondId));
 
 		//Update
-		flexProjectDAO.update(ID, UPDATE_NAME, UPDATE_DESCRIPTION, UPDATE_XML_CONFIG);
+		flexProjectDAO.update(firstId, UPDATE_NAME, UPDATE_DESCRIPTION, UPDATE_XML_CONFIG);
 		FlexProject flexProjectUpdate = flexProjectDAO.getFlexProject(firstId);
 		assertTrue(flexProjectUpdate.getId().equals(firstId));
 		assertTrue(flexProjectUpdate.getName().equals(UPDATE_NAME));

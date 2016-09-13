@@ -22,9 +22,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.serotonin.db.IntValuePair;

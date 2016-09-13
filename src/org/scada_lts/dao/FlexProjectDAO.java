@@ -127,7 +127,7 @@ public class FlexProjectDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int update(int id, String name, String description, String xmlConfig) {
+	public void update(int id, String name, String description, String xmlConfig) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("updateFlexProject(int id, String name, String descriptor, String xmlConfig) id:" + id + ", name" + name + ", description:" + description + ", xmlConfig" + xmlConfig);
@@ -135,7 +135,6 @@ public class FlexProjectDAO {
 
 		DAO.getInstance().getJdbcTemp().update(FLEX_PROJECT_UPDATE, new Object[] {name, description, xmlConfig, id},
 				new int [] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER});
-		return DAO.getInstance().getId();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

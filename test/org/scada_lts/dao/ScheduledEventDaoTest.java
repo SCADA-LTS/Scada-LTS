@@ -18,9 +18,7 @@
 package org.scada_lts.dao;
 
 import com.serotonin.mango.vo.event.ScheduledEventVO;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
@@ -185,6 +183,7 @@ public class ScheduledEventDaoTest extends TestDAO {
 
 		//Update
 		ScheduledEventVO scheduledEventVoUpdate = new ScheduledEventVO();
+		scheduledEventVoUpdate.setId(firstId);
 		scheduledEventVoUpdate.setXid(UPDATE_XID);
 		scheduledEventVoUpdate.setAlias(UPDATE_ALIAS);
 		scheduledEventVoUpdate.setAlarmLevel(UPDATE_ALARM_LEVEL);
