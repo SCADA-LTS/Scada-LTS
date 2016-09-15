@@ -220,13 +220,19 @@ public class PointEventDetectorDAO {
 		);
 	}
 
+	/**
+	 * Delete all PointEventDetector objects which are related with specific DataPointID.
+	 *
+	 * @param dataPointId
+	 *		  Id which connect PointEventDetector object and DataPoint object
+	 */
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void delete(int id) {
+	public void delete(int dataPointId) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("delete(int id) id:" + id);
+			LOG.trace("delete(int dataPointId) dataPointId:" + dataPointId);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(POINT_EVENT_DETECTOR_DELETE, new Object[] {id});
+		DAO.getInstance().getJdbcTemp().update(POINT_EVENT_DETECTOR_DELETE, new Object[] {dataPointId});
 	}
 }
