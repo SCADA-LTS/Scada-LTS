@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
@@ -34,6 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -202,9 +204,15 @@ public class DataPointDAO {
 			LOG.trace("delete(String dataPointIdList) dataPointIdList:" + dataPointIdList);
 		}
 
-		String templateDeleteIn = DATA_POINT_DELETE + " in (?) ";
+		String[] parameters = dataPointIdList.split(",");
 
-		DAO.getInstance().getJdbcTemp().update(templateDeleteIn, new Object[] {dataPointIdList});
+		StringBuilder queryBuilder = new StringBuilder(DATA_POINT_DELETE + " in (?");
+		for (int i = 1; i<parameters.length; i++) {
+			queryBuilder.append(",?");
+		}
+		queryBuilder.append(")");
+
+		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
 
 }
