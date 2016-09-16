@@ -54,5 +54,36 @@ public class PointValue {
 	public void setPointValue(PointValueTime pointValue) {
 		this.pointValue = pointValue;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (dataPointId ^ (dataPointId >>> 32));
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((pointValue == null) ? 0 : pointValue.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PointValue other = (PointValue) obj;
+		if (dataPointId != other.dataPointId)
+			return false;
+		if (id != other.id)
+			return false;
+		if (pointValue == null) {
+			if (other.pointValue != null)
+				return false;
+		} else if (!pointValue.equals(other.pointValue))
+			return false;
+		return true;
+	}
 
 }

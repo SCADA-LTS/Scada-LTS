@@ -52,7 +52,6 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 
 /** 
  * 
- * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
@@ -127,10 +126,6 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"=? "
 			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
-	//TODO
-/*	private static final String POINT_VALUE_ANNOTATION_INSERT = "insert into pointValueAnnotations "
-			+ "(pointValueId, textPointValueShort, textPointValueLong, sourceType, sourceId) values (?,?,?,?,?)";
-*/
  
 	// @formatter:on
 	
@@ -226,9 +221,9 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 			 				PreparedStatement ps = connection.prepareStatement(POINT_VALUE_INSERT, Statement.RETURN_GENERATED_KEYS);
 			 				new ArgumentPreparedStatementSetter( new Object[] { 
-			 						entity.getDataPointId(), 
+			 						entity.getDataPointId(),
 			 						entity.getPointValue().getValue().getDataType(),
-			 						entity.getPointValue(), 
+			 						entity.getPointValue().getDoubleValue(),
 			 						entity.getPointValue().getTime()
 			 				}).setValues(ps);
 			 				return ps;
