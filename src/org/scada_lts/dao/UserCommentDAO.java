@@ -26,8 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +34,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -84,7 +84,8 @@ public class UserCommentDAO {
 			+ "order by "
 				+ "uc." + COLUMN_NAME_TS;
 
-	private static final String USER_COMMENT_INSERT = ""
+	private static final String
+			USER_COMMENT_INSERT = ""
 			+ "insert into userComments ("
 				+ COLUMN_NAME_USER_ID + ", "
 				+ COLUMN_NAME_COMMENT_TYPE + ", "
@@ -144,8 +145,6 @@ public class UserCommentDAO {
 			LOG.trace("insert(UserComment comment, int typeId, int referenceId) userComment:" + userComment.toString() + " typeId:" + typeId + " referenceId:" + referenceId);
 		}
 
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -159,9 +158,9 @@ public class UserCommentDAO {
 				}).setValues(ps);
 				return ps;
 			}
-		}, keyHolder);
+		});
 
-		return keyHolder.getKey().intValue();
+		return userComment.getUserId();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -193,9 +192,17 @@ public class UserCommentDAO {
 			LOG.trace("deleteUserCommentPoint(String dataPointIdList) dataPointIdList:" + dataPointIdList);
 		}
 
-		String templateDeleteTypePoint =  USER_COMMENT_DELETE + "in (?)";
+		ArrayList<String> parameters = new ArrayList<>(Arrays.asList(dataPointIdList.split(",")));
 
-		DAO.getInstance().getJdbcTemp().update(templateDeleteTypePoint, new Object[] {UserComment.TYPE_POINT, dataPointIdList});
+		StringBuilder queryBuilder = new StringBuilder(USER_COMMENT_DELETE + " in (?");
+		for (int i = 1; i<parameters.size(); i++) {
+			queryBuilder.append(",?");
+		}
+		queryBuilder.append(")");
+
+		parameters.add(0, String.valueOf(UserComment.TYPE_POINT));
+
+		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), parameters.toArray());
 	}
 
 }

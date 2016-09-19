@@ -18,12 +18,10 @@
 package org.scada_lts.dao;
 
 import com.mysql.jdbc.Statement;
-import com.serotonin.mango.rt.event.EventDetector;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.experimental.theories.DataPoint;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
