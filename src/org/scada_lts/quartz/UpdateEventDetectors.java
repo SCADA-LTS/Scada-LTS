@@ -29,7 +29,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.dao.EventDetectorsDAO;
+import org.scada_lts.dao.EventDetectorsCacheDAO;
 import org.scada_lts.dao.model.PointEventDetectorCache;
 
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -40,7 +40,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class UpdateEventDetectors extends EventDetectorsDAO implements StatefulJob {
+public class UpdateEventDetectors extends EventDetectorsCacheDAO implements StatefulJob {
 	
 	private static final Log LOG = LogFactory.getLog(UpdateEventDetectors.class);
 

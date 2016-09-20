@@ -24,9 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,6 +42,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Repository
 public class DataPointDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataPointDAO.class);
@@ -69,6 +69,12 @@ public class DataPointDAO {
 			+ "from dataPoints dp join dataSources ds on "
 				+ "ds." + COLUMN_NAME_DS_ID + "="
 				+ "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
+
+	private static final String DATA_POINT_SELECT_ID = ""
+			+ "select DISTINCT "
+				+ COLUMN_NAME_ID + " "
+			+ "from dataPoints where "
+				+ COLUMN_NAME_DATA_SOURCE_ID + "=? ";
 
 	private static final String DATA_POINT_INSERT = ""
 			+ "insert into dataPoints ("
@@ -146,6 +152,15 @@ public class DataPointDAO {
 		return dataPointList;
 	}
 
+	public List<Integer> getDataPointsIds(int dataSourceId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointIds(int dataSourceId) dataSourceId:" + dataSourceId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().queryForList(DATA_POINT_SELECT_ID, new Object[] {dataSourceId}, Integer.class);
+	}
+
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int insert(final DataPointVO dataPoint) {
 
@@ -214,5 +229,4 @@ public class DataPointDAO {
 
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
-
 }

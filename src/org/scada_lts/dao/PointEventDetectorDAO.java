@@ -27,6 +27,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Repository
 public class PointEventDetectorDAO {
 
 	private static final Log LOG = LogFactory.getLog(PointEventDetectorDAO.class);
@@ -113,8 +115,27 @@ public class PointEventDetectorDAO {
 
 	private static final String POINT_EVENT_DETECTOR_DELETE = ""
 			+ "delete from pointEventDetectors where "
+				+ COLUMN_NAME_ID + " ";
+
+	private static final String POINT_EVENT_DETECTOR_SELECT_DP_ID = ""
+			+ "select "
 				+ COLUMN_NAME_DATA_POINT_ID + " "
-			+ "in (?)";
+			+ "from pointEventDetectors where "
+				+ COLUMN_NAME_ID + "=? ";
+
+	private static final String POINT_EVENT_DETECTOR_SELECT_XID = ""
+			+ "select "
+				+ COLUMN_NAME_XID + " "
+			+ "from pointEventDetectors where "
+				+ COLUMN_NAME_ID + "=? ";
+
+	private static final String POINT_EVENT_DETECTOR_SELECT_ID = ""
+			+ "select "
+				+ COLUMN_NAME_ID + " "
+			+ "from pointEventDetectors where "
+				+ COLUMN_NAME_XID + "=? "
+			+ "and "
+				+ COLUMN_NAME_DATA_POINT_ID + "=? ";
 
 	private class PointEventDetectorRowMapper implements RowMapper<PointEventDetectorVO> {
 
@@ -145,6 +166,16 @@ public class PointEventDetectorDAO {
 		}
 	}
 
+	public int getDataPointId(int pointEventDetectorId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointId(int pointEventDetectorId) pointEventDetectorId:" + pointEventDetectorId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_DP_ID,
+				new Object[] {pointEventDetectorId}, Integer.class);
+	}
+
 	public List<PointEventDetectorVO> getPointEventDetectors(DataPointVO dataPoint) {
 
 		if (LOG.isTraceEnabled()) {
@@ -156,6 +187,34 @@ public class PointEventDetectorDAO {
 
 		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereIdOrderBy,
 				new Object[] {dataPoint.getId()}, new PointEventDetectorRowMapper(dataPoint));
+
+	}
+
+	public int getId(String pointEventDetectorXid, int dataPointId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getId(String pointEventDetectorXid, int dataPointId) pointEventDetectorXid:" + pointEventDetectorXid
+					+ ", dataPointId:" + dataPointId);
+		}
+
+		int id = DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_ID,
+				new Object[] {pointEventDetectorXid, dataPointId}, Integer.class);
+
+		if (id == 0) {
+			return -1;
+		} else {
+			return id;
+		}
+	}
+
+	public String getXid(int pointEventDetectorId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getXid(int pointEventDetectorId) pointEventDetectorId:" + pointEventDetectorId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_XID, new Object[] {pointEventDetectorId},
+				String.class);
 
 	}
 
@@ -221,16 +280,36 @@ public class PointEventDetectorDAO {
 	/**
 	 * Delete all PointEventDetector objects which are related with specific DataPointID.
 	 *
-	 * @param dataPointId
+	 * @param pointEventDetectorId
 	 *		  Id which connect PointEventDetector object and DataPoint object
 	 */
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void delete(int dataPointId) {
+	public void delete(int pointEventDetectorId) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("delete(int dataPointId) dataPointId:" + dataPointId);
+			LOG.trace("delete(int dataPointId) dataPointId:" + pointEventDetectorId);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(POINT_EVENT_DETECTOR_DELETE, new Object[] {dataPointId});
+		String templateDelete = POINT_EVENT_DETECTOR_DELETE + " id=?";
+
+		DAO.getInstance().getJdbcTemp().update(templateDelete, new Object[] {pointEventDetectorId});
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void deleteWithId(String dataPointIds) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deleteWithId(String dataPointIds) dataPointIds:" + dataPointIds);
+		}
+
+		String[] parameters = dataPointIds.split(",");
+
+		StringBuilder queryBuilder = new StringBuilder(POINT_EVENT_DETECTOR_DELETE + COLUMN_NAME_DATA_POINT_ID + " in (?");
+		for (int i = 1; i<parameters.length; i++) {
+			queryBuilder.append(",?");
+		}
+		queryBuilder.append(")");
+
+		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
 }

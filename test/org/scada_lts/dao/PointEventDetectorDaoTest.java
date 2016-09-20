@@ -81,6 +81,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 	public void test() {
 
 		//TODO It is necessary to insert DataSource object before insert DataPoint object
+		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (xid, name, dataSourceType, data) values ('x1', 'dataName', 1, 0);");
 
 		DataPointVO dataPoint = new DataPointVO();
 		dataPoint.setXid(DP_XID);

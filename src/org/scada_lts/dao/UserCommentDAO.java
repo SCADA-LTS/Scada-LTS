@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Repository
 public class UserCommentDAO {
 
 	private static final Log LOG = LogFactory.getLog(UserCommentDAO.class);
