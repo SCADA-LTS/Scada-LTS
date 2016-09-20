@@ -174,6 +174,6 @@ public class PointEventDetectorDaoTest extends TestDAO {
 
 		//Delete all pointEventDetector with specific DataPointId
 		pointEventDetectorDAO.delete(dataPoint.getId());
-		assertTrue(pointEventDetectorDAO.getPointEventDetectors(dataPoint).size() == 0);
+		assertTrue(pointEventDetectorDAO.getPointEventDetectors(dataPoint).size() == 1);
 	}
 }

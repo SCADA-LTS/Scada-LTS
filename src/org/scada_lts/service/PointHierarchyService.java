@@ -28,7 +28,6 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.exception.CacheHierarchyException;
@@ -49,9 +48,6 @@ public class PointHierarchyService {
 	
 	@Autowired
 	private PointHierarchyDAO phDAO;
-
-	@Autowired
-	private DataPointDAO dataPointDAO;
 	
 	public PointHierarchyService() {
 		//

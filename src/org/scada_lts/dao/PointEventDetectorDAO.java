@@ -114,8 +114,7 @@ public class PointEventDetectorDAO {
 				+ COLUMN_NAME_ID + "=? ";
 
 	private static final String POINT_EVENT_DETECTOR_DELETE = ""
-			+ "delete from pointEventDetectors where "
-				+ COLUMN_NAME_ID + " ";
+			+ "delete from pointEventDetectors where ";
 
 	private static final String POINT_EVENT_DETECTOR_SELECT_DP_ID = ""
 			+ "select "
@@ -277,12 +276,6 @@ public class PointEventDetectorDAO {
 		);
 	}
 
-	/**
-	 * Delete all PointEventDetector objects which are related with specific DataPointID.
-	 *
-	 * @param pointEventDetectorId
-	 *		  Id which connect PointEventDetector object and DataPoint object
-	 */
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void delete(int pointEventDetectorId) {
 
