@@ -535,41 +535,48 @@ public class PointValueDao extends BaseDao {
 	//
 	// Point value deletions
 	//
-	/*public long deletePointValuesBefore(int dataPointId, long time) {
-		return deletePointValues(
+	public long deletePointValuesBefore(int dataPointId, long time) {
+		
+		/*return deletePointValues(
 				"delete from pointValues where dataPointId=? and ts<?",
-				new Object[] { dataPointId, time });
-	}*/
+				new Object[] { dataPointId, time });*/
+		return -1;
+	}
 
-	/*public long deletePointValues(int dataPointId) {
-		return deletePointValues("delete from pointValues where dataPointId=?",
-				new Object[] { dataPointId });
-	}*/
+	public long deletePointValues(int dataPointId) {
+		/*return deletePointValues("delete from pointValues where dataPointId=?",
+				new Object[] { dataPointId });*/
+		return -1;
+	}
 
-	/*public long deleteAllPointData() {
-		return deletePointValues("delete from pointValues", null);
-	}*/
+	public long deleteAllPointData() {
+		
+		//return deletePointValues("delete from pointValues", null);
+		return -1;
+	}
 
-	/*public long deletePointValuesWithMismatchedType(int dataPointId,
+	public long deletePointValuesWithMismatchedType(int dataPointId,
 			int dataType) {
-		return deletePointValues(
+		/*return deletePointValues(
 				"delete from pointValues where dataPointId=? and dataType<>?",
-				new Object[] { dataPointId, dataType });
-	}*/
+				new Object[] { dataPointId, dataType });*/
+		return -1;
+	}
 
 	/*public void compressTables() {
 		Common.ctx.getDatabaseAccess().executeCompress(ejt);
 	}*/
 
-	/*private long deletePointValues(String sql, Object[] params) {
-		int cnt;
+	private long deletePointValues(String sql, Object[] params) {
+		/*int cnt;
 		if (params == null)
 			cnt = ejt.update(sql);
 		else
 			cnt = ejt.update(sql, params);
 		clearUnsavedPointValues();
-		return cnt;
-	}*/
+		return cnt;*/
+		return -1;
+	}
 
 	public long dateRangeCount(int dataPointId, long from, long to) {
 		/*return ejt
