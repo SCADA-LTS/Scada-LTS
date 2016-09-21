@@ -20,7 +20,7 @@ Scada-LTS is an Open Source, web-based, multi-platform solution for building you
 
 ## Quick start
 
-Several quick start options are available:
+Here is one of the several start options:
 
 * [Download the latest release](https://github.com/sdtabilit/Scada-LTS/releases/download/v0.0.6-test-modbus.3.0.2/ScadaBR.war).
 * Install tomcat7: `apt-get install tomcat7`.
