@@ -19,7 +19,12 @@
 package org.scada_lts.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.hierarchy.PointFolder;
+import com.serotonin.mango.vo.hierarchy.PointHierarchy;
+import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
@@ -124,7 +129,6 @@ public class PointHierarchyService {
 	
 	/**
 	 * Search
-	 * @param key
 	 * @throws Exception 
 	 */
 	public List<PointHierarchyNode> search(String search, int page) throws Exception {
@@ -171,6 +175,43 @@ public class PointHierarchyService {
 			}
 		}
 		return id;
+	}
+
+	public void addFoldersToHierarchy(PointHierarchy ph, int parentId, Map<Integer, List<PointFolder>> folders) {
+		List<PointFolder> folderList = folders.remove(parentId);
+		if (folderList == null)
+			return;
+
+		for (PointFolder f : folderList) {
+			ph.addPointFolder(f, parentId);
+			addFoldersToHierarchy(ph, f.getId(), folders);
+		}
+	}
+
+	public void savePointFolder(PointFolder folder, int parentId) {
+		if (folder.getId() == Common.NEW_ID) {
+			folder.setId(phDAO.insert(parentId, folder.getName()));
+		} else if (folder.getId() != 0) {
+			phDAO.insert(folder.getId(), parentId, folder.getName());
+		}
+
+		//Save subfolders
+		for (PointFolder pF: folder.getSubfolders()) {
+			savePointFolder(pF, folder.getId());
+		}
+	}
+
+	public void savePointHierarchy(final PointFolder pointFolder) {
+
+		phDAO.delete();
+		savePointFolder(pointFolder, 0);
+
+		DataPointService dpService = new DataPointService();
+		dpService.savePointsInFolder(pointFolder);
+
+		PointHierarchyDAO.cachedPointHierarchy = null;
+		PointHierarchyDAO.cachedPointHierarchy = dpService.getPointHierarchy();
+		PointHierarchyEventDispatcher.firePointHierarchySaved(pointFolder);
 	}
 
 }
