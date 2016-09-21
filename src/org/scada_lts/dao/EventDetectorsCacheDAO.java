@@ -36,9 +36,9 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class EventDetectorsDAO {
+public class EventDetectorsCacheDAO {
 	
-	private static final Log LOG = LogFactory.getLog(EventDetectorsDAO.class);
+	private static final Log LOG = LogFactory.getLog(EventDetectorsCacheDAO.class);
 	private final static String  COLUMN_NAME_ID = "id";
 	private final static String  COLUMN_NAME_XID = "xid";
 	private final static String  COLUMN_NAME_ALIAS = "alias";
