@@ -101,6 +101,9 @@ public class MaintenanceEventDaoTest extends TestDAO {
 	@Test
 	public void test() {
 
+		//TODO It is necessary to insert DataSource object before insert MaintenanceEvent object
+		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (xid, name, dataSourceType, data) values ('x1', 'dataName', 1, 0);");
+
 		MaintenanceEventVO maintenanceEventVO = new MaintenanceEventVO();
 		maintenanceEventVO.setXid(XID);
 		maintenanceEventVO.setDataSourceId(DATA_SOURCE_ID);
@@ -237,12 +240,5 @@ public class MaintenanceEventDaoTest extends TestDAO {
 		expectedException.expect(EmptyResultDataAccessException.class);
 		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
 		maintenanceEventDAO.getMaintenanceEvent(firstId);
-
-		//TODO Przenieść do osobnego testu ?
-		//Delete maintenance event
-		maintenanceEventDAO.deleteMaintenanceEventsForDataSource(secondMaintenanceEventVO.getDataSourceId());
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		maintenanceEventDAO.getMaintenanceEvent(secondId);
 	}
 }
