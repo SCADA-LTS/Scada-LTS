@@ -17,15 +17,28 @@
  */
 package org.scada_lts.dao;
 
-import br.org.scadabr.vo.scripting.ScriptVO;
+import com.mysql.jdbc.Statement;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * DAO for Publisher
@@ -39,6 +52,9 @@ public class PublisherDAO {
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
 	private static final String COLUMN_NAME_DATA = "data";
+
+	private static final String COLUMN_NAME_EH_EVENT_TYPE_ID = "eventTypeId";
+	private static final String COLUMN_NAME_EH_EVENT_TYPE_REF = "eventTypeRef1";
 
 	private static final String PUBLISHER_SELECT = ""
 			+ "select "
@@ -64,13 +80,104 @@ public class PublisherDAO {
 			+ "delete from publishers where "
 				+ COLUMN_NAME_ID + "=? ";
 
-	private class PublisherRowMapper implements RowMapper<PublisherVO> {
+	private static final String EVENT_HANDLER_DELETE = ""
+			+ "delete from eventHandlers where "
+				+ COLUMN_NAME_EH_EVENT_TYPE_ID + "="
+				+ EventType.EventSources.PUBLISHER
+			+ " and "
+				+ COLUMN_NAME_EH_EVENT_TYPE_REF + "=? ";
+
+	private class PublisherRowMapper implements RowMapper<PublisherVO<? extends PublishedPointVO>> {
 
 		@Override
 		public PublisherVO<? extends PublishedPointVO> mapRow(ResultSet rs, int rowNum) throws SQLException {
-//			PublisherVO<? extends PublishedPointVO> p = (PublisherVO<?>) new SerializationData().writeObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
-//			ScriptVO<?> script = (ScriptVO<?>) new SerializationData().readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
-			return null;
+			PublisherVO<? extends PublishedPointVO> publisher = (PublisherVO<? extends PublishedPointVO>) new SerializationData().readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+			publisher.setId(rs.getInt(COLUMN_NAME_ID));
+			publisher.setXid(rs.getString(COLUMN_NAME_XID));
+			return publisher;
 		}
+	}
+
+	public PublisherVO<? extends PublishedPointVO> getPublisher(int id) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPublisher(int id) id:" + id);
+		}
+
+		String templateSelectWhere = PUBLISHER_SELECT + "where " + COLUMN_NAME_ID + "=? ";
+
+		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhere, new Object[] {id}, new PublisherRowMapper());
+	}
+
+	public PublisherVO<? extends PublishedPointVO> getPublisher(String xid) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPublisher(String xid) xid:" + xid);
+		}
+
+		String templateSelectWhere = PUBLISHER_SELECT + "where " + COLUMN_NAME_XID + "=? ";
+
+		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhere, new Object[] {xid}, new PublisherRowMapper());
+	}
+
+	public List<PublisherVO<? extends PublishedPointVO>> getPublishers() {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPublishers()");
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(PUBLISHER_SELECT, new PublisherRowMapper());
+	}
+
+	public List<PublisherVO<? extends PublishedPointVO>> getPublishers(Comparator<PublisherVO<?>> comparator) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPublishers(Comparator<PublisherVO<?>> comparator) comparator:" + comparator.toString());
+		}
+
+		List<PublisherVO<? extends  PublishedPointVO>> publisherList = getPublishers();
+		Collections.sort(publisherList, comparator);
+		return publisherList;
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public int insert(final PublisherVO<? extends PublishedPointVO> publisher) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insert(final PublisherVO<? extends PublishedPointVO> publisher) publisher:" + publisher.toString());
+		}
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement preparedStatement = connection.prepareStatement(PUBLISHER_INSERT, Statement.RETURN_GENERATED_KEYS);
+				new ArgumentPreparedStatementSetter(new Object[] {publisher.getXid(), new SerializationData().writeObject(publisher)}).setValues(preparedStatement);
+				return preparedStatement;
+			}
+		}, keyHolder);
+
+		return keyHolder.getKey().intValue();
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void update(PublisherVO<? extends PublishedPointVO> publisher) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("update(PublisherVO<? extends PublishedPointVO> publisher) publisher:" + publisher.toString());
+		}
+
+		DAO.getInstance().getJdbcTemp().update(PUBLISHER_UPDATE, new Object[] {publisher.getXid(), new SerializationData().writeObject(publisher), publisher.getId()});
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void delete(int id) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("delete(int id) id:" + id);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[] {id});
+		DAO.getInstance().getJdbcTemp().update(PUBLISHER_DELETE, new Object[] {id});
 	}
 }
