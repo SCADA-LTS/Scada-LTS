@@ -23,21 +23,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
+import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
+import com.serotonin.mango.rt.dataImage.SetPointSource;
 
 /** 
  * 
@@ -75,12 +80,9 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 				+ COLUMN_NAME_SOURCE_ID
 			+") "
 			+ "values (?,?,?,?,?)";
-	
-	
+		
 	public static final String POINT_VALUE_ADNNOTATIONS_FILTER_BASE_ON_POINT_VALUES_ID = " "
-			+ POINT_VALUE_ADNNOTATIONS_SELECT 
-			+" where " 
-				+COLUMN_NAME_POINT_VALUE_ID+"=? ";
+			+COLUMN_NAME_POINT_VALUE_ID+"=? ";
 	
 	// @formatter:on
 	
@@ -106,9 +108,13 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 	}
 
 
+	/*
+	 * @arguments id - idPointValue
+	 * @see org.scada_lts.dao.GenericDaoCR#findById(long)
+	 */
 	@Override
 	public PointValueAdnnotation findById(long id) {
-		return (PointValueAdnnotation) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_ADNNOTATIONS_FILTER_BASE_ON_POINT_VALUES_ID, new Object[]  { id }, new PointValueAdnnotationRowMapper());
+		return (PointValueAdnnotation) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_ADNNOTATIONS_SELECT +" where "+POINT_VALUE_ADNNOTATIONS_FILTER_BASE_ON_POINT_VALUES_ID, new Object[]  { id }, new PointValueAdnnotationRowMapper());
 	}
 
 	@Override
@@ -122,12 +128,10 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	public long create(PointValueAdnnotation entity) {
+	public long create(final PointValueAdnnotation entity) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
 		}
-		
-		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			 			@Override
@@ -142,9 +146,31 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 			 				}).setValues(ps);
 			 				return ps;
 			 			}
-		}, keyHolder);
+		});
 		
-		return keyHolder.getKey().intValue();
+		// table hav'nt pk //TODO add key
+		return 0;
 	}
+	
+	public void updateAnnotations(List<PointValue> values) {
+		Map<Integer, List<AnnotatedPointValueTime>> userIds = new HashMap<Integer, List<AnnotatedPointValueTime>>();
+		List<AnnotatedPointValueTime> alist;
 
+		// Look for annotated point values.
+		AnnotatedPointValueTime apv;
+		for (PointValue pv : values) {
+			if (pv.getPointValue() instanceof AnnotatedPointValueTime) {
+				apv = (AnnotatedPointValueTime) pv.getPointValue();
+				if (apv.getSourceType() == SetPointSource.Types.USER) {
+					alist = userIds.get(apv.getSourceId());
+					if (alist == null) {
+						alist = new ArrayList<AnnotatedPointValueTime>();
+						userIds.put(apv.getSourceId(), alist);
+					}
+					alist.add(apv);
+				}
+			}
+		}
+	}
+	
 }

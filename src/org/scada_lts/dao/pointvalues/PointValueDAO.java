@@ -30,9 +30,11 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
@@ -48,6 +50,7 @@ import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
+import com.serotonin.mango.vo.bean.LongPair;
 
 
 /** 
@@ -69,6 +72,9 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	private final static String  COLUMN_NAME_SOURCE_ID = "sourceId";
 	private final static String  COLUMN_NAME_POINT_VALUE_ID = "pointValueId";
 	private final static String  COLUMN_NAME_DATA_POINT_ID = "dataPointId";
+	private final static String  COLUMN_NAME_MIN_TIME_STAMP = "minTs";
+	private final static String  COLUMN_NAME_MAX_TIME_STAMP = "maxTs";
+	
 	
 	// @formatter:off
 	private static final String POINT_VALUE_SELECT = ""
@@ -86,10 +92,50 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 				+ "pointValues pv "
 				+ "left join pointValueAnnotations pva on pv."+COLUMN_NAME_ID+"=pva."+COLUMN_NAME_POINT_VALUE_ID;
 	
+	private static final String POINT_VALUE_SELECT_MIN_MAX_TS_BASE_ON_LIST_DATA_POINT = "" 
+			+"select "
+				+"min(ts) as "+COLUMN_NAME_MIN_TIME_STAMP+", "
+				+"max(ts) as "+COLUMN_NAME_MAX_TIME_STAMP+" "
+			+"from "
+				+ "pointValues "
+			+ "where " + COLUMN_NAME_DATA_POINT_ID + " in (:ids)";
+	
+	private static final String POINT_VALUE_SELECT_MIN_TS_BASE_ON_LIST_DATA_POINT = ""
+			+"select "
+				+"min(ts) as "+ COLUMN_NAME_MIN_TIME_STAMP + " "
+			+"from "
+				+ "pointValues "
+			+ "where "
+				+ COLUMN_NAME_DATA_POINT_ID + " in (:ids)";
+	
+	private static final String POINT_VALUE_SELECT_MAX_TS_BASE_ON_LIST_DATA_POINT = ""
+			+"select "
+				+ "max(ts) as "+ COLUMN_NAME_MAX_TIME_STAMP+" "
+			+"from "
+				+ "pointValues "
+			+ "where "
+			+ COLUMN_NAME_DATA_POINT_ID + " in (:ids)";
+	
+	private static final String POINT_VALUE_SELECT_MAX_BASE_ON_DATA_POINT_ID = ""
+			+"select "
+				+"max(ts) as " + COLUMN_NAME_MAX_TIME_STAMP + " "
+			+"from "
+			   + "pointValues "
+			+"where "
+			   + COLUMN_NAME_DATA_POINT_ID + "=?";
+					
+	
 	private static final String POINT_VALUE_SELECT_ON_BASE_ID = "" 
 			+ POINT_VALUE_SELECT 
 			+ " where " 
 				+ COLUMN_NAME_ID + "=?";
+	
+	private static final String POINT_VALUE_SELECT_ON_BASE_ID_TS = "" 
+			+ POINT_VALUE_SELECT 
+			+ " where " 
+				+ COLUMN_NAME_ID + "=? and "
+				+ COLUMN_NAME_TIME_STAMP +"=?";
+	
 	
 	private static final String POINT_VALUE_INSERT = ""
 			+ "insert pointValues ("
@@ -99,6 +145,23 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 				+ COLUMN_NAME_TIME_STAMP 
 			+") "
 			+ "values (?,?,?,?)";
+	
+	
+	private static final String POINT_VALUE_INCEPTION_DATA = " "
+			+"select "
+				+ "min(ts) "
+			+ "from "
+				+ "pointValues "
+			+ "where "
+				+ COLUMN_NAME_DATA_POINT_ID+"=?";
+	
+	private static final String POINT_VALUE_DATA_RANGE_COUNT = " "
+			+"select "
+				+ "count(*) "
+			+ "from "
+				+ "pointValues "
+			+ "where "
+				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+">=? and "+COLUMN_NAME_TIME_STAMP+"<=?";
 	
 	public static final String POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
@@ -126,10 +189,11 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"=? "
 			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
- 
+	
+	
 	// @formatter:on
 	
-	//RowMapper
+	//RowMappers
 	private class PointValueRowMapper implements RowMapper<PointValue> {
 		public PointValue mapRow(ResultSet rs, int rowNum) throws SQLException {
 			//TODO rewrite MangoValue
@@ -151,6 +215,21 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 						rs.getInt(COLUMN_NAME_SOURCE_ID)));
 			}
 			return pv; 
+		}
+	}
+	
+	private class LongPairRowMapper implements RowMapper<LongPair> {
+		public LongPair mapRow(ResultSet rs, int index) throws SQLException {
+			long myLongValue = rs.getLong(COLUMN_NAME_MIN_TIME_STAMP);
+			if (rs.wasNull())
+				return null;
+			return new LongPair(myLongValue, rs.getLong(COLUMN_NAME_MAX_TIME_STAMP));
+		}
+	}
+	
+	private class LongRowMapper implements RowMapper<Long> {
+		public Long mapRow(ResultSet rs, int index) throws SQLException {
+			return rs.getLong(COLUMN_NAME_MIN_TIME_STAMP);
 		}
 	}
 	
@@ -197,10 +276,15 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		return (PointValue) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT_ON_BASE_ID, new Object[]  { id }, new PointValueRowMapper());
 	}
 	
+	public List<PointValue> findByIdAndTs(long id, long ts) {
+		return DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT_ON_BASE_ID_TS, new Object[]  { id,ts }, new PointValueRowMapper());
+	}
+	
 	@Override
 	public List<PointValue> filtered(String filter, Object[] argsFilter, long limit) {
 		String myLimit="";
 		if (limit != NO_LIMIT) {
+			//TODO rewrite limit adding in argsFilter
 			myLimit = LIMIT+limit;
 		}
 		return (List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT+" where "+ filter + myLimit, argsFilter, new PointValueRowMapper());
@@ -208,7 +292,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	public long create(PointValue entity) {
+	public long create(final PointValue entity) {
 		
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
@@ -223,7 +307,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			 				new ArgumentPreparedStatementSetter( new Object[] { 
 			 						entity.getDataPointId(),
 			 						entity.getPointValue().getValue().getDataType(),
-			 						entity.getPointValue().getDoubleValue(),
+			 						getValueBaseOnType( entity.getPointValue().getValue().getDataType(), entity.getPointValue()),
 			 						entity.getPointValue().getTime()
 			 				}).setValues(ps);
 			 				return ps;
@@ -233,5 +317,87 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		return keyHolder.getKey().intValue();
 		
 	}
+	
+	public Long getInceptionDate(int dataPointId) {
+		return DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_INCEPTION_DATA, new Object[] {dataPointId}, Long.class);
+	}
+	
+	public long dateRangeCount(int dataPointId, long from, long to) {
+		return DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_DATA_RANGE_COUNT, new Object[] {dataPointId, from, to}, Long.class);
+	}
+	
+	public LongPair getStartAndEndTime(List<Integer> dataPointIds) {
+		if (dataPointIds.isEmpty())	return null;
+		
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("ids",dataPointIds);
+
+		LongPair longPair = DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT_MIN_MAX_TS_BASE_ON_LIST_DATA_POINT,new LongPairRowMapper(),parameters);
+			
+		return longPair;
+	}
+	
+	public long getStartTime(List<Integer> dataPointIds) {
+		if (dataPointIds.isEmpty())	return -1;
+		
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("ids",dataPointIds);
+
+		Long minTs = DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT_MIN_TS_BASE_ON_LIST_DATA_POINT,new LongRowMapper(),parameters);
+			
+		return minTs;
+	}
+	
+	public long getEndTime(List<Integer> dataPointIds) {
+		if (dataPointIds.isEmpty()) return -1;
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("ids",dataPointIds);
+
+		Long maxTs = DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT_MAX_TS_BASE_ON_LIST_DATA_POINT, new LongRowMapper(),parameters);
+			
+		return maxTs;
+
+	}
+	
+	public List<Long> getFiledataIds() {
+		//TODO rewrite
+		return DAO.getInstance().getJdbcTemp().queryForList(
+		"select distinct id from ( " //
+				+ "  select id as id from pointValues where dataType="
+				+ DataTypes.IMAGE
+				+ "  union"
+				+ "  select d.pointValueId as id from reportInstanceData d "
+				+ "    join reportInstancePoints p on d.reportInstancePointId=p.id"
+				+ "  where p.dataType="
+				+ DataTypes.IMAGE
+				+ ") a order by 1", new Object[] {}, Long.class);
+	}
+	
+	public Long getLatestPointValue(int dataPointId) {
+		try {
+			return  DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT_MAX_BASE_ON_DATA_POINT_ID, new Object[] {dataPointId}, Long.class);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}		
+	}
+		
+	/**
+	 * When save value ALPHANUMERIC or IMAGE then data save in adnnotations
+	 * @param dataType
+	 * @param value
+	 * @return
+	 */
+	private double getValueBaseOnType(int dataType, PointValueTime value) {
+		Double avalue = null;
+		if ( (dataType==DataTypes.ALPHANUMERIC) || (dataType==DataTypes.IMAGE) || value == null) {
+			avalue = 0.0;
+		} else {
+			avalue = value.getDoubleValue();
+		}
+		return avalue;
+	}
+
+	
+	
 	
 }

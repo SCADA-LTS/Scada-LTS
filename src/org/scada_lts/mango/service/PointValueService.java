@@ -24,10 +24,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
+import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 
@@ -39,16 +38,23 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.vo.bean.LongPair;
 
 /** 
  * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 public class PointValueService implements MangoPointValues {
-
-	 @Resource
-	 private PointValueDAO  pointValueDAO;
 	 
+	 private PointValueDAO  pointValueDAO; 
+	 
+	 private PointValueAdnnotationsDAO pointValueAdnnotationDAO;
+	 
+	 public PointValueService() {
+		 pointValueDAO = new PointValueDAO(); 
+		 pointValueAdnnotationDAO = new PointValueAdnnotationsDAO();
+	 }
+     
 	 public long savePointValue(final long pointId, final PointValueTime pointValue, final SetPointSource source, boolean async) {
 		 
 		 //TOOD rewrite
@@ -140,14 +146,17 @@ public class PointValueService implements MangoPointValues {
 	}
 
 	public PointValueTime getLatestPointValue(int dataPointId) {
-		List<PointValue> lst = pointValueDAO.filtered(
-				PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID, 
-				new Object[]{dataPointId},1);
-		if (lst != null && lst.size() > 0) {
-			return lst.get(0).getPointValue();
-		} else {
+		
+		Long maxTs = pointValueDAO.getLatestPointValue(dataPointId);
+		if (maxTs == null || maxTs == 0)
 			return null;
-		}
+		
+		List<PointValue> lstValues = pointValueDAO.findByIdAndTs(dataPointId, maxTs);
+		
+		pointValueAdnnotationDAO.updateAnnotations(lstValues);
+		if (lstValues.size() == 0)
+			return null;
+		return lstValues.get(0).getPointValue();
 	}	
 
 	public PointValueTime getPointValueBefore(int dataPointId, long time) {
@@ -181,8 +190,6 @@ public class PointValueService implements MangoPointValues {
 				new PointValueRowMapper(), callback);
 	}*/
 
-
-	
 	//TODO rewrite
 	private List<PointValueTime> getLstPointValueTime( List<PointValue> lstIn ) {
 		List<PointValueTime> lst = new ArrayList<PointValueTime>();
@@ -192,5 +199,35 @@ public class PointValueService implements MangoPointValues {
 		}
 		return lst;
 	}
-	 
+
+	@Override
+	public long getInceptionDate(int dataPointId) {
+		return pointValueDAO.getInceptionDate(dataPointId);
+	}
+
+	@Override
+	public long dateRangeCount(int dataPointId, long from, long to) {
+		return pointValueDAO.dateRangeCount(dataPointId,from,to);
+	}
+
+	@Override
+	public LongPair getStartAndEndTime(List<Integer> dataPointIds) {
+		return pointValueDAO.getStartAndEndTime(dataPointIds);
+	}
+
+	@Override
+	public long getStartTime(List<Integer> dataPointIds) {
+		return pointValueDAO.getStartTime(dataPointIds);
+	}
+	
+	@Override
+	public long getEndTime(List<Integer> dataPointIds) {
+		return pointValueDAO.getEndTime(dataPointIds);
+	}
+
+	@Override
+	public List<Long> getFiledataIds() {
+		return pointValueDAO.getFiledataIds();
+	}
+
 }

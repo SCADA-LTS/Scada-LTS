@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.vo.bean.LongPair;
 
 /** 
  * Adapter for PointValuesService
@@ -47,5 +48,17 @@ public interface MangoPointValues {
 	PointValueTime getPointValueBefore(int dataPointId, long time);
 
 	PointValueTime getPointValueAt(int dataPointId, long time);
+	
+	long getInceptionDate(int dataPointId); 
+	
+	long dateRangeCount(int dataPointId, long from, long to);
+	
+	LongPair getStartAndEndTime(List<Integer> dataPointIds);
+	
+	long getStartTime(List<Integer> dataPointIds);
+	
+	long getEndTime(List<Integer> dataPointIds);
+	
+	List<Long> getFiledataIds();
 	
 }

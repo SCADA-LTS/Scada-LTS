@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 
@@ -44,8 +45,7 @@ public class PointValuesDaoTest extends TestDAO {
 	private final long POINT_ID_1 = 1;
 	private final long POINT_ID_2 = 2;
 	private final long POINT_ID_3 = 3;
-	//private final long POINT_ID_4 = 4;
-	//private final long POINT_ID_5 = 5;
+	private final long POINT_ID_4 = 4;
 	
 	@Test
 	public void test() {
@@ -90,7 +90,7 @@ public class PointValuesDaoTest extends TestDAO {
 			pointValueBinary1.setPointValue(pvtForBinary1);
 			// false
 			MangoValue valueBinary2= new BinaryValue(false);
-			PointValueTime pvtForBinary2 = new PointValueTime(valueBinary2, 0);
+			PointValueTime pvtForBinary2 = new PointValueTime(valueBinary2, 1);
 			PointValue pointValueBinary2 = new PointValue();
 			pointValueBinary2.setDataPointId(POINT_ID_2);
 			pointValueBinary2.setPointValue(pvtForBinary2);
@@ -146,7 +146,7 @@ public class PointValuesDaoTest extends TestDAO {
 		// @formatter:on
 		// end populate data
 		
-		//CR
+		//CR (Create Read)
 		
 		PointValueDAO pointValuesDAO = new PointValueDAO();
 		
@@ -204,6 +204,36 @@ public class PointValuesDaoTest extends TestDAO {
 		  boolean testFiltered = (valuesFiltered.size() == 1);
 		  
 		  assertTrue(testFiltered);
+		  
+		  //TODO every method with every filter defined test
+		  
+		  List<PointValue> lst = pointValuesDAO.filtered(
+					PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID, 
+					new Object[]{POINT_ID_1},1);
+		   boolean testFiltered1 = (lst !=null && lst.size() >0 && (lst.get(0).getPointValue().getDoubleValue()==2.01));
+		
+		   assertTrue(testFiltered1);
+		   
+		   List<PointValue> lstFilterBinary = pointValuesDAO.filtered(
+					PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID, 
+					new Object[]{POINT_ID_2},1);
+		   boolean testFiltered2 = (lstFilterBinary !=null && lstFilterBinary.size() >0 && (lstFilterBinary.get(0).getPointValue().getBooleanValue()==false));
+		
+		   assertTrue(testFiltered2);
+		   
+		   List<PointValue> lstFilterBinaryNull = pointValuesDAO.filtered(
+					PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID, 
+					new Object[]{POINT_ID_4},1);
+		   boolean testFiltered3 = (lstFilterBinaryNull !=null && lstFilterBinaryNull.size() == 0 );
+		
+		   assertTrue(testFiltered3);
+		   
+		   
+		   Long latestPointValue = pointValuesDAO.getLatestPointValue(5);
+		   
+		   boolean testLatestPointValue = (latestPointValue==null);
+		   assertTrue(testLatestPointValue);
+
 
 		//end CR
 		  

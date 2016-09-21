@@ -65,4 +65,46 @@ public class PointValueAdnnotation {
 	public void setSourceId(long sourceId) {
 		this.sourceId = sourceId;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (pointValueId ^ (pointValueId >>> 32));
+		result = prime * result + (int) (sourceId ^ (sourceId >>> 32));
+		result = prime * result + sourceType;
+		result = prime * result + ((textPointValueLong == null) ? 0 : textPointValueLong.hashCode());
+		result = prime * result + ((textPointValueShort == null) ? 0 : textPointValueShort.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PointValueAdnnotation other = (PointValueAdnnotation) obj;
+		if (pointValueId != other.pointValueId)
+			return false;
+		if (sourceId != other.sourceId)
+			return false;
+		if (sourceType != other.sourceType)
+			return false;
+		if (textPointValueLong == null) {
+			if (other.textPointValueLong != null)
+				return false;
+		} else if (!textPointValueLong.equals(other.textPointValueLong))
+			return false;
+		if (textPointValueShort == null) {
+			if (other.textPointValueShort != null)
+				return false;
+		} else if (!textPointValueShort.equals(other.textPointValueShort))
+			return false;
+		return true;
+	}
+	
+	
 }
