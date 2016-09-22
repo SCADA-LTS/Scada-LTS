@@ -23,7 +23,7 @@
         <pathelement location="WebContent/WEB-INF/lib/commons-collections-3.2.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/commons-dbcp-jdbc4.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/commons-discovery-0.2.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/commons-fileupload.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/commons-fileupload-1.3.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/commons-httpclient-3.0.1.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/commons-io.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/commons-lang3-3.0.jar"/>

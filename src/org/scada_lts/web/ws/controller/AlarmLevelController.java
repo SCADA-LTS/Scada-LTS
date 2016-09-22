@@ -10,12 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.UserHighestAlarmLevelService;
 import org.scada_lts.web.ws.beans.ScadaPrincipal;
 import org.scada_lts.web.ws.config.WebSocketConfig;
-import org.scada_lts.web.ws.config.WebSocketMessageBrokerStatsMonitor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -23,9 +19,8 @@ import org.springframework.messaging.simp.user.SimpSession;
 import org.springframework.messaging.simp.user.SimpSubscription;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 
 
 @Controller
@@ -49,12 +44,9 @@ public class AlarmLevelController {
     	this.userHighestAlarmLevelService = userHighestAlarmLevelService;
     }
 
-    
     public void setWebSocketConfig(WebSocketConfig config) {
     	this.config = config;
     }
-    
-    
     
     @MessageMapping("/alarmLevel")
     @SendTo("/topic/alarmLevel")
