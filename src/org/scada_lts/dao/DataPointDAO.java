@@ -57,6 +57,7 @@ public class DataPointDAO {
 	private static final String COLUMN_NAME_DS_XID = "xid";
 	private static final String COLUMN_NAME_DS_DATA_SOURCE_TYPE = "dataSourceType";
 
+	// @formatter:off
 	private static final String DATA_POINT_SELECT = ""
 			+ "select "
 				+ "dp." + COLUMN_NAME_ID + ", "
@@ -93,6 +94,7 @@ public class DataPointDAO {
 	private static final String DATA_POINT_DELETE = ""
 			+ "delete from dataPoints where "
 				+ COLUMN_NAME_ID;
+	// @formatter:on
 
 	private class DataPointRowMapper implements RowMapper<DataPointVO> {
 
