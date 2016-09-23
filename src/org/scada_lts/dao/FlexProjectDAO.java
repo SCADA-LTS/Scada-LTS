@@ -51,6 +51,7 @@ public class FlexProjectDAO {
 	private static final String COLUMN_NAME_DESCRIPTION = "description";
 	private static final String COLUMN_NAME_XMLCONFIG = "xmlConfig";
 
+	// @formatter:off
 	private static final String FLEX_PROJECT_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -79,7 +80,7 @@ public class FlexProjectDAO {
 	private static final String FLEX_PROJECT_DELETE = ""
 			+ "delete from flexProjects where "
 				+ COLUMN_NAME_ID + "=?";
-
+	// @formatter:on
 
 	private class FlexProjectRowMapper implements RowMapper<FlexProject> {
 

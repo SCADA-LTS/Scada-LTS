@@ -63,6 +63,7 @@ public class PointEventDetectorDAO {
 	private static final String COLUMN_NAME_ALPHANUMERIC_STATE = "alphanumericState";
 	private static final String COLUMN_NAME_WEIGHT = "weight";
 
+	// @formatter:off
 	private static final String POINT_EVENT_DETECTOR_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -135,6 +136,7 @@ public class PointEventDetectorDAO {
 				+ COLUMN_NAME_XID + "=? "
 			+ "and "
 				+ COLUMN_NAME_DATA_POINT_ID + "=? ";
+	// @formatter:on
 
 	private class PointEventDetectorRowMapper implements RowMapper<PointEventDetectorVO> {
 

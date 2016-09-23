@@ -56,6 +56,7 @@ public class PublisherDAO {
 	private static final String COLUMN_NAME_EH_EVENT_TYPE_ID = "eventTypeId";
 	private static final String COLUMN_NAME_EH_EVENT_TYPE_REF = "eventTypeRef1";
 
+	// @formatter:off
 	private static final String PUBLISHER_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -86,6 +87,7 @@ public class PublisherDAO {
 				+ EventType.EventSources.PUBLISHER
 			+ " and "
 				+ COLUMN_NAME_EH_EVENT_TYPE_REF + "=? ";
+	// @formatter:on
 
 	private class PublisherRowMapper implements RowMapper<PublisherVO<? extends PublishedPointVO>> {
 

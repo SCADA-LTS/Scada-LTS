@@ -58,6 +58,7 @@ public class UserCommentDAO {
 	private static final String COLUMN_NAME_U_ID = "id";
 	private static final String COLUMN_NAME_U_USERNAME = "username";
 
+	// @formatter:off
 	private static final String USER_COMMENT_SELECT = ""
 			+ "select "
 				+ "uc." + COLUMN_NAME_USER_ID + ", "
@@ -107,6 +108,7 @@ public class UserCommentDAO {
 				+ COLUMN_NAME_COMMENT_TYPE + "=? "
 			+ "and "
 				+ COLUMN_NAME_TYPE_KEY + " ";
+	// @formatter:on
 
 	private class UserCommentRowMapper implements RowMapper<UserComment> {
 
