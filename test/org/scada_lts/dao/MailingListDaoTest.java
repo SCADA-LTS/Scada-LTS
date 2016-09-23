@@ -19,6 +19,8 @@ package org.scada_lts.dao;
 
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.junit.Test;
+import org.scada_lts.dao.TestDAO;
+import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;

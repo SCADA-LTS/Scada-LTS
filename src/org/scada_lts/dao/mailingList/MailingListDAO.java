@@ -15,12 +15,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.dao;
+package org.scada_lts.dao.mailingList;
 
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -49,6 +50,8 @@ public class MailingListDAO {
 	private static final String COLUMN_NAME_XID = "xid";
 	private static final String COLUMN_NAME_NAME = "name";
 
+	// @formatter:off
+
 	private static final String MAILING_LIST_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -72,6 +75,7 @@ public class MailingListDAO {
 	private static final String MAILING_LIST_DELETE = ""
 			+ "delete from mailingLists where "
 				+ COLUMN_NAME_ID + "=? ";
+	// @formatter:on
 
 	private class MailingListRowMapper implements RowMapper<MailingList> {
 
@@ -99,7 +103,8 @@ public class MailingListDAO {
 	public MailingList getMailingList(String xid) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("getMailingList(String xid) xid:" + xid);
+			LOG.trace("getMailingL" +
+					"ist(String xid) xid:" + xid);
 		}
 
 		String templateSelectWhereXid = MAILING_LIST_SELECT + "where " + COLUMN_NAME_XID + "=?";
