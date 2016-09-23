@@ -17,6 +17,9 @@
  */
 package org.scada_lts.dao;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -108,5 +111,19 @@ public class DAO {
 	public NamedParameterJdbcTemplate getNamedParameterJdbcTemp() {
 		return namedParamJdbcTemplate;
 	}
+	
+	/**
+	 * From example https://www.mkyong.com/java/java-append-values-into-an-object-array/ 
+	 * @param obj
+	 * @param newObj
+	 * @return
+	 */
+	public Object[] appendValue(Object[] obj, Object newObj) {
+
+		ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
+		temp.add(newObj);
+		return temp.toArray();
+
+	  }
 	
 }
