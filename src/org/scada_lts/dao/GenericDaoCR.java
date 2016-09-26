@@ -41,7 +41,4 @@ public interface GenericDaoCR<T> {
 
 	long create(T entity);
 
-		
-	
-
 }

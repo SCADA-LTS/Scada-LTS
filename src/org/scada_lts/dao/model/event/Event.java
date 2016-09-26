@@ -81,7 +81,7 @@ public class Event {
 	/**
 	 * ?
 	 */
-	private int ackTS;
+	private long ackTS;
 
 	/**
 	 * User comments on the event. Added in the events interface after the event
@@ -211,12 +211,87 @@ public class Event {
 		this.message = message;
 	}
 
-	public int getAckTS() {
+	public long getAckTS() {
 		return ackTS;
 	}
 
-	public void setAckTS(int ackTS) {
+	public void setAckTS(long ackTS) {
 		this.ackTS = ackTS;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (ackTS ^ (ackTS >>> 32));
+		result = prime * result + (int) (actUserId ^ (actUserId >>> 32));
+		result = prime * result + (int) (activeTimestamp ^ (activeTimestamp >>> 32));
+		result = prime * result + alarmLevel;
+		result = prime * result + (int) (alternateAckSource ^ (alternateAckSource >>> 32));
+		result = prime * result + ((eventComments == null) ? 0 : eventComments.hashCode());
+		result = prime * result + eventType;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((message == null) ? 0 : message.hashCode());
+		result = prime * result + (rtnApplicable ? 1231 : 1237);
+		result = prime * result + rtnCause;
+		result = prime * result + (int) (rtnTimestamp ^ (rtnTimestamp >>> 32));
+		result = prime * result + typeRef1;
+		result = prime * result + typeRef2;
+		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Event other = (Event) obj;
+		if (ackTS != other.ackTS)
+			return false;
+		if (actUserId != other.actUserId)
+			return false;
+		if (activeTimestamp != other.activeTimestamp)
+			return false;
+		if (alarmLevel != other.alarmLevel)
+			return false;
+		if (alternateAckSource != other.alternateAckSource)
+			return false;
+		if (eventComments == null) {
+			if (other.eventComments != null)
+				return false;
+		} else if (!eventComments.equals(other.eventComments))
+			return false;
+		if (eventType != other.eventType)
+			return false;
+		if (id != other.id)
+			return false;
+		if (message == null) {
+			if (other.message != null)
+				return false;
+		} else if (!message.equals(other.message))
+			return false;
+		if (rtnApplicable != other.rtnApplicable)
+			return false;
+		if (rtnCause != other.rtnCause)
+			return false;
+		if (rtnTimestamp != other.rtnTimestamp)
+			return false;
+		if (typeRef1 != other.typeRef1)
+			return false;
+		if (typeRef2 != other.typeRef2)
+			return false;
+		if (userName == null) {
+			if (other.userName != null)
+				return false;
+		} else if (!userName.equals(other.userName))
+			return false;
+		return true;
+	}
+	
+	
 
 }

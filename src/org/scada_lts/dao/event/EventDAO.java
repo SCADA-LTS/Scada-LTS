@@ -55,7 +55,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 	private static final String COLUMN_NAME_ACTIVE_TS = "activeTs";
 	private static final String COLUMN_NAME_RTN_APPLICABLE = "rtnApplicable";
 	private static final String COLUMN_NAME_RTN_TS = "rtnTs";
-	private static final String COLUMN_NAME_RTN_COUSE = "rtnCaouse";
+	private static final String COLUMN_NAME_RTN_COUSE = "rtnCause";
 	private static final String COLUMN_NAME_ALARM_LEVEL = "alarmLevel";
 	private static final String COLUMN_NAME_MESSAGE = "message";
 	private static final String COLUMN_NAME_ACT_TS = "ackTs";
@@ -105,7 +105,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 	private static final String EVENT_SELECT_BASE_ON_ID = ""+
 			BASIC_EVENT_SELECT
 			+"where "
-				+COLUMN_NAME_ID+"=?";
+				+"e."+COLUMN_NAME_ID+"=?";
 	
 	// @formatter:onn
 
@@ -121,11 +121,11 @@ public class EventDAO implements GenericDaoCR<Event> {
 			event.setTypeRef2(rs.getInt(COLUMN_NAME_TYPE_REF_2));
 			event.setActiveTimestamp(rs.getLong(COLUMN_NAME_ACTIVE_TS));
 			event.setRtnApplicable( DAO.charToBool(rs.getString(COLUMN_NAME_RTN_APPLICABLE)));
-			event.setRtnTimestamp(rs.getInt(COLUMN_NAME_RTN_APPLICABLE));
+			event.setRtnTimestamp(rs.getLong(COLUMN_NAME_RTN_TS));
 			event.setRtnCause(rs.getInt(COLUMN_NAME_RTN_COUSE));
 			event.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
 			event.setMessage(rs.getString(COLUMN_NAME_MESSAGE));
-			event.setAckTS(rs.getInt(COLUMN_NAME_ACT_TS));
+			event.setAckTS(rs.getLong(COLUMN_NAME_ACT_TS));
 			event.setActUserId(rs.getLong(COLUMN_NAME_ACT_USER_ID));
 			event.setUserName(rs.getString(COLUMN_NAME_USER_NAME));
 			event.setAlternateAckSource(rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE));
@@ -155,7 +155,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 			args=argsFilter;
 		}
 	
-		return (List<Event>) DAO.getInstance().getJdbcTemp().query(BASIC_EVENT_SELECT+" where "+ filter + myLimit, argsFilter, new EventRowMapper());
+		return (List<Event>) DAO.getInstance().getJdbcTemp().query(BASIC_EVENT_SELECT+" where "+ filter + myLimit, args, new EventRowMapper());
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -177,7 +177,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 			 						entity.getTypeRef1(),
 			 						entity.getTypeRef2(),
 			 						entity.getActiveTimestamp(),
-			 						entity.isRtnApplicable(),
+			 						DAO.boolToChar(entity.isRtnApplicable()),
 			 						entity.getRtnTimestamp(),
 			 						entity.getRtnCause(),
 			 						entity.getAlarmLevel(),
