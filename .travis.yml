@@ -1,6 +1,12 @@
 addons:
   ssh_known_hosts: 149.56.44.225
 before_install:
+- sudo add-apt-repository ppa:openjdk-r/ppa -y
+- sudo apt-get update
+- sudo apt-get install -y openjdk-8-jdk
+- sudo update-alternatives --auto java
+- sudo update-alternatives --auto javac
+- export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 - sudo apt-get install tomcat7
 - sudo apt-get install traceroute
 - sudo apt-get install sshpass
@@ -11,14 +17,15 @@ before_script:
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
 language: java
-jdk:
-- openjdk7
+#jdk:
+#- openjdk7
 script: ant war
 branches:
   only:
   - "/^PROC-.*$/"
   - "/^develop-sdtabilit.*$/"
   - "/SLTS-16.*$/"
+  - "/SLTS-26.*$/"
 notifications:
   email: false
 env:
