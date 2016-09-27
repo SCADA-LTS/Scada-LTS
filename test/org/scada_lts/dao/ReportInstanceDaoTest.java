@@ -42,7 +42,7 @@ public class ReportInstanceDaoTest extends TestDAO {
 	private static final long RUN_START_TIME = 3234;
 	private static final long RUN_END_TIME = 1232144;
 	private static final int RECORD_COUNT = 32;
-	private static final boolean PREVENT_PURGE = false;
+	private static final boolean PREVENT_PURGE = true;
 
 	private static final String SECOND_NAME = "sName";
 	private static final int SECOND_INCLUDE_EVENTS = 2;
@@ -59,6 +59,7 @@ public class ReportInstanceDaoTest extends TestDAO {
 	private static final long UPDATE_RUN_START_TIME = 34;
 	private static final long UPDATE_RUN_END_TIME = 2144;
 	private static final int UPDATE_RECORD_COUNT = 5;
+	private static final boolean UPDATE_PREVENT_PURGE = false;
 
 	private static final int LIST_SIZE = 2;
 
@@ -118,28 +119,37 @@ public class ReportInstanceDaoTest extends TestDAO {
 		assertTrue(reportInstancesList.get(0).getId() == firstId);
 		assertTrue(reportInstancesList.get(1).getId() == secondId);
 
-		//Update
-		ReportInstance updateReportInstance = new ReportInstance();
-		updateReportInstance.setId(firstId);
-		updateReportInstance.setUserId(USER_ID);
-		updateReportInstance.setReportStartTime(UPDATE_REPORT_START_TIME);
-		updateReportInstance.setReportEndTime(UPDATE_REPORT_END_TIME);
-		updateReportInstance.setRunStartTime(UPDATE_RUN_START_TIME);
-		updateReportInstance.setRunEndTime(UPDATE_RUN_END_TIME);
-		updateReportInstance.setRecordCount(UPDATE_RECORD_COUNT);
+		//Update time
+		ReportInstance updateTimeReportInstance = new ReportInstance();
+		updateTimeReportInstance.setId(firstId);
+		updateTimeReportInstance.setUserId(USER_ID);
+		updateTimeReportInstance.setReportStartTime(UPDATE_REPORT_START_TIME);
+		updateTimeReportInstance.setReportEndTime(UPDATE_REPORT_END_TIME);
+		updateTimeReportInstance.setRunStartTime(UPDATE_RUN_START_TIME);
+		updateTimeReportInstance.setRunEndTime(UPDATE_RUN_END_TIME);
+		updateTimeReportInstance.setRecordCount(UPDATE_RECORD_COUNT);
 
-		reportInstanceDAO.updateTime(updateReportInstance);
-		ReportInstance selectUpdateReportInstance = reportInstanceDAO.getReportInstance(updateReportInstance.getId());
-		assertTrue(selectUpdateReportInstance.getId() == updateReportInstance.getId());
-		assertTrue(selectUpdateReportInstance.getUserId() == updateReportInstance.getUserId());
-		assertTrue(selectUpdateReportInstance.getReportStartTime() == updateReportInstance.getReportStartTime());
-		assertTrue(selectUpdateReportInstance.getReportEndTime() == updateReportInstance.getReportEndTime());
-		assertTrue(selectUpdateReportInstance.getRunStartTime() == updateReportInstance.getRunStartTime());
-		assertTrue(selectUpdateReportInstance.getRunEndTime() == updateReportInstance.getRunEndTime());
-		assertTrue(selectUpdateReportInstance.getRecordCount() == updateReportInstance.getRecordCount());
+		reportInstanceDAO.updateTime(updateTimeReportInstance);
+		ReportInstance selectUpdateReportInstance = reportInstanceDAO.getReportInstance(updateTimeReportInstance.getId());
+		assertTrue(selectUpdateReportInstance.getId() == updateTimeReportInstance.getId());
+		assertTrue(selectUpdateReportInstance.getUserId() == updateTimeReportInstance.getUserId());
+		assertTrue(selectUpdateReportInstance.getReportStartTime() == updateTimeReportInstance.getReportStartTime());
+		assertTrue(selectUpdateReportInstance.getReportEndTime() == updateTimeReportInstance.getReportEndTime());
+		assertTrue(selectUpdateReportInstance.getRunStartTime() == updateTimeReportInstance.getRunStartTime());
+		assertTrue(selectUpdateReportInstance.getRunEndTime() == updateTimeReportInstance.getRunEndTime());
+		assertTrue(selectUpdateReportInstance.getRecordCount() == updateTimeReportInstance.getRecordCount());
+
+		//Update prevent purge
+		reportInstanceDAO.updatePreventPurge(firstId, UPDATE_PREVENT_PURGE, USER_ID);
+		selectUpdateReportInstance = reportInstanceDAO.getReportInstance(firstId);
+		assertTrue(selectUpdateReportInstance.getId() == firstId);
+		assertTrue(selectUpdateReportInstance.isPreventPurge() == UPDATE_PREVENT_PURGE);
 
 		//Delete
 		reportInstanceDAO.delete(secondId, USER_ID);
+		reportInstanceDAO.deleteReportBefore(updateTimeReportInstance.getReportEndTime()+1);
+		reportInstancesList = reportInstanceDAO.getReportInstances(firstId);
+		assertTrue(reportInstancesList.size() == 0);
 		expectedException.expect(EmptyResultDataAccessException.class);
 		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
 		reportInstanceDAO.getReportInstance(secondId);

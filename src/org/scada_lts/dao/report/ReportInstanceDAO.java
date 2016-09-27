@@ -58,6 +58,7 @@ public class ReportInstanceDAO {
 	private static final String COLUMN_NAME_RECORD_COUNT = "recordCount";
 	private static final String COLUMN_NAME_PREVENT_PURGE = "preventPurge";
 
+	// @formatter:off
 	private static final String REPORT_INSTANCE_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -87,8 +88,7 @@ public class ReportInstanceDAO {
 				+ COLUMN_NAME_PREVENT_PURGE + ") "
 			+ "values (?,?,?,?,?,?,?,?,?,?) ";
 
-	// @formatter:off
-	private static final String REPORT_INSTANCE_UPDATE = ""
+	private static final String REPORT_INSTANCE_UPDATE_TIME = ""
 			+ "update reportInstances set "
 				+ COLUMN_NAME_REPORT_START_TIME + "=?, "
 				+ COLUMN_NAME_REPORT_END_TIME + "=?, "
@@ -100,6 +100,20 @@ public class ReportInstanceDAO {
 
 	private static final String REPORT_INSTANCE_DELETE = ""
 			+ "delete from reportInstances where "
+				+ COLUMN_NAME_ID + "=? "
+			+ "and "
+				+ COLUMN_NAME_USER_ID + "=? ";
+
+	private static final String REPORT_INSTANCE_DELETE_BEFORE = ""
+			+ "delete from reportInstances where "
+				+ COLUMN_NAME_RUN_START_TIME + "<? "
+			+ "and "
+				+ COLUMN_NAME_PREVENT_PURGE + "=? ";
+
+	private static final String REPORT_INSTANCE_UPDATE_PREVENT_PURGE = ""
+			+ "update reportInstances set "
+				+ COLUMN_NAME_PREVENT_PURGE + "=? "
+			+ "where "
 				+ COLUMN_NAME_ID + "=? "
 			+ "and "
 				+ COLUMN_NAME_USER_ID + "=? ";
@@ -193,13 +207,27 @@ public class ReportInstanceDAO {
 			LOG.trace("updateTime(ReportInstance reportInstance) reportInstance:" + reportInstance.toString());
 		}
 
-		DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_UPDATE, new Object[]{
+		DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_UPDATE_TIME, new Object[]{
 				reportInstance.getReportStartTime(),
 				reportInstance.getReportEndTime(),
 				reportInstance.getRunStartTime(),
 				reportInstance.getRunEndTime(),
 				reportInstance.getRecordCount(),
 				reportInstance.getId()
+		});
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void updatePreventPurge(int id, boolean preventPurge, int userId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updatePreventPurge(int id, boolean preventPurge, int userId) id:" + id + ", preventPurge:" + preventPurge + ", userId:" + userId);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_UPDATE_PREVENT_PURGE, new Object[]{
+				DAO.boolToChar(preventPurge),
+				id,
+				userId
 		});
 	}
 
@@ -211,5 +239,15 @@ public class ReportInstanceDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_DELETE, new Object[]{id, userId});
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void deleteReportBefore(final long time) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deleteReportBefore(final long time) time:" + time);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_DELETE_BEFORE, new Object[]{ time, DAO.boolToChar(false)});
 	}
 }
