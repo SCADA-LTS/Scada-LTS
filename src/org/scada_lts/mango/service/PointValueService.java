@@ -64,7 +64,7 @@ public class PointValueService implements MangoPointValues {
 		 PointValue pv = new PointValue();
 		 pv.setDataPointId(pointId);
 		 pv.setPointValue(pointValue);
-		 long id = pointValueDAO.create(pv);
+		 long id = (long) pointValueDAO.create(pv)[0];
 			
 		 //TODO rewrite to save blob or xml svg
 		 if (dataType == DataTypes.IMAGE) {

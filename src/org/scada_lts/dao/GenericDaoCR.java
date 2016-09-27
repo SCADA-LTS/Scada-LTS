@@ -35,10 +35,19 @@ public interface GenericDaoCR<T> {
 	
 	List<T> findAll();
 	
-	T findById(long id);
+	/**
+	 * Find base on pk
+	 * @param pk
+	 * @return T
+	 */
+	T findById(Object[] pk);
 	
 	List<T> filtered(String filter, Object[] argsFilter, long limit);
 
-	long create(T entity);
+	/**
+	 * @param entity
+	 * @return pk
+	 */
+	Object[] create(T entity);
 
 }

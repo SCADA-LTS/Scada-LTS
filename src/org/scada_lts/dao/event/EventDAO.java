@@ -55,7 +55,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 	private static final String COLUMN_NAME_ACTIVE_TS = "activeTs";
 	private static final String COLUMN_NAME_RTN_APPLICABLE = "rtnApplicable";
 	private static final String COLUMN_NAME_RTN_TS = "rtnTs";
-	private static final String COLUMN_NAME_RTN_COUSE = "rtnCause";
+	private static final String COLUMN_NAME_RTN_CAUSE = "rtnCause";
 	private static final String COLUMN_NAME_ALARM_LEVEL = "alarmLevel";
 	private static final String COLUMN_NAME_MESSAGE = "message";
 	private static final String COLUMN_NAME_ACT_TS = "ackTs";
@@ -73,7 +73,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 				+ "e."+COLUMN_NAME_ACTIVE_TS+","
 				+ "e."+COLUMN_NAME_RTN_APPLICABLE+", "
 				+ "e."+COLUMN_NAME_RTN_TS+","
-				+ "e."+COLUMN_NAME_RTN_COUSE+", "
+				+ "e."+COLUMN_NAME_RTN_CAUSE+", "
 				+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
 				+ "e."+COLUMN_NAME_MESSAGE+", "
 				+ "e."+COLUMN_NAME_ACT_TS+", "
@@ -93,7 +93,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 				+ COLUMN_NAME_ACTIVE_TS + ","
 				+ COLUMN_NAME_RTN_APPLICABLE + ","
 				+ COLUMN_NAME_RTN_TS + ","
-				+ COLUMN_NAME_RTN_COUSE + ","
+				+ COLUMN_NAME_RTN_CAUSE + ","
 				+ COLUMN_NAME_ALARM_LEVEL + ","
 				+ COLUMN_NAME_MESSAGE + ","
 				+ COLUMN_NAME_ACT_TS 
@@ -106,6 +106,22 @@ public class EventDAO implements GenericDaoCR<Event> {
 			BASIC_EVENT_SELECT
 			+"where "
 				+"e."+COLUMN_NAME_ID+"=?";
+	
+	private static final String EVENT_UPDATE_CAUSE = ""+
+			"update "
+			+ "events set "
+			+ COLUMN_NAME_RTN_TS + "=?,"
+			+ COLUMN_NAME_RTN_CAUSE+"=?";
+	
+	private static final String EVENT_ACT ="" +
+			"update "
+				+"events set "
+				+ COLUMN_NAME_ACT_TS+"=?, "
+				+ COLUMN_NAME_ACT_USER_ID+"=?, "
+				+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+		  + "where "
+				+ COLUMN_NAME_ID+"=? and "
+				+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
 	
 	// @formatter:onn
 
@@ -122,7 +138,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 			event.setActiveTimestamp(rs.getLong(COLUMN_NAME_ACTIVE_TS));
 			event.setRtnApplicable( DAO.charToBool(rs.getString(COLUMN_NAME_RTN_APPLICABLE)));
 			event.setRtnTimestamp(rs.getLong(COLUMN_NAME_RTN_TS));
-			event.setRtnCause(rs.getInt(COLUMN_NAME_RTN_COUSE));
+			event.setRtnCause(rs.getInt(COLUMN_NAME_RTN_CAUSE));
 			event.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
 			event.setMessage(rs.getString(COLUMN_NAME_MESSAGE));
 			event.setAckTS(rs.getLong(COLUMN_NAME_ACT_TS));
@@ -131,6 +147,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 			event.setAlternateAckSource(rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE));
 						
 			return event;
+			
 		}
 	}
 
@@ -140,8 +157,8 @@ public class EventDAO implements GenericDaoCR<Event> {
 	}
 
 	@Override
-	public Event findById(long id) {
-		return (Event) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_SELECT_BASE_ON_ID, new Object[]  { id }, new EventRowMapper());
+	public Event findById(Object[] pk) {
+		return (Event) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_SELECT_BASE_ON_ID, pk, new EventRowMapper());
 	}
 
 	@Override
@@ -160,7 +177,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	public long create(Event entity) {
+	public Object[] create(Event entity) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
 		}
@@ -172,7 +189,6 @@ public class EventDAO implements GenericDaoCR<Event> {
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 			 				PreparedStatement ps = connection.prepareStatement(EVENT_INSERT, Statement.RETURN_GENERATED_KEYS);
 			 				new ArgumentPreparedStatementSetter( new Object[] { 
-			 						
 			 						entity.getEventType(),
 			 						entity.getTypeRef1(),
 			 						entity.getTypeRef2(),
@@ -183,13 +199,34 @@ public class EventDAO implements GenericDaoCR<Event> {
 			 						entity.getAlarmLevel(),
 			 						entity.getMessage(),
 			 						entity.getAckTS()
-			 						
 			 				}).setValues(ps);
 			 				return ps;
 			 			}
 		}, keyHolder);
 		
-		return keyHolder.getKey().intValue();
+		return new Object[] {keyHolder.getKey().intValue()};
 	}
-
+	
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void updateCause(int cause, long ts) {
+		
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("cause:"+cause+" ts:"+ts);
+		}
+				
+		DAO.getInstance().getJdbcTemp().update( EVENT_UPDATE_CAUSE, new Object[]  { ts, cause } );	
+		
+	}
+	
+	public void updateAck(long actTS, long userId, int alternateAckSource, long eventId ) {
+		
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource+" eventId:"+eventId);
+		}
+				
+		DAO.getInstance().getJdbcTemp().update( EVENT_ACT, new Object[]  { actTS, userId, alternateAckSource, eventId } );
+		
+		
+	}
+	
 }

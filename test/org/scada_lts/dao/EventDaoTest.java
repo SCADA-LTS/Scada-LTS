@@ -65,12 +65,12 @@ public class EventDaoTest extends TestDAO {
 			EventDAO eventDAO = new EventDAO();
 			
 			//insert (create)
-			long id = eventDAO.create(event);
+			long id = (long) eventDAO.create(event)[0];
 			event.setId(id);
 			
 			// read 
 			// (findById)
-			Event eventFromDB = eventDAO.findById(id);
+			Event eventFromDB = eventDAO.findById(new Object[] {id});
 			
 			boolean res = eventFromDB.equals(event);
 			assertEquals(true, res);

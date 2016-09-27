@@ -113,8 +113,8 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 	 * @see org.scada_lts.dao.GenericDaoCR#findById(long)
 	 */
 	@Override
-	public PointValueAdnnotation findById(long id) {
-		return (PointValueAdnnotation) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_ADNNOTATIONS_SELECT +" where "+POINT_VALUE_ADNNOTATIONS_FILTER_BASE_ON_POINT_VALUES_ID, new Object[]  { id }, new PointValueAdnnotationRowMapper());
+	public PointValueAdnnotation findById(Object[] pk) {
+		return (PointValueAdnnotation) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_ADNNOTATIONS_SELECT +" where "+POINT_VALUE_ADNNOTATIONS_FILTER_BASE_ON_POINT_VALUES_ID, pk, new PointValueAdnnotationRowMapper());
 	}
 
 	@Override
@@ -128,28 +128,22 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	public long create(final PointValueAdnnotation entity) {
+	public Object[] create(final PointValueAdnnotation entity) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
 		}
 		
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			 			@Override
-			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-			 				PreparedStatement ps = connection.prepareStatement(POINT_VALUE_ADNNOTATIONS_INSERT, Statement.RETURN_GENERATED_KEYS);
-			 				new ArgumentPreparedStatementSetter( new Object[] { 
+		DAO.getInstance().getJdbcTemp().update(POINT_VALUE_ADNNOTATIONS_INSERT, new Object[] { 
 			 						entity.getPointValueId(), 
 			 						entity.getTextPointValueShort(),
 			 						entity.getTextPointValueLong(), 
 			 						entity.getSourceType(),
 			 						entity.getSourceId()
-			 				}).setValues(ps);
-			 				return ps;
-			 			}
-		});
+			 				});
+
 		
 		// table hav'nt pk //TODO add key
-		return 0;
+		return new Object[] {0};
 	}
 	
 	public void updateAnnotations(List<PointValue> values) {
