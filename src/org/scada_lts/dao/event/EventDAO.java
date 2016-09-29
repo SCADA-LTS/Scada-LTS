@@ -177,7 +177,7 @@ public class EventDAO implements GenericDaoCR<Event> {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	public Object[] create(Event entity) {
+	public Object[] create(final Event entity) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
 		}
