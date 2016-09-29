@@ -190,6 +190,10 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>CacheHeaders</filter-name>
+    <url-pattern>/graphics/GreenThermo/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>CacheHeaders</filter-name>
     <url-pattern>/resources/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
