@@ -1740,7 +1740,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	// MBus stuff
 	//
 	public DwrResponseI18n saveMBusDataSource(String name, String xid,
-			Connection connection, int updatePeriodType, int updatePeriods) {
+			TcpIpConnection connection, int updatePeriodType, int updatePeriods) {
 		MBusDataSourceVO ds = (MBusDataSourceVO) Common.getUser()
 				.getEditDataSource();
 		ds.setXid(xid);
