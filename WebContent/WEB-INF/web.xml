@@ -190,6 +190,10 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>CacheHeaders</filter-name>
+    <url-pattern>/graphics/GreenThermo/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>CacheHeaders</filter-name>
     <url-pattern>/resources/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
@@ -270,6 +274,10 @@
     <servlet-name>default</servlet-name>
     <url-pattern>*.png</url-pattern>
   </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.jpg</url-pattern>
+    </servlet-mapping>
   <servlet-mapping>
     <servlet-name>default</servlet-name>
     <url-pattern>*.bmp</url-pattern>
