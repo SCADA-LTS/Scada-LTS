@@ -39,6 +39,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.EventType;
+
 /**
  * Event DAO
  *
@@ -62,6 +65,9 @@ public class EventDAO implements GenericDaoCR<Event> {
 	private static final String COLUMN_NAME_ACT_USER_ID = "ackUserId";
 	private static final String COLUMN_NAME_USER_NAME = "username";
 	private static final String COLUMN_NAME_ALTERNATE_ACK_SOURCE = "alternateAckSource";
+	private static final String COLUMN_NAME_SILENCED = "silenced";
+	private static final String COLUMN_NAME_EVENT_ID = "eventId";
+	private static final String COLUMN_NAME_USER_ID = "userId";
 
 	// @formatter:off
 	private static final String BASIC_EVENT_SELECT = ""
@@ -123,6 +129,54 @@ public class EventDAO implements GenericDaoCR<Event> {
 				+ COLUMN_NAME_ID+"=? and "
 				+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
 	
+	public static final String EVENT_ACTIVE=""+
+			BASIC_EVENT_SELECT
+			+"where "
+				+"e."+ COLUMN_NAME_RTN_APPLICABLE+"=? and e."+ COLUMN_NAME_RTN_TS+" is null";
+	
+	private static final String EVENT_SELECT_WITH_USER_DATA=""
+			+"select "
+				+ "e."+COLUMN_NAME_ID+", "
+				+ "e."+COLUMN_NAME_TYPE_ID+", "
+				+ "e."+COLUMN_NAME_TYPE_REF_1+", "
+				+ "e."+COLUMN_NAME_TYPE_REF_2+","
+				+ "e."+COLUMN_NAME_ACTIVE_TS+","
+				+ "e."+COLUMN_NAME_RTN_APPLICABLE+", "
+				+ "e."+COLUMN_NAME_RTN_TS+","
+				+ "e."+COLUMN_NAME_RTN_CAUSE+", "
+				+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
+				+ "e."+COLUMN_NAME_MESSAGE+", "
+				+ "e."+COLUMN_NAME_ACT_TS+", "
+				+ "e."+COLUMN_NAME_ACT_USER_ID+", "
+				+ "u."+COLUMN_NAME_USER_NAME+","
+				+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+", "
+				+ "ue."+COLUMN_NAME_SILENCED+" "
+			+ "from "
+				+ "events e " 
+				+ "left join users u on e."+COLUMN_NAME_ACT_USER_ID+"=u.id "
+				+ "left join userEvents ue on e."+COLUMN_NAME_ID+"=ue."+COLUMN_NAME_EVENT_ID;
+				
+	private static final String EVENT_FILTER_FOR_DATA_POINT=""+
+			"e."+COLUMN_NAME_TYPE_ID+"=" + EventType.EventSources.DATA_POINT+" and "
+		  + "e."+COLUMN_NAME_TYPE_REF_1+"=? and "
+		  + "ue."+COLUMN_NAME_USER_ID+"=? "
+		  + "order by e."+COLUMN_NAME_ACTIVE_TS+" desc";
+	
+	private static final String EVENT_FILTER_TYPE_REF_USER = ""
+			+"e."+COLUMN_NAME_TYPE_ID+"=? and "
+			+"e."+COLUMN_NAME_TYPE_REF_1+"=? and "
+			+"ue."+COLUMN_NAME_USER_ID+"=? and "
+			+"((e."+COLUMN_NAME_ACT_TS+" is null or e."+COLUMN_NAME_ACT_TS+"=0) or (e."+COLUMN_NAME_RTN_APPLICABLE+"=? and e."+COLUMN_NAME_RTN_TS+" is null and e."+COLUMN_NAME_ALARM_LEVEL+" > 0))"
+			+"order by e."+COLUMN_NAME_ACT_TS+ " desc";
+	
+	private static final String EVENT_FILTER_TYPE_USER = ""
+			+"e."+COLUMN_NAME_TYPE_ID+"=? and "
+			+"ue."+COLUMN_NAME_USER_ID+"=? and "
+			+"((e."+COLUMN_NAME_ACT_TS+" is null or e."+COLUMN_NAME_ACT_TS+"=0) or (e."+COLUMN_NAME_RTN_APPLICABLE+"=? and e."+COLUMN_NAME_RTN_TS+" is null and e."+COLUMN_NAME_ALARM_LEVEL+" > 0))"
+			+"order by e."+COLUMN_NAME_ACT_TS+ " desc";
+	
+			
+	
 	// @formatter:onn
 
 	// RowMapper
@@ -150,6 +204,21 @@ public class EventDAO implements GenericDaoCR<Event> {
 			
 		}
 	}
+	
+	//TODO to rewrite - User have event not event have user silenced;
+	private class UserEventRowMapper extends EventRowMapper {
+		@Override
+		public Event mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			Event event = super.mapRow(rs, rowNum);
+			event.setSilenced(DAO.charToBool(rs.getString(COLUMN_NAME_SILENCED)));
+			if (!rs.wasNull())
+				event.setUserNotified(true);
+			return event;
+		}
+	}
+	
+	
 
 	@Override
 	public List<Event> findAll() {
@@ -225,8 +294,19 @@ public class EventDAO implements GenericDaoCR<Event> {
 		}
 				
 		DAO.getInstance().getJdbcTemp().update( EVENT_ACT, new Object[]  { actTS, userId, alternateAckSource, eventId } );
-		
-		
+			
+	}
+	
+	public List<Event> getEventsForDataPoint(int dataPointId, int userId) {	
+		return (List<Event>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where "+ EVENT_FILTER_FOR_DATA_POINT, new Object[]{dataPointId, userId}, new UserEventRowMapper());
+	}
+	
+	public List<Event> getPendingEvents(int typeId, int typeRef1, int userId) {
+		return (List<Event>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_REF_USER, new Object[]{typeId, typeRef1, userId, DAO.boolToChar(true)}, new UserEventRowMapper() );	
+	}
+	
+	public List<Event> getPendingEvents(int typeId, int userId) {
+		return (List<Event>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_USER, new Object[]{typeId, userId, DAO.boolToChar(true)}, new UserEventRowMapper() );	
 	}
 	
 }

@@ -18,13 +18,19 @@
 
 package org.scada_lts.mango.service;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.quartz.SchedulerException;
+import org.scada_lts.cache.PendingEventsCache;
+import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.dao.model.event.Event;
@@ -34,6 +40,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.dao.EventDao.UserEventInstanceRowMapper;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.UserComment;
@@ -52,6 +59,11 @@ public class EventService implements MangoEvent {
 	
 	private Event mapping(EventInstance event) {
 		return null;
+	}
+	
+	private List<EventInstance> mapping(List<Event> lst){
+		ArrayList<EventInstance> lst1 = new ArrayList<EventInstance>();
+		return lst1;
 	}
 	
 	public EventService() {
@@ -95,50 +107,55 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public void insertUserEvents(int eventId, List<Integer> userIds, boolean alarm) {
-		// TODO Auto-generated method stub
-		
+		userEventDAO.batchUpdate(eventId, userIds, alarm);
 	}
 
 	@Override
 	public List<EventInstance> getActiveEvents() {
-		// TODO Auto-generated method stub
-		return null;
+		List<EventInstance> result = mapping(eventDAO.filtered(EventDAO.EVENT_ACTIVE, new Object[]{DAO.boolToChar(true)}, EventDAO.NO_LIMIT));
+		//attachRelationInfo(result); TODO in option disable becaouse very slow
+		return result;
 	}
 
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return mapping(eventDAO.getEventsForDataPoint(dataPointId, userId));
 	}
 
 	@Override
 	public List<EventInstance> getPendingEventsForDataPoint(int dataPointId, int userId) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<EventInstance> getPendingEventsForDataSource(int dataSourceId, int userId) {
-		// TODO Auto-generated method stub
+	public List<EventInstance> getPendingEventsForDataSource(int dataSourceId, int userId) {	
 		return null;
 	}
 
 	@Override
 	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<Event> lst;
+		if (typeRef1 == -1) {
+			lst = eventDAO.getPendingEvents(typeId, userId);
+		} else {
+			lst = eventDAO.getPendingEvents(typeId, typeRef1, userId);
+		}
+		
+		// attacheRelationInfo(result)
+		
+		return mapping(lst);
+		
 	}
 
 	@Override
 	public List<EventInstance> getPendingEvents(int userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return PendingEventsCache.getInstance().getPendingEvents(userId);
 	}
 
 	@Override

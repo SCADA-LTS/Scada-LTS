@@ -94,6 +94,14 @@ public class Event {
 	private String userName;
 	
 	private long alternateAckSource;
+	
+	//
+    //
+    // These fields are used only in the context of access by a particular user, providing state filled in from
+    // the userEvents table.
+    private boolean userNotified;
+	//TODO to rewrite - User have event not event have user silenced;
+	private boolean silenced;
 
 	public Event() {
 		//
@@ -218,6 +226,22 @@ public class Event {
 	public void setAckTS(long ackTS) {
 		this.ackTS = ackTS;
 	}
+	
+	public boolean isUserNotified() {
+		return userNotified;
+	}
+
+	public void setUserNotified(boolean userNotified) {
+		this.userNotified = userNotified;
+	}
+
+	public boolean isSilenced() {
+		return silenced;
+	}
+
+	public void setSilenced(boolean silenced) {
+		this.silenced = silenced;
+	}
 
 	@Override
 	public int hashCode() {
@@ -235,9 +259,11 @@ public class Event {
 		result = prime * result + (rtnApplicable ? 1231 : 1237);
 		result = prime * result + rtnCause;
 		result = prime * result + (int) (rtnTimestamp ^ (rtnTimestamp >>> 32));
+		result = prime * result + (silenced ? 1231 : 1237);
 		result = prime * result + typeRef1;
 		result = prime * result + typeRef2;
 		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
+		result = prime * result + (userNotified ? 1231 : 1237);
 		return result;
 	}
 
@@ -280,6 +306,8 @@ public class Event {
 			return false;
 		if (rtnTimestamp != other.rtnTimestamp)
 			return false;
+		if (silenced != other.silenced)
+			return false;
 		if (typeRef1 != other.typeRef1)
 			return false;
 		if (typeRef2 != other.typeRef2)
@@ -289,9 +317,9 @@ public class Event {
 				return false;
 		} else if (!userName.equals(other.userName))
 			return false;
+		if (userNotified != other.userNotified)
+			return false;
 		return true;
 	}
-	
-	
 
 }

@@ -18,6 +18,7 @@
 
 package org.scada_lts.dao.event;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.event.UserEvent;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 
 
@@ -40,8 +42,11 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 	private static final Log LOG = LogFactory.getLog(UserEventDAO.class);
 	
 	private static final String COLUMN_NAME_SILENCED = "silenced";
+	private static final int 	COLUMN_INDEX_SILENCED = 3;
 	private static final String COLUMN_NAME_EVENT_ID = "eventId";
+	private static final int    COLUMN_INDEX_EVENT_ID =  1;
 	private static final String COLUMN_NAME_USER_ID = "userId";
+	private static final int    COLUMN_INDEX_USER_ID = 2;
 	
 	// @formatter:off
 	
@@ -133,6 +138,24 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 		
 		return new Object[] {entity.getEventId(), entity.getUserId()};
 		
+	}
+	
+	public void batchUpdate(final int eventId,	final List<Integer> userIds, final boolean alarm) {
+		DAO.getInstance().getJdbcTemp().batchUpdate(USER_EVENT_INSERT, new BatchPreparedStatementSetter() {
+
+			@Override
+			public int getBatchSize() {
+				return userIds.size();
+			}
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ps.setInt(COLUMN_INDEX_EVENT_ID, eventId);
+				ps.setInt(COLUMN_INDEX_USER_ID, userIds.get(i));
+				ps.setString(COLUMN_INDEX_SILENCED, DAO.boolToChar(!alarm));
+			}
+
+			
+		  });
 	}
 
 	public void updateAck(long eventId, boolean silenced ) {
