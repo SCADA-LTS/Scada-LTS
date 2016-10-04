@@ -21,6 +21,7 @@ package org.scada_lts.mango.service;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -31,6 +32,7 @@ import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.dao.model.event.Event;
@@ -40,7 +42,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao.UserEventInstanceRowMapper;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.UserComment;
@@ -53,6 +54,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 public class EventService implements MangoEvent {
 	
 	private static final Log LOG = LogFactory.getLog(EventService.class);
+	private static final int MAX_PENDING_EVENTS = 100;
 	
 	private EventDAO eventDAO;
 	private UserEventDAO userEventDAO;
@@ -66,24 +68,28 @@ public class EventService implements MangoEvent {
 		return lst1;
 	}
 	
+	class UserPendingEventRetriever implements Runnable {
+		private final int userId;
+
+		UserPendingEventRetriever(int userId) {
+			this.userId = userId;
+		}
+
+		@Override
+		public void run() {
+			addToCache(
+					userId,
+					getPendingEvents(EventType.EventSources.DATA_POINT, -1,
+							userId));
+		}
+	}
+
+	
 	public EventService() {
-		
 		eventDAO = new EventDAO();
 		userEventDAO = new UserEventDAO();
 	}
 	
-
-	@Override
-	public void saveEvent(EventInstance event) {
-		
-		if (event.getId() > 0 ) {
-			eventDAO.updateCause(event.getRtnCause(), event.getRtnTimestamp());
-		} else {
-			eventDAO.create(mapping(event));
-		}
-		
-	}
-
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange) {
@@ -99,24 +105,24 @@ public class EventService implements MangoEvent {
 		}
 		
 	}
-
+	
 	@Override
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource) {
 		ackEvent(eventId, time, userId, alternateAckSource, true);
 	}
-
+	
 	@Override
 	public void insertUserEvents(int eventId, List<Integer> userIds, boolean alarm) {
 		userEventDAO.batchUpdate(eventId, userIds, alarm);
 	}
-
+	
 	@Override
 	public List<EventInstance> getActiveEvents() {
 		List<EventInstance> result = mapping(eventDAO.filtered(EventDAO.EVENT_ACTIVE, new Object[]{DAO.boolToChar(true)}, EventDAO.NO_LIMIT));
-		//attachRelationInfo(result); TODO in option disable becaouse very slow
+		attachRelationInfo(result); 
 		return result;
 	}
-
+	
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
 		return mapping(eventDAO.getEventsForDataPoint(dataPointId, userId));
@@ -124,17 +130,124 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public List<EventInstance> getPendingEventsForDataPoint(int dataPointId, int userId) {
-		return null;
+		// Check the cache
+		List<EventInstance> userEvents = getFromCache(userId);
+		if (userEvents == null) {
+			// This is a potentially long running query, so run it offline.
+			userEvents = Collections.emptyList();
+			addToCache(userId, userEvents);
+			//TODO rewrite to delete relation of seroUtils
+			Common.timer.execute(new UserPendingEventRetriever(userId));
+		}
+		List<EventInstance> list = null;
+		for (EventInstance e : userEvents) {
+			if (e.getEventType().getDataPointId() == dataPointId) {
+				if (list == null)
+					list = new ArrayList<EventInstance>();
+				list.add(e);
+			}
+		}
+		if (list == null)
+			return Collections.emptyList();
+		return list;		
 	}
 
 	@Override
 	public List<EventInstance> getPendingEventsForDataSource(int dataSourceId, int userId) {	
-		return null;
+		return getPendingEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
+	}	
+	
+	@Override
+	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
+		return getPendingEvents(EventType.EventSources.PUBLISHER, publisherId,
+				userId);
+	}
+	
+	@Override
+	public List<EventInstance> getPendingEvents(int userId) {
+		List<EventInstance> results = null;
+		try {
+			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
+			if (cacheEnable) {
+			  results = PendingEventsCache.getInstance().getPendingEvents(userId);
+			} else {
+			
+				results = mapping(eventDAO.getPendingEventsLimit(userId, MAX_PENDING_EVENTS));				
+				attachRelationalInfo(results);
+			}
+		} catch (SchedulerException | IOException e) {
+			LOG.error(e);	
+		}
+		return results;
+	}
+	
+	@Override
+	public void attachRelationalInfo(List<EventInstance> list) {
+		//TODO very slow set in config disable this function.
+		for (EventInstance e : list)
+			attachRelationalInfo(e);
 	}
 
 	@Override
-	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
+	public EventInstance insertEventComment(int eventId, UserComment comment) {
+		
+		new UserDAO().createComments(UserComment.TYPE_EVENT, eventId, comment);
+		 
+		//TODO getEventIns
 		return null;
+	}
+	
+	@Override
+	public int purgeEventsBefore(long time) {
+		return eventDAO.purgeEventsBefore(time);
+	}
+	
+	@Override
+	public int getEventCount() {
+		return eventDAO.getEventCount();
+	}
+	
+	@Override
+	public List<EventInstance> searchOld(int eventId, int eventSourceType, String status, int alarmLevel,
+			String[] keywords, int maxResults, int userId, ResourceBundle bundle) {
+		return mapping(eventDAO.searchOld(eventId, eventSourceType, status, alarmLevel, keywords, maxResults, userId, bundle));
+	}
+	
+	@Override
+	public List<EventInstance> search(int eventId, int eventSourceType, String status, int alarmLevel,
+			String[] keywords, int userId, ResourceBundle bundle, int from, int to, Date date) {
+		
+		return mapping(eventDAO.search(eventId, eventSourceType, status, alarmLevel, keywords,
+				-1, -1, userId, bundle, from, to, date));
+	}
+	
+	@Override
+	public List<EventInstance> search(int eventId, int eventSourceType, String status, int alarmLevel,
+			String[] keywords, long dateFrom, long dateTo, int userId, ResourceBundle bundle, int from, int to,
+			Date date) {
+		return mapping(eventDAO.search(eventId,eventSourceType,status,alarmLevel,keywords,dateFrom,dateTo,userId,bundle,from,to,date));
+	}
+	
+	@Override
+	public int getSearchRowCount() {
+		return eventDAO.getSearchRowCount();
+	}
+
+	@Override
+	public int getStartRow() {
+		return eventDAO.getStartRow();
+	}
+	//-------------
+	
+	@Override
+	public void saveEvent(EventInstance event) {
+		
+		if (event.getId() > 0 ) {
+			eventDAO.updateCause(event.getRtnCause(), event.getRtnTimestamp());
+		} else {
+			eventDAO.create(mapping(event));
+		}
+		
 	}
 
 	@Override
@@ -146,81 +259,24 @@ public class EventService implements MangoEvent {
 		} else {
 			lst = eventDAO.getPendingEvents(typeId, typeRef1, userId);
 		}
-		
-		// attacheRelationInfo(result)
+		attachRelationInfo(mapping(lst));
 		
 		return mapping(lst);
 		
 	}
 
-	@Override
-	public List<EventInstance> getPendingEvents(int userId) {
-		return PendingEventsCache.getInstance().getPendingEvents(userId);
-	}
+	
 
-	@Override
-	public void attachRelationalInfo(List<EventInstance> list) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void attachRelationalInfo(EventInstance event) {
 		// TODO Auto-generated method stub
-		
+		// very slow We not use
 	}
 
-	@Override
-	public EventInstance insertEventComment(int eventId, UserComment comment) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
-	@Override
-	public int purgeEventsBefore(long time) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getEventCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public List<EventInstance> searchOld(int eventId, int eventSourceType, String status, int alarmLevel,
-			String[] keywords, int maxResults, int userId, ResourceBundle bundle) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<EventInstance> search(int eventId, int eventSourceType, String status, int alarmLevel,
-			String[] keywords, int userId, ResourceBundle bundle, int from, int to, Date date) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<EventInstance> search(int eventId, int eventSourceType, String status, int alarmLevel,
-			String[] keywords, long dateFrom, long dateTo, int userId, ResourceBundle bundle, int from, int to,
-			Date date) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int getSearchRowCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getStartRow() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
 
 	@Override
 	public String generateUniqueXid() {
@@ -339,6 +395,14 @@ public class EventService implements MangoEvent {
 	@Override
 	public void clearCache() {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void attachRelationInfo(List<EventInstance> list) {
+		for (EventInstance e:list) {
+			eventDAO.attacheRelationalInfo(mapping(e));
+		}
 		
 	}
 

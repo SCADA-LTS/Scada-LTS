@@ -44,6 +44,8 @@ public interface MangoEvent {
 	
 	void insertUserEvents(final int eventId, final List<Integer> userIds, final boolean alarm);
 	
+	void attachRelationInfo(List<EventInstance> list);
+	
 	List<EventInstance> getActiveEvents();
 	
 	List<EventInstance> getEventsForDataPoint(int dataPointId, int userId);
