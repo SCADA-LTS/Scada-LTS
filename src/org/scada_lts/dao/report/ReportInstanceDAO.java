@@ -18,14 +18,14 @@
 package org.scada_lts.dao.report;
 
 import com.mysql.jdbc.Statement;
+import com.serotonin.mango.db.dao.EventDao;
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.report.ReportInstance;
-import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -38,7 +38,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * DAO for ReportInstance
@@ -60,6 +59,8 @@ public class ReportInstanceDAO {
 	private static final String COLUMN_NAME_RUN_END_TIME = "runEndTime";
 	private static final String COLUMN_NAME_RECORD_COUNT = "recordCount";
 	private static final String COLUMN_NAME_PREVENT_PURGE = "preventPurge";
+
+	private static final String COLUMN_NAME_REPORT_INSTANCE_ID = "reportInstanceId";
 
 	// @formatter:off
 	private static final String REPORT_INSTANCE_SELECT = ""
@@ -255,143 +256,47 @@ public class ReportInstanceDAO {
 	}
 
 	/*
-		ReportInstanceData and ReportInstanceDataAnnotation
+		ReportInstanceEvent
 	 */
 
-	public static final String COLUMN_NAME_D_POINT_VALUE = "pointValue";
-	public static final String COLUMN_NAME_D_TS = "ts";
-	public static final String COLUMN_NAME_D_POINT_VALUE_ID = "pointValueId";
-	public static final String COLUMN_NAME_D_REPORT_INSTANCE_POINT_ID = "reportInstancePointId";
+	private static final String COLUMN_NAME_E_ID = "eventId";
+	private static final String COLUMN_NAME_E_TYPE_ID = "typeId";
+	private static final String COLUMN_NAME_E_TYPE_REF1 = "typeRef1";
+	private static final String COLUMN_NAME_E_TYPE_REF2 = "typeRef2";
+	private static final String COLUMN_NAME_E_ACTIVE_TS = "activeTs";
+	private static final String COLUMN_NAME_E_RTN_APP = "rtnApplicable";
+	private static final String COLUMN_NAME_E_RTN_TS = "rtnTs";
+	private static final String COLUMN_NAME_E_RTN_CAUSE = "rtnCause";
+	private static final String COLUMN_NAME_E_ALARM_LEVEL = "alarmLevel";
+	private static final String COLUMN_NAME_E_MESSAGE = "message";
+	private static final String COLUMN_NAME_E_ACK_TS = "ackTs";
+	private static final String COLUMN_NAME_E_ACK_USERNAME = "ackUsername";
+	private static final String COLUMN_NAME_E_ALTERNATE_ACK_SOURCE = "alternateAckSource";
 
-	public static final String COLUMN_NAME_A_TEXT_POINT_VALUE_SHORT = "textPointValueShort";
-	public static final String COLUMN_NAME_A_TEXT_POINT_VALUE_LONG = "textPointValueLong";
-	public static final String COLUMN_NAME_A_SOURCE_VALUE = "sourceValue";
-	public static final String COLUMN_NAME_A_SOURCE_TYPE = "sourceType";
-	public static final String COLUMN_NAME_A_SOURCE_ID = "sourceId";
-	public static final String COLUMN_NAME_A_POINT_VALUE_ID = "pointValueId";
-	public static final String COLUMN_NAME_A_REPORT_INSTANCE_POINT_ID = "reportInstancePointId";
-
-	private static final String COLUMN_NAME_DATA_POINT_ID = "dataPointId";
-	private static final String COLUMN_NAME_DATA_TYPE = "dataType";
-	private static final String COLUMN_NAME_REPORT_INSTANCE_ID = "reportInstanceId";
-
-	// @formatter:off
-	public static final String REPORT_INSTANCE_DATA_INSERT = ""
-			+ "insert into reportInstanceData "
+	private static final String REPORT_INSTANCE_EVENT_SELECT = ""
 			+ "select "
-				+ COLUMN_NAME_ID + ", "
-				+ "?, "
-				+ COLUMN_NAME_D_POINT_VALUE + ", "
-				+ COLUMN_NAME_D_TS + " "
-			+ "from pointValue where "
-				+ COLUMN_NAME_DATA_POINT_ID + "=? "
-			+ "and "
-				+ COLUMN_NAME_DATA_TYPE + "=? ";
-
-	private static final String REPORT_INSTANCE_DATA_SELECT = ""
-			+ "select "
-				+ "rd." + COLUMN_NAME_D_POINT_VALUE + ", "
-				+ "rda." + COLUMN_NAME_A_TEXT_POINT_VALUE_SHORT + ", "
-				+ "rda." + COLUMN_NAME_A_TEXT_POINT_VALUE_LONG + ", "
-				+ "rd." + COLUMN_NAME_D_TS + ", "
-				+ "rda." + COLUMN_NAME_A_SOURCE_VALUE + ", "
-			+ "from reportInstanceData rd left join reportInstanceDataAnnotations rda on "
-				+ "rd." + COLUMN_NAME_D_POINT_VALUE_ID + "="
-				+ "rda." + COLUMN_NAME_A_POINT_VALUE_ID + " "
-			+ "and "
-				+ "rd." + COLUMN_NAME_D_REPORT_INSTANCE_POINT_ID + "="
-				+ "rda." + COLUMN_NAME_A_REPORT_INSTANCE_POINT_ID + " ";
-
-	public static final String REPORT_INSTANCE_DATA_SELECT_WHERE = ""
-				+ REPORT_INSTANCE_DATA_SELECT
+				+ COLUMN_NAME_E_ID + ", "
+				+ COLUMN_NAME_E_TYPE_ID + ", "
+				+ COLUMN_NAME_E_TYPE_REF1 + ", "
+				+ COLUMN_NAME_E_TYPE_REF2 + ", "
+				+ COLUMN_NAME_E_ACTIVE_TS + ", "
+				+ COLUMN_NAME_E_RTN_APP + ", "
+				+ COLUMN_NAME_E_RTN_TS + ", "
+				+ COLUMN_NAME_E_RTN_CAUSE + ", "
+				+ COLUMN_NAME_E_ALARM_LEVEL + ", "
+				+ COLUMN_NAME_E_MESSAGE + ", "
+				+ COLUMN_NAME_E_ACK_TS + ", 0, "
+				+ COLUMN_NAME_E_ACK_USERNAME + ", "
+				+ COLUMN_NAME_E_ALTERNATE_ACK_SOURCE + " "
+			+ "form reportInstanceEvents "
 			+ "where "
-				+ "rd." + COLUMN_NAME_D_REPORT_INSTANCE_POINT_ID + "=? "
+				+ COLUMN_NAME_REPORT_INSTANCE_ID + "=? "
 			+ "order by "
-				+ "rd." + COLUMN_NAME_D_TS + " ";
-
-	public static final String REPORT_INSTANCE_POINT_SELECT_MIN_MAX = ""
-			+ "select min("
-				+ "rd." + COLUMN_NAME_D_TS + "), "
-			+ "max("
-				+ "rd." + COLUMN_NAME_D_TS + ") "
-			+ "from reportInstancePoints rp "
-			+ "join reportInstanceData rd "
-			+ "on "
-				+ "rp." + COLUMN_NAME_ID + "="
-				+ "rd." + COLUMN_NAME_A_REPORT_INSTANCE_POINT_ID + " "
-			+ "where "
-				+ "rp." + COLUMN_NAME_REPORT_INSTANCE_ID + "=? ";
-
-	private static final String REPORT_INSTANCE_DATA_ANNOTATION_INSERT_FIRST = ""
-			+ "insert into reportInstanceDataAnnotations ("
-				+ COLUMN_NAME_A_POINT_VALUE_ID + ", "
-				+ COLUMN_NAME_A_REPORT_INSTANCE_POINT_ID + ", "
-				+ COLUMN_NAME_A_TEXT_POINT_VALUE_SHORT + ", "
-				+ COLUMN_NAME_A_TEXT_POINT_VALUE_LONG + ", "
-				+ COLUMN_NAME_A_SOURCE_VALUE + ") "
-			+ "select "
-				+ "rd." + COLUMN_NAME_D_POINT_VALUE_ID + ", "
-				+ "rd." + COLUMN_NAME_D_REPORT_INSTANCE_POINT_ID + ", "
-				+ "pva." + COLUMN_NAME_A_TEXT_POINT_VALUE_SHORT + ", "
-				+ "pva." + COLUMN_NAME_A_TEXT_POINT_VALUE_LONG + ", ";
+				+ COLUMN_NAME_E_ACTIVE_TS;
 
 
-	private static final String REPORT_INSTANCE_DATA_ANNOTATION_INSERT_SECOND = ""
-			+ "from reportInstanceData rd "
-			+ "join reportInstancePoints rp on "
-				+ "rd." + COLUMN_NAME_D_REPORT_INSTANCE_POINT_ID + "="
-				+ "rp." + COLUMN_NAME_ID + " "
-			+ "join pointValueAnnotations pva on "
-				+ "rd." + COLUMN_NAME_D_POINT_VALUE_ID + "="
-				+ "pva." + COLUMN_NAME_A_POINT_VALUE_ID + " "
-			+ "left join users u on "
-				+ "pva." + COLUMN_NAME_A_SOURCE_TYPE + "=1 "
-			+ "and "
-				+ "pva." + COLUMN_NAME_A_SOURCE_ID + "="
-				+ "u." + COLUMN_NAME_ID + " "
-			+ "where "
-				+ "rp." + COLUMN_NAME_ID + "=?";
-
-
-	// @formatter:on
-
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insert(Object[] params, final int reportPointId, final String timestampSql) {
-
-		final Object [] allParams = new Object[]{reportPointId, params};
-
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement preparedStatement = connection.prepareStatement(REPORT_INSTANCE_DATA_INSERT + timestampSql, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(allParams).setValues(preparedStatement);
-				return preparedStatement;
-			}
-		}, keyHolder);
-
-		return keyHolder.getKey().intValue();
+	//TODO Update EventInstanceRowMapper
+	public List<EventInstance> getReportInstanceEvents(int instanceId) {
+		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new EventDao.EventInstanceRowMapper());
 	}
-
-
-
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insertReportInstanceDataAnnotations(String annotationCase, final int reportPointId) {
-
-
-		final String template = REPORT_INSTANCE_DATA_ANNOTATION_INSERT_FIRST + annotationCase + REPORT_INSTANCE_DATA_ANNOTATION_INSERT_SECOND;
-
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement preparedStatement = connection.prepareStatement(template, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(new Object[]{reportPointId}).setValues(preparedStatement);
-				return preparedStatement;
-			}
-		}, keyHolder);
-
-		return keyHolder.getKey().intValue();
-	}
-
 }

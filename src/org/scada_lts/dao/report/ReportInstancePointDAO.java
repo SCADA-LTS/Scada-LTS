@@ -19,21 +19,17 @@ package org.scada_lts.dao.report;
 
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.rt.dataImage.types.*;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.report.ReportDataStreamHandler;
-import com.serotonin.mango.vo.report.ReportDataValue;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportPointInfo;
-import com.serotonin.web.taglib.Functions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SerializationData;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -129,6 +125,11 @@ public class ReportInstancePointDAO {
 	}
 
 	public List<ReportPointInfo> getPointInfos(int instanceId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPointInfos(int instanceId) instanceId:" + instanceId);
+		}
+
 		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_POINT_SELECT_WHERE, new Object[]{instanceId}, new ReportPointInfoRowMapper());
 	}
 
@@ -149,7 +150,6 @@ public class ReportInstancePointDAO {
 						point.getDeviceName(),
 						name,
 						dataType,
-						startValue,
 						DataTypes.valueToString(startValue),
 						new SerializationData().writeObject(point.getTextRenderer()),
 						pointInfo.getColour(),

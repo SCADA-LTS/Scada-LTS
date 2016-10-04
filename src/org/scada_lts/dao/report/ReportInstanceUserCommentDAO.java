@@ -37,12 +37,12 @@ public class ReportInstanceUserCommentDAO {
 
 	private static final Log LOG = LogFactory.getLog(ReportInstanceUserCommentDAO.class);
 
-	private static final String COLUMN_NAME_ID = "reportInstanceId";
-	private static final String COLUMN_NAME_USERNAME = "username";
-	private static final String COLUMN_NAME_COMMENT_TYPE = "commentType";
-	private static final String COLUMN_NAME_TYPE_KEY = "typeKey";
-	private static final String COLUMN_NAME_TS = "ts";
-	private static final String COLUMN_NAME_COMMENT_TEXT = "commentText";
+	public static final String COLUMN_NAME_ID = "reportInstanceId";
+	public static final String COLUMN_NAME_USERNAME = "username";
+	public static final String COLUMN_NAME_COMMENT_TYPE = "commentType";
+	public static final String COLUMN_NAME_TYPE_KEY = "typeKey";
+	public static final String COLUMN_NAME_TS = "ts";
+	public static final String COLUMN_NAME_COMMENT_TEXT = "commentText";
 
 	private static final String COLUMN_NAME_RIP_ID = "id";
 	private static final String COLUMN_NAME_RIP_POINT_NAME = "pointName";
@@ -67,6 +67,20 @@ public class ReportInstanceUserCommentDAO {
 				+ "rc." + COLUMN_NAME_ID + "=? "
 			+ "order by "
 				+ "rc." + COLUMN_NAME_TS + " ";
+
+	public static final String REPORT_USER_COMMENT_SELECT_WHERE = ""
+			+ "select "
+				+ COLUMN_NAME_USERNAME + ", "
+				+ COLUMN_NAME_TYPE_KEY + ", "
+				+ COLUMN_NAME_TS + ", "
+				+ COLUMN_NAME_COMMENT_TEXT + " "
+			+ "from reportInstanceUserComments "
+			+ "where "
+				+ COLUMN_NAME_ID + "=? "
+			+ "and "
+				+ COLUMN_NAME_COMMENT_TYPE + "=? "
+			+ "order by "
+				+ COLUMN_NAME_TS + " ";
 	// @formatter:on
 
 	private class ReportCommentRowMapper implements RowMapper<ReportUserComment> {

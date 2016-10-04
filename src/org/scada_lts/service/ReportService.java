@@ -17,36 +17,31 @@
  */
 package org.scada_lts.service;
 
-import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.DatabaseAccess;
-import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.db.dao.ReportDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.rt.dataImage.types.*;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.report.*;
-import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.taglib.Functions;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.report.ReportDAO;
-import org.scada_lts.dao.report.ReportInstanceDAO;
-import org.scada_lts.dao.report.ReportInstancePointDAO;
+import org.scada_lts.dao.report.*;
 import org.scada_lts.mango.service.PointValueService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * TITLE
+ * ReportService
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
@@ -59,6 +54,9 @@ public class ReportService {
 	private ReportInstanceDAO reportInstanceDAO = new ReportInstanceDAO();
 
 //	@Autowired
+	private ReportInstanceDataDAO reportInstanceDataDAO = new ReportInstanceDataDAO();
+
+//	@Autowired
 	private ReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
 
 	private void setReportDataValue(List<ReportPointInfo> pointInfos, final ReportDataStreamHandler handler) {
@@ -66,37 +64,7 @@ public class ReportService {
 		for (final ReportPointInfo point: pointInfos) {
 			handler.startPoint(point);
 			rdv.setReportPointId(point.getReportPointId());
-			final int dataType = point.getDataType();
-
-			DAO.getInstance().getJdbcTemp().query(ReportInstanceDAO.REPORT_INSTANCE_DATA_SELECT_WHERE, new Object[]{point.getReportPointId()}, new RowCallbackHandler() {
-				@Override
-				public void processRow(ResultSet rs) throws SQLException {
-					switch (dataType) {
-						case (DataTypes.NUMERIC):
-							rdv.setValue(new NumericValue(rs.getDouble(ReportInstanceDAO.COLUMN_NAME_D_POINT_VALUE)));
-							break;
-						case (DataTypes.BINARY):
-							rdv.setValue(new BinaryValue(rs.getDouble(ReportInstanceDAO.COLUMN_NAME_D_POINT_VALUE) == 1));
-							break;
-						case (DataTypes.MULTISTATE):
-							rdv.setValue(new MultistateValue(rs.getInt(ReportInstanceDAO.COLUMN_NAME_D_POINT_VALUE)));
-							break;
-						case (DataTypes.ALPHANUMERIC):
-							rdv.setValue(new AlphanumericValue(rs.getString(ReportInstanceDAO.COLUMN_NAME_A_TEXT_POINT_VALUE_SHORT)));
-							if (rs.wasNull())
-								rdv.setValue(new AlphanumericValue(rs.getString(ReportInstanceDAO.COLUMN_NAME_A_TEXT_POINT_VALUE_LONG)));
-							break;
-						case (DataTypes.IMAGE):
-							rdv.setValue(new ImageValue(Integer.parseInt(rs.getString(ReportInstanceDAO.COLUMN_NAME_A_TEXT_POINT_VALUE_SHORT)), rs.getInt(ReportInstanceDAO.COLUMN_NAME_D_POINT_VALUE)));
-							break;
-						default:
-							rdv.setValue(null);
-					}
-					rdv.setTime(rs.getLong(ReportInstanceDAO.COLUMN_NAME_D_TS));
-					rdv.setAnnotation(rs.getString(ReportInstanceDAO.COLUMN_NAME_A_SOURCE_VALUE));
-					handler.pointData(rdv);
-				}
-			});
+			reportInstanceDataDAO.setReportValue(point, rdv, handler);
 		}
 		handler.done();
 	}
@@ -180,7 +148,7 @@ public class ReportService {
 			String name = Functions.truncate(point.getName(), 100);
 
 			int reportPointId = reportInstancePointDAO.insert(instance, point, name, dataType, startValue, pointInfo);
-			count += reportInstanceDAO.insert(appendParameters(timestampParams, point.getId(), dataType), reportPointId, StringUtils.replaceMacro(timestampSql, "field", "ts"));
+			count += reportInstanceDataDAO.insert(appendParameters(timestampParams, point.getId(), dataType), reportPointId, StringUtils.replaceMacro(timestampSql, "field", "ts"));
 
 			String annotationCase = "    case pva.sourceType" //
 					+ "      when 1 then concat('" + userLabel + ": ',ifnull(u.username,'" + deletedLabel + "')) " //
@@ -190,63 +158,63 @@ public class ReportService {
 					+ "    end ";
 
 			// Insert the reportInstanceDataAnnotations records
-			reportInstanceDAO.insertReportInstanceDataAnnotations(annotationCase, reportPointId);
+			reportInstanceDataDAO.insertReportInstanceDataAnnotations(annotationCase, reportPointId);
 
-//			// Insert the reportInstanceEvents records for the point.
-//			if (instance.getIncludeEvents() != ReportVO.EVENTS_NONE) {
-//				String eventSQL = "insert into reportInstanceEvents " //
-//						+ "  (eventId, reportInstanceId, typeId, typeRef1, typeRef2, activeTs, rtnApplicable, rtnTs," //
-//						+ "   rtnCause, alarmLevel, message, ackTs, ackUsername, alternateAckSource)" //
-//						+ "  select e.id, " + instance.getId() + ", e.typeId, e.typeRef1, e.typeRef2, e.activeTs, " //
-//						+ "    e.rtnApplicable, e.rtnTs, e.rtnCause, e.alarmLevel, e.message, e.ackTs, u.username, " //
-//						+ "    e.alternateAckSource " //
-//						+ "  from events e join userEvents ue on ue.eventId=e.id " //
-//						+ "    left join users u on e.ackUserId=u.id " //
-//						+ "  where ue.userId=? " //
-//						+ "    and e.typeId=" //
-//						+ EventType.EventSources.DATA_POINT //
-//						+ "    and e.typeRef1=? ";
-//
-//				if (instance.getIncludeEvents() == ReportVO.EVENTS_ALARMS)
-//					eventSQL += "and e.alarmLevel > 0 ";
-//
-//				eventSQL += StringUtils.replaceMacro(timestampSql, "field", "e.activeTs");
-//				ejt.update(eventSQL, appendParameters(timestampParams, instance.getUserId(), point.getId()));
-//			}
-//
-//			// Insert the reportInstanceUserComments records for the point.
-//			if (instance.isIncludeUserComments()) {
-//				String commentSQL = "insert into reportInstanceUserComments " //
-//						+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
-//						+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_POINT + ", " //
-//						+ reportPointId + ", uc.ts, uc.commentText " //
-//						+ "  from userComments uc " //
-//						+ "    left join users u on uc.userId=u.id " //
-//						+ "  where uc.commentType=" + UserComment.TYPE_POINT //
-//						+ "    and uc.typeKey=? ";
-//
-//				// Only include comments made in the duration of the report.
-//				commentSQL += StringUtils.replaceMacro(timestampSql, "field", "uc.ts");
-//				ejt.update(commentSQL, appendParameters(timestampParams, point.getId()));
-//			}
-//		}
-//
-//		// Insert the reportInstanceUserComments records for the selected events
-//		if (instance.isIncludeUserComments()) {
-//			String commentSQL = "insert into reportInstanceUserComments " //
-//					+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
-//					+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_EVENT + ", uc.typeKey, " //
-//					+ "    uc.ts, uc.commentText " //
-//					+ "  from userComments uc " //
-//					+ "    left join users u on uc.userId=u.id " //
-//					+ "    join reportInstanceEvents re on re.eventId=uc.typeKey " //
-//					+ "  where uc.commentType=" + UserComment.TYPE_EVENT //
-//					+ "    and re.reportInstanceId=? ";
-//			ejt.update(commentSQL, new Object[] { instance.getId() });
-//		}
-//
+			//TODO
+			// Insert the reportInstanceEvents records for the point.
+			if (instance.getIncludeEvents() != ReportVO.EVENTS_NONE) {
+				String eventSQL = "insert into reportInstanceEvents " //
+						+ "  (eventId, reportInstanceId, typeId, typeRef1, typeRef2, activeTs, rtnApplicable, rtnTs," //
+						+ "   rtnCause, alarmLevel, message, ackTs, ackUsername, alternateAckSource)" //
+						+ "  select e.id, " + instance.getId() + ", e.typeId, e.typeRef1, e.typeRef2, e.activeTs, " //
+						+ "    e.rtnApplicable, e.rtnTs, e.rtnCause, e.alarmLevel, e.message, e.ackTs, u.username, " //
+						+ "    e.alternateAckSource " //
+						+ "  from events e join userEvents ue on ue.eventId=e.id " //
+						+ "    left join users u on e.ackUserId=u.id " //
+						+ "  where ue.userId=? " //
+						+ "    and e.typeId=" //
+						+ EventType.EventSources.DATA_POINT //
+						+ "    and e.typeRef1=? ";
 
+				if (instance.getIncludeEvents() == ReportVO.EVENTS_ALARMS) {
+					eventSQL += "and e.alarmLevel > 0 ";
+				}
+
+				eventSQL += StringUtils.replaceMacro(timestampSql, "field", "e.activeTs");
+				DAO.getInstance().getJdbcTemp().update(eventSQL, appendParameters(timestampParams, instance.getUserId(), point.getId()));
+			}
+
+			// Insert the reportInstanceUserComments records for the point.
+			if (instance.isIncludeUserComments()) {
+				String commentSQL = "insert into reportInstanceUserComments " //
+						+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
+						+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_POINT + ", " //
+						+ reportPointId + ", uc.ts, uc.commentText " //
+						+ "  from userComments uc " //
+						+ "    left join users u on uc.userId=u.id " //
+						+ "  where uc.commentType=" + UserComment.TYPE_POINT //
+						+ "    and uc.typeKey=? ";
+
+				// Only include comments made in the duration of the report.
+				commentSQL += StringUtils.replaceMacro(timestampSql, "field", "uc.ts");
+				DAO.getInstance().getJdbcTemp().update(commentSQL, appendParameters(timestampParams, point.getId()));
+			}
 		}
+
+		// Insert the reportInstanceUserComments records for the selected events
+		if (instance.isIncludeUserComments()) {
+			String commentSQL = "insert into reportInstanceUserComments " //
+					+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
+					+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_EVENT + ", uc.typeKey, " //
+					+ "    uc.ts, uc.commentText " //
+					+ "  from userComments uc " //
+					+ "    left join users u on uc.userId=u.id " //
+					+ "    join reportInstanceEvents re on re.eventId=uc.typeKey " //
+					+ "  where uc.commentType=" + UserComment.TYPE_EVENT //
+					+ "    and re.reportInstanceId=? ";
+			DAO.getInstance().getJdbcTemp().update(commentSQL, new Object[] { instance.getId() });
+		}
+
 		// If the report had undefined start or end times, update them with values from the data.
 		if (instance.isFromInception() || instance.isToNow()) {
 			setReportTime(instance);
@@ -256,18 +224,53 @@ public class ReportService {
 
 	private void setReportTime(final ReportInstance reportInstance) {
 
-		DAO.getInstance().getJdbcTemp().query(ReportInstanceDAO.REPORT_INSTANCE_POINT_SELECT_MIN_MAX, new Object[]{reportInstance.getId()}, new RowCallbackHandler() {
+		DAO.getInstance().getJdbcTemp().query(ReportInstanceDataDAO.REPORT_INSTANCE_POINT_SELECT_MIN_MAX, new Object[]{reportInstance.getId()}, new RowCallbackHandler() {
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				if (reportInstance.isFromInception()) {
-					reportInstance.setReportStartTime(rs.getLong(ReportInstanceDAO.COLUMN_NAME_D_TS));
+					reportInstance.setReportStartTime(rs.getLong(ReportInstanceDataDAO.COLUMN_NAME_D_TS));
 				}
 				if (reportInstance.isToNow()) {
-					reportInstance.setReportEndTime(rs.getLong(ReportInstanceDAO.COLUMN_NAME_D_TS));
+					reportInstance.setReportEndTime(rs.getLong(ReportInstanceDataDAO.COLUMN_NAME_D_TS));
 				}
 			}
 		});
 
+	}
+
+	public List<EventInstance> getReportInstanceEvents(int instanceId) {
+
+		final List<EventInstance> events = reportInstanceDAO.getReportInstanceEvents(instanceId);
+		addCommentsToEvent(events, instanceId);
+
+		return events;
+	}
+
+	//TODO
+	private void addCommentsToEvent(final List<EventInstance> events, final int instanceId) {
+		DAO.getInstance().getJdbcTemp().query(ReportInstanceUserCommentDAO.REPORT_USER_COMMENT_SELECT_WHERE, new Object[]{
+				instanceId,
+				UserComment.TYPE_EVENT
+		}, new RowCallbackHandler() {
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				UserComment userComment = new UserComment();
+				userComment.setUsername(rs.getString(ReportInstanceUserCommentDAO.COLUMN_NAME_USERNAME));
+				userComment.setTs(rs.getLong(ReportInstanceUserCommentDAO.COLUMN_NAME_TS));
+				userComment.setComment(rs.getString(ReportInstanceUserCommentDAO.COLUMN_NAME_COMMENT_TEXT));
+
+				// Find the event and add the comment
+				int eventId = rs.getInt(ReportInstanceUserCommentDAO.COLUMN_NAME_COMMENT_TYPE);
+				for (EventInstance event : events) {
+					if (event.getId() == eventId) {
+						if (event.getEventComments() == null) {
+							event.setEventComments(new ArrayList<UserComment>());
+						}
+						event.addEventComment(userComment);
+					}
+				}
+			}
+		});
 	}
 
 	private Object[] appendParameters(Object[] toAppend, Object... params) {

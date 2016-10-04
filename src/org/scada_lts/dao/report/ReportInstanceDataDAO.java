@@ -18,9 +18,17 @@
 package org.scada_lts.dao.report;
 
 import com.mysql.jdbc.Statement;
+import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.rt.dataImage.types.*;
+import com.serotonin.mango.vo.report.ReportDataStreamHandler;
+import com.serotonin.mango.vo.report.ReportDataValue;
+import com.serotonin.mango.vo.report.ReportPointInfo;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
@@ -29,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -37,6 +46,8 @@ import java.sql.SQLException;
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 public class ReportInstanceDataDAO {
+
+	private static final Log LOG = LogFactory.getLog(ReportInstanceDataDAO.class);
 
 	private static final String	COLUMN_NAME_ID = "id";
 
@@ -58,14 +69,17 @@ public class ReportInstanceDataDAO {
 	private static final String COLUMN_NAME_REPORT_INSTANCE_ID = "reportInstanceId";
 
 	// @formatter:off
-	public static final String REPORT_INSTANCE_DATA_INSERT = ""
+	public static final String REPORT_INSTANCE_DATA_INSERT_FIRST = ""
 			+ "insert into reportInstanceData "
 			+ "select "
-				+ COLUMN_NAME_ID + ", "
-				+ "?, "
+				+ COLUMN_NAME_ID + ", ";
+
+
+	public static final String REPORT_INSTANCE_DATA_INSERT_SECOND = ""
+			+ ", "
 				+ COLUMN_NAME_D_POINT_VALUE + ", "
 				+ COLUMN_NAME_D_TS + " "
-			+ "from pointValue where "
+			+ "from pointValues where "
 				+ COLUMN_NAME_DATA_POINT_ID + "=? "
 			+ "and "
 				+ COLUMN_NAME_DATA_TYPE + "=? ";
@@ -76,7 +90,7 @@ public class ReportInstanceDataDAO {
 				+ "rda." + COLUMN_NAME_A_TEXT_POINT_VALUE_SHORT + ", "
 				+ "rda." + COLUMN_NAME_A_TEXT_POINT_VALUE_LONG + ", "
 				+ "rd." + COLUMN_NAME_D_TS + ", "
-				+ "rda." + COLUMN_NAME_A_SOURCE_VALUE + ", "
+				+ "rda." + COLUMN_NAME_A_SOURCE_VALUE + " "
 			+ "from reportInstanceData rd left join reportInstanceDataAnnotations rda on "
 				+ "rd." + COLUMN_NAME_D_POINT_VALUE_ID + "="
 				+ "rda." + COLUMN_NAME_A_POINT_VALUE_ID + " "
@@ -136,26 +150,30 @@ public class ReportInstanceDataDAO {
 	// @formatter:on
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insertInstanceData(Object[] params, final int reportPointId, final String timestampSql) {
+	public int insert(final Object[] params, final int reportPointId, final String timestampSql) {
 
-		final Object [] allParams = new Object[]{reportPointId, params};
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insertInstanceData(Object[] params, final int reportPointId, final String timestampSql) reportPointId:" + reportPointId + ", timestampSql:" + timestampSql);
+		}
 
-		KeyHolder keyHolder = new GeneratedKeyHolder();
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement preparedStatement = connection.prepareStatement(REPORT_INSTANCE_DATA_INSERT + timestampSql, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(allParams).setValues(preparedStatement);
+				PreparedStatement preparedStatement = connection.prepareStatement(REPORT_INSTANCE_DATA_INSERT_FIRST + reportPointId + REPORT_INSTANCE_DATA_INSERT_SECOND + timestampSql);
+				new ArgumentPreparedStatementSetter(params).setValues(preparedStatement);
 				return preparedStatement;
 			}
-		}, keyHolder);
+		});
 
-		return keyHolder.getKey().intValue();
+		return reportPointId;
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int insertReportInstanceDataAnnotations(String annotationCase, final int reportPointId) {
 
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insertReportInstanceDataAnnotations(String annotationCase, final int reportPointId) annotationCase:" + annotationCase + ", reportPointId:" + reportPointId);
+		}
 
 		final String template = REPORT_INSTANCE_DATA_ANNOTATION_INSERT_FIRST + annotationCase + REPORT_INSTANCE_DATA_ANNOTATION_INSERT_SECOND;
 
@@ -169,6 +187,44 @@ public class ReportInstanceDataDAO {
 			}
 		}, keyHolder);
 
-		return keyHolder.getKey().intValue();
+		return reportPointId;
+	}
+
+	public void setReportValue(final ReportPointInfo point, final ReportDataValue rdv, final ReportDataStreamHandler handler) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("setReportValue(ReportPointInfo point, ReportDataValue rdv, final ReportDataStreamHandler handler) point:" + point.toString() + ", rdv:" + rdv.toString() + ", handler:" + handler.toString());
+		}
+
+		final int dataType = point.getDataType();
+		DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_DATA_SELECT_WHERE, new Object[]{point.getReportPointId()}, new RowCallbackHandler() {
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				switch (dataType) {
+					case (DataTypes.NUMERIC):
+						rdv.setValue(new NumericValue(rs.getDouble(COLUMN_NAME_D_POINT_VALUE)));
+						break;
+					case (DataTypes.BINARY):
+						rdv.setValue(new BinaryValue(rs.getDouble(COLUMN_NAME_D_POINT_VALUE) == 1));
+						break;
+					case (DataTypes.MULTISTATE):
+						rdv.setValue(new MultistateValue(rs.getInt(COLUMN_NAME_D_POINT_VALUE)));
+						break;
+					case (DataTypes.ALPHANUMERIC):
+						rdv.setValue(new AlphanumericValue(rs.getString(COLUMN_NAME_A_TEXT_POINT_VALUE_SHORT)));
+						if (rs.wasNull())
+							rdv.setValue(new AlphanumericValue(rs.getString(COLUMN_NAME_A_TEXT_POINT_VALUE_LONG)));
+						break;
+					case (DataTypes.IMAGE):
+						rdv.setValue(new ImageValue(Integer.parseInt(rs.getString(COLUMN_NAME_A_TEXT_POINT_VALUE_SHORT)), rs.getInt(COLUMN_NAME_D_POINT_VALUE)));
+						break;
+					default:
+						rdv.setValue(null);
+				}
+				rdv.setTime(rs.getLong(ReportInstanceDataDAO.COLUMN_NAME_D_TS));
+				rdv.setAnnotation(rs.getString(ReportInstanceDataDAO.COLUMN_NAME_A_SOURCE_VALUE));
+				handler.pointData(rdv);
+			}
+		});
 	}
 }

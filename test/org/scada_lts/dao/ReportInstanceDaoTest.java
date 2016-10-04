@@ -17,14 +17,26 @@
  */
 package org.scada_lts.dao;
 
-import com.serotonin.mango.vo.report.ReportInstance;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.view.text.AnalogRenderer;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.report.*;
+import com.serotonin.util.StringUtils;
+import com.serotonin.web.i18n.I18NUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.scada_lts.dao.report.ReportInstanceDAO;
+import org.scada_lts.dao.report.ReportInstanceDataDAO;
+import org.scada_lts.dao.report.ReportInstancePointDAO;
+import org.scada_lts.dao.report.ReportInstanceUserCommentDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test ReportInstanceDAO
@@ -63,8 +75,36 @@ public class ReportInstanceDaoTest extends TestDAO {
 
 	private static final int LIST_SIZE = 2;
 
+	private ReportInstance reportInstance;
+	private AnalogRenderer analogRenderer;
+	private DataPointVO dataPointVO;
+	private MangoValue startValue;
+	private ReportInstancePointDAO.PointInfo pointInfo;
+
+	@Before
+	public void beforeTest() {
+		/*
+			Create mock for some necessary objects
+		 */
+		reportInstance = mock(ReportInstance.class);
+		when(reportInstance.getId()).thenReturn(INSTANCE_ID);
+
+		analogRenderer = new AnalogRenderer();
+		analogRenderer.setFormat("form");
+		dataPointVO = mock(DataPointVO.class);
+		when(dataPointVO.getDeviceName()).thenReturn(DATA_SOURCE_NAME).thenReturn(SECOND_DATA_SOURCE_NAME);
+		when(dataPointVO.getTextRenderer()).thenReturn(analogRenderer);
+
+		startValue = mock(MangoValue.class);
+		when(startValue.toString()).thenReturn("mValString").thenReturn("secondMVal");
+
+		pointInfo = mock(ReportInstancePointDAO.PointInfo.class);
+		when(pointInfo.getColour()).thenReturn("blue").thenReturn("red");
+		when(pointInfo.isConsolidatedChart()).thenReturn(true);
+	}
+
 	@Test
-	public void test() {
+	public void testReportInstanceDAO() {
 		ReportInstance reportInstance = new ReportInstance();
 		reportInstance.setUserId(USER_ID);
 		reportInstance.setName(NAME);
@@ -153,5 +193,119 @@ public class ReportInstanceDaoTest extends TestDAO {
 		expectedException.expect(EmptyResultDataAccessException.class);
 		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
 		reportInstanceDAO.getReportInstance(secondId);
+	}
+
+	@Test
+	public void testReportInstanceDataDAO() {
+
+		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (`xid`,`name`,`dataSourceType`,`data`) VALUES ('DS_01','DS_TEST', 1,'')");
+		DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_01',1,'')");
+		DAO.getInstance().getJdbcTemp().update("INSERT INTO pointvalues (dataPointId, dataType, pointValue, ts) values(1,1,2.0,123)");
+		DAO.getInstance().getJdbcTemp().update("insert into reportInstances "
+				+ "  (userId, name, includeEvents, includeUserComments, reportStartTime, reportEndTime, runStartTime, "
+				+ "runEndTime, recordCount, preventPurge) " + "  values (" + USER_ID + ", '" + NAME + "', " + INCLUDE_EVENTS + ", " + INCLUDE_USER_COMMENT
+				+ ", " + REPORT_START_TIME + ", " + REPORT_END_TIME + "," + RUN_START_TIME + "," + RUN_END_TIME + "," + RECORD_COUNT + "," + PREVENT_PURGE + ")");
+
+		ReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
+		reportInstancePointDAO.insert(reportInstance, dataPointVO, POINT_NAME, DATA_TYPE, startValue, pointInfo);
+
+		ReportInstanceDataDAO reportInstanceDataDAO = new ReportInstanceDataDAO();
+
+		ReportInstance reportInst = new ReportInstance();
+		reportInst.setReportStartTime(1);
+
+		String timestampSql = "and ${field}>=?";
+		Object[] params = new Object[] {reportInst.getReportStartTime(), INSTANCE_ID, DATA_TYPE};
+
+		reportInstanceDataDAO.insert(params, INSTANCE_ID, StringUtils.replaceMacro(timestampSql, "field", "ts"));
+
+		//TODO
+		ResourceBundle bundle = mock(ResourceBundle.class);
+		String userLabel = I18NUtils.getMessage(bundle, "common.user");
+		String setPointLabel = I18NUtils.getMessage(bundle, "annotation.eventHandler");
+		String anonymousLabel = I18NUtils.getMessage(bundle, "annotation.anonymous");
+		String deletedLabel = I18NUtils.getMessage(bundle, "common.deleted");
+
+		String annotationCase = "    case pva.sourceType" //
+				+ "      when 1 then concat('" + userLabel + ": ',ifnull(u.username,'" + deletedLabel + "')) " //
+				+ "      when 2 then '" + setPointLabel + "'" //
+				+ "      when 3 then '" + anonymousLabel + "'" //
+				+ "      else concat('Unknown source type: ', pva.sourceType)" //
+				+ "    end ";
+
+		reportInstanceDataDAO.insertReportInstanceDataAnnotations(annotationCase, INSTANCE_ID);
+
+
+		/*
+			setReportValue test
+		 */
+		ReportDataValue reportDataValue = new ReportDataValue();
+		ReportDataStreamHandler reportDataStreamHandler = mock(ReportDataStreamHandler.class);
+		ReportPointInfo reportPointInfo = mock(ReportPointInfo.class);
+
+		reportInstanceDataDAO.setReportValue(reportPointInfo, reportDataValue, reportDataStreamHandler);
+	}
+
+	private static final int INSTANCE_ID = 1;
+
+	private static final String DATA_SOURCE_NAME = "fDSN";
+	private static final String POINT_NAME = "fPointName";
+	private static final int DATA_TYPE = 1;
+
+	private static final String SECOND_DATA_SOURCE_NAME = "sDSN";
+	private static final String SECOND_POINT_NAME = "sPointName";
+	private static final int SECOND_DATA_TYPE = 2;
+
+
+	@Test
+	public void testReportInstancePointDAO() {
+
+		DAO.getInstance().getJdbcTemp().update("insert into reportInstances "
+				+ "  (userId, name, includeEvents, includeUserComments, reportStartTime, reportEndTime, runStartTime, "
+				+ "runEndTime, recordCount, preventPurge) " + "  values (" + USER_ID + ", '" + NAME + "', " + INCLUDE_EVENTS + ", " + INCLUDE_USER_COMMENT
+						+ ", " + REPORT_START_TIME + ", " + REPORT_END_TIME + "," + RUN_START_TIME + "," + RUN_END_TIME + "," + RECORD_COUNT + "," + PREVENT_PURGE + ")");
+
+		ReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
+
+		//Insert objects
+		int firstId = reportInstancePointDAO.insert(reportInstance, dataPointVO, POINT_NAME, DATA_TYPE, startValue, pointInfo);
+		int secondId = reportInstancePointDAO.insert(reportInstance, dataPointVO, SECOND_POINT_NAME, SECOND_DATA_TYPE, startValue, pointInfo);
+
+		//Select all objects
+		List<ReportPointInfo> reportPointInfoList = reportInstancePointDAO.getPointInfos(INSTANCE_ID);
+		assertTrue(reportPointInfoList.size()==LIST_SIZE);
+		assertTrue(reportPointInfoList.get(0).getReportPointId() == firstId);
+		assertTrue(reportPointInfoList.get(0).getDeviceName().equals(DATA_SOURCE_NAME));
+		assertTrue(reportPointInfoList.get(0).getPointName().equals(POINT_NAME));
+		assertTrue(reportPointInfoList.get(0).getDataType() == DATA_TYPE);
+		assertTrue(reportPointInfoList.get(1).getReportPointId() == secondId);
+		assertTrue(reportPointInfoList.get(1).getDeviceName().equals(SECOND_DATA_SOURCE_NAME));
+		assertTrue(reportPointInfoList.get(1).getPointName().equals(SECOND_POINT_NAME));
+		assertTrue(reportPointInfoList.get(1).getDataType() == SECOND_DATA_TYPE);
+	}
+
+	private static final String USERNAME = "fUsername";
+	private static final int COMMENT_TYPE = 1;
+	private static final int TYPE_KEY = 1;
+	private static final long TS = 20;
+	private static final String COMMENT_TEXT = "fCommentText";
+
+	@Test
+	public void testReportInstanceUserCommentDAO() {
+
+		DAO.getInstance().getJdbcTemp().update("insert into reportInstances "
+				+ "  (userId, name, includeEvents, includeUserComments, reportStartTime, reportEndTime, runStartTime, "
+				+ "runEndTime, recordCount, preventPurge) " + "  values (" + USER_ID + ", '" + NAME + "', " + INCLUDE_EVENTS + ", " + INCLUDE_USER_COMMENT
+				+ ", " + REPORT_START_TIME + ", " + REPORT_END_TIME + "," + RUN_START_TIME + "," + RUN_END_TIME + "," + RECORD_COUNT + "," + PREVENT_PURGE + ")");
+		DAO.getInstance().getJdbcTemp().update("INSERT INTO reportinstanceusercomments (reportInstanceId, username, commentType, typeKey, ts, commentText) values (1, 'fName', 1, 1, 20, 'fCom')");
+
+		ReportInstanceUserCommentDAO reportInstanceUserCommentDAO = new ReportInstanceUserCommentDAO();
+
+		//Insert objects
+		List<ReportUserComment> reportUserCommentList = reportInstanceUserCommentDAO.getReportUserComments(INSTANCE_ID);
+		assertTrue(reportUserCommentList.size() == 1);
+		assertTrue(reportUserCommentList.get(0).getUsername().equals("fName"));
+		assertTrue(reportUserCommentList.get(0).getCommentType() == 1);
+		assertTrue(reportUserCommentList.get(0).getComment().equals("fCom"));
 	}
 }
