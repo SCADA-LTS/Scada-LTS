@@ -80,6 +80,10 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 
 * <https://github.com/JerzyPiejko>
 
+**Radosław Jajko**
+
+* <https://github.com/radek2s>
+
 **Marcin Gołda**
 
 * <https://github.com/marcingolda>
