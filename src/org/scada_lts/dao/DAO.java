@@ -124,6 +124,16 @@ public class DAO {
 		temp.add(newObj);
 		return temp.toArray();
 
-	  }
+	}
+
+	public static String generateUniqueXid(String xidPrefix, String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public static boolean isXidUnique(String xid, int excludeId, String tableName) {
+		return DAO.getInstance().getJdbcTemp().queryForObject("select count(*) from " + tableName
+				+ " where xid=? and id<>?", new Object[] { xid, excludeId }, Integer.class) == 0;
+	}
 	
 }

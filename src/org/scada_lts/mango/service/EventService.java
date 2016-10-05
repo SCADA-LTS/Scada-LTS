@@ -84,7 +84,6 @@ public class EventService implements MangoEvent {
 		}
 	}
 
-	
 	public EventService() {
 		eventDAO = new EventDAO();
 		userEventDAO = new UserEventDAO();
@@ -232,11 +231,27 @@ public class EventService implements MangoEvent {
 	public int getSearchRowCount() {
 		return eventDAO.getSearchRowCount();
 	}
-
+	
 	@Override
 	public int getStartRow() {
 		return eventDAO.getStartRow();
 	}
+
+	@Override
+	public String generateUniqueXid() {
+		return DAO.generateUniqueXid(EventHandlerVO.XID_PREFIX, "eventHandlers");
+	}
+	
+	@Override
+	public boolean isXidUnique(String xid, int excludeId) {
+		return DAO.isXidUnique(xid, excludeId, "eventHandlers");
+	}
+	
+	@Override
+	public EventType getEventHandlerType(int handlerId) {
+		return eventDAO.getEventHandlerType(handlerId);
+	}
+	
 	//-------------
 	
 	@Override
@@ -265,35 +280,10 @@ public class EventService implements MangoEvent {
 		
 	}
 
-	
-
-
 	@Override
 	public void attachRelationalInfo(EventInstance event) {
 		// TODO Auto-generated method stub
 		// very slow We not use
-	}
-
-	
-
-	
-
-	@Override
-	public String generateUniqueXid() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isXidUnique(String xid, int excludeId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public EventType getEventHandlerType(int handlerId) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

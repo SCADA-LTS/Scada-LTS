@@ -44,9 +44,17 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.serotonin.mango.db.dao.EventDao.UserEventInstanceRowMapper;
-import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.db.spring.GenericRowMapper;
+import com.serotonin.mango.db.dao.UserCommentRowMapper;
+import com.serotonin.mango.rt.event.type.AuditEventType;
+import com.serotonin.mango.rt.event.type.CompoundDetectorEventType;
+import com.serotonin.mango.rt.event.type.DataPointEventType;
+import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.event.type.MaintenanceEventType;
+import com.serotonin.mango.rt.event.type.PublisherEventType;
+import com.serotonin.mango.rt.event.type.ScheduledEventType;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.web.dwr.EventsDwr;
 import com.serotonin.util.StringUtils;
@@ -78,11 +86,19 @@ public class EventDAO implements GenericDaoCR<Event> {
 	private static final String COLUMN_NAME_EVENT_ID = "eventId";
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	
+	
 	//------------- User comments
+	//TODO rewrite to another class
 	private static final String COLUMN_NAME_COMMENT_TEXT = "commentText";
 	private static final String COLUMN_NAME_TIME_STAMP = "ts";
 	private static final String COLUMN_NAME_COMMENT_TYPE = "commentType";
 	private static final String COLUMN_NAME_TYPE_KEY = "typeKey";
+	
+	//------------- Event handlers
+	//TODO rewrite to another class
+	private static final String COLUMN_NAME_EVENT_TYPE_ID = "eventTypeId";
+	private static final String COLUMN_NAME_EVENT_TYPE_REF1 = "eventTypeRef1";
+	private static final String COLUMN_NAME_EVENT_TYPE_REF2 = "eventTypeRef2";
 	
 	// @formatter:off
 	private static final String BASIC_EVENT_SELECT = ""
@@ -217,6 +233,15 @@ public class EventDAO implements GenericDaoCR<Event> {
 				+ "count(*) "
 			+ "from "
 				+ "events";
+	
+	private static final String EVENT_HANDLER_TYPE = ""
+			+ "select "
+				+ COLUMN_NAME_EVENT_TYPE_ID+","
+				+ COLUMN_NAME_EVENT_TYPE_REF1+","
+				+ COLUMN_NAME_EVENT_TYPE_REF2+" "
+			+ "from "
+				+ "eventHandlers "
+			+ "where id=?";
 			
 	// @formatter:onn
 
@@ -270,7 +295,47 @@ public class EventDAO implements GenericDaoCR<Event> {
 	        return c;
 	    }
 	}
-
+	
+	private class EventTypeRowMapper implements RowMapper<EventType> {
+		public EventType mapRow(ResultSet rs, int rowNum) throws SQLException {
+			
+				int typeId = rs.getInt(COLUMN_NAME_EVENT_TYPE_ID);
+				EventType type = null;
+				if (typeId == EventType.EventSources.DATA_POINT) {
+					type = new DataPointEventType(rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1), rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2));
+					
+				} else if (typeId == EventType.EventSources.DATA_SOURCE) {
+					type = new DataSourceEventType(rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1), rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2));
+					
+				} else if (typeId == EventType.EventSources.SYSTEM) {
+					type = new SystemEventType(rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1),	rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2));
+					
+				} else if (typeId == EventType.EventSources.COMPOUND) {
+					type = new CompoundDetectorEventType(rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1));
+					
+				} else if (typeId == EventType.EventSources.SCHEDULED) {
+					type = new ScheduledEventType(rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1));
+					
+				} else if (typeId == EventType.EventSources.PUBLISHER) { 
+					type = new PublisherEventType(rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1), rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2));
+				
+				} else if (typeId == EventType.EventSources.AUDIT) {
+					type = new AuditEventType(rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1),	rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2));
+					
+				} else if (typeId == EventType.EventSources.MAINTENANCE) {
+					type = new MaintenanceEventType(rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1));
+					
+				} else {
+					
+					
+						//throw new Exception("Unknown event type: "	+ typeId);
+					
+				}
+				return type;
+			}
+	}
+	
+	
 	@Override
 	public List<Event> findAll() {
 		return (List<Event>) DAO.getInstance().getJdbcTemp().query(BASIC_EVENT_SELECT, new Object[]{ }, new EventRowMapper());
@@ -630,7 +695,9 @@ public class EventDAO implements GenericDaoCR<Event> {
 
 		return results;
 	}
-
 	
+	public EventType getEventHandlerType(int handlerId) {
+		return (EventType) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_TYPE,new Object[] { handlerId }, new EventTypeRowMapper() );
+	}
 	
 }
