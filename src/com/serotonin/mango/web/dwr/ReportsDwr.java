@@ -18,16 +18,9 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.List;
-import java.util.ResourceBundle;
-
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.ReportDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.WatchListDao;
+import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.maint.work.ReportWorkItem;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -39,10 +32,13 @@ import com.serotonin.mango.vo.report.ReportPointVO;
 import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.timer.CronTimerTrigger;
-import com.serotonin.util.ColorUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.utils.ColorUtils;
+
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * @author Matthew Lohbihler

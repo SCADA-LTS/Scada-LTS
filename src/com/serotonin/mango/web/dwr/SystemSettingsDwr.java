@@ -18,15 +18,7 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.io.File;
-import java.net.SocketTimeoutException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import br.org.scadabr.db.configuration.ConfigurationDB;
-
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -42,13 +34,20 @@ import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.IntegerPair;
 import com.serotonin.mango.web.email.MangoEmailContent;
-import com.serotonin.util.ColorUtils;
 import com.serotonin.util.DirectoryInfo;
 import com.serotonin.util.DirectoryUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.utils.ColorUtils;
+
+import java.io.File;
+import java.net.SocketTimeoutException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class SystemSettingsDwr extends BaseDwr {
 	@MethodFilter
