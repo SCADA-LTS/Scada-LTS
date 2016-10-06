@@ -18,7 +18,17 @@
  */
 package com.serotonin.mango.db.dao;
 
-import java.awt.Color;
+import com.serotonin.InvalidArgumentException;
+import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.db.spring.ConnectionCallbackVoid;
+import com.serotonin.db.spring.ExtendedJdbcTemplate;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.db.DatabaseAccess;
+import org.scada_lts.utils.ColorUtils;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,17 +37,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-
-import com.serotonin.InvalidArgumentException;
-import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.spring.ConnectionCallbackVoid;
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.db.DatabaseAccess;
-import com.serotonin.util.ColorUtils;
 
 public class SystemSettingsDao extends BaseDao {
 	// Database schema version

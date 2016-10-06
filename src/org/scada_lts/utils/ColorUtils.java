@@ -33,7 +33,6 @@ public class ColorUtils {
 	private static Map<String, Color> colors = new HashMap();
 
 	static {
-		colors.put("snow", new Color(Integer.parseInt("FFFAFA", 16)));
 		colors.put("absolutezero", new Color(Integer.parseInt("0048BA", 16)));
 		colors.put("aero", new Color(Integer.parseInt("7CB9E8", 16)));
 		colors.put("aliceblue", new Color(Integer.parseInt("F0F8FF", 16)));
