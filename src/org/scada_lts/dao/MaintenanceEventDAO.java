@@ -76,6 +76,7 @@ public class MaintenanceEventDAO {
 	private static final String COLUMN_NAME_ET_ID = "eventTypeId";
 	private static final String COLUMN_NAME_ET_REF1 = "eventTypeRef1";
 
+	// @formatter:off
 	private static final String MAINTENANCE_EVENT_SELECT = ""
 			+ "select "
 				+ "m." + COLUMN_NAME_ID + ", "
@@ -172,6 +173,7 @@ public class MaintenanceEventDAO {
 				+ EventType.EventSources.SCHEDULED
 			+ " and "
 				+ COLUMN_NAME_ET_REF1 + "=? ";
+	// @formatter:on
 
 	private class MaintenanceEventRowMapper implements RowMapper<MaintenanceEventVO> {
 

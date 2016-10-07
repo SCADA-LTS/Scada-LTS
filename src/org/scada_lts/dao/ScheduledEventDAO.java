@@ -70,6 +70,7 @@ public class ScheduledEventDAO {
 	private static final String COLUMN_NAME_INACTIVE_SECOND = "inactiveSecond";
 	private static final String COLUMN_NAME_INACTIVE_CRON = "inactiveCron";
 
+	// @formatter:off
 	private static final String SCHEDULED_EVENT_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -151,6 +152,7 @@ public class ScheduledEventDAO {
 	private static final String TEMPLATE_EVENT_HANDLER_DELETE = "delete from eventHandlers where eventTypeId="
 			+ EventType.EventSources.SCHEDULED
 			+ " and eventTypeRef1=? ";
+	// @formatter:on
 
 	private class ScheduledEventRowMapper implements RowMapper<ScheduledEventVO> {
 

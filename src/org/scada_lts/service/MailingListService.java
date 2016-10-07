@@ -1,0 +1,104 @@
+/*
+ * (c) 2016 Abil'I.T. http://abilit.eu/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+package org.scada_lts.service;
+
+import com.serotonin.mango.Common;
+import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.vo.mailingList.EmailRecipient;
+import com.serotonin.mango.vo.mailingList.MailingList;
+import com.serotonin.mango.vo.mailingList.UserEntry;
+import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
+import org.joda.time.DateTime;
+import org.scada_lts.dao.mailingList.MailingListDAO;
+import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
+import org.scada_lts.dao.mailingList.MailingListMemberDAO;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Service for MailingList
+ *
+ * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
+ */
+public class MailingListService {
+
+	//TODO
+//	@Resource
+	private static final MailingListDAO mailingListDAO = new MailingListDAO();
+
+	//TODO
+//	@Resource
+	private static final MailingListInactiveDAO mailingListInactiveDAO = new MailingListInactiveDAO();
+
+	//TODO
+//	@Resource
+	private static final MailingListMemberDAO mailingListMemberDAO = new MailingListMemberDAO();
+
+	private void setRelationalData(MailingList mailingList) {
+		mailingList.getInactiveIntervals().addAll(mailingListInactiveDAO.getInactiveInterval(mailingList.getId()));
+		mailingList.setEntries(mailingListMemberDAO.getEmailRecipient(mailingList.getId()));
+
+		populateEntrySubclasses((mailingList.getEntries()));
+	}
+
+	public Set<String> getRecipientAddresses(List<RecipientListEntryBean> beans, DateTime sendTime) {
+		List<EmailRecipient> entries = new ArrayList<EmailRecipient>(beans.size());
+		for (RecipientListEntryBean bean : beans) {
+			entries.add(bean.createEmailRecipient());
+		}
+		populateEntrySubclasses(entries);
+		Set<String> addresses = new HashSet<String>();
+		for (EmailRecipient entry : entries) {
+			entry.appendAddresses(addresses, sendTime);
+		}
+		return addresses;
+	}
+
+	public void populateEntrySubclasses(List<EmailRecipient> entries) {
+		// Update the user type entries with their respective user objects.
+		UserDao userDao = new UserDao();
+		for (EmailRecipient e : entries) {
+			if (e instanceof MailingList) {
+				setRelationalData((MailingList) e);
+			} else if (e instanceof UserEntry) {
+				UserEntry ue = (UserEntry) e;
+				ue.setUser(userDao.getUser(ue.getUserId()));
+			}
+		}
+	}
+
+	public void saveMailingList(final MailingList mailingList) {
+		if (mailingList.getId() == Common.NEW_ID) {
+			mailingList.setId(mailingListDAO.insert(mailingList));
+		} else {
+			mailingListDAO.update(mailingList);
+		}
+		saveRelationalData(mailingList);
+	}
+
+	public void saveRelationalData(final MailingList mailingList) {
+		mailingListInactiveDAO.delete(mailingList.getId());
+		mailingListInactiveDAO.insert(mailingList);
+
+		mailingListMemberDAO.delete(mailingList.getId());
+		mailingListMemberDAO.insert(mailingList);
+	}
+}

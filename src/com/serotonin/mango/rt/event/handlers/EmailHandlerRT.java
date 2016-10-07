@@ -29,7 +29,7 @@ import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
@@ -186,7 +186,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
             if (evt.getContext() != null)
                 model.putAll(evt.getContext());
             model.put("img", inlineImages);
-            model.put("instanceDescription", SystemSettingsDao.getValue(SystemSettingsDao.INSTANCE_DESCRIPTION));
+            model.put("instanceDescription", SystemSettingsDAO.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
             MangoEmailContent content = new MangoEmailContent(notificationType.getFile(), model, bundle, subject,
                     Common.UTF8);
 

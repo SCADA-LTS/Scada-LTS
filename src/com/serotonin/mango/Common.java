@@ -47,7 +47,7 @@ import org.joda.time.Period;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.KeyValuePair;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.util.CommPortConfigException;
 import com.serotonin.mango.util.ExportCodes;
@@ -331,8 +331,8 @@ public class Common {
 
 	public static String getFiledataPath() {
 		if (lazyFiledataPath == null) {
-			String name = SystemSettingsDao
-					.getValue(SystemSettingsDao.FILEDATA_PATH);
+			String name = SystemSettingsDAO
+					.getValue(SystemSettingsDAO.FILEDATA_PATH);
 			if (name.startsWith("~"))
 				name = ctx.getServletContext().getRealPath(name.substring(1));
 
@@ -454,12 +454,12 @@ public class Common {
 		client.getHttpConnectionManager().setParams(managerParams);
 		client.setParams(params);
 
-		if (SystemSettingsDao
-				.getBooleanValue(SystemSettingsDao.HTTP_CLIENT_USE_PROXY)) {
-			String proxyHost = SystemSettingsDao
-					.getValue(SystemSettingsDao.HTTP_CLIENT_PROXY_SERVER);
-			int proxyPort = SystemSettingsDao
-					.getIntValue(SystemSettingsDao.HTTP_CLIENT_PROXY_PORT);
+		if (SystemSettingsDAO
+				.getBooleanValue(SystemSettingsDAO.HTTP_CLIENT_USE_PROXY)) {
+			String proxyHost = SystemSettingsDAO
+					.getValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER);
+			int proxyPort = SystemSettingsDAO
+					.getIntValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT);
 
 			// Set up the proxy configuration.
 			client.getHostConfiguration().setProxy(proxyHost, proxyPort);
@@ -469,13 +469,13 @@ public class Common {
 					.setProxyCredentials(
 							AuthScope.ANY,
 							new UsernamePasswordCredentials(
-									SystemSettingsDao
+									SystemSettingsDAO
 											.getValue(
-													SystemSettingsDao.HTTP_CLIENT_PROXY_USERNAME,
+													SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME,
 													""),
-									SystemSettingsDao
+									SystemSettingsDAO
 											.getValue(
-													SystemSettingsDao.HTTP_CLIENT_PROXY_PASSWORD,
+													SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD,
 													"")));
 		}
 
@@ -504,8 +504,8 @@ public class Common {
 		if (systemLanguage == null) {
 			synchronized (i18nLock) {
 				if (systemLanguage == null) {
-					systemLanguage = SystemSettingsDao
-							.getValue(SystemSettingsDao.LANGUAGE);
+					systemLanguage = SystemSettingsDAO
+							.getValue(SystemSettingsDAO.LANGUAGE);
 					Locale locale = findLocale(systemLanguage);
 					if (locale == null)
 						throw new IllegalArgumentException(
@@ -527,7 +527,7 @@ public class Common {
 		if (findLocale(language) == null)
 			throw new IllegalArgumentException(
 					"Locale for given language not found: " + language);
-		new SystemSettingsDao().setValue(SystemSettingsDao.LANGUAGE, language);
+		new SystemSettingsDAO().setValue(SystemSettingsDAO.LANGUAGE, language);
 		systemLanguage = null;
 		systemBundle = null;
 	}

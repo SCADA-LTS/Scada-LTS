@@ -53,6 +53,7 @@ public class PointLinkDAO {
 	private static final String COLUMN_NAME_EVENT_TYPE = "eventType";
 	private static final String COLUMN_NAME_DISABLED = "disabled";
 
+	// @formatter:off
 	private static final String POINT_LINK_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -92,6 +93,7 @@ public class PointLinkDAO {
 			+ "delete from pointLinks where "
 				+ COLUMN_NAME_ID
 			+ "=? ";
+	// @formatter:on
 
 	private class PointLinkRowMapper implements RowMapper<PointLinkVO> {
 

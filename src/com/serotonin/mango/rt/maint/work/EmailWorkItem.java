@@ -22,7 +22,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.web.email.EmailContent;
@@ -75,17 +75,17 @@ public class EmailWorkItem implements WorkItem {
     public void execute() {
         try {
             if (fromAddress == null) {
-                String addr = SystemSettingsDao.getValue(SystemSettingsDao.EMAIL_FROM_ADDRESS);
-                String pretty = SystemSettingsDao.getValue(SystemSettingsDao.EMAIL_FROM_NAME);
+                String addr = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_FROM_ADDRESS);
+                String pretty = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_FROM_NAME);
                 fromAddress = new InternetAddress(addr, pretty);
             }
 
-            EmailSender emailSender = new EmailSender(SystemSettingsDao.getValue(SystemSettingsDao.EMAIL_SMTP_HOST),
-                    SystemSettingsDao.getIntValue(SystemSettingsDao.EMAIL_SMTP_PORT),
-                    SystemSettingsDao.getBooleanValue(SystemSettingsDao.EMAIL_AUTHORIZATION),
-                    SystemSettingsDao.getValue(SystemSettingsDao.EMAIL_SMTP_USERNAME),
-                    SystemSettingsDao.getValue(SystemSettingsDao.EMAIL_SMTP_PASSWORD),
-                    SystemSettingsDao.getBooleanValue(SystemSettingsDao.EMAIL_TLS));
+            EmailSender emailSender = new EmailSender(SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_HOST),
+                    SystemSettingsDAO.getIntValue(SystemSettingsDAO.EMAIL_SMTP_PORT),
+                    SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_AUTHORIZATION),
+                    SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_USERNAME),
+                    SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_PASSWORD),
+                    SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_TLS));
 
             emailSender.send(fromAddress, toAddresses, subject, content);
         }

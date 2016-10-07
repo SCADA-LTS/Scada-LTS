@@ -46,6 +46,7 @@ public class DataPointUserDAO {
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	private static final String COLUMN_NAME_PERMISSION = "permission";
 
+	// @formatter:off
 	private static final String DATA_POINT_USER_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_USER_ID + ", "
@@ -55,6 +56,7 @@ public class DataPointUserDAO {
 
 	private static final String DATA_POINT_USER_INSERT = ""
 			+ "insert into dataPointUsers values (?,?,?) ";
+	// @formatter:on
 
 	public List<Tuple<Integer, Integer>> getDataPointUsers(final int dataPointId) {
 

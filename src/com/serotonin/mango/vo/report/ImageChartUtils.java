@@ -43,7 +43,7 @@ import org.jfree.ui.TextAnchor;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.io.StreamUtils;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.util.mindprod.StripEntities;
 import com.serotonin.util.StringUtils;
@@ -80,11 +80,11 @@ public class ImageChartUtils {
             OutputStream out, int width, int height) throws IOException {
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(null, null, null, null, showLegend, false, false);
-        chart.setBackgroundPaint(SystemSettingsDao.getColour(SystemSettingsDao.CHART_BACKGROUND_COLOUR));
+        chart.setBackgroundPaint(SystemSettingsDAO.getColour(SystemSettingsDAO.CHART_BACKGROUND_COLOUR));
 
         XYPlot plot = chart.getXYPlot();
-        plot.setBackgroundPaint(SystemSettingsDao.getColour(SystemSettingsDao.PLOT_BACKGROUND_COLOUR));
-        Color gridlines = SystemSettingsDao.getColour(SystemSettingsDao.PLOT_GRIDLINE_COLOUR);
+        plot.setBackgroundPaint(SystemSettingsDAO.getColour(SystemSettingsDAO.PLOT_BACKGROUND_COLOUR));
+        Color gridlines = SystemSettingsDAO.getColour(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR);
         plot.setDomainGridlinePaint(gridlines);
         plot.setRangeGridlinePaint(gridlines);
 

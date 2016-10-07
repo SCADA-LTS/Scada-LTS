@@ -18,23 +18,6 @@
  */
 package com.serotonin.mango.rt.maint.work;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.mail.internet.AddressException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
@@ -45,18 +28,29 @@ import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.vo.report.ImageChartUtils;
-import com.serotonin.mango.vo.report.ReportChartCreator;
+import com.serotonin.mango.vo.report.*;
 import com.serotonin.mango.vo.report.ReportChartCreator.PointStatistics;
-import com.serotonin.mango.vo.report.ReportInstance;
-import com.serotonin.mango.vo.report.ReportPointVO;
-import com.serotonin.mango.vo.report.ReportVO;
-import com.serotonin.util.ColorUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.email.EmailAttachment;
 import com.serotonin.web.email.EmailContent;
 import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.scada_lts.utils.ColorUtils;
+
+import javax.mail.internet.AddressException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author Matthew Lohbihler
@@ -122,7 +116,7 @@ public class ReportWorkItem implements WorkItem {
 				try {
 					if (!StringUtils.isEmpty(reportPoint.getColour()))
 						colour = ColorUtils
-								.toHexString(reportPoint.getColour())
+								.toHex(reportPoint.getColour())
 								.substring(1);
 				} catch (InvalidArgumentException e) {
 					// Should never happen since the colour would have been

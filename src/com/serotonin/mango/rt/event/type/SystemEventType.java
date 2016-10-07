@@ -27,7 +27,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -103,7 +103,7 @@ public class SystemEventType extends EventType {
 	private static void addEventTypeVO(int type, String key,
 			int defaultAlarmLevel) {
 		systemEventTypes.add(new EventTypeVO(EventType.EventSources.SYSTEM,
-				type, 0, new LocalizableMessage(key), SystemSettingsDao
+				type, 0, new LocalizableMessage(key), SystemSettingsDAO
 						.getIntValue(SYSTEM_SETTINGS_PREFIX + type,
 								defaultAlarmLevel)));
 	}
@@ -120,7 +120,7 @@ public class SystemEventType extends EventType {
 		EventTypeVO et = getEventType(type);
 		et.setAlarmLevel(alarmLevel);
 
-		SystemSettingsDao dao = new SystemSettingsDao();
+		SystemSettingsDAO dao = new SystemSettingsDAO();
 		dao.setIntValue(SYSTEM_SETTINGS_PREFIX + type, alarmLevel);
 	}
 

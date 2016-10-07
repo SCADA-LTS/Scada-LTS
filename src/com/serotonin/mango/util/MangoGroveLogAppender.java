@@ -30,7 +30,7 @@ import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.maint.VersionCheck;
 
 /**
@@ -45,7 +45,7 @@ public class MangoGroveLogAppender extends AppenderSkeleton {
 
         // Check the logging property setting.
         try {
-            if (!SystemSettingsDao.getBooleanValue(SystemSettingsDao.GROVE_LOGGING, false))
+            if (!SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.GROVE_LOGGING, false))
                 return;
         }
         catch (Throwable t) {
