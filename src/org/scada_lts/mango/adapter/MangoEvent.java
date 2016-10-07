@@ -80,10 +80,6 @@ public interface MangoEvent {
 	
 	int getStartRow();
 	
-	String generateUniqueXid();
-	
-	boolean isXidUnique(String xid, int excludeId);
-	
 	EventType getEventHandlerType(int handlerId);
 	
 	List<EventHandlerVO> getEventHandlers(EventType type);
@@ -110,14 +106,5 @@ public interface MangoEvent {
 	
 	int getHighestUnsilencedAlarmLevel(int userId);
 	
-	List<EventInstance> getFromCache(int userId);
-	
-	void addToCache(int userId, List<EventInstance> list);
-	
-	void updateCache(EventInstance event);
-	
-	void removeUserIdFromCache(int userId);
-	
-	void clearCache();
 
 }

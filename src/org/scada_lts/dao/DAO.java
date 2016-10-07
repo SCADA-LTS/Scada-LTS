@@ -19,6 +19,7 @@ package org.scada_lts.dao;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 import javax.sql.DataSource;
 
@@ -28,6 +29,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.serotonin.mango.Common;
+import com.serotonin.util.StringUtils;
 
 
 /** 
@@ -126,14 +128,31 @@ public class DAO {
 
 	}
 
-	public static String generateUniqueXid(String xidPrefix, String string) {
-		// TODO Auto-generated method stub
-		return null;
+	//TODO to rewrite base on seroUtils.jar
+	public String generateXid(String prefix) {
+		return prefix + generateRandomString(6, "0123456789");
 	}
 	
-	public static boolean isXidUnique(String xid, int excludeId, String tableName) {
+	public boolean isXidUnique(String xid, int excludeId, String tableName) {
 		return DAO.getInstance().getJdbcTemp().queryForObject("select count(*) from " + tableName
 				+ " where xid=? and id<>?", new Object[] { xid, excludeId }, Integer.class) == 0;
+	}
+	
+	public String generateRandomString(final int length, final String charSet) {
+        final StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; ++i) {
+        	Random random = new Random();
+            sb.append(charSet.charAt(random.nextInt(charSet.length())));
+        }
+        return sb.toString();
+    }
+	
+	public String generateUniqueXid(String prefix, String tableName) {
+		String xid = generateXid(prefix);
+		while (!isXidUnique(xid, -1, tableName)) {
+			xid = generateXid(prefix);
+		}
+		return xid;
 	}
 	
 }

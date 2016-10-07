@@ -18,6 +18,9 @@
  */
 package com.serotonin.mango.db.dao;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -25,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.event.EventDAO;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -54,9 +59,6 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.taglib.Functions;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 
 /**
  * @author Matthew Lohbihler
@@ -615,8 +617,7 @@ public class ReportDao extends BaseDao {
 
     public List<EventInstance> getReportInstanceEvents(int instanceId) {
         // Get the events.
-        final List<EventInstance> events = query(EVENT_SELECT, new Object[] { instanceId },
-                new EventDao.EventInstanceRowMapper());
+        final List<EventInstance> events = DAO.getInstance().getJdbcTemp().query(EVENT_SELECT, new Object[] { instanceId },  new EventDAO.EventRowMapper());
         // Add in the comments.
         ejt.query(EVENT_COMMENT_SELECT, new Object[] { instanceId, UserComment.TYPE_EVENT }, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {

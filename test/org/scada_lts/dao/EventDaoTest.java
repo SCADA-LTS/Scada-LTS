@@ -23,9 +23,11 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.model.event.Event;
-import org.springframework.dao.EmptyResultDataAccessException;
 
-import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
+import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.DataSourceEventType;
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.web.i18n.LocalizableMessage;
 
 /**
  * Test EventDAO
@@ -40,22 +42,16 @@ public class EventDaoTest extends TestDAO {
 		public void test() {
 			
 			//populate data
-			Event event = new Event();
 			
-			event.setEventType(4);
-			event.setTypeRef1(9);
-			event.setTypeRef2(18);
-			event.setActiveTimestamp(1464022806190L);
-			event.setRtnApplicable(false);
-			event.setRtnTimestamp(1464027257301L);
-			event.setRtnCause(1);
-			event.setAlarmLevel(2);
-			event.setMessage("");
-			event.setAckTS(1464022806190L);
-			//event.setActUserId(ADMIN_USER_ID);
-			//event.setUserName("admin");
-			// null
-			//event.setAlternateAckSource();
+			//DATA SOURCE
+			
+			EventType type = new DataSourceEventType(1,1);
+			long activeTS = 10;
+			boolean applicable = true;
+			int alarmLevel = 3;
+						
+			EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+			
 			
 			
 			// end populate data
@@ -65,14 +61,14 @@ public class EventDaoTest extends TestDAO {
 			EventDAO eventDAO = new EventDAO();
 			
 			//insert (create)
-			long id = (long) eventDAO.create(event)[0];
-			event.setId(id);
+			int id = (int) eventDAO.create(e)[0];
+			e.setId(id);
 			
 			// read 
 			// (findById)
-			Event eventFromDB = eventDAO.findById(new Object[] {id});
+			EventInstance eventFromDB = eventDAO.findById(new Object[] {id});
 			
-			boolean res = eventFromDB.equals(event);
+			boolean res = eventFromDB.equals(e);
 			assertEquals(true, res);
 			
 			//(findAll)
