@@ -48,7 +48,7 @@ import com.serotonin.mango.db.dao.PointLinkDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
@@ -257,7 +257,7 @@ public class EmportDwr extends BaseDwr {
 		try {
 
 			stopRunningDataSources();
-			new SystemSettingsDao().resetDataBase();
+			new SystemSettingsDAO().resetDataBase();
 			importer.importProject();
 		} catch (Exception e) {
 			e.printStackTrace();

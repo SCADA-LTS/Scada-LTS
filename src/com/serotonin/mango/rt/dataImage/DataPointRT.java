@@ -31,7 +31,7 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
@@ -203,7 +203,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		}
 
 		if (newValue.getTime() > System.currentTimeMillis()
-				+ SystemSettingsDao.getFutureDateLimit()) {
+				+ SystemSettingsDAO.getFutureDateLimit()) {
 			// Too far future dated. Toss it. But log a message first.
 			LOG.warn(
 					"Future dated value detected: pointId=" + vo.getId()

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.web.email.TemplateEmailContent;
 
 import freemarker.template.Template;
@@ -23,7 +23,7 @@ public class MangoEmailContent extends TemplateEmailContent {
             String defaultSubject, String encoding) throws TemplateException, IOException {
         super(encoding);
 
-        int type = SystemSettingsDao.getIntValue(SystemSettingsDao.EMAIL_CONTENT_TYPE);
+        int type = SystemSettingsDAO.getIntValue(SystemSettingsDAO.EMAIL_CONTENT_TYPE);
 
         this.defaultSubject = defaultSubject;
         this.subjectDirective = new SubjectDirective(bundle);

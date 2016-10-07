@@ -21,6 +21,7 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import org.scada_lts.utils.ColorUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,7 +88,7 @@ public class SystemSettingsDAO {
 	public static final String DATASOURCE_DISPLAY_SUFFIX = ".display";
 	public static final String HTTPDS_PROLOGUE = "httpdsPrologue";
 	public static final String HTTPDS_EPILOGUE = "httpdsEpilogue";
-	public static final String UI_PERFORAMANCE = "uiPerformance";
+	public static final String UI_PERFORMANCE = "uiPerformance";
 	public static final String GROVE_LOGGING = "groveLogging";
 	public static final String FUTURE_DATE_LIMIT_PERIODS = "futureDateLimitPeriods";
 	public static final String FUTURE_DATE_LIMIT_PERIOD_TYPE = "futureDateLimitPeriodType";
@@ -101,6 +102,28 @@ public class SystemSettingsDAO {
 	private static final String COLUMN_NAME_SETTING_VALUE = "settingValue";
 	private static final String COLUMN_NAME_SETTINGS_NAME = "settingName";
 
+	private static final String DELETE_WATCH_LISTS = "delete from watchLists";
+	private static final String DELETE_MANGO_VIEWS = "delete from mangoViews";
+	private static final String DELETE_POINT_EVENT_DETECTORS = "delete from pointEventDetectors";
+	private static final String DELETE_COMPOUND_EVENT_DETECTORS = "delete from compoundEventDetectors";
+	private static final String DELETE_SCHEDULED_EVENTS = "delete from scheduledEvents";
+	private static final String DELETE_POINT_LINKS = "delete from pointLinks";
+	private static final String DELETE_EVENTS = "delete from events";
+	private static final String DELETE_REPORTS = "delete from reports";
+	private static final String DELETE_POINT_HIERARCHY = "delete from pointHierarchy";
+	private static final String DELETE_EVENT_HANDLERS = "delete from eventHandlers";
+	private static final String DELETE_SCRIPTS = "delete from scripts";
+	private static final String DELETE_POINT_VALUES = "delete from pointValues";
+	private static final String DELETE_MAINTENANCE_EVENTS = "delete from maintenanceEvents";
+	private static final String DELETE_MAILING_LISTS = "delete from mailingLists";
+	private static final String DELETE_USERS = "delete from users";
+	private static final String DELETE_PUBLISHERS = "delete from publishers";
+	private static final String DELETE_DATA_POINT_USERS = "delete from dataPointUsers";
+	private static final String DELETE_DATA_SOURCE_USERS = "delete from dataSourceUsers";
+	private static final String DELETE_DATA_POINTS = "delete from dataPoints";
+	private static final String DELETE_DATA_SOURCES = "delete from dataSources";
+
+	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
 			+ "select "
 			+ COLUMN_NAME_SETTING_VALUE + " "
@@ -114,27 +137,6 @@ public class SystemSettingsDAO {
 			+ "delete from systemSettings where "
 			+ COLUMN_NAME_SETTINGS_NAME + "=? ";
 
-	private static final String DELETE_WATCH_LISTS = "delete from watchLists";
-	private static final String DELETE_MANGO_VIEWS = "delete from watchLists";
-	private static final String DELETE_POINT_EVENT_DETECTORS = "delete from watchLists";
-	private static final String DELETE_COMPOUND_EVENT_DETECTORS = "delete from watchLists";
-	private static final String DELETE_SCHEDULED_EVENTS = "delete from watchLists";
-	private static final String DELETE_POINT_LINKS = "delete from watchLists";
-	private static final String DELETE_EVENTS = "delete from watchLists";
-	private static final String DELETE_REPORTS = "delete from watchLists";
-	private static final String DELETE_POINT_HIERARCHY = "delete from watchLists";
-	private static final String DELETE_EVENT_HANDLERS = "delete from watchLists";
-	private static final String DELETE_SCRIPTS = "delete from watchLists";
-	private static final String DELETE_POINT_VALUES = "delete from watchLists";
-	private static final String DELETE_MAINTENANCE_EVENTS = "delete from watchLists";
-	private static final String DELETE_MAILING_LISTS = "delete from watchLists";
-	private static final String DELETE_USERS = "delete from watchLists";
-	private static final String DELETE_PUBLISHERS = "delete from watchLists";
-	private static final String DELETE_DATA_POINT_USERS = "delete from watchLists";
-	private static final String DELETE_DATA_SOURCE_USERS = "delete from watchLists";
-	private static final String DELETE_DATA_POINTS = "delete from watchLists";
-	private static final String DELETE_DATA_SOURCES = "delete from watchLists";
-
 	private static final String DATABASE_SIZE = ""
 			+ "select sum(data_length + index_length) /1024 /1024 \"size\" "
 			+ "from information_schema.TABLES where table_schema=";
@@ -143,6 +145,7 @@ public class SystemSettingsDAO {
 	private static final String SELECT_DATABASE = ""
 			+ "select "
 			+ DATABASE_STATEMENT + ";";
+	// @formatter:on
 
 	// Value cache
 	private static final Map<String, String> cache = new HashMap<String, String>();
@@ -155,12 +158,18 @@ public class SystemSettingsDAO {
 		String result = cache.get(key);
 		if (result == null) {
 			if (!cache.containsKey(key)) {
-				result = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_SETTING_VALUE_WHERE, new Object[]{key}, String.class);
+				try {
+					result = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_SETTING_VALUE_WHERE, new Object[]{key}, String.class);
+				} catch (EmptyResultDataAccessException e) {
+					result = null;
+				}
 				cache.put(key, result);
-				if (result == null)
+				if (result == null) {
 					result = defaultValue;
-			} else
+				}
+			} else {
 				result = defaultValue;
+			}
 		}
 		return result;
 	}
@@ -202,14 +211,14 @@ public class SystemSettingsDAO {
 		updateDatabase(key, value);
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	private void updateDatabase(final String key, final String value) {
 		// Delete any existing value.
 		removeValue(key);
 
 		// Insert the new value if it's not null.
 		if (value != null) {
-			DAO.getInstance().getJdbcTemp().update(INSERT_SYSTEM_SETTING, new Object[]{key,value});
+			DAO.getInstance().getJdbcTemp().update(INSERT_SYSTEM_SETTING, new Object[]{key, value});
 		}
 	}
 
@@ -261,6 +270,7 @@ public class SystemSettingsDAO {
 	private static long FUTURE_DATE_LIMIT = -1;
 
 	public static final Map<String, Object> DEFAULT_VALUES = new HashMap<String, Object>();
+
 	static {
 		DEFAULT_VALUES.put(DATABASE_SCHEMA_VERSION, "0.7.0");
 
@@ -290,7 +300,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(FILEDATA_PATH, "~/WEB-INF/filedata");
 		DEFAULT_VALUES.put(HTTPDS_PROLOGUE, "");
 		DEFAULT_VALUES.put(HTTPDS_EPILOGUE, "");
-		DEFAULT_VALUES.put(UI_PERFORAMANCE, 2000);
+		DEFAULT_VALUES.put(UI_PERFORMANCE, 2000);
 		DEFAULT_VALUES.put(GROVE_LOGGING, false);
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIODS, 24);
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIOD_TYPE,
@@ -302,7 +312,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(PLOT_GRIDLINE_COLOUR, "silver");
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void resetDataBase() {
 		DAO.getInstance().getJdbcTemp().update(DELETE_WATCH_LISTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MANGO_VIEWS);

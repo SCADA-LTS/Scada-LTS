@@ -15,13 +15,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts;
+package org.scada_lts.utils;
 
 import com.serotonin.InvalidArgumentException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.scada_lts.utils.ColorUtils;
 
 import java.awt.*;
 

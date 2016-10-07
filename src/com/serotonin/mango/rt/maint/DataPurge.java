@@ -33,7 +33,7 @@ import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.ReportDao;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.util.DateUtils;
@@ -125,8 +125,8 @@ public class DataPurge {
 
     private void eventPurge() {
         DateTime cutoff = DateUtils.truncateDateTime(new DateTime(runtime), Common.TimePeriods.DAYS);
-        cutoff = DateUtils.minus(cutoff, SystemSettingsDao.getIntValue(SystemSettingsDao.EVENT_PURGE_PERIOD_TYPE),
-                SystemSettingsDao.getIntValue(SystemSettingsDao.EVENT_PURGE_PERIODS));
+        cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE),
+                SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
 
         int deleteCount = new EventDao().purgeEventsBefore(cutoff.getMillis());
         if (deleteCount > 0)
@@ -135,8 +135,8 @@ public class DataPurge {
 
     private void reportPurge() {
         DateTime cutoff = DateUtils.truncateDateTime(new DateTime(runtime), Common.TimePeriods.DAYS);
-        cutoff = DateUtils.minus(cutoff, SystemSettingsDao.getIntValue(SystemSettingsDao.REPORT_PURGE_PERIOD_TYPE),
-                SystemSettingsDao.getIntValue(SystemSettingsDao.REPORT_PURGE_PERIODS));
+        cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE),
+                SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
 
         int deleteCount = new ReportDao().purgeReportsBefore(cutoff.getMillis());
         if (deleteCount > 0)

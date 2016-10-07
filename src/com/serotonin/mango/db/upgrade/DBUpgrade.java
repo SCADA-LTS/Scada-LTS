@@ -30,7 +30,7 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.BaseDao;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.util.StringUtils;
 
 /**
@@ -50,8 +50,8 @@ abstract public class DBUpgrade extends BaseDao {
 		// upgrades to run, so start a loop.
 		while (true) {
 			// Get the current schema version.
-			String schemaVersion = SystemSettingsDao
-					.getValue(SystemSettingsDao.DATABASE_SCHEMA_VERSION);
+			String schemaVersion = SystemSettingsDAO
+					.getValue(SystemSettingsDAO.DATABASE_SCHEMA_VERSION);
 
 			// Convert the schema version to the class name convention. This
 			// simply means replacing dots with
@@ -86,8 +86,8 @@ abstract public class DBUpgrade extends BaseDao {
 				LOG.warn("Upgrading instance from " + schemaVersion + " to "
 						+ upgrade.getNewSchemaVersion());
 				upgrade.upgrade();
-				new SystemSettingsDao().setValue(
-						SystemSettingsDao.DATABASE_SCHEMA_VERSION,
+				new SystemSettingsDAO().setValue(
+						SystemSettingsDAO.DATABASE_SCHEMA_VERSION,
 						upgrade.getNewSchemaVersion());
 			} catch (Exception e) {
 				throw new ShouldNeverHappenException(e);
