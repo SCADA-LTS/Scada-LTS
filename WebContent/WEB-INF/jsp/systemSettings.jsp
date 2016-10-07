@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
-<%@page import="com.serotonin.mango.db.dao.SystemSettingsDao"%>
+<%@page import="org.scada_lts.dao.SystemSettingsDAO"%>
 <%@page import="com.serotonin.mango.Common"%>
 <%@page import="com.serotonin.mango.rt.event.AlarmLevels"%>
 <%@page import="com.serotonin.mango.rt.event.type.EventType"%>
@@ -30,15 +30,15 @@
     
     function init() {
         SystemSettingsDwr.getSettings(function(settings) {
-            $set("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_HOST %>"/>", settings.<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_HOST %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PORT %>"/>", settings.<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PORT %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.EMAIL_FROM_ADDRESS %>"/>", settings.<c:out value="<%= SystemSettingsDao.EMAIL_FROM_ADDRESS %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.EMAIL_FROM_NAME %>"/>", settings.<c:out value="<%= SystemSettingsDao.EMAIL_FROM_NAME %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.EMAIL_AUTHORIZATION %>"/>", settings.<c:out value="<%= SystemSettingsDao.EMAIL_AUTHORIZATION %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_USERNAME %>"/>", settings.<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_USERNAME %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PASSWORD %>"/>", settings.<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PASSWORD %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.EMAIL_TLS %>"/>", settings.<c:out value="<%= SystemSettingsDao.EMAIL_TLS %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.EMAIL_CONTENT_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDao.EMAIL_CONTENT_TYPE %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PORT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PORT %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_ADDRESS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_ADDRESS %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_NAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_NAME %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EMAIL_AUTHORIZATION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_AUTHORIZATION %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_USERNAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_USERNAME %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PASSWORD %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PASSWORD %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EMAIL_TLS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_TLS %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>);
             smtpAuthChange();
             
             var alarmFunctions = [
@@ -69,29 +69,29 @@
             setEventTypeData("auditEventAlarmLevelsList", settings.auditEventTypes, alarmFunctions, alarmOptions,
                     auditEventAlarmLevels);
             
-            $set("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_USE_PROXY %>"/>", settings.<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_USE_PROXY %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_SERVER %>"/>", settings.<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_SERVER %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PORT %>"/>", settings.<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PORT %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_USERNAME %>"/>", settings.<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_USERNAME %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PASSWORD %>"/>", settings.<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PASSWORD %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>);
             httpUseProxyChange();
             
-            $set("<c:out value="<%= SystemSettingsDao.EVENT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDao.EVENT_PURGE_PERIOD_TYPE %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.EVENT_PURGE_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDao.EVENT_PURGE_PERIODS %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.REPORT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDao.REPORT_PURGE_PERIOD_TYPE %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.REPORT_PURGE_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDao.REPORT_PURGE_PERIODS %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.UI_PERFORAMANCE %>"/>", settings.<c:out value="<%= SystemSettingsDao.UI_PERFORAMANCE %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>);
 
-            $set("<c:out value="<%= SystemSettingsDao.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDao.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>);
-            $set("<c:out value="<%= SystemSettingsDao.FUTURE_DATE_LIMIT_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDao.FUTURE_DATE_LIMIT_PERIODS %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>);
             
-            $set("<c:out value="<%= SystemSettingsDao.INSTANCE_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDao.INSTANCE_DESCRIPTION %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>);
             
-            var sel = $("<c:out value="<%= SystemSettingsDao.LANGUAGE %>"/>");
+            var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
             <c:forEach items="${availableLanguages}" var="lang">
               sel.options[sel.options.length] = new Option("${lang.value}", "${lang.key}");
             </c:forEach>
-            $set(sel, settings.<c:out value="<%= SystemSettingsDao.LANGUAGE %>"/>);
+            $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
         });
     
     	SystemSettingsDwr.checkTypeDB(function(msg){
@@ -150,15 +150,15 @@
     
     function saveEmailSettings() {
         SystemSettingsDwr.saveEmailSettings(
-            $get("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_HOST %>"/>"),
-            $get("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PORT %>"/>"),
-            $get("<c:out value="<%= SystemSettingsDao.EMAIL_FROM_ADDRESS %>"/>"),
-            $get("<c:out value="<%= SystemSettingsDao.EMAIL_FROM_NAME %>"/>"),
-            $get("<c:out value="<%= SystemSettingsDao.EMAIL_AUTHORIZATION %>"/>"),
-            $get("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_USERNAME %>"/>"),
-            $get("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PASSWORD %>"/>"),
-            $get("<c:out value="<%= SystemSettingsDao.EMAIL_TLS %>"/>"),
-            $get("<c:out value="<%= SystemSettingsDao.EMAIL_CONTENT_TYPE %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PORT %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_ADDRESS %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_NAME %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.EMAIL_AUTHORIZATION %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_USERNAME %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PASSWORD %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.EMAIL_TLS %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>"),
             function() {
                 stopImageFader("saveEmailSettingsImg");
                 setUserMessage("emailMessage", "<fmt:message key="systemSettings.emailSettingsSaved"/>");
@@ -169,15 +169,15 @@
     
     function sendTestEmail() {
         SystemSettingsDwr.sendTestEmail(
-                $get("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_HOST %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PORT %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.EMAIL_FROM_ADDRESS %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.EMAIL_FROM_NAME %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.EMAIL_AUTHORIZATION %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_USERNAME %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PASSWORD %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.EMAIL_TLS %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.EMAIL_CONTENT_TYPE %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PORT %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_ADDRESS %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_NAME %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EMAIL_AUTHORIZATION %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_USERNAME %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PASSWORD %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EMAIL_TLS %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>"),
                 function(result) {
                     stopImageFader("sendTestEmailImg");
                     if (result.exception)
@@ -218,18 +218,18 @@
     }
     
     function smtpAuthChange() {
-        var auth = $("<c:out value="<%= SystemSettingsDao.EMAIL_AUTHORIZATION %>"/>").checked;
-        setDisabled($("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_USERNAME %>"/>"), !auth);
-        setDisabled($("<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PASSWORD %>"/>"), !auth);
+        var auth = $("<c:out value="<%= SystemSettingsDAO.EMAIL_AUTHORIZATION %>"/>").checked;
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_USERNAME %>"/>"), !auth);
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PASSWORD %>"/>"), !auth);
     }
     
     function saveHttpSettings() {
         SystemSettingsDwr.saveHttpSettings(
-                $get("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_USE_PROXY %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_SERVER %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PORT %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_USERNAME %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PASSWORD %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>"),
                 function() {
                     stopImageFader("saveHttpSettingsImg");
                     setUserMessage("httpMessage", "<fmt:message key="systemSettings.httpSaved"/>");
@@ -239,23 +239,23 @@
     }
     
     function httpUseProxyChange() {
-        var proxy = $("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_USE_PROXY %>"/>").checked;
-        setDisabled($("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_SERVER %>"/>"), !proxy);
-        setDisabled($("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PORT %>"/>"), !proxy);
-        setDisabled($("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_USERNAME %>"/>"), !proxy);
-        setDisabled($("<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PASSWORD %>"/>"), !proxy);
+        var proxy = $("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>").checked;
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>"), !proxy);
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>"), !proxy);
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>"), !proxy);
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>"), !proxy);
     }
     
     function saveMiscSettings() {
         SystemSettingsDwr.saveMiscSettings(
-                $get("<c:out value="<%= SystemSettingsDao.EVENT_PURGE_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.EVENT_PURGE_PERIODS %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.REPORT_PURGE_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.REPORT_PURGE_PERIODS %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.UI_PERFORAMANCE %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>"),
                 1,
-                $get("<c:out value="<%= SystemSettingsDao.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
                 function() {
                     stopImageFader("saveMiscSettingsImg");
                     setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
@@ -273,8 +273,8 @@
     
     function saveInfoSettings() {
         SystemSettingsDwr.saveInfoSettings("0",
-                //$get("<c:out value="<%= SystemSettingsDao.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDao.INSTANCE_DESCRIPTION %>"/>"),
+                //$get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>"),
                 function() {
                     stopImageFader("saveInfoSettingsImg");
                     setUserMessage("infoMessage", "<fmt:message key="systemSettings.infoSaved"/>");
@@ -284,7 +284,7 @@
     }
     
     function newVersionCheck() {
-        SystemSettingsDwr.newVersionCheck($get("<c:out value="<%= SystemSettingsDao.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
+        SystemSettingsDwr.newVersionCheck($get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
                 function(result) {
                     if (!result)
                         result = "<fmt:message key="systemSettings.upToDate"/>";
@@ -302,7 +302,7 @@
     }
     
     function saveLangSettings() {
-        SystemSettingsDwr.saveLanguageSettings($get("<c:out value="<%= SystemSettingsDao.LANGUAGE %>"/>"), function() {
+        SystemSettingsDwr.saveLanguageSettings($get("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"), function() {
             stopImageFader("saveLangSettingsImg");
             setUserMessage("langMessage", "<fmt:message key="systemSettings.langSaved"/>");
         });
@@ -405,10 +405,10 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.notify"/></td>
         <td class="formField" valign="top">
-          <select id="<c:out value="<%= SystemSettingsDao.NEW_VERSION_NOTIFICATION_LEVEL %>"/>">
-            <option value="<c:out value="<%= SystemSettingsDao.NOTIFICATION_LEVEL_STABLE %>"/>"><fmt:message key="systemSettings.notifyStable"/></option>
-            <option value="<c:out value="<%= SystemSettingsDao.NOTIFICATION_LEVEL_RC %>"/>"><fmt:message key="systemSettings.notifyRC"/></option>
-            <option value="<c:out value="<%= SystemSettingsDao.NOTIFICATION_LEVEL_BETA %>"/>"><fmt:message key="systemSettings.notifyBeta"/></option>
+          <select id="<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>">
+            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_STABLE %>"/>"><fmt:message key="systemSettings.notifyStable"/></option>
+            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_RC %>"/>"><fmt:message key="systemSettings.notifyRC"/></option>
+            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_BETA %>"/>"><fmt:message key="systemSettings.notifyBeta"/></option>
           </select>
           <tag:img png="accept" title="systemSettings.checkNow" onclick="newVersionCheck()"/>
         </td>
@@ -416,7 +416,7 @@
       --%>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.instanceDescription"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.INSTANCE_DESCRIPTION %>"/>" type="text"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>" type="text"/></td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.databaseSize"/></td>
@@ -510,7 +510,7 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.systemLanguage"/></td>
         <td class="formField">
-          <select id="<c:out value="<%= SystemSettingsDao.LANGUAGE %>"/>"></select>
+          <select id="<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"></select>
         </td>
       </tr>
       <tr>
@@ -535,42 +535,42 @@
     <table>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.smtpHost"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_HOST %>"/>" type="text"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>" type="text"/></td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.smtpPort"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PORT %>"/>" type="text"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PORT %>"/>" type="text"/></td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.fromAddress"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.EMAIL_FROM_ADDRESS %>"/>" type="text"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_ADDRESS %>"/>" type="text"/></td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="systemSettings.fromName"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.EMAIL_FROM_NAME %>"/>" type="text"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_NAME %>"/>" type="text"/></td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.auth"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDao.EMAIL_AUTHORIZATION %>"/>" type="checkbox" onclick="smtpAuthChange()"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.EMAIL_AUTHORIZATION %>"/>" type="checkbox" onclick="smtpAuthChange()"/>
         </td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="systemSettings.smtpUsername"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_USERNAME %>"/>" type="text"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_USERNAME %>"/>" type="text"/></td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="systemSettings.smtpPassword"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.EMAIL_SMTP_PASSWORD %>"/>" type="password"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PASSWORD %>"/>" type="password"/></td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.tls"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.EMAIL_TLS %>"/>" type="checkbox"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_TLS %>"/>" type="checkbox"/></td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.contentType"/></td>
         <td class="formField">
-          <select id="<c:out value="<%= SystemSettingsDao.EMAIL_CONTENT_TYPE %>"/>">
+          <select id="<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>">
             <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_BOTH %>"/>"><fmt:message key="systemSettings.contentType.both"/></option>
             <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_HTML %>"/>"><fmt:message key="systemSettings.contentType.html"/></option>
             <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_TEXT %>"/>"><fmt:message key="systemSettings.contentType.text"/></option>
@@ -600,25 +600,25 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.useProxy"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_USE_PROXY %>"/>" type="checkbox"
+          <input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>" type="checkbox"
                   onclick="httpUseProxyChange()"/>
         </td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="systemSettings.proxyHost"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_SERVER %>"/>" type="text"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>" type="text"/></td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="systemSettings.proxyPort"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PORT %>"/>" type="text"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>" type="text"/></td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="systemSettings.proxyUsername"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_USERNAME %>"/>" type="text"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>" type="text"/></td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="systemSettings.proxyPassword"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDao.HTTP_CLIENT_PROXY_PASSWORD %>"/>" type="password"/></td>
+        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>" type="password"/></td>
       </tr>
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
@@ -642,7 +642,7 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
         <td class="formField">
-          <select id="<c:out value="<%= SystemSettingsDao.UI_PERFORAMANCE %>"/>">
+          <select id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>">
             <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
             <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
             <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
@@ -652,14 +652,14 @@
       <%--
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.groveLogging"/></td>
-        <td class="formField"><input type="checkbox" id="<c:out value="<%= SystemSettingsDao.GROVE_LOGGING %>"/>"/></td>
+        <td class="formField"><input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.GROVE_LOGGING %>"/>"/></td>
       </tr>
       --%>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.purgeEvents"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDao.EVENT_PURGE_PERIODS %>"/>" type="text" class="formShort"/>
-          <select id="<c:out value="<%= SystemSettingsDao.EVENT_PURGE_PERIOD_TYPE %>"/>">
+          <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>" type="text" class="formShort"/>
+          <select id="<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>">
             <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
           </select>
         </td>
@@ -667,8 +667,8 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.purgeReports"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDao.REPORT_PURGE_PERIODS %>"/>" type="text" class="formShort"/>
-          <select id="<c:out value="<%= SystemSettingsDao.REPORT_PURGE_PERIOD_TYPE %>"/>">
+          <input id="<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>" type="text" class="formShort"/>
+          <select id="<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>">
             <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
           </select>
         </td>
@@ -681,8 +681,8 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.futureDateLimit"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDao.FUTURE_DATE_LIMIT_PERIODS %>"/>" type="text" class="formShort"/>
-          <select id="<c:out value="<%= SystemSettingsDao.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>">
+          <input id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>" type="text" class="formShort"/>
+          <select id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>">
             <tag:timePeriodOptions min="true" h="true"/>
           </select>
         </td>

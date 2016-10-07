@@ -40,7 +40,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.DataPointVO;
@@ -99,8 +99,8 @@ public class VersionCheck extends TimerTask {
 	@Override
 	public void run(long fireTime) {
 		try {
-			String notifLevel = SystemSettingsDao
-					.getValue(SystemSettingsDao.NEW_VERSION_NOTIFICATION_LEVEL);
+			String notifLevel = SystemSettingsDAO
+					.getValue(SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL);
 			newVersionCheck(fireTime, notifLevel);
 		} catch (SocketTimeoutException e) {
 			// Ignore
@@ -147,8 +147,8 @@ public class VersionCheck extends TimerTask {
 				Common.getGroveUrl(Common.GroveServlets.VERSION_CHECK));
 
 		postMethod.addParameter("instanceId", getInstanceId());
-		postMethod.addParameter("instanceName", SystemSettingsDao
-				.getValue(SystemSettingsDao.INSTANCE_DESCRIPTION));
+		postMethod.addParameter("instanceName", SystemSettingsDAO
+				.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
 		try {
 			postMethod.addParameter("instanceIp", InetAddress.getLocalHost()
 					.getHostAddress());
@@ -205,15 +205,15 @@ public class VersionCheck extends TimerTask {
 				return null;
 
 			// Beta?
-			if (SystemSettingsDao.NOTIFICATION_LEVEL_BETA.equals(stage)
-					&& SystemSettingsDao.NOTIFICATION_LEVEL_BETA
+			if (SystemSettingsDAO.NOTIFICATION_LEVEL_BETA.equals(stage)
+					&& SystemSettingsDAO.NOTIFICATION_LEVEL_BETA
 							.equals(notifLevel))
 				return devVersion + " beta";
 
 			// Release candidate?
-			if (SystemSettingsDao.NOTIFICATION_LEVEL_RC.equals(stage)
-					&& (SystemSettingsDao.NOTIFICATION_LEVEL_BETA
-							.equals(notifLevel) || SystemSettingsDao.NOTIFICATION_LEVEL_RC
+			if (SystemSettingsDAO.NOTIFICATION_LEVEL_RC.equals(stage)
+					&& (SystemSettingsDAO.NOTIFICATION_LEVEL_BETA
+							.equals(notifLevel) || SystemSettingsDAO.NOTIFICATION_LEVEL_RC
 							.equals(notifLevel)))
 				return devVersion + " release candidate";
 		}

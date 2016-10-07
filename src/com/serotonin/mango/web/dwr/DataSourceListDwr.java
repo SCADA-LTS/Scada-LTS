@@ -30,7 +30,7 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.vo.DataPointVO;
@@ -52,8 +52,8 @@ public class DataSourceListDwr extends BaseDwr {
 			for (DataSourceVO.Type type : DataSourceVO.Type.values()) {
 				// Allow customization settings to overwrite the default display
 				// value.
-				boolean display = SystemSettingsDao.getBooleanValue(type.name()
-						+ SystemSettingsDao.DATASOURCE_DISPLAY_SUFFIX,
+				boolean display = SystemSettingsDAO.getBooleanValue(type.name()
+						+ SystemSettingsDAO.DATASOURCE_DISPLAY_SUFFIX,
 						type.isDisplay());
 				if (display)
 					translatedTypes.add(new IntValuePair(type.getId(),
