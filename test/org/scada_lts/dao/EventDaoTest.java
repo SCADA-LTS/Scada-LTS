@@ -22,12 +22,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.scada_lts.dao.event.EventDAO;
-import org.scada_lts.dao.model.event.Event;
 
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.web.i18n.LocalizableMessage;
 
 /**
  * Test EventDAO
