@@ -105,10 +105,11 @@ public class EventService implements MangoEvent {
 		
 		clearCache();
 		
-		if( signalAlarmLevelChange ) {
+		//TODO check
+		/*if( signalAlarmLevelChange ) {
 			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
 			Common.ctx.getEventManager().notifyEventAck(eventId,  userId);
-		}
+		}*/
 		
 	}
 	

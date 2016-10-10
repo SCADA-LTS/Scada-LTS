@@ -93,5 +93,31 @@ public class EventServiceTest extends TestDAO {
 		
 	}
 	
+	@Test
+	public void ackEventSingleAlarmLevelChange() {
+		
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		int alarmLevel = 3;
+					
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		
+		eventService.saveEvent(e);
+		
+		long currentTime = System.currentTimeMillis();
+		
+		eventService.ackEvent(e.getId(), currentTime, AMDMIN_USER_ID, -1);
+		
+		List<EventInstance> lstAckEvents = eventService.getActiveEvents();
+		
+		boolean checkAckEventSingleAlarmLevelChange = lstAckEvents.size() == 1;
+		
+		assertEquals(true, checkAckEventSingleAlarmLevelChange);
+		
+	}
+	
+	
+	
 
 }
