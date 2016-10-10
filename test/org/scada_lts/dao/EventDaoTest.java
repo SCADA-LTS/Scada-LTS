@@ -33,8 +33,6 @@ import com.serotonin.mango.rt.event.type.EventType;
  * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
  */
 public class EventDaoTest extends TestDAO {
-
-		private final static int ADMIN_USER_ID=1;
 		
 		@Test
 		public void test() {

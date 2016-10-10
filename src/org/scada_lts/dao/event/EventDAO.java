@@ -239,9 +239,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "uc."+COLUMN_NAME_TIME_STAMP+","
 				+ "uc."+COLUMN_NAME_COMMENT_TEXT+" "
 		    + "from "
-		    	+ "userComments uc left join users u on uc."+COLUMN_NAME_USER_ID+" = u."+COLUMN_NAME_ID
-		    + "where uc."+COLUMN_NAME_COMMENT_TYPE+"= "+UserComment.TYPE_EVENT
-				+ " and uc."+COLUMN_NAME_TYPE_KEY+"=? " + "order by uc."+COLUMN_NAME_TIME_STAMP;
+		    	+ "userComments uc left join users u on uc."+COLUMN_NAME_USER_ID+" = u."+COLUMN_NAME_ID + " "
+		    + "where "
+		    	+ "uc."+COLUMN_NAME_COMMENT_TYPE+"= "+UserComment.TYPE_EVENT +" and "
+		    	+ "uc."+COLUMN_NAME_TYPE_KEY+"=? "
+		    +"order by uc."+COLUMN_NAME_TIME_STAMP;
 	
 	private static final String EVENT_DELETE_BEFORE= ""
 			+"delete from events "
@@ -510,7 +512,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				 			}
 			}, keyHolder);
 			
-			return new Object[] {keyHolder.getKey().intValue()};
+			entity.setId(keyHolder.getKey().intValue());
+			return new Object[] {entity.getId()};
 		} catch (Throwable e) {
 			LOG.error(e);
 		}

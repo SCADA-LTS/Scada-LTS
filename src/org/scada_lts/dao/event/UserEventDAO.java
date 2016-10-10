@@ -141,6 +141,7 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 	}
 	
 	public void batchUpdate(final int eventId,	final List<Integer> userIds, final boolean alarm) {
+		
 		DAO.getInstance().getJdbcTemp().batchUpdate(USER_EVENT_INSERT, new BatchPreparedStatementSetter() {
 
 			@Override

@@ -26,7 +26,7 @@ import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.dao.model.event.UserEvent;
 
 /** 
- * Test ScriptDAO
+ * Test UserEventDAO test
  * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
