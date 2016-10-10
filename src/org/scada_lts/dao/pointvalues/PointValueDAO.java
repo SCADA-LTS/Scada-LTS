@@ -314,7 +314,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			 			}
 		}, keyHolder);
 		
-		return new Object[] {keyHolder.getKey().intValue()};
+		return new Object[] {keyHolder.getKey().longValue()};
 		
 	}
 	
