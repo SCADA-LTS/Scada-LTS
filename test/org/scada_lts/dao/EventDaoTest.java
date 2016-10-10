@@ -20,6 +20,8 @@ package org.scada_lts.dao;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.scada_lts.dao.event.EventDAO;
 
@@ -47,9 +49,7 @@ public class EventDaoTest extends TestDAO {
 			int alarmLevel = 3;
 						
 			EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
-			
-			
-			
+						
 			// end populate data
 			
 			//CR
@@ -69,7 +69,19 @@ public class EventDaoTest extends TestDAO {
 			
 			//(findAll)
 			
+			List<EventInstance> lst = eventDAO.findAll();
+			boolean resFindAll = lst.size()==1;
+			
+			assertEquals(true, resFindAll);
+			
 			//(findFiltered)
+			
+			 
+			Object[] argsFilter = new Object[] { 1 };
+			List<EventInstance> lstFiltered = eventDAO.filtered(" e.id=?", argsFilter, GenericDaoCR.NO_LIMIT);
+			boolean resFiltered = lstFiltered.size() == 1;
+			
+			assertEquals(true, resFiltered);
 			
 			//end CR
 			
