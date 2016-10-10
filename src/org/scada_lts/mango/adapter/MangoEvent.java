@@ -42,6 +42,7 @@ public interface MangoEvent {
 	
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource);
 	
+	//TODO userIds should be the List<Long>
 	void insertUserEvents(final int eventId, final List<Integer> userIds, final boolean alarm);
 	
 	void attachRelationInfo(List<EventInstance> list);

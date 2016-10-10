@@ -20,10 +20,13 @@ package org.scada_lts.dao;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 
@@ -39,12 +42,15 @@ import com.serotonin.mango.rt.event.type.EventType;
 public class EventServiceTest extends TestDAO {
 	
 	private MangoEvent eventService;
-	private static final int AMDMIN_USER_ID=1;
+	private static final int ADMIN_USER_ID=1;
 	
 	
 	@Before
 	public void init() {
 		eventService = new EventService();
+		Properties confTest = new Properties();
+		confTest.setProperty(ScadaConfig.ENABLE_CACHE, "false");
+		ScadaConfig.getInstanceTest(confTest);
 	}
 	
 	@Test
@@ -83,7 +89,7 @@ public class EventServiceTest extends TestDAO {
 		
 		long currentTime = System.currentTimeMillis();
 		
-		eventService.ackEvent(e.getId(), currentTime, AMDMIN_USER_ID, -1, false);
+		eventService.ackEvent(e.getId(), currentTime, ADMIN_USER_ID, -1, false);
 		
 		List<EventInstance> lstAckEvents = eventService.getActiveEvents();
 		
@@ -107,7 +113,7 @@ public class EventServiceTest extends TestDAO {
 		
 		long currentTime = System.currentTimeMillis();
 		
-		eventService.ackEvent(e.getId(), currentTime, AMDMIN_USER_ID, -1);
+		eventService.ackEvent(e.getId(), currentTime, ADMIN_USER_ID, -1);
 		
 		List<EventInstance> lstAckEvents = eventService.getActiveEvents();
 		
@@ -117,6 +123,28 @@ public class EventServiceTest extends TestDAO {
 		
 	}
 	
+	@Test
+	public void insertUserEvents() {
+		
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		int alarmLevel = 3;
+					
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		
+		eventService.saveEvent(e);
+		
+		List<Integer> userIds = new ArrayList<Integer>();
+		
+		userIds.add(Integer.valueOf(ADMIN_USER_ID));
+		eventService.insertUserEvents(e.getId(), userIds, true);
+
+		boolean checkInsertUserEvents = eventService.getHighestUnsilencedAlarmLevel(ADMIN_USER_ID)==3;
+		
+		assertEquals(true, checkInsertUserEvents);
+		
+	}
 	
 	
 

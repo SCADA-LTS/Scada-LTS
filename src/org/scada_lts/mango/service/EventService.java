@@ -340,9 +340,9 @@ public class EventService implements MangoEvent {
 		try {
 			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
 			if (cacheEnable) {
-			  result = UnsilencedAlarmCache.getInstance().getHighestUnsilencedAlarmLevel(userId);
-			} else {
 				result = UnsilencedAlarmCache.getInstance().getHighestUnsilencedAlarmLevel(userId);
+			} else {
+				result = new EventDAO().getHighestUnsilencedAlarmLevel(userId);
 			}
 		} catch (SchedulerException | IOException e) {
 			LOG.error(e);	

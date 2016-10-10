@@ -331,7 +331,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+"select "
 				+ "max(e."+COLUMN_NAME_ALARM_LEVEL+") "
 			+ "from userEvents u "
-				+ "join events e on u."+COLUMN_NAME_EVENT_ID+"=e."+COLUMN_NAME_USER_EVENTS_ID+"id "
+				+ "join events e on u."+COLUMN_NAME_EVENT_ID+"=e."+COLUMN_NAME_USER_EVENTS_ID+" "
 			+ "where u."+COLUMN_NAME_SILENCED+"=? and u."+COLUMN_NAME_USER_ID+"=?";
 	
 	// @formatter:onn
