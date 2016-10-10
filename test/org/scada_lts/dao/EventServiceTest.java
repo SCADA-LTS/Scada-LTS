@@ -18,6 +18,10 @@
 
 package org.scada_lts.dao;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.scada_lts.mango.adapter.MangoEvent;
@@ -27,8 +31,6 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Event DAO base on before version EventDao 
  *
@@ -37,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 public class EventServiceTest extends TestDAO {
 	
 	private MangoEvent eventService;
+	private static final int AMDMIN_USER_ID=1;
 	
 	
 	@Before
@@ -61,6 +64,33 @@ public class EventServiceTest extends TestDAO {
 		boolean resSaveEvent = checkCountSaveEvent == 1;
 		
 		assertEquals(true,resSaveEvent);
+		
+		//TODO save update event
+		
+	}
+	
+	@Test
+	public void ackEvent() {
+		
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		int alarmLevel = 3;
+					
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		
+		eventService.saveEvent(e);
+		
+		long currentTime = System.currentTimeMillis();
+		
+		eventService.ackEvent(e.getId(), currentTime, AMDMIN_USER_ID, -1, false);
+		
+		List<EventInstance> lstAckEvents = eventService.getActiveEvents();
+		
+		boolean checkAckEvent = lstAckEvents.get(0).getAcknowledgedTimestamp() == currentTime;
+		
+		assertEquals(true, checkAckEvent);
+		
 	}
 	
 

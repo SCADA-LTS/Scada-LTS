@@ -184,7 +184,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
 	
 	public static final String EVENT_FILTER_ACTIVE=" "
-			+"e."+ COLUMN_NAME_RTN_APPLICABLE+"=? and e."+ COLUMN_NAME_RTN_TS+" is null";
+			+"e."+ COLUMN_NAME_RTN_APPLICABLE+"=? and (e."+ COLUMN_NAME_RTN_TS+" is null or e."+COLUMN_NAME_RTN_TS+"=0)";
 	
 	private static final String EVENT_SELECT_WITH_USER_DATA=""
 			+"select "

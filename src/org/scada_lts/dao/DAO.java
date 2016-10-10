@@ -29,7 +29,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.serotonin.mango.Common;
-import com.serotonin.util.StringUtils;
 
 
 /** 
