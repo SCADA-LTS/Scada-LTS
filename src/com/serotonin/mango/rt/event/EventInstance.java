@@ -319,4 +319,94 @@ public class EventInstance {
     public Map<String, Object> getContext() {
         return context;
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + acknowledgedByUserId;
+		result = prime * result + ((acknowledgedByUsername == null) ? 0 : acknowledgedByUsername.hashCode());
+		result = prime * result + (int) (acknowledgedTimestamp ^ (acknowledgedTimestamp >>> 32));
+		result = prime * result + (int) (activeTimestamp ^ (activeTimestamp >>> 32));
+		result = prime * result + alarmLevel;
+		result = prime * result + alternateAckSource;
+		result = prime * result + ((context == null) ? 0 : context.hashCode());
+		result = prime * result + ((eventComments == null) ? 0 : eventComments.hashCode());
+		result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
+		result = prime * result + ((handlers == null) ? 0 : handlers.hashCode());
+		result = prime * result + id;
+		result = prime * result + ((message == null) ? 0 : message.hashCode());
+		result = prime * result + (rtnApplicable ? 1231 : 1237);
+		result = prime * result + rtnCause;
+		result = prime * result + (int) (rtnTimestamp ^ (rtnTimestamp >>> 32));
+		result = prime * result + (silenced ? 1231 : 1237);
+		result = prime * result + (userNotified ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EventInstance other = (EventInstance) obj;
+		if (acknowledgedByUserId != other.acknowledgedByUserId)
+			return false;
+		if (acknowledgedByUsername == null) {
+			if (other.acknowledgedByUsername != null)
+				return false;
+		} else if (!acknowledgedByUsername.equals(other.acknowledgedByUsername))
+			return false;
+		if (acknowledgedTimestamp != other.acknowledgedTimestamp)
+			return false;
+		if (activeTimestamp != other.activeTimestamp)
+			return false;
+		if (alarmLevel != other.alarmLevel)
+			return false;
+		if (alternateAckSource != other.alternateAckSource)
+			return false;
+		if (context == null) {
+			if (other.context != null)
+				return false;
+		} else if (!context.equals(other.context))
+			return false;
+		if (eventComments == null) {
+			if (other.eventComments != null)
+				return false;
+		} else if (!eventComments.equals(other.eventComments))
+			return false;
+		if (eventType == null) {
+			if (other.eventType != null)
+				return false;
+		} else if (!eventType.equals(other.eventType))
+			return false;
+		if (handlers == null) {
+			if (other.handlers != null)
+				return false;
+		} else if (!handlers.equals(other.handlers))
+			return false;
+		if (id != other.id)
+			return false;
+		if (message == null) {
+			if (other.message != null)
+				return false;
+		} else if (!message.equals(other.message))
+			return false;
+		if (rtnApplicable != other.rtnApplicable)
+			return false;
+		if (rtnCause != other.rtnCause)
+			return false;
+		if (rtnTimestamp != other.rtnTimestamp)
+			return false;
+		if (silenced != other.silenced)
+			return false;
+		if (userNotified != other.userNotified)
+			return false;
+		return true;
+	}
+    
+    
 }

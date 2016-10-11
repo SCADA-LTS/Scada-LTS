@@ -17,13 +17,16 @@
  */
 package org.scada_lts.dao.report;
 
-import com.mysql.jdbc.Statement;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.vo.report.ReportInstance;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.event.EventDAO;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -33,11 +36,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import com.mysql.jdbc.Statement;
+import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.vo.report.ReportInstance;
 
 /**
  * DAO for ReportInstance
@@ -297,6 +298,6 @@ public class ReportInstanceDAO {
 
 	//TODO Update EventInstanceRowMapper
 	public List<EventInstance> getReportInstanceEvents(int instanceId) {
-		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new EventDao.EventInstanceRowMapper());
+		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new EventDAO.EventRowMapper());
 	}
 }

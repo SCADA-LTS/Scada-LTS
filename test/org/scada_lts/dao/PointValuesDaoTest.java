@@ -162,32 +162,32 @@ public class PointValuesDaoTest extends TestDAO {
 		
 		// read
 		  //find (values for every type point)
-		  PointValue pv1 = pointValuesDAO.findById(1);
+		  PointValue pv1 = pointValuesDAO.findById(new Object[] {1});
 		  pointValueNumeric1.setId(1);
 		  boolean test1 = pv1.equals(pointValueNumeric1);
 		  assertTrue(test1);
 		  
-		  PointValue pv2 = pointValuesDAO.findById(2);
+		  PointValue pv2 = pointValuesDAO.findById(new Object[] {2});
 		  pointValueNumeric2.setId(2);
 		  boolean test2 = pv2.equals(pointValueNumeric2);
 		  assertTrue(test2);
 		  
-		  PointValue pv3 = pointValuesDAO.findById(3);
+		  PointValue pv3 = pointValuesDAO.findById(new Object[] {3});
 		  pointValueBinary1.setId(3);
 		  boolean test3 = pv3.equals(pointValueBinary1);
 		  assertTrue(test3);
 		  
-		  PointValue pv4 = pointValuesDAO.findById(4);
+		  PointValue pv4 = pointValuesDAO.findById(new Object[] {4});
 		  pointValueBinary2.setId(4);
 		  boolean test4 = pv4.equals(pointValueBinary2);
 		  assertTrue(test4);
 		  
-		  PointValue pv7 = pointValuesDAO.findById(5);
+		  PointValue pv7 = pointValuesDAO.findById(new Object[] {5});
 		  pointValueMultistate1.setId(5);
 		  boolean test7 = pv7.equals(pointValueMultistate1);
 		  assertTrue(test7);
 		  
-		  PointValue pv8 = pointValuesDAO.findById(6);
+		  PointValue pv8 = pointValuesDAO.findById(new Object[] {6});
 		  pointValueMultistate2.setId(6);
 		  boolean test8 = pv8.equals(pointValueMultistate2);
 		  assertTrue(test8);

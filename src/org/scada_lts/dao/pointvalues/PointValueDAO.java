@@ -272,8 +272,8 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	}
 
 	@Override
-	public PointValue findById(long id) {
-		return (PointValue) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT_ON_BASE_ID, new Object[]  { id }, new PointValueRowMapper());
+	public PointValue findById(Object[] pk) {
+		return (PointValue) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT_ON_BASE_ID, pk, new PointValueRowMapper());
 	}
 	
 	public List<PointValue> findByIdAndTs(long id, long ts) {
@@ -292,7 +292,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	public long create(final PointValue entity) {
+	public Object[] create(final PointValue entity) {
 		
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
@@ -314,7 +314,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			 			}
 		}, keyHolder);
 		
-		return keyHolder.getKey().intValue();
+		return new Object[] {keyHolder.getKey().longValue()};
 		
 	}
 	

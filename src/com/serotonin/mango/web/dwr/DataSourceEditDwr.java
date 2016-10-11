@@ -144,6 +144,8 @@ import com.serotonin.mango.vo.dataSource.jmx.JmxPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusDataSourceVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusSearchByAddressing;
+import com.serotonin.mango.vo.dataSource.mbus.PrimaryAddressingSearch;
+import com.serotonin.mango.vo.dataSource.mbus.SecondaryAddressingSearch;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO;
@@ -1763,7 +1765,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		return conn;
 	}
 
-	public void searchMBus(Connection conn, MBusSearchByAddressing addressing) {
+	public void searchMBus(TcpIpConnection conn, PrimaryAddressingSearch addressing) {
 		User user = Common.getUser();
 
 		Permissions.ensureDataSourcePermission(user);
@@ -1773,6 +1775,18 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		discovery.start();
 		user.setTestingUtility(discovery);
 	}
+	
+	public void searchMBus(TcpIpConnection conn, SecondaryAddressingSearch addressing) {
+		User user = Common.getUser();
+
+		Permissions.ensureDataSourcePermission(user);
+
+		MBusDiscovery discovery = new MBusDiscovery(getResourceBundle(), conn,
+				addressing);
+		discovery.start();
+		user.setTestingUtility(discovery);
+	}
+
 
 	public Map<String, Object> mBusSearchUpdate() {
 		Map<String, Object> result = new HashMap<String, Object>();
