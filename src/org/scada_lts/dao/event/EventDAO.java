@@ -488,7 +488,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			LOG.trace(entity);
 		}
 		try {
-			EventType type = entity.getEventType();
+			final EventType type = entity.getEventType();
 			
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			
