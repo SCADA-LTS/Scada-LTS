@@ -20,7 +20,6 @@ package org.scada_lts.dao;
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.util.SerializationHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -68,61 +67,61 @@ public class DataSourceDAO {
 	// @formatter:off
 	private static final String DATA_SOURCE_SELECT = ""
 			+ "select "
-			+ COLUMN_NAME_ID + ", "
-			+ COLUMN_NAME_XID + ", "
-			+ COLUMN_NAME_NAME + ", "
-			+ COLUMN_NAME_DATA + " "
+				+ COLUMN_NAME_ID + ", "
+				+ COLUMN_NAME_XID + ", "
+				+ COLUMN_NAME_NAME + ", "
+				+ COLUMN_NAME_DATA + " "
 			+ "from dataSources ";
 
 	private static final String DATA_SOURCE_SELECT_WHERE_ID = ""
-			+ DATA_SOURCE_SELECT
+				+ DATA_SOURCE_SELECT
 			+ "where "
-			+ COLUMN_NAME_ID + "=? ";
+				+ COLUMN_NAME_ID + "=? ";
 
 	private static final String DATA_SOURCE_SELECT_WHERE_XID = ""
 			+ DATA_SOURCE_SELECT
 			+ "where "
-			+ COLUMN_NAME_XID + "=? ";
+				+ COLUMN_NAME_XID + "=? ";
 
 	private static final String DATA_SOURCE_INSERT = ""
 			+ "insert into dataSources ("
-			+ COLUMN_NAME_XID + ", "
-			+ COLUMN_NAME_NAME + ", "
-			+ COLUMN_NAME_DS_TYPE + ", "
-			+ COLUMN_NAME_DATA + ") "
+				+ COLUMN_NAME_XID + ", "
+				+ COLUMN_NAME_NAME + ", "
+				+ COLUMN_NAME_DS_TYPE + ", "
+				+ COLUMN_NAME_DATA + ") "
 			+ "values (?,?,?,?)";
 
 	private static final String DATA_SOURCE_UPDATE = ""
 			+ "update dataSources set "
-			+ COLUMN_NAME_XID + "=?, "
-			+ COLUMN_NAME_NAME + "=?, "
-			+ COLUMN_NAME_DATA + " =? "
+				+ COLUMN_NAME_XID + "=?, "
+				+ COLUMN_NAME_NAME + "=?, "
+				+ COLUMN_NAME_DATA + " =? "
 			+ "where "
-			+ COLUMN_NAME_ID + "=? ";
+				+ COLUMN_NAME_ID + "=? ";
 
 	private static final String DATA_SOURCE_DELETE_WHERE_ID = ""
 			+ "delete from dataSources where "
-			+ COLUMN_NAME_ID + "=? ";
+				+ COLUMN_NAME_ID + "=? ";
 
 	private static final String DATA_SOURCE_USER_SELECT_WHERE_DS_ID = ""
 			+ "select "
-			+ COLUMN_NAME_USER_ID + " "
+				+ COLUMN_NAME_USER_ID + " "
 			+ "from dataSourceUsers where "
-			+ COLUMN_NAME_DS_USER_ID + "=? ";
+				+ COLUMN_NAME_DS_USER_ID + "=? ";
 
 	private static final String DATA_SOURCE_USER_INSERT = ""
 			+ "insert into dataSourceUsers values (?,?) ";
 
 	private static final String DATA_SOURCE_USER_DELETE_WHERE_DS_ID = ""
 			+ "delete from dataSourceUsers where "
-			+ COLUMN_NAME_DS_USER_ID + "=? ";
+				+ COLUMN_NAME_DS_USER_ID + "=? ";
 
 	private static final String EVENT_HANDLER_DELETE = ""
 			+ "delete from eventHandlers where "
-			+ COLUMN_NAME_EH_EVENT_TYPE_ID + "="
+				+ COLUMN_NAME_EH_EVENT_TYPE_ID + "="
 			+ EventType.EventSources.DATA_SOURCE
 			+ " and "
-			+ COLUMN_NAME_EH_EVENT_TYPE_REF + "=? ";
+				+ COLUMN_NAME_EH_EVENT_TYPE_REF + "=? ";
 	// @formatter:on
 
 	private class DataSourceRowMapper implements RowMapper<DataSourceVO> {
@@ -155,7 +154,7 @@ public class DataSourceDAO {
 		}
 
 		List<DataSourceVO> objList = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT, new DataSourceRowMapper());
-		Collections.sort(objList, new DataSourceNameComparator());
+//		Collections.sort(objList, new DataSourceNameComparator());
 		return objList;
 	}
 
