@@ -147,5 +147,28 @@ public class EventServiceTest extends TestDAO {
 	}
 	
 	
+	@Test
+	public void attachRelationInfo() {
+		
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		int alarmLevel = 3;
+		
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		
+		// Add User comments
+		DAO.getInstance().getJdbcTemp().update("INSERT userComments (`userId`,`commentType`,`typeKey`,`ts`,`commentText`) VALUES (1,1,1,1,'test')");
+		
+		eventService.saveEvent(e);
+		
+		eventService.attachRelationalInfo(e);
+		
+		boolean check = e.getEventComments().size()==1;
+		
+		assertEquals(true, check);
+		
+	}
+	
 
 }
