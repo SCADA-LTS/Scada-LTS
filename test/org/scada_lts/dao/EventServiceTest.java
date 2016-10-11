@@ -170,5 +170,36 @@ public class EventServiceTest extends TestDAO {
 		
 	}
 	
+	@Test
+	public void getActiveEvents() {
+		
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = false;
+		int alarmLevel = 3;
+		
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		
+		eventService.saveEvent(e);
+		
+		List<EventInstance> lstAckEvents = eventService.getActiveEvents();
+		
+		boolean checkLstAckEvents = lstAckEvents.size()==0;
+		
+		assertEquals(true, checkLstAckEvents);
+		
+		EventInstance e1 = new EventInstance(type, activeTS, true, alarmLevel, null, null);
+		
+		eventService.saveEvent(e1);
+		
+		List<EventInstance> lstAckEventsNext = eventService.getActiveEvents();
+		
+		boolean checkLstAckEventsNext = lstAckEventsNext.size()==1;
+		
+		assertEquals(true,checkLstAckEventsNext);
+
+	}
+	
+	
 
 }
