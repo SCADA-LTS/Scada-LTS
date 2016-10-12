@@ -339,6 +339,29 @@ public class EventServiceTest extends TestDAO {
 		
 	};
 	
+	@Test
+	public void purgeEventsBefore() {
+		
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		int alarmLevel = 3;
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		eventService.saveEvent(e);
+		
+		EventInstance e1 = new EventInstance(type, activeTS+1,	applicable, alarmLevel, null, null);
+		eventService.saveEvent(e1);
+		
+		EventInstance e2 = new EventInstance(type, activeTS+2,	applicable, alarmLevel, null, null);
+		eventService.saveEvent(e2);
+		
+		eventService.purgeEventsBefore(activeTS+1);
+		
+		boolean checkCountEvent = eventService.getEventCount()==2;
+		
+		assertEquals(true, checkCountEvent);
+	}
+	
 	
 	
 	

@@ -567,6 +567,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		event.setEventComments(lstUserComments); 
 	}
 	
+	@Deprecated
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int purgeEventsBefore(long time) {
 		
