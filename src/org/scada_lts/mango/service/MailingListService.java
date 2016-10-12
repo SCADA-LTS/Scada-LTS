@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.service;
+package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.UserDao;
@@ -24,9 +24,11 @@ import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.mailingList.UserEntry;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import org.joda.time.DateTime;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
 import org.scada_lts.dao.mailingList.MailingListMemberDAO;
+import org.scada_lts.mango.adapter.MangoMailingList;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,7 +40,7 @@ import java.util.Set;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class MailingListService {
+public class MailingListService implements MangoMailingList {
 
 	//TODO
 //	@Resource
@@ -59,6 +61,32 @@ public class MailingListService {
 		populateEntrySubclasses((mailingList.getEntries()));
 	}
 
+	@Override
+	public String generateUniqueXid() {
+		return DAO.getInstance().generateUniqueXid(MailingList.XID_PREFIX, "mailingLists");
+	}
+
+	@Override
+	public boolean isXidUnique(String xid, int excludeId) {
+		return DAO.getInstance().isXidUnique(xid, excludeId, "mailingLists");
+	}
+
+	@Override
+	public List<MailingList> getMailingLists() {
+		return mailingListDAO.getMailingLists();
+	}
+
+	@Override
+	public MailingList getMailingList(int id) {
+		return mailingListDAO.getMailingList(id);
+	}
+
+	@Override
+	public MailingList getMailingList(String xid) {
+		return mailingListDAO.getMailingList(xid);
+	}
+
+	@Override
 	public Set<String> getRecipientAddresses(List<RecipientListEntryBean> beans, DateTime sendTime) {
 		List<EmailRecipient> entries = new ArrayList<EmailRecipient>(beans.size());
 		for (RecipientListEntryBean bean : beans) {
@@ -72,6 +100,7 @@ public class MailingListService {
 		return addresses;
 	}
 
+	@Override
 	public void populateEntrySubclasses(List<EmailRecipient> entries) {
 		// Update the user type entries with their respective user objects.
 		UserDao userDao = new UserDao();
@@ -85,6 +114,7 @@ public class MailingListService {
 		}
 	}
 
+	@Override
 	public void saveMailingList(final MailingList mailingList) {
 		if (mailingList.getId() == Common.NEW_ID) {
 			mailingList.setId(mailingListDAO.insert(mailingList));
@@ -94,11 +124,17 @@ public class MailingListService {
 		saveRelationalData(mailingList);
 	}
 
+	@Override
 	public void saveRelationalData(final MailingList mailingList) {
 		mailingListInactiveDAO.delete(mailingList.getId());
 		mailingListInactiveDAO.insert(mailingList);
 
 		mailingListMemberDAO.delete(mailingList.getId());
 		mailingListMemberDAO.insert(mailingList);
+	}
+
+	@Override
+	public void deleteMailingList(int mailingListId) {
+		mailingListDAO.delete(mailingListId);
 	}
 }

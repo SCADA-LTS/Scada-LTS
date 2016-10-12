@@ -164,7 +164,7 @@ public class MaintenanceEventDAO {
 	private static final String MAINTENANCE_EVENT_SELECT_DATA_SOURCE = ""
 			+ "select "
 				+ COLUMN_NAME_ID + " "
-			+ "where "
+			+ "from maintenanceEvents where "
 				+ COLUMN_NAME_DATA_SOURCE_ID + "=? ";
 
 	private static final String EVENT_HANDLER_DELETE = ""

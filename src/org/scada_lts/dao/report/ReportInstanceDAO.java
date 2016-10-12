@@ -247,13 +247,13 @@ public class ReportInstanceDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void deleteReportBefore(final long time) {
+	public int deleteReportBefore(final long time) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("deleteReportBefore(final long time) time:" + time);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_DELETE_BEFORE, new Object[]{ time, DAO.boolToChar(false)});
+		return DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_DELETE_BEFORE, new Object[]{ time, DAO.boolToChar(false)});
 	}
 
 	/*
