@@ -115,8 +115,7 @@ public class DataSourceService implements MangoDataSource {
 		dataSourceDAO.delete(dataSourceId);
 	}
 
-	@Override
-	public void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
+	private void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
 		List<Integer> userIDs = dataSourceDAO.getDataSourceUsersId(fromDataSourceId);
 		dataSourceDAO.batchInsert(userIDs, toDataSourceId);
 	}

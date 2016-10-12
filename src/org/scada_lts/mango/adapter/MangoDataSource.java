@@ -43,7 +43,5 @@ public interface MangoDataSource {
 
 	void deleteDataSource(final int dataSourceId);
 
-	void copyPermissions(final int fromDataSourceId, final int toDataSourceId);
-
 	int copyDataSource(final int dataSourceId, final ResourceBundle bundle);
 }
