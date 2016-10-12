@@ -37,6 +37,7 @@ import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
 /**
@@ -153,7 +154,6 @@ public class EventServiceTest extends TestDAO {
 		
 	}
 	
-	
 	@Test
 	public void attachRelationInfo() {
 		
@@ -237,6 +237,63 @@ public class EventServiceTest extends TestDAO {
 		boolean applicable = false;
 		int alarmLevel = 3;
 		
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);		
+		eventService.saveEvent(e);
+		UserEvent userEvent = new UserEvent();
+		
+		userEvent.setEventId(1);
+		userEvent.setSilenced(false);
+		userEvent.setUserId(ADMIN_USER_ID);
+		
+		UserEventDAO userEventDAO = new UserEventDAO();
+		userEventDAO.create(userEvent);
+		List<EventInstance> eventsForDataPoint = eventService.getEventsForDataPoint(id, ADMIN_USER_ID);
+		boolean checkEventsForDataPoint = eventsForDataPoint.size() == 1;
+		
+		assertEquals(true, checkEventsForDataPoint);
+		
+	}
+	
+	/*@Test //TODO rewrite Common.timer.execute(new UserPendingEventRetriever(userId));
+	public void getPendingEventsForDataPoint() {
+		
+		//
+		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (xid, name, dataSourceType, data) values ('x1', 'dataName', 1, 0);");
+
+		DataPointVO dataPoint = new DataPointVO();
+		dataPoint.setXid(XID);
+		dataPoint.setDataSourceId(DATA_SOURCE_ID);
+		dataPoint.setDataSourceName(DATA_SOURCE_NAME);
+		dataPoint.setDataSourceXid(DATA_SOURCE_XID);
+		dataPoint.setDataSourceTypeId(DATA_SOURCE_TYPE_ID);
+		
+		DataPointDAO dataPointDAO = new DataPointDAO();
+		int id = dataPointDAO.insert(dataPoint);
+		dataPoint.setId(id);
+		
+		PointEventDetectorVO pointEventDetector = new PointEventDetectorVO();
+		pointEventDetector.setXid(XID);
+		pointEventDetector.setAlias(ALIAS);
+		pointEventDetector.njbSetDataPoint(dataPoint);
+		pointEventDetector.setDetectorType(DETECTOR_TYPE);
+		pointEventDetector.setAlarmLevel(ALARM_LEVEL);
+		pointEventDetector.setLimit(STATE_LIMIT);
+		pointEventDetector.setDuration(DURATION);
+		pointEventDetector.setDurationType(DURATION_TYPE);
+		pointEventDetector.setBinaryState(BINARY_STATE);
+		pointEventDetector.setMultistateState(MULTISTATE_STATE);
+		pointEventDetector.setChangeCount(CHANGE_COUNT);
+		pointEventDetector.setAlphanumericState(ALPHANUMERIC_STATE);
+		pointEventDetector.setWeight(WEIGHT);
+		
+		PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
+		int idPointEventDetector = pointEventDetectorDAO.insert(pointEventDetector);
+		
+		EventType type = new DataPointEventType(id,idPointEventDetector);
+		long activeTS = 0;
+		boolean applicable = false;
+		int alarmLevel = 3;
+		
 		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		
 		eventService.saveEvent(e);
@@ -248,17 +305,42 @@ public class EventServiceTest extends TestDAO {
 		userEvent.setUserId(ADMIN_USER_ID);
 		
 		UserEventDAO userEventDAO = new UserEventDAO();
-		
 		userEventDAO.create(userEvent);
+		List<EventInstance> eventsPendingForDataPoint = eventService.getPendingEventsForDataPoint(id, ADMIN_USER_ID);
+		boolean checkEventsForPendingDataPoint = eventsPendingForDataPoint.size() == 1;
 		
-		List<EventInstance> eventsForDataPoint = eventService.getEventsForDataPoint(id, ADMIN_USER_ID);
+		assertEquals(true, checkEventsForPendingDataPoint);
 		
-		boolean checkEventsForDataPoint = eventsForDataPoint.size() == 1;
+	}*/
+	
+	@Test
+	public void insertEventComment(){
 		
-		assertEquals(true, checkEventsForDataPoint);
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		int alarmLevel = 3;
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		
-	}
+		eventService.saveEvent(e);
+		
+		UserComment comment = new UserComment();
+		comment.setComment("test");
+		//TODO change UserComment to must set comment and user
+		comment.setUserId(ADMIN_USER_ID);
+		comment.setTs(System.currentTimeMillis());
+		comment.setUsername("admin");
+		
+		eventService.insertEventComment(e.getId(), comment);
+		List<EventInstance> events = eventService.getActiveEvents();
+		boolean checkComment = events.get(0).getEventComments().size()==1;
+		
+		assertEquals(true, checkComment);
+		
+	};
 	
 	
-
+	
+	
+	
 }
