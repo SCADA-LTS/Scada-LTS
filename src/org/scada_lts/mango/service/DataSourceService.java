@@ -99,6 +99,7 @@ public class DataSourceService implements MangoDataSource {
 		}
 	}
 
+	@Override
 	public void deleteDataSource(final int dataSourceId) {
 		DataSourceVO<?> dataSource = dataSourceDAO.getDataSource(dataSourceId);
 		dataPointService.deleteDataPoints(dataSourceId);
