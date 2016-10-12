@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.service;
+package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -31,7 +31,7 @@ import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.taglib.Functions;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.report.*;
-import org.scada_lts.mango.service.PointValueService;
+import org.scada_lts.mango.adapter.MangoReport;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import java.sql.ResultSet;
@@ -45,7 +45,7 @@ import java.util.ResourceBundle;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class ReportService {
+public class ReportService implements MangoReport {
 
 //	@Autowired
 	private ReportDAO reportDAO = new ReportDAO();
@@ -73,17 +73,64 @@ public class ReportService {
 	 * This method guarantees that the data is provided to the setData handler method grouped by point (points are not
 	 * ordered), and sorted by time ascending.
 	 */
+	@Override
 	public void reportInstanceData(int instanceId, final ReportDataStreamHandler handler) {
 		List<ReportPointInfo> pointInfos = reportInstancePointDAO.getPointInfos(instanceId);
 		setReportDataValue(pointInfos, handler);
 	}
 
+	@Override
+	public List<ReportVO> getReports() {
+		return reportDAO.getReports();
+	}
+
+	@Override
+	public List<ReportVO> getReports(int userId) {
+		return reportDAO.getReports(userId);
+	}
+
+	@Override
+	public ReportVO getReport(int id) {
+		return reportDAO.getReport(id);
+	}
+
+	@Override
 	public void saveReport(ReportVO report) {
 		if (report.getId() == Common.NEW_ID) {
 			reportDAO.insert(report);
 		} else {
 			reportDAO.update(report);
 		}
+	}
+
+	@Override
+	public void deleteReport(int reportId) {
+		reportDAO.delete(reportId);
+	}
+
+	@Override
+	public List<ReportInstance> getReportInstances(int userId) {
+		return reportInstanceDAO.getReportInstances(userId);
+	}
+
+	@Override
+	public ReportInstance getReportInstance(int id) {
+		return reportInstanceDAO.getReportInstance(id);
+	}
+
+	@Override
+	public void deleteReportInstance(int id, int userId) {
+		reportInstanceDAO.delete(id, userId);
+	}
+
+	@Override
+	public int purgeReportsBefore(long time) {
+		return reportInstanceDAO.deleteReportBefore(time);
+	}
+
+	@Override
+	public void setReportInstancePreventPurge(int id, boolean preventPurge, int userId) {
+		reportInstanceDAO.updatePreventPurge(id, preventPurge, userId);
 	}
 
 	/**
@@ -97,11 +144,12 @@ public class ReportService {
 		}
 	}
 
+	@Override
 	public int runReport(final ReportInstance instance, List<ReportInstancePointDAO.PointInfo> points, ResourceBundle bundle) {
 		PointValueService pointValueService = new PointValueService();
 		int count = 0;
 
-		//TODO
+		//TODO SeroUtils
 		String userLabel = I18NUtils.getMessage(bundle, "common.user");
 		String setPointLabel = I18NUtils.getMessage(bundle, "annotation.eventHandler");
 		String anonymousLabel = I18NUtils.getMessage(bundle, "annotation.anonymous");
@@ -238,12 +286,18 @@ public class ReportService {
 
 	}
 
+	@Override
 	public List<EventInstance> getReportInstanceEvents(int instanceId) {
 
 		final List<EventInstance> events = reportInstanceDAO.getReportInstanceEvents(instanceId);
 		addCommentsToEvent(events, instanceId);
 
 		return events;
+	}
+
+	@Override
+	public List<ReportUserComment> getReportInstanceUserComments(int instanceId) {
+		return null;
 	}
 
 	//TODO
