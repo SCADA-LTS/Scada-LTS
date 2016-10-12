@@ -40,6 +40,8 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
+import br.org.scadabr.api.constants.AlarmLevel;
+
 /**
  * Event DAO base on before version EventDao 
  *
@@ -360,6 +362,32 @@ public class EventServiceTest extends TestDAO {
 		boolean checkCountEvent = eventService.getEventCount()==2;
 		
 		assertEquals(true, checkCountEvent);
+	}
+	
+	@Test
+	public void searchOldId() {
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		//AlarmLevel.CRITICAL
+		int alarmLevel = 3;
+		
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		eventService.saveEvent(e);
+		
+		UserEvent userEvent = new UserEvent();
+		userEvent.setEventId(1);
+		userEvent.setSilenced(false);
+		userEvent.setUserId(ADMIN_USER_ID);
+		
+		UserEventDAO userEventDAO = new UserEventDAO();
+		userEventDAO.create(userEvent);
+		
+		List<EventInstance> events = eventService.searchOld(e.getId(),EventType.EventSources.DATA_SOURCE,"*",alarmLevel,null,0,ADMIN_USER_ID,null);
+		boolean checkEvents = events.size()==1;
+		
+		assertEquals(true, checkEvents);
+		
 	}
 	
 	
