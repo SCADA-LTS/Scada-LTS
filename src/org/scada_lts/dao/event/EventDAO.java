@@ -702,7 +702,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		StringBuilder sql = new StringBuilder();
 		sql.append(EVENT_SELECT_WITH_USER_DATA);
-		sql.append("where ue.userId=?");
+		sql.append(" where ue.userId=?");
 		params.add(userId);
 
 		if (eventId != 0) {

@@ -32,6 +32,7 @@ import org.scada_lts.dao.model.event.UserEvent;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 
+import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
@@ -366,10 +367,12 @@ public class EventServiceTest extends TestDAO {
 	
 	@Test
 	public void searchOldId() {
+		//TODO for every type EventType
 		EventType type = new DataSourceEventType(1,1);
 		long activeTS = 0;
 		boolean applicable = true;
-		//AlarmLevel.CRITICAL
+		//TODO for every type AlarmLevel
+		//AlarmLevel.CRITICAL 
 		int alarmLevel = 3;
 		
 		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
@@ -389,6 +392,38 @@ public class EventServiceTest extends TestDAO {
 		assertEquals(true, checkEvents);
 		
 	}
+	
+	@Test
+	public void search() {
+		
+		// Only one use for getAcknowledgedEvents
+				
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		//AlarmLevel.CRITICAL 
+		int alarmLevel = 3;
+		
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		eventService.saveEvent(e);
+		
+		UserEvent userEvent = new UserEvent();
+		userEvent.setEventId(1);
+		userEvent.setSilenced(false);
+		userEvent.setUserId(ADMIN_USER_ID);
+		
+		UserEventDAO userEventDAO = new UserEventDAO();
+		userEventDAO.create(userEvent);
+
+		List<EventInstance> events = eventService.search(0, -1, null, -1, null, 1, null, 0, 5000, null);
+		
+		boolean checkEvents = events.size()==1;
+		
+		assertEquals(true, checkEvents);
+		
+	}
+	
+	
 	
 	
 	
