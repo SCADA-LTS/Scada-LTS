@@ -15,10 +15,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.service;
+package org.scada_lts.mango.service;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -26,7 +26,10 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.MaintenanceEventDAO;
+import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.service.DataPointService;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,23 +43,41 @@ import java.util.ResourceBundle;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class DataSourceService {
+public class DataSourceService implements MangoDataSource {
 
 	//TODO spring
 	private static final DataSourceDAO dataSourceDAO = new DataSourceDAO();
 
 	private static final DataPointService dataPointService = new DataPointService();
 
+	@Override
+	public List<DataSourceVO<?>> getDataSources() {
+		return dataSourceDAO.getDataSources();
+	}
+
+	@Override
+	public DataSourceVO<?> getDataSource(int id) {
+		return dataSourceDAO.getDataSource(id);
+	}
+
+	@Override
+	public DataSourceVO<?> getDataSource(String xid) {
+		return dataSourceDAO.getDataSource(xid);
+	}
+
+	@Override
 	public String generateUniqueXid() {
 		return DAO.getInstance().generateUniqueXid(DataSourceVO.XID_PREFIX, "dataSources");
 	}
 
+	@Override
 	public boolean isXidUnique(String xid, int excludeId) {
 		return DAO.getInstance().isXidUnique(xid, excludeId, "dataSources");
 	}
 
+	@Override
 	public void saveDataSource(final DataSourceVO<?> dataSource) {
-		if (dataSource.getId() == -1) {
+		if (dataSource.getId() == Common.NEW_ID) {
 			dataSourceDAO.insert(dataSource);
 		} else {
 			updateDataSource(dataSource);
@@ -90,22 +111,24 @@ public class DataSourceService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	private void deleteInTransaction(final int dataSourceId) {
-		new MaintenanceEventDao().deleteMaintenanceEventsForDataSource(dataSourceId);
+		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
 	}
 
+	@Override
 	public void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
 		List<Integer> userIDs = dataSourceDAO.getDataSourceUsersId(fromDataSourceId);
 		dataSourceDAO.batchInsert(userIDs, toDataSourceId);
 	}
 
+	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public int copyDataSource(final int dataSourceId, final ResourceBundle bundle) {
 		DataSourceVO<?> dataSource = dataSourceDAO.getDataSource(dataSourceId);
 
 		//Copy the data source
 		DataSourceVO<?> dataSourceCopy = dataSource.copy();
-		dataSourceCopy.setId(-1);
+		dataSourceCopy.setId(Common.NEW_ID);
 		dataSourceCopy.setXid(generateUniqueXid());
 		dataSourceCopy.setEnabled(false);
 		//TODO seroUtils
@@ -119,7 +142,7 @@ public class DataSourceService {
 		//Copy points
 		for (DataPointVO dataPoint: dataPointService.getDataPoints(dataSourceId, null)) {
 			DataPointVO dataPointCopy = dataPoint.copy();
-			dataPointCopy.setId(-1);
+			dataPointCopy.setId(Common.NEW_ID);
 			//TODO dataPointService.generateUniqueXid()
 			dataPointCopy.setXid(new DataPointDao().generateUniqueXid());
 			dataPointCopy.setName(dataPoint.getName());
@@ -131,7 +154,7 @@ public class DataSourceService {
 
 			//Copy event detectors
 			for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
-				pointEventDetector.setId(-1);
+				pointEventDetector.setId(Common.NEW_ID);
 				pointEventDetector.njbSetDataPoint(dataPointCopy);
 			}
 			dataPointService.saveDataPoint(dataPointCopy);

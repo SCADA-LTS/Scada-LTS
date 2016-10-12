@@ -82,7 +82,7 @@ public class DataSourceDaoTest extends TestDAO {
 		assertTrue(dataSourceSelectXid.isEnabled() == secondDataSource.isEnabled());
 
 		//Select all objects
-		List<DataSourceVO> dataSourceList = dataSourceDAO.getDataSources();
+		List<DataSourceVO<?>> dataSourceList = dataSourceDAO.getDataSources();
 		//Check list size
 		assertTrue(dataSourceList.size() == LIST_SIZE);
 		//Check IDs

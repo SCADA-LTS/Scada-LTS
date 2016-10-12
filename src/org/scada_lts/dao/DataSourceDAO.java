@@ -124,10 +124,10 @@ public class DataSourceDAO {
 				+ COLUMN_NAME_EH_EVENT_TYPE_REF + "=? ";
 	// @formatter:on
 
-	private class DataSourceRowMapper implements RowMapper<DataSourceVO> {
+	private class DataSourceRowMapper implements RowMapper<DataSourceVO<?>> {
 
 		@Override
-		public DataSourceVO mapRow(ResultSet rs, int rowNum) throws SQLException {
+		public DataSourceVO<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
 			DataSourceVO dataSourceVO = (DataSourceVO) new SerializationData().readObject(rs.getBinaryStream(COLUMN_NAME_DATA));
 			dataSourceVO.setId(rs.getInt(COLUMN_NAME_ID));
 			dataSourceVO.setXid(rs.getString(COLUMN_NAME_XID));
@@ -147,14 +147,14 @@ public class DataSourceDAO {
 		}
 	}
 
-	public List<DataSourceVO> getDataSources() {
+	public List<DataSourceVO<?>> getDataSources() {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataSources()");
 		}
 
-		List<DataSourceVO> objList = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT, new DataSourceRowMapper());
-//		Collections.sort(objList, new DataSourceNameComparator());
+		List<DataSourceVO<?>> objList = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT, new DataSourceRowMapper());
+		Collections.sort(objList, new DataSourceNameComparator());
 		return objList;
 	}
 
