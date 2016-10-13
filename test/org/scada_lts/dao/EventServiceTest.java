@@ -32,7 +32,6 @@ import org.scada_lts.dao.model.event.UserEvent;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
@@ -40,8 +39,6 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
-
-import br.org.scadabr.api.constants.AlarmLevel;
 
 /**
  * Event DAO base on before version EventDao 
@@ -422,6 +419,39 @@ public class EventServiceTest extends TestDAO {
 		assertEquals(true, checkEvents);
 		
 	}
+	
+ 
+	@Test
+	public void searchRowCountStartRow() {
+		
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		//AlarmLevel.CRITICAL 
+		int alarmLevel = 3;
+		
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		eventService.saveEvent(e);
+		
+		UserEvent userEvent = new UserEvent();
+		userEvent.setEventId(1);
+		userEvent.setSilenced(false);
+		userEvent.setUserId(ADMIN_USER_ID);
+		
+		UserEventDAO userEventDAO = new UserEventDAO();
+		userEventDAO.create(userEvent);
+
+		eventService.search(0, -1, null, -1, null, 1, null, 0, 5000, null);
+		
+		boolean checkSearchRowCount = eventService.getSearchRowCount()==1;
+		boolean checkStartRow = eventService.getStartRow()==-1;
+		
+		assertEquals(true, checkSearchRowCount);
+		
+		assertEquals(true, checkStartRow);
+		
+	}
+	
 	
 	
 	
