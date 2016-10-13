@@ -33,7 +33,6 @@ import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -138,6 +137,7 @@ public class EventServiceTest extends TestDAO {
 		
 	}
 	
+	//Test also getHighestUnsilencedAlarmLevel
 	@Test
 	public void insertUserEvents() {
 		
@@ -546,5 +546,6 @@ public class EventServiceTest extends TestDAO {
 		
 		assertEquals(true, events.get(0).isSilenced());
 	}
+
 	
 }
