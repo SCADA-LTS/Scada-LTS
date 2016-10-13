@@ -18,9 +18,6 @@
 
 package org.scada_lts.service;
 
-import java.util.List;
-import java.util.Map;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
@@ -31,8 +28,12 @@ import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.exception.CacheHierarchyException;
+import org.scada_lts.mango.service.DataPointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /** 
  * Service for points hierarchy.

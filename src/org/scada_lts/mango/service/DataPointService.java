@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.service;
+package org.scada_lts.mango.service;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.db.dao.PointValueDao;
@@ -30,12 +30,11 @@ import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.*;
+import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.scada_lts.service.PointHierarchyService;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
@@ -46,7 +45,7 @@ import java.util.*;
  */
 
 @Service
-public class DataPointService {
+public class DataPointService implements MangoDataPoint {
 
 	//TODO
 //	@Resource
@@ -68,7 +67,19 @@ public class DataPointService {
 //	@Autowired
 	private static final DataPointUserDAO dataPointUserDAO = new DataPointUserDAO();
 
+	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
 
+	@Override
+	public String generateUniqueXid() {
+		return DAO.getInstance().generateUniqueXid(DataPointVO.XID_PREFIX, "dataPoints");
+	}
+
+	@Override
+	public boolean isXidUnique(String xid, int excludeId) {
+		return DAO.getInstance().isXidUnique(xid, excludeId, "dataPoints");
+	}
+
+	@Override
 	public String getExtendedPointName(int dataPointId) {
 		DataPointVO dataPoint = getDataPoint(dataPointId);
 		if (dataPoint == null) {
@@ -77,18 +88,21 @@ public class DataPointService {
 		return dataPoint.getExtendedName();
 	}
 
+	@Override
 	public DataPointVO getDataPoint(String xId) {
 		DataPointVO dp = dataPointDAO.getDataPoint(xId);
 		setRelationalData(dp);
 		return dp;
 	}
 
+	@Override
 	public DataPointVO getDataPoint(int id) {
 		DataPointVO dp = dataPointDAO.getDataPoint(id);
 		setRelationalData(dp);
 		return dp;
 	}
 
+	@Override
 	public List<DataPointVO> getDataPoints(Comparator<DataPointVO> comparator, boolean includeRelationalData) {
 		List<DataPointVO> dpList = dataPointDAO.getDataPoints();
 		if (includeRelationalData) {
@@ -100,6 +114,7 @@ public class DataPointService {
 		return dpList;
 	}
 
+	@Override
 	public List<DataPointVO> getDataPoints(int dataSourceId, Comparator<DataPointVO> comparator) {
 		List<DataPointVO> dpList = dataPointDAO.getDataPoints(dataSourceId);
 		setRelationalData(dpList);
@@ -122,6 +137,7 @@ public class DataPointService {
 		}
 	}
 
+	@Override
 	public void saveDataPoint(final DataPointVO dp) {
 		if (dp.getId() == -1) {
 			insertDataPoint(dp);
@@ -133,6 +149,7 @@ public class DataPointService {
 		}
 	}
 
+	@Override
 	public void insertDataPoint(final DataPointVO dp) {
 		//Create default text renderer
 		if (dp.getTextRenderer() == null) {
@@ -143,6 +160,7 @@ public class DataPointService {
 		saveEventDetectors(dp);
 	}
 
+	@Override
 	public void updateDataPoint(final DataPointVO dp) {
 		DataPointVO oldDp = dataPointDAO.getDataPoint(dp.getId());
 		if (oldDp.getPointLocator().getDataTypeId() != dp.getPointLocator().getDataTypeId()) {
@@ -153,11 +171,13 @@ public class DataPointService {
 		saveEventDetectors(dp);
 	}
 
+	@Override
 	public void updateDataPointShallow(final DataPointVO dp) {
 		dataPointDAO.update(dp);
 	}
 
 	//TODO PointValueDAO
+	@Override
 	public void deleteDataPoint(int dataPointId) {
 		DataPointVO dp = getDataPoint(dataPointId);
 		if (dp != null) {
@@ -166,6 +186,7 @@ public class DataPointService {
 	}
 
 	//TODO PointValueDAO
+	@Override
 	public void deleteDataPoints(int dataSourceId) {
 		List<DataPointVO> oldList = getDataPoints(dataSourceId, null);
 
@@ -198,15 +219,18 @@ public class DataPointService {
 	}
 
 	//TODO PointValueDAO
-	private void deletePointHistory(int dpId) {
+	@Override
+	public void deletePointHistory(int dpId) {
 
 	}
 
 	//TODO PointValueDAO
-	private void deletePointHistory(int dpId, long min, long max) {
+	@Override
+	public void deletePointHistory(int dpId, long min, long max) {
 
 	}
 
+	@Override
 	public void deleteDataPointImpl(String dataPointIds) {
 
 		//TODO delete eventHandler
@@ -220,16 +244,33 @@ public class DataPointService {
 		MangoPointHierarchy.getInst().deleteDataPoint(dataPointIds);
 	}
 
+	@Override
 	public int getDataPointIdFromDetectorId(int pointEventDetectorId) {
 		return pointEventDetectorDAO.getDataPointId(pointEventDetectorId);
 	}
 
+	@Override
 	public String getDetectorXid(int pointEventDetectorId) {
 		return pointEventDetectorDAO.getXid(pointEventDetectorId);
 	}
 
+	@Override
 	public int getDetectorId(String pointEventDetectorXid, int dataPointId) {
 		return pointEventDetectorDAO.getId(pointEventDetectorXid, dataPointId);
+	}
+
+	@Override
+	public String generateEventDetectorUniqueXid(int dataPointId) {
+		String xid = DAO.getInstance().generateXid(PointEventDetectorVO.XID_PREFIX);
+		while (!isEventDetectorXidUnique(dataPointId, xid, -1)) {
+			xid = DAO.getInstance().generateXid(PointEventDetectorVO.XID_PREFIX);
+		}
+		return xid;
+	}
+
+	@Override
+	public boolean isEventDetectorXidUnique(int dataPointId, String xid, int excludeId) {
+		return pointEventDetectorDAO.isEventDetectorXidUnique(dataPointId, xid, excludeId);
 	}
 
 	private void setEventDetectors(DataPointVO dataPoint) {
@@ -292,6 +333,7 @@ public class DataPointService {
 		return null;
 	}
 
+	@Override
 	public void copyPermissions(final int fromDataPointId, final int toDataPointId) {
 
 		final List<Tuple<Integer,Integer>> ups = dataPointUserDAO.getDataPointUsers(fromDataPointId);
@@ -302,6 +344,7 @@ public class DataPointService {
 		dp.setComments(userCommentDAO.getPointComments(dp));
 	}
 
+	@Override
 	public void savePointsInFolder(PointFolder folder) {
 
 		// Save the points in the subfolders
@@ -321,6 +364,7 @@ public class DataPointService {
 		}
 	}
 
+	@Override
 	public PointHierarchy getPointHierarchy() {
 		if (PointHierarchyDAO.cachedPointHierarchy == null) {
 			final Map<Integer, List<PointFolder>> folders = pointHierarchyDAO.getFolderList();
@@ -337,6 +381,16 @@ public class DataPointService {
 			PointHierarchyDAO.cachedPointHierarchy = ph;
 		}
 		return PointHierarchyDAO.cachedPointHierarchy;
+	}
+
+	@Override
+	public void savePointHierarchy(PointFolder root) {
+		pointHierarchyService.savePointHierarchy(root);
+	}
+
+	@Override
+	public void savePointFolder(PointFolder folder, int parentId) {
+		pointHierarchyService.savePointFolder(folder, parentId);
 	}
 
 	//TODO PointValueDAO

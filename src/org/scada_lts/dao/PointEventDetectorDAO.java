@@ -136,6 +136,14 @@ public class PointEventDetectorDAO {
 				+ COLUMN_NAME_XID + "=? "
 			+ "and "
 				+ COLUMN_NAME_DATA_POINT_ID + "=? ";
+
+	private static final String POINT_EVENT_DETECTOR_SELECT_COUNT = ""
+			+ "select count(*) from pointEventDetectors where "
+				+ COLUMN_NAME_DATA_POINT_ID + "=? "
+			+ "and "
+				+ COLUMN_NAME_XID + "=? "
+			+ "and "
+				+ COLUMN_NAME_ID + "<>? ";
 	// @formatter:on
 
 	private class PointEventDetectorRowMapper implements RowMapper<PointEventDetectorVO> {
@@ -217,6 +225,17 @@ public class PointEventDetectorDAO {
 		return DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_XID, new Object[] {pointEventDetectorId},
 				String.class);
 
+	}
+
+	public boolean isEventDetectorXidUnique(int dataPointId, String xid, int excludeId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("isEventDetectorXidUnique(int dataPointId, String xid, int excludeId) dataPointId:" + dataPointId + ", xid:" + xid + ", excludeId:" + excludeId);
+		}
+
+		int size = DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_COUNT,
+				new Object[]{dataPointId, xid, excludeId}, Integer.class);
+		return size == 0;
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
