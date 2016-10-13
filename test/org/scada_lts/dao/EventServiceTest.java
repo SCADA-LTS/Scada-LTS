@@ -519,4 +519,32 @@ public class EventServiceTest extends TestDAO {
 		
 	}
 	
+	
+	@Test
+	public void toggleSilence() {
+		
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		//AlarmLevel.CRITICAL 
+		int alarmLevel = 3;
+		
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		eventService.saveEvent(e);
+		
+		UserEvent userEvent = new UserEvent();
+		userEvent.setEventId(1);
+		userEvent.setSilenced(false);
+		userEvent.setUserId(ADMIN_USER_ID);
+		
+		UserEventDAO userEventDAO = new UserEventDAO();
+		userEventDAO.create(userEvent);
+		
+		eventService.toggleSilence(e.getId(), ADMIN_USER_ID);
+		
+		List<EventInstance> events = eventService.searchOld(e.getId(),EventType.EventSources.DATA_SOURCE,"*",alarmLevel,null,0,ADMIN_USER_ID,null);		
+		
+		assertEquals(true, events.get(0).isSilenced());
+	}
+	
 }
