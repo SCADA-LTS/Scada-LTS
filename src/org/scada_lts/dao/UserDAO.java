@@ -193,7 +193,7 @@ public class UserDAO {
 	public void updateHomeUrl(int userId, String homeUrl) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("saveHomeUrl(int userId, String homeUrl) userId:" + userId + ", homeUrl:" + homeUrl);
+			LOG.trace("updateHomeUrl(int userId, String homeUrl) userId:" + userId + ", homeUrl:" + homeUrl);
 		}
 
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_HOME_URL, new Object[]{homeUrl, userId});
