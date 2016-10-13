@@ -33,11 +33,14 @@ import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
+import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
 /**
@@ -452,11 +455,68 @@ public class EventServiceTest extends TestDAO {
 		
 	}
 	
-	
-	
-	
-	
-	
-	
+	//TODO extrack EventHandlerDaoTest
+	@Test
+	public void testEventHandler() {
+		EventType type = new DataSourceEventType(1,1);
+		long activeTS = 0;
+		boolean applicable = true;
+		//AlarmLevel.CRITICAL 
+		int alarmLevel = 3;
+		
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
+		eventService.saveEvent(e);
+		
+		EventHandlerVO handler = new EventHandlerVO();
+		handler.setXid("xid_test");
+		handler.setAlias("alias_test");
+		
+		EventHandlerVO newHandler = eventService.saveEventHandler(type, handler);
+		
+		EventHandlerVO handlerBaseOnId = eventService.getEventHandler(newHandler.getId());
+		
+		assertEquals(true, handlerBaseOnId != null);
+		
+		EventHandlerVO handlerBaseOnXID = eventService.getEventHandler("xid_test");
+		
+		assertEquals(true, handlerBaseOnXID != null);
+		
+		List<EventHandlerVO> countEventHandlerBaseOnType = eventService.getEventHandlers(type);
+		
+		assertEquals(true, countEventHandlerBaseOnType.size()==1);
+		
+		EventType eventTypeBaseOnHandler = eventService.getEventHandlerType(newHandler.getId());
+		
+		assertEquals(true, eventTypeBaseOnHandler.equals(type));
+		
+		List<EventHandlerVO> lstEventTypeBaseOnHandler = eventService.getEventHandlers(type);
+		
+		assertEquals(true, lstEventTypeBaseOnHandler.size()==1);
+		
+		EventHandlerVO handlerVO = new EventHandlerVO();
+		handlerVO.setXid("xid_test_vo");
+		handlerVO.setAlias("alias_test_vo");
+		
+		EventTypeVO typeVO = new EventTypeVO(1, 1, 1);
+		
+		EventHandlerVO eventHandlerVO = eventService.saveEventHandler(typeVO,	handlerVO);
+		
+		assertEquals(true, eventHandlerVO != null);
+		
+		List<EventHandlerVO> lstEventTypeVOBaseOnHandler = eventService.getEventHandlers(typeVO);
+		
+		assertEquals(true, lstEventTypeVOBaseOnHandler.size()==1);
+		
+		List<EventHandlerVO> lstEventHandlers = eventService.getEventHandlers();
+		
+		// xid_test, xid_test_vo
+		assertEquals(true, lstEventHandlers.size()==2);
+		
+		//TODO not run because can not call Context....
+		/*eventService.deleteEventHandler(newHandler.getId());	
+		List<EventHandlerVO> lstEventHandlers1 = eventService.getEventHandlers();
+		assertEquals(true, lstEventHandlers1.size()==1);*/
+		
+	}
 	
 }
