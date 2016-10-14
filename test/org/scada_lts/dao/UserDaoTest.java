@@ -177,8 +177,6 @@ public class UserDaoTest extends TestDAO {
 
 		//Delete
 		userDAO.delete(firstId);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		userDAO.getUser(firstId);
+		assertTrue(userDAO.getUser(firstId) == null);
 	}
 }

@@ -3,6 +3,7 @@ package org.scada_lts.dao;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -160,7 +161,13 @@ public class UserDAO {
 			LOG.trace("getUser(int id) id:" + id);
 		}
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_WHERE_ID, new Object[]{id}, new UserRowMapper());
+		User user;
+		try {
+			user = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_WHERE_ID, new Object[]{id}, new UserRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			user = null;
+		}
+		return user;
 	}
 
 	public User getUser(String username) {
@@ -169,7 +176,13 @@ public class UserDAO {
 			LOG.trace("getUser(String username) username:" + username);
 		}
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_WHERE_USERNAME, new Object[]{username}, new UserRowMapper());
+		User user;
+		try {
+			user = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_WHERE_USERNAME, new Object[]{username}, new UserRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			user = null;
+		}
+		return user;
 	}
 
 	public List<User> getUsers() {
