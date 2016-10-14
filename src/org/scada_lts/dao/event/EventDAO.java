@@ -441,7 +441,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private class EventTypeRowMapper implements RowMapper<EventType> {
 		public EventType mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return createEventType(rs, 1);
-			}
+		}
 	}
 	
 	//TODO rewrite
@@ -488,7 +488,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			LOG.trace(entity);
 		}
 		try {
-			EventType type = entity.getEventType();
+			final EventType type = entity.getEventType();
 			
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			
@@ -567,6 +567,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		event.setEventComments(lstUserComments); 
 	}
 	
+	@Deprecated
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int purgeEventsBefore(long time) {
 		
@@ -595,7 +596,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		StringBuilder sql = new StringBuilder();
 		sql.append(EVENT_SELECT_WITH_USER_DATA);
-		sql.append("where ue.userId=?");
+		sql.append(" where ue.userId=?");
 		params.add(userId);
 
 		if (eventId != 0) {
@@ -701,7 +702,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		StringBuilder sql = new StringBuilder();
 		sql.append(EVENT_SELECT_WITH_USER_DATA);
-		sql.append("where ue.userId=?");
+		sql.append(" where ue.userId=?");
 		params.add(userId);
 
 		if (eventId != 0) {
@@ -823,7 +824,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	public EventType getEventHandlerType(int handlerId) {
-		return (EventType) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_TYPE,new Object[] { handlerId }, new EventTypeRowMapper() );
+		return (EventType) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_HANDLER_TYPE,new Object[] { handlerId }, new EventTypeRowMapper() );
 	}
 	
 	public List<EventHandlerVO> getEventHandlers(int typeId, int ref1, int ref2) {
@@ -891,14 +892,15 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		
 	}
 	
+	//TODO rewrite because insert does not requires select
 	public EventHandlerVO saveEventHandler(final int typeId,final int typeRef1, final int typeRef2, final EventHandlerVO handler) {
 		if (handler.getId() == Common.NEW_ID) {
-			insertEventHandler(typeId, typeRef1, typeRef2,handler);
+			int id = insertEventHandler(typeId, typeRef1, typeRef2,handler);
+			return getEventHandler(id);
 		} else {
 			updateEventHandler(handler);
+			return getEventHandler(handler.getId());
 		}
-		
-		return getEventHandler(handler.getId());
 	}
 	
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

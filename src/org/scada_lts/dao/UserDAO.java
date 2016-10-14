@@ -72,6 +72,7 @@ public class UserDAO {
 		return null;
 	}
 	
+	@Deprecated
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public Object[] createComments(int typeId, int eventId, UserComment comment) {
 		
@@ -79,24 +80,15 @@ public class UserDAO {
 			LOG.trace("eventId:"+eventId+" comment:"+comment.toString());
 		}
 		
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			 			@Override
-			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-			 				PreparedStatement ps = connection.prepareStatement(USER_COMMENT_INSERT, Statement.RETURN_GENERATED_KEYS);
-			 				new ArgumentPreparedStatementSetter( new Object[] { 
+		DAO.getInstance().getJdbcTemp().update(USER_COMMENT_INSERT, new Object[] { 
 			 						comment.getUserId(),
 			 						typeId,
 			 						eventId,
 			 						comment.getTs(),
 			 						comment.getComment()
-			 				}).setValues(ps);
-			 				return ps;
-			 			}
-		}, keyHolder);
-		
-		return new Object[] {keyHolder.getKey().intValue()};
+			 				});
+		//TODO set pk on table in database
+		return new Object[] {comment.getUserId(), eventId, comment.getTs()};
 		
 	}
 }
