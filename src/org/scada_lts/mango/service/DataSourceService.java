@@ -20,6 +20,7 @@ package org.scada_lts.mango.service;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.StringUtils;
@@ -162,5 +163,17 @@ public class DataSourceService implements MangoDataSource {
 			dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
 		}
 		return dataSourceCopy.getId();
+	}
+
+	public List<Integer> getDataSourceId(int userId) {
+		return dataSourceDAO.getDataSourceIdFromDsUsers(userId);
+	}
+
+	public void deleteDataSourceUser(int userId) {
+		dataSourceDAO.deleteDataSourceUser(userId);
+	}
+
+	public void insertPermissions(User user) {
+		dataSourceDAO.insertPermissions(user);
 	}
 }

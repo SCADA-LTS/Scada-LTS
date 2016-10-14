@@ -30,6 +30,9 @@ import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.event.UserEvent;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -77,7 +80,10 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 				+ COLUMN_NAME_SILENCED+"=? " 
 			+"where "
 				+ COLUMN_NAME_EVENT_ID+"=?";
-	
+
+	private static final String USER_EVENT_DELETE = ""
+			+ "delete from userEvents where "
+				+ COLUMN_NAME_USER_ID + "=? ";
 	// @formatter:onn
 	
 	// RowMapper
@@ -167,6 +173,16 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 				
 		DAO.getInstance().getJdbcTemp().update( USER_EVENT_ACK, new Object[]  { DAO.boolToChar(silenced), eventId } );
 		
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void delete(int userId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("delete(int userId) userId:" + userId);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(USER_EVENT_DELETE, new Object[]{userId});
 	}
 
 }

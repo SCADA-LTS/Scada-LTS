@@ -230,4 +230,8 @@ public class PointValueService implements MangoPointValues {
 		return pointValueDAO.getFiledataIds();
 	}
 
+	public void updatePointValueAnnotations(int userId) {
+		pointValueAdnnotationDAO.update(userId);
+	}
+
 }

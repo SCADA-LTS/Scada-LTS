@@ -21,10 +21,12 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
+import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.util.Tuple;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -396,6 +398,18 @@ public class DataPointService implements MangoDataPoint {
 	//TODO PointValueDAO
 	public List<PointHistoryCount> getTopPointHistoryCounts() {
 		return null;
+	}
+
+	public List<DataPointAccess> getDataPointAccessList(final int userId) {
+		return dataPointUserDAO.getDataPointAccessList(userId);
+	}
+
+	public void deleteDataPointUser(int userId) {
+		dataPointUserDAO.delete(userId);
+	}
+
+	public void insertPermissions(User user) {
+		dataPointUserDAO.insertPermissions(user);
 	}
 
 }

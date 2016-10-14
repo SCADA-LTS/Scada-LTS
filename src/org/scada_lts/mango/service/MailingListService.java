@@ -137,4 +137,8 @@ public class MailingListService implements MangoMailingList {
 	public void deleteMailingList(int mailingListId) {
 		mailingListDAO.delete(mailingListId);
 	}
+
+	public void deleteMailingListMemberWithUserId(int userId) {
+		mailingListMemberDAO.deleteWithUserId(userId);
+	}
 }

@@ -19,6 +19,7 @@ package org.scada_lts.dao;
 
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -109,12 +110,22 @@ public class DataSourceDAO {
 			+ "from dataSourceUsers where "
 				+ COLUMN_NAME_DS_USER_ID + "=? ";
 
+	private static final String DATA_SOURCE_USER_SELECT_WHERE_USER_ID = ""
+			+ "select "
+				+ COLUMN_NAME_DS_USER_ID + " "
+			+ "from dataSourceUsers where "
+				+ COLUMN_NAME_USER_ID + "=? ";
+
 	private static final String DATA_SOURCE_USER_INSERT = ""
 			+ "insert into dataSourceUsers values (?,?) ";
 
 	private static final String DATA_SOURCE_USER_DELETE_WHERE_DS_ID = ""
 			+ "delete from dataSourceUsers where "
 				+ COLUMN_NAME_DS_USER_ID + "=? ";
+
+	private static final String DATA_SOURCE_USER_DELETE_WHERE_USER_ID = ""
+			+ "delete from dataSourceUsers where "
+				+ COLUMN_NAME_USER_ID + "=? ";
 
 	private static final String EVENT_HANDLER_DELETE = ""
 			+ "delete from eventHandlers where "
@@ -165,6 +176,15 @@ public class DataSourceDAO {
 		}
 
 		return DAO.getInstance().getJdbcTemp().queryForList(DATA_SOURCE_USER_SELECT_WHERE_DS_ID, new Object[]{id}, Integer.class);
+	}
+
+	public List<Integer> getDataSourceIdFromDsUsers(int userId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataSourceId(int userId) userId:" + userId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().queryForList(DATA_SOURCE_USER_SELECT_WHERE_USER_ID, new Object[]{userId}, Integer.class);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -232,6 +252,28 @@ public class DataSourceDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void insertPermissions(final User user) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insertPermissions(final User user) user:" + user.toString());
+		}
+
+		DAO.getInstance().getJdbcTemp().batchUpdate(DATA_SOURCE_USER_INSERT, new BatchPreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ps.setInt(COLUMN_INDEX_DS_USER_ID, user.getDataSourcePermissions().get(i));
+				ps.setInt(COLUMN_INDEX_USER_ID, user.getId());
+			}
+
+			@Override
+			public int getBatchSize() {
+				return user.getDataSourcePermissions().size();
+			}
+		});
+
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void update(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
@@ -258,5 +300,15 @@ public class DataSourceDAO {
 		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataSourceId});
 		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_DS_ID, new Object[]{dataSourceId});
 		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_DELETE_WHERE_ID, new Object[]{dataSourceId});
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void deleteDataSourceUser(int userId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deleteDataSourceUser(int userId) userId:" + userId);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_USER_ID, new Object[]{userId});
 	}
 }

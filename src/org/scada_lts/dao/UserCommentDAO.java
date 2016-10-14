@@ -87,8 +87,7 @@ public class UserCommentDAO {
 			+ "order by "
 				+ "uc." + COLUMN_NAME_TS;
 
-	private static final String
-			USER_COMMENT_INSERT = ""
+	private static final String USER_COMMENT_INSERT = ""
 			+ "insert into userComments ("
 				+ COLUMN_NAME_USER_ID + ", "
 				+ COLUMN_NAME_COMMENT_TYPE + ", "
