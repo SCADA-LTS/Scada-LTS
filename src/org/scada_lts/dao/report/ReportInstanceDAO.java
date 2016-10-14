@@ -296,14 +296,13 @@ public class ReportInstanceDAO {
 				+ COLUMN_NAME_E_ACK_TS + ", 0, "
 				+ COLUMN_NAME_E_ACK_USERNAME + ", "
 				+ COLUMN_NAME_E_ALTERNATE_ACK_SOURCE + " "
-			+ "form reportInstanceEvents "
+			+ "from reportInstanceEvents "
 			+ "where "
 				+ COLUMN_NAME_REPORT_INSTANCE_ID + "=? "
 			+ "order by "
 				+ COLUMN_NAME_E_ACTIVE_TS;
 
 
-	//TODO Update EventInstanceRowMapper
 	public List<EventInstance> getReportInstanceEvents(int instanceId) {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new EventDAO.EventRowMapper());
 	}

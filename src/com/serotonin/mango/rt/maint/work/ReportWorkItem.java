@@ -18,29 +18,6 @@
  */
 package com.serotonin.mango.rt.maint.work;
 
-import com.serotonin.InvalidArgumentException;
-import com.serotonin.io.StreamUtils;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.ReportDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.vo.report.*;
-import com.serotonin.mango.vo.report.ReportChartCreator.PointStatistics;
-import com.serotonin.util.StringUtils;
-import com.serotonin.web.email.EmailAttachment;
-import com.serotonin.web.email.EmailContent;
-import com.serotonin.web.email.EmailInline;
-import com.serotonin.web.i18n.LocalizableMessage;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.scada_lts.utils.ColorUtils;
-
-import javax.mail.internet.AddressException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -51,6 +28,36 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.mail.internet.AddressException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+
+import com.serotonin.InvalidArgumentException;
+import com.serotonin.io.StreamUtils;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.db.dao.MailingListDao;
+import com.serotonin.mango.db.dao.ReportDao;
+import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.vo.report.ImageChartUtils;
+import com.serotonin.mango.vo.report.ReportChartCreator;
+import com.serotonin.mango.vo.report.ReportChartCreator.PointStatistics;
+import com.serotonin.mango.vo.report.ReportInstance;
+import com.serotonin.mango.vo.report.ReportPointVO;
+import com.serotonin.mango.vo.report.ReportVO;
+import com.serotonin.util.ColorUtils;
+import com.serotonin.util.StringUtils;
+import com.serotonin.web.email.EmailAttachment;
+import com.serotonin.web.email.EmailContent;
+import com.serotonin.web.email.EmailInline;
+import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.report.ReportInstancePointDAO;
 
 /**
  * @author Matthew Lohbihler
@@ -105,7 +112,7 @@ public class ReportWorkItem implements WorkItem {
 
 		// Create a list of DataPointVOs to which the user has permission.
 		DataPointDao dataPointDao = new DataPointDao();
-		List<ReportDao.PointInfo> points = new ArrayList<ReportDao.PointInfo>(
+		List<ReportInstancePointDAO.PointInfo> points = new ArrayList<ReportInstancePointDAO.PointInfo>(
 				reportConfig.getPoints().size());
 		for (ReportPointVO reportPoint : reportConfig.getPoints()) {
 			DataPointVO point = dataPointDao.getDataPoint(reportPoint
@@ -116,14 +123,14 @@ public class ReportWorkItem implements WorkItem {
 				try {
 					if (!StringUtils.isEmpty(reportPoint.getColour()))
 						colour = ColorUtils
-								.toHex(reportPoint.getColour())
+								.toHexString(reportPoint.getColour())
 								.substring(1);
 				} catch (InvalidArgumentException e) {
 					// Should never happen since the colour would have been
 					// validated on save, so just let it go
 					// as null.
 				}
-				points.add(new ReportDao.PointInfo(point, colour, reportPoint
+				points.add(new ReportInstancePointDAO.PointInfo(point, colour, reportPoint
 						.isConsolidatedChart()));
 			}
 		}
