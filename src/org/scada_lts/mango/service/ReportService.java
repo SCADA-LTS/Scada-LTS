@@ -193,6 +193,7 @@ public class ReportService implements MangoReport {
 			}
 
 			// Insert the reportInstancePoints record
+			//TODO SeroUtils
 			String name = Functions.truncate(point.getName(), 100);
 
 			int reportPointId = reportInstancePointDAO.insert(instance, point, name, dataType, startValue, pointInfo);
