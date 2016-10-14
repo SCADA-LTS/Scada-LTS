@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SerializationData;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -112,7 +113,13 @@ public class ReportDAO {
 			LOG.trace("getReport(int id) id:" + id);
 		}
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(REPORT_SELECT_WHERE_ID, new Object[]{id}, new ReportRowMapper());
+		ReportVO reportVO;
+		try {
+			reportVO = DAO.getInstance().getJdbcTemp().queryForObject(REPORT_SELECT_WHERE_ID, new Object[]{id}, new ReportRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			reportVO = null;
+		}
+		return reportVO;
 	}
 
 	public List<ReportVO> getReports() {
