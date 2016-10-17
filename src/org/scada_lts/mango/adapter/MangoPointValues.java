@@ -31,7 +31,19 @@ import com.serotonin.mango.vo.bean.LongPair;
  */
 public interface MangoPointValues {
 	
-	long savePointValue(final long pointId, final PointValueTime pointValue, final SetPointSource source, boolean async);
+	long deletePointValuesBefore(int dataPointId, long time);
+	
+	long deletePointValues(int dataPointId);
+	
+	long deleteAllPointValue();
+	
+	long savePointValueImpl(final int pointId, final PointValueTime pointValue, final SetPointSource source, boolean async);
+
+	long deletePointValuesWithMismatchedType(int dataPointId, int dataType);
+	
+	PointValueTime getPointValue(long id);
+	
+	void clearUnsavedPointValues();
 	
 	void savePointValue(int pointId, PointValueTime pointValue);
 	 
