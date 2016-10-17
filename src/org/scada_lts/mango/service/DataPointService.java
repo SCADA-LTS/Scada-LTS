@@ -35,7 +35,6 @@ import org.scada_lts.dao.*;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.PointHierarchyService;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
@@ -46,7 +45,7 @@ import java.util.*;
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 
-@Service
+//@Service
 public class DataPointService implements MangoDataPoint {
 
 	//TODO
@@ -181,10 +180,10 @@ public class DataPointService implements MangoDataPoint {
 	//TODO PointValueDAO
 	@Override
 	public void deleteDataPoint(int dataPointId) {
-		DataPointVO dp = getDataPoint(dataPointId);
-		if (dp != null) {
-
-		}
+//		DataPointVO dp = getDataPoint(dataPointId);
+//		if (dp != null) {
+//
+//		}
 	}
 
 	//TODO PointValueDAO
@@ -320,8 +319,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		for (PointEventDetectorVO pointEventDetector: detectors) {
-			//TODO delete eventHandlers
-			pointEventDetectorDAO.delete(pointEventDetector.getId());
+			pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
 		}
 	}
 

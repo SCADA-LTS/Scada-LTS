@@ -173,7 +173,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		assertTrue(pointEventDetectorList.get(0).getWeight() == UPDATE_WEIGHT);
 
 		//Delete all pointEventDetector with specific DataPointId
-		pointEventDetectorDAO.delete(dataPoint.getId());
+		pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
 		assertTrue(pointEventDetectorDAO.getPointEventDetectors(dataPoint).size() == 1);
 	}
 }
