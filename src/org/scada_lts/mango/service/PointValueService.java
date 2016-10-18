@@ -62,7 +62,9 @@ public class PointValueService implements MangoPointValues {
 	 
 	private static List<UnsavedPointValue> UNSAVED_POINT_VALUES = new ArrayList<UnsavedPointValue>();
 	private static final int POINT_VALUE_INSERT_VALUES_COUNT = 4;
-		
+
+	private static PointValueAdnnotationsDAO pointValueAnnotationsDAO = new PointValueAdnnotationsDAO();
+
 	public PointValueService() {
 		
 	}
@@ -571,6 +573,10 @@ public class PointValueService implements MangoPointValues {
 	
 	public PointValueTime getPointValue(long id) {
 		return PointValueDAO.getInstance().getPointValue(id);
+	}
+
+	public void updatePointValueAnnotations(int userId) {
+		pointValueAnnotationsDAO.update(userId);
 	}
 
 	@Override
