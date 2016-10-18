@@ -205,8 +205,10 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
                 dts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
             }
 
-            // Get the data.
-            pointValueDao.getPointValuesBetween(dataPointId, from, to, this);
+         // Get the data.
+            //TODO rewrite seroUtils
+            //pointValueDao.getPointValuesBetween(dataPointId, from, to, this);
+            pointValueDao.getPointValuesBetween(dataPointId, from, to);
         }
 
         @Override

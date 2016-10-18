@@ -18,11 +18,8 @@
 
 package org.scada_lts.dao.pointvalues;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,12 +31,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
-import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
@@ -52,6 +44,8 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnotation> {
 	
 	private static final Log LOG = LogFactory.getLog(PointValueAdnnotationsDAO.class);
+	
+	private static PointValueAdnnotationsDAO instance;
 	
 	private final static String  COLUMN_NAME_POINT_VALUE_ID = "pointValueId";
 	private final static String  COLUMN_NAME_TEXT_POINT_VALUE_SHORT = "textPointValueShort";
@@ -110,6 +104,13 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 		}
 	}
 
+	public static PointValueAdnnotationsDAO getInstance() {
+		if (instance == null) {
+			instance = new PointValueAdnnotationsDAO();
+		}
+		return instance;
+	}
+
 
 	@Override
 	public List<PointValueAdnnotation> findAll() {
@@ -135,7 +136,7 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 		return (List<PointValueAdnnotation>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_ADNNOTATIONS_SELECT+" where "+ filter + myLimit, argsFilter, new PointValueAdnnotationRowMapper());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	
 	@Override
 	public Object[] create(final PointValueAdnnotation entity) {
 		if (LOG.isTraceEnabled()) {
