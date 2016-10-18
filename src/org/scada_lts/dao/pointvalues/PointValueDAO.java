@@ -269,7 +269,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			throws SQLException {
 		
 		int dataType = rs.getInt(COLUMN_NAME_DATA_TYPE);
-		MangoValue value;
+		MangoValue value = null;
 		switch (dataType) {
 		case (DataTypes.NUMERIC):
 			value = new NumericValue(rs.getDouble(COLUMN_NAME_POINT_VALUE));
@@ -286,11 +286,16 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 				s = rs.getString(COLUMN_NAME_TEXT_POINT_VALUE_LONG);
 			value = new AlphanumericValue(s);
 			break;
-		case (DataTypes.IMAGE):
-			value = new ImageValue(Integer.parseInt(rs
-					.getString(COLUMN_NAME_TEXT_POINT_VALUE_SHORT)),
-					rs.getInt(COLUMN_NAME_TEXT_POINT_VALUE_LONG));
+		case (DataTypes.IMAGE): {
+			try {		
+				value = new ImageValue(Integer.parseInt(rs
+						.getString(COLUMN_NAME_TEXT_POINT_VALUE_SHORT)),
+						rs.getInt(COLUMN_NAME_TEXT_POINT_VALUE_LONG));
+			} catch (NumberFormatException e) {
+				LOG.info(e.getMessage());
+			}
 			break;
+		}
 		default:
 			value = null;
 		}
