@@ -76,6 +76,10 @@ public class DataPointUserDAO {
 			+ "delete from dataPointUsers where "
 				+ COLUMN_NAME_USER_ID + "=? ";
 
+	private static final String DATA_POINT_USER_DELETE_WHERE_DATA_POINT_ID = ""
+			+ "delete from dataPointUsers where "
+				+ COLUMN_NAME_DP_ID + "=? ";
+
 	// @formatter:on
 
 	public List<Tuple<Integer, Integer>> getDataPointUsers(final int dataPointId) {
@@ -161,6 +165,16 @@ public class DataPointUserDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(DATA_POINT_USER_DELETE, new Object[]{userId});
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void deleteWhereDataPointId(int dataPointId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deleteWhereDataPointId(int dataPointId) datapointId:" + dataPointId);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(DATA_POINT_USER_DELETE_WHERE_DATA_POINT_ID, new Object[]{dataPointId});
 	}
 
 }

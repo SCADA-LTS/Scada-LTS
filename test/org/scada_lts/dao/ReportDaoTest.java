@@ -96,8 +96,6 @@ public class ReportDaoTest extends TestDAO {
 
 		//Delete
 		reportDAO.delete(firstId);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		reportDAO.getReport(firstId);
+		assertTrue(reportDAO.getReport(firstId) == null);
 	}
 }

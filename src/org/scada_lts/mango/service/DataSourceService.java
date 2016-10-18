@@ -26,6 +26,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.mango.adapter.MangoDataSource;
@@ -78,7 +79,7 @@ public class DataSourceService implements MangoDataSource {
 	@Override
 	public void saveDataSource(final DataSourceVO<?> dataSource) {
 		if (dataSource.getId() == Common.NEW_ID) {
-			dataSourceDAO.insert(dataSource);
+			dataSource.setId(dataSourceDAO.insert(dataSource));
 		} else {
 			updateDataSource(dataSource);
 			MangoPointHierarchy.getInst().changeDataSource(dataSource);
@@ -143,8 +144,7 @@ public class DataSourceService implements MangoDataSource {
 		for (DataPointVO dataPoint: dataPointService.getDataPoints(dataSourceId, null)) {
 			DataPointVO dataPointCopy = dataPoint.copy();
 			dataPointCopy.setId(Common.NEW_ID);
-			//TODO dataPointService.generateUniqueXid()
-			dataPointCopy.setXid(new DataPointDao().generateUniqueXid());
+			dataPointCopy.setXid(new DataPointService().generateUniqueXid());
 			dataPointCopy.setName(dataPoint.getName());
 			dataPointCopy.setDataSourceId(dataSourceCopy.getId());
 			dataPointCopy.setDataSourceName(dataSourceCopy.getName());

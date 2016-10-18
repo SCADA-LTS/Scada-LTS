@@ -99,7 +99,7 @@ public class ReportService implements MangoReport {
 	@Override
 	public void saveReport(ReportVO report) {
 		if (report.getId() == Common.NEW_ID) {
-			reportDAO.insert(report);
+			report.setId(reportDAO.insert(report));
 		} else {
 			reportDAO.update(report);
 		}

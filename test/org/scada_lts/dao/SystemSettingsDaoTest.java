@@ -120,8 +120,6 @@ public class SystemSettingsDaoTest extends TestDAO {
 
 		systemSettingsDAO.resetDataBase();
 
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		reportInstanceDAO.getReportInstance(1);
+		assertTrue(reportInstanceDAO.getReportInstance(1) == null);
 	}
 }

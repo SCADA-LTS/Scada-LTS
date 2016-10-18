@@ -190,9 +190,7 @@ public class ReportInstanceDaoTest extends TestDAO {
 		reportInstanceDAO.deleteReportBefore(updateTimeReportInstance.getReportEndTime()+1);
 		reportInstancesList = reportInstanceDAO.getReportInstances(firstId);
 		assertTrue(reportInstancesList.size() == 0);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		reportInstanceDAO.getReportInstance(secondId);
+		assertTrue(reportInstanceDAO.getReportInstance(secondId) == null);
 	}
 
 	@Test
