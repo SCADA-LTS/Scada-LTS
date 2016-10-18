@@ -35,6 +35,15 @@ public class PointValueAdnnotation {
 		//
 	}
 	
+	public PointValueAdnnotation(long id, String shortString, String longString, Integer sourceType,
+			Integer sourceId) {
+		this.pointValueId = id;
+		this.textPointValueShort = shortString;
+		this.textPointValueLong = longString;
+		this.sourceType = sourceType;
+		this.sourceId = sourceId;
+	}
+
 	public long getPointValueId() {
 		return pointValueId;
 	}

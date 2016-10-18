@@ -33,7 +33,6 @@ import org.scada_lts.dao.*;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.PointHierarchyService;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
@@ -44,7 +43,7 @@ import java.util.*;
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 
-@Service
+//@Service
 public class DataPointService implements MangoDataPoint {
 
 	//TODO

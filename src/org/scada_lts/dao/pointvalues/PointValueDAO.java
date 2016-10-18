@@ -62,6 +62,8 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 
 	private static final Log LOG = LogFactory.getLog(PointValueDAO.class);
 	
+	private static PointValueDAO instance;
+	
 	private final static String  COLUMN_NAME_ID = "id";
 	private final static String  COLUMN_NAME_DATA_TYPE = "dataType";
 	private final static String  COLUMN_NAME_POINT_VALUE = "pointValue";
@@ -91,6 +93,9 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "from "
 				+ "pointValues pv "
 				+ "left join pointValueAnnotations pva on pv."+COLUMN_NAME_ID+"=pva."+COLUMN_NAME_POINT_VALUE_ID;
+	
+	private static final String POINT_VALUE_FILTER_BASE_ON_ID = ""
+			+ "pv."+COLUMN_NAME_ID+"=?";
 	
 	private static final String POINT_VALUE_SELECT_MIN_MAX_TS_BASE_ON_LIST_DATA_POINT = "" 
 			+"select "
@@ -190,6 +195,32 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"=? "
 			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
 	
+	public static final String POINT_VALUE_DELETE_BEFFORE = ""
+			+"delete "
+			+ "from "
+				+ "pointValues "
+			+ "where "
+				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+"<?";
+	
+	public static final String POINT_VALUE_DELETE_BASE_ON_POINT_ID = ""
+			+"delete "
+			+ "from "
+				+ "pointValues "
+			+ "where "
+				+ COLUMN_NAME_DATA_POINT_ID+"=?";
+	
+	public static final String POINT_VALUE_DELETE = ""
+			+"delete "
+			+ "from "
+				+ "pointValues ";
+			
+	public static final String DELETE_POINT_VALUE_WITH_MISMATCHED_TYPE=""
+			+"delete "
+			+ "from "
+				+ "pointValues "
+			+ "where "
+				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_DATA_TYPE+"<>?";
+	
 	
 	// @formatter:on
 	
@@ -266,6 +297,13 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		return value;
 	}
 	
+	public static PointValueDAO getInstance() {
+		if (instance == null) {
+			instance = new PointValueDAO();
+		}
+		return instance;
+	}
+	
 	@Override
 	public List<PointValue> findAll() {
 		return (List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT, new Object[]{ }, new PointValueRowMapper());
@@ -318,6 +356,48 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		
 	}
 	
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public Object[] create(int pointId, int dataType, double dvalue, long time) {
+		
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("pointId:"+pointId+" dataType:"+dataType+" dvalue:"+time);
+		}
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		
+		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+			 			@Override
+			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException { 
+			 				PreparedStatement ps = connection.prepareStatement(POINT_VALUE_INSERT, Statement.RETURN_GENERATED_KEYS);
+			 				new ArgumentPreparedStatementSetter( new Object[] { 
+			 						pointId,
+			 						dataType,
+			 						dvalue,
+			 						time
+			 				}).setValues(ps);
+			 				return ps;
+			 			}
+		}, keyHolder);
+		
+		return new Object[] {keyHolder.getKey().longValue()};
+		
+	}
+	
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void executeBatchUpdateInsert( List<Object[]> params) {
+		
+		if (LOG.isTraceEnabled()) {
+			for (Object[] param : params) {
+				for (Object arg :param) {
+					LOG.trace("arg:"+arg);
+				}
+			}
+		}
+		
+		DAO.getInstance().getJdbcTemp().batchUpdate(POINT_VALUE_INSERT,params);
+
+	}
+		
 	public Long getInceptionDate(int dataPointId) {
 		return DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_INCEPTION_DATA, new Object[] {dataPointId}, Long.class);
 	}
@@ -397,7 +477,36 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		return avalue;
 	}
 
-	
-	
+	// Apply database specific bounds on double values.
+    public double applyBounds(double value) {
+        if (Double.isNaN(value))
+            return 0;
+        if (value == Double.POSITIVE_INFINITY)
+            return Double.MAX_VALUE;
+        if (value == Double.NEGATIVE_INFINITY)
+            return -Double.MAX_VALUE;
+
+        return value;
+    }
+    
+    public long deletePointValuesBefore(int dataPointId, long time) {
+    	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BEFFORE, new Object[] {dataPointId, time});
+    }
+    
+    public long deletePointValue(int dataPointId) {
+    	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BASE_ON_POINT_ID, new Object[] {dataPointId});
+    }
+    
+    public long deleteAllPointData() {
+    	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE, new Object[] {});
+    }
+    
+    public long deletePointValuesWithMismatchedType(int dataPointId, int dataType) {
+    	return DAO.getInstance().getJdbcTemp().update(DELETE_POINT_VALUE_WITH_MISMATCHED_TYPE, new Object[] {dataPointId, dataType});
+    }
+    
+    public PointValueTime getPointValue(long id) {
+		return ((PointValue) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT + " where " + POINT_VALUE_FILTER_BASE_ON_ID, new Object[] {id}, new PointValueRowMapper())).getPointValue();
+	}
 	
 }
