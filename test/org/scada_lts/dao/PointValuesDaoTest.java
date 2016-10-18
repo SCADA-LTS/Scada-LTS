@@ -68,6 +68,7 @@ public class PointValuesDaoTest extends TestDAO {
 			DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_04',1,'')");
 			// IMAGE			dataPointId 5
 			DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_05',1,'')");
+		
 			
 		// create values for point Numeric
 		    // 1.0
@@ -266,6 +267,7 @@ public class PointValuesDaoTest extends TestDAO {
 
 
 		//end CR
+		// @formatter:on
 		  
 	}
 }
