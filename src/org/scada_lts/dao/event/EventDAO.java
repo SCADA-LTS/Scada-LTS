@@ -333,6 +333,14 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "from userEvents u "
 				+ "join events e on u."+COLUMN_NAME_EVENT_ID+"=e."+COLUMN_NAME_USER_EVENTS_ID+" "
 			+ "where u."+COLUMN_NAME_SILENCED+"=? and u."+COLUMN_NAME_USER_ID+"=?";
+
+	private static final String EVENT_UPDATE_WHERE_ACK_USER_ID = ""
+			+ "update events set "
+				+ COLUMN_NAME_ACT_USER_ID + "=null, "
+				+ COLUMN_NAME_ALTERNATE_ACK_SOURCE + "="
+				+ EventInstance.AlternateAcknowledgementSources.DELETED_USER + " "
+			+ "where "
+				+ COLUMN_NAME_ACT_USER_ID + "=? ";
 	
 	// @formatter:onn
 	
@@ -930,4 +938,13 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		return DAO.getInstance().getJdbcTemp().queryForObject(HIGHEST_UNSILENT_USER_ALARMS, new Object[] { DAO.boolToChar(false), userId },Integer.class);
 	}
 
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void updateEventAckUserId(int userId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateEventAckUserId(int userId) userId:" + userId);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(EVENT_UPDATE_WHERE_ACK_USER_ID, new Object[]{userId});
+	}
 }

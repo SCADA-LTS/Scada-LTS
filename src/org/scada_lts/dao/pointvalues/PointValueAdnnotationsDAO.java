@@ -35,6 +35,9 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /** 
  * 
@@ -74,7 +77,16 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 				+ COLUMN_NAME_SOURCE_ID
 			+") "
 			+ "values (?,?,?,?,?)";
-		
+
+	private static final String POINT_VALUE_ANNOTATIONS_UPDATE = ""
+			+ "update pointValueAnnotations set "
+				+ COLUMN_NAME_SOURCE_ID + "=null "
+			+ "where "
+				+ COLUMN_NAME_SOURCE_ID + "=? "
+			+ "and "
+				+ COLUMN_NAME_SOURCE_TYPE + "="
+				+ SetPointSource.Types.USER;
+
 	public static final String POINT_VALUE_ADNNOTATIONS_FILTER_BASE_ON_POINT_VALUES_ID = " "
 			+COLUMN_NAME_POINT_VALUE_ID+"=? ";
 	
@@ -146,7 +158,17 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 		// table hav'nt pk //TODO add key
 		return new Object[] {0};
 	}
-	
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void update(int userId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("update(int userId) userId:" + userId);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(POINT_VALUE_ANNOTATIONS_UPDATE, new Object[]{userId});
+	}
+
 	public void updateAnnotations(List<PointValue> values) {
 		Map<Integer, List<AnnotatedPointValueTime>> userIds = new HashMap<Integer, List<AnnotatedPointValueTime>>();
 		List<AnnotatedPointValueTime> alist;

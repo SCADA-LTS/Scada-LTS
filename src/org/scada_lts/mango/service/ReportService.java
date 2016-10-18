@@ -47,17 +47,19 @@ import java.util.ResourceBundle;
  */
 public class ReportService implements MangoReport {
 
-//	@Autowired
+	//	@Autowired
 	private ReportDAO reportDAO = new ReportDAO();
 
-//	@Autowired
+	//	@Autowired
 	private ReportInstanceDAO reportInstanceDAO = new ReportInstanceDAO();
 
-//	@Autowired
+	//	@Autowired
 	private ReportInstanceDataDAO reportInstanceDataDAO = new ReportInstanceDataDAO();
 
-//	@Autowired
+	//	@Autowired
 	private ReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
+
+	private ReportInstanceUserCommentDAO reportInstanceUserCommentDAO = new ReportInstanceUserCommentDAO();
 
 	private void setReportDataValue(List<ReportPointInfo> pointInfos, final ReportDataStreamHandler handler) {
 		final ReportDataValue rdv = new ReportDataValue();
@@ -97,7 +99,7 @@ public class ReportService implements MangoReport {
 	@Override
 	public void saveReport(ReportVO report) {
 		if (report.getId() == Common.NEW_ID) {
-			reportDAO.insert(report);
+			report.setId(reportDAO.insert(report));
 		} else {
 			reportDAO.update(report);
 		}
@@ -138,7 +140,7 @@ public class ReportService implements MangoReport {
 	 */
 	public void saveReportInstance(ReportInstance reportInstance) {
 		if (reportInstance.getId() == Common.NEW_ID) {
-			reportInstanceDAO.insert(reportInstance);
+			reportInstance.setId(reportInstanceDAO.insert(reportInstance));
 		} else {
 			reportInstanceDAO.updateTime(reportInstance);
 		}
@@ -193,6 +195,7 @@ public class ReportService implements MangoReport {
 			}
 
 			// Insert the reportInstancePoints record
+			//TODO SeroUtils
 			String name = Functions.truncate(point.getName(), 100);
 
 			int reportPointId = reportInstancePointDAO.insert(instance, point, name, dataType, startValue, pointInfo);
@@ -297,7 +300,7 @@ public class ReportService implements MangoReport {
 
 	@Override
 	public List<ReportUserComment> getReportInstanceUserComments(int instanceId) {
-		return null;
+		return reportInstanceUserCommentDAO.getReportUserComments(instanceId);
 	}
 
 	//TODO

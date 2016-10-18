@@ -21,6 +21,7 @@ import com.mysql.jdbc.Statement;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -93,6 +94,13 @@ public class PointLinkDAO {
 			+ "delete from pointLinks where "
 				+ COLUMN_NAME_ID
 			+ "=? ";
+
+	private static final String POINT_LINK_SELECT_WHERE = ""
+				+ POINT_LINK_SELECT
+			+ " where "
+				+ COLUMN_NAME_SOURCE_POINT_ID + "=? "
+			+ "or "
+				+ COLUMN_NAME_TARGET_POINT_ID + "=? ";
 	// @formatter:on
 
 	private class PointLinkRowMapper implements RowMapper<PointLinkVO> {
@@ -119,7 +127,13 @@ public class PointLinkDAO {
 
 		String templateSelectWhereId = POINT_LINK_SELECT + "where " + COLUMN_NAME_ID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new PointLinkRowMapper());
+		PointLinkVO pointLinkVO;
+		try {
+			pointLinkVO = DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new PointLinkRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			pointLinkVO = null;
+		}
+		return pointLinkVO;
 	}
 
 	public PointLinkVO getPointLink(String xid) {
@@ -130,8 +144,13 @@ public class PointLinkDAO {
 
 		String templateSelectWhereId = POINT_LINK_SELECT + "where " + COLUMN_NAME_XID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {xid}, new PointLinkRowMapper());
-
+		PointLinkVO pointLinkVO;
+		try {
+			pointLinkVO = DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[]{xid}, new PointLinkRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			pointLinkVO = null;
+		}
+		return pointLinkVO;
 	}
 
 	public List<PointLinkVO> getPointLinks() {
@@ -141,6 +160,15 @@ public class PointLinkDAO {
 		}
 
 		return DAO.getInstance().getJdbcTemp().query(POINT_LINK_SELECT, new PointLinkRowMapper());
+	}
+
+	public List<PointLinkVO> getPointLinksForPoint(int datapointId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPointLinksForPoint(int datapointId) datapointId:" + datapointId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(POINT_LINK_SELECT_WHERE, new Object[]{datapointId, datapointId}, new PointLinkRowMapper());
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

@@ -20,11 +20,13 @@ package org.scada_lts.mango.service;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.mango.adapter.MangoDataSource;
@@ -77,7 +79,7 @@ public class DataSourceService implements MangoDataSource {
 	@Override
 	public void saveDataSource(final DataSourceVO<?> dataSource) {
 		if (dataSource.getId() == Common.NEW_ID) {
-			dataSourceDAO.insert(dataSource);
+			dataSource.setId(dataSourceDAO.insert(dataSource));
 		} else {
 			updateDataSource(dataSource);
 			MangoPointHierarchy.getInst().changeDataSource(dataSource);
@@ -142,8 +144,7 @@ public class DataSourceService implements MangoDataSource {
 		for (DataPointVO dataPoint: dataPointService.getDataPoints(dataSourceId, null)) {
 			DataPointVO dataPointCopy = dataPoint.copy();
 			dataPointCopy.setId(Common.NEW_ID);
-			//TODO dataPointService.generateUniqueXid()
-			dataPointCopy.setXid(new DataPointDao().generateUniqueXid());
+			dataPointCopy.setXid(new DataPointService().generateUniqueXid());
 			dataPointCopy.setName(dataPoint.getName());
 			dataPointCopy.setDataSourceId(dataSourceCopy.getId());
 			dataPointCopy.setDataSourceName(dataSourceCopy.getName());
@@ -162,5 +163,17 @@ public class DataSourceService implements MangoDataSource {
 			dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
 		}
 		return dataSourceCopy.getId();
+	}
+
+	public List<Integer> getDataSourceId(int userId) {
+		return dataSourceDAO.getDataSourceIdFromDsUsers(userId);
+	}
+
+	public void deleteDataSourceUser(int userId) {
+		dataSourceDAO.deleteDataSourceUser(userId);
+	}
+
+	public void insertPermissions(User user) {
+		dataSourceDAO.insertPermissions(user);
 	}
 }

@@ -50,6 +50,7 @@ public class MailingListMemberDAO {
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	private static final String COLUMN_NAME_ADDRESS = "address";
 
+	// @formatter:off
 	private static final String MAILING_MEMBER_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_TYPE_ID + ", "
@@ -66,9 +67,14 @@ public class MailingListMemberDAO {
 				+ COLUMN_NAME_ADDRESS + ") "
 			+ "values (?,?,?,?) ";
 
-	private static final String MAILING_MEMBER_DELETE = ""
+	private static final String MAILING_MEMBER_DELETE_WHERE_ML_ID = ""
 			+ "delete from mailingListMembers where "
 				+ COLUMN_NAME_ID + "=? ";
+
+	private static final String MAILING_MEMBER_DELETE_WHERE_USER_ID = ""
+			+ "delete from mailingListMembers where "
+				+ COLUMN_NAME_USER_ID + "=? ";
+	// @formatter:on
 
 	private class EmailRecipientRowMapper implements RowMapper<EmailRecipient> {
 
@@ -129,7 +135,6 @@ public class MailingListMemberDAO {
 				});
 	}
 
-
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void delete(int id) {
 
@@ -137,6 +142,16 @@ public class MailingListMemberDAO {
 			LOG.trace("delete(int id) id:" + id);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(MAILING_MEMBER_DELETE, new Object[]{id});
+		DAO.getInstance().getJdbcTemp().update(MAILING_MEMBER_DELETE_WHERE_ML_ID, new Object[]{id});
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void deleteWithUserId(int userId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("delete(int userId) userId:" + userId);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(MAILING_MEMBER_DELETE_WHERE_USER_ID, new Object[]{userId});
 	}
 }

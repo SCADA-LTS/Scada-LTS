@@ -23,6 +23,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -203,7 +204,13 @@ public class ScheduledEventDAO {
 
 		String templateSelectWhereId = SCHEDULED_EVENT_SELECT + "where " + COLUMN_NAME_XID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {xid}, new ScheduledEventRowMapper());
+		ScheduledEventVO scheduledEvent;
+		try {
+			scheduledEvent = DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {xid}, new ScheduledEventRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			scheduledEvent = null;
+		}
+		return scheduledEvent;
 	}
 
 	public List<ScheduledEventVO> getScheduledEvents() {

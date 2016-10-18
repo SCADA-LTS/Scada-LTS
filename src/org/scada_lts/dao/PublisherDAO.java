@@ -23,6 +23,7 @@ import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -108,7 +109,13 @@ public class PublisherDAO {
 
 		String templateSelectWhere = PUBLISHER_SELECT + "where " + COLUMN_NAME_ID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhere, new Object[] {id}, new PublisherRowMapper());
+		PublisherVO<?> publisher;
+		try {
+			publisher = DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhere, new Object[] {id}, new PublisherRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			publisher = null;
+		}
+		return publisher;
 	}
 
 	public PublisherVO<? extends PublishedPointVO> getPublisher(String xid) {
@@ -119,7 +126,13 @@ public class PublisherDAO {
 
 		String templateSelectWhere = PUBLISHER_SELECT + "where " + COLUMN_NAME_XID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhere, new Object[] {xid}, new PublisherRowMapper());
+		PublisherVO<?> publisher;
+		try {
+			publisher = DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhere, new Object[] {xid}, new PublisherRowMapper());;
+		} catch (EmptyResultDataAccessException e) {
+			publisher = null;
+		}
+		return publisher;
 	}
 
 	public List<PublisherVO<? extends PublishedPointVO>> getPublishers() {
@@ -129,17 +142,6 @@ public class PublisherDAO {
 		}
 
 		return DAO.getInstance().getJdbcTemp().query(PUBLISHER_SELECT, new PublisherRowMapper());
-	}
-
-	public List<PublisherVO<? extends PublishedPointVO>> getPublishers(Comparator<PublisherVO<?>> comparator) {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("getPublishers(Comparator<PublisherVO<?>> comparator) comparator:" + comparator.toString());
-		}
-
-		List<PublisherVO<? extends  PublishedPointVO>> publisherList = getPublishers();
-		Collections.sort(publisherList, comparator);
-		return publisherList;
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

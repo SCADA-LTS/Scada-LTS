@@ -122,9 +122,7 @@ public class PointLinkDaoTest extends TestDAO {
 
 		//Delete
 		pointLinkDAO.delete(firstId);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		pointLinkDAO.getPointLink(firstId);
+		assertTrue(pointLinkDAO.getPointLink(firstId) == null);
 	}
 
 }

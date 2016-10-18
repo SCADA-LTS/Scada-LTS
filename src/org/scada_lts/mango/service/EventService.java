@@ -35,6 +35,7 @@ import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.cache.UnsilencedAlarmCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
@@ -218,7 +219,7 @@ public class EventService implements MangoEvent {
 	@Override
 	public EventInstance insertEventComment(int eventId, UserComment comment) {
 		
-		new UserDAO().createComments(UserComment.TYPE_EVENT, eventId, comment);
+		new UserCommentDAO().insert(comment, UserComment.TYPE_EVENT, eventId);
 		 
 		return eventDAO.findById(new Object[]{eventId});
 	}
@@ -376,6 +377,14 @@ public class EventService implements MangoEvent {
 			eventDAO.attachRelationalInfo(e);
 		}
 		
+	}
+
+	public void updateEventAckUserId(int userId) {
+		eventDAO.updateEventAckUserId(userId);
+	}
+
+	public void deleteUserEvent(int userId) {
+		userEventDAO.delete(userId);
 	}
 	
 	// cache 

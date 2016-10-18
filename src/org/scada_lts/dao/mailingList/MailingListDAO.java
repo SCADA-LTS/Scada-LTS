@@ -22,6 +22,7 @@ import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -109,7 +110,13 @@ public class MailingListDAO {
 
 		String templateSelectWhereXid = MAILING_LIST_SELECT + "where " + COLUMN_NAME_XID + "=?";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new MailingListRowMapper());
+		MailingList mailingList;
+		try {
+			mailingList = DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new MailingListRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			mailingList = null;
+		}
+		return mailingList;
 	}
 
 	public List<MailingList> getMailingLists() {
