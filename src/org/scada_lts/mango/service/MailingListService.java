@@ -25,6 +25,7 @@ import com.serotonin.mango.vo.mailingList.UserEntry;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import org.joda.time.DateTime;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
 import org.scada_lts.dao.mailingList.MailingListMemberDAO;
@@ -73,17 +74,25 @@ public class MailingListService implements MangoMailingList {
 
 	@Override
 	public List<MailingList> getMailingLists() {
-		return mailingListDAO.getMailingLists();
+		List<MailingList> lists = mailingListDAO.getMailingLists();
+		setRelationalData(lists);
+		return lists;
 	}
 
 	@Override
 	public MailingList getMailingList(int id) {
-		return mailingListDAO.getMailingList(id);
+		MailingList mailingList = mailingListDAO.getMailingList(id);
+		setRelationalData(mailingList);
+		return mailingList;
 	}
 
 	@Override
 	public MailingList getMailingList(String xid) {
-		return mailingListDAO.getMailingList(xid);
+		MailingList mailingList = mailingListDAO.getMailingList(xid);
+		if (mailingList != null) {
+			setRelationalData(mailingList);
+		}
+		return mailingList;
 	}
 
 	@Override
@@ -103,13 +112,13 @@ public class MailingListService implements MangoMailingList {
 	@Override
 	public void populateEntrySubclasses(List<EmailRecipient> entries) {
 		// Update the user type entries with their respective user objects.
-		UserDao userDao = new UserDao();
+		UserDAO userDAO = new UserDAO();
 		for (EmailRecipient e : entries) {
 			if (e instanceof MailingList) {
 				setRelationalData((MailingList) e);
 			} else if (e instanceof UserEntry) {
 				UserEntry ue = (UserEntry) e;
-				ue.setUser(userDao.getUser(ue.getUserId()));
+				ue.setUser(userDAO.getUser(ue.getUserId()));
 			}
 		}
 	}
@@ -133,8 +142,18 @@ public class MailingListService implements MangoMailingList {
 		mailingListMemberDAO.insert(mailingList);
 	}
 
+	private void setRelationalData(List<MailingList> mailingLists) {
+		for (MailingList mailingList: mailingLists) {
+			setRelationalData(mailingList);
+		}
+	}
+
 	@Override
 	public void deleteMailingList(int mailingListId) {
 		mailingListDAO.delete(mailingListId);
+	}
+
+	public void deleteMailingListMemberWithUserId(int userId) {
+		mailingListMemberDAO.deleteWithUserId(userId);
 	}
 }

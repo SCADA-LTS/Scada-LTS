@@ -18,13 +18,17 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.db.IntValuePair;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
+import com.serotonin.mango.vo.link.PointLinkVO;
+import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.util.Tuple;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -65,6 +69,8 @@ public class DataPointService implements MangoDataPoint {
 	//TODO
 //	@Autowired
 	private static final DataPointUserDAO dataPointUserDAO = new DataPointUserDAO();
+
+	private static final PointLinkDAO pointLinkDao = new PointLinkDAO();
 
 	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
 
@@ -155,7 +161,7 @@ public class DataPointService implements MangoDataPoint {
 			dp.defaultTextRenderer();
 		}
 
-		dataPointDAO.insert(dp);
+		dp.setId(dataPointDAO.insert(dp));
 		saveEventDetectors(dp);
 	}
 
@@ -175,24 +181,22 @@ public class DataPointService implements MangoDataPoint {
 		dataPointDAO.update(dp);
 	}
 
-	//TODO PointValueDAO
 	@Override
 	public void deleteDataPoint(int dataPointId) {
 		DataPointVO dp = getDataPoint(dataPointId);
 		if (dp != null) {
-
+			beforePointDelete(dataPointId);
+			deletePointHistory(dataPointId);
+			deleteDataPointImpl(Integer.toString(dataPointId));
 		}
 	}
 
-	//TODO PointValueDAO
 	@Override
 	public void deleteDataPoints(int dataSourceId) {
 		List<DataPointVO> oldList = getDataPoints(dataSourceId, null);
-
 		for (DataPointVO dp: oldList) {
 			beforePointDelete(dp.getId());
 		}
-
 		for (DataPointVO dp: oldList) {
 			deletePointHistory(dp.getId());
 		}
@@ -209,12 +213,12 @@ public class DataPointService implements MangoDataPoint {
 
 			deleteDataPointImpl(idsWithCommaSB.toString());
 		}
-
 	}
 
-	//TODO PointValueDAO
 	private void beforePointDelete(int dpId) {
-
+		for (PointLinkVO link: pointLinkDao.getPointLinksForPoint(dpId)) {
+			Common.ctx.getRuntimeManager().deletePointLink(link.getId());
+		}
 	}
 
 	//TODO PointValueDAO
@@ -235,7 +239,7 @@ public class DataPointService implements MangoDataPoint {
 		//TODO delete eventHandler
 		userCommentDAO.deleteUserCommentPoint(dataPointIds);
 		pointEventDetectorDAO.deleteWithId(dataPointIds);
-		//TODO delete dataPointUsers
+		dataPointUserDAO.deleteWhereDataPointId(Integer.valueOf(dataPointIds));
 		//TODO delete watchList
 		dataPointDAO.deleteWithIn(dataPointIds);
 
@@ -317,8 +321,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		for (PointEventDetectorVO pointEventDetector: detectors) {
-			//TODO delete eventHandlers
-			pointEventDetectorDAO.delete(pointEventDetector.getId());
+			pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
 		}
 	}
 
@@ -395,6 +398,18 @@ public class DataPointService implements MangoDataPoint {
 	//TODO PointValueDAO
 	public List<PointHistoryCount> getTopPointHistoryCounts() {
 		return null;
+	}
+
+	public List<DataPointAccess> getDataPointAccessList(final int userId) {
+		return dataPointUserDAO.getDataPointAccessList(userId);
+	}
+
+	public void deleteDataPointUser(int userId) {
+		dataPointUserDAO.delete(userId);
+	}
+
+	public void insertPermissions(User user) {
+		dataPointUserDAO.insertPermissions(user);
 	}
 
 }

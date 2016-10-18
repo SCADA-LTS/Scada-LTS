@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.event.EventDAO;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -163,7 +164,13 @@ public class ReportInstanceDAO {
 			LOG.trace("getReportInstance(int id) id:" + id);
 		}
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(REPORT_INSTANCE_SELECT_WHERE_ID, new Object[]{id}, new ReportInstanceRowMapper());
+		ReportInstance reportInstance;
+		try {
+			reportInstance = DAO.getInstance().getJdbcTemp().queryForObject(REPORT_INSTANCE_SELECT_WHERE_ID, new Object[]{id}, new ReportInstanceRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			reportInstance = null;
+		}
+		return reportInstance;
 	}
 
 	public List<ReportInstance> getReportInstances(int userId) {
@@ -289,14 +296,13 @@ public class ReportInstanceDAO {
 				+ COLUMN_NAME_E_ACK_TS + ", 0, "
 				+ COLUMN_NAME_E_ACK_USERNAME + ", "
 				+ COLUMN_NAME_E_ALTERNATE_ACK_SOURCE + " "
-			+ "form reportInstanceEvents "
+			+ "from reportInstanceEvents "
 			+ "where "
 				+ COLUMN_NAME_REPORT_INSTANCE_ID + "=? "
 			+ "order by "
 				+ COLUMN_NAME_E_ACTIVE_TS;
 
 
-	//TODO Update EventInstanceRowMapper
 	public List<EventInstance> getReportInstanceEvents(int instanceId) {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new EventDAO.EventRowMapper());
 	}

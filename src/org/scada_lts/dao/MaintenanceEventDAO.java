@@ -22,6 +22,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -224,8 +225,13 @@ public class MaintenanceEventDAO {
 
 		String templateSelectWhereId = MAINTENANCE_EVENT_SELECT + "where m." + COLUMN_NAME_XID + "=?";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {xid}, new MaintenanceEventRowMapper());
-
+		MaintenanceEventVO maintenanceEvent;
+		try {
+			maintenanceEvent = DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {xid}, new MaintenanceEventRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			maintenanceEvent = null;
+		}
+		return maintenanceEvent;
 	}
 
 	public List<MaintenanceEventVO> getMaintenanceEvents() {

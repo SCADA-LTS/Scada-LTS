@@ -18,6 +18,7 @@
 package org.scada_lts.dao;
 
 import com.mysql.jdbc.Statement;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.Log;
@@ -62,6 +63,10 @@ public class PointEventDetectorDAO {
 	private static final String COLUMN_NAME_CHANGE_COUNT = "changeCount";
 	private static final String COLUMN_NAME_ALPHANUMERIC_STATE = "alphanumericState";
 	private static final String COLUMN_NAME_WEIGHT = "weight";
+
+	private static final String COLUMN_NAME_EH_EVENT_TYPE_ID = "eventTypeId";
+	private static final String COLUMN_NAME_EH_EVENT_TYPE_REF1 = "eventTypeRef1";
+	private static final String COLUMN_NAME_EH_EVENT_TYPE_REF2 = "eventTypeRef2";
 
 	// @formatter:off
 	private static final String POINT_EVENT_DETECTOR_SELECT = ""
@@ -144,6 +149,15 @@ public class PointEventDetectorDAO {
 				+ COLUMN_NAME_XID + "=? "
 			+ "and "
 				+ COLUMN_NAME_ID + "<>? ";
+
+	private static final String EVENT_HANDLER_DELETE = ""
+			+ "delete from eventHandlers where "
+				+ COLUMN_NAME_EH_EVENT_TYPE_ID + "="
+			+ EventType.EventSources.DATA_POINT
+			+ " and "
+				+ COLUMN_NAME_EH_EVENT_TYPE_REF1 + "=? "
+			+ "and "
+				+ COLUMN_NAME_EH_EVENT_TYPE_REF2 + "=? ";
 	// @formatter:on
 
 	private class PointEventDetectorRowMapper implements RowMapper<PointEventDetectorVO> {
@@ -298,7 +312,7 @@ public class PointEventDetectorDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void delete(int pointEventDetectorId) {
+	public void delete(int dataPointId, int pointEventDetectorId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int dataPointId) dataPointId:" + pointEventDetectorId);
@@ -306,6 +320,7 @@ public class PointEventDetectorDAO {
 
 		String templateDelete = POINT_EVENT_DETECTOR_DELETE + " id=?";
 
+		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataPointId, pointEventDetectorId});
 		DAO.getInstance().getJdbcTemp().update(templateDelete, new Object[] {pointEventDetectorId});
 	}
 

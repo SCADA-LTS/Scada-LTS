@@ -29,6 +29,7 @@ import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.PublisherService;
 
 /**
  * @author Matthew Lohbihler
@@ -42,7 +43,7 @@ public class PublisherListDwr extends BaseDwr {
             translatedTypes.add(new IntMessagePair(type.getId(), new LocalizableMessage(type.getKey())));
 
         response.addData("types", translatedTypes);
-        response.addData("publishers", new PublisherDao().getPublishers(new PublisherDao.PublisherNameComparator()));
+        response.addData("publishers", new PublisherService().getPublishers(new PublisherService.PublisherNameComparator()));
 
         return response;
     }

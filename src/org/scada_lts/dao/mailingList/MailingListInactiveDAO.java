@@ -45,7 +45,7 @@ public class MailingListInactiveDAO {
 	private static final String COLUMN_NAME_ID = "mailingListId";
 	private static final String COLUMN_NAME_INTERVAL = "inactiveInterval";
 
-
+	// @formatter:off
 	private static final String MAILING_INACTIVE_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_INTERVAL + " "
@@ -61,11 +61,12 @@ public class MailingListInactiveDAO {
 	private static final String MAILING_INACTIVE_DELETE = ""
 			+ "delete from mailingListInactive where "
 				+ COLUMN_NAME_ID + "=? ";
+	// @formatter:on
 
 	private class MailingListInactiveRowMapper implements RowMapper<Integer> {
 		@Override
 		public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return rs.getInt(COLUMN_NAME_ID);
+			return rs.getInt(COLUMN_NAME_INTERVAL);
 		}
 	}
 
