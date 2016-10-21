@@ -12,18 +12,20 @@ public class MockWatchlistDao extends WatchListDao {
 	public WatchList createNewWatchList(String name, int id, int userId) {
 		WatchList vo = new WatchList();
 
-		vo.setId(doInsert(
+		
+		/*vo.setId(doInsert(
 				"insert into watchLists (xid, id, name, userId) values (?,?,?,?)",
-				new Object[] { name, id, name, userId }));
+				new Object[] { name, id, name, userId }));*/
 
 		return vo;
 	}
 
 	public WatchList getWatchList(int watchListId) {
-		WatchList watchList = queryForObject(
+		WatchList watchList = null;
+		/*queryForObject(
 				"select id, xid, userId, name from watchLists where id=?",
 				new Object[] { watchListId }, new WatchListRowMapper());
-		populateWatchlistData(watchList);
+		populateWatchlistData(watchList);*/
 		return watchList;
 	}
 
