@@ -23,12 +23,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.BinaryValue;
+import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
@@ -46,6 +47,7 @@ public class PointValuesDaoTest extends TestDAO {
 	private final long POINT_ID_2 = 2;
 	private final long POINT_ID_3 = 3;
 	private final long POINT_ID_4 = 4;
+	private final long POINT_ID_5 = 5;
 	
 	@Test
 	public void test() {
@@ -66,6 +68,7 @@ public class PointValuesDaoTest extends TestDAO {
 			DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_04',1,'')");
 			// IMAGE			dataPointId 5
 			DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_05',1,'')");
+		
 			
 		// create values for point Numeric
 		    // 1.0
@@ -111,36 +114,36 @@ public class PointValuesDaoTest extends TestDAO {
 			pointValueMultistate2.setPointValue(pvtForMultistate2);
 
 		//create values for point ALPHANUMERIC 150 char
-		    // aadfadfasdfadfadfasdfasdfasdfasdf12ddddddddddd133333333aadfadfasdfadfadfasdfasdfasdfasdf12ddddddddddd133333333aadfadfasdfadfadfasdfasdfasdfasdf12ddddddddddd133333333
-		/*	MangoValue valueAlphanumeric1 = new AlphanumericValue("aadfadfasdfadfadfasdfasdfasdfasdf12ddddddddddd133333333aadfadfasdfadfadfasdfasdfasdfasdf12ddddddddddd133333333aadfadfasdfadfadfasdfasdfasdfasdf12ddddddddddd133333333");
+		    // 3
+			MangoValue valueAlphanumeric1 = new AlphanumericValue("aadfadfasdfadfadfasdfasdfasdfasdf12ddddddddddd133333333aadfadfasdfadfadfasdfasdfasdfasdf12ddddddddddd133333333aadfadfasdfadfadfasdfasdfasdfasdf12ddddddddddd133333333");
 			PointValueTime pvtForAlphanumeric1 = new PointValueTime(valueAlphanumeric1, 0);
 			PointValue pointValueAlphanumeric1 = new PointValue();
 			pointValueAlphanumeric1.setDataPointId(POINT_ID_4);
 			pointValueAlphanumeric1.setPointValue(pvtForAlphanumeric1);
 
-		    // 12
+		    // 4
 			MangoValue valueAlphanumeric2 = new AlphanumericValue("12");
 			PointValueTime pvtForAlphanumeric2 = new PointValueTime(valueAlphanumeric2, 0);
 			PointValue pointValueAlphanumeric2 = new PointValue();
 			pointValueAlphanumeric2.setDataPointId(POINT_ID_4);
 			pointValueAlphanumeric2.setPointValue(pvtForAlphanumeric2);
-		*/  //save data in pointValueAdnnotation
+		  //save data in pointValueAdnnotation
 		
 		//create values for point IMAGE
-		    // ?
-		/*	MangoValue valueImage1 = new ImageValue(Integer.parseInt("1"),1);
+		    // 5
+			MangoValue valueImage1 = new ImageValue(Integer.parseInt("1"),1);
 			PointValueTime pvtForImage1 = new PointValueTime(valueImage1, 0);
 			PointValue pointValueImage1 = new PointValue();
 			pointValueImage1.setDataPointId(POINT_ID_5);
 			pointValueImage1.setPointValue(pvtForImage1);
 			
-		    // ?
+		    // 6
 			MangoValue valueImage2 = new ImageValue(Integer.parseInt("2"),1);
 			PointValueTime pvtForImage2 = new PointValueTime(valueImage2, 0);
 			PointValue pointValueImage2 = new PointValue();
 			pointValueImage2.setDataPointId(POINT_ID_5);
 			pointValueImage2.setPointValue(pvtForImage2);
-		*/ //save data in pointValueAdnnotation
+		 //save data in pointValueAdnnotation
 			
 		//
 		// @formatter:on
@@ -157,6 +160,10 @@ public class PointValuesDaoTest extends TestDAO {
 		  pointValuesDAO.create(pointValueBinary2);
 		  pointValuesDAO.create(pointValueMultistate1);
 		  pointValuesDAO.create(pointValueMultistate2);
+		  pointValuesDAO.create(pointValueAlphanumeric1);
+		  pointValuesDAO.create(pointValueAlphanumeric2);
+		  pointValuesDAO.create(pointValueImage1);
+		  pointValuesDAO.create(pointValueImage2);
 		  
 		  //
 		
@@ -182,19 +189,43 @@ public class PointValuesDaoTest extends TestDAO {
 		  boolean test4 = pv4.equals(pointValueBinary2);
 		  assertTrue(test4);
 		  
-		  PointValue pv7 = pointValuesDAO.findById(new Object[] {5});
+		  PointValue pv5 = pointValuesDAO.findById(new Object[] {5});
 		  pointValueMultistate1.setId(5);
-		  boolean test7 = pv7.equals(pointValueMultistate1);
-		  assertTrue(test7);
+		  boolean test5 = pv5.equals(pointValueMultistate1);
+		  assertTrue(test5);
 		  
-		  PointValue pv8 = pointValuesDAO.findById(new Object[] {6});
+		  PointValue pv6 = pointValuesDAO.findById(new Object[] {6});
 		  pointValueMultistate2.setId(6);
-		  boolean test8 = pv8.equals(pointValueMultistate2);
-		  assertTrue(test8);
+		  boolean test6 = pv6.equals(pointValueMultistate2);
+		  assertTrue(test6);
+		  
+		  PointValue pv7 = pointValuesDAO.findById(new Object[] {7});
+		  pointValueAlphanumeric1.setId(7);
+		  boolean test7 = pv7.equals(pointValueAlphanumeric1);
+		  // Not true because we must use savePointValueImp from PointValueService to save pointValueAlphanumeric
+		  assertTrue(test7==false);
+		  
+		  PointValue pv8 = pointValuesDAO.findById(new Object[] {8});
+		  pointValueAlphanumeric2.setId(8);
+		  boolean test8 = pv8.equals(pointValueAlphanumeric2);
+		// Not true because we must use savePointValueImp from PointValueService to save pointValueAlphanumeric
+		  assertTrue(test8==false);
+		  
+		  PointValue pv9 = pointValuesDAO.findById(new Object[] {9});
+		  pointValueImage1.setId(9);
+		  boolean test9 = pv9.equals(pointValueImage1);
+		  // Not true because we must use savePointValueImp from PointValueService to save pointValueAlphanumeric
+		  assertTrue(test9==false);
+		  
+		  PointValue pv10 = pointValuesDAO.findById(new Object[] {10});
+		  pointValueImage2.setId(10);
+		  boolean test10 = pv10.equals(pointValueImage2);
+		// Not true because we must use savePointValueImp from PointValueService to save pointValueAlphanumeric
+		  assertTrue(test10==false);
 		  
 		  //findAll (values for every type point)
 		  List<PointValue> values = pointValuesDAO.findAll();
-		  boolean testAllValues = (values.size() == 6);
+		  boolean testAllValues = (values.size() == 10);
 		  assertTrue(testAllValues);
 		  
 		  //filtered (values for every type point)
@@ -224,18 +255,19 @@ public class PointValuesDaoTest extends TestDAO {
 		   List<PointValue> lstFilterBinaryNull = pointValuesDAO.filtered(
 					PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID, 
 					new Object[]{POINT_ID_4},1);
-		   boolean testFiltered3 = (lstFilterBinaryNull !=null && lstFilterBinaryNull.size() == 0 );
+		   boolean testFiltered3 = (lstFilterBinaryNull !=null && lstFilterBinaryNull.size() == 1 );
 		
 		   assertTrue(testFiltered3);
 		   
-		   
+		   // We must uniq pk on pointValues (id, dataPointId, dataType,ts) create index for: pointValue, ts, dataPointId, dataType
 		   Long latestPointValue = pointValuesDAO.getLatestPointValue(5);
 		   
-		   boolean testLatestPointValue = (latestPointValue==null);
+		   boolean testLatestPointValue = (latestPointValue==0);
 		   assertTrue(testLatestPointValue);
 
 
 		//end CR
+		// @formatter:on
 		  
 	}
 }
