@@ -98,7 +98,7 @@ public class WatchListService implements MangoWatchList {
 	
 	@Override
 	public WatchList getWatchList(String xid) {
-		return watchListDAO.findById(new Object[] {xid});
+		return watchListDAO.findByXId(xid);
 	}
 	
 	@Override
@@ -142,6 +142,18 @@ public class WatchListService implements MangoWatchList {
 
 		// Add in all of the entries.
 		watchListDAO.addWatchListUsers(watchList);
+	}
+	
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void deleteWatchList(int watchListId) {
+		watchListDAO.deleteWatchListPoints(watchListId);
+		watchListDAO.deleteWatchList(watchListId);
+		//TODO check why don't delete watch list for users
+	}
+	
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void removeUserFromWatchList(int watchListId, int userId) {
+		watchListDAO.deleteUserFromWatchList(watchListId, userId);
 	}
 
 }

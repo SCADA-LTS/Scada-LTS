@@ -102,6 +102,18 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			+ "where "
 				+ COLUMN_NAME_XID+"=?";
 	
+	private static final String WATCH_LIST_SELECT_BASE_ON_ID = ""
+			+ "select "
+				+ COLUMN_NAME_ID+", "
+				+ COLUMN_NAME_XID+", "
+				+ COLUMN_NAME_USER_ID+", "
+				+ COLUMN_NAME_NAME+" "
+			+ "from "
+				+ "watchLists "
+			+ "where "
+				+ COLUMN_NAME_ID+"=?";
+	
+	
 	private static final String WATCH_LIST_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID+", "
@@ -129,8 +141,8 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+ COLUMN_NAME_WLU_USER_ID+", "
 				+ COLUMN_NAME_WLU_ACCESS_TYPE+" "
 			+ "from "
-				+ "watchListUsers"
-			+ "where"
+				+ "watchListUsers "
+			+ "where "
 				+ COLUMN_NAME_WLU_WATCHLIST_ID+"=?";
 	
 	private static final String WATCH_LIST_POINTS_SELECT_BASE_ON_WATCH_LIST_ID=" "
@@ -185,6 +197,21 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+COLUMN_NAME_WLU_ACCESS_TYPE+")"
 			+ " values (?,?,?)";
 	
+	private static final String WATCH_LIST_DELETE_BASE_ON_ID = ""
+			+ "delete "
+				+ "from "
+					+ "watchLists "
+			+ "where "
+				+ COLUMN_NAME_ID+"=?";
+	
+	private static final String WATCH_LIST_DELETE_USER_FROM_WATCH_LIST=""
+			+"delete "
+				+ "from "
+					+ "watchListUsers "
+			+ "where "
+				+ COLUMN_NAME_WLU_WATCHLIST_ID+"=? and "
+				+ COLUMN_NAME_WLU_USER_ID+"=?";
+	
 	// @formatter:on
 	
 	//RowMapper
@@ -216,7 +243,11 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 
 	@Override
 	public WatchList findById(Object[] pk) {
-		return (WatchList) DAO.getInstance().getJdbcTemp().queryForObject(WATCH_LIST_SELECT_BASE_ON_XID, pk, new WatchListRowMapper());
+		return (WatchList) DAO.getInstance().getJdbcTemp().queryForObject(WATCH_LIST_SELECT_BASE_ON_ID, pk, new WatchListRowMapper());
+	}
+	
+	public WatchList findByXId(String xid) {
+		return (WatchList) DAO.getInstance().getJdbcTemp().queryForObject(WATCH_LIST_SELECT_BASE_ON_XID, new Object[] {xid}, new WatchListRowMapper());
 	}
 
 	@Override
@@ -287,6 +318,10 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_USERS_DELETE, new Object[] {watchListId});
 	}
 	
+	public void deleteWatchList(int watchListId) {
+		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_DELETE_BASE_ON_ID, new Object[] {watchListId});
+	}
+	
 	//TODO rewrite
 	public void addPointsForWatchList(WatchList watchList) {
 		
@@ -294,10 +329,10 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				WATCH_LIST_POINTS_INSERT,
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
-						return watchList.getWatchListUsers().size();
+						return watchList.getPointList().size();
 					}
 					public void setValues(PreparedStatement ps, int i) throws SQLException {
-						ps.setInt(COLUMN_INDEX_WLU_WATCH_LIST_ID, watchList.getId());
+						ps.setInt(COLUMN_INDEX_WLP_WATCH_LIST_ID, watchList.getId());
 						ps.setInt(COLUMN_INDEX_WLP_DATA_POINT_ID, watchList.getPointList().get(i).getId());
 						ps.setInt(COLUMN_INDEX_WLP_SORT_ORDER, i);
 					}
@@ -312,7 +347,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				WATCH_LIST_USERS_INSERT,
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
-						return watchList.getPointList().size();
+						return watchList.getWatchListUsers().size();
 					}
 					public void setValues(PreparedStatement ps, int i) throws SQLException {
 						ShareUser wlu = watchList.getWatchListUsers().get(i);
@@ -321,6 +356,10 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 						ps.setInt(COLUMN_INDEX_WLU_SORT_ORDER, wlu.getAccessType());
 					}
 				});
+	}
+	
+	public void deleteUserFromWatchList(int watchListId, int userId) {
+		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_DELETE_USER_FROM_WATCH_LIST, new Object[] {watchListId, userId});
 	}
 	
 	
