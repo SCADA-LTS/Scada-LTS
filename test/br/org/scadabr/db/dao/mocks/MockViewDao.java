@@ -9,7 +9,7 @@ public class MockViewDao extends ViewDao {
 	public View createView(String xid, int id, int userId) {
 		View vo = new View();
 
-		vo.setId(doInsert(
+		/*vo.setId(doInsert(
 				"insert into mangoViews (xid, id, name, userId, anonymousAccess, data) values (?,?,?,?,?,?)",
 				new Object[] { xid, id, xid, userId, 0,
 						SerializationHelper.writeObjectToArray(vo) }));
@@ -18,7 +18,8 @@ public class MockViewDao extends ViewDao {
 		vo.setName(xid);
 		vo.setUserId(userId);
 		vo.setId(id);
-		return vo;
+		return vo;*/
+		return null;
 	}
 
 }
