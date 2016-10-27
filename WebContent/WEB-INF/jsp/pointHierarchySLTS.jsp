@@ -267,6 +267,7 @@ thead th {
 								<li><a onclick="setLocale('zh')">中文</a></li>
 								<li><a onclick="setLocale('nl')">Nederlands</a></li>
 								<li><a onclick="setLocale('es')">Español</a></li>
+								<li><a onclisk="setLocale('pl')">Polski</a></li>
 							</ul>
 						</div>
 						<div class="btn-group pull-right menu">
