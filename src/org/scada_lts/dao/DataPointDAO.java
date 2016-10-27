@@ -18,6 +18,7 @@
 package org.scada_lts.dao;
 
 import com.mysql.jdbc.Statement;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,6 +58,9 @@ public class DataPointDAO {
 	private static final String COLUMN_NAME_DS_XID = "xid";
 	private static final String COLUMN_NAME_DS_DATA_SOURCE_TYPE = "dataSourceType";
 
+	private static final String COLUMN_NAME_EVENT_TYPE_ID = "eventTypeId";
+	private static final String COLUMN_NAME_EVENT_TYPE_REF1 = "eventTypeRef1";
+
 	// @formatter:off
 	private static final String DATA_POINT_SELECT = ""
 			+ "select "
@@ -94,6 +98,15 @@ public class DataPointDAO {
 	private static final String DATA_POINT_DELETE = ""
 			+ "delete from dataPoints where "
 				+ COLUMN_NAME_ID;
+
+	private static final String DELETE_EVENT_HANDLER_WHERE = ""
+			+ "delete from eventHandlers where "
+				+ COLUMN_NAME_EVENT_TYPE_ID + "="
+				+ EventType.EventSources.DATA_POINT + " "
+			+ "and "
+				+ COLUMN_NAME_EVENT_TYPE_REF1;
+
+
 	// @formatter:on
 
 	private class DataPointRowMapper implements RowMapper<DataPointVO> {
@@ -224,6 +237,24 @@ public class DataPointDAO {
 		String[] parameters = dataPointIdList.split(",");
 
 		StringBuilder queryBuilder = new StringBuilder(DATA_POINT_DELETE + " in (?");
+		for (int i = 1; i<parameters.length; i++) {
+			queryBuilder.append(",?");
+		}
+		queryBuilder.append(")");
+
+		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void deleteEventHandler(String dataPointIdList) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deleteEventHandler(String dataPointIdList) dataPointIdList:" + dataPointIdList);
+		}
+
+		String[] parameters = dataPointIdList.split(",");
+
+		StringBuilder queryBuilder = new StringBuilder(DELETE_EVENT_HANDLER_WHERE + " in (?");
 		for (int i = 1; i<parameters.length; i++) {
 			queryBuilder.append(",?");
 		}

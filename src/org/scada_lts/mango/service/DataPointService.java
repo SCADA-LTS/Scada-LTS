@@ -34,9 +34,12 @@ import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.*;
+import org.scada_lts.dao.pointvalues.PointValueDAO;
+import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.PointHierarchyService;
+import org.springframework.jdbc.UncategorizedSQLException;
 
 import java.io.IOException;
 import java.util.*;
@@ -70,7 +73,11 @@ public class DataPointService implements MangoDataPoint {
 //	@Autowired
 	private static final DataPointUserDAO dataPointUserDAO = new DataPointUserDAO();
 
-	private static final PointLinkDAO pointLinkDao = new PointLinkDAO();
+	private static final PointValueDAO pointValueDAO = new PointValueDAO();
+
+	private static final WatchListDAO watchListDAO = new WatchListDAO();
+
+	private static final PointLinkDAO pointLinkDAO = new PointLinkDAO();
 
 	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
 
@@ -216,31 +223,44 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	private void beforePointDelete(int dpId) {
-		for (PointLinkVO link: pointLinkDao.getPointLinksForPoint(dpId)) {
+		for (PointLinkVO link: pointLinkDAO.getPointLinksForPoint(dpId)) {
 			Common.ctx.getRuntimeManager().deletePointLink(link.getId());
 		}
 	}
 
-	//TODO PointValueDAO
 	@Override
 	public void deletePointHistory(int dpId) {
-
+		long min = pointValueDAO.getMinTs(dpId);
+		long max = pointValueDAO.getMaxTs(dpId);
+		deletePointHistory(dpId, min, max);
 	}
 
-	//TODO PointValueDAO
 	@Override
 	public void deletePointHistory(int dpId, long min, long max) {
-
+		while (true) {
+			try {
+				pointValueDAO.deletePointValuesBefore(dpId, max);
+				break;
+			} catch (UncategorizedSQLException e) {
+                if ("The total number of locks exceeds the lock table size".equals(e.getSQLException().getMessage())) {
+                    long mid = (min + max) >> 1;
+                    deletePointHistory(dpId, min, mid);
+                    min = mid;
+                }
+                else
+                    throw e;
+            }
+		}
 	}
 
 	@Override
 	public void deleteDataPointImpl(String dataPointIds) {
 
-		//TODO delete eventHandler
+		dataPointDAO.deleteEventHandler(dataPointIds);
 		userCommentDAO.deleteUserCommentPoint(dataPointIds);
 		pointEventDetectorDAO.deleteWithId(dataPointIds);
 		dataPointUserDAO.deleteWhereDataPointId(Integer.valueOf(dataPointIds));
-		//TODO delete watchList
+		watchListDAO.deleteWatchListPoints(dataPointIds);
 		dataPointDAO.deleteWithIn(dataPointIds);
 
 		PointHierarchyDAO.cachedPointHierarchy = null;
@@ -395,9 +415,20 @@ public class DataPointService implements MangoDataPoint {
 		pointHierarchyService.savePointFolder(folder, parentId);
 	}
 
-	//TODO PointValueDAO
 	public List<PointHistoryCount> getTopPointHistoryCounts() {
-		return null;
+		List<PointHistoryCount> counts = pointValueDAO.getTopPointHistoryCounts();
+		List<DataPointVO> points = getDataPoints(DataPointExtendedNameComparator.instance, false);
+
+		for (PointHistoryCount c : counts) {
+			for (DataPointVO point : points) {
+				if (point.getId() == c.getPointId()) {
+					c.setPointName(point.getExtendedName());
+					break;
+				}
+			}
+		}
+
+		return counts;
 	}
 
 	public List<DataPointAccess> getDataPointAccessList(final int userId) {

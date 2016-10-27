@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointVO;
 
 /** 
@@ -267,7 +266,7 @@ public class PointHierarchyDAO {
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public boolean updateTitle(int id, String title) {
 		int rows = DAO.getInstance().getJdbcTemp().update(updateTitleSQL, new Object[]{title,id});
-		DataPointDao.cachedPointHierarchy = null;
+		PointHierarchyDAO.cachedPointHierarchy = null;
 		return rows > 0;
 	}
 	
@@ -282,7 +281,7 @@ public class PointHierarchyDAO {
 		DataPointVO dp = getPointsHierarchy(id);
 		dp.setPointFolderId(parentId);
 		int rows = DAO.getInstance().getJdbcTemp().update(updateParentIdPointSQL,new Object[]{dp,id});
-		DataPointDao.cachedPointHierarchy = null;
+		PointHierarchyDAO.cachedPointHierarchy = null;
 		return rows > 0;
 	}
 	
@@ -295,7 +294,7 @@ public class PointHierarchyDAO {
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public boolean updateParentId(int id, int parentId) {
 		int rows = DAO.getInstance().getJdbcTemp().update(updateParentIdSQL, new Object[]{parentId, id});
-		DataPointDao.cachedPointHierarchy = null;
+		PointHierarchyDAO.cachedPointHierarchy = null;
 		return rows > 0;
 	}
 	
@@ -308,14 +307,14 @@ public class PointHierarchyDAO {
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int insert(int parentId, String name) {
 		DAO.getInstance().getJdbcTemp().update(insertSQL, new Object[]{parentId, name.trim()});
-		DataPointDao.cachedPointHierarchy = null;
+		PointHierarchyDAO.cachedPointHierarchy = null;
 		return DAO.getInstance().getId();
 	}
 
 	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int insert(int id, int parentId, String name) {
 		DAO.getInstance().getJdbcTemp().update(INSERT_POINT_HIERARCHY, new Object[]{parentId, name.trim()});
-		DataPointDao.cachedPointHierarchy = null;
+		PointHierarchyDAO.cachedPointHierarchy = null;
 		return DAO.getInstance().getId();
 	}
 
@@ -342,8 +341,8 @@ public class PointHierarchyDAO {
 		
 		int updates = DAO.getInstance().getJdbcTemp().update(updateParentIdsSQL, new Object[]{0,key});
 		LOG.trace("update rows:"+updates);
-		
-		DataPointDao.cachedPointHierarchy = null;
+
+		PointHierarchyDAO.cachedPointHierarchy = null;
 		return rows > 0;
 	}
 	
