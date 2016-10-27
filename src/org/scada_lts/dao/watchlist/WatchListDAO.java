@@ -211,6 +211,11 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			+ "where "
 				+ COLUMN_NAME_WLU_WATCHLIST_ID+"=? and "
 				+ COLUMN_NAME_WLU_USER_ID+"=?";
+
+	private static final String WATCH_LIST_DELETE_POINT_WHERE_DATA_POINT = ""
+			+ "delete from watchListPoints where "
+				+ COLUMN_NAME_WLP_DATA_POINT_ID + " "
+			+ "in ";
 	
 	// @formatter:on
 	
@@ -362,6 +367,15 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_DELETE_USER_FROM_WATCH_LIST, new Object[] {watchListId, userId});
 	}
 	
-	
+	public void deleteWatchListPoints(String dataPointIds) {
+		String[] parameters = dataPointIds.split(",");
 
+		StringBuilder queryBuilder = new StringBuilder(WATCH_LIST_DELETE_POINT_WHERE_DATA_POINT + "(?");
+		for (int i = 1; i<parameters.length; i++) {
+			queryBuilder.append(",?");
+		}
+		queryBuilder.append(")");
+
+		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+	}
 }

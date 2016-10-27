@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import com.serotonin.mango.vo.bean.PointHistoryCount;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -195,7 +196,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"=? "
 			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
 	
-	public static final String POINT_VALUE_DELETE_BEFFORE = ""
+	public static final String POINT_VALUE_DELETE_BEFORE = ""
 			+"delete "
 			+ "from "
 				+ "pointValues "
@@ -220,8 +221,26 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 				+ "pointValues "
 			+ "where "
 				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_DATA_TYPE+"<>?";
-	
-	
+
+	private static final String SELECT_MAX_TIME_WHERE_DATA_POINT_ID = ""
+			+ "select max("
+				+ COLUMN_NAME_TIME_STAMP + ") "
+			+ "from pointValues where "
+				+ COLUMN_NAME_DATA_POINT_ID + "=? ";
+
+	private static final String SELECT_MIN_TIME_WHERE_DATA_POINT_ID = ""
+			+ "select min("
+				+ COLUMN_NAME_TIME_STAMP + ") "
+			+ "from pointValues where "
+				+ COLUMN_NAME_DATA_POINT_ID + "=? ";
+
+	private static final String SELECT_DP_ID_AND_COUNT = ""
+			+ "select "
+				+ COLUMN_NAME_DATA_POINT_ID + ", "
+			+ "count(*) from pointValues group by "
+				+ COLUMN_NAME_DATA_POINT_ID + " "
+			+ "order by 2 desc ";
+
 	// @formatter:on
 	
 	//RowMappers
@@ -495,7 +514,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
     }
     
     public long deletePointValuesBefore(int dataPointId, long time) {
-    	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BEFFORE, new Object[] {dataPointId, time});
+    	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BEFORE, new Object[] {dataPointId, time});
     }
     
     public long deletePointValue(int dataPointId) {
@@ -513,5 +532,24 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
     public PointValueTime getPointValue(long id) {
 		return ((PointValue) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT + " where " + POINT_VALUE_FILTER_BASE_ON_ID, new Object[] {id}, new PointValueRowMapper())).getPointValue();
 	}
-	
+
+	public long getMinTs(int dataPointId) {
+		return DAO.getInstance().getJdbcTemp().queryForObject(SELECT_MIN_TIME_WHERE_DATA_POINT_ID, new Object[] {dataPointId}, Long.TYPE);
+	}
+
+	public long getMaxTs(int dataPointId) {
+		return DAO.getInstance().getJdbcTemp().queryForObject(SELECT_MAX_TIME_WHERE_DATA_POINT_ID, new Object[] {dataPointId}, Long.TYPE);
+	}
+
+	public List<PointHistoryCount> getTopPointHistoryCounts() {
+		return DAO.getInstance().getJdbcTemp().query(SELECT_DP_ID_AND_COUNT, new RowMapper<PointHistoryCount>() {
+			@Override
+			public PointHistoryCount mapRow(ResultSet rs, int rowNum) throws SQLException {
+				PointHistoryCount phc = new PointHistoryCount();
+				phc.setPointId(rs.getInt(1));
+				phc.setCount(rs.getInt(2));
+				return phc;
+			}
+		});
+	}
 }
