@@ -35,7 +35,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.junit.experimental.theories.DataPoint;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.config.ScadaConfig;
