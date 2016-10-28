@@ -47,9 +47,16 @@
             appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions);
         
         pointListColumnHeaders.push("");
+        
         pointListColumnFunctions.push(function(p) {
                 return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="common.edit"/>", "editPoint("+ p.id +")");
         });
+        
+        pointListColumnHeaders.push("");
+        
+        pointListColumnFunctions.push(function(p) {
+            return writeImage("editImg"+ p.id, null, "icon_ds_edit", "<fmt:message key="common.edit"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
+    	});
         
         var headers = $("pointListHeaders");
         var td;
