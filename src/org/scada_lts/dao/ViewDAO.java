@@ -244,7 +244,7 @@ public class ViewDAO implements GenericDAO<View> {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	public Object[] create(View entity) {
+	public Object[] create(final View entity) {
 		
 		if (LOG.isTraceEnabled()) {
 			  LOG.trace(entity);
@@ -319,7 +319,7 @@ public class ViewDAO implements GenericDAO<View> {
 		DAO.getInstance().getJdbcTemp().update(VIEW_USER_DELETE, new Object[]{viewId});
 	}
 	
-	public void batchUpdateInfoUsers(View view) {
+	public void batchUpdateInfoUsers(final View view) {
 		DAO.getInstance().getJdbcTemp().batchUpdate(VIEW_USER_INSERT, new BatchPreparedStatementSetter() {
 			@Override
 			public int getBatchSize() {

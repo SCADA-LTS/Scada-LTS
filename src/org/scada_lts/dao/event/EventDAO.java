@@ -852,7 +852,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insertEventHandler(int typeId, int typeRef1, int typeRef2,	EventHandlerVO handler) {
+	public int insertEventHandler(final int typeId,final int typeRef1,final int typeRef2, final	EventHandlerVO handler) {
 		
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(handler);

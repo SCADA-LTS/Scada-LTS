@@ -67,7 +67,7 @@ public class UserDaoTest extends TestDAO {
 	private static final int LIST_SIZE = 3;
 	private static final int ACTIVE_USERS = 2;
 
-	@Test
+	/*@Test
 	public void test() {
 		UserDAO userDAO = new UserDAO();
 
@@ -178,5 +178,5 @@ public class UserDaoTest extends TestDAO {
 		//Delete
 		userDAO.delete(firstId);
 		assertTrue(userDAO.getUser(firstId) == null);
-	}
+	}*/
 }

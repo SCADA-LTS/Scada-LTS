@@ -7,8 +7,8 @@
 <project basedir="." default="build" name="scadabr-1.1.0-RC">
 	<property environment="env"/>
 	<property name="debuglevel" value="source,lines,vars"/>
-	<property name="target" value="1.8"/>
-	<property name="source" value="1.8"/>
+	<property name="target" value="1.7"/>
+	<property name="source" value="1.7"/>
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/RXTXcomm.jar"/>
@@ -97,6 +97,7 @@
         <pathelement location="WebContent/WEB-INF/lib/spring-jdbc-3.2.17.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-jdbc-4.3.2.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-tx-4.3.2.RELEASE.jar"/>
+    	<pathelement location="WebContent/WEB-INF/lib/spring-tx-3.2.17.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-web-4.3.2.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-webmvc-4.3.2.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-websocket-4.3.2.RELEASE.jar"/>

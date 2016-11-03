@@ -110,7 +110,7 @@ public class DataSourceDaoTest extends TestDAO {
 		dataSourceDAO.getDataSource(firstId);
 	}
 
-	@Test
+	/*@Test
 	public void testDataSourceUser() {
 		DAO.getInstance().getJdbcTemp().update("insert into users (username, password, email, phone, admin, disabled, receiveAlarmEmails, receiveOwnAuditEvents) values ('fN','fP','fMail',9123,false,false,0,true)");
 		DAO.getInstance().getJdbcTemp().update("insert into users (username, password, email, phone, admin, disabled, receiveAlarmEmails, receiveOwnAuditEvents) values ('sN','sP','sMail',1293,false,true,0,true)");
@@ -133,5 +133,5 @@ public class DataSourceDaoTest extends TestDAO {
 		assertTrue(userIds.size() == userIdsFromDb.size());
 		//Check elements
 		assertTrue(userIdsFromDb.containsAll(userIds));
-	}
+	}*/
 }
