@@ -272,7 +272,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	public Object[] create(WatchList entity) {
+	public Object[] create(final WatchList entity) {
 		
 		if (LOG.isTraceEnabled()) {
 		  LOG.trace(entity);
@@ -328,7 +328,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	}
 	
 	//TODO rewrite
-	public void addPointsForWatchList(WatchList watchList) {
+	public void addPointsForWatchList(final WatchList watchList) {
 		
 		DAO.getInstance().getJdbcTemp().batchUpdate(
 				WATCH_LIST_POINTS_INSERT,
@@ -346,7 +346,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	}
 	
 	//TODO rewrite
-	public void addWatchListUsers(WatchList watchList) {
+	public void addWatchListUsers(final WatchList watchList) {
 		
 		DAO.getInstance().getJdbcTemp().batchUpdate(
 				WATCH_LIST_USERS_INSERT,

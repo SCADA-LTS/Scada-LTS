@@ -381,7 +381,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	}
 	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public Object[] create(int pointId, int dataType, double dvalue, long time) {
+	public Object[] create(final int pointId,final int dataType,final double dvalue,final long time) {
 		
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("pointId:"+pointId+" dataType:"+dataType+" dvalue:"+time);

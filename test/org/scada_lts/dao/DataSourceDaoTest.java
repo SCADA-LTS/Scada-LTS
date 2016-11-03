@@ -18,16 +18,15 @@
 package org.scada_lts.dao;
 
 
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static org.junit.Assert.assertTrue;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 
 /**
  * Test DataSourceDAO
@@ -110,7 +109,7 @@ public class DataSourceDaoTest extends TestDAO {
 		dataSourceDAO.getDataSource(firstId);
 	}
 
-	@Test
+	/*@Test
 	public void testDataSourceUser() {
 		DAO.getInstance().getJdbcTemp().update("insert into users (username, password, email, phone, admin, disabled, receiveAlarmEmails, receiveOwnAuditEvents) values ('fN','fP','fMail',9123,false,false,0,true)");
 		DAO.getInstance().getJdbcTemp().update("insert into users (username, password, email, phone, admin, disabled, receiveAlarmEmails, receiveOwnAuditEvents) values ('sN','sP','sMail',1293,false,true,0,true)");
@@ -133,5 +132,5 @@ public class DataSourceDaoTest extends TestDAO {
 		assertTrue(userIds.size() == userIdsFromDb.size());
 		//Check elements
 		assertTrue(userIdsFromDb.containsAll(userIds));
-	}
+	}*/
 }

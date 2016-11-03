@@ -17,19 +17,9 @@
  */
 package org.scada_lts.dao;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.DataPointAccess;
-import org.junit.Before;
-import org.junit.Test;
 import org.scada_lts.mango.service.UserService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static org.junit.Assert.assertTrue;
+import com.serotonin.mango.vo.User;
 
 /**
  * UserService test
@@ -62,7 +52,7 @@ public class UserServiceTest extends TestDAO {
 	private User user;
 	private User secondUser;
 
-	@Before
+	/*@Before
 	public void createAndInsertUsers() {
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO dataSources (xid, name, dataSourceType, data) VALUES ('fXid', 'fName', 1, 2)");
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO dataSources (xid, name, dataSourceType, data) VALUES ('sXid', 'sName', 1, 2)");
@@ -148,5 +138,5 @@ public class UserServiceTest extends TestDAO {
 		userService.deleteUser(user.getId());
 		users = userService.getUsers();
 		assertTrue(users.size() == 1);
-	}
+	}*/
 }

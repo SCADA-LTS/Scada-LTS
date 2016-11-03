@@ -161,7 +161,7 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	public Object[] create(CompoundEventDetectorVO entity) {
+	public Object[] create(final CompoundEventDetectorVO entity) {
 		if (LOG.isTraceEnabled()) {
 			  LOG.trace(entity);
 		}
