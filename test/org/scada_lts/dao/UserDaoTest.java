@@ -17,16 +17,6 @@
  */
 package org.scada_lts.dao;
 
-import com.serotonin.mango.vo.User;
-import org.junit.Test;
-import org.springframework.dao.EmptyResultDataAccessException;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static org.junit.Assert.assertTrue;
-
 /**
  * UserDAO test
  *
