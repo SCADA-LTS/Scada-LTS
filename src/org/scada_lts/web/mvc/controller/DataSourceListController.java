@@ -44,7 +44,6 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import com.serotonin.web.util.PaginatedData;
-import com.serotonin.web.util.PagingDataForm;
 
 /**
  * Controller for data source's list
@@ -61,17 +60,18 @@ public class DataSourceListController {
 	protected ModelAndView showList(HttpServletRequest request){
 		LOG.trace("/data_sources.shtm");
 		
-		PagingDataForm paging = new PagingDataForm();
-		PaginatedData data = getData(request, paging);
-        paging.setData(data.getData());
-        paging.setNumberOfItems(data.getRowCount());
+		//PagingDataForm paging = new PagingDataForm();
+		List<ListParent<DataSourceVO<?>, DataPointVO>> data = getData(request, "Name", true);
+        //paging.setData(data.getData());
+        //paging.setNumberOfItems(data.getRowCount());
         
 		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("paging", paging);
+		//model.put("paging", paging);
+		model.put("data", data);
 		return new ModelAndView("dataSourceList", model);
 	}
 	
-    protected PaginatedData getData(HttpServletRequest request, PagingDataForm paging) {
+    protected List<ListParent<DataSourceVO<?>, DataPointVO>> getData(HttpServletRequest request, final String sortFieldName, boolean desc) {
         User user = Common.getUser(request);
         DataPointDao dataPointDao = new DataPointDao();
 
@@ -80,6 +80,7 @@ public class DataSourceListController {
         ListParent<DataSourceVO<?>, DataPointVO> listParent;
         for (DataSourceVO<?> ds : data) {
             if (Permissions.hasDataSourcePermission(user, ds.getId())) {
+            	//TODO why variable listParent don't in loop
                 listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
                 listParent.setParent(ds);
                 listParent.setList(dataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
@@ -87,16 +88,17 @@ public class DataSourceListController {
             }
         }
 
-        sortData(ControllerUtils.getResourceBundle(request), dataSources, paging);
-
-        return new PaginatedData<ListParent<DataSourceVO<?>, DataPointVO>>(dataSources, data.size());
+        List<ListParent<DataSourceVO<?>, DataPointVO>> ds1= sortData(ControllerUtils.getResourceBundle(request), dataSources, sortFieldName, desc);
+        
+        //PaginatedData pd = new PaginatedData<ListParent<DataSourceVO<?>, DataPointVO>>(dataSources, data.size());
+        return ds1;
     }
     
-    private void sortData(ResourceBundle bundle, List<ListParent<DataSourceVO<?>, DataPointVO>> data,
-            final PagingDataForm paging) {
-        DataSourceComparator comp = new DataSourceComparator(bundle, paging.getSortField(), paging.getSortDesc());
+    private List<ListParent<DataSourceVO<?>, DataPointVO>> sortData(ResourceBundle bundle, List<ListParent<DataSourceVO<?>, DataPointVO>> data, final String sortFieldName, boolean desc) {
+        DataSourceComparator comp = new DataSourceComparator(bundle, sortFieldName, desc);
         if (!comp.canSort())
-            return;
+            return data;
         Collections.sort(data, comp);
+        return data;
     }
 }
