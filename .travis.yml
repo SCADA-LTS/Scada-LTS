@@ -16,6 +16,7 @@ before_script:
 - npm install -g bower
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
+- ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
 language: java

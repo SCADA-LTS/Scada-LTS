@@ -94,11 +94,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xfire-aegis-1.2.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xfire-core-1.2.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_71">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/serotonin-timer.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/seroUtils.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring-aop-4.3.2.RELEASE.jar"/>
@@ -118,5 +113,10 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring-messaging-4.3.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring-websocket-4.3.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring-tx-3.2.17.RELEASE.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_71">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

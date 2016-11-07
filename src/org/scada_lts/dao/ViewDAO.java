@@ -166,7 +166,7 @@ public class ViewDAO implements GenericDAO<View> {
 					+ "mangoViewUsers "
 			+ "where "
 				+ COLUMN_NAME_MVU_VIEW_ID+"=? and "
-				+ COLUMN_NAME_MVU_USER_ID+"userId=?";
+				+ COLUMN_NAME_MVU_USER_ID+"=?";
 
 	// @formatter:on
 	
