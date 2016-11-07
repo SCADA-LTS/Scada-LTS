@@ -295,6 +295,7 @@ thead th {
 		<div class="row">
 			<div class="col-md-12">
 				<c:if test="${!empty sessionUser}">
+				    <!-- 
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<h3 class="panel-title">
@@ -316,15 +317,15 @@ thead th {
 									class="table table-striped table-hover table-condensed table-bordered fancytree-container fancytree-ext-table ">
 									<colgroup>
 										<col width="*">
-										<!--<col width="100px">-->
-										<!--<col width="100px">-->
+										   <col width="100px">
+										   <col width="100px">
 										<col width="100px">
 									</colgroup>
 									<thead>
 										<tr>
 										   <th>Name</th>
-										   <!-- <th>Actions</th> -->
-										   <!-- <th>Path</th> -->
+										      <th>Actions</th>
+										      <th>Path</th>
 										   <th>Folder/Point</th>
 										</tr>
 									</thead>
@@ -338,7 +339,8 @@ thead th {
 						   <div class=".col-sm-6">
 						   </div>
 						</div>
-					</div>
+					</div> -->
+					
 					<div class="panel panel-default">
 						<div class="panel-heading help">
 							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b> <span
