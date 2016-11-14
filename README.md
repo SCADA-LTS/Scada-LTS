@@ -68,6 +68,10 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 
 * <https://github.com/grzesiekb>
 
+**Konrad Daniek**
+
+* <https://github.com/wisyr>
+
 **Mateusz Kaproń**
 
 * <https://github.com/matkapron>
@@ -87,7 +91,6 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 **Marcin Gołda**
 
 * <https://github.com/marcingolda>
-
 
 
 ## Copyright and license
