@@ -1,1 +1,84 @@
-/* You can add global styles to this file, and also import other style files */
+@import '~https://fonts.googleapis.com/icon?family=Material+Icons';
+@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
+
+body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  height: 100%;
+  font-family: Roboto, sans-serif;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.toolbar .icon-20 {
+  margin: 2px 15px 0 0;
+  font-size: 34px;
+  color: #333333;
+}
+
+.icon-hamburger {
+  cursor: pointer;
+  font-size: 36px;
+  color: #000;
+  margin: 20px 0 0 20px;
+}
+
+md-sidenav-layout {
+  height: 100vh;
+}
+
+md-sidenav {
+  width: 320px;
+}
+
+[md-raised-button] {
+  width: 100px;
+}
+
+.toolbar {
+  background-color: #159d82;
+  color: #000;
+}
+.logo {
+  width: 160px;
+  height: 30px;
+}
+
+.icon-message {
+  position: absolute;
+  right: 180px;
+  cursor: pointer;
+}
+.icon-announcement {
+  position: absolute;
+  right: 220px;
+  cursor: pointer;
+  margin-top: 2px;
+}
+.userImage {
+  position: absolute;
+  right: 100px;
+  cursor: pointer;
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
+  border: 2px dashed #000;
+}
+.menuElements {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.menuElements li {
+  font-size: 20px;
+  padding: 10px;
+}
+.menuElements li:hover {
+  background-color: #ccc;
+  transition: all 1s ease;
+  cursor: pointer;
+}

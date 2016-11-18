@@ -1,3 +1,48 @@
-<h1>
-  {{title}}
-</h1>
+<!--<div>-->
+  <!--<md-sidenav-layout>-->
+    <!--<md-sidenav #start (open)="closeStartButton.focus()">-->
+      <!--Start Sidenav.-->
+      <!--<br>-->
+      <!--<button md-button #closeStartButton (click)="start.close()">Close</button>-->
+    <!--</md-sidenav>-->
+    <!--<md-sidenav #end align="end">-->
+      <!--End Sidenav.-->
+      <!--<button md-button (click)="end.close()">Close</button>-->
+    <!--</md-sidenav>-->
+
+    <!--My regular content. This will be moved into the proper DOM at runtime.-->
+    <!--<button md-button (click)="start.open()">Open start sidenav</button>-->
+    <!--<button md-button (click)="end.open()">Open end sidenav</button>-->
+
+  <!--</md-sidenav-layout>-->
+<!--</div>-->
+
+
+
+<div>
+  <md-toolbar class="toolbar">
+    <a href="#"><md-icon class="icon-20">polymer</md-icon></a>
+    <img class="logo" src="../media/ScadaLogo.png">
+
+    <img class="userImage" src="../media/default-user.png">
+    <md-icon class="icon-announcement">announcement</md-icon>
+    <md-icon class="icon-message">mail_outline</md-icon>
+
+  </md-toolbar>
+  <md-sidenav-layout>
+    <md-sidenav align="start" mode="over" closed #sidenav>
+<ul class="menuElements">
+  <li>Elements</li>
+  <li>Checkpoints</li>
+  <li>Specification</li>
+</ul>
+
+    </md-sidenav>
+
+    <md-icon (click)="sidenav.open()" class="icon-hamburger">menu</md-icon>
+  </md-sidenav-layout>
+
+</div>
+
+
+
