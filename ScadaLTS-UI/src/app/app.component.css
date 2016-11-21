@@ -1,3 +1,183 @@
-md-sidenav {
-  width: 200px;
+
+
+.sideMenu {
+  float: left;
+  background-color: #f2f2f2;
+  box-shadow: 0 0 5px 0 rgba(0,0,0,0.5);
+  overflow: hidden;
+  width: 299px;
+}
+
+.sideMenuContent {
+  width: 100%;
+  height: auto;
+}
+
+.scadaLogo {
+  line-height: 85px;
+  display: block;
+  z-index: 9;
+  background-color: #e6e6e6;
+  text-align: center;
+  margin-left: -30px;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.5);
+  box-sizing: border-box;
+  position: relative;
+}
+
+.scadaLogo img {
+  line-height: 30px;
+  width: 160px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+
+.icon-20 {
+  vertical-align: middle;
+  color: #333333;
+}
+
+.menuItem {
+  width: 100%;
+  line-height: 40px;
+  display: block;
+  vertical-align: middle;
+  padding: 10px 0 10px 27px;
+  cursor: pointer;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+.menuItem:nth-child(2){
+  border-top: none;
+}
+
+.icon {
+  color: #404040;
+  width: 20px;
+  line-height: 40px;
+  float: left;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.menuItem:hover {
+  background-color: #e6e6e6;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+.bordersOfMenuSide {
+  /*border-top: solid 1px #404a4e;*/
+}
+
+.menuItemText {
+  margin: 0px 0px 0px 30px;
+  display: block;
+  vertical-align: middle;
+}
+
+.subMenuItemContainer {
+  width: auto;
+  padding: 20px 0;
+  overflow: hidden;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #b3b3b3;
+  margin-bottom: 2px;
+}
+
+.subMenuLink {
+  width: 100%;
+  display: inline-block;
+  float: left;
+  padding: 15px 0 15px 30px;
+  /*box-sizing: border-box;*/
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+  transition: all .1s ease;
+  box-sizing: border-box;
+}
+.subMenuLink:hover {
+  /*background-color: #808080;*/
+  border-left: 5px solid rgba(0,0,0,0.5);
+  transition: all .2s ease;
+  color: #000;
+
+}
+
+a {
+  text-decoration: none;
+}
+
+
+.subMenuHide {
+  overflow: hidden;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  transition: all 0.2s cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+
+.subMenuShow {
+  transition: all 0.2s cubic-bezier(0.86, 0, 0.07, 1);
+  max-height: 500px;
+}
+
+
+
+.mainContent {
+  width: auto;
+  overflow: hidden;
+  z-index: 1;
+  margin-left: 300px;
+  background-color: #FFFFFF;
+}
+
+.mainContentInside {
+  width: 100%;
+  height: auto;
+}
+
+.header {
+  display: block;
+  border-bottom: solid 1px #dde3e6;
+  padding: 30px;
+  overflow: hidden;
+  background-color: #f5f7f8;
+  height: 25px;
+}
+
+.icon-message {
+  position: absolute;
+  right: 180px;
+  cursor: pointer;
+}
+.icon-announcement {
+  position: absolute;
+  right: 220px;
+  cursor: pointer;
+  margin-top: 2px;
+}
+.userImage {
+  position: absolute;
+  right: 100px;
+  cursor: pointer;
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
+  border: 2px solid #737373;
+  top: 16px;
+}
+
+.activeMenuItem {
+  background-color: #e6e6e6;
 }

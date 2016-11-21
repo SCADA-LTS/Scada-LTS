@@ -21,8 +21,10 @@
     "@angular/platform-browser": "^2.1.0",
     "@angular/platform-browser-dynamic": "^2.1.0",
     "@angular/router": "^3.1.0",
+    "@angular2-material/core": "^2.0.0-alpha.8-2",
     "core-js": "^2.4.1",
     "hammerjs": "^2.0.8",
+    "ng2-material": "^0.8.1",
     "rxjs": "5.0.0-beta.12",
     "ts-helpers": "^1.1.1",
     "zone.js": "^0.6.23"
