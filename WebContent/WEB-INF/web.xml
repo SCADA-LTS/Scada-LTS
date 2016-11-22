@@ -165,6 +165,10 @@
     <url-pattern>*.shtm</url-pattern>
   </filter-mapping>
   <filter-mapping>
+    <filter-name>WebContext</filter-name>
+    <url-pattern>*.mp3</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
     <filter-name>CacheHeaders</filter-name>
     <url-pattern>/dwr/interfaces/*</url-pattern>
   </filter-mapping>
@@ -325,6 +329,10 @@
   <servlet-mapping>
     <servlet-name>default</servlet-name>
     <url-pattern>*.swf</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.mp3</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
