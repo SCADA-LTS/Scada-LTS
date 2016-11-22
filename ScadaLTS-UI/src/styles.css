@@ -1,11 +1,12 @@
 @import '~https://fonts.googleapis.com/icon?family=Material+Icons';
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
+@import url('https://fonts.googleapis.com/css?family=Raleway');
 
 * {
   margin: 0;
   padding: 0;
   border: 0;
-  font-family: Roboto, sans-serif;
+  font-family: Raleway, sans-serif;
 }
 
 
