@@ -1,0 +1,39 @@
+<div class="mainContainer" [ngClass]="{ 'modalOn':showModal }">
+
+  <div class="modal" [ngClass]="{ 'showModal':showModal }">
+    <button class="buttonCloseModal" (click)="modalFunction()">&#10060;</button>
+    <div class="lostInfo">If you have lost access to your account, contact the administrator at: admin@softq.pl</div>
+  </div>
+
+  <div class="container" [ngClass]="{ 'hide':showModal }">
+
+    <div class="content">
+
+      <div class="scadaLogo">
+        <a href="#"><md-icon class="iconScada">polymer</md-icon></a>
+        <img class="logo" src="../app/media/ScadaLogo.png">
+      </div>
+
+      <div class="loginForm">
+
+        <form method="post">
+
+          <input placeholder="username" type="text" required>
+
+          <input placeholder="password" type="password" required>
+
+          <div class="buttonsGroup">
+            <button [routerLink]="['/appBody']" type="button" class="loginButton">Sign in</button>
+            <button type="button" class="forgotButton" (click)="modalFunction()">Forgot password</button>
+            <button [routerLink]="['/registration']" type="button" class="registerButton">Sign up</button>
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
