@@ -50,14 +50,16 @@ public class DataSourceListDwr extends BaseDwr {
 		if (Common.getUser().isAdmin()) {
 			List<IntValuePair> translatedTypes = new ArrayList<IntValuePair>();
 			for (DataSourceVO.Type type : DataSourceVO.Type.values()) {
-				// Allow customization settings to overwrite the default display
-				// value.
-				boolean display = SystemSettingsDAO.getBooleanValue(type.name()
-						+ SystemSettingsDAO.DATASOURCE_DISPLAY_SUFFIX,
-						type.isDisplay());
-				if (display)
-					translatedTypes.add(new IntValuePair(type.getId(),
-							getMessage(type.getKey())));
+				if (type != DataSourceVO.Type.RADIUINO) {
+					// Allow customization settings to overwrite the default display
+					// value.
+					boolean display = SystemSettingsDAO.getBooleanValue(type.name()
+							+ SystemSettingsDAO.DATASOURCE_DISPLAY_SUFFIX,
+							type.isDisplay());
+					if (display)
+						translatedTypes.add(new IntValuePair(type.getId(),
+								getMessage(type.getKey())));
+				}
 			}
 			response.addData("types", translatedTypes);
 		}
