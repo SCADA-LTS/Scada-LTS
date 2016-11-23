@@ -19,22 +19,25 @@
 package com.serotonin.mango.web.dwr;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.DataSourceVO.Type;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
 
@@ -49,7 +52,15 @@ public class DataSourceListDwr extends BaseDwr {
 
 		if (Common.getUser().isAdmin()) {
 			List<IntValuePair> translatedTypes = new ArrayList<IntValuePair>();
-			for (DataSourceVO.Type type : DataSourceVO.Type.values()) {
+			List<DataSourceVO.Type> types = new ArrayList<DataSourceVO.Type>(EnumSet.allOf(DataSourceVO.Type.class));
+			types.sort(new Comparator<DataSourceVO.Type>(){
+				@Override
+				public int compare(Type o1, Type o2) {
+					return getMessage(o1.getKey()).toString().compareToIgnoreCase(getMessage(o2.getKey()).toString());
+				}
+			});
+			
+			for (DataSourceVO.Type type : types) {
 				if (type != DataSourceVO.Type.RADIUINO) {
 					// Allow customization settings to overwrite the default display
 					// value.
@@ -61,6 +72,8 @@ public class DataSourceListDwr extends BaseDwr {
 								getMessage(type.getKey())));
 				}
 			}
+			
+			
 			response.addData("types", translatedTypes);
 		}
 
