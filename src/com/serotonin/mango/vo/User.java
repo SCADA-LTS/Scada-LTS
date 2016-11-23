@@ -275,10 +275,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public List<Integer> getDataSourcePermissions() {
 		if (dataSourcePermissions==null) {
-			return new LinkedList<Integer>();
-		} else {
-			return dataSourcePermissions;
+			dataSourcePermissions = new LinkedList<Integer>();
 		}
+		
+		return dataSourcePermissions;
+		
 	}
 
 	public void setDataSourcePermissions(List<Integer> dataSourcePermissions) {
@@ -287,10 +288,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public List<DataPointAccess> getDataPointPermissions() {
 		if (dataPointPermissions==null) {
-			return new LinkedList<DataPointAccess>();
-		} else {
-			return dataPointPermissions;
-		}
+			dataPointPermissions = new LinkedList<DataPointAccess>();
+		} 
+		return dataPointPermissions;
+		
 	}
 
 	public void setDataPointPermissions(
