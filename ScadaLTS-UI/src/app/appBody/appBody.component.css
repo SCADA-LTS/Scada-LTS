@@ -71,10 +71,6 @@
   transition: all 0.5s ease;
 }
 
-.bordersOfMenuSide {
-  /*border-top: solid 1px #404a4e;*/
-}
-
 .menuItemText {
   margin: 0px 0px 0px 30px;
   display: block;
