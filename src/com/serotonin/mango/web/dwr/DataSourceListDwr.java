@@ -19,7 +19,6 @@
 package com.serotonin.mango.web.dwr;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -53,12 +52,26 @@ public class DataSourceListDwr extends BaseDwr {
 		if (Common.getUser().isAdmin()) {
 			List<IntValuePair> translatedTypes = new ArrayList<IntValuePair>();
 			List<DataSourceVO.Type> types = new ArrayList<DataSourceVO.Type>(EnumSet.allOf(DataSourceVO.Type.class));
-			types.sort(new Comparator<DataSourceVO.Type>(){
+			// because sort not work in openJdk 1.7
+			for (int i = 0; i < types.size()-1; i++) { 
+				 Type temp;
+				 for(int j = 1; j< types.size() -i; j++) {
+					 Type o1 = types.get(j-1);
+					 Type o2 = types.get(j);
+					 if (getMessage(o1.getKey()).toString().compareToIgnoreCase(getMessage(o2.getKey()).toString())>0){
+						 temp = types.get(j-1);
+						 types.set(j-1,types.get(j));
+						 types.set(j,temp);
+					 }
+				 }
+			}
+			
+			/*types.sort(new Comparator<DataSourceVO.Type>(){
 				@Override
 				public int compare(Type o1, Type o2) {
 					return getMessage(o1.getKey()).toString().compareToIgnoreCase(getMessage(o2.getKey()).toString());
 				}
-			});
+			});*/
 			
 			for (DataSourceVO.Type type : types) {
 				if (type != DataSourceVO.Type.RADIUINO) {
