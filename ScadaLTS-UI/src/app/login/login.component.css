@@ -1,0 +1,175 @@
+.mainContainer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #666;
+  transition: background-color .5s ease;
+}
+
+.container {
+  height: 500px;
+  width: 500px;
+  border-radius: 5px;
+  -webkit-transition: background .5s ease;
+  -moz-transition: background .5s ease;
+  -o-transition: background .5s ease;
+  transition: background .5s ease;
+  background-color: #fafafa;
+  border: 1px solid #ebebeb;
+  box-shadow: rgba(0, 0, 0, 0.14902) 0 1px 1px 0, rgba(0, 0, 0, 0.09804) 0 1px 2px 0;
+  position: relative;
+}
+
+.content {
+}
+
+.scadaLogo {
+  line-height: 55px;
+  display: block;
+  z-index: 9;
+  background-color: #e6e6e6;
+  text-align: left;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  position: relative;
+  padding-left: 32px;
+}
+
+.scadaLogo img {
+  line-height: 30px;
+  width: 160px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.iconScada {
+  vertical-align: middle;
+  color: #333333;
+}
+
+.loginForm {
+  margin: 60px 40px 30px 40px;
+}
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: #ccc;
+}
+
+::-moz-placeholder { /* Firefox 19+ */
+  color: #ccc;
+}
+
+:-ms-input-placeholder { /* IE 10+ */
+  color: #ccc;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+  color: #ccc;
+}
+
+input {
+  font-size: 20px;
+  padding: 10px 0;
+  -webkit-appearance: none;
+  display: block;
+  background: #fafafa;
+  color: #636363;
+  width: 100%;
+  height: 35px;
+  border-radius: 0;
+  border-bottom: 1px solid #757575;
+  margin-bottom: 20px;
+}
+
+input:focus {
+  outline: none;
+}
+
+button {
+  padding: 12px 24px;
+  margin: .3em 0 1em 0;
+  height: 45px;
+  width: 100%;
+  vertical-align: middle;
+  color: #fff;
+  font-size: 16px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+  text-align: center;
+  letter-spacing: 1px;
+  background-color: #666;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 3px;
+  outline: none;
+}
+
+button:hover {
+  background-color: #333;
+}
+
+.forgotButton {
+  width: 45%;
+}
+
+.registerButton {
+  width: 45%;
+  float: right;
+}
+
+.button:focus {
+  outline: 0;
+}
+
+.buttonsGroup {
+  margin-top: 90px;
+}
+
+.modalOn {
+  transition: background-color .5s ease;
+  background-color: #333;
+}
+
+.modal {
+  background-color: transparent;
+  z-index: 99;
+  display: none;
+  height: 50px;
+  width: 400px;
+  border-radius: 5px;
+  -webkit-transition: background .5s ease;
+  -moz-transition: background .5s ease;
+  -o-transition: background .5s ease;
+  transition: background .5s ease;
+  position: relative;
+}
+
+.showModal {
+  display: block;
+}
+
+.buttonCloseModal {
+  height: 50px;
+  width: 50px;
+  background-color: transparent;
+  color: #fff;
+  float: right;
+  padding: 5px;
+}
+
+.buttonCloseModal:hover {
+  background-color: #111;
+}
+
+.hide {
+  display: none;
+}
+
+.lostInfo {
+  height: 100px;
+  width: 300px;
+  color: #ccc;
+  text-align: start;
+}
