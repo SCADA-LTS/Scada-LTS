@@ -12,6 +12,9 @@ before_install:
 - sudo apt-get install tomcat7
 - sudo apt-get install traceroute
 - sudo apt-get install sshpass
+- sudo apt-get install -y build-essential
+- curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+- sudo apt-get install -y nodejs
 #- wget -qO- https://deb.nodesource.com/setup_6.x | sudo bash -
 #- sudo apt-get install nodejs
 #- sudo apt-get install npm
@@ -45,7 +48,7 @@ notifications:
   email: false
 env:
   matrix:
-  - CATALINA_HOME=/usr/share/tomcat7; TRAVIS_NODE_VERSION="6"
+  - CATALINA_HOME=/usr/share/tomcat7
   global:
     secure: mRa7Eq70zFEeWboEaUJNkFUK/3ufFANJAWe9K515qB5AoDLsVe0dwfqpCjqWOKq1fbbO8lA1MaISC7VgDyiVbfvYIiENh+Bav/yqjEF5ED3Qcm5fgZvkIaybAUe5yCVBFrrBjQwF5x0Ocq0SAqSoU0Bs8/24QPoR22QTBVS0NV5lzyEKVu9p40QRq3Aavpq2o0xoVz8Dx9o88nOgdcTCjT3GBuZip+8eMrOcFEbKyicLQ73nlk1v4cEB1MTv/qt1Djj3KPm/wbmOWOx9ulVmch0UMLaH8tQd+UFLjga0RTGZHfGj7KhATl0c6FFbO67Er55R3STqMWXzYACnfYRbFyl+Ds9BaImKtqNLJlrJoZlT4DitEPG4RR+WcCvsAJ8Tj7hiV6xwE2LwjiSC56U85k768PCsDLDA7q8VoR1QoMIeZg1rW+rGgMUFOwgyMx0BuXBmyniU5T2trMJvcLZpHX/QPE4UnQ5jvnaEpTXxvJmLBeO1/5ajesCYNyIH9fE00b/vgz5yBVw3S9y0D3Ps7WhIXlhiz57pI6pBi8lUmO0YdtbW9Hc0oDpI7Asg04ftdIJ7Y1+3Ww/rwszQV6QnRiH9iuWq7HJJCmgKeNHS3fo/Zy8N9Xmx3hfFuedpToIN0B+tlzwnDCtvS4Zhx8rSv+9+v/XHYinan8z25Z3CM8A=
 after_script:
