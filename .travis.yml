@@ -18,7 +18,7 @@ before_install:
 - echo 'prefix=/usr/local' > node/etc/npmrc
 - tar xvf node-v*.tar.?z --strip-components=1 -C ./node
 - sudo mv node /opt/
-- sudo chown -R root: /opt/node
+#- sudo chown -R root: /opt/node
 - sudo ln -s /opt/node/bin/node /usr/local/bin/node
 - sudo ln -s /opt/node/bin/npm /usr/local/bin/npm
 #- sudo apt-get install -y build-essential
