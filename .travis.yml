@@ -12,6 +12,7 @@ before_install:
 - sudo apt-get install tomcat7
 - sudo apt-get install traceroute
 - sudo apt-get install sshpass
+- wget -qO- https://deb.nodesource.com/setup_6.x | sudo bash -
 - sudo apt-get install nodejs
 - sudo apt-get install npm
 before_script:
