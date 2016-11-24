@@ -39,8 +39,8 @@ branches:
 notifications:
   email: false
 env:
-  -- CATALINA_HOME=/usr/share/tomcat7
-  -- TRAVIS_NODE_VERSION="6"
+  - CATALINA_HOME=/usr/share/tomcat7
+  - TRAVIS_NODE_VERSION="6"
   #matrix:
   #- CATALINA_HOME=/usr/share/tomcat7; TRAVIS_NODE_VERSION="6"
   global:
