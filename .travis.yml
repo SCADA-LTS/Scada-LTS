@@ -14,11 +14,18 @@ before_install:
 - sudo apt-get install sshpass
 before_script:
 - npm install -g bower
+- npm install -g angular-cli
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
+- cd ./ScadaLTS-UI
+- npm install
+- ng build
+- cd ./war
+- ant war
+- cd ../..
 language: java
 jdk:
 - openjdk7
@@ -41,3 +48,4 @@ after_script:
 - eval "$(ssh-agent -s)"
 - traceroute -p 22 149.56.44.225
 - sshpass -e scp ./ScadaBR.war root@149.56.44.225:/root/ScadaBR.war
+- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war root@149.56.44.225:/root/ScadaBR.war
