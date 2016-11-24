@@ -12,8 +12,8 @@
             <span class="menuItemText">Dashboard</span>
         </span>
     <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[0] }">
-      <a class="subMenuLink" href="#">Main dashboard</a>
-      <a class="subMenuLink" [routerLink]="['/appBody/watchlist']">Watch list</a>
+      <a class="subMenuLink" [routerLink]="['./']">Main dashboard</a>
+      <a class="subMenuLink" [routerLink]="['./watchlist']">Watch list</a>
       <a class="subMenuLink" href="#">Views</a>
       <a class="subMenuLink" href="#">Alarms</a>
       <a class="subMenuLink" href="#">Raports</a>
@@ -93,5 +93,5 @@
 </div>
 
 
-
+<router-outlet></router-outlet>
 

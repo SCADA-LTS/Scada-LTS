@@ -10,7 +10,7 @@
 
 .container {
   height: 500px;
-  width: 500px;
+  width: 450px;
   border-radius: 5px;
   -webkit-transition: background .5s ease;
   -moz-transition: background .5s ease;
@@ -90,17 +90,17 @@ input:focus {
 }
 
 button {
-  padding: 12px 24px;
+  /*padding: 12px 24px;*/
   margin: .3em 0 1em 0;
   height: 45px;
   width: 100%;
   vertical-align: middle;
   color: #fff;
   font-size: 16px;
-  line-height: 20px;
+  /*line-height: 20px;*/
   -webkit-font-smoothing: antialiased;
   text-align: center;
-  letter-spacing: 1px;
+  /*letter-spacing: 1px;*/
   background-color: #666;
   cursor: pointer;
   transition: all 0.15s ease;
