@@ -1,56 +1,40 @@
+/*
+Menu
+*/
 .sideMenu {
-  float: left;
   background-color: #f2f2f2;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
   overflow: hidden;
-  width: 299px;
+  width: 250px;
+  position: fixed;
+  top: 65px;
+  display: block;
+  left: 0;
+  min-height: 100%;
+  transition: .3s width cubic-bezier(0.82, 0, 0.11, 1);
 }
 
 .sideMenuContent {
-  width: 100%;
+  width: auto;
   height: auto;
 }
 
-.scadaLogo {
-  line-height: 85px;
-  display: block;
-  z-index: 9;
-  background-color: #e6e6e6;
-  text-align: center;
-  margin-left: -30px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
-  box-sizing: border-box;
-  position: relative;
-}
-
-.scadaLogo img {
-  line-height: 30px;
-  width: 160px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.iconScada {
-  vertical-align: middle;
-  color: #333333;
-}
-
 .menuItem {
-  width: 100%;
   line-height: 40px;
   display: block;
   vertical-align: middle;
-  padding: 10px 0 10px 27px;
+  padding: 6px 0 6px 12px;
   cursor: pointer;
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -ms-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   transition: all 0.5s ease;
+  width: auto;
 }
 
-.menuItem:nth-child(2) {
-  border-top: none;
+.menuItem:nth-child(11) {
+  border-bottom: 1px solid #b3b3b3;
 }
 
 .icon {
@@ -72,9 +56,10 @@
 }
 
 .menuItemText {
-  margin: 0px 0px 0px 30px;
+  margin: 0 0 0 38px;
   display: block;
   vertical-align: middle;
+  width: 150px;
 }
 
 .subMenuItemContainer {
@@ -109,6 +94,11 @@
 
 a {
   text-decoration: none;
+  outline: none;
+}
+
+*:focus, *:active {
+  outline: none;
 }
 
 .subMenuHide {
@@ -126,56 +116,84 @@ a {
   max-height: 500px;
 }
 
-.mainContent {
-  width: auto;
-  overflow: hidden;
-  z-index: 1;
-  margin-left: 300px;
-  background-color: #FFFFFF;
-}
+/*
+Menu
+*/
 
-.mainContentInside {
-  width: 100%;
-  height: 100%;
-}
 
-.header {
+.logoScada {
+  color: #fff;
   display: block;
-  border-bottom: solid 1px #dde3e6;
-  padding: 30px;
-  overflow: hidden;
-  background-color: #f5f7f8;
-  height: 25px;
+  white-space: nowrap;
+  float: left;
+  line-height: 85px;
+  padding-left: 20px;
 }
 
-.icon-message {
-  position: absolute;
-  right: 180px;
+.logoScada img {
+  width: 160px;
+  height: 30px;
+}
+
+.collapseMenuIcon {
+  line-height: 80px;
+  padding-left: 20px;
   cursor: pointer;
 }
-
-.icon-announcement {
-  position: absolute;
-  right: 220px;
-  cursor: pointer;
-  margin-top: 2px;
-}
-
-.userImage {
-  position: absolute;
-  right: 100px;
-  cursor: pointer;
-  border-radius: 100%;
-  height: 50px;
-  width: 50px;
-  border: 2px solid #737373;
-  top: 16px;
-}
-
 .activeMenuItem {
   background-color: #e6e6e6;
 }
+.hideMenu {
+  width: 50px;
+  transition: .3s width cubic-bezier(0.86, 0, 0.07, 1);
+}
+/*
+header
+*/
+.iconMenu:active {
+  color: #000;
+}
 
+.header {
+  overflow: hidden;
+  z-index: 1;
+  width: 100%;
+  min-width: 320px;
+  background-color: #FFFFFF;
+  position: fixed;
+  box-shadow: 2px 0 3px rgba(0,0,0,.5);
+  height: 65px;
+}
+
+
+.userTools {
+  float: right;
+
+  margin-right: 50px;
+}
+
+.userTools img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  border: 2px solid #666;
+  cursor: pointer;
+  margin-top: 7px;
+}
+
+.dropdownInfo {
+  cursor: pointer;
+  position: absolute;
+  right: 140px;
+  top: 23px;
+}
+
+.dropdownMail {
+  cursor: pointer;
+  position: absolute;
+  right: 180px;
+  top: 22px;
+}
 /*.background {*/
   /*background-color: #0d3349;*/
   /*height: 100%;*/
@@ -187,6 +205,35 @@ a {
   /*z-index: -1;*/
 /*}*/
 
-.content {
-  padding: 40px;
+.userDropdown {
+  position: fixed;
+  top: 80px;
+  right: 50px;
+  border: 1px dotted #999;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 10px 15px;
+  line-height: 40px;
+}
+
+.userDropdown li {
+  vertical-align: middle;
+  color: #000;
+}
+
+.userDropdown li:hover {
+  vertical-align: middle;
+}
+
+.userDropdown .icon {
+  margin-right: 5px;
+  font-size: 20px;
+}
+
+a:visited {
+  color: #000;
+}
+
+.hidden {
+  display: none;
 }

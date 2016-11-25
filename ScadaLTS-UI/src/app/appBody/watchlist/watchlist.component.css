@@ -1,5 +1,30 @@
 input {
-  border: 1px solid #333;
-  width: 98%;
-  height: 50px;
+  border: 1px dotted #666;
+  width: 300px;
+  height: 40px;
+  line-height: 26px;
+  font-size: 22px;
+  border-radius: 5px;
+  outline: none;
+  padding: 5px 15px;
+  margin-bottom: 40px;
+  box-sizing: border-box;
+}
+
+
+input:focus {
+  border: 1px solid #666;
+}
+
+li {
+  text-decoration: none;
+  list-style-type: none;
+}
+
+.search {
+
+}
+
+.dataTable {
+
 }
