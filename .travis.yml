@@ -38,7 +38,7 @@ before_script:
 - cd ../../..
 - cd ./ScadaLTS-UI
 - /opt/node/bin/npm install
-- find / -name ng
+- find /opt/node -name ng 2>/null/dev
 - /opt/node/bin/ng build
 - cd ./war
 - ant war
