@@ -27,20 +27,19 @@ before_install:
 #- sudo apt-get install npm
 before_script:
 - export PATH=/opt/node:$PATH
-- npm -v
-- node -v
-- npm install -g bower
-- npm -v
-- node -v
-- npm install -g angular-cli
+- /opt/node/npm -v
+- /opt/node/node -v
+- env
+- /opt/node/npm install -g bower
+- /opt/node/npm install -g angular-cli
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
 - cd ./ScadaLTS-UI
-- npm install
-- ng build
+- /opt/node/npm install
+- /opt/node/ng build
 - cd ./war
 - ant war
 - cd ../..
