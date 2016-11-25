@@ -18,8 +18,6 @@ before_install:
 - echo 'prefix=/usr/local' > node/etc/npmrc
 - tar xvf node-v*.tar.?z --strip-components=1 -C ./node
 - sudo mv node /opt/
-- sudo ln -s /opt/node/bin/node /usr/local/bin/node
-- sudo ln -s /opt/node/bin/npm /usr/local/bin/npm
 #- sudo apt-get install -y build-essential
 #- curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 #- sudo apt-get install -y nodejs
@@ -27,18 +25,21 @@ before_install:
 #- sudo apt-get install nodejs
 #- sudo apt-get install npm
 before_script:
-- npm install -g bower
-- npm -v
-- node -v
-- npm install -g angular-cli
+- /opt/node/bin/npm -v
+- /opt/node/bin/node -v
+- /opt/node/bin/npm install -g bower
+- /opt/node/bin/npm -v
+- /opt/node/bin/node -v
+- /opt/node/bin/npm install -g angular-cli
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
 - cd ./ScadaLTS-UI
-- npm install
-- ng build
+- /opt/node/bin/npm install
+- find / -name ng
+- /opt/node/bin/ng build
 - cd ./war
 - ant war
 - cd ../..
