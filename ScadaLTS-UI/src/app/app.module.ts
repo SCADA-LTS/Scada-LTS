@@ -8,13 +8,17 @@ import { routing }        from './app.routing';
 import { AppBodyComponent } from './appBody/index';
 import { LoginComponent } from './login/index';
 import { RegistrationComponent } from './registration/index';
+import { WatchlistComponent } from './appBody/watchlist/index';
+import { DashboardComponent } from './appBody/dashboard/index';
 
 @NgModule({
   declarations: [
     AppComponent,
     AppBodyComponent,
     LoginComponent,
-    RegistrationComponent
+    RegistrationComponent,
+    WatchlistComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,

@@ -10,7 +10,7 @@
 
 .container {
   height: 500px;
-  width: 500px;
+  width: 450px;
   border-radius: 5px;
   -webkit-transition: background .5s ease;
   -moz-transition: background .5s ease;
@@ -18,11 +18,12 @@
   transition: background .5s ease;
   background-color: #fafafa;
   border: 1px solid #ebebeb;
-  box-shadow: rgba(0, 0, 0, 0.14902) 0 1px 1px 0, rgba(0, 0, 0, 0.09804) 0 1px 2px 0;
+  box-shadow: rgba(0, 0, 0, 0.24902) 16px 16px 32px 0, rgba(0, 0, 0, 0.19804) 16px 16px 32px 0;
   position: relative;
 }
 
 .content {
+
 }
 
 .scadaLogo {
@@ -35,6 +36,7 @@
   box-sizing: border-box;
   position: relative;
   padding-left: 32px;
+  border-radius: 3px;
 }
 
 .scadaLogo img {
@@ -88,17 +90,17 @@ input:focus {
 }
 
 button {
-  padding: 12px 24px;
+  /*padding: 12px 24px;*/
   margin: .3em 0 1em 0;
   height: 45px;
   width: 100%;
   vertical-align: middle;
   color: #fff;
   font-size: 16px;
-  line-height: 20px;
+  /*line-height: 20px;*/
   -webkit-font-smoothing: antialiased;
   text-align: center;
-  letter-spacing: 1px;
+  /*letter-spacing: 1px;*/
   background-color: #666;
   cursor: pointer;
   transition: all 0.15s ease;

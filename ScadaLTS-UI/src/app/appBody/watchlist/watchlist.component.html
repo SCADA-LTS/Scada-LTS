@@ -1,0 +1,15 @@
+<div class="search">
+
+  <div class="searchInput">
+    <input type="text" placeholder="search"/>
+  </div>
+
+  <div class="listItem">
+    <ul class="listGroup" *ngIf="items.length">
+      <li class="listGroupItem" *ngFor="let item of items"></li>
+    </ul>
+  </div>
+
+</div>
+
+

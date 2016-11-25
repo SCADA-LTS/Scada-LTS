@@ -71,10 +71,6 @@
   transition: all 0.5s ease;
 }
 
-.bordersOfMenuSide {
-  /*border-top: solid 1px #404a4e;*/
-}
-
 .menuItemText {
   margin: 0px 0px 0px 30px;
   display: block;
@@ -140,7 +136,7 @@ a {
 
 .mainContentInside {
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .header {
@@ -178,4 +174,19 @@ a {
 
 .activeMenuItem {
   background-color: #e6e6e6;
+}
+
+/*.background {*/
+  /*background-color: #0d3349;*/
+  /*height: 100%;*/
+  /*width: 100%;*/
+  /*left: 0;*/
+  /*top: 0;*/
+  /*overflow: hidden;*/
+  /*position: fixed;*/
+  /*z-index: -1;*/
+/*}*/
+
+.content {
+  padding: 40px;
 }
