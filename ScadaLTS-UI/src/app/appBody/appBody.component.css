@@ -137,14 +137,14 @@ Menu
 
 .collapseMenuIcon {
   line-height: 80px;
-  padding-left: 20px;
+  margin-left: 20px;
   cursor: pointer;
 }
 .activeMenuItem {
   background-color: #e6e6e6;
 }
 .hideMenu {
-  width: 50px;
+  width: 48px;
   transition: .3s width cubic-bezier(0.86, 0, 0.07, 1);
 }
 /*
@@ -176,7 +176,7 @@ header
   height: 50px;
   width: 50px;
   border-radius: 50%;
-  border: 2px solid #666;
+  border: 2px solid #777;
   cursor: pointer;
   margin-top: 7px;
 }
@@ -185,7 +185,7 @@ header
   cursor: pointer;
   position: absolute;
   right: 140px;
-  top: 23px;
+  top: 24px;
 }
 
 .dropdownMail {
@@ -208,26 +208,38 @@ header
 .userDropdown {
   position: fixed;
   top: 80px;
-  right: 50px;
+  right: 40px;
   border: 1px dotted #999;
-  border-radius: 10px;
+  border-radius: 3px;
   background-color: #fff;
-  padding: 10px 15px;
+  /*padding: 1px 15px;*/
   line-height: 40px;
+  box-shadow: 1px 1px 0 0 rgba(0,0,0,.3);
+  z-index: 2;
+  width: 140px;
 }
 
 .userDropdown li {
   vertical-align: middle;
   color: #000;
+  cursor: pointer;
+}
+.userDropdown li a {
+  font-size: 14px
+}
+
+.userDropdown li:nth-child(odd) {
+  border-bottom: 1px solid #ccc;
 }
 
 .userDropdown li:hover {
-  vertical-align: middle;
+  background-color: #f2f2f2;
 }
 
 .userDropdown .icon {
-  margin-right: 5px;
-  font-size: 20px;
+  font-size: 16px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 a:visited {
@@ -237,3 +249,47 @@ a:visited {
 .hidden {
   display: none;
 }
+
+.notificationsDropdown {
+  width: 300px;
+  right: 40px;
+  top: 80px;
+  position: fixed;
+  border: 1px dotted #999;
+  border-radius: 3px;
+  z-index: 2;
+  box-shadow: 1px 1px 0 0 rgba(0,0,0,.3);
+}
+
+.notificationsHeader {
+  padding: 10px 12px;
+  border-bottom: 1px dotted #ccc;
+  font-size: 14px;
+}
+.msgList {
+  max-height: 280px;
+}
+.msgList li {
+  padding: 5px 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.msgList li:hover {
+  background-color: #f2f2f2;
+}
+
+.allNotifications {
+  border-top: 1px dotted #ccc;
+  text-align: center;
+  font-size: 14px;
+  padding: 10px 5px;
+  cursor: pointer;
+}
+.allNotifications:hover {
+  background-color: #e6e6e6;
+}
+.notificationsHeader span {
+  float: right;
+  cursor: pointer;
+}
+

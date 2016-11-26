@@ -81,22 +81,32 @@
     <img class="logo" src="../app/media/ScadaLogo.png">
   </a>
 
-  <a class="collapseMenuIcon" (click)="isMenuHidden=!isMenuHidden;hideElements()">
+  <span class="collapseMenuIcon" (click)="isMenuHidden=!isMenuHidden;hideElements()">
     <md-icon class="iconMenu">menu</md-icon>
-  </a>
+  </span>
 
 
   <div class="userTools">
-    <a class="dropdownMail">
-      <md-icon class="iconMail">mail_outline</md-icon>
+
+    <a class="dropdownInfo" (click)="isNotificationDropdownHidden=!isNotificationDropdownHidden;isUserDropdownHidden=false">
+      <md-icon class="iconInfo">notifications_none</md-icon>
     </a>
+    <div class="notificationsDropdown" [ngClass]="{ 'hidden':!isNotificationDropdownHidden }">
+      <div class="notificationsHeader clearfix">
+        <strong>Notifications</strong><span>Mark all as read</span>
+      </div>
+      <div class="msgList">
+        <ul class="">
+          <li *ngFor="let message of messages">{{ message.title }}</li>
+        </ul>
+      </div>
+      <div class="allNotifications">See all notifications</div>
 
-    <a class="dropdownInfo">
-      <md-icon class="iconInfo">announcement</md-icon>
-    </a>
+    </div>
 
 
-    <img class="userImage" src="../app/media/defaultUser.png" (click)="isUserDropdownHidden=!isUserDropdownHidden">
+
+    <img class="userImage" src="../app/media/defaultUser.png" (click)="isUserDropdownHidden=!isUserDropdownHidden;isNotificationDropdownHidden=false">
     <ul class="userDropdown" [ngClass]="{ 'hidden':!isUserDropdownHidden }">
       <li><a href="#"><md-icon class="icon">settings</md-icon>Settings</a></li>
       <li><a href="#"><md-icon class="icon">power_settings_new</md-icon>Sign out</a></li>

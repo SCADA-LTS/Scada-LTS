@@ -10,4 +10,11 @@ export class AppBodyComponent {
   private hideElements(){
     this.isHiddenSubMenu = this.isHiddenSubMenu.map(v => v = false);
   }
+
+  messages = [
+    {title: 'Element blocked'},
+    {title: 'Pressure warning'},
+    {title: 'Message from admin'},
+    {title: 'Monthly review'}
+  ]
 }
