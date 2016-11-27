@@ -1,5 +1,5 @@
 addons:
-  ssh_known_hosts: 149.56.44.225
+  ssh_known_hosts: 177.67.84.134
 before_install:
 #- sudo add-apt-repository ppa:openjdk-r/ppa -y
 #- sudo apt-get update
@@ -53,6 +53,6 @@ env:
 after_script:
 - echo $TRAVIS_BUILD_DIR
 - eval "$(ssh-agent -s)"
-- traceroute -p 22 $TEST_IP
-- sshpass -e scp ./ScadaBR.war test@149.56.44.225:/home/test/ScadaBR.war
-- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war test@149.56.44.225:/home/test/ScadaLTS.war
+-- traceroute -p 22 177.67.84.134
+-- sshpass -e scp ./ScadaBR.war root@177.67.84.134:/var/www/html/ScadaBR/ScadaBR.war
+-- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war root@177.67.84.134:/var/www/html/ScadaBR/ScadaLTS.war
