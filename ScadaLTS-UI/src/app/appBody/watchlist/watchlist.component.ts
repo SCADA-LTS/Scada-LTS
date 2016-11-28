@@ -7,16 +7,20 @@ import { Http } from '@angular/http';
   styleUrls: ['./watchlist.component.css']
 })
 
-
-
-
 export class WatchlistComponent {
 
-  items;
+  items:Array;
 
   constructor(private http:Http) {
     this.http.get('/app/appBody/watchlist/items.json')
       .subscribe(res => this.items = res.json());
-  }
+  };
+
+  watchlist:Array = [];
+
+  private addItemToWatchlist(item) {
+    if (this.watchlist.indexOf(item) == -1)
+      this.watchlist.push(item);
+  };
 
 }

@@ -8,23 +8,39 @@ input {
   outline: none;
   padding: 5px 15px;
   margin-bottom: 40px;
-  box-sizing: border-box;
-}
-
+  box-sizing: border-box; }
 
 input:focus {
-  border: 1px solid #666;
-}
+  border: 1px solid #666; }
 
 li {
   text-decoration: none;
   list-style-type: none;
-}
+  cursor: pointer; }
 
-.search {
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-radius: 6px;
+  -moz-border-radius: 6px; }
 
-}
+tr:nth-of-type(odd) {
+  background: #eee; }
 
-.dataTable {
+td {
+  padding: 6px;
+  border: 1px solid #ccc;
+  text-align: left; }
 
-}
+tr {
+  border-radius: 5px; }
+
+tr:first-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0; }
+
+tr:last-child {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0; }
+
+/*# sourceMappingURL=watchlist.component.css.map */
