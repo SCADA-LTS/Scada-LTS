@@ -34,6 +34,7 @@
   min-height: 100%
   +boxshadow(0 0 5px 0 rgba(0, 0, 0, 0.5))
   +transition(width .3s cubic-bezier(0.82, 0, 0.11, 1))
+  z-index: 3
 
 .sideMenuContent
   width: auto
@@ -145,7 +146,7 @@
 
 .header
   overflow: hidden
-  z-index: 1
+  z-index: 4
   width: 100%
   min-width: 320px
   background-color: #FFFFFF
@@ -163,7 +164,7 @@
   width: 45px
   border: 2px solid #777
   cursor: pointer
-  margin-top: 8px
+  margin-top: 10px
   +border-radius(50%)
 
 .dropdownInfo
@@ -212,7 +213,6 @@
   position: fixed
   border: 1px dotted #999
   border-radius: 3px
-  z-index: 2
   background-color: #fff
   +border-radius(3px)
   +boxshadow(1px 1px 0 0 rgba(0,0,0,.3))
@@ -279,6 +279,10 @@ a
   padding: 40px
 
 /* MEDIA QUERIES */
+@media (max-width: 1200px)
+  .content
+    margin-left: 48px
+
 @media (max-width: 500px)
   .userTools
     margin-right: 10px
@@ -297,5 +301,5 @@ a
     width: 250px
   .userDropdown
     right: 10px
-
-
+  .content
+    margin-left: 0

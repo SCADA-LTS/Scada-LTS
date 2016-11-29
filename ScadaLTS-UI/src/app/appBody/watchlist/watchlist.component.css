@@ -1,6 +1,6 @@
 input {
   border: 1px dotted #666;
-  width: 300px;
+  width: 70%;
   height: 40px;
   line-height: 26px;
   font-size: 22px;
@@ -22,7 +22,9 @@ table {
   width: 100%;
   border-collapse: separate;
   border-radius: 6px;
-  -moz-border-radius: 6px; }
+  -moz-border-radius: 6px;
+  border: none;
+  border-collapse: collapse; }
 
 tr:nth-of-type(odd) {
   background: #eee; }
@@ -35,12 +37,15 @@ td {
 tr {
   border-radius: 5px; }
 
-tr:first-child {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0; }
+table td:first-child {
+  border-left: none; }
 
-tr:last-child {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0; }
+table td:last-child {
+  border-right: none; }
+
+.watchlistChart {
+  min-height: 250px;
+  height: 40vh;
+  z-index: -5; }
 
 /*# sourceMappingURL=watchlist.component.css.map */

@@ -1,43 +1,30 @@
 <div class="row">
 
-  <div class="search col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12">
+  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
 
-    <h3>Points</h3>
-    <div class="searchInput">
-      <input type="text" placeholder="search"/>
-    </div>
+    <md-card>
+      <h3>Watchlist</h3>
+      <hr>
+      <br>
 
-    <div class="listItem">
-      <ul class="listGroup">
-        <li class="listGroupItem" *ngFor="let item of items; let i=index" (click)="addItemToWatchlist(item)"><strong>{{ item.name }}</strong> - {{ item.value }} - {{ item.time }}</li>
-      </ul>
-    </div>
+      <table>
+        <tr *ngFor="let item of items">
+          <td>{{ item.name }}</td>
+          <td>{{ item.value }}</td>
+          <td>{{ item.time }}</td>
+        </tr>
+      </table>
 
-
-
+    </md-card>
   </div>
 
+  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
 
-  <div class="dataTable col-xl-8 col-lg-8 col-md-6 col-sm-6 col-xs-12">
+    <md-card>
+      <chart [type]="type" [data]="data" [options]="options" class="watchlistChart"></chart>
 
-    <h3>Watchlist</h3>
-    <!--<table class="rwd-table">-->
-      <!--<tr *ngFor="let element of watchlist">-->
-        <!--<td data-th="Name">{{ element.name }}</td>-->
-        <!--<td data-th="Value">{{ element.value }}</td>-->
-        <!--<td data-th="Time">{{ element.time }}</td>-->
-      <!--</tr>-->
-    <!--</table>-->
-
-    <table>
-      <tr *ngFor="let element of watchlist">
-        <td>{{ element.name }}</td>
-        <td>{{ element.value }}</td>
-        <td>{{ element.time }}</td>
-      </tr>
-    </table>
+    </md-card>
   </div>
-
 
 </div>
 

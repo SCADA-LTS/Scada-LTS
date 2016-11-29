@@ -15,7 +15,8 @@
   -moz-transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1);
   -ms-transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1);
   -o-transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1);
-  transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1); }
+  transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  z-index: 3; }
 
 .sideMenuContent {
   width: auto;
@@ -171,7 +172,7 @@
 
 .header {
   overflow: hidden;
-  z-index: 1;
+  z-index: 4;
   width: 100%;
   min-width: 320px;
   background-color: #FFFFFF;
@@ -195,7 +196,7 @@
   width: 45px;
   border: 2px solid #777;
   cursor: pointer;
-  margin-top: 8px;
+  margin-top: 10px;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%; }
@@ -258,7 +259,6 @@
   position: fixed;
   border: 1px dotted #999;
   border-radius: 3px;
-  z-index: 2;
   background-color: #fff;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -341,6 +341,9 @@ a {
   padding: 40px; }
 
 /* MEDIA QUERIES */
+@media (max-width: 1200px) {
+  .content {
+    margin-left: 48px; } }
 @media (max-width: 500px) {
   .userTools {
     margin-right: 10px;
@@ -379,6 +382,9 @@ a {
     width: 250px; }
 
   .userDropdown {
-    right: 10px; } }
+    right: 10px; }
+
+  .content {
+    margin-left: 0; } }
 
 /*# sourceMappingURL=appBody.component.css.map */
