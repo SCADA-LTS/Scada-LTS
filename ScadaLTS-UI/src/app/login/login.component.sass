@@ -31,8 +31,8 @@
   border: 1px solid #ebebeb
   position: relative
   +border-radius(5px)
-  +transition(background .5s ease)
-  +boxshadow(16px 16px 32px 0 rgba(0, 0, 0, 0.24902))
+  +transition(all .2s ease)
+  +boxshadow(16px 16px 32px 0 rgba(0, 0, 0, 0.74902))
 
 .scadaLogo
   line-height: 55px
@@ -53,7 +53,7 @@
   vertical-align: middle
 
 .loginForm
-  margin: 60px 40px 30px 40px
+  margin: 40px 40px 30px 40px
 
 ::-webkit-input-placeholder
   color: #ccc
@@ -61,7 +61,7 @@
 ::-moz-placeholder
   color: #ccc
 
-input
+md-input
   font-size: 20px
   padding: 10px 0
   -webkit-appearance: none
@@ -70,11 +70,10 @@ input
   color: #636363
   width: 100%
   height: 35px
-  border-bottom: 1px solid #757575
   margin-bottom: 20px
   margin-top: 30px
 
-button
+[md-raised-button]
   margin: .3em 0 1em 0
   height: 45px
   width: 100%
@@ -99,7 +98,7 @@ button:hover
   float: right
 
 .buttonsGroup
-  margin-top: 75px
+  margin-top: 97px
 
 .modalOn
   background-color: #333
@@ -119,12 +118,14 @@ button:hover
   display: block
 
 .buttonCloseModal
-  height: 50px
-  width: 50px
+  height: 40px
+  width: 40px
   background-color: transparent
   color: #fff
   float: right
   padding: 5px
+  cursor: pointer
+  border-radius: 3px
 
 .buttonCloseModal:hover
   background-color: #111
@@ -137,3 +138,11 @@ button:hover
   width: 300px
   color: #ccc
   text-align: start
+
+@media (max-width: 500px)
+  .forgotButton
+    width: 100%
+  .registerButton
+    width: 100%
+  .container
+    height: 515px

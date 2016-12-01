@@ -10,7 +10,7 @@ import { LoginComponent } from './login/index';
 import { RegistrationComponent } from './registration/index';
 import { WatchlistComponent } from './appBody/watchlist/index';
 import { DashboardComponent } from './appBody/dashboard/index';
-import { ChartModule } from 'angular2-chartjs';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -27,7 +27,7 @@ import { ChartModule } from 'angular2-chartjs';
     HttpModule,
     MaterialModule.forRoot(),
     routing,
-    ChartModule
+    NgbModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

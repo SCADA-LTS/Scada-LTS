@@ -21,7 +21,51 @@
   <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
 
     <md-card>
-      <chart [type]="type" [data]="data" [options]="options" class="watchlistChart"></chart>
+      <h3>Watchlist</h3>
+      <hr>
+      <br>
+
+      <table>
+        <tr *ngFor="let item of items">
+          <td>{{ item.name }}</td>
+          <td>{{ item.value }}</td>
+          <td>{{ item.time }}</td>
+        </tr>
+      </table>
+
+    </md-card>
+  </div>
+  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+
+    <md-card>
+      <h3>Watchlist</h3>
+      <hr>
+      <br>
+
+      <table>
+        <tr *ngFor="let item of items">
+          <td>{{ item.name }}</td>
+          <td>{{ item.value }}</td>
+          <td>{{ item.time }}</td>
+        </tr>
+      </table>
+
+    </md-card>
+  </div>
+  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+
+    <md-card>
+      <h3>Watchlist</h3>
+      <hr>
+      <br>
+
+      <table>
+        <tr *ngFor="let item of items">
+          <td>{{ item.name }}</td>
+          <td>{{ item.value }}</td>
+          <td>{{ item.time }}</td>
+        </tr>
+      </table>
 
     </md-card>
   </div>

@@ -47,10 +47,17 @@
   padding: 6px 0 6px 12px
   cursor: pointer
   width: auto
-  +transition(all .5s ease)
+  +transition(background-color .5s ease)
 
 .menuItem:nth-child(11)
   border-bottom: 1px solid #b3b3b3
+
+.menuItem:hover
+  background-color: #e6e6e6
+  +transition(background-color .5s ease)
+
+.menuItem:active
+  +boxshadow(inset 0 0 3px 0 rgba(0, 0, 0, 0.4))
 
 .icon
   color: #404040
@@ -59,10 +66,6 @@
   float: left
   display: inline-block
   vertical-align: middle
-
-.menuItem:hover
-  background-color: #e6e6e6
-  +transition(all .5s ease)
 
 .menuItemText
   margin: 0 0 0 38px

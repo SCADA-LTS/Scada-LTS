@@ -18,9 +18,11 @@ li {
   list-style-type: none;
   cursor: pointer; }
 
+.dataTable {
+  margin-bottom: 30px; }
+
 table {
   width: 100%;
-  border-collapse: separate;
   border-radius: 6px;
   -moz-border-radius: 6px;
   border: none;
