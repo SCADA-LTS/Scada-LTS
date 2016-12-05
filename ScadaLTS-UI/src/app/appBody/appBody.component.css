@@ -1,57 +1,55 @@
+/* MENU */
 .sideMenu {
-  float: left;
   background-color: #f2f2f2;
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
   overflow: hidden;
-  width: 299px;
-}
+  width: 250px;
+  position: fixed;
+  top: 65px;
+  display: block;
+  left: 0;
+  min-height: 100%;
+  -webkit-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+  -webkit-transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -moz-transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -ms-transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -o-transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  transition: width 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  z-index: 3; }
 
 .sideMenuContent {
-  width: 100%;
-  height: auto;
-}
-
-.scadaLogo {
-  line-height: 85px;
-  display: block;
-  z-index: 9;
-  background-color: #e6e6e6;
-  text-align: center;
-  margin-left: -30px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
-  box-sizing: border-box;
-  position: relative;
-}
-
-.scadaLogo img {
-  line-height: 30px;
-  width: 160px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.iconScada {
-  vertical-align: middle;
-  color: #333333;
-}
+  width: auto;
+  height: auto; }
 
 .menuItem {
-  width: 100%;
   line-height: 40px;
   display: block;
   vertical-align: middle;
-  padding: 10px 0 10px 27px;
+  padding: 6px 0 6px 12px;
   cursor: pointer;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-}
+  width: auto;
+  -webkit-transition: background-color 0.5s ease;
+  -moz-transition: background-color 0.5s ease;
+  -ms-transition: background-color 0.5s ease;
+  -o-transition: background-color 0.5s ease;
+  transition: background-color 0.5s ease; }
 
-.menuItem:nth-child(2) {
-  border-top: none;
-}
+.menuItem:nth-child(11) {
+  border-bottom: 1px solid #b3b3b3; }
+
+.menuItem:hover {
+  background-color: #e6e6e6;
+  -webkit-transition: background-color 0.5s ease;
+  -moz-transition: background-color 0.5s ease;
+  -ms-transition: background-color 0.5s ease;
+  -o-transition: background-color 0.5s ease;
+  transition: background-color 0.5s ease; }
+
+.menuItem:active {
+  -webkit-box-shadow: inset 0 0 3px 0 rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: inset 0 0 3px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 3px 0 rgba(0, 0, 0, 0.4); }
 
 .icon {
   color: #404040;
@@ -59,23 +57,13 @@
   line-height: 40px;
   float: left;
   display: inline-block;
-  vertical-align: middle;
-}
-
-.menuItem:hover {
-  background-color: #e6e6e6;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-}
+  vertical-align: middle; }
 
 .menuItemText {
-  margin: 0px 0px 0px 30px;
+  margin: 0 0 0 38px;
   display: block;
   vertical-align: middle;
-}
+  width: 150px; }
 
 .subMenuItemContainer {
   width: auto;
@@ -84,32 +72,32 @@
   background-color: #f9f9f9;
   border-bottom: 1px solid #b3b3b3;
   margin-bottom: 2px;
-}
+  white-space: nowrap; }
 
 .subMenuLink {
   width: 100%;
   display: inline-block;
   float: left;
   padding: 15px 0 15px 30px;
-  /*box-sizing: border-box;*/
   cursor: pointer;
   color: #666;
   font-size: 14px;
-  transition: all .1s ease;
   box-sizing: border-box;
   border-left: 5px solid transparent;
-}
+  -webkit-transition: all 0.1s ease;
+  -moz-transition: all 0.1s ease;
+  -ms-transition: all 0.1s ease;
+  -o-transition: all 0.1s ease;
+  transition: all 0.1s ease; }
 
 .subMenuLink:hover {
-  /*background-color: #808080;*/
   border-left: 5px solid rgba(0, 0, 0, 0.5);
-  transition: all .2s ease;
   color: #000;
-}
-
-a {
-  text-decoration: none;
-}
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
 
 .subMenuHide {
   overflow: hidden;
@@ -118,75 +106,290 @@ a {
   padding-bottom: 0;
   margin-top: 0;
   margin-bottom: 0;
-  transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
-}
+  -webkit-transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+  -moz-transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+  -ms-transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+  -o-transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+  transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1); }
 
 .subMenuShow {
+  -webkit-transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+  -moz-transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+  -ms-transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+  -o-transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
   transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
-  max-height: 500px;
-}
-
-.mainContent {
-  width: auto;
-  overflow: hidden;
-  z-index: 1;
-  margin-left: 300px;
-  background-color: #FFFFFF;
-}
-
-.mainContentInside {
-  width: 100%;
-  height: 100%;
-}
-
-.header {
-  display: block;
-  border-bottom: solid 1px #dde3e6;
-  padding: 30px;
-  overflow: hidden;
-  background-color: #f5f7f8;
-  height: 25px;
-}
-
-.icon-message {
-  position: absolute;
-  right: 180px;
-  cursor: pointer;
-}
-
-.icon-announcement {
-  position: absolute;
-  right: 220px;
-  cursor: pointer;
-  margin-top: 2px;
-}
-
-.userImage {
-  position: absolute;
-  right: 100px;
-  cursor: pointer;
-  border-radius: 100%;
-  height: 50px;
-  width: 50px;
-  border: 2px solid #737373;
-  top: 16px;
-}
+  max-height: 500px; }
 
 .activeMenuItem {
-  background-color: #e6e6e6;
-}
+  background-color: #e6e6e6; }
 
-/*.background {*/
-  /*background-color: #0d3349;*/
-  /*height: 100%;*/
-  /*width: 100%;*/
-  /*left: 0;*/
-  /*top: 0;*/
-  /*overflow: hidden;*/
-  /*position: fixed;*/
-  /*z-index: -1;*/
-/*}*/
+.shrunkMenu {
+  width: 48px;
+  -webkit-transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+  -moz-transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+  -ms-transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+  -o-transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+  transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1); }
+
+.hideMenu {
+  width: 0;
+  -webkit-transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+  -moz-transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+  -ms-transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+  -o-transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+  transition: all 0.3s cubic-bezier(0.86, 0, 0.07, 1); }
+
+/* HEADER */
+.logoScada {
+  color: #fff;
+  display: block;
+  white-space: nowrap;
+  float: left;
+  line-height: 85px;
+  padding-left: 20px;
+  -webkit-transition: 0.5s padding ease;
+  -moz-transition: 0.5s padding ease;
+  -ms-transition: 0.5s padding ease;
+  -o-transition: 0.5s padding ease;
+  transition: 0.5s padding ease; }
+
+.logoScada img {
+  width: 160px;
+  height: 30px; }
+
+.collapseMenuIcon {
+  line-height: 80px;
+  margin-left: 20px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -webkit-transition: 0.5s margin ease;
+  -moz-transition: 0.5s margin ease;
+  -ms-transition: 0.5s margin ease;
+  -o-transition: 0.5s margin ease;
+  transition: 0.5s margin ease; }
+
+.iconMenu:active {
+  color: #000; }
+
+.header {
+  overflow: hidden;
+  z-index: 4;
+  width: 100%;
+  min-width: 320px;
+  background-color: #FFFFFF;
+  position: fixed;
+  height: 65px;
+  -webkit-box-shadow: 2px 0 3px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 0 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 0 3px rgba(0, 0, 0, 0.5); }
+
+.userTools {
+  float: right;
+  margin-right: 50px;
+  -webkit-transition: 0.5s margin ease;
+  -moz-transition: 0.5s margin ease;
+  -ms-transition: 0.5s margin ease;
+  -o-transition: 0.5s margin ease;
+  transition: 0.5s margin ease; }
+
+.userTools img {
+  height: 45px;
+  width: 45px;
+  border: 2px solid #777;
+  cursor: pointer;
+  margin-top: 10px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%; }
+
+.dropdownInfo {
+  cursor: pointer;
+  position: absolute;
+  right: 120px;
+  top: 24px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -webkit-transition: 0.5s right ease;
+  -moz-transition: 0.5s right ease;
+  -ms-transition: 0.5s right ease;
+  -o-transition: 0.5s right ease;
+  transition: 0.5s right ease; }
+
+.userDropdown {
+  position: fixed;
+  top: 50px;
+  right: 40px;
+  border: 1px dotted #999;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #fff;
+  line-height: 40px;
+  -webkit-box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  width: 140px; }
+
+.userDropdown li {
+  vertical-align: middle;
+  color: #000;
+  cursor: pointer; }
+
+.userDropdown li a {
+  font-size: 14px; }
+
+.userDropdown li:nth-child(odd) {
+  border-bottom: 1px solid #ccc; }
+
+.userDropdown li:hover {
+  background-color: #f2f2f2; }
+
+.userDropdown .icon {
+  font-size: 16px;
+  margin-left: 10px;
+  margin-right: 10px; }
+
+.notificationsDropdown {
+  width: 300px;
+  right: 40px;
+  top: 50px;
+  position: fixed;
+  border: 1px dotted #999;
+  border-radius: 3px;
+  background-color: #fff;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.3); }
+
+.notificationsHeader {
+  padding: 10px 12px;
+  border-bottom: 1px dotted #ccc;
+  font-size: 14px; }
+
+.msgList {
+  max-height: 280px; }
+
+.msgList li {
+  padding: 5px 20px;
+  cursor: pointer;
+  font-size: 14px; }
+
+.msgList li:hover {
+  background-color: #f2f2f2; }
+
+.allNotifications {
+  border-top: 1px dotted #ccc;
+  text-align: center;
+  font-size: 14px;
+  padding: 10px 5px;
+  cursor: pointer; }
+
+.allNotifications:hover {
+  background-color: #e6e6e6; }
+
+.notificationsHeader span {
+  float: right;
+  cursor: pointer; }
+
+/* BONUS */
+a:visited {
+  color: #000; }
+
+.hidden {
+  display: none; }
+
+a {
+  text-decoration: none;
+  outline: none; }
+
+*:focus, *:active {
+  outline: none; }
 
 .content {
-  padding: 40px;
-}
+  margin-left: 250px;
+  padding: 66px 0 34px;
+  min-height: 500px;
+  -webkit-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -moz-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -ms-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -o-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1); }
+
+.enlargedContent {
+  margin-left: 48px;
+  -webkit-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -moz-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -ms-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -o-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1); }
+
+.fullContent {
+  margin-left: 0;
+  -webkit-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -moz-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -ms-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  -o-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
+  transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1); }
+
+.contentInside {
+  padding: 40px; }
+
+/* MEDIA QUERIES */
+@media (max-width: 1200px) {
+  .content {
+    margin-left: 48px; } }
+@media (max-width: 500px) {
+  .userTools {
+    margin-right: 10px;
+    -webkit-transition: 0.5s margin ease;
+    -moz-transition: 0.5s margin ease;
+    -ms-transition: 0.5s margin ease;
+    -o-transition: 0.5s margin ease;
+    transition: 0.5s margin ease; }
+
+  .dropdownInfo {
+    right: 70px;
+    -webkit-transition: 0.5s right ease;
+    -moz-transition: 0.5s right ease;
+    -ms-transition: 0.5s right ease;
+    -o-transition: 0.5s right ease;
+    transition: 0.5s right ease; }
+
+  .collapseMenuIcon {
+    margin-left: 10px;
+    -webkit-transition: 0.5s margin ease;
+    -moz-transition: 0.5s margin ease;
+    -ms-transition: 0.5s margin ease;
+    -o-transition: 0.5s margin ease;
+    transition: 0.5s margin ease; }
+
+  .logoScada {
+    padding-left: 10px;
+    -webkit-transition: 0.5s padding ease;
+    -moz-transition: 0.5s padding ease;
+    -ms-transition: 0.5s padding ease;
+    -o-transition: 0.5s padding ease;
+    transition: 0.5s padding ease; }
+
+  .notificationsDropdown {
+    right: 10px;
+    width: 250px; }
+
+  .userDropdown {
+    right: 10px; }
+
+  .content {
+    margin-left: 0; } }
+
+/*# sourceMappingURL=appBody.component.css.map */

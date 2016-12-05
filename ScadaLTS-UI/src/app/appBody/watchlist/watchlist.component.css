@@ -1,5 +1,53 @@
 input {
-  border: 1px solid #333;
-  width: 98%;
-  height: 50px;
-}
+  border: 1px dotted #666;
+  width: 70%;
+  height: 40px;
+  line-height: 26px;
+  font-size: 22px;
+  border-radius: 5px;
+  outline: none;
+  padding: 5px 15px;
+  margin-bottom: 40px;
+  box-sizing: border-box; }
+
+input:focus {
+  border: 1px solid #666; }
+
+li {
+  text-decoration: none;
+  list-style-type: none;
+  cursor: pointer; }
+
+.dataTable {
+  margin-bottom: 30px; }
+
+table {
+  width: 100%;
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+  border: none;
+  border-collapse: collapse; }
+
+tr:nth-of-type(odd) {
+  background: #eee; }
+
+td {
+  padding: 6px;
+  border: 1px solid #ccc;
+  text-align: left; }
+
+tr {
+  border-radius: 5px; }
+
+table td:first-child {
+  border-left: none; }
+
+table td:last-child {
+  border-right: none; }
+
+.watchlistChart {
+  min-height: 250px;
+  height: 40vh;
+  z-index: -5; }
+
+/*# sourceMappingURL=watchlist.component.css.map */
