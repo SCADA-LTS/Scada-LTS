@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Http} from '@angular/http';
-import * as c3 from "c3";
 
 @Component({
   selector: 'watchlist',
@@ -79,29 +78,29 @@ export class WatchlistComponent implements OnInit {
     //   }
     // });
 
-    let chart = c3.generate({
-      bindto: '#chart',
-      data: {
-        columns: [
-          ['data1', 30, 200, 100, 400, 150, 250, 130, 50, 20, 10, 40, 15, 25, 390],
-          ['data2', 50, 20, 10, 40, 15, 25, 542, 30, 200, 100, 333, 150, 250]
-        ],
-        type: 'spline'
-      },
-
-      grid: {
-        x: {
-          show: false
-        },
-        y: {
-          show: true
-        }
-      },
-      zoom: {
-        enabled: true
-      }
-
-    });
+    // let chart = c3.generate({
+    //   bindto: '#chart',
+    //   data: {
+    //     columns: [
+    //       ['data1', 30, 200, 100, 400, 150, 250, 130, 50, 20, 10, 40, 15, 25, 390],
+    //       ['data2', 50, 20, 10, 40, 15, 25, 542, 30, 200, 100, 333, 150, 250]
+    //     ],
+    //     type: 'spline'
+    //   },
+    //
+    //   grid: {
+    //     x: {
+    //       show: false
+    //     },
+    //     y: {
+    //       show: true
+    //     }
+    //   },
+    //   zoom: {
+    //     enabled: true
+    //   }
+    //
+    // });
 
   }
 
