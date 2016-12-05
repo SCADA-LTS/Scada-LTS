@@ -1,15 +1,31 @@
-<div class="search">
+<div class="row">
 
-  <div class="searchInput">
-    <input type="text" placeholder="search"/>
+  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+
+    <md-card>
+      <h3>Watchlist</h3>
+      <hr>
+      <br>
+
+      <table>
+        <tr *ngFor="let item of items">
+          <td>{{ item.name }}</td>
+          <td>{{ item.value }}</td>
+          <td>{{ item.time }}</td>
+        </tr>
+      </table>
+    </md-card>
   </div>
 
-  <div class="listItem">
-    <ul class="listGroup" *ngIf="items.length">
-      <li class="listGroupItem" *ngFor="let item of items"></li>
-    </ul>
+  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+
+    <md-card>
+
+      <div id="chart"></div>
+
+    </md-card>
   </div>
+
 
 </div>
-
 
