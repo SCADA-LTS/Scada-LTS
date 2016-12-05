@@ -12,21 +12,7 @@ before_install:
 - sudo apt-get install tomcat7
 - sudo apt-get install traceroute
 - sudo apt-get install sshpass
-#- wget https://nodejs.org/dist/v6.9.1/node-v6.9.1-linux-x64.tar.xz
-#- mkdir node
-#- mkdir node/etc
-#- echo 'prefix=/usr/local' > node/etc/npmrc
-#- tar xvf node-v*.tar.?z --strip-components=1 -C ./node
-#- sudo mv node /opt/
-#- export PATH=/opt/node/bin:$PATH
-#- sudo apt-get install -y build-essential
-#- curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-#- sudo apt-get install -y nodejs
-#- wget -qO- https://deb.nodesource.com/setup_6.x | sudo bash -
-#- sudo apt-get install nodejs
-#- sudo apt-get install npm
 before_script:
-#- export PATH=/opt/node:/opt/node/bin:$PATH
 - nvm ls
 - nvm install node
 - nvm use node
@@ -62,11 +48,11 @@ env:
   matrix:
   - CATALINA_HOME=/usr/share/tomcat7
   global:
-  - secure: mRa7Eq70zFEeWboEaUJNkFUK/3ufFANJAWe9K515qB5AoDLsVe0dwfqpCjqWOKq1fbbO8lA1MaISC7VgDyiVbfvYIiENh+Bav/yqjEF5ED3Qcm5fgZvkIaybAUe5yCVBFrrBjQwF5x0Ocq0SAqSoU0Bs8/24QPoR22QTBVS0NV5lzyEKVu9p40QRq3Aavpq2o0xoVz8Dx9o88nOgdcTCjT3GBuZip+8eMrOcFEbKyicLQ73nlk1v4cEB1MTv/qt1Djj3KPm/wbmOWOx9ulVmch0UMLaH8tQd+UFLjga0RTGZHfGj7KhATl0c6FFbO67Er55R3STqMWXzYACnfYRbFyl+Ds9BaImKtqNLJlrJoZlT4DitEPG4RR+WcCvsAJ8Tj7hiV6xwE2LwjiSC56U85k768PCsDLDA7q8VoR1QoMIeZg1rW+rGgMUFOwgyMx0BuXBmyniU5T2trMJvcLZpHX/QPE4UnQ5jvnaEpTXxvJmLBeO1/5ajesCYNyIH9fE00b/vgz5yBVw3S9y0D3Ps7WhIXlhiz57pI6pBi8lUmO0YdtbW9Hc0oDpI7Asg04ftdIJ7Y1+3Ww/rwszQV6QnRiH9iuWq7HJJCmgKeNHS3fo/Zy8N9Xmx3hfFuedpToIN0B+tlzwnDCtvS4Zhx8rSv+9+v/XHYinan8z25Z3CM8A=
-  - TRAVIS_NODE_VERSION="6"
+  - secure: C14HDJPKUumAanXlJtbbA7/54ibtVSURw7lnuxpzBP5k6+pu75P6AixaV81L2RIUUN/eRWcgqpqnor+v6KrZHF/TnOlA5OoS73R+rHy3Rx4B6jzDEHnzyDo00zJGdO9bLOaYfNyqOv8XOtcF2YkenAiPjK/MzsIbObhwicDtREd7Br7ZArBm+GL+c5NQ3e8+gPrt1podg1ldZMbZHAi29vM974etXODsnpA3shIMplVsyxwie4PvgfP1avkeHMuPpflPFX6PrJOWatZvIHLfGqSP/rM51HDgO5xcZ0qDTJOvj7Ko0GHfn0CoWzKhwGrZ1ioRDKmTipFhiqFq7iYLts5eMB03W4m62l2Pxpzbs5ugRC49YtWmvAcbVFzERQg2GlB0/slkSdIwdxGqh8Ec3Ma/vpGNkghBBu/hhC3EladFaHPjcp7jlItW7ktyndikBV1cim95rJWWmuGxk8fOdAEVBuPV0sOx+6AwOSfM+o8Pxbe3Vjqv2UHxmMOLlPBs3uTfeS4awUuRY3oizBxaok+H8XWXMP91CjNStRnPWWIOZGG57QtMDOJiqwdwLENVEasAguwfoKSO2tUToLfHPZxtW86rfoGoX1oQ+JiebONxO5bvony8zqtcCt6s3KesKsQeJJHmfaItxylsQyi072PeDPmVuZDgDSx3C31NCYI=
+  - secure: NODnAmr6f++eRo73jznLJphwd58Kva9nXn45/7pmDddVi8akif3tCHDotx1acPwrIiwZDn1WBY7xHAYhuB+vHBep0I0AhHRDKP6q6VuDccK8lMKN11AC0pjXDbJCJOEO6CpRL2TvP/UyOhrmuvihnPqcBU2DX4VLN3cGpW+Jwn38Mk5qhw2RuJV6RFT1+/5XQNvYI3Jyp5jCPwlaCbgV2QKVtVs7NZHrj9U0qfdSsrhxp/3qUh2RrXIYZjVG4KggRWnMQ33BUSVNyDLcrKo++Q0IX5ZRP04j5b9NLvIl2otytEdyBYAa5oQYQMS5X31T9T0RDzVFYRu04HVaOXpfdlg9JdDFWQkVgY+d8ph/ZAX1h39eh3xjmMrUIFvAyQ1Kgawxdy99bYyaEefwDoZLC/O4KNjw84D0oBqTktFg75WsgfqJiUSWbryLnqG389pWGZjykiyfxXQgWF2cpqg76PuZY1gWI0jWBBS0GmrK3DONui3WU/QNcpuJTTOFlC18PC13l3+7mUNSz53BhpJg1Gwk8nUhhSnfin5kafjpUBz6mFGhiGoB46jC//kyAZJ+c+j5k8UKst65EgVp6fbu+JN1QpcDZL9l5r/1UnEQzncMraAGRAUvJL2tMkQmS5gbGwixzcrOdWa61BVs8bWe7eV1twOr2fBUNqHjH32SZYo=
 after_script:
 - echo $TRAVIS_BUILD_DIR
 - eval "$(ssh-agent -s)"
-- traceroute -p 22 149.56.44.225
-- sshpass -e scp ./ScadaBR.war root@149.56.44.225:/root/ScadaBR.war
-- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war root@149.56.44.225:/root/ScadaLTS.war
+- traceroute -p 22 $TEST_IP
+- sshpass -e scp ./ScadaBR.war test@149.56.44.225:/home/test/ScadaBR.war
+- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war test@149.56.44.225:/home/test/ScadaLTS.war
