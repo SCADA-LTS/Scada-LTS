@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Http } from '@angular/http';
-import * as d3 from "d3";
+import {Component, OnInit} from '@angular/core';
+import {Http} from '@angular/http';
 import * as c3 from "c3";
 
 @Component({
@@ -13,7 +12,7 @@ export class WatchlistComponent implements OnInit {
 
   items;
 
-  constructor(private http:Http) {
+  constructor(private http: Http) {
     this.http.get('/app/appBody/watchlist/items.json')
       .subscribe(res => this.items = res.json());
   };
@@ -84,17 +83,30 @@ export class WatchlistComponent implements OnInit {
       bindto: '#chart',
       data: {
         columns: [
-          ['data1', 30, 200, 100, 400, 150, 250],
-          ['data2', 50, 20, 10, 40, 15, 25]
-        ]
+          ['data1', 30, 200, 100, 400, 150, 250, 130, 50, 20, 10, 40, 15, 25, 390],
+          ['data2', 50, 20, 10, 40, 15, 25, 542, 30, 200, 100, 333, 150, 250]
+        ],
+        type: 'spline'
+      },
+
+      grid: {
+        x: {
+          show: false
+        },
+        y: {
+          show: true
+        }
+      },
+      zoom: {
+        enabled: true
       }
+
     });
 
   }
 
 
-
-  ngOnInit(){
+  ngOnInit() {
     this.start();
   }
 
@@ -150,8 +162,6 @@ export class WatchlistComponent implements OnInit {
   // };
   //
   // legend:boolean = true;
-
-
 
 
 }

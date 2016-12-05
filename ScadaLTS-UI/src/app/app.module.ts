@@ -10,7 +10,7 @@ import { LoginComponent } from './login/index';
 import { RegistrationComponent } from './registration/index';
 import { WatchlistComponent } from './appBody/watchlist/index';
 import { DashboardComponent } from './appBody/dashboard/index';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
