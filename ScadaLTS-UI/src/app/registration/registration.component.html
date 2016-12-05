@@ -5,7 +5,6 @@
     <div class="content">
 
       <div class="scadaLogo">
-        <a href="#"><md-icon class="iconScada">polymer</md-icon></a>
         <img class="logo" src="../app/media/ScadaLogo.png">
       </div>
 
@@ -13,16 +12,16 @@
 
         <form method="post">
 
-          <input placeholder="username" type="text" required>
+          <md-input placeholder="username" type="text"></md-input>
 
-          <input placeholder="e-mail" type="email" required>
+          <md-input placeholder="e-mail" type="email"></md-input>
 
-          <input placeholder="password" type="password" required>
+          <md-input placeholder="password" type="password"></md-input>
 
-          <input placeholder="repeat password" type="password" required>
+          <md-input placeholder="repeat password" type="password"></md-input>
 
           <div class="buttonsGroup">
-            <button [routerLink]="['/login']" type="button" class="loginButton">Sign up</button>
+            <button md-raised-button [routerLink]="['/login']" type="button" class="loginButton">Sign up</button>
           </div>
 
 
