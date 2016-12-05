@@ -4,28 +4,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #666;
   -webkit-transition: filter 1s ease;
   -moz-transition: filter 1s ease;
+  -ms-transition: filter 1s ease;
   -o-transition: filter 1s ease;
-  transition: filter 1s ease;
-  background-color: #666;
-}
+  transition: filter 1s ease; }
 
 .container {
-  height: 600px;
+  height: 515px;
   width: 450px;
-  border-radius: 5px;
-  -webkit-transition: background .5s ease;
-  -moz-transition: background .5s ease;
-  -o-transition: background .5s ease;
-  transition: background .5s ease;
   background-color: #fafafa;
   border: 1px solid #ebebeb;
-  box-shadow: rgba(0, 0, 0, 0.24902) 16px 16px 32px 0, rgba(0, 0, 0, 0.19804) 16px 16px 32px 0;
-}
-
-.content {
-}
+  position: relative;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-transition: background 0.5s ease;
+  -moz-transition: background 0.5s ease;
+  -ms-transition: background 0.5s ease;
+  -o-transition: background 0.5s ease;
+  transition: background 0.5s ease;
+  -webkit-box-shadow: 16px 16px 32px 0 rgba(0, 0, 0, 0.74902);
+  -moz-box-shadow: 16px 16px 32px 0 rgba(0, 0, 0, 0.74902);
+  box-shadow: 16px 16px 32px 0 rgba(0, 0, 0, 0.74902); }
 
 .scadaLogo {
   line-height: 55px;
@@ -33,46 +35,32 @@
   z-index: 9;
   background-color: #e6e6e6;
   text-align: left;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
   position: relative;
   padding-left: 32px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
   border-radius: 3px;
-}
+  -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5); }
 
 .scadaLogo img {
   line-height: 30px;
   width: 160px;
   display: inline-block;
-  vertical-align: middle;
-}
-
-.iconScada {
-  vertical-align: middle;
-  color: #333333;
-}
+  vertical-align: middle; }
 
 .loginForm {
-  margin: 60px 40px 30px 40px;
-}
+  margin: 40px 40px 30px 40px; }
 
-::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-  color: #ccc;
-}
+::-webkit-input-placeholder {
+  color: #ccc; }
 
-::-moz-placeholder { /* Firefox 19+ */
-  color: #ccc;
-}
+::-moz-placeholder {
+  color: #ccc; }
 
-:-ms-input-placeholder { /* IE 10+ */
-  color: #ccc;
-}
-
-:-moz-placeholder { /* Firefox 18- */
-  color: #ccc;
-}
-
-input {
+md-input {
   font-size: 20px;
   padding: 10px 0;
   -webkit-appearance: none;
@@ -81,42 +69,33 @@ input {
   color: #636363;
   width: 100%;
   height: 35px;
-  border-radius: 0;
-  border-bottom: 1px solid #757575;
   margin-bottom: 20px;
-}
+  margin-top: 35px; }
 
-input:focus {
-  outline: none;
-}
-
-button {
-  padding: 12px 24px;
-  margin: .3em 0 1em 0;
+[md-raised-button] {
+  margin: 0.3em 0 1em 0;
   height: 45px;
   width: 100%;
   vertical-align: middle;
   color: #fff;
   font-size: 16px;
-  line-height: 20px;
   -webkit-font-smoothing: antialiased;
   text-align: center;
-  letter-spacing: 1px;
   background-color: #666;
   cursor: pointer;
-  transition: all 0.15s ease;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
   border-radius: 3px;
-  outline: none;
-}
+  -webkit-transition: all 0.15s ease;
+  -moz-transition: all 0.15s ease;
+  -ms-transition: all 0.15s ease;
+  -o-transition: all 0.15s ease;
+  transition: all 0.15s ease; }
 
 button:hover {
-  background-color: #333;
-}
-
-.button:focus {
-  outline: 0;
-}
+  background-color: #333; }
 
 .buttonsGroup {
-  margin-top: 90px;
-}
+  margin-top: 84px; }
+
+/*# sourceMappingURL=registration.component.css.map */
