@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import com.serotonin.mango.vo.bean.PointHistoryCount;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -38,6 +37,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +52,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.vo.bean.LongPair;
+import com.serotonin.mango.vo.bean.PointHistoryCount;
 
 
 /** 
@@ -59,6 +60,7 @@ import com.serotonin.mango.vo.bean.LongPair;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
+@Repository
 public class PointValueDAO implements GenericDaoCR<PointValue> {
 
 	private static final Log LOG = LogFactory.getLog(PointValueDAO.class);
@@ -139,7 +141,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	private static final String POINT_VALUE_SELECT_ON_BASE_ID_TS = "" 
 			+ POINT_VALUE_SELECT 
 			+ " where " 
-				+ COLUMN_NAME_ID + "=? and "
+				+ COLUMN_NAME_DATA_POINT_ID + "=? and "
 				+ COLUMN_NAME_TIME_STAMP +"=?";
 	
 	
