@@ -1,61 +1,18 @@
 [
   {
-    "name": "AMF1",
-    "value": 77.5,
-    "time": "06:32"
+    "id": 2,
+    "xid": "WL_621542",
+    "userId": 1,
+    "name": "pierwsza",
+    "pointList": [],
+    "watchListUsers": []
   },
   {
-    "name": "AMF2",
-    "value": 66.2,
-    "time": "02:12"
-  },
-  {
-    "name": "AMF3",
-    "value": 85.3,
-    "time": "16:53"
-  },
-  {
-    "name": "AMF4",
-    "value": 11.4,
-    "time": "11:07"
-  },
-  {
-    "name": "AMF5",
-    "value": 51.9,
-    "time": "11:41"
-  },
-  {
-    "name": "AMF6",
-    "value": 63.8,
-    "time": "13:32"
-  },
-  {
-    "name": "AMF7",
-    "value": 43.2,
-    "time": "23:12"
-  },
-  {
-    "name": "AMF8",
-    "value": 65.3,
-    "time": "21:39"
-  },
-  {
-    "name": "AMF9",
-    "value": 34.4,
-    "time": "22:01"
-  },
-  {
-    "name": "AMF10",
-    "value": 11.9,
-    "time": "22:44"
-  },
-  {
-    "name": "AMF11",
-    "value": 87.8,
-    "time": "13:32"
-  },
-  {
-    "name": "AMF12",
-    "value": 37.5,
-    "time": "07:39"
-  }]
+    "id": 3,
+    "xid": "WL_616873",
+    "userId": 1,
+    "name": "druga",
+    "pointList": [],
+    "watchListUsers": []
+  }
+]
