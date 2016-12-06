@@ -78,7 +78,7 @@
 <div class="header" (window:resize)="checkScreenWidth()">
 
     <a href="#" class="logoScada clearfix">
-        <img class="logo" src="../app/media/ScadaLogo.png">
+        <img class="logo" src="../ScadaLTS/app/media/ScadaLogo.png">
     </a>
 
     <span class="collapseMenuIcon" (click)="toggleMenu();hideElements()">
@@ -106,7 +106,7 @@
 
 
 
-        <img class="userImage" src="../app/media/defaultUser.png" (mouseover)="isUserDropdownHidden=true" (mouseleave)="isUserDropdownHidden=false" (click)="isUserDropdownHidden=false">
+        <img class="userImage" src="../ScadaLTS/app/media/defaultUser.png" (mouseover)="isUserDropdownHidden=true" (mouseleave)="isUserDropdownHidden=false" (click)="isUserDropdownHidden=false">
         <ul class="userDropdown" [ngClass]="{ 'hidden':!isUserDropdownHidden }" (mouseover)="isUserDropdownHidden=true" (mouseleave)="isUserDropdownHidden=false">
             <li><md-icon class="icon">settings</md-icon>Settings</li>
             <li><md-icon class="icon">power_settings_new</md-icon>Sign out</li>
