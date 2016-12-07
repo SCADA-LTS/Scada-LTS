@@ -4,21 +4,19 @@
 
     <md-card>
 
-      <select class="chooseCategory">
-        <option value="" disabled selected>- choose watch list -</option>
-        <option value="drink">Drink</option>
-      </select>
-
-
-      <hr>
+      <div>
+        <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="updateWatchlistTable($event.xid)">
+          <option *ngFor="let item of _items; let i = index" [ngValue]="item">{{ item.name }}</option>
+        </select>
+      </div>
       <br>
-      <table>
-        <tr *ngFor="let item of items">
-          <td>{{ item.name }}</td>
-          <td>{{ item.value }}</td>
-          <td>{{ item.time }}</td>
+      <table *ngIf="_watchlistElements.length">
+        <tr *ngFor="let elem of _watchlistElements">
+          <td>{{ elem.ts }}</td>
+          <td>{{ elem.value }}</td>
         </tr>
       </table>
+
     </md-card>
   </div>
 

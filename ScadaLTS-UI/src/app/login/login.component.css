@@ -53,7 +53,7 @@
   vertical-align: middle; }
 
 .loginForm {
-  margin: 40px 40px 30px 40px; }
+  margin: 50px 40px 30px 40px; }
 
 ::-webkit-input-placeholder {
   color: #ccc; }
@@ -104,7 +104,7 @@ button:hover {
   float: right; }
 
 .buttonsGroup {
-  margin-top: 97px; }
+  margin-top: 87px; }
 
 .modalOn {
   background-color: #333;
