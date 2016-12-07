@@ -12,10 +12,10 @@ export class WatchlistComponent implements OnInit {
 
   items;
 
-  constructor(private http: Http) {
-    this.http.get('/app/appBody/watchlist/items.json')
-      .subscribe(res => this.items = res.json());
-  };
+  // constructor(private http: Http) {
+  //   this.http.get('/app /appBody/watchlist/items.json')
+  //     .subscribe(res => this.items = res.json());
+  // };
 
   watchlist = [];
 
@@ -24,8 +24,7 @@ export class WatchlistComponent implements OnInit {
       this.watchlist.push(item);
   };
 
-
-  private start() {
+  private start()  {
 
     let chart = c3.generate({
       bindto: '#chart',

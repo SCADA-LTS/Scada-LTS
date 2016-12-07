@@ -50,4 +50,19 @@ table td:last-child {
   height: 40vh;
   z-index: -5; }
 
+select {
+  height: 40px;
+  width: 100%;
+  border-radius: 5px;
+  text-align: center;
+  border: 1px solid gray;
+  outline: 0;
+  cursor: pointer;
+  padding-left: 15px;
+  margin: 0; }
+
+.chooseCategory {
+  border-color: #ddd;
+  text-align: left; }
+
 /*# sourceMappingURL=watchlist.component.css.map */
