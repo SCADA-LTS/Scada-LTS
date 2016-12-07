@@ -36,6 +36,7 @@ import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,7 @@ import com.serotonin.util.queue.ObjectQueue;
  * Base on the PointValueDao
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class PointValueService implements MangoPointValues {
 	 
 	private static List<UnsavedPointValue> UNSAVED_POINT_VALUES = new ArrayList<UnsavedPointValue>();

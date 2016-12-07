@@ -23,6 +23,7 @@ import java.util.List;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,7 @@ import com.serotonin.mango.vo.WatchList;
  * Base on the WatchListDao
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class WatchListService implements MangoWatchList {
 	
 	private WatchListDAO watchListDAO;
