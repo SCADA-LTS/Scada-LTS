@@ -3,10 +3,15 @@
   <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
 
     <md-card>
-      <h3>Watchlist</h3>
+
+      <select class="chooseCategory">
+        <option value="" disabled selected>- choose watch list -</option>
+        <option value="drink">Drink</option>
+      </select>
+
+
       <hr>
       <br>
-
       <table>
         <tr *ngFor="let item of items">
           <td>{{ item.name }}</td>
