@@ -68,12 +68,16 @@ public class PointValueAPI {
 			
 			private static final long serialVersionUID = 1L;
 			
-			String value;
-			Long ts;
+			private String value;
+			private Long ts;
+			private String name;
+			private String xid;
 			
-			void set(PointValueTime pvt) {
+			void set(PointValueTime pvt, DataPointVO dpvo) {
 				setValue(pvt.getValue());
 				setTs(pvt.getTime());
+				setName(dpvo.getName());
+				setXid(dpvo.getXid());
 			}
 
 			public String getValue() {
@@ -102,10 +106,26 @@ public class PointValueAPI {
 			public void setTs(Long ts) {
 				this.ts = ts;
 			}
+
+			public String getName() {
+				return name;
+			}
+
+			public void setName(String name) {
+				this.name = name;
+			}
+
+			public String getXid() {
+				return xid;
+			}
+
+			public void setXid(String xid) {
+				this.xid = xid;
+			}
 		}
 
 		ValueToJson v = new ValueToJson();
-		v.set(pvt);
+		v.set(pvt, dpvo);
 		
 		try {
 			//TODO Checking that the all values types are casted to String.
