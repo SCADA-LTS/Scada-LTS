@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Inject} from '@angular/core';
 import {Http} from '@angular/http';
-declare var c3:any;
+declare var c3: any;
 
 @Component({
   selector: 'watchlist',
@@ -10,19 +10,38 @@ declare var c3:any;
 
 export class WatchlistComponent implements OnInit {
 
-  items;
+  private _items: Array<WatchlistComponent> = [];
 
-  constructor(private http: Http) {
-    this.http.get('/app/appBody/watchlist/items.json')
-      .subscribe(res => this.items = res.json());
+  // constructor(private http: Http) {
+  //   this.http.get('http://localhost:8080/ScadaBR/api/watchlist/names.json')
+  //     .subscribe(res => this._items = res.json());
+  // };
+
+  // constructor(private http: Http) {
+  //   this.http.get('app/appBody/watchlist/_items.json')
+  //     .subscribe(res => this._items = res.json());
+  // };
+
+  // constructor(@Inject(Http) private http: Http) {
+  //   this.http.get('app/appBody/watchlist/items.json')
+  //     .subscribe(res => this._items = res.json());
+  // };
+
+  constructor(@Inject(Http) private http: Http) {
+    this.http.get('http://localhost:8080/ScadaBR/api/watchlist/names.json')
+      .subscribe(res => this._items = res.json());
   };
 
-  watchlist = [];
+  selectedWatchlist = 0;
 
-  private addItemToWatchlist(item) {
-    if (this.watchlist.indexOf(item) == -1)
-      this.watchlist.push(item);
-  };
+
+  private _watchlistElements: Array<WatchlistComponent> = [];
+
+  private updateWatchlistTable(name) {
+    this._watchlistElements = [];
+    this.http.get('http://localhost:8080/ScadaBR/api/points/getValue/' + name)
+      .subscribe(res => this._watchlistElements = res.json());
+  }
 
 
   private start() {

@@ -49,28 +49,16 @@ import java.util.*;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-
-//@Service
 public class DataPointService implements MangoDataPoint {
 
-	//TODO
-//	@Resource
 	private static final DataPointDAO dataPointDAO = new DataPointDAO();
 
-	//TODO
-//	@Autowired
 	private static final UserCommentDAO userCommentDAO = new UserCommentDAO();
 
-	//TODO
-//	@Autowired
 	private static final PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
 
-	//TODO
-//	@Autowired
 	private static final PointHierarchyDAO pointHierarchyDAO = new PointHierarchyDAO();
 
-	//TODO
-//	@Autowired
 	private static final DataPointUserDAO dataPointUserDAO = new DataPointUserDAO();
 
 	private static final PointValueDAO pointValueDAO = new PointValueDAO();

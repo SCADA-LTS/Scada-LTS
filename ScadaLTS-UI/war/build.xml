@@ -7,6 +7,11 @@
 					<fileset dir="../dist">
 						<include name="**/*.html"/>
 						<include name="**/*.js"/>
+						<include name="**/*.css"/>
+						<include name="*.html"/>
+						<include name="*.js"/>
+						<include name="*.css"/>
+						<include name="**/**/*.png"/>
 					</fileset>
 		</copy>
 		

@@ -136,12 +136,21 @@
   </filter>
   
   <!-- Loads Spring Security config file -->
-	<context-param>
+  <!-- 
+  <context-param>
+    <param-name>contextClass</param-name>
+    <param-value>
+        org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+    </param-value>
+  </context-param>
+  -->
+	
+  <context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			/WEB-INF/spring-security.xml, /WEB-INF/applicationContext.xml
 		</param-value>
-	</context-param>
+  </context-param>
 
   <!-- Spring Security -->
   <filter>
@@ -151,7 +160,7 @@
 
   <filter-mapping>
   	<filter-name>springSecurityFilterChain</filter-name>
-  		<url-pattern>/api/**</url-pattern>
+  		<url-pattern>/**</url-pattern>
   		<dispatcher>ERROR</dispatcher>
   		<dispatcher>REQUEST</dispatcher>
   </filter-mapping>

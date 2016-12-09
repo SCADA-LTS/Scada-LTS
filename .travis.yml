@@ -28,6 +28,7 @@ before_script:
 - cd ../../..
 - cd ./ScadaLTS-UI
 - npm install
+- ls -l ./src/app/media
 - ng build
 - cd ./war
 - ant war
