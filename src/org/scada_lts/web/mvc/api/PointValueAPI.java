@@ -72,8 +72,8 @@ public class PointValueAPI {
 			private Long ts;
 			private String name;
 			private String xid;
-			
-			void set(PointValueTime pvt, DataPointVO dpvo) {
+
+  void set(PointValueTime pvt, DataPointVO dpvo) {
 				setValue(pvt.getValue());
 				setTs(pvt.getTime());
 				setName(dpvo.getName());
@@ -114,7 +114,6 @@ public class PointValueAPI {
 			public void setName(String name) {
 				this.name = name;
 			}
-
 			public String getXid() {
 				return xid;
 			}
