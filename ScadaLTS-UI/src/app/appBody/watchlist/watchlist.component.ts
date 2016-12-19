@@ -1,5 +1,6 @@
-import {Component, OnInit, Inject} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {Http} from '@angular/http';
+import {Observable} from 'rxjs/Observable';
 declare var c3: any;
 
 @Component({
@@ -11,49 +12,80 @@ declare var c3: any;
 export class WatchlistComponent implements OnInit {
 
   private _items: Array<WatchlistComponent> = [];
+  private _watchlistElements: Array<WatchlistComponent> = [];
+  private _values: Array<WatchlistComponent> = [];
+  private xid: string;
+  private value: string;
+  private loadPoints;
 
-  // constructor(private http: Http) {
-  //   this.http.get('http://localhost:8080/ScadaBR/api/watchlist/names.json')
-  //     .subscribe(res => this._items = res.json());
-  // };
-
-  // constructor(private http: Http) {
-  //   this.http.get('app/appBody/watchlist/_items.json')
-  //     .subscribe(res => this._items = res.json());
-  // };
-
-  // constructor(@Inject(Http) private http: Http) {
-  //   this.http.get('app/appBody/watchlist/items.json')
-  //     .subscribe(res => this._items = res.json());
-  // };
-
-  constructor(@Inject(Http) private http: Http) {
-    this.http.get('http://localhost:8080/ScadaBR/api/watchlist/names.json')
+  constructor(@Inject(Http) private http: Http) {                                                                      //pobiera wszystkie zapisane watchlisty uzytkownika
+    this.http.get('http://localhost:/ScadaBR/api/watchlist/getNames')
       .subscribe(res => this._items = res.json());
   };
 
-  selectedWatchlist = 0;
 
-
-  private _watchlistElements: Array<WatchlistComponent> = [];
-
-  private updateWatchlistTable(name) {
+  private updateWatchlistTable(xid) {                                                                     //funkcja wykonywana po kazdej zmianie wartosci w select boxie
     this._watchlistElements = [];
-    this.http.get('http://localhost:8080/ScadaBR/api/points/getValue/' + name)
-      .subscribe(res => this._watchlistElements = res.json());
+    this.http.get('http://localhost/ScadaBR/api/watchlist/getPoints/' + xid)
+      .subscribe(res => {
+        this._watchlistElements = res.json();
+        this.getValues();
+      });
+  };
+
+
+  private vars = [];                                                                                      //przechowuje dane kazdego punktu z danej watchlisty
+  private bool: boolean = true;
+
+  private getValues() {
+    this._values = [];
+    Observable.forkJoin(
+      this._watchlistElements.map(v => {                                                                  //dla kazdego punktu pobieramy z serwera jego wartosc, czas i nazwe.
+        return this.http.get('http://localhost/ScadaBR/api/points/getValue/' + v.xid)
+          .map(res => res.json());
+      })
+    ).subscribe(v => {
+        this._values = v;
+        if (this.bool == true) {                                                                          //funkcja ma dodac tyle pustych tablic ile punktow w wybranej watchliscie. i ma to zrobic tylko raz (!) dlatego dodany boolean.
+          for (let i = 0; i < this._values.length; i++) {
+            this.vars.push([]);
+          }
+          this.bool = false;                                                                              //zmieniamy boolean na false, petla sie juz wiecej nie wykona
+        }
+        this.vars.map((v,i) => v.push(this._values[i].value));                                            //do kazdej tablicy w zmiennej vars wrzucamy wartosc danego punktu
+        this.start();
+    });
+  };
+
+
+  private initiateInterval() {
+    setTimeout(() => {
+      this.getValues();
+    }, 500);
+    this.loadPoints = setInterval(() => {
+      this.getValues();
+    }, 5000);
   }
 
 
-  private start() {
+
+  private deactivateInterval() {
+    clearInterval(this.loadPoints);
+  }
+
+
+  // private toSpline(){
+  //   this.chart.transform('spline');
+  // }
+
+
+  public start() {
 
     let chart = c3.generate({
       bindto: '#chart',
       data: {
-        columns: [
-          ['data1', 30, 200, 100, 400, 150, 250, 130, 50, 20, 10, 40, 15, 25, 390],
-          ['data2', 50, 20, 10, 40, 15, 25, 542, 30, 200, 100, 333, 150, 250]
-        ],
-        type: 'spline'
+        columns: this.vars,
+
       },
 
       grid: {
@@ -72,8 +104,22 @@ export class WatchlistComponent implements OnInit {
 
   }
 
+
+  // private line() {
+  //   this.chart.transform('line');
+  // }
+  //
+  // private spline(){
+  //   this.chart.transform('spline');
+  // }
+
+
   ngOnInit() {
     this.start();
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.loadPoints);
   }
 
 }

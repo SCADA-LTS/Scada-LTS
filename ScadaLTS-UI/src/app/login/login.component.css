@@ -7,7 +7,6 @@
   background-color: #666;
   -webkit-transition: background-color 0.5s ease;
   -moz-transition: background-color 0.5s ease;
-  -ms-transition: background-color 0.5s ease;
   -o-transition: background-color 0.5s ease;
   transition: background-color 0.5s ease; }
 
@@ -22,7 +21,6 @@
   border-radius: 5px;
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
   -o-transition: all 0.2s ease;
   transition: all 0.2s ease;
   -webkit-box-shadow: 16px 16px 32px 0 rgba(0, 0, 0, 0.74902);
@@ -53,7 +51,7 @@
   vertical-align: middle; }
 
 .loginForm {
-  margin: 50px 40px 30px 40px; }
+  margin: 47px 40px 30px 40px; }
 
 ::-webkit-input-placeholder {
   color: #ccc; }
@@ -89,7 +87,6 @@ md-input {
   border-radius: 3px;
   -webkit-transition: all 0.15s ease;
   -moz-transition: all 0.15s ease;
-  -ms-transition: all 0.15s ease;
   -o-transition: all 0.15s ease;
   transition: all 0.15s ease; }
 
@@ -104,13 +101,12 @@ button:hover {
   float: right; }
 
 .buttonsGroup {
-  margin-top: 87px; }
+  margin-top: 90px; }
 
 .modalOn {
   background-color: #333;
   -webkit-transition: background-color 0.5s ease;
   -moz-transition: background-color 0.5s ease;
-  -ms-transition: background-color 0.5s ease;
   -o-transition: background-color 0.5s ease;
   transition: background-color 0.5s ease; }
 
@@ -126,7 +122,6 @@ button:hover {
   border-radius: 5px;
   -webkit-transition: background 0.5s ease;
   -moz-transition: background 0.5s ease;
-  -ms-transition: background 0.5s ease;
   -o-transition: background 0.5s ease;
   transition: background 0.5s ease; }
 

@@ -5,18 +5,22 @@
     <md-card>
 
       <div>
-        <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="updateWatchlistTable($event.xid)">
+        <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="updateWatchlistTable($event.xid);deactivateInterval();initiateInterval()">
           <option *ngFor="let item of _items; let i = index" [ngValue]="item">{{ item.name }}</option>
         </select>
       </div>
       <br>
-      <table *ngIf="_watchlistElements.length">
-        <tr *ngFor="let elem of _watchlistElements">
-          <td>{{ elem.ts }}</td>
+      <table *ngIf="_values.length">
+        <tr *ngFor="let elem of _values | sort">
+          <td>{{ elem.name }}</td>
+          <td>{{ elem.ts | date: 'dd/MM/yyyy, hh:mm:ss' }}</td>
           <td>{{ elem.value }}</td>
         </tr>
       </table>
-
+      <button (click)="spline()">spline</button>
+      <button (click)="line()">line</button>
+      <button (click)="add()">add</button>
+      <button (click)="x()">start</button>
     </md-card>
   </div>
 
@@ -25,6 +29,8 @@
     <md-card>
 
       <div id="chart"></div>
+      <!--<div id="div_g"></div>-->
+      <!--<labs-dygraph [initialData]="data" [options]="options" ></labs-dygraph>-->
 
     </md-card>
   </div>
