@@ -40,9 +40,6 @@ public class PointValueAPI {
 	
 	@Resource
 	private PointValueService pointValueService;
-	
-	
-	
 		
 	/**
 	 * 
