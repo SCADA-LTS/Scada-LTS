@@ -16,6 +16,7 @@ export class WatchlistComponent implements OnInit {
   private _values: Array<WatchlistComponent> = [];
   private xid: string;
   private value: string;
+  private name: any;
   private loadPoints;
 
   constructor(@Inject(Http) private http: Http) {                                                                      //pobiera wszystkie zapisane watchlisty uzytkownika
@@ -29,7 +30,9 @@ export class WatchlistComponent implements OnInit {
     this.http.get('http://localhost/ScadaBR/api/watchlist/getPoints/' + xid)
       .subscribe(res => {
         this._watchlistElements = res.json();
-        this.getValues();
+        setTimeout(() => {
+          this.getValues();
+        }, 500);
       });
   };
 
@@ -50,24 +53,25 @@ export class WatchlistComponent implements OnInit {
           for (let i = 0; i < this._values.length; i++) {
             this.vars.push([]);
           }
+          this.vars.map((v,i) => v.push(this._values[i].name));
           this.bool = false;                                                                              //zmieniamy boolean na false, petla sie juz wiecej nie wykona
         }
-        this.vars.map((v,i) => v.push(this._values[i].value));                                            //do kazdej tablicy w zmiennej vars wrzucamy wartosc danego punktu
-        this.start();
+        if (this.vars[0].length < 15) {
+          this.vars.map((v, i) => v.push(this._values[i].value));                                          //do kazdej tablicy w zmiennej vars wrzucamy wartosc danego punktu
+        } else {
+          this.vars.map(v => v.splice(1,1));
+          this.vars.map((v, i) => v.push(this._values[i].value));
+        }
+          this.start();
     });
   };
 
-
   private initiateInterval() {
-    setTimeout(() => {
-      this.getValues();
-    }, 500);
+    // setInterval(() => {
     this.loadPoints = setInterval(() => {
       this.getValues();
     }, 5000);
   }
-
-
 
   private deactivateInterval() {
     clearInterval(this.loadPoints);
@@ -77,7 +81,6 @@ export class WatchlistComponent implements OnInit {
   // private toSpline(){
   //   this.chart.transform('spline');
   // }
-
 
   public start() {
 
