@@ -218,9 +218,9 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public void deletePointHistory(int dpId) {
-		long min = pointValueDAO.getMinTs(dpId);
-		long max = pointValueDAO.getMaxTs(dpId);
-		deletePointHistory(dpId, min, max);
+		//long min = pointValueDAO.getMinTs(dpId);
+		//long max = pointValueDAO.getMaxTs(dpId);
+		deletePointHistory(dpId, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	@Override
@@ -241,13 +241,16 @@ public class DataPointService implements MangoDataPoint {
 		}
 	}
 
+	//TODO rewrite int[] dataPointIds 
 	@Override
 	public void deleteDataPointImpl(String dataPointIds) {
 
 		dataPointDAO.deleteEventHandler(dataPointIds);
 		userCommentDAO.deleteUserCommentPoint(dataPointIds);
 		pointEventDetectorDAO.deleteWithId(dataPointIds);
-		dataPointUserDAO.deleteWhereDataPointId(Integer.valueOf(dataPointIds));
+		for (String id: dataPointIds.split(",")){
+			dataPointUserDAO.deleteWhereDataPointId(Integer.valueOf(id));
+		}
 		watchListDAO.deleteWatchListPoints(dataPointIds);
 		dataPointDAO.deleteWithIn(dataPointIds);
 
