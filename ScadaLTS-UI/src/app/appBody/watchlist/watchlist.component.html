@@ -10,17 +10,16 @@
         </select>
       </div>
       <br>
+      <button *ngIf="chartBool" (click)="pauseChart()">Pause chart</button>
+      <button *ngIf="!chartBool" (click)="pauseChart()">Start chart</button>
+      <br>
       <table *ngIf="_values.length">
         <tr *ngFor="let elem of _values | sort">
           <td>{{ elem.name }}</td>
-          <td>{{ elem.ts | date: 'dd/MM/yyyy, hh:mm:ss' }}</td>
+          <td>{{ elem.ts | date: 'dd/MM/yyyy, HH:mm:ss' }}</td>
           <td>{{ elem.value }}</td>
         </tr>
       </table>
-      <button (click)="spline()">spline</button>
-      <button (click)="line()">line</button>
-      <button (click)="add()">add</button>
-      <button (click)="">start</button>
     </md-card>
   </div>
 
@@ -28,10 +27,11 @@
 
     <md-card>
 
-      <div id="chart"></div>
+      <!--<div id="chart"></div>-->
       <!--<div id="div_g"></div>-->
       <!--<labs-dygraph [initialData]="data" [options]="options" ></labs-dygraph>-->
-
+      <div id="plotly"></div>
+      <p *ngIf="!chartBool">Chart paused!</p>
     </md-card>
   </div>
 

@@ -2,6 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 declare var c3: any;
+declare var Plotly:any;
 
 @Component({
   selector: 'watchlist',
@@ -30,95 +31,71 @@ export class WatchlistComponent implements OnInit {
     this.http.get('http://localhost/ScadaBR/api/watchlist/getPoints/' + xid)
       .subscribe(res => {
         this._watchlistElements = res.json();
-        setTimeout(() => {
           this.getValues();
-        }, 500);
       });
   };
 
 
-  private vars = [];                                                                                      //przechowuje dane kazdego punktu z danej watchlisty
+  private chartData = [];                                                                                      //przechowuje dane kazdego punktu z danej watchlisty
   private bool: boolean = true;
+  private chartBool: boolean = true;
 
   private getValues() {
     this._values = [];
     Observable.forkJoin(
-      this._watchlistElements.map(v => {                                                                  //dla kazdego punktu pobieramy z serwera jego wartosc, czas i nazwe.
+      this._watchlistElements.map(v => {
         return this.http.get('http://localhost/ScadaBR/api/points/getValue/' + v.xid)
           .map(res => res.json());
       })
-    ).subscribe(v => {
-        this._values = v;
-        if (this.bool == true) {                                                                          //funkcja ma dodac tyle pustych tablic ile punktow w wybranej watchliscie. i ma to zrobic tylko raz (!) dlatego dodany boolean.
-          for (let i = 0; i < this._values.length; i++) {
-            this.vars.push([]);
-          }
-          this.vars.map((v,i) => v.push(this._values[i].name));
-          this.bool = false;                                                                              //zmieniamy boolean na false, petla sie juz wiecej nie wykona
+    ).subscribe(res => {
+      this._values = res;
+      if (this.bool) {
+        for (let i = 0; i < this._values.length; i++) {
+          this.chartData.push({x:[], y: [], name: ''});
         }
-        if (this.vars[0].length < 15) {
-          this.vars.map((v, i) => v.push(this._values[i].value));                                          //do kazdej tablicy w zmiennej vars wrzucamy wartosc danego punktu
-        } else {
-          this.vars.map(v => v.splice(1,1));
-          this.vars.map((v, i) => v.push(this._values[i].value));
-        }
-          this.start();
+        this.chartData.map((v,i) => v.name = this._values[i].name);
+        this.bool = false;
+      }
+      if (this.chartData[0].x.length < 10) {
+        this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+      } else {
+        this.chartData.map(v => v.x.splice(0,1) && v.y.splice(0,1));
+        this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+      }
+      if (this.chartBool) {
+        this.redrawChart();
+      }
     });
   };
 
+
+
+  public initiateChart() {
+    Plotly.newPlot('plotly', this.chartData);
+  }
+
+  private redrawChart(){
+    Plotly.redraw('plotly', this.chartData);
+  }
+
+
+
   private initiateInterval() {
-    // setInterval(() => {
     this.loadPoints = setInterval(() => {
       this.getValues();
     }, 5000);
+  }
+
+  private pauseChart(){
+    this.chartBool = !this.chartBool;
   }
 
   private deactivateInterval() {
     clearInterval(this.loadPoints);
   }
 
-
-  // private toSpline(){
-  //   this.chart.transform('spline');
-  // }
-
-  public start() {
-
-    let chart = c3.generate({
-      bindto: '#chart',
-      data: {
-        columns: this.vars,
-
-      },
-
-      grid: {
-        x: {
-          show: false
-        },
-        y: {
-          show: true
-        }
-      },
-      zoom: {
-        enabled: true
-      }
-
-    });
-
-  }
-
-
-  // private line() {
-  //   this.chart.transform('line');
-  // }
-  //
-  // private spline(){
-  //   this.chart.transform('spline');
-  // }
-
-
   ngOnInit() {
-    this.start();
+    this.initiateChart();
   }
 
   ngOnDestroy() {

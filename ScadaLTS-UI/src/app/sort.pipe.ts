@@ -4,11 +4,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class SortPipe implements PipeTransform {
 
-  private value: any;
+  private name: any;
 
   transform(array: any, args: any): any {
     array.sort((a: any, b: any) =>
-      a.value - b.value
+      a.name - b.name
     );
     return array;
   }
