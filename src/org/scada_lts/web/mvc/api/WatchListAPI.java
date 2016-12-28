@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.WatchListService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +21,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
+import com.serotonin.web.dwr.MethodFilter;
 
 /**
  * Controller for API watchList
@@ -35,6 +39,12 @@ public class WatchListAPI {
 	
 	@Resource
 	private WatchListService watchListService;
+	
+	@Resource
+	private PointValueService pointValueService;
+	
+	@Resource
+	private DataPointService dataPointService;
 
 	@RequestMapping(value = "/api/watchlist/getNames", method = RequestMethod.GET)
 	public @ResponseBody String getWatchListNames(HttpServletRequest request) {
@@ -136,6 +146,65 @@ public class WatchListAPI {
 		}
 		
 		return json;
+	}
+	
+	@RequestMapping(value = "/api/watchlist/getChartData/{xid}/{fromData}/{toData}", method = RequestMethod.GET)
+	public @ResponseBody String getChartData(@PathVariable("xid") String xid, @PathVariable("fromData") Long fromData, @PathVariable("toData") Long toData, HttpServletRequest request) {
+		
+		LOG.info("/api/watchlist/getChartData/{xid}/{fromData}/{toData} xid:"+xid+" fromData:"+fromData+" toData:"+toData);
+		
+		User user = Common.getUser(request);
+		
+		if (user != null) {
+			
+			class DataChartJSON implements Serializable{
+				private String xid;
+				private String name;
+				private List<PointValueTime> values;
+				DataChartJSON(String xid, String name, List<PointValueTime> values) {
+					this.setXid(xid);
+					this.setName(name);
+					this.setValues(values);
+				}
+				public String getXid() {
+					return xid;
+				}
+				public void setXid(String xid) {
+					this.xid = xid;
+				}
+				public String getName() {
+					return name;
+				}
+				public void setName(String name) {
+					this.name = name;
+				}
+				public List<PointValueTime> getValues() {
+					return values;
+				}
+				public void setValues(List<PointValueTime> values) {
+					this.values=values;
+				}
+			}
+			
+			DataPointVO dp = dataPointService.getDataPoint(xid);
+			
+			List<PointValueTime> listValues = pointValueService.getPointValuesBetween(dp.getId(), fromData, toData);
+			
+			DataChartJSON dataChartJSON = new DataChartJSON(xid, dp.getName(), listValues);
+			
+			
+			String json = null;
+			ObjectMapper mapper = new ObjectMapper();
+			
+			try {
+				json = mapper.writeValueAsString(dataChartJSON);
+			} catch (JsonProcessingException e) {
+				LOG.error(e);
+			}
+			return json;
+		} else {
+			return "";
+		}
 	}
 
 }
