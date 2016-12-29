@@ -12,8 +12,8 @@ import { LoginComponent } from './login.component';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
-    MaterialModule.forRoot()
+    HttpModule
+    // MaterialModule.forRoot()
   ],
   providers: [],
   bootstrap: [LoginComponent]
