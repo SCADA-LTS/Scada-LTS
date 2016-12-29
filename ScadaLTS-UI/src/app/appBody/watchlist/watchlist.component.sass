@@ -1,0 +1,149 @@
+input
+  border: 1px dotted #666
+  width: 70%
+  height: 40px
+  line-height: 26px
+  font-size: 22px
+  border-radius: 5px
+  outline: none
+  padding: 5px 15px
+  margin-bottom: 40px
+  box-sizing: border-box
+
+input:focus
+  border: 1px solid #666
+
+li
+  text-decoration: none
+  list-style-type: none
+  cursor: pointer
+
+.dataTableContainer, .chartContainer
+  margin-bottom: 30px
+  position: relative
+
+table
+  width: 100%
+  border-radius: 6px
+  -moz-border-radius: 6px
+  border: none
+  border-collapse: collapse
+
+tr:nth-of-type(odd)
+  background: #eee
+
+td
+  padding: 6px
+  border: 1px solid #ccc
+  text-align: left
+
+tr
+  border-radius: 5px
+
+table td:first-child
+  border-left: none
+
+table td:last-child
+  border-right: none
+
+.watchlistChart
+  min-height: 250px
+  height: 40vh
+  z-index: -5
+
+select
+  height: 40px
+  width: 100%
+  border-radius: 3px
+  text-align: center
+  border: 1px solid #ccc
+  outline: 0
+  cursor: pointer
+  padding-left: 15px
+  margin: 0
+  color: #333
+
+.chooseCategory
+  border-color: #ddd
+  text-align: left
+
+.pauseInfoIcon
+  -webkit-animation: blink 2s infinite ease-in-out
+  animation: blink 2s infinite ease-in-out
+  font-size: 32px
+  color: #444
+  display: block
+  z-index: 2
+  position: absolute
+
+.dataPauseIcon
+  top: 191px
+  text-align: center
+  display: inline
+
+.chartPauseIcon
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+
+@-webkit-keyframes blink
+  0%, 100%
+    opacity: 0
+  40%, 60%
+    opacity: 1
+
+@keyframes blink
+  0%, 100%
+    opacity: 0
+  40%, 60%
+    opacity: 1
+
+.chartBtn
+  width: 48%
+  box-sizing: border-box
+  height: 30px
+  border-radius: 3px
+  cursor: pointer
+  transition: border-color .3s ease
+  border: 1px solid #ccc
+  margin: 15px 0
+
+.chartBtn:hover
+  border-color: #666
+  transition: border-color .3s ease-out
+
+.pauseChartButton, .unpauseChartButton
+  float: right
+
+.lastActualizationDate
+  margin-bottom: 15px
+
+.dataLoadOff
+  opacity: .3
+  transition: opacity .3s ease
+
+.dataTable
+  transition: opacity .3s ease-out
+
+.chartLoadOff
+  opacity: .3
+  transition: opacity .3s ease
+
+#plotly
+  transition: opacity .3s ease-out
+
+.backlightOnDataChange
+  -webkit-animation: backlight 1.5s ease
+  animation: backlight 1.5s ease
+
+@-webkit-keyframes backlight
+  0%
+    background-color: #d7f4e4
+  100%
+    background-color: transparent
+
+@keyframes backlight
+  0%
+    background-color: #d7f4e4
+  100%
+    background-color: transparent

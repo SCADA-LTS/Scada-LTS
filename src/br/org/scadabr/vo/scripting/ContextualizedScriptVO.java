@@ -186,4 +186,37 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((objectsOnContext == null) ? 0 : objectsOnContext.hashCode());
+		result = prime * result + ((pointsOnContext == null) ? 0 : pointsOnContext.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ContextualizedScriptVO other = (ContextualizedScriptVO) obj;
+		if (objectsOnContext == null) {
+			if (other.objectsOnContext != null)
+				return false;
+		} else if (!objectsOnContext.equals(other.objectsOnContext))
+			return false;
+		if (pointsOnContext == null) {
+			if (other.pointsOnContext != null)
+				return false;
+		} else if (!pointsOnContext.equals(other.pointsOnContext))
+			return false;
+		return true;
+	}
+	
+	
+
 }

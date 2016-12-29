@@ -31,7 +31,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.EventDetectorsDAO;
+import org.scada_lts.dao.EventDetectorsCacheDAO;
 import org.scada_lts.dao.model.PointEventDetectorCache;
 import org.scada_lts.quartz.UpdateEventDetectors;
 
@@ -44,7 +44,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class EventDetectorsCache extends EventDetectorsDAO{
+public class EventDetectorsCache extends EventDetectorsCacheDAO{
 	
 	public static final Log LOG = LogFactory.getLog(EventDetectorsCache.class);
 	private static EventDetectorsCache instance = null;

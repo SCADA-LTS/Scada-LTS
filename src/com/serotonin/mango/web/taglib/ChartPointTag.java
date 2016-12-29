@@ -18,12 +18,12 @@
  */
 package com.serotonin.mango.web.taglib;
 
+import com.serotonin.InvalidArgumentException;
+import com.serotonin.util.StringUtils;
+import org.scada_lts.utils.ColorUtils;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import com.serotonin.InvalidArgumentException;
-import com.serotonin.util.ColorUtils;
-import com.serotonin.util.StringUtils;
 
 /**
  * @author Matthew Lohbihler

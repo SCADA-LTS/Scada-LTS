@@ -63,6 +63,8 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.PublisherDAO;
+import org.scada_lts.mango.service.PublisherService;
 
 public class EventHandlersDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(EventHandlersDwr.class);
@@ -150,7 +152,7 @@ public class EventHandlersDwr extends BaseDwr {
 			// Get the publishers
 			List<EventSourceBean> publishers = new ArrayList<EventSourceBean>();
 			for (PublisherVO<? extends PublishedPointVO> p : new PublisherDao()
-					.getPublishers(new PublisherDao.PublisherNameComparator())) {
+					.getPublishers(new PublisherService.PublisherNameComparator())) {
 				if (p.getEventTypes().size() > 0) {
 					EventSourceBean source = new EventSourceBean();
 					source.setId(p.getId());

@@ -95,6 +95,11 @@ public class ScadaConfig {
 		return instance;
 	}
 	
+	public static ScadaConfig getInstanceTest(Properties confTest) {
+		instance = new ScadaConfig(confTest);
+		return instance;
+	}
+	
 	/**
 	 *  Get configuration
 	 * @return
@@ -198,6 +203,10 @@ public class ScadaConfig {
 		}
 	}
 		
+	private ScadaConfig(Properties confTest) {
+		this.conf = confTest;
+	}
+
 	private static String getPathConfigFile() {
 		String fileSeparator = System.getProperty("file.separator");
 		String path = Common.ctx.getServletContext().getRealPath("");

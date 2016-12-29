@@ -18,19 +18,6 @@
  */
 package com.serotonin.mango.web.servlet;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.jfree.data.time.Second;
-import org.jfree.data.time.TimeSeries;
-
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -40,8 +27,19 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.report.DiscreteTimeSeries;
 import com.serotonin.mango.vo.report.ImageChartUtils;
 import com.serotonin.mango.vo.report.PointTimeSeriesCollection;
-import com.serotonin.util.ColorUtils;
 import com.serotonin.util.StringUtils;
+import org.jfree.data.time.Second;
+import org.jfree.data.time.TimeSeries;
+import org.scada_lts.utils.ColorUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ImageChartServlet extends BaseInfoServlet {
     private static final long serialVersionUID = -1;

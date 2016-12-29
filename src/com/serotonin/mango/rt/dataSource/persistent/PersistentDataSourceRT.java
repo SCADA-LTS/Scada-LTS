@@ -597,7 +597,9 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                 if (dprt == null)
                     result = -1;
                 else {
-                    result = pointValueDao.dateRangeCount(dprt.getId(), from, to);
+                	//TODO check
+                    //result = pointValueDao.dateRangeCount(dprt.getId(), from, to);
+                	result = -1;
                 }
 
                 ByteQueue queue = new ByteQueue();

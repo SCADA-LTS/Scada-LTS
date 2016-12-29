@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.serotonin.cache.ObjectCreator;
 import com.serotonin.cache.ThreadSafeCache;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverData;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverMulticaster;
 import com.serotonin.util.StringUtils;
@@ -149,7 +149,7 @@ public class HttpDataSourceServlet extends HttpServlet {
             messages.add("Unconsumed key: " + unconsumed);
 
         // Write the prologue
-        response.getWriter().write(SystemSettingsDao.getValue(SystemSettingsDao.HTTPDS_EPILOGUE));
+        response.getWriter().write(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTPDS_EPILOGUE));
 
         for (String message : messages) {
             response.getWriter().write(message);
@@ -157,7 +157,7 @@ public class HttpDataSourceServlet extends HttpServlet {
         }
 
         // Write the epilogue
-        response.getWriter().write(SystemSettingsDao.getValue(SystemSettingsDao.HTTPDS_EPILOGUE));
+        response.getWriter().write(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTPDS_EPILOGUE));
     }
 
     private void addData(HttpReceiverData data, String name, String value, String time) {

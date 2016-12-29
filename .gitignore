@@ -68,3 +68,9 @@ seroUtils.jar
 *client*.png
 *client*.css
 *.vpp
+###########################
+# ScadaLTS-UI
+###########################
+/ScadaLTS-UI/node_modules/
+/ScadaLTS-UI/.editorconfig
+/ScadaLTS-UI/dist
