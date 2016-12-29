@@ -26,6 +26,67 @@ import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.vo.DataPointVO;
 
+
+class ValueToJSON implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
+	private String value;
+	private Long ts;
+	private String name;
+	private String xid;
+
+	void set(PointValueTime pvt, DataPointVO dpvo) {
+		setValue(pvt.getValue());
+		setTs(pvt.getTime());
+		setName(dpvo.getName());
+		setXid(dpvo.getXid());
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(MangoValue value) {
+		if (value instanceof AlphanumericValue) {
+			this.value = ((AlphanumericValue) value).getStringValue();
+		} else if (value instanceof BinaryValue) {
+			this.value = String.valueOf(((BinaryValue) value).getBooleanValue());
+		} else if (value instanceof ImageValue) {
+			this.value = ((ImageValue) value).getFilename();
+		} else if (value instanceof MultistateValue) {
+			this.value = String.valueOf(((MultistateValue) value).getIntegerValue());
+		} else if (value instanceof NumericValue) {
+			this.value = String.valueOf(((NumericValue) value).getFloatValue());
+		}
+		//error
+	}
+
+	public Long getTs() {
+		return ts;
+	}
+
+	public void setTs(Long ts) {
+		this.ts = ts;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getXid() {
+		return xid;
+	}
+
+	public void setXid(String xid) {
+		this.xid = xid;
+	}
+}
+
+
 /**
  * Controller for API pointValue
  * 
@@ -70,7 +131,7 @@ public class PointValueAPI {
 			private String name;
 			private String xid;
 
-  void set(PointValueTime pvt, DataPointVO dpvo) {
+			void set(PointValueTime pvt, DataPointVO dpvo) {
 				setValue(pvt.getValue());
 				setTs(pvt.getTime());
 				setName(dpvo.getName());

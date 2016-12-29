@@ -25,7 +25,6 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
-import com.serotonin.web.dwr.MethodFilter;
 
 /**
  * Controller for API watchList
@@ -157,11 +156,12 @@ public class WatchListAPI {
 		
 		if (user != null) {
 			
+			
 			class DataChartJSON implements Serializable{
 				private String xid;
 				private String name;
-				private List<PointValueTime> values;
-				DataChartJSON(String xid, String name, List<PointValueTime> values) {
+				private List<ValueToJSON> values;
+				DataChartJSON(String xid, String name, List<ValueToJSON> values) {
 					this.setXid(xid);
 					this.setName(name);
 					this.setValues(values);
@@ -178,10 +178,10 @@ public class WatchListAPI {
 				public void setName(String name) {
 					this.name = name;
 				}
-				public List<PointValueTime> getValues() {
+				public List<ValueToJSON> getValues() {
 					return values;
 				}
-				public void setValues(List<PointValueTime> values) {
+				public void setValues(List<ValueToJSON> values) {
 					this.values=values;
 				}
 			}
@@ -190,8 +190,15 @@ public class WatchListAPI {
 			
 			List<PointValueTime> listValues = pointValueService.getPointValuesBetween(dp.getId(), fromData, toData);
 			
-			DataChartJSON dataChartJSON = new DataChartJSON(xid, dp.getName(), listValues);
+			List<ValueToJSON> values = new ArrayList<ValueToJSON>();
 			
+			for (PointValueTime pvt : listValues) {
+				ValueToJSON v = new ValueToJSON();
+				v.set(pvt, dp);
+				values.add(v);
+			}
+			
+			DataChartJSON dataChartJSON = new DataChartJSON(xid, dp.getName(), values);
 			
 			String json = null;
 			ObjectMapper mapper = new ObjectMapper();
