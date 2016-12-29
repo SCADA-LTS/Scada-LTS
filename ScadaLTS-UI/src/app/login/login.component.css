@@ -129,12 +129,9 @@ button:hover {
   display: block; }
 
 .buttonCloseModal {
-  height: 40px;
-  width: 40px;
   background-color: transparent;
   color: #fff;
   float: right;
-  padding: 5px;
   cursor: pointer;
   border-radius: 3px; }
 

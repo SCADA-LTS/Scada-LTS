@@ -1,7 +1,8 @@
 <div class="mainContainer" [ngClass]="{ 'modalOn':showModal }">
 
   <div class="modal" [ngClass]="{ 'showModal':showModal }">
-    <button class="buttonCloseModal" (click)="modalFunction()">&#10060;</button>
+    <md-icon class="buttonCloseModal" (click)="modalFunction()">clear</md-icon>
+
     <div class="lostInfo">If you have lost access to your account, contact the administrator at: sdt@abilit.eu</div>
   </div>
 

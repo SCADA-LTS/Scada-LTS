@@ -8,7 +8,7 @@ export class SortPipe implements PipeTransform {
 
   transform(array: any, args: any): any {
     array.sort((a: any, b: any) =>
-      a.name - b.name
+        a.name - b.name
     );
     return array;
   }
