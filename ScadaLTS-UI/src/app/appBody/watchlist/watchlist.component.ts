@@ -1,6 +1,8 @@
-import {Component, OnInit, Inject} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {Http} from '@angular/http';
-declare var c3: any;
+import {Observable} from 'rxjs/Observable';
+declare let c3: any;
+declare let Plotly:any;
 
 @Component({
   selector: 'watchlist',
@@ -10,70 +12,108 @@ declare var c3: any;
 
 export class WatchlistComponent implements OnInit {
 
-  private _items: Array<WatchlistComponent> = [];
-
-  // constructor(private http: Http) {
-  //   this.http.get('http://localhost:8080/ScadaBR/api/watchlist/names.json')
-  //     .subscribe(res => this._items = res.json());
-  // };
-
-  // constructor(private http: Http) {
-  //   this.http.get('app/appBody/watchlist/_items.json')
-  //     .subscribe(res => this._items = res.json());
-  // };
-
-  // constructor(@Inject(Http) private http: Http) {
-  //   this.http.get('app/appBody/watchlist/items.json')
-  //     .subscribe(res => this._items = res.json());
-  // };
+  private _watchlists: Array<WatchlistComponent> = [];
+  private _watchlistElements: Array<WatchlistComponent> = [];
+  private _values: Array<WatchlistComponent> = [];
+  private xid: string;
+  private value: string;
+  private ts: number;
+  private name: any;
+  private loadPoints;
+  private chartData = [];
+  private bool: boolean = true;
+  private chartBool: boolean = true;
+  private dataBoolean: boolean = true;
+  private lastActualization;
+  private selectedWatchlist;
 
   constructor(@Inject(Http) private http: Http) {
-    this.http.get('http://localhost:8080/ScadaBR/api/watchlist/names.json')
-      .subscribe(res => this._items = res.json());
+    this.http.get('http://localhost:/ScadaBR/api/watchlist/getNames')
+        .subscribe(res => this._watchlists = res.json());
+    setTimeout(() => {
+      this.updateWatchlistTable(this._watchlists[0].xid);
+      this.selectedWatchlist = this._watchlists[0];
+      this.initiateInterval();
+    }, 500);
   };
 
-  selectedWatchlist = 0;
-
-
-  private _watchlistElements: Array<WatchlistComponent> = [];
-
-  private updateWatchlistTable(name) {
+  private updateWatchlistTable(xid) {
     this._watchlistElements = [];
-    this.http.get('http://localhost:8080/ScadaBR/api/points/getValue/' + name)
-      .subscribe(res => this._watchlistElements = res.json());
+    this.http.get('http://localhost/ScadaBR/api/watchlist/getPoints/' + xid)
+        .subscribe(res => {
+          this._watchlistElements = res.json();
+          this.getValues();
+        });
+  };
+
+  private cleanChartBeforeDraw() {
+    this.chartData = [];
+    this.bool = true;
+    Plotly.newPlot('plotly', this.chartData);
   }
 
-
-  private start() {
-
-    let chart = c3.generate({
-      bindto: '#chart',
-      data: {
-        columns: [
-          ['data1', 30, 200, 100, 400, 150, 250, 130, 50, 20, 10, 40, 15, 25, 390],
-          ['data2', 50, 20, 10, 40, 15, 25, 542, 30, 200, 100, 333, 150, 250]
-        ],
-        type: 'spline'
-      },
-
-      grid: {
-        x: {
-          show: false
-        },
-        y: {
-          show: true
+  private getValues() {
+    if (this.dataBoolean) {
+      Observable.forkJoin(
+          this._watchlistElements.map(v => {
+            return this.http.get('http://localhost/ScadaBR/api/points/getValue/' + v.xid)
+                .map(res => res.json());
+          })
+      ).subscribe(res => {
+        this._values = res;
+        if (this.bool) {
+          for (let i = 0; i < this._values.length; i++) {
+            this.chartData.push({x: [], y: [], name: ''});
+          }
+          this.chartData.map((v, i) => v.name = this._values[i].name);
+          this.bool = false;
         }
-      },
-      zoom: {
-        enabled: true
-      }
+        if (this.chartData[0].x.length < 10) {
+          this.chartData.map((v, i) => v.x.push(new Date(this._values[i].ts)) && v.y.push(this._values[i].value));
+        } else {
+          this.chartData.map(v => v.x.splice(0, 1) && v.y.splice(0, 1));
+          this.chartData.map((v, i) => v.x.push(new Date(this._values[i].ts)) && v.y.push(this._values[i].value));
+        }
+        if (this.chartBool) {
+          this.redrawChart();
+        }
+        this.lastActualization = new Date(this._values[0].ts);
+      });
+    }
+  };
 
-    });
+  private initiateChart() {
+    Plotly.newPlot('plotly', this.chartData);
+  }
 
+  private redrawChart(){
+    Plotly.redraw('plotly', this.chartData);
+  }
+
+  private initiateInterval() {
+    this.loadPoints = setInterval(() => {
+      this.getValues();
+    }, 5000);
+  }
+
+  private pauseChart(){
+    this.chartBool = !this.chartBool;
+  }
+
+  private pauseDataDownload(){
+    this.dataBoolean = !this.dataBoolean;
+  }
+
+  private deactivateInterval() {
+    clearInterval(this.loadPoints);
   }
 
   ngOnInit() {
-    this.start();
+    this.initiateChart();
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.loadPoints);
   }
 
 }

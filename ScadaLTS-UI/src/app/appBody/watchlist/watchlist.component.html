@@ -1,34 +1,45 @@
 <div class="row">
 
-  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+  <div class="dataTableContainer col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
 
     <md-card>
 
       <div>
-        <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="updateWatchlistTable($event.xid)">
-          <option *ngFor="let item of _items; let i = index" [ngValue]="item">{{ item.name }}</option>
+        <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid);deactivateInterval();initiateInterval()">
+          <option *ngFor="let item of _watchlists" [ngValue]="item">{{ item.name }}</option>
         </select>
       </div>
-      <br>
-      <table *ngIf="_watchlistElements.length">
-        <tr *ngFor="let elem of _watchlistElements">
-          <td>{{ elem.ts }}</td>
-          <td>{{ elem.value }}</td>
+
+      <button *ngIf="dataBoolean && lastActualization" (click)="pauseDataDownload()" class="pauseDataButton chartBtn">Pause data load</button>
+      <button *ngIf="!dataBoolean && lastActualization" (click)="pauseDataDownload()" class="unpauseDataButton chartBtn">Unpause data load</button>
+      <button *ngIf="chartBool && lastActualization" (click)="pauseChart()" class="pauseChartButton chartBtn">Pause chart</button>
+      <button *ngIf="!chartBool && lastActualization" (click)="pauseChart()" class="unpauseChartButton chartBtn">Unpause chart</button>
+      <md-icon *ngIf="!dataBoolean" class="pauseInfoIcon dataPauseIcon">pause</md-icon>
+
+      <p *ngIf="lastActualization" class="lastActualizationDate">Last actualization: {{ lastActualization | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
+
+      <table *ngIf="_values.length" [ngClass]="{ 'dataLoadOff':!dataBoolean }" class="dataTable">
+        <tr *ngFor="let elem of _values">
+          <td>{{ elem.name }}</td>
+          <td class="backlightOnDataChange">{{ elem.ts | date: 'dd/MM/yyyy, HH:mm:ss' }}</td>
+          <td class="backlightOnDataChange">{{ elem.value }}</td>
         </tr>
       </table>
-
     </md-card>
   </div>
 
-  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+  <div class="chartContainer col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12" (window:resize)="initiateChart()">
 
     <md-card>
-
-      <div id="chart"></div>
-
+      <!--<button (click)="initiateChart()">in</button>-->
+      <!--<button (click)="redrawChart()">redraw</button>-->
+      <!--<div id="chart"></div>-->
+      <!--<div id="div_g"></div>-->
+      <!--<labs-dygraph [initialData]="data" [options]="options" ></labs-dygraph>-->
+      <div id="plotly" [ngClass]="{ 'chartLoadOff':!chartBool }"></div>
+      <md-icon *ngIf="!chartBool" class="pauseInfoIcon chartPauseIcon">pause</md-icon>
     </md-card>
   </div>
 
 
 </div>
-

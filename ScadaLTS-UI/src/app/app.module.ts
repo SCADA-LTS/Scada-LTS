@@ -11,6 +11,8 @@ import { RegistrationComponent } from './registration/index';
 import { WatchlistComponent } from './appBody/watchlist/index';
 import { DashboardComponent } from './appBody/dashboard/index';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { SortPipe } from './sort.pipe';
+
 
 @NgModule({
   declarations: [
@@ -19,7 +21,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     LoginComponent,
     RegistrationComponent,
     WatchlistComponent,
-    DashboardComponent
+    DashboardComponent,
+    SortPipe
   ],
   imports: [
     BrowserModule,
