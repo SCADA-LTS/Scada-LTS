@@ -20,7 +20,6 @@ export class WatchlistComponent implements OnInit {
   private ts: number;
   private name: any;
   private loadPoints;
- // private loadPoints2;
   private chartData = [];
   private bool: boolean = true;
   private chartBool: boolean = true;
@@ -55,7 +54,6 @@ export class WatchlistComponent implements OnInit {
 
   private getValues() {
     if (this.dataBoolean) {
-      //this._values = [];
       Observable.forkJoin(
           this._watchlistElements.map(v => {
             return this.http.get('http://localhost/ScadaBR/api/points/getValue/' + v.xid)
@@ -96,9 +94,6 @@ export class WatchlistComponent implements OnInit {
     this.loadPoints = setInterval(() => {
       this.getValues();
     }, 5000);
-    //this.loadPoints2 = setInterval(() => {
-    //  this.redrawChart();
-   // }, 5000);
   }
 
   private pauseChart(){
@@ -111,7 +106,6 @@ export class WatchlistComponent implements OnInit {
 
   private deactivateInterval() {
     clearInterval(this.loadPoints);
-    //clearInterval(this.loadPoints2);
   }
 
   ngOnInit() {
@@ -120,7 +114,6 @@ export class WatchlistComponent implements OnInit {
 
   ngOnDestroy() {
     clearInterval(this.loadPoints);
-    //clearInterval(this.loadPoints2);
   }
 
 }
