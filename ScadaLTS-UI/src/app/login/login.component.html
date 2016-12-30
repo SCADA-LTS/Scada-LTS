@@ -1,7 +1,7 @@
 <div class="mainContainer" [ngClass]="{ 'modalOn':showModal }">
 
   <div class="modal" [ngClass]="{ 'showModal':showModal }">
-    <md-icon class="buttonCloseModal" (click)="modalFunction()">clear</md-icon>
+    <md-icon class="buttonCloseModal" (click)="modal()">clear</md-icon>
 
     <div class="lostInfo">If you have lost access to your account, contact the administrator at: sdt@abilit.eu</div>
   </div>
@@ -18,16 +18,16 @@
 
         <form method="post">
 
-          <md-input placeholder="username" type="text"></md-input>
+          <md-input placeholder="username" type="text" [(ngModel)]="username" name="a"></md-input>
 
-          <md-input placeholder="password" type="password"></md-input>
+          <md-input placeholder="password" type="password" [(ngModel)]="password" name="b"></md-input>
 
           <div class="buttonsGroup">
-            <button md-raised-button [routerLink]="['/appBody']" type="button" class="loginButton">Sign in</button>
-            <button md-raised-button type="button" class="forgotButton" (click)="modalFunction()">Forgot password</button>
+            <button md-raised-button type="button" class="loginButton" (click)="login()">Sign in</button>
+            <button md-raised-button type="button" class="forgotButton" (click)="modal()">Forgot password</button>
             <button md-raised-button [routerLink]="['/registration']" type="button" class="registerButton">Sign up</button>
+            <!--<button md-raised-button [routerLink]="['/appBody']"  type="button" class="loginButton" (click)="hehe()">log</button>-->
           </div>
-
         </form>
 
       </div>
