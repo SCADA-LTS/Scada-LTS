@@ -126,6 +126,10 @@ public class PointValueAPI {
 			
 			private static final long serialVersionUID = 1L;
 			
+			private static final String TRUE = "1";
+			private static final String FALSE = "0";
+			
+			
 			private String value;
 			private Long ts;
 			private String name;
@@ -146,7 +150,12 @@ public class PointValueAPI {
 				if (value instanceof AlphanumericValue) {
 					this.value = ((AlphanumericValue) value).getStringValue();
 				} else if (value instanceof BinaryValue) {
-					this.value = String.valueOf(((BinaryValue) value).getBooleanValue());
+					if (((BinaryValue) value).getBooleanValue()) {
+						this.value=TRUE;
+					} else {
+						this.value=FALSE;
+					}
+					//this.value = String.valueOf(((BinaryValue) value).getBooleanValue());
 				} else if (value instanceof ImageValue) {
 					this.value = ((ImageValue) value).getFilename();
 				} else if (value instanceof MultistateValue) {
