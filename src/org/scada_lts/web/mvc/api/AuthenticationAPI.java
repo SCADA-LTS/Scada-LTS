@@ -40,11 +40,14 @@ public class AuthenticationAPI {
 			ok =  false;
 		}
 
-		if (!user.getPassword().equals(Common.encrypt(password))) {
+		if ( (user != null) && 
+			 (!user.getPassword().equals(Common.encrypt(password)))
+		   ) {
 			ok = false;
 		}
 		
-		if (ok == null) {
+		if ( user != null &&
+			 ok == null) {
 			// Update the last login time.
 	        userService.recordLogin(user.getId());
 
