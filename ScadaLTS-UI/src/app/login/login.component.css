@@ -16,9 +16,9 @@
   background-color: #fafafa;
   border: 1px solid #ebebeb;
   position: relative;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
   -o-transition: all 0.2s ease;
@@ -37,9 +37,9 @@
   min-width: 320px;
   position: relative;
   padding-left: 32px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5); }
@@ -52,12 +52,6 @@
 
 .loginForm {
   margin: 47px 40px 30px 40px; }
-
-::-webkit-input-placeholder {
-  color: #ccc; }
-
-::-moz-placeholder {
-  color: #ccc; }
 
 md-input {
   font-size: 20px;
@@ -82,9 +76,9 @@ md-input {
   text-align: center;
   background-color: #666;
   cursor: pointer;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-transition: all 0.15s ease;
   -moz-transition: all 0.15s ease;
   -o-transition: all 0.15s ease;
@@ -117,9 +111,9 @@ button:hover {
   height: 50px;
   width: 400px;
   position: relative;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-transition: background 0.5s ease;
   -moz-transition: background 0.5s ease;
   -o-transition: background 0.5s ease;
@@ -133,7 +127,9 @@ button:hover {
   color: #fff;
   float: right;
   cursor: pointer;
-  border-radius: 3px; }
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px; }
 
 .buttonCloseModal:hover {
   background-color: #111; }
