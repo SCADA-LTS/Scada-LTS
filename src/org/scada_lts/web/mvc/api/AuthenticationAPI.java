@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.web.integration.CrowdUtils;
 
 /**
  * Controller for data point edition
@@ -100,6 +101,32 @@ public class AuthenticationAPI {
 		}
 		return json;
 
+	}
+	
+	@RequestMapping(value = "/api/auth/logout/{username}", method = RequestMethod.GET)
+	public @ResponseBody String setLogout(@PathVariable("username") String username, HttpServletRequest request) {
+		LOG.info("/api/auth/logout/{username} username:" + username);
+		
+		User user = userService.getUser(username);
+		
+		if (user != null) {
+            // The user is in fact logged in. Invalidate the session.
+            request.getSession().invalidate();
+
+            if (CrowdUtils.isCrowdEnabled())
+                CrowdUtils.logout(request, null);
+        }
+
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String json = null;
+		try {
+			json = mapper.writeValueAsString(true);
+		} catch (JsonProcessingException e) {
+			LOG.error(e);
+		}
+		
+		return json;		
 	}
 	
 	
