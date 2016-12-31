@@ -16,15 +16,15 @@
 
       <div class="loginForm">
 
-        <form method="post">
+        <form method="post" (submit)="login()">
 
-          <md-input placeholder="username" type="text" [(ngModel)]="username" name="a"></md-input>
+          <md-input placeholder="username" type="text" [(ngModel)]="username" name="a" autofocus></md-input>
 
-          <md-input placeholder="password" type="password" [(ngModel)]="password" name="b"></md-input>
+          <md-input placeholder="password" type="password" [(ngModel)]="password" name="b" (keyup.enter)="login()"></md-input>
 
           <div class="buttonsGroup">
-            <button md-raised-button type="button" class="loginButton" (click)="login()">Sign in</button>
-            <button md-raised-button type="button" class="forgotButton" (click)="modal()">Forgot password</button>
+            <button md-raised-button md-ripple type="submit" (click)="login()" >Sign in</button>
+            <button md-raised-button type="button" (click)="modal()" class="forgotButton">Forgot password</button>
             <button md-raised-button [routerLink]="['/registration']" type="button" class="registerButton">Sign up</button>
             <!--<button md-raised-button [routerLink]="['/appBody']"  type="button" class="loginButton" (click)="hehe()">log</button>-->
           </div>
