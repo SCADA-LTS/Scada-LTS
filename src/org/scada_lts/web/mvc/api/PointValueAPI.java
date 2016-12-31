@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.BinaryValue;
@@ -25,6 +26,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 
 
 class ValueToJSON implements Serializable {
@@ -108,98 +110,101 @@ public class PointValueAPI {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/api/points/getValue/{xid}", method = RequestMethod.GET)
-	public @ResponseBody String getWatchListNames(@PathVariable("xid") String xid, HttpServletRequest request) {
-		LOG.info("/api/points/getValue/{xid} id:"+xid);
+	@RequestMapping(value = "/api/point_value/getValue/{xid}", method = RequestMethod.GET)
+	public @ResponseBody String getValue(@PathVariable("xid") String xid, HttpServletRequest request) {
+		LOG.info("/api/points_value/getValue/{xid} id:"+xid);
 		
 		// check may use watch list
-		//User user = Common.getUser(request);
+		User user = Common.getUser(request);
 		
 		DataPointVO dpvo = dataPointService.getDataPoint(xid);
 		
-		
-		PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
-		String json = null;
-		ObjectMapper mapper = new ObjectMapper();
-		
-		class ValueToJson implements Serializable {
+		if (user != null) {
+			PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
+			String json = null;
+			ObjectMapper mapper = new ObjectMapper();
 			
-			private static final long serialVersionUID = 1L;
-			
-			private static final String TRUE = "1";
-			private static final String FALSE = "0";
-			
-			
-			private String value;
-			private Long ts;
-			private String name;
-			private String xid;
-
-			void set(PointValueTime pvt, DataPointVO dpvo) {
-				setValue(pvt.getValue());
-				setTs(pvt.getTime());
-				setName(dpvo.getName());
-				setXid(dpvo.getXid());
-			}
-
-			public String getValue() {
-				return value;
-			}
-
-			public void setValue(MangoValue value) {
-				if (value instanceof AlphanumericValue) {
-					this.value = ((AlphanumericValue) value).getStringValue();
-				} else if (value instanceof BinaryValue) {
-					if (((BinaryValue) value).getBooleanValue()) {
-						this.value=TRUE;
-					} else {
-						this.value=FALSE;
-					}
-					//this.value = String.valueOf(((BinaryValue) value).getBooleanValue());
-				} else if (value instanceof ImageValue) {
-					this.value = ((ImageValue) value).getFilename();
-				} else if (value instanceof MultistateValue) {
-					this.value = String.valueOf(((MultistateValue) value).getIntegerValue());
-				} else if (value instanceof NumericValue) {
-					this.value = String.valueOf(((NumericValue) value).getFloatValue());
+			class ValueToJson implements Serializable {
+				
+				private static final long serialVersionUID = 1L;
+				
+				private static final String TRUE = "1";
+				private static final String FALSE = "0";
+				
+				
+				private String value;
+				private Long ts;
+				private String name;
+				private String xid;
+	
+				void set(PointValueTime pvt, DataPointVO dpvo) {
+					setValue(pvt.getValue());
+					setTs(pvt.getTime());
+					setName(dpvo.getName());
+					setXid(dpvo.getXid());
 				}
-				//error
+	
+				public String getValue() {
+					return value;
+				}
+	
+				public void setValue(MangoValue value) {
+					if (value instanceof AlphanumericValue) {
+						this.value = ((AlphanumericValue) value).getStringValue();
+					} else if (value instanceof BinaryValue) {
+						if (((BinaryValue) value).getBooleanValue()) {
+							this.value=TRUE;
+						} else {
+							this.value=FALSE;
+						}
+						//this.value = String.valueOf(((BinaryValue) value).getBooleanValue());
+					} else if (value instanceof ImageValue) {
+						this.value = ((ImageValue) value).getFilename();
+					} else if (value instanceof MultistateValue) {
+						this.value = String.valueOf(((MultistateValue) value).getIntegerValue());
+					} else if (value instanceof NumericValue) {
+						this.value = String.valueOf(((NumericValue) value).getFloatValue());
+					}
+					//error
+				}
+	
+				public Long getTs() {
+					return ts;
+				}
+	
+				public void setTs(Long ts) {
+					this.ts = ts;
+				}
+	
+				public String getName() {
+					return name;
+				}
+	
+				public void setName(String name) {
+					this.name = name;
+				}
+				public String getXid() {
+					return xid;
+				}
+	
+				public void setXid(String xid) {
+					this.xid = xid;
+				}
 			}
-
-			public Long getTs() {
-				return ts;
+	
+			ValueToJson v = new ValueToJson();
+			v.set(pvt, dpvo);
+			
+			try {
+				//TODO Checking that the all values types are casted to String.
+				json = mapper.writeValueAsString(v);
+			} catch (JsonProcessingException e) {
+				LOG.error(e);
 			}
-
-			public void setTs(Long ts) {
-				this.ts = ts;
-			}
-
-			public String getName() {
-				return name;
-			}
-
-			public void setName(String name) {
-				this.name = name;
-			}
-			public String getXid() {
-				return xid;
-			}
-
-			public void setXid(String xid) {
-				this.xid = xid;
-			}
+			return json;
+		} else {
+			return null;
 		}
-
-		ValueToJson v = new ValueToJson();
-		v.set(pvt, dpvo);
-		
-		try {
-			//TODO Checking that the all values types are casted to String.
-			json = mapper.writeValueAsString(v);
-		} catch (JsonProcessingException e) {
-			LOG.error(e);
-		}
-		return json;
 	}
 }
 
