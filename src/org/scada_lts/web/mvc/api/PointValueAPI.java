@@ -112,7 +112,7 @@ public class PointValueAPI {
 	 */
 	@RequestMapping(value = "/api/point_value/getValue/{xid}", method = RequestMethod.GET)
 	public @ResponseBody String getValue(@PathVariable("xid") String xid, HttpServletRequest request) {
-		LOG.info("/api/points_value/getValue/{xid} id:"+xid);
+		LOG.info("/api/point_value/getValue/{xid} id:"+xid);
 		
 		// check may use watch list
 		User user = Common.getUser(request);
