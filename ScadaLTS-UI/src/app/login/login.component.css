@@ -88,11 +88,12 @@ button:hover {
   background-color: #333; }
 
 .forgotButton {
-  width: 45%; }
+  width: 100%; }
 
 .registerButton {
   width: 45%;
-  float: right; }
+  float: right;
+  display: none; }
 
 .buttonsGroup {
   margin-top: 90px; }
@@ -143,14 +144,15 @@ button:hover {
   color: #ccc;
   text-align: start; }
 
-@media (max-width: 500px) {
-  .forgotButton {
-    width: 100%; }
+.errorLoginParagraph {
+  opacity: 0;
+  color: #cc0066;
+  position: absolute;
+  margin-top: 15px;
+  transition: opacity 0.2s ease; }
 
-  .registerButton {
-    width: 100%; }
-
-  .container {
-    height: 515px; } }
+.showErrorLoginParagraph {
+  transition: opacity 0.7s ease;
+  opacity: 1; }
 
 /*# sourceMappingURL=login.component.css.map */

@@ -16,20 +16,24 @@
 
       <div class="loginForm">
 
-        <form method="post" (submit)="login()">
+        <form novalidate [formGroup]="form">
 
-          <md-input placeholder="username" type="text" [(ngModel)]="username" name="a" autofocus></md-input>
+          <md-input formControlName="username" placeholder="username" type="text" [(ngModel)]="username" autofocus></md-input>
 
-          <md-input placeholder="password" type="password" [(ngModel)]="password" name="b" (keyup.enter)="login()"></md-input>
+          <md-input formControlName="password" placeholder="password" type="password" [(ngModel)]="password"></md-input>
+
+          <p class="errorLoginParagraph" [ngClass]="{'showErrorLoginParagraph': isPasswordIncorrect && form.status == 'VALID' }">Wrong username or password.</p>
+          <p class="errorLoginParagraph" [ngClass]="{'showErrorLoginParagraph': !isFormEmpty && form.status == 'INVALID' }">Enter username and password.</p>
 
           <div class="buttonsGroup">
-            <button md-raised-button md-ripple type="submit" (click)="login()" >Sign in</button>
+            <button md-raised-button md-ripple type="submit" (click)="login()">Sign in</button>
             <button md-raised-button type="button" (click)="modal()" class="forgotButton">Forgot password</button>
             <button md-raised-button [routerLink]="['/registration']" type="button" class="registerButton">Sign up</button>
-            <!--<button md-raised-button [routerLink]="['/appBody']"  type="button" class="loginButton" (click)="hehe()">log</button>-->
           </div>
         </form>
-
+          <!--<p>Form: {{ form.value | json }}</p>-->
+          <!--<p>Form status: {{ form.status | json }}</p>-->
+          <!--<p>Form status: {{ isPasswordIncorrect | json }}</p>-->
       </div>
 
     </div>
