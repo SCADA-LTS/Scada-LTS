@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
 import { AppComponent } from './index';
@@ -12,7 +12,6 @@ import { WatchlistComponent } from './appBody/watchlist/index';
 import { DashboardComponent } from './appBody/dashboard/index';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SortPipe } from './sort.pipe';
-
 
 @NgModule({
   declarations: [
@@ -27,6 +26,7 @@ import { SortPipe } from './sort.pipe';
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpModule,
     MaterialModule.forRoot(),
     routing,

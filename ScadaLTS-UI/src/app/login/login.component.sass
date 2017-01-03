@@ -85,11 +85,12 @@ button:hover
   background-color: #333
 
 .forgotButton
-  width: 45%
+  width: 100%
 
 .registerButton
   width: 45%
   float: right
+  display: none
 
 .buttonsGroup
   margin-top: 90px
@@ -130,14 +131,21 @@ button:hover
   color: #ccc
   text-align: start
 
-@media (max-width: 500px)
-  .forgotButton
-    width: 100%
-  .registerButton
-    width: 100%
-  .container
-    height: 515px
+//@media (max-width: 500px)
+//  .forgotButton
+//    width: 100%
+//  .registerButton
+//    width: 100%
+//  .container
+//    height: 515px
 
+.errorLoginParagraph
+  opacity: 0
+  color: #cc0066
+  position: absolute
+  margin-top: 15px
+  transition: opacity .2s ease
 
-
-
+.showErrorLoginParagraph
+  transition: opacity .7s ease
+  opacity: 1
