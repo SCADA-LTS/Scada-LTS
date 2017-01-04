@@ -36,7 +36,6 @@ export class LoginComponent {
 
 
     private login() {
-
         this.isPasswordIncorrect = false;
         console.log(this.form.status);
         if (this.form.status == 'VALID') {

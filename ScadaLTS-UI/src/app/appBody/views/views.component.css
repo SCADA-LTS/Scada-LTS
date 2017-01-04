@@ -1,0 +1,27 @@
+#ifr {
+  width: 100%; }
+
+h1 {
+  margin-bottom: 20px; }
+
+select {
+  line-height: 30px;
+  width: 100px;
+  border-radius: 3px;
+  text-align: center;
+  border: 1px solid #ccc;
+  outline: 0;
+  cursor: pointer;
+  padding-left: 15px;
+  margin: 0;
+  color: #333;
+  vertical-align: middle; }
+
+.elements {
+  color: #666;
+  line-height: 40px; }
+
+.elements > * {
+  vertical-align: middle; }
+
+/*# sourceMappingURL=views.component.css.map */

@@ -9,9 +9,9 @@
         <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[0] }">
             <a class="subMenuLink" [routerLink]="['./']">Main dashboard</a>
             <a class="subMenuLink" [routerLink]="['./watchlist']">Watch list</a>
-            <a class="subMenuLink" href="#">Views</a>
+            <a class="subMenuLink" [routerLink]="['./views']">Views</a>
             <a class="subMenuLink" href="#">Alarms</a>
-            <a class="subMenuLink" href="#">Raports</a>
+            <a class="subMenuLink" href="#">Reports</a>
         </div>
 
         <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[1] = !isHiddenSubMenu[1]"
