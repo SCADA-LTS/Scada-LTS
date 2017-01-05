@@ -37,6 +37,7 @@ class ValueToJSON implements Serializable {
 	private Long ts;
 	private String name;
 	private String xid;
+	private String type;
 
 	void set(PointValueTime pvt, DataPointVO dpvo) {
 		setValue(pvt.getValue());
@@ -52,14 +53,19 @@ class ValueToJSON implements Serializable {
 	public void setValue(MangoValue value) {
 		if (value instanceof AlphanumericValue) {
 			this.value = ((AlphanumericValue) value).getStringValue();
+			setType("AlphanumericValue");
 		} else if (value instanceof BinaryValue) {
 			this.value = String.valueOf(((BinaryValue) value).getBooleanValue());
+			setType("BinaryValue");
 		} else if (value instanceof ImageValue) {
 			this.value = ((ImageValue) value).getFilename();
+			setType("ImageValue");
 		} else if (value instanceof MultistateValue) {
 			this.value = String.valueOf(((MultistateValue) value).getIntegerValue());
+			setType("MultistateValue");
 		} else if (value instanceof NumericValue) {
 			this.value = String.valueOf(((NumericValue) value).getFloatValue());
+			setType("NumericValue");
 		}
 		//error
 	}
@@ -85,6 +91,14 @@ class ValueToJSON implements Serializable {
 
 	public void setXid(String xid) {
 		this.xid = xid;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }
 
@@ -124,75 +138,7 @@ public class PointValueAPI {
 			String json = null;
 			ObjectMapper mapper = new ObjectMapper();
 			
-			class ValueToJson implements Serializable {
-				
-				private static final long serialVersionUID = 1L;
-				
-				private static final String TRUE = "1";
-				private static final String FALSE = "0";
-				
-				
-				private String value;
-				private Long ts;
-				private String name;
-				private String xid;
-	
-				void set(PointValueTime pvt, DataPointVO dpvo) {
-					setValue(pvt.getValue());
-					setTs(pvt.getTime());
-					setName(dpvo.getName());
-					setXid(dpvo.getXid());
-				}
-	
-				public String getValue() {
-					return value;
-				}
-	
-				public void setValue(MangoValue value) {
-					if (value instanceof AlphanumericValue) {
-						this.value = ((AlphanumericValue) value).getStringValue();
-					} else if (value instanceof BinaryValue) {
-						if (((BinaryValue) value).getBooleanValue()) {
-							this.value=TRUE;
-						} else {
-							this.value=FALSE;
-						}
-						//this.value = String.valueOf(((BinaryValue) value).getBooleanValue());
-					} else if (value instanceof ImageValue) {
-						this.value = ((ImageValue) value).getFilename();
-					} else if (value instanceof MultistateValue) {
-						this.value = String.valueOf(((MultistateValue) value).getIntegerValue());
-					} else if (value instanceof NumericValue) {
-						this.value = String.valueOf(((NumericValue) value).getFloatValue());
-					}
-					//error
-				}
-	
-				public Long getTs() {
-					return ts;
-				}
-	
-				public void setTs(Long ts) {
-					this.ts = ts;
-				}
-	
-				public String getName() {
-					return name;
-				}
-	
-				public void setName(String name) {
-					this.name = name;
-				}
-				public String getXid() {
-					return xid;
-				}
-	
-				public void setXid(String xid) {
-					this.xid = xid;
-				}
-			}
-	
-			ValueToJson v = new ValueToJson();
+			ValueToJSON v = new ValueToJSON();
 			v.set(pvt, dpvo);
 			
 			try {
