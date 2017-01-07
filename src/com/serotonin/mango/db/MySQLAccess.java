@@ -21,9 +21,12 @@ package com.serotonin.mango.db;
 import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
+import javax.swing.plaf.basic.BasicLabelUI;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.flywaydb.core.Flyway;
 import org.springframework.dao.DataAccessException;
+import org.test.MyDAO;
 
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
@@ -72,20 +75,37 @@ public class MySQLAccess extends BasePooledAccess {
 
     @Override
     protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
+    	
+    	boolean shemaExist = true;
+    	boolean baseLineNotExist = false;
+    	
+    	
         try {
             ejt.execute("select count(*) from users");
+        } catch (DataAccessException e) {
+            shemaExist = false;
         }
-        catch (DataAccessException e) {
-            if (e.getCause() instanceof SQLException) {
-                SQLException se = (SQLException) e.getCause();
-                if ("42S02".equals(se.getSQLState())) {
-                    // This state means a missing table. Assume that the schema needs to be created.
-                    createSchema("/WEB-INF/db/createTables-mysql.sql");
-                    return true;
-                }
-            }
-            throw e;
+        
+        try {
+           ejt.execute("select count(*) from schema_version");
+        } catch (DataAccessException e) {
+        	baseLineNotExist = true;
         }
+        
+        
+        Flyway flyway = new Flyway();
+		flyway.setLocations("org.scada_lts.dao.migration.mysql");
+		flyway.setDataSource(getDataSource());
+		
+        if (shemaExist) {
+        	if (baseLineNotExist) {
+        		flyway.setBaselineOnMigrate(true);
+         		flyway.baseline();
+        	}
+        }
+        
+        flyway.migrate();
+           
         return false;
     }
 
