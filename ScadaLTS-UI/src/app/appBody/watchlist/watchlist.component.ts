@@ -19,6 +19,7 @@ export class WatchlistComponent implements OnInit {
     private value: string;
     private ts: number;
     private name: any;
+    private type: string;
     private loadPoints;
     private chartData = [];
     private bool: boolean = true;
@@ -26,6 +27,9 @@ export class WatchlistComponent implements OnInit {
     private dataBoolean: boolean = true;
     private lastActualization;
     private selectedWatchlist;
+    private chartLayout;
+    private x: boolean = false;
+    help: boolean = true;
 
     constructor(@Inject(Http) private http: Http) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
@@ -38,11 +42,14 @@ export class WatchlistComponent implements OnInit {
     };
 
     private updateWatchlistTable(xid) {
+        //this.initiateChart();
+        this.help = true;
         this._watchlistElements = [];
         this.http.get(`http://localhost/ScadaBR/api/watchlist/getPoints/${xid}`)
             .subscribe(res => {
                 this._watchlistElements = res.json();
                 this.getValues();
+
             });
     };
 
@@ -53,41 +60,120 @@ export class WatchlistComponent implements OnInit {
     }
 
     private getValues() {
+
         if (this.dataBoolean) {
             Observable.forkJoin(
                 this._watchlistElements.map(v => {
-                    return this.http.get(`http://localhost/ScadaBR/api/points/getValue/${v.xid}`)
+                    return this.http.get(`http://localhost/ScadaBR/api/point_value/getValue/${v.xid}`)
                         .map(res => res.json());
                 })
             ).subscribe(res => {
                 this._values = res;
                 if (this.bool) {
                     for (let i = 0; i < this._values.length; i++) {
-                        this.chartData.push({x: [], y: [], name: ''});
+                        this.chartData.push({x: [], y: [], name: '', line: {shape: '', width: 1}});
+                        if (this._values[i].type !== 'NumericValue') {
+                            this.chartData[i]['yaxis'] = 'y2';
+                            this.chartData[i]['line'].shape = 'vh';
+
+                        }
                     }
                     this.chartData.map((v, i) => v.name = this._values[i].name);
                     this.bool = false;
                 }
+                //v.x.push(new Date(this._values[i].ts))
                 if (this.chartData[0].x.length < 10) {
-                    this.chartData.map((v, i) => v.x.push(new Date(this._values[i].ts)) && v.y.push(this._values[i].value));
+                    this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
                 } else {
                     this.chartData.map(v => v.x.splice(0, 1) && v.y.splice(0, 1));
-                    this.chartData.map((v, i) => v.x.push(new Date(this._values[i].ts)) && v.y.push(this._values[i].value));
+                    this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
                 }
-                if (this.chartBool) {
+
+
+                if (this.help) {
+
+
+                    for (let i = 0; i < this._values.length; i++) {
+                        if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
+                            this.x = true;
+                            break;
+                        } else {
+                            this.x = false;
+                        }
+                    }
+
+                    if (this.x) {
+                        this.chartLayout = {
+                            yaxis2: {
+
+                                titlefont: {color: '#000'},
+                                tickfont: {color: '#aa00ff'},
+                                overlaying: 'y',
+                                side: 'right',
+                                showticklabels: true,
+                                gridcolor: '#eeccff'
+                            }
+                        };
+                    }
+
+                    this.initiateChart();
+                    this.help = false;
+                } else {
                     this.redrawChart();
                 }
+                console.log(this.chartData);
+
+
                 this.lastActualization = new Date(this._values[0].ts);
+
             });
         }
+
     };
 
+    increaseChartLineWidth() {
+        this.chartData.map(v => v['line'].width += 1);
+        this.redrawChart();
+    }
+
+    decreaseChartLineWidth() {
+        if (this.chartData[0]['line'].width > 1) {
+            this.chartData.map(v => v['line'].width -= 1);
+            this.redrawChart();
+        }
+    }
+
+    toSplineChart() {
+        this.chartData.map(v => v['line'].width = 1);
+        for (let i = 0; i < this._values.length; i++) {
+            if (this._values[i].type == 'NumericValue') {
+                this.chartData[i]['line'].shape = 'spline';
+            }
+        }
+        this.redrawChart();
+    }
+
+    toLinearChart() {
+        this.chartData.map(v => v['line'].width = 1);
+        for (let i = 0; i < this._values.length; i++) {
+            if (this._values[i].type == 'NumericValue') {
+                this.chartData[i]['line'].shape = 'linear';
+            }
+        }
+        this.redrawChart();
+    }
+
+    toDotChart() {
+        this.chartData.map(v => v['line'].width = 0);
+        this.redrawChart();
+    }
+
     private initiateChart() {
-        Plotly.newPlot('plotly', this.chartData);
+        Plotly.newPlot('plotly', this.chartData, this.chartLayout);
     }
 
     private redrawChart() {
-        Plotly.redraw('plotly', this.chartData);
+        Plotly.redraw('plotly', this.chartData, this.chartLayout);
     }
 
     private initiateInterval() {

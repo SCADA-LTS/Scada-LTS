@@ -14,7 +14,6 @@ export class ViewsComponent implements OnInit {
     $('#ifr').on('load', function() {
         $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').hide();
     });
-
   }
 
   ngOnInit(){
