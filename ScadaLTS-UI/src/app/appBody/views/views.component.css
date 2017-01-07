@@ -24,4 +24,15 @@ select {
 .elements > * {
   vertical-align: middle; }
 
+md-card {
+  animation: show 3s ease; }
+
+@keyframes show {
+  0% {
+    opacity: 0; }
+  50% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
 /*# sourceMappingURL=views.component.css.map */
