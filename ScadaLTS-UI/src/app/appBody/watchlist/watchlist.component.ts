@@ -32,8 +32,6 @@ export class WatchlistComponent implements OnInit {
     help: boolean = true;
 
     constructor(@Inject(Http) private http: Http) {
-
-
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
             .subscribe(res => this._watchlists = res.json());
         setTimeout(() => {
@@ -44,7 +42,6 @@ export class WatchlistComponent implements OnInit {
     };
 
     private updateWatchlistTable(xid) {
-
         //this.initiateChart();
         this.help = true;
         this._watchlistElements = [];
@@ -57,7 +54,6 @@ export class WatchlistComponent implements OnInit {
     };
 
     private cleanChartBeforeDraw() {
-
         this.chartData = [];
         this.bool = true;
         Plotly.newPlot('plotly', this.chartData);

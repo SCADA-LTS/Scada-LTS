@@ -1,6 +1,27 @@
 <div class="row">
 
-  <div class="dataTableContainer col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+
+
+  <div class="chartContainer col-md-12 col-xs-12" (window:resize)="initiateChart()">
+
+    <md-card>
+      <!--<button (click)="initiateChart()">in</button>-->
+      <!--<button (click)="redrawChart()">redraw</button>-->
+      <button md-raised-button md-ripple (click)="increaseChartLineWidth()">Increase line width</button>
+      <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">Decrease line width</button>
+      <button md-raised-button md-ripple (click)="toSplineChart()">Spline chart</button>
+      <button md-raised-button md-ripple (click)="toLinearChart()">Linear chart</button>
+      <button md-raised-button md-ripple (click)="toDotChart()">Dot chart</button>
+      <!--<button md-raised-button md-ripple (click)="linear ? toSplineChart() : toLinearChart()">{{ linear ? "Spline chart" : "Linear chart"}}</button>-->
+      <div id="plotly" [ngClass]="{ 'chartLoadOff':!chartBool }"></div>
+      <!--<md-icon *ngIf="!chartBool" class="pauseInfoIcon chartPauseIcon">pause</md-icon>-->
+    </md-card>
+  </div>
+
+
+
+
+  <div class="dataTableContainer col-md-6 col-xs-12">
 
     <md-card>
 
@@ -9,12 +30,6 @@
           <option *ngFor="let item of _watchlists" [ngValue]="item">{{ item.name }}</option>
         </select>
       </div>
-
-      <button *ngIf="dataBoolean && lastActualization" (click)="pauseDataDownload()" class="pauseDataButton chartBtn">Pause data load</button>
-      <button *ngIf="!dataBoolean && lastActualization" (click)="pauseDataDownload()" class="unpauseDataButton chartBtn">Unpause data load</button>
-      <button *ngIf="chartBool && lastActualization" (click)="pauseChart()" class="pauseChartButton chartBtn">Pause chart</button>
-      <button *ngIf="!chartBool && lastActualization" (click)="pauseChart()" class="unpauseChartButton chartBtn">Unpause chart</button>
-      <md-icon *ngIf="!dataBoolean" class="pauseInfoIcon dataPauseIcon">pause</md-icon>
 
       <p *ngIf="lastActualization" class="lastActualizationDate">Last actualization: {{ lastActualization | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
 
@@ -28,18 +43,36 @@
     </md-card>
   </div>
 
-  <div class="chartContainer col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12" (window:resize)="initiateChart()">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="dataTableContainer col-md-6 col-xs-12">
 
     <md-card>
-      <!--<button (click)="initiateChart()">in</button>-->
-      <!--<button (click)="redrawChart()">redraw</button>-->
-      <!--<div id="chart"></div>-->
-      <!--<div id="div_g"></div>-->
-      <!--<labs-dygraph [initialData]="data" [options]="options" ></labs-dygraph>-->
-      <div id="plotly" [ngClass]="{ 'chartLoadOff':!chartBool }"></div>
-      <md-icon *ngIf="!chartBool" class="pauseInfoIcon chartPauseIcon">pause</md-icon>
+      <div>
+        <h1>some content</h1>
+        <h1>will</h1>
+        <h1>be here</h1>
+      </div>
     </md-card>
   </div>
-
 
 </div>

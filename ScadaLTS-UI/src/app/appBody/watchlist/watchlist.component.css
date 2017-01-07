@@ -97,7 +97,7 @@ select {
   40%, 60% {
     opacity: 1; } }
 .chartBtn {
-  width: 48%;
+  width: 160px;
   box-sizing: border-box;
   height: 30px;
   border-radius: 3px;
@@ -114,7 +114,7 @@ select {
   float: right; }
 
 .lastActualizationDate {
-  margin-bottom: 15px; }
+  margin: 15px 0; }
 
 .dataLoadOff {
   opacity: 0.3;
@@ -144,5 +144,21 @@ select {
     background-color: #d7f4e4; }
   100% {
     background-color: transparent; } }
+[md-raised-button] {
+  margin: 0.3em 0 1em 0;
+  width: 170px;
+  color: #fff;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  text-align: center;
+  background-color: #666;
+  cursor: pointer;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-transition: all 0.15s ease;
+  -moz-transition: all 0.15s ease;
+  -o-transition: all 0.15s ease;
+  transition: all 0.15s ease; }
 
 /*# sourceMappingURL=watchlist.component.css.map */
