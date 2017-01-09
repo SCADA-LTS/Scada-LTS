@@ -30,6 +30,8 @@ export class WatchlistComponent implements OnInit {
     private chartLayout;
     private x: boolean = false;
     help: boolean = true;
+    isHvChart: boolean = true;
+    isLinearChart: boolean = true;
 
     constructor(@Inject(Http) private http: Http) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
@@ -74,7 +76,7 @@ export class WatchlistComponent implements OnInit {
                         this.chartData.push({x: [], y: [], name: '', line: {shape: '', width: 1}});
                         if (this._values[i].type !== 'NumericValue') {
                             this.chartData[i]['yaxis'] = 'y2';
-                            this.chartData[i]['line'].shape = 'vh';
+                            this.chartData[i]['line'].shape = 'hv';
 
                         }
                     }
@@ -92,7 +94,6 @@ export class WatchlistComponent implements OnInit {
 
                 if (this.help) {
 
-
                     for (let i = 0; i < this._values.length; i++) {
                         if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
                             this.x = true;
@@ -105,7 +106,6 @@ export class WatchlistComponent implements OnInit {
                     if (this.x) {
                         this.chartLayout = {
                             yaxis2: {
-
                                 titlefont: {color: '#000'},
                                 tickfont: {color: '#aa00ff'},
                                 overlaying: 'y',
@@ -154,6 +154,7 @@ export class WatchlistComponent implements OnInit {
     }
 
     toLinearChart() {
+        this.isLinearChart = true;
         this.chartData.map(v => v['line'].width = 1);
         for (let i = 0; i < this._values.length; i++) {
             if (this._values[i].type == 'NumericValue') {
@@ -164,7 +165,30 @@ export class WatchlistComponent implements OnInit {
     }
 
     toDotChart() {
+        this.isLinearChart = false;
         this.chartData.map(v => v['line'].width = 0);
+        this.redrawChart();
+    }
+
+
+
+    toHvChart() {
+        this.isHvChart = true;
+        for (let i = 0; i < this._values.length; i++) {
+            if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
+                this.chartData[i]['line'].shape = 'hv';
+            }
+        }
+        this.redrawChart();
+    }
+
+    toHvhChart() {
+        this.isHvChart = false;
+        for (let i = 0; i < this._values.length; i++) {
+            if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
+                this.chartData[i]['line'].shape = 'hvh';
+            }
+        }
         this.redrawChart();
     }
 

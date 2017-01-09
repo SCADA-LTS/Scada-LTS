@@ -145,8 +145,9 @@ select {
   100% {
     background-color: transparent; } }
 [md-raised-button] {
-  margin: 0.3em 0 1em 0;
-  width: 170px;
+  margin: 0.3em 0.3em 1em 0.3em;
+  width: 16%;
+  min-width: 160px;
   color: #fff;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
@@ -160,5 +161,8 @@ select {
   -moz-transition: all 0.15s ease;
   -o-transition: all 0.15s ease;
   transition: all 0.15s ease; }
+
+h2 {
+  font-size: 20px; }
 
 /*# sourceMappingURL=watchlist.component.css.map */

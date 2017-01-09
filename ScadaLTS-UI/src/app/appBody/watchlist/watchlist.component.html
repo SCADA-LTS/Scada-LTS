@@ -1,38 +1,26 @@
 <div class="row">
 
-
-
   <div class="chartContainer col-md-12 col-xs-12" (window:resize)="initiateChart()">
 
     <md-card>
-      <!--<button (click)="initiateChart()">in</button>-->
-      <!--<button (click)="redrawChart()">redraw</button>-->
-      <button md-raised-button md-ripple (click)="increaseChartLineWidth()">Increase line width</button>
-      <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">Decrease line width</button>
-      <button md-raised-button md-ripple (click)="toSplineChart()">Spline chart</button>
-      <button md-raised-button md-ripple (click)="toLinearChart()">Linear chart</button>
-      <button md-raised-button md-ripple (click)="toDotChart()">Dot chart</button>
-      <!--<button md-raised-button md-ripple (click)="linear ? toSplineChart() : toLinearChart()">{{ linear ? "Spline chart" : "Linear chart"}}</button>-->
+        <button md-raised-button md-ripple (click)="increaseChartLineWidth()">Increase line width</button>
+        <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">Decrease line width</button>
+        <button md-raised-button md-ripple (click)="toSplineChart()">Spline chart</button>
+        <button md-raised-button md-ripple (click)="isLinearChart ? toDotChart() : toLinearChart()">{{ isLinearChart ? 'Dot chart' : 'Linear chart' }}</button>
+        <button md-raised-button md-ripple (click)="isHvChart ? toHvhChart() : toHvChart()">{{ isHvChart ? 'Hv chart' : 'Hvh chart' }}</button>
       <div id="plotly" [ngClass]="{ 'chartLoadOff':!chartBool }"></div>
-      <!--<md-icon *ngIf="!chartBool" class="pauseInfoIcon chartPauseIcon">pause</md-icon>-->
     </md-card>
   </div>
-
-
-
 
   <div class="dataTableContainer col-md-6 col-xs-12">
 
     <md-card>
-
       <div>
         <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid);deactivateInterval();initiateInterval()">
           <option *ngFor="let item of _watchlists" [ngValue]="item">{{ item.name }}</option>
         </select>
       </div>
-
       <p *ngIf="lastActualization" class="lastActualizationDate">Last actualization: {{ lastActualization | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
-
       <table *ngIf="_values.length" [ngClass]="{ 'dataLoadOff':!dataBoolean }" class="dataTable">
         <tr *ngFor="let elem of _values | sort">
           <td>{{ elem.name }}</td>
@@ -41,37 +29,13 @@
         </tr>
       </table>
     </md-card>
+
   </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <div class="dataTableContainer col-md-6 col-xs-12">
+  <div class="col-md-6 col-xs-12">
 
     <md-card>
-      <div>
-        <h1>some content</h1>
-        <h1>will</h1>
-        <h1>be here</h1>
-      </div>
+        <h2>Time series</h2>
     </md-card>
   </div>
 
