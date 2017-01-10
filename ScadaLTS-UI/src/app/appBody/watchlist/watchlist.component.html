@@ -1,13 +1,14 @@
 <div class="row">
 
-  <div class="chartContainer col-md-12 col-xs-12" (window:resize)="initiateChart()">
+  <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'open': !xx }" (window:resize)="initiateChart()">
 
     <md-card>
-        <button md-raised-button md-ripple (click)="increaseChartLineWidth()">Increase line width</button>
-        <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">Decrease line width</button>
-        <button md-raised-button md-ripple (click)="toSplineChart()">Spline chart</button>
-        <button md-raised-button md-ripple (click)="isLinearChart ? toDotChart() : toLinearChart()">{{ isLinearChart ? 'Dot chart' : 'Linear chart' }}</button>
-        <button md-raised-button md-ripple (click)="isHvChart ? toHvhChart() : toHvChart()">{{ isHvChart ? 'Hv chart' : 'Hvh chart' }}</button>
+      <div class="chartButtons">
+        <button md-raised-button md-ripple (click)="increaseChartLineWidth()">+</button>
+        <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">-</button>
+        <button md-raised-button md-ripple (click)="toSplineChart()">s</button>
+        <button md-raised-button md-ripple (click)="isLinearChart ? toDotChart() : toLinearChart()">{{ isLinearChart ? 'd' : 'l' }}</button>
+      </div>
       <div id="plotly" [ngClass]="{ 'chartLoadOff':!chartBool }"></div>
     </md-card>
   </div>
@@ -24,18 +25,22 @@
       <table *ngIf="_values.length" [ngClass]="{ 'dataLoadOff':!dataBoolean }" class="dataTable">
         <tr *ngFor="let elem of _values | sort">
           <td>{{ elem.name }}</td>
-          <td class="backlightOnDataChange">{{ elem.ts | date: 'dd/MM/yyyy, HH:mm:ss' }}</td>
+          <td class="backlightOnDataChange">{{ elem.ts | date: 'HH:mm:ss' }}</td>
           <td class="backlightOnDataChange">{{ elem.value }}</td>
+          <td><md-checkbox></md-checkbox></td>
         </tr>
       </table>
     </md-card>
 
   </div>
 
-  <div class="col-md-6 col-xs-12">
-
+  <div class="chartSettings col-md-6 col-xs-12">
     <md-card>
+
         <h2>Time series</h2>
+      <button md-raised-button md-ripple (click)="xx = !xx">{{ xx ? 'Open chart' : 'Close chart' }}</button>
+      <!--<button md-raised-button md-ripple (click)="cleanChartBeforeDraw()">Reset chart</button>-->
+
     </md-card>
   </div>
 

@@ -12,26 +12,26 @@ declare let Plotly: any;
 
 export class WatchlistComponent implements OnInit {
 
-    private _watchlists: Array<WatchlistComponent> = [];
-    private _watchlistElements: Array<WatchlistComponent> = [];
-    private _values: Array<WatchlistComponent> = [];
-    private xid: string;
-    private value: string;
-    private ts: number;
-    private name: any;
-    private type: string;
-    private loadPoints;
-    private chartData = [];
-    private bool: boolean = true;
-    private chartBool: boolean = true;
-    private dataBoolean: boolean = true;
-    private lastActualization;
-    private selectedWatchlist;
-    private chartLayout;
-    private x: boolean = false;
+    _watchlists: Array<WatchlistComponent> = [];
+    _watchlistElements: Array<WatchlistComponent> = [];
+    _values: Array<WatchlistComponent> = [];
+    xid: string;
+    value: string;
+    ts: number;
+    name: any;
+    type: string;
+    loadPoints;
+    chartData = [];
+    bool: boolean = true;
+    chartBool: boolean = true;
+    dataBoolean: boolean = true;
+    lastActualization;
+    selectedWatchlist;
+    chartLayout;
+    x: boolean = false;
     help: boolean = true;
-    isHvChart: boolean = true;
     isLinearChart: boolean = true;
+    z:boolean = true;
 
     constructor(@Inject(Http) private http: Http) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
@@ -41,9 +41,16 @@ export class WatchlistComponent implements OnInit {
             this.selectedWatchlist = this._watchlists[0];
             this.initiateInterval();
         }, 500);
+        // this.chartLayout = {
+        //     showlegend: true,
+        //     legend: {
+        //         "orientation": "h",
+        //         bgcolor: 'transparent'
+        //     }
+        // };
     };
 
-    private updateWatchlistTable(xid) {
+    updateWatchlistTable(xid) {
         //this.initiateChart();
         this.help = true;
         this._watchlistElements = [];
@@ -55,13 +62,14 @@ export class WatchlistComponent implements OnInit {
             });
     };
 
-    private cleanChartBeforeDraw() {
+    cleanChartBeforeDraw() {
+
         this.chartData = [];
         this.bool = true;
         Plotly.newPlot('plotly', this.chartData);
     }
 
-    private getValues() {
+    getValues() {
 
         if (this.dataBoolean) {
             Observable.forkJoin(
@@ -90,6 +98,20 @@ export class WatchlistComponent implements OnInit {
                     this.chartData.map(v => v.x.splice(0, 1) && v.y.splice(0, 1));
                     this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
                 }
+
+                this.lastActualization = new Date(this._values[0].ts);
+
+
+
+
+                    // for (let i = 0; i < this.chartData.length; i++) {
+                    //     if (this._values[0].ts - this.chartData[i].x[0] > 2) {
+                    //         this.chartData[i].x[0] = new Date(this._values[0].ts);
+                    //     }
+                    // }
+
+
+
 
 
                 if (this.help) {
@@ -124,12 +146,32 @@ export class WatchlistComponent implements OnInit {
                 console.log(this.chartData);
 
 
-                this.lastActualization = new Date(this._values[0].ts);
+
 
             });
         }
 
     };
+
+    // openChart(){
+    //     if (this.x) {
+    //         this.chartLayout = {
+    //             yaxis2: {
+    //                 titlefont: {color: '#000'},
+    //                 tickfont: {color: '#aa00ff'},
+    //                 overlaying: 'y',
+    //                 side: 'right',
+    //                 showticklabels: true,
+    //                 gridcolor: '#eeccff'
+    //             }
+    //         };
+    //
+    //     }
+    // }
+    //
+    // closeChart(){
+    //
+    // }
 
     increaseChartLineWidth() {
         this.chartData.map(v => v['line'].width += 1);
@@ -170,51 +212,31 @@ export class WatchlistComponent implements OnInit {
         this.redrawChart();
     }
 
+    xx: boolean = true;
 
-
-    toHvChart() {
-        this.isHvChart = true;
-        for (let i = 0; i < this._values.length; i++) {
-            if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
-                this.chartData[i]['line'].shape = 'hv';
-            }
-        }
-        this.redrawChart();
-    }
-
-    toHvhChart() {
-        this.isHvChart = false;
-        for (let i = 0; i < this._values.length; i++) {
-            if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
-                this.chartData[i]['line'].shape = 'hvh';
-            }
-        }
-        this.redrawChart();
-    }
-
-    private initiateChart() {
+    initiateChart() {
         Plotly.newPlot('plotly', this.chartData, this.chartLayout);
     }
 
-    private redrawChart() {
+    redrawChart() {
         Plotly.redraw('plotly', this.chartData, this.chartLayout);
     }
 
-    private initiateInterval() {
+    initiateInterval() {
         this.loadPoints = setInterval(() => {
             this.getValues();
         }, 5000);
     }
 
-    private pauseChart() {
+    pauseChart() {
         this.chartBool = !this.chartBool;
     }
 
-    private pauseDataDownload() {
+    pauseDataDownload() {
         this.dataBoolean = !this.dataBoolean;
     }
 
-    private deactivateInterval() {
+    deactivateInterval() {
         clearInterval(this.loadPoints);
     }
 
