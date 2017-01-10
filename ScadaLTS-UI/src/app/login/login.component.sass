@@ -20,7 +20,7 @@
   display: flex
   align-items: center
   justify-content: center
-  background-color: #666
+  background-color: #333
   +transition(background-color .5s ease)
 
 .container
@@ -85,17 +85,18 @@ button:hover
   background-color: #333
 
 .forgotButton
-  width: 45%
+  width: 100%
 
 .registerButton
   width: 45%
   float: right
+  display: none
 
 .buttonsGroup
   margin-top: 90px
 
 .modalOn
-  background-color: #333
+  background-color: #1a1a1a
   +transition(background-color .5s ease)
 
 .modal
@@ -117,9 +118,11 @@ button:hover
   float: right
   cursor: pointer
   +border-radius(2px)
+  +transition(transform .3s ease-in)
 
 .buttonCloseModal:hover
-  background-color: #111
+  transform: scale(1.6)
+  +transition(transform .1s ease-in-out)
 
 .hide
   display: none
@@ -130,14 +133,22 @@ button:hover
   color: #ccc
   text-align: start
 
-@media (max-width: 500px)
-  .forgotButton
-    width: 100%
-  .registerButton
-    width: 100%
-  .container
-    height: 515px
+//@media (max-width: 500px)
+//  .forgotButton
+//    width: 100%
+//  .registerButton
+//    width: 100%
+//  .container
+//    height: 515px
 
+.errorLoginParagraph
+  opacity: 0
+  color: #cc0066
+  position: absolute
+  margin-top: 15px
+  transition: opacity .2s ease
 
-
-
+.showErrorLoginParagraph
+  animation: 2s x ease
+  transition: opacity .7s ease
+  opacity: 1
