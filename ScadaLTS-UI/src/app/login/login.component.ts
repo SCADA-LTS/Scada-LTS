@@ -1,6 +1,7 @@
-import {Component, Inject} from '@angular/core';
+import {Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {Http} from '@angular/http';
+import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 
 @Component({
     templateUrl: './login.component.html',
@@ -9,10 +10,13 @@ import {Http} from '@angular/http';
 
 export class LoginComponent {
 
-    private username: string;
-    private password: string;
+    private username: string = "";
+    private password: string = "";
     private showModal: boolean = false;
     private response: string;
+    private isPasswordIncorrect: boolean = false;
+    isFormEmpty: boolean = true;
+    form: FormGroup;
 
     private modal() {
         this.showModal = !this.showModal;
@@ -21,24 +25,36 @@ export class LoginComponent {
     private handle(error: any): Promise<any> {
         console.error('An error occurred!', error);
         return Promise.reject(error.message || error);
-    }
-
-    constructor(@Inject(Http) private http: Http, private router: Router) {
     };
 
+    constructor(public fb: FormBuilder, private http: Http, private router: Router) {
+        this.form = this.fb.group({
+            username: ['', Validators.required],
+            password: ['', Validators.required]
+        });
+    };
+
+
     private login() {
-        this.http.get(`http://localhost/ScadaBR/api/auth/${this.username}/${this.password}`)
-            .map(res => res.json())
-            .catch(this.handle)
-            .subscribe(res => {
-                this.response = res;
-                if (this.response) {
-                    console.log('access granted');
-                    this.router.navigate(['/appBody']);
-                } else {
-                    console.log('acces denied');
-                }
-            });
+        this.isPasswordIncorrect = false;
+        console.log(this.form.status);
+        if (this.form.status == 'VALID') {
+            this.http.get(`http://localhost/ScadaBR/api/auth/${this.username}/${this.password}`)
+                .map(res => res.json())
+                .catch(this.handle)
+                .subscribe(res => {
+                    this.response = res;
+                    if (this.response) {
+                        console.log('access granted');
+                        this.router.navigate(['/appBody']);
+                    } else {
+                        console.log('access denied');
+                        this.isPasswordIncorrect = true;
+                    }
+                });
+        } else {
+            this.isFormEmpty = false;
+        }
     }
 
 }

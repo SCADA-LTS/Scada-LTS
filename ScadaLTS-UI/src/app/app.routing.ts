@@ -5,6 +5,7 @@ import { LoginComponent } from './login/index';
 import { RegistrationComponent } from './registration/index';
 import { WatchlistComponent } from './appBody/watchlist/index';
 import { DashboardComponent } from './appBody/dashboard/index';
+import { ViewsComponent } from './appBody/views/index';
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
@@ -13,6 +14,7 @@ const appRoutes: Routes = [
     children: [
       { path: 'watchlist', component: WatchlistComponent },
       { path: 'dashboard', component: DashboardComponent },
+      { path: 'views', component: ViewsComponent },
       { path: '', component: DashboardComponent }
     ]},
 

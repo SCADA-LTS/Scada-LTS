@@ -1,4 +1,23 @@
-input
+=border-radius($radius)
+  -webkit-border-radius: $radius
+  -moz-border-radius: $radius
+  border-radius: $radius
+
+=transition($trans)
+  -webkit-transition: $trans
+  -moz-transition: $trans
+  -o-transition: $trans
+  transition: $trans
+
+=boxshadow($shadow)
+  -webkit-box-shadow: $shadow
+  -moz-box-shadow: $shadow
+  box-shadow: $shadow
+
+*
+  box-sizing: border-box
+
+input[type="text"]
   border: 1px dotted #666
   width: 70%
   height: 40px
@@ -98,15 +117,6 @@ select
   40%, 60%
     opacity: 1
 
-.chartBtn
-  width: 48%
-  box-sizing: border-box
-  height: 30px
-  border-radius: 3px
-  cursor: pointer
-  transition: border-color .3s ease
-  border: 1px solid #ccc
-  margin: 15px 0
 
 .chartBtn:hover
   border-color: #666
@@ -116,7 +126,7 @@ select
   float: right
 
 .lastActualizationDate
-  margin-bottom: 15px
+  margin: 15px 0
 
 .dataLoadOff
   opacity: .3
@@ -147,3 +157,35 @@ select
     background-color: #d7f4e4
   100%
     background-color: transparent
+
+.chartContainer [md-raised-button]
+  width: 10px
+  color: #fff
+  font-size: 14px
+  -webkit-font-smoothing: antialiased
+  text-align: center
+  background-color: #666
+  cursor: pointer
+  +border-radius(2px)
+  +transition(all .15s ease)
+
+.chartSettings [md-raised-button]
+  width: 160px
+  color: #fff
+  background-color: #666
+
+h2
+  font-size: 20px
+
+.chartContainer
+  height: 0
+  overflow: hidden
+  transition: all .5s ease-in-out
+  margin-top: -30px
+
+.open
+  margin-top: 0
+  margin-bottom: 10px
+  height: 554px
+  transition: all .5s ease-in
+
