@@ -126,5 +126,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring-security-taglibs-4.2.0.RELEASE.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring-security-web-4.2.0.RELEASE.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/flyway-core-4.0.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/flyway-core-4.0.3-sources.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -34,7 +34,6 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.spring.ConnectionCallbackVoid;
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
-import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.upgrade.DBUpgrade;
 import com.serotonin.mango.vo.User;
