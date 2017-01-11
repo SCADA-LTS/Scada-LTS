@@ -148,7 +148,11 @@ public class DataPointDAO {
 
 		String templateSelectWhereXid = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_XID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	public List<DataPointVO> getDataPoints() {

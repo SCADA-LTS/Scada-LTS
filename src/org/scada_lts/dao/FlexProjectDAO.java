@@ -22,6 +22,7 @@ import br.org.scadabr.api.vo.FlexProject;
 import com.mysql.jdbc.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -103,7 +104,11 @@ public class FlexProjectDAO {
 
 		String templateSelectWhereId = FLEX_PROJECT_SELECT + " where " + COLUMN_NAME_ID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[]{id}, new FlexProjectRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[]{id}, new FlexProjectRowMapper());
+		} catch (EmptyResultDataAccessException err) {
+			return null;
+		}	
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

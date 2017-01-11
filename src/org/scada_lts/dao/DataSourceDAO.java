@@ -229,7 +229,11 @@ public class DataSourceDAO {
 			LOG.trace("getDataSource(String xid) xid:" + xid);
 		}
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(DATA_SOURCE_SELECT_WHERE_XID, new Object[]{xid}, new DataSourceRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(DATA_SOURCE_SELECT_WHERE_XID, new Object[]{xid}, new DataSourceRowMapper());
+		} catch (EmptyResultDataAccessException err) {
+			return null;
+		}	
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

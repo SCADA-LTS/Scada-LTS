@@ -213,8 +213,11 @@ public class MaintenanceEventDAO {
 		}
 
 		String templateSelectWhereId = MAINTENANCE_EVENT_SELECT + "where m." + COLUMN_NAME_ID + "=?";
-
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new MaintenanceEventRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new MaintenanceEventRowMapper());
+		} catch (EmptyResultDataAccessException err) {
+			return null;
+		}
 	}
 
 	public MaintenanceEventVO getMaintenanceEvent(String xid) {

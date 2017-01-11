@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.IdName;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -220,11 +221,19 @@ public class ViewDAO implements GenericDAO<View> {
 
 	@Override
 	public View findById(Object[] pk) {
-		return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, pk , new ViewRowMapper());
+		try {
+			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, pk , new ViewRowMapper());
+		} catch (EmptyResultDataAccessException err) {
+			return null;
+		}
 	}
 	
 	public View findByXId(Object[] pk) {
-		return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, pk , new ViewRowMapper());
+		try {
+			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, pk , new ViewRowMapper());
+		} catch (EmptyResultDataAccessException err) {
+			return null;
+		}
 	}
 
 	//TO rewrite order for example Object[] with column to order.
@@ -305,7 +314,11 @@ public class ViewDAO implements GenericDAO<View> {
 	}
 	
 	public View getView(String name) {
-		return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT + " where " + VIEW_FILTER_BASE_ON_NAME, new Object[] {name}, new ViewRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT + " where " + VIEW_FILTER_BASE_ON_NAME, new Object[] {name}, new ViewRowMapper());
+		} catch (EmptyResultDataAccessException err) {
+			return null;
+		}
 	}
 
 	//TODO rewrite
