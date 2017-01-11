@@ -12,7 +12,7 @@ declare let Plotly: any;
 
 export class WatchlistComponent implements OnInit {
 
-    _watchlists: Array<WatchlistComponent> = [];
+    private _watchlists: Array<WatchlistComponent> = [];
     _watchlistElements: Array<WatchlistComponent> = [];
     _values: Array<WatchlistComponent> = [];
     xid: string;
@@ -32,6 +32,7 @@ export class WatchlistComponent implements OnInit {
     help: boolean = true;
     isLinearChart: boolean = true;
     z:boolean = true;
+    c:number = 0;
 
     constructor(@Inject(Http) private http: Http) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
@@ -93,10 +94,10 @@ export class WatchlistComponent implements OnInit {
                 }
                 //v.x.push(new Date(this._values[i].ts))
                 if (this.chartData[0].x.length < 10) {
-                    this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+                    this.chartData.map((v, i) => v.x.push(new Date(this._values[i].ts)) && v.y.push(this._values[i].value));
                 } else {
                     this.chartData.map(v => v.x.splice(0, 1) && v.y.splice(0, 1));
-                    this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+                    this.chartData.map((v, i) => v.x.push(new Date(this._values[i].ts)) && v.y.push(this._values[i].value));
                 }
 
                 this.lastActualization = new Date(this._values[0].ts);
@@ -135,6 +136,7 @@ export class WatchlistComponent implements OnInit {
                                 showticklabels: true,
                                 gridcolor: '#eeccff'
                             }
+
                         };
                     }
 
@@ -146,6 +148,14 @@ export class WatchlistComponent implements OnInit {
                 console.log(this.chartData);
 
 
+                if (this.c == 0 || this.c > 9) {
+                    this.chartLayout.xaxis = {
+                        range: [this._values[0].ts, this._values[0].ts+(45*1000)]
+                    };
+
+                }
+
+                this.c++
 
 
             });
