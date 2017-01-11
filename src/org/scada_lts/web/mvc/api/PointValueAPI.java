@@ -25,6 +25,7 @@ import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
+import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 
@@ -38,12 +39,16 @@ class ValueToJSON implements Serializable {
 	private String name;
 	private String xid;
 	private String type;
+	private TextRenderer textRenderer;
+	private String chartColour;
 
 	void set(PointValueTime pvt, DataPointVO dpvo) {
 		setValue(pvt.getValue());
 		setTs(pvt.getTime());
 		setName(dpvo.getName());
 		setXid(dpvo.getXid());
+		setTextRenderer(dpvo.getTextRenderer());
+		setChartColour(dpvo.getChartColour());
 	}
 
 	public String getValue() {
@@ -100,6 +105,34 @@ class ValueToJSON implements Serializable {
 	public void setType(String type) {
 		this.type = type;
 	}
+
+	/**
+	 * @return the textRenderer
+	 */
+	public TextRenderer getTextRenderer() {
+		return textRenderer;
+	}
+
+	/**
+	 * @param textRenderer the textRenderer to set
+	 */
+	public void setTextRenderer(TextRenderer textRenderer) {
+		this.textRenderer = textRenderer;
+	}
+
+	/**
+	 * @return the chartColour
+	 */
+	public String getChartColour() {
+		return chartColour;
+	}
+
+	/**
+	 * @param chartColour the chartColour to set
+	 */
+	public void setChartColour(String chartColour) {
+		this.chartColour = chartColour;
+	}
 }
 
 
@@ -128,10 +161,8 @@ public class PointValueAPI {
 		LOG.info("/api/point_value/getValue/{xid} id:"+xid);
 		
 		try {
-			// check may use watch list
 			User user = Common.getUser(request);
 			DataPointVO dpvo = dataPointService.getDataPoint(xid);
-		
 			if (user != null) {
 				PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
 				String json = null;
@@ -139,6 +170,7 @@ public class PointValueAPI {
 				
 				ValueToJSON v = new ValueToJSON();
 				v.set(pvt, dpvo);
+
 				json = mapper.writeValueAsString(v);
 				
 				return new ResponseEntity<String>(json,HttpStatus.OK);
@@ -151,5 +183,6 @@ public class PointValueAPI {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
 }
 

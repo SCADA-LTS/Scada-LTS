@@ -42,10 +42,8 @@ public class PointPropertiesAPI {
 		try {
 			// check may use watch list
 			User user = Common.getUser(request);
-		
 			if (user != null) {
 				DataPointVO dpvo = dataPointService.getDataPoint(xid);
-			
 				String json = null;
 				ObjectMapper mapper = new ObjectMapper();
 				

@@ -111,7 +111,6 @@ public class WatchListAPI {
 		
 		try {
 			User user = Common.getUser(request);
-		
 			if (user != null) {
 				class PointJSON implements Serializable{
 					private String xid;
@@ -167,7 +166,6 @@ public class WatchListAPI {
 		
 		try {
 			User user = Common.getUser(request);
-		
 			if (user != null) {
 				class DataChartJSON implements Serializable{
 					private String xid;
