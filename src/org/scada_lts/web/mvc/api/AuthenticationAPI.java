@@ -5,11 +5,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +31,7 @@ public class AuthenticationAPI {
 	private UserService userService = new UserService();
 	
 	@RequestMapping(value = "/api/auth/{username}/{password}", method = RequestMethod.GET)
-	public @ResponseBody String setAuthentication(@PathVariable("username") String username, @PathVariable("password") String password, HttpServletRequest request) {
+	public ResponseEntity<String> setAuthentication(@PathVariable("username") String username, @PathVariable("password") String password, HttpServletRequest request) {
 		LOG.info("/api/auth/{username}/{password} username:" + username);
 		
 		User user = userService.getUser(username);
@@ -64,16 +65,16 @@ public class AuthenticationAPI {
 		ObjectMapper mapper = new ObjectMapper();
 		String json = null;
 		try {
-			json = mapper.writeValueAsString(ok);
+			json = mapper.writeValueAsString(ok);	
 		} catch (JsonProcessingException e) {
 			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-		return json;
-		
+		return new ResponseEntity<String>(json,HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/api/auth/isLogged/{username}", method = RequestMethod.GET)
-	public @ResponseBody String checkIsLogged(@PathVariable("username") String username, HttpServletRequest request) {
+	public ResponseEntity<String> checkIsLogged(@PathVariable("username") String username, HttpServletRequest request) {
 		
 		LOG.info("/api/auth/isLogged/{username} username:"+username);
 		
@@ -98,13 +99,13 @@ public class AuthenticationAPI {
 			json = mapper.writeValueAsString(ok);
 		} catch (JsonProcessingException e) {
 			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-		return json;
-
+		return new ResponseEntity<String>(json,HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/api/auth/logout/{username}", method = RequestMethod.GET)
-	public @ResponseBody String setLogout(@PathVariable("username") String username, HttpServletRequest request) {
+	public ResponseEntity<String> setLogout(@PathVariable("username") String username, HttpServletRequest request) {
 		LOG.info("/api/auth/logout/{username} username:" + username);
 		
 		User user = userService.getUser(username);
@@ -117,16 +118,15 @@ public class AuthenticationAPI {
                 CrowdUtils.logout(request, null);
         }
 
-		
 		ObjectMapper mapper = new ObjectMapper();
 		String json = null;
 		try {
 			json = mapper.writeValueAsString(true);
 		} catch (JsonProcessingException e) {
 			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-		
-		return json;		
+		return new ResponseEntity<String>(json,HttpStatus.OK);
 	}
 	
 	
