@@ -9,13 +9,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -119,37 +119,36 @@ public class PointValueAPI {
 	private PointValueService pointValueService;
 		
 	/**
-	 * 
 	 * @param xid
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping(value = "/api/point_value/getValue/{xid}", method = RequestMethod.GET)
-	public @ResponseBody String getValue(@PathVariable("xid") String xid, HttpServletRequest request) {
+	public ResponseEntity<String> getValue(@PathVariable("xid") String xid, HttpServletRequest request) {
 		LOG.info("/api/point_value/getValue/{xid} id:"+xid);
 		
-		// check may use watch list
-		User user = Common.getUser(request);
+		try {
+			// check may use watch list
+			User user = Common.getUser(request);
+			DataPointVO dpvo = dataPointService.getDataPoint(xid);
 		
-		DataPointVO dpvo = dataPointService.getDataPoint(xid);
-		
-		if (user != null) {
-			PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
-			String json = null;
-			ObjectMapper mapper = new ObjectMapper();
-			
-			ValueToJSON v = new ValueToJSON();
-			v.set(pvt, dpvo);
-			
-			try {
-				//TODO Checking that the all values types are casted to String.
+			if (user != null) {
+				PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
+				String json = null;
+				ObjectMapper mapper = new ObjectMapper();
+				
+				ValueToJSON v = new ValueToJSON();
+				v.set(pvt, dpvo);
 				json = mapper.writeValueAsString(v);
-			} catch (JsonProcessingException e) {
-				LOG.error(e);
+				
+				return new ResponseEntity<String>(json,HttpStatus.OK);
 			}
-			return json;
-		} else {
-			return null;
+			
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 	}
 }

@@ -18,8 +18,6 @@
  */
 package com.serotonin.mango.db;
 
-import java.sql.SQLException;
-
 import javax.servlet.ServletContext;
 
 import org.apache.commons.dbcp.BasicDataSource;
