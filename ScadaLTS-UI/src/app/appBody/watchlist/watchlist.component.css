@@ -35,10 +35,17 @@ table {
 tr:nth-of-type(odd) {
   background: #eee; }
 
-td {
+table td {
   padding: 6px;
   border: 1px solid #ccc;
-  text-align: left; }
+  text-align: left;
+  white-space: nowrap; }
+
+table td.checkBox {
+  width: 2%; }
+
+table td.date {
+  width: 5%; }
 
 tr {
   border-radius: 5px; }

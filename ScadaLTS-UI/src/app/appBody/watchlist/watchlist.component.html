@@ -24,10 +24,10 @@
       <p *ngIf="lastActualization" class="lastActualizationDate">Last actualization: {{ lastActualization | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
       <table *ngIf="_values.length" [ngClass]="{ 'dataLoadOff':!dataBoolean }" class="dataTable">
         <tr *ngFor="let elem of _values | sort">
+          <td class="checkBox"><md-checkbox></md-checkbox></td>
           <td>{{ elem.name }}</td>
-          <td class="backlightOnDataChange">{{ elem.ts | date: 'HH:mm:ss' }}</td>
+          <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
           <td class="backlightOnDataChange">{{ elem.value }}</td>
-          <td><md-checkbox></md-checkbox></td>
         </tr>
       </table>
     </md-card>
