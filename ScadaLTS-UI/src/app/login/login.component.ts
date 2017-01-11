@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component,ElementRef} from '@angular/core';
 import {Router} from '@angular/router';
 import {Http} from '@angular/http';
 import {FormGroup, FormBuilder, Validators} from "@angular/forms";
@@ -28,6 +28,8 @@ export class LoginComponent {
     };
 
     constructor(public fb: FormBuilder, private http: Http, private router: Router) {
+        this.username = 'admin';
+        this.password = 'admin';
         this.form = this.fb.group({
             username: ['', Validators.required],
             password: ['', Validators.required]
