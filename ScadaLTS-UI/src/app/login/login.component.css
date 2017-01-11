@@ -4,10 +4,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #666;
+  background-color: #333;
   -webkit-transition: background-color 0.5s ease;
   -moz-transition: background-color 0.5s ease;
-  -ms-transition: background-color 0.5s ease;
   -o-transition: background-color 0.5s ease;
   transition: background-color 0.5s ease; }
 
@@ -17,12 +16,11 @@
   background-color: #fafafa;
   border: 1px solid #ebebeb;
   position: relative;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
   -o-transition: all 0.2s ease;
   transition: all 0.2s ease;
   -webkit-box-shadow: 16px 16px 32px 0 rgba(0, 0, 0, 0.74902);
@@ -39,9 +37,9 @@
   min-width: 320px;
   position: relative;
   padding-left: 32px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5); }
@@ -53,13 +51,7 @@
   vertical-align: middle; }
 
 .loginForm {
-  margin: 50px 40px 30px 40px; }
-
-::-webkit-input-placeholder {
-  color: #ccc; }
-
-::-moz-placeholder {
-  color: #ccc; }
+  margin: 47px 40px 30px 40px; }
 
 md-input {
   font-size: 20px;
@@ -84,12 +76,11 @@ md-input {
   text-align: center;
   background-color: #666;
   cursor: pointer;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-transition: all 0.15s ease;
   -moz-transition: all 0.15s ease;
-  -ms-transition: all 0.15s ease;
   -o-transition: all 0.15s ease;
   transition: all 0.15s ease; }
 
@@ -97,20 +88,20 @@ button:hover {
   background-color: #333; }
 
 .forgotButton {
-  width: 45%; }
+  width: 100%; }
 
 .registerButton {
   width: 45%;
-  float: right; }
+  float: right;
+  display: none; }
 
 .buttonsGroup {
-  margin-top: 87px; }
+  margin-top: 90px; }
 
 .modalOn {
-  background-color: #333;
+  background-color: #1a1a1a;
   -webkit-transition: background-color 0.5s ease;
   -moz-transition: background-color 0.5s ease;
-  -ms-transition: background-color 0.5s ease;
   -o-transition: background-color 0.5s ease;
   transition: background-color 0.5s ease; }
 
@@ -121,12 +112,11 @@ button:hover {
   height: 50px;
   width: 400px;
   position: relative;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-transition: background 0.5s ease;
   -moz-transition: background 0.5s ease;
-  -ms-transition: background 0.5s ease;
   -o-transition: background 0.5s ease;
   transition: background 0.5s ease; }
 
@@ -134,17 +124,24 @@ button:hover {
   display: block; }
 
 .buttonCloseModal {
-  height: 40px;
-  width: 40px;
   background-color: transparent;
   color: #fff;
   float: right;
-  padding: 5px;
   cursor: pointer;
-  border-radius: 3px; }
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-transition: transform 0.3s ease-in;
+  -moz-transition: transform 0.3s ease-in;
+  -o-transition: transform 0.3s ease-in;
+  transition: transform 0.3s ease-in; }
 
 .buttonCloseModal:hover {
-  background-color: #111; }
+  transform: scale(1.6);
+  -webkit-transition: transform 0.1s ease-in-out;
+  -moz-transition: transform 0.1s ease-in-out;
+  -o-transition: transform 0.1s ease-in-out;
+  transition: transform 0.1s ease-in-out; }
 
 .hide {
   display: none; }
@@ -155,14 +152,16 @@ button:hover {
   color: #ccc;
   text-align: start; }
 
-@media (max-width: 500px) {
-  .forgotButton {
-    width: 100%; }
+.errorLoginParagraph {
+  opacity: 0;
+  color: #cc0066;
+  position: absolute;
+  margin-top: 15px;
+  transition: opacity 0.2s ease; }
 
-  .registerButton {
-    width: 100%; }
-
-  .container {
-    height: 515px; } }
+.showErrorLoginParagraph {
+  animation: 2s x ease;
+  transition: opacity 0.7s ease;
+  opacity: 1; }
 
 /*# sourceMappingURL=login.component.css.map */

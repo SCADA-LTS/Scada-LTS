@@ -524,7 +524,7 @@ public class PointValueService implements MangoPointValues {
 					ArrayList<Object[]> params = new ArrayList<Object[]>();
 
 					for (int i = 0; i < inserts.length; i++) {
-						Object[] args = new Object[] { inserts[i].pointId, inserts[i].dataType, inserts[i].dvalue, inserts[i].dataType };
+						Object[] args = new Object[] { inserts[i].pointId, inserts[i].dataType, inserts[i].dvalue, inserts[i].time };
 						params.add(args);
 					}
 

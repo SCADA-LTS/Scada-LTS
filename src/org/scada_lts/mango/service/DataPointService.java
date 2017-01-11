@@ -17,6 +17,31 @@
  */
 package org.scada_lts.mango.service;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.quartz.SchedulerException;
+import org.scada_lts.cache.EventDetectorsCache;
+import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.DataPointUserDAO;
+import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.PointHierarchyDAO;
+import org.scada_lts.dao.PointLinkDAO;
+import org.scada_lts.dao.UserCommentDAO;
+import org.scada_lts.dao.pointvalues.PointValueDAO;
+import org.scada_lts.dao.watchlist.WatchListDAO;
+import org.scada_lts.mango.adapter.MangoDataPoint;
+import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.service.PointHierarchyService;
+import org.springframework.jdbc.UncategorizedSQLException;
+import org.springframework.stereotype.Service;
+
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
@@ -30,25 +55,13 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.util.Tuple;
-import org.quartz.SchedulerException;
-import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.*;
-import org.scada_lts.dao.pointvalues.PointValueDAO;
-import org.scada_lts.dao.watchlist.WatchListDAO;
-import org.scada_lts.mango.adapter.MangoDataPoint;
-import org.scada_lts.mango.adapter.MangoPointHierarchy;
-import org.scada_lts.service.PointHierarchyService;
-import org.springframework.jdbc.UncategorizedSQLException;
-
-import java.io.IOException;
-import java.util.*;
 
 /**
  * Service for DataPointDAO
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class DataPointService implements MangoDataPoint {
 
 	private static final DataPointDAO dataPointDAO = new DataPointDAO();
@@ -218,9 +231,9 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public void deletePointHistory(int dpId) {
-		long min = pointValueDAO.getMinTs(dpId);
-		long max = pointValueDAO.getMaxTs(dpId);
-		deletePointHistory(dpId, min, max);
+		//long min = pointValueDAO.getMinTs(dpId);
+		//long max = pointValueDAO.getMaxTs(dpId);
+		deletePointHistory(dpId, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	@Override
@@ -241,13 +254,16 @@ public class DataPointService implements MangoDataPoint {
 		}
 	}
 
+	//TODO rewrite int[] dataPointIds 
 	@Override
 	public void deleteDataPointImpl(String dataPointIds) {
 
 		dataPointDAO.deleteEventHandler(dataPointIds);
 		userCommentDAO.deleteUserCommentPoint(dataPointIds);
 		pointEventDetectorDAO.deleteWithId(dataPointIds);
-		dataPointUserDAO.deleteWhereDataPointId(Integer.valueOf(dataPointIds));
+		for (String id: dataPointIds.split(",")){
+			dataPointUserDAO.deleteWhereDataPointId(Integer.valueOf(id));
+		}
 		watchListDAO.deleteWatchListPoints(dataPointIds);
 		dataPointDAO.deleteWithIn(dataPointIds);
 

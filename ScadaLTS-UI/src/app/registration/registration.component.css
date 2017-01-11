@@ -17,9 +17,9 @@
   background-color: #fafafa;
   border: 1px solid #ebebeb;
   position: relative;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-transition: background 0.5s ease;
   -moz-transition: background 0.5s ease;
   -ms-transition: background 0.5s ease;
@@ -39,9 +39,9 @@
   box-sizing: border-box;
   position: relative;
   padding-left: 32px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5); }
@@ -84,9 +84,9 @@ md-input {
   text-align: center;
   background-color: #666;
   cursor: pointer;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   -webkit-transition: all 0.15s ease;
   -moz-transition: all 0.15s ease;
   -ms-transition: all 0.15s ease;
