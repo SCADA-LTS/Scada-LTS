@@ -23,16 +23,13 @@ export class WatchlistComponent implements OnInit {
     loadPoints;
     chartData = [];
     bool: boolean = true;
-    chartBool: boolean = true;
-    dataBoolean: boolean = true;
     lastActualization;
     selectedWatchlist;
     chartLayout;
     x: boolean = false;
     help: boolean = true;
     isLinearChart: boolean = true;
-    z:boolean = true;
-    c:number = 0;
+    xx: boolean = true;
 
     constructor(@Inject(Http) private http: Http) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
@@ -42,13 +39,6 @@ export class WatchlistComponent implements OnInit {
             this.selectedWatchlist = this._watchlists[0];
             this.initiateInterval();
         }, 500);
-        // this.chartLayout = {
-        //     showlegend: true,
-        //     legend: {
-        //         "orientation": "h",
-        //         bgcolor: 'transparent'
-        //     }
-        // };
     };
 
     updateWatchlistTable(xid) {
@@ -63,16 +53,11 @@ export class WatchlistComponent implements OnInit {
             });
     };
 
-    cleanChartBeforeDraw() {
 
-        this.chartData = [];
-        this.bool = true;
-        Plotly.newPlot('plotly', this.chartData);
-    }
 
     getValues() {
 
-        if (this.dataBoolean) {
+
             Observable.forkJoin(
                 this._watchlistElements.map(v => {
                     return this.http.get(`http://localhost/ScadaBR/api/point_value/getValue/${v.xid}`)
@@ -93,26 +78,14 @@ export class WatchlistComponent implements OnInit {
                     this.bool = false;
                 }
                 //v.x.push(new Date(this._values[i].ts))
-                if (this.chartData[0].x.length < 10) {
-                    this.chartData.map((v, i) => v.x.push(new Date(this._values[i].ts)) && v.y.push(this._values[i].value));
-                } else {
-                    this.chartData.map(v => v.x.splice(0, 1) && v.y.splice(0, 1));
-                    this.chartData.map((v, i) => v.x.push(new Date(this._values[i].ts)) && v.y.push(this._values[i].value));
-                }
-
+                // if (this.chartData[0].x.length < 10) {
+                //     this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+                // } else {
+                //     this.chartData.map(v => v.x.splice(0, 1) && v.y.splice(0, 1));
+                //     this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+                // }
+                this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
                 this.lastActualization = new Date(this._values[0].ts);
-
-
-
-
-                    // for (let i = 0; i < this.chartData.length; i++) {
-                    //     if (this._values[0].ts - this.chartData[i].x[0] > 2) {
-                    //         this.chartData[i].x[0] = new Date(this._values[0].ts);
-                    //     }
-                    // }
-
-
-
 
 
                 if (this.help) {
@@ -134,55 +107,37 @@ export class WatchlistComponent implements OnInit {
                                 overlaying: 'y',
                                 side: 'right',
                                 showticklabels: true,
-                                gridcolor: '#eeccff'
+                                gridcolor: '#eeccff',
+                                range: ['false', 'true']
                             }
 
                         };
                     }
 
+
                     this.initiateChart();
                     this.help = false;
                 } else {
+                    console.log(this.chartData[0].x.length);
+                    console.log(this.chartData[0]);
+                    if (this.chartData[0].x.length > 9) {
+
+                        this.chartLayout.xaxis = {
+                            range: [Date.parse(this.chartData[0].x[0]) - 2000, Date.parse(this.chartData[0].x[this.chartData[0].x.length - 1]) + 5000]
+                        };
+
+                    }
                     this.redrawChart();
                 }
-                console.log(this.chartData);
-
-
-                if (this.c == 0 || this.c > 9) {
-                    this.chartLayout.xaxis = {
-                        range: [this._values[0].ts, this._values[0].ts+(45*1000)]
-                    };
-
-                }
-
-                this.c++
 
 
             });
-        }
+
 
     };
 
-    // openChart(){
-    //     if (this.x) {
-    //         this.chartLayout = {
-    //             yaxis2: {
-    //                 titlefont: {color: '#000'},
-    //                 tickfont: {color: '#aa00ff'},
-    //                 overlaying: 'y',
-    //                 side: 'right',
-    //                 showticklabels: true,
-    //                 gridcolor: '#eeccff'
-    //             }
-    //         };
-    //
-    //     }
-    // }
-    //
-    // closeChart(){
-    //
-    // }
 
+    //funkcje pomocnicze
     increaseChartLineWidth() {
         this.chartData.map(v => v['line'].width += 1);
         this.redrawChart();
@@ -196,7 +151,7 @@ export class WatchlistComponent implements OnInit {
     }
 
     toSplineChart() {
-        this.chartData.map(v => v['line'].width = 1);
+        this.isLinearChart = false;
         for (let i = 0; i < this._values.length; i++) {
             if (this._values[i].type == 'NumericValue') {
                 this.chartData[i]['line'].shape = 'spline';
@@ -207,7 +162,6 @@ export class WatchlistComponent implements OnInit {
 
     toLinearChart() {
         this.isLinearChart = true;
-        this.chartData.map(v => v['line'].width = 1);
         for (let i = 0; i < this._values.length; i++) {
             if (this._values[i].type == 'NumericValue') {
                 this.chartData[i]['line'].shape = 'linear';
@@ -215,14 +169,6 @@ export class WatchlistComponent implements OnInit {
         }
         this.redrawChart();
     }
-
-    toDotChart() {
-        this.isLinearChart = false;
-        this.chartData.map(v => v['line'].width = 0);
-        this.redrawChart();
-    }
-
-    xx: boolean = true;
 
     initiateChart() {
         Plotly.newPlot('plotly', this.chartData, this.chartLayout);
@@ -232,18 +178,16 @@ export class WatchlistComponent implements OnInit {
         Plotly.redraw('plotly', this.chartData, this.chartLayout);
     }
 
+    cleanChartBeforeDraw() {
+        this.chartData = [];
+        this.bool = true;
+        Plotly.newPlot('plotly', this.chartData);
+    }
+
     initiateInterval() {
         this.loadPoints = setInterval(() => {
             this.getValues();
         }, 5000);
-    }
-
-    pauseChart() {
-        this.chartBool = !this.chartBool;
-    }
-
-    pauseDataDownload() {
-        this.dataBoolean = !this.dataBoolean;
     }
 
     deactivateInterval() {
