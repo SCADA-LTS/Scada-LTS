@@ -192,8 +192,12 @@ public class ScheduledEventDAO {
 		}
 
 		String templateSelectWhereId = SCHEDULED_EVENT_SELECT + "where " + COLUMN_NAME_ID + "=? ";
-
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new ScheduledEventRowMapper());
+		
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new ScheduledEventRowMapper());
+		} catch (EmptyResultDataAccessException err) {
+			return null;
+		}
 	}
 
 	public ScheduledEventVO getScheduledEvent(String xid) {

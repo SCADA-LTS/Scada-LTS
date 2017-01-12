@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.exception.EventDetectorTemplateExceptionDAO;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -133,6 +134,7 @@ public class EventDetectorTemplateDAO {
 			
 	// @formatter:on
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public EventDetectorTemplateVO getEventDetectorTemplate(int id) {
 		
 		if (LOG.isTraceEnabled()) {
@@ -141,18 +143,23 @@ public class EventDetectorTemplateDAO {
 		
 		String templateSelectWhereId = TEMPLATES_SELECT +" where " + COLUMN_NAME_EVENT_DETEC_TEMPL_ID + "=? ";
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		EventDetectorTemplateVO eventDetectorTemplateVO = (EventDetectorTemplateVO) DAO.getInstance().getJdbcTemp().queryForObject( templateSelectWhereId, new Object[] { id },  
+		EventDetectorTemplateVO eventDetectorTemplateVO = null;
+		
+		try {
+			eventDetectorTemplateVO = (EventDetectorTemplateVO) DAO.getInstance().getJdbcTemp().queryForObject( templateSelectWhereId, new Object[] { id },  
 				new RowMapper() {
 					@Override
 					public EventDetectorTemplateVO mapRow(ResultSet rs, int rownumber) throws SQLException {
 							EventDetectorTemplateVO eventDetectorTempl = new EventDetectorTemplateVO();
 							eventDetectorTempl.setId(rs.getInt(COLUMN_NAME_EVENT_DETEC_TEMPL_ID));
 							eventDetectorTempl.setName(rs.getString(COLUMN_NAME_EVENT_DETEC_TEMPL_NAME));
-							return eventDetectorTempl;
+								return eventDetectorTempl;
+						}
 					}
-				}
-		);
+			);
+		} catch (EmptyResultDataAccessException err) {
+			return null;
+		}
 		
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		List<PointEventDetectorVO> listPointEventDetectorVO = DAO.getInstance().getJdbcTemp().query(DETECTORS_SELECT, new Object[] { eventDetectorTemplateVO.getId() },new RowMapper() {

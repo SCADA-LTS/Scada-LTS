@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -178,8 +179,11 @@ public class ScriptDAO  {
 	}
 
 	public ScriptVO<?> getScript(int id) {
-		
-		return (ScriptVO<?>) DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_ONE, new Object[]  { id }, new ScriptRowMapper());
+		try {
+			return (ScriptVO<?>) DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_ONE, new Object[]  { id }, new ScriptRowMapper());
+		} catch (EmptyResultDataAccessException err) {
+			return null;
+		}
 	}
 	
 	public List<ScriptVO<?>> getScripts() {
