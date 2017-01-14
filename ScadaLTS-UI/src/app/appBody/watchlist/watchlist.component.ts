@@ -15,6 +15,7 @@ export class WatchlistComponent implements OnInit {
     private _watchlists: Array<WatchlistComponent> = [];
     _watchlistElements: Array<WatchlistComponent> = [];
     _values: Array<WatchlistComponent> = [];
+    _oldValues: Array<WatchlistComponent> = [];
     xid: string;
     value: string;
     ts: number;
@@ -30,6 +31,10 @@ export class WatchlistComponent implements OnInit {
     help: boolean = true;
     isLinearChart: boolean = true;
     xx: boolean = true;
+    inputDate: any = new Date();
+    getDataFromPast: boolean = false;
+    values;
+    help2: boolean = true;
 
     constructor(@Inject(Http) private http: Http) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
@@ -39,10 +44,17 @@ export class WatchlistComponent implements OnInit {
             this.selectedWatchlist = this._watchlists[0];
             this.initiateInterval();
         }, 500);
+        this.chartLayout = {
+            showlegend: true,
+            legend: {
+                "orientation": "h",
+                bgcolor: 'transparent',
+                y: -0.17
+            }
+        };
     };
 
     updateWatchlistTable(xid) {
-        //this.initiateChart();
         this.help = true;
         this._watchlistElements = [];
         this.http.get(`http://localhost/ScadaBR/api/watchlist/getPoints/${xid}`)
@@ -54,84 +66,94 @@ export class WatchlistComponent implements OnInit {
     };
 
 
-
     getValues() {
 
 
-            Observable.forkJoin(
-                this._watchlistElements.map(v => {
-                    return this.http.get(`http://localhost/ScadaBR/api/point_value/getValue/${v.xid}`)
-                        .map(res => res.json());
-                })
-            ).subscribe(res => {
-                this._values = res;
-                if (this.bool) {
-                    for (let i = 0; i < this._values.length; i++) {
-                        this.chartData.push({x: [], y: [], name: '', line: {shape: '', width: 1}});
-                        if (this._values[i].type !== 'NumericValue') {
-                            this.chartData[i]['yaxis'] = 'y2';
-                            this.chartData[i]['line'].shape = 'hv';
+        Observable.forkJoin(
+            this._watchlistElements.map(v => {
+                return this.http.get(`http://localhost/ScadaBR/api/point_value/getValue/${v.xid}`)
+                    .map(res => res.json());
+            })
+        ).subscribe(res => {
+            this._values = res;
 
-                        }
+            if (this.bool) {
+                for (let i = 0; i < this._values.length; i++) {
+                    this.chartData.push({x: [], y: [], name: '', line: {shape: '', width: 1}, mode: 'lines+markers'});
+                    if (this._values[i].type !== 'NumericValue') {
+                        this.chartData[i]['yaxis'] = 'y2';
+                        this.chartData[i]['line'].shape = 'hv';
+
                     }
-                    this.chartData.map((v, i) => v.name = this._values[i].name);
-                    this.bool = false;
                 }
-                //v.x.push(new Date(this._values[i].ts))
-                // if (this.chartData[0].x.length < 10) {
-                //     this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
-                // } else {
-                //     this.chartData.map(v => v.x.splice(0, 1) && v.y.splice(0, 1));
-                //     this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
-                // }
-                this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
-                this.lastActualization = new Date(this._values[0].ts);
+                this.chartData.map((v, i) => v.name = this._values[i].name);
+                this.bool = false;
+            }
 
+            if (this.getDataFromPast) {
+                this.help2 = false;
+                this.chartData.map(v =>{ v.x = []; v.y = []});
 
-                if (this.help) {
+                Observable.forkJoin(
+                    this._watchlistElements.map(v => {
+                        return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${this.inputDate - 300000}/${v.xid}`)
+                            .map(res => res.json());
+                    })
+                ).subscribe(res => {
+                    this._oldValues = res;
 
-                    for (let i = 0; i < this._values.length; i++) {
-                        if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
-                            this.x = true;
-                            break;
-                        } else {
-                            this.x = false;
+                    for (let i = 0; i < this.chartData.length; i++) {
+                        for (let j = 0; j < this._oldValues[0].values.length; j++) {
+                            this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)
                         }
-                    }
-
-                    if (this.x) {
-                        this.chartLayout = {
-                            yaxis2: {
-                                titlefont: {color: '#000'},
-                                tickfont: {color: '#aa00ff'},
-                                overlaying: 'y',
-                                side: 'right',
-                                showticklabels: true,
-                                gridcolor: '#eeccff',
-                                range: ['false', 'true']
-                            }
-
-                        };
-                    }
-
-
-                    this.initiateChart();
-                    this.help = false;
-                } else {
-                    console.log(this.chartData[0].x.length);
-                    console.log(this.chartData[0]);
-                    if (this.chartData[0].x.length > 9) {
-
-                        this.chartLayout.xaxis = {
-                            range: [Date.parse(this.chartData[0].x[0]) - 2000, Date.parse(this.chartData[0].x[this.chartData[0].x.length - 1]) + 5000]
-                        };
 
                     }
                     this.redrawChart();
+                    this.getDataFromPast = false;
+                });
+            }
+
+            if (this.help2) {
+                this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+            }
+
+            this.lastActualization = new Date(this._values[0].ts);
+            console.log(this.chartData);
+
+            if (this.help) {
+
+                for (let i = 0; i < this._values.length; i++) {
+                    if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
+                        this.x = true;
+                        break;
+                    } else {
+                        this.x = false;
+                    }
+                }
+
+                if (this.x) {
+                    this.chartLayout.yaxis2 = {
+                        titlefont: {color: '#000'},
+                        tickfont: {color: '#aa00ff'},
+                        overlaying: 'y',
+                        side: 'right',
+                        showticklabels: true,
+                        gridcolor: '#eeccff',
+                        range: ['false', 'true']
+                    }
+
                 }
 
 
-            });
+                this.initiateChart();
+                this.help = false;
+                this.chartData.map(v => v['mode'] = 'lines');
+            } else {
+                this.redrawChart();
+            }
+
+            this.help2 = true;
+        });
 
 
     };
