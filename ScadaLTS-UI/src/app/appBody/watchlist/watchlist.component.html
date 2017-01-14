@@ -21,7 +21,7 @@
       <p *ngIf="lastActualization" class="lastActualizationDate">Last actualization: {{ lastActualization | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
       <table *ngIf="_values.length" class="dataTable">
         <tr *ngFor="let elem of _values | sort">
-          <td class="checkBox"><md-checkbox></md-checkbox></td>
+          <!--<td class="checkBox"><md-checkbox></md-checkbox></td>-->
           <td>{{ elem.name }}</td>
           <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
           <td class="backlightOnDataChange">{{ elem.value }}</td>
@@ -34,6 +34,9 @@
     <md-card>
         <h2>Time series</h2>
       <button md-raised-button md-ripple (click)="xx = !xx">{{ xx ? 'Open chart' : 'Close chart' }}</button>
+      <button md-raised-button md-ripple (click)="getDataFromPast = true">Load chart</button>
+      <md-input [(ngModel)]="inputDate"></md-input>
+      <!--<button (click)="clean()">clean</button>-->
     </md-card>
   </div>
 
