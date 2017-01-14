@@ -32,11 +32,41 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 
 
+class ValueTime implements Serializable {
+	
+	private static final long serialVersionUID = -1253618593346111896L;
+	
+	private String value;
+	private Long ts;
+	
+	public ValueTime(String value, Long ts) {
+		setValue(value);
+		setTs(ts);
+	}
+	
+	public String getValue() {
+		return value;
+	}
+	
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+	public Long getTs() {
+		return ts;
+	}
+	
+	public void setTs(Long ts) {
+		this.ts = ts;
+	}
+	
+}
+
 class ValuesToJSON implements Serializable {
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6842996239503634071L;
 	
-	private List<String> values;
+	private List<ValueTime> values;
 	private Long fromTs;
 	private Long toTs;
 	private String name;
@@ -45,7 +75,7 @@ class ValuesToJSON implements Serializable {
 	private TextRenderer textRenderer;
 	private String chartColour;
 	
-	public ValuesToJSON(List<String> values, DataPointVO dpvo, String type, Long from,Long to) {
+	public ValuesToJSON(List<ValueTime> values, DataPointVO dpvo, String type, Long from,Long to) {
 		setValues(values);
 		setFromTs(from);
 		setToTs(to);
@@ -54,14 +84,6 @@ class ValuesToJSON implements Serializable {
 		setType(type);
 		setTextRenderer(dpvo.getTextRenderer());
 		setChartColour(dpvo.getChartColour());
-	}
-	
-	public void setValues(List<String> values) {
-		this.values = values;
-	}
-	
-	public List<String> getValues() {
-		return this.values;
 	}
 	
 	public void setFromTs(Long fTs) {
@@ -118,6 +140,14 @@ class ValuesToJSON implements Serializable {
 	
 	public String getChartColour() {
 		return chartColour;
+	}
+
+	public List<ValueTime> getValues() {
+		return values;
+	}
+
+	public void setValues(List<ValueTime> values) {
+		this.values = values;
 	}
 	
 }
@@ -299,8 +329,10 @@ public class PointValueAPI {
 		}
 	}
 	
+
+	
 	/**
-	 * @param xid
+	 * @param ts, xid
 	 * @param request
 	 * @return
 	 */
@@ -318,10 +350,10 @@ public class PointValueAPI {
 				String json = null;
 				ObjectMapper mapper = new ObjectMapper();
 				
-				List<String> values = new ArrayList<String>();
+				List<ValueTime> values = new ArrayList<ValueTime>();
 				String type = null;
 				for ( PointValueTime pvt : pvts ) {
-					values.add(getValue(pvt.getValue(), type));
+					values.add( new ValueTime(getValue(pvt.getValue(), type),pvt.getTime()));
 				}
 				ValuesToJSON v = new ValuesToJSON(values, dpvo, type, ts, to);
 				json = mapper.writeValueAsString(v);
