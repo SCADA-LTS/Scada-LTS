@@ -31,7 +31,7 @@ export class WatchlistComponent implements OnInit {
     help: boolean = true;
     isLinearChart: boolean = true;
     xx: boolean = true;
-    inputDate: any = new Date();
+    inputDate: number = 0;
     getDataFromPast: boolean = false;
     values;
     help2: boolean = true;
@@ -91,19 +91,25 @@ export class WatchlistComponent implements OnInit {
             }
 
             if (this.getDataFromPast) {
+
                 this.help2 = false;
-                this.chartData.map(v =>{ v.x = []; v.y = []});
+                this.chartData.map(v => {
+                    v.x = [];
+                    v.y = []
+                });
+
 
                 Observable.forkJoin(
                     this._watchlistElements.map(v => {
-                        return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${this.inputDate - 300000}/${v.xid}`)
+                        return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${this.getDate() - this.inputDate}/${v.xid}`)
                             .map(res => res.json());
                     })
                 ).subscribe(res => {
                     this._oldValues = res;
+                    console.log(this._oldValues);
 
                     for (let i = 0; i < this.chartData.length; i++) {
-                        for (let j = 0; j < this._oldValues[0].values.length; j++) {
+                        for (let j = 0; j < this._oldValues[i].values.length; j++) {
                             this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)
                         }
 
@@ -113,12 +119,13 @@ export class WatchlistComponent implements OnInit {
                 });
             }
 
+
             if (this.help2) {
                 this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
             }
 
-            this.lastActualization = new Date(this._values[0].ts);
             console.log(this.chartData);
+            this.lastActualization = new Date(this._values[0].ts);
 
             if (this.help) {
 
@@ -138,8 +145,7 @@ export class WatchlistComponent implements OnInit {
                         overlaying: 'y',
                         side: 'right',
                         showticklabels: true,
-                        gridcolor: '#eeccff',
-                        range: ['false', 'true']
+                        gridcolor: '#eeccff'
                     }
 
                 }
@@ -157,7 +163,6 @@ export class WatchlistComponent implements OnInit {
 
 
     };
-
 
     //funkcje pomocnicze
     increaseChartLineWidth() {
@@ -215,6 +220,10 @@ export class WatchlistComponent implements OnInit {
     deactivateInterval() {
         clearInterval(this.loadPoints);
     }
+
+    getDate: any = function () {
+        return new Date();
+    };
 
     ngOnInit() {
         this.initiateChart();
