@@ -35,6 +35,7 @@ export class WatchlistComponent implements OnInit {
     getDataFromPast: boolean = false;
     values;
     help2: boolean = true;
+    plot;
 
     constructor(@Inject(Http) private http: Http) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
@@ -52,7 +53,11 @@ export class WatchlistComponent implements OnInit {
                 y: -0.17
             }
         };
+
+
     };
+
+
 
     updateWatchlistTable(xid) {
         this.help = true;
@@ -63,6 +68,7 @@ export class WatchlistComponent implements OnInit {
                 this.getValues();
 
             });
+
     };
 
 
@@ -154,6 +160,15 @@ export class WatchlistComponent implements OnInit {
                 this.initiateChart();
                 this.help = false;
                 this.chartData.map(v => v['mode'] = 'lines');
+                this.plot = document.getElementById('plotly');
+                this.plot.on('plotly_relayout',
+                    function(eventdata){
+                        alert( 'ZOOM!' + '\n\n' +
+                            'Event data:' + '\n' +
+                            JSON.stringify(eventdata) + '\n\n' +
+                            'x-axis start:' + eventdata['xaxis.range[0]'] + '\n' +
+                            'x-axis end:' + eventdata['xaxis.range[1]'] );
+                    });
             } else {
                 this.redrawChart();
             }
