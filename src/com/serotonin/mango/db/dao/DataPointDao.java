@@ -21,7 +21,8 @@ package com.serotonin.mango.db.dao;
 import java.util.Comparator;
 import java.util.List;
 
-import org.jfree.util.Log;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.service.DataPointService;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -35,6 +36,7 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 public class DataPointDao {
 
     private MangoDataPoint dataPointService = new DataPointService();
+    private static final Log LOG = LogFactory.getLog(DataPointDao.class);
 
 //    public DataPointDao() {
 //        super();
@@ -98,7 +100,7 @@ public class DataPointDao {
     	try {
     		return dataPointService.getDataPoint(id);
     	} catch (EmptyResultDataAccessException e) {
-    		Log.error(e);
+    		LOG.error(e);
     		return null;
     	}
     	
