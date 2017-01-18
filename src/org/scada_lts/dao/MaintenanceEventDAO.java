@@ -17,9 +17,12 @@
  */
 package org.scada_lts.dao;
 
-import com.mysql.jdbc.Statement;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.vo.event.MaintenanceEventVO;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -32,11 +35,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import com.mysql.jdbc.Statement;
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.event.MaintenanceEventVO;
 
 /**
  * DAO for MaintenanceEvent
@@ -213,11 +214,9 @@ public class MaintenanceEventDAO {
 		}
 
 		String templateSelectWhereId = MAINTENANCE_EVENT_SELECT + "where m." + COLUMN_NAME_ID + "=?";
-		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new MaintenanceEventRowMapper());
-		} catch (EmptyResultDataAccessException err) {
-			return null;
-		}
+		
+		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new MaintenanceEventRowMapper());
+		
 	}
 
 	public MaintenanceEventVO getMaintenanceEvent(String xid) {

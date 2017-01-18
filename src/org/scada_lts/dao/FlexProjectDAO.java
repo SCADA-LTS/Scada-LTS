@@ -1,5 +1,25 @@
 package org.scada_lts.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.mysql.jdbc.Statement;
+
 /*
  * (c) 2016 Abil'I.T. http://abilit.eu/
  *
@@ -19,23 +39,6 @@ package org.scada_lts.dao;
  */
 
 import br.org.scadabr.api.vo.FlexProject;
-import com.mysql.jdbc.Statement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.List;
 
 /**
  * DAO for FlexProject.
@@ -104,11 +107,8 @@ public class FlexProjectDAO {
 
 		String templateSelectWhereId = FLEX_PROJECT_SELECT + " where " + COLUMN_NAME_ID + "=? ";
 
-		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[]{id}, new FlexProjectRowMapper());
-		} catch (EmptyResultDataAccessException err) {
-			return null;
-		}	
+		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[]{id}, new FlexProjectRowMapper());
+			
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
