@@ -1,7 +1,7 @@
 * {
   box-sizing: border-box; }
 
-input[type="text"] {
+input[type="text"], input[type="datetime-local"] {
   border: 1px dotted #666;
   width: 70%;
   height: 40px;

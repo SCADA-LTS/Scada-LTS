@@ -36,6 +36,12 @@ export class WatchlistComponent implements OnInit {
     values;
     help2: boolean = true;
     plot;
+    range: number;
+    date2;
+
+    changed: boolean = false;
+
+    gnn: boolean = true;
 
     constructor(@Inject(Http) private http: Http) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
@@ -53,6 +59,8 @@ export class WatchlistComponent implements OnInit {
                 y: -0.17
             }
         };
+
+
 
 
     };
@@ -73,7 +81,7 @@ export class WatchlistComponent implements OnInit {
 
 
     getValues() {
-
+        console.log(this.chartData);
 
         Observable.forkJoin(
             this._watchlistElements.map(v => {
@@ -92,27 +100,26 @@ export class WatchlistComponent implements OnInit {
 
                     }
                 }
-                this.chartData.map((v, i) => v.name = this._values[i].name);
+                this.chartData.forEach((v, i) => v.name = this._values[i].name);
                 this.bool = false;
             }
 
             if (this.getDataFromPast) {
 
                 this.help2 = false;
-                this.chartData.map(v => {
+                this.chartData.forEach(v => {
                     v.x = [];
                     v.y = []
                 });
 
-
+                console.log('workls');
                 Observable.forkJoin(
                     this._watchlistElements.map(v => {
-                        return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${this.getDate() - this.inputDate}/${v.xid}`)
+                        return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${this.changed ? this.range : Date.parse(this.date2)-3600000}/${v.xid}`)
                             .map(res => res.json());
                     })
                 ).subscribe(res => {
                     this._oldValues = res;
-                    console.log(this._oldValues);
 
                     for (let i = 0; i < this.chartData.length; i++) {
                         for (let j = 0; j < this._oldValues[i].values.length; j++) {
@@ -126,11 +133,16 @@ export class WatchlistComponent implements OnInit {
             }
 
 
+
+
+
             if (this.help2) {
-                this.chartData.map((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+                this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
             }
 
-            console.log(this.chartData);
+
+
+
             this.lastActualization = new Date(this._values[0].ts);
 
             if (this.help) {
@@ -159,21 +171,26 @@ export class WatchlistComponent implements OnInit {
 
                 this.initiateChart();
                 this.help = false;
-                this.chartData.map(v => v['mode'] = 'lines');
+                this.chartData.forEach(v => v['mode'] = 'lines');
                 this.plot = document.getElementById('plotly');
-                this.plot.on('plotly_relayout',
-                    function(eventdata){
-                        alert( 'ZOOM!' + '\n\n' +
-                            'Event data:' + '\n' +
-                            JSON.stringify(eventdata) + '\n\n' +
-                            'x-axis start:' + eventdata['xaxis.range[0]'] + '\n' +
-                            'x-axis end:' + eventdata['xaxis.range[1]'] );
-                    });
+                this.plot.on('plotly_relayout', ()=>{
+                    this.range = Date.parse(this.chartLayout.xaxis.range[0]);
+                    console.log('zmienilo');
+                    this.changed = true;
+                    this.getDataFromPast = true;
+                });
+
             } else {
                 this.redrawChart();
+
+
             }
 
+
+
+
             this.help2 = true;
+
         });
 
 
