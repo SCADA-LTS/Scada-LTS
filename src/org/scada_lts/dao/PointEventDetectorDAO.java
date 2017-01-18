@@ -17,14 +17,14 @@
  */
 package org.scada_lts.dao;
 
-import com.mysql.jdbc.Statement;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -35,11 +35,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import com.mysql.jdbc.Statement;
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
 /**
  * DAO for PointEventDetector
@@ -197,12 +196,9 @@ public class PointEventDetectorDAO {
 			LOG.trace("getDataPointId(int pointEventDetectorId) pointEventDetectorId:" + pointEventDetectorId);
 		}
 
-		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_DP_ID,
+		return DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_DP_ID,
 					new Object[] {pointEventDetectorId}, Integer.class);
-		} catch (EmptyResultDataAccessException err) {
-			return Common.NEW_ID;
-		}
+		
 	}
 
 	public List<PointEventDetectorVO> getPointEventDetectors(DataPointVO dataPoint) {
@@ -226,19 +222,15 @@ public class PointEventDetectorDAO {
 					+ ", dataPointId:" + dataPointId);
 		}
 
-		int id = 0;
-		try {
-			id = DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_ID,
+		int id = DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_ID,
 				new Object[] {pointEventDetectorXid, dataPointId}, Integer.class);
-		} catch (EmptyResultDataAccessException err) {
-			id = 0;
-		}
-
+		
 		if (id == 0) {
 			return -1;
 		} else {
 			return id;
 		}
+		
 	}
 
 	public String getXid(int pointEventDetectorId) {
@@ -247,12 +239,8 @@ public class PointEventDetectorDAO {
 			LOG.trace("getXid(int pointEventDetectorId) pointEventDetectorId:" + pointEventDetectorId);
 		}
 
-		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_XID, new Object[] {pointEventDetectorId},
+		return DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_XID, new Object[] {pointEventDetectorId},
 					String.class);
-		} catch (EmptyResultDataAccessException err) {
-			return "";
-		}
 
 	}
 
@@ -262,13 +250,9 @@ public class PointEventDetectorDAO {
 			LOG.trace("isEventDetectorXidUnique(int dataPointId, String xid, int excludeId) dataPointId:" + dataPointId + ", xid:" + xid + ", excludeId:" + excludeId);
 		}
 
-		int size = 0;
-		try {
-			size = DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_COUNT,
+		int size = DAO.getInstance().getJdbcTemp().queryForObject(POINT_EVENT_DETECTOR_SELECT_COUNT,
 					new Object[]{dataPointId, xid, excludeId}, Integer.class);
-		} catch (EmptyResultDataAccessException err) {
-			size = 0;
-		}
+		
 		return size == 0;
 	}
 
