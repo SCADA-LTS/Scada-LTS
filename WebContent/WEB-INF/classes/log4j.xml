@@ -52,7 +52,25 @@
       <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
     </layout>
   </appender>
-
+  
+   <appender name="apilogfile" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/api.log"/>
+    <param name="MaxFileSize" value="1000KB"/>
+    <param name="MaxBackupIndex" value="10"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
+  
+  <appender name="scadalstdaoLogfile" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/scadaLTSDAO.log"/>
+    <param name="MaxFileSize" value="1000KB"/>
+    <param name="MaxBackupIndex" value="10"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
+  
   <appender name="daologfile" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${catalina.base}/logs/dao.log"/>
     <param name="MaxFileSize" value="1000KB"/>
@@ -84,6 +102,22 @@
     <param name="LocationInfo" value="true"/>
     <appender-ref ref="daologfile"/>
   </appender>
+  
+  <appender name="apiasync" class="org.apache.log4j.AsyncAppender">
+    <param name="LocationInfo" value="true"/>
+    <appender-ref ref="apilogfile"/>
+  </appender>
+  
+  <appender name="scadadaoasync" class="org.apache.log4j.AsyncAppender">
+    <param name="LocationInfo" value="true"/>
+    <appender-ref ref="scadalstdaoLogfile"/>
+  </appender>
+  
+  <appender name="apiasync" class="org.apache.log4j.AsyncAppender">
+    <param name="LocationInfo" value="true"/>
+    <appender-ref ref="apilogfile"/>
+  </appender>
+  
   
 <!-- Normal Logging -->
   <category name="org.directwebremoting"><level value="warn"/></category>
@@ -140,6 +174,16 @@
   <category name="com.serotonin.mango.web.dwr.DataSourceEditDwr" additivity="false">
     <level value="debug"/>
     <appender-ref ref="daoasync"/>
+  </category>
+  
+   <category name="org.scada_lts.web.mvc.api" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="apiasync"/>
+  </category>
+  
+  <category name="org.scada_lts.dao" additivity="false">
+    <level value="trace"/>
+    <appender-ref ref="scadadaoasync"/>
   </category>
 
 <!-- Root Log -->

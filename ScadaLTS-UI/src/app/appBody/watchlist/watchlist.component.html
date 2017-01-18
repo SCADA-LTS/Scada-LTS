@@ -1,34 +1,43 @@
 <div class="row">
 
-  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-
+  <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'open': !xx }" (window:resize)="initiateChart()">
     <md-card>
+      <div class="chartButtons">
+        <button md-raised-button md-ripple (click)="increaseChartLineWidth()">+</button>
+        <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">-</button>
+        <button md-raised-button md-ripple (click)="isLinearChart ? toSplineChart() : toLinearChart()">{{ isLinearChart ? 's' : 'l' }}</button>
+      </div>
+      <div id="plotly"></div>
+    </md-card>
+  </div>
 
+  <div class="dataTableContainer col-md-6 col-xs-12">
+    <md-card>
       <div>
-        <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="updateWatchlistTable($event.xid)">
-          <option *ngFor="let item of _items; let i = index" [ngValue]="item">{{ item.name }}</option>
+        <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid);deactivateInterval();initiateInterval()">
+          <option *ngFor="let item of _watchlists" [ngValue]="item">{{ item.name }}</option>
         </select>
       </div>
-      <br>
-      <table *ngIf="_watchlistElements.length">
-        <tr *ngFor="let elem of _watchlistElements">
-          <td>{{ elem.ts }}</td>
-          <td>{{ elem.value }}</td>
+      <p *ngIf="lastActualization" class="lastActualizationDate">Last actualization: {{ lastActualization | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
+      <table *ngIf="_values.length" class="dataTable">
+        <tr *ngFor="let elem of _values | sort">
+          <!--<td class="checkBox"><md-checkbox></md-checkbox></td>-->
+          <td>{{ elem.name }}</td>
+          <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
+          <td class="backlightOnDataChange">{{ elem.value }}</td>
         </tr>
       </table>
-
     </md-card>
   </div>
 
-  <div class="dataTable col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-
+  <div class="chartSettings col-md-6 col-xs-12">
     <md-card>
-
-      <div id="chart"></div>
-
+        <h2>Time series</h2>
+      <button md-raised-button md-ripple (click)="xx = !xx">{{ xx ? 'Open chart' : 'Close chart' }}</button>
+      <button md-raised-button md-ripple (click)="inputDate = 300000;getDataFromPast = true;xx = false">Load 5 minutes</button>
+      <button md-raised-button md-ripple (click)="inputDate = 600000;getDataFromPast = true;xx = false">Load 10 minutes</button>
+      <button md-raised-button md-ripple (click)="inputDate = 900000;getDataFromPast = true;xx = false">Load 15 minutes</button>
     </md-card>
   </div>
-
 
 </div>
-
