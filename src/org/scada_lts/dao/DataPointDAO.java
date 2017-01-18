@@ -17,12 +17,14 @@
  */
 package org.scada_lts.dao;
 
-import com.mysql.jdbc.Statement;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.vo.DataPointVO;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -33,11 +35,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import com.mysql.jdbc.Statement;
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.DataPointVO;
 
 /**
  * DAO for DataPoint
@@ -133,11 +133,8 @@ public class DataPointDAO {
 
 		String templateSelectWhereId = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_ID + "=? ";
 
-		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new DataPointRowMapper());
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
+		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new DataPointRowMapper());
+		
 	}
 
 	public DataPointVO getDataPoint(String xid) {
@@ -148,11 +145,8 @@ public class DataPointDAO {
 
 		String templateSelectWhereXid = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_XID + "=? ";
 
-		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
+		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
+		
 	}
 
 	public List<DataPointVO> getDataPoints() {
