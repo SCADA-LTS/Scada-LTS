@@ -34,9 +34,15 @@
     <md-card>
         <h2>Time series</h2>
       <button md-raised-button md-ripple (click)="xx = !xx">{{ xx ? 'Open chart' : 'Close chart' }}</button>
-      <button md-raised-button md-ripple (click)="inputDate = 300000;getDataFromPast = true;xx = false">Load 5 minutes</button>
-      <button md-raised-button md-ripple (click)="inputDate = 600000;getDataFromPast = true;xx = false">Load 10 minutes</button>
-      <button md-raised-button md-ripple (click)="inputDate = 900000;getDataFromPast = true;xx = false">Load 15 minutes</button>
+      <!--<button md-raised-button md-ripple (click)="inputDate = 300000;getDataFromPast = true;xx = false">Load 5 minutes</button>-->
+      <!--<button md-raised-button md-ripple (click)="inputDate = 600000;getDataFromPast = true;xx = false">Load 10 minutes</button>-->
+      <!--<button md-raised-button md-ripple (click)="inputDate = 900000;getDataFromPast = true;xx = false">Load 15 minutes</button>-->
+      <button md-raised-button md-ripple (click)="getDataFromPast = true;xx = false">Load chart</button>
+
+
+        <input type="datetime-local" id="datePicker" [(ngModel)]="date2">
+
+      <h1>{{ date2 }}</h1>
     </md-card>
   </div>
 
