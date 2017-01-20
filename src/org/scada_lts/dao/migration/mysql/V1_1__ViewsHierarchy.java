@@ -99,7 +99,7 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 				  +"BEGIN "					 
 				  	  + "SELECT * "
 					  + "FROM views_hierarchy "
-					  + "WHERE parent_id=a_parent_id; "
+					  + "WHERE parentid=a_parent_id; "
 				  +"END;";
 		
 		jdbcTmp.execute(pointHierarchySQL);
