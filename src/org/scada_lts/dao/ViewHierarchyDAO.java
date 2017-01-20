@@ -32,7 +32,7 @@ import org.springframework.jdbc.core.RowMapper;
  *
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
-public class HierarchyViewDAO implements GenericHierarchyDAO<ViewHierarchyNode> {
+public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> {
 	
 	private static final Log LOG = LogFactory.getLog(HierarchyViewDaoTest.class);
 	
