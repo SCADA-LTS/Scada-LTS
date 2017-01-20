@@ -34,7 +34,7 @@ import org.springframework.jdbc.core.RowMapper;
  */
 public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> {
 	
-	private static final Log LOG = LogFactory.getLog(HierarchyViewDaoTest.class);
+	private static final Log LOG = LogFactory.getLog(ViewHierarchyDAO.class);
 	
 	private final static int COLUMN_INDEX_ID = 1;
 	private final static int COLUMN_INDEX_PARENT_ID = 2;
