@@ -36,7 +36,7 @@ import org.springframework.jdbc.core.RowMapper;
  */
 public class HierarchyDAO {
 	
-private static final Log LOG = LogFactory.getLog(HierarchyDAO.class);
+	private static final Log LOG = LogFactory.getLog(HierarchyDAO.class);
 	
 	private final static int COLUMN_INDEX_ID = 1;
 	private final static int COLUMN_INDEX_PARENT_ID = 2;
