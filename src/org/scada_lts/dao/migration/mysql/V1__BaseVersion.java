@@ -20,7 +20,6 @@ package org.scada_lts.dao.migration.mysql;
 import java.util.LinkedList;
 
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
-
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,12 +35,12 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 public class V1__BaseVersion implements SpringJdbcMigration {
 	
 	public void migrate(JdbcTemplate jdbcTemplate) throws Exception {
-	// @formatter:off
+		// @formatter:off
 		
-    jdbcTemplate.execute("alter database default character set utf8");
-    jdbcTemplate.execute("alter database default character set utf8");
+        jdbcTemplate.execute("alter database default character set utf8");
+        jdbcTemplate.execute("alter database default character set utf8");
 
-    //System settings
+      //System settings
         
         final String settingSQL = ""
         		+ "create table systemSettings ("
