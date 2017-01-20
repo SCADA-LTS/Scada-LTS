@@ -18,10 +18,6 @@
 
 package org.scada_lts.dao;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -32,6 +28,7 @@ import java.util.List;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.flywaydb.core.Flyway;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -105,17 +102,14 @@ public class TestDAO {
 		dataSource.setInitialSize(INITIAL_SIZE);
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		DAO.getInstance().setJdbcTemp(jdbcTemplate);
+		DAO.getInstance().setTest(true);
 		
 		
-		ScriptRunner runner = new ScriptRunner(dataSource.getConnection(), false, false);
-		InputStream in = getClass().getResourceAsStream("createTables-mysql.sql");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		try {
-			LOG.info("Run script create schema");
-			runner.runScript(reader);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Flyway flyway = new Flyway();
+		flyway.setLocations("org.scada_lts.dao.migration.mysql");
+		flyway.setDataSource(DAO.getInstance().getJdbcTemp().getDataSource());
+        flyway.migrate();
+      
 	}
 
 	@After
