@@ -18,10 +18,11 @@
 
 package org.scada_lts.service;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.hierarchy.PointFolder;
-import com.serotonin.mango.vo.hierarchy.PointHierarchy;
-import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
@@ -29,11 +30,12 @@ import org.scada_lts.dao.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.exception.CacheHierarchyException;
 import org.scada_lts.mango.service.DataPointService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.hierarchy.PointFolder;
+import com.serotonin.mango.vo.hierarchy.PointHierarchy;
+import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
 
 /** 
  * Service for points hierarchy.
@@ -47,7 +49,7 @@ public class PointHierarchyService {
 	private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);
 	
 	
-	@Autowired
+	@Resource
 	private PointHierarchyDAO phDAO;
 	
 	public PointHierarchyService() {

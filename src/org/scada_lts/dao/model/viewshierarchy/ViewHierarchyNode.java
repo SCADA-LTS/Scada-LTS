@@ -81,6 +81,11 @@ public class ViewHierarchyNode {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "ViewHierarchyNode [id=" + id + ", parentId=" + parentId + ", name=" + name + "]";
+	}
+
 	
 	
 
