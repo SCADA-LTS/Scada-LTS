@@ -2,6 +2,7 @@ package org.scada_lts.service;
 
 import static org.junit.Assert.assertEquals;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -10,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.scada_lts.dao.TestDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.springframework.context.annotation.Bean;
@@ -28,21 +30,10 @@ public class ViewHierarchyServiceTest {
 	@Resource
 	ViewHierarchyService vhs;
 	
-	@Before
-	public void setUp() {
-		
-		//this.mockMvc = webAppContextSetup(wac).build();
-	}
-	
 	private void populateData() {
-		ViewHierarchyNode vhn = new ViewHierarchyNode(-1, -1, "test");
+		ViewHierarchyNode vhn = new ViewHierarchyNode(-1, -1, "test-service1");
 		vhn.setId(vhd.add(vhn));
-		List<ViewHierarchyNode> lst = vhd.getAll();	
-		assertEquals(true,  lst.get(0).equals(vhn) );
-		vhn.setName("test1");
-		vhd.update(vhn);
-		lst = vhd.getAll();
-		assertEquals(true, lst.get(0).getName().equals("test1"));
+		
 	}
 	
 	@Test
@@ -60,8 +51,17 @@ public class ViewHierarchyServiceTest {
 	
 	@Configuration
 	@EnableWebMvc
-	//@ComponentScan(basePackageClasses = ViewHierarchyService.class)
 	static class Config {
+		
+		Config() {
+			try {
+				new TestDAO().setUp();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		@Bean
 		ViewHierarchyDAO viewHierarchyDAO() {
