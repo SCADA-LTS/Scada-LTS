@@ -3,6 +3,7 @@ import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 declare let c3: any;
 declare let Plotly: any;
+declare let $: any;
 
 @Component({
     selector: 'watchlist',
@@ -62,6 +63,10 @@ export class WatchlistComponent implements OnInit {
                 "orientation": "h",
                 bgcolor: 'transparent',
                 y: -0.17
+            },
+            transition: {
+                duration: 500,
+                ease: 'cubic-in-out'
             }
         };
 
@@ -110,9 +115,10 @@ export class WatchlistComponent implements OnInit {
         ).subscribe(res => {
             this._oldValues = res;
             this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
-            this.redrawChart();
             clearInterval(this.loadPoints);
             console.log('loaded data time range');
+            this.chartLayout.xaxis = {range: [this.dateRange1, this.dateRange2]};
+            this.redrawChart();
         });
     }
 
@@ -133,6 +139,7 @@ export class WatchlistComponent implements OnInit {
             clearInterval(this.loadPoints);
             this.initiateInterval();
             console.log('loaded data from specified time to now');
+            this.autorangeChart();
         });
     }
 
@@ -266,6 +273,13 @@ export class WatchlistComponent implements OnInit {
 
     redrawChart() {
         Plotly.redraw('plotly', this.chartData, this.chartLayout);
+    }
+
+    autorangeChart(){
+        Plotly.relayout('plotly', {
+            'xaxis.autorange': true,
+            'yaxis.autorange': true
+        });
     }
 
     cleanChartBeforeDraw() {
