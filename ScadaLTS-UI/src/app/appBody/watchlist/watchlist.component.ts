@@ -1,9 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
-declare let c3: any;
 declare let Plotly: any;
-declare let $: any;
 
 @Component({
     selector: 'watchlist',
@@ -37,16 +35,19 @@ export class WatchlistComponent implements OnInit {
     plot;
     range: number;
     dd: any = new Date();
-    dateRange1: any = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
-    dateRange2: any = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
-
     dateFrom: number = 5;
     dateFromUnit: string = 'seconds';
+
+    dateRange1: any;
+    dateRange2: any;
 
     something: boolean = true;
     motherOfDragons: boolean = true;
     changed: boolean = false;
     chart: boolean = true;
+
+    activeState: string;
+    omg: boolean = false;
 
 
     constructor(@Inject(Http) private http: Http) {
@@ -63,10 +64,6 @@ export class WatchlistComponent implements OnInit {
                 "orientation": "h",
                 bgcolor: 'transparent',
                 y: -0.17
-            },
-            transition: {
-                duration: 500,
-                ease: 'cubic-in-out'
             }
         };
 
@@ -80,6 +77,9 @@ export class WatchlistComponent implements OnInit {
                 this._watchlistElements = res.json();
                 this.liveChart();
             });
+        this.activeState = '';
+        this.initiateChart();
+        this.autorangeChart();
     };
 
     fillDataWithScheme() {
@@ -103,26 +103,32 @@ export class WatchlistComponent implements OnInit {
 
     getDataFromTimeRange() {
         clearInterval(this.loadPoints);
+        this.omg = false;
         this.chartData.forEach(v => {
             v.x = [];
             v.y = []
         });
         Observable.forkJoin(
             this._watchlistElements.map(v => {
-                return this.http.get(`http://localhost/ScadaBR/api/watchlist/getChartData/${v.xid}/${Date.parse(this.dateRange1)}/${Date.parse(this.dateRange2)}`)
+                return this.http.get(`http://localhost/ScadaBR/api/watchlist/getChartData/${v.xid}/${(Date.parse(this.dateRange1) - 3600000)}/${(Date.parse(this.dateRange2) - 3600000)}`)
                     .map(res => res.json());
             })
         ).subscribe(res => {
             this._oldValues = res;
             this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
-            clearInterval(this.loadPoints);
             console.log('loaded data time range');
             this.chartLayout.xaxis = {range: [this.dateRange1, this.dateRange2]};
-            this.redrawChart();
+            this.initiateChart();
+            if (Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate())) {
+                this.initiateInterval();
+            }
         });
+        this.activeState = 'timeRange';
     }
 
     getDataFromSpecifiedTimeToNow() {
+        this.omg = false;
+        clearInterval(this.loadPoints);
         this.chartData.forEach(v => {
             v.x = [];
             v.y = []
@@ -136,11 +142,11 @@ export class WatchlistComponent implements OnInit {
             this._oldValues = res;
             this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
             this.redrawChart();
-            clearInterval(this.loadPoints);
             this.initiateInterval();
             console.log('loaded data from specified time to now');
             this.autorangeChart();
         });
+        this.activeState = 'specifiedTime';
     }
 
     loadNewDataAfterZoom() {
@@ -205,25 +211,24 @@ export class WatchlistComponent implements OnInit {
                 this.plot = document.getElementById('plotly');
                 if (this.motherOfDragons) {
                     this.plot.on('plotly_relayout', () => {
-
                         this.range = Date.parse(this.chartLayout.xaxis.range[0]);
-                        console.log('zoomed!');
-                        this.loadNewDataAfterZoom();
+                        if (this.omg) {
+                            console.log('zoomed!');
+                            this.loadNewDataAfterZoom();
+                        }
                     });
 
-
-
-                for (let i = 0; i < 11; i++) {
-                    document.getElementsByClassName('drag')[i].addEventListener('mousedown', () => {
-                        console.log('mousedown' + i);
-                        clearInterval(this.loadPoints);
-                    });
-                }
+                    for (let i = 0; i < 11; i++) {
+                        document.getElementsByClassName('drag')[i].addEventListener('mousedown', () => {
+                            console.log('mousedown' + i);
+                            this.omg = true;
+                            clearInterval(this.loadPoints);
+                        });
+                    }
                     this.motherOfDragons = false;
                 }
 
                 this.help2 = true;
-
                 this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
                 this.redrawChart();
                 this.chartData.forEach(v => v['mode'] = 'lines');
@@ -234,7 +239,7 @@ export class WatchlistComponent implements OnInit {
 
     };
 
-    //funkcje pomocnicze
+    //helping functions
     increaseChartLineWidth() {
         this.chartData.map(v => v['line'].width += 1);
         this.redrawChart();
@@ -275,7 +280,7 @@ export class WatchlistComponent implements OnInit {
         Plotly.redraw('plotly', this.chartData, this.chartLayout);
     }
 
-    autorangeChart(){
+    autorangeChart() {
         Plotly.relayout('plotly', {
             'xaxis.autorange': true,
             'yaxis.autorange': true
@@ -302,7 +307,13 @@ export class WatchlistComponent implements OnInit {
         return new Date();
     };
 
+    setDefaultTimeRangeValues() {
+        this.dateRange1 = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
+        this.dateRange2 = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
+    }
+
     ngOnInit() {
+        this.setDefaultTimeRangeValues();
         this.initiateChart();
     }
 
