@@ -7,10 +7,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.scada_lts.dao.TestDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
@@ -33,7 +31,8 @@ public class ViewHierarchyServiceTest {
 	private void populateData() {
 		ViewHierarchyNode vhn = new ViewHierarchyNode(-1, -1, "test-service1");
 		vhn.setId(vhd.add(vhn));
-		
+		ViewHierarchyNode vhn1 = new ViewHierarchyNode(-1, 1, "test-service2");
+		vhn.setId(vhd.add(vhn1));
 	}
 	
 	@Test
@@ -70,7 +69,8 @@ public class ViewHierarchyServiceTest {
 		
 		@Bean
 		ViewHierarchyService viewHierarchyService() {
-			return Mockito.mock(ViewHierarchyService.class);
+			//return Mockito.mock(ViewHierarchyService.class);
+			return new ViewHierarchyService();
 		}
 	}
 	

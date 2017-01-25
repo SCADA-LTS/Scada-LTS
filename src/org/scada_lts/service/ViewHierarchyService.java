@@ -40,15 +40,17 @@ public class ViewHierarchyService {
 	
 	private static final Log LOG = LogFactory.getLog(ViewHierarchyService.class);
 	
-	private String getPath(List<ViewHierarchyNode> lst, int parentId) {
+	private String getPath(List<ViewHierarchyNode> lst, ViewHierarchyNode nextVhn, ViewHierarchyNode firstVhn) {
 		String str = "|";
 		
-		for (ViewHierarchyNode vhn: lst) {
-			if (vhn.getId() == parentId) {
-				str += vhn.getName();
-				if (vhn.getParentId()>0) {
-					str += getPath(lst, vhn.getParentId());
-				}
+		if (nextVhn.getParentId()<=0) {
+			str+= firstVhn.getName();
+		} else {
+			for (ViewHierarchyNode vhn: lst) {
+				if (vhn.getId() == nextVhn.getParentId()) {
+					ViewHierarchyNode newNextVhn = new ViewHierarchyNode(vhn);
+					str += vhn.getName() +getPath(lst,newNextVhn,firstVhn);
+				} 
 			}
 		}
 		
@@ -86,7 +88,7 @@ public class ViewHierarchyService {
 		
 		//travers tree and create path
 		for (ViewHierarchyNode vhn: lst) {
-			lstStr.add(getPath(lst, vhn.getParentId()));
+			lstStr.add(getPath(lst, vhn, vhn));
 		}
 		//..
 		//get view in tree add too tree.
