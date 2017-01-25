@@ -31,13 +31,32 @@
 
   <div class="chartSettings col-md-6 col-xs-12">
     <md-card>
-        <h2>Time series</h2>
-      <button md-raised-button md-ripple (click)="xx = !xx">{{ xx ? 'Open chart' : 'Close chart' }}</button>
-      <button md-raised-button md-ripple (click)="getDataFromPast = true;xx = false;changed = false">Load chart</button>
-      <button md-raised-button md-ripple (click)="initiateChart()">redr chart</button>
 
+      <div class="elementsFromPast">
+        <input type="number" min="1" max="100" class="inputFromPast" [(ngModel)]="dateFrom" pattern="\d+">
+        <select [(ngModel)]="dateFromUnit" class="selectFromPast">
+          <option value="seconds">seconds</option>
+          <option value="minutes">minutes</option>
+          <option value="hours">hours</option>
+        </select>
+        <button md-raised-button md-ripple (click)="getDataFromSpecifiedTimeToNow();getDataFromPast = true;xx = false;changed = false;something = true;something2 = false" class="buttonFromPast">Load data</button>
+      </div>
 
-        <input type="datetime-local" id="datePicker" [(ngModel)]="date2">
+      <div class="timeRangeElements">
+
+        <div class="timeRangeElementsChild">
+          <h2>From:</h2>
+          <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange1">
+        </div>
+
+        <div class="timeRangeElementsChild">
+          <h2>To:</h2>
+          <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange2">
+        </div>
+        <button md-raised-button md-ripple (click)="getDataFromTimeRange();getDataFromPast = true;xx = false;changed = false;something = false;something2 = true" class="buttonFromPast">Load data</button>
+      </div>
+
+      <button md-raised-button md-ripple (click)="xx = !xx" class="revealChartButton">{{ xx ? 'Reveal chart' : 'Hide chart' }}</button>
 
     </md-card>
   </div>

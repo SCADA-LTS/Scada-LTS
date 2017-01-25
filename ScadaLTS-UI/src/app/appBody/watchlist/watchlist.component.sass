@@ -17,18 +17,6 @@
 *
   box-sizing: border-box
 
-input[type="text"], input[type="datetime-local"]
-  border: 1px dotted #666
-  width: 70%
-  height: 40px
-  line-height: 26px
-  font-size: 22px
-  border-radius: 5px
-  outline: none
-  padding: 5px 15px
-  margin-bottom: 40px
-  box-sizing: border-box
-
 input:focus
   border: 1px solid #666
 
@@ -89,29 +77,6 @@ select
   margin: 0
   color: #333
 
-.chooseCategory
-  border-color: #ddd
-  text-align: left
-
-.pauseInfoIcon
-  -webkit-animation: blink 2s infinite ease-in-out
-  animation: blink 2s infinite ease-in-out
-  font-size: 32px
-  color: #444
-  display: block
-  z-index: 2
-  position: absolute
-
-.dataPauseIcon
-  top: 191px
-  text-align: center
-  display: inline
-
-.chartPauseIcon
-  top: 50%
-  left: 50%
-  transform: translate(-50%, -50%)
-
 @-webkit-keyframes blink
   0%, 100%
     opacity: 0
@@ -128,9 +93,6 @@ select
 .chartBtn:hover
   border-color: #666
   transition: border-color .3s ease-out
-
-.pauseChartButton, .unpauseChartButton
-  float: right
 
 .lastActualizationDate
   margin: 15px 0
@@ -176,11 +138,6 @@ select
   +border-radius(2px)
   +transition(all .15s ease)
 
-.chartSettings [md-raised-button]
-  width: 160px
-  color: #fff
-  background-color: #666
-
 h2
   font-size: 20px
 
@@ -196,3 +153,38 @@ h2
   height: 554px
   transition: all .5s ease-in
 
+.buttonFromPast, .inputFromPast, .selectFromPast
+  width: 25%
+
+.buttonFromPast, .inputFromPast, .selectFromPast, .datePickerInput, .revealChartButton
+  border: 1px dotted #666
+  height: 30px
+  line-height: 20px
+  font-size: 18px
+  border-radius: 5px
+  outline: none
+  padding: 0 15px
+  margin-bottom: 10px
+  box-sizing: border-box
+
+.buttonFromPast, .revealChartButton
+  background-color: #666
+  color: #fff
+
+.elementsFromPast > *
+  vertical-align: middle
+
+.elementsFromPast
+  margin-bottom: 30px
+
+.timeRangeElementsChild
+  display: inline-block
+
+.revealChartButton
+  width: 100%
+  height: 40px
+  margin-top: 20px
+  margin-bottom: 0
+
+.datePickerInput
+  width: 100%

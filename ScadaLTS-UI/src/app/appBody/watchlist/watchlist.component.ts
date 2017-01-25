@@ -3,6 +3,7 @@ import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 declare let c3: any;
 declare let Plotly: any;
+declare let $: any;
 
 @Component({
     selector: 'watchlist',
@@ -23,25 +24,30 @@ export class WatchlistComponent implements OnInit {
     type: string;
     loadPoints;
     chartData = [];
-    bool: boolean = true;
-    lastActualization;
+    isFillingDataNeeded: boolean = true;
+    lastActualization = new Date();
     selectedWatchlist;
     chartLayout;
     x: boolean = false;
-    help: boolean = true;
+    checkForMultistatesAndBinaries: boolean = true;
     isLinearChart: boolean = true;
     xx: boolean = true;
-    getDataFromPast: boolean = false;
     values;
     help2: boolean = true;
     plot;
     range: number;
     dd: any = new Date();
-    date2: any = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0'+(this.dd.getMonth()+1) : this.dd.getMonth()+1}-${this.dd.getDate() < 10 ? '0'+this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0'+this.dd.getMinutes() : this.dd.getMinutes()}`;
+    dateRange1: any = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
+    dateRange2: any = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
 
+    dateFrom: number = 5;
+    dateFromUnit: string = 'seconds';
+
+    something: boolean = true;
+    motherOfDragons: boolean = true;
     changed: boolean = false;
-
     chart: boolean = true;
+
 
     constructor(@Inject(Http) private http: Http) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
@@ -57,23 +63,107 @@ export class WatchlistComponent implements OnInit {
                 "orientation": "h",
                 bgcolor: 'transparent',
                 y: -0.17
+            },
+            transition: {
+                duration: 500,
+                ease: 'cubic-in-out'
             }
         };
 
     };
 
     updateWatchlistTable(xid) {
-        this.help = true;
+        this.checkForMultistatesAndBinaries = true;
         this._watchlistElements = [];
         this.http.get(`http://localhost/ScadaBR/api/watchlist/getPoints/${xid}`)
             .subscribe(res => {
                 this._watchlistElements = res.json();
-                this.getValues();
+                this.liveChart();
             });
     };
 
+    fillDataWithScheme() {
+        this._values.forEach((_, i) => {
+            this.chartData.push({
+                x: [],
+                y: [],
+                name: '',
+                line: {shape: '', width: 1},
+                mode: 'lines+markers'
+            });
+            if (this._values[i].type !== 'NumericValue') {
+                this.chartData[i]['yaxis'] = 'y2';
+                this.chartData[i]['line'].shape = 'hv';
+            }
+        });
+        this.chartData.forEach((v, i) => v.name = this._values[i].name);
+        this.isFillingDataNeeded = false;
+        console.log('filling successful!');
+    }
 
-    getValues() {
+    getDataFromTimeRange() {
+        clearInterval(this.loadPoints);
+        this.chartData.forEach(v => {
+            v.x = [];
+            v.y = []
+        });
+        Observable.forkJoin(
+            this._watchlistElements.map(v => {
+                return this.http.get(`http://localhost/ScadaBR/api/watchlist/getChartData/${v.xid}/${Date.parse(this.dateRange1)}/${Date.parse(this.dateRange2)}`)
+                    .map(res => res.json());
+            })
+        ).subscribe(res => {
+            this._oldValues = res;
+            this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
+            clearInterval(this.loadPoints);
+            console.log('loaded data time range');
+            this.chartLayout.xaxis = {range: [this.dateRange1, this.dateRange2]};
+            this.redrawChart();
+        });
+    }
+
+    getDataFromSpecifiedTimeToNow() {
+        this.chartData.forEach(v => {
+            v.x = [];
+            v.y = []
+        });
+        Observable.forkJoin(
+            this._watchlistElements.map(v => {
+                return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${Date.parse(this.getDate()) - (this.dateFrom * 1000 * (this.dateFromUnit == 'minutes' ? 60 : this.dateFromUnit == 'hours' ? 3600 : 1))}/${v.xid}`)
+                    .map(res => res.json());
+            })
+        ).subscribe(res => {
+            this._oldValues = res;
+            this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
+            this.redrawChart();
+            clearInterval(this.loadPoints);
+            this.initiateInterval();
+            console.log('loaded data from specified time to now');
+            this.autorangeChart();
+        });
+    }
+
+    loadNewDataAfterZoom() {
+        this.chartData.forEach(v => {
+            v.x = [];
+            v.y = []
+        });
+        Observable.forkJoin(
+            this._watchlistElements.map(v => {
+                return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${this.range}/${v.xid}`)
+                    .map(res => res.json());
+            })
+        ).subscribe(res => {
+            this._oldValues = res;
+            this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
+            this.redrawChart();
+            clearInterval(this.loadPoints);
+            this.initiateInterval();
+            console.log('loaded data after zoom');
+        });
+    }
+
+    liveChart() {
         if (this.chart) {
             Observable.forkJoin(
                 this._watchlistElements.map(v => {
@@ -83,62 +173,11 @@ export class WatchlistComponent implements OnInit {
             ).subscribe(res => {
                 this._values = res;
 
-                if (this.bool) {
-                    for (let i = 0; i < this._values.length; i++) {
-                        this.chartData.push({
-                            x: [],
-                            y: [],
-                            name: '',
-                            line: {shape: '', width: 1},
-                            mode: 'lines+markers'
-                        });
-                        if (this._values[i].type !== 'NumericValue') {
-                            this.chartData[i]['yaxis'] = 'y2';
-                            this.chartData[i]['line'].shape = 'hv';
-
-                        }
-                    }
-                    this.chartData.forEach((v, i) => v.name = this._values[i].name);
-                    this.bool = false;
+                if (this.isFillingDataNeeded) {
+                    this.fillDataWithScheme();
                 }
 
-                if (this.getDataFromPast) {
-                    this.help2 = false;
-                    this.chartData.forEach(v => {
-                        v.x = [];
-                        v.y = []
-                    });
-
-                    Observable.forkJoin(
-                        this._watchlistElements.map(v => {
-                            return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${this.changed ? this.range : Date.parse(this.date2) - 3600000}/${v.xid}`)
-                                .map(res => res.json());
-                        })
-                    ).subscribe(res => {
-                        this._oldValues = res;
-
-                        for (let i = 0; i < this.chartData.length; i++) {
-                            for (let j = 0; j < this._oldValues[i].values.length; j++) {
-                                this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)
-                            }
-
-                        }
-                        this.redrawChart();
-                        this.getDataFromPast = false;
-                        console.log('loaded data from past');
-                    });
-                }
-
-
-                if (this.help2) {
-                    this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
-                }
-
-
-                this.lastActualization = new Date(this._values[0].ts);
-
-                if (this.help) {
-
+                if (this.checkForMultistatesAndBinaries) {
                     for (let i = 0; i < this._values.length; i++) {
                         if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
                             this.x = true;
@@ -159,45 +198,36 @@ export class WatchlistComponent implements OnInit {
                         }
                     }
 
-
                     this.initiateChart();
-                    this.help = false;
-                    this.chartData.forEach(v => v['mode'] = 'lines');
-
-
-                } else {
-                    this.redrawChart();
-
-
-                    // for (let i = 1; i < 11; i++) {
-                    //     document.getElementsByClassName('drag')[i].addEventListener('mouseup', () => {
-                    //         this.chart = true;
-                    //         console.log('mouseup'+i);
-                    //
-                    //     });
-                    // }
-
+                    this.checkForMultistatesAndBinaries = false;
                 }
 
                 this.plot = document.getElementById('plotly');
-                this.plot.on('plotly_relayout', () => {
-                    this.range = Date.parse(this.chartLayout.xaxis.range[0]);
-                    console.log('zmienilo');
-                    this.changed = true;
-                    this.chart = true;
-                    this.getDataFromPast = true;
-                });
+                if (this.motherOfDragons) {
+                    this.plot.on('plotly_relayout', () => {
 
-                for (let i = 1; i < 11; i++) {
+                        this.range = Date.parse(this.chartLayout.xaxis.range[0]);
+                        console.log('zoomed!');
+                        this.loadNewDataAfterZoom();
+                    });
+
+
+
+                for (let i = 0; i < 11; i++) {
                     document.getElementsByClassName('drag')[i].addEventListener('mousedown', () => {
-                        this.chart = false;
-                        console.log('mousedown'+i);
-
+                        console.log('mousedown' + i);
+                        clearInterval(this.loadPoints);
                     });
                 }
-
+                    this.motherOfDragons = false;
+                }
 
                 this.help2 = true;
+
+                this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+                this.redrawChart();
+                this.chartData.forEach(v => v['mode'] = 'lines');
+                console.log(this.chartData);
 
             });
         }
@@ -245,15 +275,22 @@ export class WatchlistComponent implements OnInit {
         Plotly.redraw('plotly', this.chartData, this.chartLayout);
     }
 
+    autorangeChart(){
+        Plotly.relayout('plotly', {
+            'xaxis.autorange': true,
+            'yaxis.autorange': true
+        });
+    }
+
     cleanChartBeforeDraw() {
         this.chartData = [];
-        this.bool = true;
+        this.isFillingDataNeeded = true;
         Plotly.newPlot('plotly', this.chartData);
     }
 
     initiateInterval() {
         this.loadPoints = setInterval(() => {
-            this.getValues();
+            this.liveChart();
         }, 5000);
     }
 
@@ -274,3 +311,16 @@ export class WatchlistComponent implements OnInit {
     }
 
 }
+
+// for (let i = 0; i < this.chartData.length; i++) {
+//     for (let j = 0; j < this._oldValues[i].values.length; j++) {
+//         this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)
+//     }
+// }
+// for (let i = 1; i < 11; i++) {
+//     document.getElementsByClassName('drag')[i].addEventListener('mouseup', () => {
+//         this.chart = true;
+//         console.log('mouseup'+i);
+//
+//     });
+// }
