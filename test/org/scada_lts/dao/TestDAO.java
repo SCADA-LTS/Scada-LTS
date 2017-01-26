@@ -65,7 +65,6 @@ public class TestDAO {
 	@Rule
 	public final ExpectedException expectedException = ExpectedException.none();
 	
-	
 	@Before
 	public void setUp() throws ClassNotFoundException, SQLException {
 		
@@ -103,13 +102,11 @@ public class TestDAO {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		DAO.getInstance().setJdbcTemp(jdbcTemplate);
 		DAO.getInstance().setTest(true);
-		
-		
+				
 		Flyway flyway = new Flyway();
 		flyway.setLocations("org.scada_lts.dao.migration.mysql");
 		flyway.setDataSource(DAO.getInstance().getJdbcTemp().getDataSource());
         flyway.migrate();
-      
 	}
 
 	@After

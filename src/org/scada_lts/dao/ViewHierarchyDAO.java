@@ -26,12 +26,14 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.exception.ViewHierarchyDaoException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * DAO for Hierarchy View
  *
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
+@Repository
 public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> {
 	
 	private static final Log LOG = LogFactory.getLog(ViewHierarchyDAO.class);
