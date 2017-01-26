@@ -29,7 +29,7 @@ export class WatchlistComponent implements OnInit {
     x: boolean = false;
     checkForMultistatesAndBinaries: boolean = true;
     isLinearChart: boolean = true;
-    xx: boolean = true;
+    isChartHidden: boolean = true;
     values;
     help2: boolean = true;
     plot;
@@ -80,6 +80,7 @@ export class WatchlistComponent implements OnInit {
         this.activeState = '';
         this.initiateChart();
         this.autorangeChart();
+        this.motherOfDragons = true;
     };
 
     fillDataWithScheme() {
@@ -102,7 +103,7 @@ export class WatchlistComponent implements OnInit {
     }
 
     getDataFromTimeRange() {
-        clearInterval(this.loadPoints);
+
         this.omg = false;
         this.chartData.forEach(v => {
             v.x = [];
@@ -118,10 +119,11 @@ export class WatchlistComponent implements OnInit {
             this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
             console.log('loaded data time range');
             this.chartLayout.xaxis = {range: [this.dateRange1, this.dateRange2]};
-            this.initiateChart();
+            this.redrawChart();
             if (Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate())) {
-                this.initiateInterval();
+                this.omg = false;
             }
+            console.log(Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate()));
         });
         this.activeState = 'timeRange';
     }
@@ -150,6 +152,7 @@ export class WatchlistComponent implements OnInit {
     }
 
     loadNewDataAfterZoom() {
+        //clearInterval(this.loadPoints);
         this.chartData.forEach(v => {
             v.x = [];
             v.y = []
@@ -163,8 +166,7 @@ export class WatchlistComponent implements OnInit {
             this._oldValues = res;
             this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
             this.redrawChart();
-            clearInterval(this.loadPoints);
-            this.initiateInterval();
+            //this.initiateInterval();
             console.log('loaded data after zoom');
         });
     }
@@ -215,6 +217,7 @@ export class WatchlistComponent implements OnInit {
                         if (this.omg) {
                             console.log('zoomed!');
                             this.loadNewDataAfterZoom();
+                            this.omg = false;
                         }
                     });
 
@@ -222,7 +225,7 @@ export class WatchlistComponent implements OnInit {
                         document.getElementsByClassName('drag')[i].addEventListener('mousedown', () => {
                             console.log('mousedown' + i);
                             this.omg = true;
-                            clearInterval(this.loadPoints);
+
                         });
                     }
                     this.motherOfDragons = false;
@@ -230,9 +233,13 @@ export class WatchlistComponent implements OnInit {
 
                 this.help2 = true;
                 this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
-                this.redrawChart();
+                if (!this.omg) {
+                    console.log('redrawing chart!');
+                    this.redrawChart();
+                }
                 this.chartData.forEach(v => v['mode'] = 'lines');
                 console.log(this.chartData);
+                console.log(this.motherOfDragons);
 
             });
         }
