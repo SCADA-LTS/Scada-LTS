@@ -11,9 +11,6 @@
         "assets",
         "favicon.ico",
         "styles.css",
-        "d3.js",
-        "c3.js",
-        "c3.css",
         "app/media/defaultUser.png",
         "app/media/ScadaLogo.png"
       ],
