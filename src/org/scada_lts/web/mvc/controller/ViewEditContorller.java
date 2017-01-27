@@ -17,7 +17,6 @@
  */
 package org.scada_lts.web.mvc.controller;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
@@ -29,10 +28,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.ViewEditForm;
+import org.scada_lts.web.mvc.validator.ViewEditValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -72,7 +71,7 @@ public class ViewEditContorller {
     private int nextImageId = -1;
     
     @Autowired
-    Validator validator;
+    ViewEditValidator validator;
 
     public void setSuccessUrl(String successUrl) {
         this.successUrl = successUrl;
@@ -81,7 +80,6 @@ public class ViewEditContorller {
     public void setUploadDirectory(String uploadDirectory) {
         this.uploadDirectory = uploadDirectory;
     }
-    
     
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.GET)
     protected ModelAndView showForm(HttpServletRequest request, @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
