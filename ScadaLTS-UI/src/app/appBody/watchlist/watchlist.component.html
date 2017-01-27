@@ -18,7 +18,7 @@
           <option *ngFor="let item of _watchlists" [ngValue]="item">{{ item.name }}</option>
         </select>
       </div>
-      <p *ngIf="lastActualization" class="lastActualizationDate">Last actualization: {{ getDate() | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
+      <p *ngIf="lastActualization" class="lastActualizationDate">Last actualization: {{ lastActualization | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
       <table *ngIf="_values.length" class="dataTable">
         <tr *ngFor="let elem of _values | sort">
           <td>{{ elem.name }}</td>
@@ -39,7 +39,15 @@
           <option value="minutes">minutes</option>
           <option value="hours">hours</option>
         </select>
-        <button md-raised-button md-ripple (click)="getDataFromSpecifiedTimeToNow();isChartHidden = false;changed = false;something = true;something2 = false" [ngClass]="{ 'active': activeState == 'specifiedTime' }" class="buttonFromPast">Load data</button>
+          <div class="jajebix">
+              <button md-raised-button md-ripple (click)="getDataFromSpecifiedTimeToNow();isChartHidden = false" [disabled]="isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'specifiedTime' }" class="buttonFromPast">Load data</button>
+              <div class="spinner spinnerSpecifiedTime" *ngIf="isRequestSpecifiedTimeActiveAndUndone">
+                  <div class="bounce1"></div>
+                  <div class="bounce2"></div>
+                  <div class="bounce3"></div>
+              </div>
+          </div>
+
       </div>
 
       <div class="timeRangeElements">
@@ -53,10 +61,22 @@
           <h2>To:</h2>
           <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange2">
         </div>
-        <button md-raised-button md-ripple (click)="getDataFromTimeRange();isChartHidden = false;changed = false;something = false;something2 = true" [ngClass]="{ 'active': activeState == 'timeRange' }" class="buttonFromPast">Load data</button>
+          <div>
+              <button md-raised-button md-ripple (click)="getDataFromTimeRange();isChartHidden = false" [disabled]="isRequestTimeRangeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" class="buttonFromPast">Load data</button>
+              <div class="spinner spinnerTimeRange" *ngIf="isRequestTimeRangeActiveAndUndone">
+                  <div class="bounce1"></div>
+                  <div class="bounce2"></div>
+                  <div class="bounce3"></div>
+              </div>
+          </div>
+
       </div>
 
-      <button md-raised-button md-ripple (click)="isChartHidden = !isChartHidden" class="revealChartButton">{{ isChartHidden ? 'Reveal chart' : 'Hide chart' }}</button>
+
+            <button md-raised-button md-ripple (click)="isChartHidden = !isChartHidden" class="revealChartButton">{{ isChartHidden ? 'Reveal chart' : 'Hide chart' }}</button>
+
+
+
 
     </md-card>
   </div>
