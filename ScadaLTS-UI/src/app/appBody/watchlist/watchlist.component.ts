@@ -38,12 +38,13 @@ export class WatchlistComponent implements OnInit {
     dateFrom: number = 5;
     dateFromUnit: string = 'seconds';
 
+    isRequestTimeRangeActiveAndUndone: boolean = false;
+    isRequestSpecifiedTimeActiveAndUndone: boolean = false;
+
     dateRange1: any;
     dateRange2: any;
 
-    something: boolean = true;
     motherOfDragons: boolean = true;
-    changed: boolean = false;
     chart: boolean = true;
 
     activeState: string;
@@ -103,7 +104,7 @@ export class WatchlistComponent implements OnInit {
     }
 
     getDataFromTimeRange() {
-
+        this.isRequestTimeRangeActiveAndUndone = true;
         this.omg = false;
         this.chartData.forEach(v => {
             v.x = [];
@@ -124,11 +125,13 @@ export class WatchlistComponent implements OnInit {
                 this.omg = false;
             }
             console.log(Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate()));
+            this.isRequestTimeRangeActiveAndUndone = false;
         });
         this.activeState = 'timeRange';
     }
 
     getDataFromSpecifiedTimeToNow() {
+        this.isRequestSpecifiedTimeActiveAndUndone = true;
         this.omg = false;
         clearInterval(this.loadPoints);
         this.chartData.forEach(v => {
@@ -147,6 +150,7 @@ export class WatchlistComponent implements OnInit {
             this.initiateInterval();
             console.log('loaded data from specified time to now');
             this.autorangeChart();
+            this.isRequestSpecifiedTimeActiveAndUndone = false;
         });
         this.activeState = 'specifiedTime';
     }
