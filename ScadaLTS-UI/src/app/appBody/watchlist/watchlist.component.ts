@@ -126,6 +126,7 @@ export class WatchlistComponent implements OnInit {
             }
             console.log(Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate()));
             this.isRequestTimeRangeActiveAndUndone = false;
+            this.isChartHidden = false;
         });
         this.activeState = 'timeRange';
     }
@@ -151,12 +152,13 @@ export class WatchlistComponent implements OnInit {
             console.log('loaded data from specified time to now');
             this.autorangeChart();
             this.isRequestSpecifiedTimeActiveAndUndone = false;
+            this.isChartHidden = false;
         });
         this.activeState = 'specifiedTime';
     }
 
     loadNewDataAfterZoom() {
-        //clearInterval(this.loadPoints);
+        clearInterval(this.loadPoints);
         this.chartData.forEach(v => {
             v.x = [];
             v.y = []
@@ -170,7 +172,7 @@ export class WatchlistComponent implements OnInit {
             this._oldValues = res;
             this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
             this.redrawChart();
-            //this.initiateInterval();
+            this.initiateInterval();
             console.log('loaded data after zoom');
         });
     }
@@ -243,8 +245,6 @@ export class WatchlistComponent implements OnInit {
                 }
                 this.chartData.forEach(v => v['mode'] = 'lines');
                 console.log(this.chartData);
-                console.log(this.motherOfDragons);
-
             });
         }
 
@@ -319,8 +319,8 @@ export class WatchlistComponent implements OnInit {
     };
 
     setDefaultTimeRangeValues() {
-        this.dateRange1 = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
-        this.dateRange2 = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
+        this.dateRange1 = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${(this.dd.getMinutes()-6) < 10 ? '0' + (this.dd.getMinutes()-6) : (this.dd.getMinutes()-6)}`;
+        this.dateRange2 = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${(this.dd.getMinutes()-1) < 10 ? '0' + (this.dd.getMinutes()-1) : (this.dd.getMinutes()-1)}`;
     }
 
     ngOnInit() {
