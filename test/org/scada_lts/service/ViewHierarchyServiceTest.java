@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.TestDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
@@ -54,7 +55,9 @@ public class ViewHierarchyServiceTest {
 		
 		Config() {
 			try {
-				new TestDAO().setUp();
+				if (DAO.getInstance().isTest()) {
+					new TestDAO().setUp();
+				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (SQLException e) {
