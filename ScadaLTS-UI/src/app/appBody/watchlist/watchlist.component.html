@@ -7,6 +7,14 @@
         <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">-</button>
         <button md-raised-button md-ripple (click)="isLinearChart ? toSplineChart() : toLinearChart()">{{ isLinearChart ? 's' : 'l' }}</button>
       </div>
+      {{ isAnyRequestActive }}
+      <div id="plotlyLoader" *ngIf="isAnyRequestActive">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+      </div>
       <div id="plotly"></div>
     </md-card>
   </div>
@@ -65,6 +73,7 @@
           </div>
       </div>
       <button md-raised-button md-ripple (click)="isChartHidden = !isChartHidden" class="revealChartButton">{{ isChartHidden ? 'Reveal chart' : 'Hide chart' }}</button>
+      <button md-raised-button md-ripple (click)="isRequestLoadChartAfterZoomAndUndone = !isRequestLoadChartAfterZoomAndUndone">showw</button>
     </md-card>
   </div>
 
