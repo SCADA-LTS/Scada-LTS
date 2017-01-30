@@ -26,29 +26,34 @@ export class WatchlistComponent implements OnInit {
     lastActualization = new Date();
     selectedWatchlist;
     chartLayout;
-    x: boolean = false;
+    multistatesOrBinariesDetected: boolean = false;
     checkForMultistatesAndBinaries: boolean = true;
     isLinearChart: boolean = true;
     isChartHidden: boolean = true;
     values;
     help2: boolean = true;
     plot;
-    range: number;
+    range1: number;
+    range2: number;
     dd: any = new Date();
     dateFrom: number = 5;
     dateFromUnit: string = 'seconds';
 
+    zoomEvent: boolean = true;
+
     isRequestTimeRangeActiveAndUndone: boolean = false;
     isRequestSpecifiedTimeActiveAndUndone: boolean = false;
+    isAnyRequestActive: boolean = false;
 
     dateRange1: any;
     dateRange2: any;
+
 
     motherOfDragons: boolean = true;
     chart: boolean = true;
 
     activeState: string;
-    omg: boolean = false;
+    isRedrawingStopped: boolean = false;
 
 
     constructor(@Inject(Http) private http: Http) {
@@ -104,8 +109,10 @@ export class WatchlistComponent implements OnInit {
     }
 
     getDataFromTimeRange() {
+        this.isAnyRequestActive = true;
+        clearInterval(this.loadPoints);
         this.isRequestTimeRangeActiveAndUndone = true;
-        this.omg = false;
+        this.isRedrawingStopped = true;
         this.chartData.forEach(v => {
             v.x = [];
             v.y = []
@@ -121,19 +128,24 @@ export class WatchlistComponent implements OnInit {
             console.log('loaded data time range');
             this.chartLayout.xaxis = {range: [this.dateRange1, this.dateRange2]};
             this.redrawChart();
-            if (Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate())) {
-                this.omg = false;
-            }
-            console.log(Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate()));
+            // if (Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate())) {
+            //     this.isRedrawingStopped = false;
+            //     this.initiateInterval();
+            // }
+            //console.log(Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate()));
             this.isRequestTimeRangeActiveAndUndone = false;
+            this.isChartHidden = false;
+            this.isAnyRequestActive = false;
+            // this.initiateInterval();
         });
         this.activeState = 'timeRange';
     }
 
     getDataFromSpecifiedTimeToNow() {
+        this.zoomEvent = false;
+        this.isAnyRequestActive = true;
         this.isRequestSpecifiedTimeActiveAndUndone = true;
-        this.omg = false;
-        clearInterval(this.loadPoints);
+        this.deactivateInterval();
         this.chartData.forEach(v => {
             v.x = [];
             v.y = []
@@ -146,107 +158,112 @@ export class WatchlistComponent implements OnInit {
         ).subscribe(res => {
             this._oldValues = res;
             this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
-            this.redrawChart();
             this.initiateInterval();
+            this.redrawChart();
             console.log('loaded data from specified time to now');
             this.autorangeChart();
             this.isRequestSpecifiedTimeActiveAndUndone = false;
+            this.isChartHidden = false;
+            this.isAnyRequestActive = false;
+            //this.zoomEvent = true;
         });
         this.activeState = 'specifiedTime';
     }
 
     loadNewDataAfterZoom() {
-        //clearInterval(this.loadPoints);
+        clearInterval(this.loadPoints);
+        this.isRedrawingStopped = true;
+        this.range1 = Date.parse(this.chartLayout.xaxis.range[0]);
+        this.range2 = Date.parse(this.chartLayout.xaxis.range[1]);
         this.chartData.forEach(v => {
             v.x = [];
             v.y = []
         });
         Observable.forkJoin(
             this._watchlistElements.map(v => {
-                return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${this.range}/${v.xid}`)
+                return this.http.get(`http://localhost/ScadaBR/api/watchlist/getChartData/${v.xid}/${this.range1}/${this.range2}`)
                     .map(res => res.json());
             })
         ).subscribe(res => {
             this._oldValues = res;
             this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
             this.redrawChart();
-            //this.initiateInterval();
+            if (Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate())) {
+                this.isRedrawingStopped = false;
+                this.initiateInterval();
+            }
             console.log('loaded data after zoom');
+
         });
     }
 
     liveChart() {
-        if (this.chart) {
-            Observable.forkJoin(
-                this._watchlistElements.map(v => {
-                    return this.http.get(`http://localhost/ScadaBR/api/point_value/getValue/${v.xid}`)
-                        .map(res => res.json());
-                })
-            ).subscribe(res => {
-                this._values = res;
+        console.log('livechart active');
+        Observable.forkJoin(
+            this._watchlistElements.map(v => {
+                return this.http.get(`http://localhost/ScadaBR/api/point_value/getValue/${v.xid}`)
+                    .map(res => res.json());
+            })
+        ).subscribe(res => {
+            this._values = res;
 
-                if (this.isFillingDataNeeded) {
-                    this.fillDataWithScheme();
-                }
+            if (this.isFillingDataNeeded) {
+                this.fillDataWithScheme();
+            }
 
-                if (this.checkForMultistatesAndBinaries) {
-                    for (let i = 0; i < this._values.length; i++) {
-                        if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
-                            this.x = true;
-                            break;
-                        } else {
-                            this.x = false;
-                        }
+            if (this.checkForMultistatesAndBinaries) {
+                for (let i = 0; i < this._values.length; i++) {
+                    if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
+                        this.multistatesOrBinariesDetected = true;
+                        break;
+                    } else {
+                        this.multistatesOrBinariesDetected = false;
                     }
-
-                    if (this.x) {
-                        this.chartLayout.yaxis2 = {
-                            titlefont: {color: '#000'},
-                            tickfont: {color: '#aa00ff'},
-                            overlaying: 'y',
-                            side: 'right',
-                            showticklabels: true,
-                            gridcolor: '#eeccff'
-                        }
-                    }
-
-                    this.initiateChart();
-                    this.checkForMultistatesAndBinaries = false;
                 }
+                if (this.multistatesOrBinariesDetected) {
+                    this.chartLayout.yaxis2 = {
+                        titlefont: {color: '#000'},
+                        tickfont: {color: '#aa00ff'},
+                        overlaying: 'y',
+                        side: 'right',
+                        showticklabels: true,
+                        gridcolor: '#eeccff'
+                    }
+                }
+                this.initiateChart();
+                this.checkForMultistatesAndBinaries = false;
+            }
 
-                this.plot = document.getElementById('plotly');
-                if (this.motherOfDragons) {
-                    this.plot.on('plotly_relayout', () => {
-                        this.range = Date.parse(this.chartLayout.xaxis.range[0]);
-                        if (this.omg) {
-                            console.log('zoomed!');
-                            this.loadNewDataAfterZoom();
-                            this.omg = false;
-                        }
+            this.plot = document.getElementById('plotly');
+            if (this.motherOfDragons) {
+                this.plot.on('plotly_relayout', () => {
+                    if (this.zoomEvent) {
+                        this.loadNewDataAfterZoom();
+                    }
+                    this.isRedrawingStopped = false;
+
+                });
+
+                for (let i = 0; i < 11; i++) {
+                    document.getElementsByClassName('drag')[i].addEventListener('mousedown', () => {
+                        console.log('mousedown' + i);
+                        this.isRedrawingStopped = true;
+                        this.zoomEvent = true;
                     });
-
-                    for (let i = 0; i < 11; i++) {
-                        document.getElementsByClassName('drag')[i].addEventListener('mousedown', () => {
-                            console.log('mousedown' + i);
-                            this.omg = true;
-
-                        });
-                    }
-                    this.motherOfDragons = false;
                 }
+                this.motherOfDragons = false;
+            }
 
-                this.help2 = true;
-                this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
-                if (!this.omg) {
-                    console.log('redrawing chart!');
-                    this.redrawChart();
-                }
-                this.chartData.forEach(v => v['mode'] = 'lines');
-                console.log(this.chartData);
-                console.log(this.motherOfDragons);
-
-            });
-        }
+            this.help2 = true;
+            this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+            if (this.isRedrawingStopped == false) {
+                console.log('redrawing chart!');
+                this.redrawChart();
+            }
+            this.chartData.forEach(v => v['mode'] = 'lines');
+            console.log(this.chartData);
+            console.log(this.isAnyRequestActive);
+        });
 
     };
 
@@ -321,6 +338,13 @@ export class WatchlistComponent implements OnInit {
     setDefaultTimeRangeValues() {
         this.dateRange1 = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
         this.dateRange2 = `${this.dd.getFullYear()}-${this.dd.getMonth() < 10 ? '0' + (this.dd.getMonth() + 1) : this.dd.getMonth() + 1}-${this.dd.getDate() < 10 ? '0' + this.dd.getDate() : this.dd.getDate()}T${this.dd.getHours() < 10 ? '0' + this.dd.getHours() : this.dd.getHours()}:${this.dd.getMinutes() < 10 ? '0' + this.dd.getMinutes() : this.dd.getMinutes()}`;
+    }
+
+    setRanges() {
+        let date1 = this.chartLayout.xaxis.range[0];
+        let date2 = this.chartLayout.xaxis.range[1];
+        this.dateRange1 = date1.slice(0, -8).split(" ").join("T");
+        this.dateRange2 = date2.slice(0, -8).split(" ").join("T");
     }
 
     ngOnInit() {

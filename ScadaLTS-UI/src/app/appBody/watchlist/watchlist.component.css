@@ -133,12 +133,11 @@ h2 {
 
 .open {
   margin-top: 0;
-  margin-bottom: 10px;
   height: 554px;
   transition: all 0.5s ease-in; }
 
 .buttonFromPast, .inputFromPast, .selectFromPast {
-  width: 25%; }
+  width: 49%; }
 
 .buttonFromPast, .inputFromPast, .selectFromPast, .datePickerInput, .revealChartButton {
   border: 1px dotted #666;
@@ -156,15 +155,6 @@ h2 {
   color: #fff;
   width: 150px; }
 
-.elementsFromPast > * {
-  vertical-align: middle; }
-
-.elementsFromPast {
-  margin-bottom: 30px; }
-
-.timeRangeElementsChild {
-  display: inline-block; }
-
 .revealChartButton {
   width: 100%;
   height: 40px;
@@ -175,7 +165,7 @@ h2 {
   width: 100%; }
 
 .active {
-  background-color: #000; }
+  background-color: #006622; }
 
 .spinner {
   margin: 0 auto;
@@ -212,14 +202,25 @@ h2 {
   position: absolute; }
 
 .spinnerSpecifiedTime {
-  top: 30px;
-  left: 60%; }
+  top: 70px;
+  left: 64px; }
 
 .spinnerTimeRange {
-  top: 227px;
-  left: 70px; }
+  top: 237px;
+  left: 64px; }
 
-.jajebix {
-  display: inline-block; }
+.chartSettings {
+  margin-bottom: 30px; }
+
+#plotlyLoader {
+  position: absolute;
+  z-index: 999;
+  height: 400px;
+  width: 94%;
+  top: 100px;
+  background-color: rgba(255, 255, 255, 0.5); }
+
+.md-card {
+  z-index: 20; }
 
 /*# sourceMappingURL=watchlist.component.css.map */

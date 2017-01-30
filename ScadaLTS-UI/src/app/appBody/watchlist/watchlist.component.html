@@ -1,11 +1,20 @@
 <div class="row">
 
   <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'open': !isChartHidden }" (window:resize)="initiateChart()">
-    <md-card>
+    <md-card class="md-card">
       <div class="chartButtons">
         <button md-raised-button md-ripple (click)="increaseChartLineWidth()">+</button>
         <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">-</button>
         <button md-raised-button md-ripple (click)="isLinearChart ? toSplineChart() : toLinearChart()">{{ isLinearChart ? 's' : 'l' }}</button>
+      </div>
+      {{ isAnyRequestActive }}
+      {{ isRedrawingStopped }}
+      <div id="plotlyLoader" *ngIf="isAnyRequestActive">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
       </div>
       <div id="plotly"></div>
     </md-card>
@@ -31,7 +40,6 @@
 
   <div class="chartSettings col-md-6 col-xs-12">
     <md-card>
-
       <div class="elementsFromPast">
         <input type="number" min="1" max="100" class="inputFromPast" [(ngModel)]="dateFrom" pattern="\d+">
         <select [(ngModel)]="dateFromUnit" class="selectFromPast">
@@ -39,45 +47,33 @@
           <option value="minutes">minutes</option>
           <option value="hours">hours</option>
         </select>
-          <div class="jajebix">
-              <button md-raised-button md-ripple (click)="getDataFromSpecifiedTimeToNow();isChartHidden = false" [disabled]="isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'specifiedTime' }" class="buttonFromPast">Load data</button>
+      </div>
+              <button md-raised-button md-ripple (click)="getDataFromSpecifiedTimeToNow()" [disabled]="isRequestSpecifiedTimeActiveAndUndone || isRequestTimeRangeActiveAndUndone" [ngClass]="{ 'active': activeState == 'specifiedTime' }" class="buttonFromPast">Load data</button>
               <div class="spinner spinnerSpecifiedTime" *ngIf="isRequestSpecifiedTimeActiveAndUndone">
                   <div class="bounce1"></div>
                   <div class="bounce2"></div>
                   <div class="bounce3"></div>
               </div>
-          </div>
-
-      </div>
 
       <div class="timeRangeElements">
-
         <div class="timeRangeElementsChild">
           <h2>From:</h2>
           <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange1">
         </div>
-
         <div class="timeRangeElementsChild">
           <h2>To:</h2>
           <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange2">
         </div>
           <div>
-              <button md-raised-button md-ripple (click)="getDataFromTimeRange();isChartHidden = false" [disabled]="isRequestTimeRangeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" class="buttonFromPast">Load data</button>
+              <button md-raised-button md-ripple (click)="getDataFromTimeRange()" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" class="buttonFromPast">Load data</button>
               <div class="spinner spinnerTimeRange" *ngIf="isRequestTimeRangeActiveAndUndone">
                   <div class="bounce1"></div>
                   <div class="bounce2"></div>
                   <div class="bounce3"></div>
               </div>
           </div>
-
       </div>
-
-
-            <button md-raised-button md-ripple (click)="isChartHidden = !isChartHidden" class="revealChartButton">{{ isChartHidden ? 'Reveal chart' : 'Hide chart' }}</button>
-
-
-
-
+      <button md-raised-button md-ripple (click)="isChartHidden = !isChartHidden" class="revealChartButton">{{ isChartHidden ? 'Reveal chart' : 'Hide chart' }}</button>
     </md-card>
   </div>
 

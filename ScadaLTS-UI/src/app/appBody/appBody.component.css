@@ -177,7 +177,7 @@
 
 .header {
   overflow: hidden;
-  z-index: 100000000;
+  z-index: 99;
   width: 100%;
   min-width: 320px;
   background-color: #FFFFFF;
@@ -190,6 +190,7 @@
 .userTools {
   float: right;
   margin-right: 50px;
+  z-index: 99;
   -webkit-transition: 0.5s margin ease;
   -moz-transition: 0.5s margin ease;
   -ms-transition: 0.5s margin ease;
