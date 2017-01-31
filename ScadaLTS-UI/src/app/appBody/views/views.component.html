@@ -1,16 +1,59 @@
 <md-card>
+<!--
     <h2>Graphic views.</h2>
 
     <div class="elements">
         <md-icon>zoom_out_map</md-icon>
-        <select>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-        </select>
+        <button id="viewsHierarchyButton">Views hierarchy</button>
         <md-icon>edit</md-icon>
         <md-icon>note_add</md-icon>
     </div>
+    <div id="viewsHierarchyDiv">
+        <h1>Fancytree Demo</h1>
 
+        <button id="button1">Test</button>
+        <hr>
+        <div id="tree">
+    <ul id="treeData" >
+      <li id="id1" title="Look, a tool tip!">item1 with key and tooltip
+      <li id="id2">item2
+      <li id="id3" class="folder">Folder <em>with some</em> children
+        <ul>
+          <li id="id3.1">Sub-item 3.1
+            <ul>
+              <li id="id3.1.1">Sub-item 3.1.1
+              <li id="id3.1.2">Sub-item 3.1.2
+              <li id="id3.1.3">Sub-item 3.1.3
+            </ul>
+          <li id="id3.2">Sub-item 3.2
+            <ul>
+              <li id="id3.2.1">Sub-item 3.2.1
+              <li id="id3.2.2">Sub-item 3.2.2
+            </ul>
+        </ul>
+      <li id="id4" class="expanded">Document with some children (expanded on init)
+        <ul>
+          <li id="id4.1"  class="active focused">Sub-item 4.1 (active and focus on init)
+            <ul>
+              <li id="id4.1.1">Sub-item 4.1.1
+              <li id="id4.1.2">Sub-item 4.1.2
+            </ul>
+          <li id="id4.2">Sub-item 4.2
+            <ul>
+              <li id="id4.2.1">Sub-item 4.2.1
+              <li id="id4.2.2">Sub-item 4.2.2
+            </ul>
+        </ul>
+    </ul>
+  </div>
+    </div>
+    
     <iframe src="/ScadaBR/views.shtm" frameborder="0" allowfullscreen id="ifr"></iframe>
+
+<script>
+      // using default options
+      $("#tree").fancytree();
+</script>
+-->
+    
 </md-card>

@@ -11,10 +11,12 @@ export class ViewsComponent implements OnInit {
   constructor(){}
 
   loadIframe(){
-    $('#ifr').on('load', function() {
+    /*$('#ifr').on('load', function() {
         $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').hide();
-    });
+    });*/
   }
+
+
 
   ngOnInit(){
     this.loadIframe();
