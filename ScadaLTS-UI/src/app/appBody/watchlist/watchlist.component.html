@@ -7,9 +7,7 @@
         <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">-</button>
         <button md-raised-button md-ripple (click)="isLinearChart ? toSplineChart() : toLinearChart()">{{ isLinearChart ? 's' : 'l' }}</button>
       </div>
-      {{ isAnyRequestActive }}
-      {{ isRedrawingStopped }}
-      <div id="plotlyLoader" *ngIf="isAnyRequestActive">
+      <div id="plotlyLoader" *ngIf="isAnyRequestActive == true">
         <div class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
