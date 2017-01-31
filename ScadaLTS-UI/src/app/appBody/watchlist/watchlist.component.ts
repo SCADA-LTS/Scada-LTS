@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, NgZone} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 declare let Plotly: any;
@@ -38,25 +38,19 @@ export class WatchlistComponent implements OnInit {
     dd: any = new Date();
     dateFrom: number = 5;
     dateFromUnit: string = 'seconds';
-
     zoomEvent: boolean = true;
-
     isRequestTimeRangeActiveAndUndone: boolean = false;
     isRequestSpecifiedTimeActiveAndUndone: boolean = false;
     isAnyRequestActive: boolean = false;
-
     dateRange1: any;
     dateRange2: any;
-
-
     motherOfDragons: boolean = true;
     chart: boolean = true;
-
     activeState: string;
     isRedrawingStopped: boolean = false;
 
 
-    constructor(@Inject(Http) private http: Http) {
+    constructor(@Inject(Http) private http: Http, public zone: NgZone) {
         this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
             .subscribe(res => this._watchlists = res.json());
         setTimeout(() => {
@@ -72,7 +66,6 @@ export class WatchlistComponent implements OnInit {
                 y: -0.17
             }
         };
-
     };
 
     updateWatchlistTable(xid) {
@@ -128,15 +121,9 @@ export class WatchlistComponent implements OnInit {
             console.log('loaded data time range');
             this.chartLayout.xaxis = {range: [this.dateRange1, this.dateRange2]};
             this.redrawChart();
-            // if (Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate())) {
-            //     this.isRedrawingStopped = false;
-            //     this.initiateInterval();
-            // }
-            //console.log(Date.parse(this.chartLayout.xaxis.range[1]) >= Date.parse(this.getDate()));
             this.isRequestTimeRangeActiveAndUndone = false;
             this.isChartHidden = false;
             this.isAnyRequestActive = false;
-            // this.initiateInterval();
         });
         this.activeState = 'timeRange';
     }
@@ -165,7 +152,6 @@ export class WatchlistComponent implements OnInit {
             this.isRequestSpecifiedTimeActiveAndUndone = false;
             this.isChartHidden = false;
             this.isAnyRequestActive = false;
-            //this.zoomEvent = true;
         });
         this.activeState = 'specifiedTime';
     }
@@ -193,12 +179,11 @@ export class WatchlistComponent implements OnInit {
                 this.initiateInterval();
             }
             console.log('loaded data after zoom');
-
+            this.isAnyRequestActive = false;
         });
     }
 
     liveChart() {
-        console.log('livechart active');
         Observable.forkJoin(
             this._watchlistElements.map(v => {
                 return this.http.get(`http://localhost/ScadaBR/api/point_value/getValue/${v.xid}`)
@@ -237,10 +222,13 @@ export class WatchlistComponent implements OnInit {
             this.plot = document.getElementById('plotly');
             if (this.motherOfDragons) {
                 this.plot.on('plotly_relayout', () => {
+                    this.zone.run(() => {
                     if (this.zoomEvent) {
                         this.loadNewDataAfterZoom();
+                        this.isAnyRequestActive = true;
                     }
                     this.isRedrawingStopped = false;
+                    });
 
                 });
 
@@ -262,7 +250,6 @@ export class WatchlistComponent implements OnInit {
             }
             this.chartData.forEach(v => v['mode'] = 'lines');
             console.log(this.chartData);
-            console.log(this.isAnyRequestActive);
         });
 
     };
