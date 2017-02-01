@@ -41,7 +41,7 @@ export class LoginComponent {
         this.isPasswordIncorrect = false;
         console.log(this.form.status);
         if (this.form.status == 'VALID') {
-            this.http.get(`http://localhost/ScadaBR/api/auth/${this.username}/${this.password}`)
+            this.http.get(`/ScadaBR/api/auth/${this.username}/${this.password}`)
                 .map(res => res.json())
                 .catch(this.handle)
                 .subscribe(res => {
