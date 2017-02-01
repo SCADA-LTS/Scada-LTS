@@ -71,7 +71,7 @@ export class WatchlistComponent implements OnInit {
     updateWatchlistTable(xid) {
         this.checkForMultistatesAndBinaries = true;
         this._watchlistElements = [];
-        this.http.get(`http://localhost/ScadaBR/api/watchlist/getPoints/${xid}`)
+        this.http.get(`/ScadaBR/api/watchlist/getPoints/${xid}`)
             .subscribe(res => {
                 this._watchlistElements = res.json();
                 this.liveChart();
@@ -112,7 +112,7 @@ export class WatchlistComponent implements OnInit {
         });
         Observable.forkJoin(
             this._watchlistElements.map(v => {
-                return this.http.get(`http://localhost/ScadaBR/api/watchlist/getChartData/${v.xid}/${(Date.parse(this.dateRange1) - 3600000)}/${(Date.parse(this.dateRange2) - 3600000)}`)
+                return this.http.get(`/ScadaBR/api/watchlist/getChartData/${v.xid}/${(Date.parse(this.dateRange1) - 3600000)}/${(Date.parse(this.dateRange2) - 3600000)}`)
                     .map(res => res.json());
             })
         ).subscribe(res => {
@@ -139,7 +139,7 @@ export class WatchlistComponent implements OnInit {
         });
         Observable.forkJoin(
             this._watchlistElements.map(v => {
-                return this.http.get(`http://localhost/ScadaBR/api/point_value/getValuesFromTime/${Date.parse(this.getDate()) - (this.dateFrom * 1000 * (this.dateFromUnit == 'minutes' ? 60 : this.dateFromUnit == 'hours' ? 3600 : 1))}/${v.xid}`)
+                return this.http.get(`/ScadaBR/api/point_value/getValuesFromTime/${Date.parse(this.getDate()) - (this.dateFrom * 1000 * (this.dateFromUnit == 'minutes' ? 60 : this.dateFromUnit == 'hours' ? 3600 : 1))}/${v.xid}`)
                     .map(res => res.json());
             })
         ).subscribe(res => {
@@ -167,7 +167,7 @@ export class WatchlistComponent implements OnInit {
         });
         Observable.forkJoin(
             this._watchlistElements.map(v => {
-                return this.http.get(`http://localhost/ScadaBR/api/watchlist/getChartData/${v.xid}/${this.range1}/${this.range2}`)
+                return this.http.get(`/ScadaBR/api/watchlist/getChartData/${v.xid}/${this.range1}/${this.range2}`)
                     .map(res => res.json());
             })
         ).subscribe(res => {
@@ -186,7 +186,7 @@ export class WatchlistComponent implements OnInit {
     liveChart() {
         Observable.forkJoin(
             this._watchlistElements.map(v => {
-                return this.http.get(`http://localhost/ScadaBR/api/point_value/getValue/${v.xid}`)
+                return this.http.get(`/ScadaBR/api/point_value/getValue/${v.xid}`)
                     .map(res => res.json());
             })
         ).subscribe(res => {
