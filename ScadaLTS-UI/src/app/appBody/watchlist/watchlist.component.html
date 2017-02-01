@@ -7,7 +7,7 @@
         <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">-</button>
         <button md-raised-button md-ripple (click)="isLinearChart ? toSplineChart() : toLinearChart()">{{ isLinearChart ? 's' : 'l' }}</button>
       </div>
-      <div id="plotlyLoader" *ngIf="isAnyRequestActive == true">
+      <div id="plotlyLoader" *ngIf="isAnyRequestActive">
         <div class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
@@ -25,7 +25,7 @@
           <option *ngFor="let item of _watchlists" [ngValue]="item">{{ item.name }}</option>
         </select>
       </div>
-      <p *ngIf="lastActualization" class="lastActualizationDate">Last actualization: {{ lastActualization | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
+      <p *ngIf="actualDate" class="lastActualizationDate">Last actualization: {{ actualDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
       <table *ngIf="_values.length" class="dataTable">
         <tr *ngFor="let elem of _values | sort">
           <td>{{ elem.name }}</td>
