@@ -51,7 +51,7 @@ export class WatchlistComponent implements OnInit {
 
 
     constructor(@Inject(Http) private http: Http, public zone: NgZone) {
-        this.http.get(`http://localhost:/ScadaBR/api/watchlist/getNames`)
+        this.http.get(`/ScadaBR/api/watchlist/getNames`)
             .subscribe(res => this._watchlists = res.json());
         setTimeout(() => {
             this.updateWatchlistTable(this._watchlists[0].xid);
