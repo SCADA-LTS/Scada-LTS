@@ -51,16 +51,16 @@ export class WatchlistComponent implements OnInit {
 
     constructor(@Inject(Http) private http: Http, public zone: NgZone) {
         this.http.get(`/ScadaBR/api/watchlist/getNames`)
-            .subscribe(res => this._watchlists = res.json());
-        setTimeout(() => {
-            this.updateWatchlistTable(this._watchlists[0].xid);
-            this.selectedWatchlist = this._watchlists[0];
-            this.initiateInterval();
-        }, 500);
+            .subscribe(res => {
+                this._watchlists = res.json();
+                this.updateWatchlistTable(this._watchlists[0].xid);
+                this.selectedWatchlist = this._watchlists[0];
+                this.initiateInterval();
+            });
         this.chartLayout = {
             showlegend: true,
             legend: {
-                "orientation": "h",
+                orientation: "h",
                 bgcolor: 'transparent',
                 y: -0.17
             }
@@ -68,15 +68,20 @@ export class WatchlistComponent implements OnInit {
     };
 
     updateWatchlistTable(xid) {
+        this.zoomEvent = false;
+        this.isAnyRequestActive = true;
         this.checkForMultistatesAndBinaries = true;
         this._watchlistElements = [];
         this.http.get(`/ScadaBR/api/watchlist/getPoints/${xid}`)
             .subscribe(res => {
                 this._watchlistElements = res.json();
                 this.liveChart();
+                this.isAnyRequestActive = false;
+                setTimeout(() => {
+                    this.autorangeChart();
+                }, 500);
             });
         this.activeState = '';
-        this.autorangeChart();
         this.motherOfDragons = true;
     };
 
@@ -131,7 +136,7 @@ export class WatchlistComponent implements OnInit {
         this.zoomEvent = false;
         this.isAnyRequestActive = true;
         this.isRequestSpecifiedTimeActiveAndUndone = true;
-        this.deactivateInterval();
+        clearInterval(this.loadPoints);
         this.chartData.forEach(v => {
             v.x = [];
             v.y = []
@@ -250,11 +255,15 @@ export class WatchlistComponent implements OnInit {
 
             this.help2 = true;
             this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+
+            if (this.chartData[0].x.length > 1) {
+                this.chartData.forEach(v => v['mode'] = 'lines');
+            }
+
             if (this.isRedrawingStopped == false) {
                 console.log('redrawing chart!');
                 this.redrawChart();
             }
-            this.chartData.forEach(v => v['mode'] = 'lines');
             console.log(this.chartData);
         });
 
@@ -324,10 +333,10 @@ export class WatchlistComponent implements OnInit {
     initiateInterval() {
         this.loadPoints = setInterval(() => {
             this.liveChart();
-        }, 5000);
+        }, 1000);
     }
 
-    deactivateInterval() {
+    deactivateInterval(){
         clearInterval(this.loadPoints);
     }
 
@@ -344,8 +353,8 @@ export class WatchlistComponent implements OnInit {
     setRanges() {
         let date1 = this.chartLayout.xaxis.range[0];
         let date2 = this.chartLayout.xaxis.range[1];
-        this.dateRange1 = date1.slice(0, -7).split(" ").join("T").replace(/:$/, '');
-        this.dateRange2 = date2.slice(0, -7).split(" ").join("T").replace(/:$/, '');
+        this.dateRange1 = date1.slice(0, -6).split(" ").join("T").replace(/(:|:\d)$/, '');
+        this.dateRange2 = date2.slice(0, -6).split(" ").join("T").replace(/(:|:\d)$/, '');
     }
 
     ngOnInit() {

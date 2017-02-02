@@ -17,6 +17,7 @@ export class LoginComponent {
     private isPasswordIncorrect: boolean = false;
     isFormEmpty: boolean = true;
     form: FormGroup;
+    isLoggingActive: boolean = false;
 
     private modal() {
         this.showModal = !this.showModal;
@@ -39,6 +40,7 @@ export class LoginComponent {
 
     private login() {
         this.isPasswordIncorrect = false;
+        this.isLoggingActive = true;
         console.log(this.form.status);
         if (this.form.status == 'VALID') {
             this.http.get(`/ScadaBR/api/auth/${this.username}/${this.password}`)
@@ -53,6 +55,7 @@ export class LoginComponent {
                         console.log('access denied');
                         this.isPasswordIncorrect = true;
                     }
+                    this.isLoggingActive = false;
                 });
         } else {
             this.isFormEmpty = false;
