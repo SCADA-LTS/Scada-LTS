@@ -12,7 +12,9 @@
         "favicon.ico",
         "styles.css",
         "app/media/defaultUser.png",
-        "app/media/ScadaLogo.png"
+        "app/media/ScadaLogo.png",
+        "jquery.min.js",
+        "plotly.min.js"
       ],
       "index": "index.html",
       "main": "main.ts",
