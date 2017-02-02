@@ -48,7 +48,6 @@ export class WatchlistComponent implements OnInit {
     activeState: string;
     isRedrawingStopped: boolean = false;
 
-
     constructor(@Inject(Http) private http: Http, public zone: NgZone) {
         this.http.get(`/ScadaBR/api/watchlist/getNames`)
             .subscribe(res => {
