@@ -47,6 +47,7 @@ export class WatchlistComponent implements OnInit {
     chart: boolean = true;
     activeState: string;
     isRedrawingStopped: boolean = false;
+    areChartButtonsVisible: boolean = false;
 
     constructor(@Inject(Http) private http: Http, public zone: NgZone) {
         this.http.get(`/ScadaBR/api/watchlist/getNames`)
@@ -70,6 +71,7 @@ export class WatchlistComponent implements OnInit {
         this.zoomEvent = false;
         this.isAnyRequestActive = true;
         this.checkForMultistatesAndBinaries = true;
+        this.activeState = '';
         this._watchlistElements = [];
         this.http.get(`/ScadaBR/api/watchlist/getPoints/${xid}`)
             .subscribe(res => {
@@ -80,7 +82,6 @@ export class WatchlistComponent implements OnInit {
                     this.autorangeChart();
                 }, 500);
             });
-        this.activeState = '';
         this.motherOfDragons = true;
     };
 
@@ -132,6 +133,7 @@ export class WatchlistComponent implements OnInit {
     }
 
     getDataFromSpecifiedTimeToNow() {
+        this.chartData.forEach(v => v['mode'] = 'lines');
         this.zoomEvent = false;
         this.isAnyRequestActive = true;
         this.isRequestSpecifiedTimeActiveAndUndone = true;
@@ -145,7 +147,7 @@ export class WatchlistComponent implements OnInit {
                 this.actualDate = res.json();
                 Observable.forkJoin(
                     this._watchlistElements.map(v => {
-                        return this.http.get(`/ScadaBR/api/point_value/getValuesFromTime/${this.actualDate - (this.dateFrom * 1000 * (this.dateFromUnit == 'minutes' ? 60 : this.dateFromUnit == 'hours' ? 3600 : 1))}/${v.xid}`)
+                        return this.http.get(`/ScadaBR/api/point_value/getValuesFromTime/${this.actualDate - (this.dateFrom * 1000 * (this.dateFromUnit == 'minutes' ? 60 : this.dateFromUnit == 'hours' ? 3600 : this.dateFromUnit == 'days' ? 86400 : 1))}/${v.xid}`)
                             .map(res => res.json());
                     })
                 ).subscribe(res => {
@@ -228,8 +230,8 @@ export class WatchlistComponent implements OnInit {
                 this.initiateChart();
                 this.checkForMultistatesAndBinaries = false;
             }
-
             this.plot = document.getElementById('plotly');
+
             if (this.motherOfDragons) {
                 this.plot.on('plotly_relayout', () => {
                     this.zone.run(() => {
@@ -238,17 +240,29 @@ export class WatchlistComponent implements OnInit {
                             this.isAnyRequestActive = true;
                         }
                         this.isRedrawingStopped = false;
+                        for (let i = 0; i < 11; i++) {
+                            let cb = (e) => {
+                                console.log('mousedown' + i);
+                                this.isRedrawingStopped = true;
+                                this.zoomEvent = true;
+                                e.currentTarget.removeEventListener(e.type, cb);
+                            };
+                            document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
+
+                        }
+
                     });
 
                 });
-
-                for (let i = 0; i < 11; i++) {
-                    document.getElementsByClassName('drag')[i].addEventListener('mousedown', () => {
-                        console.log('mousedown' + i);
-                        this.isRedrawingStopped = true;
-                        this.zoomEvent = true;
-                    });
-                }
+                    for (let i = 0; i < 11; i++) {
+                        let cb = (e) => {
+                            console.log('mousedown' + i);
+                            this.isRedrawingStopped = true;
+                            this.zoomEvent = true;
+                            e.currentTarget.removeEventListener(e.type, cb);
+                        };
+                        document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
+                    }
                 this.motherOfDragons = false;
             }
 
@@ -332,7 +346,7 @@ export class WatchlistComponent implements OnInit {
     initiateInterval() {
         this.loadPoints = setInterval(() => {
             this.liveChart();
-        }, 1000);
+        }, 5000);
     }
 
     deactivateInterval(){

@@ -14,9 +14,6 @@
   -moz-box-shadow: $shadow
   box-shadow: $shadow
 
-*
-  box-sizing: border-box
-
 input:focus
   border: 1px solid #666
 
@@ -89,7 +86,6 @@ select
   40%, 60%
     opacity: 1
 
-
 .chartBtn:hover
   border-color: #666
   transition: border-color .3s ease-out
@@ -127,17 +123,6 @@ select
   100%
     background-color: transparent
 
-.chartContainer [md-raised-button]
-  width: 10px
-  color: #fff
-  font-size: 14px
-  -webkit-font-smoothing: antialiased
-  text-align: center
-  background-color: #666
-  cursor: pointer
-  +border-radius(2px)
-  +transition(all .15s ease)
-
 h2
   font-size: 20px
 
@@ -149,7 +134,7 @@ h2
 
 .open
   margin-top: 0
-  height: 554px
+  height: 475px
   transition: all .5s ease-in
 
 .buttonFromPast, .inputFromPast, .selectFromPast
@@ -232,7 +217,30 @@ h2
 #plotlyLoader
   position: absolute
   z-index: 999
-  height: 400px
+  height: 350px
   width: 94%
-  top: 100px
-  background-color: rgba(255, 255, 255, 0.7)
+  top: 70px
+  background-color: rgba(255, 255, 255, 0.8)
+  .spinner
+    margin-top: 120px
+
+.chartButtons
+  position: absolute
+  z-index: 5
+  opacity: 0
+  top: 15px
+  +transition(all .4s ease)
+  button
+    width: 20px
+    height: 20px
+    color: #fff
+    font-size: 14px
+    -webkit-font-smoothing: antialiased
+    text-align: center
+    background-color: #999999
+    cursor: pointer
+    +border-radius(2px)
+
+.showButtons
+  opacity: 1
+  +transition(all .4s ease)
