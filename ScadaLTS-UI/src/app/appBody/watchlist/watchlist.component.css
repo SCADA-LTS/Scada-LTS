@@ -1,6 +1,3 @@
-* {
-  box-sizing: border-box; }
-
 input:focus {
   border: 1px solid #666; }
 
@@ -106,22 +103,6 @@ select {
     background-color: #d7f4e4; }
   100% {
     background-color: transparent; } }
-.chartContainer [md-raised-button] {
-  width: 10px;
-  color: #fff;
-  font-size: 14px;
-  -webkit-font-smoothing: antialiased;
-  text-align: center;
-  background-color: #666;
-  cursor: pointer;
-  -webkit-border-radius: 2px;
-  -moz-border-radius: 2px;
-  border-radius: 2px;
-  -webkit-transition: all 0.15s ease;
-  -moz-transition: all 0.15s ease;
-  -o-transition: all 0.15s ease;
-  transition: all 0.15s ease; }
-
 h2 {
   font-size: 20px; }
 
@@ -133,7 +114,7 @@ h2 {
 
 .open {
   margin-top: 0;
-  height: 554px;
+  height: 475px;
   transition: all 0.5s ease-in; }
 
 .buttonFromPast, .inputFromPast, .selectFromPast {
@@ -212,9 +193,40 @@ h2 {
 #plotlyLoader {
   position: absolute;
   z-index: 999;
-  height: 400px;
+  height: 350px;
   width: 94%;
-  top: 100px;
-  background-color: rgba(255, 255, 255, 0.7); }
+  top: 70px;
+  background-color: rgba(255, 255, 255, 0.8); }
+  #plotlyLoader .spinner {
+    margin-top: 120px; }
+
+.chartButtons {
+  position: absolute;
+  z-index: 5;
+  opacity: 0;
+  top: 15px;
+  -webkit-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  transition: all 0.4s ease; }
+  .chartButtons button {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+    background-color: #999999;
+    cursor: pointer;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px; }
+
+.showButtons {
+  opacity: 1;
+  -webkit-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  transition: all 0.4s ease; }
 
 /*# sourceMappingURL=watchlist.component.css.map */

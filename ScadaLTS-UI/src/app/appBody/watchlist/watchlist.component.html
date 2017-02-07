@@ -1,11 +1,11 @@
 <div class="row">
 
   <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'open': !isChartHidden }" (window:resize)="initiateChart()">
-    <md-card class="md-card">
-      <div class="chartButtons">
-        <button md-raised-button md-ripple (click)="increaseChartLineWidth()">+</button>
-        <button md-raised-button md-ripple (click)="decreaseChartLineWidth()">-</button>
-        <button md-raised-button md-ripple (click)="isLinearChart ? toSplineChart() : toLinearChart()">{{ isLinearChart ? 's' : 'l' }}</button>
+    <md-card class="md-card" (mouseenter)="areChartButtonsVisible = true" (mouseleave)="areChartButtonsVisible = false">
+      <div class="chartButtons" [ngClass]="{ 'showButtons': areChartButtonsVisible }">
+        <button (click)="increaseChartLineWidth()">+</button>
+        <button (click)="decreaseChartLineWidth()">-</button>
+        <button (click)="isLinearChart ? toSplineChart() : toLinearChart()">{{ isLinearChart ? 'S' : 'L' }}</button>
       </div>
       <div id="plotlyLoader" *ngIf="isAnyRequestActive">
         <div class="spinner">
@@ -44,6 +44,7 @@
           <option value="seconds">seconds</option>
           <option value="minutes">minutes</option>
           <option value="hours">hours</option>
+          <option value="days">days</option>
         </select>
       </div>
               <button md-raised-button md-ripple (click)="getDataFromSpecifiedTimeToNow()" [disabled]="isRequestSpecifiedTimeActiveAndUndone || isRequestTimeRangeActiveAndUndone" [ngClass]="{ 'active': activeState == 'specifiedTime' }" class="buttonFromPast">Load data</button>
