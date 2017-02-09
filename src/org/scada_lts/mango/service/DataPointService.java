@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.config.ScadaConfig;
@@ -39,6 +40,7 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.PointHierarchyService;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
@@ -191,11 +193,14 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public void deleteDataPoint(int dataPointId) {
-		DataPointVO dp = getDataPoint(dataPointId);
-		if (dp != null) {
+		try {
+			DataPointVO dp = getDataPoint(dataPointId);
 			beforePointDelete(dataPointId);
 			deletePointHistory(dataPointId);
 			deleteDataPointImpl(Integer.toString(dataPointId));
+		} catch (EmptyResultDataAccessException e) {
+			Log.error(e);
+			return;
 		}
 	}
 

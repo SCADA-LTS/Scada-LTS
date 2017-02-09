@@ -18,58 +18,25 @@
  */
 package com.serotonin.mango.db.dao;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.quartz.SchedulerException;
-import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.config.ScadaConfig;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.adapter.MangoDataPoint;
-import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.mango.service.DataPointService;
-import org.springframework.jdbc.UncategorizedSQLException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.IntValuePair;
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
-import com.serotonin.db.spring.GenericRowMapper;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.event.type.AuditEventType;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
-import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
-import com.serotonin.mango.vo.link.PointLinkVO;
-import com.serotonin.util.SerializationHelper;
-import com.serotonin.util.Tuple;
 
 //public class DataPointDao extends BaseDao {
 public class DataPointDao {
 
     private MangoDataPoint dataPointService = new DataPointService();
+    private static final Log LOG = LogFactory.getLog(DataPointDao.class);
 
 //    public DataPointDao() {
 //        super();
@@ -130,7 +97,13 @@ public class DataPointDao {
 //                new DataPointRowMapper(), null);
 //        setRelationalData(dp);
 //        return dp;
-		return dataPointService.getDataPoint(id);
+    	try {
+    		return dataPointService.getDataPoint(id);
+    	} catch (EmptyResultDataAccessException e) {
+    		LOG.error(e);
+    		return null;
+    	}
+    	
     }
 
     public DataPointVO getDataPoint(String xid) {

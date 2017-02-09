@@ -11,11 +11,10 @@
         "assets",
         "favicon.ico",
         "styles.css",
-        "d3.js",
-        "c3.js",
-        "c3.css",
         "app/media/defaultUser.png",
-        "app/media/ScadaLogo.png"
+        "app/media/ScadaLogo.png",
+        "jquery.min.js",
+        "plotly.min.js"
       ],
       "index": "index.html",
       "main": "main.ts",

@@ -7,6 +7,7 @@
   padding: 0;
   border: 0;
   font-family: Raleway, sans-serif;
+  box-sizing: border-box;
 }
 
 html, body {
@@ -36,7 +37,7 @@ li {
   background-color: #333;
 }
 
-.spinner {
+.spinnerMainPage {
   margin: 100px auto;
   width: 40px;
   height: 40px;
@@ -83,7 +84,13 @@ li {
     }
 }
 
+.svg-container {
+  margin-top: -50px !important;
+}
 
+.modebar, .modebar--hover {
+  margin-top: 40px !important;
+}
 
 /*
 bootstrap grid system

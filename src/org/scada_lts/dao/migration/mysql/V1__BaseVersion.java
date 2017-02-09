@@ -20,6 +20,7 @@ package org.scada_lts.dao.migration.mysql;
 import java.util.LinkedList;
 
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -720,25 +721,28 @@ public class V1__BaseVersion implements SpringJdbcMigration {
        jdbcTemplate.execute("alter table viewUsersProfiles add constraint viewUsersProfilesFk1 foreign key (viewId) references mangoViews(id) on delete cascade;");
        jdbcTemplate.execute("alter table viewUsersProfiles add constraint viewUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
        
-       // Create User
-       User user = new User();
-   	   user.setId(Common.NEW_ID);
-   	   user.setUsername("admin");
-   	   user.setPassword(Common.encrypt("admin"));
-   	   user.setEmail("admin@yourMangoDomain.com");
-       user.setHomeUrl("");
-   	   user.setPhone("");
-   	   user.setAdmin(true);
-   	   user.setDisabled(false);
-   	   user.setDataSourcePermissions(new LinkedList<Integer>());
-   	   user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-   	   new UserDao().saveUser(user);
-             	   
-   	   // Record the current version.
-   	   new SystemSettingsDAO().setValue(
-				SystemSettingsDAO.DATABASE_SCHEMA_VERSION,
-				Common.getVersion());
-	   
+       
+       if (!DAO.getInstance().isTest()) {
+    	   // Create User
+	       User user = new User();
+	   	   user.setId(Common.NEW_ID);
+	   	   user.setUsername("admin");
+	   	   user.setPassword(Common.encrypt("admin"));
+	   	   user.setEmail("admin@yourMangoDomain.com");
+	       user.setHomeUrl("");
+	   	   user.setPhone("");
+	   	   user.setAdmin(true);
+	   	   user.setDisabled(false);
+	   	   user.setDataSourcePermissions(new LinkedList<Integer>());
+	   	   user.setDataPointPermissions(new LinkedList<DataPointAccess>());
+	   	   new UserDao().saveUser(user);
+	             	   
+	   	   // Record the current version.
+	   	   new SystemSettingsDAO().setValue(
+					SystemSettingsDAO.DATABASE_SCHEMA_VERSION,
+					Common.getVersion());
+       }
+		   
    	   
        //@formatter:on
     }

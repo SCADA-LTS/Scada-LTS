@@ -21,21 +21,103 @@ import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica grzegorz.bylica@gmail.com
  */
 public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 	
 	public void migrate(JdbcTemplate jdbcTmp) throws Exception {
-		 final String pointHierarchySQL = ""
-		    		+ "create table views_hierarchy ("
-		    			+ "id int not null auto_increment,"
-		    			+ "parentId int default null,"
-		    			+ "name char(100) not null unique,"
+		
+		final String folderViewsHierarchySQL = ""
+		    		+ "create table category_views_hierarchy ("
+		    			+ "id int(11) not null auto_increment,"
+		    			+ "parentId int(11) default null,"
+		    			+ "name varchar(100) not null unique,"
 		    			+ "primary key (id)"
 		    		+ ") engine=innodb;";
 		
-		 jdbcTmp.execute(pointHierarchySQL);
-		 		
+		final String viewsHierarchySQL = ""
+				+ "create table views_category_views_hierarchy ("
+    			+ "view_id int(11) not null,"
+    			+ "folder_views_hierarchy_id int(11) not null"
+    		+ ") engine=innodb;";
+		 
+		String fAdd = 
+			    "CREATE FUNCTION func_views_hierarchy_add( "
+				 	+ "a_parentId int(11),"
+				 	+ "a_name CHAR(100)) "
+				 + "RETURNS INT(11) "
+				 + "NOT DETERMINISTIC "
+			  + "BEGIN "
+			  	+ "insert into category_views_hierarchy ("
+			  		+ "parentId, "
+			  		+ "name) "
+			  		+ "values ( a_parentId, a_name); "
+			  	+ "return last_insert_id(); "
+			  + "END";
+		
+		String fUpdate = 
+				"CREATE FUNCTION func_views_hierarchy_update( "
+					+ "a_id int(11),"
+				 	+ "a_parentId int(11),"
+				 	+ "a_name CHAR(100)) "
+				 + "RETURNS INT(11) "
+				 + "NOT DETERMINISTIC "
+			  + "BEGIN "
+			  	+ "update category_views_hierarchy "
+			  	  + "set parentId=a_parentId, "
+			  	      + "name=a_name "
+			  	+ "where id=a_id; "
+			  	+ "return a_id; "
+			  + "END";
+		
+		String fDelete =
+				"CREATE FUNCTION func_views_hierarchy_delete( "
+					+ "a_id int(11)) "
+				 + "RETURNS INT(11) "
+				 + "NOT DETERMINISTIC "
+			  + "BEGIN "
+			  	+ "delete from category_views_hierarchy where id=a_id; "
+			  	+ "return a_id; "
+			  + "END";
+		
+		String fMove = 
+				"CREATE FUNCTION func_views_hierarchy_move( "
+						+ "a_id INT, a_new_parent_id INT) "
+					 + "RETURNS INT(11) "
+					 + "NOT DETERMINISTIC "
+				  + "BEGIN "
+				  	+ "update category_views_hierarchy "
+				  		+ "set parentId=a_parentId "
+				  	+ "where id=a_id; "
+				  	+ "return a_id; "
+				  + "END";
+		
+		String pSelect = 
+				"CREATE PROCEDURE prc_views_hierarchy_select() "
+				  +"BEGIN "					 
+				  	  + "SELECT * "
+					  + "FROM category_views_hierarchy Order by parentId ASC; "
+				  +"END;";
+		
+		String pSelectNode = 
+				"CREATE PROCEDURE prc_views_hierarchy_select_node("
+				+ "a_parent_id INT(11)) "
+				  +"BEGIN "					 
+				  	  + "SELECT * "
+					  + "FROM category_views_hierarchy "
+					  + "WHERE parentid=a_parent_id; "
+				  +"END;";
+		
+		jdbcTmp.execute(folderViewsHierarchySQL);
+		jdbcTmp.execute(viewsHierarchySQL);
+		
+		jdbcTmp.execute(fAdd);
+		jdbcTmp.execute(fUpdate);
+		jdbcTmp.execute(fDelete);
+		jdbcTmp.execute(fMove);
+		jdbcTmp.execute(pSelect);
+		jdbcTmp.execute(pSelectNode);
+		
 	}
 
 }

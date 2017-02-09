@@ -14,21 +14,6 @@
   -moz-box-shadow: $shadow
   box-shadow: $shadow
 
-*
-  box-sizing: border-box
-
-input[type="text"]
-  border: 1px dotted #666
-  width: 70%
-  height: 40px
-  line-height: 26px
-  font-size: 22px
-  border-radius: 5px
-  outline: none
-  padding: 5px 15px
-  margin-bottom: 40px
-  box-sizing: border-box
-
 input:focus
   border: 1px solid #666
 
@@ -38,7 +23,7 @@ li
   cursor: pointer
 
 .dataTableContainer, .chartContainer
-  margin-bottom: 30px
+  margin-bottom: 1px
   position: relative
 
 table
@@ -89,29 +74,6 @@ select
   margin: 0
   color: #333
 
-.chooseCategory
-  border-color: #ddd
-  text-align: left
-
-.pauseInfoIcon
-  -webkit-animation: blink 2s infinite ease-in-out
-  animation: blink 2s infinite ease-in-out
-  font-size: 32px
-  color: #444
-  display: block
-  z-index: 2
-  position: absolute
-
-.dataPauseIcon
-  top: 191px
-  text-align: center
-  display: inline
-
-.chartPauseIcon
-  top: 50%
-  left: 50%
-  transform: translate(-50%, -50%)
-
 @-webkit-keyframes blink
   0%, 100%
     opacity: 0
@@ -124,13 +86,9 @@ select
   40%, 60%
     opacity: 1
 
-
 .chartBtn:hover
   border-color: #666
   transition: border-color .3s ease-out
-
-.pauseChartButton, .unpauseChartButton
-  float: right
 
 .lastActualizationDate
   margin: 15px 0
@@ -165,22 +123,6 @@ select
   100%
     background-color: transparent
 
-.chartContainer [md-raised-button]
-  width: 10px
-  color: #fff
-  font-size: 14px
-  -webkit-font-smoothing: antialiased
-  text-align: center
-  background-color: #666
-  cursor: pointer
-  +border-radius(2px)
-  +transition(all .15s ease)
-
-.chartSettings [md-raised-button]
-  width: 160px
-  color: #fff
-  background-color: #666
-
 h2
   font-size: 20px
 
@@ -192,7 +134,113 @@ h2
 
 .open
   margin-top: 0
-  margin-bottom: 10px
-  height: 554px
+  height: 475px
   transition: all .5s ease-in
 
+.buttonFromPast, .inputFromPast, .selectFromPast
+  width: 49%
+
+.buttonFromPast, .inputFromPast, .selectFromPast, .datePickerInput, .revealChartButton
+  border: 1px dotted #666
+  height: 30px
+  line-height: 20px
+  font-size: 18px
+  border-radius: 5px
+  outline: none
+  padding: 0 15px
+  margin-bottom: 10px
+  box-sizing: border-box
+
+.buttonFromPast, .revealChartButton
+  background-color: #666
+  color: #fff
+  width: 150px
+
+.revealChartButton
+  width: 100%
+  height: 40px
+  margin-top: 20px
+  margin-bottom: 0
+
+.datePickerInput
+  width: 100%
+
+.active
+  background-color: #006622
+
+.spinner
+  margin: 0 auto
+  width: 70px
+  text-align: center
+  > div
+    width: 10px
+    height: 10px
+    background-color: #333
+    border-radius: 100%
+    display: inline-block
+    -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both
+    animation: sk-bouncedelay 1.4s infinite ease-in-out both
+  .bounce1
+    -webkit-animation-delay: -0.32s
+    animation-delay: -0.32s
+  .bounce2
+    -webkit-animation-delay: -0.16s
+    animation-delay: -0.16s
+
+@-webkit-keyframes sk-bouncedelay
+  0%, 80%, 100%
+    -webkit-transform: scale(0)
+
+  40%
+    -webkit-transform: scale(1)
+
+@keyframes sk-bouncedelay
+  0%, 80%, 100%
+    -webkit-transform: scale(0)
+    transform: scale(0)
+
+  40%
+    -webkit-transform: scale(1)
+    transform: scale(1)
+
+.spinnerSpecifiedTime, .spinnerTimeRange
+  position: absolute
+
+.spinnerSpecifiedTime
+  top: 70px
+  left: 64px
+
+.spinnerTimeRange
+  top: 237px
+  left: 64px
+
+#plotlyLoader
+  position: absolute
+  z-index: 999
+  height: 350px
+  width: 94%
+  top: 70px
+  background-color: rgba(255, 255, 255, 0.8)
+  .spinner
+    margin-top: 120px
+
+.chartButtons
+  position: absolute
+  z-index: 5
+  opacity: 0
+  top: 15px
+  +transition(all .4s ease)
+  button
+    width: 20px
+    height: 20px
+    color: #fff
+    font-size: 14px
+    -webkit-font-smoothing: antialiased
+    text-align: center
+    background-color: #999999
+    cursor: pointer
+    +border-radius(2px)
+
+.showButtons
+  opacity: 1
+  +transition(all .4s ease)

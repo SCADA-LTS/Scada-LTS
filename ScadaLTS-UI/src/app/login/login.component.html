@@ -24,7 +24,13 @@
           <p class="errorLoginParagraph" [ngClass]="{'showErrorLoginParagraph': !isFormEmpty && form.status == 'INVALID' }">Enter username and password.</p>
 
           <div class="buttonsGroup">
-            <button md-raised-button md-ripple type="submit" (click)="login()">Sign in</button>
+            <button md-raised-button md-ripple type="submit" (click)="login()" [disabled]="isLoggingActive">Sign in
+              <div class="spinner" *ngIf="isLoggingActive">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+              </div>
+            </button>
             <button md-raised-button (click)="modal()" class="forgotButton">Forgot password</button>
             <button md-raised-button [routerLink]="['/registration']" class="registerButton">Sign up</button>
           </div>

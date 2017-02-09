@@ -43,6 +43,7 @@ public class DAO {
 	private NamedParameterJdbcTemplate namedParamJdbcTemplate;
 	private JdbcTemplate jdbcTemplate;	
 	private static DAO instance;
+	private boolean test =false;
 	
 	private DAO() {
 		try {
@@ -152,6 +153,20 @@ public class DAO {
 			xid = generateXid(prefix);
 		}
 		return xid;
+	}
+
+	/**
+	 * @return the test
+	 */
+	public boolean isTest() {
+		return test;
+	}
+
+	/**
+	 * @param test the test to set
+	 */
+	public void setTest(boolean test) {
+		this.test = test;
 	}
 	
 }
