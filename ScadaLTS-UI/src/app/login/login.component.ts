@@ -1,4 +1,4 @@
-import {Component,ElementRef} from '@angular/core';
+import {Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {Http} from '@angular/http';
 import {FormGroup, FormBuilder, Validators} from "@angular/forms";
