@@ -2,7 +2,7 @@
 
 <div class="systemPerformance">
   <h2>System performance:</h2>
-  <select [(ngModel)]="systemPerformance" class="performanceSelect">
+  <select [(ngModel)]="systemPerformance" class="performanceSelect" (ngModelChange)="exportUserSystemPerformance()">
     <option value="low">low</option>
     <option value="medium">medium</option>
     <option value="high">high</option>

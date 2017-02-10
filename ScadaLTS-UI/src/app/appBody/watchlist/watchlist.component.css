@@ -108,7 +108,8 @@ h2 {
   font-size: 20px; }
 
 md-card {
-  transition: all 0.5s ease; }
+  transition: all 0.5s ease;
+  overflow: hidden; }
 
 .chartContainer {
   height: 0;
@@ -119,12 +120,12 @@ md-card {
 .openFirstStage {
   margin-top: 0;
   height: 625px;
-  transition: all 0.5s ease-in; }
+  transition: all 0.5s ease-in-out; }
 
 .openSecondStage {
   margin-top: 0;
   height: 905px;
-  transition: all 0.5s ease-in; }
+  transition: all 0.5s ease-in-out; }
 
 .buttonFromPast, .inputFromPast, .selectFromPast {
   width: 49%; }

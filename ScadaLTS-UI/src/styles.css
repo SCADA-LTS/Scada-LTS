@@ -86,6 +86,7 @@ li {
 
 .svg-container {
   margin-top: -50px !important;
+  transition: all .5s ease-in-out !important;
 }
 
 .modebar, .modebar--hover {
