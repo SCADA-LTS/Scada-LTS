@@ -7,11 +7,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SystemComponent implements OnInit {
 
-  systemPerformance: string = 'low';
+  systemPerformance: string;
 
-  constructor() { }
+
+  constructor() {
+
+  }
+
+  exportUserSystemPerformance(){
+    localStorage.setItem('systemPerf', JSON.stringify(this.systemPerformance));
+  }
+
 
   ngOnInit() {
+    localStorage['systemPerf'] == undefined ? this.systemPerformance = 'low' : this.systemPerformance = JSON.parse(localStorage.getItem('systemPerf'));
   }
 
 }

@@ -195,6 +195,7 @@ export class WatchlistComponent implements OnInit {
             console.log('loaded data after zoom');
             this.isAnyRequestActive = false;
             this.setRanges();
+            this.zoomEvent = false;
         });
     }
 
@@ -257,14 +258,14 @@ export class WatchlistComponent implements OnInit {
                     });
 
                 });
-                    for (let i = 0; i < 11; i++) {
-                        let cb = (e) => {
-                            console.log('mousedown' + i);
-                            this.isRedrawingStopped = true;
-                            this.zoomEvent = true;
-                        };
-                        document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
-                    }
+                for (let i = 0; i < 11; i++) {
+                    let cb = (e) => {
+                        console.log('mousedown' + i);
+                        this.isRedrawingStopped = true;
+                        this.zoomEvent = true;
+                    };
+                    document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
+                }
                 this.motherOfDragons = false;
             }
 
@@ -348,10 +349,10 @@ export class WatchlistComponent implements OnInit {
     initiateInterval() {
         this.loadPoints = setInterval(() => {
             this.liveChart();
-        }, 5000);
+        }, this.getUserSystemPerformance());
     }
 
-    deactivateInterval(){
+    deactivateInterval() {
         clearInterval(this.loadPoints);
     }
 
@@ -375,22 +376,23 @@ export class WatchlistComponent implements OnInit {
     ngOnInit() {
         this.setDefaultTimeRangeValues();
         this.initiateChart();
+        console.log(localStorage['systemPerf']);
     }
 
     ngOnDestroy() {
         clearInterval(this.loadPoints);
     }
 
-    getScreenHeight(){
+    getScreenHeight() {
         return window.innerHeight;
     }
 
-    toggleLegend(){
+    toggleLegend() {
         this.chartLayout.showlegend == true ? this.chartLayout.showlegend = false : this.chartLayout.showlegend = true;
         this.redrawChart();
     }
 
-    toggleChartSize(){
+    toggleChartSize() {
         if (this.isChartShrunked) {
             this.chartLayout.height = 880;
             this.isChartShrunked = false;
@@ -399,6 +401,17 @@ export class WatchlistComponent implements OnInit {
             this.isChartShrunked = true;
         }
         this.redrawChart();
+    }
+
+    getUserSystemPerformance(){
+        let systemPerf = JSON.parse(localStorage.getItem('systemPerf'));
+        if (systemPerf == undefined || systemPerf == 'low') {
+            return 5000;
+        } else if (systemPerf == 'medium'){
+            return 3000;
+        } else {
+            return 1000;
+        }
     }
 
 }
