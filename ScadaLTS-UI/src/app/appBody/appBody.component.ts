@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
+declare let $: any;
 
 @Component({
     templateUrl: './appBody.component.html',
@@ -51,12 +52,17 @@ export class AppBodyComponent implements OnInit {
         }
     }
 
+
     private logout() {
         this.router.navigate(['/']);
     }
 
     ngOnInit() {
         this.checkScreenWidth();
+        $(".subMenuItemContainer").find('.subMenuLink').click(function(){
+            $('.subMenuLink').removeClass('selectedSection');
+            $(this).addClass('selectedSection');
+        });
     }
 
 }

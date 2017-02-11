@@ -392,5 +392,7 @@ a {
 
   .content {
     margin-left: 0; } }
+.selectedSection {
+  border-left: 5px solid rgba(0, 0, 0, 0.8); }
 
 /*# sourceMappingURL=appBody.component.css.map */
