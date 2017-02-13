@@ -256,8 +256,10 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			pv.setId(rs.getLong(COLUMN_NAME_ID));
 			pv.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
 			
+			
 			//TODO rewrite wasNull ?
-			if (rs.wasNull()) {
+			//if (rs.wasNull()) {
+			if (rs.getLong(COLUMN_NAME_SOURCE_ID)==0){
 				// No annotations, just return a point value.
 				pv.setPointValue(new PointValueTime(value, time));
 			} else {

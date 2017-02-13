@@ -157,6 +157,7 @@ class ValueToJSON implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String value;
+	private String formattedValue;
 	private Long ts;
 	private String name;
 	private String xid;
@@ -171,6 +172,7 @@ class ValueToJSON implements Serializable {
 		setXid(dpvo.getXid());
 		setTextRenderer(dpvo.getTextRenderer());
 		setChartColour(dpvo.getChartColour());
+		setFormattedValue(textRenderer.getText(pvt, 1)+textRenderer.getMetaText());
 	}
 
 	public String getValue() {
@@ -255,6 +257,20 @@ class ValueToJSON implements Serializable {
 	public void setChartColour(String chartColour) {
 		this.chartColour = chartColour;
 	}
+
+	/**
+	 * @return the formattedValue
+	 */
+	public String getFormattedValue() {
+		return formattedValue;
+	}
+
+	/**
+	 * @param formattedValue the formattedValue to set
+	 */
+	public void setFormattedValue(String formattedValue) {
+		this.formattedValue = formattedValue;
+	}
 }
 
 
@@ -308,6 +324,7 @@ public class PointValueAPI {
 		try {
 			User user = Common.getUser(request);
 			DataPointVO dpvo = dataPointService.getDataPoint(xid);
+			
 			if (user != null) {
 				PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
 				String json = null;

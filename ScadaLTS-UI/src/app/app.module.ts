@@ -14,7 +14,7 @@ import { DashboardComponent } from './appBody/dashboard/index';
 import { ViewsComponent } from './appBody/views/index';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { SortPipe } from './sort.pipe';
+import { SystemComponent } from './appBody/system/system.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +25,7 @@ import { SortPipe } from './sort.pipe';
     WatchlistComponent,
     DashboardComponent,
     ViewsComponent,
-    SortPipe
+    SystemComponent
   ],
   imports: [
     BrowserModule,

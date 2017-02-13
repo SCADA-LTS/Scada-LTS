@@ -6,6 +6,7 @@ import { RegistrationComponent } from './registration/index';
 import { WatchlistComponent } from './appBody/watchlist/index';
 import { DashboardComponent } from './appBody/dashboard/index';
 import { ViewsComponent } from './appBody/views/index';
+import { SystemComponent } from './appBody/system/system.component';
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
@@ -15,6 +16,7 @@ const appRoutes: Routes = [
       { path: 'watchlist', component: WatchlistComponent },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'views', component: ViewsComponent },
+      { path: 'system', component: SystemComponent },
       { path: '', component: DashboardComponent }
     ]},
 
@@ -23,3 +25,4 @@ const appRoutes: Routes = [
 ];
 
 export const routing = RouterModule.forRoot(appRoutes);
+

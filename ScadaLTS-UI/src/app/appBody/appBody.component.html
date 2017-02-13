@@ -37,12 +37,12 @@
             <a class="subMenuLink" href="#">Point hierarchy</a>
             <a class="subMenuLink" href="#">Mailing list</a>
             <a class="subMenuLink" href="#">Maintenance events</a>
-            <a class="subMenuLink" href="#">System</a>
+            <a class="subMenuLink" [routerLink]="['./system']">System</a>
             <a class="subMenuLink" href="#">Import/Export</a>
             <a class="subMenuLink" href="#">Log</a>
         </div>
 
-        <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[3] = !isHiddenSubMenu[3]"
+        <span class="menuItem"  (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[3] = !isHiddenSubMenu[3]"
               [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[3] }">
             <md-icon class="icon">trending_up</md-icon>
             <span class="menuItemText">Trends</span>

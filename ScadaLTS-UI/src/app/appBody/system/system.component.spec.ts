@@ -4,33 +4,34 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MaterialModule } from '@angular/material';
-import { WatchlistComponent } from './watchlist.component';
-declare let Plotly: any;
+
+import { SystemComponent } from './system.component';
+
 
 describe('SystemComponent', () => {
-  let component: WatchlistComponent;
-  let fixture: ComponentFixture<WatchlistComponent>;
+  let component: SystemComponent;
+  let fixture: ComponentFixture<SystemComponent>;
   let element;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WatchlistComponent ],
+      declarations: [ SystemComponent ],
       imports: [ FormsModule, MaterialModule ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WatchlistComponent);
+    fixture = TestBed.createComponent(SystemComponent);
     component = fixture.componentInstance;
     element = fixture.nativeElement;
     fixture.detectChanges();
   });
 
 
-  
-  it('should return a positive number', () => {
-    expect(component.getScreenHeight).toBeGreaterThan(0);
+
+  it('should be empty string', () => {
+    expect(document.querySelector('select').value).toBe("");
   });
 
 

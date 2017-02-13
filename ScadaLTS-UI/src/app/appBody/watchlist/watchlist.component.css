@@ -1,6 +1,3 @@
-* {
-  box-sizing: border-box; }
-
 input:focus {
   border: 1px solid #666; }
 
@@ -10,7 +7,7 @@ li {
   cursor: pointer; }
 
 .dataTableContainer, .chartContainer {
-  margin-bottom: 30px;
+  margin-bottom: 1px;
   position: relative; }
 
 table {
@@ -27,7 +24,8 @@ table td {
   padding: 6px;
   border: 1px solid #ccc;
   text-align: left;
-  white-space: nowrap; }
+  white-space: nowrap;
+  font-size: 14px; }
 
 table td.checkBox {
   width: 2%; }
@@ -106,24 +104,12 @@ select {
     background-color: #d7f4e4; }
   100% {
     background-color: transparent; } }
-.chartContainer [md-raised-button] {
-  width: 10px;
-  color: #fff;
-  font-size: 14px;
-  -webkit-font-smoothing: antialiased;
-  text-align: center;
-  background-color: #666;
-  cursor: pointer;
-  -webkit-border-radius: 2px;
-  -moz-border-radius: 2px;
-  border-radius: 2px;
-  -webkit-transition: all 0.15s ease;
-  -moz-transition: all 0.15s ease;
-  -o-transition: all 0.15s ease;
-  transition: all 0.15s ease; }
-
 h2 {
   font-size: 20px; }
+
+md-card {
+  transition: all 0.5s ease;
+  overflow: hidden; }
 
 .chartContainer {
   height: 0;
@@ -131,14 +117,18 @@ h2 {
   transition: all 0.5s ease-in-out;
   margin-top: -30px; }
 
-.open {
+.openFirstStage {
   margin-top: 0;
-  margin-bottom: 10px;
-  height: 554px;
-  transition: all 0.5s ease-in; }
+  height: 625px;
+  transition: all 0.5s ease-in-out; }
+
+.openSecondStage {
+  margin-top: 0;
+  height: 905px;
+  transition: all 0.5s ease-in-out; }
 
 .buttonFromPast, .inputFromPast, .selectFromPast {
-  width: 25%; }
+  width: 49%; }
 
 .buttonFromPast, .inputFromPast, .selectFromPast, .datePickerInput, .revealChartButton {
   border: 1px dotted #666;
@@ -156,15 +146,6 @@ h2 {
   color: #fff;
   width: 150px; }
 
-.elementsFromPast > * {
-  vertical-align: middle; }
-
-.elementsFromPast {
-  margin-bottom: 30px; }
-
-.timeRangeElementsChild {
-  display: inline-block; }
-
 .revealChartButton {
   width: 100%;
   height: 40px;
@@ -175,7 +156,7 @@ h2 {
   width: 100%; }
 
 .active {
-  background-color: #000; }
+  background-color: #006622; }
 
 .spinner {
   margin: 0 auto;
@@ -212,14 +193,53 @@ h2 {
   position: absolute; }
 
 .spinnerSpecifiedTime {
-  top: 30px;
-  left: 60%; }
+  top: 70px;
+  left: 64px; }
 
 .spinnerTimeRange {
-  top: 227px;
-  left: 70px; }
+  top: 237px;
+  left: 64px; }
 
-.jajebix {
-  display: inline-block; }
+#plotlyLoader {
+  position: absolute;
+  z-index: 999;
+  min-height: 87%;
+  width: 94%;
+  top: 70px;
+  background-color: rgba(255, 255, 255, 0.8); }
+  #plotlyLoader .spinner {
+    position: absolute;
+    top: 36%;
+    left: 50%;
+    transform: translate(-50%, -50%); }
+
+.chartButtons {
+  position: absolute;
+  z-index: 5;
+  opacity: 0;
+  top: 15px;
+  -webkit-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  transition: all 0.4s ease; }
+  .chartButtons button {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+    background-color: #999999;
+    cursor: pointer;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px; }
+
+.showButtons {
+  opacity: 1;
+  -webkit-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  transition: all 0.4s ease; }
 
 /*# sourceMappingURL=watchlist.component.css.map */

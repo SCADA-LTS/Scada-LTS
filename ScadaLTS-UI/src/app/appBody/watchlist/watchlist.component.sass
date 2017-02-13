@@ -14,9 +14,6 @@
   -moz-box-shadow: $shadow
   box-shadow: $shadow
 
-*
-  box-sizing: border-box
-
 input:focus
   border: 1px solid #666
 
@@ -26,7 +23,7 @@ li
   cursor: pointer
 
 .dataTableContainer, .chartContainer
-  margin-bottom: 30px
+  margin-bottom: 1px
   position: relative
 
 table
@@ -44,6 +41,7 @@ table td
   border: 1px solid #ccc
   text-align: left
   white-space: nowrap
+  font-size: 14px
 
 table td.checkBox
   width: 2%
@@ -89,7 +87,6 @@ select
   40%, 60%
     opacity: 1
 
-
 .chartBtn:hover
   border-color: #666
   transition: border-color .3s ease-out
@@ -127,19 +124,12 @@ select
   100%
     background-color: transparent
 
-.chartContainer [md-raised-button]
-  width: 10px
-  color: #fff
-  font-size: 14px
-  -webkit-font-smoothing: antialiased
-  text-align: center
-  background-color: #666
-  cursor: pointer
-  +border-radius(2px)
-  +transition(all .15s ease)
-
 h2
   font-size: 20px
+
+md-card
+  transition: all .5s ease
+  overflow: hidden
 
 .chartContainer
   height: 0
@@ -147,14 +137,18 @@ h2
   transition: all .5s ease-in-out
   margin-top: -30px
 
-.open
+.openFirstStage
   margin-top: 0
-  margin-bottom: 10px
-  height: 554px
-  transition: all .5s ease-in
+  height: 625px
+  transition: all .5s ease-in-out
+
+.openSecondStage
+  margin-top: 0
+  height: 905px
+  transition: all .5s ease-in-out
 
 .buttonFromPast, .inputFromPast, .selectFromPast
-  width: 25%
+  width: 49%
 
 .buttonFromPast, .inputFromPast, .selectFromPast, .datePickerInput, .revealChartButton
   border: 1px dotted #666
@@ -172,15 +166,6 @@ h2
   color: #fff
   width: 150px
 
-.elementsFromPast > *
-  vertical-align: middle
-
-.elementsFromPast
-  margin-bottom: 30px
-
-.timeRangeElementsChild
-  display: inline-block
-
 .revealChartButton
   width: 100%
   height: 40px
@@ -191,7 +176,7 @@ h2
   width: 100%
 
 .active
-  background-color: #000
+  background-color: #006622
 
 .spinner
   margin: 0 auto
@@ -232,13 +217,43 @@ h2
   position: absolute
 
 .spinnerSpecifiedTime
-  top: 30px
-  left: 60%
+  top: 70px
+  left: 64px
 
 .spinnerTimeRange
-  top: 227px
-  left: 70px
+  top: 237px
+  left: 64px
 
+#plotlyLoader
+  position: absolute
+  z-index: 999
+  min-height: 87%
+  width: 94%
+  top: 70px
+  background-color: rgba(255, 255, 255, 0.8)
+  .spinner
+    position: absolute
+    top: 36%
+    left: 50%
+    transform: translate(-50%, -50%)
 
-.jajebix
-  display: inline-block
+.chartButtons
+  position: absolute
+  z-index: 5
+  opacity: 0
+  top: 15px
+  +transition(all .4s ease)
+  button
+    width: 20px
+    height: 20px
+    color: #fff
+    font-size: 14px
+    -webkit-font-smoothing: antialiased
+    text-align: center
+    background-color: #999999
+    cursor: pointer
+    +border-radius(2px)
+
+.showButtons
+  opacity: 1
+  +transition(all .4s ease)

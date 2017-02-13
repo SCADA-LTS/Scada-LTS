@@ -7,6 +7,7 @@
   padding: 0;
   border: 0;
   font-family: Raleway, sans-serif;
+  box-sizing: border-box;
 }
 
 html, body {
@@ -83,7 +84,14 @@ li {
     }
 }
 
+.svg-container {
+  margin-top: -50px !important;
+  transition: all .5s ease-in-out !important;
+}
 
+.modebar, .modebar--hover {
+  margin-top: 40px !important;
+}
 
 /*
 bootstrap grid system
