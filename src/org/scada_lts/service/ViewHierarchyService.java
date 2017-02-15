@@ -82,17 +82,17 @@ public class ViewHierarchyService {
 	}
 	
 	//TODO replace String to BEAN for represent tree data in JSON.
-	public List<String> getAll(){
+	public List<ViewHierarchyNode> getAll(){
 		List<ViewHierarchyNode> lst = vhDAO.getAll();
-		List<String> lstStr = new ArrayList<String>();
+		/*List<String> lstStr = new ArrayList<String>();
 		
 		//travers tree and create path
 		for (ViewHierarchyNode vhn: lst) {
 			lstStr.add(getPath(lst, vhn, vhn));
 		}
 		//..
-		//get view in tree add too tree.
-		return lstStr;
+		//get view in tree add too tree.*/
+		return lst;
 	}
 	
 	public List<ViewHierarchyNode> getNode(int id) {

@@ -18,6 +18,7 @@
 package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.service.ViewHierarchyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,6 +43,7 @@ import com.serotonin.mango.vo.User;
  * 
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
+@Controller 
 public class ViewHierarchyAPI {
 	
 	private static final Log LOG = LogFactory.getLog(ViewHierarchyAPI.class);
@@ -57,52 +60,49 @@ public class ViewHierarchyAPI {
 			if (user != null) {
 				
 				class ViewHierarchyJSON implements Serializable{
-					private String xid;
-					private String name;
-					private long key;
+					private int key;
+					private String title;
 					private boolean folder;
-					private boolean view;
+					private List<ViewHierarchyJSON> children;
 					
-					ViewHierarchyJSON(String xid,String name, long key, boolean folder, boolean view) {
-						
+					ViewHierarchyJSON(int key, String title, boolean folder, List<ViewHierarchyJSON> children) {
+						this.key = key;
+						this.title = title;
+						this.folder = folder;
+						this.children = children;
 					}
-					public String getXid() {
-						return xid;
-					}
-					public void setXid(String xid) {
-						this.xid = xid;
-					}
-					public String getName() {
-						return name;
-					}
-					public void setName(String name) {
-						this.name = name;
-					}
-					public Long getKey() {
+
+					public int getKey() {
 						return key;
 					}
-					public void setKey(Long key) {
+
+					public void setKey(int key) {
 						this.key = key;
 					}
-					public boolean isFolder() {
-						return folder;
+
+					public String getTitle() {
+						return title;
 					}
-					public void setFolder(boolean folder) {
-						this.folder = folder;
+
+					public void setTitle(String title) {
+						this.title = title;
+					}
+
+					public List<ViewHierarchyJSON> getChildren() {
+						return children;
+					}
+
+					public void setChildren(List<ViewHierarchyJSON> children) {
+						this.children = children;
 					}
 					
-					public boolean isView() {
-						return view;
-					}
-					public void setView(boolean view) {
-						this.view = view;
-					}
 				}
 				
-				
+				List<ViewHierarchyNode> data = viewHierarchyService.getAll();
 				String json = null;
 				ObjectMapper mapper = new ObjectMapper();
-				json = mapper.writeValueAsString("");
+				
+				json = mapper.writeValueAsString(data);
 				
 				return new ResponseEntity<String>(json,HttpStatus.OK);				
 			} 
