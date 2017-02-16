@@ -16,6 +16,7 @@ export class ViewsComponent implements OnInit {
     this.http.get(`/ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
                 this.tree = res.json();
+                console.log(this.tree);
             });
     console.log(this.tree);
   }
@@ -35,6 +36,7 @@ export class ViewsComponent implements OnInit {
               {title: "Node 2.2", key: "4"}
             ]}
         ],
+        extensions: ["edit", "dnd", "table", "gridnav"]
      });
   }
 

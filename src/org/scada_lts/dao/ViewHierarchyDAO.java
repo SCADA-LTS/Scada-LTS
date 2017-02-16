@@ -75,9 +75,9 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 			}
 		}
 
-		
-		
 	// @formatter:on
+		
+	public static final byte ROOT_ID = -1;
 		
 	/**
 	 * 	Return nodes for hierarchy views

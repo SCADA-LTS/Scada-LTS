@@ -17,7 +17,6 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -27,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.service.ViewHierarchyService;
+import org.scada_lts.service.model.ViewHierarchyJSON;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -59,46 +59,7 @@ public class ViewHierarchyAPI {
 		
 			if (user != null) {
 				
-				class ViewHierarchyJSON implements Serializable{
-					private int key;
-					private String title;
-					private boolean folder;
-					private List<ViewHierarchyJSON> children;
-					
-					ViewHierarchyJSON(int key, String title, boolean folder, List<ViewHierarchyJSON> children) {
-						this.key = key;
-						this.title = title;
-						this.folder = folder;
-						this.children = children;
-					}
-
-					public int getKey() {
-						return key;
-					}
-
-					public void setKey(int key) {
-						this.key = key;
-					}
-
-					public String getTitle() {
-						return title;
-					}
-
-					public void setTitle(String title) {
-						this.title = title;
-					}
-
-					public List<ViewHierarchyJSON> getChildren() {
-						return children;
-					}
-
-					public void setChildren(List<ViewHierarchyJSON> children) {
-						this.children = children;
-					}
-					
-				}
-				
-				List<ViewHierarchyNode> data = viewHierarchyService.getAll();
+				List<ViewHierarchyJSON> data = viewHierarchyService.getAll();
 				String json = null;
 				ObjectMapper mapper = new ObjectMapper();
 				
