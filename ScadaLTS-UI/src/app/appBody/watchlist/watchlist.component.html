@@ -1,11 +1,13 @@
 <div class="row">
 
-  <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'open': !isChartHidden }" (window:resize)="initiateChart()">
+  <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'openFirstStage': !isChartHidden && isChartShrunked, 'openSecondStage': !isChartHidden && !isChartShrunked }" (window:resize)="initiateChart()">
     <md-card class="md-card" (mouseenter)="areChartButtonsVisible = true" (mouseleave)="areChartButtonsVisible = false">
       <div class="chartButtons" [ngClass]="{ 'showButtons': areChartButtonsVisible }">
         <button (click)="increaseChartLineWidth()">+</button>
         <button (click)="decreaseChartLineWidth()">-</button>
         <button (click)="isLinearChart ? toSplineChart() : toLinearChart()">{{ isLinearChart ? 'S' : 'L' }}</button>
+        <button (click)="toggleLegend()">LD</button>
+        <button (click)="toggleChartSize()">CS</button>
       </div>
       <div id="plotlyLoader" *ngIf="isAnyRequestActive">
         <div class="spinner">
@@ -27,7 +29,7 @@
       </div>
       <p *ngIf="actualDate" class="lastActualizationDate">Last actualization: {{ actualDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
       <table *ngIf="_values.length" class="dataTable">
-        <tr *ngFor="let elem of _values | sort">
+        <tr *ngFor="let elem of _values">
           <td>{{ elem.name }}</td>
           <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
           <td class="backlightOnDataChange">{{ elem.value }}</td>

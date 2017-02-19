@@ -48,6 +48,7 @@ export class WatchlistComponent implements OnInit {
     activeState: string;
     isRedrawingStopped: boolean = false;
     areChartButtonsVisible: boolean = false;
+    isChartShrunked: boolean = true;
 
     constructor(@Inject(Http) private http: Http, public zone: NgZone) {
         this.http.get(`/ScadaBR/api/watchlist/getNames`)
@@ -58,11 +59,14 @@ export class WatchlistComponent implements OnInit {
                 this.initiateInterval();
             });
         this.chartLayout = {
+            autosize: true,
+            height: 600,
             showlegend: true,
             legend: {
-                orientation: "h",
+                orientation: 'h',
                 bgcolor: 'transparent',
-                y: -0.17
+                y: -0.17,
+                x: 0
             }
         };
     };
@@ -191,6 +195,7 @@ export class WatchlistComponent implements OnInit {
             console.log('loaded data after zoom');
             this.isAnyRequestActive = false;
             this.setRanges();
+            this.zoomEvent = false;
         });
     }
 
@@ -245,7 +250,6 @@ export class WatchlistComponent implements OnInit {
                                 console.log('mousedown' + i);
                                 this.isRedrawingStopped = true;
                                 this.zoomEvent = true;
-                                e.currentTarget.removeEventListener(e.type, cb);
                             };
                             document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
 
@@ -254,15 +258,14 @@ export class WatchlistComponent implements OnInit {
                     });
 
                 });
-                    for (let i = 0; i < 11; i++) {
-                        let cb = (e) => {
-                            console.log('mousedown' + i);
-                            this.isRedrawingStopped = true;
-                            this.zoomEvent = true;
-                            e.currentTarget.removeEventListener(e.type, cb);
-                        };
-                        document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
-                    }
+                for (let i = 0; i < 11; i++) {
+                    let cb = (e) => {
+                        console.log('mousedown' + i);
+                        this.isRedrawingStopped = true;
+                        this.zoomEvent = true;
+                    };
+                    document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
+                }
                 this.motherOfDragons = false;
             }
 
@@ -346,10 +349,10 @@ export class WatchlistComponent implements OnInit {
     initiateInterval() {
         this.loadPoints = setInterval(() => {
             this.liveChart();
-        }, 5000);
+        }, this.getUserSystemPerformance());
     }
 
-    deactivateInterval(){
+    deactivateInterval() {
         clearInterval(this.loadPoints);
     }
 
@@ -373,10 +376,42 @@ export class WatchlistComponent implements OnInit {
     ngOnInit() {
         this.setDefaultTimeRangeValues();
         this.initiateChart();
+        console.log(localStorage['systemPerf']);
     }
 
     ngOnDestroy() {
         clearInterval(this.loadPoints);
+    }
+
+    getScreenHeight() {
+        return window.innerHeight;
+    }
+
+    toggleLegend() {
+        this.chartLayout.showlegend == true ? this.chartLayout.showlegend = false : this.chartLayout.showlegend = true;
+        this.redrawChart();
+    }
+
+    toggleChartSize() {
+        if (this.isChartShrunked) {
+            this.chartLayout.height = 880;
+            this.isChartShrunked = false;
+        } else {
+            this.chartLayout.height = 600;
+            this.isChartShrunked = true;
+        }
+        this.redrawChart();
+    }
+
+    getUserSystemPerformance(){
+        let systemPerf = JSON.parse(localStorage.getItem('systemPerf'));
+        if (systemPerf == undefined || systemPerf == 'low') {
+            return 5000;
+        } else if (systemPerf == 'medium'){
+            return 3000;
+        } else {
+            return 1000;
+        }
     }
 
 }

@@ -41,6 +41,7 @@ table td
   border: 1px solid #ccc
   text-align: left
   white-space: nowrap
+  font-size: 14px
 
 table td.checkBox
   width: 2%
@@ -126,16 +127,25 @@ select
 h2
   font-size: 20px
 
+md-card
+  transition: all .5s ease
+  overflow: hidden
+
 .chartContainer
   height: 0
   overflow: hidden
   transition: all .5s ease-in-out
   margin-top: -30px
 
-.open
+.openFirstStage
   margin-top: 0
-  height: 475px
-  transition: all .5s ease-in
+  height: 625px
+  transition: all .5s ease-in-out
+
+.openSecondStage
+  margin-top: 0
+  height: 905px
+  transition: all .5s ease-in-out
 
 .buttonFromPast, .inputFromPast, .selectFromPast
   width: 49%
@@ -217,12 +227,15 @@ h2
 #plotlyLoader
   position: absolute
   z-index: 999
-  height: 350px
+  min-height: 87%
   width: 94%
   top: 70px
   background-color: rgba(255, 255, 255, 0.8)
   .spinner
-    margin-top: 120px
+    position: absolute
+    top: 36%
+    left: 50%
+    transform: translate(-50%, -50%)
 
 .chartButtons
   position: absolute

@@ -51,7 +51,7 @@ In the process of making.
 
 ## Community
 
-* Chat with fellow scada-lts in IRC. On the `irc.freenode.net` server, in the `##scada-lts` channel.
+* ScadaLTS tag is finally available on Stack Overflow. Feel free to ask questions - http://stackoverflow.com/questions/tagged/scadalts.
 
 
 ## Versioning

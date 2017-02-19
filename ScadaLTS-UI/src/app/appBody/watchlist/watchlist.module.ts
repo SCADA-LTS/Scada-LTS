@@ -4,19 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
 import { WatchlistComponent } from './watchlist.component';
-import { SortPipe } from '../../sort.pipe';
 
 @NgModule({
   declarations: [
-    WatchlistComponent,
-    SortPipe
+    WatchlistComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    MaterialModule.forRoot(),
-    SortPipe
+    MaterialModule.forRoot()
   ],
   providers: [],
   bootstrap: [WatchlistComponent]
