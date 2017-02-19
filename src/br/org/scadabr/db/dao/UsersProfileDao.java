@@ -78,22 +78,20 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public UsersProfileVO getUserProfileById(int id) {
-		/*
-		 * UsersProfileVO profile = queryForObject(PROFILES_SELECT +
-		 * " where u.id=?", new Object[] { id }, new UsersProfilesRowMapper(),
-		 * null); populateUserProfilePermissions(profile); return profile;
-		 */
-		ListIterator<UsersProfileVO> iterator = currentProfileList
-				.listIterator();
-		while (iterator.hasNext()) {
-			UsersProfileVO iterProfile = iterator.next();
-			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getId() == id) {
-				return iterProfile;
+		synchronized (this) {
+			if (currentProfileList == null)
+				getUsersProfiles();
+
+			ListIterator<UsersProfileVO> iterator = currentProfileList.listIterator();
+			while (iterator.hasNext()) {
+				UsersProfileVO iterProfile = iterator.next();
+				LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
+				if (iterProfile.getId() == id) {
+					return iterProfile;
+				}
 			}
+			return null;
 		}
-		LOG.debug("Profile not Found!");
-		return null;
 	}
 
 	public UsersProfileVO getUserProfileByXid(String xid) {
