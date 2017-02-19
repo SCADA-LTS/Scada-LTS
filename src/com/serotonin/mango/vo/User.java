@@ -1,507 +1,558 @@
-package br.org.scadabr.db.dao;
+/*
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.serotonin.mango.vo;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
 
-import br.org.scadabr.api.exception.DAOException;
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
+import br.org.scadabr.vo.exporter.ZIPProjectManager;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
-import com.serotonin.db.spring.GenericRowMapper;
+import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.json.JsonArray;
+import com.serotonin.json.JsonException;
+import com.serotonin.json.JsonObject;
+import com.serotonin.json.JsonReader;
+import com.serotonin.json.JsonRemoteEntity;
+import com.serotonin.json.JsonRemoteProperty;
+import com.serotonin.json.JsonSerializable;
+import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.BaseDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
-import com.serotonin.mango.db.dao.WatchListDao;
+import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.db.dao.DataSourceDao;
+import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.WatchList;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.vo.publish.PublishedPointVO;
+import com.serotonin.mango.vo.publish.PublisherVO;
+import com.serotonin.mango.web.dwr.beans.DataExportDefinition;
+import com.serotonin.mango.web.dwr.beans.EventExportDefinition;
+import com.serotonin.mango.web.dwr.beans.ImportTask;
+import com.serotonin.mango.web.dwr.beans.TestingUtility;
+import com.serotonin.util.StringUtils;
+import com.serotonin.web.dwr.DwrResponseI18n;
+import com.serotonin.web.i18n.LocalizableMessage;
 
-public class UsersProfileDao extends BaseDao {
-	public Log LOG = LogFactory.getLog(UsersProfileDao.class);
+@JsonRemoteEntity
+public class User implements SetPointSource, HttpSessionBindingListener,
+		JsonSerializable {
+	private int id = Common.NEW_ID;
+	@JsonRemoteProperty
+	private String username;
+	@JsonRemoteProperty
+	private String password;
+	@JsonRemoteProperty
+	private String email;
+	@JsonRemoteProperty
+	private String phone;
+	@JsonRemoteProperty
+	private boolean admin;
+	@JsonRemoteProperty
+	private boolean disabled;
+	private List<Integer> dataSourcePermissions;
+	private List<DataPointAccess> dataPointPermissions;
+	private int selectedWatchList;
+	@JsonRemoteProperty
+	private String homeUrl;
+	private long lastLogin;
+	private int receiveAlarmEmails;
+	@JsonRemoteProperty
+	private boolean receiveOwnAuditEvents;
 
-	private static List<UsersProfileVO> currentProfileList = null;
+	//
+	// Session data. The user object is stored in session, and some other
+	// session-based information is cached here
+	// for convenience.
+	//
+	@JsonRemoteProperty
+	private int userProfile = Common.NEW_ID;
 
-	private static final String PROFILES_SELECT = "select u.id, u.name, u.xid "
-			+ "from usersProfiles u";
+	private transient View view;
+	private transient WatchList watchList;
+	private transient DataPointVO editPoint;
+	private transient DataSourceVO<?> editDataSource;
+	private transient TestingUtility testingUtility;
+	private transient Map<String, byte[]> reportImageData;
+	private transient PublisherVO<? extends PublishedPointVO> editPublisher;
+	private transient ImportTask importTask;
+	private transient boolean muted = false;
+	private transient DataExportDefinition dataExportDefinition;
+	private transient EventExportDefinition eventExportDefinition;
+	private transient Map<String, Object> attributes = new HashMap<String, Object>();
 
-	private static final String PROFILES_INSERT = "insert into usersProfiles (xid, name) values (?, ?)";
-
-	private static final String PROFILES_UPDATE = "update usersProfiles set "
-			+ "  name=? " + "where id=?";
-
-	private static final String PROFILES_DELETE = "delete from usersProfiles where id = (?)";
-
-	private WatchListDao watchlistDao = new WatchListDao();
-	private ViewDao viewDao = new ViewDao();
-	private UserDao userDao = new UserDao();
-
-	public List<UsersProfileVO> getUsersProfiles() {
-		if (currentProfileList == null) {
-			currentProfileList = query(PROFILES_SELECT + " order by u.name",
-					new UsersProfilesRowMapper());
-			populateUserProfilePermissions(currentProfileList);
-		}
-		return currentProfileList;
+	/**
+	 * Used for various display purposes.
+	 */
+	public String getDescription() {
+		return username + " (" + id + ")";
 	}
 
-	public UsersProfileVO getUserProfileByName(String name) {
-		/*
-		 * UsersProfileVO profile = queryForObject(PROFILES_SELECT +
-		 * " where lower(u.name)=?", new Object[] { name.toLowerCase() }, new
-		 * UsersProfilesRowMapper(), null);
-		 * 
-		 * populateUserProfilePermissions(profile); return profile;
-		 */
-		ListIterator<UsersProfileVO> iterator = currentProfileList
-				.listIterator();
-		while (iterator.hasNext()) {
-			UsersProfileVO iterProfile = iterator.next();
-			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getName() == name) {
-				return iterProfile;
+	public boolean isFirstLogin() {
+		return lastLogin == 0;
+	}
+
+	//
+	// /
+	// / SetPointSource implementation
+	// /
+	//
+	public int getSetPointSourceId() {
+		return id;
+	}
+
+	public int getSetPointSourceType() {
+		return SetPointSource.Types.USER;
+	}
+
+	@Override
+	public void raiseRecursionFailureEvent() {
+		throw new ShouldNeverHappenException("");
+	}
+
+	//
+	// /
+	// / HttpSessionBindingListener implementation
+	// /
+	//
+	public void valueBound(HttpSessionBindingEvent evt) {
+		// User is bound to a session when logged in. Notify the event manager.
+		SystemEventType.raiseEvent(new SystemEventType(
+				SystemEventType.TYPE_USER_LOGIN, id), System
+				.currentTimeMillis(), true, new LocalizableMessage(
+				"event.login", username));
+	}
+
+	public void valueUnbound(HttpSessionBindingEvent evt) {
+		// User is unbound from a session when logged out or the session
+		// expires.
+		SystemEventType.returnToNormal(new SystemEventType(
+				SystemEventType.TYPE_USER_LOGIN, id), System
+				.currentTimeMillis());
+
+		// Terminate any testing utility
+		if (testingUtility != null)
+			testingUtility.cancel();
+	}
+
+	// Convenience method for JSPs
+	public boolean isDataSourcePermission() {
+		return Permissions.hasDataSourcePermission(this);
+	}
+
+	//
+	// Testing utility management
+	public <T extends TestingUtility> T getTestingUtility(Class<T> requiredClass) {
+		TestingUtility tu = testingUtility;
+
+		if (tu != null) {
+			try {
+				return requiredClass.cast(tu);
+			} catch (ClassCastException e) {
+				tu.cancel();
+				testingUtility = null;
 			}
 		}
-		LOG.debug("Profile not Found!");
 		return null;
 	}
 
-	public UsersProfileVO getUserProfileById(int id) {
-		synchronized (this) {
-			if (currentProfileList == null)
-				getUsersProfiles();
+	public void setTestingUtility(TestingUtility testingUtility) {
+		TestingUtility tu = this.testingUtility;
+		if (tu != null)
+			tu.cancel();
+		this.testingUtility = testingUtility;
+	}
 
-			ListIterator<UsersProfileVO> iterator = currentProfileList.listIterator();
-			while (iterator.hasNext()) {
-				UsersProfileVO iterProfile = iterator.next();
-				LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-				if (iterProfile.getId() == id) {
-					return iterProfile;
+	public void cancelTestingUtility() {
+		setTestingUtility(null);
+	}
+
+	// Properties
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public View getView() {
+		return view;
+	}
+
+	public void setView(View view) {
+		this.view = view;
+	}
+
+	public WatchList getWatchList() {
+		return watchList;
+	}
+
+	public void setWatchList(WatchList watchList) {
+		this.watchList = watchList;
+	}
+
+	public DataPointVO getEditPoint() {
+		return editPoint;
+	}
+
+	public void setEditPoint(DataPointVO editPoint) {
+		this.editPoint = editPoint;
+	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+
+	public List<Integer> getDataSourcePermissions() {
+		if (dataSourcePermissions==null) {
+			dataSourcePermissions = new LinkedList<Integer>();
+		}
+		
+		return dataSourcePermissions;
+		
+	}
+
+	public void setDataSourcePermissions(List<Integer> dataSourcePermissions) {
+		this.dataSourcePermissions = dataSourcePermissions;
+	}
+
+	public List<DataPointAccess> getDataPointPermissions() {
+		if (dataPointPermissions==null) {
+			dataPointPermissions = new LinkedList<DataPointAccess>();
+		} 
+		return dataPointPermissions;
+		
+	}
+
+	public void setDataPointPermissions(
+			List<DataPointAccess> dataPointPermissions) {
+		this.dataPointPermissions = dataPointPermissions;
+	}
+
+	public DataSourceVO<?> getEditDataSource() {
+		return editDataSource;
+	}
+
+	public void setEditDataSource(DataSourceVO<?> editDataSource) {
+		this.editDataSource = editDataSource;
+	}
+
+	public int getSelectedWatchList() {
+		return selectedWatchList;
+	}
+
+	public void setSelectedWatchList(int selectedWatchList) {
+		this.selectedWatchList = selectedWatchList;
+	}
+
+	public String getHomeUrl() {
+		return homeUrl;
+	}
+
+	public void setHomeUrl(String homeUrl) {
+		this.homeUrl = homeUrl;
+	}
+
+	public long getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(long lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+
+	public Map<String, byte[]> getReportImageData() {
+		return reportImageData;
+	}
+
+	public void setReportImageData(Map<String, byte[]> reportImageData) {
+		this.reportImageData = reportImageData;
+	}
+
+	public PublisherVO<? extends PublishedPointVO> getEditPublisher() {
+		return editPublisher;
+	}
+
+	public void setEditPublisher(
+			PublisherVO<? extends PublishedPointVO> editPublisher) {
+		this.editPublisher = editPublisher;
+	}
+
+	public ImportTask getImportTask() {
+		return importTask;
+	}
+
+	public void setImportTask(ImportTask importTask) {
+		this.importTask = importTask;
+	}
+
+	public boolean isMuted() {
+		return muted;
+	}
+
+	public void setMuted(boolean muted) {
+		this.muted = muted;
+	}
+
+	public int getReceiveAlarmEmails() {
+		return receiveAlarmEmails;
+	}
+
+	public void setReceiveAlarmEmails(int receiveAlarmEmails) {
+		this.receiveAlarmEmails = receiveAlarmEmails;
+	}
+
+	public boolean isReceiveOwnAuditEvents() {
+		return receiveOwnAuditEvents;
+	}
+
+	public void setReceiveOwnAuditEvents(boolean receiveOwnAuditEvents) {
+		this.receiveOwnAuditEvents = receiveOwnAuditEvents;
+	}
+
+	public DataExportDefinition getDataExportDefinition() {
+		return dataExportDefinition;
+	}
+
+	public void setDataExportDefinition(
+			DataExportDefinition dataExportDefinition) {
+		this.dataExportDefinition = dataExportDefinition;
+	}
+
+	public EventExportDefinition getEventExportDefinition() {
+		return eventExportDefinition;
+	}
+
+	public void setEventExportDefinition(
+			EventExportDefinition eventExportDefinition) {
+		this.eventExportDefinition = eventExportDefinition;
+	}
+
+	public void setAttribute(String key, Object value) {
+		attributes.put(key, value);
+	}
+
+	public Object removeAttribute(String key) {
+		return attributes.remove(key);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getAttribute(String key) {
+		return (T) attributes.get(key);
+	}
+
+	public void validate(DwrResponseI18n response) {
+		if (StringUtils.isEmpty(username))
+			response.addMessage("username", new LocalizableMessage(
+					"validate.required"));
+		if (StringUtils.isEmpty(email))
+			response.addMessage("email", new LocalizableMessage(
+					"validate.required"));
+		if (id == Common.NEW_ID && StringUtils.isEmpty(password))
+			response.addMessage("password", new LocalizableMessage(
+					"validate.required"));
+
+		// Check field lengths
+		if (StringUtils.isLengthGreaterThan(username, 40))
+			response.addMessage("username", new LocalizableMessage(
+					"validate.notLongerThan", 40));
+		if (StringUtils.isLengthGreaterThan(email, 255))
+			response.addMessage("email", new LocalizableMessage(
+					"validate.notLongerThan", 255));
+		if (StringUtils.isLengthGreaterThan(phone, 40))
+			response.addMessage("phone", new LocalizableMessage(
+					"validate.notLongerThan", 40));
+	}
+
+	//
+	// /
+	// / Serialization
+	// /
+	//
+	@Override
+	public void jsonDeserialize(JsonReader reader, JsonObject json) {
+		// Note: data source permissions are explicitly deserialized by the
+		// import/export because the data sources and
+		// points need to be certain to exist before we can resolve the xids.
+	}
+
+	public void jsonDeserializePermissions(JsonReader reader, JsonObject json)
+			throws JsonException {
+		if (admin) {
+			dataSourcePermissions.clear();
+			dataPointPermissions.clear();
+		} else {
+			JsonArray jsonDataSources = json
+					.getJsonArray("dataSourcePermissions");
+			if (jsonDataSources != null) {
+				dataSourcePermissions.clear();
+				DataSourceDao dataSourceDao = new DataSourceDao();
+
+				for (JsonValue jv : jsonDataSources.getElements()) {
+					String xid = jv.toJsonString().getValue();
+					DataSourceVO<?> ds = dataSourceDao.getDataSource(xid);
+					if (ds == null)
+						throw new LocalizableJsonException(
+								"emport.error.missingSource", xid);
+					dataSourcePermissions.add(ds.getId());
 				}
 			}
-			return null;
-		}
-	}
 
-	public UsersProfileVO getUserProfileByXid(String xid) {
-		/*
-		 * UsersProfileVO profile = queryForObject(PROFILES_SELECT +
-		 * " where u.xid=?", new Object[] { xid }, new UsersProfilesRowMapper(),
-		 * null); populateUserProfilePermissions(profile); return profile;
-		 */
-		ListIterator<UsersProfileVO> iterator = currentProfileList
-				.listIterator();
-		while (iterator.hasNext()) {
-			UsersProfileVO iterProfile = iterator.next();
-			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getXid() == xid) {
-				return iterProfile;
+			JsonArray jsonPoints = json.getJsonArray("dataPointPermissions");
+			if (jsonPoints != null) {
+				// Get a list of points to which permission already exists due
+				// to data source access.
+				DataPointDao dataPointDao = new DataPointDao();
+				List<Integer> permittedPoints = new ArrayList<Integer>();
+				for (Integer dsId : dataSourcePermissions) {
+					for (DataPointVO dp : dataPointDao
+							.getDataPoints(dsId, null))
+						permittedPoints.add(dp.getId());
+				}
+
+				dataPointPermissions.clear();
+
+				for (JsonValue jv : jsonPoints.getElements()) {
+					DataPointAccess access = reader.readPropertyValue(jv,
+							DataPointAccess.class, null);
+					if (!permittedPoints.contains(access.getDataPointId()))
+						// The user doesn't already have access to the point.
+						dataPointPermissions.add(access);
+				}
 			}
 		}
-		LOG.debug("Profile not Found!");
-		return null;
 	}
 
-	public void saveUsersProfile(UsersProfileVO profile) throws DAOException {
-		if (profileExistsWithThatName(profile)
-				&& profile.getId() == Common.NEW_ID) {
-			throw new DAOException();
-		}
+	@Override
+	public void jsonSerialize(Map<String, Object> map) {
+		if (!admin) {
+			List<String> dsXids = new ArrayList<String>();
+			DataSourceDao dataSourceDao = new DataSourceDao();
+			for (Integer dsId : dataSourcePermissions)
+				dsXids.add(dataSourceDao.getDataSource(dsId).getXid());
+			map.put("dataSourcePermissions", dsXids);
 
-		saveUsersProfileWithoutNameConstraint(profile);
-	}
-
-	private boolean profileExistsWithThatName(UsersProfileVO profile) {
-		return getUserProfileByName(profile.getName()) != null;
-	}
-
-	public void saveUsersProfileWithoutNameConstraint(UsersProfileVO profile)
-			throws DAOException {
-		if (profile.getName() == null
-				|| profile.getName().replaceAll("\\s+", "").isEmpty()) {
-			throw new DAOException();
-		}
-
-		if (profile.getXid() == null) {
-			profile.setXid(generateUniqueXid(UsersProfileVO.XID_PREFIX,
-					"usersProfiles"));
-		}
-
-		if (profile.getId() == Common.NEW_ID) {
-			insertProfile(profile);
-		} else {
-			updateProfile(profile);
+			map.put("dataPointPermissions", dataPointPermissions);
 		}
 	}
 
-	public void updateProfile(UsersProfileVO profile) {
-
-		ejt.update(PROFILES_UPDATE,
-				new Object[] { profile.getName(), profile.getId() });
-
-		List<Integer> usersIds = queryForList(USERS_PROFILES_USERS_SELECT
-				+ " where u.userProfileId=?", new Object[] { profile.getId() },
-				Integer.class);
-
-		UserDao userDao = new UserDao();
-
-		for (Integer userId : usersIds) {
-			User profileUser = userDao.getUser(userId);
-			profile.apply(profileUser);
-			userDao.saveUser(profileUser);
-			this.updateUsersProfile(profile);
-		}
-
-		saveRelationalData(profile);
-
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
 	}
 
-	public void updateUsersProfile(UsersProfileVO profile) {
-		if (profile.retrieveLastAppliedUser() != null) {
-			ejt.update("delete from usersUsersProfiles where userId=?",
-					new Object[] { profile.retrieveLastAppliedUser().getId() });
-
-			ejt.update(
-					"insert into usersUsersProfiles (userProfileId, userId) values (?,?)",
-					new Object[] { profile.getId(),
-							profile.retrieveLastAppliedUser().getId() });
-		}
-
-		for (WatchList watchlist : profile.retrieveWatchlists()) {
-			watchlistDao.saveWatchList(watchlist);
-		}
-
-		for (View view : profile.retrieveViews()) {
-			viewDao.saveView(view);
-		}
-
-		ListIterator<UsersProfileVO> iterator = currentProfileList
-				.listIterator();
-		while (iterator.hasNext()) {
-			UsersProfileVO iterProfile = iterator.next();
-			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getId() == profile.getId()) {
-				iterator.set(profile);
-			}
-		}
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final User other = (User) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 
-	private void insertProfile(UsersProfileVO profile) {
-
-		profile.setId(doInsert(PROFILES_INSERT, new Object[] {
-				profile.getXid(), profile.getName() }));
-
-		saveRelationalData(profile);
-
-		currentProfileList.add(profile);
+	public void setUploadedProject(ZIPProjectManager uploadedProject) {
+		this.uploadedProject = uploadedProject;
 	}
 
-	private class UsersProfilesRowMapper implements
-			GenericRowMapper<UsersProfileVO> {
-
-		public UsersProfilesRowMapper() {
-		};
-
-		public UsersProfileVO mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
-			UsersProfileVO edt = new UsersProfileVO();
-			edt.setId(rs.getInt(1));
-			edt.setName(rs.getString(2));
-			edt.setXid(rs.getString(3));
-			return edt;
-		}
+	public ZIPProjectManager getUploadedProject() {
+		return uploadedProject;
 	}
 
-	private static final String SELECT_DATA_SOURCE_PERMISSIONS = "select dataSourceId from dataSourceUsersProfiles where userProfileId=?";
-	private static final String SELECT_DATA_POINT_PERMISSIONS = "select dataPointId, permission from dataPointUsersProfiles where userProfileId=?";
-	private static final String SELECT_WATCHLIST_PERMISSIONS = "select watchlistId, permission from watchListUsersProfiles where userProfileId=?";
-	private static final String SELECT_VIEW_PERMISSIONS = "select viewId, permission from viewUsersProfiles where userProfileId=?";
-	private static final String USERS_PROFILES_SELECT = "select userProfileId, userId from usersUsersProfiles u";
-	private static final String USERS_PROFILES_USERS_SELECT = "select userId from usersUsersProfiles u";
+	private ZIPProjectManager uploadedProject;
 
-	private void populateUserProfilePermissions(UsersProfileVO profile) {
-		if (profile == null) {
-			return;
-		}
-
-		LOG.debug("populateDataSources");
-		populateDataSources(profile);
-		LOG.debug("populateDatapoints");
-		populateDatapoints(profile);
-		LOG.debug("populateWatchlists");
-		populateWatchlists(profile);
-		LOG.debug("populateViews");
-		populateViews(profile);
-		LOG.debug("populateUsers");
-		populateUsers(profile);
-		LOG.debug("end");
-
+	public void setUserProfile(UsersProfileVO profile) {
+		this.userProfile = profile.getId();
 	}
 
-	private void populateUsers(UsersProfileVO profile) {
-		profile.defineUsers(queryForList(USERS_PROFILES_USERS_SELECT
-				+ " where userProfileId=?", new Object[] { profile.getId() },
-				Integer.class));
+	public int getUserProfile() {
+		return userProfile;
 	}
 
-	private void populateWatchlists(UsersProfileVO profile) {
-		profile.setWatchlistPermissions(query(SELECT_WATCHLIST_PERMISSIONS,
-				new Object[] { profile.getId() },
-				new GenericRowMapper<WatchListAccess>() {
-					public WatchListAccess mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						WatchListAccess a = new WatchListAccess(rs.getInt(1),
-								rs.getInt(2));
-						return a;
-					}
-				}));
-
-		WatchListDao watchListDao = new WatchListDao();
-		List<WatchList> allwatchlists = watchListDao.getWatchLists();
-		watchListDao.populateWatchlistData(allwatchlists);
-		profile.defineWatchlists(allwatchlists);
+	public void resetUserProfile() {
+		this.userProfile = Common.NEW_ID;
 	}
 
-	private void populateDatapoints(UsersProfileVO profile) {
-		profile.setDataPointPermissions(query(SELECT_DATA_POINT_PERMISSIONS,
-				new Object[] { profile.getId() },
-				new GenericRowMapper<DataPointAccess>() {
-					public DataPointAccess mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						DataPointAccess a = new DataPointAccess();
-						a.setDataPointId(rs.getInt(1));
-						a.setPermission(rs.getInt(2));
-						return a;
-					}
-				}));
+	@Override
+	public void pointSetComplete() {
+		// TODO Auto-generated method stub
+
 	}
-
-	private void populateDataSources(UsersProfileVO profile) {
-		profile.setDataSourcePermissions(queryForList(
-				SELECT_DATA_SOURCE_PERMISSIONS,
-				new Object[] { profile.getId() }, Integer.class));
-	}
-
-	private void populateViews(UsersProfileVO profile) {
-		profile.setViewPermissions(query(SELECT_VIEW_PERMISSIONS,
-				new Object[] { profile.getId() },
-				new GenericRowMapper<ViewAccess>() {
-					public ViewAccess mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						ViewAccess a = new ViewAccess(rs.getInt(1), rs
-								.getInt(2));
-						return a;
-					}
-				}));
-
-		List<View> allviews = new ViewDao().getViews();
-		profile.defineViews(allviews);
-	}
-
-	private void populateUserProfilePermissions(List<UsersProfileVO> profiles) {
-		for (UsersProfileVO profile : profiles) {
-			LOG.debug("start");
-			populateUserProfilePermissions(profile);
-			LOG.debug("end");
-		}
-	}
-
-	private void saveRelationalData(final UsersProfileVO usersProfile) {
-		ejt.update("delete from dataSourceUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-		ejt.update("delete from dataPointUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-		ejt.update("delete from watchListUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-		ejt.update("delete from viewUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-
-		ejt.batchUpdate(
-				"insert into dataSourceUsersProfiles (dataSourceId, userProfileId) values (?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getDataSourcePermissions().size();
-					}
-
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getDataSourcePermissions()
-								.get(i));
-						ps.setInt(2, usersProfile.getId());
-					}
-				});
-		ejt.batchUpdate(
-				"insert into dataPointUsersProfiles (dataPointId, userProfileId, permission) values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getDataPointPermissions().size();
-					}
-
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getDataPointPermissions()
-								.get(i).getDataPointId());
-						ps.setInt(2, usersProfile.getId());
-						ps.setInt(3, usersProfile.getDataPointPermissions()
-								.get(i).getPermission());
-					}
-				});
-
-		ejt.batchUpdate(
-				"insert into watchListUsersProfiles (watchlistId, userProfileId, permission) values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getWatchlistPermissions().size();
-					}
-
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getWatchlistPermissions()
-								.get(i).getId());
-						ps.setInt(2, usersProfile.getId());
-						ps.setInt(3, usersProfile.getWatchlistPermissions()
-								.get(i).getPermission());
-					}
-				});
-
-		ejt.batchUpdate(
-				"insert into viewUsersProfiles (viewId, userProfileId, permission) values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getViewPermissions().size();
-					}
-
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getViewPermissions().get(i)
-								.getId());
-						ps.setInt(2, usersProfile.getId());
-						ps.setInt(3, usersProfile.getViewPermissions().get(i)
-								.getPermission());
-					}
-				});
-	}
-
-	public UsersProfileVO getUserProfileByUserId(int userid) {
-		UsersProfileVO profile = queryForObject(USERS_PROFILES_SELECT
-				+ " where u.userId=?", new Object[] { userid },
-				new GenericRowMapper<UsersProfileVO>() {
-					public UsersProfileVO mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						UsersProfileVO edt = new UsersProfileVO();
-						edt.setId(rs.getInt(1));
-						return edt;
-					}
-				}, null);
-
-		if (profile != null) {
-			profile = this.getUserProfileById(profile.getId());
-		}
-
-		populateUserProfilePermissions(profile);
-		return profile;
-	}
-
-	public void grantUserAdminProfile(User user) {
-		ejt.update("delete from usersUsersProfiles where userId=?",
-				new Object[] { user.getId() });
-
-		// Add user to watchLists
-		List<WatchList> watchLists = watchlistDao.getWatchLists();
-		for (WatchList wl : watchLists) {
-			watchlistDao.removeUserFromWatchList(wl.getId(), user.getId());
-		}
-
-		// Remove user from Views
-		List<View> views = viewDao.getViews();
-		for (View view : views) {
-			viewDao.removeUserFromView(view.getId(), user.getId());
-		}
-
-		user.resetUserProfile();
-	}
-
-	public void resetUserProfile(User user) {
-		ejt.update("delete from usersUsersProfiles where userId=?",
-				new Object[] { user.getId() });
-
-		// Remove user from watchLists
-		List<WatchList> watchLists = watchlistDao.getWatchLists();
-		for (WatchList wl : watchLists) {
-			watchlistDao.removeUserFromWatchList(wl.getId(), user.getId());
-		}
-
-		// Remove user from Views
-		List<View> views = viewDao.getViews();
-		for (View view : views) {
-			viewDao.removeUserFromView(view.getId(), user.getId());
-		}
-
-		user.resetUserProfile();
-	}
-
-	public void setWatchlistDao(WatchListDao dao) {
-		this.watchlistDao = dao;
-	}
-
-	public void setViewDao(ViewDao dao) {
-		this.viewDao = dao;
-	}
-
-	public boolean userProfileExists(String xid) {
-		UsersProfileVO profile = getUserProfileByXid(xid);
-		return profile != null;
-	}
-
-	public void deleteUserProfile(final int usersProfileId) {
-		// Get Users from Profile
-		List<Integer> usersIds = queryForList(USERS_PROFILES_USERS_SELECT
-				+ " where u.userProfileId=?", new Object[] { usersProfileId },
-				Integer.class);
-
-		// Reset user profile
-		for (Integer userId : usersIds) {
-			this.resetUserProfile(userDao.getUser(userId));
-		}
-
-		getTransactionTemplate().execute(
-				new TransactionCallbackWithoutResult() {
-					@SuppressWarnings("synthetic-access")
-					@Override
-					protected void doInTransactionWithoutResult(
-							TransactionStatus status) {
-						Object[] args = new Object[] { usersProfileId };
-						// Delete relational data
-						// ejt.update(
-						// "delete from dataSourceUsersProfiles where userProfileId=?",
-						// args);
-						// ejt.update(
-						// "delete from dataPointUsersProfiles where userProfileId=?",
-						// args);
-						// ejt.update(
-						// "delete from watchlistUsersProfiles where userProfileId=?",
-						// args);
-						// ejt.update(
-						// "delete from viewUsersProfiles where userProfileId=?",
-						// args);
-						// Delete the profile
-						ejt.update("delete from usersProfiles where id=?", args);
-					}
-				});
-		currentProfileList.clear();
-		currentProfileList = null;
-	}
-
 }
