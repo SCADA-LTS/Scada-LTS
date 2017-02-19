@@ -47,6 +47,9 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 @JsonRemoteEntity
 public class View implements Serializable, JsonSerializable {
 	public static final String XID_PREFIX = "GV_";
@@ -121,6 +124,27 @@ public class View implements Serializable, JsonSerializable {
 
 		if (userId == user.getId() || user.isAdmin())
 			return ShareUser.ACCESS_OWNER;
+
+		// LOG.trace(" User: " + user);
+		// Check if view is configured in user profile.
+		UsersProfileDao profileDao = new UsersProfileDao();
+		// LOG.trace(" UserProfileId: " + user.getUserProfile());
+		UsersProfileVO profileVO = profileDao.getUserProfileByUserId(user.getId());
+
+		if (profileVO != null) {
+			// LOG.trace(" User Profile: " + profileVO.getName());
+			List<ViewAccess> viewsAccess = profileVO.getViewPermissions();
+			for (ViewAccess va : viewsAccess) {
+				if (va.getId() == this.id) {
+					// LOG.trace(" ViewAccess: " + va.getId() + ", permission: "
+					// + va.getPermission());
+					if (va.getPermission() == ShareUser.ACCESS_NONE) {
+						break; // Check SharedUser then...
+					}
+					return va.getPermission();
+				}
+			}
+		}
 
 		for (ShareUser vu : viewUsers) {
 			if (vu.getUserId() == user.getId())
