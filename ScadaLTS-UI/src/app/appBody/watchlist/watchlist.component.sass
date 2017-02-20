@@ -125,7 +125,7 @@ select
     background-color: transparent
 
 h2
-  font-size: 20px
+  font-size: 14px
 
 md-card
   transition: all .5s ease
@@ -257,3 +257,23 @@ md-card
 .showButtons
   opacity: 1
   +transition(all .4s ease)
+
+.mat-fab, .mat-mini-fab
+  background-color: #FFF
+  +transition(all 1s ease)
+
+.chartSettings .mat-mini-fab
+  position: absolute
+  right: 30px
+  bottom: 30px
+
+.chartContainer .chartIcon
+  position: absolute
+  top: 20px
+  left: 50%
+  transform: translateX(-50%)
+
+.hide
+  opacity: 0
+  +transition(all 1s ease)
+
