@@ -18,8 +18,15 @@
 
         <form novalidate [formGroup]="form">
 
-          <md-input formControlName="username" placeholder="username" type="text" [(ngModel)]="username" autofocus></md-input>
-          <md-input formControlName="password" placeholder="password" type="password" [(ngModel)]="password"></md-input>
+          <md-input-container>
+            <input mdInput formControlName="username" placeholder="username" type="text" [(ngModel)]="username" autofocus>
+          </md-input-container>
+
+          <md-input-container>
+            <input mdInput formControlName="password" placeholder="password" type="password" [(ngModel)]="password">
+          </md-input-container>
+
+
           <p class="errorLoginParagraph" [ngClass]="{'showErrorLoginParagraph': isPasswordIncorrect && form.status == 'VALID' }">Wrong username or password.</p>
           <p class="errorLoginParagraph" [ngClass]="{'showErrorLoginParagraph': !isFormEmpty && form.status == 'INVALID' }">Enter username and password.</p>
 
