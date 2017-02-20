@@ -11,6 +11,7 @@ declare let $:any;
 export class ViewsComponent implements OnInit {
   
   tree:any;
+  createdTree: boolean = false;
 
   constructor(@Inject(Http) private http: Http){
     this.http.get(`/ScadaBR/api/view_hierarchy/getAll`)
@@ -28,16 +29,18 @@ export class ViewsComponent implements OnInit {
   }
 
   showViewHierarchy() {
-    $('#viewsHierarchyDiv').fancytree({
-        source: [
-          {title: "Node 1", key: "1"},
-            {title: "Folder 2", key: "2", folder: true, children: [
-              {title: "Node 2.1", key: "3", myOwnAttr: "abc"},
-              {title: "Node 2.2", key: "4"}
-            ]}
-        ],
-        extensions: ["edit", "dnd", "table", "gridnav"]
-     });
+    if (this.createdTree == false) {
+       $('#viewsHierarchyDiv').fancytree({
+          source: this.tree
+       });
+       this.createdTree = true;
+    } else {
+       $('#viewsHierarchyDiv').toggle();
+    }
+  }
+
+  testClick() {
+    alert("test");
   }
 
   ngOnInit(){

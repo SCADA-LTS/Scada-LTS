@@ -108,6 +108,14 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 					  + "WHERE parentid=a_parent_id; "
 				  +"END;";
 		
+		String pSelectViewInFolders =
+				"CREATE PROCEDURE prc_views_category_views_hierarchy_select() "
+						  +"BEGIN "					 
+						  	  + "SELECT * "
+							  + "FROM views_category_views_hierarchy Order by view_id ASC;"
+						  +"END;";
+
+		
 		jdbcTmp.execute(folderViewsHierarchySQL);
 		jdbcTmp.execute(viewsHierarchySQL);
 		
@@ -117,6 +125,7 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 		jdbcTmp.execute(fMove);
 		jdbcTmp.execute(pSelect);
 		jdbcTmp.execute(pSelectNode);
+		jdbcTmp.execute(pSelectViewInFolders);
 		
 	}
 

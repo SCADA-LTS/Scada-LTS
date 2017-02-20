@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ViewHierarchyJSON {
 	
-	private int key;
+	private long key;
 	private String title;
 	private boolean folder;
 	private List<ViewHierarchyJSON> children;
@@ -14,18 +14,10 @@ public class ViewHierarchyJSON {
 	}
 	
 	public ViewHierarchyJSON(int key, String title, boolean folder, List<ViewHierarchyJSON> children) {
-		this.key = key;
+		this.setKey(key);
 		this.title = title;
 		this.setFolder(folder);
 		this.children = children;
-	}
-
-	public int getKey() {
-		return key;
-	}
-
-	public void setKey(int key) {
-		this.key = key;
 	}
 
 	public String getTitle() {
@@ -50,6 +42,14 @@ public class ViewHierarchyJSON {
 
 	public void setFolder(boolean folder) {
 		this.folder = folder;
+	}
+
+	public long getKey() {
+		return key;
+	}
+
+	public void setKey(long key) {
+		this.key = key;
 	}
 
 }

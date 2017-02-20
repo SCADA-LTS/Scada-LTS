@@ -32,7 +32,7 @@ public interface GenericHierarchyDAO<T> {
 
 	List<T> getAll();
 	
-	List<T> getNode(int parentId);
+	List<T> getNode(long parentId);
 	
 	int add(T node);
 	

@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
+import org.scada_lts.dao.model.viewshierarchy.ViewInViewHierarchyNode;
 import org.scada_lts.exception.ViewHierarchyDaoException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -42,10 +43,17 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	private final static int COLUMN_INDEX_PARENT_ID = 2;
 	private final static int COLUMN_INDEX_NAME = 3;
 	
+	//views_category_view_hierarchy
+	private final static int COLUMN_VIEW_ID = 1;
+	private final static int COLUMN_FOLDER_VIEW_HIERARCHY_ID=2;
+	
 	
 	// @formatter:off
 		private static final String SQL = "" +
 				"call prc_views_hierarchy_select();";
+		
+		private static final String SQL_VIEW_IN_VIEW_HIERARCHY = "" +
+				"call prc_views_category_views_hierarchy_select();";
 		
 		private static final String SQL_NODE = "" +
 				"call prc_views_hierarchy_select_node(?);";
@@ -72,6 +80,18 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 						rs.getString(COLUMN_INDEX_NAME)
 				);
 				return vhn;
+			}
+		}
+		
+		private class ViewInViewHierarchyRowMapper implements RowMapper<ViewInViewHierarchyNode> {
+			
+			@Override
+			public ViewInViewHierarchyNode mapRow(ResultSet rs, int rowNum) throws SQLException {
+				ViewInViewHierarchyNode vInVhn = new ViewInViewHierarchyNode(
+						rs.getLong(COLUMN_VIEW_ID),
+						rs.getLong(COLUMN_FOLDER_VIEW_HIERARCHY_ID)
+				);
+				return vInVhn;
 			}
 		}
 
@@ -101,13 +121,13 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * 	Return one node for hierarchy views
 	 * @return
 	 */
-	public List<ViewHierarchyNode> getNode(int parentId) {
+	public List<ViewHierarchyNode> getNode(long l) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
 		}
 		
 		try {
-			List<ViewHierarchyNode> listViewHierarchyNode = DAO.getInstance().getJdbcTemp().query(SQL_NODE, new Object[]{parentId}, new ViewHierarchyRowMapper());
+			List<ViewHierarchyNode> listViewHierarchyNode = DAO.getInstance().getJdbcTemp().query(SQL_NODE, new Object[]{l}, new ViewHierarchyRowMapper());
 			return listViewHierarchyNode;
 		} catch (Exception e) {
 			LOG.error(new ViewHierarchyDaoException(e));
@@ -115,11 +135,25 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		return null;
     }
 
-	
 	/**
-	 * 	Add node for hierarchy views
-	 * @return 
+	 * 
 	 * @return
+	 */
+	public List<ViewInViewHierarchyNode> getViewInHierarchyNode() {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("SQL ViewHierarchyDAO");
+		}
+		try {
+			List<ViewInViewHierarchyNode> listViewInViewHierarchyNode = DAO.getInstance().getJdbcTemp().query(SQL_VIEW_IN_VIEW_HIERARCHY, new Object[]{}, new ViewInViewHierarchyRowMapper() );
+			return listViewInViewHierarchyNode;
+		} catch (Exception e) {
+			LOG.error(new ViewHierarchyDaoException(e));
+		}
+		return null;
+	}
+
+	/**
+	 * 	Add node for hierarchy views  
 	 */
 	public int add(ViewHierarchyNode node) {
 		if (LOG.isTraceEnabled()) {
@@ -189,5 +223,5 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		}
 		return ERROR;
     }
-
+	
 }
