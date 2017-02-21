@@ -21,11 +21,11 @@
         </div>
       </div>
       <div id="plotly"></div>
-        <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': isChartHidden }" class="chartIconClose" mdTooltip="Increase line width" [mdTooltipPosition]="'below'"><md-icon>vertical_align_top</md-icon></button>
+        <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': isChartHidden }" class="chartIconClose" mdTooltip="Hide chart" [mdTooltipPosition]="'below'"><md-icon>vertical_align_top</md-icon></button>
     </md-card>
   </div>
 
-  <div class="dataTableContainer col-md-6 col-xs-12">
+  <div class="dataTableContainer col-md-6 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
     <md-card>
       <div>
         <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid);deactivateInterval();initiateInterval()">
@@ -43,7 +43,7 @@
     </md-card>
   </div>
 
-  <div class="chartSettings col-md-6 col-xs-12">
+  <div class="chartSettings col-md-6 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
     <md-card>
       <div class="elementsFromPast">
         <input type="number" min="1" max="100" class="inputFromPast" [(ngModel)]="dateFrom" pattern="\d+">
