@@ -68,7 +68,7 @@ public class ViewHierarchyService {
 	}
 	
 	private void addViewInNotInViewHierarchy(List<ViewHierarchyJSON> lst, View view,  HashMap<Long, Boolean> tmpViewsInFolder) {
-		if (tmpViewsInFolder.get(view.getId())) {
+		if (tmpViewsInFolder.containsKey(new Long(view.getId())) == false ) {
 			ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
 			vhJSON.setKey(view.getId());
 			vhJSON.setChildren(null);
@@ -82,7 +82,6 @@ public class ViewHierarchyService {
 	private void correctChildrenViewHierarchyFolderJSON(List<ViewHierarchyJSON> lst, ViewInViewHierarchyNode vhNodeInFolder,  HashMap<Long, Boolean> tmpViewsInFolder) {
 		for (ViewHierarchyJSON vhNode:lst){
 			if (vhNode.getKey()==vhNodeInFolder.getFolderViewsHierarchyId()){
-				
 				ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
 				vhJSON.setKey(vhNodeInFolder.getViewId());
 				vhJSON.setChildren(null);

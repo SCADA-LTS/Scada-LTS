@@ -3,15 +3,20 @@
     <h2>Graphic views.</h2>
 
     <div class="elements">
-        <md-icon>zoom_out_map</md-icon>
-        <button (click)="showViewHierarchy()">Views hierarchy</button>
-        <md-icon>edit</md-icon>
-        <md-icon>note_add</md-icon>
+        <button md-mini-fab><md-icon>zoom_out_map</md-icon></button>
+        <button md-mini-fab><md-icon>edit</md-icon></button>
+        <button md-mini-fab><md-icon>note_add</md-icon></button>
+        <span>|</span>
+        <button md-mini-fab (click)="showViewHierarchy()" mdTooltip="Show view hierarchy" [mdTooltipPosition]="'below'"><md-icon>find_in_page</md-icon></button>
+        <button md-mini-fab (click)="createNewFolder()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>
+        <button md-mini-fab (click)="editFolder()" mdTooltip="Edit folder" [mdTooltipPosition]="'below'"><md-icon>folder</md-icon></button>
+        <button md-mini-fab (click)="deleteFolder()" mdTooltip="Delete folder" [mdTooltipPosition]="'below'"><md-icon>folder_open</md-icon></button>
+        <button md-mini-fab (click)="openDialog()" mdTooltip="test" [mdTooltipPosition]="'below'">test</button>
     </div>
     <div id="viewsHierarchyDiv">
       <div id="tree"></div>
     </div>
-
+    
             
     <iframe src="/ScadaBR/views.shtm" frameborder="0" allowfullscreen id="ifr"></iframe>
     
