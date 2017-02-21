@@ -396,7 +396,7 @@ export class WatchlistComponent implements OnInit {
 
     toggleChartSize() {
         if (this.isChartShrunked) {
-            this.chartLayout.height = 880;
+            this.chartLayout.height = 870;
             this.isChartShrunked = false;
         } else {
             this.chartLayout.height = 600;

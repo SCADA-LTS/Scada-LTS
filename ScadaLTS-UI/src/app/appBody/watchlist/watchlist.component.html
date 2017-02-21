@@ -1,6 +1,10 @@
-<div class="row">
+<div class="containerr">
 
-  <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'openFirstStage': !isChartHidden && isChartShrunked, 'openSecondStage': !isChartHidden && !isChartShrunked }" (window:resize)="initiateChart()">
+<button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': !isChartHidden }" class="chartIconOpen" mdTooltip="Reveal chart" [mdTooltipPosition]="'below'"><md-icon>vertical_align_bottom</md-icon></button>
+
+
+<div class="row">
+     <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'openFirstStage': !isChartHidden && isChartShrunked, 'openSecondStage': !isChartHidden && !isChartShrunked }" (window:resize)="initiateChart()">
     <md-card class="md-card" (mouseenter)="areChartButtonsVisible = true" (mouseleave)="areChartButtonsVisible = false">
       <div class="chartButtons" [ngClass]="{ 'showButtons': areChartButtonsVisible }">
         <a md-mini-fab (click)="increaseChartLineWidth()" mdTooltip="Increase line width" [mdTooltipPosition]="'below'"><md-icon>add</md-icon></a>
@@ -17,9 +21,9 @@
         </div>
       </div>
       <div id="plotly"></div>
+        <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': isChartHidden }" class="chartIconClose" mdTooltip="Increase line width" [mdTooltipPosition]="'below'"><md-icon>vertical_align_top</md-icon></button>
     </md-card>
   </div>
-    <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': isChartHidden }" class="chartIcon"><md-icon>vertical_align_top</md-icon></button>
 
   <div class="dataTableContainer col-md-6 col-xs-12">
     <md-card>
@@ -67,7 +71,7 @@
           <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange2">
         </div>
           <div>
-              <button md-raised-button md-ripple (click)="getDataFromTimeRange()" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" class="buttonFromPast">Load data</button>
+              <button md-raised-button md-ripple (click)="getDataFromTimeRange()" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" class="buttonFromPast bottomButton">Load data</button>
               <div class="spinner spinnerTimeRange" *ngIf="isRequestTimeRangeActiveAndUndone">
                   <div class="bounce1"></div>
                   <div class="bounce2"></div>
@@ -75,8 +79,9 @@
               </div>
           </div>
       </div>
-      <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': !isChartHidden }"><md-icon>vertical_align_bottom</md-icon></button>
+
     </md-card>
   </div>
 
+</div>
 </div>

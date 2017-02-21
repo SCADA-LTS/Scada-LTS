@@ -2,6 +2,9 @@
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
+/*
+global settings
+*/
 * {
   margin: 0;
   padding: 0;
@@ -28,6 +31,9 @@ li {
   outline: none;
 }
 
+/*
+loading
+ */
 .loadingContainer {
   display: flex;
   align-items: center;
@@ -84,14 +90,17 @@ li {
     }
 }
 
+/*
+plot settings
+*/
 .svg-container {
   margin-top: -50px !important;
   transition: all .5s ease-in-out !important;
 }
 
-.modebar, .modebar--hover {
-  margin-top: 40px !important;
-}
+/*.modebar, .modebar--hover {*/
+  /*margin-top: 40px !important;*/
+/*}*/
 
 /*
 bootstrap grid system
