@@ -7,6 +7,7 @@ import { MaterialModule } from '@angular/material';
 import { WatchlistComponent } from './watchlist.component';
 declare let Plotly: any;
 
+
 describe('SystemComponent', () => {
   let component: WatchlistComponent;
   let fixture: ComponentFixture<WatchlistComponent>;
@@ -28,11 +29,9 @@ describe('SystemComponent', () => {
   });
 
 
-  
   it('should return a positive number', () => {
     expect(component.getScreenHeight).toBeGreaterThan(0);
   });
-
 
 
 });

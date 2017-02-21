@@ -1,6 +1,7 @@
 import {Component, Inject, OnInit, NgZone} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/catch';
 declare let Plotly: any;
 
 @Component({
@@ -28,7 +29,7 @@ export class WatchlistComponent implements OnInit {
     chartLayout;
     multistatesOrBinariesDetected: boolean = false;
     checkForMultistatesAndBinaries: boolean = true;
-    isLinearChart: boolean = true;
+    counter: number = 0;
     isChartHidden: boolean = true;
     values;
     help2: boolean = true;
@@ -69,6 +70,7 @@ export class WatchlistComponent implements OnInit {
                 x: 0
             }
         };
+
     };
 
     updateWatchlistTable(xid) {
@@ -108,6 +110,11 @@ export class WatchlistComponent implements OnInit {
         console.log('filling successful!');
     }
 
+    private handle(error: any): Promise<any> {
+        console.error('An error occurred!', error);
+        return Promise.reject(error.message || error);
+    };
+
     getDataFromTimeRange() {
         this.zoomEvent = false;
         this.isAnyRequestActive = true;
@@ -121,7 +128,8 @@ export class WatchlistComponent implements OnInit {
         Observable.forkJoin(
             this._watchlistElements.map(v => {
                 return this.http.get(`/ScadaBR/api/watchlist/getChartData/${v.xid}/${(Date.parse(this.dateRange1) - 3600000)}/${(Date.parse(this.dateRange2) - 3600000)}`)
-                    .map(res => res.json());
+                    .map(res => res.json())
+                .catch(this.handle)
             })
         ).subscribe(res => {
             this._oldValues = res;
@@ -305,22 +313,16 @@ export class WatchlistComponent implements OnInit {
         }
     }
 
-    toSplineChart() {
-        this.isLinearChart = false;
-        for (let i = 0; i < this._values.length; i++) {
-            if (this._values[i].type == 'NumericValue') {
-                this.chartData[i]['line'].shape = 'spline';
-            }
-        }
-        this.redrawChart();
-    }
-
-    toLinearChart() {
-        this.isLinearChart = true;
-        for (let i = 0; i < this._values.length; i++) {
-            if (this._values[i].type == 'NumericValue') {
-                this.chartData[i]['line'].shape = 'linear';
-            }
+    changeNumericChartShape(){
+        if (!this.counter) {
+            this._values.forEach((v,i) => v.type == 'NumericValue' ? this.chartData[i]['line'].shape = 'spline' : v);
+            this.counter++;
+        } else if (this.counter == 1) {
+            this._values.forEach((v, i) => v.type == 'NumericValue' ? this.chartData[i]['line'].shape = 'hv' : v);
+            this.counter++;
+        } else {
+            this._values.forEach((v, i) => v.type == 'NumericValue' ? this.chartData[i]['line'].shape = 'linear' : v);
+            this.counter = 0;
         }
         this.redrawChart();
     }
@@ -369,16 +371,16 @@ export class WatchlistComponent implements OnInit {
     setRanges() {
         let date1 = this.chartLayout.xaxis.range[0];
         let date2 = this.chartLayout.xaxis.range[1];
-        this.dateRange1 = date1.slice(0, -6).split(" ").join("T").replace(/(:|:\d)$/, '');
-        this.dateRange2 = date2.slice(0, -6).split(" ").join("T").replace(/(:|:\d)$/, '');
+        this.dateRange1 = date1.replace(/:\d+\.\d+/, "").split(" ").join("T");
+        this.dateRange2 = date2.replace(/:\d+\.\d+/, "").split(" ").join("T");
     }
+
 
     ngOnInit() {
         this.setDefaultTimeRangeValues();
         this.initiateChart();
         console.log(localStorage['systemPerf']);
     }
-
     ngOnDestroy() {
         clearInterval(this.loadPoints);
     }
@@ -394,7 +396,7 @@ export class WatchlistComponent implements OnInit {
 
     toggleChartSize() {
         if (this.isChartShrunked) {
-            this.chartLayout.height = 880;
+            this.chartLayout.height = 870;
             this.isChartShrunked = false;
         } else {
             this.chartLayout.height = 600;
