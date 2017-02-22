@@ -289,6 +289,7 @@ export class WatchlistComponent implements OnInit {
                 this.redrawChart();
             }
             console.log(this.chartData);
+            this.setDefaultTimeRangeValues();
         });
 
     };
