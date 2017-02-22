@@ -33,7 +33,7 @@
             <span class="menuItemText">Settings</span>
         </span>
         <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[2] }">
-            <a class="subMenuLink" href="#">Users</a>
+            <a class="subMenuLink" [routerLink]="['./users']">Users</a>
             <a class="subMenuLink" href="#">Point hierarchy</a>
             <a class="subMenuLink" href="#">Mailing list</a>
             <a class="subMenuLink" href="#">Maintenance events</a>

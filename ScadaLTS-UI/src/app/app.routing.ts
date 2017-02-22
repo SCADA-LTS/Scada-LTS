@@ -7,6 +7,7 @@ import { WatchlistComponent } from './appBody/watchlist/index';
 import { DashboardComponent } from './appBody/dashboard/index';
 import { ViewsComponent } from './appBody/views/index';
 import { SystemComponent } from './appBody/system/system.component';
+import { UsersComponent } from './appBody/users/users.component';
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
@@ -17,6 +18,7 @@ const appRoutes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'views', component: ViewsComponent },
       { path: 'system', component: SystemComponent },
+      { path: 'users', component: UsersComponent },
       { path: '', component: DashboardComponent }
     ]},
 

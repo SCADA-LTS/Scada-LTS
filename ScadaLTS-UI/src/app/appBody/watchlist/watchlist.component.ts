@@ -37,7 +37,7 @@ export class WatchlistComponent implements OnInit {
     range1: number;
     range2: number;
     dateFrom: number = 5;
-    dateFromUnit: string = 'seconds';
+    dateFromUnit: string = 'minutes';
     zoomEvent: boolean = true;
     isRequestTimeRangeActiveAndUndone: boolean = false;
     isRequestSpecifiedTimeActiveAndUndone: boolean = false;
@@ -254,7 +254,7 @@ export class WatchlistComponent implements OnInit {
                         }
                         this.isRedrawingStopped = false;
                         for (let i = 0; i < 11; i++) {
-                            let cb = (e) => {
+                            let cb = () => {
                                 console.log('mousedown' + i);
                                 this.isRedrawingStopped = true;
                                 this.zoomEvent = true;
@@ -266,15 +266,17 @@ export class WatchlistComponent implements OnInit {
                     });
 
                 });
-                for (let i = 0; i < 11; i++) {
-                    let cb = (e) => {
-                        console.log('mousedown' + i);
-                        this.isRedrawingStopped = true;
-                        this.zoomEvent = true;
-                    };
-                    document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
-                }
+
                 this.motherOfDragons = false;
+            }
+
+            for (let i = 0; i < 11; i++) {
+                let cb = () => {
+                    console.log('mousedown' + i);
+                    this.isRedrawingStopped = true;
+                    this.zoomEvent = true;
+                };
+                document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
             }
 
             this.help2 = true;

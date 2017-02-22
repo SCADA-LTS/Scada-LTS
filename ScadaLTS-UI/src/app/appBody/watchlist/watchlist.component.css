@@ -229,7 +229,7 @@ md-card {
 
 #plotlyLoader {
   position: absolute;
-  z-index: 999;
+  z-index: 20;
   min-height: 87%;
   width: 94%;
   top: 70px;
@@ -285,7 +285,8 @@ md-card {
 .chartContainer .chartIconClose {
   position: absolute;
   bottom: 30px;
-  right: 30px; }
+  right: 30px;
+  z-index: 21; }
 
 .hide {
   opacity: 0;
