@@ -1,5 +1,4 @@
-import { TreeDialogService } from './tree-dialog/tree-dialog.service';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import {Http} from '@angular/http';
 import {MdDialog, MdDialogRef} from '@angular/material';
 
@@ -16,33 +15,31 @@ export class ViewsComponent implements OnInit {
   tree:any;
   createdTree: boolean = false;
   selectedOption: string;
-  public result: any;
-  
-  constructor(@Inject(Http) private http: Http
-    //,private dialogsService: TreeDialogService
-  ){
-    this.http.get(`/ScadaBR/api/view_hierarchy/getAll`)
+
+  constructor(@Inject(Http) private http: Http){
+      this.http.get(`/ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
                 this.tree = res.json();
                 console.log(this.tree);
             });
-    console.log(this.tree);
+      console.log(this.tree);
   }
 
   loadIframe(){
-    $('#ifr').on('load', function() {
-        $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').hide();
+    //TODO get name viewId and set name
+    $('#ifr').attr('src','/ScadaBR/views.shtm?viewId=').on('load', function() {
+      $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #graphical').hide();
     });
   }
 
   showViewHierarchy() {
-    console.log("showViewHierarchy()");
-    console.log(this.tree);
-    if (this.createdTree == false) {
+      console.log("showViewHierarchy()");
+      console.log(this.tree);
+      if (this.createdTree == false) {
          $('#viewsHierarchyDiv').fancytree({
             extensions: ["dnd"],
             dnd: {
-              autoExpandMS: 400,
+              autoExpandMS: 200,
               draggable: { // modify default jQuery draggable options
                 zIndex: 1000,
                 scroll: false,
@@ -97,12 +94,99 @@ export class ViewsComponent implements OnInit {
             source: this.tree
         });
         this.createdTree = true;
-    } else {
-       $('#viewsHierarchyDiv').toggle();
-    }
+        $( "#dialogViewsHierarchy" ).dialog( "open" );
+      } else {
+        $( "#dialogViewsHierarchy" ).dialog( "open" );
+      }
   }
 
+  createNewFolder() {
+    $( "#addOrEditFolder" ).dialog("open");
+  }
+
+  addFolder() {
+    var valid = true;
+     /* allFields.removeClass( "ui-state-error" );
+ 
+      valid = valid && checkLength( name, "username", 3, 16 );
+      valid = valid && checkLength( email, "email", 6, 80 );
+      valid = valid && checkLength( password, "password", 5, 16 );
+ 
+      valid = valid && checkRegexp( name, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
+      valid = valid && checkRegexp( email, emailRegex, "eg. ui@jquery.com" );
+      valid = valid && checkRegexp( password, /^([0-9a-zA-Z])+$/, "Password field only allow : a-z 0-9" );
+ 
+      if ( valid ) {
+        $( "#users tbody" ).append( "<tr>" +
+          "<td>" + name.val() + "</td>" +
+          "<td>" + email.val() + "</td>" +
+          "<td>" + password.val() + "</td>" +
+        "</tr>" );
+        dialog.dialog( "close" );
+      }*/
+      alert("test7");
+      return valid;
+  }
+  
   ngOnInit(){
+    $( "#dialogViewsHierarchy" ).dialog({
+      autoOpen: false,
+      show: {
+        effect: "blind",
+        duration: 500
+      },
+      hide: {
+        effect: "blind",
+        duration: 500
+      },
+      buttons: {
+        "Select view": function() {
+          if ($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().folder) {
+            this.textInfoDialog = "Select view, not folder";
+            $("#dialogInfo" ).dialog( "open" );
+          } else {
+            $("#infoSelectedViews").text($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().title);
+            $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+ $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key).on('load', function() {
+              $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #graphical').hide();
+            });
+            // load new view in iframe.
+            $(this).dialog( "close" );
+          }
+        },
+        Cancel: function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+    $( "#dialogInfo" ).dialog({
+      autoOpen: false,
+      show: {
+        effect: "blind",
+        duration: 500
+      },
+      hide: {
+        effect: "blind",
+        duration: 500
+      }
+    });
+
+    $( "#addOrEditFolder" ).dialog({
+      autoOpen: false,
+      height: 200,
+      width: 350,
+      modal: true,
+      buttons: {
+        "Create a new folder": this.addFolder,
+        Cancel: function() {
+          $(this).dialog( "close" );
+        }
+      },
+      close: function() {
+        $(this).form[ 0 ].reset();
+        $(this).allFields.removeClass( "ui-state-error" );
+      }
+    });
+
     this.loadIframe();
   }
 
