@@ -98,9 +98,9 @@ plot settings
   transition: all .5s ease-in-out !important;
 }
 
-/*.modebar, .modebar--hover {*/
-  /*margin-top: 40px !important;*/
-/*}*/
+.modebar, .modebar--hover {
+  margin-top: 40px !important;
+}
 
 /*
 bootstrap grid system
