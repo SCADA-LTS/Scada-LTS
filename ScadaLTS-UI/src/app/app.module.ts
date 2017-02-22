@@ -15,6 +15,7 @@ import { ViewsComponent } from './appBody/views/index';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SystemComponent } from './appBody/system/system.component';
+import { UsersComponent } from './appBody/users/users.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { SystemComponent } from './appBody/system/system.component';
     WatchlistComponent,
     DashboardComponent,
     ViewsComponent,
-    SystemComponent
+    SystemComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
