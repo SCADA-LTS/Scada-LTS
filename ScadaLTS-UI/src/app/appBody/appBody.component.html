@@ -42,7 +42,7 @@
             <a class="subMenuLink" href="#">Log</a>
         </div>
 
-        <span class="menuItem"  (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[3] = !isHiddenSubMenu[3]"
+        <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[3] = !isHiddenSubMenu[3]"
               [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[3] }">
             <md-icon class="icon">trending_up</md-icon>
             <span class="menuItemText">Trends</span>
@@ -67,9 +67,9 @@
             <a class="subMenuLink" href="#">Edit something</a>
         </div>
 
-        <span class="menuItem">
+        <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[5] = !isHiddenSubMenu[5]" [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[5] }">
             <md-icon class="icon">info_outline</md-icon>
-            <span class="menuItemText">About us</span>
+            <span class="menuItemText" [routerLink]="['./about']">About us</span>
         </span>
 
     </div>

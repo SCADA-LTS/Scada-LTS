@@ -68,7 +68,8 @@ export class WatchlistComponent implements OnInit {
                 bgcolor: 'transparent',
                 y: -0.17,
                 x: 0
-            }
+            },
+            modeBarButtonsToRemove: ['toImage']
         };
 
     };
@@ -246,22 +247,15 @@ export class WatchlistComponent implements OnInit {
             this.plot = document.getElementById('plotly');
 
             if (this.motherOfDragons) {
-                this.plot.on('plotly_relayout', () => {
+                this.plot.on('plotly_relayout', (e) => {
                     this.zone.run(() => {
+                        console.log(e);
                         if (this.zoomEvent) {
                             this.loadNewDataAfterZoom();
                             this.isAnyRequestActive = true;
                         }
                         this.isRedrawingStopped = false;
-                        for (let i = 0; i < 11; i++) {
-                            let cb = () => {
-                                console.log('mousedown' + i);
-                                this.isRedrawingStopped = true;
-                                this.zoomEvent = true;
-                            };
-                            document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
 
-                        }
 
                     });
 
@@ -331,11 +325,37 @@ export class WatchlistComponent implements OnInit {
     }
 
     initiateChart() {
-        Plotly.newPlot('plotly', this.chartData, this.chartLayout);
+        Plotly.newPlot('plotly', this.chartData, this.chartLayout, {
+            modeBarButtonsToRemove: ['toImage']
+        });
+    }
+
+    relay(){
+        console.log('resized');
+
+        for (let i = 0; i < 11; i++) {
+            let cb = () => {
+                console.log('mousedown' + i);
+            };
+            document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
+        }
+
+        this.plot.on('plotly_relayout', (e) => {
+            this.zone.run(() => {
+                console.log(e);
+                    this.loadNewDataAfterZoom();
+
+
+            });
+
+        });
+
     }
 
     redrawChart() {
-        Plotly.redraw('plotly', this.chartData, this.chartLayout);
+        Plotly.redraw('plotly', this.chartData, this.chartLayout, {
+            modeBarButtonsToRemove: ['toImage']
+        });
     }
 
     autorangeChart() {

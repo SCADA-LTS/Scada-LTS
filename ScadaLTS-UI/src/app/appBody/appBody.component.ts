@@ -7,7 +7,7 @@ declare let $: any;
     styleUrls: ['./appBody.component.css']
 })
 export class AppBodyComponent implements OnInit {
-    isHiddenSubMenu = [false, false, false, false, false];
+    isHiddenSubMenu = [false, false, false, false, false, false];
 
     constructor(private router: Router) {
     };

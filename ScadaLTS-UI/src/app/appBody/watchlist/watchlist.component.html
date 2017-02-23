@@ -1,4 +1,4 @@
-<div class="containerr">
+<div class="containerr" (window:resize)="relay()">
 
 <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': !isChartHidden }" class="chartIconOpen" mdTooltip="{{ isChartHidden ? 'Reveal chart' : '' }}" [mdTooltipPosition]="'below'"><md-icon>vertical_align_bottom</md-icon></button>
 
@@ -10,8 +10,8 @@
         <a md-mini-fab (click)="increaseChartLineWidth()" mdTooltip="Increase line width" [mdTooltipPosition]="'below'"><md-icon>add</md-icon></a>
         <a md-mini-fab (click)="decreaseChartLineWidth()" mdTooltip="Decrease line width" [mdTooltipPosition]="'below'"><md-icon>remove</md-icon></a>
         <a md-mini-fab (click)="changeNumericChartShape()" mdTooltip="Toggle line shape" [mdTooltipPosition]="'below'"><md-icon>show_chart</md-icon></a>
-        <a md-mini-fab (click)="toggleLegend()" mdTooltip="Toggle legend" [mdTooltipPosition]="'below'"><md-icon>format_list_bulleted</md-icon></a>
-        <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
+        <a md-mini-fab (click)="redrawChart()" mdTooltip="Toggle legend" [mdTooltipPosition]="'below'"><md-icon>format_list_bulleted</md-icon></a>
+        <a md-mini-fab (click)="initiateChart()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
       </div>
       <div id="plotlyLoader" *ngIf="isAnyRequestActive">
         <div class="spinner">
