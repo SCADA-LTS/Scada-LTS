@@ -48,6 +48,8 @@ public class ViewHierarchyService {
 	
 	private static final boolean FOLDER = true;
 	
+	public static final int ROOT_ID = -1;
+	
 	@Resource
 	private ViewHierarchyDAO vhDAO;
 	

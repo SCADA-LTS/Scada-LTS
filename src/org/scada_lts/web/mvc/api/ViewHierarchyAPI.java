@@ -81,13 +81,42 @@ public class ViewHierarchyAPI {
 	@RequestMapping(value = "/api/view_hierarchy/createFolder/{name}/{parentId}", method = RequestMethod.GET)
 	public ResponseEntity<String> createFolder(@PathVariable("name") String name, @PathVariable("parentId") int parentId, HttpServletRequest request) {
 		
-		LOG.info("/api/view_hierarchy/createFolder/{name}:"+name);
+		LOG.info("/api/view_hierarchy/createFolder/{name}:"+name+" {parentId}:"+parentId);
 		
 		try {
 			User user = Common.getUser(request);
 			if (user != null) {
 				ViewHierarchyNode node = new ViewHierarchyNode(parentId, name);
 				if (viewHierarchyService.add(node)) {
+					String json = null;
+					ObjectMapper mapper = new ObjectMapper();
+					json = mapper.writeValueAsString(node);
+					return new ResponseEntity<String>(json,HttpStatus.OK);
+				}
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
+			
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@RequestMapping(value = "/api/view_hierarchy/editFolder/{name}/{key}", method = RequestMethod.GET)
+	public ResponseEntity<String> editFolder(@PathVariable("name") String name, @PathVariable("key") int key, HttpServletRequest request) {
+		
+		LOG.info("/api/view_hierarchy/editFolder/{name}:"+name+" {key}:"+key);
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				
+				ViewHierarchyNode node = new ViewHierarchyNode(ViewHierarchyService.ROOT_ID, name);
+				node.setId(key);
+				
+				if (viewHierarchyService.edt(node)) {
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString(node);

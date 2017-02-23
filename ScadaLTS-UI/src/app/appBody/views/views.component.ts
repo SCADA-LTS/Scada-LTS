@@ -2,7 +2,6 @@ import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import {Http} from '@angular/http';
 import {MdDialog, MdDialogRef} from '@angular/material';
 
-
 declare let $:any;
 
 @Component({
@@ -10,19 +9,23 @@ declare let $:any;
   templateUrl: './views.component.html',
   styleUrls: ['./views.component.css']
 })
+
 export class ViewsComponent implements OnInit {
   
   tree:any;
   createdTree: boolean = false;
-  selectedOption: string;
+  editDialogTree: boolean = false;
 
-  constructor(@Inject(Http) private http: Http){
-      this.http.get(`/ScadaBR/api/view_hierarchy/getAll`)
+  getEditDialogTree() {
+    return this.editDialogTree;
+  }
+
+  constructor(@Inject(Http) public http: Http){   
+      this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
                 this.tree = res.json();
-                console.log(this.tree);
             });
-      console.log(this.tree);
+      console.log("this.editDialogTree:"+this.getEditDialogTree());
   }
 
   loadIframe(){
@@ -33,8 +36,6 @@ export class ViewsComponent implements OnInit {
   }
 
   showViewHierarchy() {
-      console.log("showViewHierarchy()");
-      console.log(this.tree);
       if (this.createdTree == false) {
          $('#viewsHierarchyDiv').fancytree({
             extensions: ["dnd"],
@@ -101,32 +102,71 @@ export class ViewsComponent implements OnInit {
   }
 
   createNewFolder() {
-    $( "#addOrEditFolder" ).dialog("open");
+    $( "#nameAddFolder" ).val("");
+    $( "#addFolder" ).dialog("open");
   }
 
-  addFolder() {
-    var valid = true;
-     /* allFields.removeClass( "ui-state-error" );
- 
-      valid = valid && checkLength( name, "username", 3, 16 );
-      valid = valid && checkLength( email, "email", 6, 80 );
-      valid = valid && checkLength( password, "password", 5, 16 );
- 
-      valid = valid && checkRegexp( name, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
-      valid = valid && checkRegexp( email, emailRegex, "eg. ui@jquery.com" );
-      valid = valid && checkRegexp( password, /^([0-9a-zA-Z])+$/, "Password field only allow : a-z 0-9" );
- 
-      if ( valid ) {
-        $( "#users tbody" ).append( "<tr>" +
-          "<td>" + name.val() + "</td>" +
-          "<td>" + email.val() + "</td>" +
-          "<td>" + password.val() + "</td>" +
-        "</tr>" );
-        dialog.dialog( "close" );
-      }*/
-      alert("test7");
-      return valid;
+  editFolder() {
+    if ($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode() != null) {
+      $( "#nameEditFolder" ).val( $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().title );
+      $( "#editFolder" ).dialog("open");
+    } else {
+      $("#infoDialogText").text("Please select folder to edit");
+      $("#infoDialog" ).dialog( "open" );
+    }
   }
+
+  deleteFolder() {
+    //TODO check is folder 
+    $( "#dialogConfirmDelete" ).dialog("open");
+  }
+  
+  // TODO validate
+  editFolderFunc() {
+      //TODO rewrite to this.http.get
+      $.ajax({
+            type: "GET",
+          	dataType: "json",
+          	url:'../ScadaBR/api/view_hierarchy/editFolder/' + $("#nameEditFolder").val() + '/' + $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key,
+          	success: function(msg){
+              console.log(msg);
+  
+              $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().setTitle($("#nameEditFolder").val());
+              
+          		$( "#editFolder" ).dialog("close");
+          	},
+          	error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	  console.log(textStatus);
+          	}
+          });
+  }
+
+  // TODO validate
+  addFolderFunc() {
+
+      //TODO rewrite to this.http.get
+      $.ajax({
+            type: "GET",
+          	dataType: "json",
+          	url:'../ScadaBR/api/view_hierarchy/createFolder/' + $("#nameAddFolder").val() + '/-1',
+          	success: function(msg){
+              console.log(msg);
+  
+              $("#viewsHierarchyDiv").fancytree("getRootNode").
+              addChildren({
+                  title: $("#nameAddFolder").val(),
+                  tooltip: "",
+                  folder: true
+              });
+          		$( "#addFolder" ).dialog("close");
+          	},
+          	error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	  console.log(textStatus);
+          	}
+          });
+  }
+
+  
   
   ngOnInit(){
     $( "#dialogViewsHierarchy" ).dialog({
@@ -142,7 +182,7 @@ export class ViewsComponent implements OnInit {
       buttons: {
         "Select view": function() {
           if ($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().folder) {
-            this.textInfoDialog = "Select view, not folder";
+            $("#infoDialogText").text("Select view, not folder");
             $("#dialogInfo" ).dialog( "open" );
           } else {
             $("#infoSelectedViews").text($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().title);
@@ -158,7 +198,7 @@ export class ViewsComponent implements OnInit {
         }
       }
     });
-    $( "#dialogInfo" ).dialog({
+    $( "#infoDialog" ).dialog({
       autoOpen: false,
       show: {
         effect: "blind",
@@ -170,25 +210,74 @@ export class ViewsComponent implements OnInit {
       }
     });
 
-    $( "#addOrEditFolder" ).dialog({
+    $( "#addFolder" ).dialog({
       autoOpen: false,
-      height: 200,
-      width: 350,
+      width: 400,
       modal: true,
       buttons: {
-        "Create a new folder": this.addFolder,
+        Save: this.addFolderFunc,
         Cancel: function() {
           $(this).dialog( "close" );
         }
       },
       close: function() {
-        $(this).form[ 0 ].reset();
-        $(this).allFields.removeClass( "ui-state-error" );
+        $(this).dialog("close");
+      }
+    });
+
+    $( "#editFolder" ).dialog({
+      autoOpen: false,
+      width: 400,
+      modal: true,
+      buttons: {
+        Save: this.editFolderFunc,
+        Cancel: function() {
+          $(this).dialog( "close" );
+        }
+      },
+      close: function() {
+        $(this).dialog("close");
+      }
+    });
+
+    $( "#dialogConfirmDelete" ).dialog({
+      autoOpen: false,
+      resizable: false,
+      height: "auto",
+      width: 400,
+      modal: true,
+      buttons: {
+        "Delete item": function() {
+          $.ajax({
+            type: "GET",
+          	dataType: "json",
+          	url:'../ScadaBR//api/view_hierarchy/deleteFolder/' + $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key,
+          	success: function(msg){
+              console.log(msg);
+  
+              //TODO if have child then child move to rootNode
+              /*
+              $("#viewsHierarchyDiv").fancytree("getRootNode").
+              addChildren({
+                  title: $("#nameAddFolder").val(),
+                  tooltip: "",
+                  folder: true
+              });
+          		$( "#addFolder" ).dialog("close");*/
+              $( this ).dialog( "close" );
+          	},
+          	error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	  console.log(textStatus);
+          	}
+          });
+        },
+        Cancel: function() {
+          $( this ).dialog( "close" );
+        }
       }
     });
 
     this.loadIframe();
   }
-
 }
 

@@ -19,6 +19,7 @@
             <button md-mini-fab (click)="createNewFolder()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>
             <button md-mini-fab (click)="editFolder()" mdTooltip="Edit folder" [mdTooltipPosition]="'below'"><md-icon>folder</md-icon></button>
             <button md-mini-fab (click)="deleteFolder()" mdTooltip="Delete folder" [mdTooltipPosition]="'below'"><md-icon>folder_open</md-icon></button>
+            <button md-mini-fab (click)="refreshTree()" mdTooltip="Refresh tree" [mdTooltipPosition]="'below'"><md-icon>autorenew</md-icon></button>
         </div>
 
         
@@ -26,24 +27,39 @@
         </div>
     </div>
 
-    <div id="dialogInfo" title="Info">
-        <p id="infoParagraph">Select view, not folder</p> 
+    <div id="infoDialog" title="Info">
+        <p id="infoDialogText">Select view, not folder</p> 
     </div>
     
-    <div id="addOrEditFolder" title="Add/Edit folder">
+    <div id="addFolder" title="Add folder">
         <p class="validateTips">All form fields are required.</p>
         <br/>
         <form>
             <fieldset>
-                <label for="name">Name</label>
-                <input type="text" name="name" id="name" value="" class="text ui-widget-content ui-corner-all">
+                <label for="nameAddFolder">Name</label>
+                <input type="text" name="nameAddFolder" id="nameAddFolder" value="" class="text ui-widget-content ui-corner-all">
                 <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-600px">
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
     </div>
-    
-    
+
+    <div id="editFolder" title="Edit folder">
+        <p class="validateTips">All form fields are required.</p>
+        <br/>
+        <form>
+            <fieldset>
+                <label for="nameEditFolder">Name</label>
+                <input type="text" name="nameEditFolder" id="nameEditFolder" value="" class="text ui-widget-content ui-corner-all">
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+
+    <div id="dialogConfirmDelete" title="Do you dell folder?">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure?</p>
+    </div>
             
     <iframe src="/ScadaBR/views.shtm" frameborder="0" allowfullscreen id="ifr"></iframe>
     
