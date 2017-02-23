@@ -8,6 +8,7 @@ import { DashboardComponent } from './appBody/dashboard/index';
 import { ViewsComponent } from './appBody/views/index';
 import { SystemComponent } from './appBody/system/system.component';
 import { UsersComponent } from './appBody/users/users.component';
+import { AboutComponent } from './appBody/about/about.component';
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
@@ -19,6 +20,7 @@ const appRoutes: Routes = [
       { path: 'views', component: ViewsComponent },
       { path: 'system', component: SystemComponent },
       { path: 'users', component: UsersComponent },
+      { path: 'about', component: AboutComponent },
       { path: '', component: DashboardComponent }
     ]},
 
