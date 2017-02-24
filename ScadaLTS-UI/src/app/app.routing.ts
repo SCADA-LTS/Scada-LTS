@@ -9,6 +9,8 @@ import { ViewsComponent } from './appBody/views/index';
 import { SystemComponent } from './appBody/system/system.component';
 import { UsersComponent } from './appBody/users/users.component';
 import { AboutComponent } from './appBody/about/about.component';
+import { AlarmsComponent } from './appBody/alarms/alarms.component';
+import { ReportsComponent } from './appBody/reports/reports.component';
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
@@ -21,6 +23,8 @@ const appRoutes: Routes = [
       { path: 'system', component: SystemComponent },
       { path: 'users', component: UsersComponent },
       { path: 'about', component: AboutComponent },
+      { path: 'alarms', component: AlarmsComponent },
+      { path: 'reports', component: ReportsComponent },
       { path: '', component: DashboardComponent }
     ]},
 
