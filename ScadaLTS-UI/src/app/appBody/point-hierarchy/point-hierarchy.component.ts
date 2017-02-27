@@ -2,11 +2,11 @@ import {Component, OnInit} from '@angular/core';
 declare let $: any;
 
 @Component({
-    selector: 'app-users',
-    templateUrl: 'users.component.html',
-    styleUrls: ['users.component.css']
+    selector: 'app-point-hierarchy',
+    templateUrl: 'point-hierarchy.component.html',
+    styleUrls: ['point-hierarchy.component.css']
 })
-export class UsersComponent implements OnInit {
+export class PointHierarchyComponent implements OnInit {
 
     constructor() {
     }

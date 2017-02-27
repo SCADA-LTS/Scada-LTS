@@ -2,11 +2,11 @@ import {Component, OnInit} from '@angular/core';
 declare let $: any;
 
 @Component({
-    selector: 'app-users',
-    templateUrl: 'users.component.html',
-    styleUrls: ['users.component.css']
+    selector: 'app-scheduled-events',
+    templateUrl: 'scheduled-events.component.html',
+    styleUrls: ['scheduled-events.component.css']
 })
-export class UsersComponent implements OnInit {
+export class ScheduledEventsComponent implements OnInit {
 
     constructor() {
     }

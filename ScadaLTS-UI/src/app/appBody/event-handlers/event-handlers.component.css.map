@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,IAAI;EACF,MAAM,EAAE,IAAI;EACZ,KAAK,EAAE,IAAI;;AAEb,OAAO;EACL,MAAM,EAAE,KAAK;EACb,KAAK,EAAE,IAAI",
+"sources": ["event-handlers.component.sass"],
+"names": [],
+"file": "event-handlers.component.css"
+}

@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 declare let $: any;
 
+
 @Component({
-    selector: 'app-users',
-    templateUrl: 'users.component.html',
-    styleUrls: ['users.component.css']
+    selector: 'app-compound-events',
+    templateUrl: 'compound-events.component.html',
+    styleUrls: ['compound-events.component.css']
 })
-export class UsersComponent implements OnInit {
+export class CompoundEventsComponent implements OnInit {
 
     constructor() {
     }

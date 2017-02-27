@@ -188,6 +188,7 @@ export class WatchlistComponent implements OnInit {
     }
 
     loadNewDataAfterZoom() {
+        this.isAnyRequestActive = true;
         clearInterval(this.loadPoints);
         this.isRedrawingStopped = true;
         this.range1 = Date.parse(this.chartLayout.xaxis.range[0]);
@@ -260,7 +261,6 @@ export class WatchlistComponent implements OnInit {
                         console.log(e);
                         if (this.zoomEvent) {
                             this.loadNewDataAfterZoom();
-                            this.isAnyRequestActive = true;
                         }
                         this.isRedrawingStopped = false;
 
