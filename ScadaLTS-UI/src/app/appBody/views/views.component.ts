@@ -167,13 +167,13 @@ export class ViewsComponent implements OnInit {
     var valid = true;
     $('#addFolder').removeClass( "ui-state-error" );
     
-    valid = $("nameAddFolder").val().length > 3;
+    //valid = $("nameAddFolder").val().length > 3;
 
     //valid = valid && this.checkLength( $("nameAddFolder"), "folder name", 3, 16, $("#validateTipAddFolder"));
     //valid = valid && this.checkLength1( );
     
     
-
+    console.log($("#nameAddFolder").val());
     // check this name is used
     if (valid) {
         $.ajax({
@@ -182,7 +182,9 @@ export class ViewsComponent implements OnInit {
             	url:'../ScadaBR/api/view_hierarchy/checkNameFolder/' + $("#nameAddFolder").val(),
             	success: function(response){
                 console.log(response);
-                if (response == false) {
+                console.log(typeof response);
+                if (response === false) {
+                      console.log("create");
                       $.ajax({
                         type: "GET",
                       	dataType: "json",
@@ -203,6 +205,7 @@ export class ViewsComponent implements OnInit {
                       	}
                       });
                 } else {
+                  console.log("not create");
                   $("#validateTipAddFolder").val("This name is used. Please select another name.");
                   // show in to error
                 }
@@ -212,31 +215,6 @@ export class ViewsComponent implements OnInit {
             	  console.log(textStatus);
             	}
         });
-    }
-    
-
-    
-    if (valid) {
-      //TODO rewrite to this.http.get
-      $.ajax({
-            type: "GET",
-          	dataType: "json",
-          	url:'../ScadaBR/api/view_hierarchy/createFolder/' + $("#nameAddFolder").val() + '/-1',
-          	success: function(msg){
-              console.log(msg);
-  
-              $("#viewsHierarchyDiv").fancytree("getRootNode").
-              addChildren({
-                  title: $("#nameAddFolder").val(),
-                  tooltip: "",
-                  folder: true
-              });
-          		$( "#addFolder" ).dialog("close");
-          	},
-          	error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	  console.log(textStatus);
-          	}
-          });
     }
   }
 

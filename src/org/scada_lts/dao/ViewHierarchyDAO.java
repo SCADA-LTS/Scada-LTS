@@ -236,7 +236,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		}
 		
 		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(SQL_DELETE, new Object[]{name}, Integer.class)>0;
+			return (DAO.getInstance().getJdbcTemp().queryForObject(SQL_CHECK_IS_USED_NAME, new Object[]{name}, Integer.class)>0);
 		} catch (Exception e) {
 			LOG.error(new ViewHierarchyDaoException(e));
 			return true;
