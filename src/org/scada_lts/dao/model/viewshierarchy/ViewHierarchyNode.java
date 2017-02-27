@@ -13,6 +13,12 @@ public class ViewHierarchyNode {
 		this.name = name;
 	}
 	
+	public ViewHierarchyNode(int parentId, String name) {
+		super();
+		this.parentId = parentId;
+		this.name = name;
+	}
+	
 	public ViewHierarchyNode(ViewHierarchyNode vhn) {
 		super();
 		this.id = vhn.getId();

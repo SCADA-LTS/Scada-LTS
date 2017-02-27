@@ -43,6 +43,7 @@ branches:
   - "/^develop-sdtabilit.*$/"
   - "/SLTS-16.*$/"
   - "/SLTS-26.*$/"
+  - "feature/pre-test"
 notifications:
   email: false
 env:

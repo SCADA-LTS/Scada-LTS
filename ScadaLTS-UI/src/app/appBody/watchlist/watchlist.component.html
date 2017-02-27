@@ -1,26 +1,27 @@
-<div class="row">
+<button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': !isChartHidden }" class="chartIconOpen" mdTooltip="{{ isChartHidden ? 'Reveal chart' : '' }}" [mdTooltipPosition]="'below'"><md-icon>vertical_align_bottom</md-icon></button>
 
-  <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'openFirstStage': !isChartHidden && isChartShrunked, 'openSecondStage': !isChartHidden && !isChartShrunked }" (window:resize)="initiateChart()">
+<div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'openFirstStage': !isChartHidden && isChartShrunked, 'openSecondStage': !isChartHidden && !isChartShrunked }" (window:resize)="relay()">
     <md-card class="md-card" (mouseenter)="areChartButtonsVisible = true" (mouseleave)="areChartButtonsVisible = false">
-      <div class="chartButtons" [ngClass]="{ 'showButtons': areChartButtonsVisible }">
-        <button (click)="increaseChartLineWidth()">+</button>
-        <button (click)="decreaseChartLineWidth()">-</button>
-        <button (click)="isLinearChart ? toSplineChart() : toLinearChart()">{{ isLinearChart ? 'S' : 'L' }}</button>
-        <button (click)="toggleLegend()">LD</button>
-        <button (click)="toggleChartSize()">CS</button>
-      </div>
-      <div id="plotlyLoader" *ngIf="isAnyRequestActive">
-        <div class="spinner">
-          <div class="bounce1"></div>
-          <div class="bounce2"></div>
-          <div class="bounce3"></div>
+        <div class="chartButtons" [ngClass]="{ 'showButtons': areChartButtonsVisible }">
+            <a md-mini-fab (click)="increaseChartLineWidth()" mdTooltip="Increase line width" [mdTooltipPosition]="'below'"><md-icon>add</md-icon></a>
+            <a md-mini-fab (click)="decreaseChartLineWidth()" mdTooltip="Decrease line width" [mdTooltipPosition]="'below'"><md-icon>remove</md-icon></a>
+            <a md-mini-fab (click)="changeNumericChartShape()" mdTooltip="Toggle line shape" [mdTooltipPosition]="'below'"><md-icon>show_chart</md-icon></a>
+            <a md-mini-fab (click)="toggleLegend()" mdTooltip="Toggle legend" [mdTooltipPosition]="'below'"><md-icon>format_list_bulleted</md-icon></a>
+            <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
         </div>
-      </div>
-      <div id="plotly"></div>
+        <div id="plotlyLoader" *ngIf="isAnyRequestActive">
+            <div class="spinner">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
+        </div>
+<div id="plotly"></div> <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': isChartHidden }" class="chartIconClose" mdTooltip="Hide chart" [mdTooltipPosition]="'below'"><md-icon>vertical_align_top</md-icon></button>
     </md-card>
-  </div>
+</div>
 
-  <div class="dataTableContainer col-md-6 col-xs-12">
+
+  <div class="dataTableContainer col-md-6 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
     <md-card>
       <div>
         <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid);deactivateInterval();initiateInterval()">
@@ -38,7 +39,7 @@
     </md-card>
   </div>
 
-  <div class="chartSettings col-md-6 col-xs-12">
+  <div class="chartSettings col-md-6 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
     <md-card>
       <div class="elementsFromPast">
         <input type="number" min="1" max="100" class="inputFromPast" [(ngModel)]="dateFrom" pattern="\d+">
@@ -58,15 +59,15 @@
 
       <div class="timeRangeElements">
         <div class="timeRangeElementsChild">
-          <h2>From:</h2>
+          From:
           <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange1">
         </div>
         <div class="timeRangeElementsChild">
-          <h2>To:</h2>
+          To:
           <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange2">
         </div>
           <div>
-              <button md-raised-button md-ripple (click)="getDataFromTimeRange()" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" class="buttonFromPast">Load data</button>
+              <button md-raised-button md-ripple (click)="getDataFromTimeRange()" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" class="buttonFromPast bottomButton">Load data</button>
               <div class="spinner spinnerTimeRange" *ngIf="isRequestTimeRangeActiveAndUndone">
                   <div class="bounce1"></div>
                   <div class="bounce2"></div>
@@ -74,8 +75,7 @@
               </div>
           </div>
       </div>
-      <button md-raised-button md-ripple (click)="isChartHidden = !isChartHidden" class="revealChartButton">{{ isChartHidden ? 'Reveal chart' : 'Hide chart' }}</button>
+
     </md-card>
   </div>
 
-</div>
