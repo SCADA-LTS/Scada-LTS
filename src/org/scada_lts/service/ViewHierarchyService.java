@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericHierarchyDAO;
 import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
@@ -160,6 +161,25 @@ public class ViewHierarchyService {
 
 	public List<ViewHierarchyNode> getNode(int id) {
 		return vhDAO.getNode(id);
+	}
+	
+	public ViewHierarchyJSON getFirstViewId(){
+		
+		List<View> lstView= viewDAO.findAll();
+		if (lstView != null) {
+			if (lstView.get(0) != null ) {
+				ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
+				vhJSON.setKey(lstView.get(0).getId());
+				vhJSON.setTitle(lstView.get(0).getName());
+				vhJSON.setFolder(false);
+				return vhJSON;
+			}
+		}
+		return null;
+	}
+	
+	public boolean isUsedName(String name){
+		return vhDAO.isNameUsed(name);
 	}
 	
 }

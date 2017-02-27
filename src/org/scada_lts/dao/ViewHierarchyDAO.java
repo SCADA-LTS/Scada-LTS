@@ -70,6 +70,9 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		private static final String SQL_DELETE = "" +
 				"select func_views_hierarchy_delete(?);";
 		
+		private static final String SQL_CHECK_IS_USED_NAME = "" +
+				"select count(*) from category_views_hierarchy where name=?";
+		
 		private class ViewHierarchyRowMapper implements RowMapper<ViewHierarchyNode> {
 
 			@Override
@@ -223,5 +226,22 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		}
 		return ERROR;
     }
+	
+	
+	//TODO to refactor when we intercept error from db.
+	public boolean isNameUsed(String name) {
+		
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("SQL ViewHierarchyDAO");
+		}
+		
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(SQL_DELETE, new Object[]{name}, Integer.class)>0;
+		} catch (Exception e) {
+			LOG.error(new ViewHierarchyDaoException(e));
+			return true;
+		}
+		
+	}
 	
 }

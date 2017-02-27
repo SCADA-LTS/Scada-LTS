@@ -21,18 +21,27 @@ export class ViewsComponent implements OnInit {
   }
 
   constructor(@Inject(Http) public http: Http){   
+      
       this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
                 this.tree = res.json();
+
             });
+
       console.log("this.editDialogTree:"+this.getEditDialogTree());
   }
 
   loadIframe(){
-    //TODO get name viewId and set name
-    $('#ifr').attr('src','/ScadaBR/views.shtm?viewId=').on('load', function() {
-      $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #graphical').hide();
-    });
+    
+    this.http.get(`../ScadaBR//api/view_hierarchy/getFirstViewId`)
+            .subscribe(res => {
+                var view = res.json();
+                console.log(view);
+                $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+view.key).on('load', function() {
+                  $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #graphical').hide();
+                  $('#infoSelectedViews').text(view.title);
+                });
+            });
   }
 
   showViewHierarchy() {
@@ -141,9 +150,73 @@ export class ViewsComponent implements OnInit {
           });
   }
 
+  updateTips( t,  tips ) {
+      tips
+        .text( t )
+        .addClass( "ui-state-highlight" );
+      setTimeout(function() {
+        tips.removeClass( "ui-state-highlight", 1500 );
+      }, 500 );
+    }
+
+  
   // TODO validate
   addFolderFunc() {
+    
+    // validate
+    var valid = true;
+    $('#addFolder').removeClass( "ui-state-error" );
+    
+    valid = $("nameAddFolder").val().length > 3;
 
+    //valid = valid && this.checkLength( $("nameAddFolder"), "folder name", 3, 16, $("#validateTipAddFolder"));
+    //valid = valid && this.checkLength1( );
+    
+    
+
+    // check this name is used
+    if (valid) {
+        $.ajax({
+              type: "GET",
+            	dataType: "json",
+            	url:'../ScadaBR/api/view_hierarchy/checkNameFolder/' + $("#nameAddFolder").val(),
+            	success: function(response){
+                console.log(response);
+                if (response == false) {
+                      $.ajax({
+                        type: "GET",
+                      	dataType: "json",
+                      	url:'../ScadaBR/api/view_hierarchy/createFolder/' + $("#nameAddFolder").val() + '/-1',
+                      	success: function(msg){
+                          console.log(msg);
+              
+                          $("#viewsHierarchyDiv").fancytree("getRootNode").
+                          addChildren({
+                              title: $("#nameAddFolder").val(),
+                              tooltip: "",
+                              folder: true
+                          });
+                      		$( "#addFolder" ).dialog("close");
+                      	},
+                      	error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      	  console.log(textStatus);
+                      	}
+                      });
+                } else {
+                  $("#validateTipAddFolder").val("This name is used. Please select another name.");
+                  // show in to error
+                }
+            	},
+            	error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#validateTipAddFolder").val("Error:"+textStatus);
+            	  console.log(textStatus);
+            	}
+        });
+    }
+    
+
+    
+    if (valid) {
       //TODO rewrite to this.http.get
       $.ajax({
             type: "GET",
@@ -164,6 +237,7 @@ export class ViewsComponent implements OnInit {
           	  console.log(textStatus);
           	}
           });
+    }
   }
 
   
@@ -185,10 +259,13 @@ export class ViewsComponent implements OnInit {
             $("#infoDialogText").text("Select view, not folder");
             $("#dialogInfo" ).dialog( "open" );
           } else {
-            $("#infoSelectedViews").text($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().title);
+            
             $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+ $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key).on('load', function() {
               $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #graphical').hide();
+              console.log($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().title);
+              $("#infoSelectedViews").text( $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().title );
             });
+
             // load new view in iframe.
             $(this).dialog( "close" );
           }

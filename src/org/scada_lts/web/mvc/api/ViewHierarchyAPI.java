@@ -186,5 +186,51 @@ public class ViewHierarchyAPI {
 		}
 		
 	}
+	
+	@RequestMapping(value = "/api/view_hierarchy/getFirstViewId", method = RequestMethod.GET)
+	public ResponseEntity<String> getFirstViewId(HttpServletRequest request) {
+		
+		LOG.info("/api/view_hierarchy/getFirstViewId");
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				String json = null;
+				ObjectMapper mapper = new ObjectMapper();
+				json = mapper.writeValueAsString(viewHierarchyService.getFirstViewId());
+				return new ResponseEntity<String>(json,HttpStatus.OK);
+			}
+			
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+		
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
+	@RequestMapping(value = "/api/view_hierarchy/checkNameFolder/{name}", method = RequestMethod.GET)
+	public ResponseEntity<String> checkNameFolder(@PathVariable("name") String name, HttpServletRequest request) {
+		
+		LOG.info("/api/view_hierarchy/checkNameFolder: ");
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				String json = null;
+				ObjectMapper mapper = new ObjectMapper();
+				json = mapper.writeValueAsString(viewHierarchyService.isUsedName(name));
+				return new ResponseEntity<String>(json,HttpStatus.OK);
+			}
+			
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+		
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		
+	}
 
 }
