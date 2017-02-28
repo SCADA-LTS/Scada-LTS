@@ -10,8 +10,8 @@
             <a class="subMenuLink" [routerLink]="['./']">Main dashboard</a>
             <a class="subMenuLink" [routerLink]="['./watchlist']">Watch list</a>
             <a class="subMenuLink" [routerLink]="['./views']">Views</a>
-            <a class="subMenuLink" href="#">Alarms</a>
-            <a class="subMenuLink" href="#">Reports</a>
+            <a class="subMenuLink" [routerLink]="['./alarms']">Alarms</a>
+            <a class="subMenuLink" [routerLink]="['./reports']">Reports</a>
         </div>
 
         <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[1] = !isHiddenSubMenu[1]"
@@ -20,11 +20,11 @@
             <span class="menuItemText">Project</span>
         </span>
         <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[1] }">
-            <a class="subMenuLink" href="#">Event handlers</a>
-            <a class="subMenuLink" href="#">Data sources</a>
-            <a class="subMenuLink" href="#">Scheduled events</a>
-            <a class="subMenuLink" href="#">Compound event detectors</a>
-            <a class="subMenuLink" href="#">Point links</a>
+            <a class="subMenuLink" [routerLink]="['./eventHandlers']">Event handlers</a>
+            <a class="subMenuLink" [routerLink]="['./dataSources']">Data sources</a>
+            <a class="subMenuLink" [routerLink]="['./scheduledEvents']">Scheduled events</a>
+            <a class="subMenuLink" [routerLink]="['./compoundEvents']">Compound event detectors</a>
+            <a class="subMenuLink" [routerLink]="['./pointLinks']">Point links</a>
         </div>
 
         <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[2] = !isHiddenSubMenu[2]"
@@ -34,27 +34,21 @@
         </span>
         <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[2] }">
             <a class="subMenuLink" [routerLink]="['./users']">Users</a>
-            <a class="subMenuLink" href="#">Point hierarchy</a>
-            <a class="subMenuLink" href="#">Mailing list</a>
-            <a class="subMenuLink" href="#">Maintenance events</a>
+            <a class="subMenuLink" [routerLink]="['./pointHierarchy']">Point hierarchy</a>
+            <a class="subMenuLink" [routerLink]="['./mailingList']">Mailing list</a>
+            <a class="subMenuLink" [routerLink]="['./maintenanceEvents']">Maintenance events</a>
             <a class="subMenuLink" [routerLink]="['./system']">System</a>
-            <a class="subMenuLink" href="#">Import/Export</a>
-            <a class="subMenuLink" href="#">Log</a>
+            <a class="subMenuLink" [routerLink]="['./importExport']">Import/Export</a>
+            <a class="subMenuLink" [routerLink]="['./log']">Log</a>
         </div>
 
-        <span class="menuItem"  (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[3] = !isHiddenSubMenu[3]"
+        <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[3] = !isHiddenSubMenu[3]"
               [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[3] }">
             <md-icon class="icon">trending_up</md-icon>
             <span class="menuItemText">Trends</span>
         </span>
         <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[3] }">
-            <a class="subMenuLink" href="#">Do something</a>
-            <a class="subMenuLink" href="#">Edit something</a>
-            <a class="subMenuLink" href="#">Do something</a>
-            <a class="subMenuLink" href="#">Lorem ipsum</a>
-            <a class="subMenuLink" href="#">Lorem ipsum</a>
-            <a class="subMenuLink" href="#">Edit something</a>
-            <a class="subMenuLink" href="#">Lorem ipsum</a>
+            <a class="subMenuLink" [routerLink]="['./trends']">Trends</a>
         </div>
 
         <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[4] = !isHiddenSubMenu[4]"
@@ -63,13 +57,12 @@
             <span class="menuItemText">Search</span>
         </span>
         <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[4] }">
-            <a class="subMenuLink" href="#">Do something</a>
-            <a class="subMenuLink" href="#">Edit something</a>
+            <a class="subMenuLink" [routerLink]="['./search']">Search</a>
         </div>
 
-        <span class="menuItem">
+        <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[5] = !isHiddenSubMenu[5]" [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[5] }">
             <md-icon class="icon">info_outline</md-icon>
-            <span class="menuItemText">About us</span>
+            <span class="menuItemText" [routerLink]="['./about']">About us</span>
         </span>
 
     </div>

@@ -1,13 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 declare let $: any;
+import { WatchlistComponent } from './watchlist/index';
 
 @Component({
     templateUrl: './appBody.component.html',
     styleUrls: ['./appBody.component.css']
 })
 export class AppBodyComponent implements OnInit {
-    isHiddenSubMenu = [false, false, false, false, false];
+
+
+    isHiddenSubMenu = [false, false, false, false, false, false];
 
     constructor(private router: Router) {
     };
@@ -50,6 +53,10 @@ export class AppBodyComponent implements OnInit {
         } else {
             this.isMenuShrunken = !this.isMenuShrunken;
         }
+        setTimeout(() => {
+            WatchlistComponent.fireEvent.next(true);
+        }, 500);
+        console.log('Event Fired');
     }
 
 
