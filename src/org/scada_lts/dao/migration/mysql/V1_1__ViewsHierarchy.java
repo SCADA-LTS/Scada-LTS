@@ -48,12 +48,19 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 				 + "RETURNS INT(11) "
 				 + "NOT DETERMINISTIC "
 			  + "BEGIN "
-			  	+ "insert into category_views_hierarchy ("
-			  		+ "parentId, "
-			  		+ "name) "
-			  		+ "values ( a_parentId, a_name); "
-			  	+ "return last_insert_id(); "
-			  + "END";
+				+ "DECLARE specialty CONDITION FOR SQLSTATE '45000'; "
+			    + "IF ( (CHARACTER_LENGTH(a_name)>2) and (CHARACTER_LENGTH(a_name)<100) )  THEN "
+				  +	"SIGNAL SQLSTATE '01000';"
+				  	+ "insert into category_views_hierarchy ("
+			  			+ "parentId, "
+			  			+ "name) "
+			  			+ "values ( a_parentId, a_name); "
+			  		+ "return last_insert_id(); "
+			  	+ "ELSE " 
+				  + "SIGNAL SQLSTATE '45000' "
+			      + "SET MESSAGE_TEXT = 'SET MESSATE_TEXT = '#error.view_hierarchy.add.error1# An error occurred add view hierarchy name is not validat' "
+			    + "END IF;"
+              + "END";
 		
 		String fUpdate = 
 				"CREATE FUNCTION func_views_hierarchy_update( "
