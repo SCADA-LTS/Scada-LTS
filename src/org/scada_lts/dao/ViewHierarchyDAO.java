@@ -162,14 +162,9 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
 		}
-		
-		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(SQL_ADD, new Object[]{node.getParentId(), node.getName()}, Integer.class);
-		} catch (Exception e) {
-			LOG.error(new ViewHierarchyDaoException(e));
-		}
-		return ERROR;
 
+		return DAO.getInstance().getJdbcTemp().queryForObject(SQL_ADD, new Object[]{node.getParentId(), node.getName()}, Integer.class);
+		
     }
 	
 	/**

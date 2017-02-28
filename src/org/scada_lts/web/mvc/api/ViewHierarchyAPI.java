@@ -18,15 +18,20 @@
 package org.scada_lts.web.mvc.api;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.error.ParseError;
+import org.scada_lts.dao.error.ParseErrorResult;
+import org.scada_lts.dao.model.error.ViewError;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.service.ViewHierarchyService;
 import org.scada_lts.service.model.ViewHierarchyJSON;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -50,6 +55,10 @@ public class ViewHierarchyAPI {
 	
 	@Resource
 	private ViewHierarchyService viewHierarchyService;
+	
+	@Resource
+	private MessageSource msgSource;
+
 	
 	@RequestMapping(value = "/api/view_hierarchy/getAll", method = RequestMethod.GET)
 	public ResponseEntity<String> getAll(HttpServletRequest request) {
@@ -86,14 +95,30 @@ public class ViewHierarchyAPI {
 		try {
 			User user = Common.getUser(request);
 			if (user != null) {
-				ViewHierarchyNode node = new ViewHierarchyNode(parentId, name);
-				if (viewHierarchyService.add(node)) {
+				try {
+					ViewHierarchyNode node = new ViewHierarchyNode(parentId, name);
+					viewHierarchyService.add(node);
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString(node);
 					return new ResponseEntity<String>(json,HttpStatus.OK);
-				}
-				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+				} catch ( Exception error) {
+					LOG.error(error);
+					String json = null;
+					ObjectMapper mapper = new ObjectMapper();
+					ViewError er = new ViewError();
+					
+					ParseErrorResult per = ParseError.getError(error.getLocalizedMessage());
+					String errStr="";
+					if (per.getNotErr()) {
+						errStr = msgSource.getMessage(per.getMessage(),null, Locale.getDefault());
+					} else {
+						errStr = per.getMessage();
+					}
+					er.setMessage(errStr);
+					json = mapper.writeValueAsString(er);
+					return new ResponseEntity<String>(json,HttpStatus.BAD_REQUEST);
+				} 
 			}
 			
 			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);

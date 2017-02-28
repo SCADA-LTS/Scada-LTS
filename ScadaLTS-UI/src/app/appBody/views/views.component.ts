@@ -177,43 +177,25 @@ export class ViewsComponent implements OnInit {
     // check this name is used
     if (valid) {
         $.ajax({
-              type: "GET",
-            	dataType: "json",
-            	url:'../ScadaBR/api/view_hierarchy/checkNameFolder/' + $("#nameAddFolder").val(),
-            	success: function(response){
-                console.log(response);
-                console.log(typeof response);
-                if (response === false) {
-                      console.log("create");
-                      $.ajax({
-                        type: "GET",
-                      	dataType: "json",
-                      	url:'../ScadaBR/api/view_hierarchy/createFolder/' + $("#nameAddFolder").val() + '/-1',
-                      	success: function(msg){
-                          console.log(msg);
-              
-                          $("#viewsHierarchyDiv").fancytree("getRootNode").
-                          addChildren({
-                              title: $("#nameAddFolder").val(),
-                              tooltip: "",
-                              folder: true
-                          });
-                      		$( "#addFolder" ).dialog("close");
-                      	},
-                      	error: function(XMLHttpRequest, textStatus, errorThrown) {
-                      	  console.log(textStatus);
-                      	}
-                      });
-                } else {
-                  console.log("not create");
-                  $("#validateTipAddFolder").val("This name is used. Please select another name.");
-                  // show in to error
-                }
-            	},
-            	error: function(XMLHttpRequest, textStatus, errorThrown) {
-                $("#validateTipAddFolder").val("Error:"+textStatus);
-            	  console.log(textStatus);
-            	}
+            type: "GET",
+            dataType: "json",
+            url:'../ScadaBR/api/view_hierarchy/createFolder/' + $("#nameAddFolder").val() + '/-1',
+            success: function(request){
+              console.log(request);
+              $("#viewsHierarchyDiv").fancytree("getRootNode").
+                addChildren({
+                  title: $("#nameAddFolder").val(),
+                  tooltip: "",
+                  folder: true
+                });
+              $( "#addFolder" ).dialog("close");
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+              $("#validateTipAddFolder").text(JSON.parse(XMLHttpRequest.responseText).message).addClass("ui-state-error");
+              console.log(JSON.parse(XMLHttpRequest.responseText).message);
+              console.log(textStatus);
+              console.log(errorThrown);
+            }
         });
     }
   }

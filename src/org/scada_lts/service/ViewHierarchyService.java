@@ -110,10 +110,9 @@ public class ViewHierarchyService {
 		return vhJSON;
 	}
 	
-	public boolean add(ViewHierarchyNode node) {
+	public void add(ViewHierarchyNode node) {
 		LOG.info("add:"+node.toString());
 		node.setId(vhDAO.add(node));
-		return (node.getId() > GenericHierarchyDAO.ERROR);
 	}
 	
 	public boolean edt(ViewHierarchyNode node) {
