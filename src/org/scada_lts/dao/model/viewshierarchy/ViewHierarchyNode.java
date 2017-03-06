@@ -1,7 +1,10 @@
 package org.scada_lts.dao.model.viewshierarchy;
 
-public class ViewHierarchyNode {
+import java.io.Serializable;
+
+public class ViewHierarchyNode implements Serializable {
 	
+	private static final long serialVersionUID = 4079855826946331275L;
 	private int id;
 	private int parentId;
 	private String name;

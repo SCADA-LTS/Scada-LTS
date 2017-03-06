@@ -2,25 +2,18 @@ package org.scada_lts.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.TestDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @RunWith(SpringRunner.class)
-@WebAppConfiguration
+//@WebAppConfiguration
 public class ViewHierarchyServiceTest {
 
 	@Resource
@@ -36,7 +29,7 @@ public class ViewHierarchyServiceTest {
 		vhn.setId(vhd.add(vhn1));
 	}
 	
-	@Test
+	/*@Test
 	public void getAll() {
 		
 		populateData();
@@ -47,9 +40,9 @@ public class ViewHierarchyServiceTest {
 			System.out.println(str);
 		}
 		assertEquals(true, true);
-	}
+	}*/
 	
-	@Configuration
+	/*@Configuration
 	@EnableWebMvc
 	static class Config {
 		
@@ -75,7 +68,7 @@ public class ViewHierarchyServiceTest {
 			//return Mockito.mock(ViewHierarchyService.class);
 			return new ViewHierarchyService();
 		}
-	}
+	}*/
 	
 	
 }

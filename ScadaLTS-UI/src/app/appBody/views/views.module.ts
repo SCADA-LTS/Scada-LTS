@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { ViewsComponent } from './views.component';
 
+
 @NgModule({
   declarations: [
     ViewsComponent

@@ -48,12 +48,19 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 				 + "RETURNS INT(11) "
 				 + "NOT DETERMINISTIC "
 			  + "BEGIN "
-			  	+ "insert into category_views_hierarchy ("
-			  		+ "parentId, "
-			  		+ "name) "
-			  		+ "values ( a_parentId, a_name); "
-			  	+ "return last_insert_id(); "
-			  + "END";
+				+ "DECLARE specialty CONDITION FOR SQLSTATE '45000'; "
+			    + "IF ( (CHARACTER_LENGTH(a_name)>2) and (CHARACTER_LENGTH(a_name)<100) )  THEN "
+				  +	"SIGNAL SQLSTATE '01000';"
+				  	+ "insert into category_views_hierarchy ("
+			  			+ "parentId, "
+			  			+ "name) "
+			  			+ "values ( a_parentId, a_name); "
+			  		+ "return last_insert_id(); "
+			  	+ "ELSE " 
+				  + "SIGNAL SQLSTATE '45000' "
+			      + "SET MESSAGE_TEXT = 'SET MESSATE_TEXT = '#error.view_hierarchy.add.error1# An error occurred add view hierarchy name is not validat' "
+			    + "END IF;"
+              + "END";
 		
 		String fUpdate = 
 				"CREATE FUNCTION func_views_hierarchy_update( "
@@ -108,6 +115,14 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 					  + "WHERE parentid=a_parent_id; "
 				  +"END;";
 		
+		String pSelectViewInFolders =
+				"CREATE PROCEDURE prc_views_category_views_hierarchy_select() "
+						  +"BEGIN "					 
+						  	  + "SELECT * "
+							  + "FROM views_category_views_hierarchy Order by view_id ASC;"
+						  +"END;";
+
+		
 		jdbcTmp.execute(folderViewsHierarchySQL);
 		jdbcTmp.execute(viewsHierarchySQL);
 		
@@ -117,6 +132,7 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 		jdbcTmp.execute(fMove);
 		jdbcTmp.execute(pSelect);
 		jdbcTmp.execute(pSelectNode);
+		jdbcTmp.execute(pSelectViewInFolders);
 		
 	}
 

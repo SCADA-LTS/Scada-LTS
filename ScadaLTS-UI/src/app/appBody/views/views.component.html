@@ -1,59 +1,67 @@
 <md-card>
-<!--
+
     <h2>Graphic views.</h2>
 
     <div class="elements">
-        <md-icon>zoom_out_map</md-icon>
-        <button id="viewsHierarchyButton">Views hierarchy</button>
-        <md-icon>edit</md-icon>
-        <md-icon>note_add</md-icon>
-    </div>
-    <div id="viewsHierarchyDiv">
-        <h1>Fancytree Demo</h1>
-
-        <button id="button1">Test</button>
-        <hr>
-        <div id="tree">
-    <ul id="treeData" >
-      <li id="id1" title="Look, a tool tip!">item1 with key and tooltip
-      <li id="id2">item2
-      <li id="id3" class="folder">Folder <em>with some</em> children
-        <ul>
-          <li id="id3.1">Sub-item 3.1
-            <ul>
-              <li id="id3.1.1">Sub-item 3.1.1
-              <li id="id3.1.2">Sub-item 3.1.2
-              <li id="id3.1.3">Sub-item 3.1.3
-            </ul>
-          <li id="id3.2">Sub-item 3.2
-            <ul>
-              <li id="id3.2.1">Sub-item 3.2.1
-              <li id="id3.2.2">Sub-item 3.2.2
-            </ul>
-        </ul>
-      <li id="id4" class="expanded">Document with some children (expanded on init)
-        <ul>
-          <li id="id4.1"  class="active focused">Sub-item 4.1 (active and focus on init)
-            <ul>
-              <li id="id4.1.1">Sub-item 4.1.1
-              <li id="id4.1.2">Sub-item 4.1.2
-            </ul>
-          <li id="id4.2">Sub-item 4.2
-            <ul>
-              <li id="id4.2.1">Sub-item 4.2.1
-              <li id="id4.2.2">Sub-item 4.2.2
-            </ul>
-        </ul>
-    </ul>
-  </div>
+        <button md-mini-fab><md-icon>zoom_out_map</md-icon></button>
+        <button md-mini-fab><md-icon>edit</md-icon></button>
+        <button md-mini-fab><md-icon>note_add</md-icon></button>
+        <span>|</span>
+        <span id="infoSelectedViews">Selected views</span>
+        <span>|</span>
+        <button md-mini-fab (click)="showViewHierarchy()" mdTooltip="Show view hierarchy" [mdTooltipPosition]="'below'"><md-icon>find_in_page</md-icon></button>
+        
     </div>
     
-    <iframe src="/ScadaBR/views.shtm" frameborder="0" allowfullscreen id="ifr"></iframe>
+    <div id="dialogViewsHierarchy" title="Select view">
+        
+        <div>
+            <button md-mini-fab (click)="createNewFolder()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>
+            <button md-mini-fab (click)="editFolder()" mdTooltip="Edit folder" [mdTooltipPosition]="'below'"><md-icon>folder</md-icon></button>
+            <button md-mini-fab (click)="deleteFolder()" mdTooltip="Delete folder" [mdTooltipPosition]="'below'"><md-icon>folder_open</md-icon></button>
+            <button md-mini-fab (click)="refreshTree()" mdTooltip="Refresh tree" [mdTooltipPosition]="'below'"><md-icon>autorenew</md-icon></button>
+        </div>
 
-<script>
-      // using default options
-      $("#tree").fancytree();
-</script>
--->
+        
+        <div id="viewsHierarchyDiv">
+        </div>
+    </div>
+
+    <div id="infoDialog" title="Info">
+        <p id="infoDialogText">Select view, not folder</p> 
+    </div>
+
+    
+    <div id="addFolder" title="Add folder">
+        <p id="validateTipAddFolder">All form fields are required.</p>
+        <br/>
+        <form>
+            <fieldset>
+                <label for="nameAddFolder">Name</label>
+                <input type="text" name="nameAddFolder" id="nameAddFolder" value="" class="text ui-widget-content ui-corner-all">
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+
+    <div id="editFolder" title="Edit folder">
+        <p class="validateTips">All form fields are required.</p>
+        <br/>
+        <form>
+            <fieldset>
+                <label for="nameEditFolder">Name</label>
+                <input type="text" name="nameEditFolder" id="nameEditFolder" value="" class="text ui-widget-content ui-corner-all">
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+
+    <div id="dialogConfirmDelete" title="Do you dell folder?">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure?</p>
+    </div>
+            
+    <iframe src="/ScadaBR/views.shtm" frameborder="0" allowfullscreen id="ifr"></iframe>
     
 </md-card>
