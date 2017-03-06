@@ -10,6 +10,9 @@ li {
   margin-bottom: 1px;
   position: relative; }
 
+.chartSettings, .dataTableContainer {
+  margin-top: -30px; }
+
 table {
   width: 100%;
   border-radius: 6px;
@@ -71,6 +74,9 @@ select {
     opacity: 1; } }
 .chartBtn:hover {
   border-color: #666;
+  -webkit-transition: border-color 0.3s ease-out;
+  -moz-transition: border-color 0.3s ease-out;
+  -o-transition: border-color 0.3s ease-out;
   transition: border-color 0.3s ease-out; }
 
 .lastActualizationDate {
@@ -78,16 +84,28 @@ select {
 
 .dataLoadOff {
   opacity: 0.3;
+  -webkit-transition: opacity 0.3s ease;
+  -moz-transition: opacity 0.3s ease;
+  -o-transition: opacity 0.3s ease;
   transition: opacity 0.3s ease; }
 
 .dataTable {
+  -webkit-transition: opacity 0.3s ease-out;
+  -moz-transition: opacity 0.3s ease-out;
+  -o-transition: opacity 0.3s ease-out;
   transition: opacity 0.3s ease-out; }
 
 .chartLoadOff {
   opacity: 0.3;
+  -webkit-transition: opacity 0.3s ease;
+  -moz-transition: opacity 0.3s ease;
+  -o-transition: opacity 0.3s ease;
   transition: opacity 0.3s ease; }
 
 #plotly {
+  -webkit-transition: opacity 0.3s ease-out;
+  -moz-transition: opacity 0.3s ease-out;
+  -o-transition: opacity 0.3s ease-out;
   transition: opacity 0.3s ease-out; }
 
 .backlightOnDataChange {
@@ -108,24 +126,36 @@ h2 {
   font-size: 14px; }
 
 md-card {
-  transition: height 0.5s ease;
-  overflow: hidden; }
+  overflow: hidden;
+  -webkit-transition: height 0.5s ease;
+  -moz-transition: height 0.5s ease;
+  -o-transition: height 0.5s ease;
+  transition: height 0.5s ease; }
 
 .chartContainer {
   height: 0;
   overflow: hidden;
-  transition: all 0.5s ease-in-out;
-  margin-top: -30px; }
+  margin-top: 30px;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out; }
 
 .openFirstStage {
   margin-top: -30px;
   height: 625px;
-  transition: all 0.5s ease-in-out; }
+  -webkit-transition: all 0.4s ease-in;
+  -moz-transition: all 0.4s ease-in;
+  -o-transition: all 0.4s ease-in;
+  transition: all 0.4s ease-in; }
 
 .openSecondStage {
   margin-top: -30px;
   height: 895px;
-  transition: all 0.5s ease-in-out; }
+  -webkit-transition: all 0.4s ease-in;
+  -moz-transition: all 0.4s ease-in;
+  -o-transition: all 0.4s ease-in;
+  transition: all 0.4s ease-in; }
 
 .buttonFromPast, .inputFromPast, .selectFromPast {
   width: 49%; }
@@ -199,7 +229,7 @@ md-card {
 
 #plotlyLoader {
   position: absolute;
-  z-index: 999;
+  z-index: 20;
   min-height: 87%;
   width: 94%;
   top: 70px;
@@ -255,7 +285,8 @@ md-card {
 .chartContainer .chartIconClose {
   position: absolute;
   bottom: 30px;
-  right: 30px; }
+  right: 30px;
+  z-index: 21; }
 
 .hide {
   opacity: 0;
@@ -263,5 +294,12 @@ md-card {
   -moz-transition: opacity 0.5s ease;
   -o-transition: opacity 0.5s ease;
   transition: opacity 0.5s ease; }
+
+.moveChartListAndSettings {
+  margin-top: 0;
+  -webkit-transition: all 0.3s ease-in;
+  -moz-transition: all 0.3s ease-in;
+  -o-transition: all 0.3s ease-in;
+  transition: all 0.3s ease-in; }
 
 /*# sourceMappingURL=watchlist.component.css.map */
