@@ -26,6 +26,9 @@ li
   margin-bottom: 1px
   position: relative
 
+.chartSettings, .dataTableContainer
+  margin-top: -30px
+
 table
   width: 100%
   border-radius: 6px
@@ -89,24 +92,24 @@ select
 
 .chartBtn:hover
   border-color: #666
-  transition: border-color .3s ease-out
+  +transition(border-color .3s ease-out)
 
 .lastActualizationDate
   margin: 15px 0
 
 .dataLoadOff
   opacity: .3
-  transition: opacity .3s ease
+  +transition(opacity .3s ease)
 
 .dataTable
-  transition: opacity .3s ease-out
+  +transition(opacity .3s ease-out)
 
 .chartLoadOff
   opacity: .3
-  transition: opacity .3s ease
+  +transition(opacity .3s ease)
 
 #plotly
-  transition: opacity .3s ease-out
+  +transition(opacity .3s ease-out)
 
 .backlightOnDataChange
   -webkit-animation: backlight 1.5s ease
@@ -128,24 +131,24 @@ h2
   font-size: 14px
 
 md-card
-  transition: height .5s ease
   overflow: hidden
+  +transition(height .5s ease)
 
 .chartContainer
   height: 0
   overflow: hidden
-  transition: all .5s ease-in-out
-  margin-top: -30px
+  margin-top: 30px
+  +transition(all .4s ease-in-out)
 
 .openFirstStage
   margin-top: -30px
   height: 625px
-  transition: all .5s ease-in-out
+  +transition(all .4s ease-in)
 
 .openSecondStage
   margin-top: -30px
   height: 895px
-  transition: all .5s ease-in-out
+  +transition(all .4s ease-in)
 
 .buttonFromPast, .inputFromPast, .selectFromPast
   width: 49%
@@ -223,7 +226,7 @@ md-card
 
 #plotlyLoader
   position: absolute
-  z-index: 999
+  z-index: 20
   min-height: 87%
   width: 94%
   top: 70px
@@ -269,7 +272,12 @@ md-card
   position: absolute
   bottom: 30px
   right: 30px
+  z-index: 21
 
 .hide
   opacity: 0
   +transition(opacity .5s ease)
+
+.moveChartListAndSettings
+  margin-top: 0
+  +transition(all .3s ease-in)
