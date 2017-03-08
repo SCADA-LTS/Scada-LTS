@@ -18,11 +18,10 @@
  */
 package com.serotonin.mango.db;
 
-import java.sql.SQLException;
-
 import javax.servlet.ServletContext;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.flywaydb.core.Flyway;
 import org.springframework.dao.DataAccessException;
 
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
@@ -74,7 +73,7 @@ public class MySQLAccess extends BasePooledAccess {
     protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
     	
     	// To test old shema
-    	try {
+    	/*try {
              ejt.execute("select count(*) from users");
          }
          catch (DataAccessException e) {
@@ -89,9 +88,10 @@ public class MySQLAccess extends BasePooledAccess {
              throw e;
          }
          return false;
+         */
         
         //TODO enable flayway
-        /*
+        
     	boolean shemaExist = true;
     	boolean baseLineNotExist = false;
     	
@@ -128,7 +128,7 @@ public class MySQLAccess extends BasePooledAccess {
         
         flyway.migrate();
           
-        return false; */
+        return false; 
     }
 
     @Override

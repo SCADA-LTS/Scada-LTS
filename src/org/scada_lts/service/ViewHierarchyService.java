@@ -18,16 +18,23 @@
 package org.scada_lts.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericHierarchyDAO;
+import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
+import org.scada_lts.dao.model.viewshierarchy.ViewInViewHierarchyNode;
+import org.scada_lts.service.model.ViewHierarchyJSON;
 import org.springframework.stereotype.Service;
+
+import com.serotonin.mango.view.View;
 
 /** 
  * Service for views hierarchy.
@@ -40,30 +47,72 @@ public class ViewHierarchyService {
 	
 	private static final Log LOG = LogFactory.getLog(ViewHierarchyService.class);
 	
-	private String getPath(List<ViewHierarchyNode> lst, ViewHierarchyNode nextVhn, ViewHierarchyNode firstVhn) {
-		String str = "|";
-		
-		if (nextVhn.getParentId()<=0) {
-			str+= firstVhn.getName();
-		} else {
-			for (ViewHierarchyNode vhn: lst) {
-				if (vhn.getId() == nextVhn.getParentId()) {
-					ViewHierarchyNode newNextVhn = new ViewHierarchyNode(vhn);
-					str += vhn.getName() +getPath(lst,newNextVhn,firstVhn);
-				} 
-			}
-		}
-		
-		return str;
-	}
-
+	private static final boolean FOLDER = true;
+	
+	public static final int ROOT_ID = -1;
+	
 	@Resource
 	private ViewHierarchyDAO vhDAO;
 	
-	public boolean add(ViewHierarchyNode node) {
+	@Resource
+	private ViewDAO viewDAO;
+	
+	private List<ViewHierarchyJSON> getChildFolder(long l) {
+		ArrayList<ViewHierarchyJSON> lst = new ArrayList<ViewHierarchyJSON>();
+		
+		List<ViewHierarchyNode> lstNodeDb = vhDAO.getNode(l);
+		
+		for (ViewHierarchyNode vhNode: lstNodeDb) {
+			ViewHierarchyJSON vhJSON = createViewHierarchyFolderJSON(vhNode);
+			lst.add(vhJSON);
+		}
+		
+		return lst;
+	}
+	
+	private void addViewInNotInViewHierarchy(List<ViewHierarchyJSON> lst, View view,  HashMap<Long, Boolean> tmpViewsInFolder) {
+		if (tmpViewsInFolder.containsKey(new Long(view.getId())) == false ) {
+			ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
+			vhJSON.setKey(view.getId());
+			vhJSON.setChildren(null);
+			vhJSON.setFolder(false);
+			//TODO cash name views?
+			vhJSON.setTitle(view.getName());
+			lst.add(vhJSON);
+		}
+	}
+	
+	private void correctChildrenViewHierarchyFolderJSON(List<ViewHierarchyJSON> lst, ViewInViewHierarchyNode vhNodeInFolder,  HashMap<Long, Boolean> tmpViewsInFolder) {
+		for (ViewHierarchyJSON vhNode:lst){
+			if (vhNode.getKey()==vhNodeInFolder.getFolderViewsHierarchyId()){
+				ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
+				vhJSON.setKey(vhNodeInFolder.getViewId());
+				vhJSON.setChildren(null);
+				vhJSON.setFolder(false);
+				//TODO cash name views?
+				vhJSON.setTitle(viewDAO.findById(new Object[] { vhJSON.getKey() }).getName());
+				tmpViewsInFolder.put(vhJSON.getKey(), new Boolean(true));
+				vhNode.getChildren().add(vhJSON);
+			}	
+		}	
+	}
+	
+	private ViewHierarchyJSON createViewHierarchyFolderJSON(ViewHierarchyNode vhNode) {
+		
+		ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
+		vhJSON.setTitle(vhNode.getName());
+		vhJSON.setFolder(FOLDER);
+		vhJSON.setKey(vhNode.getId());
+		
+		// child
+		vhJSON.setChildren(getChildFolder( vhJSON.getKey()));
+		
+		return vhJSON;
+	}
+	
+	public void add(ViewHierarchyNode node) {
 		LOG.info("add:"+node.toString());
 		node.setId(vhDAO.add(node));
-		return (node.getId() > GenericHierarchyDAO.ERROR);
 	}
 	
 	public boolean edt(ViewHierarchyNode node) {
@@ -81,22 +130,55 @@ public class ViewHierarchyService {
 		return (vhDAO.move(id, newParentId)>GenericHierarchyDAO.ERROR);
 	}
 	
-	//TODO replace String to BEAN for represent tree data in JSON.
-	public List<String> getAll(){
-		List<ViewHierarchyNode> lst = vhDAO.getAll();
-		List<String> lstStr = new ArrayList<String>();
+	//TODO (userId profileId)
+	public List<ViewHierarchyJSON> getAll(){
 		
-		//travers tree and create path
-		for (ViewHierarchyNode vhn: lst) {
-			lstStr.add(getPath(lst, vhn, vhn));
+		List<ViewHierarchyNode> lstNodeDb = vhDAO.getNode(ViewHierarchyDAO.ROOT_ID);
+		List<ViewHierarchyJSON> lst = new ArrayList<ViewHierarchyJSON>();
+		
+		for (ViewHierarchyNode vhNode: lstNodeDb) {
+			ViewHierarchyJSON vhJSON = createViewHierarchyFolderJSON(vhNode);
+			lst.add(vhJSON);
 		}
-		//..
-		//get view in tree add too tree.
-		return lstStr;
+		
+		HashMap<Long,Boolean> tmpViewInFolders = new HashMap<Long,Boolean>();
+		
+		// add views to folder
+		List<ViewInViewHierarchyNode> lstViewsInFolders = vhDAO.getViewInHierarchyNode();
+		for (ViewInViewHierarchyNode vhNodeInFolder: lstViewsInFolders) {
+			correctChildrenViewHierarchyFolderJSON(lst, vhNodeInFolder,tmpViewInFolders);
+		}
+		
+		// add views with not have folder
+		List<View> lstView= viewDAO.findAll();
+		for (View view: lstView) {
+			addViewInNotInViewHierarchy(lst, view, tmpViewInFolders);
+		}
+				
+		return lst;	
 	}
-	
+
 	public List<ViewHierarchyNode> getNode(int id) {
 		return vhDAO.getNode(id);
+	}
+	
+	public ViewHierarchyJSON getFirstViewId(){
+		
+		List<View> lstView= viewDAO.findAll();
+		if (lstView != null) {
+			if (lstView.get(0) != null ) {
+				ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
+				vhJSON.setKey(lstView.get(0).getId());
+				vhJSON.setTitle(lstView.get(0).getName());
+				vhJSON.setFolder(false);
+				return vhJSON;
+			}
+		}
+		return null;
+	}
+	
+	public boolean isUsedName(String name){
+		return vhDAO.isNameUsed(name);
 	}
 	
 }
