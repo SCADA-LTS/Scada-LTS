@@ -23,6 +23,8 @@ import { ImportExportComponent } from './appBody/import-export/import-export.com
 import { LogComponent } from './appBody/log/log.component';
 import { SearchComponent } from './appBody/search/search.component';
 import { TrendsComponent } from './appBody/trends/trends.component';
+import { OldWatchlistComponent } from './appBody/old-watchlist/old-watchlist.component';
+import { WleditComponent } from './appBody/wledit/wledit.component';
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
@@ -49,6 +51,8 @@ const appRoutes: Routes = [
       { path: 'log', component: LogComponent },
       { path: 'search', component: SearchComponent },
       { path: 'trends', component: TrendsComponent },
+      { path: 'oldWatchlist', component: OldWatchlistComponent },
+      { path: 'wledit', component: WleditComponent },
       { path: '', component: DashboardComponent }
     ]},
 

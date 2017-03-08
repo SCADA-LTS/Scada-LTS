@@ -149,7 +149,7 @@
 
 .header
   overflow: hidden
-  z-index: 9999
+  z-index: 999999
   width: 100%
   min-width: 320px
   background-color: #FFFFFF
@@ -160,7 +160,7 @@
 .userTools
   float: right
   margin-right: 50px
-  z-index: 99
+  z-index: 999999
   +transition(.5s margin ease)
 
 .userTools img
@@ -269,6 +269,7 @@ a
   margin-left: 250px
   padding: 66px 0 34px
   min-height: 500px
+  z-index: -99999999999
   +transition(margin .3s cubic-bezier(0.82, 0, 0.11, 1))
 
 .enlargedContent
@@ -281,6 +282,7 @@ a
 
 .contentInside
   padding: 40px
+  z-index: -99999999
 
 /* MEDIA QUERIES */
 @media (max-width: 1200px)
