@@ -4,6 +4,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import { Subject } from 'rxjs/Subject';
 declare let Plotly: any;
+declare let $: any;
 
 @Component({
     selector: 'watchlist',
@@ -54,11 +55,14 @@ export class WatchlistComponent implements OnInit {
     areChartButtonsVisible: boolean = false;
     isChartShrunked: boolean = true;
 
+
     constructor(@Inject(Http) private http: Http, public zone: NgZone) {
 
-        WatchlistComponent.fireEvent.subscribe(res => {
+        WatchlistComponent.fireEvent.subscribe(() => {
             this.relay();
         });
+
+
 
         this.http.get(`/ScadaBR/api/watchlist/getNames`)
             .subscribe(res => {
@@ -76,8 +80,7 @@ export class WatchlistComponent implements OnInit {
                 bgcolor: 'transparent',
                 y: -0.17,
                 x: 0
-            },
-            modeBarButtonsToRemove: ['toImage']
+            }
         };
 
     };
@@ -116,7 +119,6 @@ export class WatchlistComponent implements OnInit {
         });
         this.chartData.forEach((v, i) => v.name = this._values[i].name);
         this.isFillingDataNeeded = false;
-        console.log('filling successful!');
     }
 
     private handle(error: any): Promise<any> {
@@ -143,7 +145,6 @@ export class WatchlistComponent implements OnInit {
         ).subscribe(res => {
             this._oldValues = res;
             this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
-            console.log('loaded data time range');
             this.autorangeChart();
             this.redrawChart();
             this.isRequestTimeRangeActiveAndUndone = false;
@@ -176,7 +177,6 @@ export class WatchlistComponent implements OnInit {
                     this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
                     this.initiateInterval();
                     this.redrawChart();
-                    console.log('loaded data from specified time to now');
                     this.autorangeChart();
                     this.isRequestSpecifiedTimeActiveAndUndone = false;
                     this.isChartHidden = false;
@@ -210,7 +210,6 @@ export class WatchlistComponent implements OnInit {
                 this.isRedrawingStopped = false;
                 this.initiateInterval();
             }
-            console.log('loaded data after zoom');
             this.isAnyRequestActive = false;
             this.setRanges();
             this.zoomEvent = false;
@@ -256,14 +255,12 @@ export class WatchlistComponent implements OnInit {
             this.plot = document.getElementById('plotly');
 
             if (this.motherOfDragons) {
-                this.plot.on('plotly_relayout', (e) => {
+                this.plot.on('plotly_relayout', () => {
                     this.zone.run(() => {
-                        console.log(e);
                         if (this.zoomEvent) {
                             this.loadNewDataAfterZoom();
                         }
                         this.isRedrawingStopped = false;
-
 
                     });
 
@@ -274,7 +271,6 @@ export class WatchlistComponent implements OnInit {
 
             for (let i = 0; i < 11; i++) {
                 let cb = () => {
-                    console.log('mousedown' + i);
                     this.isRedrawingStopped = true;
                     this.zoomEvent = true;
                 };
@@ -289,10 +285,8 @@ export class WatchlistComponent implements OnInit {
             }
 
             if (this.isRedrawingStopped == false) {
-                console.log('redrawing chart!');
                 this.redrawChart();
             }
-            console.log(this.chartData);
             this.setDefaultTimeRangeValues();
         });
 
@@ -371,7 +365,6 @@ export class WatchlistComponent implements OnInit {
         this.http.get(`/ScadaBR/api/utils/getTs`)
             .subscribe(res => {
                 this.actualDate = res.json();
-                console.log(this.actualDate);
                 this.dateRange1 = `${new Date(this.actualDate).getFullYear()}-${new Date(this.actualDate).getMonth() < 10 ? '0' + (new Date(this.actualDate).getMonth() + 1) : new Date(this.actualDate).getMonth() + 1}-${new Date(this.actualDate).getDate() < 10 ? '0' + new Date(this.actualDate).getDate() : new Date(this.actualDate).getDate()}T${new Date(this.actualDate).getHours() < 10 ? '0' + new Date(this.actualDate).getHours() : new Date(this.actualDate).getHours()}:${new Date(this.actualDate).getMinutes() < 10 ? '0' + new Date(this.actualDate).getMinutes() : new Date(this.actualDate).getMinutes()}`;
                 this.dateRange2 = `${new Date(this.actualDate).getFullYear()}-${new Date(this.actualDate).getMonth() < 10 ? '0' + (new Date(this.actualDate).getMonth() + 1) : new Date(this.actualDate).getMonth() + 1}-${new Date(this.actualDate).getDate() < 10 ? '0' + new Date(this.actualDate).getDate() : new Date(this.actualDate).getDate()}T${new Date(this.actualDate).getHours() < 10 ? '0' + new Date(this.actualDate).getHours() : new Date(this.actualDate).getHours()}:${new Date(this.actualDate).getMinutes() < 10 ? '0' + new Date(this.actualDate).getMinutes() : new Date(this.actualDate).getMinutes()}`;
             });
@@ -389,16 +382,6 @@ export class WatchlistComponent implements OnInit {
         this.initiateInterval();
         this.redrawChart();
         this.autorangeChart();
-    }
-
-    ngOnInit() {
-        this.setDefaultTimeRangeValues();
-        this.initiateChart();
-        console.log(localStorage['systemPerf']);
-    }
-
-    ngOnDestroy() {
-        clearInterval(this.loadPoints);
     }
 
     getScreenHeight() {
@@ -431,6 +414,31 @@ export class WatchlistComponent implements OnInit {
             return 1000;
         }
     }
+
+    ngOnInit() {
+        this.setDefaultTimeRangeValues();
+        this.initiateChart();
+        console.log(localStorage['systemPerf']);
+    }
+
+    ngOnDestroy() {
+        clearInterval(this.loadPoints);
+    }
+
+    // x(){
+    //     $('.modal').fadeIn();
+    //     $('.modal').click(function(e){
+    //         if ($(e.target).hasClass('modal')) {
+    //             $('.modal').fadeOut();
+    //         }
+    //     })
+    // }
+    //
+    // y(){
+    //     $('.modal').fadeOut();
+    // }
+
+
 
 }
 

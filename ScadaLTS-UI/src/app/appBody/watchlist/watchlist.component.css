@@ -125,7 +125,7 @@ select {
 h2 {
   font-size: 14px; }
 
-md-card {
+.md-card {
   overflow: hidden;
   -webkit-transition: height 0.5s ease;
   -moz-transition: height 0.5s ease;
