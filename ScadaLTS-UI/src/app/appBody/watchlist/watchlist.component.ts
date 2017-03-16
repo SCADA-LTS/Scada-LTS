@@ -54,6 +54,7 @@ export class WatchlistComponent implements OnInit {
     isRedrawingStopped: boolean = false;
     areChartButtonsVisible: boolean = false;
     isChartShrunked: boolean = true;
+    isFromSpecifiedDataLoadActive: boolean = false;
 
 
     constructor(@Inject(Http) private http: Http, public zone: NgZone) {
@@ -127,6 +128,7 @@ export class WatchlistComponent implements OnInit {
     };
 
     getDataFromTimeRange() {
+        this.isFromSpecifiedDataLoadActive = false;
         this.zoomEvent = false;
         this.isAnyRequestActive = true;
         clearInterval(this.loadPoints);
@@ -182,12 +184,14 @@ export class WatchlistComponent implements OnInit {
                     this.isChartHidden = false;
                     this.isAnyRequestActive = false;
                     this.setRanges();
+                    this.isFromSpecifiedDataLoadActive = true;
                 });
                 this.activeState = 'specifiedTime';
             });
     }
 
     loadNewDataAfterZoom() {
+        this.isFromSpecifiedDataLoadActive = false;
         this.isAnyRequestActive = true;
         clearInterval(this.loadPoints);
         this.isRedrawingStopped = true;
@@ -278,6 +282,12 @@ export class WatchlistComponent implements OnInit {
             }
 
             this.help2 = true;
+            // if (this.isFromSpecifiedDataLoadActive) {
+            //     this.chartData.forEach(v => {
+            //         v.x.splice(0, 1);
+            //         v.y.splice(0, 1)
+            //     });
+            // }
             this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
 
             if (this.chartData[0].x.length > 1) {
@@ -289,6 +299,7 @@ export class WatchlistComponent implements OnInit {
             }
             this.setDefaultTimeRangeValues();
         });
+        console.log(this.chartData);
 
     };
 
@@ -353,7 +364,11 @@ export class WatchlistComponent implements OnInit {
 
     initiateInterval() {
         this.loadPoints = setInterval(() => {
-            this.liveChart();
+            if (this.isFromSpecifiedDataLoadActive) {
+                this.getDataFromSpecifiedTimeToNow();
+            } else {
+                this.liveChart();
+            }
         }, this.getUserSystemPerformance());
     }
 
