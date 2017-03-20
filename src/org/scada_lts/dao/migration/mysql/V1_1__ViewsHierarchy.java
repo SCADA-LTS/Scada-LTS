@@ -87,8 +87,8 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 			  	+ "return a_id; "
 			  + "END";
 		
-		String fMove = 
-				"CREATE FUNCTION func_views_hierarchy_move( "
+		String fMoveFolder = 
+				"CREATE FUNCTION func_views_hierarchy_move_folder( "
 						+ "a_id INT, a_new_parent_id INT) "
 					 + "RETURNS INT(11) "
 					 + "NOT DETERMINISTIC "
@@ -98,6 +98,27 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 				  	+ "where id=a_id; "
 				  	+ "return a_id; "
 				  + "END";
+		
+		String fMoveView =
+				
+				"CREATE FUNCTION func_views_hierarchy_move1(a_id INT, a_new_parent_id INT) "+ 
+				  "RETURNS INT(11) "+ 
+				  "NOT DETERMINISTIC "+ 
+				"BEGIN "+ 
+				  "DECLARE varExistId INT default 0; "+
+				  "SELECT id into varExistId FROM views_vategory_views_hierarchy WHERE id=a_id; "+
+				  "IF varExistId = 0 THEN "+
+					"INSERT INTO category_views_hierarchy (view_id, folder_views_hierarchy_id) "+ 
+				    "VALUES (a_id, a_new_parent_id); "+
+				  "ELSE "+
+					"UPDATE category_views_hierarchy "+ 
+				    "SET parentId=a_parentId "+ 
+					"WHERE id=a_id; "+
+				  "END IF; " +
+				  "return a_id; " + 				  
+				"END; ";
+				
+						
 		
 		String pSelect = 
 				"CREATE PROCEDURE prc_views_hierarchy_select() "
@@ -129,7 +150,8 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 		jdbcTmp.execute(fAdd);
 		jdbcTmp.execute(fUpdate);
 		jdbcTmp.execute(fDelete);
-		jdbcTmp.execute(fMove);
+		jdbcTmp.execute(fMoveFolder);
+		jdbcTmp.execute(fMoveView);
 		jdbcTmp.execute(pSelect);
 		jdbcTmp.execute(pSelectNode);
 		jdbcTmp.execute(pSelectViewInFolders);

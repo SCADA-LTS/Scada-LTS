@@ -170,7 +170,7 @@ public class ViewHierarchyAPI {
 				if (viewHierarchyService.del(id)) {
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString("dell");
+					json = mapper.writeValueAsString("success");
 					return new ResponseEntity<String>(json,HttpStatus.OK);
 				}
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
@@ -186,7 +186,7 @@ public class ViewHierarchyAPI {
 	}
 	
 	@RequestMapping(value = "/api/view_hierarchy/move/{id}/{newParentId}", method = RequestMethod.GET)
-	public ResponseEntity<String> move(@PathVariable("newParentId") int id, @PathVariable("newParentId") int newParentId, HttpServletRequest request) {
+	public ResponseEntity<String> move(@PathVariable("id") int id, @PathVariable("newParentId") int newParentId, HttpServletRequest request) {
 		
 		LOG.info("/api/view_hierarchy/move/{id}/{newParentId} id:"+id+" newParentId:"+newParentId);
 		
@@ -235,10 +235,11 @@ public class ViewHierarchyAPI {
 		
 	}
 	
+	// TODO remove
 	@RequestMapping(value = "/api/view_hierarchy/checkNameFolder/{name}", method = RequestMethod.GET)
 	public ResponseEntity<String> checkNameFolder(@PathVariable("name") String name, HttpServletRequest request) {
 		
-		LOG.info("/api/view_hierarchy/checkNameFolder: ");
+		LOG.info("/api/view_hierarchy/checkNameFolder:"+name);
 		
 		try {
 			User user = Common.getUser(request);
@@ -254,8 +255,8 @@ public class ViewHierarchyAPI {
 		} catch (Exception e) {
 			LOG.error(e);
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-		
+		}	
 	}
-
+	
+	
 }

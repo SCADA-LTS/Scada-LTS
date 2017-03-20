@@ -451,5 +451,5 @@ public class DataPointService implements MangoDataPoint {
 	public void insertPermissions(User user) {
 		dataPointUserDAO.insertPermissions(user);
 	}
-
+	
 }

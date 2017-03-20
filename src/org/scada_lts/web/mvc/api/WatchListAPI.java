@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.WatchListService;
@@ -45,6 +46,7 @@ public class WatchListAPI {
 	
 	@Resource
 	private DataPointService dataPointService;
+	
 
 	@RequestMapping(value = "/api/watchlist/getNames", method = RequestMethod.GET)
 	public ResponseEntity<String> getNames(HttpServletRequest request) {
@@ -105,6 +107,28 @@ public class WatchListAPI {
 		}
 	}
 	
+	
+	class PointJSON implements Serializable{
+		private String xid;
+		private String name;
+		PointJSON(String xid,String name) {
+			this.setXid(xid);
+			this.setName(name);
+		}
+		public String getXid() {
+			return xid;
+		}
+		public void setXid(String xid) {
+			this.xid = xid;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
+
 	/**
 	 * 
 	 * @param xid
@@ -119,26 +143,6 @@ public class WatchListAPI {
 		try {
 			User user = Common.getUser(request);
 			if (user != null) {
-				class PointJSON implements Serializable{
-					private String xid;
-					private String name;
-					PointJSON(String xid,String name) {
-						this.setXid(xid);
-						this.setName(name);
-					}
-					public String getXid() {
-						return xid;
-					}
-					public void setXid(String xid) {
-						this.xid = xid;
-					}
-					public String getName() {
-						return name;
-					}
-					public void setName(String name) {
-						this.name = name;
-					}
-				}
 			
 				WatchList wl = watchListService.getWatchList(xid);
 				watchListService.populateWatchlistData(wl);
