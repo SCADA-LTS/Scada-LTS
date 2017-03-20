@@ -34,6 +34,8 @@ import { TrendsComponent } from './appBody/trends/trends.component';
 import { OldWatchlistComponent } from './appBody/old-watchlist/old-watchlist.component';
 import { WleditComponent } from './appBody/wledit/wledit.component';
 
+import { ClipboardModule } from 'ngx-clipboard';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -70,7 +72,8 @@ import { WleditComponent } from './appBody/wledit/wledit.component';
     HttpModule,
     MaterialModule.forRoot(),
     routing,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    ClipboardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

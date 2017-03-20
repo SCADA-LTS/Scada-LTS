@@ -1,4 +1,5 @@
 <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': !isChartHidden }" class="chartIconOpen" mdTooltip="{{ isChartHidden ? 'Reveal chart' : '' }}" [mdTooltipPosition]="'below'"><md-icon>vertical_align_bottom</md-icon></button>
+<button md-mini-fab mdTooltip="Copy URL" [ngClass]="{ 'urlButtonStageTwo': !isChartHidden }" [mdTooltipPosition]="'below'" class='urlButton' (click)="setURL();openSnackBar('URL copied to the clipboard.')" ngxClipboard [cbContent]="directURL"><md-icon>insert_link</md-icon></button>
 
 <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'openFirstStage': !isChartHidden && isChartShrunked, 'openSecondStage': !isChartHidden && !isChartShrunked }" (window:resize)="relay()">
     <md-card class="md-card" (mouseenter)="areChartButtonsVisible = true" (mouseleave)="areChartButtonsVisible = false">
@@ -18,9 +19,9 @@
         </div>
         <div id="plotly"></div>
         <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': isChartHidden }" class="chartIconClose" mdTooltip="Hide chart" [mdTooltipPosition]="'below'"><md-icon>vertical_align_top</md-icon></button>
+
     </md-card>
 </div>
-
 
 <div class="dataTableContainer col-md-6 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
     <md-card>
@@ -35,7 +36,7 @@
             <tr *ngFor="let elem of _values">
                 <td>{{ elem.name }}</td>
                 <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
-                <td class="backlightOnDataChange">{{ elem.value }}</td>
+                <td class="backlightOnDataChange">{{ elem.formattedValue }}</td>
             </tr>
         </table>
     </md-card>

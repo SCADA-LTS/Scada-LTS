@@ -1,10 +1,15 @@
-import {Component, Inject, OnInit, NgZone} from '@angular/core';
-import {Http} from '@angular/http';
+import {Component, Inject, OnInit, OnDestroy, NgZone} from '@angular/core';
+import {Router, ActivatedRoute} from '@angular/router';
+import {Http, URLSearchParams, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
-import { Subject } from 'rxjs/Subject';
+import {Subject} from 'rxjs/Subject';
 declare let Plotly: any;
 declare let $: any;
+import {MdSnackBar} from '@angular/material';
+
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/take';
 
 @Component({
     selector: 'watchlist',
@@ -12,7 +17,7 @@ declare let $: any;
     styleUrls: ['./watchlist.component.css']
 })
 
-export class WatchlistComponent implements OnInit {
+export class WatchlistComponent implements OnInit, OnDestroy {
 
     public static fireEvent: Subject<boolean> = new Subject();
 
@@ -54,21 +59,39 @@ export class WatchlistComponent implements OnInit {
     isRedrawingStopped: boolean = false;
     areChartButtonsVisible: boolean = false;
     isChartShrunked: boolean = true;
+    isFromSpecifiedDataLoadActive: boolean = false;
+    systemPerformance: any = 5000;
+    directURL: string;
 
 
-    constructor(@Inject(Http) private http: Http, public zone: NgZone) {
+    constructor(@Inject(Http) private http: Http, public zone: NgZone, private router: Router, private route: ActivatedRoute, public snackBar: MdSnackBar) {
 
         WatchlistComponent.fireEvent.subscribe(() => {
             this.relay();
         });
 
 
-
         this.http.get(`/ScadaBR/api/watchlist/getNames`)
             .subscribe(res => {
                 this._watchlists = res.json();
                 this.updateWatchlistTable(this._watchlists[0].xid);
-                this.selectedWatchlist = this._watchlists[0];
+
+                if (window.location.hash.match(/name=(\w+)/)) {
+                    let name = window.location.hash.match(/name=(\w+)/)[1];
+                    // let obj = {};
+                    // obj['xid'] = window.location.hash.match(/xid=(\w+)/)[1];
+                    // obj['name'] = window.location.hash.match(/name=(\w+)/)[1];
+                    // this.selectedWatchlist = obj;
+                    let vl = this._watchlists.filter(v => v.name == name);
+                    this.selectedWatchlist = vl[0];
+                    console.log('wl url')
+
+                } else {
+                    this.selectedWatchlist = this._watchlists[0];
+                    console.log('wl default');
+                    console.log(this.selectedWatchlist);
+                }
+
                 this.initiateInterval();
             });
         this.chartLayout = {
@@ -84,6 +107,12 @@ export class WatchlistComponent implements OnInit {
         };
 
     };
+
+    openSnackBar(message: string, action: string) {
+        this.snackBar.open(message, action, {
+            duration: 2000,
+        });
+    }
 
     updateWatchlistTable(xid) {
         this.zoomEvent = false;
@@ -127,6 +156,7 @@ export class WatchlistComponent implements OnInit {
     };
 
     getDataFromTimeRange() {
+        this.isFromSpecifiedDataLoadActive = false;
         this.zoomEvent = false;
         this.isAnyRequestActive = true;
         clearInterval(this.loadPoints);
@@ -182,12 +212,14 @@ export class WatchlistComponent implements OnInit {
                     this.isChartHidden = false;
                     this.isAnyRequestActive = false;
                     this.setRanges();
+                    this.isFromSpecifiedDataLoadActive = true;
                 });
                 this.activeState = 'specifiedTime';
             });
     }
 
     loadNewDataAfterZoom() {
+        this.isFromSpecifiedDataLoadActive = false;
         this.isAnyRequestActive = true;
         clearInterval(this.loadPoints);
         this.isRedrawingStopped = true;
@@ -278,6 +310,12 @@ export class WatchlistComponent implements OnInit {
             }
 
             this.help2 = true;
+            // if (this.isFromSpecifiedDataLoadActive) {
+            //     this.chartData.forEach(v => {
+            //         v.x.splice(0, 1);
+            //         v.y.splice(0, 1)
+            //     });
+            // }
             this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
 
             if (this.chartData[0].x.length > 1) {
@@ -289,6 +327,7 @@ export class WatchlistComponent implements OnInit {
             }
             this.setDefaultTimeRangeValues();
         });
+
 
     };
 
@@ -353,8 +392,12 @@ export class WatchlistComponent implements OnInit {
 
     initiateInterval() {
         this.loadPoints = setInterval(() => {
-            this.liveChart();
-        }, this.getUserSystemPerformance());
+            if (this.isFromSpecifiedDataLoadActive) {
+                this.getDataFromSpecifiedTimeToNow();
+            } else {
+                this.liveChart();
+            }
+        }, this.systemPerformance);
     }
 
     deactivateInterval() {
@@ -402,55 +445,54 @@ export class WatchlistComponent implements OnInit {
             this.isChartShrunked = true;
         }
         this.redrawChart();
+        console.log(this.selectedWatchlist)
     }
 
     getUserSystemPerformance() {
         let systemPerf = JSON.parse(localStorage.getItem('systemPerf'));
         if (systemPerf == undefined || systemPerf == 'low') {
+            this.systemPerformance = 5000;
             return 5000;
         } else if (systemPerf == 'medium') {
+            this.systemPerformance = 3000;
             return 3000;
         } else {
+            this.systemPerformance = 1000;
             return 1000;
         }
     }
 
+    setURL() {
+        location.hash = location.hash.replace(/\?.+/, '');
+        this.directURL = location.protocol + "//" + location.hostname + location.pathname + location.hash + "?" + "name=" + this.selectedWatchlist.name + "&chartHidden=" +
+            this.isChartHidden + "&chartSmall=" + this.isChartShrunked + "&legendHidden=" + this.chartLayout.showlegend;
+        console.log(this.directURL);
+    }
+
     ngOnInit() {
+        this.getUserSystemPerformance();
         this.setDefaultTimeRangeValues();
         this.initiateChart();
         console.log(localStorage['systemPerf']);
+
+        if (window.location.hash.match(/chartHidden=(\w+)/)) {
+            this.isChartHidden = window.location.hash.match(/chartHidden=(\w+)/)[1] == 'true';
+        }
+
+        if (window.location.hash.match(/chartSmall=(\w+)/)) {
+            this.isChartShrunked = window.location.hash.match(/chartSmall=(\w+)/)[1] == 'true';
+            this.chartLayout.height = window.location.hash.match(/chartSmall=(\w+)/)[1] == 'true' ? 600 : 870;
+        }
+
+        if (window.location.hash.match(/legendHidden=(\w+)/)) {
+            this.chartLayout.showlegend = window.location.hash.match(/legendHidden=(\w+)/)[1] == 'true';
+        }
+
+
     }
 
     ngOnDestroy() {
         clearInterval(this.loadPoints);
     }
 
-    // x(){
-    //     $('.modal').fadeIn();
-    //     $('.modal').click(function(e){
-    //         if ($(e.target).hasClass('modal')) {
-    //             $('.modal').fadeOut();
-    //         }
-    //     })
-    // }
-    //
-    // y(){
-    //     $('.modal').fadeOut();
-    // }
-
-
-
 }
-
-// for (let i = 0; i < this.chartData.length; i++) {
-//     for (let j = 0; j < this._oldValues[i].values.length; j++) {
-//         this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)
-//     }
-// }
-// for (let i = 1; i < 11; i++) {
-//     document.getElementsByClassName('drag')[i].addEventListener('mouseup', () => {
-//         this.chart = true;
-//         console.log('mouseup'+i);
-//
-//     });
-// }
