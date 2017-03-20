@@ -233,7 +233,7 @@ h2 {
   min-height: 87%;
   width: 94%;
   top: 70px;
-  background-color: rgba(255, 255, 255, 0.8); }
+  background-color: rgba(255, 255, 255, 0.5); }
   #plotlyLoader .spinner {
     position: absolute;
     top: 36%;
@@ -245,6 +245,7 @@ h2 {
   z-index: 5;
   opacity: 0;
   top: 15px;
+  left: 73px;
   -webkit-transition: all 0.4s ease;
   -moz-transition: all 0.4s ease;
   -o-transition: all 0.4s ease;
@@ -301,5 +302,20 @@ h2 {
   -moz-transition: all 0.3s ease-in;
   -o-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in; }
+
+.urlButton {
+  z-index: 5;
+  top: 0;
+  -webkit-transition: all 0.4s ease-in;
+  -moz-transition: all 0.4s ease-in;
+  -o-transition: all 0.4s ease-in;
+  transition: all 0.4s ease-in; }
+
+.urlButtonStageTwo {
+  top: 36px;
+  -webkit-transition: all 0.4s ease-in;
+  -moz-transition: all 0.4s ease-in;
+  -o-transition: all 0.4s ease-in;
+  transition: all 0.4s ease-in; }
 
 /*# sourceMappingURL=watchlist.component.css.map */
