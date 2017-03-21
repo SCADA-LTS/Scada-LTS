@@ -37,8 +37,9 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 		
 		final String viewsHierarchySQL = ""
 				+ "create table views_category_views_hierarchy ("
-    			+ "view_id int(11) not null,"
-    			+ "folder_views_hierarchy_id int(11) not null"
+    			+ "view_id int(11),"
+    			+ "folder_views_hierarchy_id int(11) not null,"
+    			+ "primary key (view_id)"
     		+ ") engine=innodb;";
 		 
 		String fAdd = 
@@ -87,38 +88,35 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 			  	+ "return a_id; "
 			  + "END";
 		
-		String fMoveFolder = 
-				"CREATE FUNCTION func_views_hierarchy_move_folder( "
-						+ "a_id INT, a_new_parent_id INT) "
-					 + "RETURNS INT(11) "
-					 + "NOT DETERMINISTIC "
-				  + "BEGIN "
-				  	+ "update category_views_hierarchy "
-				  		+ "set parentId=a_parentId "
-				  	+ "where id=a_id; "
-				  	+ "return a_id; "
-				  + "END";
-		
-		String fMoveView =
-				
-				"CREATE FUNCTION func_views_hierarchy_move1(a_id INT, a_new_parent_id INT) "+ 
-				  "RETURNS INT(11) "+ 
-				  "NOT DETERMINISTIC "+ 
-				"BEGIN "+ 
-				  "DECLARE varExistId INT default 0; "+
-				  "SELECT id into varExistId FROM views_vategory_views_hierarchy WHERE id=a_id; "+
-				  "IF varExistId = 0 THEN "+
-					"INSERT INTO category_views_hierarchy (view_id, folder_views_hierarchy_id) "+ 
-				    "VALUES (a_id, a_new_parent_id); "+
-				  "ELSE "+
-					"UPDATE category_views_hierarchy "+ 
-				    "SET parentId=a_parentId "+ 
-					"WHERE id=a_id; "+
-				  "END IF; " +
-				  "return a_id; " + 				  
-				"END; ";
-				
+		String fMoveFolder =
+				"CREATE FUNCTION func_views_hierarchy_move_folder( "+ 
+						"a_id INT, a_new_parent_id INT) "+ 
+					"RETURNS INT(11) "+ 
+					"NOT DETERMINISTIC "+ 
+					"BEGIN "+
+					 "UPDATE category_views_hierarchy "+ 
+						"SET parentId=a_new_parent_id "+ 
+					 "WHERE id=a_id; "+ 
+					 "return a_id; "+ 
+					"END;";
 						
+		String fMoveView =	
+				"CREATE FUNCTION func_views_hierarchy_move_view(a_id INT, a_new_parent_id INT) " 
+				 + "RETURNS INT(11) " 
+				 + "NOT DETERMINISTIC " 
+				+ "BEGIN "
+				 + "DECLARE varExistId INT default 0; "
+				 + "SELECT id into varExistId FROM views_category_views_hierarchy WHERE id=a_id; "
+				 + "IF varExistId = 0 THEN "
+				   + "INSERT INTO views_category_views_hierarchy (view_id, folder_views_hierarchy_id) " 
+				   + "VALUES (a_id, a_new_parent_id); "
+				 + "ELSE "
+				   + "UPDATE views_category_views_hierarchy " 
+				   + "SET folder_views_hierarchy_id=a_new_parent_id "
+				   + "WHERE view_id=a_id; "
+				 + "END IF; " 
+				 + "return a_id; "  				  
+				+ "END; ";
 		
 		String pSelect = 
 				"CREATE PROCEDURE prc_views_hierarchy_select() "

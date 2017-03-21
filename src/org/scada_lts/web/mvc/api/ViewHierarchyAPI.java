@@ -185,19 +185,46 @@ public class ViewHierarchyAPI {
 		
 	}
 	
-	@RequestMapping(value = "/api/view_hierarchy/move/{id}/{newParentId}", method = RequestMethod.GET)
-	public ResponseEntity<String> move(@PathVariable("id") int id, @PathVariable("newParentId") int newParentId, HttpServletRequest request) {
+	@RequestMapping(value = "/api/view_hierarchy/moveFolder/{id}/{newParentId}", method = RequestMethod.GET)
+	public ResponseEntity<String> moveFolder(@PathVariable("id") int id, @PathVariable("newParentId") int newParentId, HttpServletRequest request) {
 		
-		LOG.info("/api/view_hierarchy/move/{id}/{newParentId} id:"+id+" newParentId:"+newParentId);
+		LOG.info("/api/view_hierarchy/moveFolder/{id}/{newParentId} id:"+id+" newParentId:"+newParentId);
 		
 		try {
 			User user = Common.getUser(request);
 			if (user != null) {
 				
-				if (viewHierarchyService.move(id, newParentId)) {
+				if (viewHierarchyService.moveFolder(id, newParentId)) {
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString("move");
+					json = mapper.writeValueAsString("moved");
+					return new ResponseEntity<String>(json,HttpStatus.OK);
+				}
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
+			
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+		
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
+	@RequestMapping(value = "/api/view_hierarchy/moveView/{id}/{newParentId}", method = RequestMethod.GET)
+	public ResponseEntity<String> moveView(@PathVariable("id") int id, @PathVariable("newParentId") int newParentId, HttpServletRequest request) {
+		
+		LOG.info("/api/view_hierarchyView/move/{id}/{newParentId} id:"+id+" newParentId:"+newParentId);
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				
+				if (viewHierarchyService.moveView(id, newParentId)) {
+					String json = null;
+					ObjectMapper mapper = new ObjectMapper();
+					json = mapper.writeValueAsString("moved");
 					return new ResponseEntity<String>(json,HttpStatus.OK);
 				}
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);

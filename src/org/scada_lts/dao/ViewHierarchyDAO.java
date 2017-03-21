@@ -59,13 +59,17 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 				"call prc_views_hierarchy_select_node(?);";
 		
 		private static final String SQL_ADD = "" +
-				"select func_views_hierarchy_add(?,?)";
+				"select func_views_hierarchy_add(?,?);";
 		
 		private static final String SQL_UPDATE = "" +
 				"select func_views_hierarchy_update(?,?,?);";
-
-		private static final String SQL_MOVE = "" +
-				"select func_views_hierarchy_move(?,?);";
+		
+		private static final String SQL_MOVE_FOLDER = "" +
+				"select func_views_hierarchy_move_folder(?,?);";
+		
+		private static final String SQL_MOVE_VIEW = "" +
+				"select func_views_hierarchy_move_view(?,?);";
+		
 		
 		private static final String SQL_DELETE = "" +
 				"select func_views_hierarchy_delete(?);";
@@ -191,13 +195,31 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * @return 
 	 * @return
 	 */
-	public int move(int id, int newParentId) {
+	public int moveFolder(int id, int newParentId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
 		}
 		
 		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(SQL_MOVE, new Object[]{id,newParentId}, Integer.class);
+			return DAO.getInstance().getJdbcTemp().queryForObject(SQL_MOVE_FOLDER, new Object[]{id,newParentId}, Integer.class);
+		} catch (Exception e) {
+			LOG.error(new ViewHierarchyDaoException(e));
+		}
+		return ERROR;
+    }
+	
+	/**
+	 * 	Move node for hierarchy views
+	 * @return 
+	 * @return
+	 */
+	public int moveView(int id, int newParentId) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("SQL ViewHierarchyDAO");
+		}
+		
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(SQL_MOVE_VIEW, new Object[]{id,newParentId}, Integer.class);
 		} catch (Exception e) {
 			LOG.error(new ViewHierarchyDaoException(e));
 		}

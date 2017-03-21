@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
-import {Http} from '@angular/http';
-import {MdDialog, MdDialogRef} from '@angular/material';
+import { Http } from '@angular/http';
+import { MdDialog, MdDialogRef } from '@angular/material';
 
 declare let $:any;
 
@@ -13,8 +13,8 @@ declare let $:any;
 export class ViewsComponent implements OnInit {
   
   dataTree:any;
-  createdTree: boolean = false;
-  editDialogTree: boolean = false;
+  createdTree:boolean = false;
+  editDialogTree:boolean = false;
 
   moveStart:any;
   
@@ -85,20 +85,35 @@ export class ViewsComponent implements OnInit {
               dragStop: function(node, data) {
               },
               dragDrop: function(node, data) {
-
-                $.ajax({
-                  type: "GET",
-                  dataType: "json",
-                  url:'../ScadaBR//api/view_hierarchy/move/' + data.otherNode.key + '/' + node.key ,
-                  success: function(request){
-                    data.otherNode.moveTo(node, data.hitMode);
-                  },
-                  error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log(JSON.parse(XMLHttpRequest.responseText).message);
-                    console.log(textStatus);
-                    console.log(errorThrown);
-                  }
-                });
+                if (data.otherNode.folder) {
+                  $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url:'../ScadaBR/api/view_hierarchy/moveFolder/' + data.otherNode.key + '/' + node.key ,
+                    success: function(request){
+                      data.otherNode.moveTo(node, data.hitMode);
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      console.log(JSON.parse(XMLHttpRequest.responseText).message);
+                      console.log(textStatus);
+                      console.log(errorThrown);
+                   }
+                  });
+                } else {
+                  $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url:'../ScadaBR/api/view_hierarchy/moveView/' + data.otherNode.key + '/' + node.key ,
+                    success: function(request){
+                      data.otherNode.moveTo(node, data.hitMode);
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      console.log(JSON.parse(XMLHttpRequest.responseText).message);
+                      console.log(textStatus);
+                      console.log(errorThrown);
+                   }
+                  });
+                }
               }
             },
             source: this.dataTree
@@ -158,9 +173,6 @@ export class ViewsComponent implements OnInit {
         tips.removeClass( "ui-state-highlight", 1500 );
       }, 500 );*/
   }
-
-  
-
   
   // TODO validate
   addFolderFunc() {
@@ -196,8 +208,6 @@ export class ViewsComponent implements OnInit {
     }
   }
 
-  
-  
   ngOnInit(){
     $( "#dialogViewsHierarchy" ).dialog({
       autoOpen: false,
@@ -309,7 +319,6 @@ export class ViewsComponent implements OnInit {
         }
       }
     });
-
     this.loadIframe();
   }
 }
