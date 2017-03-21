@@ -35,8 +35,8 @@
         <table *ngIf="_values.length" class="dataTable">
             <tr *ngFor="let elem of _values">
                 <td>{{ elem.name }}</td>
-                <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
                 <td class="backlightOnDataChange">{{ elem.formattedValue }}</td>
+                <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
             </tr>
         </table>
     </md-card>

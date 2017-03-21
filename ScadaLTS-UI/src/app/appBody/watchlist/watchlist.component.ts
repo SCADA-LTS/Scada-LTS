@@ -62,6 +62,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     isFromSpecifiedDataLoadActive: boolean = false;
     systemPerformance: any = 5000;
     directURL: string;
+    onlyLiveChartActive: boolean = true;
 
 
     constructor(@Inject(Http) private http: Http, public zone: NgZone, private router: Router, private route: ActivatedRoute, public snackBar: MdSnackBar) {
@@ -159,7 +160,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         this.isFromSpecifiedDataLoadActive = false;
         this.zoomEvent = false;
         this.isAnyRequestActive = true;
-        clearInterval(this.loadPoints);
+        //clearInterval(this.loadPoints);
         this.isRequestTimeRangeActiveAndUndone = true;
         this.isRedrawingStopped = true;
         this.chartData.forEach(v => {
@@ -189,7 +190,8 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         this.zoomEvent = false;
         this.isAnyRequestActive = true;
         this.isRequestSpecifiedTimeActiveAndUndone = true;
-        clearInterval(this.loadPoints);
+        this.onlyLiveChartActive = false;
+        //clearInterval(this.loadPoints);
         this.chartData.forEach(v => {
             v.x = [];
             v.y = []
@@ -205,13 +207,13 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 ).subscribe(res => {
                     this._oldValues = res;
                     this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
-                    this.initiateInterval();
+                    //this.initiateInterval();
                     this.redrawChart();
                     this.autorangeChart();
                     this.isRequestSpecifiedTimeActiveAndUndone = false;
                     this.isChartHidden = false;
                     this.isAnyRequestActive = false;
-                    this.setRanges();
+                    //this.setRanges();
                     this.isFromSpecifiedDataLoadActive = true;
                 });
                 this.activeState = 'specifiedTime';
@@ -243,7 +245,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 this.initiateInterval();
             }
             this.isAnyRequestActive = false;
-            this.setRanges();
+            //this.setRanges();
             this.zoomEvent = false;
         });
     }
@@ -257,7 +259,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             })
         ).subscribe(res => {
             this._values = res;
-
+            console.log('present point values obtained');
             if (this.isFillingDataNeeded) {
                 this.fillDataWithScheme();
             }
@@ -316,7 +318,9 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             //         v.y.splice(0, 1)
             //     });
             // }
-            this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+            if (this.onlyLiveChartActive) {
+                this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
+            }
 
             if (this.chartData[0].x.length > 1) {
                 this.chartData.forEach(v => v['mode'] = 'lines');
@@ -325,7 +329,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             if (this.isRedrawingStopped == false) {
                 this.redrawChart();
             }
-            this.setDefaultTimeRangeValues();
+            //this.setDefaultTimeRangeValues();
         });
 
 
@@ -394,9 +398,8 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         this.loadPoints = setInterval(() => {
             if (this.isFromSpecifiedDataLoadActive) {
                 this.getDataFromSpecifiedTimeToNow();
-            } else {
-                this.liveChart();
             }
+            this.liveChart();
         }, this.systemPerformance);
     }
 
@@ -465,7 +468,8 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     setURL() {
         location.hash = location.hash.replace(/\?.+/, '');
         this.directURL = location.protocol + "//" + location.hostname + location.pathname + location.hash + "?" + "name=" + this.selectedWatchlist.name + "&chartHidden=" +
-            this.isChartHidden + "&chartSmall=" + this.isChartShrunked + "&legendHidden=" + this.chartLayout.showlegend;
+            this.isChartHidden + "&chartSmall=" + this.isChartShrunked + "&legendHidden=" + this.chartLayout.showlegend + "&specifiedActive=" + this.isFromSpecifiedDataLoadActive +
+                "_" + this.dateFrom + "_" + this.dateFromUnit;
         console.log(this.directURL);
     }
 
@@ -473,7 +477,6 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         this.getUserSystemPerformance();
         this.setDefaultTimeRangeValues();
         this.initiateChart();
-        console.log(localStorage['systemPerf']);
 
         if (window.location.hash.match(/chartHidden=(\w+)/)) {
             this.isChartHidden = window.location.hash.match(/chartHidden=(\w+)/)[1] == 'true';
@@ -486,8 +489,10 @@ export class WatchlistComponent implements OnInit, OnDestroy {
 
         if (window.location.hash.match(/legendHidden=(\w+)/)) {
             this.chartLayout.showlegend = window.location.hash.match(/legendHidden=(\w+)/)[1] == 'true';
+            this.isFromSpecifiedDataLoadActive = window.location.hash.match(/specifiedActive=(\w+)(_\d)/)[1] == 'true';
+            this.dateFrom = +window.location.hash.match(/(?!_)\d+(?=_)/)[0];
+            this.dateFromUnit = window.location.hash.match(/_([a-z]+)/)[1];
         }
-
 
     }
 
