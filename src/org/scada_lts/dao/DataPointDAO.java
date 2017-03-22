@@ -107,7 +107,6 @@ public class DataPointDAO {
 			+ "and "
 				+ COLUMN_NAME_EVENT_TYPE_REF1;
 
-
 	// @formatter:on
 
 	private class DataPointRowMapper implements RowMapper<DataPointVO> {
@@ -156,6 +155,20 @@ public class DataPointDAO {
 		}
 
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT, new DataPointRowMapper());
+	}
+	
+	public List<DataPointVO> filtered(String filter, Object[] argsFilter, long limit) {
+		String myLimit="";
+		Object[] args;
+		if (limit != GenericDaoCR.NO_LIMIT) {
+			myLimit = GenericDaoCR.LIMIT+" ? ";
+			args = DAO.getInstance().appendValue(argsFilter, String.valueOf(limit));
+		} else {
+			args=argsFilter;
+		}
+	
+		return (List<DataPointVO>) DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT+" where "+ filter + myLimit, args, new DataPointRowMapper());
+	
 	}
 
 	public List<DataPointVO> getDataPoints(int dataSourceId) {
