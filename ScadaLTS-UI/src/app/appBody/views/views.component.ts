@@ -85,20 +85,39 @@ export class ViewsComponent implements OnInit {
               dragStop: function(node, data) {
               },
               dragDrop: function(node, data) {
+
+
                 if (data.otherNode.folder) {
-                  $.ajax({
-                    type: "GET",
-                    dataType: "json",
-                    url:'../ScadaBR/api/view_hierarchy/moveFolder/' + data.otherNode.key + '/' + node.key ,
-                    success: function(request){
-                      data.otherNode.moveTo(node, data.hitMode);
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown) {
-                      console.log(JSON.parse(XMLHttpRequest.responseText).message);
-                      console.log(textStatus);
-                      console.log(errorThrown);
-                   }
-                  });
+                  if (node.folder) {
+                    $.ajax({
+                      type: "GET",
+                      dataType: "json",
+                      url:'../ScadaBR/api/view_hierarchy/moveFolder/' + data.otherNode.key + '/' + node.key ,
+                      success: function(request){
+
+                        $.ajax({
+                          type: "GET",
+          	              dataType: "json",
+          	              url:'../ScadaBR/api/view_hierarchy/getAll',
+          	              success: function(data){
+                            console.log(data);
+                            $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
+                            $("#dialogConfirmDelete").dialog("close");
+                          },
+          	              error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	                alert(textStatus);
+          	              }
+                        });
+                        //TODO optimalization using moveTo  
+                        //data.otherNode.moveTo(node, data.hitMode);
+                      },
+                      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        console.log(JSON.parse(XMLHttpRequest.responseText).message);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                     }
+                    });
+                  }
                 } else {
                   $.ajax({
                     type: "GET",
@@ -190,16 +209,35 @@ export class ViewsComponent implements OnInit {
             url:'../ScadaBR/api/view_hierarchy/createFolder/' + $("#nameAddFolder").val() + '/-1',
             success: function(request){
               console.log(request);
-              $("#viewsHierarchyDiv").fancytree("getRootNode").
+
+               $.ajax({
+                  type: "GET",
+          	      dataType: "json",
+          	      url:'../ScadaBR/api/view_hierarchy/getAll',
+          	      success: function(data){
+                    console.log(data);
+                    $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
+                    $("#dialogConfirmDelete").dialog("close");
+                  },
+          	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	        alert(textStatus);
+          	      }
+                });  
+
+              // TODO replace code above to optimalization 
+              /*$("#viewsHierarchyDiv").fancytree("getRootNode").
                 addChildren({
                   title: $("#nameAddFolder").val(),
                   tooltip: "",
                   folder: true
-                });
+                });*/
+              
               $( "#addFolder" ).dialog("close");
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
-              $("#validateTipAddFolder").text(JSON.parse(XMLHttpRequest.responseText).message).addClass("ui-state-error");
+              alert(JSON.parse(XMLHttpRequest.responseText).message);
+              //TODO
+              /*$("#validateTipAddFolder").text(JSON.parse(XMLHttpRequest.responseText).message).addClass("ui-state-error");*/
               console.log(JSON.parse(XMLHttpRequest.responseText).message);
               console.log(textStatus);
               console.log(errorThrown);
@@ -290,29 +328,59 @@ export class ViewsComponent implements OnInit {
       modal: true,
       buttons: {
         "Delete item": function() {
-          $.ajax({
-            type: "GET",
-          	dataType: "json",
-          	url:'../ScadaBR//api/view_hierarchy/deleteFolder/' + $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key,
-          	success: function(msg){
-              $.ajax({
-                type: "GET",
-          	    dataType: "json",
-          	    url:'../ScadaBR/api/view_hierarchy/getAll',
-          	    success: function(data){
-                  console.log(data);
-                  $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
-                  $("#dialogConfirmDelete").dialog("close");
-                },
-          	    error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	      alert(textStatus);
-          	    }
-              });  
-          	},
-          	error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	  alert(textStatus);
-          	}
-          });
+
+          if ($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().folder) {
+
+            $.ajax({
+              type: "GET",
+          	  dataType: "json",
+          	  url:'../ScadaBR//api/view_hierarchy/deleteFolder/' + $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key,
+          	  success: function(msg){
+                $.ajax({
+                  type: "GET",
+          	      dataType: "json",
+          	      url:'../ScadaBR/api/view_hierarchy/getAll',
+          	      success: function(data){
+                    console.log(data);
+                    $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
+                    $("#dialogConfirmDelete").dialog("close");
+                  },
+          	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	        alert(textStatus);
+          	      }
+                });  
+          	  },
+          	  error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	    alert(textStatus);
+          	  }
+            });
+
+          } else {
+
+            $.ajax({
+              type: "GET",
+          	  dataType: "json",
+          	  url:'../ScadaBR//api/view_hierarchy/deleteView/' + $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key,
+          	  success: function(msg){
+                $.ajax({
+                  type: "GET",
+          	      dataType: "json",
+          	      url:'../ScadaBR/api/view_hierarchy/getAll',
+          	      success: function(data){
+                    console.log(data);
+                    $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
+                    $("#dialogConfirmDelete").dialog("close");
+                  },
+          	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	        alert(textStatus);
+          	      }
+                });  
+          	  },
+          	  error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	    alert(textStatus);
+          	  }
+            });
+          }
         },
         Cancel: function() {
           $( this ).dialog( "close" );

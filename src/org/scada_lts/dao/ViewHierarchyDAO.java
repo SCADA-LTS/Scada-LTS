@@ -70,9 +70,11 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		private static final String SQL_MOVE_VIEW = "" +
 				"select func_views_hierarchy_move_view(?,?);";
 		
+		private static final String SQL_DELETE_FOLDER = "" +
+				"select func_views_hierarchy_folder_delete(?);";
 		
-		private static final String SQL_DELETE = "" +
-				"select func_views_hierarchy_delete(?);";
+		private static final String SQL_DELETE_VIEW = "" +
+				"select func_views_hierarchy_view_delete(?);";
 		
 		private static final String SQL_CHECK_IS_USED_NAME = "" +
 				"select count(*) from category_views_hierarchy where name=?";
@@ -227,38 +229,39 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
     }
 	
 	/**
-	 * 	Move node for hierarchy views
+	 * 	Delete view from hierarchy views
 	 * @return 
 	 * @return
 	 */
-	public int del(int id) {
+	public int delView(int id) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
 		}
 		
 		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(SQL_DELETE, new Object[]{id}, Integer.class);
+			return DAO.getInstance().getJdbcTemp().queryForObject(SQL_DELETE_VIEW, new Object[]{id}, Integer.class);
 		} catch (Exception e) {
 			LOG.error(new ViewHierarchyDaoException(e));
 		}
 		return ERROR;
     }
 	
-	
-	//TODO to refactor when we intercept error from db.
-	public boolean isNameUsed(String name) {
-		
+	/**
+	 * 	Delete folder from hierarchy views
+	 * @return 
+	 * @return
+	 */
+	public int delFolder(int id) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
 		}
 		
 		try {
-			return (DAO.getInstance().getJdbcTemp().queryForObject(SQL_CHECK_IS_USED_NAME, new Object[]{name}, Integer.class)>0);
+			return DAO.getInstance().getJdbcTemp().queryForObject(SQL_DELETE_FOLDER, new Object[]{id}, Integer.class);
 		} catch (Exception e) {
 			LOG.error(new ViewHierarchyDaoException(e));
-			return true;
 		}
-		
-	}
+		return ERROR;
+    }
 	
 }

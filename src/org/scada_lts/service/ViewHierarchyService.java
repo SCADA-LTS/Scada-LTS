@@ -120,9 +120,14 @@ public class ViewHierarchyService {
 		return (vhDAO.update(node)> GenericHierarchyDAO.ERROR);
 	}
 	
-	public boolean del(int id) {
-		LOG.info("delete id:"+id);
-		return (vhDAO.del(id) > GenericHierarchyDAO.ERROR);
+	public boolean delFolder(int id) {
+		LOG.info("delete folder from view hierarchy base on id:"+id);
+		return (vhDAO.delFolder(id) > GenericHierarchyDAO.ERROR);
+	}
+	
+	public boolean delView(int id) {
+		LOG.info("delete view from view hierarchy base on id:"+id);
+		return (vhDAO.delView(id) > GenericHierarchyDAO.ERROR);
 	}
 	
 	public boolean moveFolder(int id, int newParentId) {
@@ -180,10 +185,6 @@ public class ViewHierarchyService {
 			}
 		}
 		return null;
-	}
-	
-	public boolean isUsedName(String name){
-		return vhDAO.isNameUsed(name);
 	}
 	
 }

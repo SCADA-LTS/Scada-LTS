@@ -42,7 +42,9 @@ public interface GenericHierarchyDAO<T> {
 	
 	int moveView(int id, int newParentId);
 	
-	int del(int id);
+	int delView(int id);
+	
+	int delFolder(int id);
 	
 	
 }

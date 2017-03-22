@@ -159,7 +159,7 @@ public class ViewHierarchyAPI {
 	}
 	
 	@RequestMapping(value = "/api/view_hierarchy/deleteFolder/{id}", method = RequestMethod.GET)
-	public ResponseEntity<String> getChartData(@PathVariable("id") int id, HttpServletRequest request) {
+	public ResponseEntity<String> deleteFolder(@PathVariable("id") int id, HttpServletRequest request) {
 		
 		LOG.info("/api/watchlist/deleteFolder/{id}:"+id);
 		
@@ -167,7 +167,34 @@ public class ViewHierarchyAPI {
 			User user = Common.getUser(request);
 			if (user != null) {
 				
-				if (viewHierarchyService.del(id)) {
+				if (viewHierarchyService.delFolder(id)) {
+					String json = null;
+					ObjectMapper mapper = new ObjectMapper();
+					json = mapper.writeValueAsString("success");
+					return new ResponseEntity<String>(json,HttpStatus.OK);
+				}
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
+			
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+		
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
+	@RequestMapping(value = "/api/view_hierarchy/deleteView/{id}", method = RequestMethod.GET)
+	public ResponseEntity<String> deleteView(@PathVariable("id") int id, HttpServletRequest request) {
+		
+		LOG.info("/api/watchlist/deleteView/{id}:"+id);
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				
+				if (viewHierarchyService.delView(id)) {
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("success");
@@ -261,29 +288,5 @@ public class ViewHierarchyAPI {
 		}
 		
 	}
-	
-	// TODO remove
-	@RequestMapping(value = "/api/view_hierarchy/checkNameFolder/{name}", method = RequestMethod.GET)
-	public ResponseEntity<String> checkNameFolder(@PathVariable("name") String name, HttpServletRequest request) {
-		
-		LOG.info("/api/view_hierarchy/checkNameFolder:"+name);
-		
-		try {
-			User user = Common.getUser(request);
-			if (user != null) {
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				json = mapper.writeValueAsString(viewHierarchyService.isUsedName(name));
-				return new ResponseEntity<String>(json,HttpStatus.OK);
-			}
-			
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-		
-		} catch (Exception e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}	
-	}
-	
 	
 }
