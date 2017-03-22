@@ -31,6 +31,10 @@ import { ImportExportComponent } from './appBody/import-export/import-export.com
 import { LogComponent } from './appBody/log/log.component';
 import { SearchComponent } from './appBody/search/search.component';
 import { TrendsComponent } from './appBody/trends/trends.component';
+import { OldWatchlistComponent } from './appBody/old-watchlist/old-watchlist.component';
+import { WleditComponent } from './appBody/wledit/wledit.component';
+
+import { ClipboardModule } from 'ngx-clipboard';
 
 @NgModule({
   declarations: [
@@ -57,7 +61,9 @@ import { TrendsComponent } from './appBody/trends/trends.component';
     ImportExportComponent,
     LogComponent,
     SearchComponent,
-    TrendsComponent
+    TrendsComponent,
+    OldWatchlistComponent,
+    WleditComponent
   ],
   imports: [
     BrowserModule,
@@ -66,7 +72,8 @@ import { TrendsComponent } from './appBody/trends/trends.component';
     HttpModule,
     MaterialModule.forRoot(),
     routing,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    ClipboardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

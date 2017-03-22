@@ -20,7 +20,7 @@ before_script:
 - node -v
 - env
 - npm install -g bower
-- npm install -g angular-cli
+- npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar

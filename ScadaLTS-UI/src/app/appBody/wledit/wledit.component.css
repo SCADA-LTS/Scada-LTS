@@ -1,0 +1,89 @@
+.x {
+  height: 100%;
+  width: 100%; }
+
+md-card {
+  height: 700px;
+  width: 100%; }
+
+.modalBtn {
+  margin: 0 auto 15px auto;
+  width: 100%;
+  left: 50%;
+  transform: translateX(-50%); }
+
+.pointsContainerModal {
+  height: 100%;
+  position: relative; }
+
+.watchlistContainerModal {
+  height: 100%;
+  position: relative; }
+
+.pointsContainerModalHeader {
+  height: 50px;
+  width: 100%;
+  line-height: 40px; }
+
+.watchlistContainerModalHeader {
+  height: 50px;
+  line-height: 40px;
+  width: 100%; }
+
+.list-group-item:last-child {
+  margin-bottom: 0;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px; }
+
+.list-group-item:nth-child(2n) {
+  background: #f2f2f2; }
+
+.list-group-item:hover {
+  background: #ccc; }
+
+.list-group-item:first-child {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px; }
+
+.list-group-item {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  margin-bottom: -1px;
+  background-color: #fff;
+  border: 1px solid #ddd; }
+
+select {
+  height: 40px;
+  width: 64%;
+  border-radius: 3px;
+  text-align: center;
+  border: 1px solid #ccc;
+  outline: 0;
+  cursor: pointer;
+  padding-left: 15px;
+  margin: 0;
+  color: #333; }
+
+#searchInput {
+  height: 40px;
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  outline: 0;
+  cursor: pointer;
+  padding-left: 15px;
+  margin: 0 0 15px 0;
+  color: #333; }
+
+.watchlistContainerModalSelect > * {
+  vertical-align: middle; }
+
+.mat-fab, .mat-mini-fab {
+  background-color: #FFF;
+  -webkit-transition: opacity 0.5s ease;
+  -moz-transition: opacity 0.5s ease;
+  -o-transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease; }
+
+/*# sourceMappingURL=wledit.component.css.map */

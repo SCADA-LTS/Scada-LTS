@@ -177,7 +177,7 @@
 
 .header {
   overflow: hidden;
-  z-index: 9999;
+  z-index: 999999;
   width: 100%;
   min-width: 320px;
   background-color: #FFFFFF;
@@ -190,7 +190,7 @@
 .userTools {
   float: right;
   margin-right: 50px;
-  z-index: 99;
+  z-index: 999999;
   -webkit-transition: 0.5s margin ease;
   -moz-transition: 0.5s margin ease;
   -ms-transition: 0.5s margin ease;
@@ -321,6 +321,7 @@ a {
   margin-left: 250px;
   padding: 66px 0 34px;
   min-height: 500px;
+  z-index: -99999999999;
   -webkit-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
   -moz-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
   -ms-transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1);
@@ -344,7 +345,8 @@ a {
   transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1); }
 
 .contentInside {
-  padding: 40px; }
+  padding: 40px;
+  z-index: -99999999; }
 
 /* MEDIA QUERIES */
 @media (max-width: 1200px) {

@@ -23,16 +23,6 @@
             <button md-mini-fab (click)="refreshTree()" mdTooltip="Refresh tree" [mdTooltipPosition]="'below'"><md-icon>autorenew</md-icon></button>
         </div>
 
-        
-        <div id="viewsHierarchyDiv">
-        </div>
-    </div>
-
-    <div id="infoDialog" title="Info">
-        <p id="infoDialogText">Select view, not folder</p> 
-    </div>
-
-    
     <div id="addFolder" title="Add folder">
         <p id="validateTipAddFolder">All form fields are required.</p>
         <br/>
@@ -55,10 +45,6 @@
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
-    </div>
-
-    <div id="dialogConfirmDelete" title="Do you dell folder?">
-        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure?</p>
     </div>
             
     <iframe src="/ScadaBR/views.shtm" frameborder="0" allowfullscreen id="ifr"></iframe>

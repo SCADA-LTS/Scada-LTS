@@ -32,17 +32,23 @@ export class ViewsComponent implements OnInit {
       console.log("this.editDialogTree:"+this.getEditDialogTree());
   }
 
-  loadIframe(){
-    
-    this.http.get(`../ScadaBR//api/view_hierarchy/getFirstViewId`)
-            .subscribe(res => {
-                var view = res.json();
-                console.log(view);
-                $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+view.key).on('load', function() {
-                  $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #graphical').hide();
-                  $('#infoSelectedViews').text(view.title);
-                });
-            });
+  // loadIframe(){
+  //
+  //   this.http.get(`../ScadaBR//api/view_hierarchy/getFirstViewId`)
+  //           .subscribe(res => {
+  //               var view = res.json();
+  //               console.log(view);
+  //               $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+view.key).on('load', function() {
+  //                 $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #graphical').hide();
+  //                 $('#infoSelectedViews').text(view.title);
+  //               });
+  //           });
+  // }
+
+  loadIframe() {
+    $('#ifr').on('load', function () {
+      $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').hide();
+    });
   }
 
   refreshTree() {
@@ -247,6 +253,7 @@ export class ViewsComponent implements OnInit {
   }
 
   ngOnInit(){
+    this.loadIframe();
     $( "#dialogViewsHierarchy" ).dialog({
       autoOpen: false,
       show: {

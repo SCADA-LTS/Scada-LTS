@@ -130,7 +130,7 @@ select
 h2
   font-size: 14px
 
-md-card
+.md-card
   overflow: hidden
   +transition(height .5s ease)
 
@@ -230,7 +230,7 @@ md-card
   min-height: 87%
   width: 94%
   top: 70px
-  background-color: rgba(255, 255, 255, 0.8)
+  background-color: rgba(255, 255, 255, 0.5)
   .spinner
     position: absolute
     top: 36%
@@ -242,6 +242,7 @@ md-card
   z-index: 5
   opacity: 0
   top: 15px
+  left: 73px
   +transition(all .4s ease)
   button
     width: 20px
@@ -281,3 +282,14 @@ md-card
 .moveChartListAndSettings
   margin-top: 0
   +transition(all .3s ease-in)
+
+.urlButton
+  z-index: 5
+  top: 0
+  +transition(all .4s ease-in)
+
+.urlButtonStageTwo
+  top: 36px
+  +transition(all .4s ease-in)
+
+

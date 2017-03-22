@@ -53,10 +53,12 @@ export class AppBodyComponent implements OnInit {
         } else {
             this.isMenuShrunken = !this.isMenuShrunken;
         }
-        setTimeout(() => {
-            WatchlistComponent.fireEvent.next(true);
-        }, 500);
-        console.log('Event Fired');
+        if ($('#plotly') !== null) {
+            setTimeout(() => {
+                WatchlistComponent.fireEvent.next(true);
+            }, 500);
+            console.log('Event Fired');
+        }
     }
 
 
