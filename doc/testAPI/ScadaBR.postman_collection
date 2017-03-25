@@ -1,0 +1,272 @@
+{
+	"variables": [],
+	"info": {
+		"name": "ScadaBR",
+		"_postman_id": "f0d111a3-2b29-a0c0-bc73-bea1a75f7e03",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "AuthenticationAPI",
+			"description": "",
+			"item": [
+				{
+					"name": "http://localhost/ScadaBR/api/auth/admin/admin",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/auth/no/user",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/auth/no/user",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "shoud return false"
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/auth/isLogged/admin",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/auth/isLogged/admin",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/auth/logout/admin",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/auth/logout/admin",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PointPropertiesAPI",
+			"description": "",
+			"item": [
+				{
+					"name": "http://localhost/ScadaBR/api/auth/admin/admin copy",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/point_properties/getProperties/DP_041509",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/point_properties/getProperties/DP_041509",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PointValueAPI",
+			"description": "",
+			"item": [
+				{
+					"name": "http://localhost/ScadaBR/api/auth/admin/admin copy",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/point_value/getValue/DP_041509",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/point_value/getValue/DP_041509",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/translate/name",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/point_value/getValuesFromTime/1428379203000/DP_041509",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TranslateAPI",
+			"description": "",
+			"item": [
+				{
+					"name": "http://localhost/ScadaBR/api/translate/name",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/translate/name",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UtilsAPI",
+			"description": "",
+			"item": [
+				{
+					"name": "http://localhost/ScadaBR/api/utils/getTs",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/utils/getTs",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ViewHierarchyAPI",
+			"description": "",
+			"item": [
+				{
+					"name": "http://localhost/ScadaBR/api/auth/admin/admin copy",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/view_hierarchy/getAll",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/view_hierarchy/getAll",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/view_hierarchy/getFirstViewId",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/view_hierarchy/getFirstViewId",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "WatchListAPI",
+			"description": "",
+			"item": [
+				{
+					"name": "http://localhost/ScadaBR/api/auth/admin/admin copy",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/watchlist/getNames",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/watchlist/getNames",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/watchlist/getPoints/WL_614464",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/watchlist/getPoints/WL_614464",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost/ScadaBR/api/watchlist/getChartData/{xid}/{fromData}/{toData}",
+					"request": {
+						"url": "http://localhost/ScadaBR/api/watchlist/getChartData/WL_614464/1428379203000/1491537603000",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

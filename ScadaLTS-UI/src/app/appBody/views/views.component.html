@@ -2,65 +2,50 @@
 
     <h2>Graphic views.</h2>
 
-    <!--<div class="elements">-->
-        <!--<button md-mini-fab><md-icon>zoom_out_map</md-icon></button>-->
-        <!--<button md-mini-fab><md-icon>edit</md-icon></button>-->
-        <!--<button md-mini-fab><md-icon>note_add</md-icon></button>-->
-        <!--<span>|</span>-->
-        <!--<span id="infoSelectedViews">Selected views</span>-->
-        <!--<span>|</span>-->
-        <!--<button md-mini-fab (click)="showViewHierarchy()" mdTooltip="Show view hierarchy" [mdTooltipPosition]="'below'"><md-icon>find_in_page</md-icon></button>-->
-        <!---->
-    <!--</div>-->
-    <!---->
-    <!--<div id="dialogViewsHierarchy" title="Select view">-->
-        <!---->
-        <!--<div>-->
-            <!--<button md-mini-fab (click)="createNewFolder()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>-->
-            <!--<button md-mini-fab (click)="editFolder()" mdTooltip="Edit folder" [mdTooltipPosition]="'below'"><md-icon>folder</md-icon></button>-->
-            <!--<button md-mini-fab (click)="deleteFolder()" mdTooltip="Delete folder" [mdTooltipPosition]="'below'"><md-icon>folder_open</md-icon></button>-->
-            <!--<button md-mini-fab (click)="refreshTree()" mdTooltip="Refresh tree" [mdTooltipPosition]="'below'"><md-icon>autorenew</md-icon></button>-->
-        <!--</div>-->
+    <div class="elements">
+        <!--
+        <button md-mini-fab><md-icon>zoom_out_map</md-icon></button>
+        <button md-mini-fab><md-icon>edit</md-icon></button>
+        <button md-mini-fab><md-icon>note_add</md-icon></button>-->
+        <span>|</span>
+        <span id="infoSelectedViews">Selected views</span>
+        <span>|</span>
+        <button md-mini-fab (click)="showViewHierarchy()" mdTooltip="Show view hierarchy" [mdTooltipPosition]="'below'"><md-icon>find_in_page</md-icon></button>
+        
+    </div>
+    
+    <div id="dialogViewsHierarchy" title="Select view">
+        
+        <div>
+            <button md-mini-fab (click)="createNewFolder()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>
+            <button md-mini-fab (click)="editFolder()" mdTooltip="Edit folder" [mdTooltipPosition]="'below'"><md-icon>folder</md-icon></button>
+            <button md-mini-fab (click)="deleteFolder()" mdTooltip="Delete folder, view (move to root)" [mdTooltipPosition]="'below'"><md-icon>folder_open</md-icon></button>
+            <button md-mini-fab (click)="refreshTree()" mdTooltip="Refresh tree" [mdTooltipPosition]="'below'"><md-icon>autorenew</md-icon></button>
+        </div>
 
-        <!---->
-        <!--<div id="viewsHierarchyDiv">-->
-        <!--</div>-->
-    <!--</div>-->
+    <div id="addFolder" title="Add folder">
+        <p id="validateTipAddFolder">All form fields are required.</p>
+        <br/>
+        <form>
+            <fieldset>
+                <label for="nameAddFolder">Name</label>
+                <input type="text" name="nameAddFolder" id="nameAddFolder" value="" class="text ui-widget-content ui-corner-all">
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
 
-    <!--<div id="infoDialog" title="Info">-->
-        <!--<p id="infoDialogText">Select view, not folder</p> -->
-    <!--</div>-->
-
-    <!---->
-    <!--<div id="addFolder" title="Add folder">-->
-        <!--<p id="validateTipAddFolder">All form fields are required.</p>-->
-        <!--<br/>-->
-        <!--<form>-->
-            <!--<fieldset>-->
-                <!--<label for="nameAddFolder">Name</label>-->
-                <!--<input type="text" name="nameAddFolder" id="nameAddFolder" value="" class="text ui-widget-content ui-corner-all">-->
-                <!--&lt;!&ndash; Allow form submission with keyboard without duplicating the dialog button &ndash;&gt;-->
-                <!--<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">-->
-            <!--</fieldset>-->
-        <!--</form>-->
-    <!--</div>-->
-
-    <!--<div id="editFolder" title="Edit folder">-->
-        <!--<p class="validateTips">All form fields are required.</p>-->
-        <!--<br/>-->
-        <!--<form>-->
-            <!--<fieldset>-->
-                <!--<label for="nameEditFolder">Name</label>-->
-                <!--<input type="text" name="nameEditFolder" id="nameEditFolder" value="" class="text ui-widget-content ui-corner-all">-->
-                <!--&lt;!&ndash; Allow form submission with keyboard without duplicating the dialog button &ndash;&gt;-->
-                <!--<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">-->
-            <!--</fieldset>-->
-        <!--</form>-->
-    <!--</div>-->
-
-    <!--<div id="dialogConfirmDelete" title="Do you dell folder?">-->
-        <!--<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure?</p>-->
-    <!--</div>-->
+    <div id="editFolder" title="Edit folder">
+        <p class="validateTips">All form fields are required.</p>
+        <br/>
+        <form>
+            <fieldset>
+                <label for="nameEditFolder">Name</label>
+                <input type="text" name="nameEditFolder" id="nameEditFolder" value="" class="text ui-widget-content ui-corner-all">
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
             
     <iframe src="/ScadaBR/views.shtm" frameborder="0" allowfullscreen id="ifr"></iframe>
     

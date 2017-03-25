@@ -72,6 +72,10 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 
 * <https://github.com/wisyr> Angular 2
 
+**Arkadiusz Parafiniuk**
+
+* <https://github.com/ArkadiuszParafiniuk>
+
 **Mateusz Kaproń**
 
 * <https://github.com/matkapron>
