@@ -1,6 +1,5 @@
 import {Component, Inject, OnInit, OnDestroy, NgZone} from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {Http, URLSearchParams, Headers, Response} from '@angular/http';
+import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import {Subject} from 'rxjs/Subject';
@@ -61,16 +60,11 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     onlyLiveChartActive: boolean = true;
     isDotLineMode: boolean = false;
     dateFromContainer: number;
+    isLatestActive: boolean = false;
 
 
-    constructor(@Inject(Http) private http: Http, public zone: NgZone, private router: Router, private route: ActivatedRoute, public snackBar: MdSnackBar) {};
-
-
-    openSnackBar(message: string, action: string) {
-        this.snackBar.open(message, action, {
-            duration: 2000,
-        });
-    }
+    constructor(@Inject(Http) private http: Http, public zone: NgZone, public snackBar: MdSnackBar) {
+    };
 
     updateWatchlistTable(xid) {
         this.zoomEvent = false;
@@ -88,6 +82,8 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                     this.specifyDate();
                     this.getDataFromSpecifiedTimeToNow();
                 }, 500);
+            }, err => {
+                console.error('An error occured.' + err);
             });
         this.motherOfDragons = true;
     };
@@ -135,7 +131,8 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 Observable.forkJoin(
                     this.watchlistElements.map(v => {
                         return this.http.get(`/ScadaBR/api/point_value/getValuesFromTime/${this.actualDate - (this.dateFromContainer * 1000 * (this.dateFromUnit == 'minutes' ? 60 : this.dateFromUnit == 'hours' ? 3600 : this.dateFromUnit == 'days' ? 86400 : 1))}/${v.xid}`)
-                            .map(res => res.json());
+                            .map(res => res.json())
+                            .catch(err => this.handle(err));
                     })
                 ).subscribe(res => {
                     this.oldValues = res;
@@ -157,11 +154,11 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         this.isFromSpecifiedDataLoadActive = false;
         this.isAnyRequestActive = true;
         this.isRedrawingStopped = true;
-        this.range1 = this.isRequestTimeRangeActiveAndUndone ? (Date.parse(this.dateRange1) - 3600000) : Date.parse(this.chartLayout.xaxis.range[0]);
-        this.range2 = this.isRequestTimeRangeActiveAndUndone ? (Date.parse(this.dateRange2) - 3600000) : Date.parse(this.chartLayout.xaxis.range[1]);
+        this.range1 = this.isRequestTimeRangeActiveAndUndone ? (Date.parse(this.dateRange1) - 7200000) : Date.parse(this.chartLayout.xaxis.range[0]);
+        this.range2 = this.isRequestTimeRangeActiveAndUndone ? (this.isLatestActive ? this.actualDate : (Date.parse(this.dateRange2) - 7200000)) : Date.parse(this.chartLayout.xaxis.range[1]);
         if (this.isRequestTimeRangeActiveAndUndone) {
-            this.chartLayout.xaxis.range[0] = Date.parse(this.dateRange1) - 3600000;
-            this.chartLayout.xaxis.range[1] = Date.parse(this.dateRange2) - 3600000;
+            this.chartLayout.xaxis.range[0] = Date.parse(this.dateRange1) - 7200000;
+            this.chartLayout.xaxis.range[1] = this.isLatestActive ? this.actualDate : Date.parse(this.dateRange2) - 7200000;
         }
         this.chartData.forEach(v => {
             v.x = [];
@@ -170,11 +167,15 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         Observable.forkJoin(
             this.watchlistElements.map(v => {
                 return this.http.get(`/ScadaBR/api/watchlist/getChartData/${v.xid}/${this.range1}/${this.range2}`)
-                    .map(res => res.json());
+                    .map(res => res.json())
+                    .catch(err => this.handle(err));
             })
         ).subscribe(res => {
             this.oldValues = res;
-            this.chartData.forEach((_, i) => this.oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this.oldValues[i].values[j].ts)) && this.chartData[i].y.push(this.oldValues[i].values[j].value)));
+            this.chartData.forEach((_, i) => this.oldValues[i].values.forEach((_, j) => {
+                this.chartData[i].x.push(new Date(this.oldValues[i].values[j].ts));
+                this.chartData[i].y.push(this.oldValues[i].values[j].value);
+            }));
             this.redrawChart();
             if (Date.parse(this.chartLayout.xaxis.range[1]) >= this.actualDate) {
                 this.isRedrawingStopped = false;
@@ -252,6 +253,8 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         this.http.get(`/ScadaBR/api/utils/getTs`)
             .subscribe(res => {
                 this.actualDate = res.json();
+            }, err => {
+                console.error('An error occured while getting actual date.' + err);
             });
     }
 
@@ -331,7 +334,10 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 this.actualDate = res.json();
                 this.dateRange1 = `${new Date(this.actualDate).getFullYear()}-${new Date(this.actualDate).getMonth() < 10 ? '0' + (new Date(this.actualDate).getMonth() + 1) : new Date(this.actualDate).getMonth() + 1}-${new Date(this.actualDate).getDate() < 10 ? '0' + new Date(this.actualDate).getDate() : new Date(this.actualDate).getDate()}T${new Date(this.actualDate).getHours() < 10 ? '0' + new Date(this.actualDate).getHours() : new Date(this.actualDate).getHours()}:${new Date(this.actualDate).getMinutes() < 10 ? '0' + new Date(this.actualDate).getMinutes() : new Date(this.actualDate).getMinutes()}`;
                 this.dateRange2 = `${new Date(this.actualDate).getFullYear()}-${new Date(this.actualDate).getMonth() < 10 ? '0' + (new Date(this.actualDate).getMonth() + 1) : new Date(this.actualDate).getMonth() + 1}-${new Date(this.actualDate).getDate() < 10 ? '0' + new Date(this.actualDate).getDate() : new Date(this.actualDate).getDate()}T${new Date(this.actualDate).getHours() < 10 ? '0' + new Date(this.actualDate).getHours() : new Date(this.actualDate).getHours()}:${new Date(this.actualDate).getMinutes() < 10 ? '0' + new Date(this.actualDate).getMinutes() : new Date(this.actualDate).getMinutes()}`;
+            }, err => {
+                console.error('An error occured.' + err);
             });
+
     }
 
     setRanges() {
@@ -393,6 +399,12 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         }
     }
 
+    openSnackBar(message: string, action: string) {
+        this.snackBar.open(message, action, {
+            duration: 2000,
+        });
+    }
+
     setURL() {
         location.hash = location.hash.replace(/\?.+/, '');
         this.directURL = location.protocol + "//" + location.hostname + location.pathname + location.hash + "?" + "name=" + this.selectedWatchlist.name + "&chartHidden=" +
@@ -419,6 +431,8 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 }
                 this.intervalSpecifiedTimeToNow();
                 this.intervalLiveChart();
+            }, err => {
+                console.error('An error occured.' + err);
             });
 
         this.chartLayout = {
