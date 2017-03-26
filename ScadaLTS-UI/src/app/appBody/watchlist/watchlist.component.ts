@@ -186,7 +186,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             if (this.isRequestTimeRangeActiveAndUndone) {
                 this.isRequestTimeRangeActiveAndUndone = false;
             }
-            this.setRanges();
+            //this.setRanges();
         });
     }
 

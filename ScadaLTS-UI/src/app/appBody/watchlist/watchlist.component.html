@@ -32,7 +32,6 @@
             </select>
         </div>
         <p *ngIf="actualDate" class="lastActualizationDate">Last actualization: {{ actualDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
-        <!--<button md-raised-button mdTooltip="Show watchlist settings" (click)="x()" class="modalBtn" [mdTooltipPosition]="'below'"><md-icon>build</md-icon></button>-->
         <table *ngIf="_values.length" class="dataTable">
             <tr *ngFor="let elem of _values">
                 <td>{{ elem.name }}</td>
