@@ -10,9 +10,6 @@
             <a md-mini-fab (click)="toggleLineMode()" mdTooltip="Toggle line mode" [mdTooltipPosition]="'below'"><md-icon>brush</md-icon></a>
             <a md-mini-fab (click)="toggleLegend()" mdTooltip="Toggle legend" [mdTooltipPosition]="'below'"><md-icon>format_list_bulleted</md-icon></a>
             <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
-            <a md-mini-fab (click)="initiateChart()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
-            <a md-mini-fab (click)="redrawChart()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
-            <a md-mini-fab (click)="autorangeChart()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
         </div>
         <div id="plotlyLoader" *ngIf="isAnyRequestActive">
             <div class="spinner">
@@ -30,8 +27,8 @@
 <div class="dataTableContainer col-md-8 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
     <md-card>
         <div>
-            <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid);deactivateInterval();initiateInterval()">
-                <option *ngFor="let item of _watchlists" [ngValue]="item">{{ item.name }}</option>
+            <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid)">
+                <option *ngFor="let item of watchlists" [ngValue]="item">{{ item.name }}</option>
             </select>
         </div>
         <p *ngIf="actualDate" class="lastActualizationDate">Last actualization: {{ actualDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>

@@ -18,10 +18,10 @@ export class WatchlistComponent implements OnInit, OnDestroy {
 
     public static fireEvent: Subject<boolean> = new Subject();
 
-    _watchlists: Array<WatchlistComponent> = [];
-    _watchlistElements: Array<WatchlistComponent> = [];
+    watchlists: Array<WatchlistComponent> = [];
+    watchlistElements: Array<WatchlistComponent> = [];
     _values: Array<WatchlistComponent> = [];
-    _oldValues: Array<WatchlistComponent> = [];
+    oldValues: Array<WatchlistComponent> = [];
     xid: string;
     value: string;
     ts: number;
@@ -39,7 +39,6 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     counter: number = 0;
     isChartHidden: boolean = true;
     values;
-    help2: boolean = true;
     plot;
     range1: number;
     range2: number;
@@ -52,7 +51,6 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     dateRange1: any;
     dateRange2: any;
     motherOfDragons: boolean = true;
-    chart: boolean = true;
     activeState: string;
     isRedrawingStopped: boolean = false;
     areChartButtonsVisible: boolean = false;
@@ -62,52 +60,10 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     directURL: string;
     onlyLiveChartActive: boolean = true;
     isDotLineMode: boolean = false;
+    dateFromContainer: number;
 
 
-    constructor(@Inject(Http) private http: Http, public zone: NgZone, private router: Router, private route: ActivatedRoute, public snackBar: MdSnackBar) {
-
-        WatchlistComponent.fireEvent.subscribe(() => {
-            this.relay();
-        });
-
-
-        this.http.get(`/ScadaBR/api/watchlist/getNames`)
-            .subscribe(res => {
-                this._watchlists = res.json();
-                this.updateWatchlistTable(this._watchlists[0].xid);
-
-                if (window.location.hash.match(/name=(\w+)/)) {
-                    let name = window.location.hash.match(/name=(\w+)/)[1];
-                    // let obj = {};
-                    // obj['xid'] = window.location.hash.match(/xid=(\w+)/)[1];
-                    // obj['name'] = window.location.hash.match(/name=(\w+)/)[1];
-                    // this.selectedWatchlist = obj;
-                    let vl = this._watchlists.filter(v => v.name == name);
-                    this.selectedWatchlist = vl[0];
-                    console.log('wl url')
-
-                } else {
-                    this.selectedWatchlist = this._watchlists[0];
-                    console.log('wl default');
-                    console.log(this.selectedWatchlist);
-                }
-
-                this.intervalSpecifiedTimeToNow();
-                this.intervalLiveChart();
-            });
-        this.chartLayout = {
-            autosize: true,
-            height: 600,
-            showlegend: true,
-            legend: {
-                orientation: 'h',
-                bgcolor: 'transparent',
-                y: -0.17,
-                x: 0
-            }
-        };
-
-    };
+    constructor(@Inject(Http) private http: Http, public zone: NgZone, private router: Router, private route: ActivatedRoute, public snackBar: MdSnackBar) {};
 
 
     openSnackBar(message: string, action: string) {
@@ -121,10 +77,10 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         this.isAnyRequestActive = true;
         this.checkForMultistatesAndBinaries = true;
         this.activeState = '';
-        this._watchlistElements = [];
+        this.watchlistElements = [];
         this.http.get(`/ScadaBR/api/watchlist/getPoints/${xid}`)
             .subscribe(res => {
-                this._watchlistElements = res.json();
+                this.watchlistElements = res.json();
                 this.liveChart();
                 this.isAnyRequestActive = false;
                 setTimeout(() => {
@@ -159,8 +115,6 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         return Promise.reject(error.message || error);
     };
 
-    dateFromContainer: number;
-
     specifyDate() {
         this.dateFromContainer = this.dateFromInput || 1;
     }
@@ -179,64 +133,30 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             .subscribe(res => {
                 this.actualDate = res.json();
                 Observable.forkJoin(
-                    this._watchlistElements.map(v => {
+                    this.watchlistElements.map(v => {
                         return this.http.get(`/ScadaBR/api/point_value/getValuesFromTime/${this.actualDate - (this.dateFromContainer * 1000 * (this.dateFromUnit == 'minutes' ? 60 : this.dateFromUnit == 'hours' ? 3600 : this.dateFromUnit == 'days' ? 86400 : 1))}/${v.xid}`)
                             .map(res => res.json());
                     })
                 ).subscribe(res => {
-                    this._oldValues = res;
-                    this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
+                    this.oldValues = res;
+                    this.chartData.forEach((_, i) => this.oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this.oldValues[i].values[j].ts)) && this.chartData[i].y.push(this.oldValues[i].values[j].value)));
                     this.intervalSpecifiedTimeToNow();
                     this.redrawChart();
                     this.autorangeChart();
                     this.isRequestSpecifiedTimeActiveAndUndone = false;
                     this.isChartHidden = false;
                     this.isAnyRequestActive = false;
-                    //this.setRanges();
                     this.isFromSpecifiedDataLoadActive = true;
                 });
                 this.activeState = 'specifiedTime';
-                console.log('specified active')
             });
     }
-
-    // getDataFromTimeRange() {
-    //     this.isFromSpecifiedDataLoadActive = false;
-    //     this.zoomEvent = true;
-    //     this.isAnyRequestActive = true;
-    //     //clearInterval(this.loadPoints);
-    //     this.isRequestTimeRangeActiveAndUndone = true;
-    //     this.isRedrawingStopped = true;
-    //     this.chartData.forEach(v => {
-    //         v.x = [];
-    //         v.y = []
-    //     });
-    //     Observable.forkJoin(
-    //         this._watchlistElements.map(v => {
-    //             return this.http.get(`/ScadaBR/api/watchlist/getChartData/${v.xid}/${(Date.parse(this.dateRange1) - 3600000)}/${(Date.parse(this.dateRange2) - 3600000)}`)
-    //                 .map(res => res.json())
-    //                 .catch(this.handle)
-    //         })
-    //     ).subscribe(res => {
-    //         this._oldValues = res;
-    //         this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
-    //         this.autorangeChart();
-    //         this.redrawChart();
-    //         this.isRequestTimeRangeActiveAndUndone = false;
-    //         this.isChartHidden = false;
-    //         this.isAnyRequestActive = false;
-    //     });
-    //     this.activeState = 'timeRange';
-    //     console.log('time range active')
-    // }
 
     loadNewDataAfterZoom() {
         clearInterval(this.loadPointsFromSpecifiedTimeToNow);
         this.isFromSpecifiedDataLoadActive = false;
         this.isAnyRequestActive = true;
-        //clearInterval(this.loadPoints);
         this.isRedrawingStopped = true;
-        console.log(this.isRequestTimeRangeActiveAndUndone);
         this.range1 = this.isRequestTimeRangeActiveAndUndone ? (Date.parse(this.dateRange1) - 3600000) : Date.parse(this.chartLayout.xaxis.range[0]);
         this.range2 = this.isRequestTimeRangeActiveAndUndone ? (Date.parse(this.dateRange2) - 3600000) : Date.parse(this.chartLayout.xaxis.range[1]);
         if (this.isRequestTimeRangeActiveAndUndone) {
@@ -248,47 +168,41 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             v.y = []
         });
         Observable.forkJoin(
-            this._watchlistElements.map(v => {
+            this.watchlistElements.map(v => {
                 return this.http.get(`/ScadaBR/api/watchlist/getChartData/${v.xid}/${this.range1}/${this.range2}`)
                     .map(res => res.json());
             })
         ).subscribe(res => {
-            this._oldValues = res;
-            this.chartData.forEach((_, i) => this._oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this._oldValues[i].values[j].ts)) && this.chartData[i].y.push(this._oldValues[i].values[j].value)));
-            //this.autorangeChart();
+            this.oldValues = res;
+            this.chartData.forEach((_, i) => this.oldValues[i].values.forEach((_, j) => this.chartData[i].x.push(new Date(this.oldValues[i].values[j].ts)) && this.chartData[i].y.push(this.oldValues[i].values[j].value)));
             this.redrawChart();
             if (Date.parse(this.chartLayout.xaxis.range[1]) >= this.actualDate) {
                 this.isRedrawingStopped = false;
                 this.onlyLiveChartActive = true;
-
-                //this.initiateInterval();
             } else {
                 this.isRedrawingStopped = true;
             }
             this.isAnyRequestActive = false;
-
-            //this.activeState = '';
-            //this.setRanges();
-            console.log('zoom range active')
             if (this.isRequestTimeRangeActiveAndUndone) {
                 this.isRequestTimeRangeActiveAndUndone = false;
             }
+            this.setRanges();
         });
     }
 
     liveChart() {
         this.getActualDate();
         Observable.forkJoin(
-            this._watchlistElements.map(v => {
+            this.watchlistElements.map(v => {
                 return this.http.get(`/ScadaBR/api/point_value/getValue/${v.xid}`)
                     .map(res => res.json());
             })
         ).subscribe(res => {
             this._values = res;
+
             if (this.isFillingDataNeeded) {
                 this.fillDataWithScheme();
             }
-
             if (this.checkForMultistatesAndBinaries) {
                 for (let i = 0; i < this._values.length; i++) {
                     if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
@@ -312,7 +226,6 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 this.checkForMultistatesAndBinaries = false;
             }
             this.plot = document.getElementById('plotly');
-
             if (this.motherOfDragons) {
                 this.plot.on('plotly_relayout', () => {
                     this.zone.run(() => {
@@ -320,14 +233,10 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                             this.loadNewDataAfterZoom();
                         }
                         this.isRedrawingStopped = false;
-
                     });
-
                 });
-
                 this.motherOfDragons = false;
             }
-
             for (let i = 0; i < 11; i++) {
                 let cb = () => {
                     this.isRedrawingStopped = true;
@@ -335,25 +244,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 };
                 document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
             }
-
-            //this.help2 = true;
-
-
-            // if (this.onlyLiveChartActive) {
-            //     this.chartData.forEach((v, i) => v.x.push(new Date()) && v.y.push(this._values[i].value));
-            // }
-
-            //if (this.chartData[0].x.length > 1) {
-            //    this.chartData.forEach(v => v['mode'] = 'lines');
-            // }
-
-            //if (this.isRedrawingStopped == false) {
-            // this.redrawChart();
-            // }
-            //this.setDefaultTimeRangeValues();
         });
-
-
     };
 
     //helping functions
@@ -423,7 +314,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         }, this.systemPerformance);
     }
 
-    intervalLiveChart(){
+    intervalLiveChart() {
         this.loadLiveChart = setInterval(() => {
             this.liveChart();
         }, 1000);
@@ -475,10 +366,9 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             this.isChartShrunked = true;
         }
         this.redrawChart();
-        console.log(this.selectedWatchlist)
     }
 
-    toggleLineMode(){
+    toggleLineMode() {
         if (this.isDotLineMode) {
             this.chartData.forEach(v => v.mode = 'lines');
             this.isDotLineMode = false;
@@ -512,20 +402,46 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        WatchlistComponent.fireEvent.subscribe(() => {
+            this.relay();
+        });
+
+        this.http.get(`/ScadaBR/api/watchlist/getNames`)
+            .subscribe(res => {
+                this.watchlists = res.json();
+                this.updateWatchlistTable(this.watchlists[0].xid);
+                if (window.location.hash.match(/name=(\w+)/)) {
+                    let name = window.location.hash.match(/name=(\w+)/)[1];
+                    let vl = this.watchlists.filter(v => v.name == name);
+                    this.selectedWatchlist = vl[0];
+                } else {
+                    this.selectedWatchlist = this.watchlists[0];
+                }
+                this.intervalSpecifiedTimeToNow();
+                this.intervalLiveChart();
+            });
+
+        this.chartLayout = {
+            autosize: true,
+            height: 600,
+            showlegend: true,
+            legend: {
+                orientation: 'h',
+                bgcolor: 'transparent',
+                y: -0.17,
+                x: 0
+            }
+        };
+
         this.getUserSystemPerformance();
         this.setDefaultTimeRangeValues();
-        //this.initiateChart();
 
         if (window.location.hash.match(/chartHidden=(\w+)/)) {
             this.isChartHidden = window.location.hash.match(/chartHidden=(\w+)/)[1] == 'true';
-        }
-
-        if (window.location.hash.match(/chartSmall=(\w+)/)) {
+            //} if (window.location.hash.match(/chartSmall=(\w+)/)) {
             this.isChartShrunked = window.location.hash.match(/chartSmall=(\w+)/)[1] == 'true';
             this.chartLayout.height = window.location.hash.match(/chartSmall=(\w+)/)[1] == 'true' ? 600 : 870;
-        }
-
-        if (window.location.hash.match(/legendHidden=(\w+)/)) {
+            //} if (window.location.hash.match(/legendHidden=(\w+)/)) {
             this.chartLayout.showlegend = window.location.hash.match(/legendHidden=(\w+)/)[1] == 'true';
             this.isFromSpecifiedDataLoadActive = window.location.hash.match(/specifiedActive=(\w+)(_\d)/)[1] == 'true';
             this.dateFromContainer = +window.location.hash.match(/(?!_)\d+(?=_)/)[0] || 1;
@@ -533,10 +449,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             this.dateFromInput = this.dateFromContainer;
             console.log('input from url');
         }
-
-
         this.getDataFromSpecifiedTimeToNow();
-
     }
 
     ngOnDestroy() {
