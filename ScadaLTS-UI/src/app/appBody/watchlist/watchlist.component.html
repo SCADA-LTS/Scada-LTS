@@ -32,8 +32,8 @@
             </select>
         </div>
         <p *ngIf="actualDate" class="lastActualizationDate">Last actualization: {{ actualDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
-        <table *ngIf="_values.length" class="dataTable">
-            <tr *ngFor="let elem of _values">
+        <table *ngIf="watchlistPointsValues.length" class="dataTable">
+            <tr *ngFor="let elem of watchlistPointsValues">
                 <td>{{ elem.name }}</td>
                 <td class="backlightOnDataChange">{{ elem.formattedValue }} {{ elem.suffix }}</td>
                 <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
@@ -70,8 +70,8 @@
                 <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange2" [disabled]="isLatestActive">
             </div>
             <div>
-                <button md-raised-button md-ripple (click)="isRequestTimeRangeActiveAndUndone = true;loadNewDataAfterZoom();activeState = 'timeRange'" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" mdTooltip="Load data from selected time range" [mdTooltipPosition]="'above'" class="buttonFromPast bottomButton">Load</button>
-                <md-checkbox (change)="isLatestActive = !isLatestActive" [mdTooltipPosition]="'above'" mdTooltip="Load data from selected time range" [disableRipple]="true" class="checkboxLatest">Latest</md-checkbox>
+                <button md-raised-button md-ripple (click)="isRequestTimeRangeActiveAndUndone = true;loadNewDataAfterZoom();activeState = 'timeRange';isChartHidden = false" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" mdTooltip="Load data from selected time range" [mdTooltipPosition]="'above'" class="buttonFromPast bottomButton">Load</button>
+                <md-checkbox (change)="isLatestActive = !isLatestActive" [mdTooltipPosition]="'above'" mdTooltip="Latest" [disableRipple]="true" class="checkboxLatest"></md-checkbox>
                 <div class="spinner spinnerTimeRange" *ngIf="false && isRequestTimeRangeActiveAndUndone">
                     <div class="bounce1"></div>
                     <div class="bounce2"></div>

@@ -7,24 +7,44 @@ declare let Plotly: any;
 declare let $: any;
 import {MdSnackBar} from '@angular/material';
 
+interface WatchlistPattern {
+    xid: string;
+    name: string;
+}
+
+interface WatchlistPoints {
+    name: string;
+    xid: string;
+}
+
+interface WatchlistPointsValues {
+    formattedValue: string;
+    name: string;
+    ts: number;
+    value: string,
+    xid: string,
+    type: string;
+}
+
 @Component({
     selector: 'watchlist',
     templateUrl: './watchlist.component.html',
     styleUrls: ['./watchlist.component.css']
 })
 
+
 export class WatchlistComponent implements OnInit, OnDestroy {
 
     public static fireEvent: Subject<boolean> = new Subject();
 
-    watchlists: Array<WatchlistComponent> = [];
+    watchlists: { xid: string, name: string }[];
     watchlistElements: Array<WatchlistComponent> = [];
-    _values: Array<WatchlistComponent> = [];
+    watchlistPointsValues: Array<WatchlistComponent> = [];
     oldValues: Array<WatchlistComponent> = [];
-    xid: string;
-    value: string;
+    xid: WatchlistPattern;
+    value: WatchlistPattern;
     ts: number;
-    name: any;
+    name: WatchlistPattern;
     type: string;
     loadPointsFromSpecifiedTimeToNow;
     loadLiveChart;
@@ -89,7 +109,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     };
 
     fillDataWithScheme() {
-        this._values.forEach((_, i) => {
+        this.watchlistPointsValues.forEach((_, i) => {
             this.chartData.push({
                 x: [],
                 y: [],
@@ -97,12 +117,12 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 line: {shape: '', width: 1},
                 mode: 'lines'
             });
-            if (this._values[i].type !== 'NumericValue') {
+            if (this.watchlistPointsValues[i].type !== 'NumericValue') {
                 this.chartData[i]['yaxis'] = 'y2';
                 this.chartData[i]['line'].shape = 'hv';
             }
         });
-        this.chartData.forEach((v, i) => v.name = this._values[i].name);
+        this.chartData.forEach((v, i) => v.name = this.watchlistPointsValues[i].name);
         this.isFillingDataNeeded = false;
     }
 
@@ -146,11 +166,9 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 });
                 this.activeState = 'specifiedTime';
             });
-        console.log('specified time');
     }
 
     loadNewDataAfterZoom() {
-        console.log('zoom event');
         clearInterval(this.loadPointsFromSpecifiedTimeToNow);
         this.isFromSpecifiedDataLoadActive = false;
         this.isAnyRequestActive = true;
@@ -200,14 +218,14 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                     .map(res => res.json());
             })
         ).subscribe(res => {
-            this._values = res;
+            this.watchlistPointsValues = res;
 
             if (this.isFillingDataNeeded) {
                 this.fillDataWithScheme();
             }
             if (this.checkForMultistatesAndBinaries) {
-                for (let i = 0; i < this._values.length; i++) {
-                    if (this._values[i].type == 'BinaryValue' || this._values[i].type == 'MultistateValue') {
+                for (let i = 0; i < this.watchlistPointsValues.length; i++) {
+                    if (this.watchlistPointsValues[i].type == 'BinaryValue' || this.watchlistPointsValues[i].type == 'MultistateValue') {
                         this.multistatesOrBinariesDetected = true;
                         break;
                     } else {
@@ -247,7 +265,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
             }
         });
-        console.log('live chart');
+        console.log(this.oldValues);
     };
 
     //helping functions
@@ -256,7 +274,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             .subscribe(res => {
                 this.actualDate = res.json();
             }, err => {
-                console.error('An error occured while getting actual date.' + err);
+                console.error('An error occured while getting actual date. ' + err);
             });
     }
 
@@ -274,13 +292,13 @@ export class WatchlistComponent implements OnInit, OnDestroy {
 
     changeNumericChartShape() {
         if (!this.counter) {
-            this._values.forEach((v, i) => v.type == 'NumericValue' ? this.chartData[i]['line'].shape = 'spline' : v);
+            this.watchlistPointsValues.forEach((v, i) => v.type == 'NumericValue' ? this.chartData[i]['line'].shape = 'spline' : v);
             this.counter++;
         } else if (this.counter == 1) {
-            this._values.forEach((v, i) => v.type == 'NumericValue' ? this.chartData[i]['line'].shape = 'hv' : v);
+            this.watchlistPointsValues.forEach((v, i) => v.type == 'NumericValue' ? this.chartData[i]['line'].shape = 'hv' : v);
             this.counter++;
         } else {
-            this._values.forEach((v, i) => v.type == 'NumericValue' ? this.chartData[i]['line'].shape = 'linear' : v);
+            this.watchlistPointsValues.forEach((v, i) => v.type == 'NumericValue' ? this.chartData[i]['line'].shape = 'linear' : v);
             this.counter = 0;
         }
         this.redrawChart();
