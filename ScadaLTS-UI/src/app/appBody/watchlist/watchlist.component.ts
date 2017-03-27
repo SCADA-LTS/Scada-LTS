@@ -141,15 +141,16 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                     this.redrawChart();
                     this.autorangeChart();
                     this.isRequestSpecifiedTimeActiveAndUndone = false;
-                    this.isChartHidden = false;
                     this.isAnyRequestActive = false;
                     this.isFromSpecifiedDataLoadActive = true;
                 });
                 this.activeState = 'specifiedTime';
             });
+        console.log('specified time');
     }
 
     loadNewDataAfterZoom() {
+        console.log('zoom event');
         clearInterval(this.loadPointsFromSpecifiedTimeToNow);
         this.isFromSpecifiedDataLoadActive = false;
         this.isAnyRequestActive = true;
@@ -246,6 +247,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
             }
         });
+        console.log('live chart');
     };
 
     //helping functions
@@ -320,7 +322,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     intervalLiveChart() {
         this.loadLiveChart = setInterval(() => {
             this.liveChart();
-        }, 1000);
+        }, this.systemPerformance);
     }
 
     deactivateInterval() {
@@ -429,8 +431,8 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 } else {
                     this.selectedWatchlist = this.watchlists[0];
                 }
-                this.intervalSpecifiedTimeToNow();
                 this.intervalLiveChart();
+                this.intervalSpecifiedTimeToNow();
             }, err => {
                 console.error('An error occured.' + err);
             });

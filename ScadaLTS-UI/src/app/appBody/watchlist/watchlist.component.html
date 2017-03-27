@@ -53,8 +53,8 @@
                 <option value="days">days</option>
             </select>
         </div>
-        <button md-raised-button md-ripple (click)="specifyDate();getDataFromSpecifiedTimeToNow();" [disabled]="isRequestSpecifiedTimeActiveAndUndone || isRequestTimeRangeActiveAndUndone" [ngClass]="{ 'active': activeState == 'specifiedTime' }" mdTooltip="Load data from selected time to now" [mdTooltipPosition]="'below'" class="buttonFromPast">Load</button>
-        <div class="spinner spinnerSpecifiedTime" *ngIf="isRequestSpecifiedTimeActiveAndUndone">
+        <button md-raised-button md-ripple (click)="specifyDate();getDataFromSpecifiedTimeToNow();isChartHidden = false" [disabled]="isRequestSpecifiedTimeActiveAndUndone || isRequestTimeRangeActiveAndUndone" [ngClass]="{ 'active': activeState == 'specifiedTime' }" mdTooltip="Load data from selected time to now" [mdTooltipPosition]="'below'" class="buttonFromPast">Load</button>
+        <div class="spinner spinnerSpecifiedTime" *ngIf="false && isRequestSpecifiedTimeActiveAndUndone">
             <div class="bounce1"></div>
             <div class="bounce2"></div>
             <div class="bounce3"></div>
@@ -71,8 +71,8 @@
             </div>
             <div>
                 <button md-raised-button md-ripple (click)="isRequestTimeRangeActiveAndUndone = true;loadNewDataAfterZoom();activeState = 'timeRange'" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" mdTooltip="Load data from selected time range" [mdTooltipPosition]="'above'" class="buttonFromPast bottomButton">Load</button>
-                <button md-raised-button md-ripple mdTooltip="Load data from selected time range" (click)="isLatestActive = !isLatestActive" [ngClass]="{ 'active': isLatestActive }" [mdTooltipPosition]="'above'" class="buttonFromPast bottomButton">Latest</button>
-                <div class="spinner spinnerTimeRange" *ngIf="isRequestTimeRangeActiveAndUndone">
+                <md-checkbox (change)="isLatestActive = !isLatestActive" [mdTooltipPosition]="'above'" mdTooltip="Load data from selected time range" [disableRipple]="true" class="checkboxLatest">Latest</md-checkbox>
+                <div class="spinner spinnerTimeRange" *ngIf="false && isRequestTimeRangeActiveAndUndone">
                     <div class="bounce1"></div>
                     <div class="bounce2"></div>
                     <div class="bounce3"></div>
