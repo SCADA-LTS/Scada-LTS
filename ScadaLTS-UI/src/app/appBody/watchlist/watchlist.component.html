@@ -1,5 +1,5 @@
 <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': !isChartHidden }" class="chartIconOpen" mdTooltip="{{ isChartHidden ? 'Reveal chart' : '' }}" [mdTooltipPosition]="'below'"><md-icon>vertical_align_bottom</md-icon></button>
-<button md-mini-fab mdTooltip="Copy URL" [ngClass]="{ 'urlButtonStageTwo': !isChartHidden }" [mdTooltipPosition]="'below'" class='urlButton' (click)="setURL();openSnackBar('URL copied to the clipboard.')" ngxClipboard [cbContent]="directURL"><md-icon>insert_link</md-icon></button>
+<button md-mini-fab mdTooltip="Copy URL with view settings" [ngClass]="{ 'urlButtonStageTwo': !isChartHidden }" [mdTooltipPosition]="'below'" class='urlButton' (click)="setURL();openSnackBar('URL copied to the clipboard.')" ngxClipboard [cbContent]="directURL"><md-icon>insert_link</md-icon></button>
 
 <div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'openFirstStage': !isChartHidden && isChartShrunked, 'openSecondStage': !isChartHidden && !isChartShrunked }" (window:resize)="relay()">
     <md-card class="md-card" (mouseenter)="areChartButtonsVisible = true" (mouseleave)="areChartButtonsVisible = false">
@@ -7,6 +7,7 @@
             <a md-mini-fab (click)="increaseChartLineWidth()" mdTooltip="Increase line width" [mdTooltipPosition]="'below'"><md-icon>add</md-icon></a>
             <a md-mini-fab (click)="decreaseChartLineWidth()" mdTooltip="Decrease line width" [mdTooltipPosition]="'below'"><md-icon>remove</md-icon></a>
             <a md-mini-fab (click)="changeNumericChartShape()" mdTooltip="Toggle line shape" [mdTooltipPosition]="'below'"><md-icon>show_chart</md-icon></a>
+            <a md-mini-fab (click)="toggleLineMode()" mdTooltip="Toggle line mode" [mdTooltipPosition]="'below'"><md-icon>brush</md-icon></a>
             <a md-mini-fab (click)="toggleLegend()" mdTooltip="Toggle legend" [mdTooltipPosition]="'below'"><md-icon>format_list_bulleted</md-icon></a>
             <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
         </div>
@@ -23,29 +24,28 @@
     </md-card>
 </div>
 
-<div class="dataTableContainer col-md-6 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
+<div class="dataTableContainer col-md-8 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
     <md-card>
         <div>
-            <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid);deactivateInterval();initiateInterval()">
-                <option *ngFor="let item of _watchlists" [ngValue]="item">{{ item.name }}</option>
+            <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid)">
+                <option *ngFor="let item of watchlists" [ngValue]="item">{{ item.name }}</option>
             </select>
         </div>
         <p *ngIf="actualDate" class="lastActualizationDate">Last actualization: {{ actualDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
-        <!--<button md-raised-button mdTooltip="Show watchlist settings" (click)="x()" class="modalBtn" [mdTooltipPosition]="'below'"><md-icon>build</md-icon></button>-->
         <table *ngIf="_values.length" class="dataTable">
             <tr *ngFor="let elem of _values">
                 <td>{{ elem.name }}</td>
-                <td class="backlightOnDataChange">{{ elem.formattedValue }}</td>
+                <td class="backlightOnDataChange">{{ elem.formattedValue }} {{ elem.suffix }}</td>
                 <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
             </tr>
         </table>
     </md-card>
 </div>
 
-<div class="chartSettings col-md-6 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
+<div class="chartSettings col-md-4 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
     <md-card>
         <div class="elementsFromPast">
-            <input type="number" min="1" max="100" class="inputFromPast" [(ngModel)]="dateFrom" pattern="\d+">
+            <input type="number" min="1" max="100" class="inputFromPast" [(ngModel)]="dateFromInput" pattern="\d+">
             <select [(ngModel)]="dateFromUnit" class="selectFromPast">
                 <option value="seconds">seconds</option>
                 <option value="minutes">minutes</option>
@@ -53,8 +53,8 @@
                 <option value="days">days</option>
             </select>
         </div>
-        <button md-raised-button md-ripple (click)="getDataFromSpecifiedTimeToNow()" [disabled]="isRequestSpecifiedTimeActiveAndUndone || isRequestTimeRangeActiveAndUndone" [ngClass]="{ 'active': activeState == 'specifiedTime' }" mdTooltip="Load data from selected time to now" [mdTooltipPosition]="'below'" class="buttonFromPast">Load data</button>
-        <div class="spinner spinnerSpecifiedTime" *ngIf="isRequestSpecifiedTimeActiveAndUndone">
+        <button md-raised-button md-ripple (click)="specifyDate();getDataFromSpecifiedTimeToNow();isChartHidden = false" [disabled]="isRequestSpecifiedTimeActiveAndUndone || isRequestTimeRangeActiveAndUndone" [ngClass]="{ 'active': activeState == 'specifiedTime' }" mdTooltip="Load data from selected time to now" [mdTooltipPosition]="'below'" class="buttonFromPast">Load</button>
+        <div class="spinner spinnerSpecifiedTime" *ngIf="false && isRequestSpecifiedTimeActiveAndUndone">
             <div class="bounce1"></div>
             <div class="bounce2"></div>
             <div class="bounce3"></div>
@@ -67,11 +67,12 @@
             </div>
             <div class="timeRangeElementsChild">
                 To:
-                <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange2">
+                <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange2" [disabled]="isLatestActive">
             </div>
             <div>
-                <button md-raised-button md-ripple (click)="getDataFromTimeRange()" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" mdTooltip="Load data from selected time range" [mdTooltipPosition]="'below'" class="buttonFromPast bottomButton">Load data</button>
-                <div class="spinner spinnerTimeRange" *ngIf="isRequestTimeRangeActiveAndUndone">
+                <button md-raised-button md-ripple (click)="isRequestTimeRangeActiveAndUndone = true;loadNewDataAfterZoom();activeState = 'timeRange'" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" mdTooltip="Load data from selected time range" [mdTooltipPosition]="'above'" class="buttonFromPast bottomButton">Load</button>
+                <md-checkbox (change)="isLatestActive = !isLatestActive" [mdTooltipPosition]="'above'" mdTooltip="Load data from selected time range" [disableRipple]="true" class="checkboxLatest">Latest</md-checkbox>
+                <div class="spinner spinnerTimeRange" *ngIf="false && isRequestTimeRangeActiveAndUndone">
                     <div class="bounce1"></div>
                     <div class="bounce2"></div>
                     <div class="bounce3"></div>

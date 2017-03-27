@@ -115,68 +115,81 @@ bootstrap grid system
 material settings overwrite
 */
 .mat-option.mat-selected {
-  color: #1b5e20 !important;
+    color: #1b5e20 !important;
 }
 
 .mat-pseudo-checkbox-checked.mat-primary, .mat-pseudo-checkbox-indeterminate.mat-primary {
-  background: #1b5e20 !important;
+    background: #1b5e20 !important;
 }
 
 .mat-button.mat-primary, .mat-icon-button.mat-primary {
-  color: #1b5e20 !important;
+    color: #1b5e20 !important;
 }
 
 .mat-fab.mat-primary, .mat-mini-fab.mat-primary, .mat-raised-button.mat-primary {
-  color: rgba(255, 255, 255, .87);
-  background-color: #1b5e20 !important;
+    color: rgba(255, 255, 255, .87);
+    background-color: #1b5e20 !important;
 }
 
 .mat-checkbox-checked.mat-primary .mat-checkbox-background, .mat-checkbox-indeterminate.mat-primary .mat-checkbox-background {
-  background-color: #1b5e20 !important;
+    background-color: #1b5e20 !important;
 }
 
 .mat-chip.mat-chip-selected:not(.mat-basic-chip).mat-primary {
-  background-color: #1b5e20 !important;
-  color: rgba(255, 255, 255, .87)
+    background-color: #1b5e20 !important;
+    color: rgba(255, 255, 255, .87)
 }
 
 .mat-icon.mat-primary {
-  color: #1b5e20 !important;
+    color: #1b5e20 !important;
 }
 
 .mat-input-placeholder.mat-focused {
-  color: #1b5e20 !important;
+    color: #1b5e20 !important;
 }
 
 .mat-input-underline .mat-input-ripple {
-  background-color: #1b5e20 !important;
+    background-color: #1b5e20 !important;
 }
 
 .mat-select:focus:not(.mat-select-disabled) .mat-select-trigger {
-  color: #1b5e20 !important;
+    color: #1b5e20 !important;
 }
 
 .mat-select:focus:not(.mat-select-disabled) .mat-select-underline {
-  background-color: #1b5e20 !important;
+    background-color: #1b5e20 !important;
 }
 
 .mat-select:focus:not(.mat-select-disabled) .mat-select-arrow {
-  color: #1b5e20 !important;
+    color: #1b5e20 !important;
 }
 
 .mat-slide-toggle.mat-primary.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
-  background-color: #1b5e20 !important;
+    background-color: #1b5e20 !important;
 }
 
 .mat-ink-bar {
-  background-color: #1b5e20 !important;
+    background-color: #1b5e20 !important;
 }
 
 .mat-toolbar.mat-primary {
-  background: #1b5e20 !important;
-  color: rgba(255, 255, 255, .87)
+    background: #1b5e20 !important;
+    color: rgba(255, 255, 255, .87)
 }
 
 .cdk-overlay-container {
-  z-index: 999999 !important
+    z-index: 999999 !important
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background, .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+    background-color: #1b5e20 !important
+}
+
+.checkboxLatest {
+    vertical-align: baseline !important;
+    margin-left: 10px
+}
+
+.mat-checkbox-layout {
+    vertical-align: baseline !important
 }
