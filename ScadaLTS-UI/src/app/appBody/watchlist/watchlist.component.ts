@@ -8,7 +8,7 @@ declare let $: any;
 import {MdSnackBar} from '@angular/material';
 
 interface WatchlistPattern {
-    xid: string;
+    xid: void;
     name: string;
 }
 
@@ -37,11 +37,11 @@ export class WatchlistComponent implements OnInit, OnDestroy {
 
     public static fireEvent: Subject<boolean> = new Subject();
 
-    watchlists: { xid: string, name: string }[];
+    watchlists: {xid: string, name: string}[];
     watchlistElements: Array<WatchlistComponent> = [];
     watchlistPointsValues: Array<WatchlistComponent> = [];
     oldValues: Array<WatchlistComponent> = [];
-    xid: WatchlistPattern;
+    xid: string;
     value: WatchlistPattern;
     ts: number;
     name: WatchlistPattern;
@@ -81,7 +81,10 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     isDotLineMode: boolean = false;
     dateFromContainer: number;
     isLatestActive: boolean = false;
+    isChartLogarithm: boolean = false;
+    stuff: boolean = true;
 
+    //http://localhost/ScadaLTS/#/appBody/watchlist?name=first&chartHidden=true&chartSmall=true&legendHidden=true&specifiedActive=true_1_minutes&point=DP_920706
 
     constructor(@Inject(Http) private http: Http, public zone: NgZone, public snackBar: MdSnackBar) {
     };
@@ -95,6 +98,11 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         this.http.get(`/ScadaBR/api/watchlist/getPoints/${xid}`)
             .subscribe(res => {
                 this.watchlistElements = res.json();
+                if (window.location.hash.match(/point=(\w+)/) && this.stuff) {
+                    let xid = window.location.hash.match(/point=(\w+)/)[1];
+                    this.watchlistElements = this.watchlistElements.filter(v => v.xid == xid);
+                    this.stuff = false;
+                }
                 this.liveChart();
                 this.isAnyRequestActive = false;
                 setTimeout(() => {
@@ -264,8 +272,8 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 };
                 document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
             }
+            console.log(this.chartData);
         });
-        console.log(this.oldValues);
     };
 
     //helping functions
@@ -314,6 +322,18 @@ export class WatchlistComponent implements OnInit, OnDestroy {
         Plotly.redraw('plotly', this.chartData, this.chartLayout, {
             modeBarButtonsToRemove: ['toImage']
         });
+    }
+
+    logChart() {
+        if (this.isChartLogarithm) {
+            this.chartLayout.yaxis.type = 'scatter';
+            this.isChartLogarithm = true;
+        } else {
+            this.chartLayout.yaxis.type = 'log';
+            this.isChartLogarithm = false;
+        }
+        this.isChartLogarithm = !this.isChartLogarithm;
+        this.redrawChart();
     }
 
     autorangeChart() {
@@ -489,6 +509,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         clearInterval(this.loadPointsFromSpecifiedTimeToNow);
         clearInterval(this.loadLiveChart);
+        this.stuff = true;
     }
 
 }

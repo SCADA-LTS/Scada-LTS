@@ -10,6 +10,7 @@
             <a md-mini-fab (click)="toggleLineMode()" mdTooltip="Toggle line mode" [mdTooltipPosition]="'below'"><md-icon>brush</md-icon></a>
             <a md-mini-fab (click)="toggleLegend()" mdTooltip="Toggle legend" [mdTooltipPosition]="'below'"><md-icon>format_list_bulleted</md-icon></a>
             <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
+            <a md-mini-fab (click)="logChart()" mdTooltip="Toggle logarithmic Y axis" [mdTooltipPosition]="'below'"><md-icon>multiline_chart</md-icon></a>
         </div>
         <div id="plotlyLoader" *ngIf="isAnyRequestActive">
             <div class="spinner">
