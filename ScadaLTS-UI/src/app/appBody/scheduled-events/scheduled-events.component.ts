@@ -13,7 +13,8 @@ export class ScheduledEventsComponent implements OnInit {
 
     loadIframe() {
         $('#ifr').on('load', function () {
-            $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').hide();
+            $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').css("display","none");
+            $('#ifr').css("visibility","visible");
         });
     }
 
