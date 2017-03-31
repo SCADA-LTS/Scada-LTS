@@ -25,6 +25,7 @@
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.14",
     "@types/d3-selection": "^1.0.5",
     "angular2-highcharts": "^0.4.1",
+    "angular2-modal": "^2.0.3",
     "c3": "^0.4.11",
     "core-js": "^2.4.1",
     "d3": "^4.4.0",
