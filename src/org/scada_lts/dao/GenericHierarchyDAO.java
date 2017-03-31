@@ -38,9 +38,13 @@ public interface GenericHierarchyDAO<T> {
 	
 	int update(T node);
 	
-	int move(int id, int newParentId);
+	int moveFolder(int id, int newParentId);
 	
-	int del(int id);
+	int moveView(int id, int newParentId);
+	
+	int delView(int id);
+	
+	int delFolder(int id);
 	
 	
 }

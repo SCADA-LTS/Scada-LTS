@@ -159,7 +159,7 @@ public class ViewHierarchyAPI {
 	}
 	
 	@RequestMapping(value = "/api/view_hierarchy/deleteFolder/{id}", method = RequestMethod.GET)
-	public ResponseEntity<String> getChartData(@PathVariable("id") int id, HttpServletRequest request) {
+	public ResponseEntity<String> deleteFolder(@PathVariable("id") int id, HttpServletRequest request) {
 		
 		LOG.info("/api/watchlist/deleteFolder/{id}:"+id);
 		
@@ -167,10 +167,10 @@ public class ViewHierarchyAPI {
 			User user = Common.getUser(request);
 			if (user != null) {
 				
-				if (viewHierarchyService.del(id)) {
+				if (viewHierarchyService.delFolder(id)) {
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString("dell");
+					json = mapper.writeValueAsString("success");
 					return new ResponseEntity<String>(json,HttpStatus.OK);
 				}
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
@@ -185,19 +185,73 @@ public class ViewHierarchyAPI {
 		
 	}
 	
-	@RequestMapping(value = "/api/view_hierarchy/move/{id}/{newParentId}", method = RequestMethod.GET)
-	public ResponseEntity<String> move(@PathVariable("newParentId") int id, @PathVariable("newParentId") int newParentId, HttpServletRequest request) {
+	@RequestMapping(value = "/api/view_hierarchy/deleteView/{id}", method = RequestMethod.GET)
+	public ResponseEntity<String> deleteView(@PathVariable("id") int id, HttpServletRequest request) {
 		
-		LOG.info("/api/view_hierarchy/move/{id}/{newParentId} id:"+id+" newParentId:"+newParentId);
+		LOG.info("/api/watchlist/deleteView/{id}:"+id);
 		
 		try {
 			User user = Common.getUser(request);
 			if (user != null) {
 				
-				if (viewHierarchyService.move(id, newParentId)) {
+				if (viewHierarchyService.delView(id)) {
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString("move");
+					json = mapper.writeValueAsString("success");
+					return new ResponseEntity<String>(json,HttpStatus.OK);
+				}
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
+			
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+		
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
+	@RequestMapping(value = "/api/view_hierarchy/moveFolder/{id}/{newParentId}", method = RequestMethod.GET)
+	public ResponseEntity<String> moveFolder(@PathVariable("id") int id, @PathVariable("newParentId") int newParentId, HttpServletRequest request) {
+		
+		LOG.info("/api/view_hierarchy/moveFolder/{id}/{newParentId} id:"+id+" newParentId:"+newParentId);
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				
+				if (viewHierarchyService.moveFolder(id, newParentId)) {
+					String json = null;
+					ObjectMapper mapper = new ObjectMapper();
+					json = mapper.writeValueAsString("moved");
+					return new ResponseEntity<String>(json,HttpStatus.OK);
+				}
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
+			
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+		
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
+	@RequestMapping(value = "/api/view_hierarchy/moveView/{id}/{newParentId}", method = RequestMethod.GET)
+	public ResponseEntity<String> moveView(@PathVariable("id") int id, @PathVariable("newParentId") int newParentId, HttpServletRequest request) {
+		
+		LOG.info("/api/view_hierarchyView/move/{id}/{newParentId} id:"+id+" newParentId:"+newParentId);
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				
+				if (viewHierarchyService.moveView(id, newParentId)) {
+					String json = null;
+					ObjectMapper mapper = new ObjectMapper();
+					json = mapper.writeValueAsString("moved");
 					return new ResponseEntity<String>(json,HttpStatus.OK);
 				}
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
@@ -235,27 +289,4 @@ public class ViewHierarchyAPI {
 		
 	}
 	
-	@RequestMapping(value = "/api/view_hierarchy/checkNameFolder/{name}", method = RequestMethod.GET)
-	public ResponseEntity<String> checkNameFolder(@PathVariable("name") String name, HttpServletRequest request) {
-		
-		LOG.info("/api/view_hierarchy/checkNameFolder: ");
-		
-		try {
-			User user = Common.getUser(request);
-			if (user != null) {
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				json = mapper.writeValueAsString(viewHierarchyService.isUsedName(name));
-				return new ResponseEntity<String>(json,HttpStatus.OK);
-			}
-			
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-		
-		} catch (Exception e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-		
-	}
-
 }

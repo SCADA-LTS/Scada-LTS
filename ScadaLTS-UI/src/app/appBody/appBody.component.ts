@@ -11,6 +11,7 @@ export class AppBodyComponent implements OnInit {
 
 
     isHiddenSubMenu = [false, false, false, false, false, false];
+    plot;
 
     constructor(private router: Router) {
     };
@@ -28,6 +29,8 @@ export class AppBodyComponent implements OnInit {
 
     isMenuHidden: boolean = false;
     isMenuShrunken: boolean = false;
+
+
 
     private checkScreenWidth() {
         if (window.innerWidth < 1200 && window.innerWidth > 499) {
@@ -53,7 +56,10 @@ export class AppBodyComponent implements OnInit {
         } else {
             this.isMenuShrunken = !this.isMenuShrunken;
         }
-        if ($('#plotly') !== null) {
+
+        this.plot = document.getElementById('plotly');
+
+        if (this.plot) {
             setTimeout(() => {
                 WatchlistComponent.fireEvent.next(true);
             }, 500);

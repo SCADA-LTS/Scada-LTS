@@ -150,7 +150,7 @@ h2
   height: 895px
   +transition(all .4s ease-in)
 
-.buttonFromPast, .inputFromPast, .selectFromPast
+.inputFromPast, .selectFromPast
   width: 49%
 
 .buttonFromPast, .inputFromPast, .selectFromPast, .datePickerInput, .revealChartButton
@@ -164,13 +164,14 @@ h2
   margin-bottom: 10px
   box-sizing: border-box
 
-.buttonFromPast, .revealChartButton
+.buttonFromPast
   background-color: #666
   color: #fff
   width: 150px
 
 .bottomButton
   margin-bottom: 0
+  width: 150px
 
 .datePickerInput
   width: 100%
@@ -230,7 +231,7 @@ h2
   min-height: 87%
   width: 94%
   top: 70px
-  background-color: rgba(255, 255, 255, 0.8)
+  background-color: rgba(255, 255, 255, 0.5)
   .spinner
     position: absolute
     top: 36%
@@ -242,6 +243,7 @@ h2
   z-index: 5
   opacity: 0
   top: 15px
+  left: 73px
   +transition(all .4s ease)
   button
     width: 20px
@@ -282,6 +284,12 @@ h2
   margin-top: 0
   +transition(all .3s ease-in)
 
+.urlButton
+  z-index: 5
+  top: 0
+  +transition(all .4s ease-in)
 
-
+.urlButtonStageTwo
+  top: 36px
+  +transition(all .4s ease-in)
 

@@ -28,8 +28,7 @@ select {
 
 md-card {
   animation: show 2s ease;
-  height: 100%;
-  overflow: visible; }
+  height: 100%; }
 
 @keyframes show {
   0% {

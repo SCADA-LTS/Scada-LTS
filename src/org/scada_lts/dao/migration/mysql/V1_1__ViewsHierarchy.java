@@ -32,13 +32,14 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 		    			+ "id int(11) not null auto_increment,"
 		    			+ "parentId int(11) default null,"
 		    			+ "name varchar(100) not null unique,"
-		    			+ "primary key (id)"
+		    			+ "primary key (id, parentId)"
 		    		+ ") engine=innodb;";
 		
 		final String viewsHierarchySQL = ""
 				+ "create table views_category_views_hierarchy ("
-    			+ "view_id int(11) not null,"
-    			+ "folder_views_hierarchy_id int(11) not null"
+    			+ "view_id int(11),"
+    			+ "folder_views_hierarchy_id int(11) not null,"
+    			+ "primary key (view_id)"
     		+ ") engine=innodb;";
 		 
 		String fAdd = 
@@ -77,27 +78,63 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 			  	+ "return a_id; "
 			  + "END";
 		
-		String fDelete =
-				"CREATE FUNCTION func_views_hierarchy_delete( "
-					+ "a_id int(11)) "
-				 + "RETURNS INT(11) "
-				 + "NOT DETERMINISTIC "
-			  + "BEGIN "
-			  	+ "delete from category_views_hierarchy where id=a_id; "
-			  	+ "return a_id; "
-			  + "END";
+		String fDeleteView =
+				"CREATE FUNCTION func_views_hierarchy_folder_delete( "+ 
+				  "a_id int(11)) "+ 
+				"RETURNS INT(11) "+ 
+				"NOT DETERMINISTIC "+ 
+				"BEGIN "+ 
+				  "DELETE FROM category_views_hierarchy "+ 
+				  "WHERE id=a_id; "+
+				  "SET SQL_SAFE_UPDATES = 0;"+
+				  "UPDATE category_views_hierarchy "+
+				    "SET parentId=-1 "+
+				  "WHERE "+
+				    "parentId=a_id; "+
+				  
+				  "return a_id; "+ 
+				"END; ";
 		
-		String fMove = 
-				"CREATE FUNCTION func_views_hierarchy_move( "
-						+ "a_id INT, a_new_parent_id INT) "
-					 + "RETURNS INT(11) "
-					 + "NOT DETERMINISTIC "
-				  + "BEGIN "
-				  	+ "update category_views_hierarchy "
-				  		+ "set parentId=a_parentId "
-				  	+ "where id=a_id; "
-				  	+ "return a_id; "
-				  + "END";
+		String fDeleteFolder =
+				"CREATE FUNCTION func_views_hierarchy_view_delete( a_id int(11)) "+ 
+				  "RETURNS INT(11) "+ 
+				  "NOT DETERMINISTIC "+ 
+				"BEGIN "+ 
+				  "DELETE FROM views_category_views_hierarchy "+
+				  "WHERE view_id=a_id; "+ 
+				  "return a_id; "+ 
+				"END; ";
+		
+		
+		String fMoveFolder =
+				"CREATE FUNCTION func_views_hierarchy_move_folder( "+ 
+						"a_id INT, a_new_parent_id INT) "+ 
+					"RETURNS INT(11) "+ 
+					"NOT DETERMINISTIC "+ 
+					"BEGIN "+
+					 "UPDATE category_views_hierarchy "+ 
+						"SET parentId=a_new_parent_id "+ 
+					 "WHERE id=a_id; "+ 
+					 "return a_id; "+ 
+					"END;";
+						
+		String fMoveView =	
+				"CREATE FUNCTION func_views_hierarchy_move_view(a_id INT, a_new_parent_id INT) " 
+				 + "RETURNS INT(11) " 
+				 + "NOT DETERMINISTIC " 
+				+ "BEGIN "
+				 + "DECLARE varExistId INT default 0; "
+				 + "SELECT id into varExistId FROM views_category_views_hierarchy WHERE id=a_id; "
+				 + "IF varExistId = 0 THEN "
+				   + "INSERT INTO views_category_views_hierarchy (view_id, folder_views_hierarchy_id) " 
+				   + "VALUES (a_id, a_new_parent_id); "
+				 + "ELSE "
+				   + "UPDATE views_category_views_hierarchy " 
+				   + "SET folder_views_hierarchy_id=a_new_parent_id "
+				   + "WHERE view_id=a_id; "
+				 + "END IF; " 
+				 + "return a_id; "  				  
+				+ "END; ";
 		
 		String pSelect = 
 				"CREATE PROCEDURE prc_views_hierarchy_select() "
@@ -128,8 +165,10 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 		
 		jdbcTmp.execute(fAdd);
 		jdbcTmp.execute(fUpdate);
-		jdbcTmp.execute(fDelete);
-		jdbcTmp.execute(fMove);
+		jdbcTmp.execute(fDeleteFolder);
+		jdbcTmp.execute(fDeleteView);
+		jdbcTmp.execute(fMoveFolder);
+		jdbcTmp.execute(fMoveView);
 		jdbcTmp.execute(pSelect);
 		jdbcTmp.execute(pSelectNode);
 		jdbcTmp.execute(pSelectViewInFolders);
