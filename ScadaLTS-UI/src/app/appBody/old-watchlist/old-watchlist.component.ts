@@ -10,7 +10,8 @@ export class OldWatchlistComponent implements OnInit {
 
     loadIframe() {
         $('#ifr').on('load', function () {
-            $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #chartContainer').hide();
+            $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').css("display","none");
+            $('#ifr').css("visibility","visible");
         });
     }
 
