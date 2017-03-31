@@ -1,5 +1,4 @@
-addons:
-  ssh_known_hosts: 149.56.44.225
+sudo: required
 before_install:
 #- sudo add-apt-repository ppa:openjdk-r/ppa -y
 #- sudo apt-get update
@@ -10,8 +9,6 @@ before_install:
 #- java -version
 #- javac -version
 - sudo apt-get install tomcat7
-- sudo apt-get install traceroute
-- sudo apt-get install sshpass
 before_script:
 - nvm ls
 - nvm install node
@@ -19,6 +16,7 @@ before_script:
 - npm -v
 - node -v
 - env
+- npm install -g @angular/cli
 - npm install -g bower
 - npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
@@ -36,14 +34,14 @@ before_script:
 language: java
 jdk:
 - openjdk7
+services:
+- docker
 script: ant war
 branches:
   only:
   - "/^PROC-.*$/"
   - "/^develop-sdtabilit.*$/"
-  - "/SLTS-16.*$/"
-  - "/SLTS-26.*$/"
-  - "feature/pre-test"
+  - "/^#179*$/"
 notifications:
   email: false
 env:
@@ -52,9 +50,7 @@ env:
   global:
   - secure: C14HDJPKUumAanXlJtbbA7/54ibtVSURw7lnuxpzBP5k6+pu75P6AixaV81L2RIUUN/eRWcgqpqnor+v6KrZHF/TnOlA5OoS73R+rHy3Rx4B6jzDEHnzyDo00zJGdO9bLOaYfNyqOv8XOtcF2YkenAiPjK/MzsIbObhwicDtREd7Br7ZArBm+GL+c5NQ3e8+gPrt1podg1ldZMbZHAi29vM974etXODsnpA3shIMplVsyxwie4PvgfP1avkeHMuPpflPFX6PrJOWatZvIHLfGqSP/rM51HDgO5xcZ0qDTJOvj7Ko0GHfn0CoWzKhwGrZ1ioRDKmTipFhiqFq7iYLts5eMB03W4m62l2Pxpzbs5ugRC49YtWmvAcbVFzERQg2GlB0/slkSdIwdxGqh8Ec3Ma/vpGNkghBBu/hhC3EladFaHPjcp7jlItW7ktyndikBV1cim95rJWWmuGxk8fOdAEVBuPV0sOx+6AwOSfM+o8Pxbe3Vjqv2UHxmMOLlPBs3uTfeS4awUuRY3oizBxaok+H8XWXMP91CjNStRnPWWIOZGG57QtMDOJiqwdwLENVEasAguwfoKSO2tUToLfHPZxtW86rfoGoX1oQ+JiebONxO5bvony8zqtcCt6s3KesKsQeJJHmfaItxylsQyi072PeDPmVuZDgDSx3C31NCYI=
   - secure: NODnAmr6f++eRo73jznLJphwd58Kva9nXn45/7pmDddVi8akif3tCHDotx1acPwrIiwZDn1WBY7xHAYhuB+vHBep0I0AhHRDKP6q6VuDccK8lMKN11AC0pjXDbJCJOEO6CpRL2TvP/UyOhrmuvihnPqcBU2DX4VLN3cGpW+Jwn38Mk5qhw2RuJV6RFT1+/5XQNvYI3Jyp5jCPwlaCbgV2QKVtVs7NZHrj9U0qfdSsrhxp/3qUh2RrXIYZjVG4KggRWnMQ33BUSVNyDLcrKo++Q0IX5ZRP04j5b9NLvIl2otytEdyBYAa5oQYQMS5X31T9T0RDzVFYRu04HVaOXpfdlg9JdDFWQkVgY+d8ph/ZAX1h39eh3xjmMrUIFvAyQ1Kgawxdy99bYyaEefwDoZLC/O4KNjw84D0oBqTktFg75WsgfqJiUSWbryLnqG389pWGZjykiyfxXQgWF2cpqg76PuZY1gWI0jWBBS0GmrK3DONui3WU/QNcpuJTTOFlC18PC13l3+7mUNSz53BhpJg1Gwk8nUhhSnfin5kafjpUBz6mFGhiGoB46jC//kyAZJ+c+j5k8UKst65EgVp6fbu+JN1QpcDZL9l5r/1UnEQzncMraAGRAUvJL2tMkQmS5gbGwixzcrOdWa61BVs8bWe7eV1twOr2fBUNqHjH32SZYo=
-after_script:
-- echo $TRAVIS_BUILD_DIR
-- eval "$(ssh-agent -s)"
-- traceroute -p 22 $TEST_IP
-- sshpass -e scp ./ScadaBR.war test@149.56.44.225:/home/test/ScadaBR.war
-- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war test@149.56.44.225:/home/test/ScadaLTS.war
+#after_script:
+#- echo $TRAVIS_BUILD_DIR
+#- sshpass -e scp ./ScadaBR.war test@149.56.44.225:/home/test/ScadaBR.war
+#- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war test@149.56.44.225:/home/test/ScadaLTS.war
