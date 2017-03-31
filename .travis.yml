@@ -1,3 +1,4 @@
+sudo: required
 addons:
   ssh_known_hosts: 149.56.44.225
 before_install:
@@ -10,8 +11,6 @@ before_install:
 #- java -version
 #- javac -version
 - sudo apt-get install tomcat7
-- sudo apt-get install traceroute
-- sudo apt-get install sshpass
 before_script:
 - nvm ls
 - nvm install node
@@ -36,14 +35,14 @@ before_script:
 language: java
 jdk:
 - openjdk7
+services:
+- docker
 script: ant war
 branches:
   only:
   - "/^PROC-.*$/"
   - "/^develop-sdtabilit.*$/"
-  - "/SLTS-16.*$/"
-  - "/SLTS-26.*$/"
-  - "feature/pre-test"
+  - "/^#179*$/"
 notifications:
   email: false
 env:
