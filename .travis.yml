@@ -54,8 +54,11 @@ after_script:
 # get tomcat7 to ./docker/app
 - wget http://ftp.ps.pl/pub/apache/tomcat/tomcat-7/v7.0.76/bin/apache-tomcat-7.0.76.tar.gz
 - mv apache-tomcat-7.0.76.tar.gz ./docker/app
-- cd ./docker/app; ls -l
-- cd ./docker/app; tar -xvfz apache-tomcat-7.0.76.tar.gz; ls -l
+- ls -l ./docker/app/apache-tomcat-7.0.76.tar.gz
+- cd ./docker/app
+- echo `pwd` 
+- echo `ls -l`
+- tar -xvfz apache-tomcat-7.0.76.tar.gz; ls -l
 #- echo $TRAVIS_BUILD_DIR
 #- sshpass -e scp ./ScadaBR.war test@149.56.44.225:/home/test/ScadaBR.war
 #- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war test@149.56.44.225:/home/test/ScadaLTS.war
