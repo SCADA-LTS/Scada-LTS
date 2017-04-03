@@ -52,9 +52,9 @@ env:
   - secure: NODnAmr6f++eRo73jznLJphwd58Kva9nXn45/7pmDddVi8akif3tCHDotx1acPwrIiwZDn1WBY7xHAYhuB+vHBep0I0AhHRDKP6q6VuDccK8lMKN11AC0pjXDbJCJOEO6CpRL2TvP/UyOhrmuvihnPqcBU2DX4VLN3cGpW+Jwn38Mk5qhw2RuJV6RFT1+/5XQNvYI3Jyp5jCPwlaCbgV2QKVtVs7NZHrj9U0qfdSsrhxp/3qUh2RrXIYZjVG4KggRWnMQ33BUSVNyDLcrKo++Q0IX5ZRP04j5b9NLvIl2otytEdyBYAa5oQYQMS5X31T9T0RDzVFYRu04HVaOXpfdlg9JdDFWQkVgY+d8ph/ZAX1h39eh3xjmMrUIFvAyQ1Kgawxdy99bYyaEefwDoZLC/O4KNjw84D0oBqTktFg75WsgfqJiUSWbryLnqG389pWGZjykiyfxXQgWF2cpqg76PuZY1gWI0jWBBS0GmrK3DONui3WU/QNcpuJTTOFlC18PC13l3+7mUNSz53BhpJg1Gwk8nUhhSnfin5kafjpUBz6mFGhiGoB46jC//kyAZJ+c+j5k8UKst65EgVp6fbu+JN1QpcDZL9l5r/1UnEQzncMraAGRAUvJL2tMkQmS5gbGwixzcrOdWa61BVs8bWe7eV1twOr2fBUNqHjH32SZYo=
 after_script:
 # get tomcat7 to ./docker/app
-curl --header 'Host: ftp.ps.pl' --header 'User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0' --header 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' --header 'Accept-Language: pl,en-US;q=0.7,en;q=0.3' --header 'Connection: keep-alive' --header 'Upgrade-Insecure-Requests: 1' 'http://ftp.ps.pl/pub/apache/tomcat/tomcat-7/v7.0.76/bin/apache-tomcat-7.0.76.tar.gz' -o 'apache-tomcat-7.0.76.tar.gz' -L
-mv apache-tomcat-7.0.76.tar.gz ./docker/app
-ls ./docker/app
+- wget http://ftp.ps.pl/pub/apache/tomcat/tomcat-7/v7.0.76/bin/apache-tomcat-7.0.76.tar.gz
+- mv apache-tomcat-7.0.76.tar.gz ./docker/app
+- ls ./docker/app
 #- echo $TRAVIS_BUILD_DIR
 #- sshpass -e scp ./ScadaBR.war test@149.56.44.225:/home/test/ScadaBR.war
 #- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war test@149.56.44.225:/home/test/ScadaLTS.war
