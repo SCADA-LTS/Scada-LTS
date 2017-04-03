@@ -53,6 +53,7 @@ env:
 after_script:
 # get tomcat7 to ./docker/app
 - wget http://ftp.ps.pl/pub/apache/tomcat/tomcat-7/v7.0.76/bin/apache-tomcat-7.0.76.tar.gz
+- mkdir ./docker/app
 - mv apache-tomcat-7.0.76.tar.gz ./docker/app
 - ls -l ./docker/app/apache-tomcat-7.0.76.tar.gz
 - cd ./docker/app
