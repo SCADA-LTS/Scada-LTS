@@ -65,7 +65,11 @@ after_script:
 - rm -rf ./apache-tomcat-7.0.76
 - cp ../../ScadaBR.war ./webapps
 - cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
-- ls -l ./webapps 
+- ls -l ./webapps/*
+- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
+- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
+- ls -l ./lib/*
+
 #- echo $TRAVIS_BUILD_DIR
 #- sshpass -e scp ./ScadaBR.war test@149.56.44.225:/home/test/ScadaBR.war
 #- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war test@149.56.44.225:/home/test/ScadaLTS.war
