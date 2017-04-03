@@ -61,7 +61,7 @@ after_script:
 - echo `ls -l`
 - tar -zxvf apache-tomcat-7.0.76.tar.gz
 - ls -l
-- mv -R ./apache-tomcat-7.0.76/* ./
+- mv ./apache-tomcat-7.0.76/* ./
 - rm -rf ./apache-tomcat-7.0.76
 - cp ../../ScadaBR.war ./webapps
 - cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
