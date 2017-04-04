@@ -81,8 +81,7 @@ after_script:
 - docker version
 - docker build -t dockergb/scadalts-dev .
 - docker images
-- echo $DOCKER_USERNAME
-- docker login -u=$DOCKER_USERNAME -p=$DOCKER_PASSWORD
+- docker login -u=$DOCKER_USENAME -p=$DOCKER_PASSWORD
 - docker push dockergb/scadalts-dev 
 
 
