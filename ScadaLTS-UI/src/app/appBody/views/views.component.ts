@@ -23,7 +23,7 @@ export class ViewsComponent implements OnInit {
   }
 
   constructor(@Inject(Http) public http: Http){   
-      
+
       this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
                 this.dataTree = res.json();
@@ -32,8 +32,8 @@ export class ViewsComponent implements OnInit {
       console.log("this.editDialogTree:"+this.getEditDialogTree());
   }
 
-  // loadIframe(){
-  //
+    // loadIframe(){
+  
   //   this.http.get(`../ScadaBR//api/view_hierarchy/getFirstViewId`)
   //           .subscribe(res => {
   //               var view = res.json();
