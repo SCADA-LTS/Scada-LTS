@@ -36,8 +36,6 @@ import { WleditComponent } from './appBody/wledit/wledit.component';
 
 import { ClipboardModule } from 'ngx-clipboard';
 
-import { ModalModule } from 'angular2-modal';
-import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
 
 @NgModule({
   declarations: [
@@ -76,9 +74,7 @@ import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
     MaterialModule.forRoot(),
     routing,
     NgbModule.forRoot(),
-    ClipboardModule,
-    ModalModule.forRoot(),
-    BootstrapModalModule
+    ClipboardModule
   ],
   providers: [],
   bootstrap: [AppComponent]
