@@ -79,9 +79,9 @@ after_script:
 - cd ../
 - pwd
 - docker version
-- docker build -t dockergb/scadalts-dev
+- docker build -t dockergb/scadalts-dev .
 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-- docker push dockergb/scadalts-dev .
+- docker push dockergb/scadalts-dev 
 
 
 #- echo $TRAVIS_BUILD_DIR
