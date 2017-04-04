@@ -21,13 +21,20 @@ package com.serotonin.mango.db;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
+import org.scada_lts.web.mvc.api.WatchListAPI;
 import org.springframework.dao.DataAccessException;
 
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
 
 public class MySQLAccess extends BasePooledAccess {
+	
+	private static final Log LOG = LogFactory.getLog(MySQLAccess.class);
+	
     public MySQLAccess(ServletContext ctx) {
         super(ctx);
     }
@@ -97,36 +104,45 @@ public class MySQLAccess extends BasePooledAccess {
     	
         try {
             ejt.execute("select count(*) from users");
+            LOG.info("schemaExist:"+shemaExist);
         } catch (DataAccessException e) {
             shemaExist = false;
+            LOG.info("schemaExist:"+shemaExist);
         }
         
         try {
            ejt.execute("select count(*) from schema_version");
+           LOG.info("BaseLineNotExist:"+baseLineNotExist);
         } catch (DataAccessException e) {
         	baseLineNotExist = true;
+        	LOG.info("BaseLineNotExist:"+baseLineNotExist);
         }
         
-        Flyway flyway = new Flyway();
-		flyway.setLocations("org.scada_lts.dao.migration.mysql");
-		flyway.setDataSource(getDataSource());
-		
-        if (shemaExist) {
-        	// old shema without flayway
-        	if (baseLineNotExist) {
-        		flyway.setBaselineOnMigrate(true);
-    			flyway.baseline();
-    			flyway.migrate();
-    		}
-        } else {
-        	//shema not exist
-        	if (baseLineNotExist) {
-    			//flyway.baseline();
-    			flyway.migrate();		
-    		}
+        try {
+	        Flyway flyway = new Flyway();
+			flyway.setLocations("org.scada_lts.dao.migration.mysql");
+			flyway.setDataSource(getDataSource());
+			
+	        if (shemaExist) {
+	        	// old shema without flayway
+	        	if (baseLineNotExist) {
+	        		flyway.setBaselineOnMigrate(true);
+	    			flyway.baseline();
+	    			flyway.migrate();
+	    		}
+	        } else {
+	        	//shema not exist
+	        	if (baseLineNotExist) {
+	    			//flyway.baseline();
+	    			flyway.migrate();		
+	    		}
+	        }
+	        
+	        flyway.migrate();
+	        
+        } catch (FlywayException fe) {
+        	LOG.error(fe);
         }
-        
-        flyway.migrate();
           
         return false; 
     }
