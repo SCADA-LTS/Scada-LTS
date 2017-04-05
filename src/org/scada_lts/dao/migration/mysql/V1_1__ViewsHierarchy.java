@@ -30,7 +30,7 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 		final String folderViewsHierarchySQL = ""
 		    		+ "create table category_views_hierarchy ("
 		    			+ "id int(11) not null auto_increment,"
-		    			+ "parentId int(11) default null,"
+		    			+ "parentId int(11),"
 		    			+ "name varchar(100) not null unique,"
 		    			+ "primary key (id, parentId)"
 		    		+ ") engine=innodb;";
