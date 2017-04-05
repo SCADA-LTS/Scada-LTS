@@ -84,7 +84,7 @@ public class V1__BaseVersion implements SpringJdbcMigration {
         jdbcTemplate.execute(userCommentsSQL);
         
         final String constraintUserCommentsFk1 = ""
-        		+ "alter table usercomments "
+        		+ "alter table userComments "
         			+ "add constraint userCommentsFk1 foreign key (userId) "
         			+ "references users(id);";
         
