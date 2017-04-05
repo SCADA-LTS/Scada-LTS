@@ -92,7 +92,7 @@ public class V1__BaseVersion implements SpringJdbcMigration {
 
         //Mailing lists
         final String mailingListsSQL = ""
-        		+ "create table mailinglists (  "
+        		+ "create table mailingLists (  "
         			+ "id int not null auto_increment,  "
         			+ "xid varchar(50) not null,  "
         			+ "name varchar(40) not null,  "
@@ -103,7 +103,7 @@ public class V1__BaseVersion implements SpringJdbcMigration {
         jdbcTemplate.execute("alter table mailingLists add constraint mailingListsUn1 unique (xid);");
 
         final String mailingListInactiveSQL = ""
-        		+ "create table mailinglistinactive ("
+        		+ "create table mailingListInactive ("
         			+ "mailingListId int not null,"
         			+ "inactiveInterval int not null"
         		+ ") ENGINE=InnoDB;";
@@ -113,7 +113,7 @@ public class V1__BaseVersion implements SpringJdbcMigration {
         jdbcTemplate.execute("alter table mailingListInactive add constraint mailingListInactiveFk1 foreign key (mailingListId) references mailingLists(id) on delete cascade;");
         
         final String mailingListMembersSQL=""
-        		+ "create table mailinglistmembers ("
+        		+ "create table mailingListMembers ("
         			+ "mailingListId int not null,"
         			+ "typeId int not null,"
         			+ "userId int,"
