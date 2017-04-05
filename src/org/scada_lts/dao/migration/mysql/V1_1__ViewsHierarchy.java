@@ -59,7 +59,7 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 			  		+ "return last_insert_id(); "
 			  	+ "ELSE " 
 				  + "SIGNAL SQLSTATE '45000' "
-			      + "SET MESSAGE_TEXT = 'SET MESSATE_TEXT = '#error.view_hierarchy.add.error1# An error occurred add view hierarchy name is not validat' "
+			      + "SET MESSAGE_TEXT = 'SET MESSATE_TEXT = '#error.view_hierarchy.add.error1# An error occurred add view hierarchy name is not validat'; "
 			    + "END IF;"
               + "END";
 		
