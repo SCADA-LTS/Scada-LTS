@@ -21,9 +21,11 @@
             <button md-mini-fab (click)="editFolder()" mdTooltip="Edit folder" [mdTooltipPosition]="'below'"><md-icon>folder</md-icon></button>
             <button md-mini-fab (click)="deleteFolder()" mdTooltip="Delete folder, view (move to root)" [mdTooltipPosition]="'below'"><md-icon>folder_open</md-icon></button>
             <button md-mini-fab (click)="refreshTree()" mdTooltip="Refresh tree" [mdTooltipPosition]="'below'"><md-icon>autorenew</md-icon></button>
+
+            <div id="viewsHierarchyDiv"></div>
         </div>
 
-    <div id="addFolder" title="Add folder">
+        <div id="addFolder" title="Add folder">
         <p id="validateTipAddFolder">All form fields are required.</p>
         <br/>
         <form>
@@ -33,9 +35,9 @@
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
-    </div>
+        </div>
 
-    <div id="editFolder" title="Edit folder">
+        <div id="editFolder" title="Edit folder">
         <p class="validateTips">All form fields are required.</p>
         <br/>
         <form>
@@ -45,7 +47,7 @@
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
-    </div>
+        </div>
 
     </div>     
 
