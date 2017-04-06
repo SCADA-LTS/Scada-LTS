@@ -396,5 +396,10 @@ export class ViewsComponent implements OnInit {
     });
     this.loadIframe();
   }
+  ngOnDestroy(){ //test
+    $( "#dialogViewsHierarchy" ).dialog( "close" );
+  }
 }
+
+
 
