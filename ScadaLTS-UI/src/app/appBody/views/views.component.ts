@@ -100,7 +100,6 @@ export class ViewsComponent implements OnInit {
                       dataType: "json",
                       url:'../ScadaBR/api/view_hierarchy/moveFolder/' + data.otherNode.key + '/' + node.key ,
                       success: function(request){
-
                         $.ajax({
                           type: "GET",
           	              dataType: "json",
