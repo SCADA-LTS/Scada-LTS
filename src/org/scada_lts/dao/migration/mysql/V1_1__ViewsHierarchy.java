@@ -30,7 +30,7 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 		final String folderViewsHierarchySQL = ""
 		    		+ "create table category_views_hierarchy ("
 		    			+ "id int(11) not null auto_increment,"
-		    			+ "parentId int(11) default null,"
+		    			+ "parentId int(11),"
 		    			+ "name varchar(100) not null unique,"
 		    			+ "primary key (id, parentId)"
 		    		+ ") engine=innodb;";
@@ -46,22 +46,19 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 			    "CREATE FUNCTION func_views_hierarchy_add( "
 				 	+ "a_parentId int(11),"
 				 	+ "a_name CHAR(100)) "
-				 + "RETURNS INT(11) "
-				 + "NOT DETERMINISTIC "
+				 + "RETURNS int(11) "
 			  + "BEGIN "
 				+ "DECLARE specialty CONDITION FOR SQLSTATE '45000'; "
 			    + "IF ( (CHARACTER_LENGTH(a_name)>2) and (CHARACTER_LENGTH(a_name)<100) )  THEN "
-				  +	"SIGNAL SQLSTATE '01000';"
-				  	+ "insert into category_views_hierarchy ("
-			  			+ "parentId, "
-			  			+ "name) "
-			  			+ "values ( a_parentId, a_name); "
+				  +	"SIGNAL SQLSTATE '01000'; "
+				  	+ "insert into category_views_hierarchy (parentId, name) values ( a_parentId, a_name); "
 			  		+ "return last_insert_id(); "
 			  	+ "ELSE " 
 				  + "SIGNAL SQLSTATE '45000' "
-			      + "SET MESSAGE_TEXT = 'SET MESSATE_TEXT = '#error.view_hierarchy.add.error1# An error occurred add view hierarchy name is not validat' "
-			    + "END IF;"
-              + "END";
+			      + "SET MESSAGE_TEXT='#error.view_hierarchy.add.error1# '; "
+			     + "END IF;"
+			    + "END ";
+			    
 		
 		String fUpdate = 
 				"CREATE FUNCTION func_views_hierarchy_update( "

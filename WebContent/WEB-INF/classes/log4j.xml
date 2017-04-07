@@ -62,6 +62,16 @@
     </layout>
   </appender>
   
+  <appender name="flywaylogfile" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/flayway.log"/>
+    <param name="MaxFileSize" value="1000KB"/>
+    <param name="MaxBackupIndex" value="10"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
+  
+  
   <appender name="scadalstdaoLogfile" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${catalina.base}/logs/scadaLTSDAO.log"/>
     <param name="MaxFileSize" value="1000KB"/>
@@ -92,6 +102,12 @@
     <param name="LocationInfo" value="true"/>
     <appender-ref ref="modbuslogfile"/>
   </appender>
+  
+  <appender name="flywayasync" class="org.apache.log4j.AsyncAppender">
+    <param name="LocationInfo" value="true"/>
+    <appender-ref ref="flywaylogfile"/>
+  </appender>
+  
 
   <appender name="scriptsasync" class="org.apache.log4j.AsyncAppender">
     <param name="LocationInfo" value="true"/>
@@ -137,6 +153,14 @@
     <level value="debug"/>
     <appender-ref ref="modbusasync"/>
   </category>
+  
+<!-- Flyway logging -->
+<category name="com.serotonin.mango.db" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="flywayasync"/>
+</category>
+
+
 <!--   
   <category name="com.serotonin.mango.rt.dataSource.modbus"  additivity="false">
     <level value="debug"/>
