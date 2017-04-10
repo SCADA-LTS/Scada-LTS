@@ -17,6 +17,7 @@ before_script:
 - node -v
 - env
 - npm install -g @angular/cli
+- ng --version
 - npm install -g bower
 - npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
