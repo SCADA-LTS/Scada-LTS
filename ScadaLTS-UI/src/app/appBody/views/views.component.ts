@@ -12,6 +12,7 @@ declare let $:any;
 
 export class ViewsComponent implements OnInit {
   
+  
   dataTree:any;
   createdTree:boolean = false;
   editDialogTree:boolean = false;
@@ -22,7 +23,7 @@ export class ViewsComponent implements OnInit {
     return this.editDialogTree;
   }
 
-  constructor(@Inject(Http) public http: Http){   
+  constructor(@Inject(Http) public http: Http, public dialogSelectViewWithEdtHierarchyView: MdDialog ){   
 
       this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
@@ -31,6 +32,10 @@ export class ViewsComponent implements OnInit {
 
       console.log("this.editDialogTree:"+this.getEditDialogTree());
   }
+
+  openDlgSelectViewWithEdtHierarchyView(){
+        this.dialogSelectViewWithEdtHierarchyView.open(DlgSelectViewWithEdtHierarchyView);
+  };
 
     // loadIframe(){
   
@@ -397,6 +402,39 @@ export class ViewsComponent implements OnInit {
   }
 
   ngOnDestroy(){ //test
-    $( "#dialogViewsHierarchy" ).dialog( "close" );
+    //$( "#dialogViewsHierarchy" ).dialog( "close" );
   }
 }
+
+@Component({
+  selector: 'dialog-overview-example-dialog',
+  template: `<md-dialog-content>
+  <p> Hi, I'm a dialog! </p></md-dialog-content> 
+  <button md-mini-fab (click)="openDlgAddHierarchyView()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>`
+
+})
+export class DlgSelectViewWithEdtHierarchyView{
+
+  dataTree:any;
+  createdTree:boolean = false;
+  editDialogTree:boolean = false;
+
+  moveStart:any;
+
+  constructor(public dialogAddHierarchyView: MdDialog){
+
+  }
+
+  openDlgAddHierarchyView(){
+        this.dialogAddHierarchyView.open(DlgAddHierarchyView);
+  };
+  
+}
+
+@Component({
+  selector: 'dialog-overview-example-edt',
+  template: `<md-dialog-content>
+  <p> Hi, I'm a dialog! </p></md-dialog-content> <button>Test</button>`
+
+})
+export class DlgAddHierarchyView{}

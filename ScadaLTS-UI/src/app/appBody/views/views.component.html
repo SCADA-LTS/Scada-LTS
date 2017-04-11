@@ -7,10 +7,12 @@
         <button md-mini-fab><md-icon>zoom_out_map</md-icon></button>
         <button md-mini-fab><md-icon>edit</md-icon></button>
         <button md-mini-fab><md-icon>note_add</md-icon></button>-->
+
         <span>|</span>
         <span id="infoSelectedViews">Selected views</span>
         <span>|</span>
         <button md-mini-fab (click)="showViewHierarchy()" mdTooltip="Show view hierarchy" [mdTooltipPosition]="'below'"><md-icon>find_in_page</md-icon></button>
+        <button md-mini-fab (click)="openDlgSelectViewWithEdtHierarchyView()" mdTooltip="Show view hierarchy" [mdTooltipPosition]="'below'"><md-icon>find_in_page</md-icon></button>
         
     </div>
     

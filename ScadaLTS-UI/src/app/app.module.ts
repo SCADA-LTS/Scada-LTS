@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
+
 import { AppComponent } from './index';
 import { routing } from './app.routing';
 
@@ -33,6 +34,8 @@ import { SearchComponent } from './appBody/search/search.component';
 import { TrendsComponent } from './appBody/trends/trends.component';
 import { OldWatchlistComponent } from './appBody/old-watchlist/old-watchlist.component';
 import { WleditComponent } from './appBody/wledit/wledit.component';
+import { DlgSelectViewWithEdtHierarchyView } from './appBody/views/views.component';
+import { DlgAddHierarchyView } from './appBody/views/views.component';
 
 import { ClipboardModule } from 'ngx-clipboard';
 
@@ -46,6 +49,8 @@ import { ClipboardModule } from 'ngx-clipboard';
     WatchlistComponent,
     DashboardComponent,
     ViewsComponent,
+    DlgSelectViewWithEdtHierarchyView,
+    DlgAddHierarchyView,
     SystemComponent,
     UsersComponent,
     AboutComponent,
@@ -66,12 +71,17 @@ import { ClipboardModule } from 'ngx-clipboard';
     OldWatchlistComponent,
     WleditComponent
   ],
+  entryComponents: [
+    DlgSelectViewWithEdtHierarchyView,
+    DlgAddHierarchyView
+  ],
   imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
     MaterialModule.forRoot(),
+    MaterialModule,
     routing,
     NgbModule.forRoot(),
     ClipboardModule
