@@ -86,8 +86,11 @@ public class FlexProjectDaoTest extends TestDAO {
 
 		//Delete
 		flexProjectDAO.delete(firstId);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		flexProjectDAO.getFlexProject(firstId);
+		try{
+			flexProjectDAO.getFlexProject(firstId);
+		} catch(Exception e){
+			assertTrue(e.getClass().equals(EmptyResultDataAccessException.class));
+			assertTrue(e.getMessage().equals("Incorrect result size: expected 1, actual 0"));
+		}
 	}
 }

@@ -237,8 +237,11 @@ public class MaintenanceEventDaoTest extends TestDAO {
 
 		//Delete
 		maintenanceEventDAO.delete(firstId);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		maintenanceEventDAO.getMaintenanceEvent(firstId);
+		try{
+			maintenanceEventDAO.getMaintenanceEvent(firstId);
+		} catch(Exception e){
+			assertTrue(e.getClass().equals(EmptyResultDataAccessException.class));
+			assertTrue(e.getMessage().equals("Incorrect result size: expected 1, actual 0"));
+		}
 	}
 }

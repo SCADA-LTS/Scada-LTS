@@ -105,6 +105,7 @@ public class SystemSettingsDaoTest extends TestDAO {
 				+ "VALUES ('T_01',1,'')");
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO pointvalues (dataPointId, dataType, pointValue, ts) "
 				+ "VALUES(1,1,2.0,123)");
+		DAO.getInstance().getJdbcTemp().update("INSERT INTO users (`username`, `password`, `email`, `phone`, `admin`, `disabled`, `receiveAlarmEmails`, `receiveOwnAuditEvents`) VALUES ('uUsername', 'uPassword', 'uEmail', '24656789', '0', '0', '2', '0');");
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO reportInstances "
 				+ "(userId, name, includeEvents, includeUserComments, reportStartTime, reportEndTime, runStartTime, "
 				+ "runEndTime, recordCount, preventPurge) "
@@ -120,6 +121,7 @@ public class SystemSettingsDaoTest extends TestDAO {
 
 		systemSettingsDAO.resetDataBase();
 
-		assertTrue(reportInstanceDAO.getReportInstance(1) == null);
+		final int ID_FOR_CHECK_RESULT = 2;
+		assertTrue(reportInstanceDAO.getReportInstance(ID_FOR_CHECK_RESULT) == null);
 	}
 }

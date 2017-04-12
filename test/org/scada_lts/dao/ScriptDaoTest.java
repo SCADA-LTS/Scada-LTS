@@ -18,6 +18,7 @@
 package org.scada_lts.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,9 +79,12 @@ public class ScriptDaoTest extends TestDAO {
 		
 		// delete
 		scriptDAO.delete(id);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		scriptDAO.getScript(id);	
+		try{
+			scriptDAO.getScript(id);	
+		} catch(Exception e) {
+			assertTrue(e.getClass().equals(EmptyResultDataAccessException.class));
+			assertTrue(e.getMessage().equals("Incorrect result size: expected 1, actual 0"));
+		}
 		
 		//end CRUD
 		
