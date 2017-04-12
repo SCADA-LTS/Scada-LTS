@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import { Http } from '@angular/http';
 import { MdDialog, MdDialogRef } from '@angular/material';
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 
 declare let $:any;
 
@@ -11,62 +12,37 @@ declare let $:any;
 })
 
 export class ViewsComponent implements OnInit {
-  
-  
-  dataTree:any;
-  createdTree:boolean = false;
-  editDialogTree:boolean = false;
 
-  moveStart:any;
-  
-  getEditDialogTree() {
-    return this.editDialogTree;
-  }
-
-  constructor(@Inject(Http) public http: Http, public dialogSelectViewWithEdtHierarchyView: MdDialog ){   
-
-      this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
-            .subscribe(res => {
-                this.dataTree = res.json();
-            });
-
-      console.log("this.editDialogTree:"+this.getEditDialogTree());
-  }
+  constructor(@Inject(Http) public http: Http, public dialogSelectViewWithEdtHierarchyView: MdDialog ){}
 
   openDlgSelectViewWithEdtHierarchyView(){
         this.dialogSelectViewWithEdtHierarchyView.open(DlgSelectViewWithEdtHierarchyView);
   };
 
-    // loadIframe(){
-  
-  //   this.http.get(`../ScadaBR//api/view_hierarchy/getFirstViewId`)
-  //           .subscribe(res => {
-  //               var view = res.json();
-  //               console.log(view);
-  //               $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+view.key).on('load', function() {
-  //                 $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #graphical').hide();
-  //                 $('#infoSelectedViews').text(view.title);
-  //               });
-  //           });
-  // }
-
   loadIframe() {
-    $('#ifr').on('load', function () {
-      $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').hide();
+    this.http.get(`../ScadaBR//api/view_hierarchy/getFirstViewId`)
+             .subscribe(res => {
+                 var view = res.json();
+                 console.log(view);
+                 $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+view.key).on('load', function () {
+                    $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').hide();
+                    $('#infoSelectedViews').text(view.title);
+                });
     });
+    
   }
 
-  refreshTree() {
+  /*refreshTree() {
 
      this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
                 this.dataTree = res.json();
                 $("#viewsHierarchyDiv").fancytree("getTree").reload(this.dataTree);
             });
-  }
+  }*/
 
   showViewHierarchy() {
-      if (this.createdTree == false) {
+     // if (this.createdTree == false) {
          $('#viewsHierarchyDiv').fancytree({
             extensions: ["dnd"],
             dnd: {
@@ -145,13 +121,13 @@ export class ViewsComponent implements OnInit {
                 }
               }
             },
-            source: this.dataTree
+       //     source: this.dataTree
         });
-        this.createdTree = true;
+        //this.createdTree = true;
         $( "#dialogViewsHierarchy" ).dialog( "open" );
-      } else {
+      /*} else {
         $( "#dialogViewsHierarchy" ).dialog( "open" );
-      }
+      }*/
   }
 
   createNewFolder() {
@@ -407,22 +383,104 @@ export class ViewsComponent implements OnInit {
 }
 
 @Component({
-  selector: 'dialog-overview-example-dialog',
-  template: `<md-dialog-content>
-  <p> Hi, I'm a dialog! </p></md-dialog-content> 
-  <button md-mini-fab (click)="openDlgAddHierarchyView()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>`
+  selector: 'dialog-select-view',
+  template: `
+  <h4>Select view</h4>
+  <md-dialog-actions>
+      <button md-mini-fab (click)="openDlgAddHierarchyView()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>
+  </md-dialog-actions>
+  <md-dialog-content>
+      <div id="tree"></div>
+  </md-dialog-content> 
+  `
 
 })
 export class DlgSelectViewWithEdtHierarchyView{
 
   dataTree:any;
-  createdTree:boolean = false;
-  editDialogTree:boolean = false;
 
-  moveStart:any;
-
-  constructor(public dialogAddHierarchyView: MdDialog){
-
+  constructor(@Inject(Http) public http: Http, public dialogAddHierarchyView: MdDialog){
+      this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
+            .subscribe(res => {
+                this.dataTree = res.json();
+                $('#tree').fancytree({
+            extensions: ["dnd"],
+            dnd: {
+              autoExpandMS: 200,
+              draggable: { // modify default jQuery draggable options
+                zIndex: 1000,
+                scroll: false,
+                containment: "parent",
+                revert: "invalid"
+              },
+              preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
+              preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
+              dragStart: function(node, data) {     
+                return true;
+              },
+              dragEnter: function(node, data) {
+                return true;
+              },
+              dragExpand: function(node, data) {
+                // return false to prevent auto-expanding data.node on hover
+              },
+              dragOver: function(node, data) {
+              },
+              dragLeave: function(node, data) {
+              },
+              dragStop: function(node, data) {
+              },
+              dragDrop: function(node, data) {
+                if (data.otherNode.folder) {
+                  if (node.folder) {
+                    $.ajax({
+                      type: "GET",
+                      dataType: "json",
+                      url:'../ScadaBR/api/view_hierarchy/moveFolder/' + data.otherNode.key + '/' + node.key ,
+                      success: function(request){
+                        $.ajax({
+                          type: "GET",
+          	              dataType: "json",
+          	              url:'../ScadaBR/api/view_hierarchy/getAll',
+          	              success: function(data){
+                            console.log(data);
+                            $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
+                            $("#dialogConfirmDelete").dialog("close");
+                          },
+          	              error: function(XMLHttpRequest, textStatus, errorThrown) {
+          	                alert(textStatus);
+          	              }
+                        });
+                        //TODO optimalization using moveTo  
+                        //data.otherNode.moveTo(node, data.hitMode);
+                      },
+                      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        console.log(JSON.parse(XMLHttpRequest.responseText).message);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                     }
+                    });
+                  }
+                } else {
+                  $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url:'../ScadaBR/api/view_hierarchy/moveView/' + data.otherNode.key + '/' + node.key ,
+                    success: function(request){
+                      data.otherNode.moveTo(node, data.hitMode);
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      console.log(JSON.parse(XMLHttpRequest.responseText).message);
+                      console.log(textStatus);
+                      console.log(errorThrown);
+                   }
+                  });
+                }
+              }
+            },
+           source: this.dataTree
+        });
+      });
   }
 
   openDlgAddHierarchyView(){
@@ -432,9 +490,41 @@ export class DlgSelectViewWithEdtHierarchyView{
 }
 
 @Component({
-  selector: 'dialog-overview-example-edt',
-  template: `<md-dialog-content>
-  <p> Hi, I'm a dialog! </p></md-dialog-content> <button>Test</button>`
+  selector: 'dialog-add-folder',
+  template: `
+  <h4 md-dialog-title> Add folder </h4>
+  <md-dialog-content>
+    
+      
+    
+      <div novalidate [formGroup]="form">
+      <md-input-container>
+
+            <input mdInput formControlName="foldername" placeholder="folder name" type="text" [(ngModel)]="foldername" autofocus>
+      </md-input-container>
+      </div>
+      
+  </md-dialog-content> 
+  <md-dialog-actions>
+      
+     <a md-button >Add </a>    
+     <a md-button (click)="close()" mdTooltip="Close" [mdTooltipPosition]="'below'">Close</a>
+  </md-dialog-actions>
+  `
 
 })
-export class DlgAddHierarchyView{}
+export class DlgAddHierarchyView{
+    private foldername: string = "";
+    form: FormGroup;
+
+    constructor(public fb: FormBuilder, private http: Http) {
+        this.foldername = '';
+        this.form = this.fb.group({
+            foldername: ['', Validators.required]
+        });
+    };
+
+    close() {
+      this.close();
+    }
+}
