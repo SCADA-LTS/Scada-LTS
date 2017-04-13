@@ -109,8 +109,11 @@ public class DataPointDaoTest extends TestDAO {
 
 		//Delete
 		dataPointDAO.delete(firstId);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		dataPointDAO.getDataPoint(firstId);
+		try{
+			dataPointDAO.getDataPoint(firstId);
+		} catch(Exception e){
+			assertTrue(e.getClass().equals(EmptyResultDataAccessException.class));
+			assertTrue(e.getMessage().equals("Incorrect result size: expected 1, actual 0"));
+		}
 	}
 }
