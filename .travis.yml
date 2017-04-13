@@ -16,7 +16,7 @@ before_script:
 - npm -v
 - node -v
 - env
-- npm install -g @angular/cli
+- npm install -g @angular/cli@latest
 - npm install -g bower
 - npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
@@ -27,6 +27,7 @@ before_script:
 - cd ./ScadaLTS-UI
 - npm install
 - ls -l ./src/app/media
+- ng version
 - ng build
 - cd ./war
 - ant war
