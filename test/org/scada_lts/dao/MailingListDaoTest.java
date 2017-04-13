@@ -95,8 +95,11 @@ public class MailingListDaoTest extends TestDAO {
 
 		//Delete
 		mailingListDAO.delete(secondId);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		mailingListDAO.getMailingList(secondId);
+		try{
+			mailingListDAO.getMailingList(secondId);
+		} catch(Exception e){
+			assertTrue(e.getClass().equals(EmptyResultDataAccessException.class));
+			assertTrue(e.getMessage().equals("Incorrect result size: expected 1, actual 0"));
+		}
 	}
 }

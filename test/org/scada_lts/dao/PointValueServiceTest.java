@@ -29,6 +29,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.vo.AnonymousUser;
 
 /** 
  * Test PointValueService
@@ -68,7 +69,10 @@ public class PointValueServiceTest extends TestDAO {
 			
 			MangoPointValues mpv = new PointValueService();
 			
-			mpv.savePointValue(POINT_ID_1, pvtForAlphanumeric1);
+			mpv.savePointValueImpl(POINT_ID_1, pvtForAlphanumeric1, new AnonymousUser(), false);
+			
+			//TODO test async
+			//mpv.savePointValue(POINT_ID_1, pvtForAlphanumeric1);
 			
 			//TODO don't work because save run batchWrite from Context.
 			//PointValueTime pvt = mpv.getLatestPointValue(POINT_ID_1);

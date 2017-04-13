@@ -104,9 +104,12 @@ public class DataSourceDaoTest extends TestDAO {
 
 		//Delete
 		dataSourceDAO.delete(firstId);
-		expectedException.expect(EmptyResultDataAccessException.class);
-		expectedException.expectMessage("Incorrect result size: expected 1, actual 0");
-		dataSourceDAO.getDataSource(firstId);
+		try{
+			dataSourceDAO.getDataSource(firstId);
+		} catch(Exception e){
+			assertTrue(e.getClass().equals(EmptyResultDataAccessException.class));
+			assertTrue(e.getMessage().equals("Incorrect result size: expected 1, actual 0"));
+		}
 	}
 
 	/*@Test
