@@ -1,3 +1,4 @@
+import { toUnicode } from 'punycode';
 import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import { Http } from '@angular/http';
 import { MdDialog, MdDialogRef } from '@angular/material';
@@ -16,7 +17,7 @@ export class ViewsComponent implements OnInit {
   constructor(@Inject(Http) public http: Http, public dialogSelectViewWithEdtHierarchyView: MdDialog ){}
 
   openDlgSelectViewWithEdtHierarchyView(){
-        this.dialogSelectViewWithEdtHierarchyView.open(DlgSelectViewWithEdtHierarchyView);
+        this.dialogSelectViewWithEdtHierarchyView.open(DlgSelectViewWithEdtHierarchyView, this.dialogSelectViewWithEdtHierarchyView);
   };
 
   loadIframe() {
@@ -32,353 +33,15 @@ export class ViewsComponent implements OnInit {
     
   }
 
-  /*refreshTree() {
-
-     this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
-            .subscribe(res => {
-                this.dataTree = res.json();
-                $("#viewsHierarchyDiv").fancytree("getTree").reload(this.dataTree);
-            });
-  }*/
-
-  showViewHierarchy() {
-     // if (this.createdTree == false) {
-         $('#viewsHierarchyDiv').fancytree({
-            extensions: ["dnd"],
-            dnd: {
-              autoExpandMS: 200,
-              draggable: { // modify default jQuery draggable options
-                zIndex: 1000,
-                scroll: false,
-                containment: "parent",
-                revert: "invalid"
-              },
-              preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
-              preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
-          
-              dragStart: function(node, data) {     
-                return true;
-              },
-              dragEnter: function(node, data) {
-                return true;
-              },
-              dragExpand: function(node, data) {
-                // return false to prevent auto-expanding data.node on hover
-              },
-              dragOver: function(node, data) {
-              },
-              dragLeave: function(node, data) {
-              },
-              dragStop: function(node, data) {
-              },
-              dragDrop: function(node, data) {
-
-
-                if (data.otherNode.folder) {
-                  if (node.folder) {
-                    $.ajax({
-                      type: "GET",
-                      dataType: "json",
-                      url:'../ScadaBR/api/view_hierarchy/moveFolder/' + data.otherNode.key + '/' + node.key ,
-                      success: function(request){
-                        $.ajax({
-                          type: "GET",
-          	              dataType: "json",
-          	              url:'../ScadaBR/api/view_hierarchy/getAll',
-          	              success: function(data){
-                            console.log(data);
-                            $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
-                            $("#dialogConfirmDelete").dialog("close");
-                          },
-          	              error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	                alert(textStatus);
-          	              }
-                        });
-                        //TODO optimalization using moveTo  
-                        //data.otherNode.moveTo(node, data.hitMode);
-                      },
-                      error: function(XMLHttpRequest, textStatus, errorThrown) {
-                        console.log(JSON.parse(XMLHttpRequest.responseText).message);
-                        console.log(textStatus);
-                        console.log(errorThrown);
-                     }
-                    });
-                  }
-                } else {
-                  $.ajax({
-                    type: "GET",
-                    dataType: "json",
-                    url:'../ScadaBR/api/view_hierarchy/moveView/' + data.otherNode.key + '/' + node.key ,
-                    success: function(request){
-                      data.otherNode.moveTo(node, data.hitMode);
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown) {
-                      console.log(JSON.parse(XMLHttpRequest.responseText).message);
-                      console.log(textStatus);
-                      console.log(errorThrown);
-                   }
-                  });
-                }
-              }
-            },
-       //     source: this.dataTree
-        });
-        //this.createdTree = true;
-        $( "#dialogViewsHierarchy" ).dialog( "open" );
-      /*} else {
-        $( "#dialogViewsHierarchy" ).dialog( "open" );
-      }*/
-  }
-
-  createNewFolder() {
-    $( "#nameAddFolder" ).val("");
-    $( "#addFolder" ).dialog("open");
-  }
-
-  editFolder() {
-    if ($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode() != null) {
-      $( "#nameEditFolder" ).val( $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().title );
-      $( "#editFolder" ).dialog("open");
-    } else {
-      $("#infoDialogText").text("Please select folder to edit");
-      $("#infoDialog" ).dialog( "open" );
-    }
-  }
-
-  deleteFolder() {
-    //TODO check is folder 
-    $( "#dialogConfirmDelete" ).dialog("open");
-  }
-  
-  // TODO validate
-  editFolderFunc() {
-      //TODO rewrite to this.http.get
-      $.ajax({
-            type: "GET",
-          	dataType: "json",
-          	url:'../ScadaBR/api/view_hierarchy/editFolder/' + $("#nameEditFolder").val() + '/' + $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key,
-          	success: function(msg){
-              console.log(msg);
-  
-              $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().setTitle($("#nameEditFolder").val());
-              
-          		$( "#editFolder" ).dialog("close");
-          	},
-          	error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	  console.log(textStatus);
-          	}
-          });
-  }
-
   updateTips( t,  tips ) {
       tips
         .text( t )
         .addClass( "ui-state-highlight" );
-      /*setTimeout(function() {
-        tips.removeClass( "ui-state-highlight", 1500 );
-      }, 500 );*/
-  }
-  
-  // TODO validate
-  addFolderFunc() {
-    
-    // validate TODO check 
-    var valid = true;
-    $('#addFolder').removeClass( "ui-state-error" );
-    
-    console.log($("#nameAddFolder").val());
-    // check this name is used
-    if (valid) {
-        $.ajax({
-            type: "GET",
-            dataType: "json",
-            url:'../ScadaBR/api/view_hierarchy/createFolder/' + $("#nameAddFolder").val() + '/-1',
-            success: function(request){
-              console.log(request);
-
-               $.ajax({
-                  type: "GET",
-          	      dataType: "json",
-          	      url:'../ScadaBR/api/view_hierarchy/getAll',
-          	      success: function(data){
-                    console.log(data);
-                    $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
-                    $("#dialogConfirmDelete").dialog("close");
-                  },
-          	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	        alert(textStatus);
-          	      }
-                });  
-
-              // TODO replace code above to optimalization 
-              /*$("#viewsHierarchyDiv").fancytree("getRootNode").
-                addChildren({
-                  title: $("#nameAddFolder").val(),
-                  tooltip: "",
-                  folder: true
-                });*/
-              
-              $( "#addFolder" ).dialog("close");
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-              alert(JSON.parse(XMLHttpRequest.responseText).message);
-              //TODO
-              /*$("#validateTipAddFolder").text(JSON.parse(XMLHttpRequest.responseText).message).addClass("ui-state-error");*/
-              console.log(JSON.parse(XMLHttpRequest.responseText).message);
-              console.log(textStatus);
-              console.log(errorThrown);
-            }
-        });
-    }
   }
 
   ngOnInit(){
     this.loadIframe();
-    $( "#dialogViewsHierarchy" ).dialog({
-      autoOpen: false,
-      show: {
-        effect: "blind",
-        duration: 500
-      },
-      hide: {
-        effect: "blind",
-        duration: 500
-      },
-      buttons: {
-        "Select view": function() {
-          if ($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().folder) {
-            $("#infoDialogText").text("Select view, not folder");
-            $("#dialogInfo" ).dialog( "open" );
-          } else {
-            
-            $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+ $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key).on('load', function() {
-              $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, #graphical').hide();
-              console.log($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().title);
-              $("#infoSelectedViews").text( $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().title );
-            });
-
-            $(this).dialog( "close" );
-          }
-        },
-        Cancel: function() {
-          $( this ).dialog( "close" );
-        }
-      }
-    });
-    $( "#infoDialog" ).dialog({
-      autoOpen: false,
-      show: {
-        effect: "blind",
-        duration: 500
-      },
-      hide: {
-        effect: "blind",
-        duration: 500
-      }
-    });
-
-    $( "#addFolder" ).dialog({
-      autoOpen: false,
-      width: 400,
-      modal: true,
-      buttons: {
-        Save: this.addFolderFunc,
-        Cancel: function() {
-          $(this).dialog( "close" );
-        }
-      },
-      close: function() {
-        $(this).dialog("close");
-      }
-    });
-
-    $( "#editFolder" ).dialog({
-      autoOpen: false,
-      width: 400,
-      modal: true,
-      buttons: {
-        Save: this.editFolderFunc,
-        Cancel: function() {
-          $(this).dialog( "close" );
-        }
-      },
-      close: function() {
-        $(this).dialog("close");
-      }
-    });
-
-    $( "#dialogConfirmDelete" ).dialog({
-      autoOpen: false,
-      resizable: false,
-      height: "auto",
-      width: 400,
-      modal: true,
-      buttons: {
-        "Delete item": function() {
-
-          if ($("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().folder) {
-
-            $.ajax({
-              type: "GET",
-          	  dataType: "json",
-          	  url:'../ScadaBR//api/view_hierarchy/deleteFolder/' + $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key,
-          	  success: function(msg){
-                $.ajax({
-                  type: "GET",
-          	      dataType: "json",
-          	      url:'../ScadaBR/api/view_hierarchy/getAll',
-          	      success: function(data){
-                    console.log(data);
-                    $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
-                    $("#dialogConfirmDelete").dialog("close");
-                  },
-          	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	        alert(textStatus);
-          	      }
-                });  
-          	  },
-          	  error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	    alert(textStatus);
-          	  }
-            });
-
-          } else {
-
-            $.ajax({
-              type: "GET",
-          	  dataType: "json",
-          	  url:'../ScadaBR//api/view_hierarchy/deleteView/' + $("#viewsHierarchyDiv").fancytree("getTree").getActiveNode().key,
-          	  success: function(msg){
-                $.ajax({
-                  type: "GET",
-          	      dataType: "json",
-          	      url:'../ScadaBR/api/view_hierarchy/getAll',
-          	      success: function(data){
-                    console.log(data);
-                    $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
-                    $("#dialogConfirmDelete").dialog("close");
-                  },
-          	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	        alert(textStatus);
-          	      }
-                });  
-          	  },
-          	  error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	    alert(textStatus);
-          	  }
-            });
-          }
-        },
-        Cancel: function() {
-          $( this ).dialog( "close" );
-        }
-      }
-    });
-    this.loadIframe();
-  }
-
-  ngOnDestroy(){ //test
-    //$( "#dialogViewsHierarchy" ).dialog( "close" );
+    
   }
 }
 
@@ -387,19 +50,19 @@ export class ViewsComponent implements OnInit {
   template: `
   <h4>Select view</h4>
   <md-dialog-actions>
-      <button md-mini-fab (click)="openDlgAddHierarchyView()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>
+      <button md-mini-fab (click)="openDlgAddFolderHierarchyView()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>  
+      <button md-mini-fab (click)="deleteFolderHierarchyView()" mdTooltip="Delete folder" [mdTooltipPosition]="'below'"><i class="material-icons orange600">face</i></button>  
   </md-dialog-actions>
   <md-dialog-content>
       <div id="tree"></div>
   </md-dialog-content> 
   `
-
 })
 export class DlgSelectViewWithEdtHierarchyView{
 
   dataTree:any;
 
-  constructor(@Inject(Http) public http: Http, public dialogAddHierarchyView: MdDialog){
+  constructor(@Inject(Http) public http: Http, public dialogAddFolderHierarchyView: MdDialog, public dialogConfirmDeleteFolderHierarchyView: MdDialog){
       this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
                 this.dataTree = res.json();
@@ -443,9 +106,7 @@ export class DlgSelectViewWithEdtHierarchyView{
           	              dataType: "json",
           	              url:'../ScadaBR/api/view_hierarchy/getAll',
           	              success: function(data){
-                            console.log(data);
-                            $("#viewsHierarchyDiv").fancytree("getTree").reload(data);
-                            $("#dialogConfirmDelete").dialog("close");
+                            $("#tree").fancytree("getTree").reload(data);
                           },
           	              error: function(XMLHttpRequest, textStatus, errorThrown) {
           	                alert(textStatus);
@@ -467,6 +128,7 @@ export class DlgSelectViewWithEdtHierarchyView{
                     dataType: "json",
                     url:'../ScadaBR/api/view_hierarchy/moveView/' + data.otherNode.key + '/' + node.key ,
                     success: function(request){
+                      console.log(request);
                       data.otherNode.moveTo(node, data.hitMode);
                     },
                     error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -483,48 +145,120 @@ export class DlgSelectViewWithEdtHierarchyView{
       });
   }
 
-  openDlgAddHierarchyView(){
-        this.dialogAddHierarchyView.open(DlgAddHierarchyView);
+  openDlgAddFolderHierarchyView(){
+      let dialogRef = this.dialogAddFolderHierarchyView.open(DlgAddFolderHierarchyView, this.dialogAddFolderHierarchyView);
+      dialogRef.afterClosed().subscribe(result => {
+          this.rerfreshTree()        
+      });
   };
-  
+
+  deleteFolderHierarchyView(){
+    if ($("#tree").fancytree("getTree").getActiveNode().folder) {
+      let dialogRef = this.dialogConfirmDeleteFolderHierarchyView.open(DlgConfirmDeleteFolderHierarchyView, this.dialogConfirmDeleteFolderHierarchyView);
+      //TODO catch error
+      dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+             console.log("remove");
+             this.http.get(`../ScadaBR//api/view_hierarchy/deleteFolder/` + $("#tree").fancytree("getTree").getActiveNode().key)
+               .subscribe(res => {
+                 dialogRef.close();
+                 this.rerfreshTree();
+             });
+          }
+      });
+    }
+  }
+
+  rerfreshTree() {
+      $.ajax({
+        type: "GET",
+        dataType: "json",
+        url:'../ScadaBR/api/view_hierarchy/getAll',
+        success: function(data){
+          console.log(data);
+          $("#tree").fancytree("getTree").reload(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert(textStatus);
+        }
+      });  
+  }
 }
 
 @Component({
   selector: 'dialog-add-folder',
   template: `
+  
   <h4 md-dialog-title> Add folder </h4>
   <md-dialog-content>
-    
-      
-    
       <div novalidate [formGroup]="form">
-      <md-input-container>
-
-            <input mdInput formControlName="foldername" placeholder="folder name" type="text" [(ngModel)]="foldername" autofocus>
-      </md-input-container>
-      </div>
-      
+        <md-input-container>
+              <input mdInput formControlName="foldername" placeholder="folder name" type="text" [(ngModel)]="foldername" autofocus>
+        </md-input-container>
+      </div>      
   </md-dialog-content> 
   <md-dialog-actions>
-      
-     <a md-button >Add </a>    
-     <a md-button (click)="close()" mdTooltip="Close" [mdTooltipPosition]="'below'">Close</a>
+     <a md-button (click)="addFolder();" mdTooltip="Add Folder" [mdTooltipPosition]="'below'">Add </a>    
+     <a md-button md-button-close (click)="refDlg.close();" mdTooltip="Close" [mdTooltipPosition]="'below'">Close</a>
   </md-dialog-actions>
   `
-
 })
-export class DlgAddHierarchyView{
+export class DlgAddFolderHierarchyView{
     private foldername: string = "";
     form: FormGroup;
-
-    constructor(public fb: FormBuilder, private http: Http) {
+    
+    constructor(public fb: FormBuilder, private http: Http, public refDlg: MdDialogRef<DlgAddFolderHierarchyView>) {
         this.foldername = '';
         this.form = this.fb.group({
             foldername: ['', Validators.required]
         });
     };
 
-    close() {
-      this.close();
+    addFolder() {
+        //TODO catch error !!!
+        this.http.get(`../ScadaBR/api/view_hierarchy/createFolder/` + this.foldername + '/-1')
+            .subscribe(res => {
+              this.refDlg.close();
+        });
+        
+        // /*$.ajax({
+        //     type: "GET",
+        //     dataType: "json",
+        //     url:'../ScadaBR/api/view_hierarchy/createFolder/' + this.foldername + '/-1',
+        //     success: function(request){
+        //         this.myclose();
+        //     },
+        //     error: function(XMLHttpRequest, textStatus, errorThrown) {
+        //       alert(JSON.parse(XMLHttpRequest.responseText).message);
+        //       //TODO
+        //       /*$("#validateTipAddFolder").text(JSON.parse(XMLHttpRequest.responseText).message).addClass("ui-state-error");*/
+        //       /*console.log(JSON.parse(XMLHttpRequest.responseText).message);
+        //       console.log(textStatus);
+        //       console.log(errorThrown);
+        //     }
+        // });*/
     }
 }
+
+@Component({
+  selector: 'dialog-confirm-delete-folder',
+  template: `
+  <h4 md-dialog-title>Confirm delete folder</h4>
+  <md-dialog-content>
+      <p>Do you want to delete the folder?</p>
+  </md-dialog-content> 
+  <md-dialog-actions>
+     <a md-button (click)="delete();" mdTooltip="Delete" [mdTooltipPosition]="'below'">Delete </a>    
+     <a md-button md-button-close (click)="refDlg.close();" mdTooltip="Close" [mdTooltipPosition]="'below'">Close</a>
+  </md-dialog-actions>
+  `
+})
+export class DlgConfirmDeleteFolderHierarchyView{
+    
+    constructor(public refDlg: MdDialogRef<DlgConfirmDeleteFolderHierarchyView>) {};
+
+    delete() {
+        this.refDlg.close(true);
+    }
+}
+
