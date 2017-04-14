@@ -14,10 +14,17 @@ declare let $:any;
 
 export class ViewsComponent implements OnInit {
 
+  private viewKey:number=-1;
+
   constructor(@Inject(Http) public http: Http, public dialogSelectViewWithEdtHierarchyView: MdDialog ){}
 
   openDlgSelectViewWithEdtHierarchyView(){
-        this.dialogSelectViewWithEdtHierarchyView.open(DlgSelectViewWithEdtHierarchyView, this.dialogSelectViewWithEdtHierarchyView);
+
+    let dialogRef = this.dialogSelectViewWithEdtHierarchyView.open(DlgSelectViewWithEdtHierarchyView, this.dialogSelectViewWithEdtHierarchyView);
+    dialogRef.afterClosed().subscribe(result => {
+          this.viewKey = result;
+          console.log(this.viewKey);        
+    });
   };
 
   loadIframe() {
@@ -25,12 +32,33 @@ export class ViewsComponent implements OnInit {
              .subscribe(res => {
                  var view = res.json();
                  console.log(view);
-                 $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+view.key).on('load', function () {
-                    $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').hide();
+                 this.viewKey = view.key;
+                 $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+view.key).on('load', function () { 
+                    //var iframeDocument = document.getElementById('myframe').contentWindow.document;
+                    $('#ifr').contents().find('#mainHeader, #subHeader, #graphical, #fsOut, .footer').css("display","none");
+                    $('#ifr').css("visibility","visible");
                     $('#infoSelectedViews').text(view.title);
                 });
+    }); 
+  }
+
+  addView() {
+    $('#ifr').css("visibility","hidden");             
+    $('#ifr').attr('src','/ScadaBR/view_edit.shtm').on('load', function() {
+        $('#ifr').contents().find('#mainHeader, #subHeader, #graphical, #fsOut, .footer').css("display","none");
+        $('#ifr').css("visibility","visible");
+        $('#infoSelectedViews').text($("#tree").fancytree("getTree").getActiveNode().title);
     });
-    
+  }
+
+  editView() {
+    $('#ifr').css("visibility","hidden");             
+    $('#ifr').attr('src','/ScadaBR/view_edit.shtm?viewId='+ this.viewKey).on('load', function() {
+        $('#ifr').contents().find('#mainHeader, #subHeader, #graphical, #fsOut, .footer').css("display","none");
+        $('#ifr').css("visibility","visible");
+        $('#infoSelectedViews').text($("#tree").fancytree("getTree").getActiveNode().title);
+    });
+
   }
 
   updateTips( t,  tips ) {
@@ -56,13 +84,17 @@ export class ViewsComponent implements OnInit {
   <md-dialog-content>
       <div id="tree"></div>
   </md-dialog-content> 
+  <md-dialog-actions>
+      <button md-button (click)="select()" mdTooltip="Select view" [mdTooltipPosition]="'below'">Select</button>  
+      <button md-button md-button-close (click)="refDlg.close();" mdTooltip="Delete folder" [mdTooltipPosition]="'below'">Close</button>  
+  </md-dialog-actions>
   `
 })
 export class DlgSelectViewWithEdtHierarchyView{
 
   dataTree:any;
 
-  constructor(@Inject(Http) public http: Http, public dialogAddFolderHierarchyView: MdDialog, public dialogConfirmDeleteFolderHierarchyView: MdDialog){
+  constructor(@Inject(Http) public http: Http, public dialogAddFolderHierarchyView: MdDialog, public dialogConfirmDeleteFolderHierarchyView: MdDialog, public refDlg: MdDialogRef<DlgSelectViewWithEdtHierarchyView>){
       this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
                 this.dataTree = res.json();
@@ -143,6 +175,24 @@ export class DlgSelectViewWithEdtHierarchyView{
            source: this.dataTree
         });
       });
+  }
+
+  select() {
+    //TODO info not select view
+          if (!$("#tree").fancytree("getTree").getActiveNode().folder) {
+            $('#ifr').css("visibility","hidden");             
+            $('#ifr').attr('src','/ScadaBR/views.shtm?viewId='+ $("#tree").fancytree("getTree").getActiveNode().key).on('load', function() {
+
+              $('#ifr').contents().find('#mainHeader, #subHeader, #graphical, #fsOut, .footer').css("display","none");
+              $('#ifr').css("visibility","visible");
+              
+              $('#infoSelectedViews').text($("#tree").fancytree("getTree").getActiveNode().title);
+
+            });
+            this.refDlg.close($("#tree").fancytree("getTree").getActiveNode().key);
+          }
+
+
   }
 
   openDlgAddFolderHierarchyView(){
