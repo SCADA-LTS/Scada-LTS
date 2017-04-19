@@ -35,7 +35,8 @@ import { TrendsComponent } from './appBody/trends/trends.component';
 import { OldWatchlistComponent } from './appBody/old-watchlist/old-watchlist.component';
 import { WleditComponent } from './appBody/wledit/wledit.component';
 import { DlgSelectViewWithEdtHierarchyView } from './appBody/views/views.component';
-import { DlgAddHierarchyView } from './appBody/views/views.component';
+import { DlgAddFolderHierarchyView } from './appBody/views/views.component';
+import { DlgConfirmDeleteFolderHierarchyView } from './appBody/views/views.component';
 
 import { ClipboardModule } from 'ngx-clipboard';
 
@@ -50,7 +51,8 @@ import { ClipboardModule } from 'ngx-clipboard';
     DashboardComponent,
     ViewsComponent,
     DlgSelectViewWithEdtHierarchyView,
-    DlgAddHierarchyView,
+    DlgAddFolderHierarchyView,
+    DlgConfirmDeleteFolderHierarchyView,
     SystemComponent,
     UsersComponent,
     AboutComponent,
@@ -73,7 +75,8 @@ import { ClipboardModule } from 'ngx-clipboard';
   ],
   entryComponents: [
     DlgSelectViewWithEdtHierarchyView,
-    DlgAddHierarchyView
+    DlgAddFolderHierarchyView,
+    DlgConfirmDeleteFolderHierarchyView
   ],
   imports: [
     BrowserModule,
