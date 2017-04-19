@@ -78,8 +78,10 @@ export class ViewsComponent implements OnInit {
   template: `
   <h4>Select view</h4>
   <md-dialog-actions>
-      <button md-mini-fab (click)="openDlgAddFolderHierarchyView()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>  
-      <button md-mini-fab (click)="deleteFolderHierarchyView()" mdTooltip="Delete folder" [mdTooltipPosition]="'below'"><i class="material-icons orange600">face</i></button>  
+      <md-toolbar>
+        <button class="button_toolbar" md-mini-fab (click)="openDlgAddFolderHierarchyView()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>  
+        <button class="button_toolbar" md-mini-fab (click)="deleteFolderHierarchyView()" mdTooltip="Delete folder" [mdTooltipPosition]="'below'"><md-icon>delete</md-icon></button>  
+      </md-toolbar>
   </md-dialog-actions>
   <md-dialog-content>
       <div id="tree"></div>
@@ -88,7 +90,8 @@ export class ViewsComponent implements OnInit {
       <button md-button (click)="select()" mdTooltip="Select view" [mdTooltipPosition]="'below'">Select</button>  
       <button md-button md-button-close (click)="refDlg.close();" mdTooltip="Delete folder" [mdTooltipPosition]="'below'">Close</button>  
   </md-dialog-actions>
-  `
+  `,
+  styleUrls: ['./views.component.css']
 })
 export class DlgSelectViewWithEdtHierarchyView{
 
