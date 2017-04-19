@@ -57,9 +57,9 @@
     <td valign="top">
       <table width="100%" cellspacing="0" cellpadding="0" border="0">
         <spring:bind path="form">
-          <c:if test="${status.error}">
-            <tr><td colspan="2" class="formError">${status.errorMessage}</td></tr>
-          </c:if>
+        <c:if test="${error.status != null}">
+            <tr><td colspan="2" class="formError"><fmt:message key="${error.status}"/></td></tr>
+        </c:if>
         </spring:bind>
       </table>
     </td>

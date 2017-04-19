@@ -612,13 +612,13 @@ alter table usersUsersProfiles add constraint usersUsersProfilesFk1 foreign key 
 alter table usersUsersProfiles add constraint usersUsersProfilesFk2 foreign key (userId) references users(id) on delete cascade;
 
 -- Watchlist permissions
-create table watchlistUsersProfiles (
+create table watchListUsersProfiles (
   watchlistId int not null,
   userProfileId int not null,
   permission int not null
 ) ENGINE=InnoDB;
-alter table watchlistUsersProfiles add constraint watchlistUsersProfilesFk1 foreign key (watchlistId) references watchLists(id) on delete cascade;
-alter table watchlistUsersProfiles add constraint watchlistUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;
+alter table watchListUsersProfiles add constraint watchlistUsersProfilesFk1 foreign key (watchlistId) references watchLists(id) on delete cascade;
+alter table watchListUsersProfiles add constraint watchlistUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;
 
 -- Watchlist permissions
 create table viewUsersProfiles (

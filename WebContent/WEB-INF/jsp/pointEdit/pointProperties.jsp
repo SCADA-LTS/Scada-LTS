@@ -50,7 +50,7 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="pointEdit.props.name"/></td>
         <td class="formField"><input type="text" name="name" value="${status.value}"/></td>
-        <td class="formError">${status.errorMessage}</td>
+        <c:if test="${error.name != null}"><td class="formError"><fmt:message key="${error.name}"/></td></c:if>
       </tr>
     </spring:bind>
     
@@ -61,7 +61,7 @@
           <td class="formField">
             <sst:select name="engineeringUnits" value="${status.value}"><tag:engineeringUnits/></sst:select>
           </td>
-          <td class="formError">${status.errorMessage}</td>
+          <c:if test="${error.engineeringUnits != null}"><td class="formError"><fmt:message key="${error.engineeringUnits}"/></td></c:if>
         </tr>
       </spring:bind>
     </tbody>
