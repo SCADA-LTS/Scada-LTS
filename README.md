@@ -20,8 +20,22 @@ Scada-LTS is an Open Source, web-based, multi-platform solution for building you
 
 ## Quick start
 
-Here is one of the several start options:
+Here is two of the several start options:
 
+### To Run ScadaLTS on Docker:
+* Download and install Docker from: https://www.docker.com/
+* Download Docker Toolbox from: https://kitematic.com/
+* Run Docker and Docker Toolbox.
+* When the download is completed in the Docker Toolbox run Docker CLI (bottom-left corner).
+* In the Docker CLI type in: `docker pull dockergb/scadalts-dev` to download repository.
+* Type in: `docker images` to check if repository is created. It should show "dockergb/scadalts" on the list.
+* To run Scada on Docker type in: 
+`docker run -it -p 81:8080 dockergb/scadalts-dev /root/start.sh`.
+* Type in: `Get-NetIPAddress` and find IPAdrress for "DockerNAT" InterfaceAlias (You need a new CLI window to do it).
+* Type in docker IP adrress in the browser with port 81 and `/ScadaLTS/` sufix. Example:
+`http://10.0.75.2:81/ScadaLTS/`
+
+### Second option:
 * [Download the latest release](https://github.com/sdtabilit/Scada-LTS/releases/download/v0.0.6-test-modbus.3.0.2/ScadaBR.war).
 * Install tomcat7: `apt-get install tomcat7`.
 * Install mysql: `apt-get install mysql-server`.
@@ -35,6 +49,7 @@ Here is one of the several start options:
 ### What's included
 
 App ScadaBR.war 
+App ScadaLTS.war
 
 ## Bugs and feature requests
 
