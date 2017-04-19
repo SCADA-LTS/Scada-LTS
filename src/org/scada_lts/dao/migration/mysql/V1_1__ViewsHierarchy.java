@@ -121,7 +121,7 @@ public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
 				 + "NOT DETERMINISTIC " 
 				+ "BEGIN "
 				 + "DECLARE varExistId INT default 0; "
-				 + "SELECT id into varExistId FROM views_category_views_hierarchy WHERE id=a_id; "
+				 + "SELECT view_id into varExistId FROM views_category_views_hierarchy WHERE view_id=a_id; "
 				 + "IF varExistId = 0 THEN "
 				   + "INSERT INTO views_category_views_hierarchy (view_id, folder_views_hierarchy_id) " 
 				   + "VALUES (a_id, a_new_parent_id); "
