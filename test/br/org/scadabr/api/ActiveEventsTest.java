@@ -1,10 +1,12 @@
 package br.org.scadabr.api;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
-public class ActiveEventsTest extends TestCase {
+public class ActiveEventsTest {
 
-	public void testParams() {
-		assertTrue(true);
+	@Test
+	public void test() {
+		assertTrue("Fail", false);
 	}
 }

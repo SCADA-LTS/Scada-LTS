@@ -218,22 +218,27 @@
 		      <pathelement location="WebContent/WEB-INF/lib"/>
 		      <pathelement path="${java.class.path}"/>
 		    </classpath>
+		    	
+		    <classpath location="WebContent/WEB-INF/lib/junit-4.8.2.jar" />
 
 				
 			<!-- test class -->
 			<classpath location="WebContent/WEB-INF/classes" />
 			
-		    <!-- Sample execute test -->
 			<test name="br.org.scadabr.api.AckEventsTest" 
-				haltonfailure="no" todir="doc/report/test">
-				<formatter type="plain" />
-				<formatter type="xml" />
+				haltonfailure="no">
 			</test>
+		    	
+		    <test name="br.org.scadabr.api.ActiveEventsTest" 
+		        haltonfailure="no">
+		    </test>
+		    			    
+		    
 				
 		  </junit>
-		</target>
+	</target>
 	
-	<target name="war_config_test" description="Bundles the application as a WAR file with config test" depends="clean, build">
+	<target name="war_config_test" description="Bundles the application as a WAR file with config test" depends="clean, build, junit">
 		<mkdir dir="WebContent/WEB-INF/classes"/>
 		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
 			<fileset dir="build/classes">
