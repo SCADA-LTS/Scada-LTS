@@ -226,7 +226,7 @@
 			<classpath location="WebContent/WEB-INF/classes" />
 			
 			<test name="br.org.scadabr.api.AckEventsTest" 
-				haltonfailure="no">
+				haltonfailure="yes">
 			</test>
 		    	
 		    <test name="br.org.scadabr.api.ActiveEventsTest" 
