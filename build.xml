@@ -212,6 +212,8 @@
 	<target name="junit" depends="clean, build">
 
 		    <junit printsummary="yes" haltonfailure="no">
+		    
+		    <formatter type="plain" usefile="false" />
 
 			<!-- Project classpath, must include junit.jar -->
 		    <classpath>
@@ -239,6 +241,7 @@
 		    	
 		    <test name="package org.scada_lts.dao.ViewHierarchyDaoTest"
 		    	haltonfailure="true">
+		    	 
 		    </test>
 				
 		  </junit>
