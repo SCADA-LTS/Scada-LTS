@@ -232,8 +232,14 @@
 		    <test name="br.org.scadabr.api.ActiveEventsTest" 
 		        haltonfailure="no">
 		    </test>
-		    			    
-		    
+		    	
+		    <test name="br.org.scadabr.api.ActiveEventsTest" 
+		        haltonfailure="no">
+		    </test>
+		    	
+		    <test name="package org.scada_lts.dao.ViewHierarchyDaoTest"
+		    	haltonfailure="true">
+		    </test>
 				
 		  </junit>
 	</target>
