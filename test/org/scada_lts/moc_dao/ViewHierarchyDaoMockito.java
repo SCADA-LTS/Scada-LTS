@@ -20,12 +20,6 @@ public class ViewHierarchyDaoMockito {
 		return vHierarchyDAO;
 	}
 	
-	public ViewDAO pupulateViewDAOToCheckViewsWithOutFolder() {
-		/*ViewDAO vDAO = mock(ViewDAO.class);
-		List<> vDAO = new ArrayList<>();
-		
-		when(vHierarchyDAO.getAll()).thenReturn(vhn);*/
-		return null;
-	}
+	
 
 }

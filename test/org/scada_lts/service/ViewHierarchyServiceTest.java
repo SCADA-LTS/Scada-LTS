@@ -1,16 +1,21 @@
 package org.scada_lts.service;
 
+import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
+import org.scada_lts.moc_dao.ViewDaoMockito;
 import org.scada_lts.moc_dao.ViewHierarchyDaoMockito;
 
 import junit.framework.TestCase;
 
 public class ViewHierarchyServiceTest extends TestCase {
 	
-	public void test() {
+	public void testGetAllWithOnlyView() {
 		ViewHierarchyDAO vhd = ViewHierarchyDaoMockito.populateViewHierarchyDAOToCheckViewsWithOutFolder();
-		assertTrue(vhd.getAll().size()==0);
-		assertTrue(true);
+		ViewDAO vd = ViewDaoMockito.pupulateViewDAOToCheckViewsWithOutFolder();
+		ViewHierarchyService vhs = new ViewHierarchyService(vhd, vd);
+
+	    assertTrue(vhs.getAll().size()==2);
+		
 	}
 
 }
