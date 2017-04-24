@@ -214,18 +214,8 @@
 		    <junit printsummary="yes" haltonfailure="no">
 		    
 		    <formatter type="plain" usefile="false" />
-
-			<!-- Project classpath, must include junit.jar -->
-		    <classpath>
-		      <pathelement location="WebContent/WEB-INF/lib"/>
-		      <pathelement path="${java.class.path}"/>
-		    </classpath>
-		    	
-		    <classpath location="WebContent/WEB-INF/lib/junit-4.8.2.jar" />
-
-				
-			<!-- test class -->
-			<classpath location="WebContent/WEB-INF/classes" />
+ 
+		    <classpath refid="scadabr-1.1.0-RC.classpath"/>
 			
 			<test name="br.org.scadabr.api.AckEventsTest" 
 				haltonfailure="no">
@@ -239,11 +229,14 @@
 		        haltonfailure="no">
 		    </test>
 		    	
-		    <test name="package org.scada_lts.dao.ViewHierarchyDaoTest"
-		    	haltonfailure="true">
-		    	 
+		    <test name="org.scada_lts.dao.ViewHierarchyDaoTest"
+		    	haltonfailure="no">
 		    </test>
-				
+		    	
+		    <test name="org.scada_lts.service.ViewHierarchyServiceTest"
+		        haltonfailure="yes">
+		    </test>
+		    	
 		  </junit>
 	</target>
 	

@@ -57,6 +57,15 @@ public class ViewHierarchyService {
 	@Resource
 	private ViewDAO viewDAO;
 	
+	public ViewHierarchyService(){
+		
+	}
+	
+	public ViewHierarchyService(ViewHierarchyDAO vhDAO, ViewDAO viewDAO){
+		this.vhDAO = vhDAO;
+		this.viewDAO = viewDAO;
+	}
+	
 	private List<ViewHierarchyJSON> getChildFolder(long l) {
 		ArrayList<ViewHierarchyJSON> lst = new ArrayList<ViewHierarchyJSON>();
 		

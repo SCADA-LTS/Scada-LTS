@@ -76,9 +76,6 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		private static final String SQL_DELETE_VIEW = "" +
 				"select func_views_hierarchy_view_delete(?);";
 		
-		private static final String SQL_CHECK_IS_USED_NAME = "" +
-				"select count(*) from category_views_hierarchy where name=?";
-		
 		private class ViewHierarchyRowMapper implements RowMapper<ViewHierarchyNode> {
 
 			@Override
