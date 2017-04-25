@@ -1,4 +1,4 @@
-package org.scada_lts.moc_dao;
+package org.scada_lts.mock_dao;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

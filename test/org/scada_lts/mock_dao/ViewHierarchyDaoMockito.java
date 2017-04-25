@@ -1,4 +1,4 @@
-package org.scada_lts.moc_dao;
+package org.scada_lts.mock_dao;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -6,9 +6,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
+import org.scada_lts.service.model.ViewHierarchyJSON;
 
 public class ViewHierarchyDaoMockito {
 	
@@ -19,7 +19,6 @@ public class ViewHierarchyDaoMockito {
 		when(vHierarchyDAO.getAll()).thenReturn(vhl);
 		return vHierarchyDAO;
 	}
-	
 	
 
 }
