@@ -60,7 +60,6 @@ public class ViewHierarchyServiceTestOnDB extends TestDAO {
 		
 		assertTrue(user.getId()>0);
 		
-		
 		View v1 = new View();
 		v1.setName("view_1");
 		v1.setXid("XID_view1");
@@ -107,6 +106,8 @@ public class ViewHierarchyServiceTestOnDB extends TestDAO {
 	    assertTrue(vhs.getNode(2).size()==0);
 	    assertTrue(vhs.getNode(3).size()==0);
 	    assertTrue(vhs.getNode(ViewHierarchyDAO.ROOT_ID).size()==1);	
+	    
 	}
+
 
 }

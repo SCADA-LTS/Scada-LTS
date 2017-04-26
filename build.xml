@@ -243,6 +243,14 @@
 		    	haltonfailure="yes">
 		    </test>
 		    	
+		    <test name="org.scada_lts.service.ViewHierarchyServiceMoveFolderTest"
+		        haltonfailure="yes">
+		    </test>
+		    	
+		    <test name="org.scada_lts.service.ViewHierarchyServiceMoveViewTest"
+		        haltonfailure="yes">
+		    </test>
+		    	
 		  </junit>
 	</target>
 	

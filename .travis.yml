@@ -40,7 +40,7 @@ jdk:
 services:
 - docker
 - mysql
-script: ant war && mkdir logs && ant junit
+script: ant war && ls / && touch /logs/modbus.log && ant junit
 branches:
   only:
   - "/^PROC-.*$/"
