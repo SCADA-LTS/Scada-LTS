@@ -26,13 +26,14 @@ import { TrendsComponent } from './appBody/trends/trends.component';
 import { OldWatchlistComponent } from './appBody/old-watchlist/old-watchlist.component';
 import { WleditComponent } from './appBody/wledit/wledit.component';
 
+import { WorksheetAccessGuard } from './ActivationGuard';
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'registration', component: RegistrationComponent },
   { path: 'appBody', component: AppBodyComponent,
     children: [
-      { path: 'watchlist', component: WatchlistComponent },
+      { path: 'watchlist', component: WatchlistComponent, canActivate: [WorksheetAccessGuard] },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'views', component: ViewsComponent },
       { path: 'system', component: SystemComponent },
