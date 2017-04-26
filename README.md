@@ -91,7 +91,7 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 
 * <https://github.com/ArkadiuszParafiniuk>
 
-**Jarosłąw Morzyniec**
+**Jarosław Morzyniec**
 
 * <https://github.com/Morzyniec> Testing
 
