@@ -8,15 +8,14 @@ interface CanActivate {
 }
 
 @Injectable()
-export class WorksheetAccessGuard implements CanActivate {
+export class ActivationGuard implements CanActivate {
 
     constructor(private router: Router, private userService: UserAuthenticationService) {
     }
 
     public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
 
-        if (!localStorage.getItem('currentUser')) {
-            console.log(localStorage.getItem('currentUser'));
+        if (this.userService.isUserAuthenticated == false) {
             this.router.navigate(['/']);
             return false;
         }
