@@ -146,11 +146,11 @@ public class ViewHierarchyServiceMoveFolderTest extends TestDAO {
 	    vhs.moveView(v3.getId(), vhn1.getId());
 		
 		assertTrue(vhs.getAll().size()==1);
-	    assertTrue(vhs.getNode(vhn1.getId()).size()==4);
-	    assertTrue(vhs.getNode(vhn2.getId()).size()==0);
+		// One because getNode don't return views
+	    assertTrue(vhs.getNode(vhn1.getId()).size()==1);
+	    assertTrue(vhs.getNode(vhn2.getId()).size()==1);
 	    assertTrue(vhs.getNode(vhn3.getId()).size()==0);
 	    assertTrue(vhs.getNode(ViewHierarchyDAO.ROOT_ID).size()==1);	
-	    
 	    
 	}
 
