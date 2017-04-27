@@ -154,8 +154,13 @@ public class ViewHierarchyService {
 	}
 	
 	public boolean moveView(int id, int newParentId) {
-		LOG.info("move id:"+id+" newParentId:"+newParentId);
-		return (vhDAO.moveView(id, newParentId)>GenericHierarchyDAO.ERROR);
+		if (newParentId == ViewHierarchyService.ROOT_ID) {
+		   LOG.info("move id:"+id+" newParentId:"+newParentId);
+		   return (vhDAO.delView(id)>GenericHierarchyDAO.ERROR);
+		} else {
+		   LOG.info("move id:"+id+" newParentId:"+newParentId);
+		   return (vhDAO.moveView(id, newParentId)>GenericHierarchyDAO.ERROR);
+		}
 	}
 	
 	//TODO (userId profileId)

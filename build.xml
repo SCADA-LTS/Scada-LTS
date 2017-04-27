@@ -251,6 +251,12 @@
 		        haltonfailure="yes">
 		    </test>
 		    	
+		    <!--
+		    <test name="" 
+		    	haltonfailure="yes">
+		    </test> -->
+		    	
+		    	
 		  </junit>
 	</target>
 	

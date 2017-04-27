@@ -97,7 +97,24 @@ export class DlgSelectViewWithEdtHierarchyView{
 
   dataTree:any;
 
+  public getParentId = function(node) {
+    if (node != undefined) {
+      var parentId=0;
+      try {
+        parentId = parseInt(node.parent.key);
+      	if (isNaN(parentId)) {
+      	  parentId=0;
+      	}
+      } catch (e) { }
+      return parentId;
+    } else {
+      return undefined;
+    }
+  }
+
   constructor(@Inject(Http) public http: Http, public dialogAddFolderHierarchyView: MdDialog, public dialogConfirmDeleteFolderHierarchyView: MdDialog, public refDlg: MdDialogRef<DlgSelectViewWithEdtHierarchyView>){
+
+
       this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
             .subscribe(res => {
                 this.dataTree = res.json();
@@ -113,7 +130,7 @@ export class DlgSelectViewWithEdtHierarchyView{
               },
               preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
               preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
-              dragStart: function(node, data) {     
+              dragStart: function(node, data) {  
                 return true;
               },
               dragEnter: function(node, data) {
@@ -129,6 +146,11 @@ export class DlgSelectViewWithEdtHierarchyView{
               dragStop: function(node, data) {
               },
               dragDrop: function(node, data) {
+                
+                /*console.log("new parentId:"+node.key);
+                console.log(data.hitMode);
+                console.log(data);
+                console.log("elementId:"+data.otherNode.key);*/
                 if (data.otherNode.folder) {
                   if (node.folder) {
                     $.ajax({
@@ -163,7 +185,7 @@ export class DlgSelectViewWithEdtHierarchyView{
                     dataType: "json",
                     url:'../ScadaBR/api/view_hierarchy/moveView/' + data.otherNode.key + '/' + node.key ,
                     success: function(request){
-                      console.log(request);
+                      //$("#tree").fancytree("getTree").reload(data);
                       data.otherNode.moveTo(node, data.hitMode);
                     },
                     error: function(XMLHttpRequest, textStatus, errorThrown) {
