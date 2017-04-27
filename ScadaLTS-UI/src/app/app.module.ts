@@ -40,6 +40,9 @@ import { DlgConfirmDeleteFolderHierarchyView } from './appBody/views/views.compo
 
 import { ClipboardModule } from 'ngx-clipboard';
 
+import { WorksheetAccessGuard } from './ActivationGuard';
+import { UserAuthenticationService } from './UserAuthenticationService';
+
 
 @NgModule({
   declarations: [
@@ -89,7 +92,7 @@ import { ClipboardModule } from 'ngx-clipboard';
     NgbModule.forRoot(),
     ClipboardModule
   ],
-  providers: [],
+  providers: [WorksheetAccessGuard, UserAuthenticationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
