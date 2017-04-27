@@ -1,15 +1,15 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnInit} from '@angular/core';
 import {Http} from '@angular/http';
 
 @Injectable()
-export class UserAuthenticationService {
+export class UserAuthenticationService implements OnInit {
     isUserAuthenticated: boolean = false;
-    username: string;
+    username: string = 'admin';
 
-    constructor(private http: Http) {
-    }
+    constructor(private http: Http) {}
 
-    authentication() {
+
+    ngOnInit(){
         this.http.get(`http://localhost/ScadaBR/api/auth/isLogged/${this.username}`)
             .subscribe(res => {
                     this.isUserAuthenticated = res.json();
