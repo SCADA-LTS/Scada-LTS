@@ -33,7 +33,7 @@ const appRoutes: Routes = [
   { path: 'registration', component: RegistrationComponent },
   { path: 'appBody', component: AppBodyComponent,
     children: [
-      { path: 'watchlist', component: WatchlistComponent, canActivate: [WorksheetAccessGuard] },
+      { path: 'watchlist', component: WatchlistComponent/*, canActivate: [WorksheetAccessGuard]*/ },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'views', component: ViewsComponent },
       { path: 'system', component: SystemComponent },
