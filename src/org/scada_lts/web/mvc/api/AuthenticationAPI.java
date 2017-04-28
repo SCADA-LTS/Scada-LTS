@@ -129,29 +129,6 @@ public class AuthenticationAPI {
 		return new ResponseEntity<String>(json,HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/api/auth/isAdmin", method = RequestMethod.GET)
-	public ResponseEntity<String> setLogout(HttpServletRequest request) {
-		LOG.info("/api/auth/isAdmin");
-		
-		User user = Common.getUser(request);
-		
-		if (user != null) {
-			if (user.isAdmin()) {
-				ObjectMapper mapper = new ObjectMapper();
-				String json = null;
-				try {
-					json = mapper.writeValueAsString(user.isAdmin());
-				} catch (JsonProcessingException e) {
-					LOG.error(e);
-					return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-				}
-				return new ResponseEntity<String>(json,HttpStatus.OK);
-			}
-		}
-		
-		return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		
-	}
 	
 	@RequestMapping(value = "/api/auth/isRoleAdmin", method = RequestMethod.GET)
 	public ResponseEntity<String> isRoleAdmin(HttpServletRequest request) {
