@@ -130,4 +130,49 @@ public class AuthenticationAPI {
 	}
 	
 	
+	@RequestMapping(value = "/api/auth/isRoleAdmin", method = RequestMethod.GET)
+	public ResponseEntity<String> isRoleAdmin(HttpServletRequest request) {
+		LOG.info("/api/auth/isRoleAdmin");
+		
+		User user = Common.getUser(request);
+		
+		if (user != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			String json = null;
+			try {
+				json = mapper.writeValueAsString(user.isAdmin());
+			} catch (JsonProcessingException e) {
+				LOG.error(e);
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<String>(json,HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		
+	}
+	
+	@RequestMapping(value = "/api/auth/isRoleUser", method = RequestMethod.GET)
+	public ResponseEntity<String> isRoleUser(HttpServletRequest request) {
+		LOG.info("/api/auth/isRoleUser");
+		
+		User user = Common.getUser(request);
+		
+		if (user != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			String json = null;
+			try {
+				json = mapper.writeValueAsString(!user.isAdmin());
+			} catch (JsonProcessingException e) {
+				LOG.error(e);
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<String>(json,HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		
+	}
+	
+	
 }
