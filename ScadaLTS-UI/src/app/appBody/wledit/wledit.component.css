@@ -86,4 +86,7 @@ select {
   -o-transition: opacity 0.5s ease;
   transition: opacity 0.5s ease; }
 
+.wlPointsContainer {
+  margin-top: 20px; }
+
 /*# sourceMappingURL=wledit.component.css.map */

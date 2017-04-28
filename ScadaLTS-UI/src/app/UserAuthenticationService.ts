@@ -1,23 +1,31 @@
 import {Injectable, OnInit} from '@angular/core';
-import {Http} from '@angular/http';
+import {Http, Response} from '@angular/http';
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class UserAuthenticationService implements OnInit {
-    isUserAuthenticated: boolean = false;
+    public isUserAuthenticated: Observable<boolean>;
     username: string = 'admin';
 
-    constructor(private http: Http) {}
-
-
-    ngOnInit(){
-        this.http.get(`http://localhost/ScadaBR/api/auth/isLogged/${this.username}`)
-            .subscribe(res => {
-                    this.isUserAuthenticated = res.json();
-                },
-                err => {
-                    console.error('An error occured.' + err);
-                });
+    constructor(private http: Http) {
+        this.isUserAuthenticated = this.http.get(`http://localhost/ScadaBR/api/auth/isLogged/${this.username}`)
+            .map(res => res.json())
+            .share();
     }
 
+    // x() {
+    //     return this.http.get(`http://localhost/ScadaBR/api/auth/isLogged/${this.username}`)
+    //         .map((res: Response) => {
+    //             if (res) {
+    //                 localStorage.setItem('currentUser', 'true');
+    //             } else {
+    //                 localStorage.clear();
+    //             }
+    //         })
+    // }
+
+    ngOnInit() {
+
+    }
 
 }

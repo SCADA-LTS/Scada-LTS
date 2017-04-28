@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, AfterViewInit} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -14,11 +14,13 @@ import 'rxjs/add/operator/debounceTime';
 
 export class WleditComponent implements OnInit {
 
-    watchlistsArray = ['WL1', 'WL2', 'WL3', 'WL4', 'WL5', 'WL6'];
-
     pointsArray = [];
     pointName: string = '';
     bool: boolean = false;
+    watchlists = [];
+    selectedWatchlist;
+    watchlistPoints = [];
+    x;
 
     term$ = new Subject<string>();
 
@@ -28,24 +30,42 @@ export class WleditComponent implements OnInit {
             .subscribe(term => this.getPoints())
     }
 
-    getPoints() {
+    getPoints(){
+        //todo
+    }
 
-        if (this.pointName.length >= 3) {
+    watchlistChanged(){
+        this.http.get(`/ScadaBR/api/watchlist/getPoints/${this.selectedWatchlist.xid}`)
+            .subscribe(res => {
+                this.watchlistPoints = res.json();
+            }, err => {
+                console.error('An error occured.' + err);
+            });
+        console.log(this.watchlistPoints);
 
-                this.http.get(`./points.json`)
-                    .subscribe(res => {
-                        this.pointsArray = res.json();
-                        this.pointsArray = this.pointsArray.filter(v => v.name.includes(this.pointName));
-                    });
-                return console.log('fired!');
+        this.http.get('http://thecatapi.com/api/images/get?format=html&results_per_page=10')
+            .map(res => res)
+            .subscribe(res => {
+                this.x = res;
+                console.log(this.x._body);
+            });
 
-        } else {
-            this.pointsArray = [];
-        }
-    };
-
+    }
 
     ngOnInit() {
+        this.http.get(`/ScadaBR/api/watchlist/getNames`)
+            .subscribe(res => {
+                this.watchlists = res.json();
+                this.selectedWatchlist = this.watchlists[0];
+                this.http.get(`/ScadaBR/api/watchlist/getPoints/${this.selectedWatchlist.xid}`)
+                    .subscribe(res => {
+                        this.watchlistPoints = res.json();
+                    }, err => {
+                        console.error('An error occured.' + err);
+                    });
+            }, err => {
+                console.error('An error occured.' + err);
+            });
     }
 
 }

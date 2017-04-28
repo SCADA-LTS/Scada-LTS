@@ -272,7 +272,6 @@ export class WatchlistComponent implements OnInit, OnDestroy {
                 };
                 document.getElementsByClassName('drag')[i].addEventListener('mousedown', cb);
             }
-            console.log(this.chartData);
         });
     };
 

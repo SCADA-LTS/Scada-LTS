@@ -69,6 +69,7 @@ export class AppBodyComponent implements OnInit {
 
 
     private logout() {
+        localStorage.clear();
         this.router.navigate(['/']);
     }
 

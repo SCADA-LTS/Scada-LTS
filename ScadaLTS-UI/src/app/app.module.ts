@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
-
 import { AppComponent } from './index';
 import { routing } from './app.routing';
 
@@ -34,11 +33,11 @@ import { SearchComponent } from './appBody/search/search.component';
 import { TrendsComponent } from './appBody/trends/trends.component';
 import { OldWatchlistComponent } from './appBody/old-watchlist/old-watchlist.component';
 import { WleditComponent } from './appBody/wledit/wledit.component';
-import { DlgSelectViewWithEdtHierarchyView } from './appBody/views/views.component';
-import { DlgAddFolderHierarchyView } from './appBody/views/views.component';
-import { DlgConfirmDeleteFolderHierarchyView } from './appBody/views/views.component';
+import { DialogOverviewExampleDialog } from './appBody/views/views.component';
 
 import { ClipboardModule } from 'ngx-clipboard';
+import { ActivationGuard } from "./ActivationGuard";
+import { UserAuthenticationService } from "./UserAuthenticationService";
 
 
 @NgModule({
@@ -50,9 +49,6 @@ import { ClipboardModule } from 'ngx-clipboard';
     WatchlistComponent,
     DashboardComponent,
     ViewsComponent,
-    DlgSelectViewWithEdtHierarchyView,
-    DlgAddFolderHierarchyView,
-    DlgConfirmDeleteFolderHierarchyView,
     SystemComponent,
     UsersComponent,
     AboutComponent,
@@ -71,12 +67,8 @@ import { ClipboardModule } from 'ngx-clipboard';
     SearchComponent,
     TrendsComponent,
     OldWatchlistComponent,
-    WleditComponent
-  ],
-  entryComponents: [
-    DlgSelectViewWithEdtHierarchyView,
-    DlgAddFolderHierarchyView,
-    DlgConfirmDeleteFolderHierarchyView
+    WleditComponent,
+    DialogOverviewExampleDialog
   ],
   imports: [
     BrowserModule,
@@ -84,12 +76,11 @@ import { ClipboardModule } from 'ngx-clipboard';
     ReactiveFormsModule,
     HttpModule,
     MaterialModule.forRoot(),
-    MaterialModule,
     routing,
     NgbModule.forRoot(),
     ClipboardModule
   ],
-  providers: [],
+  providers: [ActivationGuard, UserAuthenticationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

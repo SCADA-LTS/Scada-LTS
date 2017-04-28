@@ -23,15 +23,17 @@
         <div class="watchlistContainerModalHeader">
           <h3>Watchlist</h3>
         </div>
-
         <div class="watchlistContainerModalSelect">
-          <select>
-            <option *ngFor="let watchlistName of watchlistsArray" class="">{{ watchlistName }}</option>
+          <select [(ngModel)]="selectedWatchlist" (ngModelChange)="watchlistChanged()">
+            <option *ngFor="let watchlistName of watchlists" [ngValue]="watchlistName" class="">{{ watchlistName.name }}</option>
           </select>
-          <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Delete" [mdTooltipPosition]="'below'" class="modalWatchlistButton"><md-icon>delete</md-icon></a>
-          <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Rename" [mdTooltipPosition]="'below'" class="modalWatchlistButton"><md-icon>find_replace</md-icon></a>
-          <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Add new" [mdTooltipPosition]="'below'" class="modalWatchlistButton"><md-icon>add</md-icon></a>
+          <a md-mini-fab (click)="null" mdTooltip="Delete" [mdTooltipPosition]="'below'" class="modalWatchlistButton"><md-icon>delete</md-icon></a>
+          <a md-mini-fab (click)="null" mdTooltip="Rename" [mdTooltipPosition]="'below'" class="modalWatchlistButton"><md-icon>find_replace</md-icon></a>
+          <a md-mini-fab (click)="null" mdTooltip="Add new" [mdTooltipPosition]="'below'" class="modalWatchlistButton"><md-icon>add</md-icon></a>
         </div>
+        <ul class="wlPointsContainer">
+          <li *ngFor="let watchlistPoint of watchlistPoints" class="list-group-item">{{ watchlistPoint.name }}</li>
+        </ul>
 
       </div>
 

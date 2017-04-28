@@ -13,7 +13,7 @@ export class PointHierarchyComponent implements OnInit {
 
     loadIframe() {
         $('#ifr').on('load', function () {
-            $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle, .nav').css("display","none");
+            $('#ifr').contents().find('#mainHeader, #subHeader, .footer, .smallTitle').css("display","none");
             $('#ifr').css("visibility","visible");
         });
     }

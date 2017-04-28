@@ -3,6 +3,8 @@ import {Router} from '@angular/router';
 import {Http} from '@angular/http';
 import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 
+//import {UserAuthenticationService} from '../UserAuthenticationService';
+
 @Component({
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.css']
@@ -13,7 +15,7 @@ export class LoginComponent {
     private username: string = "";
     private password: string = "";
     private showModal: boolean = false;
-    private response: string;
+    private response: boolean;
     private isPasswordIncorrect: boolean = false;
     isFormEmpty: boolean = true;
     form: FormGroup;
@@ -44,12 +46,13 @@ export class LoginComponent {
         console.log(this.form.status);
         if (this.form.status == 'VALID') {
             this.http.get(`/ScadaBR/api/auth/${this.username}/${this.password}`)
-                .map(res => res.json())
-                .catch(this.handle)
+                //.map(res => res.json())
+                //.catch(this.handle)
                 .subscribe(res => {
-                    this.response = res;
+                    this.response = res.json();
                     if (this.response) {
                         console.log('access granted');
+                        localStorage.setItem('currentUser', 'true');
                         this.router.navigate(['/appBody']);
                     } else {
                         console.log('access denied');
