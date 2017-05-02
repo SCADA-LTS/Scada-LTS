@@ -59,12 +59,10 @@
         <pathelement location="WebContent/WEB-INF/lib/jstl-api-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl-impl-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/log4j-1.2.17.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mail.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-core-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-master-0.1.4-SNAPSHOT.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/modbus4j-3.0.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar"/>
@@ -114,6 +112,8 @@
         <pathelement location="WebContent/WEB-INF/lib/xfire-aegis-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xfire-core-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
+    	<pathelement location="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
+  		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>
@@ -209,21 +209,15 @@
 		</war>
 	</target>
 	
-	<target name="junit" depends="clean, build">
+	<target name="junit">
 
 		    <junit printsummary="yes" haltonfailure="no">
-
-			<!-- Project classpath, must include junit.jar -->
-		    <classpath>
-		      <pathelement location="WebContent/WEB-INF/lib"/>
-		      <pathelement path="${java.class.path}"/>
+		    
+		    <formatter type="plain" usefile="false" />
+ 
+		    <classpath refid="scadabr-1.1.0-RC.classpath">
+		        
 		    </classpath>
-		    	
-		    <classpath location="WebContent/WEB-INF/lib/junit-4.8.2.jar" />
-
-				
-			<!-- test class -->
-			<classpath location="WebContent/WEB-INF/classes" />
 			
 			<test name="br.org.scadabr.api.AckEventsTest" 
 				haltonfailure="no">
@@ -232,9 +226,37 @@
 		    <test name="br.org.scadabr.api.ActiveEventsTest" 
 		        haltonfailure="no">
 		    </test>
-		    			    
-		    
-				
+		    	
+		    <test name="br.org.scadabr.api.ActiveEventsTest" 
+		        haltonfailure="no">
+		    </test>
+		    	
+		    <test name="org.scada_lts.dao.ViewHierarchyDaoTest"
+		    	haltonfailure="no">
+		    </test>
+		    	
+		    <test name="org.scada_lts.service.ViewHierarchyServiceTest"
+		        haltonfailure="yes">
+		    </test>
+		    	
+		    <test name="org.scada_lts.service.ViewHierarchyServiceTestOnDB"
+		    	haltonfailure="yes">
+		    </test>
+		    	
+		    <test name="org.scada_lts.service.ViewHierarchyServiceMoveFolderTest"
+		        haltonfailure="yes">
+		    </test>
+		    	
+		    <test name="org.scada_lts.service.ViewHierarchyServiceMoveViewTest"
+		        haltonfailure="yes">
+		    </test>
+		    	
+		    <!--
+		    <test name="" 
+		    	haltonfailure="yes">
+		    </test> -->
+		    	
+		    	
 		  </junit>
 	</target>
 	

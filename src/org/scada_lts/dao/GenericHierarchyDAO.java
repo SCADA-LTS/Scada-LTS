@@ -46,5 +46,4 @@ public interface GenericHierarchyDAO<T> {
 	
 	int delFolder(int id);
 	
-	
 }

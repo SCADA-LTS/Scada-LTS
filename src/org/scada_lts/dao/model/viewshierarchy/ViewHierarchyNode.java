@@ -29,6 +29,10 @@ public class ViewHierarchyNode implements Serializable {
 		this.name = vhn.getName();
 	}
 	
+	public ViewHierarchyNode() {
+		super();
+	}
+
 	/**
 	 * @return the id
 	 */

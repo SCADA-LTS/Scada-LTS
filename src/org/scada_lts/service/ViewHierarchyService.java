@@ -57,6 +57,15 @@ public class ViewHierarchyService {
 	@Resource
 	private ViewDAO viewDAO;
 	
+	public ViewHierarchyService(){
+		
+	}
+	
+	public ViewHierarchyService(ViewHierarchyDAO vhDAO, ViewDAO viewDAO){
+		this.vhDAO = vhDAO;
+		this.viewDAO = viewDAO;
+	}
+	
 	private List<ViewHierarchyJSON> getChildFolder(long l) {
 		ArrayList<ViewHierarchyJSON> lst = new ArrayList<ViewHierarchyJSON>();
 		
@@ -84,17 +93,26 @@ public class ViewHierarchyService {
 	
 	private void correctChildrenViewHierarchyFolderJSON(List<ViewHierarchyJSON> lst, ViewInViewHierarchyNode vhNodeInFolder,  HashMap<Long, Boolean> tmpViewsInFolder) {
 		for (ViewHierarchyJSON vhNode:lst){
-			if (vhNode.getKey()==vhNodeInFolder.getFolderViewsHierarchyId()){
-				ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
-				vhJSON.setKey(vhNodeInFolder.getViewId());
-				vhJSON.setChildren(null);
-				vhJSON.setFolder(false);
-				//TODO cash name views?
-				vhJSON.setTitle(viewDAO.findById(new Object[] { vhJSON.getKey() }).getName());
-				tmpViewsInFolder.put(vhJSON.getKey(), new Boolean(true));
-				vhNode.getChildren().add(vhJSON);
-			}	
-		}	
+			if (vhNode.isFolder()) {
+				if (vhNode.getKey()==vhNodeInFolder.getFolderViewsHierarchyId()){
+					ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
+					vhJSON.setKey(vhNodeInFolder.getViewId());
+					vhJSON.setChildren(null);
+					vhJSON.setFolder(false);
+				
+					vhJSON.setTitle(viewDAO.findById(new Object[] { vhJSON.getKey() }).getName());
+					tmpViewsInFolder.put(vhJSON.getKey(), new Boolean(true));
+					if (vhNode.getChildren() == null) {
+						vhNode.setChildren(new ArrayList<ViewHierarchyJSON>());
+					}
+					vhNode.getChildren().add(vhJSON);
+				}
+				if (vhNode.getChildren() != null && vhNode.getChildren().size()>0) {
+					correctChildrenViewHierarchyFolderJSON( vhNode.getChildren(), vhNodeInFolder,  tmpViewsInFolder);
+				}
+			}
+		}
+		
 	}
 	
 	private ViewHierarchyJSON createViewHierarchyFolderJSON(ViewHierarchyNode vhNode) {
@@ -136,8 +154,13 @@ public class ViewHierarchyService {
 	}
 	
 	public boolean moveView(int id, int newParentId) {
-		LOG.info("move id:"+id+" newParentId:"+newParentId);
-		return (vhDAO.moveView(id, newParentId)>GenericHierarchyDAO.ERROR);
+		if (newParentId == ViewHierarchyService.ROOT_ID) {
+		   LOG.info("move id:"+id+" newParentId:"+newParentId);
+		   return (vhDAO.delView(id)>GenericHierarchyDAO.ERROR);
+		} else {
+		   LOG.info("move id:"+id+" newParentId:"+newParentId);
+		   return (vhDAO.moveView(id, newParentId)>GenericHierarchyDAO.ERROR);
+		}
 	}
 	
 	//TODO (userId profileId)

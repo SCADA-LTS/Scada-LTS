@@ -1,74 +1,21 @@
 package org.scada_lts.service;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
-import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.scada_lts.mock_dao.ViewDaoMockito;
+import org.scada_lts.mock_dao.ViewHierarchyDaoMockito;
 
-@RunWith(SpringRunner.class)
-//@WebAppConfiguration
-public class ViewHierarchyServiceTest {
+import junit.framework.TestCase;
 
-	@Resource
-	ViewHierarchyDAO vhd;
+public class ViewHierarchyServiceTest extends TestCase {
 	
-	@Resource
-	ViewHierarchyService vhs;
-	
-	private void populateData() {
-		ViewHierarchyNode vhn = new ViewHierarchyNode(-1, -1, "test-service1");
-		vhn.setId(vhd.add(vhn));
-		ViewHierarchyNode vhn1 = new ViewHierarchyNode(-1, 1, "test-service2");
-		vhn.setId(vhd.add(vhn1));
+	public void testGetAllWithOnlyView() {
+		ViewHierarchyDAO vhd = ViewHierarchyDaoMockito.populateViewHierarchyDAOToCheckViewsWithOutFolder();
+		ViewDAO vd = ViewDaoMockito.pupulateViewDAOToCheckViewsWithOutFolder();
+		ViewHierarchyService vhs = new ViewHierarchyService(vhd, vd);
+
+	    assertTrue(vhs.getAll().size()==2);
+		
 	}
-	
-	/*@Test
-	public void getAll() {
-		
-		populateData();
-		
-		List<String> lst = vhs.getAll();
-		
-		for (String str: lst) {
-			System.out.println(str);
-		}
-		assertEquals(true, true);
-	}*/
-	
-	/*@Configuration
-	@EnableWebMvc
-	static class Config {
-		
-		Config() {
-			try {
-				if (DAO.getInstance().isTest()) {
-					new TestDAO().setUp();
-				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		@Bean
-		ViewHierarchyDAO viewHierarchyDAO() {
-			return new ViewHierarchyDAO();
-		}
-		
-		@Bean
-		ViewHierarchyService viewHierarchyService() {
-			//return Mockito.mock(ViewHierarchyService.class);
-			return new ViewHierarchyService();
-		}
-	}*/
-	
-	
+
 }

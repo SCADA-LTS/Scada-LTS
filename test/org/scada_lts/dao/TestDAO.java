@@ -29,6 +29,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,47 +67,51 @@ public class TestDAO {
 	public final ExpectedException expectedException = ExpectedException.none();
 	
 	@Before
-	public void setUp() throws ClassNotFoundException, SQLException {
-		
-		java.util.Date date = new java.util.Date();
-		LOG.info("Set up database for test "+date.getTime());
-		database = database + date.getTime();
-		LOG.info("DATABASE NAME:"+database);
-
-		
-		LOG.info("Create database:"+database);
+	public void setUp() {
 		try {
-			Class.forName(JDBC_DRIVER);
-			conn = DriverManager.getConnection(URL+":"+PORT, USER, PASS);
-			stmt = conn.createStatement();
-			String sql = "CREATE DATABASE " + database;
-			stmt.executeUpdate(sql);
-		} finally {
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();
+			java.util.Date date = new java.util.Date();
+			LOG.info("Set up database for test "+date.getTime());
+			database = database + date.getTime();
+			LOG.info("DATABASE NAME:"+database);
+			
+			
+			LOG.info("Create database:"+database);
+			try {
+				Class.forName(JDBC_DRIVER);
+				conn = DriverManager.getConnection(URL+":"+PORT, USER, PASS);
+				stmt = conn.createStatement();
+				String sql = "CREATE DATABASE " + database;
+				stmt.executeUpdate(sql);
+			} finally {
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			}
+	
+			LOG.info("Create schema");
+			BasicDataSource dataSource = new BasicDataSource();
+	
+			dataSource.setDriverClassName(JDBC_DRIVER);
+			dataSource.setUsername("root");
+			dataSource.setPassword("root");
+			
+			dataSource.setUrl(URL+":"+PORT+ "/" + database);
+			dataSource.setMaxActive(MAX_ACTIVE);
+			dataSource.setMaxIdle(MAX_IDLE);
+			dataSource.setInitialSize(INITIAL_SIZE);
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			DAO.getInstance().setJdbcTemp(jdbcTemplate);
+			DAO.getInstance().setTest(true);
+					
+			Flyway flyway = new Flyway();
+			flyway.setLocations("org.scada_lts.dao.migration.mysql");
+			flyway.setDataSource(DAO.getInstance().getJdbcTemp().getDataSource());
+	        flyway.migrate();
+		} catch (ClassNotFoundException | SQLException | FlywayException  e){
+			e.printStackTrace();
 		}
-
-		LOG.info("Create schema");
-		BasicDataSource dataSource = new BasicDataSource();
-
-		dataSource.setDriverClassName(JDBC_DRIVER);
-		dataSource.setUsername("root");
-		dataSource.setPassword("root");
-		
-		dataSource.setUrl(URL+":"+PORT+ "/" + database);
-		dataSource.setMaxActive(MAX_ACTIVE);
-		dataSource.setMaxIdle(MAX_IDLE);
-		dataSource.setInitialSize(INITIAL_SIZE);
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		DAO.getInstance().setJdbcTemp(jdbcTemplate);
-		DAO.getInstance().setTest(true);
-				
-		Flyway flyway = new Flyway();
-		flyway.setLocations("org.scada_lts.dao.migration.mysql");
-		flyway.setDataSource(DAO.getInstance().getJdbcTemp().getDataSource());
-        flyway.migrate();
+	      
 	}
 
 	@After
