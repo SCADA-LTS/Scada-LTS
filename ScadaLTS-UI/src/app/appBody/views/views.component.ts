@@ -88,7 +88,7 @@ export class ViewsComponent implements OnInit {
   </md-dialog-content> 
   <md-dialog-actions>
       <button md-button (click)="select()" mdTooltip="Select view" [mdTooltipPosition]="'below'">Select</button>  
-      <button md-button md-button-close (click)="refDlg.close();" mdTooltip="Delete folder" [mdTooltipPosition]="'below'">Close</button>  
+      <button md-button md-button-close (click)="refDlg.close();" mdTooltip="Close" [mdTooltipPosition]="'below'">Close</button>  
   </md-dialog-actions>
   `,
   styleUrls: ['./views.component.css']
@@ -103,7 +103,7 @@ export class DlgSelectViewWithEdtHierarchyView{
       try {
         parentId = parseInt(node.parent.key);
       	if (isNaN(parentId)) {
-      	  parentId=0;
+      	  parentId=-1;
       	}
       } catch (e) { }
       return parentId;
@@ -131,9 +131,13 @@ export class DlgSelectViewWithEdtHierarchyView{
               preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
               preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
               dragStart: function(node, data) {  
+                console.log("drag start key"+node.key);
+                console.log("drag start parent key"+node.parent.key);
                 return true;
               },
               dragEnter: function(node, data) {
+                console.log("drag enter key"+node.key);
+                console.log("drag enter parent key"+node.parent.key);
                 return true;
               },
               dragExpand: function(node, data) {
@@ -146,7 +150,30 @@ export class DlgSelectViewWithEdtHierarchyView{
               dragStop: function(node, data) {
               },
               dragDrop: function(node, data) {
-                
+                var rootId = -1;
+                var getParentId = function(node) {
+                  var parentId=rootId;
+                  if (node != undefined) {
+                    if (data.hitMode=="before") {
+                      try {
+                        parentId = parseInt(node.parent.key);
+                    	  if (isNaN(parentId)) {
+                    	    return rootId;
+                    	  } else {
+                          return parentId;
+                        }
+                      } catch (e) {
+                        console.log(e);
+                      }
+                    } else {
+                       return node.key;
+                    }   
+                  } else {
+                    return -1;
+                  }
+                }
+                console.log("data.hitMode:"+data.hitMode);
+                console.log("new parentId:"+getParentId(node));
                 /*console.log("new parentId:"+node.key);
                 console.log(data.hitMode);
                 console.log(data);
@@ -183,7 +210,7 @@ export class DlgSelectViewWithEdtHierarchyView{
                   $.ajax({
                     type: "GET",
                     dataType: "json",
-                    url:'../ScadaBR/api/view_hierarchy/moveView/' + data.otherNode.key + '/' + node.key ,
+                    url:'../ScadaBR/api/view_hierarchy/moveView/' + data.otherNode.key + '/' + getParentId(node) ,
                     success: function(request){
                       //$("#tree").fancytree("getTree").reload(data);
                       data.otherNode.moveTo(node, data.hitMode);
