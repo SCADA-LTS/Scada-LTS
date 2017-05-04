@@ -133,8 +133,8 @@ public class ViewGraphicLoader {
         }
         Collections.sort(viewGraphics, new Comparator<ViewGraphic>() {
 		      @Override
-		      public int compare(final ViewGraphic object1, final ViewGraphic object2) {
-		          return object1.getName().compareTo(object2.getName());
+		      public int compare(final ViewGraphic prev, final ViewGraphic next) {
+		          return prev.getName().compareTo(next.getName());
 		      }
 		  });
     }

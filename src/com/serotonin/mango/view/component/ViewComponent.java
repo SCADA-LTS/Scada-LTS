@@ -86,8 +86,8 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			d.add(FlexBuilderComponent.DEFINITION);
 			Collections.sort(d, new Comparator<ImplDefinition>() {
 			      @Override
-			      public int compare(final ImplDefinition object1, final ImplDefinition object2) {
-			          return object1.getNameKey().compareTo(object2.getNameKey());
+			      public int compare(final ImplDefinition prev, final ImplDefinition next) {
+			          return prev.getNameKey().compareTo(next.getNameKey());
 			      }
 			  });
 			DEFINITIONS = d;
