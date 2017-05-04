@@ -23,15 +23,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-
-import br.org.scadabr.view.component.AlarmListComponent;
-import br.org.scadabr.view.component.ButtonComponent;
-import br.org.scadabr.view.component.ChartComparatorComponent;
-import br.org.scadabr.view.component.FlexBuilderComponent;
-import br.org.scadabr.view.component.LinkComponent;
-import br.org.scadabr.view.component.ScriptButtonComponent;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonException;
@@ -51,6 +46,13 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import br.org.scadabr.view.component.AlarmListComponent;
+import br.org.scadabr.view.component.ButtonComponent;
+import br.org.scadabr.view.component.ChartComparatorComponent;
+import br.org.scadabr.view.component.FlexBuilderComponent;
+import br.org.scadabr.view.component.LinkComponent;
+import br.org.scadabr.view.component.ScriptButtonComponent;
 
 /**
  * @author Matthew Lohbihler
@@ -82,6 +84,12 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			// d.add(FlexBuilderComponent.DEFINITION);
 			d.add(ChartComparatorComponent.DEFINITION);
 			d.add(FlexBuilderComponent.DEFINITION);
+			Collections.sort(d, new Comparator<ImplDefinition>() {
+			      @Override
+			      public int compare(final ImplDefinition object1, final ImplDefinition object2) {
+			          return object1.getNameKey().compareTo(object2.getNameKey());
+			      }
+			  });
 			DEFINITIONS = d;
 		}
 		return DEFINITIONS;

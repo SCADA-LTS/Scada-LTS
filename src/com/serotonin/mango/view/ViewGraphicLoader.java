@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
@@ -129,6 +131,12 @@ public class ViewGraphicLoader {
 
             viewGraphics.add(g);
         }
+        Collections.sort(viewGraphics, new Comparator<ViewGraphic>() {
+		      @Override
+		      public int compare(final ViewGraphic object1, final ViewGraphic object2) {
+		          return object1.getName().compareTo(object2.getName());
+		      }
+		  });
     }
 
     private String getProperty(Properties props, String key, String defaultValue) {
