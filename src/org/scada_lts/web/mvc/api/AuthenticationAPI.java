@@ -20,7 +20,7 @@ import com.serotonin.mango.web.integration.CrowdUtils;
 
 /**
  * 
- * Controller for data point edition
+ * Controller for data point edition 
  * 
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
