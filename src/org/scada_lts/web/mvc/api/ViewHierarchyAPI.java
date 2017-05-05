@@ -94,7 +94,7 @@ public class ViewHierarchyAPI {
 		
 		try {
 			User user = Common.getUser(request);
-			if (user != null) {
+			if (user != null && user.isAdmin()) {
 				try {
 					ViewHierarchyNode node = new ViewHierarchyNode(parentId, name);
 					viewHierarchyService.add(node);
@@ -136,7 +136,7 @@ public class ViewHierarchyAPI {
 		
 		try {
 			User user = Common.getUser(request);
-			if (user != null) {
+			if (user != null && user.isAdmin()) {
 				
 				ViewHierarchyNode node = new ViewHierarchyNode(ViewHierarchyService.ROOT_ID, name);
 				node.setId(key);
@@ -165,7 +165,7 @@ public class ViewHierarchyAPI {
 		
 		try {
 			User user = Common.getUser(request);
-			if (user != null) {
+			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.delFolder(id)) {
 					String json = null;
@@ -192,7 +192,7 @@ public class ViewHierarchyAPI {
 		
 		try {
 			User user = Common.getUser(request);
-			if (user != null) {
+			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.delView(id)) {
 					String json = null;
@@ -219,7 +219,7 @@ public class ViewHierarchyAPI {
 		
 		try {
 			User user = Common.getUser(request);
-			if (user != null) {
+			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.moveFolder(id, newParentId)) {
 					String json = null;
@@ -246,7 +246,7 @@ public class ViewHierarchyAPI {
 		
 		try {
 			User user = Common.getUser(request);
-			if (user != null) {
+			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.moveView(id, newParentId)) {
 					String json = null;

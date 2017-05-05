@@ -77,12 +77,13 @@ export class ViewsComponent implements OnInit {
   selector: 'dialog-select-view',
   template: `
   <h4>Select view</h4>
-  <md-dialog-actions>
-      <md-toolbar>
-        <button class="button_toolbar" md-mini-fab (click)="openDlgAddFolderHierarchyView()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>  
-        <button class="button_toolbar" md-mini-fab (click)="deleteFolderHierarchyView()" mdTooltip="Delete folder" [mdTooltipPosition]="'below'"><md-icon>delete</md-icon></button>  
-      </md-toolbar>
+  <md-dialog-actions *ngIf="isRoleAdmin">
+        <md-toolbar>
+          <button class="button_toolbar" md-mini-fab (click)="openDlgAddFolderHierarchyView()" mdTooltip="Create new folder" [mdTooltipPosition]="'below'"><md-icon>create_new_folder</md-icon></button>  
+          <button class="button_toolbar" md-mini-fab (click)="deleteFolderHierarchyView()" mdTooltip="Delete folder" [mdTooltipPosition]="'below'"><md-icon>delete</md-icon></button>  
+        </md-toolbar>
   </md-dialog-actions>
+  
   <md-dialog-content>
       <div id="tree"></div>
   </md-dialog-content> 
@@ -93,9 +94,10 @@ export class ViewsComponent implements OnInit {
   `,
   styleUrls: ['./views.component.css']
 })
-export class DlgSelectViewWithEdtHierarchyView{
+export class DlgSelectViewWithEdtHierarchyView {
 
   dataTree:any;
+  isRoleAdmin:boolean = false;
 
   public getParentId = function(node) {
     if (node != undefined) {
@@ -113,120 +115,121 @@ export class DlgSelectViewWithEdtHierarchyView{
   }
 
   constructor(@Inject(Http) public http: Http, public dialogAddFolderHierarchyView: MdDialog, public dialogConfirmDeleteFolderHierarchyView: MdDialog, public refDlg: MdDialogRef<DlgSelectViewWithEdtHierarchyView>){
-
-
-      this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
-            .subscribe(res => {
-                this.dataTree = res.json();
-                $('#tree').fancytree({
-            extensions: ["dnd"],
-            dnd: {
-              autoExpandMS: 200,
-              draggable: { // modify default jQuery draggable options
-                zIndex: 1000,
-                scroll: false,
-                containment: "parent",
-                revert: "invalid"
-              },
-              preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
-              preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
-              dragStart: function(node, data) {  
-                console.log("drag start key"+node.key);
-                console.log("drag start parent key"+node.parent.key);
-                return true;
-              },
-              dragEnter: function(node, data) {
-                console.log("drag enter key"+node.key);
-                console.log("drag enter parent key"+node.parent.key);
-                return true;
-              },
-              dragExpand: function(node, data) {
-                // return false to prevent auto-expanding data.node on hover
-              },
-              dragOver: function(node, data) {
-              },
-              dragLeave: function(node, data) {
-              },
-              dragStop: function(node, data) {
-              },
-              dragDrop: function(node, data) {
-                var rootId = -1;
-                var getParentId = function(node) {
-                  var parentId=rootId;
-                  if (node != undefined) {
-                    if (data.hitMode=="before") {
-                      try {
-                        parentId = parseInt(node.parent.key);
-                    	  if (isNaN(parentId)) {
-                    	    return rootId;
-                    	  } else {
-                          return parentId;
+      
+      this.http.get(`/ScadaBR//api/auth/isRoleAdmin`)
+        .subscribe(resIsRoleAdm => {
+          this.isRoleAdmin = resIsRoleAdm.json();
+          this.http.get(`../ScadaBR/api/view_hierarchy/getAll`)
+              .subscribe(res => {
+                  this.dataTree = res.json();
+                  $('#tree').fancytree({
+              extensions: ["dnd"],
+              dnd: {
+                autoExpandMS: 200,
+                draggable: { // modify default jQuery draggable options
+                  zIndex: 1000,
+                  scroll: false,
+                  containment: "parent",
+                  revert: "invalid"
+                },
+                preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
+                preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
+                dragStart: function(node, data) {
+                  console.log("dragStart:"+resIsRoleAdm.json());
+                  return resIsRoleAdm.json();
+                },
+                dragEnter: function(node, data) {
+                  console.log("dragEnter:"+resIsRoleAdm.json());
+                  return resIsRoleAdm.json();
+                },
+                dragExpand: function(node, data) {
+                  // return false to prevent auto-expanding data.node on hover
+                },
+                dragOver: function(node, data) {
+                },
+                dragLeave: function(node, data) {
+                },
+                dragStop: function(node, data) {
+                },
+                dragDrop: function(node, data) {
+                  var rootId = -1;
+                  var getParentId = function(node) {
+                    var parentId=rootId;
+                    if (node != undefined) {
+                      if (data.hitMode=="before") {
+                        try {
+                          parentId = parseInt(node.parent.key);
+                          if (isNaN(parentId)) {
+                            return rootId;
+                          } else {
+                            return parentId;
+                          }
+                        } catch (e) {
+                          console.log(e);
                         }
-                      } catch (e) {
-                        console.log(e);
-                      }
+                      } else {
+                          return node.key;
+                      }   
                     } else {
-                       return node.key;
-                    }   
-                  } else {
-                    return -1;
+                      return -1;
+                    }
                   }
-                }
-                console.log("data.hitMode:"+data.hitMode);
-                console.log("new parentId:"+getParentId(node));
-                /*console.log("new parentId:"+node.key);
-                console.log(data.hitMode);
-                console.log(data);
-                console.log("elementId:"+data.otherNode.key);*/
-                if (data.otherNode.folder) {
-                  if (node.folder) {
+                  console.log("data.hitMode:"+data.hitMode);
+                  console.log("new parentId:"+getParentId(node));
+                  if (data.otherNode.folder) {
+                    if (node.folder) {
+                      $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        url:'../ScadaBR/api/view_hierarchy/moveFolder/' + data.otherNode.key + '/' + node.key ,
+                        success: function(request){
+                          $.ajax({
+                            type: "GET",
+                            dataType: "json",
+                            url:'../ScadaBR/api/view_hierarchy/getAll',
+                            success: function(data){
+                              $("#tree").fancytree("getTree").reload(data);
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                              alert(textStatus);
+                            }
+                          });
+                          //TODO optimalization using moveTo  
+                          //data.otherNode.moveTo(node, data.hitMode);
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                          console.log(JSON.parse(XMLHttpRequest.responseText).message);
+                          console.log(textStatus);
+                          console.log(errorThrown);
+                        }
+                      });
+                    }
+                  } else {
                     $.ajax({
                       type: "GET",
                       dataType: "json",
-                      url:'../ScadaBR/api/view_hierarchy/moveFolder/' + data.otherNode.key + '/' + node.key ,
+                      url:'../ScadaBR/api/view_hierarchy/moveView/' + data.otherNode.key + '/' + getParentId(node) ,
                       success: function(request){
-                        $.ajax({
-                          type: "GET",
-          	              dataType: "json",
-          	              url:'../ScadaBR/api/view_hierarchy/getAll',
-          	              success: function(data){
-                            $("#tree").fancytree("getTree").reload(data);
-                          },
-          	              error: function(XMLHttpRequest, textStatus, errorThrown) {
-          	                alert(textStatus);
-          	              }
-                        });
-                        //TODO optimalization using moveTo  
-                        //data.otherNode.moveTo(node, data.hitMode);
+                        //$("#tree").fancytree("getTree").reload(data);
+                        data.otherNode.moveTo(node, data.hitMode);
                       },
                       error: function(XMLHttpRequest, textStatus, errorThrown) {
                         console.log(JSON.parse(XMLHttpRequest.responseText).message);
                         console.log(textStatus);
                         console.log(errorThrown);
-                     }
+                      }
                     });
                   }
-                } else {
-                  $.ajax({
-                    type: "GET",
-                    dataType: "json",
-                    url:'../ScadaBR/api/view_hierarchy/moveView/' + data.otherNode.key + '/' + getParentId(node) ,
-                    success: function(request){
-                      //$("#tree").fancytree("getTree").reload(data);
-                      data.otherNode.moveTo(node, data.hitMode);
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown) {
-                      console.log(JSON.parse(XMLHttpRequest.responseText).message);
-                      console.log(textStatus);
-                      console.log(errorThrown);
-                   }
-                  });
                 }
-              }
-            },
-           source: this.dataTree
+              },
+              source: this.dataTree
+          });
         });
+      }, err => {
+          console.error('An error occured.' + err);
       });
+
+      
   }
 
   select() {
@@ -317,28 +320,10 @@ export class DlgAddFolderHierarchyView{
     };
 
     addFolder() {
-        //TODO catch error !!!
         this.http.get(`../ScadaBR/api/view_hierarchy/createFolder/` + this.foldername + '/-1')
             .subscribe(res => {
               this.refDlg.close();
         });
-        
-        // /*$.ajax({
-        //     type: "GET",
-        //     dataType: "json",
-        //     url:'../ScadaBR/api/view_hierarchy/createFolder/' + this.foldername + '/-1',
-        //     success: function(request){
-        //         this.myclose();
-        //     },
-        //     error: function(XMLHttpRequest, textStatus, errorThrown) {
-        //       alert(JSON.parse(XMLHttpRequest.responseText).message);
-        //       //TODO
-        //       /*$("#validateTipAddFolder").text(JSON.parse(XMLHttpRequest.responseText).message).addClass("ui-state-error");*/
-        //       /*console.log(JSON.parse(XMLHttpRequest.responseText).message);
-        //       console.log(textStatus);
-        //       console.log(errorThrown);
-        //     }
-        // });*/
     }
 }
 
