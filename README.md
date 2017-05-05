@@ -75,9 +75,9 @@ For transparency into our release cycle and in striving to maintain backward com
 
 See [the Releases section of our GitHub project](https://github.com/grzesiekb/Scada-LTS/releases) for changelogs for each release version of Scada-LTS. 
 
-## Creators 
+## Development team 
 
-Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=directory)
+Scada-LTS code bases on works from [ScadaBR](https://sourceforge.net/projects/scadabr/?source=directory) project
 
 **Grzesiek Bylica**
 
