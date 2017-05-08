@@ -18,12 +18,17 @@
  */
 package com.serotonin.mango.view;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import com.serotonin.util.ArrayUtils;
 
-public class ImplDefinition {
-    public static ImplDefinition findByName(List<ImplDefinition> list, String name) {
+public class ImplDefinition implements Serializable {
+
+	private static final long serialVersionUID = 1631252421570751506L;
+
+	public static ImplDefinition findByName(List<ImplDefinition> list, String name) {
         for (ImplDefinition def : list) {
             if (def.getName().equals(name))
                 return def;
@@ -86,4 +91,36 @@ public class ImplDefinition {
     public boolean supports(int dataType) {
         return ArrayUtils.contains(supportedDataTypes, dataType);
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		result = prime * result + ((nameKey == null) ? 0 : nameKey.hashCode());
+		result = prime * result + Arrays.hashCode(supportedDataTypes);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ImplDefinition other = (ImplDefinition) obj;
+		if (id != other.id)
+			return false;
+		if (nameKey == null) {
+			if (other.nameKey != null)
+				return false;
+		} else if (!nameKey.equals(other.nameKey))
+			return false;
+		if (!Arrays.equals(supportedDataTypes, other.supportedDataTypes))
+			return false;
+		return true;
+	}
+    
 }
