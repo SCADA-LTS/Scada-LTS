@@ -61,6 +61,8 @@ public class ViewDAO implements GenericDAO<View> {
 	private static final String COLUMN_NAME_BACKGROUND = "background";
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	private static final String COLUMN_NAME_ANONYMOUS_ACCESS = "anonymousAccess";
+	private static final String COLUMN_NAME_WIDTH = "width";
+	private static final String COLUMN_NAME_HEIGHT = "height";
 	 
 	//mangoViewUsers
 	private static final String COLUMN_NAME_MVU_USER_ID = "userid";
@@ -84,7 +86,9 @@ public class ViewDAO implements GenericDAO<View> {
 				+ COLUMN_NAME_NAME+", "
 				+ COLUMN_NAME_BACKGROUND+", "
 				+ COLUMN_NAME_USER_ID+", "
-				+ COLUMN_NAME_ANONYMOUS_ACCESS+" "
+				+ COLUMN_NAME_ANONYMOUS_ACCESS+", "
+				+ COLUMN_NAME_WIDTH+", "
+				+ COLUMN_NAME_HEIGHT+" "
 			+ "from "
 				+ "mangoViews";
 	
@@ -104,8 +108,10 @@ public class ViewDAO implements GenericDAO<View> {
 				+ COLUMN_NAME_BACKGROUND+", "
 				+ COLUMN_NAME_USER_ID+", "
 				+ COLUMN_NAME_ANONYMOUS_ACCESS+", "
-				+ COLUMN_NAME_DATA+") "
-			+ "values (?,?,?,?,?,?)";
+				+ COLUMN_NAME_DATA+","
+				+ COLUMN_NAME_HEIGHT+", "
+				+ COLUMN_NAME_WIDTH+") "
+			+ "values (?,?,?,?,?,?,?,?)";
 	
 	private static final String VIEW_UPDATE = ""
 			+"update mangoViews set "
@@ -113,7 +119,9 @@ public class ViewDAO implements GenericDAO<View> {
 				+ COLUMN_NAME_NAME+"=?, "
 				+ COLUMN_NAME_BACKGROUND+"=?, "
 				+ COLUMN_NAME_ANONYMOUS_ACCESS+"=?, "
-				+ COLUMN_NAME_DATA+"=? "
+				+ COLUMN_NAME_DATA+"=?, "
+				+ COLUMN_NAME_HEIGHT+"=?, "
+				+ COLUMN_NAME_WIDTH+"=? "
 			+ "where "
 				+ COLUMN_NAME_ID+"=?";
 	
@@ -190,7 +198,9 @@ public class ViewDAO implements GenericDAO<View> {
 			v.setBackgroundFilename(rs.getString(COLUMN_NAME_BACKGROUND));
 			v.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
 			v.setAnonymousAccess(rs.getInt(COLUMN_NAME_ANONYMOUS_ACCESS));
-
+			v.setHeight(rs.getInt(COLUMN_NAME_HEIGHT));
+			v.setWidth(rs.getInt(COLUMN_NAME_WIDTH));
+			
 			return v;
 		}
 	}
@@ -264,7 +274,9 @@ public class ViewDAO implements GenericDAO<View> {
 						 						entity.getBackgroundFilename(),
 						 						entity.getUserId(),
 						 						entity.getAnonymousAccess(),
-						 						new SerializationData().writeObject(entity)	 						
+						 						new SerializationData().writeObject(entity),
+						 						entity.getHeight(),
+						 						entity.getWidth()
 						 				}).setValues(ps);
 						 				return ps;
 						 			}
@@ -284,6 +296,8 @@ public class ViewDAO implements GenericDAO<View> {
 				entity.getBackgroundFilename(),
 				entity.getAnonymousAccess(),
 				new SerializationData().writeObject(entity),
+				entity.getHeight(),
+				entity.getWidth(),
 				entity.getId()
 		});
 			
