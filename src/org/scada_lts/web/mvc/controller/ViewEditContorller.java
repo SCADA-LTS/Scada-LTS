@@ -96,6 +96,7 @@ public class ViewEditContorller {
             view.setId(Common.NEW_ID);
             view.setUserId(user.getId());
             view.setXid(new ViewDao().generateUniqueXid());
+            //TODO view.setHeight(?) and view.setWidth(?)
         }
         user.setView(view);
         view.validateViewComponents(false);
