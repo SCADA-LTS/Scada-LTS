@@ -16,6 +16,7 @@ import { DataSourcesComponent } from './appBody/data-sources/data-sources.compon
 import { ScheduledEventsComponent } from './appBody/scheduled-events/scheduled-events.component';
 import { CompoundEventsComponent } from './appBody/compound-events/compound-events.component';
 import { PointLinksComponent } from './appBody/point-links/point-links.component';
+import { ScriptingComponent } from './appBody/scripting/scripting.component';
 import { PointHierarchyComponent } from './appBody/point-hierarchy/point-hierarchy.component';
 import { MailingListComponent } from './appBody/mailing-list/mailing-list.component';
 import { MaintenanceEventsComponent } from './appBody/maintenance-events/maintenance-events.component';
@@ -46,6 +47,7 @@ const appRoutes: Routes = [
       { path: 'scheduledEvents', component: ScheduledEventsComponent },
       { path: 'compoundEvents', component: CompoundEventsComponent },
       { path: 'pointLinks', component: PointLinksComponent },
+      { path: 'scripting', component: ScriptingComponent },
       { path: 'pointHierarchy', component: PointHierarchyComponent },
       { path: 'mailingList', component: MailingListComponent },
       { path: 'maintenanceEvents', component: MaintenanceEventsComponent },
