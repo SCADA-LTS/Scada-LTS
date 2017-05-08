@@ -3,7 +3,7 @@ package org.scada_lts.dao.migration.mysql;
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class V_1_2__SetViewSizeProperties implements SpringJdbcMigration {
+public class V1_2__SetViewSizeProperties implements SpringJdbcMigration {
 
 	@Override
 	public void migrate(JdbcTemplate jdbcTmp) throws Exception {
