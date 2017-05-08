@@ -9,7 +9,7 @@ public class V1_2__SetViewSizeProperties implements SpringJdbcMigration {
 	public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 		
 		final String setViewSizeProperties = ""
-	    		+ "alter table mangoviews " +
+	    		+ "alter table mangoViews " +
 					"add column `width` int after `data`,"+
 					"add column `height` int after `width`;";
 		
