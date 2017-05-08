@@ -380,7 +380,7 @@
                         padding-right:1px;padding-bottom:1px;">
                   <c:choose>
                     <c:when test="${empty form.view.backgroundFilename}">
-                      <img id="viewBackground" src="images/spacer.gif" alt="" width="740" height="500"
+                      <img id="viewBackground" src="images/spacer.gif" alt="" width="1600" height="1200"
                               style="top:1px;left:1px;"/>
                     </c:when>
                     <c:otherwise>
