@@ -25,6 +25,7 @@ import { DataSourcesComponent } from './appBody/data-sources/data-sources.compon
 import { ScheduledEventsComponent } from './appBody/scheduled-events/scheduled-events.component';
 import { CompoundEventsComponent } from './appBody/compound-events/compound-events.component';
 import { PointLinksComponent } from './appBody/point-links/point-links.component';
+import { ScriptingComponent } from './appBody/scripting/scripting.component';
 import { PointHierarchyComponent } from './appBody/point-hierarchy/point-hierarchy.component';
 import { MailingListComponent } from './appBody/mailing-list/mailing-list.component';
 import { MaintenanceEventsComponent } from './appBody/maintenance-events/maintenance-events.component';
@@ -66,6 +67,7 @@ import { UserAuthenticationService } from './UserAuthenticationService';
     ScheduledEventsComponent,
     CompoundEventsComponent,
     PointLinksComponent,
+    ScriptingComponent,
     PointHierarchyComponent,
     MailingListComponent,
     MaintenanceEventsComponent,

@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,IAAI;EACA,MAAM,EAAE,IAAI;EACZ,KAAK,EAAE,IAAI;;AAEf,OAAO;EACH,MAAM,EAAE,KAAK;EACb,KAAK,EAAE,IAAI",
+"sources": ["scripting.component.sass"],
+"names": [],
+"file": "scripting.component.css"
+}
