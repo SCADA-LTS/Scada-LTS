@@ -49,7 +49,10 @@
         if(document.getElementById("viewBackground").src.includes("spacer.gif")){
         	var viewSize = document.getElementById("view.resolution").value;
         	resizeViewBackgroundToResolution(viewSize);
+        } else {
+        	document.getElementById("view.resolution").style.visibility = 'hidden';
         }
+        
             
     }
     
@@ -283,32 +286,36 @@
 	}
 	
 	function resizeViewBackgroundToResolution(size) {
-
-		switch(size) {
-		   case "0":
-		   	$("viewBackground").width = 640;
-		   	$("viewBackground").height = 480;
-		       break;
-		   case "1":
-		   	$("viewBackground").width = 800;
-		   	$("viewBackground").height = 600;
-		       break;
-		   case "2":
-		   	$("viewBackground").width = 1024;
-		   	$("viewBackground").height = 768;
-		       break;
-		   case "3":
-		   	$("viewBackground").width = 1600;
-		   	$("viewBackground").height = 1200;
-		       break;
-		   case "4":
-		   	$("viewBackground").width = 1920;
-		   	$("viewBackground").height = 1080;
-		       break;
-		   default:
-		   	$("viewBackground").width = 1600;
-		   	$("viewBackground").height = 1200;
-		}
+		if(document.getElementById("viewBackground").src.includes("spacer.gif")){
+			switch(size) {
+			   case "0":
+			   	$("viewBackground").width = 640;
+			   	$("viewBackground").height = 480;
+			       break;
+			   case "1":
+			   	$("viewBackground").width = 800;
+			   	$("viewBackground").height = 600;
+			       break;
+			   case "2":
+			   	$("viewBackground").width = 1024;
+			   	$("viewBackground").height = 768;
+			       break;
+			   case "3":
+			   	$("viewBackground").width = 1600;
+			   	$("viewBackground").height = 1200;
+			       break;
+			   case "4":
+			   	$("viewBackground").width = 1920;
+			   	$("viewBackground").height = 1080;
+			       break;
+			   default:
+			   	$("viewBackground").width = 1600;
+			   	$("viewBackground").height = 1200;
+			}
+        } else {
+        	document.getElementById("view.resolution").style.visibility = 'hidden';
+        }
+		
 	}
 	
 	
