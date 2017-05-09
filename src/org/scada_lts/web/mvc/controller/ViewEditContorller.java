@@ -107,6 +107,8 @@ public class ViewEditContorller {
         model.put(FORM_OBJECT_NAME, form);
         model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
         model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
+        model.put("width", 640);
+        model.put("height", 850);
         return new ModelAndView(FORM_VIEW, model);
     }
 
@@ -259,7 +261,7 @@ public class ViewEditContorller {
     private void copyViewProperties(View targetView, View sourceView) {
         targetView.setName(sourceView.getName());
         targetView.setXid(sourceView.getXid());
-
+        targetView.setResolution(sourceView.getResolution());
         targetView.setAnonymousAccess(sourceView.getAnonymousAccess());
         targetView.setUserId(sourceView.getUserId());
     }
