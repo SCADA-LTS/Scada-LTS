@@ -45,6 +45,12 @@
             compoundEditor.setPointList(result.pointList);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
+        
+        if(document.getElementById("viewBackground").src.includes("spacer.gif")){
+        	var viewSize = document.getElementById("view.resolution").value;
+        	resizeViewBackgroundToResolution(viewSize);
+        }
+            
     }
     
     function addViewComponent() {
@@ -304,6 +310,8 @@
 		   	$("viewBackground").height = 1200;
 		}
 	}
+	
+	
     
   </script>
   
