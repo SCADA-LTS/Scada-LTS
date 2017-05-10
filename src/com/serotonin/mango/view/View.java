@@ -62,12 +62,14 @@ public class View implements Serializable, JsonSerializable {
 	private Integer width;
 	@JsonRemoteProperty
 	private Integer height;
+	
+	private int resolution = ResolutionView.R1600x1200;
 
 	private int userId;
 	private List<ViewComponent> viewComponents = new CopyOnWriteArrayList<ViewComponent>();
 	private int anonymousAccess = ShareUser.ACCESS_NONE;
 	private List<ShareUser> viewUsers = new CopyOnWriteArrayList<ShareUser>();
-
+	
 	public void addViewComponent(ViewComponent viewComponent) {
 		// Determine an index for the component.
 		int min = 0;
@@ -211,7 +213,23 @@ public class View implements Serializable, JsonSerializable {
 	}
 
 	public void setWidth(Integer width) {
+
+		if (width == 640) {
+			this.resolution = ResolutionView.R640x480;
+		} else if (width == 800) {
+			this.resolution = ResolutionView.R800x600;
+		} else if (width == 1024) {
+			this.resolution = ResolutionView.R1024x768;
+		} else if (width == 1600) {
+			this.resolution = ResolutionView.R1600x1200;
+		} else if (width == 1920) {
+			this.resolution = ResolutionView.R1920x1080;
+		} else {
+			new RuntimeException("Don't support width view:"+width);
+		}
+		
 		this.width = width;
+
 	}
 
 	public Integer getHeight() {
@@ -219,7 +237,56 @@ public class View implements Serializable, JsonSerializable {
 	}
 
 	public void setHeight(Integer height) {
+		
+		if (height == 480) {
+			this.resolution = ResolutionView.R640x480;
+		} else if (height == 600) {
+			this.resolution = ResolutionView.R800x600;
+		} else if (height == 768) {
+			this.resolution = ResolutionView.R1024x768;
+		} else if (height == 1200) {
+			this.resolution = ResolutionView.R1600x1200;
+		} else if (height == 1080) {
+			this.resolution = ResolutionView.R1920x1080;
+		} else {
+			new RuntimeException("Don't support width height:"+height);
+		}
+		
 		this.height = height;
+	}
+	
+	public int getResolution() {
+		if (width == null) {
+			// set default resolution 1600x1200
+			setResolution(4);
+		}
+		
+		return resolution;
+	}
+
+	public void setResolution(int aresolution) {
+		if (aresolution == ResolutionView.R640x480) {
+			this.resolution = ResolutionView.R640x480;
+			this.height = 480;
+			this.width = 640;
+		} else if (aresolution == ResolutionView.R800x600) {
+			this.resolution = ResolutionView.R800x600;
+			this.height = 600;
+			this.width = 800;
+		} else if (aresolution == ResolutionView.R1024x768) {
+			this.resolution = ResolutionView.R1024x768;
+			this.height = 768;
+			this.width = 1024;
+		} else if (aresolution == ResolutionView.R1600x1200) {
+			this.resolution = ResolutionView.R1600x1200;
+			this.height = 1200;
+			this.width = 1600;
+		} else if (aresolution == 4) {
+			this.resolution = ResolutionView.R1920x1080;
+			this.height = 1080;
+			this.width = 1920;
+		}
+		
 	}
 	
 	public void validate(DwrResponseI18n response) {
@@ -302,6 +369,13 @@ public class View implements Serializable, JsonSerializable {
 						"anonymousAccess", text,
 						ShareUser.ACCESS_CODES.getCodeList());
 		}
+		
+		String resolution = json.getString("resolution");
+		if (resolution != null) {
+			
+			setResolution(Integer.parseInt(resolution));
+			
+		}
 
 		JsonArray jsonSharers = json.getJsonArray("sharingUsers");
 		if (jsonSharers != null) {
@@ -324,5 +398,6 @@ public class View implements Serializable, JsonSerializable {
 				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
 		map.put("viewComponents", viewComponents);
 		map.put("sharingUsers", viewUsers);
+		map.put("resolution", resolution);
 	}
 }

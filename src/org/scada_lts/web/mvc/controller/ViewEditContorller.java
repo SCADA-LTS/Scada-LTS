@@ -259,7 +259,7 @@ public class ViewEditContorller {
     private void copyViewProperties(View targetView, View sourceView) {
         targetView.setName(sourceView.getName());
         targetView.setXid(sourceView.getXid());
-
+        targetView.setResolution(sourceView.getResolution());
         targetView.setAnonymousAccess(sourceView.getAnonymousAccess());
         targetView.setUserId(sourceView.getUserId());
     }
