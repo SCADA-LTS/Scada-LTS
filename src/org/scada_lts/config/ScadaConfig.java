@@ -39,7 +39,12 @@ import com.serotonin.mango.Common;
 public class ScadaConfig {
 	
 	/**
-	 * Evert cacge ebaled (=true) or disabled (=false)
+	 * JGrowl enabled (=true) or disabled (=false)
+	 */
+	public static final String ENABLED_JGROWL_ON_VIEW = "abilit.api.enabled.jgrowl";
+	
+	/**
+	 * Event cache enabled (=true) or disabled (=false)
 	 */
 	public static final String ENABLE_CACHE = "abilit.cacheEnable";
 	
