@@ -39,7 +39,7 @@ import com.serotonin.mango.Common;
 public class ScadaConfig {
 	
 	/**
-	 * JGrowl enabled (=true) or disabled (=false)
+	 * Replace alert enabled (=true) or disabled (=false)
 	 */
 	public static final String REPLACE_ALERT_ON_VIEW = "abilit.api.replace.alert.onview";
 	
