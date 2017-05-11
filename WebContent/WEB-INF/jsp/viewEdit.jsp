@@ -51,9 +51,8 @@
         	resizeViewBackgroundToResolution(viewSize);
         } else {
         	document.getElementById("view.resolution").style.visibility = 'hidden';
-        }
-        
-            
+        	document.getElementById("sizeLabel").style.visibility = 'hidden';
+        }    
     }
     
     function addViewComponent() {
@@ -314,12 +313,24 @@
 			}
         } else {
         	document.getElementById("view.resolution").style.visibility = 'hidden';
+        	document.getElementById("sizeLabel").style.visibility = 'hidden';        	
         }
 		
 	}
 	
+	function deleteConfirm(){
+		if(document.getElementById("deleteCheckbox").checked) {
+			document.getElementById("deleteButton").style.visibility = 'visible';
+			setTimeout(function(){
+				document.getElementById("deleteCheckbox").checked = false;
+				document.getElementById("deleteButton").style.visibility = 'hidden';
+			}, 3000);
+		} else {
+			document.getElementById("deleteButton").style.visibility = 'hidden'; 
+		}
+	}
 	
-    
+	
   </script>
   
   <form name="view" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
@@ -390,7 +401,7 @@
               
               <spring:bind path="form.view.resolution">
                 <tr>
-                  <td class="formLabelRequired" width="150"><!--<fmt:message key="viewEdit.anonymous"/>--></td>
+                  <td id="sizeLabel" class="formLabelRequired" width="150"><fmt:message key="viedEdit.viewSize" /></td>
                   <td class="formField" width="250">
                     <sst:select id="view.resolution" name="view.resolution" value="${status.value}" onchange="resizeViewBackgroundToResolution(this.options[this.selectedIndex].value)"> 
                       <sst:option value="<%= Integer.toString(0) %>"> 640x480</sst:option>
@@ -467,7 +478,9 @@
               <td colspan="2" align="center">
                 <input type="submit" name="save" value="<fmt:message key="common.save"/>"/>
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
-				<input type="submit" name="delete" onclick="return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="common.delete"/>"/>
+                <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
+                <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
+				<input id="deleteButton" type="submit" name="delete" onclick="return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
               </td>
               <td></td>
             </tr>
