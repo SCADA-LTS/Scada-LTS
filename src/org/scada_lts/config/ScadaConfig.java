@@ -41,7 +41,7 @@ public class ScadaConfig {
 	/**
 	 * JGrowl enabled (=true) or disabled (=false)
 	 */
-	public static final String ENABLED_JGROWL_ON_VIEW = "abilit.api.enabled.jgrowl";
+	public static final String REPLACE_ALERT_ON_VIEW = "abilit.api.replace.alert.onview";
 	
 	/**
 	 * Event cache enabled (=true) or disabled (=false)
