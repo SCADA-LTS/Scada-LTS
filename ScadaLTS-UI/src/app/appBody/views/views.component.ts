@@ -37,7 +37,7 @@ export class ViewsComponent implements OnInit {
                     //var iframeDocument = document.getElementById('myframe').contentWindow.document;
                     $('#ifr').contents().find('#mainHeader, #subHeader, #graphical, #fsOut, .footer').css("display","none");
                     $('#ifr').css("visibility","visible");
-                    $('#infoSelectedViews').text(view.title);
+                    // $('#infoSelectedViews').text(view.title);
                 });
     }); 
   }
@@ -47,7 +47,7 @@ export class ViewsComponent implements OnInit {
     $('#ifr').attr('src','/ScadaBR/view_edit.shtm').on('load', function() {
         $('#ifr').contents().find('#mainHeader, #subHeader, #graphical, #fsOut, .footer').css("display","none");
         $('#ifr').css("visibility","visible");
-        $('#infoSelectedViews').text($("#tree").fancytree("getTree").getActiveNode().title);
+        // $('#infoSelectedViews').text($("#tree").fancytree("getTree").getActiveNode().title);
     });
   }
 
@@ -56,7 +56,7 @@ export class ViewsComponent implements OnInit {
     $('#ifr').attr('src','/ScadaBR/view_edit.shtm?viewId='+ this.viewKey).on('load', function() {
         $('#ifr').contents().find('#mainHeader, #subHeader, #graphical, #fsOut, .footer').css("display","none");
         $('#ifr').css("visibility","visible");
-        $('#infoSelectedViews').text($("#tree").fancytree("getTree").getActiveNode().title);
+        // $('#infoSelectedViews').text($("#tree").fancytree("getTree").getActiveNode().title);
     });
 
   }
@@ -241,7 +241,7 @@ export class DlgSelectViewWithEdtHierarchyView {
               $('#ifr').contents().find('#mainHeader, #subHeader, #graphical, #fsOut, .footer').css("display","none");
               $('#ifr').css("visibility","visible");
               
-              $('#infoSelectedViews').text($("#tree").fancytree("getTree").getActiveNode().title);
+              // $('#infoSelectedViews').text($("#tree").fancytree("getTree").getActiveNode().title);
 
             });
             this.refDlg.close($("#tree").fancytree("getTree").getActiveNode().key);
