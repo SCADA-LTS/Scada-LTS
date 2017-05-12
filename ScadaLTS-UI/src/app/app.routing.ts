@@ -57,7 +57,7 @@ const appRoutes: Routes = [
       { path: 'trends', component: TrendsComponent },
       { path: 'oldWatchlist', component: OldWatchlistComponent },
       { path: 'wledit', component: WleditComponent },
-      { path: '', component: DashboardComponent }
+      { path: '', component: WatchlistComponent }
     ]},
 
   // otherwise redirect to home
