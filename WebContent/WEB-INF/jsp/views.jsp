@@ -24,6 +24,11 @@
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/shortcut.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
+  <link
+	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.css"
+	rel="stylesheet" type="text/css">
+
+    <script type="text/javascript" src="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.js"></script>
 	
 	<script type="text/javascript">
 	
@@ -41,6 +46,28 @@
 
 		
 	});
+	
+	//check replace alert
+	jQuery.ajax({
+        type: "GET",
+        dataType: "json",
+        url:'/ScadaBR/api/config/replacealert',
+            success: function(data){
+              if (data==true) {
+            	  window.alert =  function(message) {
+            	        swal({
+            	         title: message,
+            	         text: "I will close in 6 seconds.",
+            	         timer: 6000,
+            	         showConfirmButton: true
+            	       });
+            	 }
+              }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+              //no op
+            }
+    });
 	
 	<c:if test="${!empty currentView}">
       mango.view.initNormalView();

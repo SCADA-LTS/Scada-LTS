@@ -16,6 +16,7 @@
     "jquery": "~2.2.4",
     "fancytree":"~2.18.0",
     "bootstrap":"~3.3.6",
-    "bootstrap3-dialog":"~1.35.1"
+    "bootstrap3-dialog":"~1.35.1",
+    "sweetalert2": "^6.6.2" 
   }
 }
