@@ -281,6 +281,13 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+"=? and "
 			+ "("+COLUMN_NAME_EVENT_HANDLER_TYPE_REF2+"=? or "+COLUMN_NAME_EVENT_HANDLER_TYPE_REF2+"=0)";
 	
+	//TODO test
+	private static final String EVENT_HANDLER_FILTER_N= " "
+			+ COLUMN_NAME_EVENT_HANDLER_TYPE_ID+"=? and "
+			+ COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+"=? ";
+			
+	
+	
 	private static final String EVENT_HANDLER_FILTER_ID=" "
 			+ COLUMN_NAME_EVENT_HANDLER_ID+"=?";
 	
@@ -301,7 +308,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String EVENT_HANDLER_UPDATE=" "
 			+ "update eventHandlers set "
 				+ COLUMN_NAME_EVENT_HANDLER_XID+"=?, "
-				+ COLUMN_NAME_EVENT_HANDLER_ALIAS+"alias=?, "
+				+ COLUMN_NAME_EVENT_HANDLER_ALIAS+"=?, "
 				+ COLUMN_NAME_EVENT_HANDLER_DATA+"=? "
 			+ "where "+COLUMN_NAME_EVENT_HANDLER_ID+"=?";
 	
@@ -836,7 +843,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	public List<EventHandlerVO> getEventHandlers(int typeId, int ref1, int ref2) {
-		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER, new Object[] {typeId, ref1, ref2}, new EventHandlerRowMapper());
+		//return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER, new Object[] {typeId, ref1, ref2}, new EventHandlerRowMapper());
+		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER_N, new Object[] {typeId, ref1}, new EventHandlerRowMapper());
 	}
 	
 	public List<EventHandlerVO> getEventHandlers() {
