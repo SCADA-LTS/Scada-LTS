@@ -58,8 +58,8 @@ after_script:
 # get tomcat7 to ./docker/app
 - wget http://www-us.apache.org/dist/tomcat/tomcat-7/v7.0.78/bin/apache-tomcat-7.0.78.tar.gz
 - mkdir ./docker/app
-- mv apache-tomcat-7.0.77.tar.gz ./docker/app
-- ls -l ./docker/app/apache-tomcat-7.0.77.tar.gz
+- mv apache-tomcat-7.0.78.tar.gz ./docker/app
+- ls -l ./docker/app/apache-tomcat-7.0.78.tar.gz
 - cd ./docker/app
 - echo `pwd` 
 - echo `ls -l`
