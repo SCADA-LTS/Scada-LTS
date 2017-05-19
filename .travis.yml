@@ -63,10 +63,10 @@ after_script:
 - cd ./docker/app
 - echo `pwd` 
 - echo `ls -l`
-- tar -zxvf apache-tomcat-7.0.77.tar.gz
+- tar -zxvf apache-tomcat-7.0.78.tar.gz
 - ls -l
-- mv ./apache-tomcat-7.0.77/* ./
-- rm -rf ./apache-tomcat-7.0.77
+- mv ./apache-tomcat-7.0.78/* ./
+- rm -rf ./apache-tomcat-7.0.78
 - cp ../../ScadaBR.war ./webapps
 - cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
 - ls -l ./webapps/ScadaLTS.war
