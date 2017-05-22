@@ -42,7 +42,6 @@ import com.serotonin.mango.view.View;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-@Service
 public class ViewHierarchyService {
 	
 	private static final Log LOG = LogFactory.getLog(ViewHierarchyService.class);
@@ -51,11 +50,10 @@ public class ViewHierarchyService {
 	
 	public static final int ROOT_ID = -1;
 	
-	@Resource
-	private ViewHierarchyDAO vhDAO;
 	
-	@Resource
-	private ViewDAO viewDAO;
+	private ViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
+	
+	private ViewDAO viewDAO = new ViewDAO();
 	
 	public ViewHierarchyService(){
 		

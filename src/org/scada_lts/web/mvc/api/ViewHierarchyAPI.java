@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.dao.error.ParseError;
 import org.scada_lts.dao.error.ParseErrorResult;
 import org.scada_lts.dao.model.error.ViewError;
@@ -68,7 +69,8 @@ public class ViewHierarchyAPI {
 		
 			if (user != null) {
 				
-				List<ViewHierarchyJSON> data = viewHierarchyService.getAll();
+				//List<ViewHierarchyJSON> data = viewHierarchyService.getAll();
+				List<ViewHierarchyJSON> data = ViewHierarchyCache.getInstance().getAll();
 				String json = null;
 				ObjectMapper mapper = new ObjectMapper();
 				
@@ -81,7 +83,7 @@ public class ViewHierarchyAPI {
 			
 		} catch (Exception e) {
 			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(e.toString(), HttpStatus.BAD_REQUEST);
 		}
 	}
 	
