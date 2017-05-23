@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -224,8 +225,11 @@ public class DataSourceDAO {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataSource(String xid) xid:" + xid);
 		}
-
-		return DAO.getInstance().getJdbcTemp().queryForObject(DATA_SOURCE_SELECT_WHERE_XID, new Object[]{xid}, new DataSourceRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(DATA_SOURCE_SELECT_WHERE_XID, new Object[]{xid}, new DataSourceRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 			
 	}
 

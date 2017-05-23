@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -144,7 +145,11 @@ public class DataPointDAO {
 
 		String templateSelectWhereXid = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_XID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 		
 	}
 
@@ -154,7 +159,11 @@ public class DataPointDAO {
 			LOG.trace("getDataPoints()");
 		}
 
-		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT, new DataPointRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT, new DataPointRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 	
 	public List<DataPointVO> filtered(String filter, Object[] argsFilter, long limit) {
