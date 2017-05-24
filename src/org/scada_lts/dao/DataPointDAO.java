@@ -23,6 +23,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -47,7 +49,7 @@ import com.serotonin.mango.vo.DataPointVO;
  */
 @Repository
 public class DataPointDAO {
-
+	
 	private static final Log LOG = LogFactory.getLog(DataPointDAO.class);
 
 	private static final String COLUMN_NAME_ID = "id";
@@ -112,12 +114,15 @@ public class DataPointDAO {
 
 	private class DataPointRowMapper implements RowMapper<DataPointVO> {
 
+		DataSourceDAO dsDAO = new DataSourceDAO();
 		@Override
 		public DataPointVO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
 			DataPointVO dataPoint = (DataPointVO) new SerializationData().readObject(resultSet.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+			
 			dataPoint.setId(resultSet.getInt(COLUMN_NAME_ID));
 			dataPoint.setXid(resultSet.getString(COLUMN_NAME_XID));
 			dataPoint.setDataSourceId(resultSet.getInt(COLUMN_NAME_DATA_SOURCE_ID));
+			dataPoint.setDataSourceXid( dsDAO.getDataSource(resultSet.getInt(COLUMN_NAME_DATA_SOURCE_ID)).getXid() );
 			dataPoint.setDataSourceName(resultSet.getString(COLUMN_NAME_DS_NAME));
 			dataPoint.setDataSourceTypeId(resultSet.getInt(COLUMN_NAME_DS_DATA_SOURCE_TYPE));
 			return dataPoint;
