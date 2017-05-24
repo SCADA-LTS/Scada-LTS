@@ -119,7 +119,6 @@ public class DataPointDAO {
 			dataPoint.setXid(resultSet.getString(COLUMN_NAME_XID));
 			dataPoint.setDataSourceId(resultSet.getInt(COLUMN_NAME_DATA_SOURCE_ID));
 			dataPoint.setDataSourceName(resultSet.getString(COLUMN_NAME_DS_NAME));
-			dataPoint.setDataSourceXid(resultSet.getString(COLUMN_NAME_DS_XID));
 			dataPoint.setDataSourceTypeId(resultSet.getInt(COLUMN_NAME_DS_DATA_SOURCE_TYPE));
 			return dataPoint;
 		}
