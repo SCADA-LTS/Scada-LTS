@@ -31,6 +31,7 @@ import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +59,11 @@ public class DataSourceService implements MangoDataSource {
 
 	@Override
 	public DataSourceVO<?> getDataSource(int id) {
-		return dataSourceDAO.getDataSource(id);
+		try {
+			return dataSourceDAO.getDataSource(id);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	@Override

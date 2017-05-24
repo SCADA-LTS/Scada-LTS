@@ -22,6 +22,7 @@ import com.serotonin.mango.vo.event.MaintenanceEventVO;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.mango.adapter.MangoMaintenanceEvent;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
 
@@ -56,7 +57,11 @@ public class MaintenanceEventService implements MangoMaintenanceEvent {
 
 	@Override
 	public MaintenanceEventVO getMaintenanceEvent(String xid) {
-		return maintenanceEventDAO.getMaintenanceEvent(xid);
+		try {
+			return maintenanceEventDAO.getMaintenanceEvent(xid);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	@Override

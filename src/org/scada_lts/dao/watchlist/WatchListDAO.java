@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -250,11 +251,19 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 
 	@Override
 	public WatchList findById(Object[] pk) {
-		return (WatchList) DAO.getInstance().getJdbcTemp().queryForObject(WATCH_LIST_SELECT_BASE_ON_ID, pk, new WatchListRowMapper());
+		try {
+			return (WatchList) DAO.getInstance().getJdbcTemp().queryForObject(WATCH_LIST_SELECT_BASE_ON_ID, pk, new WatchListRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 	
 	public WatchList findByXId(String xid) {
-		return (WatchList) DAO.getInstance().getJdbcTemp().queryForObject(WATCH_LIST_SELECT_BASE_ON_XID, new Object[] {xid}, new WatchListRowMapper());
+		try {
+			return (WatchList) DAO.getInstance().getJdbcTemp().queryForObject(WATCH_LIST_SELECT_BASE_ON_XID, new Object[] {xid}, new WatchListRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	@Override

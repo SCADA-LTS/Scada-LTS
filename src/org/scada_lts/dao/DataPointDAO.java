@@ -23,8 +23,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -46,7 +49,7 @@ import com.serotonin.mango.vo.DataPointVO;
  */
 @Repository
 public class DataPointDAO {
-
+	
 	private static final Log LOG = LogFactory.getLog(DataPointDAO.class);
 
 	private static final String COLUMN_NAME_ID = "id";
@@ -111,14 +114,16 @@ public class DataPointDAO {
 
 	private class DataPointRowMapper implements RowMapper<DataPointVO> {
 
+		DataSourceDAO dsDAO = new DataSourceDAO();
 		@Override
 		public DataPointVO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
 			DataPointVO dataPoint = (DataPointVO) new SerializationData().readObject(resultSet.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+			
 			dataPoint.setId(resultSet.getInt(COLUMN_NAME_ID));
 			dataPoint.setXid(resultSet.getString(COLUMN_NAME_XID));
 			dataPoint.setDataSourceId(resultSet.getInt(COLUMN_NAME_DATA_SOURCE_ID));
+			dataPoint.setDataSourceXid( dsDAO.getDataSource(resultSet.getInt(COLUMN_NAME_DATA_SOURCE_ID)).getXid() );
 			dataPoint.setDataSourceName(resultSet.getString(COLUMN_NAME_DS_NAME));
-			dataPoint.setDataSourceXid(resultSet.getString(COLUMN_NAME_DS_XID));
 			dataPoint.setDataSourceTypeId(resultSet.getInt(COLUMN_NAME_DS_DATA_SOURCE_TYPE));
 			return dataPoint;
 		}
@@ -144,7 +149,11 @@ public class DataPointDAO {
 
 		String templateSelectWhereXid = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_XID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 		
 	}
 
@@ -154,7 +163,11 @@ public class DataPointDAO {
 			LOG.trace("getDataPoints()");
 		}
 
-		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT, new DataPointRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT, new DataPointRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 	
 	public List<DataPointVO> filtered(String filter, Object[] argsFilter, long limit) {

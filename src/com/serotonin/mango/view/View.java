@@ -58,12 +58,12 @@ public class View implements Serializable, JsonSerializable {
 	private String name;
 	@JsonRemoteProperty
 	private String backgroundFilename;
-	@JsonRemoteProperty
-	private Integer width;
-	@JsonRemoteProperty
-	private Integer height;
 	
-	private int resolution = ResolutionView.R1600x1200;
+	transient private Integer width;
+	
+	transient private Integer height;
+	
+	transient private int resolution = ResolutionView.R1600x1200;
 
 	private int userId;
 	private List<ViewComponent> viewComponents = new CopyOnWriteArrayList<ViewComponent>();
@@ -341,6 +341,11 @@ public class View implements Serializable, JsonSerializable {
 	@Override
 	public void jsonDeserialize(JsonReader reader, JsonObject json)
 			throws JsonException {
+		
+		resolution = ResolutionView.R1600x1200;
+		this.height = 1200;
+		this.width = 1600;
+		
 		if (isNew()) {
 			String username = json.getString("user");
 			if (StringUtils.isEmpty(username))
@@ -398,6 +403,5 @@ public class View implements Serializable, JsonSerializable {
 				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
 		map.put("viewComponents", viewComponents);
 		map.put("sharingUsers", viewUsers);
-		map.put("resolution", resolution);
 	}
 }
