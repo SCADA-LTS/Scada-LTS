@@ -41,6 +41,43 @@ public class ViewHierarchyCache {
 		initial();
 	}
 	
+	private void dell (List<ViewHierarchyJSON> data, long id) {
+		for (ViewHierarchyJSON vhJSON :data) {
+			if (vhJSON.isFolder() && (vhJSON.getKey()==id)){
+				cache.remove(vhJSON);
+				break;
+			}			
+			dell(vhJSON.getChildren(), id);
+		}
+	}
+	
+	private ViewHierarchyJSON getAndDelete(List<ViewHierarchyJSON> data, long id) {
+		for (ViewHierarchyJSON vhJSON :data) {
+			if (vhJSON.getKey()==id){
+				cache.remove(vhJSON);
+				return vhJSON;
+			}
+			ViewHierarchyJSON child = getAndDelete(vhJSON.getChildren(), id);
+			if (child !=null) {
+				return child;
+			}
+			
+		}
+		return null;
+	}
+	
+	private void addTo(List<ViewHierarchyJSON> data, long newParentId, ViewHierarchyJSON toAdd) {
+		for (ViewHierarchyJSON vhJSON :data) {
+			if (vhJSON.isFolder() && (vhJSON.getKey()==newParentId)){
+				vhJSON.getChildren().add(toAdd);
+				break;
+			}			
+			addTo(vhJSON.getChildren(), newParentId, toAdd);
+		}
+	}
+	
+	private List<ViewHierarchyJSON> cache;
+	
 	public static ViewHierarchyCache getInstance() {
 		if (viewHierarchyCache==null) {
 			LOG.info("Creating ViewHierarchyCache");
@@ -50,20 +87,32 @@ public class ViewHierarchyCache {
 		return viewHierarchyCache;
 	}
 	
-	private List<ViewHierarchyJSON> cache;
 	
     public void add(ViewHierarchyNode vhn) {
       
-	   	
+    	ViewHierarchyService vhs = new ViewHierarchyService();
+    	new ViewHierarchyService().add(vhn);
+    	ViewHierarchyJSON vhf = vhs.createViewHierarchyFolderJSON(vhn);
+        cache.add(vhf);
+  
 	}
     
-    public void move(ViewHierarchyNode vhn) {
-      //	
+    public boolean delete(ViewHierarchyNode vhn) {
+    	dell(cache, vhn.getId());
+    	return new ViewHierarchyService().delFolder(vhn.getId());
+  	}
+  	
+    
+    public boolean move(int from, int to) {
+    	ViewHierarchyJSON vhj = getAndDelete(cache, from);
+    	addTo(cache, from, vhj);
+    	if (vhj.isFolder()){
+    		return new ViewHierarchyService().moveFolder(from, to);
+    	} else {
+    		return new ViewHierarchyService().moveView(from, to);
+    	}
     }
 
-	public void delete(ViewHierarchyNode vhn) {
-	  //	
-	}
 	
 	private void initial() {
 		LOG.info("Initial ViewHierarchyCache");

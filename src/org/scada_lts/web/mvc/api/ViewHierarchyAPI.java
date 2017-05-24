@@ -99,7 +99,8 @@ public class ViewHierarchyAPI {
 			if (user != null && user.isAdmin()) {
 				try {
 					ViewHierarchyNode node = new ViewHierarchyNode(parentId, name);
-					viewHierarchyService.add(node);
+					ViewHierarchyCache.getInstance().add(node);
+					//viewHierarchyService.add(node);
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString(node);
@@ -223,7 +224,8 @@ public class ViewHierarchyAPI {
 			User user = Common.getUser(request);
 			if (user != null && user.isAdmin()) {
 				
-				if (viewHierarchyService.moveFolder(id, newParentId)) {
+				//if (viewHierarchyService.moveFolder(id, newParentId)) {
+				if (ViewHierarchyCache.getInstance().move(id, newParentId)) {
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("moved");
@@ -250,7 +252,8 @@ public class ViewHierarchyAPI {
 			User user = Common.getUser(request);
 			if (user != null && user.isAdmin()) {
 				
-				if (viewHierarchyService.moveView(id, newParentId)) {
+				//if (viewHierarchyService.moveView(id, newParentId)) {
+				if (ViewHierarchyCache.getInstance().move(id, newParentId)) {
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("moved");

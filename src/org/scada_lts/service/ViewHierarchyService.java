@@ -113,7 +113,7 @@ public class ViewHierarchyService {
 		
 	}
 	
-	private ViewHierarchyJSON createViewHierarchyFolderJSON(ViewHierarchyNode vhNode) {
+	public ViewHierarchyJSON createViewHierarchyFolderJSON(ViewHierarchyNode vhNode) {
 		
 		ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
 		vhJSON.setTitle(vhNode.getName());
