@@ -62,6 +62,16 @@
     </layout>
   </appender>
   
+  <appender name="viehierarchyservicelogfile" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/viehierarchyservicelogfile.log"/>
+    <param name="MaxFileSize" value="1000KB"/>
+    <param name="MaxBackupIndex" value="10"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
+  
+  
   <appender name="flywaylogfile" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${catalina.base}/logs/flayway.log"/>
     <param name="MaxFileSize" value="1000KB"/>
@@ -122,6 +132,11 @@
   <appender name="apiasync" class="org.apache.log4j.AsyncAppender">
     <param name="LocationInfo" value="true"/>
     <appender-ref ref="apilogfile"/>
+  </appender>
+  
+  <appender name="viehierarchyservicelogfileasync" class="org.apache.log4j.AsyncAppender">
+    <param name="LocationInfo" value="true"/>
+    <appender-ref ref="viehierarchyservicelogfile"/>
   </appender>
   
   <appender name="scadadaoasync" class="org.apache.log4j.AsyncAppender">
@@ -203,6 +218,11 @@
    <category name="org.scada_lts.web.mvc.api" additivity="false">
     <level value="info"/>
     <appender-ref ref="apiasync"/>
+  </category>
+  
+  <category name="org.scada_lts.service" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="viehierarchyservicelogfileasync"/>
   </category>
   
   <category name="org.scada_lts.dao" additivity="false">

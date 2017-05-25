@@ -68,8 +68,6 @@ public class ViewHierarchyAPI {
 			User user = Common.getUser(request);
 		
 			if (user != null) {
-				
-				//List<ViewHierarchyJSON> data = viewHierarchyService.getAll();
 				List<ViewHierarchyJSON> data = ViewHierarchyCache.getInstance().getAll();
 				String json = null;
 				ObjectMapper mapper = new ObjectMapper();
@@ -99,8 +97,8 @@ public class ViewHierarchyAPI {
 			if (user != null && user.isAdmin()) {
 				try {
 					ViewHierarchyNode node = new ViewHierarchyNode(parentId, name);
-					ViewHierarchyCache.getInstance().add(node);
-					//viewHierarchyService.add(node);
+					viewHierarchyService.add(node);
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString(node);
@@ -145,6 +143,7 @@ public class ViewHierarchyAPI {
 				node.setId(key);
 				
 				if (viewHierarchyService.edt(node)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString(node);
@@ -171,6 +170,7 @@ public class ViewHierarchyAPI {
 			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.delFolder(id)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("success");
@@ -198,6 +198,7 @@ public class ViewHierarchyAPI {
 			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.delView(id)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("success");
@@ -224,8 +225,8 @@ public class ViewHierarchyAPI {
 			User user = Common.getUser(request);
 			if (user != null && user.isAdmin()) {
 				
-				//if (viewHierarchyService.moveFolder(id, newParentId)) {
-				if (ViewHierarchyCache.getInstance().move(id, newParentId)) {
+				if (viewHierarchyService.moveFolder(id, newParentId)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("moved");
@@ -252,8 +253,8 @@ public class ViewHierarchyAPI {
 			User user = Common.getUser(request);
 			if (user != null && user.isAdmin()) {
 				
-				//if (viewHierarchyService.moveView(id, newParentId)) {
-				if (ViewHierarchyCache.getInstance().move(id, newParentId)) {
+				if (viewHierarchyService.moveView(id, newParentId)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("moved");
