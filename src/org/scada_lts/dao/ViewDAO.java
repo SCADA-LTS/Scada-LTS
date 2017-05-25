@@ -241,7 +241,11 @@ public class ViewDAO implements GenericDAO<View> {
 	}
 	
 	public View findByXId(Object[] pk) {
-		return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, pk , new ViewRowMapper());
+		try { 
+			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, pk , new ViewRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	//TO rewrite order for example Object[] with column to order.

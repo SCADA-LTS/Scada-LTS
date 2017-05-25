@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDAO;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -138,11 +139,19 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
 
 	@Override
 	public CompoundEventDetectorVO findById(Object[] pk) {
-		return (CompoundEventDetectorVO) DAO.getInstance().getJdbcTemp().queryForObject(COMPOUND_EVENT_DETECTOR_SELECT+ " where " + COMPOUND_EVENT_DETECTOR_FILTERED_BASE_ON_ID, pk , new CompoundEventDetectorRowMapper());	
+		try {
+			return (CompoundEventDetectorVO) DAO.getInstance().getJdbcTemp().queryForObject(COMPOUND_EVENT_DETECTOR_SELECT+ " where " + COMPOUND_EVENT_DETECTOR_FILTERED_BASE_ON_ID, pk , new CompoundEventDetectorRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 	
 	public CompoundEventDetectorVO findByXId(Object[] pk) {
-		return (CompoundEventDetectorVO) DAO.getInstance().getJdbcTemp().queryForObject(COMPOUND_EVENT_DETECTOR_SELECT+ " where " + COMPOUND_EVENT_DETECTOR_FILTERED_BASE_ON_XID, pk , new CompoundEventDetectorRowMapper());	
+		try {
+			return (CompoundEventDetectorVO) DAO.getInstance().getJdbcTemp().queryForObject(COMPOUND_EVENT_DETECTOR_SELECT+ " where " + COMPOUND_EVENT_DETECTOR_FILTERED_BASE_ON_XID, pk , new CompoundEventDetectorRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	@Override
