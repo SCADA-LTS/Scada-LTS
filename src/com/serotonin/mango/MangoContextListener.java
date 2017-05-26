@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
 import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
 
@@ -138,6 +139,13 @@ public class MangoContextListener implements ServletContextListener {
 		try {
 			PointHierarchyCache.getInstance();
 			log.info("Cache point hierarchy initialized");
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
+		try {
+			ViewHierarchyCache.getInstance();
+			log.info("Cache views hierarchy initialized");
 		} catch (Exception e) {
 			log.error(e);
 		}

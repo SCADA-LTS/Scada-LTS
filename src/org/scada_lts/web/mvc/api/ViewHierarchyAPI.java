@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.dao.error.ParseError;
 import org.scada_lts.dao.error.ParseErrorResult;
 import org.scada_lts.dao.model.error.ViewError;
@@ -67,8 +68,7 @@ public class ViewHierarchyAPI {
 			User user = Common.getUser(request);
 		
 			if (user != null) {
-				
-				List<ViewHierarchyJSON> data = viewHierarchyService.getAll();
+				List<ViewHierarchyJSON> data = ViewHierarchyCache.getInstance().getAll();
 				String json = null;
 				ObjectMapper mapper = new ObjectMapper();
 				
@@ -81,7 +81,7 @@ public class ViewHierarchyAPI {
 			
 		} catch (Exception e) {
 			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(e.toString(), HttpStatus.BAD_REQUEST);
 		}
 	}
 	
@@ -98,6 +98,7 @@ public class ViewHierarchyAPI {
 				try {
 					ViewHierarchyNode node = new ViewHierarchyNode(parentId, name);
 					viewHierarchyService.add(node);
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString(node);
@@ -142,6 +143,7 @@ public class ViewHierarchyAPI {
 				node.setId(key);
 				
 				if (viewHierarchyService.edt(node)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString(node);
@@ -168,6 +170,7 @@ public class ViewHierarchyAPI {
 			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.delFolder(id)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("success");
@@ -195,6 +198,7 @@ public class ViewHierarchyAPI {
 			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.delView(id)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("success");
@@ -222,6 +226,7 @@ public class ViewHierarchyAPI {
 			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.moveFolder(id, newParentId)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("moved");
@@ -249,6 +254,7 @@ public class ViewHierarchyAPI {
 			if (user != null && user.isAdmin()) {
 				
 				if (viewHierarchyService.moveView(id, newParentId)) {
+					ViewHierarchyCache.getInstance().refresh();
 					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					json = mapper.writeValueAsString("moved");

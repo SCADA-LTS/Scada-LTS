@@ -21,17 +21,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericHierarchyDAO;
 import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.dao.model.viewshierarchy.ViewInViewHierarchyNode;
 import org.scada_lts.service.model.ViewHierarchyJSON;
+import org.slf4j.profiler.Profiler;
 import org.springframework.stereotype.Service;
 
 import com.serotonin.mango.view.View;
@@ -46,16 +44,16 @@ import com.serotonin.mango.view.View;
 public class ViewHierarchyService {
 	
 	private static final Log LOG = LogFactory.getLog(ViewHierarchyService.class);
+	private Profiler profiler = new Profiler("ViewHierarchyService");
 	
 	private static final boolean FOLDER = true;
 	
 	public static final int ROOT_ID = -1;
 	
-	@Resource
-	private ViewHierarchyDAO vhDAO;
 	
-	@Resource
-	private ViewDAO viewDAO;
+	private ViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
+	
+	private ViewDAO viewDAO = new ViewDAO();
 	
 	public ViewHierarchyService(){
 		
@@ -92,6 +90,7 @@ public class ViewHierarchyService {
 	}
 	
 	private void correctChildrenViewHierarchyFolderJSON(List<ViewHierarchyJSON> lst, ViewInViewHierarchyNode vhNodeInFolder,  HashMap<Long, Boolean> tmpViewsInFolder) {
+		
 		for (ViewHierarchyJSON vhNode:lst){
 			if (vhNode.isFolder()) {
 				if (vhNode.getKey()==vhNodeInFolder.getFolderViewsHierarchyId()){
@@ -99,8 +98,10 @@ public class ViewHierarchyService {
 					vhJSON.setKey(vhNodeInFolder.getViewId());
 					vhJSON.setChildren(null);
 					vhJSON.setFolder(false);
-				
+					profiler.start("Get info view");
 					vhJSON.setTitle(viewDAO.findById(new Object[] { vhJSON.getKey() }).getName());
+					profiler.stop();
+					LOG.info("Started "+getClass().getSimpleName()+" in "+ getClass().getSimpleName() +"ms "+ profiler.elapsedTime() / 1000 / 1000);
 					tmpViewsInFolder.put(vhJSON.getKey(), new Boolean(true));
 					if (vhNode.getChildren() == null) {
 						vhNode.setChildren(new ArrayList<ViewHierarchyJSON>());
@@ -115,7 +116,7 @@ public class ViewHierarchyService {
 		
 	}
 	
-	private ViewHierarchyJSON createViewHierarchyFolderJSON(ViewHierarchyNode vhNode) {
+	public ViewHierarchyJSON createViewHierarchyFolderJSON(ViewHierarchyNode vhNode) {
 		
 		ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();
 		vhJSON.setTitle(vhNode.getName());
@@ -165,6 +166,7 @@ public class ViewHierarchyService {
 	
 	//TODO (userId profileId)
 	public List<ViewHierarchyJSON> getAll(){
+		profiler.start("correctChildrenViewHierarchyFolderJSON");
 		
 		List<ViewHierarchyNode> lstNodeDb = vhDAO.getNode(ViewHierarchyDAO.ROOT_ID);
 		List<ViewHierarchyJSON> lst = new ArrayList<ViewHierarchyJSON>();
@@ -187,7 +189,9 @@ public class ViewHierarchyService {
 		for (View view: lstView) {
 			addViewInNotInViewHierarchy(lst, view, tmpViewInFolders);
 		}
-				
+		profiler.stop();
+		LOG.info("Started "+getClass().getSimpleName()+" in "+ getClass().getSimpleName() +"ms "+ profiler.elapsedTime() / 1000 / 1000);
+			
 		return lst;	
 	}
 

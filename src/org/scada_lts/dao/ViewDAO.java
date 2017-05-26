@@ -233,7 +233,11 @@ public class ViewDAO implements GenericDAO<View> {
 
 	@Override
 	public View findById(Object[] pk) {
-		return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, pk , new ViewRowMapper());
+		try {
+			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, pk , new ViewRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 	
 	public View findByXId(Object[] pk) {
