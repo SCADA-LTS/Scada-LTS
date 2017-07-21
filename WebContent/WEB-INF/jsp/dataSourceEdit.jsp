@@ -47,6 +47,7 @@
             appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions);
         
         pointListColumnHeaders.push("");
+        
         pointListColumnFunctions.push(function(p) {
                 return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="common.edit"/>", "editPoint("+ p.id +")");
         });
