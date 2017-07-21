@@ -47,6 +47,7 @@ branches:
   - "/^PROC-.*$/"
   - "/^develop-sdtabilit.*$/"
   - "/^#179*$/"
+  - "/^master-sdtabilit.*$/"
 notifications:
   email: false
 env:
