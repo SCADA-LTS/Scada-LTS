@@ -60,15 +60,15 @@ after_script:
 # get tomcat7 to ./docker/app
 - wget http://www-us.apache.org/dist/tomcat/tomcat-7/v7.0.79/bin/apache-tomcat-7.0.79.tar.gz
 - mkdir ./docker/app
-- mv apache-tomcat-7.0.78.tar.gz ./docker/app
-- ls -l ./docker/app/apache-tomcat-7.0.78.tar.gz
+- mv apache-tomcat-7.0.79.tar.gz ./docker/app
+- ls -l ./docker/app/apache-tomcat-7.0.79.tar.gz
 - cd ./docker/app
 - echo `pwd` 
 - echo `ls -l`
-- tar -zxvf apache-tomcat-7.0.78.tar.gz
+- tar -zxvf apache-tomcat-7.0.79.tar.gz
 - ls -l
-- mv ./apache-tomcat-7.0.78/* ./
-- rm -rf ./apache-tomcat-7.0.78
+- mv ./apache-tomcat-7.0.79/* ./
+- rm -rf ./apache-tomcat-7.0.79
 - cp ../../ScadaBR.war ./webapps
 - cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
 - ls -l ./webapps/ScadaLTS.war
