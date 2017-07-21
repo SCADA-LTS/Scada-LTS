@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
@@ -137,8 +138,12 @@ public class ScriptDao extends BaseDao {
 	}
 
 	public ScriptVO<?> getScript(String xid) {
-		return queryForObject(SCRIPT_SELECT + " where xid=?",
-				new Object[] { xid }, new ScriptRowMapper(), null);
+		try {
+			return queryForObject(SCRIPT_SELECT + " where xid=?",
+					new Object[] { xid }, new ScriptRowMapper(), null);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 }

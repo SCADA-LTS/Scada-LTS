@@ -31,27 +31,13 @@ import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.web.comparators.EventInstanceComparator;
 import com.serotonin.web.util.PaginatedData;
-import com.serotonin.web.util.PaginatedListController;
 import com.serotonin.web.util.PagingDataForm;
 
-public class EventsController extends PaginatedListController {
+public class EventsController  {
     @SuppressWarnings("unchecked")
-    @Override
     protected PaginatedData getData(HttpServletRequest request, PagingDataForm paging, BindException errors)
             throws Exception {
-//        List<EventInstance> data;
         ResourceBundle bundle = ControllerUtils.getResourceBundle(request);
-//        if (((EventsForm)paging).isInactive()) {
-//            User user = Common.getUser(request);
-//            List<EventInstance> allInactive = new EventDao().getInactiveEvents();
-//            data = new ArrayList<EventInstance>();
-//            for (EventInstance evt : allInactive) {
-//                if (evt.isAlarm() && Permissions.hasEventTypePermission(user, evt.getEventType()))
-//                    data.add(evt);
-//            }
-//        }
-//        else
-//            data = Common.ctx.getEventManager().getActiveEvents(Common.getUser(request));
         List<EventInstance> data = new EventDao().getPendingEvents(Common.getUser(request).getId());
         sortData(bundle, data, paging);
         return new PaginatedData<EventInstance>(data, data.size());

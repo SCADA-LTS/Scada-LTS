@@ -3,7 +3,7 @@ package com.serotonin.mango.util.freemarker;
 import java.io.IOException;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.web.email.TemplateEmailContent;
 
 import freemarker.template.Template;
@@ -14,10 +14,10 @@ public class MangoEmailContent extends TemplateEmailContent {
     public static final int CONTENT_TYPE_HTML = 1;
     public static final int CONTENT_TYPE_TEXT = 2;
 
-    private static final SystemSettingsDao SYSTEM_SETTINGS_DAO = new SystemSettingsDao();
+    private static final SystemSettingsDAO SYSTEM_SETTINGS_DAO = new SystemSettingsDAO();
 
     public MangoEmailContent(String templateName, Object model, String encoding) throws TemplateException, IOException {
-        this(templateName, model, encoding, SYSTEM_SETTINGS_DAO.getIntValue(SystemSettingsDao.EMAIL_CONTENT_TYPE));
+        this(templateName, model, encoding, SYSTEM_SETTINGS_DAO.getIntValue(SystemSettingsDAO.EMAIL_CONTENT_TYPE));
     }
 
     private MangoEmailContent(String templateName, Object model, String encoding, int type) throws TemplateException,

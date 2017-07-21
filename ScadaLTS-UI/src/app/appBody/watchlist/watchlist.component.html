@@ -1,0 +1,85 @@
+<button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': !isChartHidden }" class="chartIconOpen" mdTooltip="{{ isChartHidden ? 'Reveal chart' : '' }}" [mdTooltipPosition]="'below'"><md-icon>vertical_align_bottom</md-icon></button>
+<button md-mini-fab mdTooltip="Copy URL with view settings" [ngClass]="{ 'urlButtonStageTwo': !isChartHidden }" [mdTooltipPosition]="'below'" class='urlButton' (click)="setURL();openSnackBar('URL copied to the clipboard.')" ngxClipboard [cbContent]="directURL"><md-icon>insert_link</md-icon></button>
+
+<div class="chartContainer col-md-12 col-xs-12" [ngClass]="{ 'openFirstStage': !isChartHidden && isChartShrunked, 'openSecondStage': !isChartHidden && !isChartShrunked }" (window:resize)="relay()">
+    <md-card class="md-card" (mouseenter)="areChartButtonsVisible = true" (mouseleave)="areChartButtonsVisible = false">
+        <div class="chartButtons" [ngClass]="{ 'showButtons': areChartButtonsVisible }">
+            <a md-mini-fab (click)="increaseChartLineWidth()" mdTooltip="Increase line width" [mdTooltipPosition]="'below'"><md-icon>add</md-icon></a>
+            <a md-mini-fab (click)="decreaseChartLineWidth()" mdTooltip="Decrease line width" [mdTooltipPosition]="'below'"><md-icon>remove</md-icon></a>
+            <a md-mini-fab (click)="changeNumericChartShape()" mdTooltip="Toggle line shape" [mdTooltipPosition]="'below'"><md-icon>show_chart</md-icon></a>
+            <a md-mini-fab (click)="toggleLineMode()" mdTooltip="Toggle line mode" [mdTooltipPosition]="'below'"><md-icon>brush</md-icon></a>
+            <a md-mini-fab (click)="toggleLegend()" mdTooltip="Toggle legend" [mdTooltipPosition]="'below'"><md-icon>format_list_bulleted</md-icon></a>
+            <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Toggle fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></a>
+            <a md-mini-fab (click)="logChart()" mdTooltip="Toggle logarithmic Y axis" [mdTooltipPosition]="'below'"><md-icon>multiline_chart</md-icon></a>
+        </div>
+        <div id="plotlyLoader" *ngIf="isAnyRequestActive">
+            <div class="spinner">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
+        </div>
+        <div id="plotly"></div>
+        <button md-mini-fab (click)="isChartHidden = !isChartHidden" [ngClass]="{ 'hide': isChartHidden }" class="chartIconClose" mdTooltip="Hide chart" [mdTooltipPosition]="'below'"><md-icon>vertical_align_top</md-icon></button>
+
+    </md-card>
+</div>
+
+<div class="dataTableContainer col-md-8 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
+    <md-card>
+        <div>
+            <select class="chooseWatchlist" [(ngModel)]="selectedWatchlist" (ngModelChange)="cleanChartBeforeDraw();updateWatchlistTable($event.xid)">
+                <option *ngFor="let item of watchlists" [ngValue]="item">{{ item.name }}</option>
+            </select>
+        </div>
+        <p *ngIf="actualDate" class="lastActualizationDate">Last actualization: {{ actualDate | date: 'dd/MM/yyyy, HH:mm:ss' }}</p>
+        <table *ngIf="watchlistPointsValues.length" class="dataTable">
+            <tr *ngFor="let elem of watchlistPointsValues">
+                <td>{{ elem.name }}</td>
+                <td class="backlightOnDataChange">{{ elem.formattedValue }} {{ elem.suffix }}</td>
+                <td class="backlightOnDataChange date">{{ elem.ts | date: 'HH:mm:ss' }}</td>
+            </tr>
+        </table>
+    </md-card>
+</div>
+
+<div class="chartSettings col-md-4 col-xs-12" [ngClass]="{ 'moveChartListAndSettings': !isChartHidden }">
+    <md-card>
+        <div class="elementsFromPast">
+            <input type="number" min="1" max="100" class="inputFromPast" [(ngModel)]="dateFromInput" pattern="\d+">
+            <select [(ngModel)]="dateFromUnit" class="selectFromPast">
+                <option value="seconds">seconds</option>
+                <option value="minutes">minutes</option>
+                <option value="hours">hours</option>
+                <option value="days">days</option>
+            </select>
+        </div>
+        <button md-raised-button md-ripple (click)="specifyDate();getDataFromSpecifiedTimeToNow();isChartHidden = false" [disabled]="isRequestSpecifiedTimeActiveAndUndone || isRequestTimeRangeActiveAndUndone" [ngClass]="{ 'active': activeState == 'specifiedTime' }" mdTooltip="Load data from selected time to now" [mdTooltipPosition]="'below'" class="buttonFromPast">Load</button>
+        <div class="spinner spinnerSpecifiedTime" *ngIf="false && isRequestSpecifiedTimeActiveAndUndone">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+
+        <div class="timeRangeElements">
+            <div class="timeRangeElementsChild">
+                From:
+                <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange1">
+            </div>
+            <div class="timeRangeElementsChild">
+                To:
+                <input type="datetime-local" class='datePickerInput' [(ngModel)]="dateRange2" [disabled]="isLatestActive">
+            </div>
+            <div>
+                <button md-raised-button md-ripple (click)="isRequestTimeRangeActiveAndUndone = true;loadNewDataAfterZoom();activeState = 'timeRange';isChartHidden = false" [disabled]="isRequestTimeRangeActiveAndUndone || isRequestSpecifiedTimeActiveAndUndone" [ngClass]="{ 'active': activeState == 'timeRange' }" mdTooltip="Load data from selected time range" [mdTooltipPosition]="'above'" class="buttonFromPast bottomButton">Load</button>
+                <md-checkbox (change)="isLatestActive = !isLatestActive" [mdTooltipPosition]="'above'" mdTooltip="Latest" [disableRipple]="true" class="checkboxLatest"></md-checkbox>
+                <div class="spinner spinnerTimeRange" *ngIf="false && isRequestTimeRangeActiveAndUndone">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
+            </div>
+        </div>
+
+    </md-card>
+</div>

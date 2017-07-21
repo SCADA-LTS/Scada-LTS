@@ -46,7 +46,7 @@ import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.event.EventInstance;
@@ -307,8 +307,8 @@ public class MiscDwr extends BaseDwr {
 
 		long expireTime = System.currentTimeMillis() + 60000; // One minute
 		LongPollState state = data.getState();
-		int waitTime = SystemSettingsDao
-				.getIntValue(SystemSettingsDao.UI_PERFORAMANCE);
+		int waitTime = SystemSettingsDAO
+				.getIntValue(SystemSettingsDAO.UI_PERFORMANCE);
 
 		// For users that log in on multiple machines (or browsers), reset the
 		// last alarm timestamp so that it always

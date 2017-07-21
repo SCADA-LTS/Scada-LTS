@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
@@ -33,7 +34,6 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.spring.ConnectionCallbackVoid;
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.upgrade.DBUpgrade;
 import com.serotonin.mango.vo.User;
@@ -162,8 +162,8 @@ abstract public class DatabaseAccess {
 					new UserDao().saveUser(user);
 
 					// Record the current version.
-					new SystemSettingsDao().setValue(
-							SystemSettingsDao.DATABASE_SCHEMA_VERSION,
+					new SystemSettingsDAO().setValue(
+							SystemSettingsDAO.DATABASE_SCHEMA_VERSION,
 							Common.getVersion());
 				}
 			} else {

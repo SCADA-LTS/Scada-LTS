@@ -1,0 +1,45 @@
+<div class="container">
+
+
+  <md-card>
+    <div class="modalContainer">
+
+      <div class="pointsContainerModal col-md-6 col-xs-12">
+
+        <div class="pointsContainerModalHeader">
+          <h3>Points</h3>
+        </div>
+        <div class="pointsContainerModalSelect">
+          <input type="text" id="searchInput" placeholder="Point name" [(ngModel)]="pointName" (keyup)="term$.next(value)">
+          <ul>
+            <li *ngFor="let point of pointsArray" class="list-group-item">{{ point.name }}</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="watchlistContainerModal col-md-6 col-xs-12">
+
+        <div class="watchlistContainerModalHeader">
+          <h3>Watchlist</h3>
+        </div>
+
+        <div class="watchlistContainerModalSelect">
+          <select>
+            <option *ngFor="let watchlistName of watchlistsArray" class="">{{ watchlistName }}</option>
+          </select>
+          <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Delete" [mdTooltipPosition]="'below'" class="modalWatchlistButton"><md-icon>delete</md-icon></a>
+          <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Rename" [mdTooltipPosition]="'below'" class="modalWatchlistButton"><md-icon>find_replace</md-icon></a>
+          <a md-mini-fab (click)="toggleChartSize()" mdTooltip="Add new" [mdTooltipPosition]="'below'" class="modalWatchlistButton"><md-icon>add</md-icon></a>
+        </div>
+
+      </div>
+
+    </div>
+  </md-card>
+
+
+</div>
+
+
+

@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
 import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
 
@@ -47,7 +48,7 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.ReportDao;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverMulticaster;
@@ -107,8 +108,8 @@ public class MangoContextListener implements ServletContextListener {
 		dataPointsNameToIdMapping(ctx);
 
 		// Check if the known servlet context path has changed.
-		String knownContextPath = SystemSettingsDao
-				.getValue(SystemSettingsDao.SERVLET_CONTEXT_PATH);
+		String knownContextPath = SystemSettingsDAO
+				.getValue(SystemSettingsDAO.SERVLET_CONTEXT_PATH);
 		if (knownContextPath != null) {
 			String contextPath = ctx.getContextPath();
 			if (!StringUtils.isEqual(knownContextPath, contextPath))
@@ -116,8 +117,8 @@ public class MangoContextListener implements ServletContextListener {
 						+ knownContextPath + " to " + contextPath
 						+ ". Are there two instances of Mango running?");
 		}
-		new SystemSettingsDao().setValue(
-				SystemSettingsDao.SERVLET_CONTEXT_PATH, ctx.getContextPath());
+		new SystemSettingsDAO().setValue(
+				SystemSettingsDAO.SERVLET_CONTEXT_PATH, ctx.getContextPath());
 
 		utilitiesInitialize(ctx);
 		eventManagerInitialize(ctx);
@@ -138,6 +139,13 @@ public class MangoContextListener implements ServletContextListener {
 		try {
 			PointHierarchyCache.getInstance();
 			log.info("Cache point hierarchy initialized");
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
+		try {
+			ViewHierarchyCache.getInstance();
+			log.info("Cache views hierarchy initialized");
 		} catch (Exception e) {
 			log.error(e);
 		}

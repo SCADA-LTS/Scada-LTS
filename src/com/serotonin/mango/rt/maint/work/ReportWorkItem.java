@@ -57,6 +57,7 @@ import com.serotonin.web.email.EmailAttachment;
 import com.serotonin.web.email.EmailContent;
 import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.report.ReportInstancePointDAO;
 
 /**
  * @author Matthew Lohbihler
@@ -111,7 +112,7 @@ public class ReportWorkItem implements WorkItem {
 
 		// Create a list of DataPointVOs to which the user has permission.
 		DataPointDao dataPointDao = new DataPointDao();
-		List<ReportDao.PointInfo> points = new ArrayList<ReportDao.PointInfo>(
+		List<ReportInstancePointDAO.PointInfo> points = new ArrayList<ReportInstancePointDAO.PointInfo>(
 				reportConfig.getPoints().size());
 		for (ReportPointVO reportPoint : reportConfig.getPoints()) {
 			DataPointVO point = dataPointDao.getDataPoint(reportPoint
@@ -129,7 +130,7 @@ public class ReportWorkItem implements WorkItem {
 					// validated on save, so just let it go
 					// as null.
 				}
-				points.add(new ReportDao.PointInfo(point, colour, reportPoint
+				points.add(new ReportInstancePointDAO.PointInfo(point, colour, reportPoint
 						.isConsolidatedChart()));
 			}
 		}

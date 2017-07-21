@@ -105,6 +105,7 @@
       </td>
     </tr>
     
+    
     <tr>
       <td colspan="2">
         <table cellspacing="0" cellpadding="0" border="0">
@@ -112,17 +113,16 @@
             <td colspan="2">
               <table cellspacing="1" cellpadding="0" border="0">
                 <tr class="rowHeader">
-                  <td><sst:listSort labelKey="dsList.name" field="name" paging="${paging}"/></td>
-                  <td><sst:listSort labelKey="dsList.type" field="type" paging="${paging}"/></td>
-                  <td><sst:listSort labelKey="dsList.connection" field="conn" paging="${paging}"/></td>
-                  <td><sst:listSort labelKey="dsList.status" field="enabled" paging="${paging}"/></td>
+                  <td><fmt:message key="dsList.name"/></td>
+                  <td><fmt:message key="dsList.type"/></td>
+                  <td><fmt:message key="dsList.connection"/></td>
+                  <td><fmt:message key="dsList.status"/></td>
                   <td></td>
                 </tr>
-                
                 <c:set var="hideText"><fmt:message key="dsList.hide"/></c:set>
                 <c:set var="showText"><fmt:message key="dsList.show"/></c:set>
-                <c:forEach items="${paging.data}" var="listParent" begin="${paging.offset}" end="${paging.endIndex}">
-                  <tr class="row" id="dataSourceRow${listParent.parent.id}">
+                <c:forEach items="${data}" var="listParent"> 
+                    <tr class="row" id="dataSourceRow${listParent.parent.id}">
                     <td><b>${listParent.parent.name}</b></td>
                     <td><fmt:message key="${listParent.parent.type.key}"/></td>
                     <td><sst:i18n message="${listParent.parent.connectionDescription}"/></td>
@@ -183,16 +183,11 @@
                       </table>
                     </td>
                   </tr>
-                </c:forEach>
+                </c:forEach> 
               </table>
             </td>
           </tr>
-          <tr>
-            <td><sst:pageNumber paging="${paging}" pageLabelKey="pagination.page" ofLabelKey="pagination.of"
-                    rowsLabelKey="pagination.rows" noRowsLabelKey="pagination.noRows"/></td>
-            <td align="right"><sst:pagination paging="${paging}" previousLabelKey="pagination.previous"
-                    nextLabelKey="pagination.next"/></td>
-          </tr>
+          
         </table>  
       </td>
     </tr>

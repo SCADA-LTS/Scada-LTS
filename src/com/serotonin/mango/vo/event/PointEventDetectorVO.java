@@ -72,7 +72,7 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
     public static final int TYPE_POSITIVE_CUSUM = 10;
     public static final int TYPE_NEGATIVE_CUSUM = 11;
 
-    private static List<ImplDefinition> definitions;
+	private static List<ImplDefinition> definitions;
 
     public static List<ImplDefinition> getImplementations(int dataType) {
         if (definitions == null) {
@@ -595,4 +595,81 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
         map.put("durationType", Common.TIME_PERIOD_CODES.getCode(durationType));
         map.put("duration", duration);
     }
+    
+    @Override
+   	public int hashCode() {
+   		final int prime = 31;
+   		int result = 1;
+   		result = prime * result + alarmLevel;
+   		result = prime * result + ((alias == null) ? 0 : alias.hashCode());
+   		result = prime * result + ((alphanumericState == null) ? 0 : alphanumericState.hashCode());
+   		result = prime * result + (binaryState ? 1231 : 1237);
+   		result = prime * result + changeCount;
+   		result = prime * result + ((dataPoint == null) ? 0 : dataPoint.hashCode());
+   		result = prime * result + detectorType;
+   		result = prime * result + duration;
+   		result = prime * result + durationType;
+   		result = prime * result + id;
+   		long temp;
+   		temp = Double.doubleToLongBits(limit);
+   		result = prime * result + (int) (temp ^ (temp >>> 32));
+   		result = prime * result + multistateState;
+   		temp = Double.doubleToLongBits(weight);
+   		result = prime * result + (int) (temp ^ (temp >>> 32));
+   		result = prime * result + ((xid == null) ? 0 : xid.hashCode());
+   		return result;
+   	}
+
+   	@Override
+   	public boolean equals(Object obj) {
+   		if (this == obj)
+   			return true;
+   		if (obj == null)
+   			return false;
+   		if (getClass() != obj.getClass())
+   			return false;
+   		PointEventDetectorVO other = (PointEventDetectorVO) obj;
+   		if (alarmLevel != other.alarmLevel)
+   			return false;
+   		if (alias == null) {
+   			if (other.alias != null)
+   				return false;
+   		} else if (!alias.equals(other.alias))
+   			return false;
+   		if (alphanumericState == null) {
+   			if (other.alphanumericState != null)
+   				return false;
+   		} else if (!alphanumericState.equals(other.alphanumericState))
+   			return false;
+   		if (binaryState != other.binaryState)
+   			return false;
+   		if (changeCount != other.changeCount)
+   			return false;
+   		if (dataPoint == null) {
+   			if (other.dataPoint != null)
+   				return false;
+   		} else if (!dataPoint.equals(other.dataPoint))
+   			return false;
+   		if (detectorType != other.detectorType)
+   			return false;
+   		if (duration != other.duration)
+   			return false;
+   		if (durationType != other.durationType)
+   			return false;
+   		if (id != other.id)
+   			return false;
+   		if (Double.doubleToLongBits(limit) != Double.doubleToLongBits(other.limit))
+   			return false;
+   		if (multistateState != other.multistateState)
+   			return false;
+   		if (Double.doubleToLongBits(weight) != Double.doubleToLongBits(other.weight))
+   			return false;
+   		if (xid == null) {
+   			if (other.xid != null)
+   				return false;
+   		} else if (!xid.equals(other.xid))
+   			return false;
+   		return true;
+   	}
+    
 }

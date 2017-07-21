@@ -17,6 +17,10 @@
  */
 package org.scada_lts.dao;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -39,22 +43,25 @@ public class DAO {
 	private NamedParameterJdbcTemplate namedParamJdbcTemplate;
 	private JdbcTemplate jdbcTemplate;	
 	private static DAO instance;
+	private boolean test =false;
 	
 	private DAO() {
-		LOG.trace("Create DAO");
-		DataSource ds = Common.ctx.getDatabaseAccess().getDataSource();
-		namedParamJdbcTemplate = new NamedParameterJdbcTemplate(ds);
-		jdbcTemplate = new JdbcTemplate(ds);
+		try {
+			LOG.trace("Create DAO");
+			DataSource ds = Common.ctx.getDatabaseAccess().getDataSource();
+			namedParamJdbcTemplate = new NamedParameterJdbcTemplate(ds);
+			jdbcTemplate = new JdbcTemplate(ds);
+		} catch (Exception e) {
+			LOG.error(e);
+		}
 	}
 	
 	/**
 	 * Get id.
-	 * Deprecated because uses deprecated method in spring jdbc.
-	 * @return
-	 * @deprecated
+	 * @return Method queryForObject() can also return "null"
 	 */
 	protected int getId() {
-		return jdbcTemplate.queryForInt("select @@identity");
+		return jdbcTemplate.queryForObject("select @@identity", Integer.class);
 	}
 
 	public static DAO getInstance() {
@@ -74,6 +81,16 @@ public class DAO {
 	}
 	
 	/**
+	 *  
+	 * @param b
+	 * @return
+	 */
+	public static String boolToChar(boolean b) {
+		return b ? "Y" : "N";
+	}
+
+	
+	/**
 	 * Return get jdbcTemplate
 	 * @return
 	 */
@@ -82,11 +99,74 @@ public class DAO {
 	}
 	
 	/**
+	 * Set jdbcTemplate
+	 * @see TestDAO
+	 * @param jdbcTemplate
+	 */
+	public void setJdbcTemp(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+	/**
 	 * Return NamedParameterJdbcTemplate
 	 * @return
 	 */
 	public NamedParameterJdbcTemplate getNamedParameterJdbcTemp() {
 		return namedParamJdbcTemplate;
+	}
+	
+	/**
+	 * From example https://www.mkyong.com/java/java-append-values-into-an-object-array/ 
+	 * @param obj
+	 * @param newObj
+	 * @return
+	 */
+	public Object[] appendValue(Object[] obj, Object newObj) {
+
+		ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
+		temp.add(newObj);
+		return temp.toArray();
+
+	}
+
+	//TODO to rewrite base on seroUtils.jar
+	public String generateXid(String prefix) {
+		return prefix + generateRandomString(6, "0123456789");
+	}
+	
+	public boolean isXidUnique(String xid, int excludeId, String tableName) {
+		return DAO.getInstance().getJdbcTemp().queryForObject("select count(*) from " + tableName
+				+ " where xid=? and id<>?", new Object[] { xid, excludeId }, Integer.class) == 0;
+	}
+	
+	public String generateRandomString(final int length, final String charSet) {
+        final StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; ++i) {
+        	Random random = new Random();
+            sb.append(charSet.charAt(random.nextInt(charSet.length())));
+        }
+        return sb.toString();
+    }
+	
+	public String generateUniqueXid(String prefix, String tableName) {
+		String xid = generateXid(prefix);
+		while (!isXidUnique(xid, -1, tableName)) {
+			xid = generateXid(prefix);
+		}
+		return xid;
+	}
+
+	/**
+	 * @return the test
+	 */
+	public boolean isTest() {
+		return test;
+	}
+
+	/**
+	 * @param test the test to set
+	 */
+	public void setTest(boolean test) {
+		this.test = test;
 	}
 	
 }

@@ -20,7 +20,7 @@ import br.org.scadabr.db.scenarios.TablelessDatabaseScenario;
 import com.serotonin.db.spring.ConnectionCallbackVoid;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess.DatabaseType;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
 
@@ -75,8 +75,8 @@ public class MySQLAccessTest extends AbstractMySQLDependentTest {
 		useScenario(new TablelessDatabaseScenario()); // automatically
 														// initializes
 														// DatabaseAccess
-		final String savedValue = new SystemSettingsDao()
-				.getValue(SystemSettingsDao.DATABASE_SCHEMA_VERSION);
+		final String savedValue = new SystemSettingsDAO()
+				.getValue(SystemSettingsDAO.DATABASE_SCHEMA_VERSION);
 		assertEquals(Common.getVersion(), savedValue);
 	}
 

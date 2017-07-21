@@ -203,4 +203,42 @@ public class PointHierarchyController {
 			return "";
 		}
 	}
+	
+	@RequestMapping(value = "/pointHierarchy/find/{search}/{page}", method = RequestMethod.GET)
+	public @ResponseBody String find(@PathVariable("search") String search, @PathVariable("page") int page, HttpServletRequest request) throws Exception {
+		LOG.info("/pointHierarchy/find/{search} search:"+search+" page:"+page);
+		User user = Common.getUser(request);
+		if (user.isAdmin()) {
+			List<PointHierarchyNode> lst = phService.search(search, page);
+			String json = "";
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				json = mapper.writeValueAsString(lst);
+			} catch (JsonProcessingException e) {
+				LOG.error(e);
+			}
+			return json;
+		} else {
+			return "";
+		}
+	}
+	
+	@RequestMapping(value = "/pointHierarchy/paths/{key}/{isFolder}", method = RequestMethod.GET)
+	public @ResponseBody String find(@PathVariable("key") int key, @PathVariable("isFolder") boolean isFolder, @PathVariable("interval") int interval, HttpServletRequest request) throws Exception {
+		LOG.info("/pointHierarchy/paths/{key}/{isFolder} key:"+key+" isFolder:"+isFolder+" interval:"+interval);
+		User user = Common.getUser(request);
+		if (user.isAdmin()) {
+			List<PointHierarchyNode> lst = phService.getPaths(key, isFolder);
+			String json = "";
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				json = mapper.writeValueAsString(lst);
+			} catch (JsonProcessingException e) {
+				LOG.error(e);
+			}
+			return json;
+		} else {
+			return "";
+		}
+	}
 }

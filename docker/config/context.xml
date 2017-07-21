@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+--><!-- The contents of this file will be loaded for each web application --><Context>
+
+    <!-- Default set of monitored resources -->
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    
+    <Resource name="jdbc/scadalts"
+          auth="Container"
+          type="javax.sql.DataSource"
+          factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+          testWhileIdle="true"
+          testOnBorrow="true"
+          testOnReturn="false"
+          validationQuery="SELECT 1"
+          validationInterval="30000"
+          timeBetweenEvictionRunsMillis="30000"
+          maxActive="80"
+          minIdle="10"
+          maxWait="10000"
+          initialSize="10"
+          removeAbandonedTimeout="1000"
+          removeAbandoned="true"
+          abandonWhenPercentageFull="75"
+          logAbandoned="true"
+          minEvictableIdleTimeMillis="30000"
+          jmxEnabled="true"
+          jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
+                                                        org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer;
+                                                        org.apache.tomcat.jdbc.pool.interceptor.ResetAbandonedTimer;
+                                                        org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport(threshold=1500)"
+          username="root"
+          password="root"
+          driverClassName="com.mysql.jdbc.Driver"
+          defaultTransactionIsolation="READ_COMMITTED"
+          url="jdbc:mysql://localhost:3306/scadalts"
+          
+         />
+    
+    <!--      
+    <Parameter name="javamelody.storage-directory" value="/var/log/tomcat7/javamelody" override="false"/>
+     -->
+     <Parameter name="javamelody.storage-directory" value="C:\Users\grzegorz bylica\Documents\Scada-PRJ\workspace\javamelody\javamelody" override="false"/>
+     
+
+    <!-- Uncomment this to disable session persistence across Tomcat restarts -->
+    <!--
+    <Manager pathname="" />
+    -->
+
+    <!-- Uncomment this to enable Comet connection tacking (provides events
+         on session expiration as well as webapp lifecycle) -->
+    <!--
+    <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
+    -->
+
+</Context>

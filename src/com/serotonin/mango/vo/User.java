@@ -20,6 +20,7 @@ package com.serotonin.mango.vo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -273,7 +274,12 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	public List<Integer> getDataSourcePermissions() {
+		if (dataSourcePermissions==null) {
+			dataSourcePermissions = new LinkedList<Integer>();
+		}
+		
 		return dataSourcePermissions;
+		
 	}
 
 	public void setDataSourcePermissions(List<Integer> dataSourcePermissions) {
@@ -281,7 +287,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	public List<DataPointAccess> getDataPointPermissions() {
+		if (dataPointPermissions==null) {
+			dataPointPermissions = new LinkedList<DataPointAccess>();
+		} 
 		return dataPointPermissions;
+		
 	}
 
 	public void setDataPointPermissions(

@@ -93,7 +93,7 @@ import com.serotonin.bacnet4j.type.constructed.Address;
 import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
-import com.serotonin.io.serial.SerialParameters;
+import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -144,6 +144,8 @@ import com.serotonin.mango.vo.dataSource.jmx.JmxPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusDataSourceVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusSearchByAddressing;
+import com.serotonin.mango.vo.dataSource.mbus.PrimaryAddressingSearch;
+import com.serotonin.mango.vo.dataSource.mbus.SecondaryAddressingSearch;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO;
@@ -203,6 +205,7 @@ import com.serotonin.modbus4j.ip.IpParameters;
 import com.serotonin.modbus4j.locator.BaseLocator;
 import com.serotonin.modbus4j.msg.ModbusRequest;
 import com.serotonin.modbus4j.msg.ReadResponse;
+import com.serotonin.modbus4j.serial.SerialPortWrapper;
 import com.serotonin.util.IpAddressUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.viconics.RequestFailureException;
@@ -1739,7 +1742,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	// MBus stuff
 	//
 	public DwrResponseI18n saveMBusDataSource(String name, String xid,
-			Connection connection, int updatePeriodType, int updatePeriods) {
+			TcpIpConnection connection, int updatePeriodType, int updatePeriods) {
 		MBusDataSourceVO ds = (MBusDataSourceVO) Common.getUser()
 				.getEditDataSource();
 		ds.setXid(xid);
@@ -1762,7 +1765,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		return conn;
 	}
 
-	public void searchMBus(Connection conn, MBusSearchByAddressing addressing) {
+	public void searchMBus(TcpIpConnection conn, PrimaryAddressingSearch addressing) {
 		User user = Common.getUser();
 
 		Permissions.ensureDataSourcePermission(user);
@@ -1772,6 +1775,18 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		discovery.start();
 		user.setTestingUtility(discovery);
 	}
+	
+	public void searchMBus(TcpIpConnection conn, SecondaryAddressingSearch addressing) {
+		User user = Common.getUser();
+
+		Permissions.ensureDataSourcePermission(user);
+
+		MBusDiscovery discovery = new MBusDiscovery(getResourceBundle(), conn,
+				addressing);
+		discovery.start();
+		user.setTestingUtility(discovery);
+	}
+
 
 	public Map<String, Object> mBusSearchUpdate() {
 		Map<String, Object> result = new HashMap<String, Object>();

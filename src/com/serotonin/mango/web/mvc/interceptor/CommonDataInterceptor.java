@@ -25,7 +25,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 
 /**
@@ -36,7 +36,7 @@ public class CommonDataInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         request.setAttribute("availableLanguages", Common.getLanguages());
         request.setAttribute("lang", ControllerUtils.getLocale(request).getLanguage());
-        request.setAttribute("instanceDescription", SystemSettingsDao.getValue(SystemSettingsDao.INSTANCE_DESCRIPTION));
+        request.setAttribute("instanceDescription", SystemSettingsDAO.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
         request.setAttribute("NEW_ID", Common.NEW_ID);
         return true;
     }

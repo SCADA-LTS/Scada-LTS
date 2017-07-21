@@ -1,23 +1,52 @@
-addons:
-  ssh_known_hosts: 149.56.44.225
+sudo: required
 before_install:
+#- sudo add-apt-repository ppa:openjdk-r/ppa -y
+#- sudo apt-get update
+#- sudo apt-get install -y openjdk-8-jdk
+#- sudo update-alternatives --auto java
+#- sudo update-alternatives --auto javac
+#- export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+#- java -version
+#- javac -version
 - sudo apt-get install tomcat7
-- sudo apt-get install traceroute
-- sudo apt-get install sshpass
 before_script:
+- mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
+- nvm ls
+- nvm install node
+- nvm use node
+- npm -v
+- node -v
+- env
+- npm install -g @angular/cli@latest
 - npm install -g bower
+- npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
+- ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
+- cd ./ScadaLTS-UI
+- npm install
+- ls -l ./src/app/media
+- ng version
+- ng build
+- cd ./war
+- ant war
+- ant 
+- cd ../..
 language: java
 jdk:
 - openjdk7
+services:
+- docker
+- mysql
+# script: ant war && ant junit
 script: ant war
 branches:
   only:
   - "/^PROC-.*$/"
   - "/^develop-sdtabilit.*$/"
+  - "/^#179*$/"
   - "/^master-sdtabilit.*$/"
 notifications:
   email: false
@@ -25,9 +54,44 @@ env:
   matrix:
   - CATALINA_HOME=/usr/share/tomcat7
   global:
-    secure: mRa7Eq70zFEeWboEaUJNkFUK/3ufFANJAWe9K515qB5AoDLsVe0dwfqpCjqWOKq1fbbO8lA1MaISC7VgDyiVbfvYIiENh+Bav/yqjEF5ED3Qcm5fgZvkIaybAUe5yCVBFrrBjQwF5x0Ocq0SAqSoU0Bs8/24QPoR22QTBVS0NV5lzyEKVu9p40QRq3Aavpq2o0xoVz8Dx9o88nOgdcTCjT3GBuZip+8eMrOcFEbKyicLQ73nlk1v4cEB1MTv/qt1Djj3KPm/wbmOWOx9ulVmch0UMLaH8tQd+UFLjga0RTGZHfGj7KhATl0c6FFbO67Er55R3STqMWXzYACnfYRbFyl+Ds9BaImKtqNLJlrJoZlT4DitEPG4RR+WcCvsAJ8Tj7hiV6xwE2LwjiSC56U85k768PCsDLDA7q8VoR1QoMIeZg1rW+rGgMUFOwgyMx0BuXBmyniU5T2trMJvcLZpHX/QPE4UnQ5jvnaEpTXxvJmLBeO1/5ajesCYNyIH9fE00b/vgz5yBVw3S9y0D3Ps7WhIXlhiz57pI6pBi8lUmO0YdtbW9Hc0oDpI7Asg04ftdIJ7Y1+3Ww/rwszQV6QnRiH9iuWq7HJJCmgKeNHS3fo/Zy8N9Xmx3hfFuedpToIN0B+tlzwnDCtvS4Zhx8rSv+9+v/XHYinan8z25Z3CM8A=
+  - secure: iWTA/pJ1p0yuflPAYi5FwQnB6qWjNpnAfUvGT4bXiEi9X0Gy0IFhjzP9acO+sG/SAc2H+YA9KbRWc7CVbilxXfLRE6yOEiPQW9M9wg+EMYnPtLcnQqpqJ8DJWhwks8oNqX95PlyLy0UkIFAfDgNNsOI6xNrtSt/pL6kDf5EXypzHnhAAPvMlo3qLsmB/5I0JZvcEUGN6fXZkVczuBhQnN7mbhYouMScZJdvNo8VbVsSmFj66u6KT82lKoEP74cD1dCRiCHtNTUIBMN7igb8byD9k0eOty89H+BGoCLUvWpghYl0fBwW9djaK/gu+Vhf+6h1lFMYsqdm7eWJDwDDlkIqllzGIRbBwjKi+We3cCMMubvwXUATkkPYKPS6SshBkwybG9/6/6cHu5Y69Sh7shgurbc40wWUMm9BoHX+DDfJf1coFBAMXnPFkupnMkDTLPaC44FbjndAIectf72J6x8MqZ/lSAY5q0c6Hg/tdKofwA92Cx13KDrNVxTP2oC2lIvHCYtuS8/6fToAHIdpCpv+l/nkUBrEdpSNjSPHHB7+jY3R2+G8mv4yX5Jj74q/OL3B2OcVL/BsxDWUYUjLRsMUxoBe5oW3/c+2mpcBQp6spMd6kceBM6L7d+pHkZV4Ce+CJoaej8BXdyfSqq/aTkG/RMQ1qsa4GYIfu0IaNZMg=
+  - secure: KNfVmgjr2ZNsnvIfuhSkZ/kPrSTjn6WSDxEJt/3ioTCgeEGGvPL7UGonHHozZu3WzpzBVyUr60hXjb1nmb9dk6A3Dg05UPZmuS7NiHEA4Ub2zQKgefSbK0AJEhXSDg+bT16Hqxf1aZDaAEpMXGWTGLdpbKkGAW56UZu6LpOlOvoX9pFoSWAyzh1jKiYQsaKJ3eCncHKug5WqTVidOL/ENR6CAYyVLkgZ0yffwsCyVAnh14vri2lswPhPsPvMzYxtLQGkKkUOYkuPOZvBD7l5mp5Y4QLv86iKTFlOteim7yD+RpZZDFpb+3+OhRuj6jlBYWina33RKqBqjhhsayyYN/tYnPUefZhT+ALs8JfUaDXqMdgd7NQj8i5ZvrB+YsCTUVGrnPVbmEq8A4l/An5ushQpK5CrASiAC0K4dOBVT+U89QHtYWuE3ZOmSb518dlbH084ljypAj3JTQpUgRAAxn21VUMKb6QyIPsSPVEQ+zPQnaxBLhYVqafO7iX1tyvdr0mGhLZjXaaGwQu8Y/RoHdmRYcQAGn6zVFNuxWxTlr2OQ0fJ5l6/qBVyqZvqNirYa5hX8KtDu3dVMo5VOirIsoJTw75qTpGxYjhCNCb/woxtRvfX9xoT7tINWOxi2ucFfObSCsTv+BPeZeJiq7UDuFQYsQtWjNRp/iQNJ+rclpQ=
 after_script:
-- echo $TRAVIS_BUILD_DIR
-- eval "$(ssh-agent -s)"
-- traceroute -p 22 149.56.44.225
-- sshpass -e scp ./ScadaBR.war root@149.56.44.225:/root/ScadaBR.war
+# get tomcat7 to ./docker/app
+- wget http://www-us.apache.org/dist/tomcat/tomcat-7/v7.0.78/bin/apache-tomcat-7.0.78.tar.gz
+- mkdir ./docker/app
+- mv apache-tomcat-7.0.78.tar.gz ./docker/app
+- ls -l ./docker/app/apache-tomcat-7.0.78.tar.gz
+- cd ./docker/app
+- echo `pwd` 
+- echo `ls -l`
+- tar -zxvf apache-tomcat-7.0.78.tar.gz
+- ls -l
+- mv ./apache-tomcat-7.0.78/* ./
+- rm -rf ./apache-tomcat-7.0.78
+- cp ../../ScadaBR.war ./webapps
+- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
+- ls -l ./webapps/ScadaLTS.war
+- ls -l ./webapps/ScadaBR.war
+- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
+- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
+- ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
+- ls -l ./lib/mysql-connector-java-5.1.38-bin.jar
+# config tomcat
+- cp -f ../config/context.xml ./conf/
+- cat ./conf/context.xml
+
+# docker
+- cd ../
+- pwd
+- ls 
+- docker version
+- docker build -t dockergb/scadalts-dev .
+- docker images
+- docker login -u=$DOCKER_USENAME -p=$DOCKER_PASSWORD
+- docker push dockergb/scadalts-dev 
+
+
+#- echo $TRAVIS_BUILD_DIR
+#- sshpass -e scp ./ScadaBR.war test@149.56.44.225:/home/test/ScadaBR.war
+#- sshpass -e scp ./ScadaLTS-UI/war/ScadaLTS.war test@149.56.44.225:/home/test/ScadaLTS.war

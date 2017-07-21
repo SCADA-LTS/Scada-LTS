@@ -69,7 +69,9 @@ public class ChartExportServlet extends HttpServlet {
                 pointInfo.setTextRenderer(dp.getTextRenderer());
                 exportCreator.startPoint(pointInfo);
 
-                pointValueDao.getPointValuesBetween(pointId, from, to, callback);
+                //TODO rewrite seroUtils
+                //pointValueDao.getPointValuesBetween(pointId, from, to, callback);
+                pointValueDao.getPointValuesBetween(pointId, from, to);
             }
         }
 

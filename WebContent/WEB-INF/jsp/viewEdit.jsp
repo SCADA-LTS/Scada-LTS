@@ -45,6 +45,14 @@
             compoundEditor.setPointList(result.pointList);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
+        
+        if(document.getElementById("viewBackground").src.includes("spacer.gif")){
+        	var viewSize = document.getElementById("view.resolution").value;
+        	resizeViewBackgroundToResolution(viewSize);
+        } else {
+        	document.getElementById("view.resolution").style.visibility = 'hidden';
+        	document.getElementById("sizeLabel").style.visibility = 'hidden';
+        }    
     }
     
     function addViewComponent() {
@@ -275,10 +283,57 @@
 			$("viewBackground").height = parseInt(height,10) + 30;
 		}
 	}
-    
+	
+	function resizeViewBackgroundToResolution(size) {
+		if(document.getElementById("viewBackground").src.includes("spacer.gif")){
+			switch(size) {
+			   case "0":
+			   	$("viewBackground").width = 640;
+			   	$("viewBackground").height = 480;
+			       break;
+			   case "1":
+			   	$("viewBackground").width = 800;
+			   	$("viewBackground").height = 600;
+			       break;
+			   case "2":
+			   	$("viewBackground").width = 1024;
+			   	$("viewBackground").height = 768;
+			       break;
+			   case "3":
+			   	$("viewBackground").width = 1600;
+			   	$("viewBackground").height = 1200;
+			       break;
+			   case "4":
+			   	$("viewBackground").width = 1920;
+			   	$("viewBackground").height = 1080;
+			       break;
+			   default:
+			   	$("viewBackground").width = 1600;
+			   	$("viewBackground").height = 1200;
+			}
+        } else {
+        	document.getElementById("view.resolution").style.visibility = 'hidden';
+        	document.getElementById("sizeLabel").style.visibility = 'hidden';        	
+        }
+		
+	}
+	
+	function deleteConfirm(){
+		if(document.getElementById("deleteCheckbox").checked) {
+			document.getElementById("deleteButton").style.visibility = 'visible';
+			setTimeout(function(){
+				document.getElementById("deleteCheckbox").checked = false;
+				document.getElementById("deleteButton").style.visibility = 'hidden';
+			}, 3000);
+		} else {
+			document.getElementById("deleteButton").style.visibility = 'hidden'; 
+		}
+	}
+	
+	
   </script>
   
-  <form name="view" action="" method="post" enctype="multipart/form-data">
+  <form name="view" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
       <tr>
         <td valign="top">
@@ -301,6 +356,9 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
+              
+              
+              
               <spring:bind path="form.view.xid">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="common.xid"/></td>
@@ -335,6 +393,22 @@
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_NONE) %>"><fmt:message key="common.access.none"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_READ) %>"><fmt:message key="common.access.read"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_SET) %>"><fmt:message key="common.access.set"/></sst:option>
+                    </sst:select>
+                  </td>
+                  <td class="formError">${status.errorMessage}</td>
+                </tr>
+              </spring:bind>
+              
+              <spring:bind path="form.view.resolution">
+                <tr>
+                  <td id="sizeLabel" class="formLabelRequired" width="150"><fmt:message key="viedEdit.viewSize" /></td>
+                  <td class="formField" width="250">
+                    <sst:select id="view.resolution" name="view.resolution" value="${status.value}" onchange="resizeViewBackgroundToResolution(this.options[this.selectedIndex].value)"> 
+                      <sst:option value="<%= Integer.toString(0) %>"> 640x480</sst:option>
+                      <sst:option value="<%= Integer.toString(1) %>"> 800x600</sst:option>
+                      <sst:option value="<%= Integer.toString(2) %>"> 1024x768</sst:option>
+                      <sst:option value="<%= Integer.toString(3) %>"> 1600x1200</sst:option>
+                      <sst:option value="<%= Integer.toString(4) %>"> 1920x1024</sst:option>
                     </sst:select>
                   </td>
                   <td class="formError">${status.errorMessage}</td>
@@ -404,7 +478,9 @@
               <td colspan="2" align="center">
                 <input type="submit" name="save" value="<fmt:message key="common.save"/>"/>
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
-				<input type="submit" name="delete" onclick="return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="common.delete"/>"/>
+                <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
+                <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
+				<input id="deleteButton" type="submit" name="delete" onclick="return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
               </td>
               <td></td>
             </tr>

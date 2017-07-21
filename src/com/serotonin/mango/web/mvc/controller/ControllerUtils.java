@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.ui.Model;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.LocaleResolver;
@@ -70,5 +71,25 @@ public class ControllerUtils {
             model.put("prevId", userPoints.get(pointIndex - 1).getId());
         if (pointIndex < userPoints.size() - 1)
             model.put("nextId", userPoints.get(pointIndex + 1).getId());
+    }
+    
+    public static void addPointListDataToModel(User user, int pointId, Model model){
+        List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
+        int pointIndex = -1;
+        for (DataPointVO dp : allPoints) {
+            if (Permissions.hasDataPointReadPermission(user, dp)) {
+                userPoints.add(dp);
+                if (dp.getId() == pointId)
+                    pointIndex = userPoints.size() - 1;
+            }
+        }
+        model.addAttribute("userPoints", userPoints);
+
+        // Determine next and previous ids
+        if (pointIndex > 0)
+        	model.addAttribute("prevId", userPoints.get(pointIndex - 1).getId());
+        if (pointIndex < userPoints.size() - 1)
+            model.addAttribute("nextId", userPoints.get(pointIndex + 1).getId());
     }
 }

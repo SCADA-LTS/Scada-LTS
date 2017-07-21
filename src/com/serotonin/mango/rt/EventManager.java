@@ -27,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.service.UserHighestAlarmLevelListener;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.EventDao;
@@ -51,6 +52,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class EventManager implements ILifecycle {
 	private final Log log = LogFactory.getLog(EventManager.class);
 
+	private final List<UserHighestAlarmLevelListener> userHighestAlarmLevelListeners = new CopyOnWriteArrayList<UserHighestAlarmLevelListener>();
 	private final List<EventInstance> activeEvents = new CopyOnWriteArrayList<EventInstance>();
 	private EventDao eventDao;
 	private UserDao userDao;
@@ -118,6 +120,8 @@ public class EventManager implements ILifecycle {
 
 			if (Permissions.hasEventTypePermission(user, type)) {
 				eventUserIds.add(user.getId());
+				if( !suppressed && evt.isAlarm() ) 
+					notifyEventRaise(evt.getId(), user.getId(), evt.getAlarmLevel());
 				if (evt.isAlarm() && user.getReceiveAlarmEmails() > 0
 						&& alarmLevel >= user.getReceiveAlarmEmails())
 					emailUsers.add(user.getEmail());
@@ -127,7 +131,7 @@ public class EventManager implements ILifecycle {
 		if (eventUserIds.size() > 0) {
 			eventDao.insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
 			if (!suppressed && evt.isAlarm())
-				lastAlarmTimestamp = System.currentTimeMillis();
+				setLastAlarmTimestamp(System.currentTimeMillis());
 		}
 
 		if (evt.isRtnApplicable())
@@ -138,7 +142,8 @@ public class EventManager implements ILifecycle {
 					evt.getId(),
 					time,
 					0,
-					EventInstance.AlternateAcknowledgementSources.MAINTENANCE_MODE);
+					EventInstance.AlternateAcknowledgementSources.MAINTENANCE_MODE,
+					false); // no signaling of AlarmLevel change
 		else {
 			if (evt.isRtnApplicable()) {
 				if (alarmLevel > highestActiveAlarmLevel) {
@@ -201,6 +206,11 @@ public class EventManager implements ILifecycle {
 
 	public long getLastAlarmTimestamp() {
 		return lastAlarmTimestamp;
+	}
+	
+	public void setLastAlarmTimestamp(long alarmTimestamp) {
+		this.lastAlarmTimestamp = alarmTimestamp;
+		notifyAlarmTimestampChange(alarmTimestamp);
 	}
 
 	//
@@ -280,7 +290,7 @@ public class EventManager implements ILifecycle {
 
 		// Get all active events from the database.
 		activeEvents.addAll(eventDao.getActiveEvents());
-		lastAlarmTimestamp = System.currentTimeMillis();
+		setLastAlarmTimestamp(System.currentTimeMillis());
 		resetHighestAlarmLevel(lastAlarmTimestamp, true);
 	}
 
@@ -395,4 +405,41 @@ public class EventManager implements ILifecycle {
 
 		return false;
 	}
+	
+	
+	///////////////////////////////////////////////
+	// UserHighestAlarmLevelListeners registration & notifications
+	//
+	public void addUserHighestAlarmLevelListener(UserHighestAlarmLevelListener listener) {
+		userHighestAlarmLevelListeners.add(listener);
+	}
+
+	public void removeUserHighestAlarmLevelListener(UserHighestAlarmLevelListener listener) {
+		userHighestAlarmLevelListeners.remove(listener);
+	}
+	
+	public void notifyAlarmTimestampChange(long alarmTimestamp) {
+		for( UserHighestAlarmLevelListener listener: userHighestAlarmLevelListeners) {
+			listener.onAlarmTimestampChange(alarmTimestamp);
+		}
+	}
+
+	public void notifyEventRaise(int eventId, int userId, int alarmLevel) {
+		for( UserHighestAlarmLevelListener listener: userHighestAlarmLevelListeners) {
+			listener.onEventRaise(eventId, userId, alarmLevel);
+		}
+	}
+	
+	public void notifyEventAck(int eventId, int userId) {
+		for( UserHighestAlarmLevelListener listener: userHighestAlarmLevelListeners) {
+			listener.onEventAck(eventId, userId);
+		}
+	}
+
+	public void notifyEventToggle(int eventId, int userId, boolean isSilenced) {
+		for( UserHighestAlarmLevelListener listener: userHighestAlarmLevelListeners) {
+			listener.onEventToggle(eventId, userId, isSilenced);
+		}
+	}
+
 }

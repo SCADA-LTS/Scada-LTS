@@ -23,7 +23,7 @@
   <c:choose>
     <c:when test="${empty view}"><fmt:message key="${emptyMessageKey}"/></c:when>
     <c:when test="${empty view.backgroundFilename}">
-      <img id="viewBackground" src="images/spacer.gif" alt="" width="740" height="500"/>
+      <img id="viewBackground" src="images/spacer.gif" alt="" width="${view.width}" height="${view.height}"/>
     </c:when>
     <c:otherwise>
       <img id="viewBackground" src="${view.backgroundFilename}" alt=""/>

@@ -39,7 +39,12 @@ import com.serotonin.mango.Common;
 public class ScadaConfig {
 	
 	/**
-	 * Evert cacge ebaled (=true) or disabled (=false)
+	 * Replace alert enabled (=true) or disabled (=false)
+	 */
+	public static final String REPLACE_ALERT_ON_VIEW = "abilit.api.replace.alert.onview";
+	
+	/**
+	 * Event cache enabled (=true) or disabled (=false)
 	 */
 	public static final String ENABLE_CACHE = "abilit.cacheEnable";
 	
@@ -92,6 +97,11 @@ public class ScadaConfig {
 		if (instance == null) {
 			instance = new ScadaConfig();
 		}
+		return instance;
+	}
+	
+	public static ScadaConfig getInstanceTest(Properties confTest) {
+		instance = new ScadaConfig(confTest);
 		return instance;
 	}
 	
@@ -198,6 +208,10 @@ public class ScadaConfig {
 		}
 	}
 		
+	private ScadaConfig(Properties confTest) {
+		this.conf = confTest;
+	}
+
 	private static String getPathConfigFile() {
 		String fileSeparator = System.getProperty("file.separator");
 		String path = Common.ctx.getServletContext().getRealPath("");

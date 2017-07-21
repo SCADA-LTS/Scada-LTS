@@ -1,228 +1,561 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core' %>
+<%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  
-  <link href="resources/app/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-  <link href="resources/app/bower_components/fancytree/dist/skin-bootstrap/ui.fancytree.min.css" rel="stylesheet" type="text/css">
-  <link href="resources/app/bower_components/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css">
-  
-  <style type="text/css">
-		
-		/* Reduce bootstrap's default 'panel' padding: */
-		div#tree {
-			padding: 3px 5px;
-		}
-		#draggableSample, #droppableSample {
-    		height:100px;
-    		padding:0.5em;
-    		width:150px;
-    		border:1px solid #AAAAAA;
-  		}
-  		#draggableSample {
-    		background-color: silver;
-    		color:#222222;
-  		}
-  		#droppableSample {
-    		background-color: maroon;
-    		color: white;
-  		}
-  		#droppableSample.drophover {
-    		border: 1px solid green;
-  		}
-  		.menu-padding {padding-top:40px;}
-  		.dropdown-menu-right{
-  			float: left;
-  		}
-  		.btn-separator:after {
-    		content: ' ';
-    		display: block;
-    		float: left;
-    		background: #2fb34a;
-    		margin: 0 5px;
-    		height: 37px;
-    		width: 1px;
-		}
-		#mainHeader {
-			padding-top: 5px;
-			background-color: #d6d5d5;
-		}
-		.menu {
-			margin-top: 10px;
-		}
-		.logo {
-			margin: 5px;
-		}
-		
-		.margin_nav {
-  			margin-top: 5px;
-  			line-height:20px;
-  			margin-bottom: 5px;
-  			
-		}
-		.nav-pills > li > a {
-    		line-height: 1px;
-    		margin-right: 2px;
-    		padding-left: 12px;
-    		padding-right: 12px;
-		}
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<link
+	href="resources/app/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet" type="text/css">
+<link
+	href="resources/app/bower_components/fancytree/dist/skin-bootstrap/ui.fancytree.min.css"
+	rel="stylesheet" type="text/css">
+<link
+	href="resources/app/bower_components/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css"
+	rel="stylesheet" type="text/css">
+
+<style type="text/css">
+
+/* Reduce bootstrap's default 'panel' padding: */
+div#tree {
+	padding: 3px 5px;
+}
+
+#draggableSample, #droppableSample {
+	height: 100px;
+	padding: 0.5em;
+	width: 150px;
+	border: 1px solid #AAAAAA;
+}
+
+#draggableSample {
+	background-color: silver;
+	color: #222222;
+}
+
+#droppableSample {
+	background-color: maroon;
+	color: white;
+}
+
+#droppableSample.drophover {
+	border: 1px solid green;
+}
+
+.menu-padding {
+	padding-top: 40px;
+}
+
+.dropdown-menu-right {
+	float: left;
+}
+
+.btn-separator:after {
+	content: ' ';
+	display: block;
+	float: left;
+	background: #2fb34a;
+	margin: 0 5px;
+	height: 37px;
+	width: 1px;
+}
+
+#mainHeader {
+	padding-top: 5px;
+	background-color: #d6d5d5;
+}
+
+.menu {
+	margin-top: 10px;
+}
+
+.logo {
+	margin: 5px;
+}
+
+.margin_nav {
+	margin-top: 5px;
+	line-height: 20px;
+	margin-bottom: 5px;
+}
+
+.nav-pills>li>a {
+	line-height: 1px;
+	margin-right: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+}
+
+table {
+    font-size: 12px;
+    border-color: white;
+    
+}
+
+thead th {
+    background-color: #006DCC;
+    color: white;
+}
 
 </style>
-  
+
 </head>
-<body >
-<div class="container-fluid">
-	<div class="row">
-		 <table width="100%" cellspacing="0" cellpadding="0" border="0" id="mainHeader">
-		 	<tr>
-		   	<td><img id="logo" class="logo" src="assets/logo.png" alt="Logo"/></td>
-		   	<c:if test="${!simple}">
-		     		<td align="center" width="99%" id="eventsRow">
-		       		<a href="events.shtm">
-		         			<span id="__header__alarmLevelDiv" style="display:none;">
+<body onload="onloadHandler();"  onunload="onunloadHandler();" >
+	<div class="container-fluid">
+		<div class="row">
+			<table width="100%" cellspacing="0" cellpadding="0" border="0"
+				id="mainHeader">
+				<tr>
+					<td><img id="logo" class="logo" src="assets/logo.png"
+						alt="Logo" /></td>
+					<c:if test="${!simple}">
+						<td align="center" width="99%" id="eventsRow">
+						<span id="__header__MemoryInfo" style="visibility:visible;">
+							<input type="button" value="UserSessions" onclick="OnListUserSessions();">
+							<input type="button" value="SessonAttributes" onclick="OnListSessionsAttributes();">
+							<input type="button" value="WebsocketStats" onclick="OnListWebsocketStats();">
+							
+						</span>
+						<a
+							href="events.shtm"> 
+<!-- 							<span id="__header__alarmLevelDiv" -->
+<!-- 								style="display: none;"> <img id="__header__alarmLevelImg" -->
+<!-- 									src="images/spacer.gif" alt="" border="0" title="" /> <span -->
+<!-- 									id="__header__alarmLevelText"></span> -->
+<!-- 							</span> -->
+		         			<span id="__header__alarmLevelDiv" style="visibility:visible;display:visible;">
 		           			<img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
-		           			<span id="__header__alarmLevelText"></span>
+		           			<span id="__header__alarmLevelText">text</span>
 		         			</span>
-		       		</a>
-		       	</td>
-		   	</c:if>
-		   	<c:if test="${!empty instanceDescription}">
-		     		<td align="right" valign="bottom" class="projectTitle" style="padding:5px; white-space: nowrap;">${instanceDescription}</td>
-		   	</c:if>
-		 	</tr>
-		</table>
-	</div>
-	
-	<div class="row">
-		<div class="col-md-12">
-		    <nav>
-		    	<ul class="nav nav-pills margin_nav">
-		    		<c:if test="${!empty sessionUser}">
-		    		
-		    			<li role="presentation"><a href="watch_list.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.watchlists.tooltip"/>'><img src="resources/app/menu_icons/eye.png" ></a></li>
-  						<li role="presentation"><a href="views.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.graphicalviews.tooltip"/>'><img src="resources/app/menu_icons/icon_view.png" ></a></li>
-  						<li role="presentation"><a href="events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.alarms.tooltip"/>'><img src="resources/app/menu_icons/flag_white.png" ></a></li>	
-  						<li role="presentation"><a href="reports.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.reports.tooltip"/>'><img src="resources/app/menu_icons/report.png" ></a></li>
-  						
-  						<c:if test="${sessionUser.dataSourcePermission}">
-          			    	<span class="btn-separator"></span>
-            				<li role="presentation"><a href="event_handlers.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.event_handlers.tooltip"/>'><img src="resources/app/menu_icons/cog.png"/></a></li>
-            				<li role="presentation"><a href="data_sources.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.data_source.tooltip"/>'><img src="resources/app/menu_icons/icon_ds.png"/></a></li>
-            				<li role="presentation"><a href="scheduled_events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.scheduled_events.tooltip"/>'><img src="resources/app/menu_icons/clock.png"/></a></li>
-            				<li role="presentation"><a href="compound_events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.compound_event_detectors.tooltip"/>'><img src="resources/app/menu_icons/multi_bell.png"/></a></li>
-            				<li role="presentation"><a href="point_links.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_links.tooltip"/>'><img src="resources/app/menu_icons/link.png"/></a></li>
-            				<li role="presentation"><a href="scripting.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.scripting.tooltip"/>'><img src="resources/app/menu_icons/script_gear.png"/></a></li>
-            				<span class="btn-separator"></span>
-          				</c:if>
-          				
-          				<li role="presentation"><a href="users.shtm" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.users.tooltip"/>'><img src="resources/app/menu_icons/user.png"/></a></li>
-          				<c:if test="${sessionUser.admin}">
-	        				<li role="presentation"><a href="usersProfiles.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.users_profiles.tooltip"/>'><img src="resources/app/menu_icons/user_ds.png"/></a></li>
-            				<li role="presentation" class="active"><a href="pointHierarchySLTS" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.tooltip"/>'><img src="resources/app/menu_icons/folder_brick.png"/></a></li>
-            				<li role="presentation"><a href="mailing_lists.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.mailing_lists.tooltip"/>'><img src="resources/app/menu_icons/book.png"/></a></li>
-            				<li role="presentation"><a href="publishers.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.publishers.tooltip"/>'><img src="resources/app/menu_icons/transmit.png"/></a></li>
-            				<li role="presentation"><a href="maintenance_events.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.maintenance_events.tooltip"/>'><img src="resources/app/menu_icons/hammer.png"/></a></li>
-            				<li role="presentation"><a href="system_settings.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.system_setings.tooltip"/>'><img src="resources/app/menu_icons/application_form.png"/></a></li>
-            				<li role="presentation"><a href="emport.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.import_export.tooltip"/>'><img src="resources/app/menu_icons/script_code.png"/></a></li>
-            				<li role="presentation"><a href="sql.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.sql.tooltip"/>'><img src="resources/app/menu_icons/script.png"/></a></li>
-            				<span class="btn-separator"></span>
-          				</c:if>
-          			
-          				<li role="presentation"><a href="logout.htm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.logout.tooltip"/>'><img src="resources/app/menu_icons/control_stop_blue.png"></a></li>
-          				<li role="presentation"><a href="help.shtm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.help.tooltip"/>'><img src="resources/app/menu_icons/help.png"></a></li>
-		    		</c:if>
-        			<c:if test="${empty sessionUser}">
-          				<li role="presentation"><a href="login.htm" class='btn btn-xs' data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.login.tooltip"/>'><img src="resources/app/menu_icons/control_play_blue.png"></a></li>
-        			</c:if>
-        			<div class="btn-group pull-right menu">
-						<button class="btn dropdown-toggle btn-xs" data-toggle="dropdown" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.change_language.tooltip"/>'>
-							<img src="resources/app/menu_icons/world.png" alt="" >
-							<span class="caret"/>
-						</button>
-						<ul class="dropdown-menu dropdown-menu-right">
- 			    			<li><a onclick="setLocale('de')">Deutsch</a></li>
-               				<li><a onclick="setLocale('ru')">Руссиан</a></li>
-             				<li><a onclick="setLocale('fi')">Suomi</a></li>
-           					<li><a onclick="setLocale('pt')">Português</a></li>
-           					<li><a onclick="setLocale('en')">English</a></li>
-             				<li><a onclick="setLocale('lu')">Luxembourgeois</a></li>
-							<li><a onclick="setLocale('fr')">Francais</a></li>
-							<li><a onclick="setLocale('zh')">中文</a></li>
-							<li><a onclick="setLocale('nl')">Nederlands</a></li>
-							<li><a onclick="setLocale('es')">Español</a></li>
- 						</ul>
-  					</div>
-  					<div class="btn-group pull-right menu">
-            			<c:if test="${!empty sessionUser}">
-            				<a href="" class="btn btn-xs"><span><fmt:message key="header.user"/>: <b>${sessionUser.username}</b></mark></span></a>
-            	  
-            			<!-- TODO REST MiscDwr.toggleUserMuted(setUserMuted)
+						</a></td>
+					</c:if>
+					<c:if test="${!empty instanceDescription}">
+						<td align="right" valign="bottom" class="projectTitle"
+							style="padding: 5px; white-space: nowrap;">${instanceDescription}</td>
+					</c:if>
+				</tr>
+			</table>
+		</div>
+
+
+
+		<div class="row">
+			<div class="col-md-12">
+				<nav>
+					<ul class="nav nav-pills margin_nav">
+						<c:if test="${!empty sessionUser}">
+
+							<li role="presentation"><a href="watch_list.shtm"
+								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+								title='<fmt:message key="menu.watchlists.tooltip"/>'><img
+									src="resources/app/menu_icons/eye.png"></a></li>
+							<li role="presentation"><a href="views.shtm"
+								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+								title='<fmt:message key="menu.graphicalviews.tooltip"/>'><img
+									src="resources/app/menu_icons/icon_view.png"></a></li>
+							<li role="presentation"><a href="events.shtm"
+								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+								title='<fmt:message key="menu.alarms.tooltip"/>'><img
+									src="resources/app/menu_icons/flag_white.png"></a></li>
+							<li role="presentation"><a href="reports.shtm"
+								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+								title='<fmt:message key="menu.reports.tooltip"/>'><img
+									src="resources/app/menu_icons/report.png"></a></li>
+
+							<c:if test="${sessionUser.dataSourcePermission}">
+								<span class="btn-separator"></span>
+								<li role="presentation"><a href="event_handlers.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.event_handlers.tooltip"/>'><img
+										src="resources/app/menu_icons/cog.png" /></a></li>
+								<li role="presentation"><a href="data_sources.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.data_source.tooltip"/>'><img
+										src="resources/app/menu_icons/icon_ds.png" /></a></li>
+								<li role="presentation"><a href="scheduled_events.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.scheduled_events.tooltip"/>'><img
+										src="resources/app/menu_icons/clock.png" /></a></li>
+								<li role="presentation"><a href="compound_events.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.compound_event_detectors.tooltip"/>'><img
+										src="resources/app/menu_icons/multi_bell.png" /></a></li>
+								<li role="presentation"><a href="point_links.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.point_links.tooltip"/>'><img
+										src="resources/app/menu_icons/link.png" /></a></li>
+								<li role="presentation"><a href="scripting.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.scripting.tooltip"/>'><img
+										src="resources/app/menu_icons/script_gear.png" /></a></li>
+								<span class="btn-separator"></span>
+							</c:if>
+
+							<li role="presentation"><a href="users.shtm"
+								data-toggle="tooltip" data-placement="top"
+								title='<fmt:message key="menu.users.tooltip"/>'><img
+									src="resources/app/menu_icons/user.png" /></a></li>
+							<c:if test="${sessionUser.admin}">
+								<li role="presentation"><a href="usersProfiles.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.users_profiles.tooltip"/>'><img
+										src="resources/app/menu_icons/user_ds.png" /></a></li>
+								<li role="presentation" class="active"><a
+									href="pointHierarchySLTS" class='btn btn-xs'
+									data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.point_hierarchy.tooltip"/>'><img
+										src="resources/app/menu_icons/folder_brick.png" /></a></li>
+								<li role="presentation"><a href="mailing_lists.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.mailing_lists.tooltip"/>'><img
+										src="resources/app/menu_icons/book.png" /></a></li>
+								<li role="presentation"><a href="publishers.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.publishers.tooltip"/>'><img
+										src="resources/app/menu_icons/transmit.png" /></a></li>
+								<li role="presentation"><a href="maintenance_events.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.maintenance_events.tooltip"/>'><img
+										src="resources/app/menu_icons/hammer.png" /></a></li>
+								<li role="presentation"><a href="system_settings.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.system_setings.tooltip"/>'><img
+										src="resources/app/menu_icons/application_form.png" /></a></li>
+								<li role="presentation"><a href="emport.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.import_export.tooltip"/>'><img
+										src="resources/app/menu_icons/script_code.png" /></a></li>
+								<li role="presentation"><a href="sql.shtm"
+									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.sql.tooltip"/>'><img
+										src="resources/app/menu_icons/script.png" /></a></li>
+								<span class="btn-separator"></span>
+							</c:if>
+
+							<li role="presentation"><a href="logout.htm"
+								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+								title='<fmt:message key="menu.logout.tooltip"/>'><img
+									src="resources/app/menu_icons/control_stop_blue.png"></a></li>
+							<li role="presentation"><a href="help.shtm"
+								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+								title='<fmt:message key="menu.help.tooltip"/>'><img
+									src="resources/app/menu_icons/help.png"></a></li>
+						</c:if>
+						<c:if test="${empty sessionUser}">
+							<li role="presentation"><a href="login.htm"
+								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
+								title='<fmt:message key="menu.login.tooltip"/>'><img
+									src="resources/app/menu_icons/control_play_blue.png"></a></li>
+						</c:if>
+						<div class="btn-group pull-right menu">
+							<button class="btn dropdown-toggle btn-xs" data-toggle="dropdown"
+								data-toggle="tooltip" data-placement="top"
+								title='<fmt:message key="menu.change_language.tooltip"/>'>
+								<img src="resources/app/menu_icons/world.png" alt=""> <span
+									class="caret" />
+							</button>
+							<ul class="dropdown-menu dropdown-menu-right">
+								<li><a onclick="setLocale('de')">Deutsch</a></li>
+								<li><a onclick="setLocale('ru')">Руссиан</a></li>
+								<li><a onclick="setLocale('fi')">Suomi</a></li>
+								<li><a onclick="setLocale('pt')">Português</a></li>
+								<li><a onclick="setLocale('en')">English</a></li>
+								<li><a onclick="setLocale('lu')">Luxembourgeois</a></li>
+								<li><a onclick="setLocale('fr')">Francais</a></li>
+								<li><a onclick="setLocale('zh')">中文</a></li>
+								<li><a onclick="setLocale('nl')">Nederlands</a></li>
+								<li><a onclick="setLocale('es')">Español</a></li>
+								<li><a onclisk="setLocale('pl')">Polski</a></li>
+							</ul>
+						</div>
+						<div class="btn-group pull-right menu">
+							<c:if test="${!empty sessionUser}">
+								<a href="" class="btn btn-xs"><span><fmt:message
+											key="header.user" />: <b>${sessionUser.username}</b>
+									</mark></span></a>
+
+								<!-- TODO REST MiscDwr.toggleUserMuted(setUserMuted)
             				<img id="userMutedImg" class="ptr" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')" border="0" src="images/sound_none.png" title="Mute" alt="Mute" style="display: inline;">
             			-->
-            			<!-- TODO goHomeUrl()
+								<!-- TODO goHomeUrl()
             				<img src="images/house.png" alt="" title="Go to my default page" class="ptr" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')" border="0">
             			-->
-            			<!-- TODO setHomeUrl()
+								<!-- TODO setHomeUrl()
             				<img src="images/house_link.png" alt="" title="Make this my default page" class="ptr" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')" border="0">
             			-->
-          				</c:if>
-          			</div>
-				</ul>
-		    </nav>          	
-		  </div>
-	</div>
-
-  	<div class="row">
-		<div class="col-md-12">
-  			<c:if test="${!empty sessionUser}">
-  				<div class="panel panel-default" >
-					<div class="panel-heading help">
-						<b><fmt:message key="pointHierarchySLTS.pointHierarchy"/></b> <span class="glyphicon glyphicon-question-sign"></span> <span class="label label-warning">rc version of the view</span>
-	     			</div>
-	     			<div class="menu panel-heading help">
-						<div class="btn-group">
-			  				<button id="addNode" class="btn btn-success" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.add.tooltip"/>'>
-			    				<span class="glyphicon glyphicon-plus"></span>
-			  				</button>
-			  				<button id="editNode" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.edit.tooltip"/>'>
-			    				<span class="glyphicon glyphicon-pencil"></span>
-			  				</button>
-			  				<button  id="deleteNode" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.delete.tooltip"/>'>
-			    				<span class="glyphicon glyphicon-minus"></span>
-			  				</button>
-			  				<button id="reloadNode" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.refresh.tooltip"/>'>
-			    				<span class="glyphicon glyphicon-refresh"></span>
-			  				</button>
-			  				<button id="infoNode" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.info.tooltip"/>'>
-			    				<span class="glyphicon glyphicon-info-sign"></span>
-			  				</button>
+							</c:if>
 						</div>
-	     			</div>     
-					<div id="tree" class=" panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
- 				</div>
-  			</c:if>
-  		</div>
-  </div>
-  <table width="100%" cellspacing="0" cellpadding="0" border="0">
-    <tr><td colspan="2">&nbsp;</td></tr>
-    <tr>
-      <td colspan="2" class="footer" align="center">&copy;2016 <fmt:message key="footer.rightsReserved"/></td>
-    </tr>
-  </table>
-</div>
+					</ul>
+				</nav>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-12">
+				<c:if test="${!empty sessionUser}">
+				    <!-- 
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								Search
+							</h3>
+						</div>
+						<div class="panel-body hidden-print">
+						  <div class="col-sm-6">
+
+							<input name="query" id="query" autocorrect="off"
+								autocomplete="off" placeholder="Enter Search Phrase" type="text">
+							<button disabled="disabled" id="btnResetSearch"
+								class="btn btn-default btn-sm">×</button>
+							<button disabled="disabled" id="btnSearch"
+								class="btn btn-default btn-sm">Search</button>
+
+							<div class="collapse" id="searchResultPane">
+								<table tabindex="0" id="searchResultTree"
+									class="table table-striped table-hover table-condensed table-bordered fancytree-container fancytree-ext-table ">
+									<colgroup>
+										<col width="*">
+										   <col width="100px">
+										   <col width="100px">
+										<col width="100px">
+									</colgroup>
+									<thead>
+										<tr>
+										   <th>Name</th>
+										      <th>Actions</th>
+										      <th>Path</th>
+										   <th>Folder/Point</th>
+										</tr>
+									</thead>
+									<tbody>
+										
+									</tbody>
+									
+								</table>
+							</div>
+						   </div>
+						   <div class=".col-sm-6">
+						   </div>
+						</div>
+					</div> -->
+					
+					<div class="panel panel-default">
+						<div class="panel-heading help">
+							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b> <span
+								class="glyphicon glyphicon-question-sign"></span> <span
+								class="label label-warning">rc version of the view</span>
+						</div>
+						<div class="menu panel-heading help">
+							<div class="btn-group">
+								<button id="addNode" class="btn btn-success"
+									data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.point_hierarchy.add.tooltip"/>'>
+									<span class="glyphicon glyphicon-plus"></span>
+								</button>
+								<button id="editNode" class="btn btn-warning"
+									data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.point_hierarchy.edit.tooltip"/>'>
+									<span class="glyphicon glyphicon-pencil"></span>
+								</button>
+								<button id="deleteNode" class="btn btn-danger"
+									data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.point_hierarchy.delete.tooltip"/>'>
+									<span class="glyphicon glyphicon-minus"></span>
+								</button>
+								<button id="reloadNode" class="btn btn-primary"
+									data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.point_hierarchy.refresh.tooltip"/>'>
+									<span class="glyphicon glyphicon-refresh"></span>
+								</button>
+								<button id="infoNode" class="btn btn-primary"
+									data-toggle="tooltip" data-placement="top"
+									title='<fmt:message key="menu.point_hierarchy.info.tooltip"/>'>
+									<span class="glyphicon glyphicon-info-sign"></span>
+								</button>
+							</div>
+						</div>
+						<div id="tree"
+							class=" panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
+					</div>
+				</c:if>
+			</div>
+		</div>
+		<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="footer" align="center">&copy;2016 <fmt:message
+						key="footer.rightsReserved" /></td>
+			</tr>
+		</table>
+	</div>
 </body>
 
 <script src="resources/app/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="resources/app/bower_components/jquery-ui/jquery-ui.min.js"></script>
-<script src="resources/app/bower_components/bootstrap/dist/js/bootstrap.min.js"></script> 
-<script src="resources/app/bower_components/fancytree/dist/jquery.fancytree-all.min.js"></script>
-<script src="resources/app/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
+<script
+	src="resources/app/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script
+	src="resources/app/bower_components/fancytree/dist/jquery.fancytree-all.min.js"></script>
+<script
+	src="resources/app/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
+<script src="resources/sockjs-0.3.4.js"></script>
+<script src="resources/stomp.js"></script>
 
 <script>
+"use strict";
+
+var header = { init: "1" };
+header.onLoad = function() {
+        //header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
+};
+
+
     
+
+
+ var headers = {
+		 login: 'admin',
+		 passcode: 'passcode',
+		 client_id: '564389'
+ } ;
+ 
+var stompClient = null;
+
+
+
+
+var connectCallback = function(frame) {
+    	console.log('Connected: ' + frame);
+    	stompClient.subscribe('/topic/alarmLevel', function(message) {
+        	console.log("message[/topic/alarmLevel]:" + message.body);
+    	});
+    	stompClient.subscribe("/ws/alarmLevel/register", function(message) {
+    		console.log("message[/ws/alarmLevel/register]:" + message.body);
+    		stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
+    			var response = JSON.parse(message.body);
+    			var alarmLevel = parseInt(response.alarmlevel);
+    			console.log("response.alarmLevel: "+response.alarmlevel);
+   		        if (alarmLevel > 0) {
+   		            document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
+   		            setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
+   		            setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
+   		            document.getElementById("__header__alarmLevelDiv").style.visibility = "visible";
+   		        	document.getElementById("__header__alarmLevelImg").style.visibility = "visible";
+   		        }
+   		        else {
+   		            document.getElementById("__header__alarmLevelText").innerHTML = "";
+   		        	document.getElementById("__header__alarmLevelImg").style.visibility = "hidden";
+   		            document.getElementById("__header__alarmLevelDiv").style.visibility =  "hidden";
+   		        }
+    		})
+    		stompClient.send("/ws/alarmLevel", {priority: 1}, "Hello, Spring STOMP - gimme my alarmLevel");
+    	} );
+    	stompClient.send("/ws/alarmLevel", {priority: 9}, "Hello, Spring STOMP");
+    	
+    	stompClient.subscribe("/ws/listusers", function(message) {
+    		console.log("message[/ws/listusers]:" + message.body);
+    	} );
+
+    	stompClient.subscribe("/ws/session", function(message) {
+    		console.log("message[/ws/session]:" + message.body);
+    	} );
+
+};
+    
+    
+function setAlarmLevelImg(alarmLevel, imgNode) {
+    if (alarmLevel == 0)
+        updateImg(imgNode, "images/flag_green.png", "undef", false, "none");
+    else if (alarmLevel == 1)
+        updateImg(imgNode, "images/flag_blue.png", "undef", true, "visisble");
+    else if (alarmLevel == 2)
+        updateImg(imgNode, "images/flag_yellow.png", "undef", true, "visisble");
+    else if (alarmLevel == 3)
+        updateImg(imgNode, "images/flag_orange.png", "undef", true, "visisble");
+    else if (alarmLevel == 4)
+        updateImg(imgNode, "images/flag_red.png", "undef", true, "visisble");
+    else
+        updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
+}
+
+function setAlarmLevelText(alarmLevel, textNode) {
+    textNode = document.getElementById(textNode);
+    if (alarmLevel == 0)
+        textNode.innerHTML = "";
+    else if (alarmLevel == 1)
+        textNode.innerHTML = "info";
+    else if (alarmLevel == 2)
+        textNode.innerHTML = "urgent";
+    else if (alarmLevel == 3)
+        textNode.innerHTML = "critical";
+    else if (alarmLevel == 4)
+        textNode.innerHTML = "lifeSafety";
+    else
+        textNode.innerHTML = "Unknown: "+ alarmLevel;
+}
+    
+function updateImg(imgNode, src, text, visible, styleType) {
+    imgNode = document.getElementById(imgNode);
+    //if (visible) {
+        imgNode.style.display = styleType;
+        if (src)
+            imgNode.src = src;
+        if (text) {
+            imgNode.title = text;
+            imgNode.alt = text;
+        }
+    //}
+    //else
+    //    imgNode.style.display = 'none';
+}
+
+var errorCallback = function(error) {
+	alert("Connect error:" + error);
+}
+
+function connect(url) {
+    var socket = new SockJS(url);
+    stompClient = Stomp.over(socket);  
+    stompClient.heartbeat.outgoing = 20000;
+    stompClient.heartbeat.incoming = 0;
+    stompClient.connect(headers,  connectCallback, errorCallback);
+}
+
+function disconnect() {
+    if(stompClient != null) {
+    	console.log("Disconnecting...");
+        stompClient.disconnect(function(){
+        	console.log("Disconnected");
+        	alert("Disconnected");
+        	stompClient = null;
+        });
+    }
+}
+
+
+function OnListUserSessions() {
+	stompClient.subscribe("/ws/listusers", function(message) {
+		console.log("message[/ws/listusers]:\n" + message.body);
+	} );
+}
+
+function OnListSessionsAttributes() {
+	stompClient.subscribe("/ws/session", function(message) {
+		console.log("message[/ws/session]:\n" + message.body);
+	} );
+}
+
+function OnListWebsocketStats() {
+	stompClient.send("/ws/websocketStats", function(message) {
+		console.log("message[/ws/websocketStats]:\n" + message.body);
+	} );
+}
+
+
 
 var messages = {
   move: "<fmt:message key="pointHierarchySLTS.move"/>",
@@ -285,20 +618,76 @@ var messages = {
 	var nodeDragAndDrop;
 	var newNode;
 	
+	var pathArray = location.href.split( '/' );
+    var protocol = pathArray[0];
+    var host = pathArray[2];
+    var port = '<c:out value="${appPort}"/>';
+    var appScada = '<c:out value="${appName}"/>';
+    var url = protocol + '//' + host;
+    var myLocation;
+    if (!myLocation) {
+ 	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
+    }
+
+    
+    function onloadHandler() {
+    	// connecting to server websocket endpoint...
+       connect(myLocation + '/ws/alarmLevel');
+    }
+
+    function onunloadHandler() {
+   	   disconnect();
+   	}
+
+    
+	/* function selectTree(key, folder) {
+    	console.log("selectTree:"+key+" folder:"+folder);
+    	 //var tree = $("#tree").fancytree("getTree");
+         //var d = tree.toDict(true);
+         //alert(JSON.stringify(d));
+    	$.ajax({
+            type: "GET",
+        	dataType: "json",
+        	url:myLocation+"/pointHierarchy/paths/"+key+"/"+folder, 
+        	success: function(msg){
+        		var path="/";
+        		if (msg.length>0) {
+        			console.log(msg);
+        			var node=undefined;
+        			for (var i=msg.length-1;i>=0;i--) {
+        				console.log(key);
+        		    	console.log(folder);
+        		    	console.log(msg[i]);
+        		    	if (node==undefined) {
+        		    		node = $("#tree").fancytree("getTree").activateKey(""+msg[i].key);
+        		    	} else {
+        		    		node.activateKey(""+msg[i].key)
+        		    	}
+        		    	if (node.isFolder) {
+        		    		node.toggleExpanded();
+        		    	}
+        		    }
+        		}
+        	},
+        	error: function(XMLHttpRequest, textStatus, errorThrown) {
+        	  console.log(textStatus);
+        	}
+        });
+    };*/
+
+    var pageGlobal=1;
+    var pageStart=0;
+    
+    
+    function pages(page) {
+    	console.log(page);
+    	pageGlobal=page;
+    	$("#btnSearch").click();
+    };
+    
+    
     $(function () {
     	$('[data-toggle="tooltip"]').tooltip();
-    	
-    	var pathArray = location.href.split( '/' );
-        var protocol = pathArray[0];
-        var host = pathArray[2];
-        var port = '<c:out value="${appPort}"/>';
-        var appScada = '<c:out value="${appName}"/>';
-        var url = protocol + '//' + host;
-        var myLocation;
-        if (!myLocation) {
-     	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
-        }
-
     	var getParentId = function(node) {
     		if (node != undefined) {
       		  var parentId=0;
@@ -770,7 +1159,7 @@ var messages = {
                });     
     	   }
 		});
-    	setLocale=function(locale) {
+    	var setLocale=function(locale) {
     		 $.ajax({
 		            type: "POST",
 		        	dataType: "json",
@@ -791,8 +1180,147 @@ var messages = {
 		                    }]
 		                })     
 		        	}
+    		});
+    	};
+    
+	    // search
+	    
+	    var queryGlobal="";
+	    
+	    
+        function updateControls() {
+        	var queryGlobal = $.trim($("input[name=query]").val());
+        	$("#btnResetSearch")
+        		.attr("disabled", queryGlobal.length === 0);
+        	$("#btnSearch")
+        		.attr("disabled", queryGlobal.length < 2);
+        };
+        
+        function createPagination() {
+        	$('#searchResultTree > tbody').append('<tr><td colspan="2">'+
+        			'<nav aria-label="Page navigation">'+
+      	  				'<ul class="pagination" style="margin:0px;">'+
+      	    				'<li>'+
+      	      					'<a onclick="if (pageStart>0) { pageStart=(parseInt(pageStart)-parseInt(5)); pages(5); }" aria-label="Previous">'+
+      	        					'<span aria-hidden="true">&laquo;</span>'+
+      	      					'</a>'+
+      	    				'</li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(1))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(1))+')">'+(parseInt(pageStart)+parseInt(1))+'</a></li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(2))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(2))+')">'+(parseInt(pageStart)+parseInt(2))+'</a></li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(3))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(3))+')">'+(parseInt(pageStart)+parseInt(3))+'</a></li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(4))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(4))+')">'+(parseInt(pageStart)+parseInt(4))+'</a></li>'+
+      	    				'<li id="page'+(parseInt(pageStart)+parseInt(5))+'"><a onclick="pages('+(parseInt(pageStart)+parseInt(5))+')">'+(parseInt(pageStart)+parseInt(5))+'</a></li>'+
+      	    				'<li>'+
+      	      					'<a onclick="pageStart=(parseInt(pageStart)+parseInt(5));pages(pageStart+1);" aria-label="Next">'+
+      	        					'<span aria-hidden="true">&raquo;</span>'+
+      	      					'</a>'+
+      	    				'</li>'+
+      	  				'</ul>'+
+      				'</nav>'+
+      			'</td></tr>');	
+        	$("li[id^=page]").removeClass("active");
+    		$('#page'+pageGlobal).addClass("active");
+        }
+        
+        function setElement(element, index, array) {
+        	$('#searchResultTree > tbody > tr').remove();
+        	for( var i=0; i<array.length;i++) {
+        		var folderOrPoint="";
+        		if (array[i].folder) {
+        			folderOrPoint="<span class='fancytree-custom-icon glyphicon glyphicon-book'></span>";
+        		} else {
+        			folderOrPoint="<span class='fancytree-icon glyphicon glyphicon-file'></span>";
+        		}
+        		
+        		$('#searchResultTree > tbody').append('<tr>'+
+        				'<td>'+array[i].title+'</td>'+
+        				//'<td><button onclick="selectTree('+array[i].key+','+array[i].folder+')" class="btn btn-warning btn-xs">Select</button></td>'+
+        				//'<td id="path_'+array[i].key+'_'+array[i].folder+'"></td>'+
+        				'<td>'+folderOrPoint+'</td></tr>');
+        	}
+        };
+        
+        
+        	            
+        function search(query, page) {
+        	queryGlobal=$.trim(query);
+        	console.log(queryGlobal);
+        	console.log(page);
+        	$.ajax({
+	            type: "GET",
+	        	dataType: "json",
+	        	url:myLocation+"/pointHierarchy/find/"+queryGlobal+"/"+page, 
+	        	success: function(msg){
+	        		
+	        	  	if(msg !== undefined ) {
+	        	  		$("#searchResultTree").addClass("busy");
+	        	  		$('#searchResultTree > tbody > tr').remove();
+	        	  		msg.forEach(setElement);
+	        	  		createPagination();
+	        	  		$("#searchResultPane").collapse("show");
+	        	  	} else {
+	        	  		$('#searchResultTree > tbody > tr').remove();
+	        	  		$("li[id^=page]").removeClass("active");
+	        	  		createPagination();
+	        	  	}
+	        	},
+	        	error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        		$('#searchResultTree > tbody > tr').remove();
+                	$('#searchResultTree > tbody').append('<tr><td>empty</td><td></td><td>empty</td></tr>');
+	        	  	console.log(textStatus);
+	        	}
+	        }); 
+        	// Store the source options for optional paging
+        	$("#searchResultTree").addClass("busy");
+        };
+        
+        
+        
+	    $("input[name=query]").keyup(function(e){
+	    	
+	    	queryGlobal = $.trim($(this).val()); 
+	    	var lastQuery = $(this).data("lastQuery");
+	
+	    	if(e && e.which === $.ui.keyCode.ESCAPE || queryGlobal === ""){
+	    		$("#btnResetSearch").click();
+	    		console.log("btnResetSearch");
+	    		pageGlobal=1;
+	    		return;
+	    	}
+	    	if(e && e.which === $.ui.keyCode.ENTER && queryGlobal.length >= 2){
+	    		pageGlobal=1;
+	    		$("#btnSearch").click();
+	    		console.log("btnSearch.click");
+	    		return;
+	    	}
+	    	if( queryGlobal === lastQuery || queryGlobal.length < 2) {
+	    		console.log("Ignored query '" + queryGlobal + "'");
+	    		return;
+	    	}
+	    	pageGlobal=1;
+	    	$(this).data("lastQuery", queryGlobal);
+	    	
+	    	$("#btnSearch").click();
+	    	
+	    	$("#btnResetSearch").attr("disabled", queryGlobal.length === 0);
+	    	$("#btnSearch").attr("disabled", queryGlobal.length < 2);
+	    	
+	    }).focus();
+	    
+    	$("#btnResetSearch").click(function(e){
+    		$("#searchResultPane").collapse("hide");
+    		$("input[name=query]").val("");
+    		//searchResultTree.clear();
+    		updateControls();
     	});
-    };
+
+    	$("#btnSearch").click(function(event){
+    		console.log(pageGlobal);
+    		search(	$("input[name=query]").val(), pageGlobal );
+    	}).attr("disabled", true);
+
     });
+    
+    
     </script>
 </html>

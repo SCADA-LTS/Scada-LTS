@@ -9,7 +9,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
-import com.serotonin.mango.db.dao.SystemSettingsDao;
+import org.scada_lts.dao.SystemSettingsDAO;
 
 @JsonRemoteEntity
 public class SystemSettingsJSONWrapper implements JsonSerializable {
@@ -20,9 +20,9 @@ public class SystemSettingsJSONWrapper implements JsonSerializable {
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 
-		Set<Entry<String, Object>> defaultValues = SystemSettingsDao.DEFAULT_VALUES
+		Set<Entry<String, Object>> defaultValues = SystemSettingsDAO.DEFAULT_VALUES
 				.entrySet();
-		SystemSettingsDao dao = new SystemSettingsDao();
+		SystemSettingsDAO dao = new SystemSettingsDAO();
 
 		for (Entry<String, Object> entry : defaultValues) {
 			if (entry.getValue() instanceof Integer) {
@@ -40,9 +40,9 @@ public class SystemSettingsJSONWrapper implements JsonSerializable {
 	public void jsonDeserialize(JsonReader reader, JsonObject json)
 			throws JsonException {
 
-		Set<Entry<String, Object>> defaultValues = SystemSettingsDao.DEFAULT_VALUES
+		Set<Entry<String, Object>> defaultValues = SystemSettingsDAO.DEFAULT_VALUES
 				.entrySet();
-		SystemSettingsDao dao = new SystemSettingsDao();
+		SystemSettingsDAO dao = new SystemSettingsDAO();
 
 		for (Entry<String, Object> entry : defaultValues) {
 			String key = entry.getKey();
