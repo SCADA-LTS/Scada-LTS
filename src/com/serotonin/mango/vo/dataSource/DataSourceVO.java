@@ -85,6 +85,17 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
 		Serializable, Cloneable, JsonSerializable, ChangeComparable<T> {
+	/**
+	 * DataSourceType enum 
+	 * Display and create a new DataSurce types
+	 * 
+	 * NAME(DataSouceID, DataSourceKey, DataSource display) {
+	 *  @Overiride
+	 *  public DataSourceVO<?> createDataSource() {
+	 *   return new NAMEDataSourceVO();
+	 *   }
+	 *  }
+	 */
 	public enum Type {
 		EBI25(16, "dsEdit.ebi25", false) {
 			@Override
