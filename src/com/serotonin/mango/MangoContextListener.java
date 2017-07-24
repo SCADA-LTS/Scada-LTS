@@ -452,17 +452,20 @@ public class MangoContextListener implements ServletContextListener {
 	
 	/**
 	 * RuntimeManagerInitialize
+	 * 
 	 * Initialize the web-application.
-	 * Allows to run the Scada-LTS in safe mode with disabled DataSources
-	 * by changing the property in env.properites file
+	 * Allows to run the Scada-LTS in safe mode with disabled DataSources 
+	 * by changing the "abilit.disableDataSourcesOnServerStart" property 
+	 * in WEB-INF/classes/env.properites file to "TRUE" or "FALSE"
 	 * @param ctx - servlet context
 	 */
+	@SuppressWarnings("deprecation")
 	private void runtimeManagerInitialize(ServletContext ctx) {
 		RuntimeManager rtm = new RuntimeManager();
 		ctx.setAttribute(Common.ContextKeys.RUNTIME_MANAGER, rtm);
 
 		// Check for safe mode enabled from env.properties file.
-		boolean safe = Boolean.parseBoolean(Common.getEnvironmentProfile().getString("abilit.safeModeEnable"));
+		boolean safe = Boolean.parseBoolean(Common.getEnvironmentProfile().getString("abilit.disableDataSourcesOnServerStart"));
 		if (safe) {
 			// Indicate that we're in safe mode.
 			StringBuilder sb = new StringBuilder();
@@ -473,8 +476,8 @@ public class MangoContextListener implements ServletContextListener {
 			sb.append("* Mango M2M is starting in safe mode. All data sources, *\r\n");
 			sb.append("* point links, scheduled events, compound events, and   *\r\n");
 			sb.append("* publishers will be disabled. To disable safe mode,    *\r\n");
-			sb.append("* change the property in env.properties safeModeEnable  *\r\n");
-			sb.append("* to \"false\".                                         *\r\n");
+			sb.append("* change the property in env.properties:                *\r\n");
+			sb.append("* abilit.disableDataSourcesOnServerStart to \"false\".  *\r\n");
 			sb.append("*                                                       *\r\n");
 			sb.append("* To find all objects that were automatically disabled, *\r\n");
 			sb.append("* search for Audit Events on the alarms page.           *\r\n");
