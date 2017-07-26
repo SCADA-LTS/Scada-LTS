@@ -58,37 +58,42 @@ public class PointValueDAO4REST {
 		if (typePointValueOfREST==PointValueTypeOfREST.TYPE_BINARY) {
 			if (value.equals(interpretationBinaryValueTrueOfREST)) {
 				pvt = new PointValueTime(true, new Date().getTime() );
-			    new PointValueDAO().createNoTransaction(dpid, DataTypes.BINARY, 1, new Date().getTime());
+
 			} else if (value.equals(interpretationBinaryValueFalseOfREST)) {
 				pvt = new PointValueTime(false, new Date().getTime() );
-			    new PointValueDAO().createNoTransaction(dpid, DataTypes.BINARY, 0, new Date().getTime());
 			} else {
 			   new RuntimeException("Value not compatible with type (binary)");
 			}
 		} else if (typePointValueOfREST==PointValueTypeOfREST.TYPE_MULTISTATE) {
 			try {
 				pvt = new PointValueTime(Integer.parseInt(value), new Date().getTime() );
-				new PointValueDAO().createNoTransaction(dpid, DataTypes.MULTISTATE, Integer.parseInt(value), new Date().getTime());
 			} catch (NumberFormatException e) {
 				new RuntimeException("Value not compatible with type (multistate)");
 			}
 		} else if (typePointValueOfREST==PointValueTypeOfREST.TYPE_DOUBLE) {
 			try {
 				pvt = new PointValueTime(Double.parseDouble(value), new Date().getTime() );
-				new PointValueDAO().createNoTransaction(dpid, DataTypes.NUMERIC, Double.parseDouble(value), new Date().getTime());
 			} catch (NumberFormatException e) {
 				new RuntimeException("Value not compatible with type (double)");
 			}
 		} else if (typePointValueOfREST==PointValueTypeOfREST.TYPE_STRING) {
+			
 			pvt = new PointValueTime(value, new Date().getTime() );
 			Object[] resultPointValue = new PointValueDAO().createNoTransaction(dpid, DataTypes.ALPHANUMERIC, 0, new Date().getTime());
 			PointValueAdnnotation pva = new PointValueAdnnotation();
 			Long pointValueId = (Long) resultPointValue[0];
 			pva.setPointValueId(pointValueId);
 			pva.setSourceType(DataTypes.ALPHANUMERIC);
-			pva.setTextPointValueLong(value);
-			pva.setTextPointValueShort(value);
-			Object[] resultPointValueAdnnotation = new PointValueAdnnotationsDAO().create(pva);
+			
+			int lengthShortValue = 128; 
+			if (value.length()<=lengthShortValue) {
+			    pva.setTextPointValueShort(value);
+			} else {
+				pva.setTextPointValueLong(value);
+			}
+			
+			new PointValueAdnnotationsDAO().create(pva);
+			
 			if (LOG.isTraceEnabled()) {
 				LOG.trace("save data string:" + dpid);
 			}
