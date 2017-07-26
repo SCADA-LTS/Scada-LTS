@@ -465,7 +465,7 @@ public class MangoContextListener implements ServletContextListener {
 		ctx.setAttribute(Common.ContextKeys.RUNTIME_MANAGER, rtm);
 
 		// Check for safe mode enabled from env.properties file.
-		boolean safe = Boolean.parseBoolean(Common.getEnvironmentProfile().getString("abilit.disableDataSourcesOnServerStart"));
+		boolean safe =  Common.getEnvironmentProfile().getBoolean("abilit.disableDataSourcesOnServerStart", false);
 		if (safe) {
 			// Indicate that we're in safe mode.
 			StringBuilder sb = new StringBuilder();
