@@ -1,0 +1,79 @@
+$theme_main_color: green;
+$theme_main_color_light: #2CB32C;
+$theme_main_color_dark: #004100;
+$header_font_size: 25px;
+$card_height: 60px;
+
+main-theme {
+    background-color: $theme_main_color;
+}
+
+.mdl-card {
+    width: 100%;
+    min-height: 20px;
+}
+
+.mdl-layout__header {
+    background-color: $theme_main_color;
+}
+.button-color {
+    color: white;
+    background-color: $theme_main_color;
+    &:hover {
+        background-color: $theme_main_color_light;
+    }
+
+}
+.mdl-card__actions {
+    img {
+        display: block;
+        width: 100%;
+        
+    }
+}
+.mdl-switch {
+    display: unset;
+}
+.mdl-switch.is-checked .mdl-switch__thumb {
+    background-color: $theme_main_color;
+}
+.mdl-switch.is-checked .mdl-switch__track {
+    background-color: rgba(0, 128, 0, 0.5);
+}
+.mdl-layout-title , #clock{
+    margin-top: 10px;
+    display: inline-block;
+    width: 100%;
+    color: white;
+    font-size: $header_font_size;
+    font-weight: bold;
+    text-align: center;
+    background-color: $theme_main_color;
+}
+#clock {
+    margin-bottom: 15px;
+}
+.logo {
+    position: fixed;
+    margin: 10px;
+    right: 20px;
+    top: 0px;
+    display: inline;
+
+}
+.center-element {
+    width: 20%;
+    text-align: center;
+    margin: 0 auto;
+
+    @media screen and (max-width: 840px) {
+        width: 100%;
+
+    }
+
+    h2 {
+        margin-right: 20px;
+    }
+
+}
+//840px

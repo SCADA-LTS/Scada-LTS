@@ -1,0 +1,60 @@
+main-theme {
+  background-color: green; }
+
+.mdl-card {
+  width: 100%;
+  min-height: 20px; }
+
+.mdl-layout__header {
+  background-color: green; }
+
+.button-color {
+  color: white;
+  background-color: green; }
+  .button-color:hover {
+    background-color: #2CB32C; }
+
+.mdl-card__actions img {
+  display: block;
+  width: 100%; }
+
+.mdl-switch {
+  display: unset; }
+
+.mdl-switch.is-checked .mdl-switch__thumb {
+  background-color: green; }
+
+.mdl-switch.is-checked .mdl-switch__track {
+  background-color: rgba(0, 128, 0, 0.5); }
+
+.mdl-layout-title, #clock {
+  margin-top: 10px;
+  display: inline-block;
+  width: 100%;
+  color: white;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+  background-color: green; }
+
+#clock {
+  margin-bottom: 15px; }
+
+.logo {
+  position: fixed;
+  margin: 10px;
+  right: 20px;
+  top: 0px;
+  display: inline; }
+
+.center-element {
+  width: 20%;
+  text-align: center;
+  margin: 0 auto; }
+  @media screen and (max-width: 840px) {
+    .center-element {
+      width: 100%; } }
+  .center-element h2 {
+    margin-right: 20px; }
+
+/*# sourceMappingURL=style.css.map */

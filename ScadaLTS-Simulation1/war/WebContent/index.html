@@ -1,0 +1,400 @@
+
+<html>
+
+<head>
+    <title>Recy Kunden Zähel</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="ScadaLTS garbage dump - recycle center">
+    <meta name="keywords" content="ScadaLTS, Scada, SIVEC">
+    <meta name="author" content="Radek Jajko">
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="login()">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header mdl-layout_header--scroll">
+            <div class="mdl-layout_header-row">
+
+                <span class="mdl-layout-title">Recy Kunden Zähel</span>
+                <span id="clock"></span>
+                <span class="logo">
+                    <img src="text48.png" alt="Sivec">
+                </span>
+            </div>
+
+        </header>
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">RECY</span>
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link" href="">OPTION</a>
+            </nav>
+        </div>
+        <main class="mdl-layout__content">
+            <!-- Location section -->
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--12-col">
+                    <div class="mdl-card mdl-shadow--2dp card-short">
+                        <header>
+                            <div class="mdl-card__title center-element">
+                                <h2 class="mdl-card__title-text">Schließen</h2>
+                                <div class="mdl-card--border">
+                                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
+                            <input type="checkbox" id="switch-1" class="mdl-switch__input" checked>
+                            <span class="mdl-switch__label"></span>
+                        </label>
+                                </div>
+                            </div>
+                        </header>
+                    </div>
+
+                </div>
+
+                <!-- Single responsive element -->
+                <div class="mdl-cell mdl-cell--4-col">
+                    <div class="mdl-card wide-card mdl-shadow--2dp">
+                        <header>
+                            <div class="mdl-card__title">
+                                <h2 class="mdl-card__title-text">Esch</h2>
+                            </div>
+                        </header>
+                        <section>
+                            <div class="mdl-card__supporting-text">
+                                <div class="mdl-grid">
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Verg. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2#/h
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. Tg:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        4
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+                        <footer>
+                            <div class="mdl-card__actions mdl-card--border">
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"><i class="material-icons">add</i>Increment</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+                <!-- Single responsive element -->
+                <div class="mdl-cell mdl-cell--4-col">
+                    <div class="mdl-card wide-card mdl-shadow--2dp">
+                        <header>
+                            <div class="mdl-card__title">
+                                <h2 class="mdl-card__title-text">Mondercange</h2>
+                            </div>
+                        </header>
+                        <section>
+                            <div class="mdl-card__supporting-text">
+                                <div class="mdl-grid">
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Verg. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2#/h
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. Tg:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        4
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+                        <footer>
+                            <div class="mdl-card__actions mdl-card--border">
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"><i class="material-icons">add</i>Increment</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+                <!-- Single responsive element -->
+                <div class="mdl-cell mdl-cell--4-col">
+                    <div class="mdl-card wide-card mdl-shadow--2dp">
+                        <header>
+                            <div class="mdl-card__title">
+                                <h2 class="mdl-card__title-text">Reckange</h2>
+                            </div>
+                        </header>
+                        <section>
+                            <div class="mdl-card__supporting-text">
+                                <div class="mdl-grid">
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Verg. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2#/h
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. Tg:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        4
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+                        <footer>
+                            <div class="mdl-card__actions mdl-card--border">
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"><i class="material-icons">add</i>Increment</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+                <!-- Single responsive element -->
+                <div class="mdl-cell mdl-cell--4-col">
+                    <div class="mdl-card wide-card mdl-shadow--2dp">
+                        <header>
+                            <div class="mdl-card__title">
+                                <h2 class="mdl-card__title-text">Sanem</h2>
+                            </div>
+                        </header>
+                        <section>
+                            <div class="mdl-card__supporting-text">
+                                <div class="mdl-grid">
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Verg. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2#/h
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. Tg:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        4
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+                        <footer>
+                            <div class="mdl-card__actions mdl-card--border">
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"><i class="material-icons">add</i>Increment</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+                <!-- Single responsive element -->
+                <div class="mdl-cell mdl-cell--4-col">
+                    <div class="mdl-card wide-card mdl-shadow--2dp">
+                        <header>
+                            <div class="mdl-card__title">
+                                <h2 class="mdl-card__title-text">Schifflange</h2>
+                            </div>
+                        </header>
+                        <section>
+                            <div class="mdl-card__supporting-text">
+                                <div class="mdl-grid">
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Verg. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2#/h
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. Tg:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        4
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+                        <footer>
+                            <div class="mdl-card__actions mdl-card--border">
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"><i class="material-icons">add</i>Increment</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+                <!-- Single responsive element -->
+                <div class="mdl-cell mdl-cell--4-col">
+                    <div class="mdl-card wide-card mdl-shadow--2dp">
+                        <header>
+                            <div class="mdl-card__title">
+                                <h2 class="mdl-card__title-text">CIGL</h2>
+                            </div>
+                        </header>
+                        <section>
+                            <div class="mdl-card__supporting-text">
+                                <div class="mdl-grid">
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Verg. St:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        2#/h
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        Akt. Tg:
+                                    </div>
+                                    <div class="mdl-cell mdl-cell--6-col">
+                                        4
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+                        <footer>
+                            <div class="mdl-card__actions mdl-card--border">
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick='incrementDP("DP_822413")'><i class="material-icons">add</i>Increment</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdl-cell mdl-cell--12-col">
+                <div class="mdl-card mdl-shadow--2dp card-short">
+                    <header>
+                        <div class="mdl-card__title center-element">
+                            <h2 class="mdl-card__title-text">Gesamt Tag: <span> 32</span></h2>
+                        </div>
+                    </header>
+
+                </div>
+
+            </div>
+            <!-- Camera section -->
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--6-col">
+                    <div class="mdl-card image-card mdl-shadow--2dp">
+                        <div class="mdl-card__title mdl-card--expand"></div>
+                        <div class="mdl-card__actions">
+                            <img id="liveStream" src="http://zm.sivec.lu/cgi-bin/nph-zms?mode=jpeg&amp;monitor=14&amp;scale=40%&amp;maxfps=1&amp;buffer=1000&amp;user=loge&amp;pass=loge"
+                                alt="Portal">
+                        </div>
+                    </div>
+                </div>
+                <div class="mdl-cell mdl-cell--6-col">
+                    <div class="mdl-card image-card mdl-shadow--2dp">
+                        <div class="mdl-card__title mdl-card--expand"></div>
+                        <div class="mdl-card__actions">
+                            <img id="liveStream" src="http://zm.sivec.lu/cgi-bin/nph-zms?mode=jpeg&amp;monitor=15&amp;scale=40%&amp;maxfps=1&amp;buffer=1000&amp;user=loge&amp;pass=loge"
+                                alt="Portal">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <footer class="mdl-mini-footer">
+                <div class="mdl-mini-footer__left-section">
+                    <div class="mdl-logo">
+                        Copyright &copy; 2017 ScadaLTS ver. 0.0.8-dev All Rights Reserved
+                    </div>
+                </div>
+            </footer>
+
+        </main>
+    </div>
+</body>
+
+<script>
+    function startTime() {
+        var today = new Date();
+        var d = today.getDate();
+        var mo = today.getMonth();
+        var y = today.getFullYear();
+        var h = today.getHours();
+        var m = today.getMinutes();
+        var s = today.getSeconds();
+        d = chceckTime(d);
+        mo = chceckTime(mo);
+        h = chceckTime(h);
+        m = chceckTime(m);
+        s = chceckTime(s);
+
+        document.getElementById("clock").innerHTML =
+            d + "-" + mo + "-" + y + "  " + h + ":" + m + ":" + s;
+
+        var t = setTimeout(startTime, 500);
+
+    }
+
+    function chceckTime(i) {
+        if (i < 10) {
+            i = "0" + i
+        }
+        return i;
+    }
+
+    /*
+     *
+     */
+
+    function login() {
+        $.get("../ScadaBR/api/auth/admin/admin", function (data) {
+            alert(data);
+        });
+
+        startTime();
+    }
+
+    function incementDP(id) {
+        $.ajax({
+            type: "POST",
+            url: "../ScadaBR/api/point_value/setValue/" + id + "/1/" + 2,
+            contentType: "application/text;charset=utf-8",
+            dataType: "json",
+            success: function (data) { alert("succsess") },
+            error: function (ts) { alert(ts.responseText) }
+
+        });
+    }
+
+</script>
+
+</html>
