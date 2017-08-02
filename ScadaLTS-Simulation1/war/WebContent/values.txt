@@ -1,0 +1,7 @@
+    var mainTitle = "Recy Kunden Zähel";
+    var navTitle = "Recy";
+    var cardTitles = ["Esch", "Mondercange", "Reckange", "Sanem", "Schifflange", "CIGL"];
+    var logoSrc = "text48.png";
+    var cameraSrc = ["http://zm.sivec.lu/cgi-bin/nph-zms?mode=jpeg&amp;monitor=14&amp;scale=40%&amp;maxfps=1&amp;buffer=1000&amp;user=loge&amp;pass=loge",
+                    "http://zm.sivec.lu/cgi-bin/nph-zms?mode=jpeg&amp;monitor=15&amp;scale=40%&amp;maxfps=1&amp;buffer=1000&amp;user=loge&amp;pass=loge"];
+

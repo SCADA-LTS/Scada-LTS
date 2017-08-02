@@ -12,7 +12,6 @@
     <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -21,16 +20,16 @@
         <header class="mdl-layout__header mdl-layout_header--scroll">
             <div class="mdl-layout_header-row">
 
-                <span class="mdl-layout-title">Simulation Model View</span>
+                <span id="mainTitle" class="mdl-layout-title"></span>
                 <span id="clock"></span>
                 <span class="logo">
-                    <!-- <img src="text48.png" alt="Sivec"> -->
+                    <img id="logoSrc" src="" alt="Logo">
                 </span>
             </div>
 
         </header>
         <div class="mdl-layout__drawer">
-            <span class="mdl-layout-title">RECY</span>
+            <span id="navTitle" class="mdl-layout-title"></span>
             <nav class="mdl-navigation">
                 <a class="mdl-navigation__link" href="">OPTION</a>
             </nav>
@@ -42,6 +41,7 @@
                     <div class="mdl-card mdl-shadow--2dp card-short">
                         <header>
                             <div class="mdl-card__title center-element">
+                                <h2 class="mdl-card__title-text">Gesamt Tag: <span id="allEntires"> 32</span></h2>
                                 <h2 class="mdl-card__title-text">Schließen</h2>
                                 <div class="mdl-card--border">
                                     <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
@@ -52,7 +52,6 @@
                             </div>
                         </header>
                     </div>
-
                 </div>
 
                 <!-- Single responsive element -->
@@ -60,7 +59,7 @@
                     <div class="mdl-card wide-card mdl-shadow--2dp">
                         <header>
                             <div class="mdl-card__title">
-                                <h2 class="mdl-card__title-text">Location 1</h2>
+                                <h2 id="cardTitle1" class="mdl-card__title-text"></h2>
                             </div>
                         </header>
                         <section>
@@ -70,19 +69,19 @@
                                         Akt. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-st1" class="data">2</span>
+                                        <span id="akt-st1" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Verg. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="verg-st1" class="data">2#/h</span>
+                                        <span id="verg-st1" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Akt. Tg:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-tg1" class="data">4</span>
+                                        <span id="akt-tg1" class="data">0</span>
                                     </div>
                                 </div>
 
@@ -100,7 +99,7 @@
                     <div class="mdl-card wide-card mdl-shadow--2dp">
                         <header>
                             <div class="mdl-card__title">
-                                <h2 class="mdl-card__title-text">Location 2</h2>
+                                <h2 id="cardTitle2" class="mdl-card__title-text"></h2>
                             </div>
                         </header>
                         <section>
@@ -110,19 +109,19 @@
                                         Akt. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-st2" class="data">2</span>
+                                        <span id="akt-st2" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Verg. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="verg-st2" class="data">2#/h</span>
+                                        <span id="verg-st2" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Akt. Tg:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-tg2" class="data">4</span>
+                                        <span id="akt-tg2" class="data">0</span>
                                     </div>
                                 </div>
 
@@ -140,7 +139,7 @@
                     <div class="mdl-card wide-card mdl-shadow--2dp">
                         <header>
                             <div class="mdl-card__title">
-                                <h2 class="mdl-card__title-text">Location 3</h2>
+                                <h2 id="cardTitle3" class="mdl-card__title-text"></h2>
                             </div>
                         </header>
                         <section>
@@ -150,19 +149,19 @@
                                         Akt. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-st3" class="data">2</span>
+                                        <span id="akt-st3" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Verg. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="verg-st3" class="data">2#/h</span>
+                                        <span id="verg-st3" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Akt. Tg:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-tg3" class="data">4</span>
+                                        <span id="akt-tg3" class="data">0</span>
                                     </div>
                                 </div>
 
@@ -180,7 +179,7 @@
                     <div class="mdl-card wide-card mdl-shadow--2dp">
                         <header>
                             <div class="mdl-card__title">
-                                <h2 class="mdl-card__title-text">Location 4</h2>
+                                <h2 id="cardTitle4" class="mdl-card__title-text"></h2>
                             </div>
                         </header>
                         <section>
@@ -190,19 +189,19 @@
                                         Akt. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-st4" class="data">2</span>
+                                        <span id="akt-st4" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Verg. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="verg-st4" class="data">2#/h</span>
+                                        <span id="verg-st4" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Akt. Tg:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-tg4" class="data">4</span>
+                                        <span id="akt-tg4" class="data">0</span>
                                     </div>
                                 </div>
 
@@ -220,7 +219,7 @@
                     <div class="mdl-card wide-card mdl-shadow--2dp">
                         <header>
                             <div class="mdl-card__title">
-                                <h2 class="mdl-card__title-text">Location 5</h2>
+                                <h2 id="cardTitle5" class="mdl-card__title-text"></h2>
                             </div>
                         </header>
                         <section>
@@ -230,19 +229,19 @@
                                         Akt. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-st5" class="data">2</span>
+                                        <span id="akt-st5" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Verg. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="verg-st5" class="data">2#/h</span>
+                                        <span id="verg-st5" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Akt. Tg:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-tg5" class="data">4</span>
+                                        <span id="akt-tg5" class="data">0</span>
                                     </div>
                                 </div>
 
@@ -260,7 +259,7 @@
                     <div class="mdl-card wide-card mdl-shadow--2dp">
                         <header>
                             <div class="mdl-card__title">
-                                <h2 class="mdl-card__title-text">Location 6</h2>
+                                <h2 id="cardTitle6" class="mdl-card__title-text"></h2>
                             </div>
                         </header>
                         <section>
@@ -270,19 +269,19 @@
                                         Akt. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-st6" class="data">2</span>
+                                        <span id="akt-st6" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Verg. St:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="verg-st6" class="data">2#/h</span>
+                                        <span id="verg-st6" class="data">0</span>
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
                                         Akt. Tg:
                                     </div>
                                     <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="akt-tg6" class="data">4</span>
+                                        <span id="akt-tg6" class="data">0</span>
                                     </div>
                                 </div>
 
@@ -296,25 +295,14 @@
                     </div>
                 </div>
             </div>
-
-            <div class="mdl-cell mdl-cell--12-col">
-                <div class="mdl-card mdl-shadow--2dp card-short">
-                    <header>
-                        <div class="mdl-card__title center-element">
-                            <h2 class="mdl-card__title-text">Gesamt Tag: <span id="allEntires"> 32</span></h2>
-                        </div>
-                    </header>
-
-                </div>
-
-            </div>
             <!-- Camera section -->
             <div class="mdl-grid">
                 <div class="mdl-cell mdl-cell--6-col">
                     <div class="mdl-card image-card mdl-shadow--2dp">
                         <div class="mdl-card__title mdl-card--expand"></div>
                         <div class="mdl-card__actions">
-                            
+                            <img id="liveStream1" src=""
+                                alt="Camera1">
                         </div>
                     </div>
                 </div>
@@ -322,7 +310,8 @@
                     <div class="mdl-card image-card mdl-shadow--2dp">
                         <div class="mdl-card__title mdl-card--expand"></div>
                         <div class="mdl-card__actions">
-                            
+                            <img id="liveStream2" src=""
+                                alt="Camera2">
                         </div>
                     </div>
                 </div>
@@ -344,8 +333,39 @@
 <!-- id="verg-stX" Average hour count -->
 <!-- id="akt-tgX" Current day count   -->
 <script>
+    
     var date = new Date().getTime() - 43200000;
 
+    //---------------------------------//
+    //    Initialization variables     //
+    //---------------------------------//
+    var mainTitle = "Page Title";
+    var navTitle = "Navigation";
+    var cardTitles = ["Location 1", "Location 1", "Location 1", "Location 1", "Location 1", "Location 1"];
+    var logoSrc = "logo.png";
+    var cameraSrc = ["http://cam1",
+        "http://cam2"];
+
+
+    function init() {
+        document.getElementById("mainTitle").innerHTML = mainTitle;
+        document.getElementById("navTitle").innerHTML = navTitle;
+
+        document.getElementById("cardTitle1").innerHTML = cardTitles[0];
+        document.getElementById("cardTitle2").innerHTML = cardTitles[1];
+        document.getElementById("cardTitle3").innerHTML = cardTitles[2];
+        document.getElementById("cardTitle4").innerHTML = cardTitles[3];
+        document.getElementById("cardTitle5").innerHTML = cardTitles[4];
+        document.getElementById("cardTitle6").innerHTML = cardTitles[5];
+
+        document.getElementById("logoSrc").setAttribute('src', logoSrc);
+        document.getElementById("liveStream1").setAttribute('src', cameraSrc[0]);
+        document.getElementById("liveStream2").setAttribute('src', cameraSrc[1]);
+    }
+
+    /**
+     * Run JS Clock on top of the page
+     */
     function startTime() {
         var today = new Date();
         var d = today.getDate();
@@ -363,9 +383,7 @@
         document.getElementById("clock").innerHTML =
             d + "-" + mo + "-" + y + "  " + h + ":" + m + ":" + s;
 
-
         var t = setTimeout(startTime, 500);
-
 
     }
 
@@ -377,20 +395,27 @@
     }
 
     /*
-     *
+     * SCADA Functions
      */
-     var allEntires = [];
+    var allEntires = [];
 
-    function login() {
-        //TODO: Zmieniać to za każdym razem!
-        $.get("../ScadaBR/api/auth/pass/administrator", function (data) {
-            alert(data);
+    function login(username, password) {
+        $.get("../ScadaBR/api/auth/"+ username + "/" + password, function (data) {
+            console.log(data);
         });
+
+        init();
 
         startTime();
         updateView();
     }
 
+    /**
+     * Increment DataPoint value
+     * Add another one value to data point with "xid" whitch is double type DS
+     * @param xid - DastaPoint unique xid
+     * @param htmlid - HTML Location Card ID number
+     */
     function incrementDP(xid, htmlid) {
 
         $.ajax({
@@ -417,7 +442,7 @@
 
         var now = new Date().getTime();
         var hour = now - 3600000;
-        var twoHours = now - 3600000*2;
+        var twoHours = now - 3600000 * 2;
         var day = now - (hour * 12);
 
         var hour_points = [];
@@ -443,7 +468,6 @@
             }
 
             allEntires[htmlid] = day_points.length;
-
             document.getElementById("akt-st" + htmlid).innerHTML = hour_points.length;
             document.getElementById("verg-st" + htmlid).innerHTML = last_hour_points.length;
             document.getElementById("akt-tg" + htmlid).innerHTML = day_points.length;
@@ -466,8 +490,8 @@
         updateCardData("DP_969596", '2');
         updateCardData("DP_643745", '1');
 
-        allData = allEntires.reduce((pv, cv) => pv+cv, 0);
-        document.getElementById("allEntires").innerHTML = allData;
+        allEntires2 = allEntires.reduce((pv, cv) => pv + cv, 0);
+        document.getElementById("allEntires").innerHTML = allEntires2;
 
         var t = setTimeout(updateView, 2000);
     }
