@@ -380,6 +380,39 @@ public class PointValueAPI {
 		}
 	}
 	
+	/**
+	 * @param xid
+	 * @param type  (0 - binary, 1 - multistate, 2 - double, 3 - string)
+	 * @param value (for binary [0,1]
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/api/point_value/setValue/{xid}/{type}/{value}", method = RequestMethod.GET)
+	public ResponseEntity<String> setValueGet(
+			@PathVariable("xid") String xid,
+			@PathVariable("type") int type,
+			@PathVariable("value") String value,  
+			HttpServletRequest request) {
+		
+		LOG.info("/api/point_value/setValue/{xid}/{type}/{value} xid:"+xid+" type:"+type+" value:"+value);
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				
+				dataPointService.save(value, xid, type);
+												
+				return new ResponseEntity<String>(value,HttpStatus.OK);
+			}
+			
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 
 	
 	/**
