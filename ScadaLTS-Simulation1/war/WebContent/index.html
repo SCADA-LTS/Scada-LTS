@@ -12,6 +12,7 @@
     <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -89,7 +90,7 @@
                         </section>
                         <footer>
                             <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"><i class="material-icons">add</i>Increment</button>
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('DP_643745','1')"><i class="material-icons">add</i>Increment</button>
                             </div>
                         </footer>
                     </div>
@@ -129,7 +130,7 @@
                         </section>
                         <footer>
                             <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"><i class="material-icons">add</i>Increment</button>
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('DP_969596','2')"><i class="material-icons">add</i>Increment</button>
                             </div>
                         </footer>
                     </div>
@@ -169,7 +170,7 @@
                         </section>
                         <footer>
                             <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"><i class="material-icons">add</i>Increment</button>
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('DP_842922','3')"><i class="material-icons">add</i>Increment</button>
                             </div>
                         </footer>
                     </div>
@@ -209,7 +210,7 @@
                         </section>
                         <footer>
                             <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"><i class="material-icons">add</i>Increment</button>
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('DP_934891','4')"><i class="material-icons">add</i>Increment</button>
                             </div>
                         </footer>
                     </div>
@@ -249,7 +250,7 @@
                         </section>
                         <footer>
                             <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="updateView()"><i class="material-icons">add</i>Increment</button>
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('DP_249754','5')"><i class="material-icons">add</i>Increment</button>
                             </div>
                         </footer>
                     </div>
@@ -289,7 +290,7 @@
                         </section>
                         <footer>
                             <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('DP_822413')"><i class="material-icons">add</i>Increment</button>
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('DP_822413','6')"><i class="material-icons">add</i>Increment</button>
                             </div>
                         </footer>
                     </div>
@@ -300,7 +301,7 @@
                 <div class="mdl-card mdl-shadow--2dp card-short">
                     <header>
                         <div class="mdl-card__title center-element">
-                            <h2 class="mdl-card__title-text">Gesamt Tag: <span> 32</span></h2>
+                            <h2 class="mdl-card__title-text">Gesamt Tag: <span id="allEntires"> 32</span></h2>
                         </div>
                     </header>
 
@@ -345,6 +346,8 @@
 <!-- id="verg-stX" Average hour count -->
 <!-- id="akt-tgX" Current day count   -->
 <script>
+    var date = new Date().getTime() - 43200000;
+
     function startTime() {
         var today = new Date();
         var d = today.getDate();
@@ -362,9 +365,9 @@
         document.getElementById("clock").innerHTML =
             d + "-" + mo + "-" + y + "  " + h + ":" + m + ":" + s;
 
-        
+
         var t = setTimeout(startTime, 500);
-        
+
 
     }
 
@@ -378,9 +381,11 @@
     /*
      *
      */
+     var allEntires = [];
 
     function login() {
-        $.get("../ScadaBR/api/auth/x/x", function (data) {
+        //TODO: Zmieniać to za każdym razem!
+        $.get("../ScadaBR/api/auth/admin/admin", function (data) {
             alert(data);
         });
 
@@ -388,33 +393,85 @@
         updateView();
     }
 
-    function incrementDP(xid) {
+    function incrementDP(xid, htmlid) {
+
         $.ajax({
             type: "POST",
-            url: "../ScadaBR/api/point_value/setValue/" + xid + "/1/2.0",
+            url: "../ScadaBR/api/point_value/setValue/" + xid + "/2/1",
             contentType: "application/text;charset=utf-8",
             dataType: "json",
-            success: function (data) { alert("succsess") },
+            success: function (data) {
+                console.log("succsess!" + xid)
+            },
             error: function (ts) { alert(ts.responseText) }
+        });
+
+    }
+
+    /**
+     * UpdateCardData
+     * Get from the server by REST api values to single data point
+     * @param xid - DataPoint xid
+     * @param htmlid - HTML Location Card ID number
+     */
+
+    function updateCardData(xid, htmlid) {
+
+        var now = new Date().getTime();
+        var hour = now - 3600000;
+        var twoHours = now - 3600000*2;
+        var day = now - (hour * 12);
+
+        var hour_points = [];
+        var last_hour_points = [];
+        var day_points = [];
+
+        $.get("../ScadaBR/api/point_value/getValuesFromTime/" + date + "/" + xid, function (data) {
+
+            var dataObjG = JSON.parse(data);
+
+            for (x in dataObjG.values) {
+                var xis = dataObjG.values[x].ts;
+                if (xis > hour) {
+                    hour_points.push(dataObjG.values[x].value);
+                    // console.log("Data: " + dataObjG.values[x].value);
+                }
+                if (xis > twoHours && xis < hour) {
+                    last_hour_points.push(dataObjG.values[x].value);
+                }
+                if (xis > day) {
+                    day_points.push(dataObjG.values[x].value);
+                }
+            }
+
+            allEntires[htmlid] = day_points.length;
+
+            document.getElementById("akt-st" + htmlid).innerHTML = hour_points.length;
+            document.getElementById("verg-st" + htmlid).innerHTML = last_hour_points.length;
+            document.getElementById("akt-tg" + htmlid).innerHTML = day_points.length;
 
         });
     }
-    function updateData(xid, htmlid){
-        $.get("../ScadaBR/api/point_value/getValue/" + xid, function(data) {
-            // console.log(JSON.parse(data).value);
-            document.getElementById(htmlid).innerHTML = JSON.parse(data).value;
-            });
-    }
 
-    function updateView(){
-        updateData("DP_822413",'akt-st6');
-        updateData("DP_249754",'akt-st5');
-        updateData("DP_934891",'akt-st4');
-        updateData("DP_842922",'akt-st3');
-        updateData("DP_969596",'akt-st2');
-        updateData("DP_643745",'akt-st1');
+    /**
+     * Update HTML View 
+     * Refresh data in every card by running updateCardData()
+     * method fore each card.
+     */
+    function updateView() {
 
-        var t = setTimeout(updateView, 1000);
+        console.log(date);
+        updateCardData("DP_822413", '6');
+        updateCardData("DP_249754", '5');
+        updateCardData("DP_934891", '4');
+        updateCardData("DP_842922", '3');
+        updateCardData("DP_969596", '2');
+        updateCardData("DP_643745", '1');
+
+        allData = allEntires.reduce((pv, cv) => pv+cv, 0);
+        document.getElementById("allEntires").innerHTML = allData;
+
+        var t = setTimeout(updateView, 2000);
     }
 
 </script>
