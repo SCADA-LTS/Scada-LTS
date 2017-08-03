@@ -1,5 +1,9 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300|Oswald);
 main-theme {
   background-color: green; }
+
+.mdl-cell {
+  float: left; }
 
 .mdl-card {
   width: 100%;
@@ -42,10 +46,16 @@ main-theme {
 
 .logo {
   position: fixed;
-  margin: 10px;
-  right: 20px;
-  top: 0px;
-  display: inline; }
+  max-height: 80px;
+  margin-left: 20px;
+  left: 35%;
+  top: 3px; }
+  @media screen and (max-width: 1366px) {
+    .logo {
+      left: 25%; } }
+  @media screen and (max-width: 840px) {
+    .logo {
+      left: 10%; } }
 
 .center-element {
   width: 60%;

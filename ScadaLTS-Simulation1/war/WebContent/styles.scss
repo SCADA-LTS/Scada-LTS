@@ -4,8 +4,13 @@ $theme_main_color_dark: #004100;
 $header_font_size: 25px;
 $card_height: 60px;
 
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300|Oswald);
+
 main-theme {
     background-color: $theme_main_color;
+}
+.mdl-cell {
+    float: left;
 }
 
 .mdl-card {
@@ -53,13 +58,19 @@ main-theme {
 #clock {
     margin-bottom: 15px;
 }
+
 .logo {
     position: fixed;
-    margin: 10px;
-    right: 20px;
-    top: 0px;
-    display: inline;
-
+    max-height: 80px;
+    margin-left: 20px;
+    left: 35%;
+    top: 3px;
+    @media screen and (max-width: 1366px) {
+        left: 25%;
+    }
+    @media screen and (max-width: 840px) {
+        left: 10%;
+    }
 }
 .center-element {
     width: 60%;
