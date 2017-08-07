@@ -90,6 +90,26 @@
                 </footer>
             </div>
         </main>
+        
+                <dialog id="dialog" class="mdl-dialog">
+            <h3 class="mdl-dialog__title">Edit element</h3>
+            <div class="mdl-dialog__content">
+                <div class="mdl-textfield mdl-js-textfield">
+                    <input id="nameField" class="mdl-textfield__input" type="text" id="fname">
+                    <label class="mdl-textfield__label" for="fname">Name...</label>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield">
+                    <input id="xidField" class="mdl-textfield__input" type="text" id="fxid">
+                    <label class="mdl-textfield__label" for="fxid">Data Point XID...</label>
+                </div>
+            </div>
+            <div class="mdl-dialog__actions">
+                <button type="button" class="mdl-button">Close</button>
+                <button type="button" class="mdl-button" onclick="saveData()">Save</button>
+                <!-- <button type="button" class="mdl-button" disabled>Disabled action</button> -->
+            </div>
+        </dialog>
+        
     </div>
 </body>
 
@@ -139,6 +159,30 @@
                 title: "Location 6",
                 dataPointXID: "DP_843430"
             },
+            {
+                title: "Location 7",
+                dataPointXID: "DP_260255"
+            },
+            {
+                title: "Location 8",
+                dataPointXID: "DP_260255"
+            },
+            {
+                title: "Location 9",
+                dataPointXID: "DP_260255"
+            },
+            {
+                title: "Location 10",
+                dataPointXID: "DP_843430"
+            },
+            {
+                title: "Location 11",
+                dataPointXID: "DP_843430"
+            },
+            {
+                title: "Location 12",
+                dataPointXID: "DP_843430"
+            }
         ]
 
     }
@@ -147,9 +191,11 @@
 
     var username;
     var password;
+    
+    var currentLocation = 0;
 
     for (var i = 1; i <= cardsData.card.length; i++) {
-        $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div>').appendTo('#locationsection');
+    	$('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
     }
 
     /**
@@ -229,6 +275,16 @@
             }, 0
         );
     }
+    
+    (function () {
+        'use strict';
+        var dialogButton = document.querySelector('.dialog-button');
+
+        dialog.querySelector('button:not([disabled])')
+            .addEventListener('click', function () {
+                dialog.close();
+            });
+    }());
 
     /*
      * SCADA Functions
@@ -439,6 +495,30 @@
 
         request.checked = false;
         postCheckBox(request);
+
+    }
+    
+    function editLocation(x) {
+        currentLocation = x;
+        var dialog = document.querySelector('#dialog');
+        if (!dialog.showModal) {
+            dialogPolyfill.registerDialog(dialog);
+        }
+        dialog.showModal();
+
+        document.getElementById('nameField').value = cardsData.card[currentLocation - 1].title;
+        document.getElementById('xidField').value = cardsData.card[currentLocation - 1].dataPointXID;
+
+    }
+
+    function saveData() {
+        var nameField = document.getElementById('nameField').value;
+        var xidField = document.getElementById('xidField').value;
+
+        cardsData.card[currentLocation - 1].title = nameField;
+        cardsData.card[currentLocation - 1].dataPointXID = xidField;
+
+        document.getElementById("cardTitle" + currentLocation).innerHTML = cardsData.card[currentLocation - 1].title;
 
     }
 
