@@ -42,7 +42,7 @@
                         <header>
                             <div class="mdl-card__title">
                                 <div class="mdl-cell mdl-cell--6-col">
-                                    <h2 class="mdl-card__title-text"><span id="current-day-all-label"></span><span id="allEntires"> 0</span></h2>
+                                    <h2 class="mdl-card__title-text"><i class="material-icons">people</i><span id="current-day-all-label"></span><span id="allEntires"> 0</span></h2>
                                 </div>
                                 <div class="mdl-cell mdl-cell--6-col">
                                     <h2 class="mdl-card__title-text"><span id="enable-switch-label"></span></h2>
@@ -94,11 +94,11 @@
                 <dialog id="dialog" class="mdl-dialog">
             <h3 class="mdl-dialog__title">Edit element</h3>
             <div class="mdl-dialog__content">
-                <div class="mdl-textfield mdl-js-textfield">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <input id="nameField" class="mdl-textfield__input" type="text" id="fname">
                     <label class="mdl-textfield__label" for="fname">Name...</label>
                 </div>
-                <div class="mdl-textfield mdl-js-textfield">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <input id="xidField" class="mdl-textfield__input" type="text" id="fxid">
                     <label class="mdl-textfield__label" for="fxid">Data Point XID...</label>
                 </div>
@@ -146,42 +146,6 @@
             {
                 title: "Location 3",
                 dataPointXID: "DP_260255"
-            },
-            {
-                title: "Location 4",
-                dataPointXID: "DP_843430"
-            },
-            {
-                title: "Location 5",
-                dataPointXID: "DP_843430"
-            },
-            {
-                title: "Location 6",
-                dataPointXID: "DP_843430"
-            },
-            {
-                title: "Location 7",
-                dataPointXID: "DP_260255"
-            },
-            {
-                title: "Location 8",
-                dataPointXID: "DP_260255"
-            },
-            {
-                title: "Location 9",
-                dataPointXID: "DP_260255"
-            },
-            {
-                title: "Location 10",
-                dataPointXID: "DP_843430"
-            },
-            {
-                title: "Location 11",
-                dataPointXID: "DP_843430"
-            },
-            {
-                title: "Location 12",
-                dataPointXID: "DP_843430"
             }
         ]
 
@@ -195,7 +159,7 @@
     var currentLocation = 0;
 
     for (var i = 1; i <= cardsData.card.length; i++) {
-    	$('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
+    	$('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">schedule </i><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">restore</i><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">today</i><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
     }
 
     /**
@@ -368,8 +332,6 @@
         });
     }
 
-
-
     /**
      * Update HTML View 
      * Refresh data in every card by running updateCardData()
@@ -378,14 +340,10 @@
     function updateView() {
 
         //console.log(date);
-        updateCardData('6');
-        updateCardData('5');
-        updateCardData('4');
-        updateCardData('3');
-        updateCardData('2');
-        updateCardData('1');
+        for (var i = 1; i <= cardsData.card.length; i++) {
+        	updateCardData(i);
+        }
         checkCheckBox();
-
 
         allEntires2 = allEntires.reduce((pv, cv) => pv + cv, 0);
         document.getElementById("allEntires").innerHTML = allEntires2;
