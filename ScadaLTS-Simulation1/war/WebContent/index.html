@@ -65,14 +65,13 @@
                         <header>
                             <div class="mdl-card__title">
                                 <h2 class="mdl-card__title-text">Add a new location</h2>
-                                
+
                             </div>
-                            <div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--fad button-color"
-                                    onclick="addCard()"><i class="material-icons">add</i></button>
+                            <div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--fad button-color" onclick="addCard()"><i class="material-icons">add</i></button>
                             </div>
                         </header>
                         <section>
-                            
+
                         </section>
                     </div>
                 </div>
@@ -161,6 +160,7 @@
      * Init
      * Initialization of webContent - values and names loading;
      */
+    var firstRun = true;
     function init() {
 
         document.getElementById("mainTitle").innerHTML = viewConfiguration.mainTitle;
@@ -193,6 +193,11 @@
         password = url.searchParams.get("pass");
 
         login(username, password);
+        if (firstRun) {
+            loadConfigFromServer();
+            firstRun = false;
+        }
+
 
     }
 
@@ -369,19 +374,27 @@
      */
     function addCard() {
 
-        
+        if (cardsData === null) {
+            var newCardsData = {
+                card: [{
+                    title: "Location 1",
+                    dataPointXID: "DP_260255"
+                }]
+            };
+            cardsData = newCardsData;
+        }
         cardsData.card.push({
-            title:"Name...",
+            title: "Name...",
             dataPointXID: "DP_260255"
         });
         var i = cardsData.card.length;
         $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="deleteLocation(' + i + ')"><i class="material-icons">delete</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">schedule </i><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">restore</i><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">today</i><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color increment-btn" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
         editLocation(i);
         init();
-        
-        
+
+
     }
-    
+
     /**
      * Edit Location
      * Edit location data - name and datasource xid
@@ -412,6 +425,7 @@
 
         document.getElementById("cardTitle" + currentLocation).innerHTML = cardsData.card[currentLocation - 1].title;
 
+        saveConfigToServer();
     }
 
     /**
@@ -421,16 +435,16 @@
      */
     function deleteLocation(x) {
 
-        cardsData.card.splice(x-1,1);
+        cardsData.card.splice(x - 1, 1);
         $('#locationsection').empty();
 
         for (var i = 1; i <= cardsData.card.length; i++) {
-        $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="deleteLocation(' + i + ')"><i class="material-icons">delete</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">schedule </i><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">restore</i><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">today</i><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color increment-btn" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
+            $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="deleteLocation(' + i + ')"><i class="material-icons">delete</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">schedule </i><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">restore</i><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">today</i><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color increment-btn" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
         }
 
+        saveConfigToServer();
+
         init();
-
-
     }
 
     /**
@@ -445,7 +459,6 @@
 
             var x = (JSON.parse(data).value == 'true');
             changeSwitch(x);
-
 
         });
     }
@@ -531,6 +544,55 @@
         request.checked = false;
         postCheckBox(request);
 
+    }
+
+    /**
+     * save Configuration to Server
+     * Send a POST to special alphanumeric DataPoint in ScadaLts
+     * with configured JSON string.
+     */
+    function saveConfigToServer() {
+
+        var xid = viewConfiguration.configLocationDSxid;
+
+        var savedData = JSON.stringify(cardsData);
+        savedData = encodeURI(savedData);
+
+        $.ajax({
+            type: "POST",
+            url: "../ScadaBR/api/point_value/setValue/" + xid + "/3/" + savedData,
+            contentType: "application/text;charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (ts) { alert("DataPoint not found!\n - Error during establishing connection") }
+        });
+
+    }
+
+    /**
+     * Load Configuration from Server
+     * Get a data from server DataSource with JSON configuration data
+     * Parse this data and save as local variable  
+     */
+    function loadConfigFromServer() {
+
+        var xid = viewConfiguration.configLocationDSxid;
+
+        $.get("../ScadaBR/api/point_value/getValue/" + xid, function (data) {
+
+            console.log(data);
+
+            var recivedValue = JSON.parse(decodeURI(data)).value;
+            cardsData = JSON.parse(recivedValue);
+
+            $('#locationsection').empty();
+            for (var i = 1; i <= cardsData.card.length; i++) {
+                $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="deleteLocation(' + i + ')"><i class="material-icons">delete</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">schedule </i><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">restore</i><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">today</i><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color increment-btn" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
+            }
+            init();
+        });
     }
 
 </script>

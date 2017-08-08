@@ -9,6 +9,7 @@
                         <include name="*.js"/>
                         <include name="*.css"/>
                     	<include name="*.png"/>
+                    	<include name="./resources/*"/>
                     </fileset>
         </copy>
         
