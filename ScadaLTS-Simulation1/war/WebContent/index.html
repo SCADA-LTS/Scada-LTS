@@ -347,8 +347,8 @@
     }
 
     /**
-     * ChangeSwitch
-     * @param x - enable/disable button
+     * editEnabled
+     * Open edit menu and show invisible buttons;
      */
     var editEnabled = false;
     function editView() {
@@ -363,6 +363,10 @@
 
     }
 
+    /**
+     * addCard
+     * add a new location card and open dialog.
+     */
     function addCard() {
 
         
@@ -377,7 +381,44 @@
         
         
     }
+    
+    /**
+     * Edit Location
+     * Edit location data - name and datasource xid
+     */
+    function editLocation(x) {
+        currentLocation = x;
+        var dialog = document.querySelector('#dialog');
+        if (!dialog.showModal) {
+            dialogPolyfill.registerDialog(dialog);
+        }
+        dialog.showModal();
 
+        document.getElementById('nameField').value = cardsData.card[currentLocation - 1].title;
+        document.getElementById('xidField').value = cardsData.card[currentLocation - 1].dataPointXID;
+
+    }
+
+    /**
+     * Save Data
+     * Accept changes and save to memory.
+     */
+    function saveData() {
+        var nameField = document.getElementById('nameField').value;
+        var xidField = document.getElementById('xidField').value;
+
+        cardsData.card[currentLocation - 1].title = nameField;
+        cardsData.card[currentLocation - 1].dataPointXID = xidField;
+
+        document.getElementById("cardTitle" + currentLocation).innerHTML = cardsData.card[currentLocation - 1].title;
+
+    }
+
+    /**
+     * deleteLocation
+     * Remove from view location card and refresh view
+     * @param x - current location
+     */
     function deleteLocation(x) {
 
         cardsData.card.splice(x-1,1);
@@ -390,7 +431,7 @@
         init();
 
 
-    } 
+    }
 
     /**
      * Check CheckBox state
@@ -451,21 +492,16 @@
             number = 1;
         }
 
-        $.post(
-            "../ScadaBR/api/point_value/setValue/" + xid + "/0/" + number, function (data) {
+        $.ajax({
+            type: "POST",
+            url: "../ScadaBR/api/point_value/setValue/" + xid + "/0/" + number,
+            contentType: "application/text;charset=utf-8",
+            dataType: "json",
+            success: function (data) {
                 console.log(data);
-            }
-        );
-        // $.ajax({
-        //     type: "POST",
-        //     url: "../ScadaBR/api/point_value/setValue/" + xid + "/0/" + globalType,
-        //     contentType: "application/text;charset=utf-8",
-        //     dataType: "json",
-        //     success: function (data) {
-        //         console.log(data);
-        //     },
-        //     error: function (ts) { alert("DataPoint not found!\n - Error during establishing connection") }
-        // });
+            },
+            error: function (ts) { alert("DataPoint not found!\n - Error during establishing connection") }
+        });
 
     }
 
@@ -494,30 +530,6 @@
 
         request.checked = false;
         postCheckBox(request);
-
-    }
-
-    function editLocation(x) {
-        currentLocation = x;
-        var dialog = document.querySelector('#dialog');
-        if (!dialog.showModal) {
-            dialogPolyfill.registerDialog(dialog);
-        }
-        dialog.showModal();
-
-        document.getElementById('nameField').value = cardsData.card[currentLocation - 1].title;
-        document.getElementById('xidField').value = cardsData.card[currentLocation - 1].dataPointXID;
-
-    }
-
-    function saveData() {
-        var nameField = document.getElementById('nameField').value;
-        var xidField = document.getElementById('xidField').value;
-
-        cardsData.card[currentLocation - 1].title = nameField;
-        cardsData.card[currentLocation - 1].dataPointXID = xidField;
-
-        document.getElementById("cardTitle" + currentLocation).innerHTML = cardsData.card[currentLocation - 1].title;
 
     }
 
