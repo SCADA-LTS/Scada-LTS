@@ -36,7 +36,7 @@
         </div>
         <main class="mdl-layout__content">
             <!-- Location section -->
-            <div class="mdl-grid">
+            <div id=locationsection class="mdl-grid">
                 <div class="mdl-cell mdl-cell--12-col">
                     <div class="mdl-card mdl-shadow--2dp card-short">
                         <header>
@@ -57,276 +57,38 @@
                         </header>
                     </div>
                 </div>
-
-                <!-- Single responsive element -->
-                <div class="mdl-cell mdl-cell--4-col">
-                    <div class="mdl-card wide-card mdl-shadow--2dp">
-                        <header>
-                            <div class="mdl-card__title">
-                                <h2 id="cardTitle1" class="mdl-card__title-text"></h2>
-                            </div>
-                        </header>
-                        <section>
-                            <div class="mdl-card__supporting-text">
-                                <div class="mdl-grid">
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-hour-data-1" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="previous-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="previous-hour-data-1" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-day-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-day-data-1" class="data">0</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </section>
-                        <footer>
-                            <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('1')"><i class="material-icons">add</i>Increment</button>
-                            </div>
-                        </footer>
-                    </div>
-                </div>
-                <!-- Single responsive element -->
-                <div class="mdl-cell mdl-cell--4-col">
-                    <div class="mdl-card wide-card mdl-shadow--2dp">
-                        <header>
-                            <div class="mdl-card__title">
-                                <h2 id="cardTitle2" class="mdl-card__title-text"></h2>
-                            </div>
-                        </header>
-                        <section>
-                            <div class="mdl-card__supporting-text">
-                                <div class="mdl-grid">
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-hour-data-2" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="previous-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="previous-hour-data-2" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-day-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-day-data-2" class="data">0</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </section>
-                        <footer>
-                            <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('2')"><i class="material-icons">add</i>Increment</button>
-                            </div>
-                        </footer>
-                    </div>
-                </div>
-                <!-- Single responsive element -->
-                <div class="mdl-cell mdl-cell--4-col">
-                    <div class="mdl-card wide-card mdl-shadow--2dp">
-                        <header>
-                            <div class="mdl-card__title">
-                                <h2 id="cardTitle3" class="mdl-card__title-text"></h2>
-                            </div>
-                        </header>
-                        <section>
-                            <div class="mdl-card__supporting-text">
-                                <div class="mdl-grid">
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-hour-data-3" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="previous-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="previous-hour-data-3" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-day-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-day-data-3" class="data">0</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </section>
-                        <footer>
-                            <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('3')"><i class="material-icons">add</i>Increment</button>
-                            </div>
-                        </footer>
-                    </div>
-                </div>
-                <!-- Single responsive element -->
-                <div class="mdl-cell mdl-cell--4-col">
-                    <div class="mdl-card wide-card mdl-shadow--2dp">
-                        <header>
-                            <div class="mdl-card__title">
-                                <h2 id="cardTitle4" class="mdl-card__title-text"></h2>
-                            </div>
-                        </header>
-                        <section>
-                            <div class="mdl-card__supporting-text">
-                                <div class="mdl-grid">
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-hour-data-4" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="previous-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="previous-hour-data-4" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-day-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-day-data-4" class="data">0</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </section>
-                        <footer>
-                            <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('4')"><i class="material-icons">add</i>Increment</button>
-                            </div>
-                        </footer>
-                    </div>
-                </div>
-                <!-- Single responsive element -->
-                <div class="mdl-cell mdl-cell--4-col">
-                    <div class="mdl-card wide-card mdl-shadow--2dp">
-                        <header>
-                            <div class="mdl-card__title">
-                                <h2 id="cardTitle5" class="mdl-card__title-text"></h2>
-                            </div>
-                        </header>
-                        <section>
-                            <div class="mdl-card__supporting-text">
-                                <div class="mdl-grid">
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-hour-data-5" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="previous-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="previous-hour-data-5" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-day-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-day-data-5" class="data">0</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </section>
-                        <footer>
-                            <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('5')"><i class="material-icons">add</i>Increment</button>
-                            </div>
-                        </footer>
-                    </div>
-                </div>
-                <!-- Single responsive element -->
-                <div class="mdl-cell mdl-cell--4-col">
-                    <div class="mdl-card wide-card mdl-shadow--2dp">
-                        <header>
-                            <div class="mdl-card__title">
-                                <h2 id="cardTitle6" class="mdl-card__title-text"></h2>
-                            </div>
-                        </header>
-                        <section>
-                            <div class="mdl-card__supporting-text">
-                                <div class="mdl-grid">
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-hour-data-6" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="previous-hour-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="previous-hour-data-6" class="data">0</span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span class="current-day-label"></span>
-                                    </div>
-                                    <div class="mdl-cell mdl-cell--6-col">
-                                        <span id="current-day-data-6" class="data">0</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </section>
-                        <footer>
-                            <div class="mdl-card__actions mdl-card--border">
-                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP('6')"><i class="material-icons">add</i>Increment</button>
-                            </div>
-                        </footer>
-                    </div>
-                </div>
             </div>
-            <!-- Camera section -->
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--6-col">
-                    <div class="mdl-card image-card mdl-shadow--2dp">
-                        <div class="mdl-card__title mdl-card--expand"></div>
-                        <div class="mdl-card__actions">
-                            <img id="liveStream1" src="" alt="Camera1">
+            <div id=camerasection class="mdl-grid">
+                <!-- Camera section -->
+                <div class="mdl-grid">
+                    <div class="mdl-cell mdl-cell--6-col">
+                        <div class="mdl-card image-card mdl-shadow--2dp">
+                            <div class="mdl-card__title mdl-card--expand"></div>
+                            <div class="mdl-card__actions">
+                                <img id="liveStream1" src="" alt="Camera1">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="mdl-cell mdl-cell--6-col">
-                    <div class="mdl-card image-card mdl-shadow--2dp">
-                        <div class="mdl-card__title mdl-card--expand"></div>
-                        <div class="mdl-card__actions">
-                            <img id="liveStream2" src="" alt="Camera2">
+                    <div class="mdl-cell mdl-cell--6-col">
+                        <div class="mdl-card image-card mdl-shadow--2dp">
+                            <div class="mdl-card__title mdl-card--expand"></div>
+                            <div class="mdl-card__actions">
+                                <img id="liveStream2" src="" alt="Camera2">
+                            </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
-            <footer class="mdl-mini-footer">
-                <div class="mdl-mini-footer__left-section">
-                    <div class="mdl-logo">
-                        Copyright &copy; 2017 ScadaLTS ver. 0.0.8-dev All Rights Reserved
+            <div>
+                <footer class="mdl-mini-footer">
+                    <div class="mdl-mini-footer__left-section">
+                        <div class="mdl-logo">
+                            Copyright &copy; 2017 ScadaLTS ver. 0.0.8-dev All Rights Reserved
+                        </div>
                     </div>
-                </div>
-            </footer>
-
+                </footer>
+            </div>
         </main>
     </div>
 </body>
@@ -355,48 +117,56 @@
         card: [
             {
                 title: "Location 1",
-                dataPointXID: "	DP_121807"
+                dataPointXID: "DP_260255"
             },
             {
                 title: "Location 2",
-                dataPointXID: "DP_331412"
+                dataPointXID: "DP_260255"
             },
             {
                 title: "Location 3",
-                dataPointXID: "DP_331412"
+                dataPointXID: "DP_260255"
             },
             {
                 title: "Location 4",
-                dataPointXID: "DP_331412"
+                dataPointXID: "DP_843430"
             },
             {
                 title: "Location 5",
-                dataPointXID: "DP_331412"
+                dataPointXID: "DP_843430"
             },
             {
                 title: "Location 6",
-                dataPointXID: "DP_331412"
+                dataPointXID: "DP_843430"
             },
         ]
 
     }
 
     var cameraSrc = ["cam.png", "cam.png"];
-    
+
     var username;
     var password;
+
+    for (var i = 1; i <= cardsData.card.length; i++) {
+        $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div>').appendTo('#locationsection');
+    }
 
     /**
      * Init
      * Initialization of webContent - values and names loading;
      */
     function init() {
-    	 
+
         document.getElementById("mainTitle").innerHTML = viewConfiguration.mainTitle;
         document.getElementById("navTitle").innerHTML = viewConfiguration.navTitle;
 
         document.getElementById("current-day-all-label").innerHTML = viewConfiguration.cardDescription[0];
         document.getElementById("enable-switch-label").innerHTML = viewConfiguration.cardDescription[1];
+
+        for (var i = 1; i <= cardsData.card.length; i++) {
+            document.getElementById("cardTitle" + i).innerHTML = cardsData.card[i - 1].title;
+        }
 
         var currHourList = document.getElementsByClassName("current-hour-label");
         var prevHourList = document.getElementsByClassName("previous-hour-label");
@@ -412,18 +182,11 @@
         document.getElementById("liveStream1").setAttribute('src', cameraSrc[0]);
         document.getElementById("liveStream2").setAttribute('src', cameraSrc[1]);
 
-        document.getElementById("cardTitle1").innerHTML = cardsData.card[0].title;
-        document.getElementById("cardTitle2").innerHTML = cardsData.card[1].title;
-        document.getElementById("cardTitle3").innerHTML = cardsData.card[2].title;
-        document.getElementById("cardTitle4").innerHTML = cardsData.card[3].title;
-        document.getElementById("cardTitle5").innerHTML = cardsData.card[4].title;
-        document.getElementById("cardTitle6").innerHTML = cardsData.card[5].title;
-        
         var url_string = window.location;
         var url = new URL(url_string);
         username = url.searchParams.get("username");
         password = url.searchParams.get("pass");
-        
+
         login(username, password);
 
     }
@@ -434,7 +197,7 @@
     function startTime() {
         var today = new Date();
         var d = today.getDate();
-        var mo = today.getMonth();
+        var mo = today.getMonth() + 1;
         var y = today.getFullYear();
         var h = today.getHours();
         var m = today.getMinutes();
@@ -459,6 +222,14 @@
         return i;
     }
 
+    function sum(points) {
+        return points.reduce(
+            function (sum, current) {
+                return parseInt(sum) + parseInt(current);
+            }, 0
+        );
+    }
+
     /*
      * SCADA Functions
      */
@@ -471,6 +242,7 @@
 
         startTime();
         updateView();
+        openingShedule();
         checkCheckBox();
     }
 
@@ -533,12 +305,14 @@
             }
 
             allEntires[htmlid] = day_points.length;
-            document.getElementById("current-hour-data-" + htmlid).innerHTML = hour_points.length;
-            document.getElementById("previous-hour-data-" + htmlid).innerHTML = last_hour_points.length;
-            document.getElementById("current-day-data-" + htmlid).innerHTML = day_points.length;
+            document.getElementById("current-hour-data-" + htmlid).innerHTML = sum(hour_points);
+            document.getElementById("previous-hour-data-" + htmlid).innerHTML = sum(last_hour_points);
+            document.getElementById("current-day-data-" + htmlid).innerHTML = sum(day_points);
 
         });
     }
+
+
 
     /**
      * Update HTML View 
@@ -574,20 +348,31 @@
             // console.log(JSON.parse(data).value == 'true');
 
             var x = (JSON.parse(data).value == 'true');
-            var buttonsList = document.getElementsByClassName("mdl-button");
-            var sw = document.getElementsByClassName("switch-1");
+            changeSwitch(x);
 
-            sw.checked = x;
-            for (var i = 0; i < buttonsList.length; i++) {
-                buttonsList[i].disabled = !x;
-            }
-            if (x == false) {
-                $("#labelCheckbox").removeClass("is-checked");
-            } else {
-                $("#labelCheckbox").addClass("is-checked");
-            }
 
         });
+    }
+
+    /**
+     * ChangeSwitch
+     * @param x - enable/disable button
+     */
+    function changeSwitch(x) {
+
+        var buttonsList = document.getElementsByClassName("mdl-button");
+        var sw = document.getElementsByClassName("switch-1");
+
+        sw.checked = x;
+        for (var i = 0; i < buttonsList.length; i++) {
+            buttonsList[i].disabled = !x;
+        }
+        if (x == false) {
+            $("#labelCheckbox").removeClass("is-checked");
+        } else {
+            $("#labelCheckbox").addClass("is-checked");
+        }
+
     }
 
     /**
@@ -595,24 +380,65 @@
      * Send a POST with actual state of selected checkbox
      * @callback - invoking checkbox - onClick method
      */
+    var globalType;
     function postCheckBox(callback) {
 
         var xid = viewConfiguration.enableButtonDSxid;
-        var type = 0;
-        if (callback.checked) {
-            type = 1;
+        try {
+            globalType = callback.checked;
+            console.log(globalType);
+        } catch (err) {
+            console.log(err);
+        }
+        var number = 0;
+        changeSwitch(globalType);
+        if (globalType) {
+            number = 1;
         }
 
-        $.ajax({
-            type: "POST",
-            url: "../ScadaBR/api/point_value/setValue/" + xid + "/0/" + type,
-            contentType: "application/text;charset=utf-8",
-            dataType: "json",
-            success: function (data) {
-                console.log("succsess Change!" + xid)
-            },
-            error: function (ts) { alert(ts.responseText) }
-        });
+        $.post(
+            "../ScadaBR/api/point_value/setValue/" + xid + "/0/" + number, function (data) {
+                console.log(data);
+            }
+        );
+        // $.ajax({
+        //     type: "POST",
+        //     url: "../ScadaBR/api/point_value/setValue/" + xid + "/0/" + globalType,
+        //     contentType: "application/text;charset=utf-8",
+        //     dataType: "json",
+        //     success: function (data) {
+        //         console.log(data);
+        //     },
+        //     error: function (ts) { alert("DataPoint not found!\n - Error during establishing connection") }
+        // });
+
+    }
+
+    /**
+     * openingShedule
+     * When this counter should be active. Disable buttons and data source
+     * if this side is opened on the wrong day or wrong time
+     */
+    function openingShedule() {
+        var today = new Date();
+        var d = today.getDay() - 1;
+        var h = today.getHours();
+        var request = { checked: true };
+        request.checked = Boolean('true');
+
+        var x = viewConfiguration;
+        var t = setTimeout(openingShedule, 12000000);
+
+        if (viewConfiguration.weekEnableShedule[d] == 1) {
+            if (viewConfiguration.weekEnableHours[0] < h && h < viewConfiguration.weekEnableHours[1]) {
+                postCheckBox(request);
+                checkCheckBox();
+                return;
+            }
+        }
+
+        request.checked = false;
+        postCheckBox(request);
 
     }
 
