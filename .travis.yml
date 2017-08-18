@@ -49,6 +49,7 @@ branches:
   - "/^#179*$/"
   - "/^master-sdtabilit.*$/"
   - "/^#337*$/"
+  - "/^v0.0.7.4*$/"
 notifications:
   email: false
 env:
