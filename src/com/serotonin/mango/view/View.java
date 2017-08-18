@@ -348,6 +348,7 @@ public class View implements Serializable, JsonSerializable {
 	public void jsonDeserialize(JsonReader reader, JsonObject json)
 			throws JsonException {
 		
+		//TODO check why not deserialize data 
 		resolution = ResolutionView.R1600x1200;
 		this.height = 1200;
 		this.width = 1600;
@@ -404,6 +405,7 @@ public class View implements Serializable, JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
+		// TODO check why not serialize data 
 		map.put("user", new UserDao().getUser(userId).getUsername());
 		map.put("anonymousAccess",
 				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
