@@ -59,6 +59,13 @@ public class DataPointUserDAO {
 				+ COLUMN_NAME_PERMISSION + " "
 			+ "from dataPointUsers where "
 				+ COLUMN_NAME_DP_ID + "=? ";
+	
+	private static final String DATA_POINT_USER_ACCESS_SELECT_WHERE_DP_ID = ""
+			+ "select "
+				+ COLUMN_NAME_PERMISSION + " "
+			+ "from dataPointUsers where "
+				+ COLUMN_NAME_DP_ID + "=? "
+				+ COLUMN_NAME_USER_ID + "=? ";
 
 	private static final String DATA_POINT_USER_SELECT_WHERE_USER_ID = ""
 			+ "select "
@@ -81,6 +88,21 @@ public class DataPointUserDAO {
 				+ COLUMN_NAME_DP_ID + "=? ";
 
 	// @formatter:on
+	
+	private class DataPointUserAccessRowMapper implements RowMapper<Boolean> {
+		@Override
+		public Boolean mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+			Boolean res = false;
+			final int ACCESS_TYPE_SETABLE = 2;
+			if (resultSet.getInt(COLUMN_INDEX_PERMISSION)==ACCESS_TYPE_SETABLE) {
+				res = true;
+			} else {
+				res = false;
+			}
+			return res;
+		}
+	}
+
 
 	public List<Tuple<Integer, Integer>> getDataPointUsers(final int dataPointId) {
 
@@ -94,6 +116,15 @@ public class DataPointUserDAO {
 				return new Tuple<Integer, Integer>(rs.getInt(COLUMN_NAME_DP_ID), rs.getInt(COLUMN_NAME_USER_ID));
 			}
 		});
+	}
+	
+	public Boolean getDataPointUsersAccess(final int dataPointId, int userId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointUsersAccess(final int dataPointId: " + dataPointId + " int userId:" + userId + ")");
+		}
+
+		return DAO.getInstance().getJdbcTemp().queryForObject(DATA_POINT_USER_ACCESS_SELECT_WHERE_DP_ID, new Object[]{dataPointId, userId}, new DataPointUserAccessRowMapper());
 	}
 
 	public List<DataPointAccess> getDataPointAccessList(final int userId) {
