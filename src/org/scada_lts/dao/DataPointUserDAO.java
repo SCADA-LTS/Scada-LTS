@@ -92,7 +92,14 @@ public class DataPointUserDAO {
 	private class DataPointUserAccessRowMapper implements RowMapper<Boolean> {
 		@Override
 		public Boolean mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-			return resultSet.getBoolean(COLUMN_INDEX_PERMISSION);
+			Boolean res = false;
+			final int ACCESS_TYPE_SETABLE = 2;
+			if (resultSet.getInt(COLUMN_INDEX_PERMISSION)==ACCESS_TYPE_SETABLE) {
+				res = true;
+			} else {
+				res = false;
+			}
+			return res;
 		}
 	}
 
