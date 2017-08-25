@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
+import org.scada_lts.dao.DataPointUserDAO;
 
 import br.org.scadabr.api.vo.FlexProject;
 import br.org.scadabr.db.dao.FlexProjectDao;
@@ -456,12 +457,27 @@ public class ViewDwr extends BaseDwr {
 
 		if (point != null) {
 			// Check that setting is allowed.
-			int access = view.getUserAccess(user);
-			if (!(access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET))
-				throw new PermissionException("Not allowed to set this point", user);
+			
+			  // Check that setting is allowed in profile
+			Boolean accessFromProfile = null;
+			try {
+				accessFromProfile = new DataPointUserDAO().getDataPointUsersAccess(point.getId(),user.getId());
+			} catch (Exception e) {
+				// If problem with get data permissions in profile user from database then checking next options 
+			}
+			
+			if (accessFromProfile == true) {
+				setPointImpl(point, valueStr, user);
+			} else {
+							
+				int access = view.getUserAccess(user);
+			
+			    if (!(access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET))
+				  throw new PermissionException("Not allowed to set this point", user);
 
-			// Try setting the point.
-			setPointImpl(point, valueStr, user);
+				// Try setting the point.
+				setPointImpl(point, valueStr, user);
+			}
 		}
 
 		return viewComponentId;
