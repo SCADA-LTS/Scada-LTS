@@ -6,6 +6,7 @@ import { MdIconModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppBodyComponent } from './appBody.component';
 import { ScriptingComponent } from './scripting/scripting.component';
+import { DashboardGridModule } from 'app/appBody/dashboard/dashboard-grid/dashboard-grid.module';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import { ScriptingComponent } from './scripting/scripting.component';
     ScriptingComponent
   ],
   imports: [
+    DashboardGridModule,
     BrowserModule,
     FormsModule,
     HttpModule,

@@ -28,6 +28,7 @@ import { OldWatchlistComponent } from './appBody/old-watchlist/old-watchlist.com
 import { WleditComponent } from './appBody/wledit/wledit.component';
 
 import { WorksheetAccessGuard } from './ActivationGuard';
+import { DashboardGridComponent } from 'app/appBody/dashboard/dashboard-grid/dashboard-grid.component';
 
 const appRoutes: Routes = [
   // { path: '', component: LoginComponent },
@@ -37,7 +38,7 @@ const appRoutes: Routes = [
     children: [
       { path: 'watchlist', component: WatchlistComponent/*, canActivate: [WorksheetAccessGuard]*/ },
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'views', component: ViewsComponent },
+      { path: 'views', component: DashboardGridComponent },
       { path: 'system', component: SystemComponent },
       { path: 'users', component: UsersComponent },
       { path: 'about', component: AboutComponent },
