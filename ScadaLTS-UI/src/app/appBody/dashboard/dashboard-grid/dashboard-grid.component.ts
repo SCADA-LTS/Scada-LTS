@@ -16,8 +16,8 @@ export class DashboardGridComponent implements OnInit {
 
     /* viewPage = Current Displayed page */
     viewPage: ViewPage;
-    viewPages = MOCKPAGES; // Mocked data form file //
-    // viewPages: ViewPage[]; // Standard variable to handle data from Scada //
+    // viewPages = MOCKPAGES; // Mocked data form file //
+    viewPages: ViewPage[]; // Standard variable to handle data from Scada //
     editMode: boolean;
     dataPointExportID: string;
 
@@ -28,9 +28,9 @@ export class DashboardGridComponent implements OnInit {
     ngOnInit(): void {
         this.dataPointExportID = this.storageService.read('config');
         /* Comment or uncomment this section to test data with or without Scada */
-        // this.viewPages = [];
-        // this.dashboardGridService.authenticate();
-        // this.dashboardGridService.getViewPages(this.dataPointExportID).then(response => this.viewPages = response);
+        this.viewPages = [];
+        this.dashboardGridService.authenticate();
+        this.dashboardGridService.getViewPages(this.dataPointExportID).then(response => this.viewPages = response);
         /* --- End section --- */
     }
 
@@ -59,6 +59,10 @@ export class DashboardGridComponent implements OnInit {
         const id = this.viewPage.id - 1;
         this.viewPages[id] = viewPage;
 
+    }
+
+    reloadConfiguration() {
+        this.dashboardGridService.getViewPages(this.dataPointExportID).then(response => this.viewPages = response);
     }
 
 }

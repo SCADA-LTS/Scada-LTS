@@ -17,7 +17,8 @@
         <md-input-container *ngIf="editMode">
             <input mdInput placeholder='Configuration: DPXID' [(ngModel)]="dataPointExportID">
         </md-input-container>
-        <button md-icon-button (click)="saveConfiguration()"><md-icon>save</md-icon></button>
+        <button *ngIf="editMode" md-icon-button (click)="reloadConfiguration()"><md-icon>refresh</md-icon></button>
+        <button *ngIf="!editMode"md-icon-button (click)="saveConfiguration()"><md-icon>save</md-icon></button>
         <button md-icon-button (click)="editMode = !editMode"><md-icon>edit</md-icon></button>
     </md-toolbar>
 
