@@ -88,7 +88,6 @@ import { UserAuthenticationService } from './UserAuthenticationService';
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
-    MaterialModule.forRoot(),
     MaterialModule,
     routing,
     NgbModule.forRoot(),

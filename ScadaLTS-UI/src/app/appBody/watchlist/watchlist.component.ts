@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit, OnDestroy, NgZone} from '@angular/core';
 import {Http} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
+import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/catch';
 import {Subject} from 'rxjs/Subject';
 declare let Plotly: any;

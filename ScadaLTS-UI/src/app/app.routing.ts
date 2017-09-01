@@ -30,7 +30,8 @@ import { WleditComponent } from './appBody/wledit/wledit.component';
 import { WorksheetAccessGuard } from './ActivationGuard';
 
 const appRoutes: Routes = [
-  { path: '', component: LoginComponent },
+  // { path: '', component: LoginComponent },
+  { path: '', redirectTo: 'appBody', pathMatch: 'full' },
   { path: 'registration', component: RegistrationComponent },
   { path: 'appBody', component: AppBodyComponent,
     children: [

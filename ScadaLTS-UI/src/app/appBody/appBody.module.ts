@@ -2,7 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { MaterialModule } from '@angular/material';
+import { MdIconModule } from '@angular/material';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppBodyComponent } from './appBody.component';
 import { ScriptingComponent } from './scripting/scripting.component';
 
@@ -15,9 +16,8 @@ import { ScriptingComponent } from './scripting/scripting.component';
     BrowserModule,
     FormsModule,
     HttpModule,
-    MaterialModule.forRoot()
+    MdIconModule
   ],
-  providers: [],
   bootstrap: [AppBodyComponent]
 })
 export class AppModule { }

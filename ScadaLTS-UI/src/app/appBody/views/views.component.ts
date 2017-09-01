@@ -20,7 +20,7 @@ export class ViewsComponent implements OnInit {
 
   openDlgSelectViewWithEdtHierarchyView(){
 
-    let dialogRef = this.dialogSelectViewWithEdtHierarchyView.open(DlgSelectViewWithEdtHierarchyView, this.dialogSelectViewWithEdtHierarchyView);
+    let dialogRef = this.dialogSelectViewWithEdtHierarchyView.open(DlgSelectViewWithEdtHierarchyView);
     dialogRef.afterClosed().subscribe(result => {
           this.viewKey = result;
           console.log(this.viewKey);        
@@ -251,7 +251,7 @@ export class DlgSelectViewWithEdtHierarchyView {
   }
 
   openDlgAddFolderHierarchyView(){
-      let dialogRef = this.dialogAddFolderHierarchyView.open(DlgAddFolderHierarchyView, this.dialogAddFolderHierarchyView);
+      let dialogRef = this.dialogAddFolderHierarchyView.open(DlgAddFolderHierarchyView);
       dialogRef.afterClosed().subscribe(result => {
           this.rerfreshTree()        
       });
@@ -259,7 +259,7 @@ export class DlgSelectViewWithEdtHierarchyView {
 
   deleteFolderHierarchyView(){
     if ($("#tree").fancytree("getTree").getActiveNode().folder) {
-      let dialogRef = this.dialogConfirmDeleteFolderHierarchyView.open(DlgConfirmDeleteFolderHierarchyView, this.dialogConfirmDeleteFolderHierarchyView);
+      let dialogRef = this.dialogConfirmDeleteFolderHierarchyView.open(DlgConfirmDeleteFolderHierarchyView);
       //TODO catch error
       dialogRef.afterClosed().subscribe(result => {
           if (result) {
