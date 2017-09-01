@@ -12,8 +12,6 @@ import { MOCKPAGES } from './dashboard.mock';
 })
 export class DashboardGridComponent implements OnInit {
 
-
-
     /* viewPage = Current Displayed page */
     viewPage: ViewPage;
     // viewPages = MOCKPAGES; // Mocked data form file //

@@ -16,14 +16,40 @@ import { ViewNavigatorDialogComponent } from './dialogs/view-navigator-dialog.co
 import { ItemEditorDialogComponent } from './dialogs/item-editor-dialog.component';
 import { StorageService } from '../utils/storage.service';
 
-
 @NgModule({
-    declarations: [DashboardGridComponent, DashboardGridNavigatorComponent, DashboardGridPageComponent,
-        ItemEditorDialogComponent, ViewNavigatorDialogComponent, ViewNavigatorSettingsDialogComponent],
-    entryComponents: [ViewNavigatorDialogComponent, ViewNavigatorSettingsDialogComponent, ItemEditorDialogComponent],
-    imports: [MdToolbarModule, MdIconModule, MdButtonModule, MdSidenavModule, MdDialogModule, MdSelectModule,
-        MdInputModule, BrowserModule, BrowserAnimationsModule, FormsModule, ItemModule],
-    providers: [DashboardGridService, ConnectionService, StorageService],
-    exports: [DashboardGridComponent]
+    declarations: [
+        DashboardGridComponent,
+        DashboardGridNavigatorComponent,
+        DashboardGridPageComponent,
+        ItemEditorDialogComponent,
+        ViewNavigatorDialogComponent,
+        ViewNavigatorSettingsDialogComponent,
+    ],
+    entryComponents: [
+        ViewNavigatorDialogComponent,
+        ViewNavigatorSettingsDialogComponent,
+        ItemEditorDialogComponent
+    ],
+    imports: [
+        MdToolbarModule,
+        MdIconModule,
+        MdButtonModule,
+        MdSidenavModule,
+        MdDialogModule,
+        MdSelectModule,
+        MdInputModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        ItemModule
+    ],
+    providers: [
+        DashboardGridService,
+        StorageService,
+        ConnectionService
+    ],
+    exports: [
+        DashboardGridComponent
+    ]
 })
 export class DashboardGridModule { }

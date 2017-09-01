@@ -2,6 +2,7 @@ import { Injectable, Type } from '@angular/core';
 import { DashboardItem } from './dashboard-item';
 import { CameraComponent } from '@scadalts/scadalts-dashbord-components/camera/camera.component';
 import { IncrementatorComponent } from '@scadalts/scadalts-dashbord-components/incrementator/incrementator.component';
+import { IframeComponent } from '@scadalts/scadalts-dashbord-components/iframe/iframe.component';
 
 /**
  * This is the major class to be changed when user created a new component
@@ -22,6 +23,8 @@ export class ItemService {
    * Remember to add this components to EntryComponents array in
    * item.module.ts file inside this directory.
    *
+   * !!! Also add this component to item.module.file as entryComponent !!!
+   *
    * @param componentType - Component type which has to be created
    * @param componentData - Component data.
    */
@@ -31,6 +34,9 @@ export class ItemService {
     }
     if (componentType === 'camera') {
       return new DashboardItem(CameraComponent, componentData);
+    }
+    if (componentType === 'iframe') {
+      return new DashboardItem(IframeComponent, componentData);
     }
 
     /* Place for another component */
@@ -54,6 +60,9 @@ export class ItemService {
     if (component.name === 'CameraComponent') {
       return 'camera';
     }
+    if (component.name === 'IframeComponent') {
+      return 'iframe';
+    }
 
   }
 
@@ -70,8 +79,9 @@ export class ItemService {
    */
   static getDashboardComponentsList() {
     return [
-      { id: 0, type: 'incrementator', label: 'SLTS Visit Counter', data: { number: 0, name: '', datapointXid: '' } },
-      { id: 1, type: 'camera', label: 'SLTS Image Component', data: { number: 0, label: '', cameraPath: '' } }
+      { id: 0, type: 'incrementator', label: 'SLTS Visit Counter', data: { number: 0, label: '', datapointXid: '' } },
+      { id: 1, type: 'camera', label: 'SLTS Image Component', data: { number: 0, label: '', imageLocation: '' } },
+      // { id: 2, type: 'iframe', label: 'SLTS Inlie Frame', data: { number: 0, label: '', frameLocation: '' } }
     ];
   }
 

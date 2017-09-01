@@ -37,7 +37,7 @@
     "rxjs": "^5.4.2",
     "ts-helpers": "^1.1.2",
     "zone.js": "^0.8.16",
-    "@scadalts/scadalts-dashbord-components": "0.0.7"
+    "@scadalts/scadalts-dashbord-components": "0.0.13"
   },
   "devDependencies": {
     "@angular/cli": "1.3.0",

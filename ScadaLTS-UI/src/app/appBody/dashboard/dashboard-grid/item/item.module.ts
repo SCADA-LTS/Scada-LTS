@@ -11,12 +11,13 @@ import { CameraComponent } from '@scadalts/scadalts-dashbord-components/camera/c
 import { ItemDirective } from './item.directive';
 import { ItemService } from './item.service';
 import { FrameComponent } from './frame.component';
+import { IframeComponent } from '@scadalts/scadalts-dashbord-components/iframe/iframe.component';
 
 
 @NgModule({
     imports: [CommonModule, LibexModule, BrowserModule, MdCardModule, MdButtonModule, MdIconModule, MdDialogModule, MdMenuModule],
     /* Entry Components - custom components declaration */
-    entryComponents: [CameraComponent, IncrementatorComponent],
+    entryComponents: [CameraComponent, IncrementatorComponent, IframeComponent],
     exports: [ItemDirective, FrameComponent],
     declarations: [ItemDirective, FrameComponent],
     providers: [ItemService]

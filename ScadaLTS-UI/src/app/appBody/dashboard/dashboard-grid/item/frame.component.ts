@@ -45,9 +45,7 @@ export class FrameComponent implements OnInit {
         if (this.item.data.label !== undefined) {
             this.title = this.item.data.label;
         }
-        if (this.item.data.name !== undefined) {
-            this.title = this.item.data.name;
-        }
+
 
     }
 
@@ -70,8 +68,16 @@ export class FrameComponent implements OnInit {
 
                 // Update this keys in orginal item.data variable //
                 for (let x = 0; x < labels.length; x++) {
-                    this.item.data[labels[x]] = values[x];
+
+                    // Prevention before crash when there is a '/' character //
+                    let valueString = values[x];
+                    if (typeof valueString === 'string') {
+                        // Replace '/' by the '1SLASH212SLASH1' pattern
+                        valueString = valueString.replace(/\//gi, '1SLASH212SLASH1');
+                    }
+                    this.item.data[labels[x]] = valueString;
                 }
+                this.title = this.item.data.label;
                 this.savedItem.emit(this.item);
             }
         });

@@ -8,7 +8,7 @@ export const MOCKPAGES: ViewPage[] = [
                 type: 'incrementator',
                 data: {
                     number: 1,
-                    name: 'Example Incrementator 1',
+                    label: 'Example Incrementator 1',
                     datapointXid: 'DP_EX_010203'
                 }
             },
@@ -16,7 +16,7 @@ export const MOCKPAGES: ViewPage[] = [
                 type: 'incrementator',
                 data: {
                     number: 2,
-                    name: 'Example Incrementator 2',
+                    label: 'Example Incrementator 2',
                     datapointXid: 'DP_EX_010203'
                 }
             }
@@ -28,7 +28,7 @@ export const MOCKPAGES: ViewPage[] = [
                 type: 'incrementator',
                 data: {
                     number: 2,
-                    name: 'Example Incrementator 2',
+                    label: 'Example Incrementator 2',
                     datapointXid: 'DP_EX_010203'
                 }
             },
@@ -37,7 +37,7 @@ export const MOCKPAGES: ViewPage[] = [
                 data: {
                     number: 1,
                     label: 'Camera 1',
-                    cameraPath: 'https://kamilmysliwiec.com/wp-content/themes/src/img/background-0@2x.png'
+                    imageLocation: 'https://kamilmysliwiec.com/wp-content/themes/src/img/background-0@2x.png'
                 }
             }
         ]
