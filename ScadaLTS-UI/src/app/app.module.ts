@@ -40,6 +40,7 @@ import { DlgAddFolderHierarchyView } from './appBody/views/views.component';
 import { DlgConfirmDeleteFolderHierarchyView } from './appBody/views/views.component';
 
 import { ClipboardModule } from 'ngx-clipboard';
+import { DashboardGridModule } from 'app/appBody/dashboard/dashboard-grid/dashboard-grid.module';
 
 import { WorksheetAccessGuard } from './ActivationGuard';
 import { UserAuthenticationService } from './UserAuthenticationService';
@@ -88,11 +89,11 @@ import { UserAuthenticationService } from './UserAuthenticationService';
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
-    MaterialModule.forRoot(),
     MaterialModule,
     routing,
     NgbModule.forRoot(),
-    ClipboardModule
+    ClipboardModule,
+    DashboardGridModule
   ],
   providers: [WorksheetAccessGuard, UserAuthenticationService],
   bootstrap: [AppComponent]

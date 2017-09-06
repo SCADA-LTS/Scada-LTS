@@ -1,0 +1,14 @@
+<h1>Create a dashboard view</h1>
+<div><md-input-container>
+    <input mdInput #locationName placeholder="View Name:">
+</md-input-container>
+</div>
+<div>
+<md-input-container>
+    <textarea mdInput #viewData placeholder="Data as JSON:"></textarea>
+  </md-input-container>
+</div>
+<div>
+    <button md-button [md-dialog-close]="{name: locationName.value, data: viewData.value }">Save</button>
+    <button md-button [md-dialog-close]="">Cancel</button>
+</div>

@@ -36,6 +36,7 @@ import org.scada_lts.dao.PointHierarchyDAO;
 import org.scada_lts.dao.PointLinkDAO;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
+import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
@@ -47,6 +48,8 @@ import org.springframework.stereotype.Service;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
+import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -137,6 +140,18 @@ public class DataPointService implements MangoDataPoint {
 			Collections.sort(dpList, comparator);
 		}
 		return dpList;
+	}
+	
+	public void save(String value, String xid, int typePointValueOfREST ) {
+		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
+		
+		PointValueTime pvt = new PointValueDAO4REST().save(value, typePointValueOfREST, dpvo.getId());
+		
+		DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
+				dpvo.getId());
+		
+		dpRT.updatePointValue(pvt);
+		
 	}
 
 	private void setRelationalData(List<DataPointVO> dpList) {

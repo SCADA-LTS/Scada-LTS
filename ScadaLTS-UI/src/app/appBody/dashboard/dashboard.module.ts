@@ -13,7 +13,7 @@ import { DashboardComponent } from './dashboard.component';
     BrowserModule,
     FormsModule,
     HttpModule,
-    MaterialModule.forRoot()
+    MaterialModule
   ],
   providers: [],
   bootstrap: [DashboardComponent]

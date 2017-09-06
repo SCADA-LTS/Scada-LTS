@@ -345,7 +345,7 @@ a {
   transition: margin 0.3s cubic-bezier(0.82, 0, 0.11, 1); }
 
 .contentInside {
-  padding: 40px;
+  /* padding: 40px; */
   z-index: -99999999; }
 
 /* MEDIA QUERIES */
