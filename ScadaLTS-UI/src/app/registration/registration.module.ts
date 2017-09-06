@@ -13,7 +13,7 @@ import { RegistrationComponent } from './registration.component';
     BrowserModule,
     FormsModule,
     HttpModule,
-    MaterialModule.forRoot()
+    MaterialModule
   ],
   providers: [],
   bootstrap: [RegistrationComponent]

@@ -1,0 +1,24 @@
+<md-card>
+    <md-card-header>
+        <h1>{{title}}</h1>
+        <span style="flex: 1 1 auto;"></span>
+        <button *ngIf="editMode" md-icon-button [mdMenuTriggerFor]="menu">
+                    <md-icon>more_vert</md-icon>
+        </button>
+        <md-menu #menu="mdMenu">
+            <button md-menu-item (click)="delete()">
+                <md-icon>delete</md-icon>
+                <span>Delete</span>
+            </button>
+            <button md-menu-item (click)="editDialog()">
+                <md-icon>create</md-icon>
+                <span>Edit</span>
+            </button>
+
+        </md-menu>
+
+    </md-card-header>
+    <md-card-content>
+        <ng-template appItemHost></ng-template>
+    </md-card-content>
+</md-card>

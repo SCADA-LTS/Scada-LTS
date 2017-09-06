@@ -1,0 +1,13 @@
+<md-toolbar color="primary">
+    <span>View List</span><span class="example-fill-remaining-space"></span>
+    <button type="button" md-icon-button (click)="toggleEditMode()"><md-icon>mode_edit</md-icon></button>
+    
+</md-toolbar>
+
+<div *ngFor="let view of viewPagesArray">
+    <button class="open-btn" (click)="open(view)" md-button>{{view.name}}</button>
+    <button class="remove-btn" [style.display]="editEnabled" (click)="remove(view)" md-icon-button><md-icon>delete</md-icon></button>
+</div>
+<div (click)="openNewPageDialog()" [style.display]="editEnabled">
+    <button class="mat-btn" md-button><md-icon>add</md-icon> Add View</button>
+</div>

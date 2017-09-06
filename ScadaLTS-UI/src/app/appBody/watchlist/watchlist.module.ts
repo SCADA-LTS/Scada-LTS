@@ -13,7 +13,7 @@ import { WatchlistComponent } from './watchlist.component';
     BrowserModule,
     FormsModule,
     HttpModule,
-    MaterialModule.forRoot()
+    MaterialModule
   ],
   providers: [],
   bootstrap: [WatchlistComponent]
