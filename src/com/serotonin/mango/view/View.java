@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.scada_lts.dao.ViewDAO;
+
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -129,6 +131,10 @@ public class View implements Serializable, JsonSerializable {
 		if (userId == user.getId() || user.isAdmin())
 			return ShareUser.ACCESS_OWNER;
 
+		if (viewUsers == null) {
+			viewUsers = new ViewDAO().getShareUsers(getId());
+		}
+		
 		for (ShareUser vu : viewUsers) {
 			if (vu.getUserId() == user.getId())
 				return vu.getAccessType();
