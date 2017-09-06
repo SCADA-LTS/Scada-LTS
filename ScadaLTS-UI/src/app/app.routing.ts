@@ -31,7 +31,7 @@ import { WorksheetAccessGuard } from './ActivationGuard';
 import { DashboardGridComponent } from 'app/appBody/dashboard/dashboard-grid/dashboard-grid.component';
 
 const appRoutes: Routes = [
-  // { path: '', component: LoginComponent },
+  { path: '', component: LoginComponent },
   { path: '', redirectTo: 'appBody', pathMatch: 'full' },
   { path: 'registration', component: RegistrationComponent },
   { path: 'appBody', component: AppBodyComponent,
