@@ -28,6 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
+import org.scada_lts.dao.UserDAO;
+import org.scada_lts.dao.model.point.PointValueAdnnotation;
+import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.RuntimeManager;
@@ -35,6 +38,7 @@ import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueFacade;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.view.chart.StatisticsChartRenderer;
 import com.serotonin.mango.vo.DataPointVO;
@@ -55,8 +59,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 	public WatchListState getPointData() {
 		// Get the point from the user's session. It should have been set by the
 		// controller.
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		User user = Common.getUser(request);
 		DataPointVO pointVO = user.getEditPoint();
 
@@ -70,8 +73,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		WatchListState state = new WatchListState();
 		state.setId(Integer.toString(pointVO.getId()));
 
-		PointValueTime pointValue = prepareBasePointState(
-				Integer.toString(pointVO.getId()), state, pointVO, pointRT,
+		PointValueTime pointValue = prepareBasePointState(Integer.toString(pointVO.getId()), state, pointVO, pointRT,
 				model);
 		setPrettyText(state, pointVO, model, pointValue);
 		if (state.getValue() != null)
@@ -89,16 +91,21 @@ public class DataPointDetailsDwr extends BaseDwr {
 		PointValueFacade facade = new PointValueFacade(pointVO.getId());
 
 		List<PointValueTime> rawData = facade.getLatestPointValues(limit);
-		List<RenderedPointValueTime> renderedData = new ArrayList<RenderedPointValueTime>(
-				rawData.size());
+		List<RenderedPointValueTime> renderedData = new ArrayList<RenderedPointValueTime>(rawData.size());
 
 		for (PointValueTime pvt : rawData) {
 			RenderedPointValueTime rpvt = new RenderedPointValueTime();
 			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
 			rpvt.setTime(Functions.getTime(pvt));
+
 			if (pvt.isAnnotated()) {
+
 				AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
-				rpvt.setAnnotation(apvt.getAnnotation(getResourceBundle()));
+				if (apvt.getSourceDescriptionArgument() == null) {
+					apvt.setSourceDescriptionArgument("");
+				} else {
+					rpvt.setAnnotation(apvt.getAnnotation(getResourceBundle()));
+				}
 			}
 			renderedData.add(rpvt);
 		}
@@ -110,14 +117,11 @@ public class DataPointDetailsDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n getImageChartData(int fromYear, int fromMonth,
-			int fromDay, int fromHour, int fromMinute, int fromSecond,
-			boolean fromNone, int toYear, int toMonth, int toDay, int toHour,
-			int toMinute, int toSecond, boolean toNone, int width, int height) {
-		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour,
-				fromMinute, fromSecond, fromNone);
-		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute,
-				toSecond, toNone);
+	public DwrResponseI18n getImageChartData(int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute,
+			int fromSecond, boolean fromNone, int toYear, int toMonth, int toDay, int toHour, int toMinute,
+			int toSecond, boolean toNone, int width, int height) {
+		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour, fromMinute, fromSecond, fromNone);
+		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute, toSecond, toNone);
 
 		StringBuilder htmlData = new StringBuilder();
 		htmlData.append("<img src=\"chart/ft_");
@@ -141,35 +145,27 @@ public class DataPointDetailsDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void getChartData(int fromYear, int fromMonth, int fromDay,
-			int fromHour, int fromMinute, int fromSecond, boolean fromNone,
-			int toYear, int toMonth, int toDay, int toHour, int toMinute,
-			int toSecond, boolean toNone) {
-		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour,
-				fromMinute, fromSecond, fromNone);
-		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute,
-				toSecond, toNone);
-		DataExportDefinition def = new DataExportDefinition(
-				new int[] { getDataPointVO().getId() }, from, to);
+	public void getChartData(int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute, int fromSecond,
+			boolean fromNone, int toYear, int toMonth, int toDay, int toHour, int toMinute, int toSecond,
+			boolean toNone) {
+		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour, fromMinute, fromSecond, fromNone);
+		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute, toSecond, toNone);
+		DataExportDefinition def = new DataExportDefinition(new int[] { getDataPointVO().getId() }, from, to);
 		Common.getUser().setDataExportDefinition(def);
 	}
 
 	@MethodFilter
-	public DwrResponseI18n getStatsChartData(int periodType, int period,
-			boolean includeSum) {
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
+	public DwrResponseI18n getStatsChartData(int periodType, int period, boolean includeSum) {
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		DataPointVO pointVO = Common.getUser(request).getEditPoint();
 
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("point", pointVO);
-		StatisticsChartRenderer r = new StatisticsChartRenderer(periodType,
-				period, includeSum);
+		StatisticsChartRenderer r = new StatisticsChartRenderer(periodType, period, includeSum);
 		r.addDataToModel(model, pointVO);
 
 		DwrResponseI18n response = new DwrResponseI18n();
-		response.addData("stats",
-				generateContent(request, "statsChart.jsp", model));
+		response.addData("stats", generateContent(request, "statsChart.jsp", model));
 		addAsof(response);
 		return response;
 	}
@@ -181,8 +177,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 
 	@MethodFilter
 	public DwrResponseI18n getFlipbookData(int limit) {
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		DataPointVO vo = Common.getUser(request).getEditPoint();
 		PointValueFacade facade = new PointValueFacade(vo.getId());
 
@@ -191,20 +186,20 @@ public class DataPointDetailsDwr extends BaseDwr {
 		List<ImageValueBean> result = new ArrayList<ImageValueBean>();
 		for (PointValueTime pvt : values) {
 			ImageValue imageValue = (ImageValue) pvt.getValue();
-			String uri = ImageValueServlet.servletPath
-					+ ImageValueServlet.historyPrefix + pvt.getTime() + "_"
+			String uri = ImageValueServlet.servletPath + ImageValueServlet.historyPrefix + pvt.getTime() + "_"
 					+ vo.getId() + "." + imageValue.getTypeExtension();
 			result.add(new ImageValueBean(Functions.getTime(pvt), uri));
 		}
 
 		DwrResponseI18n response = new DwrResponseI18n();
+		System.out.println(result);
 		response.addData("images", result);
 		addAsof(response);
 		return response;
 	}
 
 	private void addAsof(DwrResponseI18n response) {
-		response.addData("asof", new LocalizableMessage("dsDetils.asof",
-				DateFunctions.getFullSecondTime(System.currentTimeMillis())));
+		response.addData("asof",
+				new LocalizableMessage("dsDetils.asof", DateFunctions.getFullSecondTime(System.currentTimeMillis())));
 	}
 }
