@@ -36,7 +36,7 @@ before_script:
 - cd ../..
 language: java
 jdk:
-- openjdk7
+- openjdk8
 services:
 - docker
 - mysql
