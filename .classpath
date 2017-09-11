@@ -112,11 +112,6 @@
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spring-messaging-4.3.2.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spring-websocket-4.3.2.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spring-tx-3.2.17.RELEASE.jar"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spring-security-acl-4.2.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spring-security-config-4.2.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spring-security-core-4.2.0.RELEASE.jar"/>
@@ -128,5 +123,10 @@
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/flyway-core-4.0.3-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spring-test-4.3.2.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
