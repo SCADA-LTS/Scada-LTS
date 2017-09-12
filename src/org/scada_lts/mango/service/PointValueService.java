@@ -133,7 +133,7 @@ public class PointValueService implements MangoPointValues {
 
 				// Create a transaction within which to do the insert.
 				
-				id = savePointValueInTrasaction(pointId, dataType, dvalueFinal, pointValue.getTime(), svalueFinal, source, async);
+				id = savePointValueInTrasaction(pointId, dataType, dvalueFinal, pointValue.getTime(), svalueFinal, source, false);
 				
 			} else
 				// Single sql call, so no transaction required.
