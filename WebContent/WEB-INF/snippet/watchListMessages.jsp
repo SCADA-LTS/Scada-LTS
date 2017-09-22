@@ -28,7 +28,9 @@
   <tag:img png="arrow_refresh" title="common.refresh" onclick="WatchListDwr.forcePointRead(${point.id})"/><br/>
 </c:if>
 <c:forEach items="${events}" var="event">
-  <tag:eventIcon event="${event}"/>
-  ${sst:time(event.activeTimestamp)} - <sst:i18n message="${event.message}"/>
-  <tag:alarmAck event="${event}"/><br/>
+	<c:if test="${event.alarmLevel>0}">
+	  <tag:eventIcon event="${event}"/>
+	  ${sst:time(event.activeTimestamp)} - <sst:i18n message="${event.message}"/>
+	  <tag:alarmAck event="${event}"/><br/>
+	 </c:if>
 </c:forEach>
