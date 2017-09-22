@@ -17,6 +17,16 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%><%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <c:if test="${!empty invalid || !empty disabled || !empty events || pointRT.attributes.UNRELIABLE}">
+
+<c:set var="contains" value="false" />
+<c:forEach items="${events}" var="event">
+  <c:if test="${event.alarmLevel>0}">
+    <c:set var="contains" value="true" />
+  </c:if>
+</c:forEach>
+<c:if test="${contains}">
+
+
   <table width="200" cellspacing="0" cellpadding="0">
     <c:choose>
       <c:when test="${!empty invalid}">
@@ -43,13 +53,17 @@
     </c:if>
     <c:if test="${!empty events}">
       <c:forEach items="${events}" var="event">
-        <tr>
-          <td><tag:eventIcon event="${event}"/></td>
-          <td style="white-space:nowrap;">&nbsp;<tag:alarmAck event="${event}"/></td>
-          <td>${sst:time(event.activeTimestamp)}</td>
-          <td style="white-space:nowrap;">&nbsp;<sst:i18n message="${event.message}"/></td>
-        </tr>
+      	<c:if test="${event.alarmLevel>0}">
+	        <tr>
+	          <td><tag:eventIcon event="${event}"/></td>
+	          <td style="white-space:nowrap;">&nbsp;<tag:alarmAck event="${event}"/></td>
+	          <td>${sst:time(event.activeTimestamp)}</td>
+	          <td style="white-space:nowrap;">&nbsp;<sst:i18n message="${event.message}"/></td>
+	        </tr>
+        </c:if>
       </c:forEach>
     </c:if>
   </table>
+  
+  </c:if>
 </c:if>
