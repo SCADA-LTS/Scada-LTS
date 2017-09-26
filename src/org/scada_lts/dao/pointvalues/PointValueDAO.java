@@ -1,5 +1,4 @@
 /*
- * (c) 2015 Abil'I.T. http://abilit.eu/
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
+import org.slf4j.profiler.Profiler;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -355,7 +355,9 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public Object[] create(final PointValue entity) {
-		
+		Profiler profiler = null;
+		profiler = new Profiler("create point value");
+		profiler.start("create");
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
 		}
@@ -376,6 +378,8 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			 			}
 		}, keyHolder);
 		
+
+		profiler.stop().print();
 		return new Object[] {keyHolder.getKey().longValue()};
 		
 	}
