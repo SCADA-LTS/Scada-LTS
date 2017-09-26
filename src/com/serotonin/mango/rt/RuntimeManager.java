@@ -384,14 +384,14 @@ public class RuntimeManager {
 			point.defaultTextRenderer();
 
 		// Event detectors
-		/*Iterator<PointEventDetectorVO> peds = point.getEventDetectors()
+		Iterator<PointEventDetectorVO> peds = point.getEventDetectors()
 				.iterator();
-		while (peds.hasNext()) {
+			while (peds.hasNext()) {
 			PointEventDetectorVO ped = peds.next();
 			if (!ped.getDef().supports(dataType))
 				// Remove the detector.
 				peds.remove();
-		}*/
+		}
 
 		new DataPointDao().saveDataPoint(point);
 
