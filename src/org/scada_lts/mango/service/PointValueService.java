@@ -35,6 +35,7 @@ import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
+import org.slf4j.profiler.Profiler;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -101,14 +102,26 @@ public class PointValueService implements MangoPointValues {
 	 */
 	public void savePointValueAsync(int pointId, PointValueTime pointValue,
 			SetPointSource source) {
+		
+		Profiler profiler = null;
+		profiler = new Profiler("savePointValueAsync");
+		profiler.start("start");
+		
 		long id = savePointValueImpl(pointId, pointValue, source, true);
 		if (id != -1)
 			clearUnsavedPointValues();
+		
+		profiler.stop().print();
 	}
 
 	
 	public long savePointValueImpl(final int pointId, final PointValueTime pointValue,
 			final SetPointSource source, boolean async) {
+		
+		Profiler profiler = null;
+		profiler = new Profiler("savePointValueImpl");
+		profiler.start("start");
+		
 		MangoValue value = pointValue.getValue();
 		final int dataType = DataTypes.getDataType(value);
 		double dvalue = 0;
@@ -182,6 +195,7 @@ public class PointValueService implements MangoPointValues {
 			}
 		}
 
+		profiler.stop().print();
 		return id;
 	}
 
@@ -204,6 +218,11 @@ public class PointValueService implements MangoPointValues {
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	long savePointValueInTrasaction(final int pointId, final int dataType, double dvalue, final long time, final String svalue, final SetPointSource source,	boolean async) {
 		// Apply database specific bounds on double values.
+		
+		Profiler profiler = null;
+		profiler = new Profiler("savePointValueInTrasaction");
+		profiler.start("start");
+		
 		dvalue = PointValueDAO.getInstance().applyBounds(dvalue);
 
 		if (async) {
@@ -215,8 +234,11 @@ public class PointValueService implements MangoPointValues {
 		int retries = 5;
 		while (true) {
 			try {
-				return savePointValueImpl(pointId, dataType, dvalue, time,
+				
+				long id = savePointValueImpl(pointId, dataType, dvalue, time,
 						svalue, source);
+				profiler.stop().print();
+				return id;
 			} catch (ConcurrencyFailureException e) {
 				if (retries <= 0)
 					throw e;
@@ -227,11 +249,18 @@ public class PointValueService implements MangoPointValues {
 								+ ", dvalue=" + dvalue, e);
 			}
 		}
+		
+		
 	}
 	
 	public long savePointValue(final int pointId, final int dataType, double dvalue,
 			final long time, final String svalue, final SetPointSource source,
 			boolean async) {
+		
+		Profiler profiler = null;
+		profiler = new Profiler("savePointValue");
+		profiler.start("start");
+		
 		// Apply database specific bounds on double values.
 		dvalue = PointValueDAO.getInstance().applyBounds(dvalue);
 
@@ -244,8 +273,10 @@ public class PointValueService implements MangoPointValues {
 		int retries = 5;
 		while (true) {
 			try {
-				return savePointValueImpl(pointId, dataType, dvalue, time,
+				long id = savePointValueImpl(pointId, dataType, dvalue, time,
 						svalue, source);
+				profiler.stop().print();
+				return id;
 			} catch (ConcurrencyFailureException e) {
 				if (retries <= 0)
 					throw e;
@@ -259,10 +290,13 @@ public class PointValueService implements MangoPointValues {
 	}
 
 	private long savePointValueImpl(int pointId, int dataType, double dvalue, long time, String svalue, SetPointSource source) {
-                
+        
+		Profiler profiler = null;
+		profiler = new Profiler("savePointValueImpl");
+		profiler.start("start");
+		
 		long id = (Long) PointValueDAO.getInstance().create(pointId, dataType, dvalue, time)[0];
-                
-                   
+                 
 		if (svalue == null && dataType == DataTypes.IMAGE){
 			svalue = Long.toString(id);
         }
@@ -289,6 +323,8 @@ public class PointValueService implements MangoPointValues {
 			PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
            
 		}
+		
+		profiler.stop().print();
 
 		return id;
 	}
@@ -507,6 +543,11 @@ public class PointValueService implements MangoPointValues {
 		}
 
 		public void execute() {
+			
+			Profiler profiler = null;
+			profiler = new Profiler("BatchWriteBehind");
+			profiler.start("execute");
+			
 			try {
 				BatchWriteBehindEntry[] inserts;
 				while (true) {
@@ -565,6 +606,7 @@ public class PointValueService implements MangoPointValues {
 			} finally {
 				instances.remove(this);
 				INSTANCES_MONITOR.setValue(instances.size());
+				profiler.stop().print();
 			}
 		}
 

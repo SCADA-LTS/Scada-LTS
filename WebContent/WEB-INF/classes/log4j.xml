@@ -139,12 +139,6 @@
     <appender-ref ref="daologfile"/>
   </appender>
   
-  <appender name="profileasync" class="org.apache.log4j.AsyncAppender">
-    <param name="LocationInfo" value="true"/>
-    <appender-ref ref="profilelogfile"/>
-  </appender>
-  
-  
   <appender name="apiasync" class="org.apache.log4j.AsyncAppender">
     <param name="LocationInfo" value="true"/>
     <appender-ref ref="apilogfile"/>
@@ -246,11 +240,7 @@
     <appender-ref ref="scadadaoasync"/>
   </category>
   
-  <category name"org.scada_lts.dao" additivity="false">
-    <level value="trace"/>
-    <appender-ref ref="profileasync"/>
-  </category>
-
+  
 <!-- Root Log -->
   <root>
     <level value="info"/>
