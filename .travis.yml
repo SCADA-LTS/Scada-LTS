@@ -1,13 +1,5 @@
 sudo: required
 before_install:
-#- sudo add-apt-repository ppa:openjdk-r/ppa -y
-#- sudo apt-get update
-#- sudo apt-get install -y openjdk-8-jdk
-#- sudo update-alternatives --auto java
-#- sudo update-alternatives --auto javac
-#- export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-#- java -version
-#- javac -version
 - sudo apt-get install tomcat7
 before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
