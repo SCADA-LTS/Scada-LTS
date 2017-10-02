@@ -420,10 +420,12 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		
 	}
 	
-	
-	
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	//@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void executeBatchUpdateInsert( List<Object[]> params) {
+		
+		Profiler profiler = null;
+		profiler = new Profiler("executeBatchUpdateInsert:" + params.size());
+		profiler.start("prepare parameter");
 		
 		if (LOG.isTraceEnabled()) {
 			for (Object[] param : params) {
@@ -433,8 +435,21 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			}
 		}
 		
+		profiler.start("execute optymalization");
+		DAO.getInstance().getJdbcTemp().update("SET autocommit=0");
+		DAO.getInstance().getJdbcTemp().update("SET unique_checks=0");
+		DAO.getInstance().getJdbcTemp().update("SET foreign_key_checks=0");
+		
+		profiler.start("batchUpdate");
 		DAO.getInstance().getJdbcTemp().batchUpdate(POINT_VALUE_INSERT,params);
-
+		
+		profiler.start("disable optymalization");
+		DAO.getInstance().getJdbcTemp().update("SET autocommit=1");
+		DAO.getInstance().getJdbcTemp().update("SET unique_checks=1");
+		DAO.getInstance().getJdbcTemp().update("SET foreign_key_checks=1");
+		
+		profiler.stop().print();
+		
 	}
 		
 	public Long getInceptionDate(int dataPointId) {
