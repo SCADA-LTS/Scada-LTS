@@ -83,7 +83,10 @@ public class ScadaConfig {
 	 */
 	public static final String CRONE_UPDATE_CACHE_POINT_HIERARCHY = "abilit.CRONE_UPDATE_CACHE_POINT_HIERARCHY";
 	
+	public static final String PROFILE_LOG = "abilit.PROFILE_LOG";
+	
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
+	
 	private static final String FILE_NAME_LOGO="logo.png";
 	private static final String FILE_NAME_PROPERTIES="env.properties";
 	private static final String FILE_NAME_CUSTOM_CSS="common.css";

@@ -236,7 +236,7 @@
   </category>
   
   <category name="org.scada_lts.dao" additivity="false">
-    <level value="trace"/>
+    <level value="info"/>
     <appender-ref ref="scadadaoasync"/>
   </category>
   

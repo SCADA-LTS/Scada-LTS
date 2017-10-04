@@ -17,6 +17,7 @@
 
 package org.scada_lts.dao.pointvalues;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
@@ -423,10 +425,20 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	//@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void executeBatchUpdateInsert( List<Object[]> params) {
 		
-		Profiler profiler = null;
-		profiler = new Profiler("executeBatchUpdateInsert:" + params.size());
-		profiler.start("prepare parameter");
+		boolean profile = false;
 		
+		try {
+			profile = ScadaConfig.getInstance().getBoolean(ScadaConfig.PROFILE_LOG, false);
+		} catch (IOException e) {
+			LOG.error(e);
+		}
+		
+		Profiler profiler = null;
+		if (profile) {
+			profiler = new Profiler("executeBatchUpdateInsert:" + params.size());
+			profiler.start("prepare parameter");
+		}
+			
 		if (LOG.isTraceEnabled()) {
 			for (Object[] param : params) {
 				for (Object arg :param) {
@@ -435,20 +447,31 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			}
 		}
 		
-		profiler.start("execute optymalization");
-		DAO.getInstance().getJdbcTemp().update("SET autocommit=0");
-		DAO.getInstance().getJdbcTemp().update("SET unique_checks=0");
-		DAO.getInstance().getJdbcTemp().update("SET foreign_key_checks=0");
+		if (profile) {
+			//TEST
+			//profiler.start("execute optymalization");
+			//DAO.getInstance().getJdbcTemp().update("SET autocommit=0");
+			//DAO.getInstance().getJdbcTemp().update("SET unique_checks=0");
+			//DAO.getInstance().getJdbcTemp().update("SET foreign_key_checks=0");
+		}
 		
-		profiler.start("batchUpdate");
+		if (profile) {
+			profiler.start("batchUpdate");
+		}
+		
 		DAO.getInstance().getJdbcTemp().batchUpdate(POINT_VALUE_INSERT,params);
 		
-		profiler.start("disable optymalization");
-		DAO.getInstance().getJdbcTemp().update("SET autocommit=1");
-		DAO.getInstance().getJdbcTemp().update("SET unique_checks=1");
-		DAO.getInstance().getJdbcTemp().update("SET foreign_key_checks=1");
+		if (profile) { 
+			//TEST
+			//profiler.start("disable optymalization");
+			//DAO.getInstance().getJdbcTemp().update("SET autocommit=1");
+			//DAO.getInstance().getJdbcTemp().update("SET unique_checks=1");
+			//DAO.getInstance().getJdbcTemp().update("SET foreign_key_checks=1");
+		}
 		
-		profiler.stop().print();
+		if (profile) {
+			LOG.info(profiler.stop().toString());
+		}
 		
 	}
 		
