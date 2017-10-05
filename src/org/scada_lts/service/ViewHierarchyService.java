@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.config.Configurations;
 import org.scada_lts.dao.GenericHierarchyDAO;
 import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
@@ -98,9 +99,13 @@ public class ViewHierarchyService {
 					vhJSON.setKey(vhNodeInFolder.getViewId());
 					vhJSON.setChildren(null);
 					vhJSON.setFolder(false);
-					profiler.start("Get info view");
+					if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+						profiler.start("Get info view");
+					}
 					vhJSON.setTitle(viewDAO.findById(new Object[] { vhJSON.getKey() }).getName());
-					profiler.stop();
+					if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+						profiler.stop();
+					}
 					LOG.info("Started "+getClass().getSimpleName()+" in "+ getClass().getSimpleName() +"ms "+ profiler.elapsedTime() / 1000 / 1000);
 					tmpViewsInFolder.put(vhJSON.getKey(), new Boolean(true));
 					if (vhNode.getChildren() == null) {
