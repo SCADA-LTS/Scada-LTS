@@ -386,7 +386,7 @@ public class RuntimeManager {
 		// Event detectors
 		Iterator<PointEventDetectorVO> peds = point.getEventDetectors()
 				.iterator();
-		while (peds.hasNext()) {
+			while (peds.hasNext()) {
 			PointEventDetectorVO ped = peds.next();
 			if (!ped.getDef().supports(dataType))
 				// Remove the detector.
