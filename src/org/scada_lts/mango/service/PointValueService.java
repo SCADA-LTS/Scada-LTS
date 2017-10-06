@@ -593,11 +593,11 @@ public class PointValueService implements MangoPointValues {
 					int retries = 10;
 					while (true) {
 						try {
-							//if (Configurations.getInstance().getCheckTransForBatchUpdateInsert().getConfig()) {
-								//PointValueDAO.getInstance().executeBatchUpdateInsertInTransaction(params);
-							//} else {
+							if (Configurations.getInstance().getCheckTransForBatchUpdateInsert().getConfig()) {
+								PointValueDAO.getInstance().executeBatchUpdateInsertInTransaction(params);
+							} else {
 								PointValueDAO.getInstance().executeBatchUpdateInsert(params);
-							//}
+							}
 							break;
 						} catch (ConcurrencyFailureException e) {
 							if (retries <= 0) {
