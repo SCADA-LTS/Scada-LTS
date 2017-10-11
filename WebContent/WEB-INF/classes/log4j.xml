@@ -99,6 +99,16 @@
       <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
     </layout>
   </appender>
+  
+  <appender name="profilelogfile" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/profile.log"/>
+    <param name="MaxFileSize" value="1000KB"/>
+    <param name="MaxBackupIndex" value="10"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
+  
 
   <appender name="grove" class="com.serotonin.mango.util.MangoGroveLogAppender"/>
   
@@ -226,10 +236,11 @@
   </category>
   
   <category name="org.scada_lts.dao" additivity="false">
-    <level value="trace"/>
+    <level value="info"/>
     <appender-ref ref="scadadaoasync"/>
   </category>
-
+  
+  
 <!-- Root Log -->
   <root>
     <level value="info"/>

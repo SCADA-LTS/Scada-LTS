@@ -27,10 +27,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.config.Configurations;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
+import org.slf4j.profiler.Profiler;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
@@ -146,6 +148,12 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 			LOG.trace(entity);
 		}
 		
+		Profiler profiler = null;
+		if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+			profiler = new Profiler("create PointValueAdnnotation:" + entity.toString());
+			profiler.start("start");
+		}
+		
 		DAO.getInstance().getJdbcTemp().update(POINT_VALUE_ADNNOTATIONS_INSERT, new Object[] { 
 			 						entity.getPointValueId(), 
 			 						entity.getTextPointValueShort(),
@@ -154,8 +162,11 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 			 						entity.getSourceId()
 			 				});
 
-		
 		// table hav'nt pk //TODO add key
+		if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+			LOG.info(profiler.stop().toString());
+		}
+		
 		return new Object[] {0};
 	}
 

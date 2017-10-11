@@ -1,5 +1,4 @@
 /*
- * (c) 2015 Abil'I.T. http://abilit.eu/
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +26,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.config.Configurations;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
+import org.slf4j.profiler.Profiler;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -356,8 +357,13 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	@Override
 	public Object[] create(final PointValue entity) {
 		
-		if (LOG.isTraceEnabled()) {
-			LOG.trace(entity);
+		Profiler profiler = null;
+		if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+			profiler = new Profiler("create point value");
+			profiler.start("create");
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(entity);
+			}
 		}
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -376,6 +382,9 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			 			}
 		}, keyHolder);
 		
+		if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+			profiler.stop().print();
+		}
 		return new Object[] {keyHolder.getKey().longValue()};
 		
 	}
@@ -416,11 +425,21 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		
 	}
 	
-	
-	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void executeBatchUpdateInsertInTransaction( List<Object[]> params) {
+		executeBatchUpdateInsert( params );
+	}
+	
+	//@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void executeBatchUpdateInsert( List<Object[]> params) {
 		
+		Profiler profiler = null;
+		
+		if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+			profiler = new Profiler("executeBatchUpdateInsert:" + params.size());
+			profiler.start("prepare parameter");
+		}
+			
 		if (LOG.isTraceEnabled()) {
 			for (Object[] param : params) {
 				for (Object arg :param) {
@@ -429,8 +448,38 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			}
 		}
 		
+		if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+			profiler.start("execute optymalization");
+		}
+		if (Configurations.getInstance().getCheckOptimalizationBatchUpdateInsertConfig().getConfig()) {
+			//set innodb_flush_log_at_trx_commit = 2;
+			// SESION set
+			// bulk_insert_buffer_size = 256M in config
+			DAO.getInstance().getJdbcTemp().update("SET autocommit=0");
+			DAO.getInstance().getJdbcTemp().update("SET unique_checks=0");
+			DAO.getInstance().getJdbcTemp().update("SET foreign_key_checks=0");
+		}
+		
+		if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+			profiler.start("batchUpdate");
+		}
+		
 		DAO.getInstance().getJdbcTemp().batchUpdate(POINT_VALUE_INSERT,params);
-
+		
+		if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+			profiler.start("disable optymalization");
+		}
+		if (Configurations.getInstance().getCheckOptimalizationBatchUpdateInsertConfig().getConfig()) {
+			DAO.getInstance().getJdbcTemp().update("SET foreign_key_checks=1");
+			DAO.getInstance().getJdbcTemp().update("SET unique_checks=1");
+			DAO.getInstance().getJdbcTemp().update("SET autocommit=1");
+			//set innodb_flush_log_at_trx_commit = 1;
+		}
+		
+		if (Configurations.getInstance().getCheckPerformance().getConfig()) {
+			LOG.info(profiler.stop().toString());	
+		}
+		
 	}
 		
 	public Long getInceptionDate(int dataPointId) {

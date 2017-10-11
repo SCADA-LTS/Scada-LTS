@@ -83,7 +83,14 @@ public class ScadaConfig {
 	 */
 	public static final String CRONE_UPDATE_CACHE_POINT_HIERARCHY = "abilit.CRONE_UPDATE_CACHE_POINT_HIERARCHY";
 	
+	public static final String PROFILE_LOG = "abilit.PROFILE_LOG";
+	
+	public static final String TRANSACTION_FOR_BATCH_UPDATE_INSERT = "abilit.TRANSACTION_FOR_BATCH_UPDATE_INSERT";
+	
+	public static final String SET_OPTIMALIZATION_BATCH_UPDATE_INSERT = "abilit.SET_OPTIMALIZATION_BATCH_UPDATE_INSERT";
+	
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
+	
 	private static final String FILE_NAME_LOGO="logo.png";
 	private static final String FILE_NAME_PROPERTIES="env.properties";
 	private static final String FILE_NAME_CUSTOM_CSS="common.css";
@@ -263,8 +270,6 @@ public class ScadaConfig {
 			path = path + "/" + DIR_NAME_CUSTOM_CONFIG + "/";
 		}
 		return path;
-
-		
 	}
 
 	
