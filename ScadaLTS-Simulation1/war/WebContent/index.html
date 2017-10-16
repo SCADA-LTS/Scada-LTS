@@ -1,0 +1,600 @@
+<html>
+
+<head>
+    <title>Simulation Example</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="ScadaLTS garbage dump - recycle center">
+    <meta name="keywords" content="ScadaLTS, Scada, SIVEC">
+    <meta name="author" content="Radek Jajko">
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" href="resources/style.css">
+</head>
+
+<body onload="init()">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header mdl-layout_header--scroll">
+            <div class="mdl-layout_header-row">
+
+                <span id="mainTitle" class="mdl-layout-title"></span>
+                <span id="clock"></span>
+                <span class="logo">
+                    <img id="logoSrc" src="" alt="Logo">
+                </span>
+            </div>
+
+        </header>
+        <div class="mdl-layout__drawer">
+            <div>
+                <span id="navTitle" class="mdl-layout-title"></span>
+            </div>
+            <nav class="mdl-navigation">
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="editView()">Edit<i class="material-icons">create</i></button>
+                <a class="mdl-navigation__link" href="">OPTION</a>
+            </nav>
+        </div>
+        <main class="mdl-layout__content">
+            <!-- Location section -->
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--12-col">
+                    <div class="mdl-card mdl-shadow--2dp card-short">
+                        <header>
+                            <div class="mdl-card__title">
+                                <div class="mdl-cell mdl-cell--6-col">
+                                    <h2 class="mdl-card__title-text"><i class="material-icons">people</i><span id="current-day-all-label"></span><span id="allEntires"> 0</span></h2>
+                                </div>
+                                <div class="mdl-cell mdl-cell--6-col">
+                                    <h2 class="mdl-card__title-text"><span id="enable-switch-label"></span></h2>
+                                    <div class="mdl-card--border">
+                                        <label id="labelCheckbox" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
+                            <input type="checkbox" id="switch-1" class="mdl-switch__input" checked="true" onclick="postCheckBox(this)">
+                            <span class="mdl-switch__label"></span>
+                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+                    </div>
+                </div>
+                <div class="mdl-cell mdl-cell--12-col edit-btn">
+                    <div class="mdl-card wide-card mdl-shadow--2dp">
+                        <header>
+                            <div class="mdl-card__title">
+                                <h2 class="mdl-card__title-text">Add a new location</h2>
+
+                            </div>
+                            <div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--fad button-color" onclick="addCard()"><i class="material-icons">add</i></button>
+                            </div>
+                        </header>
+                        <section>
+
+                        </section>
+                    </div>
+                </div>
+                <div id=locationsection>
+
+                </div>
+            </div>
+            <div id=camerasection class="mdl-grid">
+                <!-- Camera section -->
+                <div class="mdl-grid">
+                    <div class="mdl-cell mdl-cell--6-col">
+                        <div class="mdl-card image-card mdl-shadow--2dp">
+                            <div class="mdl-card__title mdl-card--expand"></div>
+                            <div class="mdl-card__actions">
+                                <img id="liveStream1" src="" alt="Camera1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdl-cell mdl-cell--6-col">
+                        <div class="mdl-card image-card mdl-shadow--2dp">
+                            <div class="mdl-card__title mdl-card--expand"></div>
+                            <div class="mdl-card__actions">
+                                <img id="liveStream2" src="" alt="Camera2">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div>
+                <footer class="mdl-mini-footer">
+                    <div class="mdl-mini-footer__left-section">
+                        <div class="mdl-logo">
+                            Copyright &copy; 2017 ScadaLTS ver. 0.0.8-dev All Rights Reserved
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </main>
+
+        <dialog id="dialog" class="mdl-dialog">
+            <h3 class="mdl-dialog__title">Edit element</h3>
+            <div class="mdl-dialog__content">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input id="nameField" class="mdl-textfield__input" type="text" id="fname">
+                    <label class="mdl-textfield__label" for="fname">Name...</label>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input id="xidField" class="mdl-textfield__input" type="text" id="fxid">
+                    <label class="mdl-textfield__label" for="fxid">Data Point XID...</label>
+                </div>
+            </div>
+            <div class="mdl-dialog__actions">
+                <button type="button" class="mdl-button">Close</button>
+                <button type="button" class="mdl-button" onclick="saveData()">Save</button>
+                <!-- <button type="button" class="mdl-button" disabled>Disabled action</button> -->
+            </div>
+        </dialog>
+
+    </div>
+</body>
+
+<!-- Requred files with data -->
+<script src="data.js"></script>
+<script src="config.js"></script>
+
+<script>
+    var date = new Date().getTime() - 43200000;
+
+    //---------------------------------//
+    //    Initialization variables     //
+    //---------------------------------//
+
+    var cameraSrc = ["resources/cam.png", "resources/cam.png"];
+
+    var username;
+    var password;
+
+    var currentLocation = 0;
+
+    for (var i = 1; i <= cardsData.card.length; i++) {
+        $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="deleteLocation(' + i + ')"><i class="material-icons">delete</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">schedule </i><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">restore</i><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">today</i><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color increment-btn" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
+    }
+
+    /**
+     * Init
+     * Initialization of webContent - values and names loading;
+     */
+    var firstRun = true;
+    function init() {
+
+        document.getElementById("mainTitle").innerHTML = viewConfiguration.mainTitle;
+        document.getElementById("navTitle").innerHTML = viewConfiguration.navTitle;
+
+        document.getElementById("current-day-all-label").innerHTML = viewConfiguration.cardDescription[0];
+        document.getElementById("enable-switch-label").innerHTML = viewConfiguration.cardDescription[1];
+
+        for (var i = 1; i <= cardsData.card.length; i++) {
+            document.getElementById("cardTitle" + i).innerHTML = cardsData.card[i - 1].title;
+        }
+
+        var currHourList = document.getElementsByClassName("current-hour-label");
+        var prevHourList = document.getElementsByClassName("previous-hour-label");
+        var currDayList = document.getElementsByClassName("current-day-label");
+
+        for (var i = 0; i < currHourList.length; i++) {
+            currHourList[i].innerText = viewConfiguration.cardDescription[2];
+            prevHourList[i].innerText = viewConfiguration.cardDescription[3];
+            currDayList[i].innerText = viewConfiguration.cardDescription[4];
+        }
+
+        document.getElementById("logoSrc").setAttribute('src', viewConfiguration.logoSrc);
+        document.getElementById("liveStream1").setAttribute('src', cameraSrc[0]);
+        document.getElementById("liveStream2").setAttribute('src', cameraSrc[1]);
+
+        var url_string = window.location;
+        var url = new URL(url_string);
+        username = url.searchParams.get("username");
+        password = url.searchParams.get("pass");
+
+        login(username, password);
+        if (firstRun) {
+            loadConfigFromServer();
+            firstRun = false;
+        }
+
+
+    }
+
+    /**
+     * Run JS Clock on top of the page
+     */
+    function startTime() {
+        var today = new Date();
+        var d = today.getDate();
+        var mo = today.getMonth() + 1;
+        var y = today.getFullYear();
+        var h = today.getHours();
+        var m = today.getMinutes();
+        var s = today.getSeconds();
+        d = chceckTime(d);
+        mo = chceckTime(mo);
+        h = chceckTime(h);
+        m = chceckTime(m);
+        s = chceckTime(s);
+
+        document.getElementById("clock").innerHTML =
+            d + "-" + mo + "-" + y + "  " + h + ":" + m + ":" + s;
+
+        var t = setTimeout(startTime, 500);
+
+    }
+
+    function chceckTime(i) {
+        if (i < 10) {
+            i = "0" + i
+        }
+        return i;
+    }
+
+    function sum(points) {
+        return points.reduce(
+            function (sum, current) {
+                return parseInt(sum) + parseInt(current);
+            }, 0
+        );
+    }
+
+    (function () {
+        'use strict';
+        var dialogButton = document.querySelector('.dialog-button');
+
+        dialog.querySelector('button:not([disabled])')
+            .addEventListener('click', function () {
+                dialog.close();
+            });
+    }());
+
+    /*
+     * SCADA Functions
+     */
+    var allEntires = [];
+
+    function login(username, password) {
+        $.get("../ScadaBR/api/auth/" + username + "/" + password, function (data) {
+            console.log(data);
+        });
+
+        startTime();
+        updateView();
+        openingShedule();
+        checkCheckBox();
+    }
+
+    /**
+     * Increment DataPoint value
+     * Add another one value to data point with "xid" whitch is double type DS
+     * @param htmlid - HTML Location Card ID number
+     */
+    function incrementDP(htmlid) {
+
+        xid = cardsData.card[htmlid - 1].dataPointXID;
+
+        $.ajax({
+            type: "POST",
+            url: "../ScadaBR/api/point_value/setValue/" + xid + "/2/1",
+            contentType: "application/text;charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                //console.log("succsess!" + xid)
+            },
+            error: function (ts) { alert("DataPoint not found!\n - Error during establishing connection") }
+        });
+
+    }
+
+    /**
+     * UpdateCardData
+     * Get from the server by REST api values to single data point
+     * @param htmlid - HTML Location Card ID number
+     */
+    function updateCardData(htmlid) {
+
+        xid = cardsData.card[htmlid - 1].dataPointXID;
+
+        var now = new Date().getTime();
+        var hour = now - 3600000;
+        var twoHours = now - 3600000 * 2;
+        var day = now - (hour * 12);
+
+        var hour_points = [];
+        var last_hour_points = [];
+        var day_points = [];
+
+        $.get("../ScadaBR/api/point_value/getValuesFromTime/" + date + "/" + xid, function (data) {
+
+            var dataObjG = JSON.parse(data);
+
+            for (x in dataObjG.values) {
+                var xis = dataObjG.values[x].ts;
+                if (xis > hour) {
+                    hour_points.push(dataObjG.values[x].value);
+                    // console.log("Data: " + dataObjG.values[x].value);
+                }
+                if (xis > twoHours && xis < hour) {
+                    last_hour_points.push(dataObjG.values[x].value);
+                }
+                if (xis > day) {
+                    day_points.push(dataObjG.values[x].value);
+                }
+            }
+
+            allEntires[htmlid] = day_points.length;
+            document.getElementById("current-hour-data-" + htmlid).innerHTML = sum(hour_points);
+            document.getElementById("previous-hour-data-" + htmlid).innerHTML = sum(last_hour_points);
+            document.getElementById("current-day-data-" + htmlid).innerHTML = sum(day_points);
+
+        });
+    }
+
+    /**
+     * Update HTML View 
+     * Refresh data in every card by running updateCardData()
+     * method fore each card.
+     */
+    function updateView() {
+
+        //console.log(date);
+        for (var i = 1; i <= cardsData.card.length; i++) {
+            updateCardData(i);
+        }
+        checkCheckBox();
+
+        allEntires2 = allEntires.reduce((pv, cv) => pv + cv, 0);
+        document.getElementById("allEntires").innerHTML = allEntires2;
+
+        var t = setTimeout(updateView, 1000);
+    }
+
+    /**
+     * editEnabled
+     * Open edit menu and show invisible buttons;
+     */
+    var editEnabled = false;
+    function editView() {
+
+        editEnabled = !editEnabled;
+
+        if (editEnabled) {
+            $(".edit-btn").removeClass("gone");
+        } else {
+            $(".edit-btn").addClass("gone");
+        }
+
+    }
+
+    /**
+     * addCard
+     * add a new location card and open dialog.
+     */
+    function addCard() {
+
+        if (cardsData === null) {
+            var newCardsData = {
+                card: [{
+                    title: "Location 1",
+                    dataPointXID: "DP_260255"
+                }]
+            };
+            cardsData = newCardsData;
+        }
+        cardsData.card.push({
+            title: "Name...",
+            dataPointXID: "DP_260255"
+        });
+        var i = cardsData.card.length;
+        $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="deleteLocation(' + i + ')"><i class="material-icons">delete</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">schedule </i><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">restore</i><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">today</i><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color increment-btn" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
+        editLocation(i);
+        init();
+
+
+    }
+
+    /**
+     * Edit Location
+     * Edit location data - name and datasource xid
+     */
+    function editLocation(x) {
+        currentLocation = x;
+        var dialog = document.querySelector('#dialog');
+        if (!dialog.showModal) {
+            dialogPolyfill.registerDialog(dialog);
+        }
+        dialog.showModal();
+
+        document.getElementById('nameField').value = cardsData.card[currentLocation - 1].title;
+        document.getElementById('xidField').value = cardsData.card[currentLocation - 1].dataPointXID;
+
+    }
+
+    /**
+     * Save Data
+     * Accept changes and save to memory.
+     */
+    function saveData() {
+        var nameField = document.getElementById('nameField').value;
+        var xidField = document.getElementById('xidField').value;
+
+        cardsData.card[currentLocation - 1].title = nameField;
+        cardsData.card[currentLocation - 1].dataPointXID = xidField;
+
+        document.getElementById("cardTitle" + currentLocation).innerHTML = cardsData.card[currentLocation - 1].title;
+
+        saveConfigToServer();
+    }
+
+    /**
+     * deleteLocation
+     * Remove from view location card and refresh view
+     * @param x - current location
+     */
+    function deleteLocation(x) {
+
+        cardsData.card.splice(x - 1, 1);
+        $('#locationsection').empty();
+
+        for (var i = 1; i <= cardsData.card.length; i++) {
+            $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="deleteLocation(' + i + ')"><i class="material-icons">delete</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">schedule </i><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">restore</i><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">today</i><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color increment-btn" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
+        }
+
+        saveConfigToServer();
+
+        init();
+    }
+
+    /**
+     * Check CheckBox state
+     * Connect to ScadaDatabase and get value from it
+     * Set buttons on the response value
+     */
+    function checkCheckBox() {
+
+        $.get("../ScadaBR/api/point_value/getValue/" + viewConfiguration.enableButtonDSxid, function (data) {
+            // console.log(JSON.parse(data).value == 'true');
+
+            var x = (JSON.parse(data).value == 'true');
+            changeSwitch(x);
+
+        });
+    }
+
+    /**
+     * ChangeSwitch
+     * @param x - enable/disable button
+     */
+    function changeSwitch(x) {
+
+        var buttonsList = document.getElementsByClassName("increment-btn");
+        var sw = document.getElementsByClassName("switch-1");
+
+        sw.checked = x;
+        for (var i = 0; i < buttonsList.length; i++) {
+            buttonsList[i].disabled = !x;
+        }
+        if (x == false) {
+            $("#labelCheckbox").removeClass("is-checked");
+        } else {
+            $("#labelCheckbox").addClass("is-checked");
+        }
+
+    }
+
+    /**
+     * postCheckBox
+     * Send a POST with actual state of selected checkbox
+     * @callback - invoking checkbox - onClick method
+     */
+    var globalType;
+    function postCheckBox(callback) {
+
+        var xid = viewConfiguration.enableButtonDSxid;
+        try {
+            globalType = callback.checked;
+            console.log(globalType);
+        } catch (err) {
+            console.log(err);
+        }
+        var number = 0;
+        changeSwitch(globalType);
+        if (globalType) {
+            number = 1;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "../ScadaBR/api/point_value/setValue/" + xid + "/0/" + number,
+            contentType: "application/text;charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (ts) { alert("DataPoint not found!\n - Error during establishing connection") }
+        });
+
+    }
+
+    /**
+     * openingShedule
+     * When this counter should be active. Disable buttons and data source
+     * if this side is opened on the wrong day or wrong time
+     */
+    function openingShedule() {
+        var today = new Date();
+        var d = today.getDay() - 1;
+        var h = today.getHours();
+        var request = { checked: true };
+        request.checked = Boolean('true');
+
+        var x = viewConfiguration;
+        var t = setTimeout(openingShedule, 12000000);
+
+        if (viewConfiguration.weekEnableShedule[d] == 1) {
+            if (viewConfiguration.weekEnableHours[0] < h && h < viewConfiguration.weekEnableHours[1]) {
+                postCheckBox(request);
+                checkCheckBox();
+                return;
+            }
+        }
+
+        request.checked = false;
+        postCheckBox(request);
+
+    }
+
+    /**
+     * save Configuration to Server
+     * Send a POST to special alphanumeric DataPoint in ScadaLts
+     * with configured JSON string.
+     */
+    function saveConfigToServer() {
+
+        var xid = viewConfiguration.configLocationDSxid;
+
+        var savedData = JSON.stringify(cardsData);
+        savedData = encodeURI(savedData);
+
+        $.ajax({
+            type: "POST",
+            url: "../ScadaBR/api/point_value/setValue/" + xid + "/3/" + savedData,
+            contentType: "application/text;charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (ts) { alert("DataPoint not found!\n - Error during establishing connection") }
+        });
+
+    }
+
+    /**
+     * Load Configuration from Server
+     * Get a data from server DataSource with JSON configuration data
+     * Parse this data and save as local variable  
+     */
+    function loadConfigFromServer() {
+
+        var xid = viewConfiguration.configLocationDSxid;
+
+        $.get("../ScadaBR/api/point_value/getValue/" + xid, function (data) {
+
+            console.log(data);
+
+            var recivedValue = JSON.parse(decodeURI(data)).value;
+            cardsData = JSON.parse(recivedValue);
+
+            $('#locationsection').empty();
+            for (var i = 1; i <= cardsData.card.length; i++) {
+                $('<div class=mdl-cell mdl-cell--4-col><div class="mdl-card wide-card mdl-shadow--2dp"><header><div class="mdl-card__title"><h2 id="cardTitle' + i + '" class="mdl-card__title-text"></h2></div><div class="mdl-card__menu"><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="editLocation(' + i + ')"><i class="material-icons">create</i></button><button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect dialog-button edit-btn" onclick="deleteLocation(' + i + ')"><i class="material-icons">delete</i></button></div></header><section><div class="mdl-card__supporting-text"><div class="mdl-grid"><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">schedule </i><span class="current-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">restore</i><span class="previous-hour-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="previous-hour-data-' + i + '" class="data">0</span></div><div class="mdl-cell mdl-cell--6-col"><i class="material-icons">today</i><span class="current-day-label"></span></div><div class="mdl-cell mdl-cell--6-col"><span id="current-day-data-' + i + '" class="data">0</span></div></div></div></section><footer><div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color increment-btn" onclick="incrementDP(' + i + ')"><i class="material-icons">add</i>Increment</button></div></footer></div></div>').appendTo('#locationsection');
+            }
+            init();
+        });
+    }
+
+</script>
+
+</html>

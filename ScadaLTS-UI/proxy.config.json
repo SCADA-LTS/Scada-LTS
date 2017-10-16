@@ -1,0 +1,17 @@
+{
+    "/api/*": {
+       "target": "http://localhost:8080/ScadaBR",
+       "secure": false,
+       "logLevel":"debug"
+    },
+    "/ScadaLTS/app/media/*":{
+        "target": "http://localhost:4200/assets/",
+        "secure": false,
+        "logLevel":"debug"
+    },
+    "/ScadaBR/*": {
+        "target": "http://localhost:8080/",
+        "secure": false,
+        "logLevel":"debug"
+    }
+ }

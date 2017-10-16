@@ -251,22 +251,18 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			//TODO rewrite MangoValue
 			MangoValue value = createMangoValue(rs);
 			long time = rs.getLong(COLUMN_NAME_TIME_STAMP);
-			int sourceType = rs.getInt(COLUMN_NAME_SOURCE_TYPE);
+			
 			PointValue pv = new PointValue();
 			pv.setId(rs.getLong(COLUMN_NAME_ID));
 			pv.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
+			int sourceId = rs.getInt(COLUMN_NAME_SOURCE_ID);
 			
+			int sourceType = rs.getInt(COLUMN_NAME_SOURCE_TYPE);
 			
-			//TODO rewrite wasNull ?
-			//if (rs.wasNull()) {
-			if (rs.getLong(COLUMN_NAME_SOURCE_ID)==0){
-				// No annotations, just return a point value.
+			if (rs.wasNull()) {
 				pv.setPointValue(new PointValueTime(value, time));
 			} else {
-				// There was a source for the point value, so return an annotated
-				// version.
-				pv.setPointValue(new AnnotatedPointValueTime(value, time, sourceType,
-						rs.getInt(COLUMN_NAME_SOURCE_ID)));
+				pv.setPointValue(new AnnotatedPointValueTime(value, time, sourceType, sourceId));
 			}
 			return pv; 
 		}
@@ -384,8 +380,17 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		
 	}
 	
+	
+	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public Object[] create(final int pointId,final int dataType,final double dvalue,final long time) {
+		
+		return createNoTransaction(pointId, dataType, dvalue, time);
+		
+	}
+	
+	
+	public Object[] createNoTransaction(final int pointId,final int dataType,final double dvalue,final long time) {
 		
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("pointId:"+pointId+" dataType:"+dataType+" dvalue:"+time);
@@ -410,6 +415,8 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		return new Object[] {keyHolder.getKey().longValue()};
 		
 	}
+	
+	
 	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void executeBatchUpdateInsert( List<Object[]> params) {

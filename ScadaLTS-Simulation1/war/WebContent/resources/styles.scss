@@ -1,0 +1,151 @@
+$theme_main_color: green;
+$theme_main_color_light: #2CB32C;
+$theme_main_color_dark: #004100;
+$header_font_size: 25px;
+$card_height: 60px;
+
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300|Oswald);
+
+main-theme {
+    background-color: $theme_main_color;
+}
+.mdl-cell {
+    float: left;
+}
+
+.mdl-card {
+    width: 100%;
+    min-height: 20px;
+}
+
+.mdl-layout__header {
+    background-color: $theme_main_color;
+}
+.button-color {
+    color: white;
+    background-color: $theme_main_color;
+    &:hover {
+        background-color: $theme_main_color_light;
+    }
+
+}
+.mdl-card__actions {
+    img {
+        display: block;
+        width: 100%;
+        
+    }
+}
+.mdl-switch {
+    display: unset;
+}
+.mdl-switch.is-checked .mdl-switch__thumb {
+    background-color: $theme_main_color;
+}
+.mdl-switch.is-checked .mdl-switch__track {
+    background-color: rgba(0, 128, 0, 0.5);
+}
+
+.mdl-dialog {
+  border: none;
+  box-shadow: 0 9px 46px 8px rgba(0, 0, 0, 0.14), 0 11px 15px -7px rgba(0, 0, 0, 0.12), 0 24px 38px 3px rgba(0, 0, 0, 0.2);
+  width: 280px; }
+  .mdl-dialog__title {
+    padding: 24px 24px 0;
+    margin: 0;
+    font-size: 2.5rem; }
+  .mdl-dialog__actions {
+    padding: 8px 8px 8px 24px;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: row-reverse;
+        -ms-flex-direction: row-reverse;
+            flex-direction: row-reverse;
+    -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+            flex-wrap: wrap; }
+    .mdl-dialog__actions > * {
+      margin-right: 8px;
+      height: 36px; }
+      .mdl-dialog__actions > *:first-child {
+        margin-right: 0; }
+    .mdl-dialog__actions--full-width {
+      padding: 0 0 8px 0; }
+      .mdl-dialog__actions--full-width > * {
+        height: 48px;
+        -webkit-flex: 0 0 100%;
+            -ms-flex: 0 0 100%;
+                flex: 0 0 100%;
+        padding-right: 16px;
+        margin-right: 0;
+        text-align: right; }
+  .mdl-dialog__content {
+    padding: 20px 24px 24px 24px;
+    color: rgba(0,0,0, 0.54); }
+
+    
+.mdl-layout-title , #clock{
+    margin-top: 10px;
+    display: inline-block;
+    width: 100%;
+    color: white;
+    font-size: $header_font_size;
+    font-weight: bold;
+    text-align: center;
+    background-color: $theme_main_color;
+}
+#clock {
+    margin-bottom: 15px;
+}
+
+.logo {
+    position: fixed;
+    max-height: 80px;
+    margin-left: 20px;
+    left: 35%;
+    top: 3px;
+    @media screen and (max-width: 1366px) {
+        left: 25%;
+    }
+    @media screen and (max-width: 840px) {
+        left: 10%;
+    }
+}
+.center-element {
+    width: 60%;
+    text-align: center;
+    margin: 0 auto;
+
+    @media screen and (max-width: 840px) {
+        width: 100%;
+
+    }
+
+    h2 {
+        margin-right: 20px;
+    }
+
+}
+#liveStream1, #liveStream2{
+    margin-left: 30%;
+    margin-right: 30%;
+    height: 30%;
+    width: 40%;
+
+    @media screen and (max-width: 840px) {
+        margin: 0;
+        width: 90%;
+        height: auto;
+    }
+
+}
+.data {
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 1s;
+}
+.gone {
+    display: none;
+}

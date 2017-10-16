@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.web.mvc.controller;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,12 +53,20 @@ public class ViewsController extends ParameterizableViewController {
 
 		if (user.isAdmin()) { // Admin user has access to all views
 			views = viewDao.getAllViewNames();
-			LOG.debug("Views: " + views.size());
+			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
+			    return prev.getValue().compareTo(next.getValue());
+			};
+			Collections.sort(views, comp);
+			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
-
 		} else {
 			views = viewDao.getViewNamesWithReadOrWritePermissions(
 					user.getId(), user.getUserProfile());
+			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
+			    return prev.getValue().compareTo(next.getValue());
+			};
+			Collections.sort(views, comp);
+			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		}
 

@@ -1,6 +1,6 @@
 @import '~https://fonts.googleapis.com/icon?family=Material+Icons';
-@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
 @import url('https://fonts.googleapis.com/css?family=Raleway');
+@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
 
 /*
 global settings
