@@ -113,11 +113,11 @@ abstract public class DataSourceRT implements ILifecycle {
     }
 
     public void addDataPoint(DataPointRT dataPoint) {
-        synchronized (pointListChangeLock) {
+        /*synchronized (pointListChangeLock) {
             addedChangedPoints.remove(dataPoint);
             addedChangedPoints.add(dataPoint);
             removedPoints.remove(dataPoint);
-        }
+        }*/
     }
 
     public void removeDataPoint(DataPointRT dataPoint) {

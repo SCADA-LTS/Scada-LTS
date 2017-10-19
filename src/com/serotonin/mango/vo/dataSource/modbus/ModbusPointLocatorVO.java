@@ -26,6 +26,8 @@ import java.nio.charset.IllegalCharsetNameException;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.profiler.Profiler;
+
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -158,7 +160,12 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 	}
 
 	public PointLocatorRT createRuntime() {
-		return new ModbusPointLocatorRT(this);
+		Profiler profiler = null;
+		profiler = new Profiler("createRuntime modbus");
+		profiler.start("start");
+		ModbusPointLocatorRT mplRT = new ModbusPointLocatorRT(this);
+		profiler.stop().print();
+		return mplRT;
 	}
 
 	public LocalizableMessage getRangeMessage() {

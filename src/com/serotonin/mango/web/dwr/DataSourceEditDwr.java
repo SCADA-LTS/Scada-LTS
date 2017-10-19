@@ -94,6 +94,8 @@ import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.modbus.SerialParameters;
+import org.slf4j.profiler.Profiler;
+
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -260,6 +262,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 	@MethodFilter
 	public List<DataPointVO> enableAllPoints() {
+		
+		Profiler profiler = null;
+		profiler = new Profiler("Data Source");
+		profiler.start("enableAllPoints");
+		
 		User user = Common.getUser();
 		if (user == null)
 			return null;
@@ -280,6 +287,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 				runtimeManager.saveDataPoint(dataPointVO);
 			}
 		}
+		profiler.stop().print();
 		return points;
 	}
 

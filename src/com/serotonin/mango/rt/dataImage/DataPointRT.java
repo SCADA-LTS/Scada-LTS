@@ -32,6 +32,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.PointValueDao;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.slf4j.profiler.Profiler;
+
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
@@ -284,18 +286,25 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	//
 	private void initializeIntervalLogging() {
 		synchronized (intervalLoggingLock) {
+			Profiler profiler = null;
+			profiler = new Profiler("initializeIntervalLogging");
+			profiler.start("start check login type");
+			
 			if (vo.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL)
 				return;
 
+			profiler.start("create intervalLoggingTask");
 			intervalLoggingTask = new TimeoutTask(new FixedRateTrigger(0,
 					Common.getMillis(vo.getIntervalLoggingPeriodType(),
 							vo.getIntervalLoggingPeriod())), this);
 
 			intervalValue = pointValue;
+			profiler.start("set intervalStartTime, averagingValues");
 			if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.AVERAGE) {
 				intervalStartTime = System.currentTimeMillis();
 				averagingValues = new ArrayList<IValueTime>();
 			}
+			profiler.stop().print();
 		}
 	}
 
@@ -495,16 +504,24 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	// Lifecycle
 	//
 	public void initialize() {
+		
+		Profiler profiler = null;
+		profiler = new Profiler("Point initialize");
+		profiler.start("start getRuntimeManager()");
+		
 		rm = Common.ctx.getRuntimeManager();
 
+		profiler.start("valueCache.getLatestPointValue()");
 		// Get the latest value for the point from the database.
 		pointValue = valueCache.getLatestPointValue();
 
 		// Set the tolerance origin if this is a numeric
+		profiler.start("Set the tolerance origin if this is a numeric");
 		if (pointValue != null && pointValue.getValue() instanceof NumericValue)
 			toleranceOrigin = pointValue.getDoubleValue();
 
 		// Add point event listeners
+		profiler.start("Add point event listeners");
 		for (PointEventDetectorVO ped : vo.getEventDetectors()) {
 			if (detectors == null)
 				detectors = new ArrayList<PointEventDetectorRT>();
@@ -514,7 +531,8 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 			rm.addPointEventDetector(pedRT);
 			rm.addDataPointListener(vo.getId(), pedRT);
 		}
-
+		profiler.stop().print();
+		
 		initializeIntervalLogging();
 	}
 

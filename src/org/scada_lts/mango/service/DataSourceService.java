@@ -87,7 +87,7 @@ public class DataSourceService implements MangoDataSource {
 			dataSource.setId(dataSourceDAO.insert(dataSource));
 		} else {
 			updateDataSource(dataSource);
-			MangoPointHierarchy.getInst().changeDataSource(dataSource);
+		    MangoPointHierarchy.getInst().changeDataSource(dataSource);
 		}
 	}
 

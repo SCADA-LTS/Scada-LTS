@@ -27,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.profiler.Profiler;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -115,6 +116,12 @@ public class RuntimeManager {
 	//
 	// Lifecycle
 	synchronized public void initialize(boolean safe) {
+		
+
+	    Profiler profiler = null;
+		profiler = new Profiler("RuntimeManager");
+		profiler.start("initialize");
+		
 		if (started)
 			throw new ShouldNeverHappenException(
 					"RuntimeManager already started");
@@ -122,20 +129,28 @@ public class RuntimeManager {
 		// Set the started indicator to true.
 		started = true;
 
+		profiler.start("DataSourceDao");
 		// Initialize data sources that are enabled.
 		DataSourceDao dataSourceDao = new DataSourceDao();
+		profiler.start("DataSourceDao getDataSources");
 		List<DataSourceVO<?>> configs = dataSourceDao.getDataSources();
 		List<DataSourceVO<?>> pollingRound = new ArrayList<DataSourceVO<?>>();
+		
+		profiler.start("DataSourceDao initialize");
 		for (DataSourceVO<?> config : configs) {
+			profiler.start("config:"+config.getName());
 			if (config.isEnabled()) {
 				if (safe) {
-					config.setEnabled(false);
+					//config.setEnabled(false);
+					profiler.start("saveDataSource");
 					dataSourceDao.saveDataSource(config);
 				} else if (initializeDataSource(config))
+					profiler.start("pollingRound");
 					pollingRound.add(config);
 			}
 		}
 
+		profiler.start("PointLinkDao");
 		// Set up point links.
 		PointLinkDao pointLinkDao = new PointLinkDao();
 		for (PointLinkVO vo : pointLinkDao.getPointLinks()) {
@@ -148,6 +163,7 @@ public class RuntimeManager {
 			}
 		}
 
+		profiler.start("startDataSourcePolling");
 		// Tell the data sources to start polling. Delaying the polling start
 		// gives the data points a chance to
 		// initialize such that point listeners in meta points and set point
@@ -155,6 +171,7 @@ public class RuntimeManager {
 		for (DataSourceVO<?> config : pollingRound)
 			startDataSourcePolling(config);
 
+		profiler.start("Initialize the scheduled events");
 		// Initialize the scheduled events.
 		ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
 		List<ScheduledEventVO> scheduledEvents = scheduledEventDao
@@ -169,6 +186,7 @@ public class RuntimeManager {
 			}
 		}
 
+		profiler.start("Initialize the compound events");
 		// Initialize the compound events.
 		CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
 		List<CompoundEventDetectorVO> compoundDetectors = compoundEventDetectorDao
@@ -183,6 +201,7 @@ public class RuntimeManager {
 			}
 		}
 
+		profiler.start("Start the publishers that are enabled");
 		// Start the publishers that are enabled
 		PublisherDao publisherDao = new PublisherDao();
 		List<PublisherVO<? extends PublishedPointVO>> publishers = publisherDao
@@ -197,6 +216,7 @@ public class RuntimeManager {
 			}
 		}
 
+		profiler.start("Start the maintenance events that are enabled");
 		// Start the maintenance events that are enabled
 		MaintenanceEventDao maintenanceEventDao = new MaintenanceEventDao();
 		for (MaintenanceEventVO vo : maintenanceEventDao.getMaintenanceEvents()) {
@@ -208,6 +228,9 @@ public class RuntimeManager {
 					startMaintenanceEvent(vo);
 			}
 		}
+		
+		profiler.stop().print();
+		
 	}
 
 	synchronized public void terminate() {
@@ -256,10 +279,17 @@ public class RuntimeManager {
 	// Data sources
 	//
 	public DataSourceRT getRunningDataSource(int dataSourceId) {
+		Profiler profiler = null;
+		profiler = new Profiler("getRunningDataSource");
+		profiler.start("start");
+
 		for (DataSourceRT dataSource : runningDataSources) {
-			if (dataSource.getId() == dataSourceId)
+			if (dataSource.getId() == dataSourceId) {
+				profiler.stop().print();
 				return dataSource;
+			}
 		}
+		profiler.stop().print();
 		return null;
 	}
 
@@ -406,29 +436,42 @@ public class RuntimeManager {
 		Common.ctx.getEventManager().cancelEventsForDataPoint(point.getId());
 	}
 
+	
 	private void startDataPoint(DataPointVO vo) {
 		synchronized (dataPoints) {
 			Assert.isTrue(vo.isEnabled());
-
+			
+			Profiler profiler = null;
+			profiler = new Profiler("dataPoints");
+			profiler.start("startDataPoint");
+			
 			// Only add the data point if its data source is enabled.
 			DataSourceRT ds = getRunningDataSource(vo.getDataSourceId());
 			if (ds != null) {
 				// Change the VO into a data point implementation.
+				profiler.start("dataPointRT create"+vo.getName());
 				DataPointRT dataPoint = new DataPointRT(vo, vo
 						.getPointLocator().createRuntime());
 
+				profiler.start("dataPoints.put");
 				// Add/update it in the data image.
 				dataPoints.put(dataPoint.getId(), dataPoint);
 
 				// Initialize it.
+				profiler.start("dataPointRT initialize");
 				dataPoint.initialize();
+				profiler.start("getDataPointListeners");
 				DataPointListener l = getDataPointListeners(vo.getId());
-				if (l != null)
+				if (l != null) {
 					l.pointInitialized();
+				}
 
 				// Add/update it in the data source.
+				profiler.start("ds.addDataPoint");
 				ds.addDataPoint(dataPoint);
 			}
+			
+			profiler.stop().print();			
 		}
 	}
 

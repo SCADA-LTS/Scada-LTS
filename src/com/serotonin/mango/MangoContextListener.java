@@ -39,8 +39,10 @@ import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
+import org.scada_lts.config.Configurations;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
+import org.slf4j.profiler.Profiler;
 
 import br.org.scadabr.api.utils.APIUtils;
 
@@ -101,10 +103,19 @@ public class MangoContextListener implements ServletContextListener {
 				TimeUnit.SECONDS, new SynchronousQueue<Runnable>()));
 
 		// Create all the stuff we need.
+		Profiler profiler = null;
+		profiler = new Profiler("contextInitialized");
+		profiler.start("prepare parameter");
+		
+		profiler.start("constantsInitialize");
 		constantsInitialize(ctx);
+		profiler.start("freemarkerInitialize");
 		freemarkerInitialize(ctx);
+		profiler.start("imageSetInitialize");
 		imageSetInitialize(ctx);
+		profiler.start("databaseInitialize");
 		databaseInitialize(ctx);
+		profiler.start("dataPointsNameToIdMapping");
 		dataPointsNameToIdMapping(ctx);
 
 		// Check if the known servlet context path has changed.
@@ -120,12 +131,17 @@ public class MangoContextListener implements ServletContextListener {
 		new SystemSettingsDAO().setValue(
 				SystemSettingsDAO.SERVLET_CONTEXT_PATH, ctx.getContextPath());
 
+		profiler.start("utilitiesInitialize");
 		utilitiesInitialize(ctx);
+		profiler.start("eventManagerInitialize");
 		eventManagerInitialize(ctx);
+		profiler.start("runtimeManagerInitialize");
 		runtimeManagerInitialize(ctx);
+		profiler.start("reportsInitialize");
 		reportsInitialize();
+		profiler.start("maintenanceInitialize");
 		maintenanceInitialize();
-		
+		profiler.start("scriptContextInitialize");
 		scriptContextInitialize();
 
 		// Notify the event manager of the startup.
@@ -149,6 +165,8 @@ public class MangoContextListener implements ServletContextListener {
 		} catch (Exception e) {
 			log.error(e);
 		}
+		
+		profiler.stop().print();
 
 	}
 
@@ -461,6 +479,11 @@ public class MangoContextListener implements ServletContextListener {
 	 */
 	@SuppressWarnings("deprecation")
 	private void runtimeManagerInitialize(ServletContext ctx) {
+		
+		Profiler profiler = null;
+		profiler = new Profiler("runtimeManagerInitialize");
+		profiler.start("");
+		profiler.start("RuntimeManager");
 		RuntimeManager rtm = new RuntimeManager();
 		ctx.setAttribute(Common.ContextKeys.RUNTIME_MANAGER, rtm);
 
@@ -498,6 +521,7 @@ public class MangoContextListener implements ServletContextListener {
 			}
 				
 		}
+		profiler.stop().print();
 	}
 
 	private void runtimeManagerTerminate(ContextWrapper ctx) {
