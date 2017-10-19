@@ -92,7 +92,7 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 
 **Rafał Kotyla**
 
-* <https://github.com/RandemRafaeL>
+* <https://github.com/RandemRafaeL> UI/UX
 
 **Konrad Daniek**
 
