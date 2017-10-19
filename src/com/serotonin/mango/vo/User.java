@@ -27,8 +27,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import br.org.scadabr.vo.exporter.ZIPProjectManager;
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+import org.scada_lts.permissions.IAccessType;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonArray;
@@ -59,9 +58,12 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import br.org.scadabr.vo.exporter.ZIPProjectManager;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
-		JsonSerializable {
+		JsonSerializable, IAccessType {
 	private int id = Common.NEW_ID;
 	@JsonRemoteProperty
 	private String username;
@@ -553,6 +555,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@Override
 	public void pointSetComplete() {
 		// TODO Auto-generated method stub
-
 	}
+	
 }
