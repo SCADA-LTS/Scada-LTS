@@ -1,6 +1,5 @@
 package org.scada_lts.permissions;
 
-import java.util.List;
 import java.util.Map;
 
 import com.serotonin.mango.vo.User;
@@ -12,7 +11,7 @@ import com.serotonin.mango.vo.User;
  * 
  */
 
-public interface IPermission<T> {
+public interface IPermission {
 	
 	/**
 	 * Check if user has access to object<T>
@@ -21,19 +20,19 @@ public interface IPermission<T> {
 	 * @param access type
 	 * @return boolean 
 	 */
-	public boolean hasObjectPermission(User user, T object, int accessType);
+	public boolean hasObjectPermission(IUser user, IEntityPermision object, int accessType);
 	
 	/**
 	 * @param user
 	 * @param access type
 	 * @return the map of objects type <T> that user has access 
 	 */
-	public Map<String, T> getObjectsWithPermission(User user, int accessType);
+	public Map<Long, IEntityPermision> getObjectsWithPermission(IUser user, int accessType);
 
 	/**
 	 * Check if user is admin
 	 * @param user
 	 * @return boolean
 	 */
-	public boolean hasAdminPermission(User user);
+	public boolean hasAdminPermission(IUser user);
 }

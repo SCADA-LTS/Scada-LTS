@@ -1,5 +1,10 @@
 package org.scada_lts.permissions;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.scada_lts.permissions.model.AccessType;
+
 /** 
  * Access type interface 
  * 
@@ -8,8 +13,13 @@ package org.scada_lts.permissions;
  */
 
 public interface IAccessType {
-	static final int ACCESS_TYPE_NONE = 0;
-	static final int ACCESS_TYPE_READ = 1;
-	static final int ACCESS_TYPE_SET = 2;
-	static final int ACCESS_TYPE_ADMIN = 3;
+	
+	final static Map<Long, AccessType> accessTypes = new HashMap<Long, AccessType>();
+	
+    void setUp();
+    
+    default AccessType get(Long idAccessType) {
+    	return accessTypes.get(idAccessType);
+    }
+	
 }
