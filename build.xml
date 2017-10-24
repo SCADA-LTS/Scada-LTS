@@ -115,6 +115,7 @@
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
     	<pathelement location="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
   		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
+    	<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>
