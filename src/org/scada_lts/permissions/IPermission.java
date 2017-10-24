@@ -27,7 +27,7 @@ public interface IPermission {
 	 * @param access type
 	 * @return the map of objects type <T> that user has access 
 	 */
-	public Map<Long, IEntityPermision> getObjectsWithPermission(IUser user, int accessType);
+	public Map<Long, IEntityPermision> getObjectsWithPermission(IUser user, IEntityPermision object);
 
 	/**
 	 * Check if user is admin
