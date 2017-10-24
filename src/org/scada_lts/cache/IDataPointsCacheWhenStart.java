@@ -4,11 +4,9 @@ import java.util.List;
 
 import com.serotonin.mango.vo.DataPointVO;
 
-public interface IDataPointCacheWhenStart {
+public interface IDataPointsCacheWhenStart {
 	
-	final static Boolean START = new Boolean(false);
-	
-	List<DataPointVO> getDataPoint();
+	List<DataPointVO> getDataPoints(int dataSourceId);
 	
 	void cacheInitialize();
 	 

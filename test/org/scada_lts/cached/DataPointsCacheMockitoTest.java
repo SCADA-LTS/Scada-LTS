@@ -1,6 +1,6 @@
 package org.scada_lts.cached;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -8,11 +8,14 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.scada_lts.cache.IDataPointsCacheWhenStart;
 
 import com.serotonin.mango.vo.DataPointVO;
 
-public class DataPoinsCacheMockTest {
+@RunWith(JUnit4.class)
+public class DataPointsCacheMockitoTest {
 	
 	IDataPointsCacheWhenStart cache;
 	
@@ -22,16 +25,14 @@ public class DataPoinsCacheMockTest {
 	}
 	
 	@Test
-	public void getData() {
-		List<DataPointVO> lst = new ArrayList<DataPointVO>();
-		lst.add(new DataPointVO());
-		when(cache.getDataPoints(1)).thenReturn(lst);
+	public void dataPoints() {
+		List<DataPointVO> dps = new ArrayList<DataPointVO>();
+		dps.add(new DataPointVO());
 		
-		assertTrue(cache.getDataPoints(1).size()==1);
+		when(cache.getDataPoints(1)).thenReturn(dps);
+		
+		assertTrue(dps.size()==1);
+		
 	}
-	
-	
-	
-	
 
 }
