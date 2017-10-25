@@ -37,18 +37,18 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
+import org.scada_lts.cache.DataPointsCache;
+import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
-
-import br.org.scadabr.api.utils.APIUtils;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.ReportDao;
-import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverMulticaster;
@@ -76,6 +76,7 @@ import com.serotonin.mango.web.dwr.BaseDwr;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import br.org.scadabr.api.utils.APIUtils;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
@@ -122,7 +123,27 @@ public class MangoContextListener implements ServletContextListener {
 
 		utilitiesInitialize(ctx);
 		eventManagerInitialize(ctx);
-		runtimeManagerInitialize(ctx);
+		
+		try {
+			EventDetectorsCache.getInstance();
+			log.info("Cache event detectors initialized");
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
+		try {
+			DataPointsCache.getInstance().cacheInitialize();
+			log.info("Cache data points initialized");
+			
+			runtimeManagerInitialize(ctx);
+			
+		} catch (Exception e) {
+			log.error(e);
+		} finally {
+			DataPointsCache.getInstance().cacheFinalized();
+		}
+		
+		
 		reportsInitialize();
 		maintenanceInitialize();
 		

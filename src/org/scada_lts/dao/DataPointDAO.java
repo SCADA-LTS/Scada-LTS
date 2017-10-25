@@ -23,8 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -73,7 +71,7 @@ public class DataPointDAO {
 				+ "dp." + COLUMN_NAME_DATA_SOURCE_ID + ", "
 				+ "dp." + COLUMN_NAME_DATA + ", "
 				+ "ds." + COLUMN_NAME_DS_NAME + ", "
-				+ "ds." + COLUMN_NAME_DS_XID + ", "
+				+ "ds." + COLUMN_NAME_DS_XID + " as dsxid, "
 				+ "ds." + COLUMN_NAME_DS_DATA_SOURCE_TYPE + " "
 			+ "from dataPoints dp join dataSources ds on "
 				+ "ds." + COLUMN_NAME_DS_ID + "="
@@ -114,17 +112,19 @@ public class DataPointDAO {
 
 	private class DataPointRowMapper implements RowMapper<DataPointVO> {
 
-		DataSourceDAO dsDAO = new DataSourceDAO();
+		
 		@Override
 		public DataPointVO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+			
 			DataPointVO dataPoint = (DataPointVO) new SerializationData().readObject(resultSet.getBlob(COLUMN_NAME_DATA).getBinaryStream());
 			
 			dataPoint.setId(resultSet.getInt(COLUMN_NAME_ID));
 			dataPoint.setXid(resultSet.getString(COLUMN_NAME_XID));
 			dataPoint.setDataSourceId(resultSet.getInt(COLUMN_NAME_DATA_SOURCE_ID));
-			dataPoint.setDataSourceXid( dsDAO.getDataSource(resultSet.getInt(COLUMN_NAME_DATA_SOURCE_ID)).getXid() );
+			dataPoint.setDataSourceXid( resultSet.getString("dsxid"));
 			dataPoint.setDataSourceName(resultSet.getString(COLUMN_NAME_DS_NAME));
 			dataPoint.setDataSourceTypeId(resultSet.getInt(COLUMN_NAME_DS_DATA_SOURCE_TYPE));
+			
 			return dataPoint;
 		}
 	}
@@ -169,7 +169,7 @@ public class DataPointDAO {
 			return null;
 		}
 	}
-	
+		
 	public List<DataPointVO> filtered(String filter, Object[] argsFilter, long limit) {
 		String myLimit="";
 		Object[] args;
