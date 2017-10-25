@@ -132,16 +132,17 @@ public class MangoContextListener implements ServletContextListener {
 		}
 		
 		try {
-			DataPointsCache.getInstance();
 			DataPointsCache.getInstance().cacheInitialize();
 			log.info("Cache data points initialized");
+			
+			runtimeManagerInitialize(ctx);
+			
 		} catch (Exception e) {
 			log.error(e);
+		} finally {
+			DataPointsCache.getInstance().cacheFinalized();
 		}
 		
-		runtimeManagerInitialize(ctx);
-		
-		DataPointsCache.getInstance().cacheFinalized();
 		
 		reportsInitialize();
 		maintenanceInitialize();

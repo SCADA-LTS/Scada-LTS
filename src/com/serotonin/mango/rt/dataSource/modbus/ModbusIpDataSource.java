@@ -70,7 +70,7 @@ public class ModbusIpDataSource extends ModbusDataSource {
 
 				List<DataPointVO> points;
 				if (DataPointsCache.getInstance().isStart()) {
-					points = DataPointsCache.getInstance().getDataPoints(configuration.getId());
+					points = DataPointsCache.getInstance().getDataPoints((long) configuration.getId());
 				} else {
 					points = dataPointDao.getDataPoints(
 						configuration.getId(), null);

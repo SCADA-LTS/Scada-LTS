@@ -15,22 +15,10 @@ public class DataPointsCache implements IDataPointsCacheWhenStart {
 	
 	private static DataPointsCache instance = null;
 	
-	private Map<Integer, List<DataPointVO>> dss = new HashMap<Integer, List<DataPointVO>>();
+	private Map<Long, List<DataPointVO>> dss = new HashMap<Long, List<DataPointVO>>();
 	
 	private DataPointsCache() {
 		
-		 List<DataPointVO> dps = new DataPointDAO().getDataPoints();
-		
-		for (DataPointVO dp : dps) {
-			List<DataPointVO> cacheDs = dss.get(dp.getDataSourceId()); 
-			if (cacheDs==null) {
-				cacheDs = new ArrayList<DataPointVO>();
-				cacheDs.add(dp);
-				dss.put(dp.getDataSourceId(), cacheDs);			
-			} else {
-				cacheDs.add(dp);
-			}
-		}
 	}
 	
 	public static DataPointsCache getInstance() {
@@ -41,17 +29,12 @@ public class DataPointsCache implements IDataPointsCacheWhenStart {
 	}
 
 	@Override
-	public List<DataPointVO> getDataPoints(int dataSourceId) {
+	public List<DataPointVO> getDataPoints(Long dataSourceId) {
 		if (start) {
 			return dss.get(dataSourceId);
 		} else {
 			throw new RuntimeException("Cache may work only when scada start");
 		}
-	}
-
-	@Override
-	public void cacheInitialize() {
-		start = true;
 	}
 
 	@Override
@@ -62,6 +45,37 @@ public class DataPointsCache implements IDataPointsCacheWhenStart {
 
 	public boolean isStart() {
 		return start;
+	}
+
+	@Override
+	public void cacheInitialize() {
+		
+		List<DataPointVO> dps = new DataPointDAO().getDataPoints();
+		
+		dss = composeCashData(dps);
+		
+		start = true;
+	}
+	
+	public Map<Long, List<DataPointVO>> composeCashData(List<DataPointVO> dps) {
+		
+		Map<Long, List<DataPointVO>> dss = new HashMap<Long, List<DataPointVO>>();
+		if (dps != null && dps.size()>0) {
+			for (DataPointVO dp : dps) {
+				List<DataPointVO> cacheDs = dss.get((long)dp.getDataSourceId()); 
+				if (cacheDs==null) {
+					cacheDs = new ArrayList<DataPointVO>();
+					cacheDs.add(dp);
+					dss.put((long) dp.getDataSourceId(), cacheDs);			
+				} else {
+					cacheDs.add(dp);
+				}
+			}
+		}
+		
+		return dss;
+		
+		
 	}
 
 }

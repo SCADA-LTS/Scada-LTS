@@ -6,11 +6,12 @@ import com.serotonin.mango.vo.DataPointVO;
 
 public interface IDataPointsCacheWhenStart {
 	
-	List<DataPointVO> getDataPoints(int dataSourceId);
+	List<DataPointVO> getDataPoints(Long dataSourceId);
 	
 	void cacheInitialize();
 	 
 	void cacheFinalized();
 	
-
+	
+	
 }

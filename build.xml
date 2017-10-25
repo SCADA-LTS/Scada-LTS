@@ -212,7 +212,7 @@
 	</target>
 	
 	<target name="junit">
-
+		
 		    <junit printsummary="yes" haltonfailure="no">
 		    
 		    <formatter type="plain" usefile="false" />
@@ -221,6 +221,7 @@
 		        
 		    </classpath>
 			
+		    <!--
 			<test name="br.org.scadabr.api.AckEventsTest" 
 				haltonfailure="no">
 			</test>
@@ -232,11 +233,12 @@
 		    <test name="br.org.scadabr.api.ActiveEventsTest" 
 		        haltonfailure="no">
 		    </test>
-		    	
+		    -->
+		    <!--
 		    <test name="org.scada_lts.dao.ViewHierarchyDaoTest"
 		    	haltonfailure="no">
 		    </test>
-		    	
+		    
 		    <test name="org.scada_lts.service.ViewHierarchyServiceTest"
 		        haltonfailure="yes">
 		    </test>
@@ -244,13 +246,22 @@
 		    <test name="org.scada_lts.service.ViewHierarchyServiceTestOnDB"
 		    	haltonfailure="yes">
 		    </test>
-		    	
+		    -->
+		    <!--	
 		    <test name="org.scada_lts.service.ViewHierarchyServiceMoveFolderTest"
 		        haltonfailure="yes">
 		    </test>
 		    	
 		    <test name="org.scada_lts.service.ViewHierarchyServiceMoveViewTest"
 		        haltonfailure="yes">
+		    </test>
+		    -->
+		    <test name="org.scada_lts.cached.DataPointsCacheComposeDataTest"
+		    	haltonfailure="yes">
+		    </test>	
+		    	
+		    <test name="org.scada_lts.cached.DataPointsCacheMockitoTest" 
+		    	haltonfailure="yes">
 		    </test>
 		    	
 		    <!--
