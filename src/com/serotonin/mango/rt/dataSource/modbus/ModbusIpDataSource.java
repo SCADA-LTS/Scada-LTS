@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.DataPointsCache;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -67,8 +68,13 @@ public class ModbusIpDataSource extends ModbusDataSource {
 				DataPointDao dataPointDao = new DataPointDao();
 				boolean found = false;
 
-				List<DataPointVO> points = dataPointDao.getDataPoints(
+				List<DataPointVO> points;
+				if (DataPointsCache.getInstance().isStart()) {
+					points = DataPointsCache.getInstance().getDataPoints((long) configuration.getId());
+				} else {
+					points = dataPointDao.getDataPoints(
 						configuration.getId(), null);
+				}
 				for (DataPointVO dp : points) {
 					ModbusPointLocatorVO loc = dp.getPointLocator();
 					LOG.trace("current dp: " + dp.getName());
