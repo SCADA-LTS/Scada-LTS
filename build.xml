@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. -->
+
 <project basedir="." default="build" name="scadabr-1.1.0-RC">
 	<property environment="env"/>
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.8"/>
 	<property name="source" value="1.8"/>
+
+   <path id="tomcat.ant.classpath">
+	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
+   </path>
+
+	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="tomcat.ant.classpath"/>
+
+	<target name="deploy" description="deploy to tomcat">
+		<echo>deploying from client</echo>
+		<deploy
+			url="http://localhost:8080/manager"
+			username="tomcat"
+			password="tomcat"
+			path="/ScadaBR"
+			war="ScadaBR.war"
+			update="true"/>
+	</target>
+
+	<target name="copyToDeploy" >
+		<copy file="ScadaBR.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
+		</copy>
+	</target>
+
+	<!-- to option copy file to webapps :) -->
+
+
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/RXTXcomm.jar"/>
