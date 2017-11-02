@@ -19,32 +19,7 @@
 
 package com.serotonin.mango;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.mozilla.javascript.ContextFactory;
-import org.scada_lts.cache.DataPointsCache;
-import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.cache.PointHierarchyCache;
-import org.scada_lts.cache.ViewHierarchyCache;
-import org.scada_lts.dao.SystemSettingsDAO;
-import org.scada_lts.mango.adapter.MangoScadaConfig;
-import org.scada_lts.scripting.SandboxContextFactory;
-
+import br.org.scadabr.api.utils.APIUtils;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -75,13 +50,35 @@ import com.serotonin.mango.web.ContextWrapper;
 import com.serotonin.mango.web.dwr.BaseDwr;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-
-import br.org.scadabr.api.utils.APIUtils;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.mozilla.javascript.ContextFactory;
+import org.scada_lts.cache.DataSourcePointsCache;
+import org.scada_lts.cache.EventDetectorsCache;
+import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.cache.ViewHierarchyCache;
+import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.mango.adapter.MangoScadaConfig;
+import org.scada_lts.scripting.SandboxContextFactory;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
@@ -132,7 +129,7 @@ public class MangoContextListener implements ServletContextListener {
 		}
 		
 		try {
-			DataPointsCache.getInstance().cacheInitialize();
+			DataSourcePointsCache.getInstance().cacheInitialize();
 			log.info("Cache data points initialized");
 			
 			runtimeManagerInitialize(ctx);
@@ -140,7 +137,7 @@ public class MangoContextListener implements ServletContextListener {
 		} catch (Exception e) {
 			log.error(e);
 		} finally {
-			DataPointsCache.getInstance().cacheFinalized();
+			DataSourcePointsCache.getInstance().cacheFinalized();
 		}
 		
 		
