@@ -17,17 +17,16 @@
  */
 package org.scada_lts.config;
 
+import com.serotonin.mango.Common;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.serotonin.mango.Common;
 
 
 /** 
@@ -82,7 +81,17 @@ public class ScadaConfig {
 	 * Period update point hierarchy but can be delayed when system heavy loaded. For example cron 0 15 1 ? * *.
 	 */
 	public static final String CRONE_UPDATE_CACHE_POINT_HIERARCHY = "abilit.CRONE_UPDATE_CACHE_POINT_HIERARCHY";
-	
+
+	/**
+	* Period update data sources points. For example cron 0 15 1 ? * * the after start
+	*/
+ 	public static final String CRONE_UPDATE_CACHE_DATA_SOURCES_POINTS = "abilit.CRONE_UPDATE_DATA_SOURCES_POINTS";
+
+	/**
+    * Use Cache data sources points when the system is ready
+    */
+	public static final String USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY = "abilit.USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY";
+
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
 	private static final String FILE_NAME_LOGO="logo.png";
 	private static final String FILE_NAME_PROPERTIES="env.properties";

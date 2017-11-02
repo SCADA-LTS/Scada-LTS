@@ -18,13 +18,6 @@
  */
 package com.serotonin.mango.rt.dataSource.modbus;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.scada_lts.cache.DataPointsCache;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -38,6 +31,12 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.ip.IpParameters;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.DataSourcePointsCache;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModbusIpDataSource extends ModbusDataSource {
 	private final ModbusIpDataSourceVO configuration;
@@ -69,8 +68,8 @@ public class ModbusIpDataSource extends ModbusDataSource {
 				boolean found = false;
 
 				List<DataPointVO> points;
-				if (DataPointsCache.getInstance().isStart()) {
-					points = DataPointsCache.getInstance().getDataPoints((long) configuration.getId());
+				if (DataSourcePointsCache.getInstance().isCacheEnabled()) {
+					points = DataSourcePointsCache.getInstance().getDataPoints((long) configuration.getId());
 				} else {
 					points = dataPointDao.getDataPoints(
 						configuration.getId(), null);

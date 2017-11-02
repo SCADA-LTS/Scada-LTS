@@ -23,7 +23,9 @@
 			update="true"/>
 	</target>
 
-	<target name="copyToDeploy" >
+	<target name="clearAndCopyToDeploy" >
+		<delete file="${env.CATALINA_HOME}/webapps/ScadaBR.war"></delete>
+		<delete dir="${env.CATALINA_HOME}/webapps/ScadaBR"></delete>
 		<copy file="ScadaBR.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
 		</copy>
 	</target>
@@ -278,11 +280,11 @@
 		        haltonfailure="yes">
 		    </test>
 		    -->
-		    <test name="org.scada_lts.cached.DataPointsCacheComposeDataTest"
+		    <test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
 		    	haltonfailure="yes">
 		    </test>	
 		    	
-		    <test name="org.scada_lts.cached.DataPointsCacheMockitoTest" 
+		    <test name="org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
 		    	haltonfailure="yes">
 		    </test>
 		    	

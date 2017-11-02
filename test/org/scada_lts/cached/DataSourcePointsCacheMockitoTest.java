@@ -1,21 +1,21 @@
 package org.scada_lts.cached;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.serotonin.mango.vo.DataPointVO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.scada_lts.cache.IDataPointsCacheWhenStart;
 
-import com.serotonin.mango.vo.DataPointVO;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
-public class DataPointsCacheMockitoTest {
+public class DataSourcePointsCacheMockitoTest {
 	
 	IDataPointsCacheWhenStart cache;
 	

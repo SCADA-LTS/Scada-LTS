@@ -1,31 +1,30 @@
 package org.scada_lts.cached;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.serotonin.mango.vo.DataPointVO;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.scada_lts.cache.DataPointsCache;
+import org.scada_lts.cache.DataSourcePointsCache;
 
-import com.serotonin.mango.vo.DataPointVO;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
-public class DataPointsCacheComposeDataTest {
+public class DataPointsCacheComposeDataSourcesDataTest {
 	
 	@Before
 	public void init() {
-		DataPointsCache.getInstance();
+		DataSourcePointsCache.getInstance();
 	}
 	
 	@After
 	public void finalized() {
-		DataPointsCache.getInstance().cacheFinalized();
+		//DataSourcePointsCache.getInstance().cacheFinalized();
 	}
 	
 	@Test
@@ -46,7 +45,7 @@ public class DataPointsCacheComposeDataTest {
 		lst.add(dpvo1);
 		lst.add(dpvo2);
 		
-		Map<Long, List<DataPointVO>> map = DataPointsCache.getInstance().composeCashData(lst);
+		Map<Long, List<DataPointVO>> map = DataSourcePointsCache.getInstance().composeCashData(lst);
 		
 		assertTrue(map.size()==2);
 		
@@ -62,7 +61,7 @@ public class DataPointsCacheComposeDataTest {
 		
 		lst.add(dpvo);
 		
-		Map<Long, List<DataPointVO>> map = DataPointsCache.getInstance().composeCashData(lst);
+		Map<Long, List<DataPointVO>> map = DataSourcePointsCache.getInstance().composeCashData(lst);
 		
 		assertTrue(map.size()==1);
 		
@@ -80,7 +79,7 @@ public class DataPointsCacheComposeDataTest {
 			lst.add(dpvo);
 		}
 		
-		Map<Long, List<DataPointVO>> map = DataPointsCache.getInstance().composeCashData(lst);
+		Map<Long, List<DataPointVO>> map = DataSourcePointsCache.getInstance().composeCashData(lst);
 		
 		assertTrue(map.size()==1);
 		
@@ -110,7 +109,7 @@ public class DataPointsCacheComposeDataTest {
 			lst.add(dpvo);
 		}
 		
-		Map<Long, List<DataPointVO>> map = DataPointsCache.getInstance().composeCashData(lst);
+		Map<Long, List<DataPointVO>> map = DataSourcePointsCache.getInstance().composeCashData(lst);
 		
 		assertTrue(map.size()==100);
 		assertTrue(map.get(1L).size()==countOne);
@@ -118,6 +117,5 @@ public class DataPointsCacheComposeDataTest {
 		assertTrue(map.get(100L).size()==1);
 	
 	}
-	
-	
+
 }
