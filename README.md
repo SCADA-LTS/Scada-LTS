@@ -86,13 +86,17 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 
 * <https://github.com/grzesiekb>
 
-**Konrad Daniek**
-
-* <https://github.com/wisyr>
-
 **Arkadiusz Parafiniuk**
 
 * <https://github.com/ArkadiuszParafiniuk>
+
+**Rafał Kotyla**
+
+* <https://github.com/RandemRafaeL> UI/UX
+
+**Konrad Daniek**
+
+* <https://github.com/wisyr>
 
 **Jarosław Morzyniec**
 

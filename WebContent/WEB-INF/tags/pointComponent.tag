@@ -36,10 +36,10 @@
               </div>
             </td></tr>
             <c:if test="${vc.settable}">
-              <tr id="c${vc.id}ChangeMin" onmouseout="mango.view.hideChange('c${vc.id}Change');"
+              <tr id="c${vc.id}ChangeMin" ondblclick="mango.view.hideChange('c${vc.id}Change');"
                       onmouseover="mango.view.showChange('c${vc.id}Change', 16, 0);"><td>
                 <img src="images/icon_edit.png" alt=""/>
-                <div id="c${vc.id}Change" onmouseout="hideLayer(this);">
+                <div id="c${vc.id}Change">
                   <tag:img png="hourglass" title="common.gettingData"/>
                 </div>
               </td></tr>
