@@ -637,11 +637,12 @@
                 <div id="wlEditDiv" style="display:inline;" onmouseover="showWatchListEdit()">
                   <tag:img id="wlEditImg" png="pencil" title="watchlist.editListName"/>
                   <div id="wlEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv"
-                          onmouseout="hideLayer(this)">
+                          ondblclick="hideLayer(this)">
                     <fmt:message key="watchlist.newListName"/><br/>
                     <input type="text" id="newWatchListName"
                             onkeypress="if (event.keyCode==13) $('saveWatchListNameLink').onclick();"/>
                     <a class="ptr" id="saveWatchListNameLink" onclick="saveWatchListName()"><fmt:message key="common.save"/></a>
+                  <br>Double click to close
                   </div>
                 </div>
                 
