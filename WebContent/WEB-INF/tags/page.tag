@@ -206,7 +206,7 @@
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr><td colspan="2">&nbsp;</td></tr>
   <tr>
-     <td colspan="2" class="footer" align="center">&copy;2012-2016 Scada-LTS <fmt:message key="footer.rightsReserved"/></td>
+     <td colspan="2" class="footer" align="center">&copy;2012-2018 Scada-LTS <fmt:message key="footer.rightsReserved"/></td>
   </tr>
 </table>
 <c:if test="${!empty onload}">
