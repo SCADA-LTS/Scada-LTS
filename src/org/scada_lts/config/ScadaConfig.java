@@ -138,10 +138,10 @@ public class ScadaConfig {
 	 * @return
 	 */
 	public Boolean getBoolean(String propertyName, boolean defaultValues) {
-		Boolean result = defaultValues;
+		Boolean result = (Boolean) defaultValues;
 		try {
 			String propertyValue = getProperty(propertyName);
-			result = Boolean.parseBoolean(propertyValue);
+			result = (Boolean) Boolean.parseBoolean(propertyValue);
 			LOG.trace("propertyName:"+propertyName+" value:"+result);
 		} catch (Exception e) {
 			LOG.trace("propertyName:"+propertyName+" value:"+defaultValues);
