@@ -88,3 +88,4 @@ docker/app/**
 # jrebel
 ###########################
 catalina-jrebel.bat
+scadabr-1.1.0-RC.iml
