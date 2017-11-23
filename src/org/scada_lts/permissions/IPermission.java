@@ -1,37 +1,28 @@
+/*
+ * (c) 2017 Abil'I.T. http://abilit.eu/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.scada_lts.permissions;
 
-import java.util.List;
-import java.util.Map;
+/**
+ * @author Grzegorz Bylica grzegorz.bylica@gmail.com
+ **/
+public interface IPermission {
 
-/** 
- * Permission interface 
- * 
- * @author Arkadiusz Parafiniuk    email: arkadiusz.parafiniuk@gmail.com
- * 
- */
+    void setPermission(byte permission);
 
-public interface IPermission<T> {
-	
-	/**
-	 * Check if user has access to object<T>
-	 * @param user
-	 * @param <T> object is Data Source, View, Data Poin or Watch List
-	 * @param access type
-	 * @return boolean 
-	 */
-	public boolean hasObjectPermission(IUser user, T object, IAccessType accessType);
-	
-	/**
-	 * @param user
-	 * @param access type
-	 * @return the map of objects type <T> that user has access 
-	 */
-	public Map<String, T> getObjectsWithPermission(IUser user, IAccessType accessType);
-
-	/**
-	 * Check if user is admin
-	 * @param user
-	 * @return boolean
-	 */
-	public boolean hasAdminPermission(IUser user);
+    byte getPermission();
 }
