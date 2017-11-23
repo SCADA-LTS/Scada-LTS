@@ -92,6 +92,11 @@ public class ScadaConfig {
     */
 	public static final String USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY = "abilit.USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY";
 
+	public static final String USE_ACL = "abilit.USE_ACL";
+
+	public static final String ACL_SERVER = "abilit.ACL_SERVER";
+
+
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
 	private static final String FILE_NAME_LOGO="logo.png";
 	private static final String FILE_NAME_PROPERTIES="env.properties";
@@ -138,10 +143,10 @@ public class ScadaConfig {
 	 * @return
 	 */
 	public Boolean getBoolean(String propertyName, boolean defaultValues) {
-		Boolean result = defaultValues;
+		Boolean result = (Boolean) defaultValues;
 		try {
 			String propertyValue = getProperty(propertyName);
-			result = Boolean.parseBoolean(propertyValue);
+			result = (Boolean) Boolean.parseBoolean(propertyValue);
 			LOG.trace("propertyName:"+propertyName+" value:"+result);
 		} catch (Exception e) {
 			LOG.trace("propertyName:"+propertyName+" value:"+defaultValues);
