@@ -22,6 +22,8 @@ package org.scada_lts.permissions;
  **/
 public interface IPermission {
 
+    //1- read, 2-write, 3-execute
+
     void setPermission(byte permission);
 
     byte getPermission();
