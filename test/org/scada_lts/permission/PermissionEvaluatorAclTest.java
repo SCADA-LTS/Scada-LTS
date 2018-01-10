@@ -19,6 +19,7 @@ package org.scada_lts.permission;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.scada_lts.permissions.PermissionEvaluatorAcl;
@@ -44,9 +45,12 @@ public class PermissionEvaluatorAclTest {
         //PermissionEvaluatorAcl.getInstance().finalized();
     }
 
-    //@Test requires a server running with permissions
+    @Test //requires a server running with permissions
     public void filter() throws IOException {
         List<EntryDto> result = PermissionEvaluatorAcl.getInstance().filter("org.scada_lts.domain.DataSource", 1L, "admin", 1L,1L);
+        for (EntryDto entry: result) {
+            System.out.printf(""+entry.toString());
+        }
     }
 
 }

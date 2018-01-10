@@ -60,7 +60,7 @@ public class PermisionFilterDataSource {
 
 
         result = tofilter.stream()
-                        .filter(e -> ds.contains(e.getId()))
+                        .filter(e ->  ds.contains(e.getId()))
                         .collect(Collectors.toList());
 
         return result;

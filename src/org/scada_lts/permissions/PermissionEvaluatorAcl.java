@@ -51,19 +51,33 @@ public class PermissionEvaluatorAcl {
     private PermissionEvaluatorAcl() {
     }
 
+    public static boolean hasPermissionToWrite(Long userId, Long classId, Long entityIdentityId) {
+        return true;
+    }
+
+    public static boolean hasPermissionToRead(int userId, Long classId, int entityIdentityId) {
+        return true;
+    }
+
+    public static boolean hasPermissionToExecute(Long userId, Long classId, Long entityIdentityId) {
+        return true;
+    }
+
+    //filter is always check isRead
     public List<EntryDto> filter(String clazz, long clazzId, String sid, long sidId, long principalId) {
 
         List<EntryDto> result = null;
         try {
-            if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
+            /*if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
                 throw new Exception("Note the filter method is only provided for authentication from the ACL server");
-            }
+            }*/
 
             //TODO optimalization
             CloseableHttpClient httpclient = HttpClients.createDefault();
 
 
-            HttpPost httpPost = new HttpPost(ACLConfig.getInstance().getUrlACL());
+            //HttpPost httpPost = new HttpPost(ACLConfig.getInstance().getUrlACL());
+            HttpPost httpPost = new HttpPost("http://localhost:8090/api/permission/filter");
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
 
@@ -107,7 +121,6 @@ public class PermissionEvaluatorAcl {
         }
 
         return result;
-
 
     }
 

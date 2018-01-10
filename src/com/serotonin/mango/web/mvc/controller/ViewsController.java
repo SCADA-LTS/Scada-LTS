@@ -18,20 +18,6 @@
  */
 package com.serotonin.mango.web.mvc.controller;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.ParameterizableViewController;
-
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.ViewDao;
@@ -39,6 +25,14 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.ParameterizableViewController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);

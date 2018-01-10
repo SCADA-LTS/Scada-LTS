@@ -17,14 +17,20 @@
  */
 package org.scada_lts.permissions;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author Grzegorz Bylica grzegorz.bylica@gmail.com
  **/
-public interface IPermission {
+public class PermissionViewACL {
 
-    //1- read, 2-write, 3-execute
+    private static final Log LOG = LogFactory.getLog(PermissionViewACL.class);
 
-    void setPermission(byte permission);
+    private static Long CLAZZ_ID = 1L;
 
-    byte getPermission();
+    public static boolean hasPermissionToRead(int userId, int entityIdentityId) {
+        return PermissionEvaluatorAcl.hasPermissionToRead(userId, CLAZZ_ID, entityIdentityId);
+    }
+
 }
