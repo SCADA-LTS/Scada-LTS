@@ -194,7 +194,7 @@ public class Permissions {
     public static void ensureViewPermission(User user, View view) throws PermissionException {
 
         if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
-            boolean permit = PermissionViewACL.hasPermissionToRead( user.getId(), view.getId());
+            boolean permit = PermissionViewACL.getInstance().hasPermissionToRead( user.getId(), view.getId());
             if (!permit) {
                 throw new PermissionException("User does not have permission to the view", user);
             }
