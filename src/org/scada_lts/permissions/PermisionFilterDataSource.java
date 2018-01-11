@@ -21,11 +21,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.permissions.model.EntryDto;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Grzegorz Bylica grzegorz.bylica@gmail.com
@@ -52,16 +49,16 @@ public class PermisionFilterDataSource {
     //TODO set permision
     public List<DataSourceVO<?>> filter(List<DataSourceVO<?>> tofilter, User user) {
         List<DataSourceVO<?>> result = null;
-        Set<Long> ds =
-                PermissionEvaluatorAcl.getInstance().filter(CLAZZ, CLAZZ_ID, user.getUsername(), user.getId(),user.getId())
+        /*Set<Long> ds =
+                PermissionEvaluatorAclImp.getInstance().filter(CLAZZ, CLAZZ_ID, user.getUsername(), user.getId(),user.getId())
                         .stream()
                         .map(EntryDto::getId)
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toSet());*/
 
 
-        result = tofilter.stream()
+        /*result = tofilter.stream()
                         .filter(e ->  ds.contains(e.getId()))
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList());*/
 
         return result;
     }
