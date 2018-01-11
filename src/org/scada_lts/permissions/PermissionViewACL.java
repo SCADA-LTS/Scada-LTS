@@ -19,6 +19,9 @@ package org.scada_lts.permissions;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.permissions.model.EntryDto;
+
+import java.util.List;
 
 /**
  * @author Grzegorz Bylica grzegorz.bylica@gmail.com
@@ -27,10 +30,37 @@ public class PermissionViewACL {
 
     private static final Log LOG = LogFactory.getLog(PermissionViewACL.class);
 
-    private static Long CLAZZ_ID = 1L;
+    private static int CLAZZ_ID = 1;
 
-    public static boolean hasPermissionToRead(int userId, int entityIdentityId) {
-        return PermissionEvaluatorAcl.hasPermissionToRead(userId, CLAZZ_ID, entityIdentityId);
+    private static PermissionViewACL instance = null;
+
+    private PermissionViewACL() {
+        //
+    }
+
+    public static PermissionViewACL getInstance() {
+        if (instance == null) {
+            instance = new PermissionViewACL();
+        }
+
+        return instance;
+    }
+
+    public  boolean hasPermissionToRead(int userId, int entityIdentityId) {
+        return PermissionEvaluatorAclImp.getInstance().hasPermissionToRead(userId, CLAZZ_ID, entityIdentityId);
+    }
+
+    public  boolean hasPermissionToWrite(int userId, int entityIdentityId) {
+        return PermissionEvaluatorAclImp.getInstance().hasPermissionToRead(userId, CLAZZ_ID, entityIdentityId);
+    }
+
+    public boolean hasPermissionToExecute(int userId, int entityIdentityId) {
+        return PermissionEvaluatorAclImp.getInstance().hasPermissionToRead(userId, CLAZZ_ID, entityIdentityId);
+    }
+
+    public List<EntryDto> filter(int userId) {
+        //rerunt PermissionEvaluatorAclImp.getInstance().filter
+        return null;
     }
 
 }
