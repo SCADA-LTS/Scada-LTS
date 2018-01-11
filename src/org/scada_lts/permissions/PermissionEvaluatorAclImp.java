@@ -17,7 +17,9 @@
  */
 package org.scada_lts.permissions;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,16 +27,12 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.scada_lts.permissions.model.EntryDto;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -103,59 +101,34 @@ public class PermissionEvaluatorAclImp implements PermissionEvaluatorAcl {
         return hasPermisionTo("hasPermissionToExecute", userId, classId, entityIdentityId );
     }
 
-    //filter is always check isRead
     @Override
     public List<EntryDto> filter(long clazzId, long userId ) {
 
         List<EntryDto> result = null;
         try {
-            /*if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
-                throw new Exception("Note the filter method is only provided for authentication from the ACL server");
-            }*/
 
-            //TODO optimalization
-            CloseableHttpClient httpclient = HttpClients.createDefault();
+            //TODO to optimalization
+            HttpClient client = HttpClientBuilder.create().build();
 
-            HttpPost httpPost = new HttpPost(ACLConfig.getInstance().getUrlACL()+"/filter");
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
+            HttpGet request = new HttpGet(ACLConfig.getInstance().getUrlACL()+"/filter/"+userId+"/"+clazzId);
+            request.addHeader("User-Agent", USER_AGENT);
+            request.setHeader("Content-type", "application/json");
+            HttpResponse response = client.execute(request);
 
-            String inputFilter = "{" +
-            /*        "\"entityClass\": { " +
-                    "\"className\": \"" + clazz + "\"," +
-                    "\"id\":" + clazzId +
-                    "}," +
-                    "\"permision\": {" +
-                    "\"mask\": \"1\"" +
-                    "}," +
-                    "\"sid\": {" +
-                    "\"id\":" + sidId + "," +
-                    "\"principal\":" + principalId + ", " +
-                    "\"sid\": \"" + sid + "\"" +
-                    "}" +*/
-                    "}";
+            ObjectMapper mapper = new ObjectMapper();
+            result = mapper.readValue(response.getEntity().getContent(), new TypeReference<List<EntryDto>>() {});
 
-            StringEntity entity = new StringEntity(inputFilter);
-            httpPost.setEntity(entity);
+            HttpEntity entity = response.getEntity();
+            EntityUtils.consume(entity);
 
-            CloseableHttpResponse response2 = httpclient.execute(httpPost);
-
-
-            try {
-
-                ObjectMapper mapper = new ObjectMapper();
-                result = mapper.readValue(response2.getEntity().getContent(), new TypeReference<List<EntryDto>>() {
-                });
-
-                HttpEntity entity2 = response2.getEntity();
-                // do something useful with the response body
-                // and ensure it is fully consumed
-                EntityUtils.consume(entity2);
-            } finally {
-                response2.close();
-            }
-        } catch (Exception e) {
-            LOG.error(e);
+        } catch (JsonParseException e1) {
+            LOG.error(e1);
+        } catch (JsonMappingException e1) {
+            LOG.error(e1);
+        } catch (ClientProtocolException e1) {
+            LOG.error(e1);
+        } catch (IOException e1) {
+            LOG.error(e1);
         }
 
         return result;

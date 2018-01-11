@@ -59,8 +59,7 @@ public class PermissionViewACL {
     }
 
     public List<EntryDto> filter(int userId) {
-        //rerunt PermissionEvaluatorAclImp.getInstance().filter
-        return null;
+        return PermissionEvaluatorAclImp.getInstance().filter(userId, CLAZZ_ID);
     }
 
 }
