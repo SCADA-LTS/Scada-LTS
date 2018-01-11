@@ -17,40 +17,32 @@
  */
 package org.scada_lts.permission;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.scada_lts.permissions.PermissionEvaluatorAcl;
-import org.scada_lts.permissions.model.EntryDto;
+import org.scada_lts.permissions.ACLConfig;
+import org.scada_lts.permissions.PermissionViewACL;
 
 import java.io.IOException;
-import java.util.List;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Grzegorz Bylica grzegorz.bylica@gmail.com
  **/
 @RunWith(JUnit4.class)
-public class PermissionEvaluatorAclTest {
+public class PermissionViewAclTest {
 
-
-    @Before
-    public void init() {
-        PermissionEvaluatorAcl.getInstance();
-    }
-
-    @After
-    public void finalized() {
-        //PermissionEvaluatorAcl.getInstance().finalized();
-    }
-
-    @Test //requires a server running with permissions
+    @Test //requires a server running with permissions with well set permission
     public void filter() throws IOException {
-        List<EntryDto> result = PermissionEvaluatorAcl.getInstance().filter("org.scada_lts.domain.DataSource", 1L, "admin", 1L,1L);
-        for (EntryDto entry: result) {
-            System.out.printf(""+entry.toString());
-        }
+        ACLConfig aclConfig = mock(ACLConfig.class);
+        when(aclConfig.getUrlACL()).thenReturn("http://localhost:8090/api/permission");
+        new ACLConfig(aclConfig);
+        Boolean test = PermissionViewACL.getInstance().hasPermissionToRead(1, 1);
+        assertTrue(test==false);
     }
+
 
 }
