@@ -67,7 +67,6 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.permissions.IPermission;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -76,7 +75,7 @@ import java.io.Serializable;
 import java.util.*;
 
 abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
-		Serializable, Cloneable, JsonSerializable, ChangeComparable<T>, IPermission {
+		Serializable, Cloneable, JsonSerializable, ChangeComparable<T> {
 	public enum Type {
 		EBI25(16, "dsEdit.ebi25", false) {
 			@Override
@@ -609,15 +608,4 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
 		return value;
 	}
 
-	private byte permission;
-
-	@Override
-	public byte getPermission() {
-		return permission;
-	}
-
-	@Override
-	public void setPermission(byte permission) {
-		this.permission = permission;
-	}
 }

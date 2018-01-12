@@ -15,16 +15,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.permissions;
+package org.scada_lts.permission;
+
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * @author Grzegorz Bylica grzegorz.bylica@gmail.com
  **/
-public interface IPermission {
+public class TestLoger {
 
-    //1- read, 2-write, 3-execute
+    static {
+        Logger.getRootLogger().addAppender(new TestAppender());
+    }
 
-    void setPermission(byte permission);
+    public static class TestAppender extends AppenderSkeleton {
+        public void close() {}
+        public boolean requiresLayout() {return false;}
+        @Override
+        protected void append(LoggingEvent event) {
+            System.out.println(""+event.getMessage());
+        }
+    }
 
-    byte getPermission();
 }

@@ -47,10 +47,15 @@ public class ACLConfig {
         return instance;
     }
 
+    //for test
+    public ACLConfig(ACLConfig config) {
+        instance = config;
+    }
+
     private ACLConfig() throws IOException {
-        permissionFromServerAcl = ScadaConfig.getInstance().getBoolean(ScadaConfig.ACL_SERVER, false);
+        permissionFromServerAcl = ScadaConfig.getInstance().getBoolean(ScadaConfig.USE_ACL, false);
         serverACL = ScadaConfig.getInstance().getProperty(ScadaConfig.ACL_SERVER);
-        urlACL = serverACL+"/api/permission/filter";
+        urlACL = serverACL+"/api/permission";
     }
 
     public String getServerACL() {
@@ -64,4 +69,5 @@ public class ACLConfig {
     public String getUrlACL() {
         return urlACL;
     }
+
 }
