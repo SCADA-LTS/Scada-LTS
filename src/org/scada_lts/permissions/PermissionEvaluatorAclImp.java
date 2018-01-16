@@ -102,7 +102,7 @@ public class PermissionEvaluatorAclImp implements PermissionEvaluatorAcl {
     }
 
     @Override
-    public List<EntryDto> filter(long clazzId, long userId ) {
+    public List<EntryDto> filter(long userId, long clazzId ) {
 
         List<EntryDto> result = null;
         try {
