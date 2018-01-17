@@ -3,20 +3,14 @@
  */
 package com.serotonin.mango.web.servlet;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.view.component.EnhancedImageChartComponent;
-import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.Permissions;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Data servlet for EnhancedImageChart.
@@ -37,7 +31,7 @@ public class EnhancedImageChartServlet extends BaseInfoServlet {
         if (view == null) {
             view = user.getView();
         }
-        if (view != null) {
+        /*if (view != null) {
             Permissions.ensureViewPermission(user, view);
 
             // Make sure the owner still has permission to all of the points in the view, and that components are
@@ -49,6 +43,6 @@ public class EnhancedImageChartServlet extends BaseInfoServlet {
                 String data = chart.generateImageChartData(true);
                 IOUtils.write(data, response.getOutputStream());
             }
-        }
+        }*/
     }
 }

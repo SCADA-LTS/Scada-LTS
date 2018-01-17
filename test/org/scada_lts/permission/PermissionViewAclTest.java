@@ -25,7 +25,7 @@ import org.scada_lts.permissions.PermissionViewACL;
 import org.scada_lts.permissions.model.EntryDto;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -52,9 +52,9 @@ public class PermissionViewAclTest {
         ACLConfig aclConfig = mock(ACLConfig.class);
         when(aclConfig.getUrlACL()).thenReturn("http://localhost:8090/api/permission");
         new ACLConfig(aclConfig);
-        List<EntryDto> lst = PermissionViewACL.getInstance().filter(1);
+        Map<Integer, EntryDto> map = PermissionViewACL.getInstance().filter(1);
         //System.out.printf("size:"+lst.size());
-        assertTrue(lst.size()==0);
+        assertTrue(map.size()==0);
     }
 
 }

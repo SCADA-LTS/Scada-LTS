@@ -22,6 +22,8 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.permissions.model.EntryDto;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Grzegorz Bylica grzegorz.bylica@gmail.com
@@ -30,7 +32,7 @@ public class PermissionViewACL {
 
     private static final Log LOG = LogFactory.getLog(PermissionViewACL.class);
 
-    private static int CLAZZ_ID = 1;
+    private static int CLAZZ_ID = 3;
 
     private static PermissionViewACL instance = null;
 
@@ -58,8 +60,15 @@ public class PermissionViewACL {
         return PermissionEvaluatorAclImp.getInstance().hasPermissionToRead(userId, CLAZZ_ID, entityIdentityId);
     }
 
-    public List<EntryDto> filter(int userId) {
-        return PermissionEvaluatorAclImp.getInstance().filter(userId, CLAZZ_ID);
+
+    public Map<Integer, EntryDto> filter(int userId) {
+
+        List<EntryDto> lst = PermissionEvaluatorAclImp.getInstance().filter(userId, CLAZZ_ID);
+
+        Map<Integer, EntryDto> map = lst.stream().collect(
+                Collectors.toMap(EntryDto::getId, EntryDto::getSelf));
+
+        return map;
     }
 
 }
