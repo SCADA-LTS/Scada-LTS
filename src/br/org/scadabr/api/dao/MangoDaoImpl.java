@@ -32,8 +32,6 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import org.scada_lts.permissions.ACLConfig;
-import org.scada_lts.permissions.PermisionFilterDataSource;
 
 import java.util.*;
 
@@ -744,21 +742,15 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		List<Object> dataSources = new ArrayList<Object>();
 
 
-		if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
-			List<DataSourceVO<?>> userDataSources = PermisionFilterDataSource.getInstance().filter(allDataSources,user);
-			for (DataSourceVO<?> dataSourceVO : userDataSources) {
-				dataSources.add(getDataSourceConfig(dataSourceVO));
-			}
-		} else {
-			for (DataSourceVO<?> dataSourceVO : allDataSources) {
-				if (dataSourceVO.getType() == dsType) {
-					if (Permissions.hasDataSourcePermission(user,
-							dataSourceVO.getId())) {
-						dataSources.add(getDataSourceConfig(dataSourceVO));
-					}
+		for (DataSourceVO<?> dataSourceVO : allDataSources) {
+			if (dataSourceVO.getType() == dsType) {
+				if (Permissions.hasDataSourcePermission(user,
+						dataSourceVO.getId())) {
+					dataSources.add(getDataSourceConfig(dataSourceVO));
 				}
 			}
 		}
+
 
 		if (dataSources.size() == 0) {
 			APIError error = new APIError();
