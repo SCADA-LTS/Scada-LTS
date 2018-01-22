@@ -60,27 +60,29 @@ public class WatchListController extends ParameterizableViewController {
 		// The user's permissions may have changed since the last session, so
 		// make sure the watch lists are correct.
 		WatchListDao watchListDao = new WatchListDao();
-		List<WatchList> watchLists;
+		List<WatchList> watchLists = new ArrayList<WatchList>();
 		List<IntValuePair> vwatchLists = vwatchLists = new ArrayList<IntValuePair>();
 		if (!user.isAdmin()) {
 //			watchLists = watchListDao.getWatchLists(user.getId(),
 //					user.getUserProfile());
 
-			// ACL start
-			watchLists = watchListDao.getWatchLists();
-			List<IntValuePair> watchListsIVP = new ArrayList<IntValuePair>();
-			for(WatchList wl : watchLists){
-				watchListsIVP.add(new IntValuePair(wl.getId(), wl.getName()));
-			}
-
-			Map<Integer, EntryDto> mapToCheckId = PermissionWatchlistACL.getInstance().filter(user.getId());
-			for (IntValuePair vwl: watchListsIVP) {
-				if (mapToCheckId.get(vwl.getKey())!=null) {
-					vwatchLists.add(vwl);
+			if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
+				// ACL start
+				watchLists = watchListDao.getWatchLists();
+				List<IntValuePair> watchListsIVP = new ArrayList<IntValuePair>();
+				for (WatchList wl : watchLists) {
+					watchListsIVP.add(new IntValuePair(wl.getId(), wl.getName()));
 				}
+
+				Map<Integer, EntryDto> mapToCheckId = PermissionWatchlistACL.getInstance().filter(user.getId());
+				for (IntValuePair vwl : watchListsIVP) {
+					if (mapToCheckId.get(vwl.getKey()) != null) {
+						vwatchLists.add(vwl);
+					}
+				}
+				//watchLists.stream().filter(watchList -> mapToCheckId.get(watchList.getKey()) != null );
+				// ACL end;
 			}
-			//watchLists.stream().filter(watchList -> mapToCheckId.get(watchList.getKey()) != null );
-			// ACL end;
 
 		} else {
 			watchLists = watchListDao.getWatchLists();
