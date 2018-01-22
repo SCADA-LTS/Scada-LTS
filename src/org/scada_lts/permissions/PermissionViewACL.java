@@ -65,7 +65,7 @@ public class PermissionViewACL {
 
         List<EntryDto> lst = PermissionEvaluatorAclImp.getInstance().filter(userId, CLAZZ_ID);
 
-         if(LOG.isDebugEnabled()) LOG.debug("Filter PermissionViewACL lst:" + lst.toString());
+        LOG.info("Filter PermissionViewACL lst:" + lst.toString());
         Map<Integer, EntryDto> map = lst.stream().collect(
                 Collectors.toMap(EntryDto::getId, EntryDto::getSelf));
 
