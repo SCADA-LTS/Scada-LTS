@@ -78,7 +78,7 @@ public class DataSourceDAO {
 	private static final String DATA_SOURCE_SELECT_WHERE_ID = ""
 				+ DATA_SOURCE_SELECT
 			+ "where "
-				+ COLUMN_NAME_ID + "=:id ";
+				+ COLUMN_NAME_ID + "=? ";
 
 	private static final String DATA_SOURCE_SELECT_WHERE_XID = ""
 			+ DATA_SOURCE_SELECT
@@ -214,6 +214,7 @@ public class DataSourceDAO {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataSource(int id) id:" + id);
 		}
+
 
 		return DAO.getInstance().getJdbcTemp().queryForObject(DATA_SOURCE_SELECT_WHERE_ID, new Object[]{id}, new DataSourceRowMapper());
 		
