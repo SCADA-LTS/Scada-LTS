@@ -214,15 +214,8 @@ public class Permissions {
     // / Watch list access
     //
     public static void ensureWatchListPermission(User user, WatchList watchList) throws PermissionException {
-        if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
-            boolean permit = PermissionWatchlistACL.getInstance().hasPermissionToRead(user.getId(), watchList.getId());
-            if(!permit) {
-                throw new PermissionException("User does not have permission to the watch list", user);
-            }
-        } else {
             if (watchList.getUserAccess(user) == ShareUser.ACCESS_NONE)
                 throw new PermissionException("User does not have permission to the watch list", user);
-        }
     }
 
     public static void ensureWatchListEditPermission(User user, WatchList watchList) throws PermissionException {
