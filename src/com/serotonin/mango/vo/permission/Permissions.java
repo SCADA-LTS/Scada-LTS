@@ -31,6 +31,7 @@ import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionViewACL;
+import org.scada_lts.permissions.PermissionWatchlistACL;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -213,13 +214,13 @@ public class Permissions {
     // / Watch list access
     //
     public static void ensureWatchListPermission(User user, WatchList watchList) throws PermissionException {
-        if (watchList.getUserAccess(user) == ShareUser.ACCESS_NONE)
-            throw new PermissionException("User does not have permission to the watch list", user);
+            if (watchList.getUserAccess(user) == ShareUser.ACCESS_NONE)
+                throw new PermissionException("User does not have permission to the watch list", user);
     }
 
     public static void ensureWatchListEditPermission(User user, WatchList watchList) throws PermissionException {
-        if (watchList.getUserAccess(user) != ShareUser.ACCESS_OWNER)
-            throw new PermissionException("User does not have permission to edit the watch list", user);
+            if (watchList.getUserAccess(user) != ShareUser.ACCESS_OWNER)
+                throw new PermissionException("User does not have permission to edit the watch list", user);
     }
 
     //
