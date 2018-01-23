@@ -5,8 +5,13 @@ sleep 10
 mysql -uroot -proot -e "create database if not exists scadalts"
 cd /opt/scadalts
 ./bin/startup.sh
-sleep 120
+sleep 60
 cd
+kill 460
 cd /opt/scadalts/webapps/ScadaBR/WEB-INF/classes
 sed -i 's/localhost:8090/'`echo $DOCKER_HOST_IP`:8090'/g' env.properties
+cd
+cd /opt/scadalts
+./bin/startup.sh
+cd
 tail -f 100 /opt/scadalts/logs/catalina.out
