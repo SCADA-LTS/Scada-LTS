@@ -71,6 +71,10 @@ In the process of making.
 
 * ScadaLTS tag is finally available on Stack Overflow. Feel free to ask questions - http://stackoverflow.com/questions/tagged/scadalts.
 
+## Tests
+
+[scada-lts.testquality.com](https://scada-lts.testquality.com)
+
 
 ## Versioning
 
