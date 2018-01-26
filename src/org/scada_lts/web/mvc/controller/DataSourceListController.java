@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionWatchlistACL;
 import org.scada_lts.permissions.model.EntryDto;
+import org.scada_lts.permissions.model.PermissionDataSourceACL;
 import org.scada_lts.web.mvc.comparators.DataSourceComparator;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,7 +77,7 @@ public class DataSourceListController {
         for (DataSourceVO<?> ds : data) {
             if(ACLConfig.getInstance().isPermissionFromServerAcl()) {
                 //ACL Start
-                Map<Integer, EntryDto> mapToCheckId = PermissionWatchlistACL.getInstance().filter(user.getId());
+                Map<Integer, EntryDto> mapToCheckId = PermissionDataSourceACL.getInstance().filter(user.getId());
                 if(mapToCheckId.get(ds.getId())!=null) {
                     listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
                     listParent.setParent(ds);
