@@ -223,7 +223,7 @@ public class PointValueService implements MangoPointValues {
 				retries--;
 			} catch (RuntimeException e) {
 				throw new RuntimeException(
-						"Error saving point value: dataType=" + dataType
+						"Error transactional saving point value: dataType=" + dataType
 								+ ", dvalue=" + dvalue, e);
 			}
 		}
@@ -252,7 +252,7 @@ public class PointValueService implements MangoPointValues {
 				retries--;
 			} catch (RuntimeException e) {
 				throw new RuntimeException(
-						"Error saving point value: dataType=" + dataType
+						"Error no transaction saving point value: dataType=" + dataType
 								+ ", dvalue=" + dvalue, e);
 			}
 		}
@@ -273,6 +273,9 @@ public class PointValueService implements MangoPointValues {
 			if (source != null) {
 				sourceType = source.getSetPointSourceType();
 				sourceId = source.getSetPointSourceId();
+			} else {
+				sourceType 	= SetPointSource.Types.UNKNOWN;
+				sourceId 	= new Integer(1);
 			}
 
 			String shortString = null;
@@ -285,9 +288,8 @@ public class PointValueService implements MangoPointValues {
 			}
 			
 			PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id,shortString, longString, sourceType, sourceId);
-			
 			PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
-           
+			
 		}
 
 		return id;
