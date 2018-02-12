@@ -39,7 +39,7 @@ branches:
   - "/^PROC-.*$/"
   - "/^develop-sdtabilit.*$/"
   - "/^#179*$/"
-  - "/^#459*$/"
+  - "/^bug/#459*$/"
   - "/^fix*$/"
   - "/^master-sdtabilit.*$/"
   - "/^v*$/"
