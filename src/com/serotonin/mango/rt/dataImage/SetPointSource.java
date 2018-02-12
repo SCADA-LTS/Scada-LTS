@@ -33,6 +33,7 @@ public interface SetPointSource {
 		int EVENT_HANDLER = 2;
 		int ANONYMOUS = 3;
 		int POINT_LINK = 4;
+		int UNKNOWN = 5;
 	}
 
 	public int getSetPointSourceType();
