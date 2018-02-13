@@ -223,7 +223,7 @@ public class PointValueService implements MangoPointValues {
 				retries--;
 			} catch (RuntimeException e) {
 				throw new RuntimeException(
-						"Error transactional saving point value: dataType=" + dataType
+						"Error saving point value: dataType=" + dataType
 								+ ", dvalue=" + dvalue, e);
 			}
 		}
@@ -252,7 +252,7 @@ public class PointValueService implements MangoPointValues {
 				retries--;
 			} catch (RuntimeException e) {
 				throw new RuntimeException(
-						"Error no transaction saving point value: dataType=" + dataType
+						"Error saving point value: dataType=" + dataType
 								+ ", dvalue=" + dvalue, e);
 			}
 		}
