@@ -36,14 +36,14 @@
   <!-- Meta -->
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <meta http-equiv="Content-Style-Type" content="text/css" />  
-  <meta name="Copyright" content="ScadaLTS &copy;©2015"/>
+  <meta name="Copyright" content="ScadaLTS &copy;ï¿½2015"/>
   <meta name="DESCRIPTION" content="ScadaLTS Software"/>
   <meta name="KEYWORDS" content="ScadaLTS Software"/>
   
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
-  <link href="assets/common.css" type="text/css" rel="stylesheet"/>
+  <link id="pagestyle" href="assets/common_deprecated.css" type="text/css" rel="stylesheet"/>
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
@@ -112,6 +112,28 @@
       function goHomeUrl() {
           MiscDwr.getHomeUrl(function(loc) { window.location = loc; });
       }
+
+      function swapStyleSheet(sheet) {
+        document.getElementById("pagestyle").setAttribute("href", sheet); 
+        localStorage.setItem('theme', sheet);
+      }
+
+      function initate() {
+
+        var theme = localStorage.getItem('theme');
+        if (theme) {
+            document.getElementById("pagestyle").setAttribute("href", theme);
+        }
+
+        var style1 = document.getElementById("stylesheet1");
+        var style2 = document.getElementById("stylesheet2");
+
+        style1.onclick = function () { swapStyleSheet("assets/common_deprecated.css") };
+        style2.onclick = function () { swapStyleSheet("assets/common.css") };
+      }
+
+      window.onload = initate;
+
     </script>
   </c:if>
 </head>
@@ -187,6 +209,13 @@
           <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
           <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
         </c:if>
+        <div style="display:inline;" onmouseover="showMenu('styleEdit', -40, 10);">
+          <tag:img png="theme" title="header.changeTheme"/>
+          <div id="styleEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
+            <a id="stylesheet1">Default ScadaBR Theme </a><br/>
+            <a id="stylesheet2">Modern ScadaBR Theme</a><br/>
+        </div>
+        </div>
         <div style="display:inline;" onmouseover="showMenu('localeEdit', -40, 10);">
           <tag:img png="world" title="header.changeLanguage"/>
           <div id="localeEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">

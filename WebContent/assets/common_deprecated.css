@@ -517,3 +517,15 @@ html > body .dojoTreeNodeLabelSelected {
 	margin: 5px 0;
 }
 
+/* To fix new css changees */
+.form-box {
+    width: 20px;
+}
+.login-button {
+    width: 165px;
+}
+
+img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src$="world.png"] {
+	height: 16px;
+	width: 16px;
+}

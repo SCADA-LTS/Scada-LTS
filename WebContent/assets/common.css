@@ -380,4 +380,16 @@ html {
   padding-bottom: 1rem;
   font-weight: 300; }
 
+
+.form-box {
+    width: 100%;
+}
+.login-button {
+    width: 100%;
+}
+
+img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src$="world.png"] {
+	height: 32px;
+	width: 32px;
+}
 /*# sourceMappingURL=common.css.map */

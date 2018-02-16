@@ -66,7 +66,7 @@
                 </div>
               </div>
             
-              <div>
+              <div class="form-box">
                 <div class="formLabelRequired"><fmt:message key="login.password"/></div>
                 <div class="formField">
                   <input id="password" type="password" name="password" value="${login.password}" maxlength="20"/>
