@@ -1,12 +1,15 @@
 @import url(common_deprecated.css);
 @import url("https://fonts.googleapis.com/css?family=Lato:300,400,700&subset=latin-ext");
-html body {
-  font-family: "Lato", sans-serif;
-  font-size: 18px;
-  color: #000000;
-  background-color: #E8EAF6;
-  margin: 0;
-  padding: 0; }
+html {
+  height: 100%; }
+  html body {
+    height: 100%;
+    font-family: "Lato", sans-serif;
+    font-size: 18px;
+    color: #000000;
+    background-color: whitesmoke;
+    margin: 0;
+    padding: 0; }
 
 .controlsDiv {
   padding: 5px;
@@ -21,7 +24,7 @@ html body {
       background-color: transparent; }
 
 #mainHeader {
-  background-color: #607D8B; }
+  background-color: whitesmoke; }
 
 #logo {
   padding: 1px 1em;
@@ -31,6 +34,7 @@ img#logo {
   opacity: 0.95; }
 
 .projectTitle {
+  color: black;
   font-family: "Lato", sans-serif;
   font-size: 1rem; }
 
@@ -57,12 +61,6 @@ img#logo {
     display: block;
     height: 1px;
     background-color: transparent; }
-
-#viewContent {
-  background-color: red; }
-
-#viewBackground {
-  background-color: blue; }
 
 a img {
   margin: 0;
@@ -135,8 +133,13 @@ select#watchListSelect {
 #newWatchListName {
   font-family: "Lato", sans-serif; }
 
+#subHeader {
+  background-color: #4C5A50;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.33);
+  margin-bottom: 5px; }
+
 #subHeader > tbody > tr > td:nth-child(2) span.copyTitle {
-  color: #263238;
+  color: white;
   font-size: 1rem;
   text-transform: uppercase; }
   #subHeader > tbody > tr > td:nth-child(2) span.copyTitle b {
@@ -183,7 +186,7 @@ span.dojoTreeNodeLabel span {
 
 span#__header__alarmLevelText {
   font-family: "Lato", sans-serif;
-  color: white;
+  color: black;
   line-height: 2rem;
   font-weight: 300;
   font-size: 1rem; }
@@ -233,28 +236,12 @@ span#__header__alarmLevelText {
     transform: translateX(0.5rem);
     color: #1B5E20; }
 
-html {
-  background-color: #607d8b; }
+img[src^="images/"] {
+  height: 32px;
+  width: 32px; }
 
-.rowHeader td, .smRowHeader td, .row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
-  font-family: "Lato", sans-serif;
-  font-size: 18px;
-  color: #000000;
-  text-align: center; }
-
-.rowHeader td, .smRowHeader td {
-  text-transform: uppercase;
-  font-weight: 400;
-  color: #FFFFFF;
-  background-color: #1d89fa;
-  text-align: center;
-  white-space: nowrap;
-  height: 2rem; }
-
-#subHeader {
-  margin: auto; }
-  #subHeader .labelDiv {
-    transform: translateX(-16px) translateY(48px); }
+#subHeader .labelDiv {
+  transform: translateX(-16px) translateY(48px); }
 
 .login-container {
   background-image: url("./images/Background.jpg");
@@ -271,7 +258,7 @@ html {
 .form-box {
   text-align: center; }
 
-.formLabelRequired {
+.formLabelRequired, .formLabel {
   width: 70%;
   text-align: left;
   margin: auto;
@@ -290,7 +277,7 @@ html {
 
 .formField {
   margin-bottom: 3rem; }
-  .formField input {
+  .formField input, .formField select {
     width: 70%;
     text-align: left;
     font-size: 1.3rem;
@@ -304,7 +291,7 @@ html {
   top: calc(50vh - 100px);
   left: 50vw;
   transform: translateY(-50%) translateX(-50%);
-  background-color: rgba(187, 222, 251, 0.75);
+  background-color: rgba(232, 234, 246, 0.75);
   border: 1px solid black;
   text-align: center;
   opacity: 0.9; }
@@ -336,60 +323,40 @@ html {
     border: 1px solid rgba(0, 0, 0, 0.07); }
     .login-button input:hover {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.24);
-      background-color: #00C853;
+      background-color: #77C055;
       border: 1px solid rgba(0, 0, 0, 0.55);
       cursor: pointer; }
 
-.documentationPane {
-  position: absolute;
-  margin-left: -150px;
-  margin-top: -50vh; }
+.form-box {
+  width: 100%; }
 
-.watch-container {
-  position: static; }
+.login-button {
+  width: 100%; }
 
-#splitContainer {
-  padding-right: 5px; }
-  #splitContainer .dojoSplitPane {
-    padding-left: 2rem; }
-
-#imageChartDiv, #temp {
-  box-sizing: border-box;
-  overflow: hidden;
-  border: 1px solid black; }
-  #imageChartDiv img, #temp img {
-    width: 100%;
-    height: 400px; }
-
-#temp {
-  z-index: -1;
-  position: fixed;
-  top: 0;
-  right: 0; }
-
-#chartContainer {
-  position: static;
-  height: 200px; }
+img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src$="world.png"] {
+  height: 32px;
+  width: 32px; }
 
 .dojoSplitPane {
   overflow-y: visible;
   height: 100%; }
 
-.footer {
-  font-size: 1rem;
-  padding-bottom: 1rem;
-  font-weight: 300; }
+html {
+  background-color: #607d8b; }
 
+.rowHeader td, .smRowHeader td, .row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  color: #000000;
+  text-align: center; }
 
-.form-box {
-    width: 100%;
-}
-.login-button {
-    width: 100%;
-}
+.rowHeader td, .smRowHeader td {
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #FFFFFF;
+  background-color: #1d89fa;
+  text-align: center;
+  white-space: nowrap;
+  height: 2rem; }
 
-img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src$="world.png"] {
-	height: 32px;
-	width: 32px;
-}
 /*# sourceMappingURL=common.css.map */

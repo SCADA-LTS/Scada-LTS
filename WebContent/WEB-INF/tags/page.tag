@@ -159,7 +159,7 @@
 </table>
 
 <c:if test="${!simple}">
-  <table width="100%" cellspacing="0" cellpadding="0" border="0" id="subHeader">
+  <table class="navHeader" width="100%" id="subHeader">
     <tr>
       <td style="cursor:default" >
         <c:if test="${!empty sessionUser}">
@@ -209,14 +209,14 @@
           <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
           <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
         </c:if>
-        <div style="display:inline;" onmouseover="showMenu('styleEdit', -40, 10);">
+        <div style="display:inline;" class="ptr" onmouseover="showMenu('styleEdit', -40, 10);">
           <tag:img png="theme" title="header.changeTheme"/>
           <div id="styleEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
             <a id="stylesheet1">Default ScadaBR Theme </a><br/>
             <a id="stylesheet2">Modern ScadaBR Theme</a><br/>
         </div>
         </div>
-        <div style="display:inline;" onmouseover="showMenu('localeEdit', -40, 10);">
+        <div style="display:inline;" class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
           <tag:img png="world" title="header.changeLanguage"/>
           <div id="localeEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
             <c:forEach items="${availableLanguages}" var="lang">
@@ -232,12 +232,9 @@
 <div style="padding:5px;">
   <jsp:doBody/>
 </div>
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr><td colspan="2">&nbsp;</td></tr>
-  <tr>
-     <td colspan="2" class="footer" align="center">&copy;2012-2018 Scada-LTS <fmt:message key="footer.rightsReserved"/></td>
-  </tr>
-</table>
+<div class="footer" style="text-align:center">
+    <span>&copy;2012-2018 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
+</div>
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>
 </c:if>

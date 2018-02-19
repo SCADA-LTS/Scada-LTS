@@ -578,14 +578,11 @@
                 setCookie("split_container_height", jQuery("#splitContainer").height());
                 splitContainerHeight = jQuery("#splitContainer").height();
             }
-            if(chartContainerHeight != jQuery("#chartContainer").height()){
-                setCookie("chart_container_height", jQuery("#chartContainer").height());
-                chartContainerHeight = jQuery("#chartContainer").height();
-            }
+
         }
 
         var splitContainerHeight;
-        var chartContainerHeight;
+
 
         jQuery(document).ready(function(){
             (function($) {
@@ -595,10 +592,6 @@
                 splitContainerHeight = parseInt(getCookie("split_container_height"));
                 if(splitContainerHeight != null){
                     jQuery("#splitContainer").height(splitContainerHeight);
-                }
-                chartContainerHeight = parseInt(getCookie("chart_container_height"));
-                if(chartContainerHeight != null){
-                    jQuery("#chartContainer").height(chartContainerHeight);
                 }
 
                 window.setInterval(saveDivHeightsToCookieOnChange, 2000);
@@ -715,7 +708,7 @@
 
 
 
-        <div id="chartContainer" class="borderDiv" style="width: 100%; height: 200px; resize: none; overflow: hidden;">
+        <div id="chartContainer" class="borderDiv">
           <table width="100%">
             <tr>
               <td class="smallTitle"><fmt:message key="watchlist.chart"/> <tag:help id="watchListCharts"/></td>
