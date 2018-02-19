@@ -525,7 +525,7 @@ html > body .dojoTreeNodeLabelSelected {
     width: 165px;
 }
 
-img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="images/"] {
+img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="images/"]:not(#viewBackground){
 	height: 16px;
 	width: 16px;
 }
