@@ -4,7 +4,7 @@ html {
   height: 100%; }
   html body {
     height: 100%;
-    font-family: "Lato", sans-serif;
+    font-family: 'Lato', sans-serif;
     font-size: 18px;
     color: #000000;
     background-color: whitesmoke;
@@ -18,134 +18,74 @@ html {
       color: white;
       background-color: #4C5A50; }
 
-.controlsDiv {
-  padding: 5px;
-  background-color: transparent;
-  transform: translateX(-100%);
-  transition: all 0.3s ease-in-out; }
-  .controlsDiv table {
-    background-color: transparent; }
-    .controlsDiv table td {
-      color: red;
-      width: 2rem;
-      background-color: transparent; }
-
-#mainHeader {
-  background-color: whitesmoke; }
-
-#logo {
-  padding: 1px 1em;
-  text-shadow: 1px 1px 3px red; }
-
-img#logo {
-  opacity: 0.95; }
-
-.projectTitle {
-  color: black;
-  font-family: "Lato", sans-serif;
-  font-size: 1rem; }
-
-.bigTitle {
-  color: #37474F;
-  font-size: 1.5rem;
-  font-weight: 700; }
-
-.borderDiv, .borderDivPadded {
-  border: 1px solid transparent;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
-  box-sizing: border-box;
-  background-color: whitesmoke;
-  padding: 1rem; }
-
-.formLabel, .formLabelRequired, .formField, .formError {
-  font-family: "Lato", sans-serif;
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 2rem;
-  padding: 0.5rem; }
-  .formLabel::before, .formLabelRequired::before, .formField::before, .formError::before {
-    content: "";
-    display: block;
-    height: 1px;
-    background-color: transparent; }
-
+/* Hoverable icons */
 img.ptr {
   margin: 0;
-  padding: 0.2rem;
+  padding: .2rem;
   height: 32px;
-  transition: all 0.3s ease-in-out; }
+  transition: all .3s ease-in-out; }
   img.ptr:hover {
     background: rgba(96, 125, 139, 0.51); }
   img.ptr:focus {
     background-color: red; }
 
-input, select, textarea {
-  font-family: "Lato", sans-serif;
-  box-sizing: content-box;
-  text-align: right;
-  min-width: 3.5rem;
-  height: 32px;
+/* Header Section */
+#logo {
+  padding: 1px 1em; }
+
+#mainHeader {
+  background-color: whitesmoke; }
+
+span#__header__alarmLevelText {
+  font-family: 'Lato', sans-serif;
+  color: black;
   line-height: 2rem;
-  font-size: 1rem;
-  padding: 0.2rem 0.5rem;
-  margin: 0.1rem 0.9rem;
-  border: 1px solid #80CBC4; }
-  input::selection, select::selection, textarea::selection {
-    color: #263238;
-    padding: 1rem;
-    line-height: 2rem; }
+  font-weight: 300;
+  font-size: 1rem; }
 
-select#watchListSelect {
-  font-family: "Lato", sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
-  height: 32px;
-  padding: 0 1rem 5px;
-  margin-right: 3rem;
-  color: #1B5E20; }
-
-#wlEdit {
-  font-family: "Lato", sans-serif;
-  font-size: 1.2rem;
-  padding: 1rem 1rem;
-  transform: translateY(40%); }
-  #wlEdit .labelDiv {
-    color: blue; }
-  #wlEdit a {
-    padding: 0.5rem 1rem;
-    background-color: #00C853;
-    font-size: 1rem;
-    text-decoration: none; }
-    #wlEdit a:hover {
-      background-color: #1B5E20; }
-  #wlEdit div {
-    margin: 1rem; }
-  #wlEdit input {
-    font-family: "Lato", sans-serif;
-    margin: 1rem 0; }
-
-#wlEditImg {
-  height: 32px; }
-
-#newWatchListName {
-  font-family: "Lato", sans-serif; }
+#__header__alarmLevelImg {
+  transform: translateY(25%); }
 
 #subHeader {
+  margin-bottom: 5px;
   background-color: #4C5A50;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.33);
-  margin-bottom: 5px; }
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.33); }
+  #subHeader tbody > tr > td:nth-child(2) .copyTitle {
+    color: white;
+    font-size: 1rem;
+    text-transform: uppercase; }
+    #subHeader tbody > tr > td:nth-child(2) .copyTitle b {
+      text-transform: none;
+      font-size: 1.2rem;
+      padding-right: 2rem; }
 
-#subHeader > tbody > tr > td:nth-child(2) span.copyTitle {
-  color: white;
-  font-size: 1rem;
-  text-transform: uppercase; }
-  #subHeader > tbody > tr > td:nth-child(2) span.copyTitle b {
-    text-transform: none;
-    font-size: 1.2rem;
-    padding-right: 2rem; }
+.projectTitle {
+  color: black !important;
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem; }
 
+/* Language and style dropdown */
+#localeEdit, #styleEdit {
+  margin-left: -100px;
+  margin-top: -1rem;
+  padding: 1rem 0.5rem 0;
+  overflow: hidden; }
+  #localeEdit a, #styleEdit a {
+    margin: -0.5rem;
+    padding: 8px 2rem;
+    display: block;
+    line-height: 1rem;
+    text-decoration: none;
+    transition: all .3s ease-in-out;
+    transform: translateX(0);
+    font-size: 1rem; }
+  #localeEdit:hover, #styleEdit:hover {
+    color: #53F385;
+    transform: translateX(10px); }
+
+/* Default card/panel component */
 .smallTitle {
-  font-family: "Lato", sans-serif;
+  font-family: 'Lato' ,sans-serif;
   font-size: 1.4rem;
   font-weight: 300;
   line-height: 3rem;
@@ -161,57 +101,47 @@ select#watchListSelect {
     height: 15px;
     background-color: black; }
 
-.dojoTreeNode img {
-  background-size: cover;
-  min-height: 32px;
-  min-width: 32px; }
+.borderDiv, .borderDivPadded {
+  border: 1px solid transparent;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+  box-sizing: border-box;
+  background-color: whitesmoke;
+  padding: 1rem; }
 
-span.dojoTreeNodeLabel span {
+.content {
+  margin-bottom: 30px; }
+
+/* Form Components */
+.formLabel, .formLabelRequired, .formField, .formError {
   font-family: "Lato", sans-serif;
-  font-size: 1rem; }
-
-#subHeader > tbody > tr > td:nth-child(2) > div > img {
-  margin: 0 1rem;
-  padding: 0; }
-
-#treeDiv img {
-  height: 32px; }
-#treeDiv span {
-  font-family: "Lato", sans-serif;
-  color: inherit;
-  margin: 0; }
-
-span#__header__alarmLevelText {
-  font-family: "Lato", sans-serif;
-  color: black;
-  line-height: 2rem;
-  font-weight: 300;
-  font-size: 1rem; }
-
-#__header__alarmLevelImg {
-  transform: translateY(25%); }
-
-#imageChartDiv img {
-  width: 100%;
-  height: calc(100% - 4rem); }
-
-#localeEdit, #styleEdit {
-  margin-left: -100px;
-  margin-top: -1rem;
-  padding: 1rem 0.5rem 0;
-  overflow: hidden; }
-  #localeEdit a, #styleEdit a {
-    margin: -0.5rem;
-    padding: 8px 2rem;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 2.0rem;
+  padding: .5rem; }
+  .formLabel::before, .formLabelRequired::before, .formField::before, .formError::before {
+    content: "";
     display: block;
-    line-height: 1rem;
-    text-decoration: none;
-    transition: all 0.3s ease-in-out;
-    transform: translateX(0);
-    font-size: 1rem; }
-    #localeEdit a:hover, #styleEdit a:hover {
-      color: #00C853;
-      transform: translateX(10px); }
+    height: 1px;
+    background-color: transparent; }
+
+input, select, textarea {
+  font-family: "Lato", sans-serif;
+  box-sizing: content-box;
+  text-align: right;
+  min-width: 3.5rem;
+  height: 32px;
+  line-height: 2rem;
+  font-size: 1rem;
+  padding: .2rem .5rem;
+  margin: .1rem .9rem;
+  border: 1px solid #4C5A50; }
+  input::selection, select::selection, textarea::selection {
+    color: #263238;
+    padding: 1rem;
+    line-height: 2rem; }
+  input #watchListSelect, select #watchListSelect, textarea #watchListSelect {
+    padding: 0 1rem 5px;
+    margin-right: 3rem; }
 
 .labelDiv {
   box-sizing: border-box;
@@ -220,19 +150,11 @@ span#__header__alarmLevelText {
   font-size: 1rem;
   font-weight: 300; }
   .labelDiv input {
-    margin: 0.5rem;
-    padding: 0 0.5rem;
+    margin: .5rem;
+    padding: 0 .5rem;
     line-height: 10rem; }
 
-.link {
-  font-size: 1rem;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: all 0.3s ease-in-out; }
-  .link:hover {
-    transform: translateX(0.5rem);
-    color: #1B5E20; }
-
+/* Modern theme icons */
 img[src^="images/"]:not(#viewBackground) {
   height: 32px;
   width: 32px; }
@@ -338,8 +260,47 @@ img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src$="w
   overflow-y: visible;
   height: 100%; }
 
-html {
-  background-color: #607d8b; }
+#wlEdit {
+  font-family: "Lato", sans-serif;
+  font-size: 1.2rem;
+  padding: 1rem 1rem;
+  transform: translateY(40%); }
+  #wlEdit .labelDiv {
+    color: blue; }
+  #wlEdit a {
+    padding: .5rem 1rem;
+    background-color: #00C853;
+    font-size: 1rem;
+    text-decoration: none; }
+    #wlEdit a:hover {
+      background-color: #1B5E20; }
+  #wlEdit div {
+    margin: 1rem; }
+  #wlEdit input {
+    margin: 1rem 0; }
+
+#newWatchListName {
+  font-family: "Lato", sans-serif; }
+
+.dojoTreeNode img {
+  background-size: cover;
+  min-height: 32px;
+  min-width: 32px; }
+
+span.dojoTreeNodeLabel span {
+  font-family: "Lato", sans-serif;
+  font-size: 1rem; }
+
+#treeDiv img {
+  height: 32px; }
+#treeDiv span {
+  font-family: 'Lato' , sans-serif;
+  color: inherit;
+  margin: 0; }
+
+#imageChartDiv img {
+  width: 100%;
+  height: calc(100% - 4rem); }
 
 .rowHeader td, .smRowHeader td, .row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
   font-family: "Lato", sans-serif;

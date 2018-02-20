@@ -229,7 +229,7 @@
   </table>
 </c:if>
 
-<div style="padding:5px;">
+<div class="content" style="padding-top:10px;">
   <jsp:doBody/>
 </div>
 <div class="footer" style="text-align:center">

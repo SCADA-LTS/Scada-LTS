@@ -592,6 +592,10 @@
                 splitContainerHeight = parseInt(getCookie("split_container_height"));
                 if(splitContainerHeight != null){
                     jQuery("#splitContainer").height(splitContainerHeight);
+                } else if(splitContainerHeight === undefined || splitContainerHeight < 300) {
+                    jQuery("#splitContainer").height(600);
+                } else {
+                    jQuery("#splitContainer").height(500);
                 }
 
                 window.setInterval(saveDivHeightsToCookieOnChange, 2000);
