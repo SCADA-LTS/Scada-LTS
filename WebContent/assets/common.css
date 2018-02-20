@@ -10,6 +10,13 @@ html {
     background-color: whitesmoke;
     margin: 0;
     padding: 0; }
+    html body .footer {
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      padding: 12px;
+      color: white;
+      background-color: #4C5A50; }
 
 .controlsDiv {
   padding: 5px;
@@ -61,16 +68,6 @@ img#logo {
     display: block;
     height: 1px;
     background-color: transparent; }
-
-a img {
-  margin: 0;
-  padding: 0.2rem;
-  height: 32px;
-  transition: all 0.3s ease-in-out; }
-  a img:hover {
-    background: rgba(96, 125, 139, 0.51); }
-  a img:focus {
-    background-color: red; }
 
 img.ptr {
   margin: 0;
@@ -198,12 +195,12 @@ span#__header__alarmLevelText {
   width: 100%;
   height: calc(100% - 4rem); }
 
-#localeEdit {
+#localeEdit, #styleEdit {
   margin-left: -100px;
   margin-top: -1rem;
   padding: 1rem 0.5rem 0;
   overflow: hidden; }
-  #localeEdit a {
+  #localeEdit a, #styleEdit a {
     margin: -0.5rem;
     padding: 8px 2rem;
     display: block;
@@ -212,7 +209,7 @@ span#__header__alarmLevelText {
     transition: all 0.3s ease-in-out;
     transform: translateX(0);
     font-size: 1rem; }
-    #localeEdit a:hover {
+    #localeEdit a:hover, #styleEdit a:hover {
       color: #00C853;
       transform: translateX(10px); }
 
@@ -236,7 +233,7 @@ span#__header__alarmLevelText {
     transform: translateX(0.5rem);
     color: #1B5E20; }
 
-img[src^="images/"] {
+img[src^="images/"]:not(#viewBackground) {
   height: 32px;
   width: 32px; }
 

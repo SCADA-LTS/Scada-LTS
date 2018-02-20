@@ -212,8 +212,8 @@
         <div style="display:inline;" class="ptr" onmouseover="showMenu('styleEdit', -40, 10);">
           <tag:img png="theme" title="header.changeTheme"/>
           <div id="styleEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
-            <a id="stylesheet1">Default ScadaBR Theme </a><br/>
-            <a id="stylesheet2">Modern ScadaBR Theme</a><br/>
+            <a class="ptr" id="stylesheet1">Default ScadaBR Theme </a><br/>
+            <a class="ptr" id="stylesheet2">Modern ScadaBR Theme</a><br/>
         </div>
         </div>
         <div style="display:inline;" class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
