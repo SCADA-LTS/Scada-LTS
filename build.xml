@@ -10,18 +10,6 @@
 	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
    </path>
 
-	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="tomcat.ant.classpath"/>
-
-	<target name="deploy" description="deploy to tomcat">
-		<echo>deploying from client</echo>
-		<deploy
-			url="http://localhost:8080/manager"
-			username="tomcat"
-			password="tomcat"
-			path="/ScadaBR"
-			war="ScadaBR.war"
-			update="true"/>
-	</target>
 
 	<target name="clean_and_tomcat_deploy" description="Deploy prepared WAR file from project dir to Tomcat webapps folder">
 		<delete file="${env.CATALINA_HOME}/webapps/ScadaBR.war"></delete>

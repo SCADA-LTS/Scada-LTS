@@ -7,6 +7,7 @@
 
 package br.org.scadabr.api.ae;
 
+
 public class AckEventsOptions  implements java.io.Serializable {
     private boolean returnEventDetails;
 

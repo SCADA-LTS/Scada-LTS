@@ -37,8 +37,8 @@ public class EntryDto implements Serializable {
         this.mask = mask;
     }
 
-    public Long getId() {
-        return id;
+    public Integer getId() {
+        return new Integer(Math.toIntExact(id));
     }
 
     public void setId(Long id) {
@@ -51,6 +51,10 @@ public class EntryDto implements Serializable {
 
     public void setMask(byte mask) {
         this.mask = mask;
+    }
+
+    public EntryDto getSelf() {
+        return this;
     }
 
     @Override

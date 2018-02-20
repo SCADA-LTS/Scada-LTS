@@ -18,8 +18,6 @@
  */
 package com.serotonin.mango.vo.permission;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -31,6 +29,11 @@ import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
+import org.scada_lts.permissions.ACLConfig;
+import org.scada_lts.permissions.PermissionViewACL;
+import org.scada_lts.permissions.PermissionWatchlistACL;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Matthew Lohbihler
@@ -190,8 +193,16 @@ public class Permissions {
     // / View access
     //
     public static void ensureViewPermission(User user, View view) throws PermissionException {
-        if (view.getUserAccess(user) == ShareUser.ACCESS_NONE)
-            throw new PermissionException("User does not have permission to the view", user);
+
+        if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
+            boolean permit = PermissionViewACL.getInstance().hasPermissionToRead( user.getId(), view.getId());
+            if (!permit) {
+                throw new PermissionException("User does not have permission to the view", user);
+            }
+        } else {
+            if (view.getUserAccess(user) == ShareUser.ACCESS_NONE)
+                throw new PermissionException("User does not have permission to the view", user);
+        }
     }
 
     public static void ensureViewEditPermission(User user, View view) throws PermissionException {
@@ -203,13 +214,13 @@ public class Permissions {
     // / Watch list access
     //
     public static void ensureWatchListPermission(User user, WatchList watchList) throws PermissionException {
-        if (watchList.getUserAccess(user) == ShareUser.ACCESS_NONE)
-            throw new PermissionException("User does not have permission to the watch list", user);
+            if (watchList.getUserAccess(user) == ShareUser.ACCESS_NONE)
+                throw new PermissionException("User does not have permission to the watch list", user);
     }
 
     public static void ensureWatchListEditPermission(User user, WatchList watchList) throws PermissionException {
-        if (watchList.getUserAccess(user) != ShareUser.ACCESS_OWNER)
-            throw new PermissionException("User does not have permission to edit the watch list", user);
+            if (watchList.getUserAccess(user) != ShareUser.ACCESS_OWNER)
+                throw new PermissionException("User does not have permission to edit the watch list", user);
     }
 
     //

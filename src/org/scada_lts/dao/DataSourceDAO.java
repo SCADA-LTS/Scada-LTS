@@ -17,14 +17,10 @@
  */
 package org.scada_lts.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
+import com.mysql.jdbc.Statement;
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -38,10 +34,13 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mysql.jdbc.Statement;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * DataSource DAO
@@ -215,6 +214,7 @@ public class DataSourceDAO {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataSource(int id) id:" + id);
 		}
+
 
 		return DAO.getInstance().getJdbcTemp().queryForObject(DATA_SOURCE_SELECT_WHERE_ID, new Object[]{id}, new DataSourceRowMapper());
 		
