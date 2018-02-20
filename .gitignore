@@ -2,6 +2,9 @@
 /build/
 /bin/
 target/
+/WebContent/assets/.sass-cache/
+/WebContent/images/oldicons
+/WebContent/resources/app/bower_components/
 # OS Files #
 .DS_Store
 *.class

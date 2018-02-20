@@ -1,0 +1,276 @@
+$font-size: 18px
+$menu-icon-size: 32px
+$bold: 700
+
+html
+  body
+    font-family: 'Lato', sans-serif
+    font-size: $font-size
+    color: #000000
+    background-color: #E8EAF6
+    margin: 0
+    padding: 0
+
+@mixin icon-menu
+  margin: 0
+  padding: .2rem
+  height: $menu-icon-size
+  transition: all .3s ease-in-out
+  //border-radius: 15px
+
+  &:hover
+    background: rgba(96, 125, 139, 0.51)
+
+  &:focus
+    background-color: red
+
+@mixin font
+  font-family: 'Lato', sans-serif
+@mixin button
+  padding: .5rem 1rem
+  background-color:  #00C853
+  &:hover
+    background-color: #1B5E20
+
+
+.controlsDiv
+  padding: 5px
+  background-color: transparent
+  transform: translateX(-100%)
+  transition: all .3s ease-in-out
+
+  table
+    background-color: transparent
+    td
+      color: red
+      width: 2rem
+      background-color: transparent
+      //display: none
+
+
+#mainHeader
+  background-color:  #607D8B
+
+#logo
+  padding: 1px 1em
+  text-shadow: 1px 1px 3px red
+
+img#logo
+    opacity: .95
+
+.projectTitle
+  font-family: 'Lato', sans-serif
+  font-size: 1rem
+
+
+.bigTitle
+  color: #37474F //#333333;
+  font-size: 1.5rem
+  font-weight: $bold
+
+.borderDiv, .borderDivPadded
+  border: 1px solid transparent
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13)
+  box-sizing: border-box
+  background-color: whitesmoke
+  padding: 1rem
+
+
+.formLabel, .formLabelRequired, .formField, .formError
+  +font
+  font-weight: 400
+  font-size: 1rem
+  line-height: 2.0rem
+  padding: .5rem
+  &::before
+      content: ""
+      display: block
+      height: 1px
+      background-color: transparent
+
+//border: 1px solid #39B54A
+
+#viewContent
+  background-color: red
+  // display: none
+
+#viewBackground
+  background-color: blue
+
+
+a
+  img
+    +icon-menu
+
+img.ptr
+  +icon-menu
+
+input, select, textarea
+  +font
+  box-sizing: content-box
+  text-align: right
+  min-width: 3.5rem
+  height: $menu-icon-size
+  line-height: 2rem
+  font-size: 1rem
+  padding: .2rem .5rem
+  margin: .1rem .9rem
+  border: 1px solid#80CBC4
+  &::selection
+    color: #263238
+    padding: 1rem
+    line-height: 2rem
+
+
+select#watchListSelect
+  +font
+  font-weight: 700
+  font-size: 1rem
+  height: $menu-icon-size
+  //ine-height: 2.5rem
+  padding: 0 1rem 5px
+  margin-right: 3rem
+  color: #1B5E20
+
+#wlEdit
+  +font
+  font-size: 1.2rem
+  padding: 1rem 1rem
+  transform: translateY(40%)
+  .labelDiv
+    color: blue
+  a
+    +button
+    font-size: 1rem
+    text-decoration: none
+  div
+    margin: 1rem
+  input
+    +font
+    margin: 1rem 0
+
+
+#wlEditImg
+  height: $menu-icon-size
+
+
+#newWatchListName
+  +font
+
+
+//admin icons
+#subHeader > tbody > tr > td:nth-child(2)
+  //background-color: black
+
+  span.copyTitle
+    color: #263238
+    font-size: 1rem
+    text-transform: uppercase
+    b
+      text-transform: none
+      font-size: 1.2rem
+      padding-right: 2rem
+
+.smallTitle
+  font-family: 'Lato' ,sans-serif
+  font-size: 1.4rem
+  font-weight: 300
+  line-height: 3rem
+  text-transform: uppercase
+  padding: 1rem 1rem 0.2rem 0
+  margin-bottom: 3rem
+  //border: 1px solid black
+  border-bottom: 1px solid black
+  text-align: left
+  &::after
+    position: relative
+    display: inline-block
+    content: ""
+    height: 15px
+    background-color: black
+
+
+.dojoTreeNode
+  img
+    background-size: cover
+    min-height: $menu-icon-size
+    min-width: $menu-icon-size
+
+    //border: 1px solid red
+    // display: none !important
+
+
+span.dojoTreeNodeLabel span
+  +font
+  font-size: 1rem
+
+#subHeader > tbody > tr > td:nth-child(2) > div > img
+  //+icon-menu
+  margin: 0 1rem
+  padding: 0
+
+#treeDiv
+  img
+    height: $menu-icon-size
+  span
+    font-family: 'Lato' , sans-serif
+    color: inherit
+    margin: 0
+
+span#__header__alarmLevelText
+  font-family: 'Lato', sans-serif
+  color: white
+  line-height: 2rem
+  font-weight: 300
+  font-size: 1rem
+
+#__header__alarmLevelImg
+  transform: translateY(25%)
+
+#imageChartDiv
+  img
+    width: 100%
+    height: calc(100% - 4rem)
+
+
+//language table
+#localeEdit
+  margin-left: -100px
+  margin-top: -1rem
+  padding: 1rem 0.5rem 0
+  overflow: hidden
+  a
+    margin: -0.5rem
+    padding: 8px 2rem
+    display: block
+    line-height: 1rem
+    text-decoration: none
+    transition: all .3s ease-in-out
+    transform: translateX(0)
+    font-size: 1rem
+    //background-color: khaki
+    &:hover
+      color: #00C853
+      transform: translateX(10px)
+
+
+.labelDiv
+  box-sizing: border-box
+  transform: translateY(-$menu-icon-size) translateX($menu-icon-size)
+  padding: 5px 1rem
+  font-size: 1rem
+  //opacity: .8
+  font-weight: 300
+  input
+    margin: .5rem
+    padding: 0 .5rem
+    line-height: 10rem
+
+.link
+  font-size: 1rem
+  text-decoration: none
+  text-transform: uppercase
+  transition: all .3s ease-in-out
+  &:hover
+    transform: translateX(.5rem)
+    color: #1B5E20

@@ -1,0 +1,362 @@
+@import url(common_deprecated.css);
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400,700&subset=latin-ext");
+html {
+  height: 100%; }
+  html body {
+    height: 100%;
+    font-family: "Lato", sans-serif;
+    font-size: 18px;
+    color: #000000;
+    background-color: whitesmoke;
+    margin: 0;
+    padding: 0; }
+
+.controlsDiv {
+  padding: 5px;
+  background-color: transparent;
+  transform: translateX(-100%);
+  transition: all 0.3s ease-in-out; }
+  .controlsDiv table {
+    background-color: transparent; }
+    .controlsDiv table td {
+      color: red;
+      width: 2rem;
+      background-color: transparent; }
+
+#mainHeader {
+  background-color: whitesmoke; }
+
+#logo {
+  padding: 1px 1em;
+  text-shadow: 1px 1px 3px red; }
+
+img#logo {
+  opacity: 0.95; }
+
+.projectTitle {
+  color: black;
+  font-family: "Lato", sans-serif;
+  font-size: 1rem; }
+
+.bigTitle {
+  color: #37474F;
+  font-size: 1.5rem;
+  font-weight: 700; }
+
+.borderDiv, .borderDivPadded {
+  border: 1px solid transparent;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+  box-sizing: border-box;
+  background-color: whitesmoke;
+  padding: 1rem; }
+
+.formLabel, .formLabelRequired, .formField, .formError {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 2rem;
+  padding: 0.5rem; }
+  .formLabel::before, .formLabelRequired::before, .formField::before, .formError::before {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: transparent; }
+
+a img {
+  margin: 0;
+  padding: 0.2rem;
+  height: 32px;
+  transition: all 0.3s ease-in-out; }
+  a img:hover {
+    background: rgba(96, 125, 139, 0.51); }
+  a img:focus {
+    background-color: red; }
+
+img.ptr {
+  margin: 0;
+  padding: 0.2rem;
+  height: 32px;
+  transition: all 0.3s ease-in-out; }
+  img.ptr:hover {
+    background: rgba(96, 125, 139, 0.51); }
+  img.ptr:focus {
+    background-color: red; }
+
+input, select, textarea {
+  font-family: "Lato", sans-serif;
+  box-sizing: content-box;
+  text-align: right;
+  min-width: 3.5rem;
+  height: 32px;
+  line-height: 2rem;
+  font-size: 1rem;
+  padding: 0.2rem 0.5rem;
+  margin: 0.1rem 0.9rem;
+  border: 1px solid #80CBC4; }
+  input::selection, select::selection, textarea::selection {
+    color: #263238;
+    padding: 1rem;
+    line-height: 2rem; }
+
+select#watchListSelect {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  height: 32px;
+  padding: 0 1rem 5px;
+  margin-right: 3rem;
+  color: #1B5E20; }
+
+#wlEdit {
+  font-family: "Lato", sans-serif;
+  font-size: 1.2rem;
+  padding: 1rem 1rem;
+  transform: translateY(40%); }
+  #wlEdit .labelDiv {
+    color: blue; }
+  #wlEdit a {
+    padding: 0.5rem 1rem;
+    background-color: #00C853;
+    font-size: 1rem;
+    text-decoration: none; }
+    #wlEdit a:hover {
+      background-color: #1B5E20; }
+  #wlEdit div {
+    margin: 1rem; }
+  #wlEdit input {
+    font-family: "Lato", sans-serif;
+    margin: 1rem 0; }
+
+#wlEditImg {
+  height: 32px; }
+
+#newWatchListName {
+  font-family: "Lato", sans-serif; }
+
+#subHeader {
+  background-color: #4C5A50;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.33);
+  margin-bottom: 5px; }
+
+#subHeader > tbody > tr > td:nth-child(2) span.copyTitle {
+  color: white;
+  font-size: 1rem;
+  text-transform: uppercase; }
+  #subHeader > tbody > tr > td:nth-child(2) span.copyTitle b {
+    text-transform: none;
+    font-size: 1.2rem;
+    padding-right: 2rem; }
+
+.smallTitle {
+  font-family: "Lato", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 300;
+  line-height: 3rem;
+  text-transform: uppercase;
+  padding: 1rem 1rem 0.2rem 0;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid black;
+  text-align: left; }
+  .smallTitle::after {
+    position: relative;
+    display: inline-block;
+    content: "";
+    height: 15px;
+    background-color: black; }
+
+.dojoTreeNode img {
+  background-size: cover;
+  min-height: 32px;
+  min-width: 32px; }
+
+span.dojoTreeNodeLabel span {
+  font-family: "Lato", sans-serif;
+  font-size: 1rem; }
+
+#subHeader > tbody > tr > td:nth-child(2) > div > img {
+  margin: 0 1rem;
+  padding: 0; }
+
+#treeDiv img {
+  height: 32px; }
+#treeDiv span {
+  font-family: "Lato", sans-serif;
+  color: inherit;
+  margin: 0; }
+
+span#__header__alarmLevelText {
+  font-family: "Lato", sans-serif;
+  color: black;
+  line-height: 2rem;
+  font-weight: 300;
+  font-size: 1rem; }
+
+#__header__alarmLevelImg {
+  transform: translateY(25%); }
+
+#imageChartDiv img {
+  width: 100%;
+  height: calc(100% - 4rem); }
+
+#localeEdit {
+  margin-left: -100px;
+  margin-top: -1rem;
+  padding: 1rem 0.5rem 0;
+  overflow: hidden; }
+  #localeEdit a {
+    margin: -0.5rem;
+    padding: 8px 2rem;
+    display: block;
+    line-height: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    transform: translateX(0);
+    font-size: 1rem; }
+    #localeEdit a:hover {
+      color: #00C853;
+      transform: translateX(10px); }
+
+.labelDiv {
+  box-sizing: border-box;
+  transform: translateY(-32px) translateX(32px);
+  padding: 5px 1rem;
+  font-size: 1rem;
+  font-weight: 300; }
+  .labelDiv input {
+    margin: 0.5rem;
+    padding: 0 0.5rem;
+    line-height: 10rem; }
+
+.link {
+  font-size: 1rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all 0.3s ease-in-out; }
+  .link:hover {
+    transform: translateX(0.5rem);
+    color: #1B5E20; }
+
+img[src^="images/"] {
+  height: 32px;
+  width: 32px; }
+
+#subHeader .labelDiv {
+  transform: translateX(-16px) translateY(48px); }
+
+.login-container {
+  background-image: url("./images/Background.jpg");
+  background-size: cover;
+  height: calc(100vh - 166px);
+  margin: auto;
+  text-align: center; }
+  .login-container .ptr {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    display: none; }
+
+.form-box {
+  text-align: center; }
+
+.formLabelRequired, .formLabel {
+  width: 70%;
+  text-align: left;
+  margin: auto;
+  margin-bottom: -0.5rem;
+  padding: 0;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 1.2rem; }
+
+.formError {
+  color: #D50000;
+  margin-top: -2rem;
+  text-transform: uppercase;
+  margin-bottom: -2rem;
+  font-weight: 700; }
+
+.formField {
+  margin-bottom: 3rem; }
+  .formField input, .formField select {
+    width: 70%;
+    text-align: left;
+    font-size: 1.3rem;
+    font-weight: 300; }
+
+.login-box {
+  position: relative;
+  padding: 5rem;
+  padding-bottom: 3rem;
+  width: 600px;
+  top: calc(50vh - 100px);
+  left: 50vw;
+  transform: translateY(-50%) translateX(-50%);
+  background-color: rgba(232, 234, 246, 0.75);
+  border: 1px solid black;
+  text-align: center;
+  opacity: 0.9; }
+
+.login-browser {
+  display: block;
+  position: relative;
+  top: 66px;
+  width: 60%;
+  left: 50%;
+  color: white;
+  transform: translateX(-50%);
+  opacity: 0.85; }
+  .login-browser img {
+    height: 32px;
+    transform: translateY(25%); }
+
+.login-button {
+  margin: auto; }
+  .login-button input {
+    margin-top: 3rem;
+    width: 180px;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    padding: 4px 65px;
+    background-color: rgba(0, 200, 83, 0.39);
+    font-weight: 700;
+    border: 1px solid rgba(0, 0, 0, 0.07); }
+    .login-button input:hover {
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.24);
+      background-color: #77C055;
+      border: 1px solid rgba(0, 0, 0, 0.55);
+      cursor: pointer; }
+
+.form-box {
+  width: 100%; }
+
+.login-button {
+  width: 100%; }
+
+img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src$="world.png"] {
+  height: 32px;
+  width: 32px; }
+
+.dojoSplitPane {
+  overflow-y: visible;
+  height: 100%; }
+
+html {
+  background-color: #607d8b; }
+
+.rowHeader td, .smRowHeader td, .row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  color: #000000;
+  text-align: center; }
+
+.rowHeader td, .smRowHeader td {
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #FFFFFF;
+  background-color: #1d89fa;
+  text-align: center;
+  white-space: nowrap;
+  height: 2rem; }
+
+/*# sourceMappingURL=common.css.map */

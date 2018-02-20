@@ -19,7 +19,7 @@
 <%@ taglib prefix="view" tagdir="/WEB-INF/tags/view" %>
 <html>
 <head>
-  <link href="resources/common.css" type="text/css" rel="stylesheet"/>
+  <link id="pagestyle" href="resources/common.css" type="text/css" rel="stylesheet"/>
   
   <%--
   <!--

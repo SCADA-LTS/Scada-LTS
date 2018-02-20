@@ -11,11 +11,22 @@
    </path>
 
 
-	<target name="clearAndCopyToDeploy" >
+	<target name="clean_and_tomcat_deploy" description="Deploy prepared WAR file from project dir to Tomcat webapps folder">
 		<delete file="${env.CATALINA_HOME}/webapps/ScadaBR.war"></delete>
 		<delete dir="${env.CATALINA_HOME}/webapps/ScadaBR"></delete>
 		<copy file="ScadaBR.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
 		</copy>
+	</target>
+
+	<target name="tomcat_clean_static_content" description="Delete static content">
+		<delete dir="${env.CATALINA_HOME}/work/Catalina/localhost"></delete>
+	</target>
+
+	<target name="run" depends="tomcat_clean_static_content">
+		<exec executable="cmd">
+			<arg value="/c"/>
+			<arg value="%CATALINA_HOME%\bin\startup.bat"/>
+		</exec>
 	</target>
 
 	<!-- to option copy file to webapps :) -->
