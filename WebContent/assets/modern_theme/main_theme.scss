@@ -154,10 +154,45 @@ span#__header__alarmLevelText {
     box-sizing: border-box;
     background-color: whitesmoke;
     padding: 1rem;
+
+    & > table {
+        width: 100%;
+        
+        input, select {
+            width: 73%;
+        }
+
+        input[type=button] {
+            text-align: center;
+        }
+        
+    }
 }
 
 .content {
     margin-bottom: 30px;
+    // display: flex;
+    // flex-wrap: wrap;
+    /* flex-direction: column; */
+
+    // table {
+    //     width: 99%;
+    // }
+
+
+    & > .borderDiv {
+        width: 48%;
+        padding-bottom: 40px;
+        margin-left: 4px;
+
+        @media screen and (max-width: 1080px) {
+            width: 99%;
+            float: none;
+        }
+
+
+    }
+
 }
 
 /* Form Components */
@@ -165,6 +200,7 @@ span#__header__alarmLevelText {
     @include font();
 
     font-weight: 400;
+    width: 50%;
     font-size: 1rem;
     line-height: 2.0rem;
     padding: .5rem;
@@ -184,6 +220,7 @@ input, select, textarea {
     box-sizing: content-box;
     text-align: right;
     min-width: 3.5rem;
+    
     height: $icon_size;
     line-height: 2rem;
     font-size: 1rem;
@@ -222,4 +259,50 @@ input, select, textarea {
 img[src^="images/"]:not(#viewBackground) {
     height: $icon_size;
     width:  $icon_size;
+}
+
+/* User and UserProfile tab */
+#userProfileDetails, tbody#dataSources {
+
+    & > tr {
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+
+        & > td:nth-child(1) {
+            font-size: 1.3rem;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+    }
+
+    .formLabelRequired {
+        width: 4%;
+    }
+
+    .formField {
+        label {
+            float: left;
+        }
+
+        div {
+            margin-top: 10px;
+            padding: 15px;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+
+            label {
+                display: block;
+                width: 40%;
+            }
+
+            input {
+                width: 40%;
+            }
+
+            .formLabelRequired {
+                font-weight: bolder;
+                font-size: 1.2rem;
+                padding-top: 0;
+            }
+        }
+    }
+
 }

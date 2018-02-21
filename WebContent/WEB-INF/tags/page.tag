@@ -36,7 +36,7 @@
   <!-- Meta -->
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <meta http-equiv="Content-Style-Type" content="text/css" />  
-  <meta name="Copyright" content="ScadaLTS &copy;�2015"/>
+  <meta name="Copyright" content="ScadaLTS &copy;2018"/>
   <meta name="DESCRIPTION" content="ScadaLTS Software"/>
   <meta name="KEYWORDS" content="ScadaLTS Software"/>
   
