@@ -201,10 +201,14 @@
         </c:if>
         <div id="headerMenuDescription" class="labelDiv" style="position:absolute;display:none;"></div>
       </td>
-      
+      <td class="userDetails">
+        <c:if test="${!empty sessionUser}">
+            <span class="copyTitle"><fmt:message key="header.user"/>:</span>
+            <span class="userName"><b>${sessionUser.username}</b></span>
+        </c:if>
+      </td>
       <td align="right">
         <c:if test="${!empty sessionUser}">
-          <span class="copyTitle"><fmt:message key="header.user"/>: <b>${sessionUser.username}</b></span>
           <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
           <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
           <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>

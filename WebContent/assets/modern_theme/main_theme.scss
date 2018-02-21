@@ -83,7 +83,10 @@ span#__header__alarmLevelText {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.33);
 
     tbody > tr > td:nth-child(2) {
-        .copyTitle {
+        
+        text-align: right;
+
+        span {
             color: white;
             font-size: 1rem;
             text-transform: uppercase;
@@ -91,9 +94,11 @@ span#__header__alarmLevelText {
             b {
                 text-transform: none;
                 font-size: 1.2rem;
-                padding-right: 2rem;
             }
         }
+
+
+        
     }
 }
 
@@ -109,7 +114,6 @@ span#__header__alarmLevelText {
     margin-left: -100px;
     margin-top: -1rem;
     padding: 1rem 0.5rem 0;
-    overflow: hidden;
 
     a {
         margin: -0.5rem;
@@ -117,15 +121,18 @@ span#__header__alarmLevelText {
         display: block;
         line-height: 1rem;
         text-decoration: none;
-        transition: all .3s ease-in-out;
         transform: translateX(0);
         font-size: 1rem;
+        transition: transform 0.2s ease-in-out;
+
+        &:hover {
+            color: $primary_color_accent;
+            transform: translateX(10px);
+            
+        }
     }
 
-    &:hover {
-        color: $primary_color_accent;
-        transform: translateX(10px);
-    }
+    
 }
   
 /* Default card/panel component */
@@ -148,6 +155,8 @@ span#__header__alarmLevelText {
         background-color: black;
     }
 }
+
+
 
 .borderDiv, .borderDivPadded {
     border: 1px solid transparent;
@@ -189,6 +198,12 @@ span#__header__alarmLevelText {
     //     width: 99%;
     // }
 
+    .subPageHeader, #alarmsTable {
+        width: 99%;
+        padding: 20px;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+    }
+
 
     & > .borderDiv {
         width: 48%;
@@ -201,12 +216,11 @@ span#__header__alarmLevelText {
         }
     }
 
-    textarea#emportData {
+    textarea#emportData, textarea#sqlString {
         height: 500px;
         width: 95%;
         margin-bottom: 100px;
     }
-
 
 }
 
@@ -216,7 +230,7 @@ span#__header__alarmLevelText {
 
     font-weight: 400;
     width: 50%;
-    font-size: 1rem;
+    font-size: 1.2rem;
     line-height: 2.0rem;
     padding: .5rem;
     
@@ -233,13 +247,14 @@ input, select, textarea {
     @include font();
 
     box-sizing: content-box;
-    text-align: right;
+    text-align: left;
     min-width: 3.5rem;
     
     height: $icon_size;
     line-height: 2rem;
-    font-size: 1rem;
+    font-size: 1.3rem;
     padding: .2rem .5rem;
+    padding-right: 4px;
     margin: .1rem .9rem;
     border: 1px solid $primary_color_dark;
 
@@ -274,6 +289,10 @@ input[type=button], input[type=submit] {
     }
 }
 
+.link, a:link {
+    font-size: inherit;
+}
+
 /* Modern theme icons */
 img[src^="images/"]:not(#viewBackground) {
     height: $icon_size;
@@ -305,6 +324,8 @@ img[src^="images/"]:not(#viewBackground) {
         div {
             margin-top: 10px;
             padding: 15px;
+            min-height: 40px;
+            margin-bottom: 10px;
             box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
 
             label {
@@ -324,4 +345,8 @@ img[src^="images/"]:not(#viewBackground) {
         }
     }
 
+}
+
+.horzSeparator {
+    background: #000;
 }

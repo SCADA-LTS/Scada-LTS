@@ -301,8 +301,7 @@
     }
   </script>
 
-	<table class="borderDiv marB" cellpadding="0" cellspacing="0"
-		id="alarmsTable" style="display: none;">
+	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: none;">
 		<tr>
 			<td>
 				<table width="100%">

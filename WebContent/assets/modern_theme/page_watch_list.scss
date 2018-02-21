@@ -68,4 +68,10 @@ span.dojoTreeNodeLabel span {
         height: calc(100% - 4rem);
     }
 }
-    
+
+#chartContainer {
+    table tr td label {
+        float: left;
+        margin-left: 12px;
+    }
+}

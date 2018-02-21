@@ -51,14 +51,15 @@ span#__header__alarmLevelText {
   margin-bottom: 5px;
   background-color: rgba(76, 90, 80, 0.75);
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.33); }
-  #subHeader tbody > tr > td:nth-child(2) .copyTitle {
-    color: white;
-    font-size: 1rem;
-    text-transform: uppercase; }
-    #subHeader tbody > tr > td:nth-child(2) .copyTitle b {
-      text-transform: none;
-      font-size: 1.2rem;
-      padding-right: 2rem; }
+  #subHeader tbody > tr > td:nth-child(2) {
+    text-align: right; }
+    #subHeader tbody > tr > td:nth-child(2) span {
+      color: white;
+      font-size: 1rem;
+      text-transform: uppercase; }
+      #subHeader tbody > tr > td:nth-child(2) span b {
+        text-transform: none;
+        font-size: 1.2rem; }
 
 .projectTitle {
   color: black !important;
@@ -69,20 +70,19 @@ span#__header__alarmLevelText {
 #localeEdit, #styleEdit {
   margin-left: -100px;
   margin-top: -1rem;
-  padding: 1rem 0.5rem 0;
-  overflow: hidden; }
+  padding: 1rem 0.5rem 0; }
   #localeEdit a, #styleEdit a {
     margin: -0.5rem;
     padding: 8px 2rem;
     display: block;
     line-height: 1rem;
     text-decoration: none;
-    transition: all .3s ease-in-out;
     transform: translateX(0);
-    font-size: 1rem; }
-  #localeEdit:hover, #styleEdit:hover {
-    color: #53F385;
-    transform: translateX(10px); }
+    font-size: 1rem;
+    transition: transform 0.2s ease-in-out; }
+    #localeEdit a:hover, #styleEdit a:hover {
+      color: #53F385;
+      transform: translateX(10px); }
 
 /* Default card/panel component */
 .smallTitle {
@@ -123,6 +123,10 @@ span#__header__alarmLevelText {
 .content {
   margin-bottom: 40px;
   /* flex-direction: column; */ }
+  .content .subPageHeader, .content #alarmsTable {
+    width: 99%;
+    padding: 20px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13); }
   .content > .borderDiv {
     width: 48%;
     padding-bottom: 40px;
@@ -131,7 +135,7 @@ span#__header__alarmLevelText {
       .content > .borderDiv {
         width: 99%;
         float: none; } }
-  .content textarea#emportData {
+  .content textarea#emportData, .content textarea#sqlString {
     height: 500px;
     width: 95%;
     margin-bottom: 100px; }
@@ -141,7 +145,7 @@ span#__header__alarmLevelText {
   font-family: "Lato", sans-serif;
   font-weight: 400;
   width: 50%;
-  font-size: 1rem;
+  font-size: 1.2rem;
   line-height: 2.0rem;
   padding: .5rem; }
   .formLabel::before, .formLabelRequired::before, .formField::before, .formError::before {
@@ -153,12 +157,13 @@ span#__header__alarmLevelText {
 input, select, textarea {
   font-family: "Lato", sans-serif;
   box-sizing: content-box;
-  text-align: right;
+  text-align: left;
   min-width: 3.5rem;
   height: 32px;
   line-height: 2rem;
-  font-size: 1rem;
+  font-size: 1.3rem;
   padding: .2rem .5rem;
+  padding-right: 4px;
   margin: .1rem .9rem;
   border: 1px solid #4C5A50; }
   input::selection, select::selection, textarea::selection {
@@ -183,6 +188,9 @@ input[type=button], input[type=submit] {
     padding: 0 .5rem;
     line-height: 10rem; }
 
+.link, a:link {
+  font-size: inherit; }
+
 /* Modern theme icons */
 img[src^="images/"]:not(#viewBackground) {
   height: 32px;
@@ -202,6 +210,8 @@ img[src^="images/"]:not(#viewBackground) {
 #userProfileDetails .formField div, tbody#dataSources .formField div {
   margin-top: 10px;
   padding: 15px;
+  min-height: 40px;
+  margin-bottom: 10px;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13); }
   #userProfileDetails .formField div label, tbody#dataSources .formField div label {
     display: block;
@@ -212,6 +222,9 @@ img[src^="images/"]:not(#viewBackground) {
     font-weight: bolder;
     font-size: 1.2rem;
     padding-top: 0; }
+
+.horzSeparator {
+  background: #000; }
 
 #subHeader .labelDiv {
   transform: translateX(-16px) translateY(48px); }
@@ -329,6 +342,10 @@ span.dojoTreeNodeLabel span {
 #imageChartDiv img {
   width: 100%;
   height: calc(100% - 4rem); }
+
+#chartContainer table tr td label {
+  float: left;
+  margin-left: 12px; }
 
 .rowHeader td, .smRowHeader td, .row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
   font-family: "Lato", sans-serif;
