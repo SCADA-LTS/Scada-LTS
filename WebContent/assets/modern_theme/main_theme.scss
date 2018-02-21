@@ -165,6 +165,10 @@ span#__header__alarmLevelText {
         input[type=button] {
             text-align: center;
         }
+
+        input[type=checkbox] {
+            width: auto;
+        }
         
     }
 }
@@ -189,9 +193,14 @@ span#__header__alarmLevelText {
             width: 99%;
             float: none;
         }
-
-
     }
+
+    textarea#emportData {
+        height: 500px;
+        width: 95%;
+        margin-bottom: 100px;
+    }
+
 
 }
 

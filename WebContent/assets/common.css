@@ -107,14 +107,36 @@ span#__header__alarmLevelText {
   box-sizing: border-box;
   background-color: whitesmoke;
   padding: 1rem; }
+  .borderDiv > table, .borderDivPadded > table {
+    width: 100%; }
+    .borderDiv > table input, .borderDiv > table select, .borderDivPadded > table input, .borderDivPadded > table select {
+      width: 73%; }
+    .borderDiv > table input[type=button], .borderDivPadded > table input[type=button] {
+      text-align: center; }
+    .borderDiv > table input[type=checkbox], .borderDivPadded > table input[type=checkbox] {
+      width: auto; }
 
 .content {
-  margin-bottom: 30px; }
+  margin-bottom: 30px;
+  /* flex-direction: column; */ }
+  .content > .borderDiv {
+    width: 48%;
+    padding-bottom: 40px;
+    margin-left: 4px; }
+    @media screen and (max-width: 1080px) {
+      .content > .borderDiv {
+        width: 99%;
+        float: none; } }
+  .content textarea#emportData {
+    height: 500px;
+    width: 95%;
+    margin-bottom: 100px; }
 
 /* Form Components */
 .formLabel, .formLabelRequired, .formField, .formError {
   font-family: "Lato", sans-serif;
   font-weight: 400;
+  width: 50%;
   font-size: 1rem;
   line-height: 2.0rem;
   padding: .5rem; }
@@ -159,104 +181,100 @@ img[src^="images/"]:not(#viewBackground) {
   height: 32px;
   width: 32px; }
 
+/* User and UserProfile tab */
+#userProfileDetails > tr, tbody#dataSources > tr {
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13); }
+  #userProfileDetails > tr > td:nth-child(1), tbody#dataSources > tr > td:nth-child(1) {
+    font-size: 1.3rem;
+    text-decoration: underline;
+    font-weight: bold; }
+#userProfileDetails .formLabelRequired, tbody#dataSources .formLabelRequired {
+  width: 4%; }
+#userProfileDetails .formField label, tbody#dataSources .formField label {
+  float: left; }
+#userProfileDetails .formField div, tbody#dataSources .formField div {
+  margin-top: 10px;
+  padding: 15px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13); }
+  #userProfileDetails .formField div label, tbody#dataSources .formField div label {
+    display: block;
+    width: 40%; }
+  #userProfileDetails .formField div input, tbody#dataSources .formField div input {
+    width: 40%; }
+  #userProfileDetails .formField div .formLabelRequired, tbody#dataSources .formField div .formLabelRequired {
+    font-weight: bolder;
+    font-size: 1.2rem;
+    padding-top: 0; }
+
 #subHeader .labelDiv {
   transform: translateX(-16px) translateY(48px); }
 
-.login-container {
+div.content .login-container {
   background-image: url("./images/Background.jpg");
   background-size: cover;
   height: calc(100vh - 166px);
   margin: auto;
   text-align: center; }
-  .login-container .ptr {
+  div.content .login-container .login-browser {
+    display: block;
+    position: relative;
+    top: 66px;
+    left: 50%;
+    color: white;
+    transform: translateX(-50%);
+    opacity: 0.85; }
+  div.content .login-container .login-box {
+    position: relative;
+    padding: 5rem;
+    padding-bottom: 3rem;
+    width: 600px;
+    top: calc(50vh - 100px);
+    left: 50vw;
+    transform: translateY(-50%) translateX(-50%);
+    background-color: rgba(232, 234, 246, 0.75);
+    box-shadow: 4px 8px 14px 1px rgba(0, 0, 0, 0.5);
+    border: 1px solid black;
+    text-align: center;
+    opacity: 0.9; }
+    div.content .login-container .login-box .formLabelRequired {
+      margin-bottom: -0.5rem;
+      font-size: 1.2rem;
+      font-weight: bolder;
+      text-align: left;
+      text-transform: uppercase; }
+    div.content .login-container .login-box .formField {
+      width: 100%;
+      text-align: left;
+      font-size: 1.3rem;
+      font-weight: bold; }
+      div.content .login-container .login-box .formField input {
+        text-align: left;
+        width: 90%; }
+    div.content .login-container .login-box .form-box {
+      width: 100%; }
+    div.content .login-container .login-box .login-button {
+      width: 100%;
+      margin: auto; }
+      div.content .login-container .login-box .login-button input {
+        width: 180px;
+        margin-top: 3rem;
+        padding: 4px 65px;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        background-color: rgba(119, 192, 85, 0.4);
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        transition: all 0.3s ease-in-out; }
+        div.content .login-container .login-box .login-button input:hover {
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.24);
+          background-color: #77C055;
+          border: 1px solid rgba(0, 0, 0, 0.55);
+          cursor: pointer; }
+  div.content .login-container .ptr {
     position: absolute;
     left: 1rem;
     top: 1rem;
     display: none; }
-
-.form-box {
-  text-align: center; }
-
-.formLabelRequired, .formLabel {
-  width: 70%;
-  text-align: left;
-  margin: auto;
-  margin-bottom: -0.5rem;
-  padding: 0;
-  text-transform: uppercase;
-  font-weight: 400;
-  font-size: 1.2rem; }
-
-.formError {
-  color: #D50000;
-  margin-top: -2rem;
-  text-transform: uppercase;
-  margin-bottom: -2rem;
-  font-weight: 700; }
-
-.formField {
-  margin-bottom: 3rem; }
-  .formField input, .formField select {
-    text-align: left;
-    font-size: 1.3rem;
-    font-weight: 300; }
-
-#username, #password {
-  width: 70%; }
-
-.login-box {
-  position: relative;
-  padding: 5rem;
-  padding-bottom: 3rem;
-  width: 600px;
-  top: calc(50vh - 100px);
-  left: 50vw;
-  transform: translateY(-50%) translateX(-50%);
-  background-color: rgba(232, 234, 246, 0.75);
-  border: 1px solid black;
-  text-align: center;
-  opacity: 0.9; }
-
-.login-browser {
-  display: block;
-  position: relative;
-  top: 66px;
-  width: 60%;
-  left: 50%;
-  color: white;
-  transform: translateX(-50%);
-  opacity: 0.85; }
-  .login-browser img {
-    height: 32px;
-    transform: translateY(25%); }
-
-.login-button {
-  margin: auto; }
-  .login-button input {
-    margin-top: 3rem;
-    width: 180px;
-    text-align: center;
-    transition: all 0.3s ease-in-out;
-    text-transform: uppercase;
-    padding: 4px 65px;
-    background-color: rgba(0, 200, 83, 0.39);
-    font-weight: 700;
-    border: 1px solid rgba(0, 0, 0, 0.07); }
-    .login-button input:hover {
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.24);
-      background-color: #77C055;
-      border: 1px solid rgba(0, 0, 0, 0.55);
-      cursor: pointer; }
-
-.form-box {
-  width: 100%; }
-
-.login-button {
-  width: 100%; }
-
-img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src$="world.png"] {
-  height: 32px;
-  width: 32px; }
 
 .dojoSplitPane {
   overflow-y: visible;
