@@ -354,3 +354,16 @@ img[src^="images/"]:not(#viewBackground) {
 .horzSeparator {
     background: #000;
 }
+
+/* Help tooltip */
+.dojoFloatingPane {
+
+    .dojoFloatingPaneTitleBar {
+        padding: 10px;
+    }
+
+    .dojoFloatingPaneTitleText {
+        color: white;
+    }
+
+}
