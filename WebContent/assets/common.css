@@ -153,6 +153,8 @@ span#__header__alarmLevelText {
     display: block;
     height: 1px;
     background-color: transparent; }
+  .formLabel .formShort, .formLabelRequired .formShort, .formField .formShort, .formError .formShort {
+    display: block; }
 
 input, select, textarea {
   font-family: "Lato", sans-serif;
