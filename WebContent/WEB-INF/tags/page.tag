@@ -36,7 +36,7 @@
   <!-- Meta -->
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <meta http-equiv="Content-Style-Type" content="text/css" />  
-  <meta name="Copyright" content="ScadaLTS &copy;�2015"/>
+  <meta name="Copyright" content="ScadaLTS &copy;2018"/>
   <meta name="DESCRIPTION" content="ScadaLTS Software"/>
   <meta name="KEYWORDS" content="ScadaLTS Software"/>
   
@@ -201,10 +201,14 @@
         </c:if>
         <div id="headerMenuDescription" class="labelDiv" style="position:absolute;display:none;"></div>
       </td>
-      
+      <td class="userDetails">
+        <c:if test="${!empty sessionUser}">
+            <span class="copyTitle"><fmt:message key="header.user"/>:</span>
+            <span class="userName"><b>${sessionUser.username}</b></span>
+        </c:if>
+      </td>
       <td align="right">
         <c:if test="${!empty sessionUser}">
-          <span class="copyTitle"><fmt:message key="header.user"/>: <b>${sessionUser.username}</b></span>
           <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
           <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
           <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
@@ -212,8 +216,8 @@
         <div style="display:inline;" class="ptr" onmouseover="showMenu('styleEdit', -40, 10);">
           <tag:img png="theme" title="header.changeTheme"/>
           <div id="styleEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
-            <a id="stylesheet1">Default ScadaBR Theme </a><br/>
-            <a id="stylesheet2">Modern ScadaBR Theme</a><br/>
+            <a class="ptr" id="stylesheet1">Default ScadaBR Theme </a><br/>
+            <a class="ptr" id="stylesheet2">Modern ScadaBR Theme</a><br/>
         </div>
         </div>
         <div style="display:inline;" class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
@@ -229,7 +233,7 @@
   </table>
 </c:if>
 
-<div style="padding:5px;">
+<div class="content" style="padding-top:10px;">
   <jsp:doBody/>
 </div>
 <div class="footer" style="text-align:center">

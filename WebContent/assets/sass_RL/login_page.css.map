@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAAA,UAAU;EACR,MAAM,EAAE,IAAI;;AAEd,gBAAgB;EACd,MAAM,EAAE,IAAI;EACZ,OAAO,EAAE,IAAI",
-"sources": ["login_page.sass"],
-"names": [],
-"file": "login_page.css"
-}

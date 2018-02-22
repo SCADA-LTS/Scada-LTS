@@ -407,7 +407,7 @@
     }
   </script>
   
-  <table>
+  <table class="subPageHeader">
     <tr>
       <td valign="top">
         <div class="borderDiv">
