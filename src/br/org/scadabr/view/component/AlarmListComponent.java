@@ -69,6 +69,7 @@ public class AlarmListComponent extends CustomComponent {
 
 	private void filter(List<EventInstance> list, int alarmLevel) {
 
+		removeAlarmLevel(list, AlarmLevels.NONE);
 		if (AlarmLevels.URGENT == alarmLevel) {
 			removeAlarmLevel(list, AlarmLevels.INFORMATION);
 		}
