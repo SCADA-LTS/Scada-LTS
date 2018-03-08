@@ -69,14 +69,20 @@ public class AlarmListComponent extends CustomComponent {
 
 	private void filter(List<EventInstance> list, int alarmLevel) {
 
+		if (AlarmLevels.INFORMATION == alarmLevel) {
+			removeAlarmLevel(list, AlarmLevels.NONE);
+		}
 		if (AlarmLevels.URGENT == alarmLevel) {
+			removeAlarmLevel(list, AlarmLevels.NONE);
 			removeAlarmLevel(list, AlarmLevels.INFORMATION);
 		}
 		if (AlarmLevels.CRITICAL == alarmLevel) {
+			removeAlarmLevel(list, AlarmLevels.NONE);
 			removeAlarmLevel(list, AlarmLevels.INFORMATION);
 			removeAlarmLevel(list, AlarmLevels.URGENT);
 		}
 		if (AlarmLevels.LIFE_SAFETY == alarmLevel) {
+			removeAlarmLevel(list, AlarmLevels.NONE);
 			removeAlarmLevel(list, AlarmLevels.INFORMATION);
 			removeAlarmLevel(list, AlarmLevels.URGENT);
 			removeAlarmLevel(list, AlarmLevels.CRITICAL);
