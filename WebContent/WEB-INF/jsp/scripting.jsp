@@ -87,12 +87,14 @@
                     "type":1
                     };
         }
+       document.getElementById("loader").style.display = "none";
+       document.body.style.overflow="visible";
     }
 
     function appendScript(seId) {
         createFromTemplate("se_TEMPLATE_", seId, "scriptsTable");
     }
-    
+
     function updateScript(se) {
         $("se"+ se.id +"Name").innerHTML = se.name;
         //setScheduledEventImg(se.disabled, $("se"+ se.id +"Img"));
@@ -103,7 +105,7 @@
     	if (editingScript)
             stopImageFader($("se"+ editingScript.id +"Img"));
         hideContextualMessages("scriptDetails");
-        
+
         ScriptsDwr.getScript(seId, function(s) {
         	 if (!editingScript)
                  show($("scriptDetails"));
@@ -112,7 +114,7 @@
             $set("xid", s.xid);
             $set("name", s.name);
             $set("script", s.script);
-            
+
             contextArray.length = 0;
             for (var i=0; i<s.pointsOnContext.length; i++)
                 addToContextArray(s.pointsOnContext[i].key, s.pointsOnContext[i].value);
@@ -127,10 +129,10 @@
         });
 
 		startImageFader($("se"+ seId +"Img"));
-        
+
         if (seId == ${NEW_ID}) {
-        	hide($("deleteScriptImg")); 
-        	hide($("executeScriptImg")); 
+        	hide($("deleteScriptImg"));
+        	hide($("executeScriptImg"));
         }
         else {
         	 show($("deleteScriptImg"));
@@ -139,11 +141,11 @@
         		 executeScript();
         	 });
         }
-           
+
     }
-    
+
     function saveScript() {
-        ScriptsDwr.saveScript(editingScript.id,$get("xid"), $get("name"),  
+        ScriptsDwr.saveScript(editingScript.id,$get("xid"), $get("name"),
                 $get("script"),createContextArray(),objectsContextArray,
                 function(response) {
 		        	if (response.hasMessages)
@@ -175,13 +177,13 @@
             editingScript = null;
         });
     }
-    
+
     function addPointToContext() {
         var pointId = $get("allPointsList");
         addToContextArray(pointId, "p"+ pointId);
         writeContextArray();
     }
-    
+
     function addToContextArray(pointId, scriptVarName) {
         var data = getElement(pointsArray, pointId);
         if (data) {
@@ -194,7 +196,7 @@
             };
         }
     }
-    
+
     function removeFromContextArray(pointId) {
         for (var i=contextArray.length-1; i>=0; i--) {
             if (contextArray[i].pointId == pointId)
@@ -202,7 +204,7 @@
         }
         writeContextArray();
     }
-    
+
     function writeContextArray() {
         dwr.util.removeAllRows("contextTable");
         if (contextArray.length == 0) {
@@ -220,7 +222,7 @@
                             return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
                                     "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
                     },
-                    function(data) { 
+                    function(data) {
                             return "<img src='images/bullet_delete.png' class='ptr' "+
                                     "onclick='removeFromContextArray("+ data.pointId +")'/>";
                     }
@@ -235,7 +237,7 @@
         }
         updatePointsList();
     }
-    
+
     function updatePointsList() {
         dwr.util.removeAllOptions("allPointsList");
         var availPoints = new Array();
@@ -253,14 +255,14 @@
         dwr.util.addOptions("allPointsList", availPoints, "id", "name");
         jQuery("#allPointsList").trigger('chosen:updated');
     }
-    
+
     function updateScriptVarName(pointId, scriptVarName) {
         for (var i=contextArray.length-1; i>=0; i--) {
             if (contextArray[i].pointId == pointId)
                 contextArray[i].scriptVarName = scriptVarName;
         }
     }
-    
+
     function createContextArray() {
         var context = new Array();
         for (var i=0; i<contextArray.length; i++) {
@@ -275,9 +277,9 @@
     function validateScript() {
         //alert('Not implemented!');
         //("pointProperties");
-        //DataSourceEditDwr.validateScript($get("script"), createContextArray(), $get("dataTypeId"), validateScriptCB); 
+        //DataSourceEditDwr.validateScript($get("script"), createContextArray(), $get("dataTypeId"), validateScriptCB);
     }
-    
+
     function validateScriptCB(response) {
         showDwrMessages(response.messages);
     }
@@ -291,7 +293,7 @@
 			$(id+"ObjectVarName").value = "val_"+id;
 			$(id+"ObjectAdd").checked = false;
 		}
-        
+
     }
 
     function addObjectToContext(objectId, checked) {
@@ -303,7 +305,7 @@
 				$(objectId+"ObjectAdd").checked = false;
 				return;
 			}
-            
+
         	objectNameField.disabled = true;
         	objectsContextArray.push({"key":objectId, "value": varName });
         } else {
@@ -333,23 +335,28 @@
         else
             hide($("userMessage"));
     }
-    
-    jQuery(document).ready(function(){    
+
+    jQuery(document).ready(function(){
     	(function($) {
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
+			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
 			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
     	})(jQuery);
     });
-    
-     
+
+
   </script>
-  
+
   <script type="text/javascript">
-  	
-  </script>  
-    
-    
-  <table>
+
+  </script>
+
+  <style>body{ overflow:hidden;}</style>
+  
+  <div id="loader" style="background-color:rgba(0, 0, 0, 0.7); height: 100%; position:absolute; width:100%;">
+	<div style="color:#ffffff; font-size:30px; text-align:center; margin-top:40vh;">LOADING...</div>
+  </div>
+
+  <table id="scriptsList">
     <tr>
       <td valign="top">
         <div class="borderDiv">
