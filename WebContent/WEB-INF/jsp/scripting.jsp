@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -24,10 +24,10 @@
 <c:set var="NEW_ID"><%= Common.NEW_ID %></c:set>
 
 <tag:page dwr="ScriptsDwr,DataSourceEditDwr" onload="init">
-  
-  
+
+
   <script type="text/javascript">
-  
+
   	var pathArray = location.href.split( '/' );
   	var protocol = pathArray[0];
   	var host = pathArray[2];
@@ -38,12 +38,13 @@
   	if (!myLocation) {
    		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
   	}
+    var urlGetDataPoints = "/api/datapoint/getAll";
     function executeScript(){
     	var xid = jQuery("#xid");
-    	// saveScript() nie zdarzy zapisac !!! 
+    	// saveScript() nie zdarzy zapisac !!!
     	jQuery.ajax({
-    		url: myLocation+"/script/execute/"+xid[0].value, 
-    		type:"POST", 
+    		url: myLocation+"/script/execute/"+xid[0].value,
+    		type:"POST",
     		success: function(){
               setUserMessage("<fmt:message key="script.execute.success"/> ")
         	},
@@ -52,33 +53,42 @@
         		console.log(XMLHttpRequest);
         		setUserMessage("<fmt:message key="script.execute.error"/> "+XMLHttpRequest.responseText);
         	}
-    	});    	
+    	});
     };
 
     var pointsArray = new Array();
     var contextArray = new Array();
     var objectsContextArray = new Array();
-  
+
     function init() {
         ScriptsDwr.getScripts(initCB);
-        ScriptsDwr.getPoints(getPointsCB);
-        
+        getPointsCB();
+
         jQuery("#allPointsList").chosen({
        		allow_single_deselect: true,
 			placeholder_text_single: " ",
 			search_contains: true,
 			width: "400px"
-		});              
+		});
     }
-    
+
+    function getPoints()
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", myLocation+urlGetDataPoints, false );
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
+
     function initCB(scripts) {
     	for (var i=0; i<scripts.length; i++) {
             appendScript(scripts[i].id);
             updateScript(scripts[i]);
         }
     }
-    
-    function getPointsCB(points) {
+
+    function getPointsCB() {
+        var points = JSON.parse(getPoints());
         for(i = 0; i < points.length; i++) {
             point = points[i];
             pointsArray[i] = {
@@ -380,7 +390,7 @@
           </table>
         </div>
       </td>
-      
+
       <td valign="top" style="display:none;" id="scriptDetails">
         <div class="borderDiv">
           <table width="100%">
@@ -393,24 +403,24 @@
               </td>
             </tr>
           </table>
-          
+
           <table>
           	<tr>
 	            <td class="formLabelRequired"><fmt:message key="dsEdit.points.name"/></td>
 	            <td class="formField"><input type="text" id="name"/></td>
           	</tr>
-          
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
-            
+
             <tr>
 			    <td class="formLabelRequired"><fmt:message key="scripts.pointsContext"/></td>
 			    <td class="formField">
 			      <select id="allPointsList"></select>
 			      <tag:img png="add" onclick="addPointToContext();" title="common.add"/>
-			      
+
 			      <table cellspacing="1" id="contextContainer">
 			        <tbody id="contextTableEmpty" style="display:none;">
 			          <tr><th colspan="4"><fmt:message key="dsEdit.meta.noPoints"/></th></tr>
@@ -427,11 +437,11 @@
 			      </table>
 			    </td>
 			</tr>
-			
+
 			<tr>
 			    <td class="formLabelRequired"><fmt:message key="scripts.objectsContext"/></td>
 			    <td class="formField">
-			      
+
 			      <table cellspacing="1" id="objectsContextTable">
 				      <tbody id="objectsContextTable">
 				        		<tr class="smRowHeader">
@@ -439,35 +449,35 @@
 									<td> <fmt:message key="scripts.objectsContext.var"/> </td>
 									<td> <fmt:message key="scripts.objectsContext.add"/> </td>
 									<td> &nbsp; </td>
-								</tr>	
-				        		<c:forEach var="object" items="<%=br.org.scadabr.rt.scripting.context.ScriptContextObject.Type.values()%>"> 
+								</tr>
+				        		<c:forEach var="object" items="<%=br.org.scadabr.rt.scripting.context.ScriptContextObject.Type.values()%>">
 								<tr style="width: 100%;" class="smRow">
 									<td title="${object.id}" style="display: none;"> </td>
 									<td> <fmt:message key="${object.key}"/>  </td>
 									<td> <input id="${object.id}ObjectVarName" type="text" value="var_${object.id}"/> </td>
 									<td> <input id="${object.id}ObjectAdd" type="checkbox" onchange="addObjectToContext(${object.id}, this.checked)"/> </td>
 									<td> <tag:help id="${object.help}"/> </td>
-								</tr>			        		
+								</tr>
 				        		</c:forEach>
 				       	</tbody>
 			      </table>
 			    </td>
 			</tr>
-			
+
             <tr>
-            
+
     			<td class="formLabelRequired">
-      				<fmt:message key="dsEdit.meta.script"/> 
-      				
+      				<fmt:message key="dsEdit.meta.script"/>
+
       				<tag:img id="executeScriptImg" png="cog_go" title="common.run"/>
-      				<%-- <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/> --%> 
+      				<%-- <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/> --%>
     			</td>
-    		
+
     			<td class="formField"><textarea id="script" rows="10" cols="50"/></textarea></td>
   			</tr>
 
- 	
-          
+
+
           </table>
           <table>
             <tr>
