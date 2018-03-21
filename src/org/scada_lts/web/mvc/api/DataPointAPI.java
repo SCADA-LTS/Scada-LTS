@@ -60,13 +60,11 @@ public class DataPointAPI {
                     private long id;
                     private String name;
                     private String xid;
-                    private String dataSourceXid;
 
-                    DatapointJSON(long id, String name, String xid, String dataSourceXid) {
+                    DatapointJSON(long id, String name, String xid) {
                         this.setId(id);
                         this.setName(name);
                         this.setXid(xid);
-                        this.setDataSourceXid(dataSourceXid);
                     }
 
                     public long getId() { return id; }
@@ -84,8 +82,6 @@ public class DataPointAPI {
                     public void setXid(String xid) {
                         this.xid = xid;
                     }
-                    public String getDataSourceXid() { return dataSourceXid; }
-                    public void setDataSourceXid(String dataSourceXid) { this.dataSourceXid = dataSourceXid; }
                 }
 
                 int userId = user.getId();
@@ -106,7 +102,7 @@ public class DataPointAPI {
 
                 List<DatapointJSON> lst = new ArrayList<>();
                 for (DataPointVO dp:lstDP){
-                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid(), dp.getDataSourceXid());
+                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid());
                     lst.add(dpJ);
                 }
 
