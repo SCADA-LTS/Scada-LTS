@@ -76,9 +76,10 @@
     {
         jQuery.ajax({
             type: "GET",
-        	dataType: "json",
+        	dataType: "text",
         	url:myLocation+urlGetDataPoints,
         	success: function(points){
+            points = JSON.parse(points);
             for(i = 0; i < points.length; i++) {
                 point = points[i];
                 pointsArray[i] = {
