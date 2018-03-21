@@ -74,10 +74,6 @@
 
     function getPointsCB()
     {
-        // var xmlHttp = new XMLHttpRequest();
-        // xmlHttp.open( "GET", myLocation+urlGetDataPoints, false );
-        // xmlHttp.send( null );
-        // return xmlHttp.responseText;
         jQuery.ajax({
             type: "GET",
         	dataType: "json",
