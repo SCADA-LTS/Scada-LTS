@@ -72,12 +72,32 @@
 		});
     }
 
-    function getPoints()
+    function getPointsCB()
     {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", myLocation+urlGetDataPoints, false );
-        xmlHttp.send( null );
-        return xmlHttp.responseText;
+        // var xmlHttp = new XMLHttpRequest();
+        // xmlHttp.open( "GET", myLocation+urlGetDataPoints, false );
+        // xmlHttp.send( null );
+        // return xmlHttp.responseText;
+        jQuery.ajax({
+            type: "GET",
+        	dataType: "json",
+        	url:myLocation+urlGetDataPoints,
+        	success: function(points){
+            for(i = 0; i < points.length; i++) {
+                point = points[i];
+                pointsArray[i] = {
+                        "id":point.id,
+                        "name":point.name,
+                        "type":1
+                        };
+            }
+            document.getElementById("loader").style.display = "none";
+            document.body.style.overflow="visible";
+        	},
+        	error: function(XMLHttpRequest, textStatus, errorThrown) {
+        	  console.log(textStatus);
+        	}
+        });
     }
 
     function initCB(scripts) {
@@ -85,20 +105,6 @@
             appendScript(scripts[i].id);
             updateScript(scripts[i]);
         }
-    }
-
-    function getPointsCB() {
-        var points = JSON.parse(getPoints());
-        for(i = 0; i < points.length; i++) {
-            point = points[i];
-            pointsArray[i] = {
-                    "id":point.id,
-                    "name":point.name,
-                    "type":1
-                    };
-        }
-       document.getElementById("loader").style.display = "none";
-       document.body.style.overflow="visible";
     }
 
     function appendScript(seId) {
