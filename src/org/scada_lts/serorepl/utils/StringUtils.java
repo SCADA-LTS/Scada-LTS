@@ -21,7 +21,8 @@ public class StringUtils {
 
     private static final int CHARACTER_NO_FOUND = -1;
     private static final String DOLLAR_OPEN_BRACKET = "${";
-    private final  static String CLOSE_BRACKET =  "}";
+    private static final String CLOSE_BRACKET =  "}";
+    private static int FIRST_GROUP = 1;
 
 
     public static String capitalize(String s){
@@ -121,7 +122,7 @@ public class StringUtils {
         Matcher matcher = p.matcher(s);
         StringBuffer result = new StringBuffer();
         while (matcher.find()) {
-            String group = matcher.group(1);
+            String group = matcher.group(FIRST_GROUP);
             matcher.appendReplacement(result, Matcher.quoteReplacement(ObjectUtils.toString(properties.get(group))));
         }
         matcher.appendTail(result);
