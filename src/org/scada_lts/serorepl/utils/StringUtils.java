@@ -13,15 +13,26 @@ public class StringUtils {
 
     private static final Random RANDOM = new Random();
 
+    private static final String LESS_THAN_SING = "<";
+    private static final String LESS_THAN_EQUIVALENT = "&lt;";
+
+    private static final char SPACE = ' ';
+    private static final char UNDERLINE = '_';
+
+    private static final int CHARACTER_NO_FOUND = -1;
+    private static final String DOLLAR_OPEN_BRACKET = "${";
+    private final  static String CLOSE_BRACKET =  "}";
+
+
     public static String capitalize(String s){
         if (s != null){
-            return s.toUpperCase().replace(' ', '_');
+            return s.toUpperCase().replace(SPACE, UNDERLINE);
         }
         else return null;
     }
 
     public static String escapeLT(String s){
-           return s.replaceAll("<", "&lt;");
+           return s.replaceAll(LESS_THAN_SING, LESS_THAN_EQUIVALENT);
     }
 
     public static String generateRandomString(int length, String charSet){
@@ -35,13 +46,14 @@ public class StringUtils {
     }
 
     public static boolean globWhiteListMatchIgnoreCase(String[] values, String value){
+
         if (values == null || values.length == 0 || value == null) {
             return false;
         }
         int occurence = 0;
         for (String element : values){
             occurence = element.indexOf("*");
-            if (occurence != -1){
+            if (occurence != CHARACTER_NO_FOUND){
                 if (element.equalsIgnoreCase(value)){
                     return true;
                 }else if (value.length() >= occurence && element.substring(0, occurence).equalsIgnoreCase(value.substring(0,occurence))){
@@ -100,7 +112,7 @@ public class StringUtils {
     }
 
     public static String replaceMacro(String s, String name, String replacement){
-        return s.replaceAll(Pattern.quote("${" + name + "}"), replacement);
+        return s.replaceAll(Pattern.quote(DOLLAR_OPEN_BRACKET + name + CLOSE_BRACKET), replacement);
     }
 
     public static String replaceMacros(String s, Properties properties){
