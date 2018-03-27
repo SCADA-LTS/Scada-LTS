@@ -1,7 +1,13 @@
 package org.scada_lts.serorepl.utils;
 
+import org.apache.commons.lang3.ObjectUtils;
+
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -10,13 +16,20 @@ public class StringUtils {
     public static final Random RANDOM = new Random();
 
     public static String capitalize(String s){
-        // nic się nie da zmienić
-        return s == null ? null : s.toUpperCase().replace(' ', '_');
+    //    return s == null ? null : s.toUpperCase().replace(' ', '_');
+
+        if (s != null){
+            return s.toUpperCase().replace(' ', '_');
+        }
+        else return null;
     }
 
     public static String escapeLT(String s){
-        // nic się nie da zmienic
-        return s == null ? null : s.replaceAll("<", "&lt;");
+     //   return s == null ? null : s.replaceAll("<", "&lt;");
+    //    if (s != null){
+           return s.replaceAll("<", "&lt;");
+       // }
+     //   return null;
     }
 
     public static String generateRandomString(int length, String charSet){
@@ -32,7 +45,22 @@ public class StringUtils {
     }
 
     public static boolean globWhiteListMatchIgnoreCase(String[] values, String value){
-        return true;
+        if (values == null || values.length == 0 || value == null) {
+            return false;
+        }
+        int occurence = 0;
+        for (String element : values){
+            occurence = element.indexOf("*");
+            if (occurence != -1){
+                if (element.equalsIgnoreCase(value)){
+                    return true;
+                }else if (value.length() >= occurence && element.substring(0, occurence).equalsIgnoreCase(value.substring(0,occurence))){
+                    return true;
+                }
+            }
+        }
+        return false;
+
     }
 
     public static boolean isBetweenInc(int value, int min, int max){
@@ -73,7 +101,10 @@ public class StringUtils {
         }
         return false;
     }
-
+    /**
+    * When s.lenght is less than given length, method append padChar (len - s.string)
+     * times at the beginning of the String s
+    */
     public static String pad(String s, char padChar, int len){
        // gdy dlugosc s jest mniejsza niz len, dokleja przed stringa tyle liter padChar aby dlugosc s+(n*padchar) = len
 
@@ -81,7 +112,8 @@ public class StringUtils {
             return s;
         }
         else{
-            String padCharRepated = IntStream.range(0, len-s.length()).mapToObj(i -> s).collect(Collectors.joining(""));
+            String tmp = String.valueOf(padChar);
+            String padCharRepated = IntStream.range(0, len-s.length()).mapToObj(i -> tmp).collect(Collectors.joining(""));
             StringBuffer buffer = new StringBuffer();
             return buffer.append(padCharRepated).append(s).toString();
         }
@@ -97,23 +129,40 @@ public class StringUtils {
     }
 
     public static String replaceMacro(String s, String name, String replacement){
-        return "";
+        return s.replaceAll(Pattern.quote("${" + name + "}"), replacement);
     }
 
     public static String replaceMacros(String s, Properties properties){
-        return "";
+        Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
+        Matcher matcher = p.matcher(s);
+        StringBuffer result = new StringBuffer();
+        while (matcher.find()) {
+            String group = matcher.group(1);
+            matcher.appendReplacement(result, Matcher.quoteReplacement(ObjectUtils.toString(properties.get(group))));
+        }
+        matcher.appendTail(result);
+        return result.toString();
     }
 
     public static String trimWhitespace(String s){   // com seratonin mangi web dwr
-        return "";
+        return s.trim();
     }
 
     public static String truncate(String s, int length){
-        return "";
+        return truncate(s, length, (String)null);
     }
 
     public static String truncate(String s, int length, String truncateSuffix){
-        return "";
+        if (s == null) {
+            return null;
+        }
+        if (s.length() <= length) {
+            return s;
+        }
+        if (truncateSuffix != null){
+            return s.substring(0,length) + truncateSuffix;
+        }
+        return s.substring(0,length);
     }
 
 
