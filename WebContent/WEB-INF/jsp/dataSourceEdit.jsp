@@ -311,8 +311,10 @@
     }
 
     function enableAllPoints() {
-    	 startImageFader($("enableAllImg"));
-    	 DataSourceEditDwr.enableAllPoints(enableAllPointsCB);
+        if(confirm("Are you sure you wish to enable all data points?")) {
+            startImageFader($("enableAllImg"));
+            DataSourceEditDwr.enableAllPoints(enableAllPointsCB);
+        }
     }
 
     function enableAllPointsCB(points) {

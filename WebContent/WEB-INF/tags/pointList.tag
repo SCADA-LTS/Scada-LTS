@@ -30,7 +30,7 @@
             <td class="smallTitle"><fmt:message key="dsEdit.points.points"/></td>
             <td align="right">
             <tag:img id="enableAllImg" png="icon_ds_go"
-                      onclick="enableAllPoints()" title="common.enableAll"/>
+                      onclick="enableAllPoints()" title="common.enableAll" style="margin-right:10px;"/>
               <tag:img id="editImg${applicationScope['constants.Common.NEW_ID']}" png="icon_comp_add"
                       onclick="editPoint(${applicationScope['constants.Common.NEW_ID']})" />
             </td>
