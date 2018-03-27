@@ -199,7 +199,7 @@
         if (currentPoint) {
             stopImageFader("editImg"+ currentPoint.id);
             var childs = document.getElementById("editImg" + currentPoint.id).parentNode.parentNode.childNodes;
-			markRow(childs, false);
+            if (currentPoint.id!=-1) markRow(childs, false);
         }
         DataSourceEditDwr.getPoint(pointId, editPointCB);
         hideContextualMessages("pointProperties");
@@ -216,8 +216,10 @@
         if (typeof editPointCBImpl == 'function') cancel = editPointCBImpl(locator);
         if (!cancel) {
             startImageFader("editImg"+ point.id);
-            var childs = document.getElementById("editImg" + point.id).parentNode.parentNode.childNodes;
-			markRow(childs, true);
+            if(point.id!=-1) {
+            	var childs = document.getElementById("editImg" + point.id).parentNode.parentNode.childNodes;
+				markRow(childs, true);
+            }
             show("pointDetails");
         }
     }
