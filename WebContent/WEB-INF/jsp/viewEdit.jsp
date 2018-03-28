@@ -335,9 +335,9 @@
         return false;
     }
 
-	
+
   </script>
-  
+
   <form name="view" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
       <tr>
@@ -351,7 +351,7 @@
                   <tag:help id="editingGraphicalViews"/>
                 </td>
               </tr>
-              
+
               <spring:bind path="form.view.name">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.name"/></td>
@@ -361,9 +361,9 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
-              
-              
-              
+
+
+
               <spring:bind path="form.view.xid">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="common.xid"/></td>
@@ -389,12 +389,12 @@
                 </td>
                 <td></td>
               </tr>
-              
+
               <spring:bind path="form.view.anonymousAccess">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.anonymous"/></td>
                   <td class="formField" width="250">
-                    <sst:select name="view.anonymousAccess" value="${status.value}"> 
+                    <sst:select name="view.anonymousAccess" value="${status.value}">
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_NONE) %>"><fmt:message key="common.access.none"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_READ) %>"><fmt:message key="common.access.read"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_SET) %>"><fmt:message key="common.access.set"/></sst:option>
@@ -403,12 +403,12 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
-              
+
               <spring:bind path="form.view.resolution">
                 <tr>
                   <td id="sizeLabel" class="formLabelRequired" width="150"><fmt:message key="viedEdit.viewSize" /></td>
                   <td class="formField" width="250">
-                    <sst:select id="view.resolution" name="view.resolution" value="${status.value}" onchange="resizeViewBackgroundToResolution(this.options[this.selectedIndex].value)"> 
+                    <sst:select id="view.resolution" name="view.resolution" value="${status.value}" onchange="resizeViewBackgroundToResolution(this.options[this.selectedIndex].value)">
                       <sst:option value="<%= Integer.toString(0) %>"> 640x480</sst:option>
                       <sst:option value="<%= Integer.toString(1) %>"> 800x600</sst:option>
                       <sst:option value="<%= Integer.toString(2) %>"> 1024x768</sst:option>
@@ -419,11 +419,11 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
-              
+
             </table>
           </div>
         </td>
-        	
+
         <td valign="top">
           <div class="borderDiv" id="sharedUsersDiv">
             <tag:sharedUsers doxId="viewSharing" noUsersKey="share.noViewUsers"/>
@@ -431,7 +431,7 @@
         </td>
       </tr>
     </table>
-    
+
     <table>
       <tr>
         <td>
@@ -440,15 +440,15 @@
           <tag:img png="plugin_add" title="viewEdit.addViewComponent" onclick="addViewComponent()"/>
         </td>
         <td style="width:30px;"></td>
-       
+
         <td>
           <input type="checkbox" id="iconifyCB" onclick="iconizeClicked();"/>
           <label for="iconifyCB"><fmt:message key="viewEdit.iconify"/></label>
         </td>
-        
+
       </tr>
     </table>
-    
+
     <table width="100%" cellspacing="0" cellpadding="0">
       <tr>
         <td>
@@ -467,7 +467,7 @@
                               style="top:1px;left:1px;"/>
                     </c:otherwise>
                   </c:choose>
-                  
+
                   <%@ include file="/WEB-INF/jsp/include/staticEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/settingsEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/graphicRendererEditor.jsp" %>
@@ -476,12 +476,12 @@
                 </div>
               </td>
             </tr>
-            
+
             <tr><td colspan="3">&nbsp;</td></tr>
-            
+
             <tr>
               <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>"/>
+                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
                 <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
                 <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
