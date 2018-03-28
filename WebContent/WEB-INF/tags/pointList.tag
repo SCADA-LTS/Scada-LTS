@@ -21,7 +21,7 @@
 <%@tag import="com.serotonin.mango.Common"%>
 <%@attribute name="pointHelpId" required="true"%>
 
-<table cellpadding="0" cellspacing="0" id="pointProperties" style="display:none;">
+<table cellpadding="0" cellspacing="0" id="pointProperties" style="display:none; width:60%;">
   <tr>
     <td valign="top">
       <div class="borderDiv marR marB">
@@ -30,21 +30,21 @@
             <td class="smallTitle"><fmt:message key="dsEdit.points.points"/></td>
             <td align="right">
             <tag:img id="enableAllImg" png="icon_ds_go"
-                      onclick="enableAllPoints()" title="common.enableAll"/>
+                      onclick="enableAllPoints()" title="common.enableAll" style="margin-right:10px;"/>
               <tag:img id="editImg${applicationScope['constants.Common.NEW_ID']}" png="icon_comp_add"
                       onclick="editPoint(${applicationScope['constants.Common.NEW_ID']})" />
             </td>
           </tr>
         </table>
-        <table cellspacing="1">
+        <table cellspacing="1" style="width:100%;">
           <tr class="rowHeader" id="pointListHeaders"></tr>
           <tbody id="pointsList"></tbody>
         </table>
       </div>
     </td>
 
-    <td valign="top">
-      <div id="pointDetails" class="borderDiv marB" style="display: none;">
+    <td>
+      <div id="pointDetails" class="borderDiv marB" style="display: none; position:fixed; bottom:0; width:38%;  background-color:white;">
         <table width="100%">
           <tr>
             <td>
@@ -58,15 +58,15 @@
           </tr>
         </table>
         <div id="pointMessage" class="ctxmsg formError"></div>
-        
+
         <table>
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.points.name"/></td>
-            <td class="formField"><input type="text" id="name"/></td>
+            <td class="formField" style="width:100%;"><input style="width:90%;" type="text" id="name"/></td>
           </tr>
           <tr>
             <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
-            <td class="formField"><input type="text" id="xid"/></td>
+            <td class="formField" style="width:100%;"><input style="width:90%;" type="text" id="xid"/></td>
           </tr>
           
           <jsp:doBody/>
