@@ -125,13 +125,15 @@
     }
 
     function toggleDataSource() {
-        if (typeof toggleDataSourceImpl == 'function') toggleDataSourceImpl();
+	    if(confirm("Are you sure you wish to toggle data source?")) {
+	        if (typeof toggleDataSourceImpl == 'function') toggleDataSourceImpl();
 
-        var imgNode = $("dsStatusImg");
-        if (!hasImageFader(imgNode)) {
-            DataSourceEditDwr.toggleEditDataSource(toggleDataSourceCB);
-            startImageFader(imgNode);
-        }
+	        var imgNode = $("dsStatusImg");
+	        if (!hasImageFader(imgNode)) {
+	            DataSourceEditDwr.toggleEditDataSource(toggleDataSourceCB);
+	            startImageFader(imgNode);
+	        }
+	    }
     }
 
     function toggleDataSourceCB(result) {
