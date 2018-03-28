@@ -56,7 +56,7 @@
               <tag:img id="pointDeleteImg" png="delete" onclick="deletePoint()" title="common.delete" />
             </td>
           </tr>
-        </table>
+        </table> 
         <div id="pointMessage" class="ctxmsg formError"></div>
 
         <table>
