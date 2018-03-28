@@ -329,7 +329,12 @@
 			document.getElementById("deleteButton").style.visibility = 'hidden'; 
 		}
 	}
-	
+
+    window.onbeforeunload = confirmExit;
+    function confirmExit(){
+        return false;
+    }
+
 	
   </script>
   
