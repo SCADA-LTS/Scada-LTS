@@ -17,6 +17,8 @@
  */
 package org.scada_lts.web.mvc.api;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.ResourcesService;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Create by at Grzesiek Bylica
@@ -42,14 +45,19 @@ public class ResourcesAPI {
     private ResourcesService resourcesService;
 
     @RequestMapping(value = "/api/resources/imagesRefresh", method = RequestMethod.GET)
-    public ResponseEntity<String> imagesRefresh() {
+    public ResponseEntity<String> imagesRefresh(HttpServletRequest request) {
 
         LOG.info("/api/resources/imagesRefresh");
         try {
-            resourcesService.refreshImages();
-            return new ResponseEntity<String>(HttpStatus.OK);
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                resourcesService.refreshImages();
+                return new ResponseEntity<String>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+             return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
