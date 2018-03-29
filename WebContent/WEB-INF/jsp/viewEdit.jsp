@@ -253,7 +253,7 @@
                         comp.savedContent = content.innerHTML;
                     content.innerHTML = "<img src='images/plugin.png'/>";
                 }
-            } 
+            }
             else {
                 mango.view.edit.iconize = false;
                 for (i=0; i<ids.length; i++) {
@@ -384,8 +384,8 @@
               </spring:bind>
               <tr>
                 <td colspan="2" align="center">
-                  <input type="submit" name="upload" value="<fmt:message key="viewEdit.upload"/>"/>
-                  <input type="submit" name="clearImage" value="<fmt:message key="viewEdit.clearImage"/>"/>
+                  <input type="submit" name="upload" value="<fmt:message key="viewEdit.upload"/>" onclick="window.onbeforeunload = null;"/>
+                  <input type="submit" name="clearImage" value="<fmt:message key="viewEdit.clearImage"/>" onclick="window.onbeforeunload = null;"/>
                 </td>
                 <td></td>
               </tr>
@@ -485,7 +485,7 @@
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
                 <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
                 <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
-				<input id="deleteButton" type="submit" name="delete" onclick="return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
+				<input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
               </td>
               <td></td>
             </tr>
