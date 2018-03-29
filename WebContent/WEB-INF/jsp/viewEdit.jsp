@@ -249,11 +249,11 @@
                 for (i=0; i<ids.length; i++) {
                     comp = $("c"+ ids[i]);
                     content = $("c"+ ids[i] +"Content");
-                    if (!comp.savedContent) 
+                    if (!comp.savedContent)
                         comp.savedContent = content.innerHTML;
                     content.innerHTML = "<img src='images/plugin.png'/>";
                 }
-            }
+            } 
             else {
                 mango.view.edit.iconize = false;
                 for (i=0; i<ids.length; i++) {
