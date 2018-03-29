@@ -195,34 +195,35 @@
         graphicRendererEditor.close();
         staticEditor.close();
         compoundEditor.close();
+        customEditor.close();
     }
-    
+
     function updateViewComponentLocation(divId) {
         var div = $(divId);
         var lt = div.style.left;
         var tp = div.style.top;
-        
+
         // Remove the 'px's from the positions.
         lt = lt.substring(0, lt.length-2);
         tp = tp.substring(0, tp.length-2);
-        
+
         // Save the new location.
         ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp);
     }
-    
+
     function addDnD(divId) {
         var div = $(divId);
         var dragSource = new dojo.dnd.HtmlDragMoveSource(div);
         dragSource.constrainTo($("viewBackground"));
-        
+
         // Save the drag source in the div in case it gets deleted. See below.
         div.dragSource = dragSource;
         // Also, create a function to call on drag end to update the point view's location.
         div.onDragEnd = function() {updateViewComponentLocation(divId);};
-        
+
         dojo.event.connect(dragSource, "onDragEnd", div.onDragEnd);
     }
-    
+
     function deleteViewComponent(viewComponentId) {
         closeEditors();
         if(confirm('<fmt:message key="common.confirmDelete"/>')) {
