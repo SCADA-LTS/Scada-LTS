@@ -224,8 +224,8 @@
     }
     
     function deleteViewComponent(viewComponentId) {
+        closeEditors();
         if(confirm('<fmt:message key="common.confirmDelete"/>')) {
-            closeEditors();
             ViewDwr.deleteViewComponent(viewComponentId);
 
             var div = $("c"+ viewComponentId);
