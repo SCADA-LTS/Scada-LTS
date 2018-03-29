@@ -83,6 +83,7 @@ docker/app/**
 # intelij
 ###########################
 .idea
+scadabr-1.1.0-RC.iml
 
 ###########################
 # jrebel
