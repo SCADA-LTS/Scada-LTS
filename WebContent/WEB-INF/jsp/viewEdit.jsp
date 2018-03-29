@@ -224,23 +224,25 @@
     }
     
     function deleteViewComponent(viewComponentId) {
-        closeEditors();
-        ViewDwr.deleteViewComponent(viewComponentId);
-        
-        var div = $("c"+ viewComponentId);
-        
-        // Unregister the drag source from the DnD manager.
-        div.dragSource.unregister();
-        // Disconnect the event handling for drag ends on this guy.
-        $("viewContent").removeChild(div);
+        if(confirm('<fmt:message key="common.confirmDelete"/>')) {
+            closeEditors();
+            ViewDwr.deleteViewComponent(viewComponentId);
+
+            var div = $("c"+ viewComponentId);
+
+            // Unregister the drag source from the DnD manager.
+            div.dragSource.unregister();
+            // Disconnect the event handling for drag ends on this guy.
+            $("viewContent").removeChild(div);
+        }
     }
-    
+
     function getViewComponentId(node) {
         while (!(node.viewComponentId))
             node = node.parentNode;
         return node.viewComponentId;
     }
-    
+
     function iconizeClicked() {
         ViewDwr.getViewComponentIds(function(ids) {
             var i, comp, content;
@@ -260,7 +262,7 @@
                     comp = $("c"+ ids[i]);
                     content = $("c"+ ids[i] +"Content");
                     if (comp.savedState)
-                        mango.view.setContent(comp.savedState);                
+                        mango.view.setContent(comp.savedState);
                     else if (comp.savedContent)
                         content.innerHTML = comp.savedContent;
                     else
@@ -278,12 +280,12 @@
 
 		if(width > currentWidth) {
 			$("viewBackground").width = parseInt(width,10) + 30;
-		} 
+		}
 		if(height > currentHeight) {
 			$("viewBackground").height = parseInt(height,10) + 30;
 		}
 	}
-	
+
 	function resizeViewBackgroundToResolution(size) {
 		if(document.getElementById("viewBackground").src.includes("spacer.gif")){
 			switch(size) {
@@ -313,11 +315,11 @@
 			}
         } else {
         	document.getElementById("view.resolution").style.visibility = 'hidden';
-        	document.getElementById("sizeLabel").style.visibility = 'hidden';        	
+        	document.getElementById("sizeLabel").style.visibility = 'hidden';
         }
-		
+
 	}
-	
+
 	function deleteConfirm(){
 		if(document.getElementById("deleteCheckbox").checked) {
 			document.getElementById("deleteButton").style.visibility = 'visible';
@@ -326,7 +328,7 @@
 				document.getElementById("deleteButton").style.visibility = 'hidden';
 			}, 3000);
 		} else {
-			document.getElementById("deleteButton").style.visibility = 'hidden'; 
+			document.getElementById("deleteButton").style.visibility = 'hidden';
 		}
 	}
 
