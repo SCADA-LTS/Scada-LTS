@@ -186,10 +186,17 @@
         // Position and display the renderer editor.
         var pDim = getNodeBounds($("c"+ compId));
         var editDiv = $(editorId);
-        editDiv.style.left = (pDim.x + pDim.w + 20) +"px";
-        editDiv.style.top = (pDim.y + 10) +"px";
+        if (pDim.x < screen.width-pDim.w) {
+            console.log("TAK");
+            editDiv.style.left = (pDim.x + pDim.w + 20) +"px";
+            editDiv.style.top = (pDim.y + 10) +"px";
+        } else {
+            console.log("NIE");
+            editDiv.style.left = (pDim.x - pDim.w - 20) +"px";
+            editDiv.style.top = (pDim.y + 10) +"px";
+        }
     }
-    
+
     function closeEditors() {
         settingsEditor.close();
         graphicRendererEditor.close();
