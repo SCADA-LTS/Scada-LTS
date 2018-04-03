@@ -188,7 +188,7 @@
         var editDiv = $(editorId);
         var eWidth = jQuery("#" + editorId).outerWidth(true);
         var scrollL = document.documentElement.scrollLeft;
-        if (pDim.x < (screen.width - eWidth - 180 + scrollL)) {
+        if (pDim.x < (screen.width - eWidth - pDim.w + scrollL - 10)) {
             console.log("TAK");
             editDiv.style.left = (pDim.x + pDim.w + 10) +"px";
             editDiv.style.top = (pDim.y) +"px";
