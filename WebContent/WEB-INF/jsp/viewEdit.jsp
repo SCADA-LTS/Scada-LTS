@@ -189,15 +189,23 @@
         var eWidth = jQuery("#" + editorId).outerWidth(true);
         var scrollL = document.documentElement.scrollLeft;
         if (pDim.x < (screen.width - eWidth - pDim.w + scrollL - 10)) {
-            console.log("TAK");
             editDiv.style.left = (pDim.x + pDim.w + 10) +"px";
             editDiv.style.top = (pDim.y) +"px";
         } else {
-            console.log("NIE");
             editDiv.style.left = (pDim.x - eWidth - 10) + "px";
             editDiv.style.top = (pDim.y) +"px";
         }
 
+    }
+
+    function positionCustomEditor(compId, editorId) {
+        // Position and display the renderer editor.
+        var pDim = getNodeBounds($("c"+ compId));
+        var editDiv = $(editorId);
+        var eWidth = jQuery("#" + editorId).outerWidth(true);
+        var scrollL = document.documentElement.scrollLeft;
+        editDiv.style.left = (pDim.x) +"px";
+        editDiv.style.top = (pDim.y + pDim.h) +"px";
     }
 
     function closeEditors() {
