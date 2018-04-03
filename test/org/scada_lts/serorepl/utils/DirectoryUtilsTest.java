@@ -10,7 +10,10 @@ public class DirectoryUtilsTest {
     @Test
     public void getDirectorySize() throws Exception {
 
-        assertEquals(DirectoryUtils.getDirectorySize(new File("\"C:\\\\Users\\\\Jerzyk\\\\Desktop\\\\remove\"")).size , com.serotonin.util.DirectoryUtils.getDirectorySize(new File("\"C:\\\\Users\\\\Jerzyk\\\\Desktop\\\\remove\"")).getSize());
+        assertEquals(DirectoryUtils.getDirectorySize(new File("src/br/org/scadabr/api/vo")).getSize() , com.serotonin.util.DirectoryUtils.getDirectorySize(new File("src/br/org/scadabr/api/vo")).getSize());
+        assertEquals(DirectoryUtils.getDirectorySize(new File("src/br/org/scadabr/api/da")).getSize() , com.serotonin.util.DirectoryUtils.getDirectorySize(new File("src/br/org/scadabr/api/da")).getSize());
+        assertEquals(DirectoryUtils.getDirectorySize(new File("src/br/org/scadabr/api/config")).getSize() , com.serotonin.util.DirectoryUtils.getDirectorySize(new File("src/br/org/scadabr/api/config")).getSize());
+        assertEquals(DirectoryUtils.getDirectorySize(new File("src/br/org/scadabr/api")).getSize() , com.serotonin.util.DirectoryUtils.getDirectorySize(new File("src/br/org/scadabr/api")).getSize());
     }
 
     @Test
