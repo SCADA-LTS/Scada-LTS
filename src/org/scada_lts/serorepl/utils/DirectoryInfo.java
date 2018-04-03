@@ -1,9 +1,14 @@
 package org.scada_lts.serorepl.utils;
 
-public class DirectoryInfo {
+import java.io.Serializable;
 
+public class DirectoryInfo implements Serializable{
+
+    private static final long serialVersionUID = -4451404084448543201L;
     private int count;
     private long size;
+
+
 
     public DirectoryInfo() {
     }
