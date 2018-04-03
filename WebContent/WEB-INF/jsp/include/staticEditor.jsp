@@ -183,8 +183,9 @@
 		            show("staticEditorPopup");
 
 				}
+                    positionEditor(compId, "staticEditorPopup");
+
             });
-            positionEditor(compId, "staticEditorPopup");
         };
         
         this.close = function() {
