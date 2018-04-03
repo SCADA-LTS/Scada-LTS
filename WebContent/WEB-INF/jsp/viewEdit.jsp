@@ -189,10 +189,10 @@
         var eWidth = jQuery("#" + editorId).outerWidth(true);
         var scrollL = document.documentElement.scrollLeft;
         if (pDim.x < (screen.width - eWidth - pDim.w + scrollL - 10)) {
-            editDiv.style.left = (pDim.x + pDim.w + 10) +"px";
+            editDiv.style.left = (pDim.x + pDim.w + 5) +"px";
             editDiv.style.top = (pDim.y) +"px";
         } else {
-            editDiv.style.left = (pDim.x - eWidth - 10) + "px";
+            editDiv.style.left = (pDim.x - eWidth - 5) + "px";
             editDiv.style.top = (pDim.y) +"px";
         }
 
