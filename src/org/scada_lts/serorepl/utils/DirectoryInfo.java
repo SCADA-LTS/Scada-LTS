@@ -8,6 +8,25 @@ public class DirectoryInfo implements Serializable{
     private int count;
     private long size;
 
+    public DirectoryInfo() {
+    }
+
+    public int getCount() {
+        return this.count;
+    }
+
+    public long getSize() {
+        return this.size;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -32,24 +51,5 @@ public class DirectoryInfo implements Serializable{
                 "count=" + count +
                 ", size=" + size +
                 '}';
-    }
-
-    public DirectoryInfo() {
-    }
-
-    public int getCount() {
-        return this.count;
-    }
-
-    public long getSize() {
-        return this.size;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public void setSize(long size) {
-        this.size = size;
     }
 }
