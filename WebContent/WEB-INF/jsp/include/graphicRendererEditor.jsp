@@ -218,14 +218,12 @@
             
             // Set the renderers for the data type of this point view.
             ViewDwr.getViewComponent(compId, graphicRendererEditor.setViewComponent);
-            
-            positionEditor(compId, "graphicRendererEditorPopup");
         };
-        
+
         this.setViewComponent = function(comp) {
             graphicRendererEditor.typeName = comp.typeName;
             $set("graphicsComponentName", comp.displayName);
-            
+
             // Clear the form data.
             $set("graphicRendererBinaryDisplayText");
             $set("graphicRendererBinaryImageSet");
@@ -271,7 +269,7 @@
                 $set("graphicRendererMultistateImageSet", comp.imageSetId);
                 graphicRendererEditor.displayMultistateImages(comp.imageSetId);
                 var imageStates = comp.imageStateList;
-                
+
                 var i=0;
                 while ($("graphicRendererMultistateState"+ i))
                     $set("graphicRendererMultistateState"+ (i++), "");
@@ -294,6 +292,8 @@
             }
             show("graphicRenderer_"+ comp.typeName);
             show("graphicRendererEditorPopup");
+
+            positionEditor(comp.id, "graphicRendererEditorPopup");
         };
     
         this.close = function() {
