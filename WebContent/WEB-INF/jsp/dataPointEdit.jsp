@@ -56,17 +56,43 @@
                        var idPointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].value;
                        var namePointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].text;
                        var swal_message = namePointConfigurationToBaseOnExistingPoint + "</br> id:"+idPointConfigurationToBaseOnExistingPoint;
-                       swal({
-                         text: swal_message,
-                         buttons: {
-                           cancel: true,
-                           confirm: "Confirm",
-                           roll: {
-                             text: "Do a barrell roll!",
-                             value: "roll",
-                           },
-                         },
-                       });
+
+                       var pathArray = location.href.split( '/' );
+                       var protocol = pathArray[0];
+                       var host = pathArray[2];
+                       var appScada = pathArray[3];
+                       var myLocation;
+                       if (!myLocation) {
+                        myLocation = protocol + "//" + host + "/" + appScada + "/";
+                       }
+
+                       jQuery.ajax({
+                            type: "GET",
+                            dataType: "json",
+                            url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
+                           					        	   success: function(properties){
+                           					        	            swal({
+                                                                      html: swal_message+"</br> properties:"+JSON.stringify(properties),
+                                                                      buttons: {
+                                                                        cancel: true,
+                                                                        confirm: "Confirm",
+                                                                        roll: {
+                                                                        text: "Do a barrell roll!",
+                                                                        value: "roll",
+                                                                       },
+                                                                      },
+                                                                     });
+
+                           					        	   },
+                           					        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
+                           					        		   swal({
+                                                                  text: "Problem when get properties:"+errorThrown.message,
+                                                                  buttons: {
+                                                                    cancel: true
+                                                                   },
+                                                                });
+                           					        	   }
+                           					        	});
                   }
             </script>
             </br>
