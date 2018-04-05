@@ -76,13 +76,19 @@
                                                                       buttons: {
                                                                         cancel: true,
                                                                         confirm: "Confirm",
-                                                                        roll: {
-                                                                        text: "Do a barrell roll!",
-                                                                        value: "roll",
+                                                                        icon: "warning",
+                                                                        buttons: true,
+                                                                        dangerMode: true,
                                                                        },
-                                                                      },
+                                                                     }).then(function(isConfirm) {
+                                                                         if (isConfirm) {
+                                                                           alert(JSON.stringify(properties.loggingType));
+                                                                           alert(properties.loggingType);
+                                                                           jQuery("#loggingType").val(properties.loggingType);
+                                                                         } else {
+                                                                           alert("cancel");
+                                                                         }
                                                                      });
-
                            					        	   },
                            					        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
                            					        		   swal({
