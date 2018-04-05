@@ -44,44 +44,44 @@
     }
   </script>
   
-  <div class="login-container">
+  <div class="login-container" style="margin: 100px auto 10px auto; background-color: #77c055; width: 290px; border-radius: 25px;">
 
-      <div class="login-browser">
+      <div class="login-browser" style="text-align: center; padding-top: 10px;">
 
           <b><span id="browser"><fmt:message key="login.unknownBrowser"/></span></b>
-          <img id="browserImg" src="images/magnifier.png"/>
+          <img id="browserImg" src="images/magnifier.png" style="height: 10px;width: auto;"/>
           <span id="okMsg" style="display:none"><fmt:message key="login.supportedBrowser"/></span>
           <span id="warnMsg" style="display:none"><fmt:message key="login.unsupportedBrowser"/></span>
       </div>
 
 
       <div class="login-box">
-        <form action="login.htm" method="post" onclick="nag()">
+        <form action="login.htm" method="post" onclick="nag()" style="margin: 0 auto; width:200px;">
 
-          
+
               <div class="form-box">
                 <div class="formLabelRequired"><fmt:message key="login.userId"/></div>
                 <div class="formField">
-                  <input id="username" type="text" name="username" value="${login.username}" maxlength="40"/>
+                  <input id="username" type="text" name="username" value="${login.username}" maxlength="40" style="width: 200px; height: 20px;"/>
                 </div>
               </div>
-            
+
               <div class="form-box">
                 <div class="formLabelRequired"><fmt:message key="login.password"/></div>
                 <div class="formField">
-                  <input id="password" type="password" name="password" value="${login.password}" maxlength="20"/>
+                  <input id="password" type="password" name="password" value="${login.password}" maxlength="20" style="width: 200px; height: 20px;"/>
                 </div>
               </div>
-                
+
                 <div class="formError">
                   <c:forEach items="${errors}" var="error">
                     <fmt:message key="${error}"/><br/>
                   </c:forEach>
                 </div>
-                            
+
 
               <div class="login-button" align="center">
-                <input type="submit" value="<fmt:message key="login.loginButton"/>"/>
+                <input type="submit" value="<fmt:message key="login.loginButton"/>"  style="padding: 5px 20px; margin-left:30%; margin-top:10px;"/>
                 <tag:help id="welcomeToMango"/>
               </div>
 
