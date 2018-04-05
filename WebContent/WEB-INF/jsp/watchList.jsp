@@ -675,7 +675,7 @@
                                 src="images/icon_edit.png"/><div id="p_TEMPLATE_Change" class="labelDiv" 
                                 style="visibility:hidden;top:10px;left:1px;" ondblclick="hideLayer(this);">
                           <tag:img png="hourglass" title="common.gettingData"/>
-                        </div></td>
+                        </div></td> 
                         <td id="p_TEMPLATE_ChartMin" style="display:none;" onmouseover="showChart(getMangoId(this), event, this);"
                                 onmouseout="hideChart(getMangoId(this), event, this);"><img alt="" 
                                 src="images/icon_chart.png"/><div id="p_TEMPLATE_ChartLayer" class="labelDiv" 
