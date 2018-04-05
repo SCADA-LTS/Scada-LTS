@@ -390,7 +390,7 @@ public class View implements Serializable, JsonSerializable {
 
 		JsonArray jsonSharers = json.getJsonArray("sharingUsers");
 		if (jsonSharers != null) {
-			viewUsers.clear();
+			viewUsers = new CopyOnWriteArrayList<ShareUser>();
 
 			for (JsonValue jv : jsonSharers.getElements()) {
 				ShareUser shareUser = reader.readPropertyValue(jv,

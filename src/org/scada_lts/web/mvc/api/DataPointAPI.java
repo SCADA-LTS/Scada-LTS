@@ -37,7 +37,8 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
+ * @author Arkadiusz Parafiniuk
+ * E-mail: arkadiusz.parafiniuk@gmail.com
  */
 @Controller
 public class DataPointAPI {
@@ -57,25 +58,30 @@ public class DataPointAPI {
             if (user != null) {
                 class DatapointJSON implements Serializable {
                     private long id;
+                    private String name;
                     private String xid;
-                    private String dataSourceXid;
 
-                    DatapointJSON(long id, String xid, String dataSourceXid) {
+                    DatapointJSON(long id, String name, String xid) {
                         this.setId(id);
+                        this.setName(name);
                         this.setXid(xid);
-                        this.setDataSourceXid(dataSourceXid);
                     }
 
                     public long getId() { return id; }
                     public void setId(long id) { this.id = id; }
+                    public String getName() {
+                        return name;
+                    }
+
+                    public void setName(String name) {
+                        this.name = name;
+                    }
                     public String getXid() {
                         return xid;
                     }
                     public void setXid(String xid) {
                         this.xid = xid;
                     }
-                    public String getDataSourceXid() { return dataSourceXid; }
-                    public void setDataSourceXid(String dataSourceXid) { this.dataSourceXid = dataSourceXid; }
                 }
 
                 int userId = user.getId();
@@ -96,7 +102,7 @@ public class DataPointAPI {
 
                 List<DatapointJSON> lst = new ArrayList<>();
                 for (DataPointVO dp:lstDP){
-                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getXid(), dp.getDataSourceXid());
+                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid());
                     lst.add(dpJ);
                 }
 
@@ -114,5 +120,5 @@ public class DataPointAPI {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
     }
-
 }
+

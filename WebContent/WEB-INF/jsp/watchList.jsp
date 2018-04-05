@@ -667,11 +667,11 @@
                 <td width="1">
                   <table cellpadding="0" cellspacing="0" class="rowIcons">
                     <tr>
-                      <td onmouseover="mango.view.showChange('p'+ getMangoId(this) +'Change', 4, 12);"
-                          onmouseout="mango.view.hideChange('p'+ getMangoId(this) +'Change');"
-                          id="p_TEMPLATE_ChangeMin" style="display:none;"><img alt="" id="p_TEMPLATE_Changing"
-                                                                               src="images/icon_edit.png"/><div id="p_TEMPLATE_Change" class="labelDiv"
-                                                                                                                style="visibility:hidden;top:10px;left:1px;" onmouseout="hideLayer(this);">
+                      <td onclick="mango.view.showChange('p'+ getMangoId(this) +'Change', 4, 12);"
+                                ondblclick="mango.view.hideChange('p'+ getMangoId(this) +'Change');"
+                                id="p_TEMPLATE_ChangeMin" style="display:none;"><img alt="" id="p_TEMPLATE_Changing" 
+                                src="images/icon_edit.png"/><div id="p_TEMPLATE_Change" class="labelDiv" 
+                                style="visibility:hidden;top:10px;left:1px;" ondblclick="hideLayer(this);">
                         <tag:img png="hourglass" title="common.gettingData"/>
                       </div></td>
                       <td id="p_TEMPLATE_ChartMin" style="display:none;" onmouseover="showChart(getMangoId(this), event, this);"

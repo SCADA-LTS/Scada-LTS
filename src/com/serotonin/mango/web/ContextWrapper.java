@@ -152,4 +152,8 @@ public class ContextWrapper {
 
 		return dm;
 	}
+
+	public ServletContext getCtx() {
+		return ctx;
+	}
 }
