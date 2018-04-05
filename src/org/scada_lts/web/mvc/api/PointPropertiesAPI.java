@@ -64,25 +64,48 @@ public class PointPropertiesAPI {
 					private static final long serialVersionUID = 1L;
 
 					private int loggingType;
+					private int intervalLoggingPeriod;
+					private int intervalLoggingPeriodType;
+					private int purgeType;
+
 					public PropertiesPointToJSON(
-							int loggingType
+							int loggingType,
+							int intervalLoggingPeriod,
+							int intervalLoggingPeriodType,
+							int purgeType
 					) {
 						this.loggingType = loggingType;
+						this.intervalLoggingPeriod = intervalLoggingPeriod;
+						this.intervalLoggingPeriodType = intervalLoggingPeriodType;
+						this.purgeType = purgeType;
 					}
 
-					public int getLoggingType() {
-						return loggingType;
-					}
+					public int getLoggingType() { return loggingType;}
 
-					public void setLoggingType(int loggingType) {
-						this.loggingType = loggingType;
-					}
+					public void setLoggingType( int loggingType) {this.loggingType = loggingType; }
+
+					public int getIntervalLoggingPeriod() { return intervalLoggingPeriod; }
+
+					public void setIntervalLoggingPeriod(int intervalLoggingPeriod) { this.intervalLoggingPeriod = intervalLoggingPeriod; }
+
+					public int getIntervalLoggingPeriodType() { return intervalLoggingPeriodType; }
+
+					public void setIntervalLoggingPeriodType(int intervalLoggingPeriodType) { this.intervalLoggingPeriodType = intervalLoggingPeriodType; }
+
+					public int getPurgeType() { return purgeType; }
+
+					public void setPurgeType(int purgeType) { this.purgeType = purgeType;}
 				}
 
 
 				PropertiesPointToJSON p = new PropertiesPointToJSON(
-						dpvo.getLoggingType()
+						dpvo.getLoggingType(),
+						dpvo.getIntervalLoggingPeriod(),
+						dpvo.getIntervalLoggingPeriodType(),
+						dpvo.getPurgeType()
+
 				);
+
 				json = mapper.writeValueAsString(p);
 
 				return new ResponseEntity<String>(json,HttpStatus.OK);

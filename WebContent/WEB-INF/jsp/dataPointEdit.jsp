@@ -66,13 +66,20 @@
                         myLocation = protocol + "//" + host + "/" + appScada + "/";
                        }
 
+                       var arrDictLoggingType = ["When point value changes", "All data", "Do not log", "Interval", "When point timestamp changes"];
+
+                       var arrDictPurge = ["","","","","day(s)", "week(s)", "month(s)", "year(s)"];
+
                        jQuery.ajax({
                             type: "GET",
                             dataType: "json",
                             url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
                            					        	            swal({
-                                                                      html: swal_message+"</br> properties:"+JSON.stringify(properties),
+                                                                      html: swal_message
+                                                                                 + "</br> Logging type:"+arrDictLoggingType[properties.loggingType]
+                                                                                 + "</br> Purge After:"+properties.intervalLoggingPeriod+" "+ arrDictPurge[properties.purgeType]
+                                                                                 + "</br> ",
                                                                       buttons: {
                                                                         cancel: true,
                                                                         confirm: "Confirm",
@@ -82,9 +89,12 @@
                                                                        },
                                                                      }).then(function(isConfirm) {
                                                                          if (isConfirm) {
-                                                                           alert(JSON.stringify(properties.loggingType));
-                                                                           alert(properties.loggingType);
+                                                                           alert(JSON.stringify(properties));
                                                                            jQuery("#loggingType").val(properties.loggingType);
+                                                                           jQuery("#purgePeriod").val(properties.intervalLoggingPeriod);
+                                                                           //jQuery("#purgeType").val(properties.intervalLoggingPeriodType);
+                                                                           jQuery("#purgeType").val(properties.purgeType);
+
                                                                          } else {
                                                                            alert("cancel");
                                                                          }
