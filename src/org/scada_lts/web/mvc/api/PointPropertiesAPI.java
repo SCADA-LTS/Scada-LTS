@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.view.ImplDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
@@ -67,17 +68,30 @@ public class PointPropertiesAPI {
 					private int intervalLoggingPeriod;
 					private int intervalLoggingPeriodType;
 					private int purgeType;
+					private int defaultCacheSize;
+					private String typeKey;
+					private TextRenderer textRenderer;
+					private ImplDefinition def;
+
 
 					public PropertiesPointToJSON(
 							int loggingType,
 							int intervalLoggingPeriod,
 							int intervalLoggingPeriodType,
-							int purgeType
+							int purgeType,
+							int defaultCacheSize,
+							String typeKey,
+							TextRenderer textRenderer,
+							ImplDefinition def
 					) {
 						this.loggingType = loggingType;
 						this.intervalLoggingPeriod = intervalLoggingPeriod;
 						this.intervalLoggingPeriodType = intervalLoggingPeriodType;
 						this.purgeType = purgeType;
+						this.defaultCacheSize = defaultCacheSize;
+						this.typeKey = typeKey;
+						this.textRenderer = textRenderer;
+						this.def = def;
 					}
 
 					public int getLoggingType() { return loggingType;}
@@ -95,15 +109,34 @@ public class PointPropertiesAPI {
 					public int getPurgeType() { return purgeType; }
 
 					public void setPurgeType(int purgeType) { this.purgeType = purgeType;}
-				}
 
+					public int getDefaultCacheSize() {return defaultCacheSize; }
+
+					public void setDefaultCacheSize(int defaultCacheSize) { this.defaultCacheSize = defaultCacheSize; }
+
+					public String getTypeKey() { return typeKey; }
+
+					public void setTypeKey(String typeKey) {this.typeKey = typeKey; }
+
+					public TextRenderer getTextRenderer() { return textRenderer; }
+
+					public void setTextRenderer(TextRenderer textRenderer) { this.textRenderer = textRenderer;}
+
+					public ImplDefinition getDef() { return def; }
+
+					public void setDef(ImplDefinition def) { this.def = def;}
+
+				}
 
 				PropertiesPointToJSON p = new PropertiesPointToJSON(
 						dpvo.getLoggingType(),
 						dpvo.getIntervalLoggingPeriod(),
 						dpvo.getIntervalLoggingPeriodType(),
-						dpvo.getPurgeType()
-
+						dpvo.getPurgeType(),
+						dpvo.getDefaultCacheSize(),
+						dpvo.getTypeKey(),
+						dpvo.getTextRenderer(),
+						dpvo.getTextRenderer().getDef()
 				);
 
 				json = mapper.writeValueAsString(p);
