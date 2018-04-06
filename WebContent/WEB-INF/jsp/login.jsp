@@ -44,7 +44,7 @@
     }
   </script>
   
-  <div class="login-container" style="margin: 100px auto 10px auto; background-color: #77c055; width: 290px; border-radius: 25px;">
+  <div class="login-container" style="margin: 100px auto 10px auto; background-color: #77c055; width: 290px; border-radius: 10px;">
 
       <div class="login-browser" style="text-align: center; padding-top: 10px;">
 
