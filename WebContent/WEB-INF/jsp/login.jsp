@@ -60,14 +60,14 @@
 
 
               <div class="form-box">
-                <div class="formLabelRequired"><fmt:message key="login.userId"/></div>
+                <div class="formLabelRequired" style="color: #000000; font-size: 14px;"><fmt:message key="login.userId"/></div>
                 <div class="formField">
                   <input id="username" type="text" name="username" value="${login.username}" maxlength="40" style="width: 200px; height: 20px;"/>
                 </div>
               </div>
 
               <div class="form-box">
-                <div class="formLabelRequired"><fmt:message key="login.password"/></div>
+                <div class="formLabelRequired" style="color: #000000; font-size: 14px;"><fmt:message key="login.password"/></div>
                 <div class="formField">
                   <input id="password" type="password" name="password" value="${login.password}" maxlength="20" style="width: 200px; height: 20px;"/>
                 </div>
