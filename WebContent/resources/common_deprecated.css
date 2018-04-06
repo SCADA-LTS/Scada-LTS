@@ -57,7 +57,7 @@ a.titleLink:hover {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	/*color: #804000;*/
 	color: #414042;
-	font-size: 13px;
+	font-size: 20px;
 	font-weight: bold;
 }
 .projectTitle {
@@ -389,6 +389,7 @@ span.absmiddle img {
  */
 html > body .dojoFloatingPaneTitleBar {
     background-color: #424041;
+    color: #ffffff;
 }
 html > body .dojoFloatingPaneCloseIcon {
     background-image: url(../images/cross_doc.png);
@@ -479,7 +480,7 @@ html > body .dojoTreeNodeLabelSelected {
 }
 .enhancedImageChartLegend {
 	position:static !important;
-	background-color: white;	
+	background-color: white;
 	padding: 5px;
 	display: inline-block;
 }
@@ -496,7 +497,7 @@ html > body .dojoTreeNodeLabelSelected {
 	background-color: white;
 	width: 240px;
 	border: 1px outset #39B54A;
-	z-index: 1;	
+	z-index: 1;
 }
 
 .enhancedImageChartConfig > div {
@@ -517,3 +518,15 @@ html > body .dojoTreeNodeLabelSelected {
 	margin: 5px 0;
 }
 
+/* To fix new css changees */
+.form-box {
+    width: 20px;
+}
+.login-button {
+    width: 165px;
+}
+
+img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="images/"]:not(#viewBackground){
+	height: 16px;
+	width: 16px;
+}
