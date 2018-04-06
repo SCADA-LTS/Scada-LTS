@@ -769,7 +769,7 @@
        <table width="100%">
           <tr>
              <td>
-               <span class="smallTitle">Cashe images</span>
+               <span class="smallTitle">Cache images</span>
              </td>
           </tr>
           <tr>
