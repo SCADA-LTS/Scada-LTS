@@ -79,7 +79,10 @@
                                                                       html: swal_message
                                                                                  + "</br> Logging type:"+arrDictLoggingType[properties.loggingType]
                                                                                  + "</br> Purge After:"+properties.intervalLoggingPeriod+" "+ arrDictPurge[properties.purgeType]
-                                                                                 + "</br> ",
+                                                                                 + "</br> Default cache size: " + properties.defaultCacheSize
+                                                                                 + "</br> Type key: " + properties.typeKey
+                                                                                 + "</br> Def: " + properties.def.name
+                                                                                 + "</br>",
                                                                       buttons: {
                                                                         cancel: true,
                                                                         confirm: "Confirm",
@@ -94,6 +97,31 @@
                                                                            jQuery("#purgePeriod").val(properties.intervalLoggingPeriod);
                                                                            //jQuery("#purgeType").val(properties.intervalLoggingPeriodType);
                                                                            jQuery("#purgeType").val(properties.purgeType);
+                                                                           jQuery("#defaultCacheSize").val(properties.defaultCacheSize);
+                                                                           var currentTextRenderer = $("textRendererSelect").value;
+
+                                                                           console.log(currentTextRenderer);
+
+                                                                           dojo.html.hide(
+                                                                                    $(currentTextRenderer)
+                                                                           );
+
+                                                                           jQuery("#textRendererSelect").val(properties.def.name);
+
+                                                                           currentTextRenderer = $("textRendererSelect").value;
+
+                                                                           dojo.html.show(
+                                                                                    $(currentTextRenderer)
+                                                                           );
+
+                                                                           if (properties.def.name == "textRendererBinary") {
+                                                                              jQuery("#textRendererBinaryZero").val(properties.textRenderer.zeroLabel);
+                                                                              dojo.widget.byId("textRendererBinaryZeroColour").selectedColour = properties.textRenderer.zeroColour;
+                                                                              jQuery("#textRendererBinaryZero").css('color', properties.textRenderer.zeroColour);
+                                                                              jQuery("#textRendererBinaryOne").val(properties.textRenderer.oneLabel);
+                                                                              jQuery("#textRendererBinaryOne").css('color', properties.textRenderer.oneColour);
+                                                                              dojo.widget.byId("textRendererBinaryOneColour").selectedColour = properties.textRenderer.oneColour;
+                                                                           }
 
                                                                          } else {
                                                                            alert("cancel");
