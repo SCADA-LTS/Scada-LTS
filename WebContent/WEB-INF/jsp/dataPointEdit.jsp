@@ -121,6 +121,8 @@
                                                                               jQuery("#textRendererBinaryOne").val(properties.textRenderer.oneLabel);
                                                                               jQuery("#textRendererBinaryOne").css('color', properties.textRenderer.oneColour);
                                                                               dojo.widget.byId("textRendererBinaryOneColour").selectedColour = properties.textRenderer.oneColour;
+                                                                           } else if (properties.def.name == "textRendererPlain") {
+                                                                              jQuery("#textRendererPlainSuffix").val(properties.textRenderer.suffix);
                                                                            }
 
                                                                          } else {
