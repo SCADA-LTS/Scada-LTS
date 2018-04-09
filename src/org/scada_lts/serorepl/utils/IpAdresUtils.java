@@ -1,7 +1,5 @@
 package org.scada_lts.serorepl.utils;
 
-import com.serotonin.util.IpWhiteListException;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.function.Predicate;
