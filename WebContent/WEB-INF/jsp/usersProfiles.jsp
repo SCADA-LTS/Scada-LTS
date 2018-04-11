@@ -302,7 +302,7 @@
     }
   </script>
   
-  <table>
+  <table class="subPageHeader">
     <tr>
       <td valign="top" id="userProfileList" style="display:none;">
         <div class="borderDiv">

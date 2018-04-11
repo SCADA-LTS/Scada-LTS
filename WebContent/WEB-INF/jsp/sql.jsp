@@ -25,7 +25,7 @@
     }
   </script>
   
-  <table width="100%" cellspacing="0" cellpadding="0" border="0">
+  <table class="subPageHeader" width="100%" cellspacing="0" cellpadding="0" border="0">
     <tr>
       <td>
         <form action="sql.shtm" method="post">

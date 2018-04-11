@@ -41,6 +41,8 @@ branches:
   - "/^#179*$/"
   - "/^master-sdtabilit.*$/"
   - "/^v*$/"
+  - "/^develop*$/"
+  - "/^master*$/"
 notifications:
   email: false
 env:

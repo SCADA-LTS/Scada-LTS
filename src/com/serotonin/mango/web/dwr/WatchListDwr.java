@@ -182,8 +182,8 @@ public class WatchListDwr extends BaseDwr {
 		WatchListDao watchListDao = new WatchListDao();
 		WatchList watchList = watchListDao.getWatchList(watchListId);
 
-		if (!user.isAdmin())
-			Permissions.ensureWatchListPermission(user, watchList);
+//		if (!user.isAdmin())
+//			Permissions.ensureWatchListPermission(user, watchList);
 		prepareWatchList(watchList, user);
 
 		watchListDao.saveSelectedWatchList(user.getId(), watchList.getId());

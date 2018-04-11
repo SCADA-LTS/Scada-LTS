@@ -17,23 +17,6 @@
  */
 package org.scada_lts.web.mvc.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.scada_lts.web.mvc.comparators.DataSourceComparator;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointNameComparator;
@@ -43,7 +26,20 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
-import com.serotonin.web.util.PaginatedData;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.permissions.ACLConfig;
+import org.scada_lts.permissions.PermissionWatchlistACL;
+import org.scada_lts.permissions.model.EntryDto;
+import org.scada_lts.permissions.model.PermissionDataSourceACL;
+import org.scada_lts.web.mvc.comparators.DataSourceComparator;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /**
  * Controller for data source's list
@@ -79,12 +75,24 @@ public class DataSourceListController {
         List<ListParent<DataSourceVO<?>, DataPointVO>> dataSources = new ArrayList<ListParent<DataSourceVO<?>, DataPointVO>>();
         ListParent<DataSourceVO<?>, DataPointVO> listParent;
         for (DataSourceVO<?> ds : data) {
-            if (Permissions.hasDataSourcePermission(user, ds.getId())) {
-            	//TODO why variable listParent don't in loop
-                listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
-                listParent.setParent(ds);
-                listParent.setList(dataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
-                dataSources.add(listParent);
+            if(ACLConfig.getInstance().isPermissionFromServerAcl()) {
+                //ACL Start
+                Map<Integer, EntryDto> mapToCheckId = PermissionDataSourceACL.getInstance().filter(user.getId());
+                if(mapToCheckId.get(ds.getId())!=null) {
+                    listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
+                    listParent.setParent(ds);
+                    listParent.setList(dataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
+                    dataSources.add(listParent);
+                }
+                //ACL End
+            } else {
+                if (Permissions.hasDataSourcePermission(user, ds.getId())) {
+                    //TODO why variable listParent don't in loop
+                    listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
+                    listParent.setParent(ds);
+                    listParent.setList(dataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
+                    dataSources.add(listParent);
+                }
             }
         }
 

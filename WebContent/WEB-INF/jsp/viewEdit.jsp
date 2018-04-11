@@ -358,8 +358,8 @@
 
 
   </script>
-
-  <form name="view" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
+  
+  <form name="view" class="view-edit-form" style="margin-bottom: 40px;" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
       <tr>
         <td valign="top">
