@@ -1,0 +1,369 @@
+@mixin icon-menu() {
+    margin: 0;
+    padding: .2rem;
+    height: $icon_size;
+    transition: all .3s ease-in-out;
+
+    &:hover {
+        background: rgba(76,90,80, 0.85);
+        border-radius: 5px;
+    }
+    
+    &:focus {
+        background-color: red;
+    }
+    
+}
+
+@mixin font() {
+    font-family: $theme_font_family;
+}
+  
+@mixin button() {
+    padding: .5rem 1rem;
+    background-color:  #00C853;
+    
+    &:hover {
+        background-color: #1B5E20
+    }
+}
+
+html {
+    height: 100%;
+
+    body {
+        height: 100%;
+        font-family: 'Lato', sans-serif;
+        font-size: $font_size;
+        color: #000000;
+        background-color: $background_color;
+        margin: 0;
+        padding: 0;
+
+        .footer {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            padding: 12px;
+            color: white;
+            background-color: $primary_color_dark;
+        }
+    }
+}
+
+/* Hoverable icons */
+img.ptr {
+    @include icon-menu();
+}
+
+/* Header Section */
+#logo {
+    padding: 1px 1em;
+}
+
+#mainHeader {
+    background-color:  $background_color;
+}
+
+span#__header__alarmLevelText {
+    font-family: 'Lato', sans-serif;
+    color: black;
+    line-height: 2rem;
+    font-weight: 300;
+    font-size: 1rem;
+}
+  
+#__header__alarmLevelImg {
+    transform: translateY(25%);
+}
+
+#subHeader {
+    margin-bottom: 5px;
+    background-color: rgba(76,90,80, 0.75);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.33);
+
+    tbody > tr > td:nth-child(2) {
+        
+        text-align: right;
+
+        span {
+            color: white;
+            font-size: 1rem;
+            text-transform: uppercase;
+
+            b {
+                text-transform: none;
+                font-size: 1.2rem;
+            }
+        }
+
+
+        
+    }
+}
+
+
+.projectTitle {
+    color: black !important;
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+}
+
+/* Language and style dropdown */
+#localeEdit, #styleEdit {
+    margin-left: -100px;
+    margin-top: -1rem;
+    padding: 1rem 0.5rem 0;
+
+    a {
+        margin: -0.5rem;
+        padding: 8px 2rem;
+        display: block;
+        line-height: 1rem;
+        text-decoration: none;
+        transform: translateX(0);
+        font-size: 1rem;
+        transition: transform 0.2s ease-in-out;
+
+        &:hover {
+            color: $primary_color_accent;
+            transform: translateX(10px);
+            
+        }
+    }
+
+    
+}
+  
+/* Default card/panel component */
+.smallTitle {
+    font-family: 'Lato' ,sans-serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    line-height: 3rem;
+    text-transform: uppercase;
+    padding: 1rem 1rem 0.2rem 0;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid black;
+    text-align: left;
+
+    &::after{
+        position: relative;
+        display: inline-block;
+        content: "";
+        height: 15px;
+        background-color: black;
+    }
+}
+
+
+
+.borderDiv, .borderDivPadded {
+    border: 1px solid transparent;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+    box-sizing: border-box;
+    background-color: whitesmoke;
+    padding: 1rem;
+
+    & > table {
+        width: 100%;
+        
+        input, select {
+            width: 73%;
+        }
+
+        input[type=button] {
+            text-align: center;
+        }
+
+        input[type=submit] {
+            width: 30%;
+            text-align: center;
+        }
+
+        input[type=checkbox] {
+            width: auto;
+        }
+        
+    }
+}
+
+.content {
+    margin-bottom: 40px;
+    // display: flex;
+    // flex-wrap: wrap;
+    /* flex-direction: column; */
+
+    // table {
+    //     width: 99%;
+    // }
+
+    .subPageHeader, #alarmsTable {
+        width: 99%;
+        padding: 20px;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+    }
+
+
+    & > .borderDiv {
+        width: 48%;
+        padding-bottom: 40px;
+        margin-left: 4px;
+
+        @media screen and (max-width: 1080px) {
+            width: 99%;
+            float: none;
+        }
+    }
+
+    textarea#emportData, textarea#sqlString {
+        height: 500px;
+        width: 95%;
+        margin-bottom: 100px;
+    }
+
+}
+
+/* Form Components */
+.formLabel, .formLabelRequired, .formField, .formError{
+    @include font();
+
+    font-weight: 400;
+    width: 50%;
+    font-size: 1.2rem;
+    line-height: 2.0rem;
+    padding: .5rem;
+    
+    &::before {
+        content: "";
+        display: block;
+        height: 1px;
+        background-color: transparent;
+    }
+
+    .formShort {
+        display: block;
+    }
+        
+}
+
+input, select, textarea {
+    @include font();
+
+    box-sizing: content-box;
+    text-align: left;
+    min-width: 3.5rem;
+    
+    height: $icon_size;
+    line-height: 2rem;
+    font-size: 1.3rem;
+    padding: .2rem .5rem;
+    padding-right: 4px;
+    margin: .1rem .9rem;
+    border: 1px solid $primary_color_dark;
+
+    &::selection{
+        color: #263238;
+        padding: 1rem;
+        line-height: 2rem;
+    }
+
+    #watchListSelect {
+        padding: 0 1rem 5px;
+        margin-right: 3rem;
+    }
+
+}
+
+input[type=button], input[type=submit] {
+    text-align: center;
+}
+
+.labelDiv {
+    box-sizing: border-box;
+    transform: translateY(-$icon_size) translateX($icon_size);
+    padding: 5px 1rem;
+    font-size: 1rem;
+    font-weight: 300;
+
+    input {
+        margin: .5rem;
+        padding: 0 .5rem;
+        line-height: 10rem;
+    }
+}
+
+.link, a:link {
+    font-size: inherit;
+}
+
+/* Modern theme icons */
+img[src^="images/"]:not(#viewBackground) {
+    height: $icon_size;
+    width:  $icon_size;
+}
+
+/* User and UserProfile tab */
+#userProfileDetails, tbody#dataSources {
+
+    & > tr {
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+
+        & > td:nth-child(1) {
+            font-size: 1.3rem;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+    }
+
+    .formLabelRequired {
+        width: 4%;
+    }
+
+    .formField {
+        label {
+            float: left;
+        }
+
+        div {
+            margin-top: 10px;
+            padding: 15px;
+            min-height: 40px;
+            margin-bottom: 10px;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+
+            label {
+                display: block;
+                width: 40%;
+            }
+
+            input {
+                width: 40%;
+            }
+
+            .formLabelRequired {
+                font-weight: bolder;
+                font-size: 1.2rem;
+                padding-top: 0;
+            }
+        }
+    }
+
+}
+
+.horzSeparator {
+    background: #000;
+}
+
+/* Help tooltip */
+.dojoFloatingPane {
+
+    .dojoFloatingPaneTitleBar {
+        padding: 10px;
+    }
+
+    .dojoFloatingPaneTitleText {
+        color: white;
+    }
+
+}

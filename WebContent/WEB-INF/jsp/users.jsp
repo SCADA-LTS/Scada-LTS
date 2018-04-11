@@ -336,7 +336,7 @@
     }
   </script>
   
-  <table>
+  <table class="subPageHeader">
     <tr>
       <td valign="top" id="userList" style="display:none;">
         <div class="borderDiv">

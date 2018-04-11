@@ -4,7 +4,7 @@
 [![GPL-2.0](https://img.shields.io/npm/l/gb-json.svg?style=flat-square)](https://github.com/sdtabilit/Scada-LTS/blob/master-sdtabilit/LICENSE)
 [![](https://images.microbadger.com/badges/version/dockergb/scadalts-dev.svg)](https://microbadger.com/images/dockergb/scadalts-dev "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/dockergb/scadalts-dev.svg)](https://microbadger.com/images/dockergb/scadalts-dev "Get your own image badge on microbadger.com")
-[![Stories in Ready](https://badge.waffle.io/SCADA-LTS/Scada-LTS.svg?label=ready&title=Ready)](http://waffle.io/SCADA-LTS/Scada-LTS)
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/SCADA-LTS/User-Management.svg?columns=all)](https://waffle.io/SCADA-LTS/User-Management)
 
 Scada-LTS is an Open Source, web-based, multi-platform solution for building your own SCADA (Supervisory Control and Data Acquisiton) system.
 
@@ -33,7 +33,7 @@ Here is two of the several start options:
 * In the Docker CLI type in: `docker pull dockergb/scadalts-dev` to download repository.
 * Type in: `docker images` to check if repository is created. It should show "dockergb/scadalts" on the list.
 * To run Scada on Docker type in: 
-`docker run -it -p 81:8080 dockergb/scadalts-dev /root/start.sh`.
+``docker run -it -e DOCKER_HOST_IP=`docker-machine ip` -p 81:8080 dockergb/scadalts-dev /root/start.sh``.
 * Type in: `Get-NetIPAddress` and find IPAdrress for "DockerNAT" InterfaceAlias (You need a new CLI window to do it).
 * Type in docker IP adrress in the browser with port 81 and `/ScadaLTS/` sufix. Example:
 `http://10.0.75.2:81/ScadaLTS/`
@@ -70,6 +70,10 @@ In the process of making.
 ## Community
 
 * ScadaLTS tag is finally available on Stack Overflow. Feel free to ask questions - http://stackoverflow.com/questions/tagged/scadalts.
+
+## Tests
+
+[scada-lts.testquality.com](https://scada-lts.testquality.com)
 
 
 ## Versioning

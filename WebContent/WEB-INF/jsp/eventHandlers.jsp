@@ -528,7 +528,7 @@
     }
   </script>
   
-  <table class="borderDiv marB"><tr><td>
+  <table class="marB subPageHeader" id="eventHandlerHeader"><tr><td>
     <tag:img png="cog" title="eventHandlers.eventHandlers"/>
     <span class="smallTitle"><fmt:message key="eventHandlers.eventHandlers"/></span>
     <tag:help id="eventHandlers"/>
