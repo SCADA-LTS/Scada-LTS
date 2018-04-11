@@ -120,5 +120,5 @@ public class DataPointAPI {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
     }
-
 }
+

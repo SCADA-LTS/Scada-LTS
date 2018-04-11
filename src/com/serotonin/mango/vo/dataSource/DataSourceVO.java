@@ -18,16 +18,6 @@
  */
 package com.serotonin.mango.vo.dataSource;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import br.org.scadabr.vo.dataSource.alpha2.Alpha2DataSourceVO;
 import br.org.scadabr.vo.dataSource.asciiFile.ASCIIFileDataSourceVO;
 import br.org.scadabr.vo.dataSource.asciiSerial.ASCIISerialDataSourceVO;
@@ -39,13 +29,8 @@ import br.org.scadabr.vo.dataSource.iec101.IEC101SerialDataSourceVO;
 import br.org.scadabr.vo.dataSource.nodaves7.NodaveS7DataSourceVO;
 import br.org.scadabr.vo.dataSource.opc.OPCDataSourceVO;
 import cc.radiuino.scadabr.vo.datasource.radiuino.RadiuinoDataSourceVO;
-
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.json.JsonSerializable;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
@@ -82,6 +67,12 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.*;
 
 abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
 		Serializable, Cloneable, JsonSerializable, ChangeComparable<T> {
@@ -616,4 +607,5 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
 
 		return value;
 	}
+
 }

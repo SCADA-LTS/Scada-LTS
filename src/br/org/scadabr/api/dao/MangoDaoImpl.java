@@ -1,41 +1,13 @@
 package br.org.scadabr.api.dao;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import br.org.scadabr.api.constants.AlarmLevel;
-import br.org.scadabr.api.constants.DataSourceType;
-import br.org.scadabr.api.constants.ErrorCode;
-import br.org.scadabr.api.constants.EventType;
-import br.org.scadabr.api.constants.ModbusDataType;
-import br.org.scadabr.api.constants.ModbusRegisterRange;
-import br.org.scadabr.api.constants.QualityCode;
+import br.org.scadabr.api.constants.*;
 import br.org.scadabr.api.exception.ScadaBRAPIException;
 import br.org.scadabr.api.utils.APIConstants;
 import br.org.scadabr.api.utils.APIUtils;
-import br.org.scadabr.api.vo.APIError;
-import br.org.scadabr.api.vo.EventDefinition;
-import br.org.scadabr.api.vo.EventMessage;
-import br.org.scadabr.api.vo.EventNotification;
-import br.org.scadabr.api.vo.ItemInfo;
-import br.org.scadabr.api.vo.ItemStringValue;
-import br.org.scadabr.api.vo.ItemValue;
-import br.org.scadabr.api.vo.ModbusIPConfig;
-import br.org.scadabr.api.vo.ModbusPointConfig;
-import br.org.scadabr.api.vo.ModbusSerialConfig;
-
+import br.org.scadabr.api.vo.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.Common.TimePeriods;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -60,6 +32,8 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+
+import java.util.*;
 
 public class MangoDaoImpl implements ScadaBRAPIDao {
 	private User user;
@@ -767,6 +741,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 		List<Object> dataSources = new ArrayList<Object>();
 
+
 		for (DataSourceVO<?> dataSourceVO : allDataSources) {
 			if (dataSourceVO.getType() == dsType) {
 				if (Permissions.hasDataSourcePermission(user,
@@ -775,6 +750,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 				}
 			}
 		}
+
 
 		if (dataSources.size() == 0) {
 			APIError error = new APIError();

@@ -217,7 +217,7 @@
 	
 </script>
 
-	<table class="borderDiv" id="graphical">
+	<table class="subPageHeader" id="graphical">
 		<tr>
 			<td class="smallTitle"><fmt:message key="views.title" /> <tag:help
 					id="graphicalViews" /></td>
