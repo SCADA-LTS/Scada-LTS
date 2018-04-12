@@ -121,9 +121,24 @@
                                                                               jQuery("#textRendererBinaryOne").val(properties.textRenderer.oneLabel);
                                                                               jQuery("#textRendererBinaryOne").css('color', properties.textRenderer.oneColour);
                                                                               dojo.widget.byId("textRendererBinaryOneColour").selectedColour = properties.textRenderer.oneColour;
-                                                                           } else if (properties.def.name == "textRendererPlain") {
+                                                                           }
+
+                                                                           if (properties.def.name == "textRendererPlain") {
                                                                               jQuery("#textRendererPlainSuffix").val(properties.textRenderer.suffix);
                                                                            }
+
+                                                                           if (properties.def.name == "textRendererMultistate") {
+                                                                              for (var multistate in properties.textRenderer.multistateValues) {
+
+                                                                                   textRendererEditor.addMultistateValue(
+                                                                                        properties.textRenderer.multistateValues[multistate].key,
+                                                                                        properties.textRenderer.multistateValues[multistate].text,
+                                                                                        properties.textRenderer.multistateValues[multistate].colour
+                                                                                   );
+                                                                              }
+                                                                           }
+
+
 
                                                                          } else {
                                                                            alert("cancel");
