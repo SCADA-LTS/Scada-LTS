@@ -154,6 +154,11 @@
                                                                                 }
                                                                            }
 
+                                                                           if (properties.def.name == "textRendererTime") {
+                                                                                jQuery("#textRendererTimeFormat").val(properties.textRenderer.format);
+                                                                                jQuery("#textRendererTimeConversionExponent").val(properties.textRenderer.conversionExponent);
+                                                                           }
+
 
                                                                          } else {
                                                                            alert("cancel");
