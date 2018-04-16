@@ -95,9 +95,9 @@
                                                                            alert(JSON.stringify(properties));
                                                                            jQuery("#loggingType").val(properties.loggingType);
                                                                            jQuery("#purgePeriod").val(properties.intervalLoggingPeriod);
-                                                                           //jQuery("#purgeType").val(properties.intervalLoggingPeriodType);
                                                                            jQuery("#purgeType").val(properties.purgeType);
                                                                            jQuery("#defaultCacheSize").val(properties.defaultCacheSize);
+
                                                                            var currentTextRenderer = $("textRendererSelect").value;
 
                                                                            console.log(currentTextRenderer);
@@ -129,13 +129,22 @@
 
                                                                            if (properties.def.name == "textRendererMultistate") {
                                                                               for (var multistate in properties.textRenderer.multistateValues) {
-
                                                                                    textRendererEditor.addMultistateValue(
                                                                                         properties.textRenderer.multistateValues[multistate].key,
                                                                                         properties.textRenderer.multistateValues[multistate].text,
                                                                                         properties.textRenderer.multistateValues[multistate].colour
                                                                                    );
                                                                               }
+                                                                           }
+
+                                                                           if (properties.def.name == "textRendererAnalog") {
+                                                                                jQuery("#textRendererAnalogFormat").val(properties.textRenderer.format);
+                                                                                jQuery("#textRendererAnalogSuffix").val(properties.textRenderer.metaText);
+                                                                           }
+
+                                                                           if (properties.def.name == "") {
+                                                                                console.log(JSON.stringify(properties.textRenderer));
+
                                                                            }
 
 
