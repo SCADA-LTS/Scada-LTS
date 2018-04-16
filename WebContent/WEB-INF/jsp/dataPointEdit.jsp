@@ -142,11 +142,17 @@
                                                                                 jQuery("#textRendererAnalogSuffix").val(properties.textRenderer.metaText);
                                                                            }
 
-                                                                           if (properties.def.name == "") {
-                                                                                console.log(JSON.stringify(properties.textRenderer));
-
+                                                                           if (properties.def.name == "textRendererRange") {
+                                                                                jQuery("#textRendererRangeFormat").val(properties.textRenderer.format);
+                                                                                for (var range in properties.textRenderer.rangeValues) {
+                                                                                    textRendererEditor.addRangeValue(
+                                                                                        properties.textRenderer.rangeValues[range].from,
+                                                                                        properties.textRenderer.rangeValues[range].to,
+                                                                                        properties.textRenderer.rangeValues[range].text,
+                                                                                        properties.textRenderer.rangeValues[range].color
+                                                                                    );
+                                                                                }
                                                                            }
-
 
 
                                                                          } else {
