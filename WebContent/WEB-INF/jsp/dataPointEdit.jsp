@@ -160,8 +160,17 @@
                                                                                 jQuery("#textRendererTimeConversionExponent").val(properties.textRenderer.conversionExponent);
                                                                            }
 
+                                                                           if (properties.chartRenderer == null) {
+                                                                                alert("null");
+                                                                           } else  if (properties.chartRenderer.def.name == "chartRendererImage") {
+                                                                                alert("chartRendererImage");
+                                                                           } else if (properties.chartRenderer.def.name == "chartRendererStats") {
+                                                                                alert("chartRendererStats");
+                                                                           } else if (properties.chartRenderer.def.name == "chartRendererTable") {
+                                                                                alert("chartRendererTable");
+                                                                           }
+
                                                                            console.log(JSON.stringify(properties));
-                                                                           //jQuery("#chartRendererSelect").val(properties.textRenderer.
 
 
                                                                          } else {
