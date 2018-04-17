@@ -52,6 +52,15 @@
              </select>
          </div>
             <script>
+                   function showEditChartRender(charRenerer) {
+                      jQuery("#chartRendererNone").hide();
+                      jQuery("#chartRendererTable").hide();
+                      jQuery("#chartRendererImage").hide();
+                      jQuery("#chartRendererStats").hide();
+                      var selectorChartRenderer = "#" + charRenerer;
+                      jQuery(selectorChartRenderer).show();
+                   };
+
                   function baseOnExistingPoint(){
                        var idPointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].value;
                        var namePointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].text;
@@ -162,12 +171,20 @@
 
                                                                            if (properties.chartRenderer == null) {
                                                                                 alert("null");
+                                                                                jQuery("#chartRendererSelect").val("chartRendererNone");
+                                                                                showEditChartRender(chartRendererNone);
                                                                            } else  if (properties.chartRenderer.def.name == "chartRendererImage") {
                                                                                 alert("chartRendererImage");
+                                                                                jQuery("#chartRendererSelect").val("chartRendererImage");
+                                                                                showEditChartRender("chartRendererImage");
                                                                            } else if (properties.chartRenderer.def.name == "chartRendererStats") {
                                                                                 alert("chartRendererStats");
+                                                                                jQuery("#chartRendererSelect").val("chartRendererStats");
+                                                                                showEditChartRender("chartRendererStats");
                                                                            } else if (properties.chartRenderer.def.name == "chartRendererTable") {
                                                                                 alert("chartRendererTable");
+                                                                                jQuery("#chartRendererSelect").val("chartRendererTable");
+                                                                                showEditChartRender("chartRendererTable");
                                                                            }
 
                                                                            console.log(JSON.stringify(properties));
