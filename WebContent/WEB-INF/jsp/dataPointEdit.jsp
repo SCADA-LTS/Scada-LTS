@@ -85,6 +85,7 @@
                                                                                  + "</br>",
                                                                       buttons: {
                                                                         cancel: true,
+
                                                                         confirm: "Confirm",
                                                                         icon: "warning",
                                                                         buttons: true,
@@ -158,6 +159,9 @@
                                                                                 jQuery("#textRendererTimeFormat").val(properties.textRenderer.format);
                                                                                 jQuery("#textRendererTimeConversionExponent").val(properties.textRenderer.conversionExponent);
                                                                            }
+
+                                                                           console.log(JSON.stringify(properties));
+                                                                           //jQuery("#chartRendererSelect").val(properties.textRenderer.
 
 
                                                                          } else {

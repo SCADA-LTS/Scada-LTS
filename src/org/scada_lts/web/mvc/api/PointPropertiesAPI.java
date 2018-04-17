@@ -72,6 +72,7 @@ public class PointPropertiesAPI {
 					private String typeKey;
 					private TextRenderer textRenderer;
 					private ImplDefinition def;
+					private ChartRenderer chartRenderer;
 
 
 					public PropertiesPointToJSON(
@@ -82,7 +83,8 @@ public class PointPropertiesAPI {
 							int defaultCacheSize,
 							String typeKey,
 							TextRenderer textRenderer,
-							ImplDefinition def
+							ImplDefinition def,
+							ChartRenderer chartRenderer
 					) {
 						this.loggingType = loggingType;
 						this.intervalLoggingPeriod = intervalLoggingPeriod;
@@ -92,6 +94,7 @@ public class PointPropertiesAPI {
 						this.typeKey = typeKey;
 						this.textRenderer = textRenderer;
 						this.def = def;
+						this.chartRenderer = chartRenderer;
 					}
 
 					public int getLoggingType() { return loggingType;}
@@ -126,6 +129,9 @@ public class PointPropertiesAPI {
 
 					public void setDef(ImplDefinition def) { this.def = def;}
 
+					public ChartRenderer getChartRenderer() { return chartRenderer; }
+
+					public void setChartRenderer(ChartRenderer chartRenderer) { this.chartRenderer = chartRenderer; }
 				}
 
 				PropertiesPointToJSON p = new PropertiesPointToJSON(
@@ -136,7 +142,8 @@ public class PointPropertiesAPI {
 						dpvo.getDefaultCacheSize(),
 						dpvo.getTypeKey(),
 						dpvo.getTextRenderer(),
-						dpvo.getTextRenderer().getDef()
+						dpvo.getTextRenderer().getDef(),
+						dpvo.getChartRenderer()
 				);
 
 				json = mapper.writeValueAsString(p);
