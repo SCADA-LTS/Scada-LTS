@@ -186,10 +186,28 @@
         // Position and display the renderer editor.
         var pDim = getNodeBounds($("c"+ compId));
         var editDiv = $(editorId);
-        editDiv.style.left = (pDim.x + pDim.w + 20) +"px";
-        editDiv.style.top = (pDim.y + 10) +"px";
+        var eWidth = jQuery("#" + editorId).outerWidth(true);
+        var scrollL = document.documentElement.scrollLeft;
+        if (pDim.x < (screen.width - eWidth - pDim.w + scrollL - 10)) {
+            editDiv.style.left = (pDim.x + pDim.w + 5) +"px";
+            editDiv.style.top = (pDim.y) +"px";
+        } else {
+            editDiv.style.left = (pDim.x - eWidth - 5) + "px";
+            editDiv.style.top = (pDim.y) +"px";
+        }
+
     }
-    
+
+    function positionCustomEditor(compId, editorId) {
+        // Position and display the renderer editor.
+        var pDim = getNodeBounds($("c"+ compId));
+        var editDiv = $(editorId);
+        var eWidth = jQuery("#" + editorId).outerWidth(true);
+        var scrollL = document.documentElement.scrollLeft;
+        editDiv.style.left = (pDim.x) +"px";
+        editDiv.style.top = (pDim.y + pDim.h) +"px";
+    }
+
     function closeEditors() {
         settingsEditor.close();
         graphicRendererEditor.close();
@@ -340,8 +358,8 @@
 
 
   </script>
-
-  <form name="view" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
+  
+  <form name="view" class="view-edit-form" style="margin-bottom: 40px;" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
       <tr>
         <td valign="top">

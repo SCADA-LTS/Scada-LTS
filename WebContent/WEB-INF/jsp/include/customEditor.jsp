@@ -86,12 +86,11 @@
             // Set the renderers for the data type of this point view.
             ViewDwr.getViewComponent(compId, customEditor.setViewComponent);
             
-            positionEditor(compId, "customEditorPopup");
         };
-        
+
         this.setViewComponent = function(comp) {
             customEditor.typeName = comp.typeName;
-            
+
             // Update the data in the form.
             if (comp.typeName == "alarmlist") {
             	$set("customEditorAlarmListMinAlarmLevel",comp.minAlarmLevel);
@@ -102,11 +101,12 @@
                 $set("customEditorAlarmListTimestampColumn",comp.hideTimestampColumn);
                 $set("customEditorAlarmListInactivityColumn",comp.hideInactivityColumn);
                 $set("customEditorAlarmListAckColumn",comp.hideAckColumn);
-                
+
             } else if(comp.typeName == "yourCustomComponent") {
-                
+
             }
             show("customEditor_"+ comp.typeName);
+            positionCustomEditor(comp.id, "customEditorPopup");
             show("customEditorPopup");
         };
     

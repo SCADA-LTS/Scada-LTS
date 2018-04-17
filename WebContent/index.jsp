@@ -21,10 +21,10 @@
   <title>ScadaBR (powered by Mango)</title>
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="Copyright" content="&copy;©2009-2012 Fundação Certi, MCA Sistemas, Unis Sistemas, Conetec, Todos os direitos reservados."/>
+  <meta name="Copyright" content="&copy;ï¿½2009-2012 Fundaï¿½ï¿½o Certi, MCA Sistemas, Unis Sistemas, Conetec, Todos os direitos reservados."/>
   <meta name="DESCRIPTION" content="ScadaBR Software"/>
   <meta name="KEYWORDS" content="ScadaBR Software"/>
-  <link href="resources/common.css" type="text/css" rel="stylesheet"/>
+  <link id="pagestyle" href="resources/common.css" type="text/css" rel="stylesheet"/>
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
 </head>

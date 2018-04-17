@@ -359,17 +359,13 @@
 
   </script>
 
-  <script type="text/javascript">
-
-  </script>
-
   <style>body{ overflow:hidden;}</style>
 
   <div id="loader" style="background-color:rgba(0, 0, 0, 0.7); height: 100%; position:absolute; width:100%;">
   	<div style="color:#ffffff; font-size:30px; text-align:center; margin-top:40vh;"><img src="images/ajax-loader.gif" style="height:20px;"/> LOADING... </div>
   </div>
 
-  <table id="scriptsList">
+  <table id="scriptsList" class="subPageHeader">
     <tr>
       <td valign="top">
         <div class="borderDiv">

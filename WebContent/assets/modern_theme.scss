@@ -1,0 +1,27 @@
+$primary_color:         #77C055;
+$primary_color_accent:  #53F385;
+$primary_color_dark:    #4C5A50;
+$secondary_color:       #A053F3;
+$secondary_color_accent:#B98AC8;
+
+$background_color:       whitesmoke;
+$background_color_accent:#E8EAF6;
+
+$font_size: 18px;
+$icon_size: 32px;
+
+$theme_font_family: 'Lato', sans-serif;
+
+//old version css
+@import 'common_deprecated.css';
+
+//font
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&subset=latin-ext');
+
+//modules import
+@import 'modern_theme/main_theme';
+@import 'modern_theme/page_login';
+@import 'modern_theme/page_watch_list';
+@import 'modern_theme/table';
+
+$color: #90A4AE;

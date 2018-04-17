@@ -1,519 +1,201 @@
-/*
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+@import url(common_deprecated.css);
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400,700&subset=latin-ext");
+html body {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  color: #000000;
+  background-color: #E8EAF6;
+  margin: 0;
+  padding: 0; }
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+.controlsDiv {
+  padding: 5px;
+  background-color: transparent;
+  transform: translateX(-100%);
+  transition: all 0.3s ease-in-out; }
+  .controlsDiv table {
+    background-color: transparent; }
+    .controlsDiv table td {
+      color: red;
+      width: 2rem;
+      background-color: transparent; }
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-html > body {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	color: #000000;
-	background-color: #FFFFFF;
-	margin: 0px;
-	padding: 0px;
-}
-a, a:visited, a:link, .link {
-	/*color: #804000;*/
-	color: #414042;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	text-decoration: underline;
-	font-size: 11px;
-}
-a:hover {
-	/*color: #F07800;*/
-	color: #39B54A;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	text-decoration: underline;
-	font-size: 11px;
-}
-a.titleLink, a.titleLink:visited, a.titleLink:link {
-	font-size: 11px;
-	
-	font-weight: bold;
-}
-a.titleLink:hover {
-	font-size: 11px;
-	font-weight: bold;
-}
-.bigTitle {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	color: #333333;
-	font-size: 16px;
-	font-weight: bold;
-}
-.smallTitle {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	/*color: #804000;*/
-	color: #414042;
-	font-size: 13px;
-	font-weight: bold;
-}
-.projectTitle {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	/*color: #804000;*/
-	color: #FFFFFF !important;
-	font-size: 14px;
-	font-weight: bold;
-}
-.titlePadding {
-	padding:3px 3px 0px 3px;
-}
-.copyTitle {
-	/*color: #804000;*/
-	color: #414042;
-	font-size: 10px;
-}
-.bodyCopy {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	color: #333333;
-	font-size: 11px;
-}
-.footer {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	color: #333333;
-	font-size: 9px;
-}
-.ptr {
-	cursor: pointer;
-}
-
-
-/**
- * Header styles
- */
-#__header__alarmLevelText {
-	font-weight: bold;
-	font-size: 14px;
-	color: #25AB9B
-}
 #mainHeader {
-	padding-top: 5px;
-	background-color: #d6d5d5;
-}
-#subHeader {
-	background-color: #F0F0F0;
-	padding: 3px;
-}
+  background-color: #607D8B; }
 
+#logo {
+  padding: 1px 1em;
+  text-shadow: 1px 1px 3px red; }
 
-/**
- * List cell styles.
- */
-.rowHeader td, .smRowHeader td, .row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-}
-.rowHeader td, .smRowHeader td {
-	font-weight: bold;
-	color: #FFFFFF;
-	/*background-color: #F07800;*/
-	background-color: #424041;
-	text-align: center;
-    white-space: nowrap;
-}
-.rowHeader td {
-	padding: 3px 10px 3px 10px;
-}
-.smRowHeader td {
-	padding: 2px 3px 2px 3px;
-}
-a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:hover {
-	color: #FFFFFF;
-	text-decoration: underline;
-}
-.row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
-	color: #000000;
-}
-.row td, .rowAlt td, .rowAlt2 td {
-	padding: 3px;
-}
-.smRow td, .smRowAlt td {
-	padding: 0px 3px 0px 3px;
-}
-.row td, .smRow td {
-	background-color: #F0F0F0;
-}
-.rowAlt td, .smRowAlt td {
-	background-color: #DCDCDC;
-}
-.rowAlt2 td {
-	background-color: #FFFFFF;
-}
+img#logo {
+  opacity: 0.9; }
+
+.projectTitle {
+  font-family: "Lato", sans-serif;
+  font-size: 1rem; }
+
+.bigTitle {
+  color: #37474F;
+  font-size: 1.5rem;
+  font-weight: 700; }
 
 .borderDiv, .borderDivPadded {
-	/*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-}
-.borderDivPadded {
-	padding: 3px;
-}
-.marR {
-	margin-right: 5px;
-}
-.marB {
-	margin-bottom: 5px;
-}
+  border: 1px solid transparent;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+  box-sizing: border-box;
+  background-color: whitesmoke;
+  padding: 1rem; }
 
+.formLabel, .formLabelRequired, .formField, .formError {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 2rem;
+  padding: 0.5rem; }
+  .formLabel::before, .formLabelRequired::before, .formField::before, .formError::before {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: transparent; }
 
-
-/**
- * Form styles
- */
-.formLabel, .formLabelRequired, .formField, .formError, select, input, textarea {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-}
-.formLabel, .formLabelRequired {
-	color: #333333;
-	padding-right: 10px;
-	text-align: right;
-	white-space: nowrap;
-	padding-top: 5px;
-	vertical-align: top;
-}
-.formLabelRequired, .formError {
-	font-weight: bold;
-}
-.formField {
-	padding: 2px;
-	color: #333333;
-}
-.formError {
-	color: #FF0000;
-	padding-left: 10px;
-}
-select, input, textarea {
-	color: #333333;
-	/*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-	padding: 2px;
-}
-input[type="checkbox"], input[type="radio"] {
-	/*color: #F07800;*/
-	color: #39B54A;
-	border: 0;
-}
-.formVeryShort {
-	width: 30px;
-}
-.formShort {
-	width: 50px;
-}
-.formLong {
-	width: 250px;
-}
-.formDisabled {
-	border: 1px solid #D0D0D0;
-}
-input[type="submit"], input[type="button"] {
-	overflow: visible;
-}
-
-
-
-/**
- * View styles
- */
-.controlsDiv {
-    position: absolute;
-    visibility: hidden;
-    left: 0;
-    top: -1px;
-    z-index: 1;
-    margin: 1px 0px 1px 0px;
-    padding: 0;
-    background-color: #FFFFFF;
-}
-.controlsDiv table {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    background-color: #FFFFFF;
-}
-.controlsDiv td {
-    list-style: none;
-    margin: 1px;
-    padding: 0;
-    /*background-color: #F8BB00;*/
-    background-color: #FFFFFF;
-    width: 16px;
-    height: 16px;
-}
-.controlsDiv td div, .controlContent {
-    padding: 1px 5px 1px 5px;
-    margin: 0px;
-    /*background: #F8BB00;*/
-    background: #FFFFFF;
-    white-space: nowrap;
-    text-align: left;
-	font-size: 10px;
-	font-weight: normal;
-    /*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-    position: absolute;
-    visibility:hidden;
-    left: 15px;
-    top: 0px;
-}
-
-.labelDiv, .windowDiv {
-    position:absolute;
-    padding:1px 5px 1px 5px;
-    margin:0px;
-    /*background: #F8BB00;*/
-    background: #FFFFFF;
-    white-space:nowrap;
-    text-align:left;
-	font-size: 10px;
-	font-weight: normal;
-	z-index: 20;
-}
-.labelDiv {
-    /*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-}
-.windowDiv {
-	/*border: 1px outset #F07800;*/
-	border: 1px outset #39B54A;
-}
-.labelDiv a, .windowDiv a {
-	font-size: 10px;
-}
-.imageDiv {
-    z-index:10;
-    left:18px;
-    position:absolute;
-    padding:0px;
-    margin:0px;
-    /*background: #F8BB00;*/
-    background: #FFFFFF;
-    white-space:nowrap;
-    /*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-}
-.ovrflw {
-    background:inherit;
-    background:expression(this.parentNode.style.background);
-    color:inherit;
-    color:expression(this.parentNode.style.color);
-    font:inherit;
-    font:expression(this.parentNode.style.font);
-    width:300px;
-   	border-width:0 1px 0 1px;
-   	border-style:solid;
-   	/*border-color:#F07800;*/
-   	border-color:#39B54A;
-}
 #viewContent {
-	position:relative;
-	margin: 0px;
-	padding: 0px;
-}
-#viewContent img {
-	display: block;
-	margin: 0px;
-	padding: 0px;
-}
-.componentMin {
-	/*background-color: #F8BB00;*/
-    background-color: #FFFFFF;
-    top:0px;
-    left:0px;
-    margin:0px;
-    padding:0px;
-    width:16px;
-    height:16px;
-}
-.componentInput {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10px;
-	color: #333333;
-	/*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-	padding: 1px;
-}
-.simpleRenderer, .simpleRenderer2 {
-    /*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-    padding:1px 5px 1px 5px;
-    margin:0px;
-    /*background: #F8BB00;*/
-    background: #FFFFFF;
-    white-space:nowrap;
-    text-align:left;
-	font-size: 10px;
-	font-weight: normal;
-}
-.simpleRenderer {
-	line-height:16px;
-}
-.infoData {
-	color: #FF0000;
-}
-.horzSeparator {
-	height: 1px;
-	background: #699D2E;
-	padding: 0px;
-}
-.viewChangeBkgd {
-	background: #D8E2CC;
-}
+  background-color: red; }
 
+#viewBackground {
+  background-color: blue; }
 
-/**
- * Absmiddle workaround
- */
-span.absmiddle img {
-	padding: 0;
-	margin: 0;
-	vertical-align: middle;
-/*	display: inline-block; */
-	display: inline;
-}
+a img {
+  margin: 0;
+  padding: 0.2rem;
+  height: 44px;
+  transition: all 0.3s ease-in-out; }
+  a img:hover {
+    background: rgba(96, 125, 139, 0.51); }
+  a img:focus {
+    background-color: red; }
 
+img.ptr {
+  margin: 0;
+  padding: 0.2rem;
+  height: 44px;
+  transition: all 0.3s ease-in-out; }
+  img.ptr:hover {
+    background: rgba(96, 125, 139, 0.51); }
+  img.ptr:focus {
+    background-color: red; }
 
-/**
- * Documentation float pane style overrides.
- */
-html > body .dojoFloatingPaneTitleBar {
-    background-color: #424041;
-}
-html > body .dojoFloatingPaneCloseIcon {
-    background-image: url(../images/cross_doc.png);
-    cursor: pointer;
-}
-html > body .dojoFloatingPaneClient {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10px;
-}
-html > body .dojoFloatingPaneClient p, #help p {
-	padding: 0px;
-	margin: 0px 0px 10px 0px;
-}
-#help h1 {
-	/*color: #804000;*/
-	color: #414042;
-	font-size: 15px;
-	font-weight: bold;
-	padding: 0px;
-	margin: 20px 0px 10px 0px;
-}
-html > body .dojoFloatingPaneClient h1, #help h2 {
-	padding: 0px;
-	margin: 0px 0px 10px 0px;
-	font-size: 13px;
-	font-weight: bold;
-}
-html > body .dojoFloatingPaneClient img, #help img {
-	vertical-align: bottom;
-}
+input, select, textarea {
+  font-family: "Lato", sans-serif;
+  box-sizing: content-box;
+  text-align: right;
+  min-width: 3.5rem;
+  height: 44px;
+  line-height: 2rem;
+  font-size: 1rem;
+  padding: 0.4rem 0.5rem;
+  margin: 0.1rem 0.9rem;
+  border: 1px solid #80CBC4; }
+  input::selection, select::selection, textarea::selection {
+    color: #263238;
+    padding: 1rem;
+    line-height: 2rem; }
 
-/**
- * Common tree styling
- */
-html > body .dojoTreeNodeLabelSelected {
-	/*background-color: #F07800;*/
-    background-color: #39B54A;
-    color: #FFFFFF;
-    padding: 2px 3px 3px 2px;
-}
+select#watchListSelect {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  height: 44px;
+  padding: 0 1rem 5px;
+  margin-right: 3rem;
+  color: #1B5E20; }
 
+#wlEdit {
+  font-family: "Lato", sans-serif;
+  font-size: 1.2rem;
+  padding: 1rem 1rem;
+  transform: translateY(40%); }
+  #wlEdit .labelDiv {
+    color: blue; }
+  #wlEdit a {
+    padding: 0.5rem 1rem;
+    background-color: #00C853;
+    font-size: 1rem;
+    text-decoration: none; }
+    #wlEdit a:hover {
+      background-color: #1B5E20; }
+  #wlEdit div {
+    margin: 1rem; }
+  #wlEdit input {
+    font-family: "Lato", sans-serif;
+    margin: 1rem 0; }
 
-/**
- * Styles for weekly 15 minute interval schedules.
- */
-.qoff {
-    /*background-color: #B4CE96;*/
-    background-color: #FF4000;
-}
-.qon {
-    /*background-color: #699D2E;*/
-    background-color: #B4CE96;
-}
+#wlEditImg {
+  height: 44px; }
 
-.qreg {
-    border: 1px solid #699D2E;
-}
-.qhlt {
-    border: 1px solid #FF9D2E;
-}
+#newWatchListName {
+  font-family: "Lato", sans-serif; }
 
-.hreg {
-    border: 1px solid #FFFFFF;
-}
-.hhlt {
-    border: 1px solid #FF9D2E;
-}
+#subHeader > tbody > tr > td:nth-child(2) span.copyTitle {
+  color: #263238;
+  font-size: 1rem;
+  text-transform: uppercase; }
+  #subHeader > tbody > tr > td:nth-child(2) span.copyTitle b {
+    text-transform: none;
+    font-size: 1.2rem;
+    padding-right: 2rem; }
 
-.selectItem {
-	width:100%;
-}
+.smallTitle {
+  font-family: "Lato", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 300;
+  line-height: 3rem;
+  text-transform: uppercase;
+  padding: 1rem 1rem 0.2rem 0;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid black;
+  text-align: left; }
+  .smallTitle::after {
+    position: relative;
+    display: inline-block;
+    content: "";
+    height: 15px;
+    background-color: black; }
 
-.selectItem:hover {
-	background-color: rgb(96, 154, 68);
-}
+.dojoTreeNode img {
+  background-size: cover;
+  min-height: 44px;
+  min-width: 44px; }
 
-.windowDiv .selectDiv {
-	display:none;
-	max-height:100px;
-	overflow:auto;
-}
+span.dojoTreeNodeLabel span {
+  font-family: "Lato", sans-serif;
+  font-size: 1rem; }
 
-/**
- * Enhanced image chart
- */
-.enhancedImageChart {
-	background-color: white;
-}
-.enhancedImageChartLegend {
-	position:static !important;
-	background-color: white;	
-	padding: 5px;
-	display: inline-block;
-}
-.enhancedImageChartLegend > div {
-	margin-top: 2px;
-}
-.enhancedImageChartConfig {
-	position: absolute !important;
-	top: 0px !important;
-	left: 100% !important;
-	float: right;
-	padding-left: 5px;
-	display: block;
-	background-color: white;
-	width: 240px;
-	border: 1px outset #39B54A;
-	z-index: 1;	
-}
+#subHeader > tbody > tr > td:nth-child(2) > div > img {
+  margin: 0 1rem;
+  padding: 0; }
 
-.enhancedImageChartConfig > div {
-	width: 100%;
-	display: inline-block;
-}
-.enhancedImageChartConfig div.margin1{
-	margin-top: 15px;
-}
-.enhancedImageChartConfig div.margin2{
-	margin: 5px 0px;
-}
-.enhancedImageChartConfig label.margin{
-	margin: 0px 5px;
-}
-.enhancedImageChartConfig span{
-	font-weight: bold;
-	margin: 5px 0;
-}
+#treeDiv img {
+  height: 44px; }
+#treeDiv span {
+  font-family: "Lato", sans-serif;
+  color: inherit;
+  margin: 0; }
 
+span#__header__alarmLevelText {
+  font-family: "Lato", sans-serif;
+  color: white;
+  line-height: 2rem;
+  font-weight: 300;
+  font-size: 1rem; }
+
+#__header__alarmLevelImg {
+  transform: translateY(25%); }
+
+#imageChartDiv img {
+  width: 100%;
+  height: calc(100% - 4rem); }
+
+html {
+  background-color: #607d8b; }
+
+/*# sourceMappingURL=common.css.map */

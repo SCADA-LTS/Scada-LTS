@@ -57,7 +57,7 @@ public class MobileWatchListController extends WatchListController {
             int watchListId = Integer.parseInt(request.getParameter("watchListId"));
 
             WatchList watchList = watchListDao.getWatchList(watchListId);
-            Permissions.ensureWatchListPermission(user, watchList);
+//            Permissions.ensureWatchListPermission(user, watchList);
             user.setSelectedWatchList(watchListId);
             watchListDao.saveSelectedWatchList(user.getId(), watchList.getId());
         }

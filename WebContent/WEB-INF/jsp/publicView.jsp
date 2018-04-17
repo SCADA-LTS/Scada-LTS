@@ -26,7 +26,7 @@
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
-  <link href="resources/common.css" type="text/css" rel="stylesheet"/>
+  <link id="pagestyle" href="resources/common.css" type="text/css" rel="stylesheet"/>
   
   <!-- Script -->
   <script type="text/javascript">var djConfig = { isDebug: true };</script>
