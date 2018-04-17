@@ -1,0 +1,373 @@
+@import url(common_deprecated.css);
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400,700&subset=latin-ext");
+html {
+  height: 100%; }
+  html body {
+    height: 100%;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    color: #000000;
+    background-color: whitesmoke;
+    margin: 0;
+    padding: 0; }
+    html body .footer {
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      padding: 12px;
+      color: white;
+      background-color: #4C5A50; }
+
+/* Hoverable icons */
+img.ptr {
+  margin: 0;
+  padding: .2rem;
+  height: 32px;
+  transition: all .3s ease-in-out; }
+  img.ptr:hover {
+    background: rgba(76, 90, 80, 0.85);
+    border-radius: 5px; }
+  img.ptr:focus {
+    background-color: red; }
+
+/* Header Section */
+#logo {
+  padding: 1px 1em; }
+
+#mainHeader {
+  background-color: whitesmoke; }
+
+span#__header__alarmLevelText {
+  font-family: 'Lato', sans-serif;
+  color: black;
+  line-height: 2rem;
+  font-weight: 300;
+  font-size: 1rem; }
+
+#__header__alarmLevelImg {
+  transform: translateY(25%); }
+
+#subHeader {
+  margin-bottom: 5px;
+  background-color: rgba(76, 90, 80, 0.75);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.33); }
+  #subHeader tbody > tr > td:nth-child(2) {
+    text-align: right; }
+    #subHeader tbody > tr > td:nth-child(2) span {
+      color: white;
+      font-size: 1rem;
+      text-transform: uppercase; }
+      #subHeader tbody > tr > td:nth-child(2) span b {
+        text-transform: none;
+        font-size: 1.2rem; }
+
+.projectTitle {
+  color: black !important;
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem; }
+
+/* Language and style dropdown */
+#localeEdit, #styleEdit {
+  margin-left: -100px;
+  margin-top: -1rem;
+  padding: 1rem 0.5rem 0; }
+  #localeEdit a, #styleEdit a {
+    margin: -0.5rem;
+    padding: 8px 2rem;
+    display: block;
+    line-height: 1rem;
+    text-decoration: none;
+    transform: translateX(0);
+    font-size: 1rem;
+    transition: transform 0.2s ease-in-out; }
+    #localeEdit a:hover, #styleEdit a:hover {
+      color: #53F385;
+      transform: translateX(10px); }
+
+/* Default card/panel component */
+.smallTitle {
+  font-family: 'Lato' ,sans-serif;
+  font-size: 1.4rem;
+  font-weight: 300;
+  line-height: 3rem;
+  text-transform: uppercase;
+  padding: 1rem 1rem 0.2rem 0;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid black;
+  text-align: left; }
+  .smallTitle::after {
+    position: relative;
+    display: inline-block;
+    content: "";
+    height: 15px;
+    background-color: black; }
+
+.borderDiv, .borderDivPadded {
+  border: 1px solid transparent;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13);
+  box-sizing: border-box;
+  background-color: whitesmoke;
+  padding: 1rem; }
+  .borderDiv > table, .borderDivPadded > table {
+    width: 100%; }
+    .borderDiv > table input, .borderDiv > table select, .borderDivPadded > table input, .borderDivPadded > table select {
+      width: 73%; }
+    .borderDiv > table input[type=button], .borderDivPadded > table input[type=button] {
+      text-align: center; }
+    .borderDiv > table input[type=submit], .borderDivPadded > table input[type=submit] {
+      width: 30%;
+      text-align: center; }
+    .borderDiv > table input[type=checkbox], .borderDivPadded > table input[type=checkbox] {
+      width: auto; }
+
+.content {
+  margin-bottom: 40px;
+  /* flex-direction: column; */ }
+  .content .subPageHeader, .content #alarmsTable {
+    width: 99%;
+    padding: 20px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13); }
+  .content > .borderDiv {
+    width: 48%;
+    padding-bottom: 40px;
+    margin-left: 4px; }
+    @media screen and (max-width: 1080px) {
+      .content > .borderDiv {
+        width: 99%;
+        float: none; } }
+  .content textarea#emportData, .content textarea#sqlString {
+    height: 500px;
+    width: 95%;
+    margin-bottom: 100px; }
+
+/* Form Components */
+.formLabel, .formLabelRequired, .formField, .formError {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  width: 50%;
+  font-size: 1.2rem;
+  line-height: 2.0rem;
+  padding: .5rem; }
+  .formLabel::before, .formLabelRequired::before, .formField::before, .formError::before {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: transparent; }
+  .formLabel .formShort, .formLabelRequired .formShort, .formField .formShort, .formError .formShort {
+    display: block; }
+
+input, select, textarea {
+  font-family: "Lato", sans-serif;
+  box-sizing: content-box;
+  text-align: left;
+  min-width: 3.5rem;
+  height: 32px;
+  line-height: 2rem;
+  font-size: 1.3rem;
+  padding: .2rem .5rem;
+  padding-right: 4px;
+  margin: .1rem .9rem;
+  border: 1px solid #4C5A50; }
+  input::selection, select::selection, textarea::selection {
+    color: #263238;
+    padding: 1rem;
+    line-height: 2rem; }
+  input #watchListSelect, select #watchListSelect, textarea #watchListSelect {
+    padding: 0 1rem 5px;
+    margin-right: 3rem; }
+
+input[type=button], input[type=submit] {
+  text-align: center; }
+
+.labelDiv {
+  box-sizing: border-box;
+  transform: translateY(-32px) translateX(32px);
+  padding: 5px 1rem;
+  font-size: 1rem;
+  font-weight: 300; }
+  .labelDiv input {
+    margin: .5rem;
+    padding: 0 .5rem;
+    line-height: 10rem; }
+
+.link, a:link {
+  font-size: inherit; }
+
+/* Modern theme icons */
+img[src^="images/"]:not(#viewBackground) {
+  height: 32px;
+  width: 32px; }
+
+/* User and UserProfile tab */
+#userProfileDetails > tr, tbody#dataSources > tr {
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13); }
+  #userProfileDetails > tr > td:nth-child(1), tbody#dataSources > tr > td:nth-child(1) {
+    font-size: 1.3rem;
+    text-decoration: underline;
+    font-weight: bold; }
+#userProfileDetails .formLabelRequired, tbody#dataSources .formLabelRequired {
+  width: 4%; }
+#userProfileDetails .formField label, tbody#dataSources .formField label {
+  float: left; }
+#userProfileDetails .formField div, tbody#dataSources .formField div {
+  margin-top: 10px;
+  padding: 15px;
+  min-height: 40px;
+  margin-bottom: 10px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.13); }
+  #userProfileDetails .formField div label, tbody#dataSources .formField div label {
+    display: block;
+    width: 40%; }
+  #userProfileDetails .formField div input, tbody#dataSources .formField div input {
+    width: 40%; }
+  #userProfileDetails .formField div .formLabelRequired, tbody#dataSources .formField div .formLabelRequired {
+    font-weight: bolder;
+    font-size: 1.2rem;
+    padding-top: 0; }
+
+.horzSeparator {
+  background: #000; }
+
+/* Help tooltip */
+.dojoFloatingPane .dojoFloatingPaneTitleBar {
+  padding: 10px; }
+.dojoFloatingPane .dojoFloatingPaneTitleText {
+  color: white; }
+
+#subHeader .labelDiv {
+  transform: translateX(-16px) translateY(48px); }
+
+div.content .login-container {
+  background-image: url("./images/Background.jpg");
+  background-size: cover;
+  height: calc(100vh - 166px);
+  margin: auto;
+  text-align: center; }
+  div.content .login-container .login-browser {
+    display: block;
+    position: relative;
+    top: 66px;
+    left: 50%;
+    color: white;
+    transform: translateX(-50%);
+    opacity: 0.85; }
+  div.content .login-container .login-box {
+    position: relative;
+    padding: 5rem;
+    padding-bottom: 3rem;
+    width: 600px;
+    top: calc(50vh - 100px);
+    left: 50vw;
+    transform: translateY(-50%) translateX(-50%);
+    background-color: rgba(232, 234, 246, 0.75);
+    box-shadow: 4px 8px 14px 1px rgba(0, 0, 0, 0.5);
+    border: 1px solid black;
+    text-align: center;
+    opacity: 0.9; }
+    div.content .login-container .login-box .formLabelRequired {
+      margin-bottom: -0.5rem;
+      font-size: 1.2rem;
+      font-weight: bolder;
+      text-align: left;
+      text-transform: uppercase; }
+    div.content .login-container .login-box .formField {
+      width: 100%;
+      text-align: left;
+      font-size: 1.3rem;
+      font-weight: bold; }
+      div.content .login-container .login-box .formField input {
+        text-align: left;
+        width: 90%; }
+    div.content .login-container .login-box .form-box {
+      width: 100%; }
+    div.content .login-container .login-box .login-button {
+      width: 100%;
+      margin: auto; }
+      div.content .login-container .login-box .login-button input {
+        width: 180px;
+        margin-top: 3rem;
+        padding: 4px 65px;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        background-color: rgba(119, 192, 85, 0.4);
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        transition: all 0.3s ease-in-out; }
+        div.content .login-container .login-box .login-button input:hover {
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.24);
+          background-color: #77C055;
+          border: 1px solid rgba(0, 0, 0, 0.55);
+          cursor: pointer; }
+  div.content .login-container .ptr {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    display: none; }
+
+.dojoSplitPane {
+  overflow-y: visible;
+  height: 100%; }
+
+#wlEdit {
+  font-family: "Lato", sans-serif;
+  font-size: 1.2rem;
+  padding: 1rem 1rem;
+  transform: translateY(40%); }
+  #wlEdit .labelDiv {
+    color: blue; }
+  #wlEdit a {
+    padding: .5rem 1rem;
+    background-color: #00C853;
+    font-size: 1rem;
+    text-decoration: none; }
+    #wlEdit a:hover {
+      background-color: #1B5E20; }
+  #wlEdit div {
+    margin: 1rem; }
+  #wlEdit input {
+    margin: 1rem 0; }
+
+#newWatchListName {
+  font-family: "Lato", sans-serif; }
+
+.dojoTreeNode img {
+  background-size: cover;
+  min-height: 32px;
+  min-width: 32px; }
+
+span.dojoTreeNodeLabel span {
+  font-family: "Lato", sans-serif;
+  font-size: 1rem; }
+
+#treeDiv img {
+  height: 32px; }
+#treeDiv span {
+  font-family: 'Lato' , sans-serif;
+  color: inherit;
+  margin: 0;
+  margin-right: 10px; }
+
+#imageChartDiv img {
+  width: 100%;
+  height: calc(100% - 4rem); }
+
+#chartContainer table tr td label {
+  float: left;
+  margin-left: 12px; }
+
+.rowHeader td, .smRowHeader td, .row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  color: #000000;
+  text-align: center; }
+
+.rowHeader td, .smRowHeader td {
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #FFFFFF;
+  background-color: #1d89fa;
+  text-align: center;
+  white-space: nowrap;
+  height: 2rem; }
+
+/*# sourceMappingURL=common.css.map */

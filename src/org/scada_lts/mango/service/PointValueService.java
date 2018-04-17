@@ -271,11 +271,11 @@ public class PointValueService implements MangoPointValues {
 		if (svalue != null || source != null) {
 			Integer sourceType = null, sourceId = null;
 			if (source != null) {
-				sourceType = source.getSetPointSourceType();
-				sourceId = source.getSetPointSourceId();
+				sourceType 	= source.getSetPointSourceType();
+				sourceId 	= source.getSetPointSourceId();
 			} else {
 				sourceType 	= SetPointSource.Types.UNKNOWN;
-				sourceId 	= new Integer(1);
+				sourceId	= new Integer(1);
 			}
 
 			String shortString = null;

@@ -44,58 +44,53 @@
     }
   </script>
   
-  <table cellspacing="0" cellpadding="0" border="0">
-    <tr>
-      <td>
-        <form action="login.htm" method="post" onclick="nag()">
-          <table>
-          
-              <tr>
-                <td class="formLabelRequired"><fmt:message key="login.userId"/></td>
-                <td class="formField">
-                  <input id="username" type="text" name="username" value="${login.username}" maxlength="40"/>
-                </td>
-              </tr>
-            
-              <tr>
-                <td class="formLabelRequired"><fmt:message key="login.password"/></td>
-                <td class="formField">
-                  <input id="password" type="password" name="password" value="${login.password}" maxlength="20"/>
-                </td>
-              </tr>
-                
-                <td colspan="3" class="formError">
+  <div class="login-container" style="margin: 100px auto 10px auto; background-color: #77c055; width: 290px; border-radius: 10px;">
+
+      <div class="login-browser" style="text-align: center; padding-top: 10px;">
+
+          <b><span id="browser"><fmt:message key="login.unknownBrowser"/></span></b>
+          <img id="browserImg" src="images/magnifier.png" style="height: 10px;width: auto;"/>
+          <span id="okMsg" style="display:none"><fmt:message key="login.supportedBrowser"/></span>
+          <span id="warnMsg" style="display:none"><fmt:message key="login.unsupportedBrowser"/></span>
+      </div>
+
+
+      <div class="login-box">
+        <form action="login.htm" method="post" onclick="nag()" style="margin: 0 auto; width:200px;">
+
+
+              <div class="form-box">
+                <div class="formLabelRequired" style="color: #000000; font-size: 14px;"><fmt:message key="login.userId"/></div>
+                <div class="formField">
+                  <input id="username" type="text" name="username" value="${login.username}" maxlength="40" style="width: 200px; height: 20px;"/>
+                </div>
+              </div>
+
+              <div class="form-box">
+                <div class="formLabelRequired" style="color: #000000; font-size: 14px;"><fmt:message key="login.password"/></div>
+                <div class="formField">
+                  <input id="password" type="password" name="password" value="${login.password}" maxlength="20" style="width: 200px; height: 20px;"/>
+                </div>
+              </div>
+
+                <div class="formError">
                   <c:forEach items="${errors}" var="error">
                     <fmt:message key="${error}"/><br/>
                   </c:forEach>
-                </td>
-                            
-            <tr>
-              <td colspan="2" align="center">
-                <input type="submit" value="<fmt:message key="login.loginButton"/>"/>
+                </div>
+
+
+              <div class="login-button" align="center">
+                <input type="submit" value="<fmt:message key="login.loginButton"/>"  style="padding: 5px 20px; margin-left:30%; margin-top:10px;"/>
                 <tag:help id="welcomeToMango"/>
-              </td>
-              <td></td>
-            </tr>
-          </table>
+              </div>
+
+
+
         </form>
         <br/>
-      </td>
-      <td valign="top">
-        <table>
-          <tr>
-            <td valign="top"><img id="browserImg" src="images/magnifier.png"/></td>
-            <td><b><span id="browser"><fmt:message key="login.unknownBrowser"/></span></b></td>
-          </tr>
-          <tr>
-            <td valign="top" colspan="2">
-              <span id="okMsg" style="display:none"><fmt:message key="login.supportedBrowser"/></span>
-              <span id="warnMsg" style="display:none"><fmt:message key="login.unsupportedBrowser"/></span>
-            </td>
-          </tr>
-        </table>
-        <br/><br/>
-      </td>
-    </tr>
-  </table>
+      </div>
+
+
+  </div>
 </tag:page>

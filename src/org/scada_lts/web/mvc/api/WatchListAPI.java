@@ -46,6 +46,70 @@ public class WatchListAPI {
 	
 	@Resource
 	private DataPointService dataPointService;
+
+	@RequestMapping(value = "/api/watchlist/getAll", method = RequestMethod.GET)
+	public ResponseEntity<String> getAll(HttpServletRequest request) {
+		LOG.info("/api/watchlist/getAll");
+		try {
+			User user = Common.getUser(request);
+
+			if (user != null) {
+
+				class WatchListJSON implements Serializable{
+					private long id;
+					private String xid;
+					private String name;
+					WatchListJSON(long id,String xid,String name) {
+						this.setId(id);
+						this.setXid(xid);
+						this.setName(name);
+					}
+
+					public long getId() { return id; }
+					public void setId(long id) { this.id = id; }
+					public String getXid() {
+						return xid;
+					}
+					public void setXid(String xid) {
+						this.xid = xid;
+					}
+					public String getName() {
+						return name;
+					}
+					public void setName(String name) {
+						this.name = name;
+					}
+				}
+
+				int userId = user.getId();
+				List<WatchList> lstWL;
+				if (userId == ID_USER_AMIN) {
+					lstWL = watchListService.getWatchLists();
+				} else {
+					int profileId = user.getUserProfile();
+					lstWL = watchListService.getWatchLists(userId, profileId);
+				}
+
+				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();
+				for (WatchList wl:lstWL) {
+					WatchListJSON wlJ = new WatchListJSON(wl.getId(), wl.getXid(), wl.getName());
+					lst.add(wlJ);
+				}
+
+				String json = null;
+				ObjectMapper mapper = new ObjectMapper();
+				json = mapper.writeValueAsString(lst);
+
+				return new ResponseEntity<String>(json,HttpStatus.OK);
+			}
+
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 
 	@RequestMapping(value = "/api/watchlist/getNames", method = RequestMethod.GET)
