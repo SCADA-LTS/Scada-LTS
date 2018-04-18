@@ -79,6 +79,8 @@
 
                        var arrDictPurge = ["","","","","day(s)", "week(s)", "month(s)", "year(s)"];
 
+                       var arrDictChartRendererImageTimePeriod = ["","","minute(s)", "hour(s)", "day(s)", "week(s)", "month(s)"];
+
                        jQuery.ajax({
                             type: "GET",
                             dataType: "json",
@@ -170,19 +172,21 @@
                                                                            }
 
                                                                            if (properties.chartRenderer == null) {
-                                                                                alert("null");
                                                                                 jQuery("#chartRendererSelect").val("chartRendererNone");
                                                                                 showEditChartRender(chartRendererNone);
                                                                            } else  if (properties.chartRenderer.def.name == "chartRendererImage") {
-                                                                                alert("chartRendererImage");
                                                                                 jQuery("#chartRendererSelect").val("chartRendererImage");
                                                                                 showEditChartRender("chartRendererImage");
+                                                                                jQuery("#chartRendererImageNumberOfPeriods").val(properties.chartRenderer.numberOfPeriods);
+                                                                                jQuery("#chartRendererImageTimePeriod").val(properties.chartRenderer.timePeriod);
+
+                                                                                //arrDictChartRendererImageTimePeriod
                                                                            } else if (properties.chartRenderer.def.name == "chartRendererStats") {
-                                                                                alert("chartRendererStats");
                                                                                 jQuery("#chartRendererSelect").val("chartRendererStats");
                                                                                 showEditChartRender("chartRendererStats");
+
+                                                                                
                                                                            } else if (properties.chartRenderer.def.name == "chartRendererTable") {
-                                                                                alert("chartRendererTable");
                                                                                 jQuery("#chartRendererSelect").val("chartRendererTable");
                                                                                 showEditChartRender("chartRendererTable");
                                                                            }
