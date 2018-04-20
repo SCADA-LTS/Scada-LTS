@@ -295,9 +295,9 @@
                         spanText.innerHTML = alarm.message;
                         div.appendChild(spanTime);
                         div.appendChild(spanText);
-                        div.style.paddingLeft = "30px";
-                        div.getElementsByTagName('span')[0].style.marginLeft = "-30px";
-                        div.getElementsByTagName('span')[0].style.color = "black";
+                        div.style.display = "table-row";
+                        div.getElementsByTagName('span')[0].style.display = "table-cell";
+                        div.getElementsByTagName('span')[1].style.display = "table-cell";
 
                         return div;
                     }],
