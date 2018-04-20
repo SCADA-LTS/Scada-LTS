@@ -27,12 +27,7 @@ import java.nio.charset.IllegalCharsetNameException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -382,6 +377,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		List<EventInstance> events = new EventDao()
 				.getPendingEventsForDataSource(ds.getId(), Common.getUser()
 						.getId());
+		Collections.sort(events, new Comparator<EventInstance>() {
+			@Override
+			public int compare(EventInstance lhs, EventInstance rhs) {
+				// -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+				return lhs.getActiveTimestamp() > rhs.getActiveTimestamp() ? -1 : (lhs.getActiveTimestamp() < rhs.getActiveTimestamp()) ? 1 : 0;
+			}
+		});
 		List<EventInstanceBean> beans = new ArrayList<EventInstanceBean>();
 		if (events != null) {
 			for (EventInstance event : events)

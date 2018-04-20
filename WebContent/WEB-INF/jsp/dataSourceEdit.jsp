@@ -289,9 +289,15 @@
                         setAlarmLevelImg(alarm.alarmLevel, img);
                         div.appendChild(img);
 
-                        var span = document.createElement("span");
-                        span.innerHTML = alarm.prettyActiveTimestamp +": "+ alarm.message;
-                        div.appendChild(span);
+                        var spanTime = document.createElement("span");
+                        var spanText = document.createElement("span");
+                        spanTime.innerHTML = alarm.prettyActiveTimestamp +": ";
+                        spanText.innerHTML = alarm.message;
+                        div.appendChild(spanTime);
+                        div.appendChild(spanText);
+                        div.style.paddingLeft = "30px";
+                        div.getElementsByTagName('span')[0].style.marginLeft = "-30px";
+                        div.getElementsByTagName('span')[0].style.color = "black";
 
                         return div;
                     }],
