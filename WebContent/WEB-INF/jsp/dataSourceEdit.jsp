@@ -330,7 +330,7 @@
     }
   </script>
 
-	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; height: 300px; overflow-y: auto; width: 59%;">
+	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; max-height: 300px; overflow-y: auto; width: 59%;">
 		<tr>
 			<td>
 				<table width="100%">
