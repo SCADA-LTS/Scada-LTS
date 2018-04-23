@@ -21,21 +21,45 @@ public class XmlUtilsTest {
 
         String pathName = "WebContent/WEB-INF/dox/manifest.xml";
 
-        XmlUtils seroXML = new XmlUtils();
-        org.scada_lts.serorepl.utils.XmlUtils scadaXML = new org.scada_lts.serorepl.utils.XmlUtils();
+        XmlUtils oldXml = new XmlUtils();
+        org.scada_lts.serorepl.utils.XmlUtils newXml = new org.scada_lts.serorepl.utils.XmlUtils();
 
-        Document document = seroXML.parse(new File(pathName));
-        Document document1 = scadaXML.parse(new File(pathName));
+        Document document = oldXml.parse(new File(pathName));
+        Document document1 = newXml.parse(new File(pathName));
 
         Element root = document.getDocumentElement();
         Element root1 = document1.getDocumentElement();
 
-        int seroLength = seroXML.getElementsByTagName(root,"item").toArray().length;
-        int scadaLength = scadaXML.getElementsByTagName(root1,"item").toArray().length;
+        int oldLength = oldXml.getElementsByTagName(root,"item").toArray().length;
+        int newLength = newXml.getElementsByTagName(root1,"item").toArray().length;
 
-     //   System.out.println("sero length " + seroLength + " scada length " + scadaLength);
+        System.out.println(pathName);
+        System.out.println("old :" + oldLength + " new :" + newLength);
+        assertEquals(oldLength ,  newLength );
 
-        assertEquals(seroLength ,  scadaLength );
+
+    }
+
+    @Test
+    public void getElementsByTagName1() throws Exception {
+
+        String pathName = "WebContent/WEB-INF/applicationContext.xml";
+
+        XmlUtils oldXml = new XmlUtils();
+        org.scada_lts.serorepl.utils.XmlUtils newXml = new org.scada_lts.serorepl.utils.XmlUtils();
+
+        Document document = oldXml.parse(new File(pathName));
+        Document document1 = newXml.parse(new File(pathName));
+
+        Element root = document.getDocumentElement();
+        Element root1 = document1.getDocumentElement();
+
+        int oldLength = oldXml.getElementsByTagName(root,"beans").toArray().length;
+        int newLength = newXml.getElementsByTagName(root1,"beans").toArray().length;
+
+        System.out.println(pathName);
+        System.out.println("old :" + oldLength + " new :" + newLength);
+        assertEquals(oldLength ,  newLength );
 
 
     }
