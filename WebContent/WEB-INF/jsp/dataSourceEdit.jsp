@@ -173,7 +173,6 @@
         if (!points)
             return;
         show("pointProperties");
-        show("alarmsTable");
         show("dsStatusImg");
 
         if (currentPoint)
@@ -238,7 +237,7 @@
 			}
     	}
     }
-    
+
     function cancelEditPoint() {
         if (currentPoint) {
             stopImageFader("editImg"+ currentPoint.id);
@@ -246,19 +245,19 @@
             hide("pointDetails");
         }
     }
-    
+
     function savePoint() {
         startImageFader("pointSaveImg", true);
         hideContextualMessages("pointProperties");
         var locator = currentPoint.pointLocator;
-        
+
         // Prevents DWR warnings
         delete locator.configurationDescription;
         delete locator.dataTypeMessage;
-        
+
         savePointImpl(locator);
     }
-    
+
     function savePointCB(response) {
         stopImageFader("pointSaveImg");
         if (response.hasMessages)
@@ -269,11 +268,11 @@
             showMessage("pointMessage", "<fmt:message key="dsEdit.pointSaved"/>");
         }
     }
-    
+
     function getAlarms() {
         DataSourceEditDwr.getAlarms(writeAlarms);
     }
-    
+
     function writeAlarms(alarms) {
         dwr.util.removeAllRows("alarmsList");
         if (alarms.length == 0) {
@@ -289,12 +288,18 @@
                         var img = document.createElement("img");
                         setAlarmLevelImg(alarm.alarmLevel, img);
                         div.appendChild(img);
-                        
-                        var span = document.createElement("span");
-                        span.innerHTML = alarm.prettyActiveTimestamp +": "+ alarm.message;
-                        div.appendChild(span);
-                        
-                        return div; 
+
+                        var spanTime = document.createElement("span");
+                        var spanText = document.createElement("span");
+                        spanTime.innerHTML = alarm.prettyActiveTimestamp +": ";
+                        spanText.innerHTML = alarm.message;
+                        div.appendChild(spanTime);
+                        div.appendChild(spanText);
+                        div.style.display = "table-row";
+                        div.getElementsByTagName('span')[0].style.display = "table-cell";
+                        div.getElementsByTagName('span')[1].style.display = "table-cell";
+
+                        return div;
                     }],
                     {
                         cellCreator: function(options) {
@@ -305,7 +310,7 @@
                     });
         }
     }
-    
+
     function alarmLevelChanged(eventId) {
         var alarmLevel = $get("alarmLevel"+ eventId);
         DataSourceEditDwr.updateEventAlarmLevel(eventId, alarmLevel);
@@ -325,7 +330,7 @@
     }
   </script>
 
-	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: none;">
+	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; max-height: 300px; overflow-y: auto; width: 59%;">
 		<tr>
 			<td>
 				<table width="100%">
