@@ -84,9 +84,10 @@
               
               hide("loadingImg");
               show("treeDiv");
-              
+              document.getElementById("chartContainer").style.height = "auto";
+
               addPointNames(rootFolder);
-              
+
               // Add default points.
               displayWatchList(data.selectedWatchList);
               maybeDisplayDeleteImg();
@@ -96,7 +97,7 @@
           dojo.event.topic.subscribe("tree/titleClick", handler, 'titleClick');
           dojo.event.topic.subscribe("tree/expand", handler, 'expand');
       }
-      
+
       //
       // Populating filterable data point list
       //
@@ -110,7 +111,7 @@
     		  addPointsToSelectList(rootFolder.subfolders[i], path + rootFolder.subfolders[i].name + "/");
     	  }
       }
-      
+
       //
       // Populating data point hierarchy list
       //
@@ -121,7 +122,7 @@
           for (i=0; i<folder.subfolders.length; i++)
               addPointNames(folder.subfolders[i]);
       }
-      
+
       function addFolder(folder, parent) {
           var folderNode = dojo.widget.createWidget("TreeNode", {
                   title: "<img src='images/folder_brick.png'/> "+ folder.name,
@@ -130,24 +131,24 @@
           });
           parent.addChild(folderNode);
       }
-      
+
       function populateFolder(folderNode, lazyLoadData) {
           // Turn this off so as not to confuse the tree node.
           folderNode.isExpanded = false;
-          
+
           var i;
           for (i=0; i<lazyLoadData.subfolders.length; i++)
               addFolder(lazyLoadData.subfolders[i], folderNode);
-          
+
           for (i=0; i<lazyLoadData.points.length; i++) {
               addPoint(lazyLoadData.points[i], folderNode);
               if ($("p"+ lazyLoadData.points[i].key))
                   togglePointTreeIcon(lazyLoadData.points[i].key, false);
           }
-          
+
           folderNode.expand();
       }
-      
+
       function addPoint(point, parent) {
           var pointNode = dojo.widget.createWidget("TreeNode", {
                   title: "<img src='images/icon_comp.png'/> <span id='ph"+ point.key +"Name'>"+ point.value +"</span> "+
@@ -157,14 +158,14 @@
           parent.addChild(pointNode);
           $("ph"+ point.key +"Image").mangoName = "pointTreeIcon";
       }
-      
+
       var TreeClickHandler = function() {
           this.titleClick = function(message) {
               var widget = message.source;
               if (!widget.isFolder)
                   addToWatchList(widget.object.key);
           },
-          
+
           this.expand = function(message) {
               if (message.source.lazyLoadData) {
                   var lazyLoadData = message.source.lazyLoadData;
@@ -173,15 +174,15 @@
               }
           }
       }
-      
+
       function displayWatchList(data) {
           if (!data.points)
               // Couldn't find the watchlist. Reload the page
               window.location.reload();
-          
+
           var points = data.points;
           owner = data.access == <c:out value="<%= ShareUser.ACCESS_OWNER %>"/>;
-          
+
           // Add the new rows.
           for (var i=0; i<points.length; i++) {
               if (!pointNames[points[i]]) {
@@ -191,21 +192,21 @@
               }
               addToWatchListImpl(points[i]);
           }
-          
+
           fixRowFormatting();
           mango.view.watchList.reset();
-          
+
           var select = $("watchListSelect");
           var txt = $("newWatchListName");
           $set(txt, select.options[select.selectedIndex].text);
-          
+
           // Display controls based on access
           var iconSrc;
           if (owner) {
               show("wlEditDiv", "inline");
               //Disabled for userProfiles apply function
               hide("usersEditDiv", "inline");
-              
+
               // Set the share users.
               //mango.share.writeSharedUsers(data.users);
               iconSrc = "images/bullet_go.png";
@@ -215,17 +216,18 @@
               hide("usersEditDiv");
               iconSrc = "images/bullet_key.png";
           }
-          
+
           var icons = getElementsByMangoName($("treeDiv"), "pointTreeIcon");
           for (var i=0; i<icons.length; i++)
               icons[i].src = iconSrc;
       }
-      
+
+
       function showWatchListEdit() {
           openLayer("wlEdit");
           $("newWatchListName").select();
       }
-    
+
       function saveWatchListName() {
           var name = $get("newWatchListName");
           var select = $("watchListSelect");
@@ -233,13 +235,13 @@
           WatchListDwr.updateWatchListName(name);
           hideLayer("wlEdit");
       }
-      
+
       function watchListChanged() {
           // Clear the list.
           var rows = getElementsByMangoName($("watchListTable"), "watchListRow");
           for (var i=0; i<rows.length; i++)
               removeFromWatchListImpl(rows[i].id.substring(1));
-          
+
           watchlistChangeId++;
           var id = watchlistChangeId;
           WatchListDwr.setSelectedWatchList($get("watchListSelect"), function(data) {
@@ -247,12 +249,12 @@
                   displayWatchList(data);
           });
       }
-      
+
       function addWatchList(copy) {
     	  var copyId = ${NEW_ID};
     	  if (copy)
               copyId = $get("watchListSelect");
-    	  
+
           WatchListDwr.addNewWatchList(copyId, function(watchListData) {
               var wlselect = $("watchListSelect");
               wlselect.options[wlselect.options.length] = new Option(watchListData.value, watchListData.key);
@@ -261,26 +263,26 @@
               maybeDisplayDeleteImg();
           });
       }
-      
+
       function deleteWatchList() {
           var wlselect = $("watchListSelect");
           var deleteId = $get(wlselect);
           wlselect.options[wlselect.selectedIndex] = null;
-          
+
           watchListChanged();
           WatchListDwr.deleteWatchList(deleteId);
           maybeDisplayDeleteImg();
       }
-      
+
       function maybeDisplayDeleteImg() {
           var wlselect = $("watchListSelect");
           display("watchListDeleteImg", wlselect.options.length > 1);
       }
-      
+
       function showWatchListUsers() {
           openLayer("usersEdit");
       }
-      
+
       function openLayer(nodeId) {
           var nodeDiv = $(nodeId);
           closeLayers(nodeId);
@@ -289,22 +291,22 @@
           nodeDiv.style.left = (ancBounds.w - divBounds.w - 30) +"px";
           showLayer(nodeDiv, true);
       }
-    
+
       function closeLayers(exclude) {
           if (exclude != "wlEdit")
               hideLayer("wlEdit");
           if (exclude != "usersEdit")
               hideLayer("usersEdit");
       }
-      
+
       function addSelectedToWatchList(){
     	  var pointId = $("dpSelector").value;
     	  if(pointId > 0){
     	      addToWatchList(pointId);
     	  }
       }
-      
-      
+
+
       //
       // Watch list membership
       //
@@ -316,43 +318,43 @@
           WatchListDwr.addToWatchList(pointId, mango.view.watchList.setDataImpl);
           fixRowFormatting();
       }
-      
+
       var watchListCount = 0;
       function addToWatchListImpl(pointId) {
           watchListCount++;
-      
+
           // Add a row for the point by cloning the template row.
           var pointContent = createFromTemplate("p_TEMPLATE_", pointId, "watchListTable");
           pointContent.mangoName = "watchListRow";
-          
+
           if (owner) {
               show("p"+ pointId +"MoveUp");
               show("p"+ pointId +"MoveDown");
               show("p"+ pointId +"Delete");
           }
-          
+
           $("p"+ pointId +"Name").innerHTML = pointNames[pointId];
-          
+
           // Disable the element in the point list.
           togglePointTreeIcon(pointId, false);
       }
-      
+
       function removeFromWatchList(pointId) {
           removeFromWatchListImpl(pointId);
           fixRowFormatting();
           WatchListDwr.removeFromWatchList(pointId);
       }
-      
+
       function removeFromWatchListImpl(pointId) {
           watchListCount--;
           var pointContent = $("p"+ pointId);
           var watchListTable = $("watchListTable");
           watchListTable.removeChild(pointContent);
-          
+
           // Enable the element in the point list.
           togglePointTreeIcon(pointId, true);
       }
-      
+
       function togglePointTreeIcon(pointId, enable) {
           var node = $("ph"+ pointId +"Image");
           if (node) {
@@ -362,7 +364,7 @@
                   dojo.html.setOpacity(node, 0.2);
           }
       }
-      
+
       //
       // List state updating
       //
@@ -383,7 +385,7 @@
               fixRowFormatting();
           }
       }
-      
+
       function moveRowUp(pointId) {
           var watchListTable = $("watchListTable");
           var rows = getElementsByMangoName(watchListTable, "watchListRow");
@@ -398,7 +400,7 @@
               fixRowFormatting();
           }
       }
-      
+
       function fixRowFormatting() {
           var rows = getElementsByMangoName($("watchListTable"), "watchListRow");
           if (rows.length == 0) {
@@ -416,7 +418,7 @@
                       if (owner)
                           show(rows[i].id +"MoveUp");
                   }
-                      
+
                   if (i == rows.length - 1)
                       hide(rows[i].id +"MoveDown");
                   else if (owner)
@@ -424,7 +426,7 @@
               }
           }
       }
-      
+
       function showChart(mangoId, event, source) {
     	  if (isMouseLeaveOrEnter(event, source)) {
               // Take the data in the chart textarea and put it into the chart layer div
@@ -432,12 +434,12 @@
               showMenu('p'+ mangoId +'ChartLayer', 4, 12);
     	  }
       }
-      
+
       function hideChart(mangoId, event, source) {
           if (isMouseLeaveOrEnter(event, source))
         	  hideLayer('p'+ mangoId +'ChartLayer');
       }
-      
+
       //
       // Image chart
       //
@@ -448,56 +450,56 @@
           var height = dojo.html.getContentBox($("chartContainer")).height - 80;
     	  height = height < 200 ? 200 : height;
           startImageFader($("imageChartImg"));
-          WatchListDwr.getImageChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"), 
-        		  $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"), 
-        		  $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"), 
+          WatchListDwr.getImageChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
+        		  $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"),
+        		  $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"),
         		  width, height, function(data) {
               $("imageChartDiv").innerHTML = data;
               stopImageFader($("imageChartImg"));
-              
+
               // Make sure the length of the chart doesn't mess up the watch list display. Do async to
               // make sure the rendering gets done.
               setTimeout('dojo.widget.manager.getWidgetById("splitContainer").onResized()', 2000);
           });
       }
-      
-      function getImageChartLive(period) {    	  
+
+      function getImageChartLive(period) {
     	  var dataT;
     	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
     	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
-    	  height = height < 200 ? 200 : height;
+    	  height = height < 100 ? 100 : height;
     	  $("imageChartDiv").height=height;
-    	  var sourcet = "\"chart/"+Date.now()+"_"+period;    	  
-    	  var pointIds = $get("chartCB");    	  
+    	  var sourcet = "\"chart/"+Date.now()+"_"+period;
+    	  var pointIds = $get("chartCB");
     	  if(isChartLive){
           	for (var i=0; i<pointIds.length; i++) {
-          	    if (pointIds[i] == "_TEMPLATE_") {                  
+          	    if (pointIds[i] == "_TEMPLATE_") {
           	    }else{
           	    	sourcet +="_"+pointIds[i];
           	    }
-          	}          
+          	}
     	  	sourcet += ".png?w="+width+"&h="+height+"\"";
     	  	dataT = "<img id=chartTemp src="+sourcet+" onload=\"switchChart()\"/>";
-    	  	$("temp").innerHTML = dataT;    	  	
-    	  }   
+    	  	$("temp").innerHTML = dataT;
+    	  }
       }
-      
+
       function getChartData() {
     	  var pointIds = getChartPointList();
     	  if (pointIds.length == 0)
     		  alert("<fmt:message key="watchlist.noExportables"/>");
     	  else {
               startImageFader($("chartDataImg"));
-              WatchListDwr.getChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"), 
-                      $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"), 
-                      $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"), 
+              WatchListDwr.getChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
+                      $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"),
+                      $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"),
                       function(data) {
                   stopImageFader($("chartDataImg"));
                   window.location = "chartExport/watchListData.csv";
               });
     	  }
       }
-      
+
       function getChartPointList() {
           var pointIds = $get("chartCB");
           for (var i=pointIds.length-1; i>=0; i--) {
@@ -507,33 +509,39 @@
           }
           return pointIds;
       }
-      
+
       // change from static to live
-      function switchChartMode(){    	  
+      function switchChartMode(){
     	  if(isChartLive){
     		  isChartLive=false;
     		  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
+          document.getElementById("imageChartDiv").style.display = "none";
+          document.getElementById("chartContainer").style.height = "auto";
     	   } else {
-    		  isChartLive=true;   
+    		  isChartLive=true;
+          document.getElementById("chartContainer").style.height = "500px";
     		  jQuery("#imageChartLiveImg").attr('src', 'images/control_stop_blue.png');
     		  getImageChartLive(calculatePeriod());
+          // height = document.getElementById("imageChartDiv").height;
+          document.getElementById("imageChartDiv").style.display = "table-cell";
+          document.getElementById("chartContainer").style.height = "auto";
     	  }
-      }    
-      
+      }
+
       // insert new (loaded) chart
       function switchChart(){
     	  if(isChartLive){
-    	  	var datan = "<img src="+jQuery("#chartTemp").attr('src')+"/>"; 
-	  	  	$("imageChartDiv").innerHTML = datan; 
+    	  	var datan = "<img src="+jQuery("#chartTemp").attr('src')+"/>";
+	  	  	$("imageChartDiv").innerHTML = datan;
 	  	  	setTimeout(function(){getImageChartLive(calculatePeriod());}, 2500);
 	  	  }
       }
-      
+
       // calculate period for live chart
       function calculatePeriod(){
     	  var period=$get("prevPeriodCount")*1000*60;
     	  var type=$get("prevPeriodType");
-    	  
+
     	  if(type>2)
 			  period*=60;
 		  if(type>3)
@@ -543,25 +551,25 @@
 		  else if(type==6)
 			  period*=30;
 		  else if(type==7)
-			  period*=365; 
-		  
+			  period*=365;
+
 		  return period;
       }
-      
+
       //
       // Create report
       //
       function createReport() {
           window.location = "reports.shtm?wlid="+ $get("watchListSelect");
       }
-      
+
       //
       // Cookies handling
       //
       function setCookie(cname, cvalue) {
     	    document.cookie = cname + "=" + cvalue + ";";
    	  }
-      
+
       function getCookie(cname) {
     	    var name = cname + "=";
     	    var ca = document.cookie.split(';');
@@ -572,7 +580,7 @@
     	    }
     	    return "";
       }
-      
+
       function saveDivHeightsToCookieOnChange(){
     	  if(splitContainerHeight != jQuery("#splitContainer").height()){
     		  setCookie("split_container_height", jQuery("#splitContainer").height());
@@ -583,15 +591,15 @@
     		  chartContainerHeight = jQuery("#chartContainer").height();
   		  }
       }
-      
+
       var splitContainerHeight;
       var chartContainerHeight;
-      
-      jQuery(document).ready(function(){    
+
+      jQuery(document).ready(function(){
     	  (function($) {
-    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
+    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
     		loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-    		
+
     		splitContainerHeight = parseInt(getCookie("split_container_height"));
     		if(splitContainerHeight != null){
     			jQuery("#splitContainer").height(splitContainerHeight);
@@ -600,12 +608,12 @@
     		if(chartContainerHeight != null){
     			jQuery("#chartContainer").height(chartContainerHeight);
     		}
-    		
+
     		window.setInterval(saveDivHeightsToCookieOnChange, 2000);
    	  	})(jQuery);
    	  });
     </script>
-    
+
     <table width="100%">
     <tr><td>
       <div id="splitContainer" dojoType="SplitContainer" orientation="horizontal" sizerWidth="3" activeSizing="true" class="borderDiv"
@@ -633,7 +641,7 @@
                     <sst:option value="${wl.key}">${sst:escapeLessThan(wl.value)}</sst:option>
                   </c:forEach>
                 </sst:select>
-                
+
                 <div id="wlEditDiv" style="display:inline;" onmouseover="showWatchListEdit()">
                   <tag:img id="wlEditImg" png="pencil" title="watchlist.editListName"/>
                   <div id="wlEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv"
@@ -644,7 +652,7 @@
                     <a class="ptr" id="saveWatchListNameLink" onclick="saveWatchListName()"><fmt:message key="common.save"/></a>
                   </div>
                 </div>
-                
+
                 <div id="usersEditDiv" style="display:inline;" onmouseover="showWatchListUsers()">
                   <tag:img png="user" title="share.sharing" onmouseover="closeLayers();"/>
                   <div id="usersEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv">
@@ -652,7 +660,7 @@
                             closeFunction="hideLayer('usersEdit')"/>
                   </div>
                 </div>
-                
+
                 <tag:img png="copy" onclick="addWatchList(true)" title="watchlist.copyList" onmouseover="closeLayers();"/>
                 <tag:img png="add" onclick="addWatchList(false)" title="watchlist.addNewList" onmouseover="closeLayers();"/>
                 <tag:img png="delete" id="watchListDeleteImg" onclick="deleteWatchList()" title="watchlist.deleteList"
@@ -671,14 +679,14 @@
                       <tr>
                         <td onclick="mango.view.showChange('p'+ getMangoId(this) +'Change', 4, 12);"
                                 ondblclick="mango.view.hideChange('p'+ getMangoId(this) +'Change');"
-                                id="p_TEMPLATE_ChangeMin" style="display:none;"><img alt="" id="p_TEMPLATE_Changing" 
-                                src="images/icon_edit.png"/><div id="p_TEMPLATE_Change" class="labelDiv" 
+                                id="p_TEMPLATE_ChangeMin" style="display:none;"><img alt="" id="p_TEMPLATE_Changing"
+                                src="images/icon_edit.png"/><div id="p_TEMPLATE_Change" class="labelDiv"
                                 style="visibility:hidden;top:10px;left:1px;" ondblclick="hideLayer(this);">
                           <tag:img png="hourglass" title="common.gettingData"/>
                         </div></td>
                         <td id="p_TEMPLATE_ChartMin" style="display:none;" onmouseover="showChart(getMangoId(this), event, this);"
-                                onmouseout="hideChart(getMangoId(this), event, this);"><img alt="" 
-                                src="images/icon_chart.png"/><div id="p_TEMPLATE_ChartLayer" class="labelDiv" 
+                                onmouseout="hideChart(getMangoId(this), event, this);"><img alt=""
+                                src="images/icon_chart.png"/><div id="p_TEMPLATE_ChartLayer" class="labelDiv"
                                 style="visibility:hidden;top:0;left:0;"></div><textarea
                                 style="display:none;" id="p_TEMPLATE_Chart"><tag:img png="hourglass"
                                 title="common.gettingData"/></textarea></td>
@@ -712,9 +720,9 @@
         </div>
       </div>
     </td></tr>
-    
+
     <tr><td>
-      <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden;">
+      <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden; height: 500px;">
         <table width="100%">
           <tr>
             <td class="smallTitle"><fmt:message key="watchlist.chart"/> <tag:help id="watchListCharts"/></td>
