@@ -222,6 +222,7 @@
               icons[i].src = iconSrc;
       }
 
+
       function showWatchListEdit() {
           openLayer("wlEdit");
           $("newWatchListName").select();
@@ -466,7 +467,7 @@
     	  var dataT;
     	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
     	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
-    	  height = height < 500 ? 500 : height;
+    	  height = height < 100 ? 100 : height;
     	  $("imageChartDiv").height=height;
     	  var sourcet = "\"chart/"+Date.now()+"_"+period;
     	  var pointIds = $get("chartCB");
@@ -518,6 +519,7 @@
           document.getElementById("chartContainer").style.height = "auto";
     	   } else {
     		  isChartLive=true;
+          document.getElementById("chartContainer").style.height = "500px";
     		  jQuery("#imageChartLiveImg").attr('src', 'images/control_stop_blue.png');
     		  getImageChartLive(calculatePeriod());
           // height = document.getElementById("imageChartDiv").height;
@@ -720,7 +722,7 @@
     </td></tr>
 
     <tr><td>
-      <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden;">
+      <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden; height: 500px;">
         <table width="100%">
           <tr>
             <td class="smallTitle"><fmt:message key="watchlist.chart"/> <tag:help id="watchListCharts"/></td>
