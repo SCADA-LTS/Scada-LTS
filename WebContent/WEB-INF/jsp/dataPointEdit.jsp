@@ -23,6 +23,20 @@
      <link href="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" type="text/css">
      <script type="text/javascript" src="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.js"></script>
 
+     <style type="text/css">
+         .swal2-icon {
+            zoom: 0.4;
+         }
+         #swal2-title {
+            font-size: 1em;
+         }
+         .gbtest {
+            color: blue !important;
+            text-decoration: bold;
+            text-size: 1em;
+         }
+     </style>
+
 
   <%@ include file="/WEB-INF/jsp/pointEdit/pointName.jsp" %>
   
@@ -292,14 +306,38 @@
                             dataType: "json",
                             url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
+
                            					        	            swal({
+                                                                      title: '<i>New</i> <u>configuration point</u>',
+                                                                      type: 'warning',
+                                                                      html:
+                                                                        'You can use <b>bold text</b>, ' +
+                                                                        '<a href="//github.com">links</a> ' +
+                                                                        'and other HTML tags',
+                                                                      showCloseButton: true,
+                                                                      showCancelButton: true,
+                                                                      focusConfirm: false,
+                                                                      confirmButtonText:
+                                                                        '<i class="fa fa-thumbs-up"></i> Great!',
+                                                                      confirmButtonAriaLabel: 'Thumbs up, great!',
+                                                                      cancelButtonText:
+                                                                      '<i class="fa fa-thumbs-down"></i>',
+                                                                      cancelButtonAriaLabel: 'Thumbs down',
+                                                                      customClass: "gbtest"
+                                                                    })
+
+
+                           					        	            /*swal({
                                                                       html: swal_message
+                                                                                 + "<div class='font-size:8px'>"
+                                                                                 + "<p>Point properties:</p>"
+                                                                                 + "<p>Engineering units:"+arrDictEnginneringUnits[properties.engineeringUnits]+"</p>"
                                                                                  + "</br> Logging type:"+arrDictLoggingType[properties.loggingType]
                                                                                  + "</br> Purge After:"+properties.intervalLoggingPeriod+" "+ arrDictPurge[properties.purgeType]
                                                                                  + "</br> Default cache size: " + properties.defaultCacheSize
                                                                                  + "</br> Type key: " + properties.typeKey
                                                                                  + "</br> Def: " + properties.def.name
-                                                                                 + "</br>",
+                                                                                 + "</br></div>",
                                                                       buttons: {
                                                                         cancel: true,
 
@@ -405,7 +443,7 @@
                                                                          } else {
                                                                            alert("cancel");
                                                                          }
-                                                                     });
+                                                                     });*/
                            					        	   },
                            					        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
                            					        		   swal({
