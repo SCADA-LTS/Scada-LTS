@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -49,7 +49,7 @@
     }
     </style>
   </jsp:attribute>
-  
+
   <jsp:body>
     <script type="text/javascript">
       dojo.require("dojo.widget.SplitContainer");
@@ -60,28 +60,28 @@
       var pointNames = {};
       var watchlistChangeId = 0;
       var isChartLive = false;
-      
+
       function init() {
           WatchListDwr.init(function(data) {
               mango.share.users = data.shareUsers;
-              
+
               // Create the point tree.
               var rootFolder = data.pointFolder;
               var tree = dojo.widget.manager.getWidgetById('tree');
               var i;
-              
+
               for (i=0; i<rootFolder.subfolders.length; i++)
                   addFolder(rootFolder.subfolders[i], tree);
-              
+
               for (i=0; i<rootFolder.points.length; i++)
                   addPoint(rootFolder.points[i], tree);
-              
+
               /*  addPointsToSelectList(rootFolder, "");
               jQuery("#dpSelector").chosen({
             	  placeholder_text_single: " ",
             	  search_contains: true
               });  */
-              
+
               hide("loadingImg");
               show("treeDiv");
               document.getElementById("chartContainer").style.height = "auto";
@@ -445,10 +445,11 @@
       //
       function getImageChart() {
     	  isChartLive=false;
+        document.getElementById("chartContainer").style.height = "500px";
     	  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
           var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
           var height = dojo.html.getContentBox($("chartContainer")).height - 80;
-    	  height = height < 200 ? 200 : height;
+    	  height = height < 100 ? 100 : height;
           startImageFader($("imageChartImg"));
           WatchListDwr.getImageChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
         		  $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"),
@@ -730,7 +731,7 @@
             	<select id="prevPeriodType">
                 	<tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
             	</select>
-            </td>                            
+            </td>
             <td  align="left"><tag:img id="imageChartLiveImg" png="control_play_blue" title="watchlist.imageChartLiveButton"
                       onclick="switchChartMode()"/><br/></td>
             <td class="vertSeparator"></td>
@@ -747,7 +748,7 @@
         </table>
       </div>
     </td></tr>
-    
+
     </table>
   </jsp:body>
 </tag:page>

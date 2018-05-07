@@ -332,12 +332,29 @@ public class WatchListDwr extends BaseDwr {
 				toSecond, toNone);
 
 		StringBuilder htmlData = new StringBuilder();
-		htmlData.append("<img src=\"achart/ft_");
-		htmlData.append(System.currentTimeMillis());
+		long now = System.currentTimeMillis();
+		htmlData.append("<img src=\"chart/");
+		htmlData.append("ft_");
+		htmlData.append(now);
 		htmlData.append('_');
-		htmlData.append(fromNone ? -1 : from.getMillis());
-		htmlData.append('_');
-		htmlData.append(toNone ? -1 : to.getMillis());
+
+		if(toNone && fromNone) {
+			htmlData.append('0');
+			htmlData.append('_');
+			htmlData.append(now);
+	    }else if(toNone) {             // latest - works
+			htmlData.append(from.getMillis());
+			htmlData.append('_');
+			htmlData.append(now);
+		} else if(fromNone) {
+			htmlData.append('0');
+			htmlData.append('_');
+			htmlData.append(to.getMillis());
+		} else {
+			htmlData.append(from.getMillis());
+			htmlData.append('_');
+			htmlData.append(to.getMillis());
+		}
 
 		boolean pointsFound = false;
 		// Add the list of points that are numeric.
