@@ -1,6 +1,5 @@
 package org.scada_lts.serorepl.monitor;
 
-import org.scada_lts.serorepl.exceptions.NotImplementedException;
 
 public abstract class ValMonitor<T> {
 
@@ -22,23 +21,23 @@ public abstract class ValMonitor<T> {
 
 
     public int intValue() {
-        throw new NotImplementedException();
+        throw new RuntimeException("Method not implemented");
     }
 
     public long longValue() {
-        throw new NotImplementedException();
+        throw new RuntimeException("Method not implemented");
     }
 
     public float floatValue() {
-        throw new NotImplementedException();
+        throw new RuntimeException("Method not implemented");
     }
 
     public double doubleValue() {
-        throw new NotImplementedException();
+        throw new RuntimeException("Method not implemented");
     }
 
     public String stringValue() {
-        throw new NotImplementedException();
+        throw new RuntimeException("Method not implemented");
     }
 
 
