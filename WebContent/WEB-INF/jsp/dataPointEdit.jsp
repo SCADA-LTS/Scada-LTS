@@ -35,6 +35,15 @@
             text-decoration: bold;
             text-size: 1em;
          }
+         .swal-content {
+            font-size: 0.8em;
+          }
+         .gbul {
+            text-align: left;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+         }
      </style>
 
 
@@ -78,7 +87,7 @@
                   function baseOnExistingPoint(){
                        var idPointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].value;
                        var namePointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].text;
-                       var swal_message = namePointConfigurationToBaseOnExistingPoint + "</br> id:"+idPointConfigurationToBaseOnExistingPoint;
+                       //var swal_message = namePointConfigurationToBaseOnExistingPoint + "</br> id:"+idPointConfigurationToBaseOnExistingPoint;
 
                        var pathArray = location.href.split( '/' );
                        var protocol = pathArray[0];
@@ -89,11 +98,12 @@
                         myLocation = protocol + "//" + host + "/" + appScada + "/";
                        }
 
-                       var arrDictLoggingType = ["When point value changes", "All data", "Do not log", "Interval", "When point timestamp changes"];
+                       var arrDictLoggingType = ["", "When point value changes", "All data", "Do not log", "Interval", "When point timestamp changes"];
 
                        var arrDictPurge = ["","","","","day(s)", "week(s)", "month(s)", "year(s)"];
 
                        var arrDictChartRendererImageTimePeriod = ["","","minute(s)", "hour(s)", "day(s)", "week(s)", "month(s)"];
+                       var arrDictIntervalLoggingPeriod = ["","second(s)","minute(s)", "hour(s)", "day(s)", "week(s)", "month(s)"];
 
                        var arrDictEnginneringUnits = [
                                                 "square meters", /* 0 */
@@ -306,14 +316,58 @@
                             dataType: "json",
                             url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
+                           					        	            // Checking the appropriate type of login properties to generate an appropriate hint.
+                           					        	            let htmlLogginProperties = "";
+                           					        	            console.log(properties.loggingType);
+                           					        	            if (properties.loggingType == 1) {
 
+                           					        	              // When point value changes
+                           					        	              htmlLogginProperties = ""
+                           					        	                + "<li><b>Logging type:</b> " + arrDictLoggingType[properties.loggingType] + "</li>"
+                                                                        + "<li><b>Tolerance:</b> " + properties.tolerance + "</li>"
+
+                           					        	            } else if (
+                           					        	                (properties.loggingType == 2) ||
+                           					        	                (properties.loggingType == 3) ||
+                           					        	                (properties.loggingType == 5) ) {
+
+                                                                      console.log( properties.loggingType );
+                                                                      console.log( arrDictLoggingType[properties.loggingType] );
+
+                           					        	              // All data 2
+                           					        	              // Do not log 3
+                           					        	              // When point timestamp changes 5
+
+                           					        	              htmlLogginProperties = ""
+                           					        	                + "<li><b>Logging type:</b> " + arrDictLoggingType[properties.loggingType] + "</li>"
+
+                           					        	            } else if (
+                           					        	                properties.loggingType == 4
+                           					        	            ) {
+
+                           					        	              // Interval 4
+
+                                                                      htmlLogginProperties = ""
+                                                                        + "<li><b>Logging type:</b> " + arrDictLoggingType[properties.loggingType] + "</li>"
+                                                                        + "<li><b>Interval logging period:</b> Every:" + properties.intervalLoggingPeriod + " " + arrDictIntervalLoggingPeriod[properties.intervalLoggingPeriodType] + "</li>"
+
+
+                           					        	            }
+                                                                    // console.log(JSON.stringify(properties));
                            					        	            swal({
                                                                       title: '<i>New</i> <u>configuration point</u>',
                                                                       type: 'warning',
-                                                                      html:
-                                                                        'You can use <b>bold text</b>, ' +
-                                                                        '<a href="//github.com">links</a> ' +
-                                                                        'and other HTML tags',
+                                                                      html: "<div class='font-size:8px'> "
+                                                                        + "<p><b>base on</b> " + namePointConfigurationToBaseOnExistingPoint + "</p>"
+                                                                        + "<b>Point properties:</b> "
+                                                                        + "<ul class='gbul'> "
+                                                                        + "<li><b>Engineering units:</b> " + arrDictEnginneringUnits[properties.engineeringUnits] + "</li>"
+                                                                        + htmlLogginProperties
+                                                                        + "<li><b>Purge After:</b> " + properties.intervalLoggingPeriod + " " + arrDictPurge[properties.purgeType] + "</li>"
+                                                                        + "<li><b>Default cache size:</b> " + properties.defaultCacheSize + "</li>"
+                                                                        + "<li><b>Type key:</b> " + properties.typeKey + "</li>"
+                                                                        + "<li><b>Def:</b> " + properties.def.name + "</li>"
+                                                                        + "</ul></div>",
                                                                       showCloseButton: true,
                                                                       showCancelButton: true,
                                                                       focusConfirm: false,
@@ -321,129 +375,112 @@
                                                                         '<i class="fa fa-thumbs-up"></i> Great!',
                                                                       confirmButtonAriaLabel: 'Thumbs up, great!',
                                                                       cancelButtonText:
-                                                                      '<i class="fa fa-thumbs-down"></i>',
+                                                                      '<i class="fa fa-thumbs-down">Cancel</i>',
                                                                       cancelButtonAriaLabel: 'Thumbs down',
                                                                       customClass: "gbtest"
-                                                                    })
+                                                                    }).then(function(isConfirm) {
+                                                                        if (isConfirm.value) {
+                                                                          console.log(isConfirm);
+                                                                          console.log(JSON.stringify(properties));
 
+                                                                          jQuery("#engineeringUnits").val(properties.engineeringUnits);
+                                                                          jQuery("#loggingType").val(properties.loggingType);
+                                                                          jQuery("#purgePeriod").val(properties.intervalLoggingPeriod);
+                                                                          jQuery("#purgeType").val(properties.purgeType);
+                                                                          jQuery("#defaultCacheSize").val(properties.defaultCacheSize);
 
-                           					        	            /*swal({
-                                                                      html: swal_message
-                                                                                 + "<div class='font-size:8px'>"
-                                                                                 + "<p>Point properties:</p>"
-                                                                                 + "<p>Engineering units:"+arrDictEnginneringUnits[properties.engineeringUnits]+"</p>"
-                                                                                 + "</br> Logging type:"+arrDictLoggingType[properties.loggingType]
-                                                                                 + "</br> Purge After:"+properties.intervalLoggingPeriod+" "+ arrDictPurge[properties.purgeType]
-                                                                                 + "</br> Default cache size: " + properties.defaultCacheSize
-                                                                                 + "</br> Type key: " + properties.typeKey
-                                                                                 + "</br> Def: " + properties.def.name
-                                                                                 + "</br></div>",
-                                                                      buttons: {
-                                                                        cancel: true,
+                                                                          var currentTextRenderer = $("textRendererSelect").value;
 
-                                                                        confirm: "Confirm",
-                                                                        icon: "warning",
-                                                                        buttons: true,
-                                                                        dangerMode: true,
-                                                                       },
-                                                                     }).then(function(isConfirm) {
-                                                                         if (isConfirm) {
-                                                                           alert(JSON.stringify(properties));
-                                                                           jQuery("#engineeringUnits").val(properties.engineeringUnits);
-                                                                           jQuery("#loggingType").val(properties.loggingType);
-                                                                           jQuery("#purgePeriod").val(properties.intervalLoggingPeriod);
-                                                                           jQuery("#purgeType").val(properties.purgeType);
-                                                                           jQuery("#defaultCacheSize").val(properties.defaultCacheSize);
+                                                                          console.log(currentTextRenderer);
 
-                                                                           var currentTextRenderer = $("textRendererSelect").value;
+                                                                          dojo.html.hide(
+                                                                            $(currentTextRenderer)
+                                                                          );
 
-                                                                           console.log(currentTextRenderer);
+                                                                          jQuery("#textRendererSelect").val(properties.def.name);
 
-                                                                           dojo.html.hide(
-                                                                                    $(currentTextRenderer)
-                                                                           );
+                                                                          currentTextRenderer = $("textRendererSelect").value;
 
-                                                                           jQuery("#textRendererSelect").val(properties.def.name);
+                                                                          dojo.html.show(
+                                                                            $(currentTextRenderer)
+                                                                          );
 
-                                                                           currentTextRenderer = $("textRendererSelect").value;
+                                                                          if (properties.def.name == "textRendererBinary") {
+                                                                            jQuery("#textRendererBinaryZero").val(properties.textRenderer.zeroLabel);
+                                                                            dojo.widget.byId("textRendererBinaryZeroColour").selectedColour = properties.textRenderer.zeroColour;
+                                                                            jQuery("#textRendererBinaryZero").css('color', properties.textRenderer.zeroColour);
+                                                                            jQuery("#textRendererBinaryOne").val(properties.textRenderer.oneLabel);
+                                                                            jQuery("#textRendererBinaryOne").css('color', properties.textRenderer.oneColour);
+                                                                            dojo.widget.byId("textRendererBinaryOneColour").selectedColour = properties.textRenderer.oneColour;
+                                                                          }
 
-                                                                           dojo.html.show(
-                                                                                    $(currentTextRenderer)
-                                                                           );
+                                                                          if (properties.def.name == "textRendererPlain") {
+                                                                            jQuery("#textRendererPlainSuffix").val(properties.textRenderer.suffix);
+                                                                          }
 
-                                                                           if (properties.def.name == "textRendererBinary") {
-                                                                              jQuery("#textRendererBinaryZero").val(properties.textRenderer.zeroLabel);
-                                                                              dojo.widget.byId("textRendererBinaryZeroColour").selectedColour = properties.textRenderer.zeroColour;
-                                                                              jQuery("#textRendererBinaryZero").css('color', properties.textRenderer.zeroColour);
-                                                                              jQuery("#textRendererBinaryOne").val(properties.textRenderer.oneLabel);
-                                                                              jQuery("#textRendererBinaryOne").css('color', properties.textRenderer.oneColour);
-                                                                              dojo.widget.byId("textRendererBinaryOneColour").selectedColour = properties.textRenderer.oneColour;
-                                                                           }
+                                                                          if (properties.def.name == "textRendererMultistate") {
+                                                                            for (var multistate in properties.textRenderer.multistateValues) {
+                                                                                textRendererEditor.addMultistateValue(
+                                                                                properties.textRenderer.multistateValues[multistate].key,
+                                                                                properties.textRenderer.multistateValues[multistate].text,
+                                                                                properties.textRenderer.multistateValues[multistate].colour);
+                                                                            }
+                                                                          }
 
-                                                                           if (properties.def.name == "textRendererPlain") {
-                                                                              jQuery("#textRendererPlainSuffix").val(properties.textRenderer.suffix);
-                                                                           }
+                                                                          if (properties.def.name == "textRendererAnalog") {
+                                                                            jQuery("#textRendererAnalogFormat").val(properties.textRenderer.format);
+                                                                            jQuery("#textRendererAnalogSuffix").val(properties.textRenderer.metaText);
+                                                                          }
 
-                                                                           if (properties.def.name == "textRendererMultistate") {
-                                                                              for (var multistate in properties.textRenderer.multistateValues) {
-                                                                                   textRendererEditor.addMultistateValue(
-                                                                                        properties.textRenderer.multistateValues[multistate].key,
-                                                                                        properties.textRenderer.multistateValues[multistate].text,
-                                                                                        properties.textRenderer.multistateValues[multistate].colour
-                                                                                   );
-                                                                              }
-                                                                           }
+                                                                          if (properties.def.name == "textRendererRange") {
+                                                                            jQuery("#textRendererRangeFormat").val(properties.textRenderer.format);
 
-                                                                           if (properties.def.name == "textRendererAnalog") {
-                                                                                jQuery("#textRendererAnalogFormat").val(properties.textRenderer.format);
-                                                                                jQuery("#textRendererAnalogSuffix").val(properties.textRenderer.metaText);
-                                                                           }
+                                                                            for (var range in properties.textRenderer.rangeValues) {
+                                                                                textRendererEditor.addRangeValue(
+                                                                                    properties.textRenderer.rangeValues[range].from,
+                                                                                    properties.textRenderer.rangeValues[range].to,
+                                                                                    properties.textRenderer.rangeValues[range].text,
+                                                                                    properties.textRenderer.rangeValues[range].color);
+                                                                            }
+                                                                          }
 
-                                                                           if (properties.def.name == "textRendererRange") {
-                                                                                jQuery("#textRendererRangeFormat").val(properties.textRenderer.format);
-                                                                                for (var range in properties.textRenderer.rangeValues) {
-                                                                                    textRendererEditor.addRangeValue(
-                                                                                        properties.textRenderer.rangeValues[range].from,
-                                                                                        properties.textRenderer.rangeValues[range].to,
-                                                                                        properties.textRenderer.rangeValues[range].text,
-                                                                                        properties.textRenderer.rangeValues[range].color
-                                                                                    );
-                                                                                }
-                                                                           }
+                                                                          if (properties.def.name == "textRendererTime") {
+                                                                            jQuery("#textRendererTimeFormat").val(properties.textRenderer.format);
+                                                                            jQuery("#textRendererTimeConversionExponent").val(properties.textRenderer.conversionExponent);
+                                                                          }
 
-                                                                           if (properties.def.name == "textRendererTime") {
-                                                                                jQuery("#textRendererTimeFormat").val(properties.textRenderer.format);
-                                                                                jQuery("#textRendererTimeConversionExponent").val(properties.textRenderer.conversionExponent);
-                                                                           }
+                                                                          if (properties.chartRenderer == null) {
+                                                                            jQuery("#chartRendererSelect").val("chartRendererNone");
+                                                                            showEditChartRender("chartRendererNone");
+                                                                          } else  if (properties.chartRenderer.def.name == "chartRendererImage") {
+                                                                            jQuery("#chartRendererSelect").val("chartRendererImage");
+                                                                            showEditChartRender("chartRendererImage");
+                                                                            jQuery("#chartRendererImageNumberOfPeriods").val(properties.chartRenderer.numberOfPeriods);
+                                                                            jQuery("#chartRendererImageTimePeriod").val(properties.chartRenderer.timePeriod);
 
-                                                                           if (properties.chartRenderer == null) {
-                                                                                jQuery("#chartRendererSelect").val("chartRendererNone");
-                                                                                showEditChartRender("chartRendererNone");
-                                                                           } else  if (properties.chartRenderer.def.name == "chartRendererImage") {
-                                                                                jQuery("#chartRendererSelect").val("chartRendererImage");
-                                                                                showEditChartRender("chartRendererImage");
-                                                                                jQuery("#chartRendererImageNumberOfPeriods").val(properties.chartRenderer.numberOfPeriods);
-                                                                                jQuery("#chartRendererImageTimePeriod").val(properties.chartRenderer.timePeriod);
+                                                                            //arrDictChartRendererImageTimePeriod
 
-                                                                                //arrDictChartRendererImageTimePeriod
-                                                                           } else if (properties.chartRenderer.def.name == "chartRendererStats") {
-                                                                                jQuery("#chartRendererSelect").val("chartRendererStats");
-                                                                                showEditChartRender("chartRendererStats");
-                                                                                jQuery("#chartRendererStatsNumberOfPeriods").val(properties.chartRenderer.numberOfPeriods);
-                                                                                jQuery("#chartRendererStatsTimePeriod").val(properties.chartRenderer.timePeriod);
-                                                                                jQuery("#chartRendererStatsIncludeSum").attr('checked', properties.chartRenderer.includeSum);
-                                                                           } else if (properties.chartRenderer.def.name == "chartRendererTable") {
-                                                                                jQuery("#chartRendererSelect").val("chartRendererTable");
-                                                                                showEditChartRender("chartRendererTable");
-                                                                                jQuery("#chartRendererTableLimit").val(properties.chartRenderer.limit);
-                                                                           }
+                                                                          } else if (properties.chartRenderer.def.name == "chartRendererStats") {
 
-                                                                           console.log(JSON.stringify(properties));
+                                                                            jQuery("#chartRendererSelect").val("chartRendererStats");
+                                                                            showEditChartRender("chartRendererStats");
+                                                                            jQuery("#chartRendererStatsNumberOfPeriods").val(properties.chartRenderer.numberOfPeriods);
+                                                                            jQuery("#chartRendererStatsTimePeriod").val(properties.chartRenderer.timePeriod);
+                                                                            jQuery("#chartRendererStatsIncludeSum").attr('checked', properties.chartRenderer.includeSum);
 
-                                                                         } else {
-                                                                           alert("cancel");
-                                                                         }
-                                                                     });*/
+                                                                          } else if (properties.chartRenderer.def.name == "chartRendererTable") {
+                                                                            jQuery("#chartRendererSelect").val("chartRendererTable");
+                                                                            showEditChartRender("chartRendererTable");
+                                                                            jQuery("#chartRendererTableLimit").val(properties.chartRenderer.limit);
+                                                                          }
+
+                                                                          console.log(JSON.stringify(properties));
+
+                                                                        } else {
+                                                                            console.log(isConfirm);
+                                                                        }
+                                                                     });
+
                            					        	   },
                            					        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
                            					        		   swal({

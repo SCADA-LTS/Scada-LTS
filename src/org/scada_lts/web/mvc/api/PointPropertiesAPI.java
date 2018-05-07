@@ -72,6 +72,7 @@ public class PointPropertiesAPI {
                     private ImplDefinition def;
                     private ChartRenderer chartRenderer;
                     private int engineeringUnits;
+                    private double tolerance;
 
 
                     public PropertiesPointToJSON(
@@ -84,7 +85,10 @@ public class PointPropertiesAPI {
                             TextRenderer textRenderer,
                             ImplDefinition def,
                             ChartRenderer chartRenderer,
-                            int engineeringUnits
+                            int engineeringUnits,
+                            double tolerance
+
+
 
                     ) {
                         this.loggingType = loggingType;
@@ -97,6 +101,7 @@ public class PointPropertiesAPI {
                         this.def = def;
                         this.chartRenderer = chartRenderer;
                         this.engineeringUnits = engineeringUnits;
+                        this.tolerance = tolerance;
                     }
 
                     public int getLoggingType() {
@@ -179,6 +184,13 @@ public class PointPropertiesAPI {
                         this.engineeringUnits = engineeringUnits;
                     }
 
+                    public double getTolerance() {
+                        return tolerance;
+                    }
+
+                    public void setTolerance(double tolerance) {
+                        this.tolerance = tolerance;
+                    }
                 }
 
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
@@ -191,7 +203,8 @@ public class PointPropertiesAPI {
                         dpvo.getTextRenderer(),
                         dpvo.getTextRenderer().getDef(),
                         dpvo.getChartRenderer(),
-                        dpvo.getEngineeringUnits()
+                        dpvo.getEngineeringUnits(),
+                        dpvo.getTolerance()
                 );
 
                 json = mapper.writeValueAsString(p);
