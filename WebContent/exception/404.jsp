@@ -17,8 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-
-<tag:page>
+<%@page import="com.serotonin.mango.Common"%>
+<%@page import="com.serotonin.mango.view.ShareUser"%>
+<tag:page js="view" onload="init">
 <br/>
 <span class="bigTitle">Page Not Found!</span><br/>
 <br/>
