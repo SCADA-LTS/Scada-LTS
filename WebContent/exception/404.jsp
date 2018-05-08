@@ -19,7 +19,7 @@
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="com.serotonin.mango.Common"%>
 <%@page import="com.serotonin.mango.view.ShareUser"%>
-<tag:page js="view" onload="init">
+<tag:page dwr="WatchListDwr" js="view" onload="init">
 <br/>
 <span class="bigTitle">Page Not Found!</span><br/>
 <br/>

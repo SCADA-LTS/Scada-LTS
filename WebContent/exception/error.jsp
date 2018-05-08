@@ -109,4 +109,3 @@ We apologize for the inconvenience.<br/>
 <a href="#" onclick="return toggleErrorData();"/><div id="errorDataMessage">Show error details</div></a><br/>
 <div id="errorData" style="display:none;"><pre>${stackTrace}</pre></div>
 
-<log:error message="${stackTrace}"/>
