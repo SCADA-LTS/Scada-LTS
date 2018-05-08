@@ -19,12 +19,14 @@
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="com.serotonin.mango.Common"%>
 <%@page import="com.serotonin.mango.view.ShareUser"%>
-<tag:page dwr="WatchListDwr" js="view" onload="init">
+<tag:page js="view" onload="init">
 <br/>
+<div style="text-align: center;">
 <span class="bigTitle">Page Not Found!</span><br/>
 <br/>
 The page that you requested was not found. Please check your URL
 and try your request again, or start again from the <a href="${pageContext.request.contextPath}/login.htm">login page</a>.<br/>
+</div>
 <br/>
 <br/>
 </tag:page>
