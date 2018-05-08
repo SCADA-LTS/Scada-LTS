@@ -66,14 +66,6 @@
       </tr>
       <tr>
         <td>
-        </br>
-        <div id="base_on_existing_point_chooser">
-             <select id="selected_base_on_existing_point_chooser">
-               <c:forEach items="${userPoints}" var="point">
-                 <sst:option value="${point.id}">${point.extendedName}</sst:option>
-               </c:forEach>
-             </select>
-         </div>
             <script>
                    function showEditChartRender(charRenerer) {
                       jQuery("#chartRendererNone").hide();
@@ -83,6 +75,69 @@
                       var selectorChartRenderer = "#" + charRenerer;
                       jQuery(selectorChartRenderer).show();
                    };
+
+
+                   function showAndSetLoginType(prop) {
+
+                       jQuery("#loggingType").val(prop.loggingType);
+
+                       // Interval
+                       if (prop.loggingType == 4) {
+                         jQuery("#intervalLoggingSection").show();
+                       } else {
+                         jQuery("#intervalLoggingSection").hide();
+                       }
+
+                       //When point value changes
+                       if (prop.loggingType == 1) {
+                         jQuery("#tolerance").removeAttr('disabled');
+                       } else {
+                         jQuery("#tolerance").attr('disabled','disabled');
+                       }
+
+                       // Discard Extreme values
+                       if (prop.discardExtremeValues) {
+                         jQuery("#discardLowLimit").removeAttr('disabled');
+                         jQuery("#discardHighLimit").removeAttr('disabled');
+                       } else {
+                         jQuery("#discardLowLimit").attr('disabled','disabled');
+                         jQuery("#discardHighLimit").attr('disabled','disabled');
+                       }
+
+                       // tolerance ok
+                       jQuery("#tolerance").val(prop.tolerance);
+
+                       // Interval logging period
+                       jQuery("#intervalLoggingPeriod").val(prop.intervalLoggingPeriod);
+
+                       // Interval logging period type
+                       jQuery("#intervalLoggingPeriodType").val(prop.intervalLoggingPeriodType);
+
+                       // Value type
+                       jQuery("#intervalLoggingType").val(prop.intervalLoggingType);
+
+                       // discard extreme values
+                       if (prop.discardExtremeValues) {
+                          jQuery("#discardExtremeValues").attr('checked','checked')
+                       } else {
+                          jQuery("#discardExtremeValues").removeAttr('checked');
+                       }
+
+                       jQuery("#discardExtremeValues").val(prop.discardExtremeValues);
+
+                       // discard low limit
+                       jQuery("#discardLowLimit").val(prop.discardLowLimit);
+
+                       // discard high limit
+                       jQuery("#discardHighLimit").val(prop.discardHighLimit);
+
+                       // set state of form base on loggingType
+
+                       jQuery("#purgePeriod").val(prop.purgePeriod);
+                       jQuery("#purgeType").val(prop.purgeType);
+                       jQuery("#defaultCacheSize").val(prop.defaultCacheSize);
+
+                   }
 
                   function baseOnExistingPoint(){
                        var idPointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].value;
@@ -104,6 +159,8 @@
 
                        var arrDictChartRendererImageTimePeriod = ["","","minute(s)", "hour(s)", "day(s)", "week(s)", "month(s)"];
                        var arrDictIntervalLoggingPeriod = ["","second(s)","minute(s)", "hour(s)", "day(s)", "week(s)", "month(s)"];
+
+
 
                        var arrDictEnginneringUnits = [
                                                 "square meters", /* 0 */
@@ -316,12 +373,12 @@
                             dataType: "json",
                             url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
-                           					        	            // Checking the appropriate type of login properties to generate an appropriate hint.
+
                            					        	            let htmlLogginProperties = "";
-                           					        	            console.log(properties.loggingType);
+
                            					        	            if (properties.loggingType == 1) {
 
-                           					        	              // When point value changes
+                           					        	              // When point value changes 1
                            					        	              htmlLogginProperties = ""
                            					        	                + "<li><b>Logging type:</b> " + arrDictLoggingType[properties.loggingType] + "</li>"
                                                                         + "<li><b>Tolerance:</b> " + properties.tolerance + "</li>"
@@ -331,9 +388,6 @@
                            					        	                (properties.loggingType == 3) ||
                            					        	                (properties.loggingType == 5) ) {
 
-                                                                      console.log( properties.loggingType );
-                                                                      console.log( arrDictLoggingType[properties.loggingType] );
-
                            					        	              // All data 2
                            					        	              // Do not log 3
                            					        	              // When point timestamp changes 5
@@ -341,19 +395,101 @@
                            					        	              htmlLogginProperties = ""
                            					        	                + "<li><b>Logging type:</b> " + arrDictLoggingType[properties.loggingType] + "</li>"
 
-                           					        	            } else if (
-                           					        	                properties.loggingType == 4
-                           					        	            ) {
+                           					        	            } else if (properties.loggingType == 4) {
 
                            					        	              // Interval 4
 
                                                                       htmlLogginProperties = ""
                                                                         + "<li><b>Logging type:</b> " + arrDictLoggingType[properties.loggingType] + "</li>"
                                                                         + "<li><b>Interval logging period:</b> Every:" + properties.intervalLoggingPeriod + " " + arrDictIntervalLoggingPeriod[properties.intervalLoggingPeriodType] + "</li>"
-
-
                            					        	            }
-                                                                    // console.log(JSON.stringify(properties));
+
+                                                                    htmlLogginProperties = ""
+                                                                       + "<li><b>Discard extreme values:</b> " + properties.discardExtremeValues + " low:" + properties.discardLowLimit + " high:" + properties.discardHighLimit + "</li>"
+
+                                                                    let textRenderer = "";
+
+                                                                    if (properties.def.name == "textRendererBinary") {
+                                                                        textRenderer = ""
+                                                                          + "<li><b>Text renderer properties:</b>  Binary </br>"
+                                                                          + "zero: " + properties.textRenderer.zeroLabel + " color:" + properties.textRenderer.zeroColour + "</br>"
+                                                                          + "one: " +  properties.textRenderer.oneLabel +  " color:" + properties.textRenderer.oneColour + "</li>";
+                                                                    }
+
+                                                                    if (properties.def.name == "textRendererPlain") {
+                                                                        textRenderer = ""
+                                                                          + "<li><b>Text renderer properties:</b>  Plain </br>"
+                                                                          + "Suffix: " + properties.textRenderer.suffix + "</li>";
+                                                                    }
+
+                                                                    if (properties.def.name == "textRendererMultistate") {
+                                                                       textRenderer = ""
+                                                                          + "<li><b>Text renderer properties:</b>  Multistate </br>";
+
+                                                                      for (var multistate in properties.textRenderer.multistateValues) {
+                                                                        textRenderer = textRenderer + "key: " + properties.textRenderer.multistateValues[multistate].key
+                                                                           + " text: " + properties.textRenderer.multistateValues[multistate].text
+                                                                           + " color: " + properties.textRenderer.multistateValues[multistate].colour;
+                                                                      }
+
+                                                                      textRenderer =+ "</li>";
+                                                                     }
+
+                                                                     if (properties.def.name == "textRendererAnalog") {
+                                                                        textRenderer =  ""
+                                                                          + "<li><b>Text renderer properties:</b>  Analog </br>"
+                                                                          + " Format: " + properties.textRenderer.format + "</br>"
+                                                                          + " Suffix: " + properties.textRenderer.metaText + "</li>";
+                                                                     }
+
+                                                                     if (properties.def.name == "textRendererRange") {
+
+                                                                        textRenderer = ""
+                                                                            + "<li><b>Text renderer properties:</b>  Range </br>"
+                                                                            + " Format: " + properties.textRenderer.format + "</br>";
+
+                                                                        for (var range in properties.textRenderer.rangeValues) {
+
+                                                                            textRenderer = textRenderer + "from: " + properties.textRenderer.rangeValues[range].from
+                                                                               + " to: " + properties.textRenderer.rangeValues[range].to
+                                                                               + " text: " + properties.textRenderer.rangeValues[range].text
+                                                                               + " color: " + properties.textRenderer.rangeValues[range].color;
+
+                                                                        }
+                                                                     }
+
+                                                                      if (properties.def.name == "textRendererTime") {
+                                                                            textRenderer = ""
+                                                                               + "<li><b>Text renderer properties:</b>  Time </br>"
+                                                                               + " Format: " + properties.textRenderer.format + "</br>"
+                                                                               + " Exponent: " + properties.textRenderer.conversionExponent + "</li>";
+                                                                      }
+
+                                                                      let chartRenderer = "";
+
+                                                                      if (properties.chartRenderer == null) {
+                                                                            chartRenderer = ""
+                                                                                + "<li><b>Chart renderer properties:</b>  None</li>";
+
+                                                                       } else  if (properties.chartRenderer.def.name == "chartRendererImage") {
+                                                                            chartRenderer = ""
+                                                                                + "<li><b>Chart renderer properties:</b>  Images</br>"
+                                                                                + "Time period:" + properties.chartRenderer.numberOfPeriods + " " + arrDictChartRendererImageTimePeriod[properties.chartRenderer.timePeriod] + "</li>";
+
+                                                                       } else if (properties.chartRenderer.def.name == "chartRendererStats") {
+
+                                                                            chartRenderer = ""
+                                                                                + "<li><b>Chart renderer properties:</b>  Statistics</br>"
+                                                                                + "Time period:" + properties.chartRenderer.numberOfPeriods + " " + arrDictChartRendererImageTimePeriod[properties.chartRenderer.timePeriod] + "</br>"
+                                                                                + "Include sum:" + properties.chartRenderer.includeSum + "</li>";
+
+                                                                       } else if (properties.chartRenderer.def.name == "chartRendererTable") {
+
+                                                                            chartRenderer = ""
+                                                                                + "<li><b>Chart renderer properties:</b>  Table</br>"
+                                                                                + "Limit:" + properties.chartRenderer.limit + "</li>";
+                                                                       }
+
                            					        	            swal({
                                                                       title: '<i>New</i> <u>configuration point</u>',
                                                                       type: 'warning',
@@ -363,16 +499,16 @@
                                                                         + "<ul class='gbul'> "
                                                                         + "<li><b>Engineering units:</b> " + arrDictEnginneringUnits[properties.engineeringUnits] + "</li>"
                                                                         + htmlLogginProperties
-                                                                        + "<li><b>Purge After:</b> " + properties.intervalLoggingPeriod + " " + arrDictPurge[properties.purgeType] + "</li>"
+                                                                        + "<li><b>Purge After:</b> " + properties.purgePeriod + " " + arrDictPurge[properties.purgeType] + "</li>"
                                                                         + "<li><b>Default cache size:</b> " + properties.defaultCacheSize + "</li>"
-                                                                        + "<li><b>Type key:</b> " + properties.typeKey + "</li>"
-                                                                        + "<li><b>Def:</b> " + properties.def.name + "</li>"
+                                                                        + textRenderer
+                                                                        + chartRenderer
                                                                         + "</ul></div>",
                                                                       showCloseButton: true,
                                                                       showCancelButton: true,
-                                                                      focusConfirm: false,
+                                                                      focusConfirm: true,
                                                                       confirmButtonText:
-                                                                        '<i class="fa fa-thumbs-up"></i> Great!',
+                                                                        '<i class="fa fa-thumbs-up"></i> Accept',
                                                                       confirmButtonAriaLabel: 'Thumbs up, great!',
                                                                       cancelButtonText:
                                                                       '<i class="fa fa-thumbs-down">Cancel</i>',
@@ -380,14 +516,10 @@
                                                                       customClass: "gbtest"
                                                                     }).then(function(isConfirm) {
                                                                         if (isConfirm.value) {
-                                                                          console.log(isConfirm);
-                                                                          console.log(JSON.stringify(properties));
 
                                                                           jQuery("#engineeringUnits").val(properties.engineeringUnits);
-                                                                          jQuery("#loggingType").val(properties.loggingType);
-                                                                          jQuery("#purgePeriod").val(properties.intervalLoggingPeriod);
-                                                                          jQuery("#purgeType").val(properties.purgeType);
-                                                                          jQuery("#defaultCacheSize").val(properties.defaultCacheSize);
+
+                                                                          showAndSetLoginType(properties);
 
                                                                           var currentTextRenderer = $("textRendererSelect").value;
 
@@ -474,8 +606,6 @@
                                                                             jQuery("#chartRendererTableLimit").val(properties.chartRenderer.limit);
                                                                           }
 
-                                                                          console.log(JSON.stringify(properties));
-
                                                                         } else {
                                                                             console.log(isConfirm);
                                                                         }
@@ -493,12 +623,33 @@
                            					        	});
                   }
             </script>
-            </br>
-            <div id="baseOnTemplate">
-                <input id="baseOnExistingPointBtn" type="button" value="Base on existing point" onclick="baseOnExistingPoint()" class="">
+
+            <div class="borderDiv marB marR">
+              <table>
+                <tr><td colspan="4">
+                  <span class="smallTitle">Configuration base on existing point</span>
+                </td></tr>
+
+                <tr>
+                  <td class="formLabelRequired">Select point:</td>
+                  <td colspan="2" class="formField">
+                    <select id="selected_base_on_existing_point_chooser">
+                                   <c:forEach items="${userPoints}" var="point">
+                                     <sst:option value="${point.id}">${point.extendedName}</sst:option>
+                                   </c:forEach>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="4">
+
+                    <input id="baseOnExistingPointBtn" type="button" value="Set configuration base on existing point" onclick="baseOnExistingPoint()" class="">
+                    <p>Note: changes require saving</p>
+                  </td>
+                </tr>
+
+              </table>
             </div>
-            </br>
-            </br>
 
         </td>
       </tr>

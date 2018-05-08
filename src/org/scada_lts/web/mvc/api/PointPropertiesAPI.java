@@ -65,7 +65,9 @@ public class PointPropertiesAPI {
                     private int loggingType;
                     private int intervalLoggingPeriod;
                     private int intervalLoggingPeriodType;
+                    private int intervalLoggingType;
                     private int purgeType;
+                    private int purgePeriod;
                     private int defaultCacheSize;
                     private String typeKey;
                     private TextRenderer textRenderer;
@@ -73,6 +75,9 @@ public class PointPropertiesAPI {
                     private ChartRenderer chartRenderer;
                     private int engineeringUnits;
                     private double tolerance;
+                    private boolean isDiscardExtremeValues;
+                    private double discardLowLimit;
+                    private double discardHighLimit;
 
 
                     public PropertiesPointToJSON(
@@ -80,21 +85,25 @@ public class PointPropertiesAPI {
                             int intervalLoggingPeriod,
                             int intervalLoggingPeriodType,
                             int purgeType,
+                            int purgePeriod,
                             int defaultCacheSize,
                             String typeKey,
                             TextRenderer textRenderer,
                             ImplDefinition def,
                             ChartRenderer chartRenderer,
                             int engineeringUnits,
-                            double tolerance
-
-
+                            double tolerance,
+                            int intervalLoggingType,
+                            boolean isDiscardExtremeValues,
+                            double discardLowLimit,
+                            double discardHighLimit
 
                     ) {
                         this.loggingType = loggingType;
                         this.intervalLoggingPeriod = intervalLoggingPeriod;
                         this.intervalLoggingPeriodType = intervalLoggingPeriodType;
                         this.purgeType = purgeType;
+                        this.purgePeriod =  purgePeriod;
                         this.defaultCacheSize = defaultCacheSize;
                         this.typeKey = typeKey;
                         this.textRenderer = textRenderer;
@@ -102,6 +111,11 @@ public class PointPropertiesAPI {
                         this.chartRenderer = chartRenderer;
                         this.engineeringUnits = engineeringUnits;
                         this.tolerance = tolerance;
+                        this.intervalLoggingType = intervalLoggingType;
+                        this.isDiscardExtremeValues = isDiscardExtremeValues;
+                        this.discardLowLimit = discardLowLimit;
+                        this.discardHighLimit = discardHighLimit;
+
                     }
 
                     public int getLoggingType() {
@@ -191,6 +205,46 @@ public class PointPropertiesAPI {
                     public void setTolerance(double tolerance) {
                         this.tolerance = tolerance;
                     }
+
+                    public int getIntervalLoggingType() {
+                        return intervalLoggingType;
+                    }
+
+                    public void setIntervalLoggingType(int intervalLoggingType) {
+                        this.intervalLoggingType = intervalLoggingType;
+                    }
+
+                    public boolean isDiscardExtremeValues() {
+                        return isDiscardExtremeValues;
+                    }
+
+                    public void setDiscardExtremeValues(boolean discardExtremeValues) {
+                        isDiscardExtremeValues = discardExtremeValues;
+                    }
+
+                    public double getDiscardLowLimit() {
+                        return discardLowLimit;
+                    }
+
+                    public void setDiscardLowLimit(double discardLowLimit) {
+                        this.discardLowLimit = discardLowLimit;
+                    }
+
+                    public double getDiscardHighLimit() {
+                        return discardHighLimit;
+                    }
+
+                    public void setDiscardHighLimit(double discardHighLimit) {
+                        this.discardHighLimit = discardHighLimit;
+                    }
+
+                    public int getPurgePeriod() {
+                        return purgePeriod;
+                    }
+
+                    public void setPurgePeriod(int purgePeriod) {
+                        this.purgePeriod = purgePeriod;
+                    }
                 }
 
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
@@ -198,13 +252,18 @@ public class PointPropertiesAPI {
                         dpvo.getIntervalLoggingPeriod(),
                         dpvo.getIntervalLoggingPeriodType(),
                         dpvo.getPurgeType(),
+                        dpvo.getPurgePeriod(),
                         dpvo.getDefaultCacheSize(),
                         dpvo.getTypeKey(),
                         dpvo.getTextRenderer(),
                         dpvo.getTextRenderer().getDef(),
                         dpvo.getChartRenderer(),
                         dpvo.getEngineeringUnits(),
-                        dpvo.getTolerance()
+                        dpvo.getTolerance(),
+                        dpvo.getIntervalLoggingType(),
+                        dpvo.isDiscardExtremeValues(),
+                        dpvo.getDiscardLowLimit(),
+                        dpvo.getDiscardHighLimit()
                 );
 
                 json = mapper.writeValueAsString(p);
@@ -447,6 +506,8 @@ public class PointPropertiesAPI {
                     }
 
                 }
+
+                //dpvo.isDiscardExtremeValues()
 
 
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
