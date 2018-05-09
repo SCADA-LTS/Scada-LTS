@@ -23,6 +23,7 @@
 <%@page import="com.serotonin.mango.util.freemarker.MangoEmailContent"%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 
+
 <tag:page dwr="SystemSettingsDwr" onload="init">
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
@@ -379,6 +380,31 @@
     function dbBackup() {
     	alert("Not implemented !");
     }
+
+    function refreshImages() {
+
+        var pathArray = location.href.split( '/' );
+        var protocol = pathArray[0];
+        var host = pathArray[2];
+        var appScada = pathArray[3];
+        var myLocation;
+        if (!myLocation) {
+     	   myLocation = protocol + "//" + host + "/" + appScada + "/";
+        }
+
+        jQuery.ajax({
+            type: 'GET',
+            dataType: 'text',
+            url:myLocation+"/api/resources/imagesRefresh",
+            success: function(msg){
+                alert("Success: the resource images has been refreshed");
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("Problem when refreshing assets:"+errorThrown.message);
+            }
+        });
+
+    }
     
     
     
@@ -506,6 +532,7 @@
         </td>
       </tr>
     </table>
+
     <table>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.systemLanguage"/></td>
@@ -518,7 +545,6 @@
       </tr>
     </table>
   </div>
-  
   <div class="borderDiv marB marR" style="clear:left;float:left">
     <table width="100%">
       <tr>
@@ -739,6 +765,21 @@
       </tr>
     </table>
   </div>
+  <div class="borderDiv marB marR" style="float:left">
+       <table width="100%">
+          <tr>
+             <td>
+               <span class="smallTitle">Cache images</span>
+             </td>
+          </tr>
+          <tr>
+             <td>
+               <button onClick="refreshImages()">Refresh</button>
+             </td>
+          </tr>
+       </table>
+  </div>
+
   <div class="borderDiv marB marR" style="clear:left;float:left">
     <table>
     <tr>
@@ -746,6 +787,7 @@
     </tr>
     </table>
   </div>
+
   <div class="" style="float:left; color:white">
   #branchName
   </div>

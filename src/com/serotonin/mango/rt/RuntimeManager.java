@@ -530,39 +530,40 @@ public class RuntimeManager {
 	}
 
 	public long purgeDataPointValues() {
-		/*
+
 		PointValueDao pointValueDao = new PointValueDao();
 		long count = pointValueDao.deleteAllPointData();
 		pointValueDao.compressTables();
 		for (Integer id : dataPoints.keySet())
 			updateDataPointValuesRT(id);
-		return count;*/
+		return count;
 		//TODO not allow the deletion of data should be switched to a new database
-		return 0;
+		//return 0;
 	}
 
 	public long purgeDataPointValues(int dataPointId, int periodType,
 			int periodCount) {
 		long before = DateUtils.minus(System.currentTimeMillis(), periodType,
 				periodCount);
-		return purgeDataPointValues(dataPointId, before);
+		long result = purgeDataPointValues(dataPointId, before);
+		return result;
 	}
 
 	public long purgeDataPointValues(int dataPointId) {
-		/*long count = new PointValueDao().deletePointValues(dataPointId);
+		long count = new PointValueDao().deletePointValues(dataPointId);
 		updateDataPointValuesRT(dataPointId);
-		return count;*/
+		return count;
 		//TODO not allow the deletion of data should be switched to a new database
-		return 0;
+		//return 0;
 	}
 
 	public long purgeDataPointValues(int dataPointId, long before) {
-		/*long count = new PointValueDao().deletePointValuesBefore(dataPointId,
+		long count = new PointValueDao().deletePointValuesBefore(dataPointId,
 				before);
 		if (count > 0)
 			updateDataPointValuesRT(dataPointId);
-		return count;*/
-		return 0;
+		return count;
+		//return 0;
 	}
 
 	private void updateDataPointValuesRT(int dataPointId) {

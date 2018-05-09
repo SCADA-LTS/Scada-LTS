@@ -18,4 +18,4 @@
 --%><%@include file="/WEB-INF/tags/decl.tagf"%><%--
 --%><%@tag body-content="empty"%><%--
 --%><%@attribute name="id"%><%--
---%><tag:img png="help" title="common.help" style="display:inline" onclick="help('${id}', this);"/>
+--%><tag:img png="help" title="common.help" style="display:inline; width:auto; height: 16px; vertical-align:bottom; margin-bottom: 4px;" onclick="help('${id}', this);"/>

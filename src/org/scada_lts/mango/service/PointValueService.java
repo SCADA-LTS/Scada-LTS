@@ -288,9 +288,8 @@ public class PointValueService implements MangoPointValues {
 			}
 			
 			PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id,shortString, longString, sourceType, sourceId);
-			
 			PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
-           
+			
 		}
 
 		return id;

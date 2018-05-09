@@ -193,7 +193,7 @@
     }
   </script>
   
-  <table>
+  <table class="subPageHeader">
     <tr>
       <td rowspan="2" valign="top">
         <div class="borderDiv">

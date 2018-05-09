@@ -92,11 +92,10 @@
             	});
                 
                 jQuery("#settingsPointList").trigger('chosen:updated');
-                          
+
+                positionEditor(compId, "settingsEditorPopup");
                 show("settingsEditorPopup");
             });
-            
-            positionEditor(compId, "settingsEditorPopup");
         };
         
         this.close = function() {
