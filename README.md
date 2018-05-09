@@ -44,7 +44,8 @@ Here is two of the several start options:
 * Install mysql: `apt-get install mysql-server`.
 * Login to mysql: `mysql -u [user] -p`.
 * Create db:`create dababase scadalts;`.
-* Copy ScadaBR.war to dir tomacat webapps: `cp ScadaBR.war /var/lib/tomcat7/webapps/`.
+* Copy ScadaBR.war & ScadaLTS.war to dir tomacat webapps: `cp ScadaBR.war /var/lib/tomcat7/webapps/`.
+* Restart tomcat7 to generate ScadaLTS folder: `/etc/init.d/tomcat7 restart`
 * Change config file env.properties set connection to db: `vim /var/lib/tomcat7/webapps/ScadaBR/WEB-INF/classes/env.properties`.
 * Restart tomcat7: `/etc/init.d/tomcat7 restart`
 
