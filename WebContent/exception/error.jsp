@@ -22,68 +22,69 @@
 <%
 // Store the stack trace as a request attribute.
 java.io.StringWriter sw = new java.io.StringWriter();
-if (exception != null)
-    exception.printStackTrace(new java.io.PrintWriter(sw));
+// if (exception != null)
+//     exception.printStackTrace(new java.io.PrintWriter(sw));
 
 // Write the request url into the message.
-sw.append("\r\nREQUEST URL\r\n");
-sw.append(request.getRequestURL());
+// sw.append("\r\nREQUEST URL\r\n");
+// sw.append(request.getRequestURL());
 
 // Write the request parameters.
-sw.append("\r\n\r\nREQUEST PARAMETERS\r\n");
-java.util.Enumeration names = request.getParameterNames();
-while (names.hasMoreElements()) {
-    String name = (String) names.nextElement();
-    sw.append("   ").append(name).append('=').append(request.getParameter(name)).append("\r\n");
-}
+// sw.append("\r\n\r\nREQUEST PARAMETERS\r\n");
+// java.util.Enumeration names = request.getParameterNames();
+// while (names.hasMoreElements()) {
+//     String name = (String) names.nextElement();
+//     sw.append("   ").append(name).append('=').append(request.getParameter(name)).append("\r\n");
+// }
 
 // Write the request headers.
-sw.append("\r\n\r\nREQUEST HEADERS\r\n");
-names = request.getHeaderNames();
-while (names.hasMoreElements()) {
-    String name = (String) names.nextElement();
-    sw.append("   ").append(name).append('=').append(request.getHeader(name)).append("\r\n");
-}
-
-// Write the page attributes.
-//sw.append("\r\n\r\nPAGE ATTRIBUTES\r\n");
-//names = pageContext.getAttributeNames();
+//sw.append("\r\n\r\nREQUEST HEADERS\r\n");
+//names = request.getHeaderNames();
 //while (names.hasMoreElements()) {
 //    String name = (String) names.nextElement();
-//    sw.append("   ").append(name).append('=').append(pageContext.getAttribute(name)).append("\r\n");
+//    sw.append("   ").append(name).append('=').append(request.getHeader(name)).append("\r\n");
 //}
 
+// Write the page attributes.
+// sw.append("\r\n\r\nPAGE ATTRIBUTES\r\n");
+// names = pageContext.getAttributeNames();
+// while (names.hasMoreElements()) {
+//     String name = (String) names.nextElement();
+//     sw.append("   ").append(name).append('=').append(pageContext.getAttribute(name)).append("\r\n");
+// }
+
 // Write the request attributes.
-sw.append("\r\n\r\nREQUEST ATTRIBUTES\r\n");
-names = request.getAttributeNames();
-while (names.hasMoreElements()) {
-    String name = (String) names.nextElement();
-    sw.append("   ").append(name).append('=').append(String.valueOf(request.getAttribute(name))).append("\r\n");
-}
+// sw.append("\r\n\r\nREQUEST ATTRIBUTES\r\n");
+// names = request.getAttributeNames();
+// while (names.hasMoreElements()) {
+//     String name = (String) names.nextElement();
+//     sw.append("   ").append(name).append('=').append(String.valueOf(request.getAttribute(name))).append("\r\n");
+// }
 
-if (request.getSession() != null) {
-    // Write the session attributes.
-    sw.append("\r\n\r\nSESSION ATTRIBUTES\r\n");
-    names = session.getAttributeNames();
-    while (names.hasMoreElements()) {
-        String name = (String) names.nextElement();
-        sw.append("   ").append(name).append('=').append(String.valueOf(session.getAttribute(name))).append("\r\n");
-    }
-}
+// if (request.getSession() != null) {
+//     // Write the session attributes.
+//     sw.append("\r\n\r\nSESSION ATTRIBUTES\r\n");
+//     names = session.getAttributeNames();
+//     while (names.hasMoreElements()) {
+//         String name = (String) names.nextElement();
+//         sw.append("   ").append(name).append('=').append(String.valueOf(session.getAttribute(name))).append("\r\n");
+//     }
+// }
 
-if (request.getSession() != null) {
-    // Write the context attributes.
-    sw.append("\r\n\r\nCONTEXT ATTRIBUTES\r\n");
-    names = session.getServletContext().getAttributeNames();
-    while (names.hasMoreElements()) {
-        String name = (String) names.nextElement();
-        sw.append("   ").append(name).append('=').append(String.valueOf(session.getServletContext().getAttribute(name))).append("\r\n");
-    }
-}
+// if (request.getSession() != null) {
+//     // Write the context attributes.
+//     sw.append("\r\n\r\nCONTEXT ATTRIBUTES\r\n");
+//     names = session.getServletContext().getAttributeNames();
+//     while (names.hasMoreElements()) {
+//         String name = (String) names.nextElement();
+//         sw.append("   ").append(name).append('=').append(String.valueOf(session.getServletContext().getAttribute(name))).append("\r\n");
+//     }
+// }
 
-request.setAttribute("stackTrace", sw.toString());
+// request.setAttribute("stackTrace", sw.toString());
 %>
-
+<tag:page>
+<div style="text-align: center;">
 <br/>
 <span class="bigTitle">System exception!</span><br/>
 <br/>
@@ -106,6 +107,8 @@ We apologize for the inconvenience.<br/>
       return false;
   }
 </script>
-<a href="#" onclick="return toggleErrorData();"/><div id="errorDataMessage">Show error details</div></a><br/>
-<div id="errorData" style="display:none;"><pre>${stackTrace}</pre></div>
+<!--<a href="#" onclick="return toggleErrorData();"/><div id="errorDataMessage">Show error details</div></a><br/>
+<div id="errorData" style="display:none;"><pre>${stackTrace}</pre></div>-->
+</div>
+</tag:page>
 

@@ -17,9 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<%@page import="com.serotonin.mango.Common"%>
-<%@page import="com.serotonin.mango.view.ShareUser"%>
-<tag:page js="view" onload="init">
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt_rt" %>
+<fmt:setBundle basename="messages" />
+<tag:page>
 <br/>
 <div style="text-align: center;">
 <span class="bigTitle">Page Not Found!</span><br/>
@@ -30,3 +30,4 @@ and try your request again, or start again from the <a href="${pageContext.reque
 <br/>
 <br/>
 </tag:page>
+
