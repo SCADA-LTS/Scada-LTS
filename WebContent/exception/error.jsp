@@ -83,7 +83,7 @@ java.io.StringWriter sw = new java.io.StringWriter();
 
 // request.setAttribute("stackTrace", sw.toString());
 %>
-<tag:page>
+<tag:page onload="hideAlarms">
 <div style="text-align: center;">
 <br/>
 <span class="bigTitle">System exception!</span><br/>
@@ -94,6 +94,10 @@ We apologize for the inconvenience.<br/>
 <br/>
 
 <script type="text/javascript">
+    function hideAlarms() {
+          document.getElementById("eventsRow").style.display = "none";
+    }
+
   function toggleErrorData() {
       var ed = document.getElementById("errorData");
       if (ed.style.display == "none") {

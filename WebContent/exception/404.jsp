@@ -19,7 +19,12 @@
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt_rt" %>
 <fmt:setBundle basename="messages" />
-<tag:page>
+<tag:page onload="hideAlarms">
+<script type="text/javascript">
+    function hideAlarms() {
+          document.getElementById("eventsRow").style.display = "none";
+    }
+</script>
 <br/>
 <div style="text-align: center;">
 <span class="bigTitle">Page Not Found!</span><br/>
