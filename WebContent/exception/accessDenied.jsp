@@ -73,6 +73,8 @@ if (request.getSession() != null) {
 request.setAttribute("stackTrace", sw.toString());
 %>
 
+<tag:page>
+<div style="text-align: center;">
 <br/>
 <span class="bigTitle">Permission denied!</span><br/>
 <br/>
@@ -81,3 +83,5 @@ for review by a system administrator.<br/>
 <br/>
 
 <log:error message="${stackTrace}"/>
+</div>
+</tag:page>
