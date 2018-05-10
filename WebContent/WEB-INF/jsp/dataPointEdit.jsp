@@ -84,6 +84,7 @@
                        // Interval
                        if (prop.loggingType == 4) {
                          jQuery("#intervalLoggingSection").show();
+
                        } else {
                          jQuery("#intervalLoggingSection").hide();
                        }
@@ -108,10 +109,11 @@
                        jQuery("#tolerance").val(prop.tolerance);
 
                        // Interval logging period
-                       jQuery("#intervalLoggingPeriod").val(prop.intervalLoggingPeriod);
+
+                       jQuery("[name='intervalLoggingPeriod'").val(prop.intervalLoggingPeriod);
 
                        // Interval logging period type
-                       jQuery("#intervalLoggingPeriodType").val(prop.intervalLoggingPeriodType);
+                       jQuery("[name='intervalLoggingPeriodType']").val(prop.intervalLoggingPeriodType);
 
                        // Value type
                        jQuery("#intervalLoggingType").val(prop.intervalLoggingType);
@@ -140,7 +142,7 @@
                    }
 
                    function setConfig(properties) {
-                      jQuery("#engineeringUnits").val(properties.engineeringUnits);
+                      jQuery('[name="engineeringUnits"]').val(properties.engineeringUnits);
 
                       showAndSetLoginType(properties);
 
@@ -510,7 +512,7 @@
                                                                         + "<li><b>Interval logging period:</b> Every:" + properties.intervalLoggingPeriod + " " + arrDictIntervalLoggingPeriod[properties.intervalLoggingPeriodType] + "</li>"
                            					        	            }
 
-                                                                    htmlLogginProperties = ""
+                                                                    htmlLogginProperties = htmlLogginProperties + ""
                                                                        + "<li><b>Discard extreme values:</b> " + properties.discardExtremeValues + " low:" + properties.discardLowLimit + " high:" + properties.discardHighLimit + "</li>"
 
                                                                     let textRenderer = "";
@@ -529,16 +531,18 @@
                                                                     }
 
                                                                     if (properties.def.name == "textRendererMultistate") {
+
                                                                        textRenderer = ""
                                                                           + "<li><b>Text renderer properties:</b>  Multistate </br>";
 
                                                                       for (var multistate in properties.textRenderer.multistateValues) {
                                                                         textRenderer = textRenderer + "key: " + properties.textRenderer.multistateValues[multistate].key
                                                                            + " text: " + properties.textRenderer.multistateValues[multistate].text
-                                                                           + " color: " + properties.textRenderer.multistateValues[multistate].colour;
+                                                                           + " color: " + properties.textRenderer.multistateValues[multistate].colour + "</br>";
                                                                       }
 
-                                                                      textRenderer =+ "</li>";
+                                                                      textRenderer = textRenderer + "</li>";
+
                                                                      }
 
                                                                      if (properties.def.name == "textRendererAnalog") {
@@ -659,10 +663,11 @@
                 </tr>
                 <tr>
                   <td colspan="4">
-                    <input id="baseOnExistingPointBtn" type="button" value="Set configuration base on existing point (from hints of changes)" onclick="baseOnExistingPoint()">
+                    <input id="baseOnExistingPointBtn" type="button" value="Set configuration base on existing point" onclick="baseOnExistingPoint()">
                   </td>
                 </tr>
-                <tr>
+
+                <tr style="display:none">
                   <td colspan="4">
                       <input id="baseOnExistingPointBtnWithOutHint" type="button" value="Set configuration base on existing point (no hint of change)" onclick="baseOnExistingPointWithOutHint()">
                   </td>
