@@ -83,7 +83,7 @@ java.io.StringWriter sw = new java.io.StringWriter();
 
 // request.setAttribute("stackTrace", sw.toString());
 %>
-<tag:page onload="hideAlarms">
+<tag:page onload="hideAlarmsAndShowTimestamp">
 <div style="text-align: center;">
 <br/>
 <span class="bigTitle">System exception!</span><br/>
@@ -92,10 +92,30 @@ The server has experienced an exception processing your last request. The except
 system administrators will be notified of this problem. You may continue to use the site. 
 We apologize for the inconvenience.<br/>
 <br/>
+Please provide the following code to the administrator to identify the problem:
+<div id="errorTimestamp" style="margin-top:5px; font-size: 20px; color:#333333; margin-bottom:20px;"></div>
 
 <script type="text/javascript">
-    function hideAlarms() {
+    function hideAlarmsAndShowTimestamp() {
           document.getElementById("eventsRow").style.display = "none";
+          var today = new Date();
+          var ms = today.getMilliseconds();
+          var sc = today.getSeconds();
+          var mn = today.getMinutes();
+          var hr = today.getHours();
+          var dd = today.getDate();
+          var mm = today.getMonth()+1; //January is 0!
+          var yyyy = today.getFullYear();
+          if(hr<10) ms = '0' + ms;
+          if(hr<100) ms = '0' + ms;
+          if(sc<10) sc = '0' + sc;
+          if(mn<10) mn = '0' + mn;
+          if(hr<10) hr = '0' + hr;
+          if(dd<10) dd = '0' + dd;
+          if(mm<10) mm = '0' + mm;
+          var date = yyyy + mm + dd + hr + mn + sc + ms;
+
+          document.getElementById("errorTimestamp").innerHTML = date;
     }
 
   function toggleErrorData() {
