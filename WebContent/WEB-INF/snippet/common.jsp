@@ -17,6 +17,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%><%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %><%--
 --%><%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt_rt" %><%--
+--%><fmt:setBundle basename="messages" /><%--
 --%><%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %><%--
 --%><%@ taglib prefix="sst" uri="http://www.serotoninsoftware.com/tags" %><%--
 --%><%@ taglib prefix="mango" uri="/WEB-INF/tld/mango.tld" %><%--

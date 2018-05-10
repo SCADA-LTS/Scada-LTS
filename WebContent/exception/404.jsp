@@ -17,11 +17,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt_rt" %>
+<fmt:setBundle basename="messages" />
+<tag:page onload="hideAlarms">
+<script type="text/javascript">
+    function hideAlarms() {
+          document.getElementById("eventsRow").style.display = "none";
+    }
+</script>
 <br/>
+<div style="text-align: center;">
 <span class="bigTitle">Page Not Found!</span><br/>
 <br/>
 The page that you requested was not found. Please check your URL
 and try your request again, or start again from the <a href="${pageContext.request.contextPath}/login.htm">login page</a>.<br/>
+</div>
 <br/>
 <br/>
+</tag:page>
+

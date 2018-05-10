@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%><%@include file="/WEB-INF/tags/decl.tagf" %><%--
+--%><%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt_rt" %><%--
+--%><fmt:setBundle basename="messages" /><%--
 --%><%@tag body-content="empty" %><%--
 --%><%@attribute name="event" type="com.serotonin.mango.rt.event.EventInstance" rtexprvalue="true" %><%--
 --%><%@attribute name="eventBean" type="com.serotonin.mango.web.dwr.beans.EventInstanceBean" %><%--
