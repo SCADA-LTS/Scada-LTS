@@ -67,6 +67,16 @@
       <tr>
         <td>
             <script>
+
+                   function checkType(pointDataTypeIdFromNewConfiguration) {
+                     let existingDataTypeId = dataTypeId;
+
+                     console.log("existingDataTypeId:" + existingDataTypeId);
+                     console.log("dataTypeId:" + pointDataTypeIdFromNewConfiguration);
+
+                     return existingDataTypeId == pointDataTypeIdFromNewConfiguration;
+                   }
+
                    function showEditChartRender(charRenerer) {
                       jQuery("#chartRendererNone").hide();
                       jQuery("#chartRendererTable").hide();
@@ -482,7 +492,10 @@
                             url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
 
+
                            					        	            let htmlLogginProperties = "";
+                           					        	            console.log("dataTypeId:" + dataTypeId);
+                           					        	            console.log(JSON.stringify(properties));
 
                            					        	            if (properties.loggingType == 1) {
 
@@ -599,6 +612,9 @@
                                                                                 + "<li><b>Chart renderer properties:</b>  Table</br>"
                                                                                 + "Limit:" + properties.chartRenderer.limit + "</li>";
                                                                        }
+                                                                       let textConfirmButton = "";
+
+                                                                       let setConfirmButton = checkType(properties.dataTypeId);
 
                            					        	            swal({
                                                                       title: '<i>New</i> <u>configuration point</u>',
@@ -616,7 +632,8 @@
                                                                         + "</ul></div>",
                                                                       showCloseButton: true,
                                                                       showCancelButton: true,
-                                                                      focusConfirm: true,
+                                                                      showConfirmButton: setConfirmButton,
+                                                                      focusConfirm: setConfirmButton,
                                                                       confirmButtonText:
                                                                         '<i class="fa fa-thumbs-up"></i> Accept',
                                                                       confirmButtonAriaLabel: 'Thumbs up, great!',
