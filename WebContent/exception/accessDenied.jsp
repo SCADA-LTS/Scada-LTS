@@ -18,7 +18,7 @@
 --%>
 <%@ page isErrorPage="true" %>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<%@ include file="/WEB-INF/jsp/include/stacktrace.jsp" %>
+<%@ include file="/WEB-INF/jsp/include/log.jsp" %>
 
 <tag:page>
 <div style="text-align: center;">

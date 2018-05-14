@@ -171,6 +171,10 @@ function vcOut(base) {
     hideLayer(base +'Controls');
 };
 
+let errh=function (msg, exc) {
+           alert("Incorrect format. The point value has not been changed. " + msg);
+}
+
 
 //
 // Anonymous views
@@ -184,9 +188,7 @@ mango.view.initAnonymousView = function(viewId) {
 
 mango.view.anon = {};
 mango.view.anon.setPoint = function(pointId, viewComponentId, value) {
-    dwr.engine.setErrorHandler(errh=function (msg, exc) {
-           alert("Incorrect format. The point value has not been changed. " + msg);
-    });
+    dwr.engine.setErrorHandler(errh);
     show("c"+ viewComponentId +"Changing");
     mango.view.hideChange("c"+ viewComponentId +"Change");
     ViewDwr.setViewPointAnon(mango.view.anon.viewId, viewComponentId, value, function(viewComponentId) {
@@ -206,9 +208,7 @@ mango.view.initNormalView = function() {
 
 mango.view.norm = {};
 mango.view.norm.setPoint = function(pointId, viewComponentId, value) {
-    dwr.engine.setErrorHandler(errh=function (msg, exc) {
-           alert("Incorrect format. The point value has not been changed. " + msg);
-    });
+    dwr.engine.setErrorHandler(errh);
     show("c"+ viewComponentId +"Changing");
     mango.view.hideChange("c"+ viewComponentId +"Change");
     ViewDwr.setViewPoint(viewComponentId, value, function(viewComponentId) {
@@ -273,9 +273,7 @@ mango.view.watchList.reset = function() {
 };
 
 mango.view.watchList.setPoint = function(pointId, componentId, value) {
-    dwr.engine.setErrorHandler(errh=function (msg, exc) {
-           alert("Incorrect format. The point value has not been changed. " + msg);
-    });
+    dwr.engine.setErrorHandler(errh);
 
     startImageFader("p"+ pointId +"Changing");
     mango.view.hideChange("p"+ pointId +"Change");
@@ -357,9 +355,7 @@ mango.view.initPointDetails = function() {
 
 mango.view.pointDetails = {};
 mango.view.pointDetails.setPoint = function(pointId, componentId, value) {
-    dwr.engine.setErrorHandler(errh=function (msg, exc) {
-           alert("Incorrect format. The point value has not been changed. " + msg);
-    });
+    dwr.engine.setErrorHandler(errh);
     startImageFader("pointChanging");
     DataPointDetailsDwr.setPoint(pointId, componentId, value, function(componentId) {
         stopImageFader("pointChanging");
