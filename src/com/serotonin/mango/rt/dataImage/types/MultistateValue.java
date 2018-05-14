@@ -27,13 +27,7 @@ public class MultistateValue extends MangoValue implements Comparable<Multistate
     public static MultistateValue parseMultistate(String s) {
         if (s == null)
             return new MultistateValue(0);
-        try {
-            return new MultistateValue(Integer.parseInt(s));
-        }
-        catch (NumberFormatException e) {
-            // no op
-        }
-        return new MultistateValue(0);
+        return new MultistateValue(Integer.parseInt(s));
     }
 
     private final int value;
