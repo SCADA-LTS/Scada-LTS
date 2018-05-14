@@ -24,25 +24,41 @@
      <script type="text/javascript" src="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.js"></script>
 
      <style type="text/css">
-         .swal2-icon {
-            zoom: 0.4;
-         }
+
          #swal2-title {
-            font-size: 1em;
+            font-size: 16px;
          }
-         .gbtest {
+         .scada-swal2 {
             color: blue !important;
-            text-decoration: bold;
-            text-size: 1em;
+            text-size: 12em;
          }
          .swal-content {
-            font-size: 0.8em;
-          }
-         .gbul {
+            font-size: 12px;
+         }
+         .scada-swal-ul {
+            text-align: left;
+            font-weight: bold;
+            list-style-type: none;
+            font-size: 12px;
+            margin-left: 0px;
+            padding: 0;
+         }
+         .scada-swal-ul2 {
             text-align: left;
             list-style-type: none;
-            margin: 0;
+            font-weight: normal;
+            margin-left: 10px;
             padding: 0;
+         }
+         .scada-swal-content {
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 14px;
+         }
+         .swal2-cancel {
+           font-size: 0.8em;
+         }
+         .swal2-actions {
+           font-size: 0.8em;
          }
      </style>
 
@@ -56,7 +72,6 @@
         <td valign="top">
           <%@ include file="/WEB-INF/jsp/pointEdit/pointProperties.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/valuePurge.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/textRenderer.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/chartRenderer.jsp" %>
         </td>
@@ -67,6 +82,12 @@
       <tr>
         <td>
             <script>
+
+                   function checkType(pointDataTypeIdFromNewConfiguration) {
+                     let existingDataTypeId = dataTypeId;
+                     return existingDataTypeId == pointDataTypeIdFromNewConfiguration;
+                   }
+
                    function showEditChartRender(charRenerer) {
                       jQuery("#chartRendererNone").hide();
                       jQuery("#chartRendererTable").hide();
@@ -84,6 +105,7 @@
                        // Interval
                        if (prop.loggingType == 4) {
                          jQuery("#intervalLoggingSection").show();
+
                        } else {
                          jQuery("#intervalLoggingSection").hide();
                        }
@@ -108,10 +130,11 @@
                        jQuery("#tolerance").val(prop.tolerance);
 
                        // Interval logging period
-                       jQuery("#intervalLoggingPeriod").val(prop.intervalLoggingPeriod);
+
+                       jQuery("[name='intervalLoggingPeriod'").val(prop.intervalLoggingPeriod);
 
                        // Interval logging period type
-                       jQuery("#intervalLoggingPeriodType").val(prop.intervalLoggingPeriodType);
+                       jQuery("[name='intervalLoggingPeriodType']").val(prop.intervalLoggingPeriodType);
 
                        // Value type
                        jQuery("#intervalLoggingType").val(prop.intervalLoggingType);
@@ -140,7 +163,7 @@
                    }
 
                    function setConfig(properties) {
-                      jQuery("#engineeringUnits").val(properties.engineeringUnits);
+                      jQuery('[name="engineeringUnits"]').val(properties.engineeringUnits);
 
                       showAndSetLoginType(properties);
 
@@ -446,10 +469,157 @@
                                                                   "" /* 200 */
                   ];
 
+                  function confirmText(properties) {
+
+                      let result = "";
+
+                      let htmlLogginProperties = "";
+
+                      if (properties.loggingType == 1) {
+                          // When point value changes 1
+                          htmlLogginProperties = ""
+                          + "<li>Logging type: " + arrDictLoggingType[properties.loggingType] + "</li>"
+                          + "<li>Tolerance: " + properties.tolerance + "</li>"
+                      } else if (
+                        (properties.loggingType == 2) ||
+                        (properties.loggingType == 3) ||
+                        (properties.loggingType == 5) ) {
+
+                        // All data 2
+                        // Do not log 3
+                        // When point timestamp changes 5
+
+                        htmlLogginProperties = ""
+                        + "<li>Logging type: " + arrDictLoggingType[properties.loggingType] + "</li>";
+
+                      } else if (properties.loggingType == 4) {
+
+                        // Interval 4
+                        htmlLogginProperties = ""
+                        + "<li>Logging type: " + arrDictLoggingType[properties.loggingType] + "</li>"
+                        + "<li>Interval logging period: Every:" + properties.intervalLoggingPeriod + " " + arrDictIntervalLoggingPeriod[properties.intervalLoggingPeriodType] + "</li>"
+                      }
+
+                      htmlLogginProperties = htmlLogginProperties + ""
+                      + "<li>Discard extreme values: " + properties.discardExtremeValues
+                      + "<ul class='scada-swal-ul2'>"
+                      + "<li>low:" + properties.discardLowLimit + "</li>"
+                      + "<li>high:" + properties.discardHighLimit + "</li></ul></li>"
+
+                      let textRenderer = "";
+
+                      if (properties.def.name == "textRendererBinary") {
+                        textRenderer = ""
+                        + "<li>Text renderer properties: Binary"
+                        + "<ul class='scada-swal-ul2'>"
+                        + "<li>zero: " + properties.textRenderer.zeroLabel + " color:" + properties.textRenderer.zeroColour + "</li>"
+                        + "<li>one: " +  properties.textRenderer.oneLabel +  " color:" + properties.textRenderer.oneColour + "</li></ul></li>";
+                      }
+
+                      if (properties.def.name == "textRendererPlain") {
+                        textRenderer = ""
+                        + "<li>Text renderer properties: Plain"
+                        + "<ul class='scada-swal-ul2'>"
+                        + "<li>Suffix: " + properties.textRenderer.suffix + "</li></ul></li>";
+                      }
+
+                      if (properties.def.name == "textRendererMultistate") {
+
+                        textRenderer = ""
+                        + "<li>Text renderer properties: Multistate "
+                        + "<ul class='scada-swal-ul2'>";
+
+                        for (var multistate in properties.textRenderer.multistateValues) {
+                            textRenderer = textRenderer + "<li>key: " + properties.textRenderer.multistateValues[multistate].key
+                            + " text: " + properties.textRenderer.multistateValues[multistate].text
+                            + " color: " + properties.textRenderer.multistateValues[multistate].colour + "</li>";
+                        }
+
+                        textRenderer = textRenderer + "</ul></li>";
+                      }
+
+                      if (properties.def.name == "textRendererAnalog") {
+                        textRenderer =  ""
+                        + "<li>Text renderer properties: Analog "
+                        + "<ul class='scada-swal-ul2'>"
+                        + "<li> Format: " + properties.textRenderer.format + "</li>"
+                        + "<li> Suffix: " + properties.textRenderer.metaText + "</li></ul></li>";
+                      }
+
+                      if (properties.def.name == "textRendererRange") {
+
+                        textRenderer = ""
+                        + "<li>Text renderer properties: Range "
+                        + "<ul class='scada-swal-ul2'>"
+                        + "<li> Format: " + properties.textRenderer.format + "</li>";
+
+                        for (var range in properties.textRenderer.rangeValues) {
+
+                            textRenderer = textRenderer + "<li>from: " + properties.textRenderer.rangeValues[range].from
+                            + " to: " + properties.textRenderer.rangeValues[range].to
+                            + " text: " + properties.textRenderer.rangeValues[range].text
+                            + " color: " + properties.textRenderer.rangeValues[range].color + "</li>";
+
+                        }
+
+                        textRenderer = textRenderer + "</ul></li>";
+                      }
+
+                      if (properties.def.name == "textRendererTime") {
+                        textRenderer = ""
+                            + "<li>Text renderer properties: Time <ul class='scada-swal-ul2'>"
+                            + "<li>Format: " + properties.textRenderer.format + "</li>"
+                            + "<li>Exponent: " + properties.textRenderer.conversionExponent + "</li></ul></li>";
+                      }
+
+                      let chartRenderer = "";
+
+                      if (properties.chartRenderer == null) {
+                        chartRenderer = ""
+                            + "<li>Chart renderer properties: None</li>";
+
+                      } else  if (properties.chartRenderer.def.name == "chartRendererImage") {
+
+                        chartRenderer = ""
+                        + "<li>Chart renderer properties: Images<ul class='scada-swal-ul2'>"
+                        + "<li>Time period:" + properties.chartRenderer.numberOfPeriods + " " + arrDictChartRendererImageTimePeriod[properties.chartRenderer.timePeriod] + "</li></ul></li>";
+
+                      } else if (properties.chartRenderer.def.name == "chartRendererStats") {
+
+                        chartRenderer = ""
+                        + "<li>Chart renderer properties: Statistics<ul class='scada-swal-ul2'>"
+                        + "<li>Time period:" + properties.chartRenderer.numberOfPeriods + " " + arrDictChartRendererImageTimePeriod[properties.chartRenderer.timePeriod] + "</li>"
+                        + "<li>Include sum:" + properties.chartRenderer.includeSum + "</li></ul></li>";
+
+                      } else if (properties.chartRenderer.def.name == "chartRendererTable") {
+
+                        chartRenderer = ""
+                        + "<li>Chart renderer properties: Table<ul class='scada-swal-ul2'>"
+                        + "<li>Limit:" + properties.chartRenderer.limit + "</li></ul></li>";
+                      }
+
+                      let textConfirmButton = "";
+
+                      let bCheckedType = checkType(properties.dataTypeId);
+
+                      let namePointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].text;
+
+                      result = "<div class='gb-content'> "
+                        + "<p><strong>basing on</strong> <i>" + namePointConfigurationToBaseOnExistingPoint + "</i></p>"
+                        + "<ul class='scada-swal-ul'> "
+                        + "<li>Engineering units: " + arrDictEnginneringUnits[properties.engineeringUnits] + "</li>"
+                        + htmlLogginProperties
+                        + "<li>Purge After: " + properties.purgePeriod + " " + arrDictPurge[properties.purgeType] + "</li>"
+                        + "<li>Default cache size: " + properties.defaultCacheSize + "</li>"
+                        + textRenderer
+                        + chartRenderer
+                        + "</ul></div>";
+
+                      return result;
+                  }
 
                   function baseOnExistingPointWithOutHint() {
-                    var idPointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].value;
-                    var namePointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].text;
+                    let idPointConfigurationToBaseOnExistingPoint = jQuery('#selected_base_on_existing_point_chooser').find(":selected")[0].value;
 
                     jQuery.ajax({
                             type: "GET",
@@ -480,146 +650,35 @@
                             url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
 
-                           					        	            let htmlLogginProperties = "";
+                                                                    let bCheckedType = checkType(properties.dataTypeId);
 
-                           					        	            if (properties.loggingType == 1) {
+                                                                    let htmlConfirmText = "";
+                                                                    let htmlTitle = "";
 
-                           					        	              // When point value changes 1
-                           					        	              htmlLogginProperties = ""
-                           					        	                + "<li><b>Logging type:</b> " + arrDictLoggingType[properties.loggingType] + "</li>"
-                                                                        + "<li><b>Tolerance:</b> " + properties.tolerance + "</li>"
+                                                                    if (bCheckedType) {
+                                                                        htmlTitle = "Apply new properties"
+                                                                        htmlConfirmText = confirmText(properties);
 
-                           					        	            } else if (
-                           					        	                (properties.loggingType == 2) ||
-                           					        	                (properties.loggingType == 3) ||
-                           					        	                (properties.loggingType == 5) ) {
-
-                           					        	              // All data 2
-                           					        	              // Do not log 3
-                           					        	              // When point timestamp changes 5
-
-                           					        	              htmlLogginProperties = ""
-                           					        	                + "<li><b>Logging type:</b> " + arrDictLoggingType[properties.loggingType] + "</li>"
-
-                           					        	            } else if (properties.loggingType == 4) {
-
-                           					        	              // Interval 4
-
-                                                                      htmlLogginProperties = ""
-                                                                        + "<li><b>Logging type:</b> " + arrDictLoggingType[properties.loggingType] + "</li>"
-                                                                        + "<li><b>Interval logging period:</b> Every:" + properties.intervalLoggingPeriod + " " + arrDictIntervalLoggingPeriod[properties.intervalLoggingPeriodType] + "</li>"
-                           					        	            }
-
-                                                                    htmlLogginProperties = ""
-                                                                       + "<li><b>Discard extreme values:</b> " + properties.discardExtremeValues + " low:" + properties.discardLowLimit + " high:" + properties.discardHighLimit + "</li>"
-
-                                                                    let textRenderer = "";
-
-                                                                    if (properties.def.name == "textRendererBinary") {
-                                                                        textRenderer = ""
-                                                                          + "<li><b>Text renderer properties:</b>  Binary </br>"
-                                                                          + "zero: " + properties.textRenderer.zeroLabel + " color:" + properties.textRenderer.zeroColour + "</br>"
-                                                                          + "one: " +  properties.textRenderer.oneLabel +  " color:" + properties.textRenderer.oneColour + "</li>";
-                                                                    }
-
-                                                                    if (properties.def.name == "textRendererPlain") {
-                                                                        textRenderer = ""
-                                                                          + "<li><b>Text renderer properties:</b>  Plain </br>"
-                                                                          + "Suffix: " + properties.textRenderer.suffix + "</li>";
-                                                                    }
-
-                                                                    if (properties.def.name == "textRendererMultistate") {
-                                                                       textRenderer = ""
-                                                                          + "<li><b>Text renderer properties:</b>  Multistate </br>";
-
-                                                                      for (var multistate in properties.textRenderer.multistateValues) {
-                                                                        textRenderer = textRenderer + "key: " + properties.textRenderer.multistateValues[multistate].key
-                                                                           + " text: " + properties.textRenderer.multistateValues[multistate].text
-                                                                           + " color: " + properties.textRenderer.multistateValues[multistate].colour;
+                                                                      } else {
+                                                                        htmlTitle = "";
+                                                                        htmlConfirmText = "It is possible to apply point properties basing only on the same type of points";
                                                                       }
-
-                                                                      textRenderer =+ "</li>";
-                                                                     }
-
-                                                                     if (properties.def.name == "textRendererAnalog") {
-                                                                        textRenderer =  ""
-                                                                          + "<li><b>Text renderer properties:</b>  Analog </br>"
-                                                                          + " Format: " + properties.textRenderer.format + "</br>"
-                                                                          + " Suffix: " + properties.textRenderer.metaText + "</li>";
-                                                                     }
-
-                                                                     if (properties.def.name == "textRendererRange") {
-
-                                                                        textRenderer = ""
-                                                                            + "<li><b>Text renderer properties:</b>  Range </br>"
-                                                                            + " Format: " + properties.textRenderer.format + "</br>";
-
-                                                                        for (var range in properties.textRenderer.rangeValues) {
-
-                                                                            textRenderer = textRenderer + "from: " + properties.textRenderer.rangeValues[range].from
-                                                                               + " to: " + properties.textRenderer.rangeValues[range].to
-                                                                               + " text: " + properties.textRenderer.rangeValues[range].text
-                                                                               + " color: " + properties.textRenderer.rangeValues[range].color;
-
-                                                                        }
-                                                                     }
-
-                                                                      if (properties.def.name == "textRendererTime") {
-                                                                            textRenderer = ""
-                                                                               + "<li><b>Text renderer properties:</b>  Time </br>"
-                                                                               + " Format: " + properties.textRenderer.format + "</br>"
-                                                                               + " Exponent: " + properties.textRenderer.conversionExponent + "</li>";
-                                                                      }
-
-                                                                      let chartRenderer = "";
-
-                                                                      if (properties.chartRenderer == null) {
-                                                                            chartRenderer = ""
-                                                                                + "<li><b>Chart renderer properties:</b>  None</li>";
-
-                                                                       } else  if (properties.chartRenderer.def.name == "chartRendererImage") {
-                                                                            chartRenderer = ""
-                                                                                + "<li><b>Chart renderer properties:</b>  Images</br>"
-                                                                                + "Time period:" + properties.chartRenderer.numberOfPeriods + " " + arrDictChartRendererImageTimePeriod[properties.chartRenderer.timePeriod] + "</li>";
-
-                                                                       } else if (properties.chartRenderer.def.name == "chartRendererStats") {
-
-                                                                            chartRenderer = ""
-                                                                                + "<li><b>Chart renderer properties:</b>  Statistics</br>"
-                                                                                + "Time period:" + properties.chartRenderer.numberOfPeriods + " " + arrDictChartRendererImageTimePeriod[properties.chartRenderer.timePeriod] + "</br>"
-                                                                                + "Include sum:" + properties.chartRenderer.includeSum + "</li>";
-
-                                                                       } else if (properties.chartRenderer.def.name == "chartRendererTable") {
-
-                                                                            chartRenderer = ""
-                                                                                + "<li><b>Chart renderer properties:</b>  Table</br>"
-                                                                                + "Limit:" + properties.chartRenderer.limit + "</li>";
-                                                                       }
 
                            					        	            swal({
-                                                                      title: '<i>New</i> <u>configuration point</u>',
-                                                                      type: 'warning',
-                                                                      html: "<div class='font-size:8px'> "
-                                                                        + "<p><b>base on</b> " + namePointConfigurationToBaseOnExistingPoint + "</p>"
-                                                                        + "<b>Point properties:</b> "
-                                                                        + "<ul class='gbul'> "
-                                                                        + "<li><b>Engineering units:</b> " + arrDictEnginneringUnits[properties.engineeringUnits] + "</li>"
-                                                                        + htmlLogginProperties
-                                                                        + "<li><b>Purge After:</b> " + properties.purgePeriod + " " + arrDictPurge[properties.purgeType] + "</li>"
-                                                                        + "<li><b>Default cache size:</b> " + properties.defaultCacheSize + "</li>"
-                                                                        + textRenderer
-                                                                        + chartRenderer
-                                                                        + "</ul></div>",
+                                                                      title: htmlTitle,
+                                                                      // icon: 'warning',
+                                                                      html: htmlConfirmText,
                                                                       showCloseButton: true,
                                                                       showCancelButton: true,
-                                                                      focusConfirm: true,
+                                                                      showConfirmButton: bCheckedType,
+                                                                      focusConfirm: bCheckedType,
                                                                       confirmButtonText:
                                                                         '<i class="fa fa-thumbs-up"></i> Accept',
                                                                       confirmButtonAriaLabel: 'Thumbs up, great!',
                                                                       cancelButtonText:
                                                                       '<i class="fa fa-thumbs-down">Cancel</i>',
                                                                       cancelButtonAriaLabel: 'Thumbs down',
-                                                                      customClass: "gbtest"
+                                                                      className: "scada-swal2"
                                                                     }).then(function(isConfirm) {
                                                                         if (isConfirm.value) {
                                                                             setConfig(properties);
@@ -641,40 +700,46 @@
                   }
             </script>
 
-            <div class="borderDiv marB marR">
-              <table>
-                <tr><td colspan="4">
-                  <span class="smallTitle">Configuration base on existing point</span>
-                </td></tr>
-
-                <tr>
-                  <td class="formLabelRequired">Select point:</td>
-                  <td colspan="2" class="formField">
-                    <select id="selected_base_on_existing_point_chooser">
-                                   <c:forEach items="${userPoints}" var="point">
-                                     <sst:option value="${point.id}">${point.extendedName}</sst:option>
-                                   </c:forEach>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="4">
-                    <input id="baseOnExistingPointBtn" type="button" value="Set configuration base on existing point (from hints of changes)" onclick="baseOnExistingPoint()">
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="4">
-                      <input id="baseOnExistingPointBtnWithOutHint" type="button" value="Set configuration base on existing point (no hint of change)" onclick="baseOnExistingPointWithOutHint()">
-                  </td>
-                </tr>
-              </table>
-              <p>Note: changes require saving</p>
-            </div>
-
         </td>
       </tr>
     </table>
 
     <%@ include file="/WEB-INF/jsp/pointEdit/buttons.jsp" %>
   </form>
+        <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                <div class="borderDiv marB marR" style="margin:20px; padding:10px; border-color:blue; max-width: 800px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr><td colspan="4">
+                            <span class="smallTitle"> <fmt:message key="pointEdit.basing_on.title"/></span>
+                        </td></tr>
+
+                        <tr>
+                            <td class="formLabelRequired"><fmt:message key="pointEdit.basing_on.select"/></td>
+                            <td colspan="2" class="formField">
+                                <select id="selected_base_on_existing_point_chooser">
+                                    <c:forEach items="${userPoints}" var="point">
+                                        <sst:option value="${point.id}">${point.extendedName}</sst:option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <input id="baseOnExistingPointBtn" type="button" value="<fmt:message key="pointEdit.basing_on.apply"/>" onclick="baseOnExistingPoint()">
+                            </td>
+                        </tr>
+                    </table>
+                    <p>Note: changes require saving</p>
+                </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <%@ include file="/WEB-INF/jsp/pointEdit/valuePurge.jsp" %>
+          </td>
+        </tr>
+        </table>
+
 </tag:page>

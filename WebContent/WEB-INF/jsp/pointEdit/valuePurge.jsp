@@ -44,7 +44,7 @@
   }
 </script>
 
-<div class="borderDiv marB marR">
+<div class="borderDiv marB marR" style="margin:20px; padding:10px 10px 10px 10px; border-color:blue; max-width: 800px;">
   <table>
     <tr><td colspan="3">
       <span class="smallTitle"><fmt:message key="pointEdit.purge.purgeNow"/></span>

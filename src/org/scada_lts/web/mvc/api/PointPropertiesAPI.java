@@ -53,6 +53,7 @@ public class PointPropertiesAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 DataPointVO dpvo = dataPointService.getDataPoint(id);
+
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
 
@@ -78,6 +79,7 @@ public class PointPropertiesAPI {
                     private boolean isDiscardExtremeValues;
                     private double discardLowLimit;
                     private double discardHighLimit;
+                    private int dataTypeId;
 
 
                     public PropertiesPointToJSON(
@@ -96,7 +98,8 @@ public class PointPropertiesAPI {
                             int intervalLoggingType,
                             boolean isDiscardExtremeValues,
                             double discardLowLimit,
-                            double discardHighLimit
+                            double discardHighLimit,
+                            int dataTypeId
 
                     ) {
                         this.loggingType = loggingType;
@@ -115,7 +118,7 @@ public class PointPropertiesAPI {
                         this.isDiscardExtremeValues = isDiscardExtremeValues;
                         this.discardLowLimit = discardLowLimit;
                         this.discardHighLimit = discardHighLimit;
-
+                        this.dataTypeId = dataTypeId;
                     }
 
                     public int getLoggingType() {
@@ -245,6 +248,14 @@ public class PointPropertiesAPI {
                     public void setPurgePeriod(int purgePeriod) {
                         this.purgePeriod = purgePeriod;
                     }
+
+                    public int getDataTypeId() {
+                        return dataTypeId;
+                    }
+
+                    public void setDataTypeId(int dataTypeId) {
+                        this.dataTypeId = dataTypeId;
+                    }
                 }
 
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
@@ -263,7 +274,8 @@ public class PointPropertiesAPI {
                         dpvo.getIntervalLoggingType(),
                         dpvo.isDiscardExtremeValues(),
                         dpvo.getDiscardLowLimit(),
-                        dpvo.getDiscardHighLimit()
+                        dpvo.getDiscardHighLimit(),
+                        dpvo.getPointLocator().getDataTypeId()
                 );
 
                 json = mapper.writeValueAsString(p);
@@ -508,7 +520,6 @@ public class PointPropertiesAPI {
                 }
 
                 //dpvo.isDiscardExtremeValues()
-
 
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
                         dpvo.getChartColour(),
