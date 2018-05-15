@@ -216,8 +216,9 @@
                                 properties.textRenderer.rangeValues[range].from,
                                 properties.textRenderer.rangeValues[range].to,
                                 properties.textRenderer.rangeValues[range].text,
-                                properties.textRenderer.rangeValues[range].color);
+                                properties.textRenderer.rangeValues[range].colour);
                         }
+
                       }
 
                       if (properties.def.name == "textRendererTime") {
@@ -558,7 +559,7 @@
                             textRenderer = textRenderer + "<li>from: " + properties.textRenderer.rangeValues[range].from
                             + " to: " + properties.textRenderer.rangeValues[range].to
                             + " text: " + properties.textRenderer.rangeValues[range].text
-                            + " color: " + properties.textRenderer.rangeValues[range].color + "</li>";
+                            + " color: " + properties.textRenderer.rangeValues[range].colour + "</li>";
 
                         }
 
@@ -678,7 +679,7 @@
                                                                       cancelButtonText:
                                                                       '<i class="fa fa-thumbs-down">Cancel</i>',
                                                                       cancelButtonAriaLabel: 'Thumbs down',
-                                                                      className: "scada-swal2"
+                                                                      customClass: "scada-swal2"
                                                                     }).then(function(isConfirm) {
                                                                         if (isConfirm.value) {
                                                                             setConfig(properties);
