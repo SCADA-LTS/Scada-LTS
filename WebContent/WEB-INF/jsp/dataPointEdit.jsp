@@ -83,6 +83,9 @@
         <td>
             <script>
 
+                   function checkGetAlertError() {
+                     return jQuery("#checkGetAlertError").prop('checked');
+                   }
                    function checkType(pointDataTypeIdFromNewConfiguration) {
                      let existingDataTypeId = dataTypeId;
                      return existingDataTypeId == pointDataTypeIdFromNewConfiguration;
@@ -195,12 +198,32 @@
                       }
 
                       if (properties.def.name == "textRendererMultistate") {
-                        for (var multistate in properties.textRenderer.multistateValues) {
-                            textRendererEditor.addMultistateValue(
-                                properties.textRenderer.multistateValues[multistate].key,
-                                properties.textRenderer.multistateValues[multistate].text,
-                                properties.textRenderer.multistateValues[multistate].colour);
-                        }
+
+                            if (checkGetAlertError()) {
+                               try {
+                                    var alert_old = alert;
+                                    alert = function (message) {
+                                        console.log(message);
+                                    }
+                                    for (var multistate in properties.textRenderer.multistateValues) {
+                                        textRendererEditor.addMultistateValue(
+                                            String( properties.textRenderer.multistateValues[multistate].key ),
+                                            String( properties.textRenderer.multistateValues[multistate].text ),
+                                            String( properties.textRenderer.multistateValues[multistate].colour ));
+                                    }
+                               } catch (err) {
+                                    console.log(err);
+                               } finally {
+                                    alert = alert_old;
+                               }
+                            } else {
+                               for (var multistate in properties.textRenderer.multistateValues) {
+                                    textRendererEditor.addMultistateValue(
+                                        String( properties.textRenderer.multistateValues[multistate].key ),
+                                        String( properties.textRenderer.multistateValues[multistate].text ),
+                                        String( properties.textRenderer.multistateValues[multistate].colour ));
+                               }
+                            }
                       }
 
                       if (properties.def.name == "textRendererAnalog") {
@@ -211,12 +234,33 @@
                       if (properties.def.name == "textRendererRange") {
                         jQuery("#textRendererRangeFormat").val(properties.textRenderer.format);
 
-                        for (var range in properties.textRenderer.rangeValues) {
-                            textRendererEditor.addRangeValue(
-                                properties.textRenderer.rangeValues[range].from,
-                                properties.textRenderer.rangeValues[range].to,
-                                properties.textRenderer.rangeValues[range].text,
-                                properties.textRenderer.rangeValues[range].colour);
+                        if (checkGetAlertError()) {
+                            try {
+                                var alert_old = alert;
+                                alert = function (message) {
+                                    console.log(message);
+                                }
+                                for (var range in properties.textRenderer.rangeValues) {
+                                    textRendererEditor.addRangeValue(
+                                        String( properties.textRenderer.rangeValues[range].from ),
+                                        String( properties.textRenderer.rangeValues[range].to ),
+                                        String( properties.textRenderer.rangeValues[range].text ),
+                                        String( properties.textRenderer.rangeValues[range].colour ));
+                                }
+                            } catch( err ) {
+                                console.log(err);
+                            } finally {
+                                alert = alert_old;
+                            }
+
+                        } else {
+                            for (var range in properties.textRenderer.rangeValues) {
+                               textRendererEditor.addRangeValue(
+                                    String( properties.textRenderer.rangeValues[range].from ),
+                                    String( properties.textRenderer.rangeValues[range].to ),
+                                    String( properties.textRenderer.rangeValues[range].text ),
+                                    String( properties.textRenderer.rangeValues[range].colour ));
+                            }
                         }
 
                       }
@@ -727,8 +771,12 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td>
                                 <input id="baseOnExistingPointBtn" type="button" value="<fmt:message key="pointEdit.basing_on.apply"/>" onclick="baseOnExistingPoint()">
+                            </td>
+                            <td colspan="3">
+                                <input type="checkbox" id="checkGetAlertError" value="true" checked>
+                                <label for="checkGetAlertError"><fmt:message key="pointEdit.basing_on.warning_on"/></label>
                             </td>
                         </tr>
                     </table>
