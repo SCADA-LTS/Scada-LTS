@@ -28,11 +28,13 @@ public class BinaryValue extends MangoValue implements Comparable<BinaryValue> {
     public static final BinaryValue ONE = new BinaryValue(true);
 
     public static BinaryValue parseBinary(String s) {
-        if (s == null || "0".equals(s))
+        s = s.trim().toLowerCase();
+        if(s == null || s.equals("0") || s.equals("false")) {
             return ZERO;
-        if ("1".equals(s) || Boolean.parseBoolean(s))
+        } else if(s.equals("1") || s.equals("true")) {
             return ONE;
-        return ZERO;
+        }
+        throw new NumberFormatException("Value is not a binary.");
     }
 
     private final boolean value;

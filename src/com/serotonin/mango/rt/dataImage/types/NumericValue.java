@@ -25,15 +25,10 @@ import com.serotonin.mango.DataTypes;
  */
 public class NumericValue extends MangoValue implements Comparable<NumericValue> {
     public static NumericValue parseNumeric(String s) {
+        s = s.replaceAll(",",".");
         if (s == null)
             return new NumericValue(0);
-        try {
-            return new NumericValue(Double.parseDouble(s));
-        }
-        catch (NumberFormatException e) {
-            // no op
-        }
-        return new NumericValue(0);
+        return new NumericValue(Double.parseDouble(s));
     }
 
     private final double value;
