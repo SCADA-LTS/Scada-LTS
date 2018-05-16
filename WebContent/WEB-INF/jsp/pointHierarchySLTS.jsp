@@ -16,6 +16,10 @@
 	href="resources/app/bower_components/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css"
 	rel="stylesheet" type="text/css">
 
+<link
+	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.css"
+	rel="stylesheet" type="text/css">
+
 <style type="text/css">
 
 /* Reduce bootstrap's default 'panel' padding: */
@@ -375,6 +379,31 @@ thead th {
 									<span class="glyphicon glyphicon-info-sign"></span>
 								</button>
 							</div>
+							<div class="btn-group">
+								<div id="hierarchy-import-export">
+									<!-- data-toggle="tooltip" data-placement="top" title='<fmt:message key="menu.point_hierarchy.export-import.tooltip"/>' -->
+                                    <button id="Export_Import" class="btn" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                        <span class="glyphicon glyphicon-export"></span> <span class="glyphicon glyphicon-import"></span>
+                                    </button>
+
+									<!-- <p>
+										<a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+											Link with href
+										</a>
+										<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+											Button with data-target
+										</button>
+									</p> -->
+									<div class="collapse" id="collapseExample">
+										<div class="card card-body">
+											Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+										</div>
+										<button-counter></button-counter>
+										<simple-form></simple-form>
+									</div>
+
+                            	</div>
+							</div>
 						</div>
 						<div id="tree"
 							class=" panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
@@ -405,6 +434,13 @@ thead th {
 <script src="resources/sockjs-0.3.4.js"></script>
 <script src="resources/stomp.js"></script>
 
+
+<script src="resources/npm/node_modules/vue/dist/vue.min.js"></script>
+<script src="resources/vue-components/export-import/form-on-dlg-export-import.js"></script>
+<script src="resources/vue-mixins/shared/export-import.js"></script>
+<script src="resources/npm/node_modules/vue-form/dist/vue-form.min.js"></script>
+
+
 <script>
 "use strict";
 
@@ -414,7 +450,7 @@ header.onLoad = function() {
 };
 
 
-    
+
 
 
  var headers = {
@@ -1322,5 +1358,28 @@ var messages = {
     });
     
     
+    </script>
+
+    <!-- export import -->
+    <script>
+        var app = new Vue({
+          el: '#hierarchy-import-export',
+          mixins: [ExportImportJSON],
+            methods: {
+              doSuccess() {
+                  this.alertSuccess();
+                },
+                doError() {
+                  this.alertError();
+                },
+                doConfirm() {
+                  this.confirm(() => {
+                    this.alertSuccess({
+                      title: "Confirm Succcessful!"
+                    });
+                  });
+                }
+            }
+        })
     </script>
 </html>
