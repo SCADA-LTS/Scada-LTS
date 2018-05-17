@@ -41,6 +41,7 @@ import java.util.List;
 @Controller
 public class ViewAPI {
 
+
     private static final Log LOG = LogFactory.getLog(WatchListAPI.class);
     private static final int ID_USER_AMIN = 1;
 
