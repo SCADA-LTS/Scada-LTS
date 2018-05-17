@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "json-lint": "~0.1.0",
-    "vue": "^2.5.16",
-    "vue-form": "^4.9.0"
+    "vue": "^2.5.16"
   }
 }
