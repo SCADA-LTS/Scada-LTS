@@ -5,17 +5,30 @@ Vue.component('export-import', {
             json: ''
         }
     },
+    mixins: [ExportImportHierarchiPoints],
+    methods: {
+        doExport() {
+            this.export();
+            //alert('export-import');
+        },
+        doImport() {
+            this.import();
+            //alert('export-import');
+        }
+
+
+    },
     template: `
          <div>
             
             <textarea v-model="json" placeholder="JSON with definition hierarchy" rows="15" cols="200">
             
             </textarea></br>
-            <button v-on:click="alert('export');">Export</button>
-            <button v-on:click="alert('import');">Import</button>
-            <p>{{json}}</p>
-            
-        </div>
-    `
+            <button v-on:click="doExport()">Export</button>
+            <button v-on:click="doImport()">Import</button>
+            <!--
+                <p>{{json}}</p>
+            -->
+        </div>`
 });
 

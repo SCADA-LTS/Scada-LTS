@@ -427,8 +427,11 @@ thead th {
 <script src="resources/stomp.js"></script>
 
 
+<script src="resources/npm/node_modules/axios/dist/axios.min.js"></script>
 <script src="resources/npm/node_modules/vue/dist/vue.min.js"></script>
+<script src="resources/vue-mixins/shared/mixins-export-import.js"></script>
 <script src="resources/vue-components/export-import/export-import.js"></script>
+<script src="resources/npm/node_modules/jsonschema/lib/validator.js"></script>
 
 <script>
 "use strict";
@@ -1353,22 +1356,8 @@ var messages = {
     <script>
         var app = new Vue({
           el: '#hierarchy-import-export',
-          mixins: [],
-            methods: {
-              doSuccess() {
-                  this.alertSuccess();
-                },
-                doError() {
-                  this.alertError();
-                },
-                doConfirm() {
-                  this.confirm(() => {
-                    this.alertSuccess({
-                      title: "Confirm Succcessful!"
-                    });
-                  });
-                }
-            }
+          mixins: []
+
         })
     </script>
 </html>

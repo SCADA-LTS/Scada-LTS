@@ -9,7 +9,9 @@
     "node": ">=0.10"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "json-lint": "~0.1.0",
+    "jsonschema": "^1.2.4",
     "vue": "^2.5.16"
   }
 }
