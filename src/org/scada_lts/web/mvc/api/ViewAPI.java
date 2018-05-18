@@ -17,16 +17,19 @@
  */
 package org.scada_lts.web.mvc.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.view.ViewDTO;
 import org.scada_lts.mango.service.ViewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -100,6 +103,93 @@ public class ViewAPI {
             LOG.error(e);
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @RequestMapping(value = "/api/view/createV", method = RequestMethod.POST)
+    public ResponseEntity<String> createView(HttpServletRequest request,@RequestBody ViewDTO viewDTO){
+        LOG.info("/api/view/createView");
+
+        try{
+
+            class ViewJSON implements Serializable {
+                private String name;
+                private String xid;
+                private int userId;
+                private int resolution;
+                private String filename;
+
+                public ViewJSON(String name, String xid, int userId, int resolution, String filename) {
+                    this.name = name;
+                    this.xid = xid;
+                    this.userId = userId;
+                    this.resolution = resolution;
+                    this.filename = filename;
+                }
+
+                public String getName() {
+                    return name;
+                }
+                public void setName(String name) {
+                    this.name = name;
+                }
+                public String getXid() {
+                    return xid;
+                }
+                public void setXid(String xid) {
+                    this.xid = xid;
+                }
+                public int getUserId() {
+                    return userId;
+                }
+                public void setUserId(int userId) {
+                    this.userId = userId;
+                }
+                public int getResolution() {
+                    return resolution;
+                }
+                public void setResolution(int resolution) {
+                    this.resolution = resolution;
+                }
+                public String getFilename() {
+                    return filename;
+                }
+                public void setFilename(String filename) {
+                    this.filename = filename;
+                }
+            }
+
+            User user = Common.getUser(request);
+
+            View view = new View();
+            view.setName(viewDTO.getName());
+            view.setXid(viewDTO.getXid());
+            view.setResolution(viewDTO.getSize());
+            view.setBackgroundFilename(viewDTO.getImagePath());
+            view.setUserId(user.getId());
+
+            viewService.saveView(view);
+
+            ObjectMapper mapper = new ObjectMapper();
+            String json = null;
+            ViewJSON viewJSON = new ViewJSON(
+                    view.getName(),
+                    view.getXid(),
+                    view.getUserId(),
+                    view.getResolution(),
+                    view.getBackgroundFilename()
+            );
+            try {
+                json = mapper.writeValueAsString(viewJSON);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            return new ResponseEntity<String>(json,HttpStatus.OK);
+        }
+        catch (Exception e){
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
 }
