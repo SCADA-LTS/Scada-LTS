@@ -25,47 +25,47 @@ import org.springframework.jdbc.core.JdbcTemplate;
  *
  * @author grzegorz.bylica@gmail.com
  */
-public class V1_3__SetXidHierarchyPoint implements SpringJdbcMigration {
+public class V1_3__SetXidPointHierarchy implements SpringJdbcMigration {
 
     @Override
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 
         // alter table pointHierarchy drop column `xid`
-        final String addXidInHierarchyPoint =
-                "alter table pointHierarchy add column `xid` VARCHAR(100)  after `name`;";
+        final String addXidInPointHierarchy =
+                "ALTER TABLE pointHierarchy ADD COLUMN `xid` VARCHAR(100)  AFTER `name`;";
 
-        jdbcTmp.execute(addXidInHierarchyPoint);
+        jdbcTmp.execute(addXidInPointHierarchy);
 
         // create procedure to generate_xid
         final String dropPrcIfExist =
-                "DROP FUNCTION IF EXISTS func_gen_xid_hierarchy_point;";
+                "DROP FUNCTION IF EXISTS func_gen_xid_point_hierarchy;";
 
         jdbcTmp.execute(dropPrcIfExist);
 
         final String addPrcGenerateXid =
-                "CREATE FUNCTION func_gen_xid_hierarchy_point (id INT(10)) "
+                "CREATE FUNCTION func_gen_xid_point_hierarchy(id INT(10)) "
                 + "RETURNS VARCHAR(100) "
                 + "BEGIN "
-                + " RETURN CONCAT(\"HP_\", UNIX_TIMESTAMP(),\"_\", id); "
+                + " RETURN CONCAT(\"DIR_\", UNIX_TIMESTAMP(),\"_\", id); "
                 + "END";
 
         jdbcTmp.execute(addPrcGenerateXid);
 
         // complete the data for xid for the existing data.
         final String runPrcToGenerateXid =
-                "update pointHierarchy set xid=func_gen_xid_hierarchy_point(id)";
+                "UPDATE pointHierarchy SET xid=func_gen_xid_point_hierarchy(id)";
 
         jdbcTmp.execute(runPrcToGenerateXid);
 
         // add constraint unique
         final String addConstraintUniqueXidPointHierarchy =
-                "alter table pointHierarchy add constraint unique_xid_point_hierarchy unique (xid);";
+                "ALTER TABLE pointHierarchy ADD CONSTRAINT unique_xid_point_hierarchy UNIQUE (xid);";
 
         jdbcTmp.execute(addConstraintUniqueXidPointHierarchy);
 
         // add index on xid
         final String addIdex =
-                "alter table pointHierarchy add index idx_xid_point_hierarchy (xid);";
+                "ALTER TABLE pointHierarchy ADD INDEX idx_xid_point_hierarchy (xid);";
 
         jdbcTmp.execute(addIdex);
 
