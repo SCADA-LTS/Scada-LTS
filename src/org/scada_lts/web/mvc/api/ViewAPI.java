@@ -49,8 +49,7 @@ public class ViewAPI {
     private static final Log LOG = LogFactory.getLog(WatchListAPI.class);
     private static final int ID_USER_AMIN = 1;
 
-    @Autowired
-    ViewService viewService;
+    ViewService viewService = new ViewService();
 
     @RequestMapping(value = "/api/view/getAll", method = RequestMethod.GET)
     public ResponseEntity<String> getAll(HttpServletRequest request) {
