@@ -60,7 +60,7 @@ public class DAO {
 	 * Get id.
 	 * @return Method queryForObject() can also return "null"
 	 */
-	protected int getId() {
+	public int getId() {
 		return jdbcTemplate.queryForObject("select @@identity", Integer.class);
 	}
 

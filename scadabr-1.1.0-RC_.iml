@@ -905,96 +905,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="spring-aop-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-aop-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-beans-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-beans-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-context-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-context-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-context-support-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-context-support-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-core-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-core-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-expression-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-expression-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-jdbc-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-jdbc-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-tx-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-tx-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-web-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-web-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-webmvc-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-webmvc-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
       <library name="modbus4j-3.0.2-javadoc.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/modbus4j-3.0.2-javadoc.jar!/" />
@@ -1031,90 +941,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="spring-messaging-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-messaging-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-websocket-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-websocket-4.3.2.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
       <library name="spring-tx-3.2.17.RELEASE.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-tx-3.2.17.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-security-acl-4.2.0.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-security-acl-4.2.0.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-security-config-4.2.0.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-security-config-4.2.0.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-security-core-4.2.0.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-security-core-4.2.0.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-security-crypto-4.2.0.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-security-crypto-4.2.0.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-security-jwt-1.0.6.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-security-jwt-1.0.6.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-security-taglibs-4.2.0.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-security-taglibs-4.2.0.RELEASE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-security-web-4.2.0.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-security-web-4.2.0.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1133,15 +962,6 @@
       <library name="flyway-core-4.0.3-sources.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/flyway-core-4.0.3-sources.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="spring-test-4.3.2.RELEASE.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-test-4.3.2.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1335,6 +1155,54 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/commons-codec-1.9.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/commons-logging-1.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/fluent-hc-4.5.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/httpclient-4.5.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/httpclient-cache-4.5.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/httpclient-win-4.5.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/httpcore-4.4.6.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/httpmime-4.5.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/jackson-annotations-2.8.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/jackson-core-2.8.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/jackson-databind-2.8.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/jjwt-0.7.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/jna-4.1.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/jna-platform-4.1.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/junit-4.12.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/mockito-core-2.11.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/slf4j-ext-1.5.11.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-aop-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-beans-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-context-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-context-support-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-core-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-expression-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-jdbc-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-messaging-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-test-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-tx-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-web-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-webmvc-4.3.16.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/spring-websocket-4.3.16.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/modbus4j-3.0.2-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/alpha24j.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/dnp34j.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/flyway-core-4.0.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/iec101.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/mockito-all-1.9.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/modbus4j-3.0.2-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/WebContent/WEB-INF/lib/org.osgi.core-4.0.0.jar!/OSGI-OPT/src" />
+        </SOURCES>
       </library>
     </orderEntry>
   </component>
