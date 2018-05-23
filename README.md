@@ -95,10 +95,6 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 
 * <https://github.com/ArkadiuszParafiniuk>
 
-**Rafał Kotyla**
-
-* <https://github.com/RandemRafaeL> UI/UX
-
 **Konrad Daniek**
 
 * <https://github.com/wisyr>
@@ -126,6 +122,10 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 **Marcin Gołda**
 
 * <https://github.com/marcingolda>
+
+**Tomasz Skrobol**
+
+* <https://github.com/TomashHawk>
 
 
 ## Copyright and license
