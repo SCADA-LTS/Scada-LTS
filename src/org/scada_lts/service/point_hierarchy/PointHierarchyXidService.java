@@ -19,9 +19,9 @@ package org.scada_lts.service.point_hierarchy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.dao.point_hierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.point_hierarchy.PointHierarchyXidDAO;
-import org.scada_lts.exception.CacheHierarchyException;
+import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,54 +37,41 @@ public class PointHierarchyXidService extends PointHierarchyService {
     private static final Log LOG = LogFactory.getLog(PointHierarchyXidService.class);
 
     @Resource
-    private PointHierarchyXidDAO pointHierarchyXidService;
+    private PointHierarchyXidDAO pointHierarchyXidDAO;
 
-
-
-    public boolean movePoint(String xidPoint, String xidFolder, boolean cacheRefresh) {
-
+    public boolean movePoint(String xidPoint, String xidFolder) {
         boolean res = false;
         try {
-            res = pointHierarchyXidService.updateParent(xidPoint, xidFolder);
+            res = pointHierarchyXidDAO.updateParent(xidPoint, xidFolder);
         } catch (Exception e) {
             LOG.error(e);
         }
-
-        if (res) {
-            if (cacheRefresh) {
-
-                // TODO get oldParentId, get newParentId, get key, folder = false
-                /*try {
-                    PointHierarchyCache.getInstance().move( oldParentId, newParentId, key, isFolder);
-                } catch (Exception e) {
-                    LOG.error(new CacheHierarchyException(e));
-                }*/
-            }
-        }
         return res;
-
     }
 
-
-    public boolean moveFolder(String xidFolder, String newParentXidFolder, boolean cacheRefresh) {
+    public boolean moveFolder(String xidFolder, String newParentXidFolder) {
         boolean res = false;
         try {
-            res = pointHierarchyXidService.updateFolder(xidFolder, newParentXidFolder);
+            res = pointHierarchyXidDAO.updateFolder(xidFolder, newParentXidFolder);
         } catch (Exception e) {
             LOG.error(e);
         }
-
-        if (res) {
-            if (cacheRefresh) {
-
-                // TODO get oldParentId, get newParentId, get key, folder = false
-                /*try {
-                    PointHierarchyCache.getInstance().move( oldParentId, newParentId, key, isFolder);
-                } catch (Exception e) {
-                    LOG.error(new CacheHierarchyException(e));
-                }*/
-            }
-        }
         return res;
+    }
+
+    public void folderAdd(FolderPointHierarchy folderPointHierarchy) {
+        pointHierarchyXidDAO.add(folderPointHierarchy);
+    }
+
+    public boolean folderCheckExist(String xidFolder) {
+        return pointHierarchyXidDAO.folderCheckExist(xidFolder);
+    }
+
+    public void cacheRefresh() {
+        PointHierarchyDAO.cachedPointHierarchy = null;
+    }
+
+    public void deleteFolderXid(String xidFolder) {
+        pointHierarchyXidDAO.deleteFolderXid(xidFolder);
     }
 }

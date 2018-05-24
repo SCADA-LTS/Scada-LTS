@@ -22,7 +22,7 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.point_hierarchy.PointHierarchyXidService;
-import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyDTO;
+import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,23 +42,18 @@ public class PointHierarchyAPI {
     @Resource
     private PointHierarchyXidService pointHierarchyXidService;
 
-    @RequestMapping(value = "/api/pointHierarchy/pointMoveTo/{xid_point}/{xid_folder}/{casche_refresh}", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/pointHierarchy/pointMoveTo/{xid_point}/{xid_folder}", method = RequestMethod.PUT)
     public ResponseEntity<String> pointMoveTo(
             @PathVariable("xid_point") String xidPoint,
             @PathVariable("xid_folder") String xidFolder,
-            @PathVariable("cache_refresh") boolean caschRefresh,
             HttpServletRequest request)  {
 
-        LOG.info("/api/pointHierarchy/pointMoveTo xidPoint:" + xidPoint + " xidFolder:" + xidFolder + " cacheRefresh:" + caschRefresh );
-
+        LOG.info("/api/pointHierarchy/pointMoveTo xidPoint:" + xidPoint + " xidFolder:" + xidFolder  );
         ResponseEntity<String> result = null;
-
         try {
-
             User user = Common.getUser(request);
-
             if (user.isAdmin()) {
-                if (pointHierarchyXidService.movePoint(xidPoint, xidFolder, caschRefresh)) {
+                if (pointHierarchyXidService.movePoint(xidPoint, xidFolder)) {
                     result = new ResponseEntity<String>(String.valueOf(true), HttpStatus.OK);
                 } else {
                     result = new ResponseEntity<String>(String.valueOf(false), HttpStatus.OK);
@@ -66,33 +61,25 @@ public class PointHierarchyAPI {
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }
-
         } catch (Exception e) {
             LOG.error(e);
             result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
         return result;
-
     }
 
-
-    @RequestMapping(value = "/api/pointHierarchy/folderMoveTo/{xid_folder}/{new_parent_xid_folder}/{casche_refresh}", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/pointHierarchy/folderMoveTo/{xid_folder}/{new_parent_xid_folder}", method = RequestMethod.PUT)
     public ResponseEntity<String> folderMoveTo(
             @PathVariable("xid_folder") String xidFolder,
             @PathVariable("new_parent_xid_folder") String newParentXidFolder,
-            @PathVariable("cache_refresh") boolean caschRefresh,
             HttpServletRequest request)  {
 
         LOG.info("/api/pointHierarchy/folderMoveTo xidFolder:" + xidFolder + " newParentXidFolder:" + newParentXidFolder);
-
         ResponseEntity<String> result = null;
-
         try {
-
             User user = Common.getUser(request);
-
             if (user.isAdmin()) {
-                if (pointHierarchyXidService.moveFolder(xidFolder, newParentXidFolder, caschRefresh)) {
+                if (pointHierarchyXidService.moveFolder(xidFolder, newParentXidFolder)) {
                     result = new ResponseEntity<String>(String.valueOf(true), HttpStatus.OK);
                 } else {
                     result = new ResponseEntity<String>(String.valueOf(false), HttpStatus.OK);
@@ -100,91 +87,93 @@ public class PointHierarchyAPI {
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }
-
         } catch (Exception e) {
             LOG.error(e);
             result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
         return result;
-
     }
-
 
     @RequestMapping(value = "/api/pointHierarchy/folderAdd", method = RequestMethod.POST)
-    public ResponseEntity<String> folderAdd(@RequestBody FolderPointHierarchyDTO folderPointHierarchy, HttpServletRequest request)  {
+    public ResponseEntity<String> folderAdd(
+            @RequestBody FolderPointHierarchy folderPointHierarchy,
+            HttpServletRequest request)  {
 
         LOG.info("/api/pointHierarchy/folderAdd folderPointHierarchy:" + folderPointHierarchy);
-
         ResponseEntity<String> result = null;
-
         try {
-
-
             User user = Common.getUser(request);
-
             if (user.isAdmin()) {
-
+                pointHierarchyXidService.folderAdd(folderPointHierarchy);
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }
-
         } catch (Exception e) {
             LOG.error(e);
             result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
         return result;
-
     }
 
-
-    @RequestMapping(value = "/api/pointHierarchy/folderCheckExist/{xid_folder}", method = RequestMethod.POST)
-    public ResponseEntity<String> folderCheckExist(@PathVariable("xid_folder") String xidFolder, HttpServletRequest request)  {
+    @RequestMapping(value = "/api/pointHierarchy/folderCheckExist/{xid_folder}", method = RequestMethod.GET)
+    public ResponseEntity<String> folderCheckExist(
+            @PathVariable("xid_folder") String xidFolder,
+            HttpServletRequest request)  {
 
         LOG.info("/api/pointHierarchy/folderCheckExist xidFolder:" + xidFolder);
-
         ResponseEntity<String> result = null;
-
         try {
-
             User user = Common.getUser(request);
-
             if (user.isAdmin()) {
-
+                boolean is = pointHierarchyXidService.folderCheckExist(xidFolder);
+                result = new ResponseEntity<String>(String.valueOf(is), HttpStatus.UNAUTHORIZED);
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }
-
         } catch (Exception e) {
             LOG.error(e);
             result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
         return result;
-
     }
 
     @RequestMapping(value = "/api/pointHierarchy/deleteFolder/{xid_folder}", method = RequestMethod.POST)
-    public ResponseEntity<String> deleteFolder(@PathVariable("xid_folder") String xidFolder, HttpServletRequest request)  {
+    public ResponseEntity<String> deleteFolder(
+            @PathVariable("xid_folder") String xidFolder,
+            HttpServletRequest request)  {
 
         LOG.info("/api/pointHierarchy/deleteFolder xidFolder:" + xidFolder);
-
         ResponseEntity<String> result = null;
-
         try {
-
             User user = Common.getUser(request);
-
             if (user.isAdmin()) {
-
+                pointHierarchyXidService.deleteFolderXid(xidFolder);
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }
-
         } catch (Exception e) {
             LOG.error(e);
             result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
         return result;
+    }
 
+    @RequestMapping(value = "/api/pointHierarchy/cacheRefresh", method = RequestMethod.POST)
+    public ResponseEntity<String> cacheRefresh(HttpServletRequest request) {
+        LOG.info("/api/pointHierarchy/cacheRefresh");
+        ResponseEntity<String> result = null;
+        try {
+            User user = Common.getUser(request);
+            if (user.isAdmin()) {
+                pointHierarchyXidService.cacheRefresh();
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
     }
 
 }

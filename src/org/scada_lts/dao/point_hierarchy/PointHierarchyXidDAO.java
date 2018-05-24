@@ -20,6 +20,8 @@ package org.scada_lts.dao.point_hierarchy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -43,22 +45,52 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
     private static final String SELECT_FOLDER_XID =
             "SELECT id FROM pointHierarchy WHERE xid=?";
 
-    @Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED, rollbackFor=SQLException.class)
+    private static final String UPDATE_FOLDER_HIERARCHY_XID =
+            "UPDATE "
+            + "pointHierarchy SET xid=func_gen_xid_point_hierarchy(id) WHERE id=?";
+
+    private static final String DELETE_FOLDER_HIERARCHY_XID =
+            "DELETE pointHierarchy WHERE xid=?";
+
+    @Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,
+            rollbackFor=SQLException.class)
     public boolean updateParent(String xidPoint, String xidFolder) {
-
         int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_POINT_XID, new Object[]{xidPoint}, Integer.class);
-
         int parentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER_XID, new Object[]{xidFolder}, Integer.class);
-
         return updateParentIdDataPoint(id, parentId);
     }
 
-    @Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED, rollbackFor=SQLException.class)
+    @Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,
+            rollbackFor=SQLException.class)
     public boolean updateFolder(String xidFolder, String newParentXidFolder) {
         int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER_XID, new Object[]{xidFolder}, Integer.class);
-
         int newParentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER_XID, new Object[]{xidFolder}, Integer.class);
-
         return updateParentId(id, newParentId);
+    }
+
+    @Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,
+            rollbackFor=SQLException.class)
+    public void add(FolderPointHierarchy folderPointHierarchy) {
+        int parentId = DAO.getInstance().getJdbcTemp().queryForObject(
+                SELECT_FOLDER_XID,
+                new Object[]{folderPointHierarchy.getParentXid()},
+                Integer.class);
+        DAO.getInstance().getJdbcTemp().update(insertSQL, new Object[]{parentId, folderPointHierarchy.getName()});
+        int folderId = DAO.getInstance().getId();
+        DAO.getInstance().getJdbcTemp().update(UPDATE_FOLDER_HIERARCHY_XID, new Object[]{folderId});
+    }
+
+    public boolean folderCheckExist(String xidFolder) {
+        try {
+            int idFolder = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER_XID, new Object[]{xidFolder}, Integer.class);
+            return idFolder>0;
+        } catch (EmptyResultDataAccessException e) {
+            LOG.trace(e);
+        }
+        return false;
+    }
+
+    public void deleteFolderXid(String xidFolder) {
+        DAO.getInstance().getJdbcTemp().update(DELETE_FOLDER_HIERARCHY_XID, new Object[]{xidFolder});
     }
 }
