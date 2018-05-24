@@ -54,10 +54,10 @@ import com.serotonin.mango.rt.dataSource.DataSourceUtils;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.vo.dataSource.pachube.PachubeDataSourceVO;
 import com.serotonin.util.ObjectUtils;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 public class PachubeDataSourceRT extends PollingDataSource {
     public static final int DATA_RETRIEVAL_FAILURE_EVENT = 1;

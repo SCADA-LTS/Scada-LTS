@@ -29,7 +29,7 @@ import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

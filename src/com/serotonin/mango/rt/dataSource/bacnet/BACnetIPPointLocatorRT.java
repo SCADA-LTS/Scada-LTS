@@ -28,7 +28,8 @@ import com.serotonin.bacnet4j.type.primitive.ObjectIdentifier;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPPointLocatorVO;
 import com.serotonin.util.IpAddressUtils;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 /**
  * @author Matthew Lohbihler

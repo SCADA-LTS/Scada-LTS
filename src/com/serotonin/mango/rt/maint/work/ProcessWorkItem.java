@@ -30,8 +30,8 @@ import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

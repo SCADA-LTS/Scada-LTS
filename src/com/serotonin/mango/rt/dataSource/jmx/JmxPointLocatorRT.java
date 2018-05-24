@@ -24,7 +24,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.vo.dataSource.jmx.JmxPointLocatorVO;
 import com.serotonin.util.ArrayUtils;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

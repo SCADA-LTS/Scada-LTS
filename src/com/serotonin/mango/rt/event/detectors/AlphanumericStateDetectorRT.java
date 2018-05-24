@@ -21,8 +21,8 @@ package com.serotonin.mango.rt.event.detectors;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

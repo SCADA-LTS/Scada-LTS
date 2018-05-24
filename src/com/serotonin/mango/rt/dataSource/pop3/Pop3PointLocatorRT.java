@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.vo.dataSource.pop3.Pop3PointLocatorVO;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

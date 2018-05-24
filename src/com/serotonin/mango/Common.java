@@ -41,6 +41,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.Period;
@@ -60,7 +61,6 @@ import com.serotonin.monitor.MonitoredValues;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.timer.RealTimeTimer;
 import com.serotonin.util.PropertiesUtils;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
@@ -547,9 +547,8 @@ public class Common {
 			languages.add(new KeyValuePair(key, i18n.getString(key)));
 		return languages;
 	}
-
 	public static String generateXid(String prefix) {
-		return prefix + StringUtils.generateRandomString(6, "0123456789");
+		return prefix + RandomStringUtils.random(6, "0123456789");
 	}
 
 }

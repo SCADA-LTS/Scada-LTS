@@ -28,8 +28,8 @@ import com.serotonin.mango.rt.event.SimpleEventDetector;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 abstract public class PointEventDetectorRT extends SimpleEventDetector implements DataPointListener {
     protected PointEventDetectorVO vo;

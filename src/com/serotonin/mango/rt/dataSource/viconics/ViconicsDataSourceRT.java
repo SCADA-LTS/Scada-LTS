@@ -59,7 +59,6 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.util.StringUtils;
 import com.serotonin.viconics.RequestFailureException;
 import com.serotonin.viconics.ViconicsConfigurationException;
 import com.serotonin.viconics.ViconicsDevice;
@@ -74,6 +73,8 @@ import com.serotonin.viconics.config.Thermostat;
 import com.serotonin.viconics.io.ViconicsIncomingResponse;
 import com.serotonin.viconics.io.ViconicsOutgoingRequest;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 /**
  * @author Matthew Lohbihler

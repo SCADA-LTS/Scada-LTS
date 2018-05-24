@@ -41,9 +41,9 @@ import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.SerializationHelper;
-import com.serotonin.util.StringUtils;
 import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 public class PersistentDataSourceRT extends EventDataSource implements Runnable {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;

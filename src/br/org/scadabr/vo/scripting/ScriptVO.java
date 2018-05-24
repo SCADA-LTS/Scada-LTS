@@ -19,8 +19,9 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 		JsonSerializable {

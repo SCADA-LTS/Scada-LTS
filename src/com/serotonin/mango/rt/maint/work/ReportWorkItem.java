@@ -52,12 +52,12 @@ import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportPointVO;
 import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.util.ColorUtils;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.email.EmailAttachment;
 import com.serotonin.web.email.EmailContent;
 import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

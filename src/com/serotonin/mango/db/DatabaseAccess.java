@@ -38,7 +38,8 @@ import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.upgrade.DBUpgrade;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
-import com.serotonin.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
 
 abstract public class DatabaseAccess {
 	private final Log log = LogFactory.getLog(DatabaseAccess.class);

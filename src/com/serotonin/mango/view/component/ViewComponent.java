@@ -43,7 +43,6 @@ import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -53,6 +52,7 @@ import br.org.scadabr.view.component.ChartComparatorComponent;
 import br.org.scadabr.view.component.FlexBuilderComponent;
 import br.org.scadabr.view.component.LinkComponent;
 import br.org.scadabr.view.component.ScriptButtonComponent;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

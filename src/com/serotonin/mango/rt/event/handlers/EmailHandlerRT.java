@@ -39,9 +39,10 @@ import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.mango.web.email.UsedImagesDirective;
 import com.serotonin.timer.TimerTask;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient<EventInstance> {
     private static final Log LOG = LogFactory.getLog(EmailHandlerRT.class);

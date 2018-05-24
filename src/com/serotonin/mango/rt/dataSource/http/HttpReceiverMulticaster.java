@@ -22,7 +22,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.serotonin.util.IpAddressUtils;
 import com.serotonin.util.IpWhiteListException;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 /**
  * @author Matthew Lohbihler

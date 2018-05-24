@@ -30,7 +30,8 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.EventDataSource;
 import com.serotonin.mango.vo.dataSource.http.HttpReceiverDataSourceVO;
 import com.serotonin.mango.vo.dataSource.http.HttpReceiverPointLocatorVO;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 /**
  * @author Matthew Lohbihler

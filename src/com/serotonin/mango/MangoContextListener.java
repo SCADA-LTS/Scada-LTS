@@ -48,7 +48,6 @@ import com.serotonin.mango.vo.report.ReportJob;
 import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.ContextWrapper;
 import com.serotonin.mango.web.dwr.BaseDwr;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
@@ -65,6 +64,7 @@ import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -110,7 +110,7 @@ public class MangoContextListener implements ServletContextListener {
 				.getValue(SystemSettingsDAO.SERVLET_CONTEXT_PATH);
 		if (knownContextPath != null) {
 			String contextPath = ctx.getContextPath();
-			if (!StringUtils.isEqual(knownContextPath, contextPath))
+			if (!StringUtils.equals(knownContextPath, contextPath))
 				log.warn("Mango's known servlet context path has changed from "
 						+ knownContextPath + " to " + contextPath
 						+ ". Are there two instances of Mango running?");

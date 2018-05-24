@@ -28,8 +28,8 @@ import com.serotonin.mango.vo.publish.persistent.PersistentSenderVO;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.timer.TimerTrigger;
-import com.serotonin.util.StringUtils;
 import com.serotonin.util.queue.ByteQueue;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 class PersistentSendThread extends SendThread {
     static final Log LOG = LogFactory.getLog(PersistentSendThread.class);

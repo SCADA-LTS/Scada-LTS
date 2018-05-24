@@ -21,7 +21,7 @@ package com.serotonin.mango.rt.event.handlers;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.maint.work.ProcessWorkItem;
 import com.serotonin.mango.vo.event.EventHandlerVO;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

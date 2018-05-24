@@ -40,7 +40,8 @@ import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.vo.dataSource.snmp.SnmpPointLocatorVO;
-import com.serotonin.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+//import com.serotonin.util.StringUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -73,7 +74,7 @@ public class SnmpPointLocatorRT extends PointLocatorRT {
     public MangoValue variableToValue(Variable variable) {
         switch (vo.getDataTypeId()) {
         case DataTypes.BINARY:
-            return new BinaryValue(StringUtils.isEqual(variable.toString(), vo.getBinary0Value()));
+            return new BinaryValue(StringUtils.equals(variable.toString(), vo.getBinary0Value()));
 
         case DataTypes.MULTISTATE:
             return new MultistateValue(variable.toInt());

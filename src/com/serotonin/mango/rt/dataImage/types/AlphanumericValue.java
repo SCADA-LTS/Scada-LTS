@@ -19,7 +19,7 @@
 package com.serotonin.mango.rt.dataImage.types;
 
 import com.serotonin.mango.DataTypes;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

@@ -20,8 +20,8 @@ package com.serotonin.mango.rt.dataSource.http;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.scada_lts.serorepl.utils.StringUtils;
 
-import com.serotonin.util.StringUtils;
 
 /**
  * @author Matthew Lohbihler

@@ -31,9 +31,9 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.util.LifecycleException;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

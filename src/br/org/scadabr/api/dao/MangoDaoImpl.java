@@ -30,8 +30,8 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.util.*;
 

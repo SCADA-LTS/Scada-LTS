@@ -20,7 +20,7 @@ package com.serotonin.mango.view;
 
 import com.serotonin.mango.view.graphic.GraphicRenderer;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 @Deprecated
 // use ViewComponent instead

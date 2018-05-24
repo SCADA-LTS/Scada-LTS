@@ -31,7 +31,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.BaseDao;
 import org.scada_lts.dao.SystemSettingsDAO;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * Base class for instances that perform database upgrades. The naming of

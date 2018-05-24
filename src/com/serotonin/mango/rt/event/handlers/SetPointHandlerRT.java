@@ -20,7 +20,6 @@ package com.serotonin.mango.rt.event.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -33,8 +32,9 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.SetPointWorkItem;
 import com.serotonin.mango.vo.event.EventHandlerVO;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource {
 	private static final Log LOG = LogFactory.getLog(SetPointHandlerRT.class);
