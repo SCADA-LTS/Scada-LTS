@@ -23,8 +23,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.point_hierarchy.PointHierarchyXidService;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -35,12 +37,13 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author grzegorz.bylica@gmail.com
  */
+@Controller
 public class PointHierarchyAPI {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyAPI.class);
 
-    @Resource
-    private PointHierarchyXidService pointHierarchyXidService;
+    //@Autowired
+    private PointHierarchyXidService pointHierarchyXidService = new PointHierarchyXidService();
 
     @RequestMapping(value = "/api/pointHierarchy/pointMoveTo/{xid_point}/{xid_folder}", method = RequestMethod.PUT)
     public ResponseEntity<String> pointMoveTo(

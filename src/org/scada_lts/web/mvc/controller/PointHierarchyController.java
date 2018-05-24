@@ -56,11 +56,8 @@ public class PointHierarchyController {
 
 	private static final Log LOG = LogFactory.getLog(PointHierarchyController.class);
 
-	@Resource
-	private ServletContext servletContext;
-
-	@Resource
-	PointHierarchyService phService;
+	//@Resource(name = "PointHierarchyService")
+	private PointHierarchyService phService = new PointHierarchyService();
 
 	@RequestMapping(value = "/pointHierarchySLTS", method = RequestMethod.GET)
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)

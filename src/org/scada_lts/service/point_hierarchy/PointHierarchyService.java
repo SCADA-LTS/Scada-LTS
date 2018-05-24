@@ -47,10 +47,8 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
 public class PointHierarchyService {
 	// cache
 	private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);
-	
-	
-	@Resource
-	private PointHierarchyDAO phDAO;
+
+	private PointHierarchyDAO phDAO = new PointHierarchyDAO();
 	
 	public PointHierarchyService() {
 		//
