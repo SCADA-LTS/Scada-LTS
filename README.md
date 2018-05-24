@@ -87,6 +87,10 @@ See [the Releases section of our GitHub project](https://github.com/grzesiekb/Sc
 
 Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=directory)
 
+**Michał Rokitiański**
+
+* <https://github.com/SoftQ>
+
 **Grzesiek Bylica**
 
 * <https://github.com/grzesiekb>
