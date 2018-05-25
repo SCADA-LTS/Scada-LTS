@@ -12,7 +12,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.UnsilencedAlarmDAO;
 import org.scada_lts.dao.model.UnsilencedAlarmLevelCache;
-import org.scada_lts.service.point_hierarchy.PointHierarchyService;
 import org.scada_lts.web.ws.beans.ScadaPrincipal;
 import org.scada_lts.web.ws.beans.UserAlarmLevel;
 import org.scada_lts.web.ws.config.WebsocketApplicationListener;
@@ -31,7 +30,7 @@ import com.serotonin.timer.TimerTrigger;
 
 @Service
 public class UserHighestAlarmLevelService implements WebsocketSessionListener, UserHighestAlarmLevelListener {
-    private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);
+    private static final Log LOG = LogFactory.getLog(UserHighestAlarmLevelService.class);
 
     private static final String USER_ALARM_LEVEL_TOPIC_PREFIX = "/topic/alarmLevel/";
     

@@ -21,7 +21,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.service.point_hierarchy.PointHierarchyXidService;
+import org.scada_lts.service.pointhierarchy.PointHierarchyXidService;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

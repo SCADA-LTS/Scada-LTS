@@ -16,7 +16,7 @@
  * 
  */
 
-package org.scada_lts.service.point_hierarchy;
+package org.scada_lts.service.pointhierarchy;
 
 import java.util.List;
 import java.util.Map;
