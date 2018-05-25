@@ -82,7 +82,7 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
 
     public boolean folderCheckExist(String xidFolder) {
         try {
-            //TODO use OPTIONS
+            //TODO use OPTIONAL
             int idFolder = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER_XID, new Object[]{xidFolder}, Integer.class);
             return idFolder>0;
         } catch (EmptyResultDataAccessException e) {
