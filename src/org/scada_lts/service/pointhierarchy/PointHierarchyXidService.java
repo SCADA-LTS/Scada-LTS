@@ -42,7 +42,7 @@ public class PointHierarchyXidService extends PointHierarchyService {
     public boolean movePoint(String xidPoint, String xidFolder) {
         boolean res = false;
         try {
-            //TODO use OPTIONAL
+            //TODO use java.utils.Optional
             res = pointHierarchyXidDAO.updateParent(xidPoint, xidFolder);
         } catch (Exception e) {
             LOG.error(e);
@@ -53,7 +53,7 @@ public class PointHierarchyXidService extends PointHierarchyService {
     public boolean moveFolder(String xidFolder, String newParentXidFolder) {
         boolean res = false;
         try {
-            //TODO use OPTIONAL
+            //TODO use java.utils.Optional
             res = pointHierarchyXidDAO.updateFolder(xidFolder, newParentXidFolder);
         } catch (Exception e) {
             LOG.error(e);
