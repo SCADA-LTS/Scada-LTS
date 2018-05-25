@@ -46,6 +46,7 @@ public class PointHierarchyService {
 	// cache
 	private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);
 
+	//TODO replace to @Autowire
 	private PointHierarchyDAO phDAO = new PointHierarchyDAO();
 	
 	public PointHierarchyService() {
