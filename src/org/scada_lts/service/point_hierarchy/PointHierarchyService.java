@@ -21,12 +21,10 @@ package org.scada_lts.service.point_hierarchy;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
-import org.scada_lts.dao.point_hierarchy.PointHierarchyDAO;
+import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.exception.CacheHierarchyException;
 import org.scada_lts.mango.service.DataPointService;

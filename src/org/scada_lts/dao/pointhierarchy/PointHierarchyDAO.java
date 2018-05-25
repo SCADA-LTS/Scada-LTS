@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.scada_lts.dao.point_hierarchy;
+package org.scada_lts.dao.pointhierarchy;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

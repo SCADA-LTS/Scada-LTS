@@ -32,7 +32,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataPointUserDAO;
 import org.scada_lts.dao.PointEventDetectorDAO;
-import org.scada_lts.dao.point_hierarchy.PointHierarchyDAO;
+import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.PointLinkDAO;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;

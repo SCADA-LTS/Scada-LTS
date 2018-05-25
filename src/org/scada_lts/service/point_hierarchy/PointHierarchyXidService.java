@@ -19,8 +19,8 @@ package org.scada_lts.service.point_hierarchy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.point_hierarchy.PointHierarchyDAO;
-import org.scada_lts.dao.point_hierarchy.PointHierarchyXidDAO;
+import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
+import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.springframework.stereotype.Service;
 
