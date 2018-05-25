@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
-import org.scada_lts.service.PointHierarchyService;
+import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,11 +54,8 @@ public class PointHierarchyController {
 
 	private static final Log LOG = LogFactory.getLog(PointHierarchyController.class);
 
-	@Resource
-	private ServletContext servletContext;
-
-	@Resource
-	PointHierarchyService phService;
+	//TODO add @Autowire
+	private PointHierarchyService phService = new PointHierarchyService();
 
 	@RequestMapping(value = "/pointHierarchySLTS", method = RequestMethod.GET)
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)

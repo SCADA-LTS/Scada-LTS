@@ -16,17 +16,15 @@
  * 
  */
 
-package org.scada_lts.service;
+package org.scada_lts.service.pointhierarchy;
 
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
-import org.scada_lts.dao.PointHierarchyDAO;
+import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.exception.CacheHierarchyException;
 import org.scada_lts.mango.service.DataPointService;
@@ -47,10 +45,9 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
 public class PointHierarchyService {
 	// cache
 	private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);
-	
-	
-	@Resource
-	private PointHierarchyDAO phDAO;
+
+	//TODO replace to @Autowire
+	private PointHierarchyDAO phDAO = new PointHierarchyDAO();
 	
 	public PointHierarchyService() {
 		//

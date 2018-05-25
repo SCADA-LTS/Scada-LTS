@@ -1,8 +1,5 @@
 package org.scada_lts.service;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,11 +10,8 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.SchedulerException;
-import org.scada_lts.cache.UnsilencedAlarmCache;
 import org.scada_lts.dao.UnsilencedAlarmDAO;
 import org.scada_lts.dao.model.UnsilencedAlarmLevelCache;
-import org.scada_lts.quartz.UpdateUnsilencedAlarmLevel;
 import org.scada_lts.web.ws.beans.ScadaPrincipal;
 import org.scada_lts.web.ws.beans.UserAlarmLevel;
 import org.scada_lts.web.ws.config.WebsocketApplicationListener;
@@ -29,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
-import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.timer.OneTimeTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.timer.TimerTrigger;
@@ -37,7 +30,7 @@ import com.serotonin.timer.TimerTrigger;
 
 @Service
 public class UserHighestAlarmLevelService implements WebsocketSessionListener, UserHighestAlarmLevelListener {
-    private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);
+    private static final Log LOG = LogFactory.getLog(UserHighestAlarmLevelService.class);
 
     private static final String USER_ALARM_LEVEL_TOPIC_PREFIX = "/topic/alarmLevel/";
     
