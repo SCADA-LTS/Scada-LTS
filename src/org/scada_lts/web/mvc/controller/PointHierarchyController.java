@@ -54,7 +54,7 @@ public class PointHierarchyController {
 
 	private static final Log LOG = LogFactory.getLog(PointHierarchyController.class);
 
-	//@Resource(name = "PointHierarchyService")
+	//TODO add @Autowire
 	private PointHierarchyService phService = new PointHierarchyService();
 
 	@RequestMapping(value = "/pointHierarchySLTS", method = RequestMethod.GET)
