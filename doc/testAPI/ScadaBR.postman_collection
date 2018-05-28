@@ -273,7 +273,7 @@
 		    "description": "",
 		    "item": [
 		        {
-                    "name": "http://localhost/ScadaBR/api/view/createView",
+                    "name": "http://localhost:8080/ScadaBR/api/view/createView",
                     "request": {
                     "method": "POST",
                     "header": [
