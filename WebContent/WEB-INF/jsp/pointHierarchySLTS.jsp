@@ -417,18 +417,15 @@ thead th {
 
 <script src="resources/app/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="resources/app/bower_components/jquery-ui/jquery-ui.min.js"></script>
-<script
-	src="resources/app/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script
-	src="resources/app/bower_components/fancytree/dist/jquery.fancytree-all.min.js"></script>
-<script
-	src="resources/app/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
+<script	src="resources/app/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script	src="resources/app/bower_components/fancytree/dist/jquery.fancytree-all.min.js"></script>
+<script	src="resources/app/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
 <script src="resources/sockjs-0.3.4.js"></script>
 <script src="resources/stomp.js"></script>
 
-
 <script src="resources/npm/node_modules/axios/dist/axios.min.js"></script>
 <script src="resources/npm/node_modules/vue/dist/vue.min.js"></script>
+<script src="resources/npm/node_modules/vue-axios/dist/vue-axios.min.js"></script>
 <script src="resources/vue-mixins/shared/mixins-export-import.js"></script>
 <script src="resources/vue-components/export-import/export-import.js"></script>
 <script src="resources/npm/node_modules/jsonschema/lib/validator.js"></script>
@@ -1357,7 +1354,6 @@ var messages = {
         var app = new Vue({
           el: '#hierarchy-import-export',
           mixins: []
-
         })
     </script>
 </html>
