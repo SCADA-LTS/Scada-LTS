@@ -126,7 +126,7 @@ public class PointHierarchyAPI {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 boolean is = pointHierarchyXidService.folderCheckExist(xidFolder);
-                result = new ResponseEntity<String>(String.valueOf(is), HttpStatus.UNAUTHORIZED);
+                result = new ResponseEntity<String>(String.valueOf(is), HttpStatus.OK);
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }
