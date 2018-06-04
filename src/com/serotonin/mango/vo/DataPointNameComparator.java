@@ -20,7 +20,7 @@ package com.serotonin.mango.vo;
 
 import java.util.Comparator;
 
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

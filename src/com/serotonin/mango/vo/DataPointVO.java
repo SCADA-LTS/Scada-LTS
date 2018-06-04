@@ -40,10 +40,10 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.SerializationHelper;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
