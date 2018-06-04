@@ -113,7 +113,7 @@ public class ViewAPI {
         }
     }
 
-    @RequestMapping(value = "/api/view/createV", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/view/createView", method = RequestMethod.POST)
     public ResponseEntity<String> createView(HttpServletRequest request, @RequestBody ViewDTO viewDTO) {
         LOG.info("/api/view/createView");
 

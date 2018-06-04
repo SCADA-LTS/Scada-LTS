@@ -12,9 +12,9 @@
 			"description": "",
 			"item": [
 				{
-					"name": "http://localhost/ScadaBR/api/auth/admin/admin",
+					"name": "http://localhost:8080/ScadaBR/api/auth/admin/admin",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"url": "http://localhost:8080/ScadaBR/api/auth/admin/admin",
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -26,9 +26,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/auth/no/user",
+					"name": "http://localhost:8080/ScadaBR/api/auth/no/user",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/auth/no/user",
+						"url": "http://localhost:8080/ScadaBR/api/auth/no/user",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -37,9 +37,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/auth/isLogged/admin",
+					"name": "http://localhost:8080/ScadaBR/api/auth/isLogged/admin",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/auth/isLogged/admin",
+						"url": "http://localhost:8080/ScadaBR/api/auth/isLogged/admin",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -48,9 +48,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/auth/logout/admin",
+					"name": "http://localhost:8080/ScadaBR/api/auth/logout/admin",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/auth/logout/admin",
+						"url": "http://localhost:8080/ScadaBR/api/auth/logout/admin",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -65,9 +65,9 @@
 			"description": "",
 			"item": [
 				{
-					"name": "http://localhost/ScadaBR/api/auth/admin/admin copy",
+					"name": "http://localhost:8080/ScadaBR/api/auth/admin/admin copy",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"url": "http://localhost:8080/ScadaBR/api/auth/admin/admin",
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -79,9 +79,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/point_properties/getProperties/DP_041509",
+					"name": "http://localhost:8080/ScadaBR/api/point_properties/getProperties/DP_041509",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/point_properties/getProperties/DP_041509",
+						"url": "http://localhost:8080/ScadaBR/api/point_properties/getProperties/DP_041509",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -96,9 +96,9 @@
 			"description": "",
 			"item": [
 				{
-					"name": "http://localhost/ScadaBR/api/auth/admin/admin copy",
+					"name": "http://localhost:8080/ScadaBR/api/auth/admin/admin copy",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"url": "http://localhost:8080/ScadaBR/api/auth/admin/admin",
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -110,9 +110,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/point_value/getValue/DP_041509",
+					"name": "http://localhost:8080/ScadaBR/api/point_value/getValue/DP_041509",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/point_value/getValue/DP_041509",
+						"url": "http://localhost:8080/ScadaBR/api/point_value/getValue/DP_041509",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -121,9 +121,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/translate/name",
+					"name": "http://localhost:8080/ScadaBR/api/translate/name",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/point_value/getValuesFromTime/1428379203000/DP_041509",
+						"url": "http://localhost:8080/ScadaBR/api/point_value/getValuesFromTime/1428379203000/DP_041509",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -138,9 +138,9 @@
 			"description": "",
 			"item": [
 				{
-					"name": "http://localhost/ScadaBR/api/translate/name",
+					"name": "http://localhost:8080/ScadaBR/api/translate/name",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/translate/name",
+						"url": "http://localhost:8080/ScadaBR/api/translate/name",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -155,9 +155,9 @@
 			"description": "",
 			"item": [
 				{
-					"name": "http://localhost/ScadaBR/api/utils/getTs",
+					"name": "http://localhost:8080/ScadaBR/api/utils/getTs",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/utils/getTs",
+						"url": "http://localhost:8080/ScadaBR/api/utils/getTs",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -172,9 +172,9 @@
 			"description": "",
 			"item": [
 				{
-					"name": "http://localhost/ScadaBR/api/auth/admin/admin copy",
+					"name": "http://localhost:8080/ScadaBR/api/auth/admin/admin copy",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"url": "http://localhost:8080/ScadaBR/api/auth/admin/admin",
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -186,9 +186,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/view_hierarchy/getAll",
+					"name": "http://localhost:8080/ScadaBR/api/view_hierarchy/getAll",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/view_hierarchy/getAll",
+						"url": "http://localhost:8080/ScadaBR/api/view_hierarchy/getAll",
 						"method": "GET",
 						"header": [
 							{
@@ -203,9 +203,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/view_hierarchy/getFirstViewId",
+					"name": "http://localhost:8080/ScadaBR/api/view_hierarchy/getFirstViewId",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/view_hierarchy/getFirstViewId",
+						"url": "http://localhost:8080/ScadaBR/api/view_hierarchy/getFirstViewId",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -220,9 +220,9 @@
 			"description": "",
 			"item": [
 				{
-					"name": "http://localhost/ScadaBR/api/auth/admin/admin copy",
+					"name": "http://localhost:8080/ScadaBR/api/auth/admin/admin copy",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/auth/admin/admin",
+						"url": "http://localhost:8080/ScadaBR/api/auth/admin/admin",
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -234,9 +234,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/watchlist/getNames",
+					"name": "http://localhost:8080/ScadaBR/api/watchlist/getNames",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/watchlist/getNames",
+						"url": "http://localhost:8080/ScadaBR/api/watchlist/getNames",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -245,9 +245,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/watchlist/getPoints/WL_614464",
+					"name": "http://localhost:8080/ScadaBR/api/watchlist/getPoints/WL_614464",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/watchlist/getPoints/WL_614464",
+						"url": "http://localhost:8080/ScadaBR/api/watchlist/getPoints/WL_614464",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -256,9 +256,9 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost/ScadaBR/api/watchlist/getChartData/{xid}/{fromData}/{toData}",
+					"name": "http://localhost:8080/ScadaBR/api/watchlist/getChartData/{xid}/{fromData}/{toData}",
 					"request": {
-						"url": "http://localhost/ScadaBR/api/watchlist/getChartData/WL_614464/1428379203000/1491537603000",
+						"url": "http://localhost:8080/ScadaBR/api/watchlist/getChartData/WL_614464/1428379203000/1491537603000",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -267,6 +267,30 @@
 					"response": []
 				}
 			]
+		},
+		{
+		    "name": "ViewAPI",
+		    "description": "",
+		    "item": [
+		        {
+                    "name": "http://localhost:8080/ScadaBR/api/view/createView",
+                    "request": {
+                    "method": "POST",
+                    "header": [
+                    {
+                    	"key": "Content-Type",
+                    	"value": "application/json"
+                    }
+                    ],
+                    "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n\t\"name\": \"nasamsce7sd88dsas\",\r\n\t\"xid\": \"GV_2137777c23\",\r\n\t\"imagePath\": \"C:\\\\Users\\\\Jerzyk\\\\Desktop\\\\lena.png\",\r\n\t\"size\": \"2\"\r\n}"
+                    },
+                    "url": "http://localhost:8080/ScadaBR/api/view/createView"
+                    },
+                   "response": []
+                }
+		    ]
 		}
 	]
 }
