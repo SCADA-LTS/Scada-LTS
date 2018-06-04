@@ -379,6 +379,7 @@ thead th {
 									<span class="glyphicon glyphicon-info-sign"></span>
 								</button>
 							</div>
+							<!--
 							<div class="btn-group">
 								<div id="hierarchy-import-export">
 
@@ -396,6 +397,7 @@ thead th {
 
                             	</div>
 							</div>
+							-->
 						</div>
 						<div id="tree"
 							class=" panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
