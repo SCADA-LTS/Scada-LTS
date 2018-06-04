@@ -379,7 +379,7 @@ thead th {
 									<span class="glyphicon glyphicon-info-sign"></span>
 								</button>
 							</div>
-							<!--
+
 							<div class="btn-group">
 								<div id="hierarchy-import-export">
 
@@ -387,17 +387,13 @@ thead th {
                                         <span class="glyphicon glyphicon-export"></span> <span class="glyphicon glyphicon-import"></span>
                                     </button>
 
-
 									<div class="collapse" id="collapseExample">
 										<div class="card card-body">
 										</div>
 										<export-import></export-import>
-
 									</div>
-
                             	</div>
 							</div>
-							-->
 						</div>
 						<div id="tree"
 							class=" panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
