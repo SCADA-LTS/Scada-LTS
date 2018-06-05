@@ -36,8 +36,7 @@ public class PointHierarchyXidService extends PointHierarchyService {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyXidService.class);
 
-    @Resource
-    private PointHierarchyXidDAO pointHierarchyXidDAO;
+    private PointHierarchyXidDAO pointHierarchyXidDAO = new PointHierarchyXidDAO();
 
     public boolean movePoint(String xidPoint, String xidFolder) {
         boolean res = false;
