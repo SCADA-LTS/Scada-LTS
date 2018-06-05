@@ -7,14 +7,19 @@ Vue.component('export-import', {
             errorMsg: '',
             export_import_json: {},
             refreshed: '',
-            xidFolder: '',
             xidFolderExists:[],
-            xidFolderNotExists:[]
+            xidFolderNotExists:[],
+            xidFolderToCheck:[],
+            xidFolderToCreate: [],
+            xidFolderToMoveFromTo: [],
+            xidPointsMoveFromTo: [],
+            xidFolderToDelete: [],
+            xidErrors: []
         }
     },
     mixins: [ExportImportHierarchiPoints],
     methods: {
-        doExport() {ri
+        doExport() {
             this.export();
             //alert('export-import');
         },
@@ -43,35 +48,60 @@ Vue.component('export-import', {
                 // check exist folders and root folder 'may only one' etc.
                 for (id in folders) {
                     console.log(folders[id]);
-                    promises.push(this.check(folders[id].xidFolder));
                 }
+                //this.checks(folders[id].xidFolder);
+                this.xidFolderToCheck = folders;
+                this.check();
+
             }
 
             console.log("xidFolderExists");
             console.log(this.xidFolderExists);
             console.log("xidFolderNotExists");
             console.log(this.xidFolderNotExists);
+            console.log("xidFolderToCheck");
+            console.log(this.xidFolderToCheck);
+
         },
+        validToCreate() {
+            for (id in this.xidFolderToCreate) {
+                if (this.xidFolderToCreate[id].xidFolder == undefined ) {
+                    this.xidErrors.push(this.xidFolderToCreate[id])
+                    this.xidFolderToCreate.splice(id, 1);
+                }
+                //TODO check xidFolder
+                prepareDataToMoveFolders();
+            }
+        },
+        prepareDataToMoveFolders() {
 
-        check(xidFolder) {
-            this.xidFolder = xidFolder;
-            console.log(xidFolder);
-            console.log(this.xidFolder);
-            const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.xidFolder}`;
-
+        },
+        check() {
+            //TODO check responce becouse server is down then error.
+            console.log( this.xidFolderToCheck[0].xidFolder );
+            const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.xidFolderToCheck[0].xidFolder}`;
+            console.log( apiCheckXidFolder );
             axios.get( apiCheckXidFolder ).then(response => {
                 console.log(response);
                 if (response.data == true) {
-                    this.xidFolderExists.push(this.xidFolder);
-                } else if (this.xidFolder != undefined && response.data == false) {
-                    this.xidFolderNotExists.push(this.xidFolder);
+                    this.xidFolderExists.push(this.xidFolderToCheck[0]);
+                } else if (this.xidFolderToCheck[0] != undefined && response.data == false) {
+                    this.xidFolderNotExists.push(this.xidFolderToCheck[0]);
+                }
+                this.xidFolderToCheck.splice(0, 1);
+                if (this.xidFolderToCheck.length > 0) {
+                    this.check();
+                } else {
+                    validToCreate();
                 }
             }).catch(error => {
-                if (this.xidFolder != undefined && response.data == false) {
-                   this.xidFolderNotExists.push(this.xidFolder);
+                this.xidFolderNotExists.push(this.xidFolderToCheck[0].xidFolder);
+                this.xidFolderToCheck.splice(0, 1);
+                if (this.xidFolderToCheck.length > 0) {
+                    this.check();
+                } else {
+                    validToCreate();
                 }
-                console.log(error)
-                return false;
             });
         },
 
@@ -109,7 +139,6 @@ Vue.component('export-import', {
             <button v-on:click="cacheRefresh()">Refresh</button>
             <button v-on:click="parse()">Parse</button>
 
-
             <form @submit.prevent="search">
                 <input v-model="username" placeholder="Enter a github username!">
             </form>
@@ -121,6 +150,12 @@ Vue.component('export-import', {
             <p v-else>{{ errorMsg }}
             <p> Not Exist: {{xidFolderNotExists}} </p>
             <p> Is Exist: {{xidFolderExists}} </p>
+            <p> To check: {{xidFolderToCheck}} </p>
+            <p> To create: {{xidFolderToCreate}}  </p>
+            <p> To move folder: {{xidFolderToMoveFromTo}} </p>
+            <p> To move points: {{xidPointsMoveFromTo}} </p>
+            <p> Errors: {{xidErrors}} </p>
+
         </div>`
 });
 

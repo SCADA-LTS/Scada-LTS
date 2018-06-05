@@ -116,7 +116,7 @@ public class PointHierarchyAPI {
     }
 
     @RequestMapping(value = "/api/pointHierarchy/folderCheckExist/{xid_folder}", method = RequestMethod.GET)
-    public ResponseEntity<String> folderCheckExist(
+    public ResponseEntity<FolderPointHierarchy> folderCheckExist(
             @PathVariable("xid_folder") String xidFolder,
             HttpServletRequest request)  {
 
@@ -125,14 +125,14 @@ public class PointHierarchyAPI {
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
-                boolean is = pointHierarchyXidService.folderCheckExist(xidFolder);
-                result = new ResponseEntity<String>(String.valueOf(is), HttpStatus.OK);
+                FolderPointHierarchy fph = pointHierarchyXidService.folderCheckExist(xidFolder);
+                result = new ResponseEntity<FolderPointHierarchy>(fph, HttpStatus.OK);
             } else {
-                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                result = new ResponseEntity<FolderPointHierarchy>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             LOG.error(e);
-            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<FolderPointHierarchy>(HttpStatus.BAD_REQUEST);
         }
         return result;
     }

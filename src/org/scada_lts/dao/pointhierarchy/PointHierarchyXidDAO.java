@@ -22,11 +22,13 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -51,6 +53,8 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
 
     private static final String DELETE_FOLDER_HIERARCHY_XID =
             "DELETE pointHierarchy WHERE xid=?";
+
+
 
     @Transactional(readOnly = false, propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,
             rollbackFor=SQLException.class)
@@ -80,15 +84,15 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
         DAO.getInstance().getJdbcTemp().update(UPDATE_FOLDER_HIERARCHY_XID, new Object[]{folderId});
     }
 
-    public boolean folderCheckExist(String xidFolder) {
+    public int folderCheckExist(String xidFolder) {
         try {
             //TODO use java.utils.Optional
             int idFolder = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER_XID, new Object[]{xidFolder}, Integer.class);
-            return idFolder>0;
+            return idFolder;
         } catch (EmptyResultDataAccessException e) {
             LOG.trace(e);
         }
-        return false;
+        return -1;
     }
 
     public void deleteFolderXid(String xidFolder) {

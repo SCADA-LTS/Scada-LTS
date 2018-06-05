@@ -19,6 +19,7 @@ package org.scada_lts.service.pointhierarchy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
@@ -64,8 +65,10 @@ public class PointHierarchyXidService extends PointHierarchyService {
         pointHierarchyXidDAO.add(folderPointHierarchy);
     }
 
-    public boolean folderCheckExist(String xidFolder) {
-        return pointHierarchyXidDAO.folderCheckExist(xidFolder);
+    public FolderPointHierarchy folderCheckExist(String xidFolder) {
+
+         int id = pointHierarchyXidDAO.folderCheckExist(xidFolder);
+
     }
 
     public void cacheRefresh() {
