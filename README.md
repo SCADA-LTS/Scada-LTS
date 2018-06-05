@@ -87,6 +87,10 @@ See [the Releases section of our GitHub project](https://github.com/grzesiekb/Sc
 
 Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=directory)
 
+**Michał Rokitiański**
+
+* <https://github.com/SoftQ>
+
 **Grzesiek Bylica**
 
 * <https://github.com/grzesiekb>
@@ -94,10 +98,6 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 **Arkadiusz Parafiniuk**
 
 * <https://github.com/ArkadiuszParafiniuk>
-
-**Rafał Kotyla**
-
-* <https://github.com/RandemRafaeL> UI/UX
 
 **Konrad Daniek**
 
@@ -126,6 +126,10 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 **Marcin Gołda**
 
 * <https://github.com/marcingolda>
+
+**Tomasz Skrobol**
+
+* <https://github.com/TomashHawk>
 
 
 ## Copyright and license
