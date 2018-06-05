@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.scada_lts.dao;
+package org.scada_lts.dao.pointhierarchy;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,6 +28,8 @@ import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.SerializationData;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyDataSource;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.exception.PointHierarchyDaoException;
@@ -126,7 +128,7 @@ public class PointHierarchyDAO {
 				+ "where "
 					+ "id=?";
 		
-		private static final String insertSQL = ""
+		protected static final String insertSQL = ""
 				+ "insert into " 
 				    + "pointHierarchy (parentId, name) "
 				+ "values (?,?)";
