@@ -637,12 +637,11 @@
                 <div id="wlEditDiv" style="display:inline;" onmouseover="showWatchListEdit()">
                   <tag:img id="wlEditImg" png="pencil" title="watchlist.editListName"/>
                   <div id="wlEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv"
-                          ondblclick="hideLayer(this)">
+                          onmouseout="hideLayer(this)">
                     <fmt:message key="watchlist.newListName"/><br/>
                     <input type="text" id="newWatchListName"
                             onkeypress="if (event.keyCode==13) $('saveWatchListNameLink').onclick();"/>
                     <a class="ptr" id="saveWatchListNameLink" onclick="saveWatchListName()"><fmt:message key="common.save"/></a>
-                  <br>Double click to close
                   </div>
                 </div>
                 
@@ -670,7 +669,7 @@
                   <td width="1">
                     <table cellpadding="0" cellspacing="0" class="rowIcons">
                       <tr>
-                        <td onmouseover="mango.view.showChange('p'+ getMangoId(this) +'Change', 4, 12);"
+                        <td onclick="mango.view.showChange('p'+ getMangoId(this) +'Change', 4, 12);"
                                 ondblclick="mango.view.hideChange('p'+ getMangoId(this) +'Change');"
                                 id="p_TEMPLATE_ChangeMin" style="display:none;"><img alt="" id="p_TEMPLATE_Changing" 
                                 src="images/icon_edit.png"/><div id="p_TEMPLATE_Change" class="labelDiv" 

@@ -186,61 +186,82 @@
         // Position and display the renderer editor.
         var pDim = getNodeBounds($("c"+ compId));
         var editDiv = $(editorId);
-        editDiv.style.left = (pDim.x + pDim.w + 20) +"px";
-        editDiv.style.top = (pDim.y + 10) +"px";
+        var eWidth = jQuery("#" + editorId).outerWidth(true);
+        var scrollL = document.documentElement.scrollLeft;
+        if (pDim.x < (screen.width - eWidth - pDim.w + scrollL - 10)) {
+            editDiv.style.left = (pDim.x + pDim.w + 5) +"px";
+            editDiv.style.top = (pDim.y) +"px";
+        } else {
+            editDiv.style.left = (pDim.x - eWidth - 5) + "px";
+            editDiv.style.top = (pDim.y) +"px";
+        }
+
     }
-    
+
+    function positionCustomEditor(compId, editorId) {
+        // Position and display the renderer editor.
+        var pDim = getNodeBounds($("c"+ compId));
+        var editDiv = $(editorId);
+        var eWidth = jQuery("#" + editorId).outerWidth(true);
+        var scrollL = document.documentElement.scrollLeft;
+        editDiv.style.left = (pDim.x) +"px";
+        editDiv.style.top = (pDim.y + pDim.h) +"px";
+    }
+
     function closeEditors() {
         settingsEditor.close();
         graphicRendererEditor.close();
         staticEditor.close();
         compoundEditor.close();
+        customEditor.close();
     }
-    
+
     function updateViewComponentLocation(divId) {
         var div = $(divId);
         var lt = div.style.left;
         var tp = div.style.top;
-        
+
         // Remove the 'px's from the positions.
         lt = lt.substring(0, lt.length-2);
         tp = tp.substring(0, tp.length-2);
-        
+
         // Save the new location.
         ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp);
     }
-    
+
     function addDnD(divId) {
         var div = $(divId);
         var dragSource = new dojo.dnd.HtmlDragMoveSource(div);
         dragSource.constrainTo($("viewBackground"));
-        
+
         // Save the drag source in the div in case it gets deleted. See below.
         div.dragSource = dragSource;
         // Also, create a function to call on drag end to update the point view's location.
         div.onDragEnd = function() {updateViewComponentLocation(divId);};
-        
+
         dojo.event.connect(dragSource, "onDragEnd", div.onDragEnd);
     }
-    
+
     function deleteViewComponent(viewComponentId) {
         closeEditors();
-        ViewDwr.deleteViewComponent(viewComponentId);
-        
-        var div = $("c"+ viewComponentId);
-        
-        // Unregister the drag source from the DnD manager.
-        div.dragSource.unregister();
-        // Disconnect the event handling for drag ends on this guy.
-        $("viewContent").removeChild(div);
+        if(confirm('<fmt:message key="common.confirmDelete"/>')) {
+            ViewDwr.deleteViewComponent(viewComponentId);
+
+            var div = $("c"+ viewComponentId);
+
+            // Unregister the drag source from the DnD manager.
+            div.dragSource.unregister();
+            // Disconnect the event handling for drag ends on this guy.
+            $("viewContent").removeChild(div);
+        }
     }
-    
+
     function getViewComponentId(node) {
         while (!(node.viewComponentId))
             node = node.parentNode;
         return node.viewComponentId;
     }
-    
+
     function iconizeClicked() {
         ViewDwr.getViewComponentIds(function(ids) {
             var i, comp, content;
@@ -260,7 +281,7 @@
                     comp = $("c"+ ids[i]);
                     content = $("c"+ ids[i] +"Content");
                     if (comp.savedState)
-                        mango.view.setContent(comp.savedState);                
+                        mango.view.setContent(comp.savedState);
                     else if (comp.savedContent)
                         content.innerHTML = comp.savedContent;
                     else
@@ -278,12 +299,12 @@
 
 		if(width > currentWidth) {
 			$("viewBackground").width = parseInt(width,10) + 30;
-		} 
+		}
 		if(height > currentHeight) {
 			$("viewBackground").height = parseInt(height,10) + 30;
 		}
 	}
-	
+
 	function resizeViewBackgroundToResolution(size) {
 		if(document.getElementById("viewBackground").src.includes("spacer.gif")){
 			switch(size) {
@@ -313,11 +334,11 @@
 			}
         } else {
         	document.getElementById("view.resolution").style.visibility = 'hidden';
-        	document.getElementById("sizeLabel").style.visibility = 'hidden';        	
+        	document.getElementById("sizeLabel").style.visibility = 'hidden';
         }
-		
+
 	}
-	
+
 	function deleteConfirm(){
 		if(document.getElementById("deleteCheckbox").checked) {
 			document.getElementById("deleteButton").style.visibility = 'visible';
@@ -326,14 +347,19 @@
 				document.getElementById("deleteButton").style.visibility = 'hidden';
 			}, 3000);
 		} else {
-			document.getElementById("deleteButton").style.visibility = 'hidden'; 
+			document.getElementById("deleteButton").style.visibility = 'hidden';
 		}
 	}
-	
-	
+
+    window.onbeforeunload = confirmExit;
+    function confirmExit(){
+        return false;
+    }
+
+
   </script>
   
-  <form name="view" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
+  <form name="view" class="view-edit-form" style="margin-bottom: 40px;" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
       <tr>
         <td valign="top">
@@ -346,7 +372,7 @@
                   <tag:help id="editingGraphicalViews"/>
                 </td>
               </tr>
-              
+
               <spring:bind path="form.view.name">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.name"/></td>
@@ -356,9 +382,9 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
-              
-              
-              
+
+
+
               <spring:bind path="form.view.xid">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="common.xid"/></td>
@@ -379,17 +405,17 @@
               </spring:bind>
               <tr>
                 <td colspan="2" align="center">
-                  <input type="submit" name="upload" value="<fmt:message key="viewEdit.upload"/>"/>
-                  <input type="submit" name="clearImage" value="<fmt:message key="viewEdit.clearImage"/>"/>
+                  <input type="submit" name="upload" value="<fmt:message key="viewEdit.upload"/>" onclick="window.onbeforeunload = null;"/>
+                  <input type="submit" name="clearImage" value="<fmt:message key="viewEdit.clearImage"/>" onclick="window.onbeforeunload = null;"/>
                 </td>
                 <td></td>
               </tr>
-              
+
               <spring:bind path="form.view.anonymousAccess">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.anonymous"/></td>
                   <td class="formField" width="250">
-                    <sst:select name="view.anonymousAccess" value="${status.value}"> 
+                    <sst:select name="view.anonymousAccess" value="${status.value}">
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_NONE) %>"><fmt:message key="common.access.none"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_READ) %>"><fmt:message key="common.access.read"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_SET) %>"><fmt:message key="common.access.set"/></sst:option>
@@ -398,12 +424,12 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
-              
+
               <spring:bind path="form.view.resolution">
                 <tr>
                   <td id="sizeLabel" class="formLabelRequired" width="150"><fmt:message key="viedEdit.viewSize" /></td>
                   <td class="formField" width="250">
-                    <sst:select id="view.resolution" name="view.resolution" value="${status.value}" onchange="resizeViewBackgroundToResolution(this.options[this.selectedIndex].value)"> 
+                    <sst:select id="view.resolution" name="view.resolution" value="${status.value}" onchange="resizeViewBackgroundToResolution(this.options[this.selectedIndex].value)">
                       <sst:option value="<%= Integer.toString(0) %>"> 640x480</sst:option>
                       <sst:option value="<%= Integer.toString(1) %>"> 800x600</sst:option>
                       <sst:option value="<%= Integer.toString(2) %>"> 1024x768</sst:option>
@@ -414,11 +440,11 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
-              
+
             </table>
           </div>
         </td>
-        	
+
         <td valign="top">
           <div class="borderDiv" id="sharedUsersDiv">
             <tag:sharedUsers doxId="viewSharing" noUsersKey="share.noViewUsers"/>
@@ -426,7 +452,7 @@
         </td>
       </tr>
     </table>
-    
+
     <table>
       <tr>
         <td>
@@ -435,15 +461,15 @@
           <tag:img png="plugin_add" title="viewEdit.addViewComponent" onclick="addViewComponent()"/>
         </td>
         <td style="width:30px;"></td>
-       
+
         <td>
           <input type="checkbox" id="iconifyCB" onclick="iconizeClicked();"/>
           <label for="iconifyCB"><fmt:message key="viewEdit.iconify"/></label>
         </td>
-        
+
       </tr>
     </table>
-    
+
     <table width="100%" cellspacing="0" cellpadding="0">
       <tr>
         <td>
@@ -462,7 +488,7 @@
                               style="top:1px;left:1px;"/>
                     </c:otherwise>
                   </c:choose>
-                  
+
                   <%@ include file="/WEB-INF/jsp/include/staticEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/settingsEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/graphicRendererEditor.jsp" %>
@@ -471,16 +497,16 @@
                 </div>
               </td>
             </tr>
-            
+
             <tr><td colspan="3">&nbsp;</td></tr>
-            
+
             <tr>
               <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>"/>
+                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
                 <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
                 <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
-				<input id="deleteButton" type="submit" name="delete" onclick="return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
+				<input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
               </td>
               <td></td>
             </tr>

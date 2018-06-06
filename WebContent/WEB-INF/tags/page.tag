@@ -36,14 +36,14 @@
   <!-- Meta -->
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <meta http-equiv="Content-Style-Type" content="text/css" />  
-  <meta name="Copyright" content="ScadaLTS &copy;©2015"/>
+  <meta name="Copyright" content="ScadaLTS &copy;2018"/>
   <meta name="DESCRIPTION" content="ScadaLTS Software"/>
   <meta name="KEYWORDS" content="ScadaLTS Software"/>
   
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
-  <link href="assets/common.css" type="text/css" rel="stylesheet"/>
+  <link id="pagestyle" href="assets/common_deprecated.css" type="text/css" rel="stylesheet"/>
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
@@ -112,6 +112,28 @@
       function goHomeUrl() {
           MiscDwr.getHomeUrl(function(loc) { window.location = loc; });
       }
+
+      function swapStyleSheet(sheet) {
+        document.getElementById("pagestyle").setAttribute("href", sheet); 
+        localStorage.setItem('theme', sheet);
+      }
+
+      function initate() {
+
+        var theme = localStorage.getItem('theme');
+        if (theme) {
+            document.getElementById("pagestyle").setAttribute("href", theme);
+        }
+
+        var style1 = document.getElementById("stylesheet1");
+        var style2 = document.getElementById("stylesheet2");
+
+        style1.onclick = function () { swapStyleSheet("assets/common_deprecated.css") };
+        style2.onclick = function () { swapStyleSheet("assets/common.css") };
+      }
+
+      window.onload = initate;
+
     </script>
   </c:if>
 </head>
@@ -137,7 +159,7 @@
 </table>
 
 <c:if test="${!simple}">
-  <table width="100%" cellspacing="0" cellpadding="0" border="0" id="subHeader">
+  <table class="navHeader" width="100%" id="subHeader">
     <tr>
       <td style="cursor:default" >
         <c:if test="${!empty sessionUser}">
@@ -179,15 +201,26 @@
         </c:if>
         <div id="headerMenuDescription" class="labelDiv" style="position:absolute;display:none;"></div>
       </td>
-      
+      <td class="userDetails">
+        <c:if test="${!empty sessionUser}">
+            <span class="copyTitle"><fmt:message key="header.user"/>:</span>
+            <span class="userName"><b>${sessionUser.username}</b></span>
+        </c:if>
+      </td>
       <td align="right">
         <c:if test="${!empty sessionUser}">
-          <span class="copyTitle"><fmt:message key="header.user"/>: <b>${sessionUser.username}</b></span>
           <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
           <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
           <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
         </c:if>
-        <div style="display:inline;" onmouseover="showMenu('localeEdit', -40, 10);">
+        <div style="display:inline;" class="ptr" onmouseover="showMenu('styleEdit', -40, 10);">
+          <tag:img png="theme" title="header.changeTheme"/>
+          <div id="styleEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
+            <a class="ptr" id="stylesheet1">Default ScadaBR Theme </a><br/>
+            <a class="ptr" id="stylesheet2">Modern ScadaBR Theme</a><br/>
+        </div>
+        </div>
+        <div style="display:inline;" class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
           <tag:img png="world" title="header.changeLanguage"/>
           <div id="localeEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
             <c:forEach items="${availableLanguages}" var="lang">
@@ -200,15 +233,12 @@
   </table>
 </c:if>
 
-<div style="padding:5px;">
+<div class="content" style="padding-top:10px;">
   <jsp:doBody/>
 </div>
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr><td colspan="2">&nbsp;</td></tr>
-  <tr>
-     <td colspan="2" class="footer" align="center">&copy;2012-2018 Scada-LTS <fmt:message key="footer.rightsReserved"/></td>
-  </tr>
-</table>
+<div class="footer" style="text-align:center">
+    <span>&copy;2012-2018 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
+</div>
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>
 </c:if>

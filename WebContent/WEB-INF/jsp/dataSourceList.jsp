@@ -92,7 +92,7 @@
     }
   </script>
   
-  <table cellspacing="0" cellpadding="0">
+  <table class="subPageHeader">
     <tr>
       <td>
         <tag:img png="icon_ds" title="dsList.dataSources"/>
@@ -108,10 +108,10 @@
     
     <tr>
       <td colspan="2">
-        <table cellspacing="0" cellpadding="0" border="0">
+        <table class="dataSourcesTable" >
           <tr>
             <td colspan="2">
-              <table cellspacing="1" cellpadding="0" border="0">
+              <table class="dataSourcesTable">
                 <tr class="rowHeader">
                   <td><fmt:message key="dsList.name"/></td>
                   <td><fmt:message key="dsList.type"/></td>

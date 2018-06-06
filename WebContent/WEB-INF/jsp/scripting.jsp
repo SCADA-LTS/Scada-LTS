@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -24,10 +24,10 @@
 <c:set var="NEW_ID"><%= Common.NEW_ID %></c:set>
 
 <tag:page dwr="ScriptsDwr,DataSourceEditDwr" onload="init">
-  
-  
+
+
   <script type="text/javascript">
-  
+
   	var pathArray = location.href.split( '/' );
   	var protocol = pathArray[0];
   	var host = pathArray[2];
@@ -38,12 +38,13 @@
   	if (!myLocation) {
    		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
   	}
+    var urlGetDataPoints = "/api/datapoint/getAll";
     function executeScript(){
     	var xid = jQuery("#xid");
-    	// saveScript() nie zdarzy zapisac !!! 
+    	// saveScript() nie zdarzy zapisac !!!
     	jQuery.ajax({
-    		url: myLocation+"/script/execute/"+xid[0].value, 
-    		type:"POST", 
+    		url: myLocation+"/script/execute/"+xid[0].value,
+    		type:"POST",
     		success: function(){
               setUserMessage("<fmt:message key="script.execute.success"/> ")
         	},
@@ -52,47 +53,61 @@
         		console.log(XMLHttpRequest);
         		setUserMessage("<fmt:message key="script.execute.error"/> "+XMLHttpRequest.responseText);
         	}
-    	});    	
+    	});
     };
 
     var pointsArray = new Array();
     var contextArray = new Array();
     var objectsContextArray = new Array();
-  
+
     function init() {
         ScriptsDwr.getScripts(initCB);
-        ScriptsDwr.getPoints(getPointsCB);
-        
+        getPointsCB();
+
         jQuery("#allPointsList").chosen({
        		allow_single_deselect: true,
 			placeholder_text_single: " ",
 			search_contains: true,
 			width: "400px"
-		});              
+		});
     }
-    
+
+    function getPointsCB()
+    {
+        jQuery.ajax({
+            type: "GET",
+        	dataType: "text",
+        	url:myLocation+urlGetDataPoints,
+        	success: function(points){
+            points = JSON.parse(points);
+            for(i = 0; i < points.length; i++) {
+                point = points[i];
+                pointsArray[i] = {
+                        "id":point.id,
+                        "name":point.name,
+                        "type":1
+                        };
+            }
+            document.getElementById("loader").style.display = "none";
+            document.body.style.overflow="visible";
+        	},
+        	error: function(XMLHttpRequest, textStatus, errorThrown) {
+        	  console.log(textStatus);
+        	}
+        });
+    }
+
     function initCB(scripts) {
     	for (var i=0; i<scripts.length; i++) {
             appendScript(scripts[i].id);
             updateScript(scripts[i]);
         }
     }
-    
-    function getPointsCB(points) {
-        for(i = 0; i < points.length; i++) {
-            point = points[i];
-            pointsArray[i] = {
-                    "id":point.id,
-                    "name":point.name,
-                    "type":1
-                    };
-        }
-    }
 
     function appendScript(seId) {
         createFromTemplate("se_TEMPLATE_", seId, "scriptsTable");
     }
-    
+
     function updateScript(se) {
         $("se"+ se.id +"Name").innerHTML = se.name;
         //setScheduledEventImg(se.disabled, $("se"+ se.id +"Img"));
@@ -103,7 +118,7 @@
     	if (editingScript)
             stopImageFader($("se"+ editingScript.id +"Img"));
         hideContextualMessages("scriptDetails");
-        
+
         ScriptsDwr.getScript(seId, function(s) {
         	 if (!editingScript)
                  show($("scriptDetails"));
@@ -112,7 +127,7 @@
             $set("xid", s.xid);
             $set("name", s.name);
             $set("script", s.script);
-            
+
             contextArray.length = 0;
             for (var i=0; i<s.pointsOnContext.length; i++)
                 addToContextArray(s.pointsOnContext[i].key, s.pointsOnContext[i].value);
@@ -127,10 +142,10 @@
         });
 
 		startImageFader($("se"+ seId +"Img"));
-        
+
         if (seId == ${NEW_ID}) {
-        	hide($("deleteScriptImg")); 
-        	hide($("executeScriptImg")); 
+        	hide($("deleteScriptImg"));
+        	hide($("executeScriptImg"));
         }
         else {
         	 show($("deleteScriptImg"));
@@ -139,11 +154,11 @@
         		 executeScript();
         	 });
         }
-           
+
     }
-    
+
     function saveScript() {
-        ScriptsDwr.saveScript(editingScript.id,$get("xid"), $get("name"),  
+        ScriptsDwr.saveScript(editingScript.id,$get("xid"), $get("name"),
                 $get("script"),createContextArray(),objectsContextArray,
                 function(response) {
 		        	if (response.hasMessages)
@@ -175,13 +190,13 @@
             editingScript = null;
         });
     }
-    
+
     function addPointToContext() {
         var pointId = $get("allPointsList");
         addToContextArray(pointId, "p"+ pointId);
         writeContextArray();
     }
-    
+
     function addToContextArray(pointId, scriptVarName) {
         var data = getElement(pointsArray, pointId);
         if (data) {
@@ -194,7 +209,7 @@
             };
         }
     }
-    
+
     function removeFromContextArray(pointId) {
         for (var i=contextArray.length-1; i>=0; i--) {
             if (contextArray[i].pointId == pointId)
@@ -202,7 +217,7 @@
         }
         writeContextArray();
     }
-    
+
     function writeContextArray() {
         dwr.util.removeAllRows("contextTable");
         if (contextArray.length == 0) {
@@ -220,7 +235,7 @@
                             return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
                                     "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
                     },
-                    function(data) { 
+                    function(data) {
                             return "<img src='images/bullet_delete.png' class='ptr' "+
                                     "onclick='removeFromContextArray("+ data.pointId +")'/>";
                     }
@@ -235,7 +250,7 @@
         }
         updatePointsList();
     }
-    
+
     function updatePointsList() {
         dwr.util.removeAllOptions("allPointsList");
         var availPoints = new Array();
@@ -253,14 +268,14 @@
         dwr.util.addOptions("allPointsList", availPoints, "id", "name");
         jQuery("#allPointsList").trigger('chosen:updated');
     }
-    
+
     function updateScriptVarName(pointId, scriptVarName) {
         for (var i=contextArray.length-1; i>=0; i--) {
             if (contextArray[i].pointId == pointId)
                 contextArray[i].scriptVarName = scriptVarName;
         }
     }
-    
+
     function createContextArray() {
         var context = new Array();
         for (var i=0; i<contextArray.length; i++) {
@@ -275,9 +290,9 @@
     function validateScript() {
         //alert('Not implemented!');
         //("pointProperties");
-        //DataSourceEditDwr.validateScript($get("script"), createContextArray(), $get("dataTypeId"), validateScriptCB); 
+        //DataSourceEditDwr.validateScript($get("script"), createContextArray(), $get("dataTypeId"), validateScriptCB);
     }
-    
+
     function validateScriptCB(response) {
         showDwrMessages(response.messages);
     }
@@ -291,7 +306,7 @@
 			$(id+"ObjectVarName").value = "val_"+id;
 			$(id+"ObjectAdd").checked = false;
 		}
-        
+
     }
 
     function addObjectToContext(objectId, checked) {
@@ -303,7 +318,7 @@
 				$(objectId+"ObjectAdd").checked = false;
 				return;
 			}
-            
+
         	objectNameField.disabled = true;
         	objectsContextArray.push({"key":objectId, "value": varName });
         } else {
@@ -333,23 +348,24 @@
         else
             hide($("userMessage"));
     }
-    
-    jQuery(document).ready(function(){    
+
+    jQuery(document).ready(function(){
     	(function($) {
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
+			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
 			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
     	})(jQuery);
     });
-    
-     
+
+
   </script>
-  
-  <script type="text/javascript">
-  	
-  </script>  
-    
-    
-  <table>
+
+  <style>body{ overflow:hidden;}</style>
+
+  <div id="loader" style="background-color:rgba(0, 0, 0, 0.7); height: 100%; position:absolute; width:100%;">
+  	<div style="color:#ffffff; font-size:30px; text-align:center; margin-top:40vh;"><img src="images/ajax-loader.gif" style="height:20px;"/> LOADING... </div>
+  </div>
+
+  <table id="scriptsList" class="subPageHeader">
     <tr>
       <td valign="top">
         <div class="borderDiv">
@@ -373,7 +389,7 @@
           </table>
         </div>
       </td>
-      
+
       <td valign="top" style="display:none;" id="scriptDetails">
         <div class="borderDiv">
           <table width="100%">
@@ -386,24 +402,24 @@
               </td>
             </tr>
           </table>
-          
+
           <table>
           	<tr>
 	            <td class="formLabelRequired"><fmt:message key="dsEdit.points.name"/></td>
 	            <td class="formField"><input type="text" id="name"/></td>
           	</tr>
-          
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
-            
+
             <tr>
 			    <td class="formLabelRequired"><fmt:message key="scripts.pointsContext"/></td>
 			    <td class="formField">
 			      <select id="allPointsList"></select>
 			      <tag:img png="add" onclick="addPointToContext();" title="common.add"/>
-			      
+
 			      <table cellspacing="1" id="contextContainer">
 			        <tbody id="contextTableEmpty" style="display:none;">
 			          <tr><th colspan="4"><fmt:message key="dsEdit.meta.noPoints"/></th></tr>
@@ -420,11 +436,11 @@
 			      </table>
 			    </td>
 			</tr>
-			
+
 			<tr>
 			    <td class="formLabelRequired"><fmt:message key="scripts.objectsContext"/></td>
 			    <td class="formField">
-			      
+
 			      <table cellspacing="1" id="objectsContextTable">
 				      <tbody id="objectsContextTable">
 				        		<tr class="smRowHeader">
@@ -432,35 +448,35 @@
 									<td> <fmt:message key="scripts.objectsContext.var"/> </td>
 									<td> <fmt:message key="scripts.objectsContext.add"/> </td>
 									<td> &nbsp; </td>
-								</tr>	
-				        		<c:forEach var="object" items="<%=br.org.scadabr.rt.scripting.context.ScriptContextObject.Type.values()%>"> 
+								</tr>
+				        		<c:forEach var="object" items="<%=br.org.scadabr.rt.scripting.context.ScriptContextObject.Type.values()%>">
 								<tr style="width: 100%;" class="smRow">
 									<td title="${object.id}" style="display: none;"> </td>
 									<td> <fmt:message key="${object.key}"/>  </td>
 									<td> <input id="${object.id}ObjectVarName" type="text" value="var_${object.id}"/> </td>
 									<td> <input id="${object.id}ObjectAdd" type="checkbox" onchange="addObjectToContext(${object.id}, this.checked)"/> </td>
 									<td> <tag:help id="${object.help}"/> </td>
-								</tr>			        		
+								</tr>
 				        		</c:forEach>
 				       	</tbody>
 			      </table>
 			    </td>
 			</tr>
-			
+
             <tr>
-            
+
     			<td class="formLabelRequired">
-      				<fmt:message key="dsEdit.meta.script"/> 
-      				
+      				<fmt:message key="dsEdit.meta.script"/>
+
       				<tag:img id="executeScriptImg" png="cog_go" title="common.run"/>
-      				<%-- <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/> --%> 
+      				<%-- <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/> --%>
     			</td>
-    		
+
     			<td class="formField"><textarea id="script" rows="10" cols="50"/></textarea></td>
   			</tr>
 
- 	
-          
+
+
           </table>
           <table>
             <tr>

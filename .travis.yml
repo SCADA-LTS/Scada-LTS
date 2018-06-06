@@ -41,6 +41,8 @@ branches:
   - "/^#179*$/"
   - "/^master-sdtabilit.*$/"
   - "/^v*$/"
+  - "/^develop*$/"
+  - "/^master*$/"
 notifications:
   email: false
 env:
@@ -51,7 +53,7 @@ env:
   - secure: KNfVmgjr2ZNsnvIfuhSkZ/kPrSTjn6WSDxEJt/3ioTCgeEGGvPL7UGonHHozZu3WzpzBVyUr60hXjb1nmb9dk6A3Dg05UPZmuS7NiHEA4Ub2zQKgefSbK0AJEhXSDg+bT16Hqxf1aZDaAEpMXGWTGLdpbKkGAW56UZu6LpOlOvoX9pFoSWAyzh1jKiYQsaKJ3eCncHKug5WqTVidOL/ENR6CAYyVLkgZ0yffwsCyVAnh14vri2lswPhPsPvMzYxtLQGkKkUOYkuPOZvBD7l5mp5Y4QLv86iKTFlOteim7yD+RpZZDFpb+3+OhRuj6jlBYWina33RKqBqjhhsayyYN/tYnPUefZhT+ALs8JfUaDXqMdgd7NQj8i5ZvrB+YsCTUVGrnPVbmEq8A4l/An5ushQpK5CrASiAC0K4dOBVT+U89QHtYWuE3ZOmSb518dlbH084ljypAj3JTQpUgRAAxn21VUMKb6QyIPsSPVEQ+zPQnaxBLhYVqafO7iX1tyvdr0mGhLZjXaaGwQu8Y/RoHdmRYcQAGn6zVFNuxWxTlr2OQ0fJ5l6/qBVyqZvqNirYa5hX8KtDu3dVMo5VOirIsoJTw75qTpGxYjhCNCb/woxtRvfX9xoT7tINWOxi2ucFfObSCsTv+BPeZeJiq7UDuFQYsQtWjNRp/iQNJ+rclpQ=
 after_script:
 # get tomcat7 to ./docker/app
-- wget http://www-us.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
+- wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
 - mkdir ./docker/app
 - mv apache-tomcat-7.0.85.tar.gz ./docker/app
 - ls -l ./docker/app/apache-tomcat-7.0.85.tar.gz

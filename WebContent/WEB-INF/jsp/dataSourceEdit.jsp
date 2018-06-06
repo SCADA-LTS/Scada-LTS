@@ -49,15 +49,15 @@
         pointListColumnHeaders.push("");
         
         pointListColumnFunctions.push(function(p) {
-                return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="common.edit"/>", "editPoint("+ p.id +")");
+                return writeImage("editImg"+ p.id, null, "icon_ds_edit", "<fmt:message key="pointDetails.editPoint"/>", "editPoint("+ p.id +")");
         });
-        
+
         pointListColumnHeaders.push("");
-                
+
         pointListColumnFunctions.push(function(p) {
-        		return writeImage("editImg"+ p.id, null, "icon_ds_edit", "<fmt:message key="common.edit"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
+        		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
         });
-        
+
         var headers = $("pointListHeaders");
         var td;
         for (var i=0; i<pointListColumnHeaders.length; i++) {
@@ -68,7 +68,7 @@
                 pointListColumnHeaders[i](td);
             headers.appendChild(td);
         }
-        
+
         pointListOptions = {
                 rowCreator: function(options) {
                     var tr = document.createElement("tr");
@@ -83,34 +83,34 @@
                     return td;
                 }
         };
-        
+
         var dsStatus = $("dsStatusImg");
         setDataSourceStatusImg(${dataSource.enabled}, dsStatus);
         hide(dsStatus);
-        
+
         if (typeof initImpl == 'function') initImpl();
-        
+
         DataSourceEditDwr.editInit(initCB);
         showMessage("dataSourceMessage");
         showMessage("pointMessage");
     }
-    
+
     function initCB(response) {
         writePointList(response.data.points);
         writeAlarms(response.data.alarms);
-        
+
         <c:if test="${!empty param.pid}">
           // Default the selection if the parameter was provided.
           editPoint(${param.pid});
         </c:if>
     }
-    
+
     function saveDataSource() {
         startImageFader("dsSaveImg", true);
         hideContextualMessages($("dataSourceProperties"));
         saveDataSourceImpl();
     }
-    
+
     function saveDataSourceCB(response) {
   	  console.log("dataSourceEdit.jsp::saveDataSourceCB - init");
         stopImageFader("dsSaveImg");
@@ -123,98 +123,120 @@
         getAlarms();
   	  console.log("dataSourceEdit.jsp::saveDataSourceCB - done");
     }
-    
+
     function toggleDataSource() {
-        if (typeof toggleDataSourceImpl == 'function') toggleDataSourceImpl();
-        
-        var imgNode = $("dsStatusImg");
-        if (!hasImageFader(imgNode)) {
-            DataSourceEditDwr.toggleEditDataSource(toggleDataSourceCB);
-            startImageFader(imgNode);
-        }
+	    if(confirm("Are you sure you wish to toggle data source?")) {
+	        if (typeof toggleDataSourceImpl == 'function') toggleDataSourceImpl();
+
+	        var imgNode = $("dsStatusImg");
+	        if (!hasImageFader(imgNode)) {
+	            DataSourceEditDwr.toggleEditDataSource(toggleDataSourceCB);
+	            startImageFader(imgNode);
+	        }
+	    }
     }
-    
+
     function toggleDataSourceCB(result) {
         var imgNode = $("dsStatusImg");
         stopImageFader(imgNode);
         setDataSourceStatusImg(result.enabled, imgNode);
         getAlarms();
     }
-    
+
     function togglePoint(pointId) {
         DataSourceEditDwr.togglePoint(pointId, togglePointCB);
         startImageFader("toggleImg"+ pointId, true);
     }
-    
+
     function togglePointCB(response) {
         stopImageFader("toggleImg"+ response.data.id);
         writePointList(response.data.points);
     }
-    
+
     function deletePoint() {
         if (confirm("<fmt:message key="dsEdit.deleteConfirm"/>")) {
             DataSourceEditDwr.deletePoint(currentPoint.id, deletePointCB);
             startImageFader("pointDeleteImg", true);
         }
     }
-    
+
     function deletePointCB(points) {
         stopImageFader("pointDeleteImg");
         hide("pointDetails");
         currentPoint = null;
         writePointList(points);
     }
-    
+
     function writePointList(points) {
         if (typeof writePointListImpl == 'function') writePointListImpl(points);
-        
+
         if (!points)
             return;
         show("pointProperties");
         show("alarmsTable");
         show("dsStatusImg");
-    
+
         if (currentPoint)
             stopImageFader("editImg"+ currentPoint.id);
         dwr.util.removeAllRows("pointsList");
         dwr.util.addRows("pointsList", points, pointListColumnFunctions, pointListOptions);
     }
-    
+
     function addPoint(ref) {
         if (!dojo.html.isShowing("pointProperties")) {
             alert("<fmt:message key="dsEdit.saveWarning"/>");
             return;
         }
-        
+
         if (currentPoint)
             stopImageFader("editImg"+ currentPoint.id);
-        
+
         startImageFader("editImg"+ <c:out value="<%=Common.NEW_ID%>"/>);
         hideContextualMessages("pointProperties");
-        
+
         addPointImpl(ref);
     }
-    
+
     function editPoint(pointId) {
-        if (currentPoint)
+        if (currentPoint) {
             stopImageFader("editImg"+ currentPoint.id);
+            var childs = document.getElementById("editImg" + currentPoint.id).parentNode.parentNode.childNodes;
+            if (currentPoint.id!=-1) markRow(childs, false);
+        }
         DataSourceEditDwr.getPoint(pointId, editPointCB);
         hideContextualMessages("pointProperties");
     }
-    
+
     function editPointCB(point) {
         currentPoint = point;
         display("pointDeleteImg", point.id != <c:out value="<%=Common.NEW_ID%>"/>);
         var locator = currentPoint.pointLocator;
-        
+
         $set("name", currentPoint.name);
         $set("xid", currentPoint.xid);
         var cancel;
         if (typeof editPointCBImpl == 'function') cancel = editPointCBImpl(locator);
         if (!cancel) {
             startImageFader("editImg"+ point.id);
+            if(point.id!=-1) {
+            	var childs = document.getElementById("editImg" + point.id).parentNode.parentNode.childNodes;
+				markRow(childs, true);
+            }
             show("pointDetails");
         }
+    }
+
+    function markRow(elements, mark) {
+    	if(mark==true) {
+	    	for(var ichild = 0; ichild<elements.length; ichild++) {
+					elements[ichild].style.backgroundColor = "#77c055";
+					elements[ichild].style.color = "white";
+			}
+    	} else {
+    		for(var ichild = 0; ichild<elements.length; ichild++) {
+					elements[ichild].removeAttribute("style");
+			}
+    	}
     }
     
     function cancelEditPoint() {
@@ -291,8 +313,10 @@
     }
 
     function enableAllPoints() {
-    	 startImageFader($("enableAllImg"));
-    	 DataSourceEditDwr.enableAllPoints(enableAllPointsCB);
+        if(confirm("Are you sure you wish to enable all data points?")) {
+            startImageFader($("enableAllImg"));
+            DataSourceEditDwr.enableAllPoints(enableAllPointsCB);
+        }
     }
 
     function enableAllPointsCB(points) {
@@ -301,8 +325,7 @@
     }
   </script>
 
-	<table class="borderDiv marB" cellpadding="0" cellspacing="0"
-		id="alarmsTable" style="display: none;">
+	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: none;">
 		<tr>
 			<td>
 				<table width="100%">

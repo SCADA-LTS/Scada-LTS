@@ -21,8 +21,10 @@ package com.serotonin.mango.web.mvc.controller;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.ViewDao;
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.permissions.PermissionViewACL;
@@ -54,8 +56,9 @@ public class ViewsController extends ParameterizableViewController {
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
-			//views = viewDao.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
+			views = viewDao.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
 
+			/* ** Disable ACL **
 			// ACL start
 			views = viewDao.getAllViewNames();
 			Map<Integer, EntryDto> mapToCheckId = PermissionViewACL.getInstance().filter(user.getId());
@@ -67,13 +70,14 @@ public class ViewsController extends ParameterizableViewController {
 			}
 			//views.stream().filter(view -> mapToCheckId.get(view.getKey()) != null );
 			// ACL end;
+			*/
 
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
 			};
-			Collections.sort(vviews, comp);
+			Collections.sort(views, comp);
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
-			model.put("views", vviews);
+			model.put("views", views);
 		}
 
 		// Set the current view.
@@ -88,7 +92,7 @@ public class ViewsController extends ParameterizableViewController {
 		if (currentView == null && views.size() > 0)
 			currentView = viewDao.getView(views.get(0).getKey());
 
-		/*if (currentView != null) {
+		if (currentView != null) {
 			if (!user.isAdmin())
 				Permissions.ensureViewPermission(user, currentView);
 
@@ -102,7 +106,7 @@ public class ViewsController extends ParameterizableViewController {
 			model.put("owner",
 					currentView.getUserAccess(user) == ShareUser.ACCESS_OWNER);
 			user.setView(currentView);
-		}*/
+		}
 
 		return new ModelAndView(getViewName(), model);
 	}
