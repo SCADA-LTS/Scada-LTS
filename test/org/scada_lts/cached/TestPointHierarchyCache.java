@@ -51,19 +51,19 @@ public class TestPointHierarchyCache {
 	private final int keyPoint6=6;
 	private final int keyPoint7=7;
 		
-	private PointHierarchyNode phn1 = new PointHierarchyNode(keyFolder1, PointHierarchyCache.ROOT, "test1", PointHierarchyCache.IS_FOLDER, POINT_HIERARCHY_DS);
-	private PointHierarchyNode phn2 = new PointHierarchyNode(keyFolder2, keyFolder1, "test2", PointHierarchyCache.IS_FOLDER, POINT_HIERARCHY_DS);
-	private PointHierarchyNode phn3 = new PointHierarchyNode(keyFolder3, keyFolder2, "test3", PointHierarchyCache.IS_FOLDER, POINT_HIERARCHY_DS);
-	private PointHierarchyNode phn4 = new PointHierarchyNode(keyFolder4, PointHierarchyCache.ROOT, "test4", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
-	private PointHierarchyNode phn5 = new PointHierarchyNode(keyFolder5, PointHierarchyCache.ROOT, "test5", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+	private PointHierarchyNode phn1 = new PointHierarchyNode(keyFolder1, "DIR_1", PointHierarchyCache.ROOT, "test1", PointHierarchyCache.IS_FOLDER, POINT_HIERARCHY_DS);
+	private PointHierarchyNode phn2 = new PointHierarchyNode(keyFolder2, "DIR_2", keyFolder1, "test2", PointHierarchyCache.IS_FOLDER, POINT_HIERARCHY_DS);
+	private PointHierarchyNode phn3 = new PointHierarchyNode(keyFolder3, "DIR_3", keyFolder2, "test3", PointHierarchyCache.IS_FOLDER, POINT_HIERARCHY_DS);
+	private PointHierarchyNode phn4 = new PointHierarchyNode(keyFolder4, "DIR_4", PointHierarchyCache.ROOT, "test4", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+	private PointHierarchyNode phn5 = new PointHierarchyNode(keyFolder5, "DIR_5", PointHierarchyCache.ROOT, "test5", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 	
-	private PointHierarchyNode phnP1 = new PointHierarchyNode(keyPoint1, PointHierarchyCache.ROOT, "point1", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
-	private PointHierarchyNode phnP2 = new PointHierarchyNode(keyPoint2, PointHierarchyCache.ROOT, "point2", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
-	private PointHierarchyNode phnP3 = new PointHierarchyNode(keyPoint3, PointHierarchyCache.ROOT, "point3", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
-	private PointHierarchyNode phnP4 = new PointHierarchyNode(keyPoint4, keyFolder4, "point4", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
-	private PointHierarchyNode phnP5 = new PointHierarchyNode(keyPoint5, keyFolder5, "point5", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
-	private PointHierarchyNode phnP6 = new PointHierarchyNode(keyPoint6, keyFolder3, "point6", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
-	private PointHierarchyNode phnP7 = new PointHierarchyNode(keyPoint7, keyFolder3, "point7", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+	private PointHierarchyNode phnP1 = new PointHierarchyNode(keyPoint1, "DP_1", PointHierarchyCache.ROOT, "point1", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+	private PointHierarchyNode phnP2 = new PointHierarchyNode(keyPoint2, "DP_2", PointHierarchyCache.ROOT, "point2", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+	private PointHierarchyNode phnP3 = new PointHierarchyNode(keyPoint3, "DP_3", PointHierarchyCache.ROOT, "point3", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+	private PointHierarchyNode phnP4 = new PointHierarchyNode(keyPoint4, "DP_4", keyFolder4, "point4", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+	private PointHierarchyNode phnP5 = new PointHierarchyNode(keyPoint5, "DP_5", keyFolder5, "point5", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+	private PointHierarchyNode phnP6 = new PointHierarchyNode(keyPoint6, "DP_6", keyFolder3, "point6", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+	private PointHierarchyNode phnP7 = new PointHierarchyNode(keyPoint7, "DP_7", keyFolder3, "point7", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
 	
 	@Before
 	public void init() throws Exception {
@@ -313,22 +313,22 @@ public class TestPointHierarchyCache {
 		
 		PointHierarchyCache cache = new PointHierarchyCache(false);
 		
-		PointHierarchyNode testf = new PointHierarchyNode(keyFolder1, PointHierarchyCache.ROOT, "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode testf = new PointHierarchyNode(keyFolder1, "DIR_1", PointHierarchyCache.ROOT, "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(testf);
 		
-		PointHierarchyNode hlkjhd = new PointHierarchyNode(keyFolder2, testf.getKey(), "hlkjhd", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode hlkjhd = new PointHierarchyNode(keyFolder2, "DIR_2", testf.getKey(), "hlkjhd", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(hlkjhd);
 		
-		PointHierarchyNode testf1 = new PointHierarchyNode(keyFolder5, testf.getKey(), "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode testf1 = new PointHierarchyNode(keyFolder5, "DIR_3", testf.getKey(), "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(testf1);
 				
-		PointHierarchyNode test = new PointHierarchyNode(keyPoint1, testf.getKey(), "test", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode test = new PointHierarchyNode(keyPoint1, "DP_1", testf.getKey(), "test", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addPoint(test);
 		
-		PointHierarchyNode hlkjh = new PointHierarchyNode(keyFolder4, PointHierarchyCache.ROOT, "hlkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode hlkjh = new PointHierarchyNode(keyFolder4, "DIR_4", PointHierarchyCache.ROOT, "hlkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(hlkjh);
 		
-		PointHierarchyNode lkjh = new PointHierarchyNode(keyFolder3, PointHierarchyCache.ROOT, "lkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode lkjh = new PointHierarchyNode(keyFolder3, "DIR_5", PointHierarchyCache.ROOT, "lkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(lkjh);
 		
 		
@@ -353,22 +353,22 @@ public class TestPointHierarchyCache {
 		
 		PointHierarchyCache cache = new PointHierarchyCache(false);
 		
-		PointHierarchyNode testf = new PointHierarchyNode(keyFolder1, PointHierarchyCache.ROOT, "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode testf = new PointHierarchyNode(keyFolder1, "DIR_1", PointHierarchyCache.ROOT, "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(testf);
 		
-		PointHierarchyNode hlkjhd = new PointHierarchyNode(keyFolder2, testf.getKey(), "hlkjhd", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode hlkjhd = new PointHierarchyNode(keyFolder2, "DIR_2", testf.getKey(), "hlkjhd", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(hlkjhd);
 		
-		PointHierarchyNode testf1 = new PointHierarchyNode(keyFolder5, testf.getKey(), "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode testf1 = new PointHierarchyNode(keyFolder5, "DIR_5", testf.getKey(), "test", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(testf1);
 				
-		PointHierarchyNode test = new PointHierarchyNode(keyPoint1, testf.getKey(), "test", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode test = new PointHierarchyNode(keyPoint1, "DP_1", testf.getKey(), "test", PointHierarchyCache.IS_NOT_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addPoint(test);
 		
-		PointHierarchyNode hlkjh = new PointHierarchyNode(keyFolder4, PointHierarchyCache.ROOT, "hlkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode hlkjh = new PointHierarchyNode(keyFolder4, "DIR_4", PointHierarchyCache.ROOT, "hlkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(hlkjh);
 		
-		PointHierarchyNode lkjh = new PointHierarchyNode(keyFolder3, PointHierarchyCache.ROOT, "lkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
+		PointHierarchyNode lkjh = new PointHierarchyNode(keyFolder3, "DIR_3", PointHierarchyCache.ROOT, "lkjh", PointHierarchyCache.IS_FOLDER,  POINT_HIERARCHY_DS);
 		cache.addFolder(lkjh);
 		
 		List<PointHierarchyNode> resultForFolder1 = cache.getPaths(keyFolder1, PointHierarchyCache.IS_FOLDER);

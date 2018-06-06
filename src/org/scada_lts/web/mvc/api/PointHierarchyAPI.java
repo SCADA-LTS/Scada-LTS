@@ -121,7 +121,7 @@ public class PointHierarchyAPI {
             HttpServletRequest request)  {
 
         LOG.info("/api/pointHierarchy/folderCheckExist xidFolder:" + xidFolder);
-        ResponseEntity<String> result = null;
+        ResponseEntity<FolderPointHierarchy> result = null;
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {

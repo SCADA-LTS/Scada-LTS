@@ -28,8 +28,10 @@ import java.util.Objects;
 public class FolderPointHierarchy {
 
     private String name;
+    private int id;
     private String xid;
     private String parentXid;
+    private int parentId;
     private List<String> pointXids;
 
     public FolderPointHierarchy() {
@@ -42,6 +44,14 @@ public class FolderPointHierarchy {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getXid() {
@@ -60,6 +70,14 @@ public class FolderPointHierarchy {
         this.parentXid = parentXid;
     }
 
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
     public List<String> getPointXids() {
         return pointXids;
     }
@@ -73,7 +91,9 @@ public class FolderPointHierarchy {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FolderPointHierarchy that = (FolderPointHierarchy) o;
-        return Objects.equals(name, that.name) &&
+        return id == that.id &&
+                parentId == that.parentId &&
+                Objects.equals(name, that.name) &&
                 Objects.equals(xid, that.xid) &&
                 Objects.equals(parentXid, that.parentXid) &&
                 Objects.equals(pointXids, that.pointXids);
@@ -81,7 +101,6 @@ public class FolderPointHierarchy {
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(name, xid, parentXid, pointXids);
+        return Objects.hash(name, id, xid, parentXid, parentId, pointXids);
     }
 }

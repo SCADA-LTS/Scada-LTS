@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
+import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.exception.CacheHierarchyException;
 import org.scada_lts.mango.service.DataPointService;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class PointHierarchyService {
 	private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);
 
 	//TODO replace to @Autowire
-	private PointHierarchyDAO phDAO = new PointHierarchyDAO();
+	private PointHierarchyXidDAO phDAO = new PointHierarchyXidDAO();
 	
 	public PointHierarchyService() {
 		//
@@ -108,7 +109,6 @@ public class PointHierarchyService {
 	 * @param key
 	 * @param isFolder
 	 * @return
-	 * @throws PointHierarchyException
 	 */
 	public boolean move(int oldParentId,int newParentId, int key, boolean isFolder) {
 		boolean res = false;
@@ -152,13 +152,15 @@ public class PointHierarchyService {
 	 * @return
 	 */
 	public int add(int parentId, String title) {
-		//TODO check title null
+		//TODO check title null only folder to change
 		LOG.info("add parentId:"+parentId+" title:"+title);
 		int id = phDAO.insert(parentId, title);
-		//actualize cache
+		String xid = phDAO.getFolderXid(id);
+		//actualize cache //TODO
 		if (id>0) {
 			PointHierarchyNode phn = new PointHierarchyNode(
-					id, 
+					id,
+					xid,
 					parentId, 
 					title, 
 					true, 

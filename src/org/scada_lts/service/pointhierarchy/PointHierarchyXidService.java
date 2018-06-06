@@ -20,12 +20,15 @@ package org.scada_lts.service.pointhierarchy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Create by at Grzesiek Bylica
@@ -65,10 +68,22 @@ public class PointHierarchyXidService extends PointHierarchyService {
         pointHierarchyXidDAO.add(folderPointHierarchy);
     }
 
-    public FolderPointHierarchy folderCheckExist(String xidFolder) {
+    public FolderPointHierarchy folderCheckExist(String xidFolder) throws Exception {
 
-         int id = pointHierarchyXidDAO.folderCheckExist(xidFolder);
+        FolderPointHierarchy fph = pointHierarchyXidDAO.folderCheckExist(xidFolder);
 
+        List<PointHierarchyNode> childrens = PointHierarchyCache.getInstance().getOnBaseParentId(fph.getId());
+
+        List<String> pointXids = childrens.stream()
+                .filter(
+                        f -> !f.isFolder())
+                .map(
+                        child -> child.getXid())
+                .collect(Collectors.toList());
+
+        fph.setPointXids(pointXids);
+
+        return fph;
     }
 
     public void cacheRefresh() {
