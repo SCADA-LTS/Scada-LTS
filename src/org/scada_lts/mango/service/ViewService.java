@@ -125,7 +125,11 @@ public class ViewService {
 		view.setViewUsers(viewDAO.getShareUsers(view.getId()));
 		return view;
 	}
-	
+
+	public List<ShareUser> getShareUsers(View view) {
+		return viewDAO.getShareUsers(view.getId());
+	}
+
 	public String generateUniqueXid() {
 		return DAO.getInstance().generateUniqueXid(View.XID_PREFIX, "mangoViews");
 	}
