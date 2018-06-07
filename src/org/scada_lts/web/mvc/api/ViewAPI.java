@@ -34,6 +34,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.AbstractErrors;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,7 +51,7 @@ import java.util.List;
 public class ViewAPI {
 
 
-    private static final Log LOG = LogFactory.getLog(WatchListAPI.class);
+    private static final Log LOG = LogFactory.getLog(ViewAPI.class);
     private static final int ID_USER_AMIN = 1;
 
     ViewService viewService = new ViewService();
@@ -106,6 +107,65 @@ public class ViewAPI {
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
                 json = mapper.writeValueAsString(lst);
+
+                return new ResponseEntity<String>(json, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/api/view/getByXid/{xid}", method = RequestMethod.GET)
+    public ResponseEntity<String> getByXid(@PathVariable("xid") String xid, HttpServletRequest request) {
+        LOG.info("/api/view/getByXid/{xid} xid:"+xid);
+
+        try {
+            User user = Common.getUser(request);
+
+            if (user != null) {
+                class ViewJSON implements Serializable {
+                    private long id;
+                    private String xid;
+
+                    ViewJSON(long id, String xid) {
+                        this.setId(id);
+                        this.setXid(xid);
+                    }
+
+                    public long getId() {
+                        return id;
+                    }
+
+                    public void setId(long id) {
+                        this.id = id;
+                    }
+
+                    public String getXid() {
+                        return xid;
+                    }
+
+                    public void setXid(String xid) {
+                        this.xid = xid;
+                    }
+                }
+
+                int userId = user.getId();
+                View view = new View();
+                if (userId == ID_USER_AMIN) {
+                    view = viewService.getViewByXid(xid);
+                } else {
+                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                }
+
+
+                ViewJSON viewJSON = new ViewJSON(view.getId(), view.getXid());
+
+                String json = null;
+                ObjectMapper mapper = new ObjectMapper();
+                json = mapper.writeValueAsString(viewJSON);
 
                 return new ResponseEntity<String>(json, HttpStatus.OK);
             }
