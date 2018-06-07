@@ -9,9 +9,10 @@ Vue.component('export-import', {
             refreshed: '',
             xidFolderExists:[],
             xidFolderNotExists:[],
+            xidFolderBefore:[],
             xidFolderToCheck:[],
             xidFolderToCreate: [],
-            xidFolderToMoveFromTo: [],
+            xidFolderToMoveTo: [],
             xidPointsMoveFromTo: [],
             xidFolderToDelete: [],
             xidErrors: []
@@ -40,7 +41,6 @@ Vue.component('export-import', {
             // check elements
             let exp_imp = JSON.parse(this.export_import_json);
             let folders = exp_imp.folders;
-            let promises = [];
 
             if (folders == undefined) {
               console.log('Folders is required');
@@ -64,16 +64,34 @@ Vue.component('export-import', {
 
         },
         validToCreate() {
-            for (id in this.xidFolderToCreate) {
-                if (this.xidFolderToCreate[id].xidFolder == undefined ) {
+            console.log("run validToCreate");
+            for (id in this.xidFolderNotExists) {
+                if (this.xidFolderNotExists[id].xidFolder == undefined || this.xidFolderNotExists[id].name == undefined ) {
                     this.xidErrors.push(this.xidFolderToCreate[id])
-                    this.xidFolderToCreate.splice(id, 1);
+                } else {
+                    // is ok
+                    this.xidFolderToCreate.push( this.xidFolderNotExists[id]);
                 }
-                //TODO check xidFolder
-                prepareDataToMoveFolders();
             }
+            this.prepareDataToMoveFolders();
         },
         prepareDataToMoveFolders() {
+            // check in exist Folders parentId then different then to move
+            console.log("run prepareDataToMoveFolders");
+
+            for (i in this.xidFolderExists) {
+                for (j in this.xidFolderBefore) {
+                    if (this.xidFolderExists[i].xidFolder == this.xidFolderBefore[j].xid) {
+                        console.log("the same xid:"+ this.xidFolderExists[i].xidFolder);
+                        if (this.xidFolderExists[i].parentXid !== this.xidFolderBefore[j].parentXid) {
+                            let newMoveFolder = {};
+                            newMoveFolder.newParentXid = this.xidFolderExists[i].parentXid;
+                            newMoveFolder.xidFolder = this.xidFolderExists[i].xidFolder;
+                            this.xidFolderToMoveTo.push(newMoveFolder);
+                        }
+                    }
+                }
+            }
 
         },
         check() {
@@ -83,8 +101,9 @@ Vue.component('export-import', {
             console.log( apiCheckXidFolder );
             axios.get( apiCheckXidFolder ).then(response => {
                 console.log(response);
-                if (response.data == true) {
+                if (response.data !== undefined) {
                     this.xidFolderExists.push(this.xidFolderToCheck[0]);
+                    this.xidFolderBefore.push(response.data);
                 } else if (this.xidFolderToCheck[0] != undefined && response.data == false) {
                     this.xidFolderNotExists.push(this.xidFolderToCheck[0]);
                 }
@@ -92,15 +111,16 @@ Vue.component('export-import', {
                 if (this.xidFolderToCheck.length > 0) {
                     this.check();
                 } else {
-                    validToCreate();
+                    this.validToCreate();
                 }
             }).catch(error => {
-                this.xidFolderNotExists.push(this.xidFolderToCheck[0].xidFolder);
+                console.log(error);
+                this.xidFolderNotExists.push(this.xidFolderToCheck[0]);
                 this.xidFolderToCheck.splice(0, 1);
                 if (this.xidFolderToCheck.length > 0) {
                     this.check();
                 } else {
-                    validToCreate();
+                    this.validToCreate();
                 }
             });
         },
@@ -152,8 +172,9 @@ Vue.component('export-import', {
             <p> Is Exist: {{xidFolderExists}} </p>
             <p> To check: {{xidFolderToCheck}} </p>
             <p> To create: {{xidFolderToCreate}}  </p>
-            <p> To move folder: {{xidFolderToMoveFromTo}} </p>
+            <p> To move folder: {{xidFolderToMoveTo}} </p>
             <p> To move points: {{xidPointsMoveFromTo}} </p>
+            <p> Before: {{xidFolderBefore}} </p>
             <p> Errors: {{xidErrors}} </p>
 
         </div>`
