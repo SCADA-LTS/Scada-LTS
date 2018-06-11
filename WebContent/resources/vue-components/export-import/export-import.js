@@ -13,6 +13,8 @@ Vue.component('export-import', {
             xidFolderToCheck:[],
             xidFolderToCreate: [],
             xidFolderToMoveTo: [],
+            xidPointsToMove: [],
+            xidPointsExist: [],
             xidPointsMoveFromTo: [],
             xidFolderToDelete: [],
             xidErrors: []
@@ -63,6 +65,36 @@ Vue.component('export-import', {
             console.log(this.xidFolderToCheck);
 
         },
+        check() {
+                    //TODO check responce becouse server is down then error.
+                    console.log( this.xidFolderToCheck[0].xidFolder );
+                    const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.xidFolderToCheck[0].xidFolder}`;
+                    console.log( apiCheckXidFolder );
+                    axios.get( apiCheckXidFolder ).then(response => {
+                        console.log(response);
+                        if (response.data !== undefined) {
+                            this.xidFolderExists.push(this.xidFolderToCheck[0]);
+                            this.xidFolderBefore.push(response.data);
+                        } else if (this.xidFolderToCheck[0] != undefined && response.data == false) {
+                            this.xidFolderNotExists.push(this.xidFolderToCheck[0]);
+                        }
+                        this.xidFolderToCheck.splice(0, 1);
+                        if (this.xidFolderToCheck.length > 0) {
+                            this.check();
+                        } else {
+                            this.validToCreate();
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        this.xidFolderNotExists.push(this.xidFolderToCheck[0]);
+                        this.xidFolderToCheck.splice(0, 1);
+                        if (this.xidFolderToCheck.length > 0) {
+                            this.check();
+                        } else {
+                            this.validToCreate();
+                        }
+                    });
+        },
         validToCreate() {
             console.log("run validToCreate");
             for (id in this.xidFolderNotExists) {
@@ -79,6 +111,8 @@ Vue.component('export-import', {
             // check in exist Folders parentId then different then to move
             console.log("run prepareDataToMoveFolders");
 
+            var animal = {};
+
             for (i in this.xidFolderExists) {
                 for (j in this.xidFolderBefore) {
                     if (this.xidFolderExists[i].xidFolder == this.xidFolderBefore[j].xid) {
@@ -93,38 +127,19 @@ Vue.component('export-import', {
                 }
             }
 
+            this.prepareDataToMovePoints();
         },
-        check() {
-            //TODO check responce becouse server is down then error.
-            console.log( this.xidFolderToCheck[0].xidFolder );
-            const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.xidFolderToCheck[0].xidFolder}`;
-            console.log( apiCheckXidFolder );
-            axios.get( apiCheckXidFolder ).then(response => {
-                console.log(response);
-                if (response.data !== undefined) {
-                    this.xidFolderExists.push(this.xidFolderToCheck[0]);
-                    this.xidFolderBefore.push(response.data);
-                } else if (this.xidFolderToCheck[0] != undefined && response.data == false) {
-                    this.xidFolderNotExists.push(this.xidFolderToCheck[0]);
-                }
-                this.xidFolderToCheck.splice(0, 1);
-                if (this.xidFolderToCheck.length > 0) {
-                    this.check();
-                } else {
-                    this.validToCreate();
-                }
-            }).catch(error => {
-                console.log(error);
-                this.xidFolderNotExists.push(this.xidFolderToCheck[0]);
-                this.xidFolderToCheck.splice(0, 1);
-                if (this.xidFolderToCheck.length > 0) {
-                    this.check();
-                } else {
-                    this.validToCreate();
-                }
-            });
-        },
+        prepareDataToMovePoints() {
+                    // check in exist Folders parentId then different then to move
+                    console.log("run prepareDataToMovePoints");
 
+                    for (i in this.xidFolderExists) {
+                        console.log(this.xidFolderExists[i]);
+                        for (j in this.xidFolderNotExists[i].points) {
+                            this.xidPointsExist[xidFolderNotExists[i].points[j]] = {xidPoint:xidFolderNotExists[i].points[j], xidFolder: this.xidFolderNotExists[i].xidFolder }
+                        }
+                    }
+         },
         add() {
             const apiAdd = `../api/`;
         },
@@ -170,12 +185,15 @@ Vue.component('export-import', {
             <p v-else>{{ errorMsg }}
             <p> Not Exist: {{xidFolderNotExists}} </p>
             <p> Is Exist: {{xidFolderExists}} </p>
+            <p> Before: {{xidFolderBefore}} </p>
             <p> To check: {{xidFolderToCheck}} </p>
             <p> To create: {{xidFolderToCreate}}  </p>
             <p> To move folder: {{xidFolderToMoveTo}} </p>
+            <p> Points exist: {{xidPointsExist}} </p>
+            <p> Points to move: {{xidPointsToMove}} </p>
             <p> To move points: {{xidPointsMoveFromTo}} </p>
-            <p> Before: {{xidFolderBefore}} </p>
             <p> Errors: {{xidErrors}} </p>
+
 
         </div>`
 });
