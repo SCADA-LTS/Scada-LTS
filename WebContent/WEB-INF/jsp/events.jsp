@@ -119,9 +119,22 @@
 		
 		
 //         doSearch(0,time.getTime());
-		doSearchOld();
+        console.log("newSearch");
+        if(isIntAndShorterThan11Characters(eventId.value) && isIntAndShorterThan11Characters(maxResults.value)) {
+            doSearchOld();
+        } else {
+            $set("searchMessage", "Incorrect input data type");
+        }
     }
-    
+
+    function isIntAndShorterThan11Characters(value) {
+      if(value == "") return true;
+      if(value.length > 10) return false;
+      return !isNaN(value) &&
+             parseInt(Number(value)) == value &&
+             !isNaN(parseInt(value, 10));
+    }
+
     function silenceAll() {
     	MiscDwr.silenceAll(function(result) {
     		var silenced = result.data.silenced;
@@ -137,7 +150,7 @@
 //         dojo.event.connect(x,'onValueChanged','jumpToDateClicked');
 //     });
   </script>
-  
+
   <div class="borderDiv marB" style="float:left;">
     <div class="smallTitle titlePadding" style="float:left;">
       <tag:img png="flag_white" title="events.alarms"/>
