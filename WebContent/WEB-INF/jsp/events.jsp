@@ -120,7 +120,7 @@
 		
 //         doSearch(0,time.getTime());
         console.log("newSearch");
-        if(isInt(eventId.value) && isInt(maxResults.value)) {
+        if(isInt(eventId.value) && (eventId.value.length<11) && isInt(maxResults.value)) {
             doSearchOld();
         } else {
             $set("searchMessage", "Incorrect input data type");
