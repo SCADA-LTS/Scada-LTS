@@ -12,6 +12,7 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.view.ViewDTO;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.web.mvc.api.dto.ViewComponentDTO;
 import org.scada_lts.web.mvc.api.dto.ViewHTMLComponentDTO;
@@ -39,6 +40,8 @@ public class ViewComponentAPI {
     private static final Log LOG = LogFactory.getLog(ViewComponentAPI.class);
 
     ViewService viewService = new ViewService();
+
+    DataPointService dataPointService = new DataPointService();
 
     @RequestMapping(value = "/api/component/getAllComponentsFromView/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getAllComponentsFromView(@PathVariable("xid") String xid, HttpServletRequest request) {
@@ -127,9 +130,7 @@ public class ViewComponentAPI {
                 View view = viewService.getViewByXid(xid);
 
                 view.setViewUsers(viewService.getShareUsers(view));
-
-
-
+                
                 PointComponent simplePointComponent = new SimplePointComponent();
 
                 convertJSONToObject(viewSimplePointComponentDTO, simplePointComponent);
@@ -138,9 +139,11 @@ public class ViewComponentAPI {
                 simplePointComponent.setDisplayControls(viewSimplePointComponentDTO.isDisplayControls());
                 simplePointComponent.setNameOverride(viewSimplePointComponentDTO.getNameOverride());
                 simplePointComponent.setSettableOverride(viewSimplePointComponentDTO.isSettableOverride());
-                simplePointComponent.tsetDataPoint(viewSimplePointComponentDTO.getDataPoint());
+                simplePointComponent.tsetDataPoint(dataPointService.getDataPoint(viewSimplePointComponentDTO.getDataPointXid()));
 
                 view.addViewComponent(simplePointComponent);
+
+                System.out.println(simplePointComponent.toString());
 
                 viewService.saveView(view);
 

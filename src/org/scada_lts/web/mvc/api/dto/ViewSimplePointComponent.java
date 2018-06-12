@@ -8,7 +8,7 @@ import com.serotonin.mango.vo.DataPointVO;
  * arkadiusz.parafiniuk@gmail.com
  */
 public class ViewSimplePointComponent extends ViewComponentDTO {
-    private DataPointVO dataPoint;
+    private String dataPointXid;
     private String nameOverride;
     private boolean settableOverride;
     private String bkgdColorOverride;
@@ -19,9 +19,9 @@ public class ViewSimplePointComponent extends ViewComponentDTO {
     public ViewSimplePointComponent() {
     }
 
-    public ViewSimplePointComponent(String id, int index, String defName, String idSuffix, String style, int x, int y, DataPointVO dataPoint, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, boolean displayPointName, String styleAttribute) {
+    public ViewSimplePointComponent(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, boolean displayPointName, String styleAttribute) {
         super(id, index, defName, idSuffix, style, x, y);
-        this.dataPoint = dataPoint;
+        this.dataPointXid = dataPointXid;
         this.nameOverride = nameOverride;
         this.settableOverride = settableOverride;
         this.bkgdColorOverride = bkgdColorOverride;
@@ -30,12 +30,12 @@ public class ViewSimplePointComponent extends ViewComponentDTO {
         this.styleAttribute = styleAttribute;
     }
 
-    public DataPointVO getDataPoint() {
-        return dataPoint;
+    public String getDataPointXid() {
+        return dataPointXid;
     }
 
-    public void setDataPoint(DataPointVO dataPoint) {
-        this.dataPoint = dataPoint;
+    public void setDataPointXid(String dataPointXid) {
+        this.dataPointXid = dataPointXid;
     }
 
     public String getNameOverride() {
