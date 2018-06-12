@@ -25,11 +25,15 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.view.ViewDTO;
+import org.scada_lts.dao.model.view.ViewDTOValidator;
 import org.scada_lts.mango.service.ViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.AbstractErrors;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -178,6 +182,11 @@ public class ViewAPI {
         LOG.info("/api/view/createView");
 
         ResponseEntity<String> result;
+        ViewDTOValidator validator = new ViewDTOValidator();
+
+        BindException errors = new BindException(viewDTO, "viewDTO");
+        validator.validate(viewDTO, errors);
+
 
         try {
             class ViewJSON implements Serializable {
@@ -239,37 +248,41 @@ public class ViewAPI {
 
             User user = Common.getUser(request);
 
-            if (user.isAdmin()) {
+            if (!errors.hasErrors()) {
+                if (user.isAdmin()) {
 
-                View view = new View();
-                view.setName(viewDTO.getName());
-                view.setXid(viewDTO.getXid());
-                view.setResolution(viewDTO.getSize());
-                view.setBackgroundFilename(viewDTO.getImagePath());
-                view.setUserId(user.getId());
+                    View view = new View();
+                    view.setName(viewDTO.getName());
+                    view.setXid(viewDTO.getXid());
+                    view.setResolution(viewDTO.getSize());
+                    view.setBackgroundFilename(viewDTO.getImagePath());
+                    view.setUserId(user.getId());
 
-                viewService.saveView(view);
+                    viewService.saveView(view);
 
-                ObjectMapper mapper = new ObjectMapper();
-                String json = null;
-                ViewJSON viewJSON = new ViewJSON(
-                        view.getName(),
-                        view.getXid(),
-                        view.getUserId(),
-                        view.getResolution(),
-                        view.getBackgroundFilename()
-                );
+                    ObjectMapper mapper = new ObjectMapper();
+                    String json = null;
+                    ViewJSON viewJSON = new ViewJSON(
+                            view.getName(),
+                            view.getXid(),
+                            view.getUserId(),
+                            view.getResolution(),
+                            view.getBackgroundFilename()
+                    );
 
-                json = mapper.writeValueAsString(viewJSON);
+                    json = mapper.writeValueAsString(viewJSON);
 
-                result = new ResponseEntity<String>(json, HttpStatus.OK);
+                    result = new ResponseEntity<String>(json, HttpStatus.OK);
+                } else {
+                    result = new ResponseEntity<String>("Acces unauthorized, logged user has no admin permissions ",HttpStatus.UNAUTHORIZED);
+                }
             } else {
-                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                result = new ResponseEntity<String>("Invalid arguments in JSON file " , HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
         } catch (Exception e) {
             LOG.error(e);
-            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<String>("Something went wrong ",HttpStatus.BAD_REQUEST);
         }
         return result;
 
