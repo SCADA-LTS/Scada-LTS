@@ -120,15 +120,16 @@
 		
 //         doSearch(0,time.getTime());
         console.log("newSearch");
-        if(isInt(eventId.value) && (eventId.value.length<11) && isInt(maxResults.value)) {
+        if(isIntAndShorterThan11Characters(eventId.value) && isIntAndShorterThan11Characters(maxResults.value)) {
             doSearchOld();
         } else {
             $set("searchMessage", "Incorrect input data type");
         }
     }
 
-    function isInt(value) {
+    function isIntAndShorterThan11Characters(value) {
       if(value == "") return true;
+      if(value.length > 10) return false;
       return !isNaN(value) &&
              parseInt(Number(value)) == value &&
              !isNaN(parseInt(value, 10));
