@@ -10,11 +10,12 @@ Vue.component('export-import', {
             xidFolderExists:[],
             xidFolderNotExists:[],
             xidFolderBefore:[],
+            xidFolderAfter:[],
             xidFolderToCheck:[],
             xidFolderToCreate: [],
             xidFolderToMoveTo: [],
             xidPointsToMove: [],
-            xidPointsExist: [],
+            xidPointsExist: {},
             xidPointsMoveFromTo: [],
             xidFolderToDelete: [],
             xidErrors: []
@@ -43,6 +44,8 @@ Vue.component('export-import', {
             // check elements
             let exp_imp = JSON.parse(this.export_import_json);
             let folders = exp_imp.folders;
+            this.xidFolderAfter = exp_imp.folders.slice();
+
 
             if (folders == undefined) {
               console.log('Folders is required');
@@ -133,26 +136,18 @@ Vue.component('export-import', {
                     // check in exist Folders parentId then different then to move
                     console.log("run prepareDataToMovePoints");
 
-                    for (i in this.xidFolderExists) {
-                        console.log(this.xidFolderExists[i]);
-                        for (j in this.xidFolderNotExists[i].points) {
-                            this.xidPointsExist[xidFolderNotExists[i].points[j]] = {xidPoint:xidFolderNotExists[i].points[j], xidFolder: this.xidFolderNotExists[i].xidFolder }
+                    for (i in this.xidFolderBefore) {
+                        console.log(this.xidFolderBefore[i]);
+                        for (j in this.xidFolderBefore[i].pointXids) {
+                            this.xidPointsExist[this.xidFolderBefore[i].pointXids[j]] = {xidPoint:this.xidFolderBefore[i].pointXids[j], xidFolder: this.xidFolderBefore[i].xid }
                         }
-                    }
-         },
-        add() {
-            const apiAdd = `../api/`;
-        },
-        remove() {
+                     }
+                     //
+                    /*for(k in this.xidFolderAfter )
 
-        },
-        pointMove() {
-
-        },
-        folderMove() {
-
-        },
-        cacheRefresh() {
+                    }*/
+       },
+       cacheRefresh() {
             const apiCacheRefresh = `./api/pointHierarchy/cacheRefresh`;
             axios.get(apiCacheRefresh).then(response => {
                 console.log(response);
@@ -186,6 +181,7 @@ Vue.component('export-import', {
             <p> Not Exist: {{xidFolderNotExists}} </p>
             <p> Is Exist: {{xidFolderExists}} </p>
             <p> Before: {{xidFolderBefore}} </p>
+            <p> After: {{xidFolderAfter}} </p>
             <p> To check: {{xidFolderToCheck}} </p>
             <p> To create: {{xidFolderToCreate}}  </p>
             <p> To move folder: {{xidFolderToMoveTo}} </p>
