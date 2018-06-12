@@ -47,10 +47,11 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.PermissionException;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.email.MangoEmailContent;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 public class UsersDwr extends BaseDwr {
 	public Log LOG = LogFactory.getLog(UsersDwr.class);

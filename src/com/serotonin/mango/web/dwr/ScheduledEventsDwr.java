@@ -26,8 +26,9 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 /**
  * @author Matthew Lohbihler

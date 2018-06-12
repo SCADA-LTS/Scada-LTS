@@ -60,9 +60,10 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.web.dwr.EventsDwr;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.LocalizableMessageParseException;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 /**
  * Event DAO base on before version EventDao 

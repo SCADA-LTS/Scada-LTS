@@ -87,9 +87,9 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import com.serotonin.mango.web.dwr.beans.EnhancedPointComponentProperties;
 import com.serotonin.mango.web.dwr.beans.ViewComponentState;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the

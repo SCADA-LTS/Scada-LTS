@@ -18,7 +18,8 @@
  */
 package com.serotonin.mango.web.dwr.beans;
 
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 abstract public class BasePointState implements Cloneable {
     private String id;

@@ -27,8 +27,8 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 public class Functions {
     public static String getHtmlText(DataPointVO point, PointValueTime pointValue) {

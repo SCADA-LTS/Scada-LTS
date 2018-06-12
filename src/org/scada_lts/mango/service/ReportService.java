@@ -26,13 +26,13 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.report.*;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.taglib.Functions;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.report.*;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -32,10 +32,10 @@ import com.serotonin.mango.vo.report.ReportPointVO;
 import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.timer.CronTimerTrigger;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.util.List;
 import java.util.ResourceBundle;

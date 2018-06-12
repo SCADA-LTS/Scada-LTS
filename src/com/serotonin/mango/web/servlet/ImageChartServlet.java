@@ -27,10 +27,10 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.report.DiscreteTimeSeries;
 import com.serotonin.mango.vo.report.ImageChartUtils;
 import com.serotonin.mango.vo.report.PointTimeSeriesCollection;
-import com.serotonin.util.StringUtils;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

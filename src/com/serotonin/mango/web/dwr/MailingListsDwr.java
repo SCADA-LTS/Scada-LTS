@@ -38,10 +38,11 @@ import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.mango.web.email.MangoEmailContent;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 public class MailingListsDwr extends BaseDwr {
 	private final Log log = LogFactory.getLog(MailingListsDwr.class);

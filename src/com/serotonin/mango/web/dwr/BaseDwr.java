@@ -57,11 +57,12 @@ import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ObjectUtils;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.content.ContentGenerator;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";

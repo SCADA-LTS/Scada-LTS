@@ -40,13 +40,13 @@ import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.TextAnchor;
-
+import org.scada_lts.serorepl.utils.StringUtils;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.util.mindprod.StripEntities;
-import com.serotonin.util.StringUtils;
+
 
 /**
  * @author Matthew Lohbihler

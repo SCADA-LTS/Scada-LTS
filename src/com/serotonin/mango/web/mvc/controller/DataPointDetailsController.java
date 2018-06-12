@@ -42,7 +42,7 @@ import com.serotonin.mango.view.chart.TableChartRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 public class DataPointDetailsController extends ParameterizableViewController {
 	@Override

@@ -30,8 +30,8 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 @JsonRemoteEntity
 public class MailingList extends EmailRecipient {

@@ -28,7 +28,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.util.LocalizableJsonException;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 @JsonRemoteEntity
 public class AddressEntry extends EmailRecipient {

@@ -21,7 +21,6 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.text.AnalogRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.report.*;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +29,7 @@ import org.scada_lts.dao.report.ReportInstanceDataDAO;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
 import org.scada_lts.dao.report.ReportInstanceUserCommentDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.util.List;
 import java.util.ResourceBundle;

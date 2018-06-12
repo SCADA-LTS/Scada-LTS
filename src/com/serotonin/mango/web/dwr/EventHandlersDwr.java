@@ -60,11 +60,12 @@ import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import com.serotonin.mango.web.dwr.beans.EventSourceBean;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.PublisherDAO;
 import org.scada_lts.mango.service.PublisherService;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 public class EventHandlersDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(EventHandlersDwr.class);

@@ -37,7 +37,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.integration.CrowdUtils;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * Controller for login system

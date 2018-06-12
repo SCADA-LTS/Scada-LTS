@@ -36,10 +36,11 @@ import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.mango.web.dwr.beans.EventExportDefinition;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 public class EventsDwr extends BaseDwr {
 	private static final int PAGE_SIZE = 50;

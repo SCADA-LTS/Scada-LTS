@@ -47,9 +47,9 @@ import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.IntMessagePair;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 @JsonRemoteEntity
 public class VirtualPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {

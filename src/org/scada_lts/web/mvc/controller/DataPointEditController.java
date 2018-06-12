@@ -51,7 +51,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import com.serotonin.propertyEditor.DecimalFormatEditor;
 import com.serotonin.propertyEditor.IntegerFormatEditor;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * Controller for data point edition

@@ -19,7 +19,7 @@
 package com.serotonin.mango.web.dwr.beans;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * This class is used by DWR to package up information needed at the browser for

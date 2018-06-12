@@ -36,7 +36,7 @@ import com.serotonin.mango.Common;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverData;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverMulticaster;
-import com.serotonin.util.StringUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

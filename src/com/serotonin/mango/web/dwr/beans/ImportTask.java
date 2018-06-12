@@ -71,10 +71,11 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.mango.web.dwr.EmportDwr;
 import com.serotonin.util.ProgressiveTask;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
+
 
 /**
  * @author Matthew Lohbihler

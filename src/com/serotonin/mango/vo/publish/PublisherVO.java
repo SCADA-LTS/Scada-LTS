@@ -45,9 +45,9 @@ import com.serotonin.mango.vo.publish.httpSender.HttpSenderVO;
 import com.serotonin.mango.vo.publish.pachube.PachubeSenderVO;
 import com.serotonin.mango.vo.publish.persistent.PersistentSenderVO;
 import com.serotonin.util.SerializationHelper;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler

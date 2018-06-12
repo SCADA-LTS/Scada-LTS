@@ -23,7 +23,6 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
@@ -35,6 +34,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.sql.SQLException;
 import java.util.List;

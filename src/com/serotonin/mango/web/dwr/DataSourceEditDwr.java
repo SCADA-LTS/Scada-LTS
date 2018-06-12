@@ -202,7 +202,6 @@ import com.serotonin.modbus4j.msg.ModbusRequest;
 import com.serotonin.modbus4j.msg.ReadResponse;
 import com.serotonin.modbus4j.serial.SerialPortWrapper;
 import com.serotonin.util.IpAddressUtils;
-import com.serotonin.util.StringUtils;
 import com.serotonin.viconics.RequestFailureException;
 import com.serotonin.viconics.ViconicsDevice;
 import com.serotonin.viconics.ViconicsNetwork;
@@ -214,6 +213,7 @@ import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler
