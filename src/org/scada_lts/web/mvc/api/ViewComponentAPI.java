@@ -13,6 +13,7 @@ import org.scada_lts.dao.model.view.ViewDTO;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.web.mvc.api.dto.ViewComponentDTO;
 import org.scada_lts.web.mvc.api.dto.ViewHTMLComponentDTO;
+import org.scada_lts.web.mvc.api.dto.ViewSimplePointComponent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -109,6 +110,17 @@ public class ViewComponentAPI {
         }
 
         return result;
+    }
+
+    @RequestMapping(value = "/api/component/addSimplePointComponentToView/{xid}", method = RequestMethod.POST)
+    public ResponseEntity<String> addSimplePointComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewSimplePointComponent viewSimplePointComponentDTO) {
+        LOG.info("/api/component/addSimplePointComponentToView/{xid} xid:" + xid);
+
+        ResponseEntity<String> result;
+
+
+
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     private ViewComponent convertJSONToObject(ViewComponentDTO viewComponentDTO, ViewComponent viewComponent) {
