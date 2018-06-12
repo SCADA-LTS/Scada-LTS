@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.HtmlComponent;
+import com.serotonin.mango.view.component.PointComponent;
+import com.serotonin.mango.view.component.SimplePointComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
@@ -118,9 +120,40 @@ public class ViewComponentAPI {
 
         ResponseEntity<String> result;
 
+        try {
+            User user = Common.getUser(request);
+
+            if (user.isAdmin()) {
+                View view = viewService.getViewByXid(xid);
+
+                view.setViewUsers(viewService.getShareUsers(view));
 
 
-        return new ResponseEntity<String>(HttpStatus.OK);
+
+                PointComponent simplePointComponent = new SimplePointComponent();
+
+                convertJSONToObject(viewSimplePointComponentDTO, simplePointComponent);
+
+                simplePointComponent.setBkgdColorOverride(viewSimplePointComponentDTO.getBkgdColorOverride());
+                simplePointComponent.setDisplayControls(viewSimplePointComponentDTO.isDisplayControls());
+                simplePointComponent.setNameOverride(viewSimplePointComponentDTO.getNameOverride());
+                simplePointComponent.setSettableOverride(viewSimplePointComponentDTO.isSettableOverride());
+                simplePointComponent.tsetDataPoint(viewSimplePointComponentDTO.getDataPoint());
+
+                view.addViewComponent(simplePointComponent);
+
+                viewService.saveView(view);
+
+                result = new ResponseEntity<String>(HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+
+        return result;
     }
 
     private ViewComponent convertJSONToObject(ViewComponentDTO viewComponentDTO, ViewComponent viewComponent) {
