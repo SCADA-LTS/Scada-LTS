@@ -7,7 +7,7 @@ import com.serotonin.mango.vo.DataPointVO;
  * @Author Arkadiusz Parafiniuk
  * arkadiusz.parafiniuk@gmail.com
  */
-public class ViewSimplePointComponent extends ViewComponentDTO {
+public class ViewSimplePointComponentDTO extends ViewComponentDTO {
     private String dataPointXid;
     private String nameOverride;
     private boolean settableOverride;
@@ -16,10 +16,10 @@ public class ViewSimplePointComponent extends ViewComponentDTO {
     private boolean displayPointName;
     private String styleAttribute;
 
-    public ViewSimplePointComponent() {
+    public ViewSimplePointComponentDTO() {
     }
 
-    public ViewSimplePointComponent(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, boolean displayPointName, String styleAttribute) {
+    public ViewSimplePointComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, boolean displayPointName, String styleAttribute) {
         super(id, index, defName, idSuffix, style, x, y);
         this.dataPointXid = dataPointXid;
         this.nameOverride = nameOverride;
