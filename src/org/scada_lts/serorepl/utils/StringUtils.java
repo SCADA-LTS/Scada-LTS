@@ -25,9 +25,9 @@ public class StringUtils {
     private static int FIRST_GROUP = 1;
 
 
-    public static String capitalize(String s){
-        if (s != null){
-            return s.toUpperCase().replace(SPACE, UNDERLINE);
+    public static String capitalize(String stringToCapitalize){
+        if (stringToCapitalize != null){
+            return stringToCapitalize.toUpperCase().replace(SPACE, UNDERLINE);
         }
         else return null;
     }
@@ -73,12 +73,12 @@ public class StringUtils {
         return value == null || value.length == 0;
     }
 
-    public static boolean isEmpty(String s){
-        return s == null || s.trim().length() == 0;
+    public static boolean isEmpty(String string){
+        return string == null || string.trim().length() == 0;
     }
 
-    public static boolean isEqual(Object o1, Object o2){
-        if( o1 != null) return o1.equals(o2);
+    public static boolean isEqual(Object object1, Object object2){
+        if( object1 != null) return object1.equals(object2);
         else return false;
     }
 
@@ -104,16 +104,16 @@ public class StringUtils {
         }
     }
 
-    public static int parseInt(String s, int defaultValue){
+    public static int parseInt(String string, int defaultValue){
         try {
-            return Integer.parseInt(s);
+            return Integer.parseInt(string);
         } catch (NumberFormatException var3) {
             return defaultValue;
         }
     }
 
-    public static String replaceMacro(String s, String name, String replacement){
-        return s.replaceAll(Pattern.quote(DOLLAR_OPEN_BRACKET + name + CLOSE_BRACKET), replacement);
+    public static String replaceMacro(String string, String name, String replacement){
+        return string.replaceAll(Pattern.quote(DOLLAR_OPEN_BRACKET + name + CLOSE_BRACKET), replacement);
     }
 
     public static String replaceMacros(String s, Properties properties){
@@ -129,24 +129,24 @@ public class StringUtils {
         return result.toString();
     }
 
-    public static String trimWhitespace(String s){
-        return s.trim();
+    public static String trimWhitespace(String string){
+        return string.trim();
     }
 
-    public static String truncate(String s, int length){
-        return truncate(s, length, (String)null);
+    public static String truncate(String string, int length){
+        return truncate(string, length, (String)null);
     }
 
-    public static String truncate(String s, int length, String truncateSuffix){
-        if (s == null) {
+    public static String truncate(String string, int length, String truncateSuffix){
+        if (string == null) {
             return null;
         }
-        if (s.length() <= length) {
-            return s;
+        if (string.length() <= length) {
+            return string;
         }
         if (truncateSuffix != null){
-            return s.substring(0,length) + truncateSuffix;
+            return string.substring(0,length) + truncateSuffix;
         }
-        return s.substring(0,length);
+        return string.substring(0,length);
     }
 }
