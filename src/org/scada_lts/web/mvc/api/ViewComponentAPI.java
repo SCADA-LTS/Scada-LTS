@@ -36,7 +36,8 @@ public class ViewComponentAPI {
 
     private static final Log LOG = LogFactory.getLog(ViewComponentAPI.class);
 
-    ViewService viewService = new ViewService();
+    @Resource
+    ViewService viewService;
 
     @Resource
     DataPointService dataPointService;
