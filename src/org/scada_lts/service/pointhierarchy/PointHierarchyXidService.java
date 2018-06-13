@@ -27,6 +27,7 @@ import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,10 @@ public class PointHierarchyXidService extends PointHierarchyService {
     private static final Log LOG = LogFactory.getLog(PointHierarchyXidService.class);
 
     private PointHierarchyXidDAO pointHierarchyXidDAO = new PointHierarchyXidDAO();
+
+    public List<FolderPointHierarchy> getFolders() {
+        return pointHierarchyXidDAO.getFolders();
+    }
 
     public boolean movePoint(String xidPoint, String xidFolder) {
         boolean res = false;
@@ -68,9 +73,33 @@ public class PointHierarchyXidService extends PointHierarchyService {
         pointHierarchyXidDAO.add(folderPointHierarchy);
     }
 
+    public List<FolderPointHierarchy> fillInThePoints(List<FolderPointHierarchy> folders) throws Exception {
+        List<FolderPointHierarchy> lfph = pointHierarchyXidDAO.getFolders();
+        List<FolderPointHierarchy> nlfph = new ArrayList<FolderPointHierarchy>();
+
+        for(FolderPointHierarchy fph : lfph) {
+            nlfph.add(fill(fph));
+        }
+
+        return  nlfph;
+    }
+
     public FolderPointHierarchy folderCheckExist(String xidFolder) throws Exception {
 
         FolderPointHierarchy fph = pointHierarchyXidDAO.folderCheckExist(xidFolder);
+        fph = fill(fph);
+        return fph;
+    }
+
+    public void cacheRefresh() {
+        PointHierarchyDAO.cachedPointHierarchy = null;
+    }
+
+    public void deleteFolderXid(String xidFolder) {
+        pointHierarchyXidDAO.deleteFolderXid(xidFolder);
+    }
+
+    private FolderPointHierarchy fill(FolderPointHierarchy fph) throws Exception {
 
         List<PointHierarchyNode> childrens = PointHierarchyCache.getInstance().getOnBaseParentId(fph.getId());
 
@@ -84,13 +113,5 @@ public class PointHierarchyXidService extends PointHierarchyService {
         fph.setPointXids(pointXids);
 
         return fph;
-    }
-
-    public void cacheRefresh() {
-        PointHierarchyDAO.cachedPointHierarchy = null;
-    }
-
-    public void deleteFolderXid(String xidFolder) {
-        pointHierarchyXidDAO.deleteFolderXid(xidFolder);
     }
 }

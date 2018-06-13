@@ -2,9 +2,6 @@
 Vue.component('export-import', {
     data() {
         return {
-            username: '',
-            data: [],
-            errorMsg: '',
             export_import_json: {},
             refreshed: '',
             xidFolderExists:[],
@@ -14,31 +11,28 @@ Vue.component('export-import', {
             xidFolderToCheck:[],
             xidFolderToCreate: [],
             xidFolderToMoveTo: [],
-            xidPointsToMove: [],
-            xidPointsExist: {},
-            xidPointsMoveFromTo: [],
+            xidMapPointsExist: {},
+            xidMapPointsAfter: {},
+            xidPointsMoveFromTo: {},
+            xidPointsNotMove: {},
             xidFolderToDelete: [],
-            xidErrors: []
+            xidErrors: [],
+            counter: 0
         }
     },
-    mixins: [ExportImportHierarchiPoints],
     methods: {
         doExport() {
-            this.export();
-            //alert('export-import');
+            const apiExportXidFolder = `./api/pointHierarchy/export`;
+            console.log( apiExportXidFolder );
+            axios.get( apiExportXidFolder ).then(response => {
+                console.log(response);
+                this.export_import_json = response.data;
+            }).catch(error => {
+                console.log(error);
+            });
         },
         doImport() {
-            this.import();
-            //alert('export-import');
-        },
-        search() {
-            const api = `https://api.github.com/users/${this.username}`
-            axios.get(api).then(response => {
-                this.data = response.data
-            }).catch(error => {
-                this.errorMsg = 'No user or no location!';
-                this.data = [];
-            });
+            this.parse();
         },
         parse() {
             // check elements
@@ -107,6 +101,7 @@ Vue.component('export-import', {
                     // is ok
                     this.xidFolderToCreate.push( this.xidFolderNotExists[id]);
                 }
+                this.counter++;
             }
             this.prepareDataToMoveFolders();
         },
@@ -114,11 +109,10 @@ Vue.component('export-import', {
             // check in exist Folders parentId then different then to move
             console.log("run prepareDataToMoveFolders");
 
-            var animal = {};
-
             for (i in this.xidFolderExists) {
                 for (j in this.xidFolderBefore) {
                     if (this.xidFolderExists[i].xidFolder == this.xidFolderBefore[j].xid) {
+                       this.counter++;
                         console.log("the same xid:"+ this.xidFolderExists[i].xidFolder);
                         if (this.xidFolderExists[i].parentXid !== this.xidFolderBefore[j].parentXid) {
                             let newMoveFolder = {};
@@ -137,17 +131,44 @@ Vue.component('export-import', {
                     console.log("run prepareDataToMovePoints");
 
                     for (i in this.xidFolderBefore) {
-                        console.log(this.xidFolderBefore[i]);
                         for (j in this.xidFolderBefore[i].pointXids) {
-                            this.xidPointsExist[this.xidFolderBefore[i].pointXids[j]] = {xidPoint:this.xidFolderBefore[i].pointXids[j], xidFolder: this.xidFolderBefore[i].xid }
+                            this.xidMapPointsExist[this.xidFolderBefore[i].pointXids[j]] = {xidPoint:this.xidFolderBefore[i].pointXids[j], xidFolder: this.xidFolderBefore[i].xid }
                         }
                      }
-                     //
-                    /*for(k in this.xidFolderAfter )
 
-                    }*/
-       },
-       cacheRefresh() {
+                     for (a in this.xidFolderAfter) {
+                        for (b in this.xidFolderAfter[a].points) {
+                            this.xidMapPointsAfter[this.xidFolderAfter[a].points[b]] = {xidPoint:this.xidFolderAfter[a].points[b], xidFolder: this.xidFolderAfter[a].xidFolder, delete: this.xidFolderAfter[a].delete }
+                        }
+                     }
+                     // move to root from folder delete
+                    for(p in this.xidMapPointsExist ) {
+
+                        this.counter++;
+
+                        let xidPointToCheckAfter = this.xidMapPointsAfter[this.xidFolderBefore[i].pointXids[j]];
+                        let xidPointToCheckExist = this.xidMapPointsExist[p];
+
+                        // check is in After if not move to root
+                        if (xidPointToCheckAfter == undefined) {
+                            let pointMoveFromToRoot = { xidPoint: xidPointToCheckExist.xidPoint, oldParent: '?', newParent: ''}
+                            this.xidPointsMoveFromTo[xidPointToCheckExist.xidPoint] = pointMoveFromToRoot;
+                        // check is in After has another xidFolder then move point to new Folder
+                        } else if (xidPointToCheckAfter.xidFolder !== xidPointToCheckExist.xidFolder) {
+                            let pointMoveFromToAnother = {
+                                xidPoint: xidPointToCheckExist.xidPoint,
+                                oldParent: xidPointToCheckExist.xidFolder,
+                                newParent: xidPointToCheckAfter.xidFolder}
+                            this.xidPointsMoveFromTo[xidPointToCheckExist.xidPoint] = pointMoveFromToAnother;
+                        // not move
+                        } else if (xidPointToCheckAfter.xidFolder == xidPointToCheckExist.xidFolder) {
+                            this.xidPointsNotMove[xidPointToCheckExist.xidPoint] == xidPointToCheckAfter;
+                        }
+
+                    }
+                    this.runImportApi();
+        },
+        cacheRefresh() {
             const apiCacheRefresh = `./api/pointHierarchy/cacheRefresh`;
             axios.get(apiCacheRefresh).then(response => {
                 console.log(response);
@@ -155,6 +176,9 @@ Vue.component('export-import', {
                 this.errorMsg = 'No user or no location!';
                 console.log(error)
             });
+        },
+        runImportApi(){
+            alert('import');
         }
     },
     template: `
@@ -165,19 +189,7 @@ Vue.component('export-import', {
             </textarea></br>
             <button v-on:click="doExport()">Export</button>
             <button v-on:click="doImport()">Import</button>
-            <button v-on:click="check()">Check</button>
-            <button v-on:click="cacheRefresh()">Refresh</button>
-            <button v-on:click="parse()">Parse</button>
 
-            <form @submit.prevent="search">
-                <input v-model="username" placeholder="Enter a github username!">
-            </form>
-            <p v-if="data.name && data.location">
-                {{ data.name }} ( {{ data.login }} )
-                is from
-                {{ data.location }}!
-            </p>
-            <p v-else>{{ errorMsg }}
             <p> Not Exist: {{xidFolderNotExists}} </p>
             <p> Is Exist: {{xidFolderExists}} </p>
             <p> Before: {{xidFolderBefore}} </p>
@@ -185,10 +197,12 @@ Vue.component('export-import', {
             <p> To check: {{xidFolderToCheck}} </p>
             <p> To create: {{xidFolderToCreate}}  </p>
             <p> To move folder: {{xidFolderToMoveTo}} </p>
-            <p> Points exist: {{xidPointsExist}} </p>
-            <p> Points to move: {{xidPointsToMove}} </p>
+            <p> Points exist: {{xidMapPointsExist}} </p>
+            <p> Points after: {{xidMapPointsAfter}} </p>
             <p> To move points: {{xidPointsMoveFromTo}} </p>
+            <p> Not to move points: {{xidPointsNotMove}} </p>
             <p> Errors: {{xidErrors}} </p>
+            <p> counter: {{counter}} </p>
 
 
         </div>`

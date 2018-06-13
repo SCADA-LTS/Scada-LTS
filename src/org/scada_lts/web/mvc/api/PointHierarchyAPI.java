@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Create by at Grzesiek Bylica
@@ -133,6 +134,27 @@ public class PointHierarchyAPI {
         } catch (Exception e) {
             LOG.error(e);
             result = new ResponseEntity<FolderPointHierarchy>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/api/pointHierarchy/export", method = RequestMethod.GET)
+    public ResponseEntity<List<FolderPointHierarchy>> exportData(HttpServletRequest request) {
+
+        LOG.info("/api/pointHierarchy/exportData");
+        ResponseEntity<List<FolderPointHierarchy>> result = null;
+        try {
+            User user = Common.getUser(request);
+            if (user.isAdmin()) {
+                List<FolderPointHierarchy> lfph = pointHierarchyXidService.getFolders();
+                List<FolderPointHierarchy> nlfph = pointHierarchyXidService.fillInThePoints(lfph);
+                result = new ResponseEntity<List<FolderPointHierarchy>>(nlfph, HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<List<FolderPointHierarchy>>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<List<FolderPointHierarchy>>(HttpStatus.BAD_REQUEST);
         }
         return result;
     }

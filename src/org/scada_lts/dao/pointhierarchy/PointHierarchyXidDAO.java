@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Create by at Grzesiek Bylica
@@ -66,6 +67,21 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
                         "WHERE id=" + "ph."+ COLUMN_NAME_PARENT_ID + ") as " + COLUMN_NAME_PARENT_XID + " " +
                 "FROM pointHierarchy ph WHERE xid=?";
     // @formatter:on
+
+    // @formatter:off
+    private static final String SELECT_FOLDERS =
+                "SELECT " +
+                    COLUMN_NAME_NAME + ", " +
+                    COLUMN_NAME_ID + ", " +
+                    COLUMN_NAME_XID + ", " +
+                    COLUMN_NAME_PARENT_ID + ", " +
+                        "(SELECT " +
+                            COLUMN_NAME_XID + " " +
+                        "FROM pointHierarchy " +
+                        "WHERE id=" + "ph."+ COLUMN_NAME_PARENT_ID + ") as " + COLUMN_NAME_PARENT_XID + " " +
+                "FROM pointHierarchy ph";
+    // @formatter:on
+
 
     private static final String UPDATE_FOLDER_HIERARCHY_XID =
             "UPDATE "
@@ -132,6 +148,20 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
         return null;
     }
 
+    public List<FolderPointHierarchy> getFolders() {
+        try {
+            //TODO use java.utils.Optional
+            List<FolderPointHierarchy> fph = DAO.getInstance().getJdbcTemp().query(SELECT_FOLDERS, new Object[]{}, new FolderPointHierarchyRowMapper());
+            return fph;
+        } catch (EmptyResultDataAccessException e) {
+            LOG.trace(e);
+        }
+        //TODO Optional
+        return null;
+    }
+
+
+
     public void deleteFolderXid(String xidFolder) {
         DAO.getInstance().getJdbcTemp().update(DELETE_FOLDER_HIERARCHY_XID, new Object[]{xidFolder});
     }
@@ -139,4 +169,6 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
     public String getFolderXid(int folderId) {
         return DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER_XID, new Object[]{folderId}, String.class);
     }
+
+
 }
