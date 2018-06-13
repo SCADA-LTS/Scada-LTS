@@ -130,8 +130,8 @@ public class ViewComponentAPI {
                 View view = viewService.getViewByXid(xid);
 
                 view.setViewUsers(viewService.getShareUsers(view));
-                
-                PointComponent simplePointComponent = new SimplePointComponent();
+
+                SimplePointComponent simplePointComponent = new SimplePointComponent();
 
                 convertJSONToObject(viewSimplePointComponentDTO, simplePointComponent);
 
@@ -140,6 +140,8 @@ public class ViewComponentAPI {
                 simplePointComponent.setNameOverride(viewSimplePointComponentDTO.getNameOverride());
                 simplePointComponent.setSettableOverride(viewSimplePointComponentDTO.isSettableOverride());
                 simplePointComponent.tsetDataPoint(dataPointService.getDataPoint(viewSimplePointComponentDTO.getDataPointXid()));
+                simplePointComponent.setDisplayPointName(viewSimplePointComponentDTO.isDisplayPointName());
+                simplePointComponent.setStyleAttribute(viewSimplePointComponentDTO.getStyleAttribute());
 
                 view.addViewComponent(simplePointComponent);
 
