@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -54,7 +55,8 @@ public class ViewAPI {
     private static final Log LOG = LogFactory.getLog(ViewAPI.class);
     private static final int ID_USER_AMIN = 1;
 
-    ViewService viewService = new ViewService();
+    @Resource
+    ViewService viewService;
 
     @RequestMapping(value = "/api/view/getAll", method = RequestMethod.GET)
     public ResponseEntity<String> getAll(HttpServletRequest request) {
