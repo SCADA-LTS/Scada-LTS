@@ -431,6 +431,10 @@ thead th {
 <script src="resources/vue-mixins/shared/mixins-export-import.js"></script>
 <script src="resources/vue-components/export-import/export-import.js"></script>
 <script src="resources/npm/node_modules/jsonschema/lib/validator.js"></script>
+<script src="resources/npm/node_modules/jsonschema/lib/validator.js"></script>
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
+
 
 <script>
 "use strict";

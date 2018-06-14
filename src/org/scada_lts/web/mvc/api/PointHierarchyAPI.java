@@ -23,6 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.pointhierarchy.PointHierarchyXidService;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
+import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
+import org.scada_lts.web.mvc.api.dto.PointHierarchyExp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -139,22 +141,23 @@ public class PointHierarchyAPI {
     }
 
     @RequestMapping(value = "/api/pointHierarchy/export", method = RequestMethod.GET)
-    public ResponseEntity<List<FolderPointHierarchy>> exportData(HttpServletRequest request) {
+    public ResponseEntity<PointHierarchyExp> exportData(HttpServletRequest request) {
 
         LOG.info("/api/pointHierarchy/exportData");
-        ResponseEntity<List<FolderPointHierarchy>> result = null;
+        ResponseEntity<PointHierarchyExp> result = null;
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 List<FolderPointHierarchy> lfph = pointHierarchyXidService.getFolders();
-                List<FolderPointHierarchy> nlfph = pointHierarchyXidService.fillInThePoints(lfph);
-                result = new ResponseEntity<List<FolderPointHierarchy>>(nlfph, HttpStatus.OK);
+                List<FolderPointHierarchyExport> nlfph = pointHierarchyXidService.fillInThePoints(lfph);
+
+                result = new ResponseEntity<PointHierarchyExp>(new PointHierarchyExp(nlfph), HttpStatus.OK);
             } else {
-                result = new ResponseEntity<List<FolderPointHierarchy>>(HttpStatus.UNAUTHORIZED);
+                result = new ResponseEntity<PointHierarchyExp>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             LOG.error(e);
-            result = new ResponseEntity<List<FolderPointHierarchy>>(HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<PointHierarchyExp>(HttpStatus.BAD_REQUEST);
         }
         return result;
     }

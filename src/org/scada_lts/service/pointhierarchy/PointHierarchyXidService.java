@@ -24,6 +24,7 @@ import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
+import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -73,12 +74,12 @@ public class PointHierarchyXidService extends PointHierarchyService {
         pointHierarchyXidDAO.add(folderPointHierarchy);
     }
 
-    public List<FolderPointHierarchy> fillInThePoints(List<FolderPointHierarchy> folders) throws Exception {
-        List<FolderPointHierarchy> lfph = pointHierarchyXidDAO.getFolders();
-        List<FolderPointHierarchy> nlfph = new ArrayList<FolderPointHierarchy>();
+    public List<FolderPointHierarchyExport> fillInThePoints(List<FolderPointHierarchy> folders) throws Exception {
+        List<FolderPointHierarchy> lfph = folders;
+        List<FolderPointHierarchyExport> nlfph = new ArrayList<FolderPointHierarchyExport>();
 
         for(FolderPointHierarchy fph : lfph) {
-            nlfph.add(fill(fph));
+            nlfph.add(new FolderPointHierarchyExport(fill(fph)));
         }
 
         return  nlfph;
@@ -109,6 +110,7 @@ public class PointHierarchyXidService extends PointHierarchyService {
                 .map(
                         child -> child.getXid())
                 .collect(Collectors.toList());
+
 
         fph.setPointXids(pointXids);
 
