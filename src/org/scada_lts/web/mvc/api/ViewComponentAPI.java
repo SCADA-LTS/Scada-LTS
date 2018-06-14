@@ -1,5 +1,6 @@
 package org.scada_lts.web.mvc.api;
 
+import br.org.scadabr.api.API;
 import br.org.scadabr.view.component.LinkComponent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
