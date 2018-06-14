@@ -1,5 +1,6 @@
 package org.scada_lts.web.mvc.api;
 
+import br.org.scadabr.view.component.LinkComponent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
@@ -13,6 +14,7 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.web.mvc.api.dto.ViewComponentDTO;
 import org.scada_lts.web.mvc.api.dto.ViewHTMLComponentDTO;
+import org.scada_lts.web.mvc.api.dto.ViewLinkComponentDTO;
 import org.scada_lts.web.mvc.api.dto.ViewSimplePointComponentDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -117,7 +119,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/addSimplePointComponentToView/{xid}", method = RequestMethod.POST)
-    public ResponseEntity<String> addSimplePointComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewSimplePointComponentDTO viewSimplePointComponentDTODTO) {
+    public ResponseEntity<String> addSimplePointComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewSimplePointComponentDTO viewSimplePointComponentDTO) {
         LOG.info("/api/component/addSimplePointComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<String> result;
@@ -132,19 +134,58 @@ public class ViewComponentAPI {
 
                 SimplePointComponent simplePointComponent = new SimplePointComponent();
 
-                convertJSONToObject(viewSimplePointComponentDTODTO, simplePointComponent);
+                convertJSONToObject(viewSimplePointComponentDTO, simplePointComponent);
 
-                simplePointComponent.setBkgdColorOverride(viewSimplePointComponentDTODTO.getBkgdColorOverride());
-                simplePointComponent.setDisplayControls(viewSimplePointComponentDTODTO.isDisplayControls());
-                simplePointComponent.setNameOverride(viewSimplePointComponentDTODTO.getNameOverride());
-                simplePointComponent.setSettableOverride(viewSimplePointComponentDTODTO.isSettableOverride());
-                simplePointComponent.tsetDataPoint(dataPointService.getDataPoint(viewSimplePointComponentDTODTO.getDataPointXid()));
-                simplePointComponent.setDisplayPointName(viewSimplePointComponentDTODTO.isDisplayPointName());
-                simplePointComponent.setStyleAttribute(viewSimplePointComponentDTODTO.getStyleAttribute());
+                simplePointComponent.setBkgdColorOverride(viewSimplePointComponentDTO.getBkgdColorOverride());
+                simplePointComponent.setDisplayControls(viewSimplePointComponentDTO.isDisplayControls());
+                simplePointComponent.setNameOverride(viewSimplePointComponentDTO.getNameOverride());
+                simplePointComponent.setSettableOverride(viewSimplePointComponentDTO.isSettableOverride());
+                simplePointComponent.tsetDataPoint(dataPointService.getDataPoint(viewSimplePointComponentDTO.getDataPointXid()));
+                simplePointComponent.setDisplayPointName(viewSimplePointComponentDTO.isDisplayPointName());
+                simplePointComponent.setStyleAttribute(viewSimplePointComponentDTO.getStyleAttribute());
 
                 view.addViewComponent(simplePointComponent);
 
                 System.out.println(simplePointComponent.toString());
+
+                viewService.saveView(view);
+
+                result = new ResponseEntity<String>(HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+
+        return result;
+    }
+
+    @RequestMapping(value = "/api/component/addLinkComponentToView/{xid}", method = RequestMethod.POST)
+    public ResponseEntity<String> addLinkComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewLinkComponentDTO viewLinkComponentDTO) {
+        LOG.info("/api/component/addLinkComponentToView/{xid} xid:" + xid);
+
+        ResponseEntity<String> result;
+
+        try {
+            User user = Common.getUser(request);
+
+            if (user.isAdmin()) {
+                View view = viewService.getViewByXid(xid);
+
+                view.setViewUsers(viewService.getShareUsers(view));
+
+                LinkComponent linkComponent = new LinkComponent();
+
+                convertJSONToObject(viewLinkComponentDTO, linkComponent);
+
+                linkComponent.setLink(viewLinkComponentDTO.getLink());
+                linkComponent.setText(viewLinkComponentDTO.getText());
+
+                view.addViewComponent(linkComponent);
+
+                System.out.println(linkComponent.toString());
 
                 viewService.saveView(view);
 
