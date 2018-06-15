@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.HtmlComponent;
+import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.view.component.SimplePointComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.User;
@@ -13,10 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ViewService;
-import org.scada_lts.web.mvc.api.dto.ViewComponentDTO;
-import org.scada_lts.web.mvc.api.dto.ViewHTMLComponentDTO;
-import org.scada_lts.web.mvc.api.dto.ViewLinkComponentDTO;
-import org.scada_lts.web.mvc.api.dto.ViewSimplePointComponentDTO;
+import org.scada_lts.web.mvc.api.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -187,6 +185,49 @@ public class ViewComponentAPI {
                 view.addViewComponent(linkComponent);
 
                 System.out.println(linkComponent.toString());
+
+                viewService.saveView(view);
+
+                result = new ResponseEntity<String>(HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+
+        return result;
+    }
+
+    @RequestMapping(value = "/api/component/addScriptComponentToView/{xid}", method = RequestMethod.POST)
+    public ResponseEntity<String> addScriptComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewScriptComponentDTO viewScriptComponentDTO) {
+        LOG.info("/api/component/addLinkComponentToView/{xid} xid:" + xid);
+
+        ResponseEntity<String> result;
+
+        try {
+            User user = Common.getUser(request);
+
+            if (user.isAdmin()) {
+                View view = viewService.getViewByXid(xid);
+
+                view.setViewUsers(viewService.getShareUsers(view));
+
+                ScriptComponent scriptComponent = new ScriptComponent();
+
+                convertJSONToObject(viewScriptComponentDTO, scriptComponent);
+
+                scriptComponent.setBkgdColorOverride(viewScriptComponentDTO.getBkgdColorOverride());
+                scriptComponent.setDisplayControls(viewScriptComponentDTO.isDisplayControls());
+                scriptComponent.setNameOverride(viewScriptComponentDTO.getNameOverride());
+                scriptComponent.setSettableOverride(viewScriptComponentDTO.isSettableOverride());
+                scriptComponent.tsetDataPoint(dataPointService.getDataPoint(viewScriptComponentDTO.getDataPointXid()));
+                scriptComponent.setScript(viewScriptComponentDTO.getScript());
+
+                view.addViewComponent(scriptComponent);
+
+                System.out.println(scriptComponent.toString());
 
                 viewService.saveView(view);
 
