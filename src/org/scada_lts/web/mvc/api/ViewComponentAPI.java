@@ -4,6 +4,7 @@ import br.org.scadabr.api.API;
 import br.org.scadabr.view.component.LinkComponent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.User;
@@ -259,6 +260,8 @@ public class ViewComponentAPI {
                 multistateGraphicComponent.tsetDataPoint(dataPointService.getDataPoint(viewMultistateGraphicComponentDTO.getDataPointXid()));
                 multistateGraphicComponent.setDefaultImage(viewMultistateGraphicComponentDTO.getDefaultImage());
                 multistateGraphicComponent.setImageStateList(viewMultistateGraphicComponentDTO.getStateImageMap());
+                multistateGraphicComponent.tsetImageSet(getImageSet(viewMultistateGraphicComponentDTO.getImageSet()));
+                multistateGraphicComponent.setImageStateList(viewMultistateGraphicComponentDTO.getStateImageMap());
 
                 view.addViewComponent(multistateGraphicComponent);
 
@@ -284,6 +287,10 @@ public class ViewComponentAPI {
         viewComponent.setX(viewComponentDTO.getX());
         viewComponent.setY(viewComponentDTO.getY());
         return viewComponent;
+    }
+
+    private ImageSet getImageSet(String id) {
+        return Common.ctx.getImageSet(id);
     }
 
 }

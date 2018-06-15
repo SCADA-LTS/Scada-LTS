@@ -12,13 +12,13 @@ public class ViewImageSetComponentDTO extends ViewComponentDTO {
     private boolean settableOverride;
     private String bkgdColorOverride;
     private boolean displayControls;
-    private ImageSet imageSet;
+    private String imageSet;
     private boolean displayText;
 
     public ViewImageSetComponentDTO() {
     }
 
-    public ViewImageSetComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, ImageSet imageSet, boolean displayText) {
+    public ViewImageSetComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, String imageSet, boolean displayText) {
         super(id, index, defName, idSuffix, style, x, y);
         this.dataPointXid = dataPointXid;
         this.nameOverride = nameOverride;
@@ -33,7 +33,7 @@ public class ViewImageSetComponentDTO extends ViewComponentDTO {
         return dataPointXid;
     }
 
-    public void setDataPointXird(String dataPointXid) {
+    public void setDataPointXid(String dataPointXid) {
         this.dataPointXid = dataPointXid;
     }
 
@@ -69,11 +69,11 @@ public class ViewImageSetComponentDTO extends ViewComponentDTO {
         this.displayControls = displayControls;
     }
 
-    public ImageSet getImageSet() {
+    public String getImageSet() {
         return imageSet;
     }
 
-    public void setImageSet(ImageSet imageSet) {
+    public void setImageSet(String imageSet) {
         this.imageSet = imageSet;
     }
 
