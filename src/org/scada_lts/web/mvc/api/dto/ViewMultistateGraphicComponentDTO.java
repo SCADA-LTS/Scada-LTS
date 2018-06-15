@@ -1,9 +1,12 @@
 package org.scada_lts.web.mvc.api.dto;
 
+import com.serotonin.db.IntValuePair;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.view.ImageSet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,23 +14,23 @@ import java.util.Map;
  * arkadiusz.parafiniuk@gmail.com
  */
 public class ViewMultistateGraphicComponentDTO extends ViewImageSetComponentDTO {
-    private Map<Integer, Integer> stateImageMap = new HashMap<Integer, Integer>();
+    private List<IntValuePair> stateImageMap = new ArrayList<>();
     private int defaultImage;
 
     public ViewMultistateGraphicComponentDTO() {
     }
 
-    public ViewMultistateGraphicComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, ImageSet imageSet, boolean displayText, Map<Integer, Integer> stateImageMap, int defaultImage) {
+    public ViewMultistateGraphicComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, ImageSet imageSet, boolean displayText, List<IntValuePair> stateImageMap, int defaultImage) {
         super(id, index, defName, idSuffix, style, x, y, dataPointXid, nameOverride, settableOverride, bkgdColorOverride, displayControls, imageSet, displayText);
         this.stateImageMap = stateImageMap;
         this.defaultImage = defaultImage;
     }
 
-    public Map<Integer, Integer> getStateImageMap() {
+    public List<IntValuePair> getStateImageMap() {
         return stateImageMap;
     }
 
-    public void setStateImageMap(Map<Integer, Integer> stateImageMap) {
+    public void setStateImageMap(List<IntValuePair> stateImageMap) {
         this.stateImageMap = stateImageMap;
     }
 
