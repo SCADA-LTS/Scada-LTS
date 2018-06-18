@@ -13,19 +13,21 @@ public class ViewSimplePointComponentDTO extends ViewComponentDTO {
     private boolean settableOverride;
     private String bkgdColorOverride;
     private boolean displayControls;
+    private boolean setDisplatText;
     private boolean displayPointName;
     private String styleAttribute;
 
     public ViewSimplePointComponentDTO() {
     }
 
-    public ViewSimplePointComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, boolean displayPointName, String styleAttribute) {
+    public ViewSimplePointComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, boolean setDisplatText, boolean displayPointName, String styleAttribute) {
         super(id, index, defName, idSuffix, style, x, y);
         this.dataPointXid = dataPointXid;
         this.nameOverride = nameOverride;
         this.settableOverride = settableOverride;
         this.bkgdColorOverride = bkgdColorOverride;
         this.displayControls = displayControls;
+        this.setDisplatText = setDisplatText;
         this.displayPointName = displayPointName;
         this.styleAttribute = styleAttribute;
     }
@@ -68,6 +70,14 @@ public class ViewSimplePointComponentDTO extends ViewComponentDTO {
 
     public void setDisplayControls(boolean displayControls) {
         this.displayControls = displayControls;
+    }
+
+    public boolean isSetDisplatText() {
+        return setDisplatText;
+    }
+
+    public void setSetDisplatText(boolean setDisplatText) {
+        this.setDisplatText = setDisplatText;
     }
 
     public boolean isDisplayPointName() {
