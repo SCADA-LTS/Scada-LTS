@@ -259,7 +259,6 @@ public class ViewComponentAPI {
                 multistateGraphicComponent.setSettableOverride(viewMultistateGraphicComponentDTO.isSettableOverride());
                 multistateGraphicComponent.tsetDataPoint(dataPointService.getDataPoint(viewMultistateGraphicComponentDTO.getDataPointXid()));
                 multistateGraphicComponent.setDefaultImage(viewMultistateGraphicComponentDTO.getDefaultImage());
-                multistateGraphicComponent.setImageStateList(viewMultistateGraphicComponentDTO.getStateImageMap());
                 multistateGraphicComponent.tsetImageSet(getImageSet(viewMultistateGraphicComponentDTO.getImageSet()));
                 multistateGraphicComponent.setImageStateList(viewMultistateGraphicComponentDTO.getStateImageMap());
 

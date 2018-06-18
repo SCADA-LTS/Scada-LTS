@@ -20,7 +20,7 @@ public class ViewMultistateGraphicComponentDTO extends ViewImageSetComponentDTO 
     public ViewMultistateGraphicComponentDTO() {
     }
 
-    public ViewMultistateGraphicComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, ImageSet imageSet, boolean displayText, List<IntValuePair> stateImageMap, int defaultImage) {
+    public ViewMultistateGraphicComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, String imageSet, boolean displayText, List<IntValuePair> stateImageMap, int defaultImage) {
         super(id, index, defName, idSuffix, style, x, y, dataPointXid, nameOverride, settableOverride, bkgdColorOverride, displayControls, imageSet, displayText);
         this.stateImageMap = stateImageMap;
         this.defaultImage = defaultImage;
