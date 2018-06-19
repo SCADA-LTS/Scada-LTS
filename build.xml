@@ -232,8 +232,45 @@
 			<classpath refid="scadabr-1.1.0-RC.classpath"/>
 		</javac>
 	</target>
+
+	<target name="new-ui">
+		<exec dir="./ScadaBR-UI/eiph" executable="npm">
+			<arg value="run"/>
+			<arg value="build"/>
+		</exec>
+	</target>
+
 	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-	<target name="war" description="Bundles the application as a WAR file" depends="clean, build">
+	<target name="war" description="Bundles the application as a WAR file" depends="clean, build, new-ui">
+
+		<delete dir="WebContent/resources/new-ui"></delete>
+		<mkdir dir="WebContent/resources/new-ui"></mkdir>
+		<mkdir dir="WebContent/resources/new-ui/css"></mkdir>
+		<mkdir dir="WebContent/resources/new-ui/js"></mkdir>
+
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css">
+			<fileset dir="ScadaBR-UI/eiph/dist/css">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="app.*.css" to="app.css"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaBR-UI/eiph/dist/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="app.*.js" to="app.js"/>
+
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaBR-UI/eiph/dist/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="chunk-vendors.*.js" to="chunk-vendors.js"/>
+		</copy>
+
 		<mkdir dir="WebContent/WEB-INF/classes"/>
 		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
 			<fileset dir="build/classes">

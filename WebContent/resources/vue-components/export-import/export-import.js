@@ -23,8 +23,8 @@ Vue.component('export-import', {
                 endImport:0,
                 timeImport:0
             },
-            status:{},
-            ref_status: {}
+            ref_status: {},
+            counterToParse:0
         }
     },
     methods: {
@@ -56,15 +56,19 @@ Vue.component('export-import', {
 
                                '<div class="tab-content">'+
                                  '<div id="tab_prepare_import" class="tab-pane fade in active">'+
-                                   //'<h3>HOME</h3>'+
-                                   '<p id="status_prepare_import" ref="ref_status_prepare_import">Start</p>'+
+                                   '<p id="status_prepare_import">Start</p>'+
+                                   '<div class="progress"> ' +
+                                        '<div id="progress-status_prepare_import" class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%"> ' +
+                                            '<span class="sr-only">70% Complete</span>'+
+                                        '</div>'+
+                                   '</div>' +
                                  '</div>' +
                                  '<div id="tab_import" class="tab-pane fade">'+
                                    '<h3>Menu 1</h3>'+
                                    '<p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>'+
                                  '</div>'+
-                            '<div><button class="btn btn-success">Revert button status right now.</button></div>' +
-                            '<div class="progress">  <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%"> <span class="sr-only">70% Complete</span> </div></div>');
+                            '<div><button class="btn btn-success">Revert button status right now.</button></div>')
+
                             var $footerButton = dialog.getButton('btn-1');
                             $content.find('button').click({$footerButton: $footerButton}, function(event) {
                                 event.data.$footerButton.enable();
@@ -85,42 +89,33 @@ Vue.component('export-import', {
                             }
                         }]
                     });
-
+            sleep(1000);
             this.mytimer.startImport = performance.now();
             this.parse();
         },
+        showStatus(str) {
+            jQuery("p#status_prepare_import").html(str);
+            console.log(str);
+        },
         parse() {
             // check elements
-            this.status = document.getElementById("status_prepare_import");
-            this.ref_status = this.$refs[“ref_status_prepare_import”]
-            if (this.status == undefined) {
-                alert("ERROR");
-            } else {
-                this.status.innerHtml = "Parse input string";
-            }
-            if (this.ref_status = undefined) {
-                alert("ERROR1");
-            } else {
-                this.ref_status.innerHtml = "Parse input string";
-            }
+            this.showStatus("Parse input string");
 
-            let exp_imp = JSON.parse(this.export_import_json);
+            /*let exp_imp = JSON.parse(this.export_import_json);
             let folders = exp_imp.folders;
             this.xidFolderAfter = exp_imp.folders.slice();
-
+            this.counterToParse = this.xidFolderAfter.length;
 
             if (folders == undefined) {
               //document.getElementById("status_prepare_import").value = "Folders is required";
             } else {
-
                 this.xidFolderToCheck = folders;
                 this.check();
-
-            }
+            }*/
 
         },
         check() {
-            //document.getElementById("status_prepare_import"). = "Check folder:" + this.xidFolderToCheck[0].xidFolder;
+            this.status.html("Check folder:" + this.xidFolderToCheck[0].xidFolder);
             const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.xidFolderToCheck[0].xidFolder}`;
             axios.get( apiCheckXidFolder ).then(response => {
                  if (response.data !== undefined) {
@@ -136,7 +131,7 @@ Vue.component('export-import', {
                     this.validToCreate();
                  }
             }).catch(error => {
-               //document.getElementById("status_prepare_import").value = "Error:" + error;
+                this.status.html("Error:" + error);
                 console.log(error);
                 this.xidFolderNotExists.push(this.xidFolderToCheck[0]);
                 this.xidFolderToCheck.splice(0, 1);
@@ -160,7 +155,7 @@ Vue.component('export-import', {
             this.prepareDataToMoveFolders();
         },
         prepareDataToMoveFolders() {
-            // check in exist Folders parentId then different then to move
+            this.status.html("check in exist Folders parentId then different then to move");
             for (i in this.xidFolderExists) {
                 for (j in this.xidFolderBefore) {
                     if (this.xidFolderExists[i].xidFolder == this.xidFolderBefore[j].xid) {
@@ -179,8 +174,8 @@ Vue.component('export-import', {
             this.prepareDataToMovePoints();
         },
         prepareDataToMovePoints() {
-                    // check in exist Folders parentId then different then to move
-                    console.log("run prepareDataToMovePoints");
+
+                    this.status.html("prepare data before");
 
                     for (i in this.xidFolderBefore) {
                         for (j in this.xidFolderBefore[i].pointXids) {
@@ -188,12 +183,13 @@ Vue.component('export-import', {
                         }
                      }
 
+                    this.status.html("prepare data after");
                      for (a in this.xidFolderAfter) {
                         for (b in this.xidFolderAfter[a].points) {
                             this.xidMapPointsAfter[this.xidFolderAfter[a].points[b]] = {xidPoint:this.xidFolderAfter[a].points[b], xidFolder: this.xidFolderAfter[a].xidFolder, delete: this.xidFolderAfter[a].delete }
                         }
                      }
-                     // move to root from folder delete
+                     this.status.html("check move to root from folder delete");
                     for(p in this.xidMapPointsExist ) {
 
                         this.counter++;
@@ -201,6 +197,7 @@ Vue.component('export-import', {
                         let xidPointToCheckAfter = this.xidMapPointsAfter[this.xidFolderBefore[i].pointXids[j]];
                         let xidPointToCheckExist = this.xidMapPointsExist[p];
 
+                        this.status.html("check is in After if not move to root for:" + xidPointToCheckExist.xidFolder);
                         // check is in After if not move to root
                         if (xidPointToCheckAfter == undefined) {
                             let pointMoveFromToRoot = { xidPoint: xidPointToCheckExist.xidPoint, oldParent: '?', newParent: ''}
@@ -218,7 +215,16 @@ Vue.component('export-import', {
                         }
 
                     }
-                    this.runImportApi();
+                    this.reportToChange();
+                    //this.runImportApi();
+        },
+        reportToChange() {
+             // to create
+             // to delete
+             // to move folder
+             // to move point
+             this.status.html("<p>Folder to create: " + this.xidFolderToCreate.length);
+
         },
         cacheRefresh() {
             const apiCacheRefresh = `./api/pointHierarchy/cacheRefresh`;

@@ -20,6 +20,11 @@
 	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.css"
 	rel="stylesheet" type="text/css">
 
+<link as=style href=resources/new-ui/css/app.css rel=preload>
+<link as=script href=resources/new-ui/js/app.js rel=preload>
+<link as=script href=resources/new-ui/js/chunk-vendors.js rel=preload>
+<link href=resources/new-ui/css/app.css rel=stylesheet>
+
 <style type="text/css">
 
 /* Reduce bootstrap's default 'panel' padding: */
@@ -394,6 +399,7 @@ thead th {
 										<export-import></export-import>
 
 									</div>
+									<div id=app></div>
 
                             	</div>
 							</div>
@@ -435,9 +441,20 @@ thead th {
 <script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
 <script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
 
+<script src=resources/new-ui/js/chunk-vendors.js></script>
+<script src=resources/new-ui/js/app.js></script>
+
 
 <script>
 "use strict";
+
+
+
+<link as=style href=resources/new-ui/css/app.c4563333.css rel=preload>
+<link as=script href=resources/new-ui/js/app.0ee005c2.js rel=preload>
+<link as=script href=resources/new-ui/js/chunk-vendors.493d0141.js rel=preload>
+<link href=resources/new-ui/css/app.c4563333.css rel=stylesheet>
+
 
 var header = { init: "1" };
 header.onLoad = function() {
