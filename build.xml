@@ -234,7 +234,7 @@
 	</target>
 
 	<target name="new-ui">
-		<exec dir="./ScadaBR-UI/eiph" executable="npm">
+		<exec dir="./ScadaLTS-UI-1" executable="npm">
 			<arg value="run"/>
 			<arg value="build"/>
 		</exec>
@@ -248,16 +248,15 @@
 		<mkdir dir="WebContent/resources/new-ui/css"></mkdir>
 		<mkdir dir="WebContent/resources/new-ui/js"></mkdir>
 
-
 		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css">
-			<fileset dir="ScadaBR-UI/eiph/dist/css">
+			<fileset dir="ScadaLTS-UI-1/dist/static/css">
 				<include name="*"/>
 			</fileset>
 			<mapper type="glob" from="app.*.css" to="app.css"/>
 		</copy>
 
 		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaBR-UI/eiph/dist/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
 				<include name="*"/>
 			</fileset>
 			<mapper type="glob" from="app.*.js" to="app.js"/>
@@ -265,11 +264,41 @@
 		</copy>
 
 		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaBR-UI/eiph/dist/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
 				<include name="*"/>
 			</fileset>
-			<mapper type="glob" from="chunk-vendors.*.js" to="chunk-vendors.js"/>
+			<mapper type="glob" from="vendor.*.js" to="vendor.js"/>
 		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="manifest.*.js" to="manifest.js"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="vendor.*.js.map" to="vendor.js.map"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="manifest.*.js.map" to="manifest.js.map"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="app.*.js.map" to="app.js.map"/>
+
+		</copy>
+
 
 		<mkdir dir="WebContent/WEB-INF/classes"/>
 		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
@@ -277,6 +306,7 @@
 				<include name="**/*.class"/>
 			</fileset>
 		</copy>
+
 
 		<war destfile="ScadaBR.war"
               	        basedir="WebContent"

@@ -269,8 +269,6 @@ Vue.component('export-import', {
             <p> Errors: {{xidErrors}} </p>
             <p> counter: {{counter}} </p>
             <p> time import: {{mytimer.timeImport}}
-
-
         </div>`
 });
 
