@@ -22,7 +22,11 @@
 
 <link href=resources/new-ui/css/app.css rel=stylesheet>
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/5.14.0/jsoneditor.min.css" rel="stylesheet">
+
 <style type="text/css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/5.14.0/jsoneditor.min.js"></script>
 
 /* Reduce bootstrap's default 'panel' padding: */
 div#tree {
@@ -385,21 +389,14 @@ thead th {
 							<div class="btn-group">
 								<div id="hierarchy-import-export">
 
-                                    <button id="Export_Import" class="btn" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                    <button id="Export_Import" class="btn" data-toggle="collapse" href="#collapseImport" role="button" aria-expanded="false" aria-controls="collapseImport">
                                         <span class="glyphicon glyphicon-export"></span> <span class="glyphicon glyphicon-import"></span>
                                     </button>
 
-
-									<div class="collapse" id="collapseExample">
-										<div class="card card-body">
-										</div>
-										<export-import></export-import>
-
+									<div class="collapse" id="collapseImport">
+                                        <div id=export-import-ph></div>
 									</div>
-									<div id=test></div>
-									<div id=HelloWorld></div>
-									<div id=app></div>
-                                    <test></test>
+
                             	</div>
 							</div>
 
@@ -1366,10 +1363,10 @@ var messages = {
 
     <!-- export import -->
     <script>
-        var app = new Vue({
+       /* var app = new Vue({
           el: '#hierarchy-import-export',
           mixins: []
-        });
+        });*/
     </script>
 
 </html>

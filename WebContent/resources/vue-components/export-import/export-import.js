@@ -101,7 +101,7 @@ Vue.component('export-import', {
             // check elements
             this.showStatus("Parse input string");
 
-            /*let exp_imp = JSON.parse(this.export_import_json);
+            let exp_imp = JSON.parse(this.export_import_json);
             let folders = exp_imp.folders;
             this.xidFolderAfter = exp_imp.folders.slice();
             this.counterToParse = this.xidFolderAfter.length;

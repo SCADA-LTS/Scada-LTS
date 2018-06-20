@@ -3,20 +3,29 @@
 import Vue from 'vue'
 import App from './App'
 import Test from './components/Test'
+import ExportImportPointHierarchy from './components/ExportImportPointHierarchy'
 import router from './router'
+import VJsoneditor from 'vue-jsoneditor';
 
 Vue.config.productionTip = false
-
-/* eslint-disable no-new */
+Vue.use(VJsoneditor);
+/*eslint-disable no-new */
 new Vue({
-  el: '#app',
+  el: '#app1',
   router,
   components: { App },
   template: '<App/>'
 })
 
+
 new Vue({
   el: '#test',
   components: { Test },
   template: '<Test/>'
+})
+
+new Vue({
+  el: '#export-import-ph',
+  components: { ExportImportPointHierarchy },
+  template: '<ExportImportPointHierarchy/>'
 })
