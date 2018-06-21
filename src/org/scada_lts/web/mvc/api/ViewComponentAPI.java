@@ -4,11 +4,9 @@ import br.org.scadabr.api.API;
 import br.org.scadabr.view.component.LinkComponent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.view.component.HtmlComponent;
-import com.serotonin.mango.view.component.ScriptComponent;
-import com.serotonin.mango.view.component.SimplePointComponent;
-import com.serotonin.mango.view.component.ViewComponent;
+import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -145,8 +143,6 @@ public class ViewComponentAPI {
 
                 view.addViewComponent(simplePointComponent);
 
-                System.out.println(simplePointComponent.toString());
-
                 viewService.saveView(view);
 
                 result = new ResponseEntity<String>(HttpStatus.OK);
@@ -184,8 +180,6 @@ public class ViewComponentAPI {
 
                 view.addViewComponent(linkComponent);
 
-                System.out.println(linkComponent.toString());
-
                 viewService.saveView(view);
 
                 result = new ResponseEntity<String>(HttpStatus.OK);
@@ -202,7 +196,7 @@ public class ViewComponentAPI {
 
     @RequestMapping(value = "/api/component/addScriptComponentToView/{xid}", method = RequestMethod.POST)
     public ResponseEntity<String> addScriptComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewScriptComponentDTO viewScriptComponentDTO) {
-        LOG.info("/api/component/addLinkComponentToView/{xid} xid:" + xid);
+        LOG.info("/api/component/addScriptComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<String> result;
 
@@ -227,7 +221,49 @@ public class ViewComponentAPI {
 
                 view.addViewComponent(scriptComponent);
 
-                System.out.println(scriptComponent.toString());
+                viewService.saveView(view);
+
+                result = new ResponseEntity<String>(HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+
+        return result;
+    }
+
+    @RequestMapping(value = "/api/component/addMultistateGraphicComponentToView/{xid}", method = RequestMethod.POST)
+    public ResponseEntity<String> addMultistateGraphicComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewMultistateGraphicComponentDTO viewMultistateGraphicComponentDTO) {
+        LOG.info("/api/component/addMultistateGraphicComponentToView/{xid} xid:" + xid);
+
+        ResponseEntity<String> result;
+
+        try {
+            User user = Common.getUser(request);
+
+            if (user.isAdmin()) {
+                View view = viewService.getViewByXid(xid);
+
+                view.setViewUsers(viewService.getShareUsers(view));
+
+                MultistateGraphicComponent multistateGraphicComponent = new MultistateGraphicComponent();
+
+                convertJSONToObject(viewMultistateGraphicComponentDTO, multistateGraphicComponent);
+
+                multistateGraphicComponent.setBkgdColorOverride(viewMultistateGraphicComponentDTO.getBkgdColorOverride());
+                multistateGraphicComponent.setDisplayControls(viewMultistateGraphicComponentDTO.isDisplayControls());
+                multistateGraphicComponent.setNameOverride(viewMultistateGraphicComponentDTO.getNameOverride());
+                multistateGraphicComponent.setSettableOverride(viewMultistateGraphicComponentDTO.isSettableOverride());
+                multistateGraphicComponent.tsetDataPoint(dataPointService.getDataPoint(viewMultistateGraphicComponentDTO.getDataPointXid()));
+                multistateGraphicComponent.setDefaultImage(viewMultistateGraphicComponentDTO.getDefaultImage());
+                multistateGraphicComponent.setDisplayText(viewMultistateGraphicComponentDTO.isDisplayText());
+                multistateGraphicComponent.tsetImageSet(getImageSet(viewMultistateGraphicComponentDTO.getImageSet()));
+                multistateGraphicComponent.setImageStateList(viewMultistateGraphicComponentDTO.getStateImageMap());
+
+                view.addViewComponent(multistateGraphicComponent);
 
                 viewService.saveView(view);
 
@@ -251,6 +287,10 @@ public class ViewComponentAPI {
         viewComponent.setX(viewComponentDTO.getX());
         viewComponent.setY(viewComponentDTO.getY());
         return viewComponent;
+    }
+
+    private ImageSet getImageSet(String id) {
+        return Common.ctx.getImageSet(id);
     }
 
 }

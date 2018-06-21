@@ -1,35 +1,32 @@
 package org.scada_lts.web.mvc.api.dto;
 
-import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.view.ImageSet;
 
 /**
  * @Author Arkadiusz Parafiniuk
  * arkadiusz.parafiniuk@gmail.com
  */
-public class ViewSimplePointComponentDTO extends ViewComponentDTO {
+public class ViewImageSetComponentDTO extends ViewComponentDTO {
     private String dataPointXid;
     private String nameOverride;
     private boolean settableOverride;
     private String bkgdColorOverride;
     private boolean displayControls;
-    private boolean setDisplatText;
-    private boolean displayPointName;
-    private String styleAttribute;
+    private String imageSet;
+    private boolean displayText;
 
-    public ViewSimplePointComponentDTO() {
+    public ViewImageSetComponentDTO() {
     }
 
-    public ViewSimplePointComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, boolean setDisplatText, boolean displayPointName, String styleAttribute) {
+    public ViewImageSetComponentDTO(String id, int index, String defName, String idSuffix, String style, int x, int y, String dataPointXid, String nameOverride, boolean settableOverride, String bkgdColorOverride, boolean displayControls, String imageSet, boolean displayText) {
         super(id, index, defName, idSuffix, style, x, y);
         this.dataPointXid = dataPointXid;
         this.nameOverride = nameOverride;
         this.settableOverride = settableOverride;
         this.bkgdColorOverride = bkgdColorOverride;
         this.displayControls = displayControls;
-        this.setDisplatText = setDisplatText;
-        this.displayPointName = displayPointName;
-        this.styleAttribute = styleAttribute;
+        this.imageSet = imageSet;
+        this.displayText = displayText;
     }
 
     public String getDataPointXid() {
@@ -72,27 +69,19 @@ public class ViewSimplePointComponentDTO extends ViewComponentDTO {
         this.displayControls = displayControls;
     }
 
-    public boolean isSetDisplatText() {
-        return setDisplatText;
+    public String getImageSet() {
+        return imageSet;
     }
 
-    public void setSetDisplatText(boolean setDisplatText) {
-        this.setDisplatText = setDisplatText;
+    public void setImageSet(String imageSet) {
+        this.imageSet = imageSet;
     }
 
-    public boolean isDisplayPointName() {
-        return displayPointName;
+    public boolean isDisplayText() {
+        return displayText;
     }
 
-    public void setDisplayPointName(boolean displayPointName) {
-        this.displayPointName = displayPointName;
-    }
-
-    public String getStyleAttribute() {
-        return styleAttribute;
-    }
-
-    public void setStyleAttribute(String styleAttribute) {
-        this.styleAttribute = styleAttribute;
+    public void setDisplayText(boolean displayText) {
+        this.displayText = displayText;
     }
 }
