@@ -1,6 +1,5 @@
 package org.scada_lts.web.mvc.api;
 
-import br.org.scadabr.api.API;
 import br.org.scadabr.view.component.LinkComponent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
@@ -264,6 +263,50 @@ public class ViewComponentAPI {
                 multistateGraphicComponent.setImageStateList(viewMultistateGraphicComponentDTO.getStateImageMap());
 
                 view.addViewComponent(multistateGraphicComponent);
+
+                viewService.saveView(view);
+
+                result = new ResponseEntity<String>(HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+
+        return result;
+    }
+
+    @RequestMapping(value = "/api/component/addBinaryGraphicComponentToView/{xid}", method = RequestMethod.POST)
+    public ResponseEntity<String> addBinaryGraphicComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewBinaryGraphicComponentDTO viewBinaryGraphicComponentDTO) {
+        LOG.info("/api/component/addBinaryGraphicComponentToView/{xid} xid:" + xid);
+
+        ResponseEntity<String> result;
+
+        try {
+            User user = Common.getUser(request);
+
+            if (user.isAdmin()) {
+                View view = viewService.getViewByXid(xid);
+
+                view.setViewUsers(viewService.getShareUsers(view));
+
+                BinaryGraphicComponent binaryGraphicComponent = new BinaryGraphicComponent();
+
+                convertJSONToObject(viewBinaryGraphicComponentDTO, binaryGraphicComponent);
+
+                binaryGraphicComponent.setBkgdColorOverride(viewBinaryGraphicComponentDTO.getBkgdColorOverride());
+                binaryGraphicComponent.setDisplayControls(viewBinaryGraphicComponentDTO.isDisplayControls());
+                binaryGraphicComponent.setNameOverride(viewBinaryGraphicComponentDTO.getNameOverride());
+                binaryGraphicComponent.setSettableOverride(viewBinaryGraphicComponentDTO.isSettableOverride());
+                binaryGraphicComponent.tsetDataPoint(dataPointService.getDataPoint(viewBinaryGraphicComponentDTO.getDataPointXid()));
+                binaryGraphicComponent.setZeroImage(viewBinaryGraphicComponentDTO.getZeroImage());
+                binaryGraphicComponent.setOneImage(viewBinaryGraphicComponentDTO.getOneImage());
+                binaryGraphicComponent.setDisplayText(viewBinaryGraphicComponentDTO.isDisplayText());
+                binaryGraphicComponent.tsetImageSet(getImageSet(viewBinaryGraphicComponentDTO.getImageSet()));
+
+                view.addViewComponent(binaryGraphicComponent);
 
                 viewService.saveView(view);
 
