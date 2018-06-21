@@ -257,7 +257,9 @@ public class ViewAPI {
                     view.setName(viewDTO.getName());
                     view.setXid(viewDTO.getXid());
                     view.setResolution(viewDTO.getSize());
-                    view.setBackgroundFilename(viewDTO.getImagePath());
+                    if(viewDTO.getImagePath()!=null&&!viewDTO.equals("")) {
+                        view.setBackgroundFilename(viewDTO.getImagePath());
+                    }
                     view.setUserId(user.getId());
 
                     viewService.saveView(view);
