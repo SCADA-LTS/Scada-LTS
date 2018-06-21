@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import org.scada_lts.dao.DAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -61,13 +62,15 @@ public class ScriptDao extends BaseDao {
                     }
                 }
                 else{
-                    vo.setId(doInsert(
-                                                    "insert into scripts (xid, name,  script, userId, data) values (?,?,?,?,?)",
-                                                    new Object[] { vo.getXid(), vo.getName(),
-                                                                    vo.getScript(), vo.getUserId(),
-                                                                    SerializationHelper.writeObject(vo) },
-                                                    new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
-                                                        Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB }));
+
+					DAO.getInstance().getJdbcTemp().update("insert into scripts (xid, name,  script, userId, data) values (?,?,?,?,?)", new Object[] { vo.getXid(), vo.getName(),
+									vo.getScript(), vo.getUserId(),
+									SerializationHelper.writeObject(vo) },
+							new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER,
+									Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB } );
+
+					vo.setId(DAO.getInstance().getId());
+
                 }
 	}
 
@@ -102,12 +105,15 @@ public class ScriptDao extends BaseDao {
 	}
 
 	public ScriptVO<?> getScript(int id) {
-		return queryForObject(SCRIPT_SELECT + " where id=?",
-				new Object[] { id }, new ScriptRowMapper(), null);
+
+		return (ScriptVO<?>)DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT + " where id=?",new Object[] { id }, new ScriptRowMapper() );
+		/*return queryForObject(SCRIPT_SELECT + " where id=?",
+				new Object[] { id }, new ScriptRowMapper(), null);*/
 	}
 
 	public List<ScriptVO<?>> getScripts() {
-		List<ScriptVO<?>> scripts = query(SCRIPT_SELECT, new ScriptRowMapper());
+
+		List<ScriptVO<?>> scripts = DAO.getInstance().getJdbcTemp().query(SCRIPT_SELECT, new ScriptRowMapper()); //query(SCRIPT_SELECT, new ScriptRowMapper());
 		return scripts;
 	}
 
@@ -139,8 +145,11 @@ public class ScriptDao extends BaseDao {
 
 	public ScriptVO<?> getScript(String xid) {
 		try {
-			return queryForObject(SCRIPT_SELECT + " where xid=?",
-					new Object[] { xid }, new ScriptRowMapper(), null);
+			return (ScriptVO<?>)DAO.getInstance().getJdbcTemp().query(SCRIPT_SELECT + " where xid=?",
+					new Object[] { xid }, new ScriptRowMapper());
+
+			/*return queryForObject(SCRIPT_SELECT + " where xid=?",
+					new Object[] { xid }, new ScriptRowMapper(), null);*/
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}

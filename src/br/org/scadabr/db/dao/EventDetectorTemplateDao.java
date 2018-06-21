@@ -11,6 +11,7 @@ import br.org.scadabr.vo.eventDetectorTemplate.EventDetectorTemplateVO;
 import com.serotonin.db.spring.GenericRowMapper;
 import com.serotonin.mango.db.dao.BaseDao;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import org.scada_lts.dao.DAO;
 
 public class EventDetectorTemplateDao extends BaseDao {
 
@@ -30,7 +31,7 @@ public class EventDetectorTemplateDao extends BaseDao {
 	private static final String TEMPLATES_SELECT = "select dp.id, dp.name "
 			+ "from eventDetectorTemplates dp";
 
-	public void insertEventDetectorTemplate(
+	/*public void insertEventDetectorTemplate(
 			final EventDetectorTemplateVO eventDetectorTemplate)
 			throws DAOException {
 
@@ -43,18 +44,18 @@ public class EventDetectorTemplateDao extends BaseDao {
 				new Object[] { eventDetectorTemplate.getName() }));
 
 		saveEventDetectorReferences(eventDetectorTemplate);
-	}
+	}*/
 
-	private List<EventDetectorTemplateVO> getByEventDetectorTemplateByName(
+	/*private List<EventDetectorTemplateVO> getByEventDetectorTemplateByName(
 			String name) {
 		List<EventDetectorTemplateVO> edt = query(TEMPLATES_SELECT
 				+ " where dp.name=? ", new Object[] { name },
 				new EventDetectorTemplateRowMapper());
 
 		return edt;
-	}
+	}*/
 
-	private void saveEventDetectorReferences(
+	/*private void saveEventDetectorReferences(
 			EventDetectorTemplateVO eventDetectorTemplate) {
 
 		for (PointEventDetectorVO ped : eventDetectorTemplate
@@ -76,10 +77,10 @@ public class EventDetectorTemplateDao extends BaseDao {
 							Types.DOUBLE, Types.INTEGER }));
 		}
 
-	}
+	}*/
 
 	public EventDetectorTemplateVO getEventDetectorTemplate(int id) {
-		EventDetectorTemplateVO edt = queryForObject(TEMPLATES_SELECT
+		EventDetectorTemplateVO edt = (EventDetectorTemplateVO)DAO.getInstance().getJdbcTemp().queryForObject(TEMPLATES_SELECT
 				+ " where dp.id=? ", new Object[] { id },
 				new EventDetectorTemplateRowMapper());
 		setRelationalData(edt);
@@ -97,8 +98,11 @@ public class EventDetectorTemplateDao extends BaseDao {
 	private List<PointEventDetectorVO> getEventDetectors(
 			EventDetectorTemplateVO template) {
 
-		return query(DETECTORS_SELECT, new Object[] { template.getId() },
+		return DAO.getInstance().getJdbcTemp().query(DETECTORS_SELECT, new Object[] { template.getId() },
 				new TemplateEventDetectorRowMapper(template));
+
+//		return query(DETECTORS_SELECT, new Object[] { template.getId() },
+//				new TemplateEventDetectorRowMapper(template));
 	}
 
 	class TemplateEventDetectorRowMapper implements
@@ -131,10 +135,11 @@ public class EventDetectorTemplateDao extends BaseDao {
 		}
 	}
 
-	public List<EventDetectorTemplateVO> getEventDetectorTemplatesWithoutDetectors() {
+	/*public List<EventDetectorTemplateVO> getEventDetectorTemplatesWithoutDetectors() {
+		//return DAO.getInstance().getJdbcTemp().update(TEMPLATES_SELECT, new EventDetectorTemplateRowMapper());
 		return query(TEMPLATES_SELECT, new EventDetectorTemplateRowMapper());
 
-	}
+	}*/
 
 	class EventDetectorTemplateRowMapper implements
 			GenericRowMapper<EventDetectorTemplateVO> {

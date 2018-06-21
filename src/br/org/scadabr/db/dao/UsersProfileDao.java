@@ -8,6 +8,7 @@ import java.util.ListIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -49,8 +50,10 @@ public class UsersProfileDao extends BaseDao {
 
 	public List<UsersProfileVO> getUsersProfiles() {
 		if (currentProfileList == null) {
-			currentProfileList = query(PROFILES_SELECT + " order by u.name",
+
+			currentProfileList = DAO.getInstance().getJdbcTemp().query(PROFILES_SELECT + " order by u.name",
 					new UsersProfilesRowMapper());
+
 			populateUserProfilePermissions(currentProfileList);
 		}
 		return currentProfileList;
@@ -152,7 +155,7 @@ public class UsersProfileDao extends BaseDao {
 		ejt.update(PROFILES_UPDATE,
 				new Object[] { profile.getName(), profile.getId() });
 
-		List<Integer> usersIds = queryForList(USERS_PROFILES_USERS_SELECT
+		List<Integer> usersIds = DAO.getInstance().getJdbcTemp().queryForList(USERS_PROFILES_USERS_SELECT
 				+ " where u.userProfileId=?", new Object[] { profile.getId() },
 				Integer.class);
 
@@ -202,8 +205,8 @@ public class UsersProfileDao extends BaseDao {
 
 	private void insertProfile(UsersProfileVO profile) {
 
-		profile.setId(doInsert(PROFILES_INSERT, new Object[] {
-				profile.getXid(), profile.getName() }));
+		DAO.getInstance().getJdbcTemp().update(PROFILES_INSERT, profile.getXid(), profile.getName());
+		profile.setId(DAO.getInstance().getId());
 
 		saveRelationalData(profile);
 
@@ -253,13 +256,14 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private void populateUsers(UsersProfileVO profile) {
-		profile.defineUsers(queryForList(USERS_PROFILES_USERS_SELECT
+		profile.defineUsers(DAO.getInstance().getJdbcTemp().queryForList(USERS_PROFILES_USERS_SELECT
 				+ " where userProfileId=?", new Object[] { profile.getId() },
 				Integer.class));
 	}
 
 	private void populateWatchlists(UsersProfileVO profile) {
-		profile.setWatchlistPermissions(query(SELECT_WATCHLIST_PERMISSIONS,
+
+		profile.setWatchlistPermissions(DAO.getInstance().getJdbcTemp().query(SELECT_WATCHLIST_PERMISSIONS,
 				new Object[] { profile.getId() },
 				new GenericRowMapper<WatchListAccess>() {
 					public WatchListAccess mapRow(ResultSet rs, int rowNum)
@@ -277,7 +281,9 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private void populateDatapoints(UsersProfileVO profile) {
-		profile.setDataPointPermissions(query(SELECT_DATA_POINT_PERMISSIONS,
+
+
+		profile.setDataPointPermissions(DAO.getInstance().getJdbcTemp().query(SELECT_DATA_POINT_PERMISSIONS,
 				new Object[] { profile.getId() },
 				new GenericRowMapper<DataPointAccess>() {
 					public DataPointAccess mapRow(ResultSet rs, int rowNum)
@@ -291,13 +297,13 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private void populateDataSources(UsersProfileVO profile) {
-		profile.setDataSourcePermissions(queryForList(
+		profile.setDataSourcePermissions(DAO.getInstance().getJdbcTemp().queryForList(
 				SELECT_DATA_SOURCE_PERMISSIONS,
 				new Object[] { profile.getId() }, Integer.class));
 	}
 
 	private void populateViews(UsersProfileVO profile) {
-		profile.setViewPermissions(query(SELECT_VIEW_PERMISSIONS,
+		profile.setViewPermissions(DAO.getInstance().getJdbcTemp().query(SELECT_VIEW_PERMISSIONS,
 				new Object[] { profile.getId() },
 				new GenericRowMapper<ViewAccess>() {
 					public ViewAccess mapRow(ResultSet rs, int rowNum)
@@ -397,7 +403,19 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public UsersProfileVO getUserProfileByUserId(int userid) {
-		UsersProfileVO profile = queryForObject(USERS_PROFILES_SELECT
+
+
+		UsersProfileVO profile = (UsersProfileVO)DAO.getInstance().getJdbcTemp().queryForObject(USERS_PROFILES_SELECT
+						+ " where u.userId=?", new Object[] { userid },
+				new GenericRowMapper<UsersProfileVO>() {
+					public UsersProfileVO mapRow(ResultSet rs, int rowNum)
+							throws SQLException {
+						UsersProfileVO edt = new UsersProfileVO();
+						edt.setId(rs.getInt(1));
+						return edt;
+					}
+				});
+	/*	UsersProfileVO profile = queryForObject(USERS_PROFILES_SELECT
 				+ " where u.userId=?", new Object[] { userid },
 				new GenericRowMapper<UsersProfileVO>() {
 					public UsersProfileVO mapRow(ResultSet rs, int rowNum)
@@ -406,7 +424,7 @@ public class UsersProfileDao extends BaseDao {
 						edt.setId(rs.getInt(1));
 						return edt;
 					}
-				}, null);
+				}, null);*/
 
 		if (profile != null) {
 			profile = this.getUserProfileById(profile.getId());
@@ -469,7 +487,7 @@ public class UsersProfileDao extends BaseDao {
 
 	public void deleteUserProfile(final int usersProfileId) {
 		// Get Users from Profile
-		List<Integer> usersIds = queryForList(USERS_PROFILES_USERS_SELECT
+		List<Integer> usersIds = DAO.getInstance().getJdbcTemp().queryForList(USERS_PROFILES_USERS_SELECT
 				+ " where u.userProfileId=?", new Object[] { usersProfileId },
 				Integer.class);
 
