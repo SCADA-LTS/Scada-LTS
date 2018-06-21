@@ -4,14 +4,14 @@ Vue.component('export-import', {
         return {
             export_import_json: {},
             refreshed: '',
-            xidFolderExists:[],
-            xidFolderNotExists:[],
-            xidFolderBefore:[],
-            xidFolderAfter:[],
-            xidFolderToCheck:[],
-            xidFolderToCreate: [],
-            xidFolderToMoveTo: [],
-            xidMapPointsExist: {},
+            xidFolderExists:[],  // createFolder
+            xidFolderNotExists:[],  // createFolder
+            xidFolderBefore:[],    // createFolder
+            xidFolderAfter:[],     // createFolder
+            xidFolderToCheck:[],   // createFolder
+            xidFolderToCreate: [],  // to CreateFolder
+            xidFolderToMoveTo: [],  // to Move Folder
+            xidMapPointsExist: {},  //
             xidMapPointsAfter: {},
             xidPointsMoveFromTo: {},
             xidPointsNotMove: {},
