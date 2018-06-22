@@ -233,7 +233,13 @@
 		</javac>
 	</target>
 
-	<target name="new-ui">
+	<target name="new-ui-dependency">
+		<exec dir="./ScadaLTS-UI-1" executable="npm">
+			<arg value="install"/>
+		</exec>
+	</target>
+
+	<target name="new-ui" depends="new-ui-dependency">
 		<exec dir="./ScadaLTS-UI-1" executable="npm">
 			<arg value="run"/>
 			<arg value="build"/>

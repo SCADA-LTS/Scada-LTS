@@ -7,26 +7,75 @@
       <button v-on:click="doExport()">Export</button>
       <button v-on:click="doImport">Import</button>
     </div>
-    <p>{{status}}</p>
-    <p>To import: {{base.counterToParse}}</p>
-    <p>To create: {{toCreate.xidFolderToCreate.length}}</p>
-    <p>To move folder: {{toMoveFolder.xidFolderToMoveTo.length}}</p>
-    <p>To move points: {{Object.keys(toMovePoints.xidPointsMoveFromTo).length}}</p>
-    <p>To delete folder: {{toDeleteFolder.xidFolderToDelete.length}}</p>
+    <div class="exph-report">
+      <table border="1">
+        <tr>
+          <td colspan="2">
+          <span v-html="status">
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            Time import: {{timer.timeImport}}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            To import: {{base.counterToParse}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            To create: {{toCreate.xidFolderToCreate.length}}
+          </td>
+          <td>
+            To created: {{toCreate.xidFolderCreated.length}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            To move folder: {{toMoveFolder.xidFolderToMoveTo.length}}
+          </td>
+          <td>
+            To moved folder:
+          </td>
+        </tr>
+        <tr>
+          <td>
+            To move points: {{Object.keys(toMovePoints.xidPointsMoveFromTo).length}}
+          </td>
+          <td>
+            To moved points:
+          </td>
+        </tr>
+        <tr>
+          <td>
+            To delete folder: {{toDeleteFolder.xidFolderToDelete.length}}
+          </td>
+          <td>
+            To delete
+          </td>
+        </tr>
+      </table>
+    </div>
+
+
     <!-- TODO format moment -->
-    <p>Time import: {{timer.timeImport}}</p>
     <!-- debug
     <p>check: {{base.xidFolderToCheck}}</p>
     <p>Exist: {{base.xidFolderExists}}</p>
     <p>Before: {{base.xidFolderBefore}}</p>
-    <p>Error: {{base.xidErrors}}</p>
-    -->
+
     <p>Not exist: {{toCreate.xidFolderNotExists}}</p>
-    <!--
+
+    <p>To create: {{toCreate.xidFolderToCreate}}</p>
+    <p>Errors: {{base.xidErrors}}</p>
+
     <p>After: {{base.xidFolderAfter}}}</p>
     <p>Points after: {{toMovePoints.xidMapPointsAfter}}</p>
-
+    -->
     <p>Move folder: {{toMoveFolder.xidFolderToMoveTo}}
+    <!--
     <p>Points exists: {{toMovePoints.xidMapPointsExist}}</p>
 
     <p>Points move from to: {{toMovePoints.xidPointsMoveFromTo}} </p>
@@ -66,10 +115,12 @@
         },
         toCreate: {
           xidFolderNotExists: [],
-          xidFolderToCreate: []
+          xidFolderToCreate: [],
+          xidFolderCreated: [],
         },
         toMoveFolder: {
-          xidFolderToMoveTo: []
+          xidFolderToMoveTo: [],
+          xidFolderMoved:[]
         },
         toDeleteFolder: {
           xidFolderToDelete: []
@@ -243,21 +294,110 @@
         this.execute();
       },
       execute() {
-
+        this.createFolders();
+      },
+      createFolders() {
         this.showStatus("Create folders");
-        // xidFolderToCreate
+        if (this.toCreate.xidFolderToCreate.length > 0) {
+          const data = {};
+          data.name = this.toCreate.xidFolderToCreate[0].name;
+          data.xid = this.toCreate.xidFolderToCreate[0].xidFolder;
+          data.parentXid = this.toCreate.xidFolderToCreate[0].parentXid;
+          data.pointXids = this.toCreate.xidFolderToCreate[0].points;
+
+          const apiAddFolder = `.//api/pointHierarchy/folderAdd/`;
+
+          axios.post(apiAddFolder, data)
+            .then(response => {
+              console.log(response);
+              let newCreated = {};
+              newCreated = this.toCreate.xidFolderToCreate[0];
+              this.xidFolderCreated.push(newCreated);
+              this.toCreate.xidFolderToCreate.splice(0, 1);
+              if (this.toCreate.xidFolderToCreate.length > 0) {
+                this.createFolders();
+              } else {
+                this.moveFolders();
+              }
+            })
+            .catch(error => {
+              console.log(error);
+              //this.base.xidErrors.push(this.toCreate.xidFolderToCreate[0]);
+              this.toCreate.xidFolderToCreate.splice(0, 1);
+              if (this.toCreate.xidFolderToCreate.length > 0) {
+                this.createFolders();
+              } else {
+                this.moveFolders();
+              }
+            });
+        } else {
+          this.moveFolders();
+        }
+      },
+      moveFolders() {
+
         this.showStatus("Move folders");
-        // xidFolderToMoveTo
+        if (this.toMoveFolder.xidFolderToMoveTo.length > 0) {
+
+          const apiMoveFolder = `./api/pointHierarchy/folderMoveTo/${this.toMoveFolder.xidFolderToMoveTo[0].xidFolder}/${this.toMoveFolder.xidFolderToMoveTo[0].newParentXid}`;
+
+          axios.put(apiMoveFolder)
+            .then(response => {
+              console.log(response);
+              this.toMoveFolder.xidFolderMoved.push(this.toMoveFolder.xidFolderToMoveTo[0])
+
+              this.toMoveFolder.xidFolderMoved.splice(0, 1);
+              if (this.toMoveFolder.xidFolderMoved.length > 0) {
+                this.moveFolders();
+              } else {
+                this.movePoints();
+              }
+            })
+            .catch(error => {
+              console.log(error);
+
+              this.toMoveFolder.xidFolderMoved.splice(0, 1);
+              if (this.toMoveFolder.xidFolderMoved.length > 0) {
+                this.moveFolders();
+              } else {
+                this.movePoints();
+              }
+            });
+        } else {
+          this.movePoints();
+        }
+      },
+      movePoints() {
         this.showStatus("Move points");
         //this.xidPointsMoveFromTo
         this.showStatus("Delete folders");
         this.timer.stopImport = performance.now();
         this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
+        this.refreshCache();
+      },
+      refreshCache() {
+        const apiRefreshCache = `./api/pointHierarchy/cacheRefresh/`;
+
+        axios.post(apiRefreshCache)
+          .then(response => {
+            console.log(response);
+            this.showStatus("<b>End Import</b>");
+          })
+          .catch(error => {
+            console.log(error);
+            this.showStatus("<b>End Import</b>");
+          });
+        this.showStatus("<b>End Import</b>");
       }
-    }
+    },
+
   }
 </script>
 
 <style>
+
+  exph-report {
+    margin: 10px;
+  }
 
 </style>

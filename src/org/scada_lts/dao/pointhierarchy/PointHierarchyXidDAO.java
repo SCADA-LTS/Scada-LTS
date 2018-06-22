@@ -127,10 +127,17 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED,
             rollbackFor = SQLException.class)
     public void add(FolderPointHierarchy folderPointHierarchy) {
-        int parentId = DAO.getInstance().getJdbcTemp().queryForObject(
-                SELECT_FOLDER,
-                new Object[]{folderPointHierarchy.getParentXid()},
-                Integer.class);
+        int parentId = 0;
+        if (folderPointHierarchy.getParentXid() != null) {
+            try {
+                parentId = DAO.getInstance().getJdbcTemp().queryForObject(
+                        SELECT_FOLDER,
+                        new Object[]{folderPointHierarchy.getParentXid()},
+                        Integer.class);
+            } catch (EmptyResultDataAccessException e) {
+                // do not do anything
+            }
+        }
         DAO.getInstance().getJdbcTemp().update(insertSQL, new Object[]{parentId, folderPointHierarchy.getName()});
         int folderId = DAO.getInstance().getId();
         DAO.getInstance().getJdbcTemp().update(UPDATE_FOLDER_HIERARCHY_XID, new Object[]{folderId});

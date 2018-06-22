@@ -93,7 +93,11 @@ public class PointHierarchyXidService extends PointHierarchyService {
     }
 
     public void cacheRefresh() {
-        PointHierarchyDAO.cachedPointHierarchy = null;
+        try {
+            PointHierarchyCache.getInstance().updateData();
+        } catch (Exception e) {
+            LOG.error(e);
+        }
     }
 
     public void deleteFolderXid(String xidFolder) {

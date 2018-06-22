@@ -108,6 +108,7 @@ public class PointHierarchyAPI {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 pointHierarchyXidService.folderAdd(folderPointHierarchy);
+                result = new ResponseEntity<String>(HttpStatus.OK);
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }
