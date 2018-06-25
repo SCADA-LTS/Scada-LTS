@@ -1,25 +1,17 @@
 package br.org.scadabr.db.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.List;
-
+import br.org.scadabr.vo.scripting.ScriptVO;
+import com.serotonin.db.spring.GenericRowMapper;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.db.dao.BaseDao;
+import com.serotonin.util.SerializationHelper;
 import org.scada_lts.dao.DAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import br.org.scadabr.vo.scripting.ScriptVO;
-
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
-import com.serotonin.db.spring.GenericRowMapper;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.BaseDao;
-import com.serotonin.util.SerializationHelper;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import java.sql.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,7 +69,14 @@ public class ScriptDao extends BaseDao {
 	@SuppressWarnings("unchecked")
 	private void updateScript(final ScriptVO<?> vo) {
 		ScriptVO<?> old = getScript(vo.getId());
-		ejt
+		DAO.getInstance().getJdbcTemp().update(	"update scripts set xid=?, name=?, script=?, userId=?, data=? where id=?",
+				new Object[] { vo.getXid(), vo.getName(),
+						vo.getScript(), vo.getUserId(),
+						SerializationHelper.writeObject(vo), vo.getId() },
+				new int[] { Types.VARCHAR, Types.VARCHAR,
+						Types.VARCHAR, Types.INTEGER, Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB,
+						Types.INTEGER });
+		/*ejt
 				.update(
 						"update scripts set xid=?, name=?, script=?, userId=?, data=? where id=?",
 						new Object[] { vo.getXid(), vo.getName(),
@@ -85,20 +84,22 @@ public class ScriptDao extends BaseDao {
 								SerializationHelper.writeObject(vo), vo.getId() },
 						new int[] { Types.VARCHAR, Types.VARCHAR,
 								Types.VARCHAR, Types.INTEGER, Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB,
-								Types.INTEGER });
+								Types.INTEGER });*/
 	}
 
 	public void deleteScript(final int scriptId) {
 		ScriptVO<?> vo = getScript(scriptId);
-		final ExtendedJdbcTemplate ejt2 = ejt;
+		//final ExtendedJdbcTemplate ejt2 = ejt;
 		if (vo != null) {
 			getTransactionTemplate().execute(
 					new TransactionCallbackWithoutResult() {
 						@Override
 						protected void doInTransactionWithoutResult(
 								TransactionStatus status) {
-							ejt2.update("delete from scripts where id=?",
-									new Object[] { scriptId });
+							DAO.getInstance().getJdbcTemp().update("delete from scripts where id=?",
+									scriptId);
+							/*ejt2.update("delete from scripts where id=?",
+									new Object[] { scriptId });*/
 						}
 					});
 		}
@@ -135,9 +136,9 @@ public class ScriptDao extends BaseDao {
 		}
 	}
 
-	public String generateUniqueXid() {
+	/*public String generateUniqueXid() {
 		return generateUniqueXid(ScriptVO.XID_PREFIX, "scripts");
-	}
+	}*/
 
 	public boolean isXidUnique(String xid, int excludeId) {
 		return isXidUnique(xid, excludeId, "scripts");

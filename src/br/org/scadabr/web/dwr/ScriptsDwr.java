@@ -14,6 +14,7 @@ import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.web.dwr.BaseDwr;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.dao.DAO;
 
 public class ScriptsDwr extends BaseDwr {
 
@@ -31,7 +32,7 @@ public class ScriptsDwr extends BaseDwr {
 	public ScriptVO<?> getScript(int id) {
 		if (id == Common.NEW_ID) {
 			ContextualizedScriptVO vo = new ContextualizedScriptVO();
-			vo.setXid(new ScriptDao().generateUniqueXid());
+			vo.setXid(generateUniqueXid(ScriptVO.XID_PREFIX, "scripts"));
 			return vo;
 		}
 
@@ -60,6 +61,21 @@ public class ScriptsDwr extends BaseDwr {
 
 		response.addData("seId", vo.getId());
 		return response;
+	}
+
+	private String generateUniqueXid(String prefix, String tableName) {
+		String xid = Common.generateXid(prefix);
+		while (!isXidUnique(xid, -1, tableName)) {
+			xid = Common.generateXid(prefix);
+		}
+		return xid;
+	}
+
+	protected boolean isXidUnique(String xid, int excludeId, String tableName) {
+
+		return DAO.getInstance().getJdbcTemp().queryForInt("select count(*) from " + tableName
+				+ " where xid=? and id<>?", xid, excludeId) == 0;
+
 	}
 
 	public void deleteScript(int scriptId) {

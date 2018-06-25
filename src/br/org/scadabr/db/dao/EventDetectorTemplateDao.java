@@ -126,7 +126,7 @@ public class EventDetectorTemplateDao extends BaseDao {
 			detector.setLimit(rs.getDouble(++i));
 			detector.setDuration(rs.getInt(++i));
 			detector.setDurationType(rs.getInt(++i));
-			detector.setBinaryState(charToBool(rs.getString(++i)));
+			detector.setBinaryState(DAO.charToBool(rs.getString(++i)));
 			detector.setMultistateState(rs.getInt(++i));
 			detector.setChangeCount(rs.getInt(++i));
 			detector.setAlphanumericState(rs.getString(++i));

@@ -152,8 +152,11 @@ public class UsersProfileDao extends BaseDao {
 
 	public void updateProfile(UsersProfileVO profile) {
 
-		ejt.update(PROFILES_UPDATE,
-				new Object[] { profile.getName(), profile.getId() });
+		DAO.getInstance().getJdbcTemp().update(PROFILES_UPDATE,
+				profile.getName(), profile.getId());
+
+	/*	ejt.update(PROFILES_UPDATE,
+				new Object[] { profile.getName(), profile.getId() });*/
 
 		List<Integer> usersIds = DAO.getInstance().getJdbcTemp().queryForList(USERS_PROFILES_USERS_SELECT
 				+ " where u.userProfileId=?", new Object[] { profile.getId() },
@@ -174,13 +177,19 @@ public class UsersProfileDao extends BaseDao {
 
 	public void updateUsersProfile(UsersProfileVO profile) {
 		if (profile.retrieveLastAppliedUser() != null) {
-			ejt.update("delete from usersUsersProfiles where userId=?",
-					new Object[] { profile.retrieveLastAppliedUser().getId() });
 
-			ejt.update(
+			DAO.getInstance().getJdbcTemp().update("delete from usersUsersProfiles where userId=?",
+					profile.retrieveLastAppliedUser().getId());
+			/*ejt.update("delete from usersUsersProfiles where userId=?",
+					new Object[] { profile.retrieveLastAppliedUser().getId() }); */
+
+			DAO.getInstance().getJdbcTemp().update("insert into usersUsersProfiles (userProfileId, userId) values (?,?)",
+					profile.getId(),
+					profile.retrieveLastAppliedUser().getId());
+			/*ejt.update(
 					"insert into usersUsersProfiles (userProfileId, userId) values (?,?)",
 					new Object[] { profile.getId(),
-							profile.retrieveLastAppliedUser().getId() });
+							profile.retrieveLastAppliedUser().getId() });*/
 		}
 
 		for (WatchList watchlist : profile.retrieveWatchlists()) {
@@ -327,17 +336,16 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private void saveRelationalData(final UsersProfileVO usersProfile) {
-		ejt.update("delete from dataSourceUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-		ejt.update("delete from dataPointUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-		ejt.update("delete from watchListUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-		ejt.update("delete from viewUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
 
-		ejt.batchUpdate(
-				"insert into dataSourceUsersProfiles (dataSourceId, userProfileId) values (?,?)",
+		DAO.getInstance().getJdbcTemp().update("delete from dataSourceUsersProfiles where userProfileId=?",
+				usersProfile.getId());
+		DAO.getInstance().getJdbcTemp().update("delete from dataPointUsersProfiles where userProfileId=?",
+				usersProfile.getId());
+		DAO.getInstance().getJdbcTemp().update("delete from watchListUsersProfiles where userProfileId=?",
+				usersProfile.getId());
+		DAO.getInstance().getJdbcTemp().update("delete from viewUsersProfiles where userProfileId=?",
+				usersProfile.getId());
+		DAO.getInstance().getJdbcTemp().update("insert into dataSourceUsersProfiles (dataSourceId, userProfileId) values (?,?)",
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
 						return usersProfile.getDataSourcePermissions().size();
@@ -350,8 +358,7 @@ public class UsersProfileDao extends BaseDao {
 						ps.setInt(2, usersProfile.getId());
 					}
 				});
-		ejt.batchUpdate(
-				"insert into dataPointUsersProfiles (dataPointId, userProfileId, permission) values (?,?,?)",
+		DAO.getInstance().getJdbcTemp().update("insert into dataPointUsersProfiles (dataPointId, userProfileId, permission) values (?,?,?)",
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
 						return usersProfile.getDataPointPermissions().size();
@@ -366,9 +373,7 @@ public class UsersProfileDao extends BaseDao {
 								.get(i).getPermission());
 					}
 				});
-
-		ejt.batchUpdate(
-				"insert into watchListUsersProfiles (watchlistId, userProfileId, permission) values (?,?,?)",
+		DAO.getInstance().getJdbcTemp().update(	"insert into watchListUsersProfiles (watchlistId, userProfileId, permission) values (?,?,?)",
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
 						return usersProfile.getWatchlistPermissions().size();
@@ -383,9 +388,7 @@ public class UsersProfileDao extends BaseDao {
 								.get(i).getPermission());
 					}
 				});
-
-		ejt.batchUpdate(
-				"insert into viewUsersProfiles (viewId, userProfileId, permission) values (?,?,?)",
+		DAO.getInstance().getJdbcTemp().update("insert into viewUsersProfiles (viewId, userProfileId, permission) values (?,?,?)",
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
 						return usersProfile.getViewPermissions().size();
@@ -400,6 +403,79 @@ public class UsersProfileDao extends BaseDao {
 								.getPermission());
 					}
 				});
+		/*ejt.update("delete from dataSourceUsersProfiles where userProfileId=?",
+				new Object[] { usersProfile.getId() });*/
+		/*ejt.update("delete from dataPointUsersProfiles where userProfileId=?",
+				new Object[] { usersProfile.getId() });*/
+		/*ejt.update("delete from watchListUsersProfiles where userProfileId=?",
+				new Object[] { usersProfile.getId() });*/
+		/*ejt.update("delete from viewUsersProfiles where userProfileId=?",
+				new Object[] { usersProfile.getId() });*/
+
+		/*ejt.batchUpdate(
+				"insert into dataSourceUsersProfiles (dataSourceId, userProfileId) values (?,?)",
+				new BatchPreparedStatementSetter() {
+					public int getBatchSize() {
+						return usersProfile.getDataSourcePermissions().size();
+					}
+
+					public void setValues(PreparedStatement ps, int i)
+							throws SQLException {
+						ps.setInt(1, usersProfile.getDataSourcePermissions()
+								.get(i));
+						ps.setInt(2, usersProfile.getId());
+					}
+				});*/
+		/*ejt.batchUpdate(
+				"insert into dataPointUsersProfiles (dataPointId, userProfileId, permission) values (?,?,?)",
+				new BatchPreparedStatementSetter() {
+					public int getBatchSize() {
+						return usersProfile.getDataPointPermissions().size();
+					}
+
+					public void setValues(PreparedStatement ps, int i)
+							throws SQLException {
+						ps.setInt(1, usersProfile.getDataPointPermissions()
+								.get(i).getDataPointId());
+						ps.setInt(2, usersProfile.getId());
+						ps.setInt(3, usersProfile.getDataPointPermissions()
+								.get(i).getPermission());
+					}
+				});*/
+
+		/*ejt.batchUpdate(
+				"insert into watchListUsersProfiles (watchlistId, userProfileId, permission) values (?,?,?)",
+				new BatchPreparedStatementSetter() {
+					public int getBatchSize() {
+						return usersProfile.getWatchlistPermissions().size();
+					}
+
+					public void setValues(PreparedStatement ps, int i)
+							throws SQLException {
+						ps.setInt(1, usersProfile.getWatchlistPermissions()
+								.get(i).getId());
+						ps.setInt(2, usersProfile.getId());
+						ps.setInt(3, usersProfile.getWatchlistPermissions()
+								.get(i).getPermission());
+					}
+				});*/
+
+		/*ejt.batchUpdate(
+				"insert into viewUsersProfiles (viewId, userProfileId, permission) values (?,?,?)",
+				new BatchPreparedStatementSetter() {
+					public int getBatchSize() {
+						return usersProfile.getViewPermissions().size();
+					}
+
+					public void setValues(PreparedStatement ps, int i)
+							throws SQLException {
+						ps.setInt(1, usersProfile.getViewPermissions().get(i)
+								.getId());
+						ps.setInt(2, usersProfile.getId());
+						ps.setInt(3, usersProfile.getViewPermissions().get(i)
+								.getPermission());
+					}
+				});*/
 	}
 
 	public UsersProfileVO getUserProfileByUserId(int userid) {
@@ -435,8 +511,10 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public void grantUserAdminProfile(User user) {
-		ejt.update("delete from usersUsersProfiles where userId=?",
-				new Object[] { user.getId() });
+		DAO.getInstance().getJdbcTemp().update("delete from usersUsersProfiles where userId=?",
+				user.getId());
+		/*ejt.update("delete from usersUsersProfiles where userId=?",
+				new Object[] { user.getId() });*/
 
 		// Add user to watchLists
 		List<WatchList> watchLists = watchlistDao.getWatchLists();
@@ -454,8 +532,11 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public void resetUserProfile(User user) {
-		ejt.update("delete from usersUsersProfiles where userId=?",
-				new Object[] { user.getId() });
+
+		DAO.getInstance().getJdbcTemp().update("delete from usersUsersProfiles where userId=?",
+				user.getId());
+		/*ejt.update("delete from usersUsersProfiles where userId=?",
+				new Object[] { user.getId() });*/
 
 		// Remove user from watchLists
 		List<WatchList> watchLists = watchlistDao.getWatchLists();
@@ -517,7 +598,8 @@ public class UsersProfileDao extends BaseDao {
 						// "delete from viewUsersProfiles where userProfileId=?",
 						// args);
 						// Delete the profile
-						ejt.update("delete from usersProfiles where id=?", args);
+						DAO.getInstance().getJdbcTemp().update("delete from usersProfiles where id=?", args);
+//						ejt.update("delete from usersProfiles where id=?", args);
 					}
 				});
 		currentProfileList.clear();

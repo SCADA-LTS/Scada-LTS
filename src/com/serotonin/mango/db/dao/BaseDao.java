@@ -18,47 +18,49 @@
  */
 package com.serotonin.mango.db.dao;
 
+import com.serotonin.db.spring.ArgPreparedStatementSetter;
+import com.serotonin.db.spring.ArgTypePreparedStatementSetter;
+import com.serotonin.db.spring.GenericTransactionTemplate;
+import com.serotonin.mango.Common;
+import org.scada_lts.dao.DAO;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-
-import com.serotonin.db.DaoUtils;
-import com.serotonin.db.spring.ArgPreparedStatementSetter;
-import com.serotonin.db.spring.ArgTypePreparedStatementSetter;
-import com.serotonin.mango.Common;
-
-public class BaseDao extends DaoUtils {
+public class BaseDao/* extends DaoUtils */{
 
 	private static final String DEFAULT_GENERATED_KEY_COLUMN_NAME = "id";
+
+	protected DataSource dataSource;
+	protected DataSourceTransactionManager tm;
 
 	/**
 	 * Public constructor for code that needs to get stuff from the database.
 	 */
 	public BaseDao() {
-		super(Common.ctx.getDatabaseAccess().getDataSource());
+//		super(Common.ctx.getDatabaseAccess().getDataSource());
 	}
 
 	protected BaseDao(DataSource dataSource) {
-		super(dataSource);
+//		super(dataSource);
+		this.dataSource = dataSource;
 	}
 
 	//
 	// Convenience methods for storage of booleans.
 	//
-	protected static String boolToChar(boolean b) {
+/*	protected static String boolToChar(boolean b) {
 		return b ? "Y" : "N";
 	}
 
 	protected static boolean charToBool(String s) {
 		return "Y".equals(s);
-	}
+	}*/
 
 	/*protected void deleteInChunks(String sql, List<Integer> ids) {
 		int chunk = 1000;
@@ -80,8 +82,10 @@ public class BaseDao extends DaoUtils {
 	}
 
 	protected boolean isXidUnique(String xid, int excludeId, String tableName) {
-		return ejt.queryForInt("select count(*) from " + tableName
-				+ " where xid=? and id<>?", new Object[] { xid, excludeId }) == 0;
+		return DAO.getInstance().getJdbcTemp().queryForInt("select count(*) from " + tableName
+				+ " where xid=? and id<>?", xid, excludeId) == 0;
+		/*return ejt.queryForInt("select count(*) from " + tableName
+				+ " where xid=? and id<>?", xid, excludeId) == 0;*/
 	}
 
 	/**
@@ -129,48 +133,71 @@ public class BaseDao extends DaoUtils {
 	}
 
 	private int executeInsert(String sql, PreparedStatementSetter pss) {
-		GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-		ejt.update(getPreparedStatementCreator(sql, pss), keyHolder);
-		return keyHolder.getKey().intValue();
+
+		DAO.getInstance().getJdbcTemp().update(sql,pss);
+		return DAO.getInstance().getId();
+
+		//	GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+		//ejt.update(getPreparedStatementCreator(sql, pss), keyHolder);
+		//return keyHolder.getKey().intValue();
 	}
 
 	private long executeInsertLong(String sql, PreparedStatementSetter pss) {
-		GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+
+		DAO.getInstance().getJdbcTemp().update(sql,pss);
+		return DAO.getInstance().getId();
+	/*	GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 		ejt.update(getPreparedStatementCreator(sql, pss), keyHolder);
-		return keyHolder.getKey().longValue();
+		return keyHolder.getKey().longValue();*/
 	}
 
-	@Override
+//	@Override
 	protected int doInsert(String sql, Object params[]) {
 		return executeInsert(sql, new ArgPreparedStatementSetter(params));
 	}
 
-	@Override
+//	@Override
 	protected int doInsert(String sql, Object params[], int types[]) {
 		return executeInsert(sql, new ArgTypePreparedStatementSetter(params,
 				types));
 	}
 
-	@Override
+//	@Override
 	protected int doInsert(String sql, PreparedStatementSetter pss) {
 		return executeInsert(sql, pss);
 	}
 
-	@Override
+//	@Override
 	protected long doInsertLong(String sql, Object params[]) {
 		return executeInsertLong(sql, new ArgPreparedStatementSetter(params));
 	}
 
-	@Override
+//	@Override
 	protected long doInsertLong(String sql, Object params[], int types[]) {
 		return executeInsertLong(sql, new ArgTypePreparedStatementSetter(
 				params, types));
 	}
 
-	@Override
+//	@Override
 	protected long doInsertLong(String sql, PreparedStatementSetter pss) {
 		return executeInsertLong(sql, pss);
 	}
+
+
+
+	protected DataSourceTransactionManager getTransactionManager() {
+		if (this.tm == null) {
+			this.tm = new DataSourceTransactionManager(this.dataSource);
+		}
+
+		return this.tm;
+	}
+
+	protected GenericTransactionTemplate getTransactionTemplate() {
+		return new GenericTransactionTemplate(this.getTransactionManager());
+	}
+
+
 	// TODO VANIA - FAZER TESTES EM TODOS METODOS DAO, com todos drivers jdbc
 
 }
