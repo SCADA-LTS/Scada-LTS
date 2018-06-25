@@ -41,6 +41,9 @@ import java.util.List;
 @Repository
 public class PointHierarchyXidDAO extends PointHierarchyDAO {
 
+    private static final String ROOT = "_";
+    private static final int ROOT_PARENT_ID = 0;
+
     private static final String COLUMN_NAME_ID = "id";
     private static final String COLUMN_NAME_XID = "xid";
     private static final String COLUMN_NAME_PARENT_ID = "parentId";
@@ -67,6 +70,12 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
                         "FROM pointHierarchy " +
                         "WHERE id=" + "ph."+ COLUMN_NAME_PARENT_ID + ") as " + COLUMN_NAME_PARENT_XID + " " +
                 "FROM pointHierarchy ph WHERE xid=?";
+
+    private static final String SELECT_FOLER_ID_BASE_ON_XID =
+            "SELECT " +
+                    COLUMN_NAME_ID + " " +
+            "FROM pointHierarchy ph WHERE xid=?";
+
     // @formatter:on
 
     // @formatter:off
@@ -112,15 +121,18 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
             rollbackFor = SQLException.class)
     public boolean updateParent(String xidPoint, String xidFolder) {
         int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_POINT_ID, new Object[]{xidPoint}, Integer.class);
-        int parentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER, new Object[]{xidFolder}, Integer.class);
+        int parentId = ROOT_PARENT_ID;
+        if (!xidFolder.equals(ROOT)) {
+            parentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER, new Object[]{xidFolder}, Integer.class);
+        }
         return updateParentIdDataPoint(id, parentId);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED,
             rollbackFor = SQLException.class)
     public boolean updateFolder(String xidFolder, String newParentXidFolder) {
-        int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER, new Object[]{xidFolder}, Integer.class);
-        int newParentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER, new Object[]{xidFolder}, Integer.class);
+        int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLER_ID_BASE_ON_XID, new Object[]{xidFolder}, Integer.class);
+        int newParentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLER_ID_BASE_ON_XID, new Object[]{newParentXidFolder}, Integer.class);
         return updateParentId(id, newParentId);
     }
 

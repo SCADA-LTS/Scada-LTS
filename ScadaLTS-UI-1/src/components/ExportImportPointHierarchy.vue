@@ -61,7 +61,7 @@
 
 
     <!-- TODO format moment -->
-    <!-- debug
+
     <p>check: {{base.xidFolderToCheck}}</p>
     <p>Exist: {{base.xidFolderExists}}</p>
     <p>Before: {{base.xidFolderBefore}}</p>
@@ -73,16 +73,20 @@
 
     <p>After: {{base.xidFolderAfter}}}</p>
     <p>Points after: {{toMovePoints.xidMapPointsAfter}}</p>
-    -->
-    <p>Move folder: {{toMoveFolder.xidFolderToMoveTo}}
-    <!--
-    <p>Points exists: {{toMovePoints.xidMapPointsExist}}</p>
 
+    <p>Move folder: {{toMoveFolder.xidFolderToMoveTo}} </p>
     <p>Points move from to: {{toMovePoints.xidPointsMoveFromTo}} </p>
-    <p>Points not move: {{toMovePoints.xidPointsNotMove}} </p>
-    <p>To delete folder: {{toDeleteFolder.xidFolderToDelete}}</p>
-    <p>Timer: {{timer}}</p>
-    -->
+
+      <p>Points exists: {{toMovePoints.xidMapPointsExist}}</p>
+
+
+      <p>Points not move: {{toMovePoints.xidPointsNotMove}} </p>
+
+
+
+      <p>To delete folder: {{toDeleteFolder.xidFolderToDelete}}</p>
+      <p>Timer: {{timer}}</p>
+
 
 
   </div>
@@ -99,6 +103,10 @@
     },
     data() {
       return {
+        constants:{
+          // if new parentId is # then move to root
+          ROOT:"_"
+        },
         json: {},
         timer: {
           startImport: 0,
@@ -120,7 +128,7 @@
         },
         toMoveFolder: {
           xidFolderToMoveTo: [],
-          xidFolderMoved:[]
+          xidFolderMoved: []
         },
         toDeleteFolder: {
           xidFolderToDelete: []
@@ -130,6 +138,7 @@
           xidMapPointsAfter: {},
           xidPointsMoveFromTo: {},
           xidPointsNotMove: {},
+          xidPointMoved: []
         }
       };
     },
@@ -257,16 +266,23 @@
           }
         }
 
+        for (var p in this.toMovePoints.xidMapPointsAfter) {
+          let xidPointToCheckAfter = this.toMovePoints.xidMapPointsAfter[p];
+          let xidPointToCheckExist = this.toMovePoints.xidMapPointsExist[p];
+
+          if (xidPointToCheckExist == undefined) {
+            let pointMoveFromToFolder = {xidPoint: xidPointToCheckAfter.xidPoint, oldParent: '?', newParent: xidPointToCheckAfter.xidFolder}
+            this.toMovePoints.xidPointsMoveFromTo[xidPointToCheckAfter.xidPoint] = pointMoveFromToFolder;
+          }
+        }
+
         for (var p in this.toMovePoints.xidMapPointsExist) {
-          /*console.log("xidPoint:"+p);
-          console.log("after:"+this.toMovePoints.xidMapPointsAfter[p]);
-          console.log("before:"+this.toMovePoints.xidMapPointsExist[p]);*/
 
           let xidPointToCheckAfter = this.toMovePoints.xidMapPointsAfter[p];
           let xidPointToCheckExist = this.toMovePoints.xidMapPointsExist[p];
           // check is in After if not move to root
           if (xidPointToCheckAfter == undefined) {
-            let pointMoveFromToRoot = {xidPoint: xidPointToCheckExist.xidPoint, oldParent: '?', newParent: ''}
+            let pointMoveFromToRoot = {xidPoint: xidPointToCheckExist.xidPoint, oldParent: '?', newParent: this.constants.ROOT}
             this.toMovePoints.xidPointsMoveFromTo[xidPointToCheckExist.xidPoint] = pointMoveFromToRoot;
             // check is in After has another xidFolder then move point to new Folder
           } else if (xidPointToCheckAfter.xidFolder !== xidPointToCheckExist.xidFolder) {
@@ -335,19 +351,15 @@
         }
       },
       moveFolders() {
-
         this.showStatus("Move folders");
         if (this.toMoveFolder.xidFolderToMoveTo.length > 0) {
-
           const apiMoveFolder = `./api/pointHierarchy/folderMoveTo/${this.toMoveFolder.xidFolderToMoveTo[0].xidFolder}/${this.toMoveFolder.xidFolderToMoveTo[0].newParentXid}`;
-
           axios.put(apiMoveFolder)
             .then(response => {
               console.log(response);
               this.toMoveFolder.xidFolderMoved.push(this.toMoveFolder.xidFolderToMoveTo[0])
-
-              this.toMoveFolder.xidFolderMoved.splice(0, 1);
-              if (this.toMoveFolder.xidFolderMoved.length > 0) {
+              this.toMoveFolder.xidFolderToMoveTo.splice(0, 1);
+              if (this.toMoveFolder.xidFolderToMoveTo.length > 0) {
                 this.moveFolders();
               } else {
                 this.movePoints();
@@ -355,9 +367,8 @@
             })
             .catch(error => {
               console.log(error);
-
-              this.toMoveFolder.xidFolderMoved.splice(0, 1);
-              if (this.toMoveFolder.xidFolderMoved.length > 0) {
+              this.toMoveFolder.xidFolderToMoveTo.splice(0, 1);
+              if (this.toMoveFolder.xidFolderToMoveTo.length > 0) {
                 this.moveFolders();
               } else {
                 this.movePoints();
@@ -368,9 +379,45 @@
         }
       },
       movePoints() {
-        this.showStatus("Move points");
-        //this.xidPointsMoveFromTo
-        this.showStatus("Delete folders");
+        setTimeout(()=>{
+          this.showStatus("Move points");
+          let arrPointToMove = Object.keys(this.toMovePoints.xidPointsMoveFromTo).map(key => this.toMovePoints.xidPointsMoveFromTo[key]);
+          if (arrPointToMove.length > 0) {
+            let newParent = this.constants.ROOT;
+            if (!arrPointToMove[0].newParent.trim() == "") {
+              newParent = arrPointToMove[0].newParent;
+            }
+            const apiMovePoints = `./api/pointHierarchy/pointMoveTo/${arrPointToMove[0].xidPoint}/${newParent}`;
+            console.log(apiMovePoints);
+            axios.put(apiMovePoints)
+              .then(response => {
+                console.log(response);
+                this.toMovePoints.xidPointMoved.push(arrPointToMove[0]);
+                delete this.toMovePoints.xidPointsMoveFromTo[arrPointToMove[0].xidPoint];
+                arrPointToMove.splice(0, 1);
+                if (arrPointToMove.length > 0) {
+                  this.movePoints();
+                } else {
+                  this.deleteFolders();
+                }
+              })
+              .catch(error => {
+                console.log(error);
+                delete this.toMovePoints.xidPointsMoveFromTo[arrPointToMove[0].xidPoint];
+                arrPointToMove.splice(0, 1);
+                if (arrPointToMove.length > 0) {
+                  this.movePoints();
+                } else {
+                  this.deleteFolders();
+                }
+              });
+          } else {
+            this.deleteFolders();
+          }
+        },1000);
+      },
+      deleteFolders() {
+        this.showStatus("Change name");
         this.timer.stopImport = performance.now();
         this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
         this.refreshCache();
@@ -390,7 +437,6 @@
         this.showStatus("<b>End Import</b>");
       }
     },
-
   }
 </script>
 

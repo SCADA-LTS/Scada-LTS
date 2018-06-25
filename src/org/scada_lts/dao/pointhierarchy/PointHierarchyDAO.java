@@ -52,13 +52,15 @@ import com.serotonin.mango.vo.DataPointVO;
 public class PointHierarchyDAO {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyDAO.class);
-    private final static int SELECT_COLUMN_INDEX_ID = 1;
-    private final static int SELECT_COLUMN_INDEX_XID = 2;
-    private final static int SELECT_COLUMN_INDEX_DATA = 3;
-    private final static int SELECT_COLUMN_INDEX_DATA_SOURCE_ID = 4;
-    private final static int SELECT_COLUMN_INDEX_DATA_SOURCE_NAME = 5;
-    private final static int SELECT_COLUMN_INDEX_DATA_SOURCE_XID = 6;
-    private final static int SELECT_COLUMN_INDEX_DATA_SOURCE_TYPE = 7;
+    private final static String COLUMN_NAME_ID = "id";
+    private final static String COLUMN_NAME_XID = "xid";
+    private final static String COLUMN_NAME_DATA = "data";
+    private final static String COLUMN_NAME_DATA_SOURCE_ID = "dataSourceId";
+    private final static String COLUMN_NAME_DATA_SOURCE_NAME = "name";
+    private final static String COLUMN_NAME_DATA_SOURCE_XID = "dsxid";
+    private final static String COLUMN_NAME_DATA_SOURCE_TYPE = "dataSourceType";
+    private static final String COLUMN_NAME_PARENT_ID = "parentId";
+    private static final String COLUMN_NAME_NAME = "name";
 
     private final static boolean IS_NOT_FOLDER = false;
 
@@ -70,16 +72,11 @@ public class PointHierarchyDAO {
 					+ "dp.data, "
 					+ "dp.dataSourceId, "
 					+ "ds.name, "
-					+ "ds.xid, "
+					+ "ds.xid as dsxid, "
 					+ "ds.dataSourceType "
 	            + "from "
 	            	+ "dataPoints dp join dataSources ds on ds.id = dp.dataSourceId ";
-	             /* "select "
-				    + "dp.id,"
-					+ "dp.data "
-	            + "from "
-	            	+ "dataPoints dp " */;
-			
+
 		private static final String pointSQL = "" +
 				"select "
 				    + "dp.id,"
@@ -137,10 +134,6 @@ public class PointHierarchyDAO {
 		private static final String UPDATE_FOLDER_XID =
                 "UPDATE pointHierarchy SET xid=func_gen_xid_point_hierarchy(id) WHERE id=?";
 
-		private static final String COLUMN_NAME_ID = "id";
-		private static final String COLUMN_NAME_PARENT_ID = "parentId";
-		private static final String COLUMN_NAME_NAME = "name";
-
 		private static final String SELECT_POINT_HIERARCHY = ""
 				+ "select "
 					+ COLUMN_NAME_ID + ", "
@@ -182,17 +175,16 @@ public class PointHierarchyDAO {
                     try {
                         DataPointVO dp = new DataPointVO();
                         SerializationData sd = new SerializationData();
-                        dp = (DataPointVO) sd.readObject(rs.getBlob(SELECT_COLUMN_INDEX_DATA).getBinaryStream());
-
+                        dp = (DataPointVO) sd.readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
                         PointHierarchyDataSource phds = new PointHierarchyDataSource();
-                        phds.setId(rs.getInt(SELECT_COLUMN_INDEX_DATA_SOURCE_ID));
-                        phds.setName(rs.getString(SELECT_COLUMN_INDEX_DATA_SOURCE_NAME));
-                        phds.setXid(rs.getString(SELECT_COLUMN_INDEX_DATA_SOURCE_XID));
-                        phds.setDataSourceType(String.valueOf(rs.getInt(SELECT_COLUMN_INDEX_DATA_SOURCE_TYPE)));
+                        phds.setId(rs.getInt(COLUMN_NAME_DATA_SOURCE_ID));
+                        phds.setName(rs.getString(COLUMN_NAME_DATA_SOURCE_NAME));
+                        phds.setXid(rs.getString(COLUMN_NAME_DATA_SOURCE_XID));
+                        phds.setDataSourceType(String.valueOf(rs.getInt(COLUMN_NAME_DATA_SOURCE_TYPE)));
 
                         phn = new PointHierarchyNode(
-                                rs.getInt(SELECT_COLUMN_INDEX_ID),
-                                rs.getString(SELECT_COLUMN_INDEX_XID),
+                                rs.getInt(COLUMN_NAME_ID),
+                                rs.getString(COLUMN_NAME_XID),
                                 dp.getPointFolderId(),
                                 dp.getName(),
                                 IS_NOT_FOLDER,
@@ -229,7 +221,7 @@ public class PointHierarchyDAO {
             public DataPointVO mapRow(ResultSet rs, int rownumber) throws SQLException {
                 try {
                     SerializationData sd = new SerializationData();
-                    return (DataPointVO) sd.readObject(rs.getBlob(SELECT_COLUMN_INDEX_DATA).getBinaryStream());
+                    return (DataPointVO) sd.readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
                 } catch (Exception e) {
                     LOG.error(new PointHierarchyDaoException(e));
                 }
