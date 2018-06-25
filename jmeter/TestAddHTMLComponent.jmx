@@ -99,7 +99,9 @@
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
     &quot;name&quot;: &quot;1 test Graphical view&quot;,&#xd;
-    &quot;xid&quot;: &quot;GV_viewForTest&quot;&#xd;
+    &quot;xid&quot;: &quot;GV_viewForTest&quot;,&#xd;
+    &quot;size&quot;:2,&#xd;
+    &quot;imagePath&quot;:&quot;null&quot;&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>

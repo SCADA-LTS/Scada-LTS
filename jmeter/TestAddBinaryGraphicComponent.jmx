@@ -101,7 +101,7 @@
     &quot;name&quot;: &quot;testView&quot;,&#xd;
     &quot;xid&quot;: &quot;GV_1234567&quot;,&#xd;
     &quot;size&quot;: &quot;2&quot;,&#xd;
-    &quot;imagePath&quot;: &quot;C:\\Users\\Jerzyk\\Desktop\\lena.png&quot;&#xd;
+    &quot;imagePath&quot;: &quot;null&quot;&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
