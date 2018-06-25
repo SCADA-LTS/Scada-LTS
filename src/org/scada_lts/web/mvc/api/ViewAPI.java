@@ -54,6 +54,7 @@ public class ViewAPI {
 
     private static final Log LOG = LogFactory.getLog(ViewAPI.class);
     private static final int ID_USER_AMIN = 1;
+    private static final String NULL_IMAGE_PATH = "null";
 
     @Resource
     ViewService viewService;
@@ -257,7 +258,7 @@ public class ViewAPI {
                     view.setName(viewDTO.getName());
                     view.setXid(viewDTO.getXid());
                     view.setResolution(viewDTO.getSize());
-                    if(!viewDTO.getImagePath().equals("null")) {
+                    if(!viewDTO.getImagePath().equals(NULL_IMAGE_PATH)) {
                         view.setBackgroundFilename(viewDTO.getImagePath());
                     } else {
                         view.setBackgroundFilename(null);
