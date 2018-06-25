@@ -32,7 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class BaseDao/* extends DaoUtils */{
+public class BaseDao{
 
 	private static final String DEFAULT_GENERATED_KEY_COLUMN_NAME = "id";
 
@@ -43,32 +43,12 @@ public class BaseDao/* extends DaoUtils */{
 	 * Public constructor for code that needs to get stuff from the database.
 	 */
 	public BaseDao() {
-//		super(Common.ctx.getDatabaseAccess().getDataSource());
 	}
 
 	protected BaseDao(DataSource dataSource) {
-//		super(dataSource);
 		this.dataSource = dataSource;
 	}
 
-	//
-	// Convenience methods for storage of booleans.
-	//
-/*	protected static String boolToChar(boolean b) {
-		return b ? "Y" : "N";
-	}
-
-	protected static boolean charToBool(String s) {
-		return "Y".equals(s);
-	}*/
-
-	/*protected void deleteInChunks(String sql, List<Integer> ids) {
-		int chunk = 1000;
-		for (int i = 0; i < ids.size(); i += chunk) {
-			String idStr = createDelimitedList(ids, i, i + chunk, ",", null);
-			ejt.update(sql + " (" + idStr + ")");
-		}
-	}*/
 
 	//
 	// XID convenience methods
@@ -84,8 +64,6 @@ public class BaseDao/* extends DaoUtils */{
 	protected boolean isXidUnique(String xid, int excludeId, String tableName) {
 		return DAO.getInstance().getJdbcTemp().queryForInt("select count(*) from " + tableName
 				+ " where xid=? and id<>?", xid, excludeId) == 0;
-		/*return ejt.queryForInt("select count(*) from " + tableName
-				+ " where xid=? and id<>?", xid, excludeId) == 0;*/
 	}
 
 	/**
@@ -137,48 +115,36 @@ public class BaseDao/* extends DaoUtils */{
 		DAO.getInstance().getJdbcTemp().update(sql,pss);
 		return DAO.getInstance().getId();
 
-		//	GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-		//ejt.update(getPreparedStatementCreator(sql, pss), keyHolder);
-		//return keyHolder.getKey().intValue();
 	}
 
 	private long executeInsertLong(String sql, PreparedStatementSetter pss) {
 
 		DAO.getInstance().getJdbcTemp().update(sql,pss);
 		return DAO.getInstance().getId();
-	/*	GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-		ejt.update(getPreparedStatementCreator(sql, pss), keyHolder);
-		return keyHolder.getKey().longValue();*/
 	}
 
-//	@Override
 	protected int doInsert(String sql, Object params[]) {
 		return executeInsert(sql, new ArgPreparedStatementSetter(params));
 	}
 
-//	@Override
 	protected int doInsert(String sql, Object params[], int types[]) {
 		return executeInsert(sql, new ArgTypePreparedStatementSetter(params,
 				types));
 	}
 
-//	@Override
 	protected int doInsert(String sql, PreparedStatementSetter pss) {
 		return executeInsert(sql, pss);
 	}
 
-//	@Override
 	protected long doInsertLong(String sql, Object params[]) {
 		return executeInsertLong(sql, new ArgPreparedStatementSetter(params));
 	}
 
-//	@Override
 	protected long doInsertLong(String sql, Object params[], int types[]) {
 		return executeInsertLong(sql, new ArgTypePreparedStatementSetter(
 				params, types));
 	}
 
-//	@Override
 	protected long doInsertLong(String sql, PreparedStatementSetter pss) {
 		return executeInsertLong(sql, pss);
 	}
@@ -196,8 +162,4 @@ public class BaseDao/* extends DaoUtils */{
 	protected GenericTransactionTemplate getTransactionTemplate() {
 		return new GenericTransactionTemplate(this.getTransactionManager());
 	}
-
-
-	// TODO VANIA - FAZER TESTES EM TODOS METODOS DAO, com todos drivers jdbc
-
 }
