@@ -2,11 +2,17 @@ package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.rt.dataImage.IDataPoint;
+import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
+import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
+import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
@@ -451,6 +457,26 @@ public class PointValueAPI {
 			LOG.error(e);
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	@RequestMapping(value = "/api/point_value/updateMetaDataPoint/{xid}", method = RequestMethod.GET)
+	public ResponseEntity<String> updateMetaDataPoint(@PathVariable("xid") String xid, HttpServletRequest request) {
+
+		DataPointVO dataPoint = dataPointService.getDataPoint(xid);
+
+		MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
+
+		metaPointLocatorVO.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE);
+
+		MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
+
+		metaPointLocatorRT.initialize();
+
+		PointValueTime pointValueTime = new PointValueTime(new NumericValue(0), System.currentTimeMillis());
+
+		metaPointLocatorRT.pointUpdated(pointValueTime);
+
+		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 	
 }
