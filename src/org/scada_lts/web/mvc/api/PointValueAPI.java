@@ -468,24 +468,28 @@ public class PointValueAPI {
 	@RequestMapping(value = "/api/point_value/updateMetaDataPoint/{xid}", method = RequestMethod.GET)
 	public ResponseEntity<String> updateMetaDataPoint(@PathVariable("xid") String xid, HttpServletRequest request) {
 
-		DataPointVO dataPoint = dataPointService.getDataPoint(xid);
-		MetaDataSourceVO metaDataSourceVO = (MetaDataSourceVO) dataSourceService.getDataSource(dataPoint.getDataSourceXid());
+		try {
+			DataPointVO dataPoint = dataPointService.getDataPoint(xid);
+			MetaDataSourceVO metaDataSourceVO = (MetaDataSourceVO) dataSourceService.getDataSource(dataPoint.getDataSourceXid());
 
-		MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
+			MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
 
-		metaPointLocatorVO.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE);
+			metaPointLocatorVO.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE);
 
-		MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
+			MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
 
-		MetaDataSourceRT metaDataSourceRT = new MetaDataSourceRT(metaDataSourceVO);
+			MetaDataSourceRT metaDataSourceRT = new MetaDataSourceRT(metaDataSourceVO);
 
-		DataPointRT dataPointRT = new DataPointRT(dataPoint, metaPointLocatorRT);
+			DataPointRT dataPointRT = new DataPointRT(dataPoint, metaPointLocatorRT);
 
-		metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
+			metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
 
-		PointValueTime pointValueTime = new PointValueTime(new NumericValue(0), System.currentTimeMillis());
+			PointValueTime pointValueTime = new PointValueTime(new NumericValue(0), System.currentTimeMillis());
 
-		metaPointLocatorRT.pointUpdated(pointValueTime);
+			metaPointLocatorRT.pointUpdated(pointValueTime);
+		} catch (Exception e) {
+			LOG.error(e);
+		}
 
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
