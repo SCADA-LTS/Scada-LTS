@@ -468,7 +468,6 @@ public class PointValueAPI {
 	@RequestMapping(value = "/api/point_value/updateMetaDataPoint/{xid}", method = RequestMethod.GET)
 	public ResponseEntity<String> updateMetaDataPoint(@PathVariable("xid") String xid, HttpServletRequest request) {
 
-		try {
 			DataPointVO dataPoint = dataPointService.getDataPoint(xid);
 			MetaDataSourceVO metaDataSourceVO = (MetaDataSourceVO) dataSourceService.getDataSource(dataPoint.getDataSourceXid());
 
@@ -484,12 +483,17 @@ public class PointValueAPI {
 
 			metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
 
-			PointValueTime pointValueTime = new PointValueTime(new NumericValue(0), System.currentTimeMillis());
 
-			metaPointLocatorRT.pointUpdated(pointValueTime);
-		} catch (Exception e) {
-			LOG.error(e);
-		}
+
+			ScriptExecutor scriptExecutor = new ScriptExecutor();
+			try {
+				Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
+
+				PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
+			} catch (Exception e) {
+				LOG.error(e);
+			}
+
 
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
