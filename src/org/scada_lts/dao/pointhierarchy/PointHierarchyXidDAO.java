@@ -55,8 +55,14 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
     private static final String SELECT_POINT_ID =
             "SELECT id FROM dataPoints WHERE xid=?";
 
+    private static final String SELECT_FOLDER_ID =
+            "SELECT id FROM pointHierarchy WHERE xid=?";
+
     private static final String SELECT_FOLDER_XID =
             "SELECT xid FROM pointHierarchy WHERE id=?";
+
+    private static final String UPDATE_FOLDER_NAME_BASE_ON_XID =
+            "UPDATE pointHierarchy SET name=? WHERE xid=?";
 
     // @formatter:off
     private static final String SELECT_FOLDER =
@@ -98,7 +104,8 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
                     + "pointHierarchy SET xid=func_gen_xid_point_hierarchy(id) WHERE id=?";
 
     private static final String DELETE_FOLDER_HIERARCHY_XID =
-            "DELETE pointHierarchy WHERE xid=?";
+            "DELETE FROM pointHierarchy WHERE xid=?";
+
 
 
     private class FolderPointHierarchyRowMapper implements RowMapper<FolderPointHierarchy> {
@@ -119,11 +126,19 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED,
             rollbackFor = SQLException.class)
+    public boolean updateNameFolder(String xidFolder, String newName) {
+        int rows = DAO.getInstance().getJdbcTemp().update(UPDATE_FOLDER_NAME_BASE_ON_XID, new Object[]{newName, xidFolder});
+        PointHierarchyDAO.cachedPointHierarchy = null;
+        return rows > 0;
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED,
+            rollbackFor = SQLException.class)
     public boolean updateParent(String xidPoint, String xidFolder) {
         int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_POINT_ID, new Object[]{xidPoint}, Integer.class);
         int parentId = ROOT_PARENT_ID;
         if (!xidFolder.equals(ROOT)) {
-            parentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER, new Object[]{xidFolder}, Integer.class);
+            parentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLDER_ID, new Object[]{xidFolder}, Integer.class);
         }
         return updateParentIdDataPoint(id, parentId);
     }

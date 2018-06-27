@@ -92,6 +92,10 @@ public class PointHierarchyXidService extends PointHierarchyService {
         return fph;
     }
 
+    public boolean updateNameFolder(String xidFolder, String newName) {
+        return pointHierarchyXidDAO.updateNameFolder(xidFolder, newName);
+    }
+
     public void cacheRefresh() {
         try {
             PointHierarchyCache.getInstance().updateData();
@@ -120,4 +124,5 @@ public class PointHierarchyXidService extends PointHierarchyService {
 
         return fph;
     }
+
 }

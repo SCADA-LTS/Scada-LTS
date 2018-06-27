@@ -97,6 +97,32 @@ public class PointHierarchyAPI {
         return result;
     }
 
+    @RequestMapping(value = "/api/pointHierarchy/changeName/{xid_folder}/{new_name}", method = RequestMethod.PUT)
+    public ResponseEntity<String> folderUpdateName(
+            @PathVariable("xid_folder") String xidFolder,
+            @PathVariable("new_name") String newName,
+            HttpServletRequest request)  {
+
+        LOG.info("/api/pointHierarchy/changeName/{xid_folder}/{new_name} xidFolder:" + xidFolder + " newName:" + newName);
+        ResponseEntity<String> result = null;
+        try {
+            User user = Common.getUser(request);
+            if (user.isAdmin()) {
+                if (pointHierarchyXidService.updateNameFolder(xidFolder, newName)){
+                    result = new ResponseEntity<String>(String.valueOf(true), HttpStatus.OK);
+                } else {
+                    result = new ResponseEntity<String>(String.valueOf(false), HttpStatus.OK);
+                }
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+
     @RequestMapping(value = "/api/pointHierarchy/folderAdd", method = RequestMethod.POST)
     public ResponseEntity<String> folderAdd(
             @RequestBody FolderPointHierarchy folderPointHierarchy,
