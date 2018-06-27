@@ -9,13 +9,18 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
+import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.PointValueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -291,6 +296,7 @@ public class PointValueAPI {
 	private static final Log LOG = LogFactory.getLog(PointValueAPI.class);
 	
 	private DataPointService dataPointService = new DataPointService();
+	private DataSourceService dataSourceService = new DataSourceService();
 	
 	@Resource
 	private PointValueService pointValueService;
@@ -463,6 +469,7 @@ public class PointValueAPI {
 	public ResponseEntity<String> updateMetaDataPoint(@PathVariable("xid") String xid, HttpServletRequest request) {
 
 		DataPointVO dataPoint = dataPointService.getDataPoint(xid);
+		MetaDataSourceVO metaDataSourceVO = (MetaDataSourceVO) dataSourceService.getDataSource(dataPoint.getDataSourceXid());
 
 		MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
 
@@ -470,7 +477,11 @@ public class PointValueAPI {
 
 		MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
 
-		metaPointLocatorRT.initialize();
+		MetaDataSourceRT metaDataSourceRT = new MetaDataSourceRT(metaDataSourceVO);
+
+		DataPointRT dataPointRT = new DataPointRT(dataPoint, metaPointLocatorRT);
+
+		metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
 
 		PointValueTime pointValueTime = new PointValueTime(new NumericValue(0), System.currentTimeMillis());
 
