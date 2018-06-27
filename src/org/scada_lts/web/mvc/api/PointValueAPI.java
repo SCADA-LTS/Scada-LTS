@@ -490,6 +490,9 @@ public class PointValueAPI {
 				Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
 
 				PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
+
+				dataPointService.save(pointValueTime.getStringValue(), dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
+
 			} catch (Exception e) {
 				LOG.error(e);
 			}
