@@ -167,27 +167,67 @@
         });
       },
       doImport() {
+        this.clearData();
         this.timer.startImport = performance.now();
         this.parse();
+      },
+      clearData() {
+        //Cleansing of data from previous imports
+
+        this.timer.startImport = 0;
+        this.timer.endImport = 0;
+        this.timer.timeImport =0;
+
+        this.base.status="";
+        this.base.counterToParse = 0;
+        this.base.xidFolderAfter = [];
+        this.base.xidFolderBefore = [];
+        this.base.xidFolderExists = [];
+        this.base.xidErrors = [];
+
+        this.toCreate.xidFolderNotExists = [];
+        this.toCreate.xidFolderToCreate = [];
+        this.toCreate.xidFolderCreated = [];
+
+        this.toMoveFolder.xidFolderToMoveTo = [];
+        this.toMoveFolder.xidFolderMoved = [];
+
+        this.toMovePoints.xidMapPointsExist = {};
+        this.toMovePoints.xidMapPointsAfter = {};
+        this.toMovePoints.xidPointsMoveFromTo = {};
+        this.toMovePoints.xidPointsNotMove = {};
+        this.toMovePoints.xidPointMoved = [];
+
+        this.toDeleteFolder.xidFolderToDelete = [];
+        this.toDeleteFolder.xidFolderDeleted = [];
+
+        this.toChangeNameFolder.xidFolderToNameChange = [];
+        this.toChangeNameFolder.xidFolderNameChanged = [];
       },
       showStatus(str) {
         this.status = str;
       },
       parse() {
         this.showStatus("Parse input string");
-        let folders = this.json.folders;
-        this.base.xidFolderAfter = folders.slice();
-        this.base.counterToParse = this.base.xidFolderAfter.length;
-        if (folders == undefined) {
-          this.showStatus("In import don't have folders");
-        } else {
-          this.base.xidFolderToCheck = folders;
-          this.check();
+        try {
+          let folders = this.json.folders;
+          this.base.xidFolderAfter = folders.slice();
+          this.base.counterToParse = this.base.xidFolderAfter.length;
+          if (folders == undefined) {
+            this.showStatus("In import don't have folders");
+          } else {
+            this.base.xidFolderToCheck = folders;
+            this.check();
+          }
+        } catch (err) {
+          this.showStatus("Poor data format.");
         }
       },
       check() {
         if (this.base.xidFolderToCheck.length == 0) {
-          console.log('this situation should not occur');
+          this.showStatus("there seems to be nothing to import");
+          this.timer.stopImport = performance.now();
+          this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
         } else {
           this.showStatus("Check folder:" + this.base.xidFolderToCheck[0].xidFolder);
           const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.base.xidFolderToCheck[0].xidFolder}`;
