@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
@@ -491,7 +492,11 @@ public class PointValueAPI {
 
 				PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
 
-				dataPointService.save(pointValueTime.getStringValue(), dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
+				AlphanumericValue mangoValue = (AlphanumericValue) pointValueTime.getValue();
+
+				String value = mangoValue.getStringValue();
+
+				dataPointService.save(value, dataPoint.getXid(), DataTypes.ALPHANUMERIC);
 
 			} catch (Exception e) {
 				LOG.error(e);
