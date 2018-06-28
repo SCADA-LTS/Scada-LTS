@@ -492,14 +492,32 @@ public class PointValueAPI {
 
 				PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
 
-				AlphanumericValue mangoValue = (AlphanumericValue) pointValueTime.getValue();
+				String value = "";
 
-				String value = mangoValue.getStringValue();
+				switch (metaPointLocatorVO.getDataTypeId()) {
+					case DataTypes.BINARY:
+						BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
+						value = "" + binaryValue.getBooleanValue();
+						break;
+					case DataTypes.MULTISTATE:
+						MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
+						value = multistateValue.getStringValue();
+						break;
+					case DataTypes.NUMERIC:
+						NumericValue numericValue = (NumericValue) pointValueTime.getValue();
+						value = "" + numericValue.getStringValue();
+						break;
+					case DataTypes.ALPHANUMERIC:
+						AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
+						value = alphanumericValue.getStringValue();
+						break;
+				}
 
-				dataPointService.save(value, dataPoint.getXid(), DataTypes.ALPHANUMERIC);
+				dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
 
 			} catch (Exception e) {
 				LOG.error(e);
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 
 
