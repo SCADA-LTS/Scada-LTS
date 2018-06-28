@@ -497,15 +497,19 @@ public class PointValueAPI {
 				switch (metaPointLocatorVO.getDataTypeId()) {
 					case DataTypes.BINARY:
 						BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
-						value = "" + binaryValue.getBooleanValue();
+						if(binaryValue.getBooleanValue()) {
+							value = "" + 1;
+						} else {
+							value = "" + 0;
+						}
 						break;
 					case DataTypes.MULTISTATE:
 						MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
-						value = multistateValue.getStringValue();
+						value = "" + multistateValue.getIntegerValue();
 						break;
 					case DataTypes.NUMERIC:
 						NumericValue numericValue = (NumericValue) pointValueTime.getValue();
-						value = "" + numericValue.getStringValue();
+						value = "" + numericValue.getDoubleValue();
 						break;
 					case DataTypes.ALPHANUMERIC:
 						AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
