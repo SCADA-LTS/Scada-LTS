@@ -6,9 +6,11 @@ import Test from './components/Test'
 import ExportImportPointHierarchy from './components/ExportImportPointHierarchy'
 import router from './router'
 import VJsoneditor from 'vue-jsoneditor';
+import Vuetify from 'vuetify';
 
 Vue.config.productionTip = false
-Vue.use(VJsoneditor);
+Vue.use(VJsoneditor, Vuetify);
+
 /*eslint-disable no-new */
 new Vue({
   el: '#app1',
@@ -23,6 +25,7 @@ new Vue({
   components: { Test },
   template: '<Test/>'
 })
+
 
 new Vue({
   el: '#export-import-ph',
