@@ -68,8 +68,8 @@
     </div>
 
 
-    <!-- TODO format moment -->
-
+    <!-- debug -->
+     <!--
     <p>check: {{base.xidFolderToCheck}}</p>
     <p>Exist: {{base.xidFolderExists}}</p>
     <p>Before: {{base.xidFolderBefore}}</p>
@@ -96,6 +96,7 @@
 
     <p>To delete folder: {{toDeleteFolder.xidFolderToDelete}}</p>
     <p>Timer: {{timer}}</p>
+    -->
 
 
   </div>
@@ -159,9 +160,7 @@
     methods: {
       doExport() {
         const apiExportXidFolder = `./api/pointHierarchy/export`;
-        console.log(apiExportXidFolder);
         axios.get(apiExportXidFolder).then(response => {
-          console.log(response);
           this.json = response.data;
         }).catch(error => {
           console.log(error);
@@ -176,13 +175,11 @@
       },
       parse() {
         this.showStatus("Parse input string");
-
         let folders = this.json.folders;
         this.base.xidFolderAfter = folders.slice();
         this.base.counterToParse = this.base.xidFolderAfter.length;
-
         if (folders == undefined) {
-
+          this.showStatus("In import don't have folders");
         } else {
           this.base.xidFolderToCheck = folders;
           this.check();
@@ -190,7 +187,7 @@
       },
       check() {
         if (this.base.xidFolderToCheck.length == 0) {
-          alert('this situation should not occur');
+          console.log('this situation should not occur');
         } else {
           this.showStatus("Check folder:" + this.base.xidFolderToCheck[0].xidFolder);
           const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.base.xidFolderToCheck[0].xidFolder}`;
@@ -229,7 +226,6 @@
               if (this.toCreate.xidFolderNotExists[id].xidFolder == undefined || this.toCreate.xidFolderNotExists[id].name == undefined) {
                 this.base.xidErrors.push(this.toCreate.xidFolderToCreate[id])
               } else {
-                // is ok
                 this.toCreate.xidFolderToCreate.push(this.toCreate.xidFolderNotExists[id]);
               }
             }
@@ -243,7 +239,6 @@
           for (var j in this.base.xidFolderBefore) {
             if (this.base.xidFolderExists[i].xidFolder == this.base.xidFolderBefore[j].xid) {
               this.showStatus("The same xid:" + this.base.xidFolderExists[i].xidFolder);
-
               if (this.base.xidFolderExists[i].parentXid !== this.base.xidFolderBefore[j].parentXid) {
                 let newMoveFolder = {};
                 newMoveFolder.newParentXid = this.base.xidFolderExists[i].parentXid;
@@ -357,9 +352,8 @@
           axios.post(apiAddFolder, data)
             .then(response => {
               console.log(response);
-              let newCreated = {};
-              newCreated = this.toCreate.xidFolderToCreate[0];
-              this.xidFolderCreated.push(newCreated);
+              let newCreated = this.toCreate.xidFolderToCreate[0];
+              this.toCreate.xidFolderCreated.push(newCreated);
               this.toCreate.xidFolderToCreate.splice(0, 1);
               if (this.toCreate.xidFolderToCreate.length > 0) {
                 this.createFolders();
@@ -369,7 +363,6 @@
             })
             .catch(error => {
               console.log(error);
-              //this.base.xidErrors.push(this.toCreate.xidFolderToCreate[0]);
               this.toCreate.xidFolderToCreate.splice(0, 1);
               if (this.toCreate.xidFolderToCreate.length > 0) {
                 this.createFolders();
@@ -388,7 +381,8 @@
           axios.put(apiMoveFolder)
             .then(response => {
               console.log(response);
-              this.toMoveFolder.xidFolderMoved.push(this.toMoveFolder.xidFolderToMoveTo[0])
+              let moved = this.toMoveFolder.xidFolderToMoveTo[0];
+              this.toMoveFolder.xidFolderMoved.push(moved);
               this.toMoveFolder.xidFolderToMoveTo.splice(0, 1);
               if (this.toMoveFolder.xidFolderToMoveTo.length > 0) {
                 this.moveFolders();
@@ -419,11 +413,11 @@
               newParent = arrPointToMove[0].newParent;
             }
             const apiMovePoints = `./api/pointHierarchy/pointMoveTo/${arrPointToMove[0].xidPoint}/${newParent}`;
-            console.log(apiMovePoints);
             axios.put(apiMovePoints)
               .then(response => {
                 console.log(response);
-                this.toMovePoints.xidPointMoved.push(arrPointToMove[0]);
+                let moved = arrPointToMove[0];
+                this.toMovePoints.xidPointMoved.push(moved);
                 delete this.toMovePoints.xidPointsMoveFromTo[arrPointToMove[0].xidPoint];
                 arrPointToMove.splice(0, 1);
                 if (arrPointToMove.length > 0) {
@@ -451,11 +445,10 @@
         this.showStatus("Delete folders");
         if (this.toDeleteFolder.xidFolderToDelete.length > 0) {
           const apiDeleteFolders = `./api/pointHierarchy/deleteFolder/${this.toDeleteFolder.xidFolderToDelete[0].xidFolder}`;
-          console.log(apiDeleteFolders);
           axios.post(apiDeleteFolders)
             .then(response => {
-              console.log(response);
-              this.toDeleteFolder.xidFolderDeleted.push(this.toDeleteFolder.xidFolderToDelete[0].xidFolder);
+              let deleted = this.toDeleteFolder.xidFolderToDelete[0];
+              this.toDeleteFolder.xidFolderDeleted.push(deleted);
               this.toDeleteFolder.xidFolderToDelete.splice(0, 1);
               if (this.toDeleteFolder.xidFolderToDelete.length > 0) {
                 this.deleteFolders();
@@ -480,9 +473,10 @@
         this.showStatus("Change name folders");
         if (this.toChangeNameFolder.xidFolderToNameChange.length > 0) {
           const apiUpdateFolder = `./api/pointHierarchy/changeName/${this.toChangeNameFolder.xidFolderToNameChange[0].xidFolder}/${this.toChangeNameFolder.xidFolderToNameChange[0].name}`;
-          axios.post(apiUpdateFolder)
+          axios.put(apiUpdateFolder)
             .then(response => {
-              this.toChangeNameFolder.xidFolderNameChanged.push(this.toChangeNameFolder.xidFolderToNameChange[0])
+              let change = this.toChangeNameFolder.xidFolderToNameChange[0];
+              this.toChangeNameFolder.xidFolderNameChanged.push(change);
               this.toChangeNameFolder.xidFolderToNameChange.splice(0, 1);
               if (this.toChangeNameFolder.xidFolderToNameChange.length > 0) {
                 this.changeNameFolders();
@@ -505,12 +499,11 @@
       },
       refreshCache() {
         this.showStatus("Refresh cache");
-        this.timer.stopImport = performance.now();
-        this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
         const apiRefreshCache = `./api/pointHierarchy/cacheRefresh/`;
         axios.post(apiRefreshCache)
           .then(response => {
-            console.log(response);
+            this.timer.stopImport = performance.now();
+            this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
             this.showStatus("<b>End Import</b>");
           })
           .catch(error => {
