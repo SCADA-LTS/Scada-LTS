@@ -9,7 +9,8 @@ import VJsoneditor from 'vue-jsoneditor';
 import Vuetify from 'vuetify';
 
 Vue.config.productionTip = false
-Vue.use(VJsoneditor, Vuetify);
+Vue.use(VJsoneditor);
+Vue.use(Vuetify);
 
 /*eslint-disable no-new */
 new Vue({
