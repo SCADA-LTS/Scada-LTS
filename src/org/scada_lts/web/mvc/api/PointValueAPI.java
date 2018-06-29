@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -466,61 +467,46 @@ public class PointValueAPI {
         }
     }
 
-    @RequestMapping(value = "/api/point_value/updateMetaDataPoint/{xid}", method = RequestMethod.GET)
-    public ResponseEntity<String> updateMetaDataPoint(@PathVariable("xid") String xid, HttpServletRequest request) {
+    @RequestMapping(value = "/api/point_value/updateMetaDataPointByScript/{xid}", method = RequestMethod.GET)
+    public ResponseEntity<String> updateMetaDataPointByScript(@PathVariable("xid") String xid, HttpServletRequest request) {
 
         try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                if(dataPointService.getDataPoint(xid).getDataSourceTypeId()==DataSourceVO.Type.META.getId()) {
+                    pointValueService.updateMetaDataPointByScript(xid);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
 
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/api/point_value/updateMetaDataPointsByScript/{xid}", method = RequestMethod.GET)
+    public ResponseEntity<String> updateMetaDataPointsByScript(@PathVariable("xid") String xid, HttpServletRequest request) {
+
+        try {
             User user = Common.getUser(request);
             if (user != null) {
 
-                DataPointVO dataPoint = dataPointService.getDataPoint(xid);
-                MetaDataSourceVO metaDataSourceVO = (MetaDataSourceVO) dataSourceService.getDataSource(dataPoint.getDataSourceXid());
+                DataSourceVO dataSource = dataSourceService.getDataSource(xid);
 
-                MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
-
-                metaPointLocatorVO.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE);
-
-                MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
-
-                MetaDataSourceRT metaDataSourceRT = new MetaDataSourceRT(metaDataSourceVO);
-
-                DataPointRT dataPointRT = new DataPointRT(dataPoint, metaPointLocatorRT);
-
-                metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
-
-                ScriptExecutor scriptExecutor = new ScriptExecutor();
-
-                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
-
-                PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
-
-                String value = "";
-
-                switch (metaPointLocatorVO.getDataTypeId()) {
-                    case DataTypes.BINARY:
-                        BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
-                        if (binaryValue.getBooleanValue()) {
-                            value = "" + 1;
-                        } else {
-                            value = "" + 0;
-                        }
-                        break;
-                    case DataTypes.MULTISTATE:
-                        MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
-                        value = "" + multistateValue.getIntegerValue();
-                        break;
-                    case DataTypes.NUMERIC:
-                        NumericValue numericValue = (NumericValue) pointValueTime.getValue();
-                        value = "" + numericValue.getDoubleValue();
-                        break;
-                    case DataTypes.ALPHANUMERIC:
-                        AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
-                        value = alphanumericValue.getStringValue();
-                        break;
+                if(dataSource.getType().getId()==DataSourceVO.Type.META.getId()) {
+                    List<DataPointVO> dataPoints = dataPointService.getDataPoints(dataSource.getId(), null);
+                    for(DataPointVO dp : dataPoints) {
+                        pointValueService.updateMetaDataPointByScript(dp.getXid());
+                    }
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
-
-                dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -531,6 +517,35 @@ public class PointValueAPI {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/api/point_value/updateAllMetaDataPointsByScript/", method = RequestMethod.GET)
+    public ResponseEntity<String> updateAllMetaDataPointsByScript(HttpServletRequest request) {
+
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+
+                List<DataSourceVO<?>> dataSources = dataSourceService.getDataSources();
+
+                for(DataSourceVO<?> ds : dataSources) {
+                    if(ds.getType().getId()==DataSourceVO.Type.META.getId()) {
+                        List<DataPointVO> dataPoints = dataPointService.getDataPoints(ds.getId(), null);
+                        for(DataPointVO dp : dataPoints) {
+                            pointValueService.updateMetaDataPointByScript(dp.getXid());
+                        }
+                    }
+                }
+
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity<String>(HttpStatus.OK);
     }

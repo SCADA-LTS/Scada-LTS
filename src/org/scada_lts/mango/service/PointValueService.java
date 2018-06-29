@@ -24,9 +24,19 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.RejectedExecutionException;
 
+import com.serotonin.mango.rt.dataImage.DataPointRT;
+import com.serotonin.mango.rt.dataImage.IDataPoint;
+import com.serotonin.mango.rt.dataImage.types.*;
+import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
+import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
+import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
+import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.GenericDaoCR;
@@ -47,8 +57,6 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.ImageSaveException;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
-import com.serotonin.mango.rt.dataImage.types.ImageValue;
-import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.bean.LongPair;
@@ -66,6 +74,8 @@ public class PointValueService implements MangoPointValues {
 	private static final int POINT_VALUE_INSERT_VALUES_COUNT = 4;
 
 	private static PointValueAdnnotationsDAO pointValueAnnotationsDAO = new PointValueAdnnotationsDAO();
+	private DataPointService dataPointService = new DataPointService();
+	private DataSourceService dataSourceService = new DataSourceService();
 
 	public PointValueService() {
 		
@@ -596,6 +606,60 @@ public class PointValueService implements MangoPointValues {
 	@Override
 	public long deletePointValuesWithMismatchedType(int dataPointId, int dataType) {
 		return PointValueDAO.getInstance().deletePointValuesWithMismatchedType(dataPointId, dataType);
+	}
+
+	public void updateMetaDataPointByScript(String xid) {
+		try {
+			DataPointVO dataPoint = dataPointService.getDataPoint(xid);
+			MetaDataSourceVO metaDataSourceVO = (MetaDataSourceVO) dataSourceService.getDataSource(dataPoint.getDataSourceXid());
+
+			MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
+
+			metaPointLocatorVO.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE);
+
+			MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
+
+			MetaDataSourceRT metaDataSourceRT = new MetaDataSourceRT(metaDataSourceVO);
+
+			DataPointRT dataPointRT = new DataPointRT(dataPoint, metaPointLocatorRT);
+
+			metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
+
+			ScriptExecutor scriptExecutor = new ScriptExecutor();
+
+			Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
+
+			PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
+
+			String value = "";
+
+			switch (metaPointLocatorVO.getDataTypeId()) {
+				case DataTypes.BINARY:
+					BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
+					if (binaryValue.getBooleanValue()) {
+						value = "" + 1;
+					} else {
+						value = "" + 0;
+					}
+					break;
+				case DataTypes.MULTISTATE:
+					MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
+					value = "" + multistateValue.getIntegerValue();
+					break;
+				case DataTypes.NUMERIC:
+					NumericValue numericValue = (NumericValue) pointValueTime.getValue();
+					value = "" + numericValue.getDoubleValue();
+					break;
+				case DataTypes.ALPHANUMERIC:
+					AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
+					value = alphanumericValue.getStringValue();
+					break;
+			}
+
+			dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
+		} catch(Exception e) {
+			//
+		}
 	}
 	
 }
