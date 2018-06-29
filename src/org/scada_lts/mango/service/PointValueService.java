@@ -35,6 +35,7 @@ import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
@@ -46,6 +47,8 @@ import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -659,6 +662,32 @@ public class PointValueService implements MangoPointValues {
 			dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
 		} catch(Exception e) {
 			//
+		}
+	}
+
+	public void updateAllMetaDataPointsFromDatasourceByScript(String dataSourceXid) {
+		DataSourceVO dataSource = dataSourceService.getDataSource(dataSourceXid);
+
+		if(dataSource.getType().getId()==DataSourceVO.Type.META.getId()) {
+			List<DataPointVO> dataPoints = dataPointService.getDataPoints(dataSource.getId(), null);
+			for(DataPointVO dp : dataPoints) {
+				updateMetaDataPointByScript(dp.getXid());
+			}
+		} else {
+			throw new RuntimeException("Wrong data source type. Expected meta data source. Found " + dataSource.getType().toString());
+		}
+	}
+
+	public void updateAllMetaDataPointsByScript() {
+		List<DataSourceVO<?>> dataSources = dataSourceService.getDataSources();
+
+		for(DataSourceVO<?> ds : dataSources) {
+			if(ds.getType().getId()==DataSourceVO.Type.META.getId()) {
+				List<DataPointVO> dataPoints = dataPointService.getDataPoints(ds.getId(), null);
+				for(DataPointVO dp : dataPoints) {
+					updateMetaDataPointByScript(dp.getXid());
+				}
+			}
 		}
 	}
 	

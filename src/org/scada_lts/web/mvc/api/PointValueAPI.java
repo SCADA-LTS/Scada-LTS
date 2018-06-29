@@ -497,16 +497,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
 
-                DataSourceVO dataSource = dataSourceService.getDataSource(xid);
-
-                if(dataSource.getType().getId()==DataSourceVO.Type.META.getId()) {
-                    List<DataPointVO> dataPoints = dataPointService.getDataPoints(dataSource.getId(), null);
-                    for(DataPointVO dp : dataPoints) {
-                        pointValueService.updateMetaDataPointByScript(dp.getXid());
-                    }
-                } else {
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
+                pointValueService.updateAllMetaDataPointsFromDatasourceByScript(xid);
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -527,16 +518,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
 
-                List<DataSourceVO<?>> dataSources = dataSourceService.getDataSources();
-
-                for(DataSourceVO<?> ds : dataSources) {
-                    if(ds.getType().getId()==DataSourceVO.Type.META.getId()) {
-                        List<DataPointVO> dataPoints = dataPointService.getDataPoints(ds.getId(), null);
-                        for(DataPointVO dp : dataPoints) {
-                            pointValueService.updateMetaDataPointByScript(dp.getXid());
-                        }
-                    }
-                }
+                pointValueService.updateAllMetaDataPointsByScript();
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
