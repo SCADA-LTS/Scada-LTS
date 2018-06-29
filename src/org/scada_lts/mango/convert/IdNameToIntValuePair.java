@@ -17,31 +17,37 @@
  */
 package org.scada_lts.mango.convert;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import javafx.util.Pair;
 import org.scada_lts.dao.model.IdName;
 
-import com.serotonin.db.IntValuePair;
+import java.util.ArrayList;
+import java.util.List;
 
 /** 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 public class IdNameToIntValuePair {
 	
-	public static IntValuePair convert(IdName idName) {
-		IntValuePair ivp = new IntValuePair();
+	public static Pair<Integer, String> convert(IdName idName) {
+
+	/*	IntValuePair ivp = new IntValuePair();
 		ivp.setKey(idName.getId());
 		ivp.setValue(idName.getName());
-		return ivp;
+		return ivp;*/
+		Pair<Integer, String> ivp2 = new Pair<>(idName.getId(), idName.getName());
+		return ivp2;
 	}
 	
-	public static List<IntValuePair> convert(List<IdName> lstIdName) {
-		ArrayList<IntValuePair> lstIntValuePair = new ArrayList<IntValuePair>();
+	public static List<Pair<Integer, String>> convert(List<IdName> lstIdName) {
+
+		ArrayList<Pair<Integer, String>> list = new ArrayList<>();
+//		ArrayList<IntValuePair> lstIntValuePair = new ArrayList<IntValuePair>();
 		for (IdName idName: lstIdName) {
-			lstIntValuePair.add(convert(idName));
+//			lstIntValuePair.add(convert(idName));
+			list.add(convert(idName));
 		}
-		return lstIntValuePair;
+		return list;
+//		return lstIntValuePair;
 	}
 
 }

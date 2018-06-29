@@ -25,10 +25,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import javafx.util.Pair;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -125,7 +125,7 @@ public class WatchListDwr extends BaseDwr {
 		new WatchListDao().saveWatchList(watchList);
 	}
 
-	public IntValuePair addNewWatchList(int copyId) {
+	public Pair<Integer, String> addNewWatchList(int copyId) {
 		User user = Common.getUser();
 
 		WatchListDao watchListDao = new WatchListDao();
@@ -151,7 +151,7 @@ public class WatchListDwr extends BaseDwr {
 
 		watchListDao.saveSelectedWatchList(user.getId(), watchList.getId());
 
-		return new IntValuePair(watchList.getId(), watchList.getName());
+		return new Pair<>(watchList.getId(), watchList.getName());
 	}
 
 	public void deleteWatchList(int watchListId) {

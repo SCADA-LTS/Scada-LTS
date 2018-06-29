@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javafx.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,7 +47,6 @@ import com.serotonin.bacnet4j.type.primitive.ObjectIdentifier;
 import com.serotonin.bacnet4j.type.primitive.UnsignedInteger;
 import com.serotonin.bacnet4j.util.PropertyReferences;
 import com.serotonin.bacnet4j.util.PropertyValues;
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.I18NUtils;
@@ -61,7 +61,9 @@ public class BACnetDiscovery extends DefaultDeviceEventListener implements Testi
     private int removeDeviceIndex = 1;
     private final LocalDevice localDevice;
     private final AutoShutOff autoShutOff;
-    private final List<IntValuePair> iamsReceived = new ArrayList<IntValuePair>();
+
+    private final List<Pair<Integer, String>> iamsReceived = new ArrayList<>();
+
     String message;
     private boolean finished;
 
@@ -189,7 +191,7 @@ public class BACnetDiscovery extends DefaultDeviceEventListener implements Testi
             index = removeDeviceIndex++;
         }
         d.setUserData(index);
-        iamsReceived.add(new IntValuePair(index, getDeviceDescription(d)));
+        iamsReceived.add(new Pair<>(index, getDeviceDescription(d)));
     }
 
     public static String getDeviceDescription(RemoteDevice d) {

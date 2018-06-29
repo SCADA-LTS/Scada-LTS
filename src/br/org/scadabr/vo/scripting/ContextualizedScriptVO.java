@@ -1,5 +1,16 @@
 package br.org.scadabr.vo.scripting;
 
+import br.org.scadabr.rt.scripting.ContextualizedScriptRT;
+import br.org.scadabr.rt.scripting.ScriptRT;
+import br.org.scadabr.rt.scripting.context.ScriptContextObject;
+import com.serotonin.json.*;
+import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.util.ChangeComparable;
+import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.web.i18n.LocalizableMessage;
+import javafx.util.Pair;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,23 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import br.org.scadabr.rt.scripting.ContextualizedScriptRT;
-import br.org.scadabr.rt.scripting.ScriptRT;
-import br.org.scadabr.rt.scripting.context.ScriptContextObject;
-
-import com.serotonin.db.IntValuePair;
-import com.serotonin.json.JsonArray;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonValue;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.util.ChangeComparable;
-import com.serotonin.mango.util.LocalizableJsonException;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.web.i18n.LocalizableMessage;
 
 @JsonRemoteEntity
 public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
@@ -35,9 +29,11 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		return TYPE;
 	}
 
-	private List<IntValuePair> pointsOnContext = new ArrayList<IntValuePair>();
-	private List<IntValuePair> objectsOnContext = new ArrayList<IntValuePair>();
+//	private List<IntValuePair> pointsOnContext = new ArrayList<IntValuePair>();
+//	private List<IntValuePair> objectsOnContext = new ArrayList<IntValuePair>();
 
+	private List<Pair<Integer, String>> pointsOnContext2 = new ArrayList<>();
+	private List<Pair<Integer, String>> objectsOnContext2 = new ArrayList<>();
 	//
 	// /
 	// / Serialization
@@ -48,8 +44,10 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(version);
-		out.writeObject(pointsOnContext);
-		out.writeObject(objectsOnContext);
+//		out.writeObject(pointsOnContext);
+//		out.writeObject(objectsOnContext);
+		out.writeObject(pointsOnContext2);
+		out.writeObject(objectsOnContext2);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -58,8 +56,10 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		int ver = in.readInt();
 		// Switch on the version of the class so that version changes can be
 		if (ver == 1) {
-			pointsOnContext = (List<IntValuePair>) in.readObject();
-			objectsOnContext = (List<IntValuePair>) in.readObject();
+//			pointsOnContext = (List<IntValuePair>) in.readObject();
+//			objectsOnContext = (List<IntValuePair>) in.readObject();
+			pointsOnContext2 = (List<Pair<Integer,String>>) in.readObject();
+			objectsOnContext2 = (List<Pair<Integer,String>>) in.readObject();
 		}
 	}
 
@@ -68,20 +68,20 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		return new ContextualizedScriptRT(this);
 	}
 
-	public List<IntValuePair> getPointsOnContext() {
-		return pointsOnContext;
+	public  List<Pair<Integer, String>>  getPointsOnContext() {
+		return pointsOnContext2;
 	}
 
-	public void setPointsOnContext(List<IntValuePair> pointsOnContext) {
-		this.pointsOnContext = pointsOnContext;
+	public void setPointsOnContext( List<Pair<Integer, String>>  pointsOnContext) {
+		this.pointsOnContext2 = pointsOnContext;
 	}
 
-	public void setObjectsOnContext(List<IntValuePair> objectsOnContext) {
-		this.objectsOnContext = objectsOnContext;
+	public void setObjectsOnContext( List<Pair<Integer, String>>  objectsOnContext) {
+		this.objectsOnContext2 = objectsOnContext;
 	}
 
-	public List<IntValuePair> getObjectsOnContext() {
-		return objectsOnContext;
+	public List<Pair<Integer, String>> getObjectsOnContext() {
+		return objectsOnContext2;
 	}
 
 	@Override
@@ -109,7 +109,8 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		super.jsonDeserialize(reader, json);
 		JsonArray jsonContext = json.getJsonArray("pointsOnContext");
 		if (jsonContext != null) {
-			pointsOnContext.clear();
+//			pointsOnContext.clear();
+			pointsOnContext2.clear();
 			DataPointDao dataPointDao = new DataPointDao();
 
 			for (JsonValue jv : jsonContext.getElements()) {
@@ -129,13 +130,15 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 					throw new LocalizableJsonException(
 							"emport.error.meta.missing", "varName");
 
-				pointsOnContext.add(new IntValuePair(dp.getId(), var));
+//				pointsOnContext.add(new IntValuePair(dp.getId(), var));
+				pointsOnContext2.add(new Pair<>(dp.getId(), var));
 			}
 		}
 
 		jsonContext = json.getJsonArray("objectsOnContext");
 		if (jsonContext != null) {
-			objectsOnContext.clear();
+//			objectsOnContext.clear();
+			objectsOnContext2.clear();
 
 			for (JsonValue jv : jsonContext.getElements()) {
 				JsonObject jo = jv.toJsonObject();
@@ -153,7 +156,8 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 					throw new LocalizableJsonException(
 							"emport.error.meta.missing", "varName");
 
-				objectsOnContext.add(new IntValuePair(key, var));
+//				objectsOnContext.add(new IntValuePair(key, var));
+				objectsOnContext2.add(new Pair<>(key, var));
 			}
 		}
 
@@ -163,8 +167,8 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 	public void jsonSerialize(Map<String, Object> map) {
 		super.jsonSerialize(map);
 		List<Map<String, Object>> pointList = new ArrayList<Map<String, Object>>();
-		for (IntValuePair p : pointsOnContext) {
-			DataPointVO dp = new DataPointDao().getDataPoint(p.getKey());
+		for (Pair p : pointsOnContext2) {
+			DataPointVO dp = new DataPointDao().getDataPoint((int)p.getKey());
 			if (dp != null) {
 				Map<String, Object> point = new HashMap<String, Object>();
 				pointList.add(point);
@@ -175,10 +179,10 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		map.put("pointsOnContext", pointList);
 
 		List<Map<String, Object>> objectsList = new ArrayList<Map<String, Object>>();
-		for (IntValuePair p : objectsOnContext) {
+		for (Pair p : objectsOnContext2) {
 			Map<String, Object> point = new HashMap<String, Object>();
 			objectsList.add(point);
-			point.put("varName", p.getValue());
+			point.put("varName", p.getValue().toString());
 			point.put("objectId", p.getKey());
 		}
 
@@ -190,8 +194,8 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((objectsOnContext == null) ? 0 : objectsOnContext.hashCode());
-		result = prime * result + ((pointsOnContext == null) ? 0 : pointsOnContext.hashCode());
+		result = prime * result + ((objectsOnContext2 == null) ? 0 : objectsOnContext2.hashCode());
+		result = prime * result + ((pointsOnContext2 == null) ? 0 : pointsOnContext2.hashCode());
 		return result;
 	}
 
@@ -204,15 +208,15 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		if (getClass() != obj.getClass())
 			return false;
 		ContextualizedScriptVO other = (ContextualizedScriptVO) obj;
-		if (objectsOnContext == null) {
-			if (other.objectsOnContext != null)
+		if (objectsOnContext2 == null) {
+			if (other.objectsOnContext2 != null)
 				return false;
-		} else if (!objectsOnContext.equals(other.objectsOnContext))
+		} else if (!objectsOnContext2.equals(other.objectsOnContext2))
 			return false;
-		if (pointsOnContext == null) {
-			if (other.pointsOnContext != null)
+		if (pointsOnContext2 == null) {
+			if (other.pointsOnContext2 != null)
 				return false;
-		} else if (!pointsOnContext.equals(other.pointsOnContext))
+		} else if (!pointsOnContext2.equals(other.pointsOnContext2))
 			return false;
 		return true;
 	}

@@ -18,13 +18,12 @@
  */
 package com.serotonin.mango.db.dao;
 
-import java.util.List;
-
+import com.serotonin.mango.view.View;
+import javafx.util.Pair;
 import org.scada_lts.mango.convert.IdNameToIntValuePair;
 import org.scada_lts.mango.service.ViewService;
 
-import com.serotonin.db.IntValuePair;
-import com.serotonin.mango.view.View;
+import java.util.List;
 
 public class ViewDao {
 	
@@ -42,15 +41,15 @@ public class ViewDao {
 		return viewService.getViews(userId, userProfileId);
 	}
 
-	public List<IntValuePair> getViewNames(int userId, int userProfileId) {
+	public List<Pair<Integer, String>>  getViewNames(int userId, int userProfileId) {
 		return IdNameToIntValuePair.convert(viewService.getViewNames(userId, userProfileId));
 	}
 
-	public List<IntValuePair> getAllViewNames() {
+	public List<Pair<Integer, String>>  getAllViewNames() {
 		return IdNameToIntValuePair.convert(viewService.getAllViewNames());
 	}
 
-	public List<IntValuePair> getViewNamesWithReadOrWritePermissions(
+	public List<Pair<Integer, String>>  getViewNamesWithReadOrWritePermissions(
 			int userId, int userProfileId) {
 		return IdNameToIntValuePair.convert(viewService.getViewNamesWithReadOrWritePermissions(userId, userProfileId));
 	}

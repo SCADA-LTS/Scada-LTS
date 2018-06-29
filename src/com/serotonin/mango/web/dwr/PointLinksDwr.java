@@ -18,14 +18,11 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.script.ScriptException;
 
-import com.serotonin.db.IntValuePair;
+//import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.PointLinkDao;
@@ -44,6 +41,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import javafx.util.Pair;
 
 /**
  * @author Matthew Lohbihler
@@ -55,23 +53,28 @@ public class PointLinksDwr extends BaseDwr {
 
         // Get the points that this user can access.
         List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
-        List<IntValuePair> sourcePoints = new ArrayList<IntValuePair>();
-        List<IntValuePair> targetPoints = new ArrayList<IntValuePair>();
+        /* List<IntValuePair> sourcePoints = new ArrayList<IntValuePair>();
+        List<IntValuePair> targetPoints = new ArrayList<IntValuePair>();*/
+        List<Pair<Integer, String>> sPoints = new ArrayList<>();
+        List<Pair<Integer, String>> tPoints = new ArrayList<>();
+
         for (DataPointVO point : allPoints) {
             if (Permissions.hasDataPointReadPermission(user, point))
-                sourcePoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
+//                sourcePoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
+                sPoints.add(new Pair<>(point.getId(), point.getExtendedName()));
             if (point.getPointLocator().isSettable() && Permissions.hasDataPointSetPermission(user, point))
-                targetPoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
+//                targetPoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
+                tPoints.add(new Pair<>(point.getId(), point.getExtendedName()));
         }
 
-        data.put("sourcePoints", sourcePoints);
-        data.put("targetPoints", targetPoints);
+        data.put("sourcePoints", sPoints);
+        data.put("targetPoints", tPoints);
 
         // Get the existing point links.
         List<PointLinkVO> pointLinks = new ArrayList<PointLinkVO>();
         for (PointLinkVO pointLink : new PointLinkDao().getPointLinks()) {
-            if (containsPoint(sourcePoints, pointLink.getSourcePointId())
-                    && containsPoint(targetPoints, pointLink.getTargetPointId()))
+            if (containsPoint(sPoints, pointLink.getSourcePointId())
+                    && containsPoint(tPoints, pointLink.getTargetPointId()))
                 pointLinks.add(pointLink);
         }
 
@@ -80,9 +83,9 @@ public class PointLinksDwr extends BaseDwr {
         return data;
     }
 
-    private boolean containsPoint(List<IntValuePair> pointList, int pointId) {
-        for (IntValuePair ivp : pointList) {
-            if (ivp.getKey() == pointId)
+    private boolean containsPoint( List<Pair<Integer, String>> pointList, int pointId) {
+        for (Pair ivp : pointList) {
+            if (Objects.equals(ivp.getKey().toString(), String.valueOf(pointId)))
                 return true;
         }
         return false;

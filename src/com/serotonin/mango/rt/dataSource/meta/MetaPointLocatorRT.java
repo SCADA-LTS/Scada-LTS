@@ -42,6 +42,7 @@ import com.serotonin.timer.CronExpression;
 import com.serotonin.timer.OneTimeTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.web.i18n.LocalizableMessage;
+import javafx.util.Pair;
 
 /**
  * @author Matthew Lohbihler
@@ -91,10 +92,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         // Add listener registrations
         RuntimeManager rm = Common.ctx.getRuntimeManager();
-        for (IntValuePair contextKey : vo.getContext()) {
+        for (Pair contextKey : vo.getContext()) {
             // Points shouldn't listen for their own updates.
-            if (dataPoint.getId() != contextKey.getKey())
-                rm.addDataPointListener(contextKey.getKey(), this);
+            if (dataPoint.getId() != (Integer) contextKey.getKey())
+                rm.addDataPointListener((Integer) contextKey.getKey(), this);
         }
 
         initialized = true;
@@ -113,8 +114,8 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         synchronized (LOCK) {
             // Remove listener registrations
             RuntimeManager rm = Common.ctx.getRuntimeManager();
-            for (IntValuePair contextKey : vo.getContext())
-                rm.removeDataPointListener(contextKey.getKey(), this);
+            for (Pair contextKey : vo.getContext())
+                rm.removeDataPointListener((Integer) contextKey.getKey(), this);
 
             // Cancel scheduled job
             if (timerTask != null)

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.util.Pair;
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -47,9 +48,9 @@ public class ScriptDaoTest extends TestDAO {
 		ContextualizedScriptVO scriptVO = new ContextualizedScriptVO();
 		
 		scriptVO.setName("test");
-		List<IntValuePair> lstObjectsOnContext = new ArrayList<IntValuePair>();
+		List<Pair<Integer, String>> lstObjectsOnContext = new ArrayList<>();
 		scriptVO.setObjectsOnContext(lstObjectsOnContext);
-		List<IntValuePair> lstPointsOnContext = new ArrayList<IntValuePair>();
+		List<Pair<Integer, String>> lstPointsOnContext = new ArrayList<>();
 		scriptVO.setPointsOnContext(lstPointsOnContext);
 		scriptVO.setScript("var i=1");
 		scriptVO.setUserId(ADMIN_USER_ID);

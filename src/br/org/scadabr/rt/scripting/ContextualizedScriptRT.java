@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
+import javafx.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -109,13 +110,13 @@ public class ContextualizedScriptRT extends ScriptRT {
 					throw new ShouldNeverHappenException("Unknown data type id: " + point.getDataTypeId());
 			}
 
-			List<IntValuePair> objectsContext = ((ContextualizedScriptVO) vo).getObjectsOnContext();
+			List<Pair<Integer, String>> objectsContext = ((ContextualizedScriptVO) vo).getObjectsOnContext();
 
 			User user = new UserDao().getUser(vo.getUserId());
-			for (IntValuePair object : objectsContext) {
-				ScriptContextObject o = ScriptContextObject.Type.valueOf(object.getKey()).createScriptContextObject();
+			for (Pair object : objectsContext) {
+				ScriptContextObject o = ScriptContextObject.Type.valueOf((Integer) object.getKey()).createScriptContextObject();
 				o.setUser(user);
-				scope.put(object.getValue(), scope, o);
+				scope.put(object.getValue().toString(), scope, o);
 			}
 
 			// Create the script.

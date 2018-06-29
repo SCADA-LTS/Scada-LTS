@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javafx.util.Pair;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionViewACL;
 import org.scada_lts.permissions.PermissionWatchlistACL;
@@ -33,7 +34,6 @@ import org.scada_lts.permissions.model.EntryDto;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.ShareUser;
@@ -61,7 +61,7 @@ public class WatchListController extends ParameterizableViewController {
 		// make sure the watch lists are correct.
 		WatchListDao watchListDao = new WatchListDao();
 		List<WatchList> watchLists = new ArrayList<WatchList>();
-		List<IntValuePair> vwatchLists = vwatchLists = new ArrayList<IntValuePair>();
+		List<Pair<Integer, String>> vwatchLists2 = new ArrayList<>();
 		if (!user.isAdmin()) {
 //			watchLists = watchListDao.getWatchLists(user.getId(),
 //					user.getUserProfile());
@@ -69,15 +69,15 @@ public class WatchListController extends ParameterizableViewController {
 			if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
 				// ACL start
 				watchLists = watchListDao.getWatchLists();
-				List<IntValuePair> watchListsIVP = new ArrayList<IntValuePair>();
+				List<Pair<Integer, String>> watchListsIVP2 = new ArrayList<>();
 				for (WatchList wl : watchLists) {
-					watchListsIVP.add(new IntValuePair(wl.getId(), wl.getName()));
+					watchListsIVP2.add(new Pair<>(wl.getId(), wl.getName()));
 				}
 
 				Map<Integer, EntryDto> mapToCheckId = PermissionWatchlistACL.getInstance().filter(user.getId());
-				for (IntValuePair vwl : watchListsIVP) {
+				for (Pair vwl : watchListsIVP2) {
 					if (mapToCheckId.get(vwl.getKey()) != null) {
-						vwatchLists.add(vwl);
+						vwatchLists2.add(vwl);
 					}
 				}
 				//watchLists.stream().filter(watchList -> mapToCheckId.get(watchList.getKey()) != null );
@@ -87,11 +87,11 @@ public class WatchListController extends ParameterizableViewController {
 		} else {
 			watchLists = watchListDao.getWatchLists();
 			for(WatchList wl : watchLists){
-				vwatchLists.add(new IntValuePair(wl.getId(), wl.getName()));
+				vwatchLists2.add(new Pair<>(wl.getId(), wl.getName()));
 			}
 		}
 
-		List<IntValuePair> watchListNames = new ArrayList<IntValuePair>();
+		List<Pair<Integer, String>> watchListNames2 = new ArrayList<>();
 
 		if (watchLists.size() == 0) {
 			// Add a default watch list if none exist.
@@ -107,10 +107,9 @@ public class WatchListController extends ParameterizableViewController {
 		boolean found = false;
 
 		if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
-			watchListNames = vwatchLists;
+			watchListNames2 = vwatchLists2;
 		} else {
-			watchListNames = new ArrayList<IntValuePair>(
-					watchLists.size());
+			watchListNames2 = new ArrayList<Pair<Integer, String>>(watchLists.size());
 			for (WatchList watchList : watchLists) {
 				if (watchList.getId() == selected)
 					found = true;
@@ -134,8 +133,7 @@ public class WatchListController extends ParameterizableViewController {
 					if (changed)
 						watchListDao.saveWatchList(watchList);
 				}
-				watchListNames.add(new IntValuePair(watchList.getId(), watchList
-						.getName()));
+				watchListNames2.add(new Pair<>(watchList.getId(), watchList.getName()));
 			}
 		}
 
@@ -149,7 +147,7 @@ public class WatchListController extends ParameterizableViewController {
 			new WatchListDao().saveSelectedWatchList(user.getId(), selected);
 		}
 
-		model.put(KEY_WATCHLISTS, watchListNames);
+		model.put(KEY_WATCHLISTS, watchListNames2);
 
 		model.put(KEY_SELECTED_WATCHLIST, selected);
 

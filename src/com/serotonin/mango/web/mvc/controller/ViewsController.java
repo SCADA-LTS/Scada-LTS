@@ -18,13 +18,13 @@
  */
 package com.serotonin.mango.web.mvc.controller;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
+import javafx.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.permissions.PermissionViewACL;
@@ -45,14 +45,19 @@ public class ViewsController extends ParameterizableViewController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ViewDao viewDao = new ViewDao();
 		User user = Common.getUser(request);
-		List<IntValuePair> views;
+		List<Pair<Integer, String>>  views;
 
 		if (user.isAdmin()) { // Admin user has access to all views
 			views = viewDao.getAllViewNames();
-			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
+			/*Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
-			};
-			Collections.sort(views, comp);
+			};*/
+			Collections.sort(views, new Comparator<Pair<Integer, String>>() {
+				@Override
+				public int compare(final Pair< Integer, String> o1, final Pair<Integer, String> o2) {
+					return  o1.getValue().compareTo(o2.getValue());
+				}
+			});
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
@@ -72,10 +77,15 @@ public class ViewsController extends ParameterizableViewController {
 			// ACL end;
 			*/
 
-			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
+			/*Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
-			};
-			Collections.sort(views, comp);
+			};*/
+			Collections.sort(views,  new Comparator<Pair<Integer, String>>() {
+				@Override
+				public int compare(final Pair< Integer, String> o1, final Pair<Integer, String> o2) {
+					return  o1.getValue().compareTo(o2.getValue());
+				}
+			});
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		}

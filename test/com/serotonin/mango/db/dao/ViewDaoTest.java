@@ -3,6 +3,7 @@ package com.serotonin.mango.db.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import javafx.util.Pair;
 import org.junit.Test;
 
 import br.org.scadabr.api.exception.DAOException;
@@ -81,19 +82,19 @@ public class ViewDaoTest extends AbstractMySQLDependentTest {
 
 		assertEquals(
 				view2.getId(),
-				new ViewDao()
-						.getViewNamesWithReadOrWritePermissions(user.getId(),
-								user.getUserProfile()).get(FIRST).getKey());
+				(int)new ViewDao()
+						.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile()).get(FIRST).getKey()
+								);
 
 		assertEquals(
 				view3.getId(),
-				new ViewDao()
+				(int)new ViewDao()
 						.getViewNamesWithReadOrWritePermissions(user.getId(),
 								user.getUserProfile()).get(SECOND).getKey());
 
 		assertEquals(
 				view4.getId(),
-				new ViewDao()
+				(int)new ViewDao()
 						.getViewNamesWithReadOrWritePermissions(user.getId(),
 								user.getUserProfile()).get(THIRD).getKey());
 	}

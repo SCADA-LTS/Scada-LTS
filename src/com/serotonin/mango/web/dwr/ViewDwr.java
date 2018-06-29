@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import javafx.util.Pair;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -127,11 +128,11 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public List<IntValuePair> getViews() {
+	public List<Pair<Integer, String>>  getViews() {
 		ViewDao viewDao = new ViewDao();
 		User user = Common.getUser();
 
-		List<IntValuePair> views = viewDao.getViewNames(user.getId(), user.getUserProfile());
+		List<Pair<Integer, String>>  views = viewDao.getViewNames(user.getId(), user.getUserProfile());
 
 		return views;
 	}

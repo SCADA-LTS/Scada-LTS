@@ -42,6 +42,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
+import javafx.util.Pair;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -1065,7 +1066,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 	@MethodFilter
 	public DwrResponseI18n validateScript(String script,
-			List<IntValuePair> context, int dataTypeId) {
+										  List<Pair<Integer, String>> context, int dataTypeId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		ScriptExecutor executor = new ScriptExecutor();
