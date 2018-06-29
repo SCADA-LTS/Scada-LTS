@@ -45,488 +45,493 @@ import com.serotonin.mango.vo.User;
 
 
 class ValueTime implements Serializable {
-	
-	private static final long serialVersionUID = -1253618593346111896L;
-	
-	private String value;
-	private Long ts;
-	
-	public ValueTime(String value, Long ts) {
-		setValue(value);
-		setTs(ts);
-	}
-	
-	public String getValue() {
-		return value;
-	}
-	
-	public void setValue(String value) {
-		this.value = value;
-	}
-	
-	public Long getTs() {
-		return ts;
-	}
-	
-	public void setTs(Long ts) {
-		this.ts = ts;
-	}
-	
+
+    private static final long serialVersionUID = -1253618593346111896L;
+
+    private String value;
+    private Long ts;
+
+    public ValueTime(String value, Long ts) {
+        setValue(value);
+        setTs(ts);
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public Long getTs() {
+        return ts;
+    }
+
+    public void setTs(Long ts) {
+        this.ts = ts;
+    }
+
 }
 
 class ValuesToJSON implements Serializable {
-	
-	private static final long serialVersionUID = 6842996239503634071L;
-	
-	private List<ValueTime> values;
-	private Long fromTs;
-	private Long toTs;
-	private String name;
-	private String xid;
-	private String type;
-	private TextRenderer textRenderer;
-	private String chartColour;
-	
-	public ValuesToJSON(List<ValueTime> values, DataPointVO dpvo, String type, Long from,Long to) {
-		setValues(values);
-		setFromTs(from);
-		setToTs(to);
-		setName(dpvo.getName());
-		setXid(dpvo.getXid());
-		setType(type);
-		setTextRenderer(dpvo.getTextRenderer());
-		setChartColour(dpvo.getChartColour());
-	}
-	
-	public void setFromTs(Long fTs) {
-		this.fromTs = fTs;
-	}
-	
-	public Long getFromTs() {
-		return this.fromTs;
-	}
-	
-	public void setToTs(Long tTs) {
-		this.toTs = tTs;
-	}
-	
-	public Long getToTs() {
-		return this.toTs;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public void setXid(String xid) {
-		this.xid = xid;
-	}
-	
-	public String getXid() {
-		return xid;
-	}
-	
-	public void setType(String type) {
-		this.type = type;
-	}
-	
-	public String getType() {
-		return type;
-	}
-	
-	public void setTextRenderer(TextRenderer textRenderer){
-		this.textRenderer = textRenderer;
-	}
-	
-	public TextRenderer getTextRenderer() {
-		return textRenderer;
-	}
-	
-	public void setChartColour(String chartColour) {
-		this.chartColour = chartColour;
-	}
-	
-	public String getChartColour() {
-		return chartColour;
-	}
 
-	public List<ValueTime> getValues() {
-		return values;
-	}
+    private static final long serialVersionUID = 6842996239503634071L;
 
-	public void setValues(List<ValueTime> values) {
-		this.values = values;
-	}
-	
+    private List<ValueTime> values;
+    private Long fromTs;
+    private Long toTs;
+    private String name;
+    private String xid;
+    private String type;
+    private TextRenderer textRenderer;
+    private String chartColour;
+
+    public ValuesToJSON(List<ValueTime> values, DataPointVO dpvo, String type, Long from, Long to) {
+        setValues(values);
+        setFromTs(from);
+        setToTs(to);
+        setName(dpvo.getName());
+        setXid(dpvo.getXid());
+        setType(type);
+        setTextRenderer(dpvo.getTextRenderer());
+        setChartColour(dpvo.getChartColour());
+    }
+
+    public void setFromTs(Long fTs) {
+        this.fromTs = fTs;
+    }
+
+    public Long getFromTs() {
+        return this.fromTs;
+    }
+
+    public void setToTs(Long tTs) {
+        this.toTs = tTs;
+    }
+
+    public Long getToTs() {
+        return this.toTs;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setXid(String xid) {
+        this.xid = xid;
+    }
+
+    public String getXid() {
+        return xid;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setTextRenderer(TextRenderer textRenderer) {
+        this.textRenderer = textRenderer;
+    }
+
+    public TextRenderer getTextRenderer() {
+        return textRenderer;
+    }
+
+    public void setChartColour(String chartColour) {
+        this.chartColour = chartColour;
+    }
+
+    public String getChartColour() {
+        return chartColour;
+    }
+
+    public List<ValueTime> getValues() {
+        return values;
+    }
+
+    public void setValues(List<ValueTime> values) {
+        this.values = values;
+    }
+
 }
 
 class ValueToJSON implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private String value;
-	private String formattedValue;
-	private Long ts;
-	private String name;
-	private String xid;
-	private String type;
-	private TextRenderer textRenderer;
-	private String chartColour;
 
-	void set(PointValueTime pvt, DataPointVO dpvo) {
-		setValue(pvt.getValue());
-		setTs(pvt.getTime());
-		setName(dpvo.getName());
-		setXid(dpvo.getXid());
-		setTextRenderer(dpvo.getTextRenderer());
-		setChartColour(dpvo.getChartColour());
-		setFormattedValue(textRenderer.getText(pvt, 1)+textRenderer.getMetaText());
-	}
+    private static final long serialVersionUID = 1L;
 
-	public String getValue() {
-		return value;
-	}
+    private String value;
+    private String formattedValue;
+    private Long ts;
+    private String name;
+    private String xid;
+    private String type;
+    private TextRenderer textRenderer;
+    private String chartColour;
 
-	public void setValue(MangoValue value) {
-		if (value instanceof AlphanumericValue) {
-			this.value = ((AlphanumericValue) value).getStringValue();
-			setType("AlphanumericValue");
-		} else if (value instanceof BinaryValue) {
-			this.value = String.valueOf(((BinaryValue) value).getBooleanValue());
-			setType("BinaryValue");
-		} else if (value instanceof ImageValue) {
-			this.value = ((ImageValue) value).getFilename();
-			setType("ImageValue");
-		} else if (value instanceof MultistateValue) {
-			this.value = String.valueOf(((MultistateValue) value).getIntegerValue());
-			setType("MultistateValue");
-		} else if (value instanceof NumericValue) {
-			this.value = String.valueOf(((NumericValue) value).getFloatValue());
-			setType("NumericValue");
-		}
-		//error
-	}
+    void set(PointValueTime pvt, DataPointVO dpvo) {
+        setValue(pvt.getValue());
+        setTs(pvt.getTime());
+        setName(dpvo.getName());
+        setXid(dpvo.getXid());
+        setTextRenderer(dpvo.getTextRenderer());
+        setChartColour(dpvo.getChartColour());
+        setFormattedValue(textRenderer.getText(pvt, 1) + textRenderer.getMetaText());
+    }
 
-	public Long getTs() {
-		return ts;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setTs(Long ts) {
-		this.ts = ts;
-	}
+    public void setValue(MangoValue value) {
+        if (value instanceof AlphanumericValue) {
+            this.value = ((AlphanumericValue) value).getStringValue();
+            setType("AlphanumericValue");
+        } else if (value instanceof BinaryValue) {
+            this.value = String.valueOf(((BinaryValue) value).getBooleanValue());
+            setType("BinaryValue");
+        } else if (value instanceof ImageValue) {
+            this.value = ((ImageValue) value).getFilename();
+            setType("ImageValue");
+        } else if (value instanceof MultistateValue) {
+            this.value = String.valueOf(((MultistateValue) value).getIntegerValue());
+            setType("MultistateValue");
+        } else if (value instanceof NumericValue) {
+            this.value = String.valueOf(((NumericValue) value).getFloatValue());
+            setType("NumericValue");
+        }
+        //error
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getTs() {
+        return ts;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getXid() {
-		return xid;
-	}
+    public void setTs(Long ts) {
+        this.ts = ts;
+    }
 
-	public void setXid(String xid) {
-		this.xid = xid;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getXid() {
+        return xid;
+    }
 
-	/**
-	 * @return the textRenderer
-	 */
-	public TextRenderer getTextRenderer() {
-		return textRenderer;
-	}
+    public void setXid(String xid) {
+        this.xid = xid;
+    }
 
-	/**
-	 * @param textRenderer the textRenderer to set
-	 */
-	public void setTextRenderer(TextRenderer textRenderer) {
-		this.textRenderer = textRenderer;
-	}
+    public String getType() {
+        return type;
+    }
 
-	/**
-	 * @return the chartColour
-	 */
-	public String getChartColour() {
-		return chartColour;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	/**
-	 * @param chartColour the chartColour to set
-	 */
-	public void setChartColour(String chartColour) {
-		this.chartColour = chartColour;
-	}
+    /**
+     * @return the textRenderer
+     */
+    public TextRenderer getTextRenderer() {
+        return textRenderer;
+    }
 
-	/**
-	 * @return the formattedValue
-	 */
-	public String getFormattedValue() {
-		return formattedValue;
-	}
+    /**
+     * @param textRenderer the textRenderer to set
+     */
+    public void setTextRenderer(TextRenderer textRenderer) {
+        this.textRenderer = textRenderer;
+    }
 
-	/**
-	 * @param formattedValue the formattedValue to set
-	 */
-	public void setFormattedValue(String formattedValue) {
-		this.formattedValue = formattedValue;
-	}
+    /**
+     * @return the chartColour
+     */
+    public String getChartColour() {
+        return chartColour;
+    }
+
+    /**
+     * @param chartColour the chartColour to set
+     */
+    public void setChartColour(String chartColour) {
+        this.chartColour = chartColour;
+    }
+
+    /**
+     * @return the formattedValue
+     */
+    public String getFormattedValue() {
+        return formattedValue;
+    }
+
+    /**
+     * @param formattedValue the formattedValue to set
+     */
+    public void setFormattedValue(String formattedValue) {
+        this.formattedValue = formattedValue;
+    }
 }
 
 
 /**
  * Controller for API pointValue
- * 
+ *
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
-@Controller 
+@Controller
 public class PointValueAPI {
-	
-	private static final Log LOG = LogFactory.getLog(PointValueAPI.class);
-	
-	private DataPointService dataPointService = new DataPointService();
-	private DataSourceService dataSourceService = new DataSourceService();
-	
-	@Resource
-	private PointValueService pointValueService;
-	
-	private String getValue(MangoValue value, String type) {
-		
-		if (value instanceof AlphanumericValue) {
-			type = "AlphanumericValue";
-			return ((AlphanumericValue) value).getStringValue();
-		} else if (value instanceof BinaryValue) {
-			type = "BinaryValue";
-			return String.valueOf(((BinaryValue) value).getBooleanValue());
-		} else if (value instanceof ImageValue) {
-			type = "ImageValue";
-			return ((ImageValue) value).getFilename();
-		} else if (value instanceof MultistateValue) {
-			type = "ImageValue";
-			return String.valueOf(((MultistateValue) value).getIntegerValue());
-		} else if (value instanceof NumericValue) {
-			type = "NumericValue";
-			return String.valueOf(((NumericValue) value).getFloatValue());
-		} else {
-			//TODO throw not type defined
-			return null;
-		}
-	}
-		
-	/**
-	 * @param xid
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/api/point_value/getValue/{xid}", method = RequestMethod.GET)
-	public ResponseEntity<String> getValue(@PathVariable("xid") String xid, HttpServletRequest request) {
-		LOG.info("/api/point_value/getValue/{xid} id:"+xid);
-		
-		try {
-			User user = Common.getUser(request);
-			
-			if (user != null) {
-				DataPointVO dpvo = dataPointService.getDataPoint(xid);
-				PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				
-				ValueToJSON v = new ValueToJSON();
-				v.set(pvt, dpvo);
 
-				json = mapper.writeValueAsString(v);
-				
-				return new ResponseEntity<String>(json,HttpStatus.OK);
-			}
-			
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-			
-		} catch (Exception e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
-	
-	/**
-	 * @param xid
-	 * @param type  (0 - binary, 1 - multistate, 2 - double, 3 - string)
-	 * @param value (for binary [0,1]
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/api/point_value/setValue/{xid}/{type}/{value}", method = RequestMethod.POST)
-	public ResponseEntity<String> setValue(
-			@PathVariable("xid") String xid,
-			@PathVariable("type") int type,
-			@PathVariable("value") String value,  
-			HttpServletRequest request) {
-		
-		LOG.info("/api/point_value/setValue/{xid}/{type}/{value} xid:"+xid+" type:"+type+" value:"+value);
-		
-		try {
-			User user = Common.getUser(request);
-			if (user != null) {
-				
-				dataPointService.save(value, xid, type);
-												
-				return new ResponseEntity<String>(value,HttpStatus.OK);
-			}
-			
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-			
-		} catch (Exception e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
-	/**
-	 * @param xid
-	 * @param type  (0 - binary, 1 - multistate, 2 - double, 3 - string)
-	 * @param value (for binary [0,1]
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/api/point_value/setValue/{xid}/{type}/{value}", method = RequestMethod.GET)
-	public ResponseEntity<String> setValueGet(
-			@PathVariable("xid") String xid,
-			@PathVariable("type") int type,
-			@PathVariable("value") String value,  
-			HttpServletRequest request) {
-		
-		LOG.info("/api/point_value/setValue/{xid}/{type}/{value} xid:"+xid+" type:"+type+" value:"+value);
-		
-		try {
-			User user = Common.getUser(request);
-			if (user != null) {
-				
-				dataPointService.save(value, xid, type);
-												
-				return new ResponseEntity<String>(value,HttpStatus.OK);
-			}
-			
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-			
-		} catch (Exception e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
+    private static final Log LOG = LogFactory.getLog(PointValueAPI.class);
 
-	
-	/**
-	 * @param ts, xid
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/api/point_value/getValuesFromTime/{ts}/{xid}", method = RequestMethod.GET)
-	public ResponseEntity<String> getValuesFromTime(@PathVariable("ts") long ts, @PathVariable("xid") String xid, HttpServletRequest request) {
-		
-		LOG.info("/api/point_value/getValuesFromTime/{ts}/{xid} ts:"+ts+" id:"+xid);
-		
-		try {
-			User user = Common.getUser(request);
-			DataPointVO dpvo = dataPointService.getDataPoint(xid);
-			if (user != null) {
-				long to = System.currentTimeMillis();
-				List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), ts, to);
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				
-				List<ValueTime> values = new ArrayList<ValueTime>();
-				String type = null;
-				for ( PointValueTime pvt : pvts ) {
-					values.add( new ValueTime(getValue(pvt.getValue(), type),pvt.getTime()));
-				}
-				ValuesToJSON v = new ValuesToJSON(values, dpvo, type, ts, to);
-				json = mapper.writeValueAsString(v);
-				
-				return new ResponseEntity<String>(json,HttpStatus.OK);
-			}
-			
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-			
-		} catch (Exception e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-	}
+    private DataPointService dataPointService = new DataPointService();
+    private DataSourceService dataSourceService = new DataSourceService();
 
-	@RequestMapping(value = "/api/point_value/updateMetaDataPoint/{xid}", method = RequestMethod.GET)
-	public ResponseEntity<String> updateMetaDataPoint(@PathVariable("xid") String xid, HttpServletRequest request) {
+    @Resource
+    private PointValueService pointValueService;
 
-			DataPointVO dataPoint = dataPointService.getDataPoint(xid);
-			MetaDataSourceVO metaDataSourceVO = (MetaDataSourceVO) dataSourceService.getDataSource(dataPoint.getDataSourceXid());
+    private String getValue(MangoValue value, String type) {
 
-			MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
+        if (value instanceof AlphanumericValue) {
+            type = "AlphanumericValue";
+            return ((AlphanumericValue) value).getStringValue();
+        } else if (value instanceof BinaryValue) {
+            type = "BinaryValue";
+            return String.valueOf(((BinaryValue) value).getBooleanValue());
+        } else if (value instanceof ImageValue) {
+            type = "ImageValue";
+            return ((ImageValue) value).getFilename();
+        } else if (value instanceof MultistateValue) {
+            type = "ImageValue";
+            return String.valueOf(((MultistateValue) value).getIntegerValue());
+        } else if (value instanceof NumericValue) {
+            type = "NumericValue";
+            return String.valueOf(((NumericValue) value).getFloatValue());
+        } else {
+            //TODO throw not type defined
+            return null;
+        }
+    }
 
-			metaPointLocatorVO.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE);
+    /**
+     * @param xid
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/point_value/getValue/{xid}", method = RequestMethod.GET)
+    public ResponseEntity<String> getValue(@PathVariable("xid") String xid, HttpServletRequest request) {
+        LOG.info("/api/point_value/getValue/{xid} id:" + xid);
 
-			MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
+        try {
+            User user = Common.getUser(request);
 
-			MetaDataSourceRT metaDataSourceRT = new MetaDataSourceRT(metaDataSourceVO);
+            if (user != null) {
+                DataPointVO dpvo = dataPointService.getDataPoint(xid);
+                PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
+                String json = null;
+                ObjectMapper mapper = new ObjectMapper();
 
-			DataPointRT dataPointRT = new DataPointRT(dataPoint, metaPointLocatorRT);
+                ValueToJSON v = new ValueToJSON();
+                v.set(pvt, dpvo);
 
-			metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
+                json = mapper.writeValueAsString(v);
+
+                return new ResponseEntity<String>(json, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
+    /**
+     * @param xid
+     * @param type    (0 - binary, 1 - multistate, 2 - double, 3 - string)
+     * @param value   (for binary [0,1]
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/point_value/setValue/{xid}/{type}/{value}", method = RequestMethod.POST)
+    public ResponseEntity<String> setValue(
+            @PathVariable("xid") String xid,
+            @PathVariable("type") int type,
+            @PathVariable("value") String value,
+            HttpServletRequest request) {
 
-			ScriptExecutor scriptExecutor = new ScriptExecutor();
-			try {
-				Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
+        LOG.info("/api/point_value/setValue/{xid}/{type}/{value} xid:" + xid + " type:" + type + " value:" + value);
 
-				PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
 
-				String value = "";
+                dataPointService.save(value, xid, type);
 
-				switch (metaPointLocatorVO.getDataTypeId()) {
-					case DataTypes.BINARY:
-						BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
-						if(binaryValue.getBooleanValue()) {
-							value = "" + 1;
-						} else {
-							value = "" + 0;
-						}
-						break;
-					case DataTypes.MULTISTATE:
-						MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
-						value = "" + multistateValue.getIntegerValue();
-						break;
-					case DataTypes.NUMERIC:
-						NumericValue numericValue = (NumericValue) pointValueTime.getValue();
-						value = "" + numericValue.getDoubleValue();
-						break;
-					case DataTypes.ALPHANUMERIC:
-						AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
-						value = alphanumericValue.getStringValue();
-						break;
-				}
+                return new ResponseEntity<String>(value, HttpStatus.OK);
+            }
 
-				dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
+            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
 
-			} catch (Exception e) {
-				LOG.error(e);
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * @param xid
+     * @param type    (0 - binary, 1 - multistate, 2 - double, 3 - string)
+     * @param value   (for binary [0,1]
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/point_value/setValue/{xid}/{type}/{value}", method = RequestMethod.GET)
+    public ResponseEntity<String> setValueGet(
+            @PathVariable("xid") String xid,
+            @PathVariable("type") int type,
+            @PathVariable("value") String value,
+            HttpServletRequest request) {
+
+        LOG.info("/api/point_value/setValue/{xid}/{type}/{value} xid:" + xid + " type:" + type + " value:" + value);
+
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+
+                dataPointService.save(value, xid, type);
+
+                return new ResponseEntity<String>(value, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
-		return new ResponseEntity<String>(HttpStatus.OK);
-	}
-	
+    /**
+     * @param ts,     xid
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/point_value/getValuesFromTime/{ts}/{xid}", method = RequestMethod.GET)
+    public ResponseEntity<String> getValuesFromTime(@PathVariable("ts") long ts, @PathVariable("xid") String xid, HttpServletRequest request) {
+
+        LOG.info("/api/point_value/getValuesFromTime/{ts}/{xid} ts:" + ts + " id:" + xid);
+
+        try {
+            User user = Common.getUser(request);
+            DataPointVO dpvo = dataPointService.getDataPoint(xid);
+            if (user != null) {
+                long to = System.currentTimeMillis();
+                List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), ts, to);
+                String json = null;
+                ObjectMapper mapper = new ObjectMapper();
+
+                List<ValueTime> values = new ArrayList<ValueTime>();
+                String type = null;
+                for (PointValueTime pvt : pvts) {
+                    values.add(new ValueTime(getValue(pvt.getValue(), type), pvt.getTime()));
+                }
+                ValuesToJSON v = new ValuesToJSON(values, dpvo, type, ts, to);
+                json = mapper.writeValueAsString(v);
+
+                return new ResponseEntity<String>(json, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/api/point_value/updateMetaDataPoint/{xid}", method = RequestMethod.GET)
+    public ResponseEntity<String> updateMetaDataPoint(@PathVariable("xid") String xid, HttpServletRequest request) {
+
+        try {
+
+            User user = Common.getUser(request);
+            if (user != null) {
+
+                DataPointVO dataPoint = dataPointService.getDataPoint(xid);
+                MetaDataSourceVO metaDataSourceVO = (MetaDataSourceVO) dataSourceService.getDataSource(dataPoint.getDataSourceXid());
+
+                MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
+
+                metaPointLocatorVO.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE);
+
+                MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
+
+                MetaDataSourceRT metaDataSourceRT = new MetaDataSourceRT(metaDataSourceVO);
+
+                DataPointRT dataPointRT = new DataPointRT(dataPoint, metaPointLocatorRT);
+
+                metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
+                
+                ScriptExecutor scriptExecutor = new ScriptExecutor();
+
+                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
+
+                PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
+
+                String value = "";
+
+                switch (metaPointLocatorVO.getDataTypeId()) {
+                    case DataTypes.BINARY:
+                        BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
+                        if (binaryValue.getBooleanValue()) {
+                            value = "" + 1;
+                        } else {
+                            value = "" + 0;
+                        }
+                        break;
+                    case DataTypes.MULTISTATE:
+                        MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
+                        value = "" + multistateValue.getIntegerValue();
+                        break;
+                    case DataTypes.NUMERIC:
+                        NumericValue numericValue = (NumericValue) pointValueTime.getValue();
+                        value = "" + numericValue.getDoubleValue();
+                        break;
+                    case DataTypes.ALPHANUMERIC:
+                        AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
+                        value = alphanumericValue.getStringValue();
+                        break;
+                }
+
+                dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
+
+            }
+
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
+        return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
 }
 
