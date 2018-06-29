@@ -488,7 +488,7 @@ public class PointValueAPI {
                 DataPointRT dataPointRT = new DataPointRT(dataPoint, metaPointLocatorRT);
 
                 metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
-                
+
                 ScriptExecutor scriptExecutor = new ScriptExecutor();
 
                 Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
@@ -522,6 +522,8 @@ public class PointValueAPI {
 
                 dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
 
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
 
         } catch (Exception e) {
