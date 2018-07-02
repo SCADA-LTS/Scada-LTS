@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col-md-12" style="margin: 10px;">
-        <v-jsoneditor v-model="json" style="width: 800px; height: 300px">
+      <div class="col-md-12">
+        <v-jsoneditor v-model="json" style="height: 300px">
         </v-jsoneditor>
       </div>
     </div>
@@ -14,125 +14,124 @@
     </div>
 
     <div class="row">
-      <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="container">
-            <h4 class="progress-label">{{base.status}}</h4>
+      <div class="col-md-12 col-lg-12" style="background-color:white; padding: 2em">
+        <h4 class="progress-label">{{base.status}}</h4>
+        <h5 class="progress-label">{{base.statusGroup}}</h5>
+        <div class="progress">
+          <div class="progress-bar progress-bar-striped"
+               v-bind:class="{ active: base.progressImport.isActive }" role="progressbar"
+               aria-valuenow=""
+               aria-valuemin="0" aria-valuemax="100"
+               v-bind:style="{ width: base.progressImport.group.percent + '%'}">
+            {{base.progressImport.group.percent}}%
           </div>
-          <div class="container">
-            <h5 class="progress-label">{{base.statusGroup}}</h5>
-            <div class="progress">
-              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="20"
-                   aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
-                20%
-              </div>
-            </div>
+        </div>
+
+        <h5 class="progress-label">{{base.statusDetail}}</h5>
+
+        <div class="progress">
+          <div class="progress-bar progress-bar-striped"
+               v-bind:class="{ active: base.progressImport.isActive }"
+               role="progressbar" aria-valuenow=""
+               aria-valuemin="0" aria-valuemax="100"
+               v-bind:style="{ width: base.progressImport.detail.percent + '%'}">
+            {{base.progressImport.detail.percent}}%
           </div>
-          <div class="container">
-            <h5 class="progress-label">{{base.statusDetail}}</h5>
-            <div class="progress">
-              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="30"
-                   aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
-                30%
-              </div>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-              <tr>
-                <td colspan="2">
-                  <span v-html="base.status"/>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2">
-                  Time import: {{timer.timeImport}}
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2">
-                  To import: {{base.counterToParse}}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  To create: {{toCreate.xidFolderToCreate.length}}
-                </td>
-                <td>
-                  To created: {{toCreate.xidFolderCreated.length}}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  To move folder: {{toMoveFolder.xidFolderToMoveTo.length}}
-                </td>
-                <td>
-                  To moved folder: {{toMoveFolder.xidFolderMoved.length}}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  To move points: {{Object.keys(toMovePoints.xidPointsMoveFromTo).length}}
-                </td>
-                <td>
-                  To moved points: {{toMovePoints.xidPointMoved.length}}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  To delete folder: {{toDeleteFolder.xidFolderToDelete.length}}
-                </td>
-                <td>
-                  To deleted: {{toDeleteFolder.xidFolderDeleted.length}}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  Folder names to change: {{toChangeNameFolder.xidFolderToNameChange.length}}
-                </td>
-                <td>
-                  Names changed: {{toChangeNameFolder.xidFolderNameChanged.length}}
-                </td>
-              </tr>
-            </table>
-          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <tr>
+              <td colspan="2">
+                <span v-html="base.status"/>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                Time import: {{timer.timeImport}}
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                To import: {{base.counterToParse}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                To create: {{toCreate.xidFolderToCreate.length}}
+              </td>
+              <td>
+                To created: {{toCreate.xidFolderCreated.length}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                To move folder: {{toMoveFolder.xidFolderToMoveTo.length}}
+              </td>
+              <td>
+                To moved folder: {{toMoveFolder.xidFolderMoved.length}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                To move points: {{Object.keys(toMovePoints.xidPointsMoveFromTo).length}}
+              </td>
+              <td>
+                To moved points: {{toMovePoints.xidPointMoved.length}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                To delete folder: {{toDeleteFolder.xidFolderToDelete.length}}
+              </td>
+              <td>
+                To deleted: {{toDeleteFolder.xidFolderDeleted.length}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Folder names to change: {{toChangeNameFolder.xidFolderToNameChange.length}}
+              </td>
+              <td>
+                Names changed: {{toChangeNameFolder.xidFolderNameChanged.length}}
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>
-
-
-    <!-- debug -->
-    <!--
-   <p>check: {{base.xidFolderToCheck}}</p>
-   <p>Exist: {{base.xidFolderExists}}</p>
-   <p>Before: {{base.xidFolderBefore}}</p>
-
-   <p>Not exist: {{toCreate.xidFolderNotExists}}</p>
-
-   <p>To create: {{toCreate.xidFolderToCreate}}</p>
-   <p>Errors: {{base.xidErrors}}</p>
-
-   <p>After: {{base.xidFolderAfter}}}</p>
-   <p>Points after: {{toMovePoints.xidMapPointsAfter}}</p>
-
-   <p>Move folder: {{toMoveFolder.xidFolderToMoveTo}} </p>
-   <p>Points move from to: {{toMovePoints.xidPointsMoveFromTo}} </p>
-
-   <p>Points exists: {{toMovePoints.xidMapPointsExist}}</p>
-   <p>Points not move: {{toMovePoints.xidPointsNotMove}} </p>
-
-   <p>Name folder to change: {{toChangeNameFolder.xidFolderToNameChange}}</p>
-   <p>Name folder changed: {{toChangeNameFolder.xidFolderNameChanged}}</p>
-
-   <p>Folder to delete: {{toDeleteFolder.xidFolderToDelete}}</p>
-   <p>Folder deleted: {{toDeleteFolder.xidFolderDeleted}}</p>
-
-   <p>To delete folder: {{toDeleteFolder.xidFolderToDelete}}</p>
-   <p>Timer: {{timer}}</p>
-   -->
-
-
   </div>
+
+
+  <!-- debug -->
+  <!--
+ <p>check: {{base.xidFolderToCheck}}</p>
+ <p>Exist: {{base.xidFolderExists}}</p>
+ <p>Before: {{base.xidFolderBefore}}</p>
+
+ <p>Not exist: {{toCreate.xidFolderNotExists}}</p>
+
+ <p>To create: {{toCreate.xidFolderToCreate}}</p>
+ <p>Errors: {{base.xidErrors}}</p>
+
+ <p>After: {{base.xidFolderAfter}}}</p>
+ <p>Points after: {{toMovePoints.xidMapPointsAfter}}</p>
+
+ <p>Move folder: {{toMoveFolder.xidFolderToMoveTo}} </p>
+ <p>Points move from to: {{toMovePoints.xidPointsMoveFromTo}} </p>
+
+ <p>Points exists: {{toMovePoints.xidMapPointsExist}}</p>
+ <p>Points not move: {{toMovePoints.xidPointsNotMove}} </p>
+
+ <p>Name folder to change: {{toChangeNameFolder.xidFolderToNameChange}}</p>
+ <p>Name folder changed: {{toChangeNameFolder.xidFolderNameChanged}}</p>
+
+ <p>Folder to delete: {{toDeleteFolder.xidFolderToDelete}}</p>
+ <p>Folder deleted: {{toDeleteFolder.xidFolderDeleted}}</p>
+
+ <p>To delete folder: {{toDeleteFolder.xidFolderToDelete}}</p>
+ <p>Timer: {{timer}}</p>
+ -->
+
 </template>
 
 <script>
@@ -151,10 +150,10 @@
           ROOT: "_",
           STATUS: 0,  // run - green, warning - yellow, error - red
           STATUS_INFO: {
-            run:0,
-            warning: 1,
-            error: 2,
-            end: 3
+            RUN: 0,
+            WARNING: 1,
+            ERROR: 2,
+            END: 3
           },
           STATUS_GROUP: 1,
           STATUS_GROUP_INFO: {
@@ -186,17 +185,16 @@
         base: {
           progressImport: {
             group: {
-              label: "",
               percent: 0,
-              status: "active",
               elementToDo: 13,
-              elementDoing:1
+              elementDoing: 1
             },
             detail: {
-              label: "",
               percent: 0,
-              status: "active"
-            }
+              elementToDo: 0,
+              elementDoing: 1
+            },
+            isActive: false,
           },
           status: "",
           statusGroup: "",
@@ -249,7 +247,6 @@
       },
       clearData() {
         //Cleansing of data from previous imports
-
         this.timer.startImport = 0;
         this.timer.endImport = 0;
         this.timer.timeImport = 0;
@@ -280,29 +277,41 @@
         this.toChangeNameFolder.xidFolderToNameChange = [];
         this.toChangeNameFolder.xidFolderNameChanged = [];
       },
-      showStatus(status, infoStatus, str) {
+      showStatus(status, infoStatus, str, detailsElementsDoing, detailsElementsToDo ) {
         //TODO err, info
         if (status == this.constants.STATUS) {
           this.base.status = str;
           if (
-            infoStatus == this.constants.STATUS_INFO.warning ||
-            infoStatus == this.constants.STATUS_INFO.error ||
-            infoStatus == this.constants.STATUS_INFO.end
+            infoStatus == this.constants.STATUS_INFO.WARNING ||
+            infoStatus == this.constants.STATUS_INFO.ERROR ||
+            infoStatus == this.constants.STATUS_INFO.END
           ) {
+            console.log("STATUS INFO:" + infoStatus);
+
+            this.base.progressImport.isActive = false;
+            this.base.progressImport.detail.percent = 100.00;
+            this.base.statusDetail = "";
+            this.base.statusGroup = "";
+
             this.timer.stopImport = performance.now();
             this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
+          } else if (
+            infoStatus == this.constants.STATUS_INFO.RUN
+          ) {
+            this.base.progressImport.isActive = true;
           }
         } else if (status == this.constants.STATUS_GROUP) {
           this.base.statusGroup = str;
           this.calculateProgressGroup(infoStatus);
         } else if (status == this.constants.STATUS_DETAIL) {
+          this.calculateProgressDetail(detailsElementsDoing, detailsElementsToDo)
           this.base.statusDetail = str;
         }
       },
       parse() {
         this.showStatus(
           this.constants.STATUS,
-          this.constants.STATUS_INFO.run,
+          this.constants.STATUS_INFO.RUN,
           "Start");
         this.showStatus(
           this.constants.STATUS_GROUP,
@@ -315,7 +324,7 @@
           if (folders == undefined) {
             this.showStatus(
               this.constants.STATUS,
-              this.constants.STATUS_INFO.warning,
+              this.constants.STATUS_INFO.WARNING,
               "In import don't have folders");
           } else {
             this.base.xidFolderToCheck = folders;
@@ -324,8 +333,8 @@
         } catch (err) {
           this.showStatus(
             this.constants.STATUS,
-            this.constants.STATUS_INFO.error,
-            "Poor data format:"+err);
+            this.constants.STATUS_INFO.ERROR,
+            "Poor data format:" + err);
         }
       },
       check() {
@@ -336,16 +345,22 @@
         if (this.base.xidFolderToCheck.length == 0) {
           this.showStatus(
             this.constants.STATUS,
-            this.constants.STATUS_INFO.warning,
+            this.constants.STATUS_INFO.WARNING,
             "there seems to be nothing to import");
         } else {
+
           this.showStatus(
             this.constants.STATUS_DETAIL,
             0,
-            "Check folder:" + this.base.xidFolderToCheck[0].xidFolder);
+            "Check folder:" + this.base.xidFolderToCheck[0].xidFolder,
+            this.base.xidFolderExists.length + this.toCreate.xidFolderNotExists.length,
+            this.base.xidFolderToCheck.length + this.base.xidFolderExists.length + this.toCreate.xidFolderNotExists.length
+          );
+
           const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.base.xidFolderToCheck[0].xidFolder}`;
           axios.get(apiCheckXidFolder).then(response => {
             if (response.data !== undefined) {
+
               this.base.xidFolderExists.push(this.base.xidFolderToCheck[0]);
               this.base.xidFolderBefore.push(response.data);
             } else if (this.base.xidFolderToCheck[0] != undefined && response.data == false) {
@@ -358,10 +373,6 @@
               this.validToCreate();
             }
           }).catch(error => {
-            this.showStatus(
-              this.constants.STATUS,
-              this.constants.STATUS_INFO.error,
-              "Error:"+err);
             console.log(error);
             this.toCreate.xidFolderNotExists.push(this.base.xidFolderToCheck[0]);
             this.base.xidFolderToCheck.splice(0, 1);
@@ -381,10 +392,14 @@
         if (this.toCreate.xidFolderNotExists.length > 0) {
           for (var id in this.toCreate.xidFolderNotExists) {
             if (this.toCreate.xidFolderNotExists[id] != null) {
+
               this.showStatus(
                 this.constants.STATUS_DETAIL,
                 0,
-                "Validate to create:" + this.toCreate.xidFolderNotExists[id].xidFolder);
+                "Validate to create:" + this.toCreate.xidFolderNotExists[id].xidFolder,
+                this.toCreate.xidFolderToCreate.length,
+                this.toCreate.xidFolderNotExists.length
+              );
               if (this.toCreate.xidFolderNotExists[id].xidFolder == undefined || this.toCreate.xidFolderNotExists[id].name == undefined) {
                 this.base.xidErrors.push(this.toCreate.xidFolderToCreate[id])
               } else {
@@ -404,8 +419,12 @@
           for (var j in this.base.xidFolderBefore) {
             if (this.base.xidFolderExists[i].xidFolder == this.base.xidFolderBefore[j].xid) {
               this.showStatus(
-                this.constants.STATUS_DETAIL, 0,
-                "The same xid:" + this.base.xidFolderExists[i].xidFolder);
+                this.constants.STATUS_DETAIL,
+                0,
+                "xid:" + this.base.xidFolderExists[i].xidFolder,
+                i+j,
+                this.base.xidFolderExists.length + this.base.xidFolderBefore.length
+              );
               if (this.base.xidFolderExists[i].parentXid !== this.base.xidFolderBefore[j].parentXid) {
                 let newMoveFolder = {};
                 newMoveFolder.newParentXid = this.base.xidFolderExists[i].parentXid;
@@ -527,6 +546,14 @@
           data.parentXid = this.toCreate.xidFolderToCreate[0].parentXid;
           data.pointXids = this.toCreate.xidFolderToCreate[0].points;
 
+          this.showStatus(
+            this.constants.STATUS_DETAIL,
+            0,
+            "xid:" + this.toCreate.xidFolderToCreate[0].xidFolder,
+            this.toCreate.xidFolderToCreate.length + this.toCreate.xidFolderCreated.length,
+            this.toCreate.xidFolderCreated.length
+          );
+
           const apiAddFolder = `.//api/pointHierarchy/folderAdd/`;
 
           axios.post(apiAddFolder, data)
@@ -560,6 +587,15 @@
           this.constants.STATUS_GROUP_INFO.MOVE_FOLDERS,
           "Move folders");
         if (this.toMoveFolder.xidFolderToMoveTo.length > 0) {
+
+          this.showStatus(
+            this.constants.STATUS_DETAIL,
+            0,
+            "xid:" + this.toMoveFolder.xidFolderToMoveTo[0].xidFolder,
+            this.toCreate.xidFolderToMoveTo.length + this.toCreate.xidFolderMoved.length,
+            this.toCreate.xidFolderMoved.length
+          );
+
           const apiMoveFolder = `./api/pointHierarchy/folderMoveTo/${this.toMoveFolder.xidFolderToMoveTo[0].xidFolder}/${this.toMoveFolder.xidFolderToMoveTo[0].newParentXid}`;
           axios.put(apiMoveFolder)
             .then(response => {
@@ -598,6 +634,15 @@
           if (!arrPointToMove[0].newParent.trim() == "") {
             newParent = arrPointToMove[0].newParent;
           }
+
+          this.showStatus(
+            this.constants.STATUS_DETAIL,
+            0,
+            "xid:" + arrPointToMove[0].xidPoint,
+            this.toCreate.xidFolderToMoveTo.length + this.toCreate.xidFolderMoved.length,
+            this.toCreate.xidFolderMoved.length
+          );
+
           const apiMovePoints = `./api/pointHierarchy/pointMoveTo/${arrPointToMove[0].xidPoint}/${newParent}`;
           axios.put(apiMovePoints)
             .then(response => {
@@ -633,6 +678,15 @@
           this.constants.STATUS_GROUP_INFO.DELETE_FOLDERS,
           "Delete folders");
         if (this.toDeleteFolder.xidFolderToDelete.length > 0) {
+
+          this.showStatus(
+            this.constants.STATUS_DETAIL,
+            0,
+            "xid:" + this.toDeleteFolder.xidFolderToDelete[0].xidFolder,
+            this.toDeleteFolder.xidFolderToDelete.length + this.toDeleteFolder.xidFolderDeleted.length,
+            this.toDeleteFolder.xidFolderDeleted.length
+          );
+
           const apiDeleteFolders = `./api/pointHierarchy/deleteFolder/${this.toDeleteFolder.xidFolderToDelete[0].xidFolder}`;
           axios.post(apiDeleteFolders)
             .then(response => {
@@ -665,6 +719,15 @@
           "Change name folders");
 
         if (this.toChangeNameFolder.xidFolderToNameChange.length > 0) {
+
+          this.showStatus(
+            this.constants.STATUS_DETAIL,
+            0,
+            "xid:" + this.toChangeNameFolder.xidFolderToNameChange[0].xidFolder,
+            this.toChangeNameFolder.xidFolderToNameChange.length + this.toChangeNameFolder.xidFolderNameChanged.length,
+            this.toChangeNameFolder.xidFolderNameChanged.length
+          );
+
           const apiUpdateFolder = `./api/pointHierarchy/changeName/${this.toChangeNameFolder.xidFolderToNameChange[0].xidFolder}/${this.toChangeNameFolder.xidFolderToNameChange[0].name}`;
           axios.put(apiUpdateFolder)
             .then(response => {
@@ -701,19 +764,50 @@
           .then(response => {
             this.timer.stopImport = performance.now();
             this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
-            this.showStatus(this.constants.STATUS_GROUP, "<b>End Import</b>");
+            this.showStatus(
+              this.constants.STATUS_GROUP,
+              this.constants.STATUS_GROUP_INFO.REFRESH_CACHE,
+              "End");
           })
           .catch(error => {
             console.log(error);
-            this.showStatus(this.constants.STATUS_GROUP, "<b>End Import</b>");
+            this.showStatus(
+              this.constants.STATUS,
+              this.constants.STATUS_INFO.ERROR,
+              "End Import");
           });
-        this.showStatus(this.constants.STATUS_GROUP, "<b>End Import</b>");
+
+        this.showStatus(
+          this.constants.STATUS,
+          this.constants.STATUS_INFO.END,
+          "End Import")
       },
-      calculateProgressGroup(elementDoing) {
-        this.base.progressImport.group.elementDoing = elementDoing;
-        this.base.progressImport.group.percent = (this.base.progressImport.group.elementDoing / this.base.progressImport.group.elementToDo) * 100;
+      calculateProgressGroup(elementsDoing) {
+        this.base.progressImport.group.elementDoing = elementsDoing;
+        this.base.progressImport.group.percent = (
+          this.base.progressImport.group.elementDoing /
+          this.base.progressImport.group.elementToDo) * 100;
+      },
+      calculateProgressDetail(elementsDoing, elementsToDo) {
+        this.base.progressImport.detail.elementDoing = elementsDoing;
+        this.base.progressImport.detail.elementToDo = elementsToDo;
+        if ( elementsDoing == undefined || elementsToDo == undefined) {
+          this.base.progressImport.detail.percent = 100.00;
+        } else if (elementsToDo == 0) {
+          this.base.progressImport.detail.percent = 100.00;
+        } if (elementsDoing == 0) {
+          this.base.progressImport.detail.percent = 0;
+        } else {
+          this.base.progressImport.detail.percent = (
+            this.base.progressImport.detail.elementDoing /
+            this.base.progressImport.detail.elementToDo) * 100;
+        }
+        if (isNaN(this.base.progressImport.detail.percent)) {
+          this.base.progressImport.detail.percent = 100.00;
+        }
+
       }
-    },
+    }
   }
 </script>
 
