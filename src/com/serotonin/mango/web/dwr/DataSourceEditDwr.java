@@ -87,7 +87,6 @@ import com.serotonin.bacnet4j.LocalDevice;
 import com.serotonin.bacnet4j.RemoteDevice;
 import com.serotonin.bacnet4j.type.constructed.Address;
 import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
-import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;

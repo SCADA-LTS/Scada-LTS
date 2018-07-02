@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javafx.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.PointValueDao;
@@ -557,7 +557,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
 
                 if (oldFolder != newFolder) {
                     oldFolder.removeDataPoint(dpvo.getId());
-                    newFolder.addDataPoint(new IntValuePair(dpvo.getId(), dpvo.getName()));
+                    newFolder.addDataPoint(new Pair<>(dpvo.getId(), dpvo.getName()));
 
                     // Save the hierarchy
                     dataPointDao.savePointHierarchy(pointHierarchy.getRoot());

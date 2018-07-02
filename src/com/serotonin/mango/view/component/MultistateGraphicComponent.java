@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -41,6 +40,7 @@ import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import javafx.util.Pair;
 
 /**
  * @author Matthew Lohbihler
@@ -90,13 +90,13 @@ public class MultistateGraphicComponent extends ImageSetComponent {
         return null;
     }
 
-    public List<IntValuePair> getImageStateList() {
-        List<IntValuePair> result = new ArrayList<IntValuePair>();
+    public List<Pair<Integer, String>> getImageStateList() {
+        List<Pair<Integer, String>> result = new ArrayList<>();
         for (Integer state : stateImageMap.keySet()) {
             Integer imageId = stateImageMap.get(state);
 
-            IntValuePair stateList = null;
-            for (IntValuePair ivp : result) {
+            Pair stateList = null;
+            for (Pair ivp : result) {
                 if (ivp.getKey() == imageId) {
                     stateList = ivp;
                     break;
@@ -104,23 +104,23 @@ public class MultistateGraphicComponent extends ImageSetComponent {
             }
 
             if (stateList == null) {
-                stateList = new IntValuePair(imageId, state.toString());
+                stateList = new Pair<>(imageId, state.toString());
                 result.add(stateList);
             }
-            else
-                stateList.setValue(stateList.getValue() + ',' + state.toString());
+//            else
+//                stateList.setValue(stateList.getValue() + ',' + state.toString());
         }
         return result;
     }
 
-    public void setImageStateList(List<IntValuePair> imageStateList) {
+    public void setImageStateList(List<Pair<Integer, String>> imageStateList) {
         stateImageMap.clear();
-        for (IntValuePair ivp : imageStateList) {
-            String[] states = ivp.getValue().split(",");
+        for (Pair ivp : imageStateList) {
+            String[] states = ivp.getValue().toString().split(",");
             for (String stateStr : states) {
                 try {
                     int state = Integer.parseInt(stateStr.trim());
-                    stateImageMap.put(state, ivp.getKey());
+                    stateImageMap.put(state, (Integer) ivp.getKey());
                 }
                 catch (NumberFormatException e) {
                     // Ignore

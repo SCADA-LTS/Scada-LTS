@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javafx.util.Pair;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -45,7 +46,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DuplicateKeyException;
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -402,8 +402,8 @@ public class DataPointService implements MangoDataPoint {
 
 		// Update the folder references in the points.
 		DataPointVO dp;
-		for (IntValuePair p : folder.getPoints()) {
-			dp = getDataPoint(p.getKey());
+		for (Pair p : folder.getPoints()) {
+			dp = getDataPoint((Integer) p.getKey());
 			// The point may have been deleted while editing the hierarchy.
 			if (dp != null) {
 				dp.setPointFolderId(folder.getId());

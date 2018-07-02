@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.serotonin.db.IntValuePair;
+import br.org.scadabr.protocol.iec101.common101.information.SRQ;
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -35,6 +35,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
+import javafx.util.Pair;
 
 /**
  * @author Matthew Lohbihler
@@ -49,7 +50,7 @@ public class PointFolder implements JsonSerializable {
     @JsonRemoteProperty(innerType = PointFolder.class)
     private List<PointFolder> subfolders = new ArrayList<PointFolder>();
 
-    private List<IntValuePair> points = new ArrayList<IntValuePair>();
+    private List<Pair<Integer, String>> points = new ArrayList<>();
 
     public PointFolder() {
         // no op
@@ -64,7 +65,7 @@ public class PointFolder implements JsonSerializable {
         subfolders.add(subfolder);
     }
 
-    public void addDataPoint(IntValuePair point) {
+    public void addDataPoint(Pair point) {
         points.add(point);
     }
 
@@ -93,11 +94,11 @@ public class PointFolder implements JsonSerializable {
         this.name = name;
     }
 
-    public List<IntValuePair> getPoints() {
+    public List<Pair<Integer, String>> getPoints() {
         return points;
     }
 
-    public void setPoints(List<IntValuePair> points) {
+    public void setPoints(List<Pair<Integer, String>> points) {
         this.points = points;
     }
 
@@ -111,8 +112,8 @@ public class PointFolder implements JsonSerializable {
 
     boolean findPoint(List<PointFolder> path, int pointId) {
         boolean found = false;
-        for (IntValuePair point : points) {
-            if (point.getKey() == pointId) {
+        for (Pair point : points) {
+            if ((Integer)point.getKey() == pointId) {
                 found = true;
                 break;
             }
@@ -156,8 +157,8 @@ public class PointFolder implements JsonSerializable {
     public void jsonSerialize(Map<String, Object> map) {
         DataPointDao dataPointDao = new DataPointDao();
         List<String> pointList = new ArrayList<String>();
-        for (IntValuePair p : points) {
-            DataPointVO dp = dataPointDao.getDataPoint(p.getKey());
+        for (Pair p : points) {
+            DataPointVO dp = dataPointDao.getDataPoint((Integer) p.getKey());
             if (dp != null)
                 pointList.add(dp.getXid());
         }
@@ -178,7 +179,7 @@ public class PointFolder implements JsonSerializable {
                 if (dp == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
 
-                points.add(new IntValuePair(dp.getId(), dp.getName()));
+                points.add(new Pair<>(dp.getId(), dp.getName()));
             }
         }
     }

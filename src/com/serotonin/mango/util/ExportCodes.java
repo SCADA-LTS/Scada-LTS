@@ -21,8 +21,8 @@ package com.serotonin.mango.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.util.ArrayUtils;
+import javafx.util.Pair;
 
 /**
  * @author Matthew Lohbihler
@@ -94,11 +94,11 @@ public class ExportCodes {
         return elements.get(index).id;
     }
 
-    public List<IntValuePair> getIdKeys(int... excludeIds) {
-        List<IntValuePair> result = new ArrayList<IntValuePair>(elements.size());
+    public List<Pair<Integer, String>> getIdKeys(int... excludeIds) {
+        List<Pair<Integer, String>> result = new ArrayList<>(elements.size());
         for (Element e : elements) {
             if (!ArrayUtils.contains(excludeIds, e.id))
-                result.add(new IntValuePair(e.id, e.key));
+                result.add(new Pair<>(e.id, e.key));
         }
         return result;
     }

@@ -2,7 +2,6 @@ package com.serotonin.mango.rt.dataSource.meta;
 
 import java.util.HashMap;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;

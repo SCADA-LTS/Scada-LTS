@@ -130,9 +130,10 @@
     <convert converter="bean" match="br.org.scadabr.OPCItem" />
     <convert converter="bean" match="br.org.scadabr.api.vo.*" />
     
-    <convert converter="bean" match="com.serotonin.db.IntValuePair"/>
+    <!--<convert converter="bean" match="com.serotonin.db.IntValuePair"/>-->
+    <convert converter="bean" match="javafx.util.Pair"/>
     <convert converter="bean" match="com.serotonin.db.KeyValuePair"/>
-    
+
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.http.HttpReceiverPointSample"/>
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.onewire.OneWireContainerInfo"/>
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.onewire.OneWireContainerAttribute"/>

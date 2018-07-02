@@ -7,7 +7,6 @@ import br.org.scadabr.rt.scripting.ScriptRT;
 import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;

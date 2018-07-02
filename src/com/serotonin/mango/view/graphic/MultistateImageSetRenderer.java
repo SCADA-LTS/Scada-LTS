@@ -26,11 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.ImplDefinition;
+import javafx.util.Pair;
 
 /**
  * @author Matthew Lohbihler
@@ -56,16 +56,16 @@ public class MultistateImageSetRenderer extends ImageSetRenderer {
     private Map<Integer, Integer> stateImageMap;
     private int defaultImage;
 
-    public MultistateImageSetRenderer(ImageSet imageSet, List<IntValuePair> imageStateList, int defaultImage,
-            boolean displayText) {
+    public MultistateImageSetRenderer(ImageSet imageSet, List<Pair<Integer, String>> imageStateList, int defaultImage,
+                                      boolean displayText) {
         super(imageSet, displayText);
 
         stateImageMap = new HashMap<Integer, Integer>();
-        for (IntValuePair ivp : imageStateList) {
-            String[] states = ivp.getValue().split(",");
+        for (Pair ivp : imageStateList) {
+            String[] states = ivp.getValue().toString().split(",");
             for (String stateStr : states) {
                 int state = Integer.parseInt(stateStr.trim());
-                stateImageMap.put(state, ivp.getKey());
+                stateImageMap.put(state, (Integer) ivp.getKey());
             }
         }
 
@@ -95,13 +95,13 @@ public class MultistateImageSetRenderer extends ImageSetRenderer {
         return null;
     }
 
-    public List<IntValuePair> getImageStateList() {
-        List<IntValuePair> result = new ArrayList<IntValuePair>();
+    public List<Pair<Integer, String>> getImageStateList() {
+        List<Pair<Integer, String>> result = new ArrayList<>();
         for (Integer state : stateImageMap.keySet()) {
             Integer imageId = stateImageMap.get(state);
 
-            IntValuePair stateList = null;
-            for (IntValuePair ivp : result) {
+            Pair<Integer, String> stateList = null;
+            for (Pair ivp : result) {
                 if (ivp.getKey() == imageId) {
                     stateList = ivp;
                     break;
@@ -109,11 +109,12 @@ public class MultistateImageSetRenderer extends ImageSetRenderer {
             }
 
             if (stateList == null) {
-                stateList = new IntValuePair(imageId, state.toString());
+                stateList = new Pair<>(imageId, state.toString());
                 result.add(stateList);
             }
-            else
-                stateList.setValue(stateList.getValue() + ',' + state.toString());
+//            else
+//                stateList.setValue(stateList.getValue() + ',' + state.toString());
+
         }
         return result;
     }

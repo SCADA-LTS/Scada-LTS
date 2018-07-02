@@ -47,7 +47,6 @@ import br.org.scadabr.view.component.LinkComponent;
 import br.org.scadabr.view.component.ScriptButtonComponent;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -151,7 +150,6 @@ public class ViewDwr extends BaseDwr {
 	 * Retrieves point state for all points on a given view. This is the
 	 * monitoring version of the method. See below for the view editing version.
 	 * 
-	 * @param viewId
 	 * @return
 	 */
 	@MethodFilter
@@ -444,8 +442,6 @@ public class ViewDwr extends BaseDwr {
 	/**
 	 * Allows the setting of a given data point. Overrides BaseDwr to resolve
 	 * the point view id.
-	 * 
-	 * @param pointId
 	 * @param valueStr
 	 * @return
 	 */
@@ -587,7 +583,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<IntValuePair> imageStates, int defaultImage, boolean displayText, String imageSetId) {
+	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<Pair<Integer, String>> imageStates, int defaultImage, boolean displayText, String imageSetId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		// Validate

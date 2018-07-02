@@ -18,12 +18,12 @@
  */
 package com.serotonin.mango.vo.hierarchy;
 
+import com.serotonin.ShouldNeverHappenException;
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.IntValuePair;
 
 /**
  * @author Matthew Lohbihler
@@ -68,13 +68,14 @@ public class PointHierarchy {
     }
 
     public void addDataPoint(int id, int folderId, String name) {
-        IntValuePair point = new IntValuePair(id, name);
+//        IntValuePair point = new IntValuePair(id, name);
+        Pair<Integer, String> point = new Pair<>(id, name);
         boolean added = addDataPoint(point, folderId, root);
         if (!added)
             root.addDataPoint(point);
     }
 
-    private static boolean addDataPoint(IntValuePair p, int folderId, PointFolder parent) {
+    private static boolean addDataPoint(Pair p, int folderId, PointFolder parent) {
         if (parent.getId() == folderId) {
             parent.addDataPoint(p);
             return true;

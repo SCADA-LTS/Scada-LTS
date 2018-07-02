@@ -27,7 +27,6 @@ import javafx.util.Pair;
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.serotonin.db.IntValuePair;
 
 import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 

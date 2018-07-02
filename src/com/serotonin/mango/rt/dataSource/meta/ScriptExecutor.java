@@ -35,7 +35,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
