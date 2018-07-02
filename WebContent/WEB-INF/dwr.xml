@@ -132,7 +132,7 @@
     
     <!--<convert converter="bean" match="com.serotonin.db.IntValuePair"/>-->
     <convert converter="bean" match="javafx.util.Pair"/>
-    <convert converter="bean" match="com.serotonin.db.KeyValuePair"/>
+    <!--<convert converter="bean" match="com.serotonin.db.KeyValuePair"/>-->
 
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.http.HttpReceiverPointSample"/>
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.onewire.OneWireContainerInfo"/>

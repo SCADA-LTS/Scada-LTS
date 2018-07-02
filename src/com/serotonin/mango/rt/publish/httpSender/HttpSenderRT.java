@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javafx.util.Pair;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -29,7 +30,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -141,8 +141,8 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
             method.addRequestHeader("User-Agent", USER_AGENT);
 
             // Add the user-defined headers.
-            for (KeyValuePair kvp : vo.getStaticHeaders())
-                method.addRequestHeader(kvp.getKey(), kvp.getValue());
+            for (Pair kvp : vo.getStaticHeaders())
+                method.addRequestHeader(kvp.getKey().toString(), kvp.getValue().toString());
 
             // Send the request. Set message non-null if there is a failure.
             LocalizableMessage message = null;
@@ -191,11 +191,11 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
         }
     }
 
-    NameValuePair[] createNVPs(List<KeyValuePair> staticParameters, List<PublishQueueEntry<HttpPointVO>> list) {
-        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+    NameValuePair[] createNVPs(List<Pair<String, String>> staticParameters, List<PublishQueueEntry<HttpPointVO>> list) {
+        List<Pair<String, String>> nvps = new ArrayList<>();
 
-        for (KeyValuePair kvp : staticParameters)
-            nvps.add(new NameValuePair(kvp.getKey(), kvp.getValue()));
+        for (Pair kvp : staticParameters)
+            nvps.add(new Pair<>(kvp.getKey().toString(), kvp.getValue().toString()));
 
         for (PublishQueueEntry<HttpPointVO> e : list) {
             HttpPointVO pvo = e.getVo();
@@ -220,7 +220,7 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
                     throw new ShouldNeverHappenException("Unknown date format type: " + vo.getDateFormat());
                 }
             }
-            nvps.add(new NameValuePair(pvo.getParameterName(), value));
+            nvps.add(new Pair<>(pvo.getParameterName(), value));
         }
 
         return nvps.toArray(new NameValuePair[nvps.size()]);

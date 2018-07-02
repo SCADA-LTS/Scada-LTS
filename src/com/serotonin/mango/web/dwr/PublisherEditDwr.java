@@ -21,7 +21,6 @@ package com.serotonin.mango.web.dwr;
 import java.util.Iterator;
 import java.util.List;
 
-import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -39,6 +38,7 @@ import com.serotonin.mango.vo.publish.persistent.PersistentSenderVO;
 import com.serotonin.mango.web.dwr.beans.HttpSenderTester;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import javafx.util.Pair;
 
 /**
  * @author Matthew Lohbihler
@@ -82,7 +82,7 @@ public class PublisherEditDwr extends BaseDwr {
     // HTTP sender stuff
     //
     public DwrResponseI18n saveHttpSender(String name, String xid, boolean enabled, List<HttpPointVO> points,
-            String url, boolean usePost, List<KeyValuePair> staticHeaders, List<KeyValuePair> staticParameters,
+            String url, boolean usePost, List<Pair<String, String>> staticHeaders, List<Pair<String, String>> staticParameters,
             int cacheWarningSize, boolean changesOnly, boolean raiseResultWarning, int dateFormat,
             boolean sendSnapshot, int snapshotSendPeriods, int snapshotSendPeriodType) {
         HttpSenderVO p = (HttpSenderVO) Common.getUser().getEditPublisher();
@@ -106,8 +106,8 @@ public class PublisherEditDwr extends BaseDwr {
         return trySave(p);
     }
 
-    public void httpSenderTest(String url, boolean usePost, List<KeyValuePair> staticHeaders,
-            List<KeyValuePair> staticParameters) {
+    public void httpSenderTest(String url, boolean usePost, List<Pair<String, String>> staticHeaders,
+            List<Pair<String, String>> staticParameters) {
         Common.getUser().setTestingUtility(new HttpSenderTester(url, usePost, staticHeaders, staticParameters));
     }
 

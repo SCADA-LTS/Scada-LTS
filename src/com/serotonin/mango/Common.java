@@ -35,6 +35,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import javafx.util.Pair;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -46,7 +47,6 @@ import org.directwebremoting.WebContextFactory;
 import org.joda.time.Period;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.KeyValuePair;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.util.CommPortConfigException;
@@ -138,9 +138,7 @@ public class Common {
 
 	/**
 	 * Returns the length of time in milliseconds that the
-	 * 
-	 * @param timePeriod
-	 * @param numberOfPeriods
+	 *
 	 * @return
 	 */
 	public static long getMillis(int periodType, int periods) {
@@ -540,11 +538,11 @@ public class Common {
 		return null;
 	}
 
-	public static List<KeyValuePair> getLanguages() {
-		List<KeyValuePair> languages = new ArrayList<KeyValuePair>();
+	public static List<Pair<String, String>> getLanguages() {
+		List<Pair<String, String>> languages = new ArrayList<>();
 		ResourceBundle i18n = Utf8ResourceBundle.getBundle("i18n");
 		for (String key : i18n.keySet())
-			languages.add(new KeyValuePair(key, i18n.getString(key)));
+			languages.add(new Pair<>(key, i18n.getString(key)));
 		return languages;
 	}
 

@@ -20,13 +20,13 @@ package com.serotonin.mango.web.dwr.beans;
 
 import java.util.List;
 
+import javafx.util.Pair;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 
-import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.publish.httpSender.HttpSenderRT;
 import com.serotonin.web.http.HttpUtils;
@@ -37,13 +37,13 @@ import com.serotonin.web.http.HttpUtils;
 public class HttpSenderTester extends Thread implements TestingUtility {
     private final String url;
     private final boolean usePost;
-    private final List<KeyValuePair> staticHeaders;
-    private final List<KeyValuePair> staticParameters;
+    private final List<Pair<String, String>> staticHeaders;
+    private final List<Pair<String, String>> staticParameters;
 
     private String result;
 
-    public HttpSenderTester(String url, boolean usePost, List<KeyValuePair> staticHeaders,
-            List<KeyValuePair> staticParameters) {
+    public HttpSenderTester(String url, boolean usePost, List<Pair<String,String>> staticHeaders,
+            List<Pair<String,String>> staticParameters) {
         this.url = url;
         this.usePost = usePost;
         this.staticHeaders = staticHeaders;
@@ -69,8 +69,8 @@ public class HttpSenderTester extends Thread implements TestingUtility {
         method.addRequestHeader("User-Agent", HttpSenderRT.USER_AGENT);
 
         // Add the user-defined headers.
-        for (KeyValuePair kvp : staticHeaders)
-            method.addRequestHeader(kvp.getKey(), kvp.getValue());
+        for (Pair kvp : staticHeaders)
+            method.addRequestHeader(kvp.getKey().toString(), kvp.getValue().toString());
 
         try {
             int code = Common.getHttpClient().executeMethod(method);
@@ -91,11 +91,11 @@ public class HttpSenderTester extends Thread implements TestingUtility {
         return result;
     }
 
-    private NameValuePair[] convertToNVPs(List<KeyValuePair> staticParameters) {
+    private NameValuePair[] convertToNVPs(List<Pair<String, String>> staticParameters) {
         NameValuePair[] nvps = new NameValuePair[staticParameters.size()];
         for (int i = 0; i < nvps.length; i++) {
-            KeyValuePair kvp = staticParameters.get(i);
-            nvps[i] = new NameValuePair(kvp.getKey(), kvp.getValue());
+            Pair kvp = staticParameters.get(i);
+            nvps[i] = new NameValuePair(kvp.getKey().toString(), kvp.getValue().toString());
         }
         return nvps;
     }

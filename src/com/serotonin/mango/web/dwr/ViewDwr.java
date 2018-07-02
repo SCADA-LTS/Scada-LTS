@@ -47,7 +47,6 @@ import br.org.scadabr.view.component.LinkComponent;
 import br.org.scadabr.view.component.ScriptButtonComponent;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
-import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -367,9 +366,9 @@ public class ViewDwr extends BaseDwr {
 		result.put("viewUsers", user.getView().getViewUsers());
 
 		// View component types
-		List<KeyValuePair> components = new ArrayList<KeyValuePair>();
+		List<Pair<String, String>> components = new ArrayList<>();
 		for (ImplDefinition impl : ViewComponent.getImplementations())
-			components.add(new KeyValuePair(impl.getName(), getMessage(impl.getNameKey())));
+			components.add(new Pair<>(impl.getName(), getMessage(impl.getNameKey())));
 		result.put("componentTypes", components);
 
 		// Available points
@@ -647,15 +646,15 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<Pair<String, String>> childPointIds) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
 
 		String leadPointId = null;
-		for (KeyValuePair kvp : childPointIds) {
+		for (Pair kvp : childPointIds) {
 			if (SimpleCompoundComponent.LEAD_POINT.equals(kvp.getKey())) {
-				leadPointId = kvp.getValue();
+				leadPointId = kvp.getValue().toString();
 				break;
 			}
 		}
@@ -674,7 +673,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<Pair<String, String>> childPointIds) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		commonImageChartComponentValidation(name, width, height, durationType, durationPeriods, response);
@@ -693,7 +692,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<KeyValuePair> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList) {
+	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<Pair<String,String>> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList) {
 
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -716,7 +715,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<Pair<String, String>> childPointIds) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
@@ -872,13 +871,13 @@ public class ViewDwr extends BaseDwr {
 			response.addContextualMessage("compoundName", "dsEdit.validate.required");
 	}
 
-	private void saveCompoundPoints(CompoundComponent c, List<KeyValuePair> childPointIds) {
+	private void saveCompoundPoints(CompoundComponent c, List<Pair<String, String>> childPointIds) {
 		User user = Common.getUser();
 
-		for (KeyValuePair kvp : childPointIds) {
+		for (Pair kvp : childPointIds) {
 			int dataPointId = -1;
 			try {
-				dataPointId = Integer.parseInt(kvp.getValue());
+				dataPointId = Integer.parseInt(String.valueOf(Integer.valueOf(kvp.getValue().toString())));
 			} catch (NumberFormatException e) {
 				// no op
 			}
@@ -886,10 +885,10 @@ public class ViewDwr extends BaseDwr {
 			DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
 
 			if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
-				c.setDataPoint(kvp.getKey(), null);
+				c.setDataPoint(String.valueOf(kvp.getKey()) , null);
 			else
-				c.setDataPoint(kvp.getKey(), dp);
-			c.getChildComponent(kvp.getKey()).validateDataPoint(user, false);
+				c.setDataPoint(String.valueOf(kvp.getKey()), dp);
+			c.getChildComponent(String.valueOf(kvp.getKey())).validateDataPoint(user, false);
 		}
 	}
 
