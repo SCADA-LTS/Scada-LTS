@@ -15,15 +15,18 @@
 
     <div class="row">
       <div class="col-md-12 col-lg-12" style="background-color:white; padding: 2em">
-        <h4 class="progress-label">{{base.status}}</h4>
-        <h5 class="progress-label">{{base.statusGroup}}</h5>
+        <h4 class="progress-label">{{base.status}} <span v-if="base.canceled" class="badge badge-danger">CANCELED</span> </h4>
+        <h5 class="progress-label">&nbsp;{{base.statusGroup}}</h5>
+
         <div class="progress">
           <div class="progress-bar progress-bar-striped"
                v-bind:class="{ active: base.progressImport.isActive }" role="progressbar"
                aria-valuenow=""
                aria-valuemin="0" aria-valuemax="100"
                v-bind:style="{ width: base.progressImport.group.percent + '%'}">
-            {{base.progressImport.group.percent}}%
+            <span v-if="base.canceled">canceled</span>
+            <span v-else>{{base.progressImport.group.percent}}%</span>
+
           </div>
         </div>
 
@@ -35,9 +38,11 @@
                role="progressbar" aria-valuenow=""
                aria-valuemin="0" aria-valuemax="100"
                v-bind:style="{ width: base.progressImport.detail.percent + '%'}">
-            {{base.progressImport.detail.percent}}%
+            <span v-if="base.canceled">canceled</span>
+            <span v-else>{{base.progressImport.detail.percent}}%</span>
           </div>
         </div>
+
         <div class="table-responsive">
           <table class="table table-striped table-bordered">
             <tr>
@@ -97,6 +102,7 @@
             </tr>
           </table>
         </div>
+        <button v-on:click="doCancel()" color="danger" type="button" class="btn btn-danger btn-sm">Cancel</button>
       </div>
     </div>
   </div>
@@ -196,6 +202,7 @@
             },
             isActive: false,
           },
+          canceled: false,
           status: "",
           statusGroup: "",
           statusDetail: "",
@@ -245,6 +252,9 @@
         this.timer.startImport = performance.now();
         this.parse();
       },
+      doCancel() {
+        this.base.canceled = true;
+      },
       clearData() {
         //Cleansing of data from previous imports
         this.timer.startImport = 0;
@@ -257,6 +267,7 @@
         this.base.xidFolderBefore = [];
         this.base.xidFolderExists = [];
         this.base.xidErrors = [];
+        this.base.canceled = false;
 
         this.toCreate.xidFolderNotExists = [];
         this.toCreate.xidFolderToCreate = [];
@@ -278,7 +289,7 @@
         this.toChangeNameFolder.xidFolderNameChanged = [];
       },
       showStatus(status, infoStatus, str, detailsElementsDoing, detailsElementsToDo ) {
-        //TODO err, info
+
         if (status == this.constants.STATUS) {
           this.base.status = str;
           if (
@@ -338,6 +349,8 @@
         }
       },
       check() {
+        if (this.canceled())return;
+
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.CHECK,
@@ -348,7 +361,6 @@
             this.constants.STATUS_INFO.WARNING,
             "there seems to be nothing to import");
         } else {
-
           this.showStatus(
             this.constants.STATUS_DETAIL,
             0,
@@ -356,11 +368,9 @@
             this.base.xidFolderExists.length + this.toCreate.xidFolderNotExists.length,
             this.base.xidFolderToCheck.length + this.base.xidFolderExists.length + this.toCreate.xidFolderNotExists.length
           );
-
           const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.base.xidFolderToCheck[0].xidFolder}`;
           axios.get(apiCheckXidFolder).then(response => {
             if (response.data !== undefined) {
-
               this.base.xidFolderExists.push(this.base.xidFolderToCheck[0]);
               this.base.xidFolderBefore.push(response.data);
             } else if (this.base.xidFolderToCheck[0] != undefined && response.data == false) {
@@ -385,6 +395,7 @@
         }
       },
       validToCreate() {
+        if (this.canceled()) return;
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.CHECK_TO_CREATE,
@@ -411,6 +422,7 @@
         this.prepareDataToMoveFolders();
       },
       prepareDataToMoveFolders() {
+        if (this.canceled()) return;
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.CHECK_TO_MOVE_FOLDER,
@@ -439,6 +451,7 @@
 
       },
       prepareDataToMovePoints() {
+        if (this.canceled()) return;
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.CHECK_TO_MOVE_POINTS,
@@ -505,6 +518,7 @@
         this.prepareDataToDeleteFolders();
       },
       prepareDataToDeleteFolders() {
+        if (this.canceled()) return;
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.CHECK_FOLDERS_TO_DELETE,
@@ -519,6 +533,7 @@
         this.prepareFolderToNameChange();
       },
       prepareFolderToNameChange() {
+        if (this.canceled()) return;
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.CHECK_TO_CHANGE_FOLDER_NAME,
@@ -535,6 +550,7 @@
         this.createFolders();
       },
       createFolders() {
+        if (this.canceled()) return;
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.CREATE_FOLDERS,
@@ -554,7 +570,7 @@
             this.toCreate.xidFolderCreated.length
           );
 
-          const apiAddFolder = `.//api/pointHierarchy/folderAdd/`;
+          const apiAddFolder = `./api/pointHierarchy/folderAdd/`;
 
           axios.post(apiAddFolder, data)
             .then(response => {
@@ -582,6 +598,7 @@
         }
       },
       moveFolders() {
+        if (this.canceled()) return;
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.MOVE_FOLDERS,
@@ -623,6 +640,7 @@
         }
       },
       movePoints() {
+        if (this.canceled()) return;
         // setTimeout(() => {
         this.showStatus(
           this.constants.STATUS_GROUP,
@@ -673,6 +691,7 @@
         //}, 1000);
       },
       deleteFolders() {
+        if (this.canceled()) return;
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.DELETE_FOLDERS,
@@ -713,6 +732,7 @@
         }
       },
       changeNameFolders() {
+        if (this.canceled()) return;
         this.showStatus(
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.CHANGE_NAME_FOLDERS,
@@ -805,7 +825,12 @@
         if (isNaN(this.base.progressImport.detail.percent)) {
           this.base.progressImport.detail.percent = 100.00;
         }
-
+      },
+      canceled() {
+        if (this.base.canceled) {
+          this.refreshCache();
+        }
+        return this.base.canceled
       }
     }
   }

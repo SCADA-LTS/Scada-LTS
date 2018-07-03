@@ -26,6 +26,8 @@
 
 <style type="text/css">
 
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/5.14.0/jsoneditor.min.js"></script>
 
 /* Reduce bootstrap's default 'panel' padding: */
@@ -354,8 +356,7 @@ thead th {
 					<div class="panel panel-default">
 						<div class="panel-heading help">
 							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b> <span
-								class="glyphicon glyphicon-question-sign"></span> <span
-								class="label label-warning">rc version of the view</span>
+								class="glyphicon glyphicon-question-sign"></span>
 						</div>
 						<div class="menu panel-heading help">
 							<div class="btn-group">
@@ -432,8 +433,10 @@ thead th {
 <script src="resources/npm/node_modules/vue-axios/dist/vue-axios.min.js"></script>
 <script src="resources/vue-mixins/shared/mixins-export-import.js"></script>
 <script src="resources/vue-components/export-import/export-import.js"></script>
+
 <script src="resources/npm/node_modules/jsonschema/lib/validator.js"></script>
 <script src="resources/npm/node_modules/jsonschema/lib/validator.js"></script>
+
 <script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
 <script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
 
