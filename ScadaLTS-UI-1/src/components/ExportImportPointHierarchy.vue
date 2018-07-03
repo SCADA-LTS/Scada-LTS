@@ -15,7 +15,8 @@
 
     <div class="row">
       <div class="col-md-12 col-lg-12" style="background-color:white; padding: 2em">
-        <h4 class="progress-label">{{base.status}} <span v-if="base.canceled" class="badge badge-danger">CANCELED</span> </h4>
+        <h4 class="progress-label">{{base.status}} <span v-if="base.canceled" class="badge badge-danger">CANCELED</span>
+        </h4>
         <h5 class="progress-label">&nbsp;{{base.statusGroup}}</h5>
 
         <div class="progress">
@@ -52,7 +53,7 @@
             </tr>
             <tr>
               <td colspan="2">
-                Time import: {{timer.timeImport}}
+                Time import: {{timer.timeImport | moment }}
               </td>
             </tr>
             <tr>
@@ -105,49 +106,57 @@
         <button v-on:click="doCancel()" color="danger" type="button" class="btn btn-danger btn-sm">Cancel</button>
       </div>
     </div>
+    <!-- debug -->
+
+   <p>check: {{base.xidFolderToCheck}}</p>
+   <p>Exist: {{base.xidFolderExists}}</p>
+   <p>Before: {{base.xidFolderBefore}}</p>
+
+   <p>Not exist: {{toCreate.xidFolderNotExists}}</p>
+
+   <p>To create: {{toCreate.xidFolderToCreate}}</p>
+   <p>Errors: {{base.xidErrors}}</p>
+
+   <p>After: {{base.xidFolderAfter}}}</p>
+   <p>Points after: {{toMovePoints.xidMapPointsAfter}}</p>
+
+   <p>Move folder: {{toMoveFolder.xidFolderToMoveTo}} </p>
+   <p>Points move from to: {{toMovePoints.xidPointsMoveFromTo}} </p>
+
+   <p>Points exists: {{toMovePoints.xidMapPointsExist}}</p>
+   <p>Points not move: {{toMovePoints.xidPointsNotMove}} </p>
+
+   <p>Name folder to change: {{toChangeNameFolder.xidFolderToNameChange}}</p>
+   <p>Name folder changed: {{toChangeNameFolder.xidFolderNameChanged}}</p>
+
+   <p>Folder to delete: {{toDeleteFolder.xidFolderToDelete}}</p>
+   <p>Folder deleted: {{toDeleteFolder.xidFolderDeleted}}</p>
+
+   <p>To delete folder: {{toDeleteFolder.xidFolderToDelete}}</p>
+
+
+
   </div>
 
 
-  <!-- debug -->
-  <!--
- <p>check: {{base.xidFolderToCheck}}</p>
- <p>Exist: {{base.xidFolderExists}}</p>
- <p>Before: {{base.xidFolderBefore}}</p>
-
- <p>Not exist: {{toCreate.xidFolderNotExists}}</p>
-
- <p>To create: {{toCreate.xidFolderToCreate}}</p>
- <p>Errors: {{base.xidErrors}}</p>
-
- <p>After: {{base.xidFolderAfter}}}</p>
- <p>Points after: {{toMovePoints.xidMapPointsAfter}}</p>
-
- <p>Move folder: {{toMoveFolder.xidFolderToMoveTo}} </p>
- <p>Points move from to: {{toMovePoints.xidPointsMoveFromTo}} </p>
-
- <p>Points exists: {{toMovePoints.xidMapPointsExist}}</p>
- <p>Points not move: {{toMovePoints.xidPointsNotMove}} </p>
-
- <p>Name folder to change: {{toChangeNameFolder.xidFolderToNameChange}}</p>
- <p>Name folder changed: {{toChangeNameFolder.xidFolderNameChanged}}</p>
-
- <p>Folder to delete: {{toDeleteFolder.xidFolderToDelete}}</p>
- <p>Folder deleted: {{toDeleteFolder.xidFolderDeleted}}</p>
-
- <p>To delete folder: {{toDeleteFolder.xidFolderToDelete}}</p>
- <p>Timer: {{timer}}</p>
- -->
 
 </template>
 
 <script>
   import VJsoneditor from 'vue-jsoneditor';
   import axios from 'axios';
+  import moment from 'moment';
+
 
   export default {
     name: "export-import-point-hierarchy",
     components: {
       VJsoneditor
+    },
+    filters: {
+      moment: function (date) {
+        return moment(date).format(' mm:ss');
+      }
     },
     data() {
       return {
@@ -203,7 +212,6 @@
             isActive: false,
           },
           canceled: false,
-          status: "",
           statusGroup: "",
           statusDetail: "",
           counterToParse: 0,
@@ -211,6 +219,7 @@
           xidFolderBefore: [],
           xidFolderExists: [],
           xidErrors: [],
+          xidFolderToCheck: []
         },
         toCreate: {
           xidFolderNotExists: [],
@@ -261,13 +270,15 @@
         this.timer.endImport = 0;
         this.timer.timeImport = 0;
 
-        this.base.status = "";
+        this.base.statusGroup ="";
+        this.base.statusDetail = "";
         this.base.counterToParse = 0;
         this.base.xidFolderAfter = [];
         this.base.xidFolderBefore = [];
         this.base.xidFolderExists = [];
         this.base.xidErrors = [];
         this.base.canceled = false;
+        this.base.xidFolderToCheck = [];
 
         this.toCreate.xidFolderNotExists = [];
         this.toCreate.xidFolderToCreate = [];
@@ -287,8 +298,9 @@
 
         this.toChangeNameFolder.xidFolderToNameChange = [];
         this.toChangeNameFolder.xidFolderNameChanged = [];
+
       },
-      showStatus(status, infoStatus, str, detailsElementsDoing, detailsElementsToDo ) {
+      showStatus(status, infoStatus, str, detailsElementsDoing, detailsElementsToDo) {
 
         if (status == this.constants.STATUS) {
           this.base.status = str;
@@ -300,7 +312,7 @@
             console.log("STATUS INFO:" + infoStatus);
 
             this.base.progressImport.isActive = false;
-            this.base.progressImport.detail.percent = 100.00;
+            this.base.progressImport.detail.percent = 100;
             this.base.statusDetail = "";
             this.base.statusGroup = "";
 
@@ -349,7 +361,7 @@
         }
       },
       check() {
-        if (this.canceled())return;
+        if (this.canceled()) return;
 
         this.showStatus(
           this.constants.STATUS_GROUP,
@@ -370,10 +382,12 @@
           );
           const apiCheckXidFolder = `./api/pointHierarchy/folderCheckExist/${this.base.xidFolderToCheck[0].xidFolder}`;
           axios.get(apiCheckXidFolder).then(response => {
+
             if (response.data !== undefined) {
               this.base.xidFolderExists.push(this.base.xidFolderToCheck[0]);
               this.base.xidFolderBefore.push(response.data);
             } else if (this.base.xidFolderToCheck[0] != undefined && response.data == false) {
+
               this.toCreate.xidFolderNotExists.push(this.base.xidFolderToCheck[0]);
             }
             this.base.xidFolderToCheck.splice(0, 1);
@@ -384,6 +398,7 @@
             }
           }).catch(error => {
             console.log(error);
+            console.log("SIZE FOLDERS NOT EXISTS:"+this.toCreate.xidFolderNotExists.length);
             this.toCreate.xidFolderNotExists.push(this.base.xidFolderToCheck[0]);
             this.base.xidFolderToCheck.splice(0, 1);
             if (this.base.xidFolderToCheck.length > 0) {
@@ -400,10 +415,10 @@
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.CHECK_TO_CREATE,
           "Check folders to create");
+        console.log("SIZE FOLDERS NOT EXISTS:"+this.toCreate.xidFolderNotExists.length);
         if (this.toCreate.xidFolderNotExists.length > 0) {
           for (var id in this.toCreate.xidFolderNotExists) {
             if (this.toCreate.xidFolderNotExists[id] != null) {
-
               this.showStatus(
                 this.constants.STATUS_DETAIL,
                 0,
@@ -434,7 +449,7 @@
                 this.constants.STATUS_DETAIL,
                 0,
                 "xid:" + this.base.xidFolderExists[i].xidFolder,
-                i+j,
+                i + j,
                 this.base.xidFolderExists.length + this.base.xidFolderBefore.length
               );
               if (this.base.xidFolderExists[i].parentXid !== this.base.xidFolderBefore[j].parentXid) {
@@ -784,10 +799,6 @@
           .then(response => {
             this.timer.stopImport = performance.now();
             this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
-            this.showStatus(
-              this.constants.STATUS_GROUP,
-              this.constants.STATUS_GROUP_INFO.REFRESH_CACHE,
-              "End");
           })
           .catch(error => {
             console.log(error);
@@ -804,26 +815,27 @@
       },
       calculateProgressGroup(elementsDoing) {
         this.base.progressImport.group.elementDoing = elementsDoing;
-        this.base.progressImport.group.percent = (
+        this.base.progressImport.group.percent = ((
           this.base.progressImport.group.elementDoing /
-          this.base.progressImport.group.elementToDo) * 100;
+          this.base.progressImport.group.elementToDo) * 100).toFixed(0);
       },
       calculateProgressDetail(elementsDoing, elementsToDo) {
         this.base.progressImport.detail.elementDoing = elementsDoing;
         this.base.progressImport.detail.elementToDo = elementsToDo;
-        if ( elementsDoing == undefined || elementsToDo == undefined) {
-          this.base.progressImport.detail.percent = 100.00;
+        if (elementsDoing == undefined || elementsToDo == undefined) {
+          this.base.progressImport.detail.percent = 100;
         } else if (elementsToDo == 0) {
-          this.base.progressImport.detail.percent = 100.00;
-        } if (elementsDoing == 0) {
+          this.base.progressImport.detail.percent = 100;
+        }
+        if (elementsDoing == 0) {
           this.base.progressImport.detail.percent = 0;
         } else {
-          this.base.progressImport.detail.percent = (
+          this.base.progressImport.detail.percent = ((
             this.base.progressImport.detail.elementDoing /
-            this.base.progressImport.detail.elementToDo) * 100;
+            this.base.progressImport.detail.elementToDo) * 100).toFixed(0);
         }
         if (isNaN(this.base.progressImport.detail.percent)) {
-          this.base.progressImport.detail.percent = 100.00;
+          this.base.progressImport.detail.percent = 100;
         }
       },
       canceled() {

@@ -158,7 +158,7 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
         if (folderPointHierarchy.getParentXid() != null) {
             try {
                 parentId = DAO.getInstance().getJdbcTemp().queryForObject(
-                        SELECT_FOLDER,
+                        SELECT_FOLDER_ID,
                         new Object[]{folderPointHierarchy.getParentXid()},
                         Integer.class);
             } catch (EmptyResultDataAccessException e) {
