@@ -683,6 +683,7 @@ public class PointValueService implements MangoPointValues {
     public void updateAllMetaDataPointsByScript() {
         List<DataPointVO> metaDataPoints = new ArrayList<>();
 
+        
         dataSourceService.getDataSources()
                 .stream()
                 .filter(ds -> ds.getType().getId() == DataSourceVO.Type.META.getId())
