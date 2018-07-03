@@ -5,7 +5,6 @@
 package com.serotonin.mango.web.servlet;
 
 import com.serotonin.InvalidArgumentException;
-import com.serotonin.db.MappedRowCallback;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -22,6 +21,7 @@ import com.serotonin.sync.Synchronizer;
 import com.serotonin.util.StringUtils;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
+import org.scada_lts.serorepl.db.RowMapperCallback;
 import org.scada_lts.utils.ColorUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -158,7 +158,7 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
         return null;
     }
 
-    class PointDataRetriever implements Runnable, MappedRowCallback<PointValueTime>, DataQuantizerCallback {
+    class PointDataRetriever implements Runnable, RowMapperCallback<PointValueTime>, DataQuantizerCallback {
         private final int dataPointId;
         private Color colour;
         private final int imageWidth;
