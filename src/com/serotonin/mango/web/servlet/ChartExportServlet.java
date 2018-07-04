@@ -19,7 +19,6 @@ import com.serotonin.mango.vo.report.ReportCsvStreamer;
 import com.serotonin.mango.vo.report.ReportDataValue;
 import com.serotonin.mango.vo.report.ReportPointInfo;
 import com.serotonin.mango.web.dwr.beans.DataExportDefinition;
-import org.scada_lts.serorepl.db.RowMapperCallback;
 
 public class ChartExportServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -47,7 +46,7 @@ public class ChartExportServlet extends HttpServlet {
         final ReportCsvStreamer exportCreator = new ReportCsvStreamer(response.getWriter(), bundle);
 
         final ReportDataValue rdv = new ReportDataValue();
-        RowMapperCallback<PointValueTime> callback = new RowMapperCallback<PointValueTime>() {
+        PVTRowMapper callback = new PVTRowMapper() {
             @Override
             public void row(PointValueTime pvt, int rowIndex) {
                 rdv.setValue(pvt.getValue());

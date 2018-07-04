@@ -21,7 +21,6 @@ import com.serotonin.sync.Synchronizer;
 import com.serotonin.util.StringUtils;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
-import org.scada_lts.serorepl.db.RowMapperCallback;
 import org.scada_lts.utils.ColorUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -158,7 +157,7 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
         return null;
     }
 
-    class PointDataRetriever implements Runnable, RowMapperCallback<PointValueTime>, DataQuantizerCallback {
+    class PointDataRetriever implements Runnable, PVTRowMapper, DataQuantizerCallback {
         private final int dataPointId;
         private Color colour;
         private final int imageWidth;
