@@ -1,12 +1,12 @@
 package br.org.scadabr.db.dao;
 
 import br.org.scadabr.vo.scripting.ScriptVO;
-import com.serotonin.db.spring.GenericRowMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.BaseDao;
 import com.serotonin.util.SerializationHelper;
 import org.scada_lts.dao.DAO;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
@@ -76,15 +76,7 @@ public class ScriptDao extends BaseDao {
 				new int[] { Types.VARCHAR, Types.VARCHAR,
 						Types.VARCHAR, Types.INTEGER, Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB,
 						Types.INTEGER });
-		/*ejt
-				.update(
-						"update scripts set xid=?, name=?, script=?, userId=?, data=? where id=?",
-						new Object[] { vo.getXid(), vo.getName(),
-								vo.getScript(), vo.getUserId(),
-								SerializationHelper.writeObject(vo), vo.getId() },
-						new int[] { Types.VARCHAR, Types.VARCHAR,
-								Types.VARCHAR, Types.INTEGER, Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB,
-								Types.INTEGER });*/
+
 	}
 
 	public void deleteScript(final int scriptId) {
@@ -98,18 +90,14 @@ public class ScriptDao extends BaseDao {
 								TransactionStatus status) {
 							DAO.getInstance().getJdbcTemp().update("delete from scripts where id=?",
 									scriptId);
-							/*ejt2.update("delete from scripts where id=?",
-									new Object[] { scriptId });*/
+
 						}
 					});
 		}
 	}
 
 	public ScriptVO<?> getScript(int id) {
-
 		return (ScriptVO<?>)DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT + " where id=?",new Object[] { id }, new ScriptRowMapper() );
-		/*return queryForObject(SCRIPT_SELECT + " where id=?",
-				new Object[] { id }, new ScriptRowMapper(), null);*/
 	}
 
 	public List<ScriptVO<?>> getScripts() {
@@ -118,7 +106,7 @@ public class ScriptDao extends BaseDao {
 		return scripts;
 	}
 
-	class ScriptRowMapper implements GenericRowMapper<ScriptVO<?>> {
+	class ScriptRowMapper implements RowMapper<ScriptVO<?>> {
 		public ScriptVO<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
                         ScriptVO<?> script;
                         if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")){
@@ -136,9 +124,6 @@ public class ScriptDao extends BaseDao {
 		}
 	}
 
-	/*public String generateUniqueXid() {
-		return generateUniqueXid(ScriptVO.XID_PREFIX, "scripts");
-	}*/
 
 	public boolean isXidUnique(String xid, int excludeId) {
 		return isXidUnique(xid, excludeId, "scripts");
@@ -149,8 +134,6 @@ public class ScriptDao extends BaseDao {
 			return (ScriptVO<?>)DAO.getInstance().getJdbcTemp().query(SCRIPT_SELECT + " where xid=?",
 					new Object[] { xid }, new ScriptRowMapper());
 
-			/*return queryForObject(SCRIPT_SELECT + " where xid=?",
-					new Object[] { xid }, new ScriptRowMapper(), null);*/
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}

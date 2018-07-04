@@ -18,14 +18,14 @@
  */
 package com.serotonin.mango.db.dao;
 
-import com.serotonin.db.spring.ArgPreparedStatementSetter;
-import com.serotonin.db.spring.ArgTypePreparedStatementSetter;
-import com.serotonin.db.spring.GenericTransactionTemplate;
 import com.serotonin.mango.Common;
 import org.scada_lts.dao.DAO;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.ArgumentTypePreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -124,11 +124,11 @@ public class BaseDao{
 	}
 
 	protected int doInsert(String sql, Object params[]) {
-		return executeInsert(sql, new ArgPreparedStatementSetter(params));
+		return executeInsert(sql, new ArgumentPreparedStatementSetter(params));
 	}
 
 	protected int doInsert(String sql, Object params[], int types[]) {
-		return executeInsert(sql, new ArgTypePreparedStatementSetter(params,
+		return executeInsert(sql, new ArgumentTypePreparedStatementSetter(params,
 				types));
 	}
 
@@ -137,11 +137,11 @@ public class BaseDao{
 	}
 
 	protected long doInsertLong(String sql, Object params[]) {
-		return executeInsertLong(sql, new ArgPreparedStatementSetter(params));
+		return executeInsertLong(sql, new ArgumentPreparedStatementSetter(params));
 	}
 
 	protected long doInsertLong(String sql, Object params[], int types[]) {
-		return executeInsertLong(sql, new ArgTypePreparedStatementSetter(
+		return executeInsertLong(sql, new ArgumentTypePreparedStatementSetter(
 				params, types));
 	}
 
@@ -159,7 +159,7 @@ public class BaseDao{
 		return this.tm;
 	}
 
-	protected GenericTransactionTemplate getTransactionTemplate() {
-		return new GenericTransactionTemplate(this.getTransactionManager());
+	protected TransactionTemplate getTransactionTemplate() {
+		return new TransactionTemplate(this.getTransactionManager());
 	}
 }

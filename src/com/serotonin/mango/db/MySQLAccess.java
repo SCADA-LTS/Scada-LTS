@@ -27,8 +27,8 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.springframework.dao.DataAccessException;
 
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class MySQLAccess extends BasePooledAccess {
 	
@@ -76,11 +76,11 @@ public class MySQLAccess extends BasePooledAccess {
     }
 
     @Override
-    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
+    protected boolean newDatabaseCheck(JdbcTemplate jdbcTemplate) {
     	
     	// To test old shema
     	/*try {
-             ejt.execute("select count(*) from users");
+             jdbcTemplate.execute("select count(*) from users");
          }
          catch (DataAccessException e) {
              if (e.getCause() instanceof SQLException) {
@@ -102,7 +102,7 @@ public class MySQLAccess extends BasePooledAccess {
     	boolean baseLineNotExist = false;
     	
         try {
-            ejt.execute("select count(*) from users");
+            jdbcTemplate.execute("select count(*) from users");
             LOG.info("schemaExist:"+shemaExist);
         } catch (DataAccessException e) {
             shemaExist = false;
@@ -110,7 +110,7 @@ public class MySQLAccess extends BasePooledAccess {
         }
         
         try {
-           ejt.execute("select count(*) from schema_version");
+           jdbcTemplate.execute("select count(*) from schema_version");
            LOG.info("BaseLineNotExist:"+baseLineNotExist);
         } catch (DataAccessException e) {
         	baseLineNotExist = true;
@@ -159,7 +159,7 @@ public class MySQLAccess extends BasePooledAccess {
     }
 
     @Override
-    public void executeCompress(ExtendedJdbcTemplate ejt) {
+    public void executeCompress(JdbcTemplate jdbcTemplate) {
         // no op
     }
 }

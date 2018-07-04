@@ -1,11 +1,11 @@
 package br.org.scadabr.db.dao.mocks;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import com.serotonin.db.spring.GenericRowMapper;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.vo.WatchList;
+import org.springframework.jdbc.core.RowMapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class MockWatchlistDao extends WatchListDao {
 
@@ -29,7 +29,7 @@ public class MockWatchlistDao extends WatchListDao {
 		return watchList;
 	}
 
-	class WatchListRowMapper implements GenericRowMapper<WatchList> {
+	class WatchListRowMapper implements RowMapper<WatchList> {
 		public WatchList mapRow(ResultSet rs, int rowNum) throws SQLException {
 			WatchList wl = new WatchList();
 			wl.setId(rs.getInt(1));

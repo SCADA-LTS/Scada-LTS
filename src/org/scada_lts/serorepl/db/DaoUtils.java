@@ -1,7 +1,7 @@
 package org.scada_lts.serorepl.db;
 
-import com.serotonin.db.spring.GenericTransactionTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 
@@ -22,7 +22,7 @@ public class DaoUtils {
         return this.tm;
     }
 
-    protected GenericTransactionTemplate getTransactionTemplate() {
-        return new GenericTransactionTemplate(this.getTransactionManager());
+    protected TransactionTemplate getTransactionTemplate() {
+        return new TransactionTemplate(this.getTransactionManager());
     }
 }

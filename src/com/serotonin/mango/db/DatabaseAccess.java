@@ -28,11 +28,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.spring.ConnectionCallbackVoid;
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.upgrade.DBUpgrade;
@@ -111,11 +111,11 @@ abstract public class DatabaseAccess {
 			initializeImpl("");
 		}
 
-		ExtendedJdbcTemplate ejt = new ExtendedJdbcTemplate();
-		ejt.setDataSource(getDataSource());
+		JdbcTemplate jdbcTemplate = new JdbcTemplate();
+		jdbcTemplate.setDataSource(getDataSource());
 
 		try {
-			if (newDatabaseCheck(ejt)) {
+			if (newDatabaseCheck(jdbcTemplate)) {
 				// Check if we should convert from another database.
 				String convertTypeStr = null;
 				try {
@@ -181,7 +181,7 @@ abstract public class DatabaseAccess {
 			throw e;
 		}
 
-		postInitialize(ejt);
+		postInitialize(jdbcTemplate);
 	}
 
 	abstract public DatabaseType getType();
@@ -194,7 +194,7 @@ abstract public class DatabaseAccess {
 
 	abstract public File getDataDirectory();
 
-	abstract public void executeCompress(ExtendedJdbcTemplate ejt);
+	abstract public void executeCompress(JdbcTemplate ejt);
 
 	abstract protected void initializeImpl(String propertyPrefix);
 
@@ -202,16 +202,16 @@ abstract public class DatabaseAccess {
 			String dataSourceName);
 
 	protected void postInitialize(
-			@SuppressWarnings("unused") ExtendedJdbcTemplate ejt) {
+			@SuppressWarnings("unused") JdbcTemplate jdbcTemplate) {
 		// no op - override as necessary
 	}
 
-	abstract protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt);
+	abstract protected boolean newDatabaseCheck(JdbcTemplate jdbcTemplate);
 
 	abstract public void runScript(String[] script, final OutputStream out)
 			throws Exception;
 
-	public void doInConnection(ConnectionCallbackVoid callback) {
+	public void doInConnection(ConnectionCallback callback) {
 		DataSource dataSource = getDataSource();
 		Connection conn = null;
 		try {

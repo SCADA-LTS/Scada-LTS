@@ -29,8 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataAccessException;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class Oracle11GAccess extends BasePooledAccess {
 	private enum ErrorCode {
@@ -112,9 +112,9 @@ public class Oracle11GAccess extends BasePooledAccess {
 	}
 
 	@Override
-	protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
+	protected boolean newDatabaseCheck(JdbcTemplate jdbcTemplate) {
 		try {
-			ejt.execute("select count(*) from users");
+			jdbcTemplate.execute("select count(*) from users");
 		} catch (DataAccessException e) {
 			if (e.getCause() instanceof SQLException) {
 				SQLException se = (SQLException) e.getCause();
@@ -146,7 +146,7 @@ public class Oracle11GAccess extends BasePooledAccess {
 	}
 
 	@Override
-	public void executeCompress(ExtendedJdbcTemplate ejt) {
+	public void executeCompress(JdbcTemplate jdbcTemplate) {
 		// no op
 	}
 

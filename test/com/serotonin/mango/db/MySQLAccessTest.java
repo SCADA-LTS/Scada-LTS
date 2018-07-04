@@ -17,12 +17,12 @@ import br.org.scadabr.db.AbstractMySQLDependentTest;
 import br.org.scadabr.db.scenarios.ScenarioWithAdministrador;
 import br.org.scadabr.db.scenarios.TablelessDatabaseScenario;
 
-import com.serotonin.db.spring.ConnectionCallbackVoid;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess.DatabaseType;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
+import org.springframework.jdbc.core.ConnectionCallback;
 
 public class MySQLAccessTest extends AbstractMySQLDependentTest {
 
@@ -110,9 +110,9 @@ public class MySQLAccessTest extends AbstractMySQLDependentTest {
 	public void doInConnectionShouldPassAConnectionToTheDatabase() {
 		useScenario(new ScenarioWithAdministrador());
 
-		mysqlAccess.doInConnection(new ConnectionCallbackVoid() {
+		mysqlAccess.doInConnection(new ConnectionCallback() {
 			@Override
-			public void doInConnection(Connection conn) throws SQLException {
+			public Object doInConnection(Connection conn) throws SQLException {
 				Statement stmt = conn.createStatement();
 
 				ResultSet rs = stmt.executeQuery("SELECT username FROM users");
@@ -122,6 +122,7 @@ public class MySQLAccessTest extends AbstractMySQLDependentTest {
 				}
 				rs.close();
 				assertEquals(dbName, "admin");
+				return null;
 			}
 		});
 	}
@@ -130,9 +131,9 @@ public class MySQLAccessTest extends AbstractMySQLDependentTest {
 	public void doInConnectionShouldRollbackWhenExceptionIsThrown() {
 		useScenario(new ScenarioWithAdministrador());
 		try {
-			mysqlAccess.doInConnection(new ConnectionCallbackVoid() {
+			mysqlAccess.doInConnection(new ConnectionCallback() {
 				@Override
-				public void doInConnection(Connection conn) throws SQLException {
+				public Object doInConnection(Connection conn) throws SQLException {
 					Statement stmt = conn.createStatement();
 
 					stmt.execute("UPDATE USERS SET username='admin2' WHERE username='admin'");

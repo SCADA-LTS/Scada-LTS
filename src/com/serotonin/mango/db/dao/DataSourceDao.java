@@ -18,13 +18,13 @@
  */
 package com.serotonin.mango.db.dao;
 
-import com.serotonin.db.spring.GenericResultSetExtractor;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.util.SerializationHelper;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.service.DataSourceService;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -73,7 +73,7 @@ public class DataSourceDao {
 	public Object getPersistentData(int id) {
 		return DAO.getInstance().getJdbcTemp().query("select rtdata from dataSources where id=?",
 				new Object[] { id },
-				(GenericResultSetExtractor<Serializable>) rs -> {
+				(ResultSetExtractor<Serializable>) rs -> {
                     if (!rs.next())
                         return null;
 

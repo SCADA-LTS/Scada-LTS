@@ -8,19 +8,19 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.spring.ConnectionCallbackVoid;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.ScriptRunner;
+import org.springframework.jdbc.core.ConnectionCallback;
 
 public class DatalessDatabaseScenario extends AbstractDatabaseScenario {
 
 	@Override
 	public void setupScenario(DatabaseAccess database) {
 		try {
-			database.doInConnection(new ConnectionCallbackVoid() {
+			database.doInConnection(new ConnectionCallback() {
 
 				@Override
-				public void doInConnection(Connection conn) throws SQLException {
+				public Object doInConnection(Connection conn) throws SQLException {
 					ScriptRunner sr = new ScriptRunner(conn, false, false);
 					Reader reader = getScriptCommands("scripts/resetDatabase-mysql.sql");
 					try {
@@ -28,6 +28,7 @@ public class DatalessDatabaseScenario extends AbstractDatabaseScenario {
 					} catch (IOException e) {
 						fail("Error reading script");
 					}
+					return null;
 				}
 			});
 		} catch (Exception e) {

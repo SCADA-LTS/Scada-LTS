@@ -30,8 +30,8 @@ import javax.servlet.ServletContext;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.dao.DataAccessException;
 
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class PostgreSQLAccess extends BasePooledAccess {
     public PostgreSQLAccess(ServletContext ctx) {
@@ -76,9 +76,9 @@ public class PostgreSQLAccess extends BasePooledAccess {
     }
 
     @Override
-    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
+    protected boolean newDatabaseCheck(JdbcTemplate jdbcTemplate) {
         try {
-            //ejt.execute("select count(*) from users");
+            //jdbcTemplate.execute("select count(*) from users");
             Class.forName(getDriverClassName());
             Connection conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url.public"),
                     Common.getEnvironmentProfile().getString("db.username"),
@@ -133,7 +133,7 @@ public class PostgreSQLAccess extends BasePooledAccess {
     }
 
     @Override
-    public void executeCompress(ExtendedJdbcTemplate ejt) {
+    public void executeCompress(JdbcTemplate jdbcTemplate) {
         // no op
     }
 }

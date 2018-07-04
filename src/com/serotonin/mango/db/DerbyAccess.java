@@ -26,10 +26,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -40,12 +38,11 @@ import org.apache.derby.jdbc.EmbeddedXADataSource40;
 import org.apache.derby.tools.ij;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.CallableStatementCreator;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.spring.ConnectionCallbackVoid;
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
-import com.serotonin.db.spring.GenericRowMapper;
 import com.serotonin.mango.Common;
 
 public class DerbyAccess extends DatabaseAccess {
@@ -123,8 +120,8 @@ public class DerbyAccess extends DatabaseAccess {
     }
 
     @Override
-    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
-        int count = ejt.queryForInt("select count(1) from sys.systables where tablename='USERS'");
+    protected boolean newDatabaseCheck(JdbcTemplate jdbcTemplate) {
+        int count = jdbcTemplate.queryForInt("select count(1) from sys.systables where tablename='USERS'");
         if (count == 0) {
             // The users table wasn't found, so assume that this is a new Mango instance.
             // Create the tables
@@ -149,8 +146,8 @@ public class DerbyAccess extends DatabaseAccess {
     }
 
     @Override
-    protected void postInitialize(ExtendedJdbcTemplate ejt) {
-        updateIndentityStarts(ejt);
+    protected void postInitialize(JdbcTemplate jdbcTemplate) {
+        updateIndentityStarts(jdbcTemplate);
     }
 
     @Override
@@ -160,14 +157,15 @@ public class DerbyAccess extends DatabaseAccess {
             sb.append(line).append("\r\n");
         final InputStream in = new ByteArrayInputStream(sb.toString().getBytes("ASCII"));
 
-        Common.ctx.getDatabaseAccess().doInConnection(new ConnectionCallbackVoid() {
-            public void doInConnection(Connection conn) {
+        Common.ctx.getDatabaseAccess().doInConnection(new ConnectionCallback() {
+            public Object doInConnection(Connection conn) {
                 try {
                     ij.runScript(conn, in, "ASCII", out, Common.UTF8);
                 }
                 catch (UnsupportedEncodingException e) {
                     throw new ShouldNeverHappenException(e);
                 }
+                return null;
             }
         });
     }
@@ -182,7 +180,7 @@ public class DerbyAccess extends DatabaseAccess {
      * autoincrement value or max(id)+1. This ensures that updates to tables that may have occurred are handled, and
      * prevents cases where inserts are attempted with identities that already exist.
      */
-    private void updateIndentityStarts(ExtendedJdbcTemplate ejt) {
+    private void updateIndentityStarts(JdbcTemplate ejt) {
        /* List<IdentityStart> starts = ejt.query("select t.tablename, c.columnname, c.autoincrementvalue " + //
                 "from sys.syscolumns c join sys.systables t on c.referenceid = t.tableid " + //
                 "where t.tabletype='T' and c.autoincrementvalue is not null", new GenericRowMapper<IdentityStart>() {
@@ -230,18 +228,18 @@ public class DerbyAccess extends DatabaseAccess {
     }
 
     @Override
-    public void executeCompress(ExtendedJdbcTemplate ejt) {
-        compressTable(ejt, "pointValues");
-        compressTable(ejt, "pointValueAnnotations");
-        compressTable(ejt, "events");
-        compressTable(ejt, "reportInstanceData");
-        compressTable(ejt, "reportInstanceDataAnnotations");
-        compressTable(ejt, "reportInstanceEvents");
-        compressTable(ejt, "reportInstanceUserComments");
+    public void executeCompress(JdbcTemplate jdbcTemplate) {
+        compressTable(jdbcTemplate, "pointValues");
+        compressTable(jdbcTemplate, "pointValueAnnotations");
+        compressTable(jdbcTemplate, "events");
+        compressTable(jdbcTemplate, "reportInstanceData");
+        compressTable(jdbcTemplate, "reportInstanceDataAnnotations");
+        compressTable(jdbcTemplate, "reportInstanceEvents");
+        compressTable(jdbcTemplate, "reportInstanceUserComments");
     }
 
-    private void compressTable(ExtendedJdbcTemplate ejt, final String tableName) {
-        ejt.call(new CallableStatementCreator() {
+    private void compressTable(JdbcTemplate jdbcTemplate, final String tableName) {
+        jdbcTemplate.call(new CallableStatementCreator() {
             @Override
             public CallableStatement createCallableStatement(Connection conn) throws SQLException {
                 CallableStatement cs = conn.prepareCall("call SYSCS_UTIL.SYSCS_COMPRESS_TABLE(?, ?, ?)");

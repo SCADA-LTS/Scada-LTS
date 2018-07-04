@@ -18,13 +18,13 @@
  */
 package com.serotonin.mango.db.dao;
 
+import com.serotonin.mango.vo.UserComment;
+import org.springframework.jdbc.core.RowMapper;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.serotonin.db.spring.GenericRowMapper;
-import com.serotonin.mango.vo.UserComment;
-
-public class UserCommentRowMapper implements GenericRowMapper<UserComment> {
+public class UserCommentRowMapper implements RowMapper<UserComment> {
     public static final String USER_COMMENT_SELECT = "select uc.userId, u.username, uc.ts, uc.commentText "
             + "from userComments uc left join users u on uc.userId = u.id ";
 

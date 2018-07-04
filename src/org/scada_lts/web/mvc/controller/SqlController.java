@@ -35,14 +35,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.SqlForm;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
 
-import com.serotonin.db.spring.ConnectionCallbackVoid;
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -89,8 +89,8 @@ public class SqlController {
         DatabaseAccess databaseAccess = Common.ctx.getDatabaseAccess();
         try {
             if (WebUtils.hasSubmitParameter(request, "query")) {
-                databaseAccess.doInConnection(new ConnectionCallbackVoid() {
-                    public void doInConnection(Connection conn) throws SQLException {
+                databaseAccess.doInConnection(new ConnectionCallback() {
+                    public Object doInConnection(Connection conn) throws SQLException {
                         Statement stmt = conn.createStatement();
                         ResultSet rs = stmt.executeQuery(form.getSqlString());
 
@@ -125,11 +125,12 @@ public class SqlController {
                         }
                         form.setHeaders(headers);
                         form.setData(data);
+                        return null;
                     }
                 });
             }
             else if (WebUtils.hasSubmitParameter(request, "update")) {
-                ExtendedJdbcTemplate ejt = new ExtendedJdbcTemplate();
+                JdbcTemplate ejt = new JdbcTemplate();
                 ejt.setDataSource(databaseAccess.getDataSource());
                 int result = ejt.update(form.getSqlString());
                 form.setUpdateResult(result);

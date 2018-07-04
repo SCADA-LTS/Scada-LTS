@@ -3,10 +3,10 @@ package com.serotonin.mango.vo.bean;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.serotonin.db.spring.GenericRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 
 public class LongPair {
-    public static final GenericRowMapper<LongPair> ROW_MAPPER = new GenericRowMapper<LongPair>() {
+    public static final RowMapper<LongPair> ROW_MAPPER = new RowMapper<LongPair>() {
         @Override
         public LongPair mapRow(ResultSet rs, int index) throws SQLException {
             return new LongPair(rs.getLong(1), rs.getLong(2));

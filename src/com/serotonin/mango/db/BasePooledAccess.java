@@ -33,8 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * @author Matthew Lohbihler
@@ -100,8 +100,8 @@ abstract public class BasePooledAccess extends DatabaseAccess
     @Override
     public void runScript(String[] script, OutputStream out)
     {
-        ExtendedJdbcTemplate ejt = new ExtendedJdbcTemplate();
-        ejt.setDataSource(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+        jdbcTemplate.setDataSource(dataSource);
 
         StringBuilder statement = new StringBuilder();
 
@@ -119,7 +119,7 @@ abstract public class BasePooledAccess extends DatabaseAccess
             if(line.endsWith(";"))
             {
                 // Execute the statement
-                ejt.execute(statement.toString());
+                jdbcTemplate.execute(statement.toString());
                 statement.delete(0, statement.length() - 1);
             }
         }

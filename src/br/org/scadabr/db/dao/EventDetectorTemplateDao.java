@@ -1,17 +1,14 @@
 package br.org.scadabr.db.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.List;
-
-import br.org.scadabr.api.exception.DAOException;
 import br.org.scadabr.vo.eventDetectorTemplate.EventDetectorTemplateVO;
-
-import com.serotonin.db.spring.GenericRowMapper;
 import com.serotonin.mango.db.dao.BaseDao;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.scada_lts.dao.DAO;
+import org.springframework.jdbc.core.RowMapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 public class EventDetectorTemplateDao extends BaseDao {
 
@@ -106,7 +103,7 @@ public class EventDetectorTemplateDao extends BaseDao {
 	}
 
 	class TemplateEventDetectorRowMapper implements
-			GenericRowMapper<PointEventDetectorVO> {
+			RowMapper<PointEventDetectorVO> {
 
 		private final EventDetectorTemplateVO template;
 
@@ -142,7 +139,7 @@ public class EventDetectorTemplateDao extends BaseDao {
 	}*/
 
 	class EventDetectorTemplateRowMapper implements
-			GenericRowMapper<EventDetectorTemplateVO> {
+			RowMapper<EventDetectorTemplateVO> {
 
 		public EventDetectorTemplateVO mapRow(ResultSet rs, int rowNum)
 				throws SQLException {
