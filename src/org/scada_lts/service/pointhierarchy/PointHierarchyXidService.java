@@ -52,7 +52,7 @@ public class PointHierarchyXidService extends PointHierarchyService {
         boolean res = false;
         try {
             //TODO use java.utils.Optional
-            res = pointHierarchyXidDAO.updateParent(xidPoint, xidFolder);
+            res = pointHierarchyXidDAO.updateParentPoint(xidPoint, xidFolder);
         } catch (Exception e) {
             LOG.error(e);
         }

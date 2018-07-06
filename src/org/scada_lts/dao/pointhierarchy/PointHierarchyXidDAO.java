@@ -106,6 +106,9 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
     private static final String DELETE_FOLDER_HIERARCHY_XID =
             "DELETE FROM pointHierarchy WHERE xid=?";
 
+    private static final String INSERT_FOLDER_HIERARCHY_XID = ""
+            + "INSERT INTO pointHierarchy (parentId, name, xid) values (?,?,?)";
+
 
 
     private class FolderPointHierarchyRowMapper implements RowMapper<FolderPointHierarchy> {
@@ -134,7 +137,7 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED,
             rollbackFor = SQLException.class)
-    public boolean updateParent(String xidPoint, String xidFolder) {
+    public boolean updateParentPoint(String xidPoint, String xidFolder) {
         int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_POINT_ID, new Object[]{xidPoint}, Integer.class);
         int parentId = ROOT_PARENT_ID;
         if (!xidFolder.equals(ROOT)) {
@@ -145,14 +148,21 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED,
             rollbackFor = SQLException.class)
+    public boolean updateParentPoint(String xidPoint, Integer idFolder) {
+        int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_POINT_ID, new Object[]{xidPoint}, Integer.class);
+
+        return updateParentIdDataPoint(id, idFolder);
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED,
+            rollbackFor = SQLException.class)
     public boolean updateFolder(String xidFolder, String newParentXidFolder) {
         int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLER_ID_BASE_ON_XID, new Object[]{xidFolder}, Integer.class);
         int newParentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLER_ID_BASE_ON_XID, new Object[]{newParentXidFolder}, Integer.class);
         return updateParentId(id, newParentId);
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED,
-            rollbackFor = SQLException.class)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     public void add(FolderPointHierarchy folderPointHierarchy) {
         int parentId = 0;
         if (folderPointHierarchy.getParentXid() != null) {
@@ -165,9 +175,11 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
                 // do not do anything
             }
         }
-        DAO.getInstance().getJdbcTemp().update(insertSQL, new Object[]{parentId, folderPointHierarchy.getName()});
-        int folderId = DAO.getInstance().getId();
-        DAO.getInstance().getJdbcTemp().update(UPDATE_FOLDER_HIERARCHY_XID, new Object[]{folderId});
+        DAO.getInstance().getJdbcTemp().update(INSERT_FOLDER_HIERARCHY_XID, new Object[]{parentId, folderPointHierarchy.getName(), folderPointHierarchy.getXid()});
+        Integer idFolder = DAO.getInstance().getId();
+        for(String xidPoint : folderPointHierarchy.getPointXids()) {
+            updateParentPoint(xidPoint, idFolder);
+        }
     }
 
     public FolderPointHierarchy folderCheckExist(String xidFolder) {
