@@ -3,7 +3,6 @@ package com.serotonin.mango.db.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import javafx.util.Pair;
 import org.junit.Test;
 
 import br.org.scadabr.api.exception.DAOException;

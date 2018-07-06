@@ -24,7 +24,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.permissions.PermissionViewACL;
@@ -45,16 +45,16 @@ public class ViewsController extends ParameterizableViewController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ViewDao viewDao = new ViewDao();
 		User user = Common.getUser(request);
-		List<Pair<Integer, String>>  views;
+		List<MutablePair<Integer, String>>  views;
 
 		if (user.isAdmin()) { // Admin user has access to all views
 			views = viewDao.getAllViewNames();
 			/*Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
 			};*/
-			Collections.sort(views, new Comparator<Pair<Integer, String>>() {
+			Collections.sort(views, new Comparator<MutablePair<Integer, String>>() {
 				@Override
-				public int compare(final Pair< Integer, String> o1, final Pair<Integer, String> o2) {
+				public int compare(final MutablePair< Integer, String> o1, final MutablePair<Integer, String> o2) {
 					return  o1.getValue().compareTo(o2.getValue());
 				}
 			});
@@ -80,9 +80,9 @@ public class ViewsController extends ParameterizableViewController {
 			/*Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
 			};*/
-			Collections.sort(views,  new Comparator<Pair<Integer, String>>() {
+			Collections.sort(views,  new Comparator<MutablePair<Integer, String>>() {
 				@Override
-				public int compare(final Pair< Integer, String> o1, final Pair<Integer, String> o2) {
+				public int compare(final MutablePair< Integer, String> o1, final MutablePair<Integer, String> o2) {
 					return  o1.getValue().compareTo(o2.getValue());
 				}
 			});

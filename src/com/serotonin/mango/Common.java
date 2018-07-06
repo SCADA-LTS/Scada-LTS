@@ -35,13 +35,13 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
-import javafx.util.Pair;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.Period;
@@ -538,11 +538,11 @@ public class Common {
 		return null;
 	}
 
-	public static List<Pair<String, String>> getLanguages() {
-		List<Pair<String, String>> languages = new ArrayList<>();
+	public static List<MutablePair<String, String>> getLanguages() {
+		List<MutablePair<String, String>> languages = new ArrayList<>();
 		ResourceBundle i18n = Utf8ResourceBundle.getBundle("i18n");
 		for (String key : i18n.keySet())
-			languages.add(new Pair<>(key, i18n.getString(key)));
+			languages.add(new MutablePair<>(key, i18n.getString(key)));
 		return languages;
 	}
 

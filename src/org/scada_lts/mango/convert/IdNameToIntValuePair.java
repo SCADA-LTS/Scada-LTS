@@ -17,7 +17,7 @@
  */
 package org.scada_lts.mango.convert;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.scada_lts.dao.model.IdName;
 
 import java.util.ArrayList;
@@ -28,26 +28,18 @@ import java.util.List;
  */
 public class IdNameToIntValuePair {
 	
-	public static Pair<Integer, String> convert(IdName idName) {
-
-	/*	IntValuePair ivp = new IntValuePair();
-		ivp.setKey(idName.getId());
-		ivp.setValue(idName.getName());
-		return ivp;*/
-		Pair<Integer, String> ivp2 = new Pair<>(idName.getId(), idName.getName());
+	public static MutablePair<Integer, String> convert(IdName idName) {
+		MutablePair<Integer, String> ivp2 = new MutablePair<>(idName.getId(), idName.getName());
 		return ivp2;
 	}
 	
-	public static List<Pair<Integer, String>> convert(List<IdName> lstIdName) {
+	public static List<MutablePair<Integer, String>> convert(List<IdName> lstIdName) {
 
-		ArrayList<Pair<Integer, String>> list = new ArrayList<>();
-//		ArrayList<IntValuePair> lstIntValuePair = new ArrayList<IntValuePair>();
+		ArrayList<MutablePair<Integer, String>> list = new ArrayList<>();
 		for (IdName idName: lstIdName) {
-//			lstIntValuePair.add(convert(idName));
 			list.add(convert(idName));
 		}
 		return list;
-//		return lstIntValuePair;
 	}
 
 }

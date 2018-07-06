@@ -40,7 +40,7 @@ import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * @author Matthew Lohbihler
@@ -90,13 +90,13 @@ public class MultistateGraphicComponent extends ImageSetComponent {
         return null;
     }
 
-    public List<Pair<Integer, String>> getImageStateList() {
-        List<Pair<Integer, String>> result = new ArrayList<>();
+    public List<MutablePair<Integer, String>> getImageStateList() {
+        List<MutablePair<Integer, String>> result = new ArrayList<>();
         for (Integer state : stateImageMap.keySet()) {
             Integer imageId = stateImageMap.get(state);
 
-            Pair stateList = null;
-            for (Pair ivp : result) {
+            MutablePair stateList = null;
+            for (MutablePair ivp : result) {
                 if (ivp.getKey() == imageId) {
                     stateList = ivp;
                     break;
@@ -104,7 +104,7 @@ public class MultistateGraphicComponent extends ImageSetComponent {
             }
 
             if (stateList == null) {
-                stateList = new Pair<>(imageId, state.toString());
+                stateList = new MutablePair<>(imageId, state.toString());
                 result.add(stateList);
             }
 //            else
@@ -113,9 +113,9 @@ public class MultistateGraphicComponent extends ImageSetComponent {
         return result;
     }
 
-    public void setImageStateList(List<Pair<Integer, String>> imageStateList) {
+    public void setImageStateList(List<MutablePair<Integer, String>> imageStateList) {
         stateImageMap.clear();
-        for (Pair ivp : imageStateList) {
+        for (MutablePair ivp : imageStateList) {
             String[] states = ivp.getValue().toString().split(",");
             for (String stateStr : states) {
                 try {

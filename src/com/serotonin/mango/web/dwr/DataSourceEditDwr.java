@@ -42,7 +42,6 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
-import javafx.util.Pair;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -54,6 +53,7 @@ import net.sf.openv4j.Devices;
 import net.sf.openv4j.Group;
 import net.sf.openv4j.Protocol;
 
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jinterop.dcom.common.JISystem;
@@ -1065,7 +1065,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 	@MethodFilter
 	public DwrResponseI18n validateScript(String script,
-										  List<Pair<Integer, String>> context, int dataTypeId) {
+										  List<MutablePair<Integer, String>> context, int dataTypeId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		ScriptExecutor executor = new ScriptExecutor();

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javafx.util.Pair;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -46,6 +45,7 @@ import com.serotonin.mango.web.servlet.HttpDataSourceServlet;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * @author Matthew Lohbihler
@@ -141,7 +141,7 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
             method.addRequestHeader("User-Agent", USER_AGENT);
 
             // Add the user-defined headers.
-            for (Pair kvp : vo.getStaticHeaders())
+            for (MutablePair kvp : vo.getStaticHeaders())
                 method.addRequestHeader(kvp.getKey().toString(), kvp.getValue().toString());
 
             // Send the request. Set message non-null if there is a failure.
@@ -191,11 +191,11 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
         }
     }
 
-    NameValuePair[] createNVPs(List<Pair<String, String>> staticParameters, List<PublishQueueEntry<HttpPointVO>> list) {
-        List<Pair<String, String>> nvps = new ArrayList<>();
+    NameValuePair[] createNVPs(List<MutablePair<String, String>> staticParameters, List<PublishQueueEntry<HttpPointVO>> list) {
+        List<MutablePair<String, String>> nvps = new ArrayList<>();
 
-        for (Pair kvp : staticParameters)
-            nvps.add(new Pair<>(kvp.getKey().toString(), kvp.getValue().toString()));
+        for (MutablePair kvp : staticParameters)
+            nvps.add(new MutablePair<>(kvp.getKey().toString(), kvp.getValue().toString()));
 
         for (PublishQueueEntry<HttpPointVO> e : list) {
             HttpPointVO pvo = e.getVo();
@@ -220,7 +220,7 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
                     throw new ShouldNeverHappenException("Unknown date format type: " + vo.getDateFormat());
                 }
             }
-            nvps.add(new Pair<>(pvo.getParameterName(), value));
+            nvps.add(new MutablePair<>(pvo.getParameterName(), value));
         }
 
         return nvps.toArray(new NameValuePair[nvps.size()]);

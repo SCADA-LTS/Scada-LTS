@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -402,7 +402,7 @@ public class DataPointService implements MangoDataPoint {
 
 		// Update the folder references in the points.
 		DataPointVO dp;
-		for (Pair p : folder.getPoints()) {
+		for (MutablePair p : folder.getPoints()) {
 			dp = getDataPoint((Integer) p.getKey());
 			// The point may have been deleted while editing the hierarchy.
 			if (dp != null) {

@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
@@ -58,9 +58,9 @@ public class MaintenanceEventsDwr extends BaseDwr {
         });
         response.addData("events", events);
 
-        List<Pair<Integer, String>> dataSources = new ArrayList<>();
+        List<MutablePair<Integer, String>> dataSources = new ArrayList<>();
         for (DataSourceVO<?> ds : new DataSourceDao().getDataSources())
-            dataSources.add(new Pair<>(ds.getId(), ds.getName()));
+            dataSources.add(new MutablePair<>(ds.getId(), ds.getName()));
         response.addData("dataSources", dataSources);
 
         return response;

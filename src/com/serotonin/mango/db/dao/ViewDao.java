@@ -19,7 +19,7 @@
 package com.serotonin.mango.db.dao;
 
 import com.serotonin.mango.view.View;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.scada_lts.mango.convert.IdNameToIntValuePair;
 import org.scada_lts.mango.service.ViewService;
 
@@ -41,15 +41,15 @@ public class ViewDao {
 		return viewService.getViews(userId, userProfileId);
 	}
 
-	public List<Pair<Integer, String>>  getViewNames(int userId, int userProfileId) {
+	public List<MutablePair<Integer, String>>  getViewNames(int userId, int userProfileId) {
 		return IdNameToIntValuePair.convert(viewService.getViewNames(userId, userProfileId));
 	}
 
-	public List<Pair<Integer, String>>  getAllViewNames() {
+	public List<MutablePair<Integer, String>>  getAllViewNames() {
 		return IdNameToIntValuePair.convert(viewService.getAllViewNames());
 	}
 
-	public List<Pair<Integer, String>>  getViewNamesWithReadOrWritePermissions(
+	public List<MutablePair<Integer, String>>  getViewNamesWithReadOrWritePermissions(
 			int userId, int userProfileId) {
 		return IdNameToIntValuePair.convert(viewService.getViewNamesWithReadOrWritePermissions(userId, userProfileId));
 	}

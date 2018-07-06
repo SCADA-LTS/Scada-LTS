@@ -9,7 +9,7 @@ import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.web.i18n.LocalizableMessage;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -32,8 +32,8 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 //	private List<IntValuePair> pointsOnContext = new ArrayList<IntValuePair>();
 //	private List<IntValuePair> objectsOnContext = new ArrayList<IntValuePair>();
 
-	private List<Pair<Integer, String>> pointsOnContext2 = new ArrayList<>();
-	private List<Pair<Integer, String>> objectsOnContext2 = new ArrayList<>();
+	private List<MutablePair<Integer, String>> pointsOnContext2 = new ArrayList<>();
+	private List<MutablePair<Integer, String>> objectsOnContext2 = new ArrayList<>();
 	//
 	// /
 	// / Serialization
@@ -58,8 +58,8 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		if (ver == 1) {
 //			pointsOnContext = (List<IntValuePair>) in.readObject();
 //			objectsOnContext = (List<IntValuePair>) in.readObject();
-			pointsOnContext2 = (List<Pair<Integer,String>>) in.readObject();
-			objectsOnContext2 = (List<Pair<Integer,String>>) in.readObject();
+			pointsOnContext2 = (List<MutablePair<Integer,String>>) in.readObject();
+			objectsOnContext2 = (List<MutablePair<Integer,String>>) in.readObject();
 		}
 	}
 
@@ -68,19 +68,19 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		return new ContextualizedScriptRT(this);
 	}
 
-	public  List<Pair<Integer, String>>  getPointsOnContext() {
+	public  List<MutablePair<Integer, String>>  getPointsOnContext() {
 		return pointsOnContext2;
 	}
 
-	public void setPointsOnContext( List<Pair<Integer, String>>  pointsOnContext) {
+	public void setPointsOnContext( List<MutablePair<Integer, String>>  pointsOnContext) {
 		this.pointsOnContext2 = pointsOnContext;
 	}
 
-	public void setObjectsOnContext( List<Pair<Integer, String>>  objectsOnContext) {
+	public void setObjectsOnContext( List<MutablePair<Integer, String>>  objectsOnContext) {
 		this.objectsOnContext2 = objectsOnContext;
 	}
 
-	public List<Pair<Integer, String>> getObjectsOnContext() {
+	public List<MutablePair<Integer, String>> getObjectsOnContext() {
 		return objectsOnContext2;
 	}
 
@@ -131,7 +131,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 							"emport.error.meta.missing", "varName");
 
 //				pointsOnContext.add(new IntValuePair(dp.getId(), var));
-				pointsOnContext2.add(new Pair<>(dp.getId(), var));
+				pointsOnContext2.add(new MutablePair<>(dp.getId(), var));
 			}
 		}
 
@@ -157,7 +157,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 							"emport.error.meta.missing", "varName");
 
 //				objectsOnContext.add(new IntValuePair(key, var));
-				objectsOnContext2.add(new Pair<>(key, var));
+				objectsOnContext2.add(new MutablePair<>(key, var));
 			}
 		}
 
@@ -167,7 +167,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 	public void jsonSerialize(Map<String, Object> map) {
 		super.jsonSerialize(map);
 		List<Map<String, Object>> pointList = new ArrayList<Map<String, Object>>();
-		for (Pair p : pointsOnContext2) {
+		for (MutablePair p : pointsOnContext2) {
 			DataPointVO dp = new DataPointDao().getDataPoint((int)p.getKey());
 			if (dp != null) {
 				Map<String, Object> point = new HashMap<String, Object>();
@@ -179,7 +179,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		map.put("pointsOnContext", pointList);
 
 		List<Map<String, Object>> objectsList = new ArrayList<Map<String, Object>>();
-		for (Pair p : objectsOnContext2) {
+		for (MutablePair p : objectsOnContext2) {
 			Map<String, Object> point = new HashMap<String, Object>();
 			objectsList.add(point);
 			point.put("varName", p.getValue().toString());

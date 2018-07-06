@@ -13,7 +13,7 @@ import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.web.dwr.BaseDwr;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.scada_lts.dao.DAO;
 
 public class ScriptsDwr extends BaseDwr {
@@ -40,8 +40,8 @@ public class ScriptsDwr extends BaseDwr {
 	}
 
 	public DwrResponseI18n saveScript(int id, String xid, String name,
-			String script, List<Pair<Integer, String>> pointsOnContext,
-			List<Pair<Integer, String>> objectsOnContext) {
+			String script, List<MutablePair<Integer, String>> pointsOnContext,
+			List<MutablePair<Integer, String>> objectsOnContext) {
 
 		ContextualizedScriptVO vo = new ContextualizedScriptVO();
 		vo.setId(id);

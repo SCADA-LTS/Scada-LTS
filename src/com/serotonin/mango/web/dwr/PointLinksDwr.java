@@ -41,7 +41,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * @author Matthew Lohbihler
@@ -55,16 +55,16 @@ public class PointLinksDwr extends BaseDwr {
         List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
         /* List<IntValuePair> sourcePoints = new ArrayList<IntValuePair>();
         List<IntValuePair> targetPoints = new ArrayList<IntValuePair>();*/
-        List<Pair<Integer, String>> sPoints = new ArrayList<>();
-        List<Pair<Integer, String>> tPoints = new ArrayList<>();
+        List<MutablePair<Integer, String>> sPoints = new ArrayList<>();
+        List<MutablePair<Integer, String>> tPoints = new ArrayList<>();
 
         for (DataPointVO point : allPoints) {
             if (Permissions.hasDataPointReadPermission(user, point))
 //                sourcePoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
-                sPoints.add(new Pair<>(point.getId(), point.getExtendedName()));
+                sPoints.add(new MutablePair<>(point.getId(), point.getExtendedName()));
             if (point.getPointLocator().isSettable() && Permissions.hasDataPointSetPermission(user, point))
 //                targetPoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
-                tPoints.add(new Pair<>(point.getId(), point.getExtendedName()));
+                tPoints.add(new MutablePair<>(point.getId(), point.getExtendedName()));
         }
 
         data.put("sourcePoints", sPoints);
@@ -83,8 +83,8 @@ public class PointLinksDwr extends BaseDwr {
         return data;
     }
 
-    private boolean containsPoint( List<Pair<Integer, String>> pointList, int pointId) {
-        for (Pair ivp : pointList) {
+    private boolean containsPoint( List<MutablePair<Integer, String>> pointList, int pointId) {
+        for (MutablePair ivp : pointList) {
             if (Objects.equals(ivp.getKey().toString(), String.valueOf(pointId)))
                 return true;
         }

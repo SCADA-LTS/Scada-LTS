@@ -20,7 +20,6 @@ package com.serotonin.mango.web.dwr.beans;
 
 import java.util.List;
 
-import javafx.util.Pair;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -30,6 +29,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.publish.httpSender.HttpSenderRT;
 import com.serotonin.web.http.HttpUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * @author Matthew Lohbihler
@@ -37,13 +37,13 @@ import com.serotonin.web.http.HttpUtils;
 public class HttpSenderTester extends Thread implements TestingUtility {
     private final String url;
     private final boolean usePost;
-    private final List<Pair<String, String>> staticHeaders;
-    private final List<Pair<String, String>> staticParameters;
+    private final List<MutablePair<String, String>> staticHeaders;
+    private final List<MutablePair<String, String>> staticParameters;
 
     private String result;
 
-    public HttpSenderTester(String url, boolean usePost, List<Pair<String,String>> staticHeaders,
-            List<Pair<String,String>> staticParameters) {
+    public HttpSenderTester(String url, boolean usePost, List<MutablePair<String,String>> staticHeaders,
+            List<MutablePair<String,String>> staticParameters) {
         this.url = url;
         this.usePost = usePost;
         this.staticHeaders = staticHeaders;
@@ -69,7 +69,7 @@ public class HttpSenderTester extends Thread implements TestingUtility {
         method.addRequestHeader("User-Agent", HttpSenderRT.USER_AGENT);
 
         // Add the user-defined headers.
-        for (Pair kvp : staticHeaders)
+        for (MutablePair kvp : staticHeaders)
             method.addRequestHeader(kvp.getKey().toString(), kvp.getValue().toString());
 
         try {
@@ -91,10 +91,10 @@ public class HttpSenderTester extends Thread implements TestingUtility {
         return result;
     }
 
-    private NameValuePair[] convertToNVPs(List<Pair<String, String>> staticParameters) {
+    private NameValuePair[] convertToNVPs(List<MutablePair<String, String>> staticParameters) {
         NameValuePair[] nvps = new NameValuePair[staticParameters.size()];
         for (int i = 0; i < nvps.length; i++) {
-            Pair kvp = staticParameters.get(i);
+            MutablePair kvp = staticParameters.get(i);
             nvps[i] = new NameValuePair(kvp.getKey().toString(), kvp.getValue().toString());
         }
         return nvps;

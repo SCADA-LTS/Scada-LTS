@@ -50,7 +50,7 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * @author Matthew Lohbihler
@@ -72,7 +72,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         UPDATE_EVENT_CODES.addElement(UPDATE_EVENT_CRON, "CRON", "dsEdit.meta.event.cron");
     }
 
-    private List<Pair<Integer, String>> context = new ArrayList<>();
+    private List<MutablePair<Integer, String>> context = new ArrayList<>();
     @JsonRemoteProperty
     private String script;
     private int dataTypeId;
@@ -92,11 +92,11 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         return new LocalizableMessage("common.default", "'" + StringUtils.truncate(script, 40) + "'");
     }
 
-    public List<Pair<Integer, String>> getContext() {
+    public List<MutablePair<Integer, String>> getContext() {
         return context;
     }
 
-    public void setContext(List<Pair<Integer, String>> context) {
+    public void setContext(List<MutablePair<Integer, String>> context) {
         this.context = context;
     }
 
@@ -153,7 +153,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             response.addContextualMessage("script", "validate.required");
 
         List<String> varNameSpace = new ArrayList<String>();
-        for (Pair point : context) {
+        for (MutablePair point : context) {
             String varName = (String) point.getValue();
             if (StringUtils.isEmpty(varName)) {
                 response.addContextualMessage("context", "validate.allVarNames");
@@ -236,7 +236,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         DataPointDao dataPointDao = new DataPointDao();
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        for (Pair ivp : context) {
+        for (MutablePair ivp : context) {
             DataPointVO dp = dataPointDao.getDataPoint((Integer) ivp.getKey());
             if (first)
                 first = false;
@@ -279,7 +279,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             context = new ArrayList<>();
             Map<Integer, String> ctxMap = (Map<Integer, String>) in.readObject();
             for (Map.Entry<Integer, String> point : ctxMap.entrySet())
-                context.add(new Pair<>(point.getKey(), point.getValue()));
+                context.add(new MutablePair<>(point.getKey(), point.getValue()));
 
             script = SerializationHelper.readSafeUTF(in);
             dataTypeId = in.readInt();
@@ -289,7 +289,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             executionDelaySeconds = in.readInt();
         }
         else if (ver == 2) {
-            context = (List<Pair<Integer, String>>) in.readObject();
+            context = (List<MutablePair<Integer, String>>) in.readObject();
             script = SerializationHelper.readSafeUTF(in);
             dataTypeId = in.readInt();
             settable = false;
@@ -298,7 +298,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             executionDelaySeconds = in.readInt();
         }
         else if (ver == 3) {
-            context = (List<Pair<Integer, String>>) in.readObject();
+            context = (List<MutablePair<Integer, String>>) in.readObject();
             script = SerializationHelper.readSafeUTF(in);
             dataTypeId = in.readInt();
             settable = false;
@@ -307,7 +307,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             executionDelaySeconds = in.readInt();
         }
         else if (ver == 4) {
-            context = (List<Pair<Integer, String>>) in.readObject();
+            context = (List<MutablePair<Integer, String>>) in.readObject();
             script = SerializationHelper.readSafeUTF(in);
             dataTypeId = in.readInt();
             settable = in.readBoolean();
@@ -350,7 +350,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 if (var == null)
                     throw new LocalizableJsonException("emport.error.meta.missing", "varName");
 
-                context.add(new Pair<>(dp.getId(), var));
+                context.add(new MutablePair<>(dp.getId(), var));
             }
         }
     }
@@ -363,7 +363,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
         DataPointDao dataPointDao = new DataPointDao();
         List<Map<String, Object>> pointList = new ArrayList<Map<String, Object>>();
-        for (Pair p : context) {
+        for (MutablePair p : context) {
             DataPointVO dp = dataPointDao.getDataPoint((Integer) p.getKey());
             if (dp != null) {
                 Map<String, Object> point = new HashMap<String, Object>();

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.util.ArrayUtils;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * @author Matthew Lohbihler
@@ -94,11 +94,11 @@ public class ExportCodes {
         return elements.get(index).id;
     }
 
-    public List<Pair<Integer, String>> getIdKeys(int... excludeIds) {
-        List<Pair<Integer, String>> result = new ArrayList<>(elements.size());
+    public List<MutablePair<Integer, String>> getIdKeys(int... excludeIds) {
+        List<MutablePair<Integer, String>> result = new ArrayList<>(elements.size());
         for (Element e : elements) {
             if (!ArrayUtils.contains(excludeIds, e.id))
-                result.add(new Pair<>(e.id, e.key));
+                result.add(new MutablePair<>(e.id, e.key));
         }
         return result;
     }

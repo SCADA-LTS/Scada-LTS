@@ -141,9 +141,6 @@
     	<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
-	<path id="Web App Libraries.javafx">
-		<pathelement location="WebContent/WEB-INF/lib/javafx-2018.5.0.jar"/>
-	</path>
 	<path id="EAR Libraries.libraryclasspath"/>
 	<path id="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath">
 		<pathelement location="${env.CATALINA_HOME}/lib/annotations-api.jar"/>
@@ -184,7 +181,6 @@
 		<path refid="Web App Libraries.libraryclasspath"/>
 		<path refid="EAR Libraries.libraryclasspath"/>
 		<path refid="httpcomponents-client-4.5.3"/>
-		<path refid="Web App Libraries.javafx" />
 		<pathelement location="WebContent/WEB-INF/lib/wsdl4j-1.5.1.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/wss4j-1.5.8.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>

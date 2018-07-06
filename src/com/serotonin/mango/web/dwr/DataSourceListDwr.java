@@ -28,7 +28,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO.Type;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -45,7 +45,7 @@ public class DataSourceListDwr extends BaseDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		if (Common.getUser().isAdmin()) {
-			List<Pair<Integer, String>> translatedTypes2 = new ArrayList<>();
+			List<MutablePair<Integer, String>> translatedTypes2 = new ArrayList<>();
 			List<DataSourceVO.Type> types = new ArrayList<DataSourceVO.Type>(EnumSet.allOf(DataSourceVO.Type.class));
 			// because sort not work in openJdk 1.7
 			for (int i = 0; i < types.size()-1; i++) { 
@@ -76,7 +76,7 @@ public class DataSourceListDwr extends BaseDwr {
 							+ SystemSettingsDAO.DATASOURCE_DISPLAY_SUFFIX,
 							type.isDisplay());
 					if (display)
-						translatedTypes2.add(new Pair<>(type.getId(), getMessage(type.getKey())));
+						translatedTypes2.add(new MutablePair<>(type.getId(), getMessage(type.getKey())));
 				}
 			}
 			

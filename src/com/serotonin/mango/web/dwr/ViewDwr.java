@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -126,11 +126,11 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public List<Pair<Integer, String>>  getViews() {
+	public List<MutablePair<Integer, String>>  getViews() {
 		ViewDao viewDao = new ViewDao();
 		User user = Common.getUser();
 
-		List<Pair<Integer, String>>  views = viewDao.getViewNames(user.getId(), user.getUserProfile());
+		List<MutablePair<Integer, String>>  views = viewDao.getViewNames(user.getId(), user.getUserProfile());
 
 		return views;
 	}
@@ -366,9 +366,9 @@ public class ViewDwr extends BaseDwr {
 		result.put("viewUsers", user.getView().getViewUsers());
 
 		// View component types
-		List<Pair<String, String>> components = new ArrayList<>();
+		List<MutablePair<String, String>> components = new ArrayList<>();
 		for (ImplDefinition impl : ViewComponent.getImplementations())
-			components.add(new Pair<>(impl.getName(), getMessage(impl.getNameKey())));
+			components.add(new MutablePair<>(impl.getName(), getMessage(impl.getNameKey())));
 		result.put("componentTypes", components);
 
 		// Available points
@@ -582,7 +582,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<Pair<Integer, String>> imageStates, int defaultImage, boolean displayText, String imageSetId) {
+	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<MutablePair<Integer, String>> imageStates, int defaultImage, boolean displayText, String imageSetId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		// Validate
@@ -646,13 +646,13 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<Pair<String, String>> childPointIds) {
+	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<MutablePair<String, String>> childPointIds) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
 
 		String leadPointId = null;
-		for (Pair kvp : childPointIds) {
+		for (MutablePair kvp : childPointIds) {
 			if (SimpleCompoundComponent.LEAD_POINT.equals(kvp.getKey())) {
 				leadPointId = kvp.getValue().toString();
 				break;
@@ -673,7 +673,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<Pair<String, String>> childPointIds) {
+	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<MutablePair<String, String>> childPointIds) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		commonImageChartComponentValidation(name, width, height, durationType, durationPeriods, response);
@@ -692,7 +692,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<Pair<String,String>> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList) {
+	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<MutablePair<String,String>> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList) {
 
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -715,7 +715,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<Pair<String, String>> childPointIds) {
+	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<MutablePair<String, String>> childPointIds) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
@@ -871,10 +871,10 @@ public class ViewDwr extends BaseDwr {
 			response.addContextualMessage("compoundName", "dsEdit.validate.required");
 	}
 
-	private void saveCompoundPoints(CompoundComponent c, List<Pair<String, String>> childPointIds) {
+	private void saveCompoundPoints(CompoundComponent c, List<MutablePair<String, String>> childPointIds) {
 		User user = Common.getUser();
 
-		for (Pair kvp : childPointIds) {
+		for (MutablePair kvp : childPointIds) {
 			int dataPointId = -1;
 			try {
 				dataPointId = Integer.parseInt(String.valueOf(Integer.valueOf(kvp.getValue().toString())));

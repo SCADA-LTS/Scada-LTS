@@ -30,7 +30,7 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.ImplDefinition;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * @author Matthew Lohbihler
@@ -56,12 +56,12 @@ public class MultistateImageSetRenderer extends ImageSetRenderer {
     private Map<Integer, Integer> stateImageMap;
     private int defaultImage;
 
-    public MultistateImageSetRenderer(ImageSet imageSet, List<Pair<Integer, String>> imageStateList, int defaultImage,
+    public MultistateImageSetRenderer(ImageSet imageSet, List<MutablePair<Integer, String>> imageStateList, int defaultImage,
                                       boolean displayText) {
         super(imageSet, displayText);
 
         stateImageMap = new HashMap<Integer, Integer>();
-        for (Pair ivp : imageStateList) {
+        for (MutablePair ivp : imageStateList) {
             String[] states = ivp.getValue().toString().split(",");
             for (String stateStr : states) {
                 int state = Integer.parseInt(stateStr.trim());
@@ -95,13 +95,13 @@ public class MultistateImageSetRenderer extends ImageSetRenderer {
         return null;
     }
 
-    public List<Pair<Integer, String>> getImageStateList() {
-        List<Pair<Integer, String>> result = new ArrayList<>();
+    public List<MutablePair<Integer, String>> getImageStateList() {
+        List<MutablePair<Integer, String>> result = new ArrayList<>();
         for (Integer state : stateImageMap.keySet()) {
             Integer imageId = stateImageMap.get(state);
 
-            Pair<Integer, String> stateList = null;
-            for (Pair ivp : result) {
+            MutablePair<Integer, String> stateList = null;
+            for (MutablePair ivp : result) {
                 if (ivp.getKey() == imageId) {
                     stateList = ivp;
                     break;
@@ -109,7 +109,7 @@ public class MultistateImageSetRenderer extends ImageSetRenderer {
             }
 
             if (stateList == null) {
-                stateList = new Pair<>(imageId, state.toString());
+                stateList = new MutablePair<>(imageId, state.toString());
                 result.add(stateList);
             }
 //            else

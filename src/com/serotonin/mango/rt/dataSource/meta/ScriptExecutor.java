@@ -28,7 +28,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -63,12 +63,12 @@ public class ScriptExecutor {
 		SCRIPT_FUNCTION_PATH = path;
 	}
 
-	public Map<String, IDataPoint> convertContext(List<Pair<Integer, String>> context)
+	public Map<String, IDataPoint> convertContext(List<MutablePair<Integer, String>> context)
 			throws DataPointStateException {
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
 		Map<String, IDataPoint> converted = new HashMap<String, IDataPoint>();
-		for (Pair<Integer, String> contextEntry : context) {
+		for (MutablePair<Integer, String> contextEntry : context) {
 			DataPointRT point = rtm.getDataPoint((Integer) contextEntry.getKey());
 			if (point == null) {
 				LOG.error("Error DataPointRT null "

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -62,7 +62,7 @@ public class BACnetDiscovery extends DefaultDeviceEventListener implements Testi
     private final LocalDevice localDevice;
     private final AutoShutOff autoShutOff;
 
-    private final List<Pair<Integer, String>> iamsReceived = new ArrayList<>();
+    private final List<MutablePair<Integer, String>> iamsReceived = new ArrayList<>();
 
     String message;
     private boolean finished;
@@ -191,7 +191,7 @@ public class BACnetDiscovery extends DefaultDeviceEventListener implements Testi
             index = removeDeviceIndex++;
         }
         d.setUserData(index);
-        iamsReceived.add(new Pair<>(index, getDeviceDescription(d)));
+        iamsReceived.add(new MutablePair<>(index, getDeviceDescription(d)));
     }
 
     public static String getDeviceDescription(RemoteDevice d) {

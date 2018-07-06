@@ -25,7 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
@@ -85,8 +85,6 @@ public class WatchListDwr extends BaseDwr {
 	/**
 	 * Retrieves point state for all points on the current watch list.
 	 * 
-	 * @param pointIds
-	 * @return
 	 */
 	public List<WatchListState> getPointData() {
 		// Get the watch list from the user's session. It should have been set
@@ -125,7 +123,7 @@ public class WatchListDwr extends BaseDwr {
 		new WatchListDao().saveWatchList(watchList);
 	}
 
-	public Pair<Integer, String> addNewWatchList(int copyId) {
+	public MutablePair<Integer, String> addNewWatchList(int copyId) {
 		User user = Common.getUser();
 
 		WatchListDao watchListDao = new WatchListDao();
@@ -151,7 +149,7 @@ public class WatchListDwr extends BaseDwr {
 
 		watchListDao.saveSelectedWatchList(user.getId(), watchList.getId());
 
-		return new Pair<>(watchList.getId(), watchList.getName());
+		return new MutablePair<>(watchList.getId(), watchList.getName());
 	}
 
 	public void deleteWatchList(int watchListId) {

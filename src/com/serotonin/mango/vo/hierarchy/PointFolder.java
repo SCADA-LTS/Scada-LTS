@@ -35,7 +35,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * @author Matthew Lohbihler
@@ -50,7 +50,7 @@ public class PointFolder implements JsonSerializable {
     @JsonRemoteProperty(innerType = PointFolder.class)
     private List<PointFolder> subfolders = new ArrayList<PointFolder>();
 
-    private List<Pair<Integer, String>> points = new ArrayList<>();
+    private List<MutablePair<Integer, String>> points = new ArrayList<>();
 
     public PointFolder() {
         // no op
@@ -65,7 +65,7 @@ public class PointFolder implements JsonSerializable {
         subfolders.add(subfolder);
     }
 
-    public void addDataPoint(Pair point) {
+    public void addDataPoint(MutablePair point) {
         points.add(point);
     }
 
@@ -94,11 +94,11 @@ public class PointFolder implements JsonSerializable {
         this.name = name;
     }
 
-    public List<Pair<Integer, String>> getPoints() {
+    public List<MutablePair<Integer, String>> getPoints() {
         return points;
     }
 
-    public void setPoints(List<Pair<Integer, String>> points) {
+    public void setPoints(List<MutablePair<Integer, String>> points) {
         this.points = points;
     }
 
@@ -112,7 +112,7 @@ public class PointFolder implements JsonSerializable {
 
     boolean findPoint(List<PointFolder> path, int pointId) {
         boolean found = false;
-        for (Pair point : points) {
+        for (MutablePair point : points) {
             if ((Integer)point.getKey() == pointId) {
                 found = true;
                 break;
@@ -157,7 +157,7 @@ public class PointFolder implements JsonSerializable {
     public void jsonSerialize(Map<String, Object> map) {
         DataPointDao dataPointDao = new DataPointDao();
         List<String> pointList = new ArrayList<String>();
-        for (Pair p : points) {
+        for (MutablePair p : points) {
             DataPointVO dp = dataPointDao.getDataPoint((Integer) p.getKey());
             if (dp != null)
                 pointList.add(dp.getXid());
@@ -179,7 +179,7 @@ public class PointFolder implements JsonSerializable {
                 if (dp == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
 
-                points.add(new Pair<>(dp.getId(), dp.getName()));
+                points.add(new MutablePair<>(dp.getId(), dp.getName()));
             }
         }
     }

@@ -42,7 +42,7 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * @author Matthew Lohbihler
@@ -105,10 +105,10 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
     private String url;
     @JsonRemoteProperty
     private boolean usePost;
-    @JsonRemoteProperty(innerType = Pair.class)
-    private List<Pair<String, String>> staticHeaders = new ArrayList<>();
-    @JsonRemoteProperty(innerType = Pair.class)
-    private List<Pair<String, String>> staticParameters = new ArrayList<>();
+    @JsonRemoteProperty(innerType = MutablePair.class)
+    private List<MutablePair<String, String>> staticHeaders = new ArrayList<>();
+    @JsonRemoteProperty(innerType = MutablePair.class)
+    private List<MutablePair<String, String>> staticParameters = new ArrayList<>();
     @JsonRemoteProperty
     private boolean raiseResultWarning = true;
     private int dateFormat = DATE_FORMAT_BASIC;
@@ -129,19 +129,19 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
         this.usePost = usePost;
     }
 
-    public List<Pair<String, String>> getStaticHeaders() {
+    public List<MutablePair<String, String>> getStaticHeaders() {
         return staticHeaders;
     }
 
-    public void setStaticHeaders(List<Pair<String, String>> staticHeaders) {
+    public void setStaticHeaders(List<MutablePair<String, String>> staticHeaders) {
         this.staticHeaders = staticHeaders;
     }
 
-    public List<Pair<String, String>> getStaticParameters() {
+    public List<MutablePair<String, String>> getStaticParameters() {
         return staticParameters;
     }
 
-    public void setStaticParameters(List<Pair<String, String>> staticParameters) {
+    public void setStaticParameters(List<MutablePair<String, String>> staticParameters) {
         this.staticParameters = staticParameters;
     }
 
@@ -206,23 +206,23 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
             url = SerializationHelper.readSafeUTF(in);
             usePost = in.readBoolean();
             staticHeaders = new ArrayList<>();
-            staticParameters = (List<Pair<String, String>>) in.readObject();
+            staticParameters = (List<MutablePair<String, String>>) in.readObject();
             raiseResultWarning = in.readBoolean();
             dateFormat = DATE_FORMAT_BASIC;
         }
         else if (ver == 2) {
             url = SerializationHelper.readSafeUTF(in);
             usePost = in.readBoolean();
-            staticHeaders = (List<Pair<String, String>>) in.readObject();
-            staticParameters = (List<Pair<String, String>>) in.readObject();
+            staticHeaders = (List<MutablePair<String, String>>) in.readObject();
+            staticParameters = (List<MutablePair<String, String>>) in.readObject();
             raiseResultWarning = in.readBoolean();
             dateFormat = DATE_FORMAT_BASIC;
         }
         else if (ver == 3) {
             url = SerializationHelper.readSafeUTF(in);
             usePost = in.readBoolean();
-            staticHeaders = (List<Pair<String, String>>) in.readObject();
-            staticParameters = (List<Pair<String, String>>) in.readObject();
+            staticHeaders = (List<MutablePair<String, String>>) in.readObject();
+            staticParameters = (List<MutablePair<String, String>>) in.readObject();
             raiseResultWarning = in.readBoolean();
             dateFormat = in.readInt();
         }
