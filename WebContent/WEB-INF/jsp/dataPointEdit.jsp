@@ -705,7 +705,7 @@
                                                                         htmlConfirmText = confirmText(properties);
 
                                                                       } else {
-                                                                        htmlTitle = "";
+                                                                        htmlTitle = "Invalid data type";
                                                                         htmlConfirmText = "It is possible to apply point properties basing only on the same type of points";
                                                                       }
 
