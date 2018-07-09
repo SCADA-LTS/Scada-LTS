@@ -176,9 +176,9 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-	&quot;name&quot;: &quot;nasame23423423sasdasdasdddsas&quot;,&#xd;
+	&quot;name&quot;: &quot;testViewFromJmeter&quot;,&#xd;
 	&quot;xid&quot;: &quot;GV_2137111111127723&quot;,&#xd;
-	&quot;imagePath&quot;: &quot;C:\\Users\\Jerzyk\\Desktop\\lena.png&quot;,&#xd;
+	&quot;imagePath&quot;:&quot;null&quot;,&#xd;
 	&quot;size&quot;: &quot;2&quot;&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
