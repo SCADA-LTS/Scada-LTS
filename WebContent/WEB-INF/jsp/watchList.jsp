@@ -469,7 +469,7 @@
     	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
     	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
     	  height = height < 100 ? 100 : height;
-    	  $("imageChartDiv").height=height;
+    	  $("imageChartDiv").height=height+10;
     	  var sourcet = "\"chart/"+Date.now()+"_"+period;
     	  var pointIds = $get("chartCB");
     	  if(isChartLive){
