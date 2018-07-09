@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <v-jsoneditor v-model="json" style="height: 300px">
+        <v-jsoneditor v-model="json" :options="options" :plus="true" style="height: 300px">
         </v-jsoneditor>
       </div>
     </div>
@@ -171,93 +171,182 @@
     },
     data() {
       return {
+        options: {
+          /*mode: 'code',
+          modes: ['code', 'text'],
+          schema: {
+            "title": "Example Schema",
+            "type": "object",
+            "properties":
+              {
+                "firstName": {"type": "string"},
+                "lastName": {"type": "string"},
+                "gender": {"enum": ["male", "female"]},
+                "age": {
+                  "description": "Age in years",
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+            "required": ["firstName", "lastName"]
+          },*/
+          templates: [
+            {
+              text: 'Person',
+              title: 'Insert a Person Node',
+              className: 'jsoneditor-type-object',
+              field: 'PersonTemplate',
+              value: {
+                'firstName': 'John',
+                'lastName': 'Do',
+                'age': 28
+              }
+            }]
+        },
         constants: {
           // if new parentId is # then move to root
           ROOT: "_",
-          STATUS: 0,  // run - green, warning - yellow, error - red
-          STATUS_INFO: {
-            RUN: 0,
-            WARNING: 1,
-            ERROR: 2,
-            END: 3
-          },
+          STATUS:
+            0,  // run - green, warning - yellow, error - red
+          STATUS_INFO:
+            {
+              RUN: 0,
+              WARNING:
+                1,
+              ERROR:
+                2,
+              END:
+                3
+            }
+          ,
           STATUS_GROUP: 1,
-          STATUS_GROUP_INFO: {
-            PARSE: 1,
-            CHECK: 2,
-            CHECK_TO_CREATE: 3,
-            CHECK_TO_MOVE_FOLDER: 4,
-            CHECK_TO_MOVE_POINTS: 5,
-            CHECK_FOLDERS_TO_DELETE: 6,
-            CHECK_TO_CHANGE_FOLDER_NAME: 7,
-            CREATE_FOLDERS: 8,
-            MOVE_FOLDERS: 9,
-            MOVE_POINTS: 10,
-            DELETE_FOLDERS: 11,
-            CHANGE_NAME_FOLDERS: 12,
-            REFRESH_CACHE: 13
-          },
+          STATUS_GROUP_INFO:
+            {
+              PARSE: 1,
+              CHECK:
+                2,
+              CHECK_TO_CREATE:
+                3,
+              CHECK_TO_MOVE_FOLDER:
+                4,
+              CHECK_TO_MOVE_POINTS:
+                5,
+              CHECK_FOLDERS_TO_DELETE:
+                6,
+              CHECK_TO_CHANGE_FOLDER_NAME:
+                7,
+              CREATE_FOLDERS:
+                8,
+              MOVE_FOLDERS:
+                9,
+              MOVE_POINTS:
+                10,
+              DELETE_FOLDERS:
+                11,
+              CHANGE_NAME_FOLDERS:
+                12,
+              REFRESH_CACHE:
+                13
+            }
+          ,
           STATUS_DETAIL: 2,
-          STATUS_DETAIL_INFO: {
-            //
-          }
-        },
-        json: {},
+          STATUS_DETAIL_INFO:
+            {
+              //
+            }
+        }
+        ,
+        json: {}
+        ,
         timer: {
           startImport: 0,
-          endImport: 0,
-          timeImport: 0
-        },
+          endImport:
+            0,
+          timeImport:
+            0
+        }
+        ,
         base: {
           progressImport: {
             group: {
               percent: 0,
-              elementToDo: 13,
-              elementDoing: 1
-            },
+              elementToDo:
+                13,
+              elementDoing:
+                1
+            }
+            ,
             detail: {
               percent: 0,
-              elementToDo: 0,
-              elementDoing: 1
-            },
+              elementToDo:
+                0,
+              elementDoing:
+                1
+            }
+            ,
             isActive: false,
-          },
+          }
+          ,
           canceled: false,
-          statusGroup: "",
-          statusDetail: "",
-          counterToParse: 0,
-          xidFolderAfter: [],
-          xidFolderBefore: [],
-          xidFolderExists: [],
-          xidErrors: [],
-          xidFolderToCheck: []
-        },
+          statusGroup:
+            "",
+          statusDetail:
+            "",
+          counterToParse:
+            0,
+          xidFolderAfter:
+            [],
+          xidFolderBefore:
+            [],
+          xidFolderExists:
+            [],
+          xidErrors:
+            [],
+          xidFolderToCheck:
+            []
+        }
+        ,
         toCreate: {
           xidFolderNotExists: [],
-          xidFolderToCreate: [],
-          xidFolderCreated: [],
-        },
+          xidFolderToCreate:
+            [],
+          xidFolderCreated:
+            [],
+        }
+        ,
         toMoveFolder: {
           xidFolderToMoveTo: [],
-          xidFolderMoved: []
-        },
+          xidFolderMoved:
+            []
+        }
+        ,
         toMovePoints: {
-          xidMapPointsExist: {},
-          xidMapPointsAfter: {},
-          xidMapPointsInCreateFolder: {},
-          xidPointsMoveFromTo: {},
-          xidPointsNotMove: {},
+          xidMapPointsExist: {}
+          ,
+          xidMapPointsAfter: {}
+          ,
+          xidMapPointsInCreateFolder: {}
+          ,
+          xidPointsMoveFromTo: {}
+          ,
+          xidPointsNotMove: {}
+          ,
           xidPointMoved: []
-        },
+        }
+        ,
         toDeleteFolder: {
           xidFolderToDelete: [],
-          xidFolderDeleted: []
-        },
+          xidFolderDeleted:
+            []
+        }
+        ,
         toChangeNameFolder: {
           xidFolderToNameChange: [],
-          xidFolderNameChanged: []
+          xidFolderNameChanged:
+            []
         }
-      };
+      }
+        ;
     },
     methods: {
       doExport() {
@@ -620,8 +709,8 @@
             this.constants.STATUS_DETAIL,
             0,
             "xid:" + this.toCreate.xidFolderToCreate[0].xidFolder,
-            this.toCreate.xidFolderToCreate.length + this.toCreate.xidFolderCreated.length,
-            this.toCreate.xidFolderCreated.length
+            this.toCreate.xidFolderCreated.length,
+            this.toCreate.xidFolderToCreate.length + this.toCreate.xidFolderCreated.length
           );
 
           const apiAddFolder = `./api/pointHierarchy/folderAdd/`;
@@ -662,8 +751,8 @@
             this.constants.STATUS_DETAIL,
             0,
             "xid:" + this.toMoveFolder.xidFolderToMoveTo[0].xidFolder,
-            this.toMoveFolder.xidFolderToMoveTo.length + this.toMoveFolder.xidFolderMoved.length,
-            this.toMoveFolder.xidFolderMoved.length
+            this.toMoveFolder.xidFolderMoved.length,
+            this.toMoveFolder.xidFolderToMoveTo.length + this.toMoveFolder.xidFolderMoved.length
           );
 
           const apiMoveFolder = `./api/pointHierarchy/folderMoveTo/${this.toMoveFolder.xidFolderToMoveTo[0].xidFolder}/${this.toMoveFolder.xidFolderToMoveTo[0].newParentXid}`;
@@ -710,8 +799,8 @@
             this.constants.STATUS_DETAIL,
             0,
             "xid:" + arrPointToMove[0].xidPoint,
-            this.toMovePoints.xidPointsMoveFromTo.length + this.toMovePoints.xidPointMoved.length,
-            this.toMovePoints.xidPointMoved.length
+            this.toMovePoints.xidPointMoved.length,
+            this.toMovePoints.xidPointsMoveFromTo.length + this.toMovePoints.xidPointMoved.length
           );
 
           const apiMovePoints = `./api/pointHierarchy/pointMoveTo/${arrPointToMove[0].xidPoint}/${newParent}`;
@@ -755,8 +844,8 @@
             this.constants.STATUS_DETAIL,
             0,
             "xid:" + this.toDeleteFolder.xidFolderToDelete[0].xidFolder,
-            this.toDeleteFolder.xidFolderToDelete.length + this.toDeleteFolder.xidFolderDeleted.length,
-            this.toDeleteFolder.xidFolderDeleted.length
+            this.toDeleteFolder.xidFolderDeleted.length,
+            this.toDeleteFolder.xidFolderToDelete.length + this.toDeleteFolder.xidFolderDeleted.length
           );
 
           const apiDeleteFolders = `./api/pointHierarchy/deleteFolder/${this.toDeleteFolder.xidFolderToDelete[0].xidFolder}`;
@@ -797,8 +886,8 @@
             this.constants.STATUS_DETAIL,
             0,
             "xid:" + this.toChangeNameFolder.xidFolderToNameChange[0].xidFolder,
-            this.toChangeNameFolder.xidFolderToNameChange.length + this.toChangeNameFolder.xidFolderNameChanged.length,
-            this.toChangeNameFolder.xidFolderNameChanged.length
+            this.toChangeNameFolder.xidFolderNameChanged.length,
+            this.toChangeNameFolder.xidFolderToNameChange.length + this.toChangeNameFolder.xidFolderNameChanged.length
           );
 
           const apiUpdateFolder = `./api/pointHierarchy/changeName/${this.toChangeNameFolder.xidFolderToNameChange[0].xidFolder}/${this.toChangeNameFolder.xidFolderToNameChange[0].name}`;
