@@ -540,7 +540,12 @@
 
       // calculate period for live chart
       function calculatePeriod(){
-    	  var period=$get("prevPeriodCount")*1000*60;
+          if(!isNaN($get("prevPeriodCount"))) {
+              var period=$get("prevPeriodCount")*1000*60;
+          } else {
+                  	  var period=1*1000*60;
+          }
+
     	  var type=$get("prevPeriodType");
 
     	  if(type>2)
