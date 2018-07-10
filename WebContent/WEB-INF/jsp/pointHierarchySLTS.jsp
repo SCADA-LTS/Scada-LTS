@@ -305,7 +305,7 @@ thead th {
 		</div>
 
 		<div class="row">
-			<div class="col-md-12">
+			<div id="pointHierarchy" class="col-md-12">
 				<c:if test="${!empty sessionUser}">
 				    <!--
 					<div class="panel panel-default">
@@ -390,13 +390,9 @@ thead th {
 							<div class="btn-group">
 								<div id="hierarchy-import-export">
 
-                                    <button id="Export_Import" class="btn" data-toggle="collapse" href="#collapseImport" role="button" aria-expanded="false" aria-controls="collapseImport">
+                                    <button onclick="collapseImportExport()" id="Export_Import" class="btn" data-toggle="collapse" href="#collapseImport" role="button" aria-expanded="false" aria-controls="collapseImport">
                                         <span class="glyphicon glyphicon-export"></span> <span class="glyphicon glyphicon-import"></span>
                                     </button>
-
-									<div class="collapse" id="collapseImport">
-                                        <div id=export-import-ph></div>
-									</div>
 
                             	</div>
 							</div>
@@ -405,8 +401,12 @@ thead th {
 						<div id="tree"
 							class=" panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
 					</div>
+
 				</c:if>
 			</div>
+			<div class="collapse" id="collapseImport">
+                               <div id=export-import-ph></div>
+                        </div>
 		</div>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
@@ -453,10 +453,6 @@ header.onLoad = function() {
         //header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
 };
 
-
-
-
-
  var headers = {
 		 login: 'admin',
 		 passcode: 'passcode',
@@ -464,9 +460,6 @@ header.onLoad = function() {
  } ;
 
 var stompClient = null;
-
-
-
 
 var connectCallback = function(frame) {
     	console.log('Connected: ' + frame);
@@ -725,6 +718,15 @@ var messages = {
     	$("#btnSearch").click();
     };
 
+    function collapseImportExport() {
+
+        if ( $( "div#pointHierarchy" ).hasClass('col-md-8') ) {
+          $( "div#pointHierarchy" ).attr("class", "col-md-12");
+        } else {
+          $( "div#pointHierarchy" ).attr("class", "col-md-8");
+        }
+
+    };
 
     $(function () {
     	$('[data-toggle="tooltip"]').tooltip();

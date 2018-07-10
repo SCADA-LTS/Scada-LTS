@@ -1,154 +1,142 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <v-jsoneditor v-model="json" :options="options" :plus="true" style="height: 300px">
-        </v-jsoneditor>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-        <button v-on:click="doExport()" type="button" class="btn btn-primary">Export</button>
-        <button v-on:click="doImport()" color="warning" type="button" class="btn btn-warning">Import</button>
-      </div>
-    </div>
+  <div>
 
-    <div class="row">
-      <div class="col-md-12 col-lg-12" style="background-color:white; padding: 2em">
-        <h4 class="progress-label">{{base.status}} <span v-if="base.canceled" class="badge badge-danger">CANCELED</span>
-        </h4>
-        <h5 class="progress-label">&nbsp;{{base.statusGroup}}</h5>
+    <div class="col-md-4" style="background-color:white; padding: 2em">
 
-        <div class="progress">
-          <div class="progress-bar progress-bar-striped"
-               v-bind:class="{ active: base.progressImport.isActive }" role="progressbar"
-               aria-valuenow=""
-               aria-valuemin="0" aria-valuemax="100"
-               v-bind:style="{ width: base.progressImport.group.percent + '%'}">
-            <span v-if="base.canceled">canceled</span>
-            <span v-else>{{base.progressImport.group.percent}}%</span>
+      <v-jsoneditor v-model="json" :options="options" :plus="true" style="height: 300px">
+      </v-jsoneditor>
+      <br/>
+      <button v-on:click="doExport()" type="button" class="btn btn-primary">Export</button>
+      <button v-on:click="doImport()" color="warning" type="button" class="btn btn-warning">Import</button>
 
-          </div>
+      <h4 class="progress-label">{{base.status}} <span v-if="base.canceled" class="badge badge-danger">CANCELED</span>
+      </h4>
+      <h5 class="progress-label">&nbsp;{{base.statusGroup}}</h5>
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped"
+             v-bind:class="{ active: base.progressImport.isActive }" role="progressbar"
+             aria-valuenow=""
+             aria-valuemin="0" aria-valuemax="100"
+             v-bind:style="{ width: base.progressImport.group.percent + '%'}">
+          <span v-if="base.canceled">canceled</span>
+          <span v-else>{{base.progressImport.group.percent}}%</span>
         </div>
-
-        <h5 class="progress-label">{{base.statusDetail}}</h5>
-
-        <div class="progress">
-          <div class="progress-bar progress-bar-striped"
-               v-bind:class="{ active: base.progressImport.isActive }"
-               role="progressbar" aria-valuenow=""
-               aria-valuemin="0" aria-valuemax="100"
-               v-bind:style="{ width: base.progressImport.detail.percent + '%'}">
-            <span v-if="base.canceled">canceled</span>
-            <span v-else>{{base.progressImport.detail.percent}}%</span>
-          </div>
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-striped table-bordered">
-            <tr>
-              <td colspan="2">
-                <span v-html="base.status"/>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                Import time: {{timer.timeImport | moment }}
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                To be imported: {{base.counterToParse}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                To be created: {{toCreate.xidFolderToCreate.length}}
-              </td>
-              <td>
-                Created: {{toCreate.xidFolderCreated.length}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Folders to be moved: {{toMoveFolder.xidFolderToMoveTo.length}}
-              </td>
-              <td>
-                Moved folders: {{toMoveFolder.xidFolderMoved.length}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Points to be moved: {{Object.keys(toMovePoints.xidPointsMoveFromTo).length}}
-              </td>
-              <td>
-                Moved points: {{toMovePoints.xidPointMoved.length}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Folder to be deleted: {{toDeleteFolder.xidFolderToDelete.length}}
-              </td>
-              <td>
-                Deleted: {{toDeleteFolder.xidFolderDeleted.length}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Folder names to be changed: {{toChangeNameFolder.xidFolderToNameChange.length}}
-              </td>
-              <td>
-                Names changed: {{toChangeNameFolder.xidFolderNameChanged.length}}
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                Errors: {{base.xidErrors.length}} <span v-if="(base.xidErrors.length>0)" class="badge badge-danger">Check console</span>
-              </td>
-
-            </tr>
-          </table>
-        </div>
-        <button v-on:click="doCancel()" color="danger" type="button" class="btn btn-danger btn-sm">Cancel</button>
       </div>
+      <h5 class="progress-label">{{base.statusDetail}}</h5>
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped"
+             v-bind:class="{ active: base.progressImport.isActive }"
+             role="progressbar" aria-valuenow=""
+             aria-valuemin="0" aria-valuemax="100"
+             v-bind:style="{ width: base.progressImport.detail.percent + '%'}">
+          <span v-if="base.canceled">canceled</span>
+          <span v-else>{{base.progressImport.detail.percent}}%</span>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <tr>
+            <td colspan="2">
+              <span v-html="base.status"/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              Import time: {{timer.timeImport | moment }}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              To be imported: {{base.counterToParse}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              To be created: {{toCreate.xidFolderToCreate.length}}
+            </td>
+            <td>
+              Created: {{toCreate.xidFolderCreated.length}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Folders to be moved: {{toMoveFolder.xidFolderToMoveTo.length}}
+            </td>
+            <td>
+              Moved folders: {{toMoveFolder.xidFolderMoved.length}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Points to be moved: {{Object.keys(toMovePoints.xidPointsMoveFromTo).length}}
+            </td>
+            <td>
+              Moved points: {{toMovePoints.xidPointMoved.length}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Folder to be deleted: {{toDeleteFolder.xidFolderToDelete.length}}
+            </td>
+            <td>
+              Deleted: {{toDeleteFolder.xidFolderDeleted.length}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Folder names to be changed: {{toChangeNameFolder.xidFolderToNameChange.length}}
+            </td>
+            <td>
+              Names changed: {{toChangeNameFolder.xidFolderNameChanged.length}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              Errors: {{base.xidErrors.length}} <span v-if="(base.xidErrors.length>0)" class="badge badge-danger">Check console</span>
+            </td>
+
+          </tr>
+        </table>
+      </div>
+      <button v-on:click="doCancel()" color="danger" type="button" class="btn btn-danger btn-sm">Cancel</button>
     </div>
-    <!-- debug
-
-
-    <p>check: {{base.xidFolderToCheck}}</p>
-    <p>Exist: {{base.xidFolderExists}}</p>
-    <p>Before: {{base.xidFolderBefore}}</p>
-
-    <p>Not exist: {{toCreate.xidFolderNotExists}}</p>
-
-    <p>To create: {{toCreate.xidFolderToCreate}}</p>
-    <p>Errors: {{base.xidErrors}}</p>
-
-    <p>After: {{base.xidFolderAfter}}}</p>
-    <p>Points after: {{toMovePoints.xidMapPointsAfter}}</p>
-
-    <p>Move folder: {{toMoveFolder.xidFolderToMoveTo}} </p>
-    <p>Points move from to: {{toMovePoints.xidPointsMoveFromTo}} </p>
-
-    <p>Points exists: {{toMovePoints.xidMapPointsExist}}</p>
-    <p>Points not move: {{toMovePoints.xidPointsNotMove}} </p>
-
-    <p>Name folder to change: {{toChangeNameFolder.xidFolderToNameChange}}</p>
-    <p>Name folder changed: {{toChangeNameFolder.xidFolderNameChanged}}</p>
-
-    <p>Folder to delete: {{toDeleteFolder.xidFolderToDelete}}</p>
-    <p>Folder deleted: {{toDeleteFolder.xidFolderDeleted}}</p>
-
-    <p>To delete folder: {{toDeleteFolder.xidFolderToDelete}}</p>
-
-    <p>Created {{toCreate.xidFolderCreated}}</p>
-    <p>Moved folder {{toMoveFolder.xidFolderMoved}}</p>
-    <p>Moved point {{toMovePoints.xidPointMoved}}</p>
-
-    <p>Point in folder create {{toMovePoints.xidMapPointsInCreateFolder}}</p>
-    -->
-
   </div>
+  <!-- debug
+
+
+  <p>check: {{base.xidFolderToCheck}}</p>
+  <p>Exist: {{base.xidFolderExists}}</p>
+  <p>Before: {{base.xidFolderBefore}}</p>
+
+  <p>Not exist: {{toCreate.xidFolderNotExists}}</p>
+
+  <p>To create: {{toCreate.xidFolderToCreate}}</p>
+  <p>Errors: {{base.xidErrors}}</p>
+
+  <p>After: {{base.xidFolderAfter}}}</p>
+  <p>Points after: {{toMovePoints.xidMapPointsAfter}}</p>
+
+  <p>Move folder: {{toMoveFolder.xidFolderToMoveTo}} </p>
+  <p>Points move from to: {{toMovePoints.xidPointsMoveFromTo}} </p>
+
+  <p>Points exists: {{toMovePoints.xidMapPointsExist}}</p>
+  <p>Points not move: {{toMovePoints.xidPointsNotMove}} </p>
+
+  <p>Name folder to change: {{toChangeNameFolder.xidFolderToNameChange}}</p>
+  <p>Name folder changed: {{toChangeNameFolder.xidFolderNameChanged}}</p>
+
+  <p>Folder to delete: {{toDeleteFolder.xidFolderToDelete}}</p>
+  <p>Folder deleted: {{toDeleteFolder.xidFolderDeleted}}</p>
+
+  <p>To delete folder: {{toDeleteFolder.xidFolderToDelete}}</p>
+
+  <p>Created {{toCreate.xidFolderCreated}}</p>
+  <p>Moved folder {{toMoveFolder.xidFolderMoved}}</p>
+  <p>Moved point {{toMovePoints.xidPointMoved}}</p>
+
+  <p>Point in folder create {{toMovePoints.xidMapPointsInCreateFolder}}</p>
+  -->
 
 
 </template>
@@ -172,34 +160,41 @@
     data() {
       return {
         options: {
-          /*mode: 'code',
-          modes: ['code', 'text'],
+          mode: "text",
+          modes: ["text"],
           schema: {
-            "title": "Example Schema",
+            "title": "Folders",
             "type": "object",
             "properties":
               {
-                "firstName": {"type": "string"},
-                "lastName": {"type": "string"},
-                "gender": {"enum": ["male", "female"]},
-                "age": {
-                  "description": "Age in years",
-                  "type": "integer",
-                  "minimum": 0
-                }
-              },
-            "required": ["firstName", "lastName"]
-          },*/
+                "folders": [{
+                  "type": "object",
+                  "properties": {
+                    "parentXid": {"type": "string"},
+                    "name": {"type": "string"},
+                    "xidFolder": {"type": "string"},
+                    "pointXids": [
+                      {"type": "string"}
+                    ],
+                    "toDelete": {"enum": ["true", "false"]}
+                  },
+                  "required": ["parentXid", "name", "xidFolder", "pointXids"]
+                }],
+                "required": ["folders"]
+              }
+          },
           templates: [
             {
-              text: 'Person',
-              title: 'Insert a Person Node',
+              text: 'Folder',
+              title: 'Insert a Folder Node',
               className: 'jsoneditor-type-object',
-              field: 'PersonTemplate',
+              field: 'FolderTemplate',
               value: {
-                'firstName': 'John',
-                'lastName': 'Do',
-                'age': 28
+                'parentXid': 'null',
+                'name': 'new name folder',
+                'xidFolder': 'new xid folder',
+                'pointXids': [],
+                'toDelete': "false"
               }
             }]
         },
