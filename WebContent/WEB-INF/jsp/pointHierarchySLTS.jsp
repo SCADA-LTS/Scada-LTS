@@ -405,8 +405,15 @@ thead th {
 				</c:if>
 			</div>
 			<div class="collapse" id="collapseImport">
-                               <div id=export-import-ph></div>
-                        </div>
+			 <div class="btn-group">
+             	<button onclick="collapseImportExport()" id="close-export-import" class="btn btn-default"
+             	    data-toggle="tooltip" data-placement="top"
+             			title='close export/import'>
+             			<span class="glyphicon glyphicon-resize-small"></span>
+             	</button>
+             </div>
+                <div id=export-import-ph></div>
+            </div>
 		</div>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
@@ -723,6 +730,7 @@ var messages = {
         if ( $( "div#pointHierarchy" ).hasClass('col-md-8') ) {
           $( "div#pointHierarchy" ).attr("class", "col-md-12");
         } else {
+          $( "#collapseImport" ).attr("class", "collapse");
           $( "div#pointHierarchy" ).attr("class", "col-md-8");
         }
 
@@ -1364,14 +1372,6 @@ var messages = {
     });
 
 
-    </script>
-
-    <!-- export import -->
-    <script>
-       /* var app = new Vue({
-          el: '#hierarchy-import-export',
-          mixins: []
-        });*/
     </script>
 
 </html>
