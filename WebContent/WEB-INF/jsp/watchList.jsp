@@ -469,7 +469,7 @@
     	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
     	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
     	  height = height < 100 ? 100 : height;
-    	  $("imageChartDiv").height=height;
+    	  $("imageChartDiv").height=height+10;
     	  var sourcet = "\"chart/"+Date.now()+"_"+period;
     	  var pointIds = $get("chartCB");
     	  if(isChartLive){
@@ -540,8 +540,14 @@
 
       // calculate period for live chart
       function calculatePeriod(){
-    	  var period=$get("prevPeriodCount")*1000*60;
-    	  var type=$get("prevPeriodType");
+          let period
+          if(!isNaN($get("prevPeriodCount"))) {
+              period=$get("prevPeriodCount")*1000*60;
+          } else {
+              period=1*1000*60;
+          }
+
+    	  let type=$get("prevPeriodType");
 
     	  if(type>2)
 			  period*=60;
