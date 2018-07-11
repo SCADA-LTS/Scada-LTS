@@ -1160,8 +1160,7 @@ var messages = {
     	   }
 		});
     	$("button#reloadNode").click(()=>{
-    		//location.reload();
-    		$("#tree").reload(0);
+    		reload();
     		node=undefined;
     	});
     	$("button#infoNode").click(()=>{
