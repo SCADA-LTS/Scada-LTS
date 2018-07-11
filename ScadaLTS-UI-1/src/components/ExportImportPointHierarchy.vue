@@ -3,7 +3,7 @@
 
     <div class="col-md-4" style="background-color:white; padding: 2em">
 
-      <v-jsoneditor v-model="json" :options="options" :plus="true" style="height: 300px">
+      <v-jsoneditor v-model="json" :options="options" :plus="true" style="height: 200px">
       </v-jsoneditor>
       <br/>
       <button v-on:click="doExport()" type="button" class="btn btn-primary">Export</button>
@@ -161,8 +161,8 @@
       return {
         options: {
           mode: "text",
-          modes: ["text"],
-          schema: {
+          modes: [],
+          /*schema: {
             "title": "Folders",
             "type": "object",
             "properties":
@@ -182,7 +182,7 @@
                 }],
                 "required": ["folders"]
               }
-          },
+          },*/
           templates: [
             {
               text: 'Folder',
@@ -921,6 +921,7 @@
           .then(response => {
             this.timer.stopImport = performance.now();
             this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
+            reload();
           })
           .catch(error => {
             console.log(error);
@@ -928,6 +929,7 @@
               this.constants.STATUS,
               this.constants.STATUS_INFO.ERROR,
               "End import");
+            reload();
           });
 
         this.showStatus(
@@ -965,6 +967,7 @@
           this.refreshCache();
         }
         return this.base.canceled
+        reload();
       }
     }
   }

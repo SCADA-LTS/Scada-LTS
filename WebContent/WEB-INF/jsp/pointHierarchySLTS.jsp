@@ -355,8 +355,7 @@ thead th {
 
 					<div class="panel panel-default">
 						<div class="panel-heading help">
-							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b> <span
-								class="glyphicon glyphicon-question-sign"></span>
+							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b>
 						</div>
 						<div class="menu panel-heading help">
 							<div class="btn-group">
@@ -388,7 +387,7 @@ thead th {
 							</div>
 
 							<div class="btn-group">
-								<div id="hierarchy-import-export">
+								<div id="hierarchy-import-export" >
 
                                     <button onclick="collapseImportExport()" id="Export_Import" class="btn" data-toggle="collapse" href="#collapseImport" role="button" aria-expanded="false" aria-controls="collapseImport">
                                         <span class="glyphicon glyphicon-export"></span> <span class="glyphicon glyphicon-import"></span>
@@ -399,14 +398,14 @@ thead th {
 
 						</div>
 						<div id="tree"
-							class=" panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
+							class=" panel-body fancytree-colorize-hover fancytree-fade-expander pre-scrollable" style="max-height: 65vh"></div>
 					</div>
 
 				</c:if>
 			</div>
 			<div class="collapse" id="collapseImport">
 			 <div class="btn-group">
-             	<button onclick="collapseImportExport()" id="close-export-import" class="btn btn-default"
+             	<button onclick="closeImportExport()" id="close-export-import" class="btn btn-default"
              	    data-toggle="tooltip" data-placement="top"
              			title='close export/import'>
              			<span class="glyphicon glyphicon-resize-small"></span>
@@ -730,11 +729,21 @@ var messages = {
         if ( $( "div#pointHierarchy" ).hasClass('col-md-8') ) {
           $( "div#pointHierarchy" ).attr("class", "col-md-12");
         } else {
-          $( "#collapseImport" ).attr("class", "collapse");
+
           $( "div#pointHierarchy" ).attr("class", "col-md-8");
         }
 
     };
+
+    function closeImportExport() {
+        $( "#collapseImport" ).attr("class", "collapse");
+        $( "div#pointHierarchy" ).attr("class", "col-md-12");
+    }
+
+    function reload() {
+       var tree = $("#tree").fancytree("getTree");
+       tree.reload(0);
+    }
 
     $(function () {
     	$('[data-toggle="tooltip"]').tooltip();
@@ -1151,7 +1160,8 @@ var messages = {
     	   }
 		});
     	$("button#reloadNode").click(()=>{
-    		location.reload();
+    		//location.reload();
+    		$("#tree").reload(0);
     		node=undefined;
     	});
     	$("button#infoNode").click(()=>{
@@ -1167,6 +1177,7 @@ var messages = {
 		        		 	'<li>'+messages.title+':'+nodeActivate.title+'</li>'+
 		        		 	'<li>'+messages.keyParent+':'+getParentId(nodeActivate)+'</li>'+
 		        		 	'<li>'+messages.isFolder+':'+nodeActivate.isFolder()+'</li>'+
+		        		 	'<li> Folder xid : ' + nodeActivate.data.xid + '</li>'+
 		         		 '</ul></div>');
 		         } else {
 		        	   $content = $('<div><h3>'+nodeActivate.title+'</h3>'+
@@ -1175,6 +1186,7 @@ var messages = {
 			        		 	'<li>'+messages.title+':'+nodeActivate.title+'</li>'+
 			        		 	'<li>'+messages.keyParent+':'+getParentId(nodeActivate)+'</li>'+
 			        		 	'<li>'+messages.isFolder+':'+nodeActivate.isFolder()+'</li>'+
+			        		 	'<li> Folder xid : ' + nodeActivate.data.xid + '</li>'+
 			        		 	'<li>'+messages.dataSource+':'+nodeActivate.data.pointHierarchyDataSource.name+''+
 			        		 	'<ul>'+
 			        		 		'<li>'+messages.key+':'+nodeActivate.data.pointHierarchyDataSource.id+'</li>'+
@@ -1293,6 +1305,7 @@ var messages = {
 
 
         function search(query, page) {
+            console.log("SEARCH");
         	queryGlobal=$.trim(query);
         	console.log(queryGlobal);
         	console.log(page);
