@@ -22,13 +22,13 @@
 
 <link href=resources/new-ui/css/app.css rel=stylesheet>
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/5.14.0/jsoneditor.min.css" rel="stylesheet">
+<link
+	href="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
+    rel="stylesheet" type="text/css">
 
 <style type="text/css">
 
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/5.14.0/jsoneditor.min.js"></script>
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
 
 /* Reduce bootstrap's default 'panel' padding: */
 div#tree {
