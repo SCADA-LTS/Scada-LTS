@@ -145,6 +145,7 @@
   import VJsoneditor from 'vue-jsoneditor';
   import axios from 'axios';
   import moment from 'moment';
+  import Ajv from 'ajv';
 
 
   export default {
@@ -161,29 +162,8 @@
       return {
         options: {
           mode: "text",
-          modes: [],
-          /*schema: {
-            "title": "Folders",
-            "type": "object",
-            "properties":
-              {
-                "folders": [{
-                  "type": "object",
-                  "properties": {
-                    "parentXid": {"type": "string"},
-                    "name": {"type": "string"},
-                    "xidFolder": {"type": "string"},
-                    "pointXids": [
-                      {"type": "string"}
-                    ],
-                    "toDelete": {"enum": ["true", "false"]}
-                  },
-                  "required": ["parentXid", "name", "xidFolder", "pointXids"]
-                }],
-                "required": ["folders"]
-              }
-          },*/
-          templates: [
+          modes: []
+          /*templates: [
             {
               text: 'Folder',
               title: 'Insert a Folder Node',
@@ -196,9 +176,26 @@
                 'pointXids': [],
                 'toDelete': "false"
               }
-            }]
+            }]*/
         },
         constants: {
+          SCHEMA: {
+            "folders": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "parentXid": {"type": "string"},
+                  "name": {"type": "string"},
+                  "xidFolder": {"type": "string"},
+                  "pointXids": [ {"type": "string"} ],
+                  "toDelete": {"enum": ["true", "false"]}
+                },
+                "required": ["parentXid", "name", "xidFolder", "pointXids"]
+              },
+            },
+            "required": ["folders"]
+          }, 
           // if new parentId is # then move to root
           ROOT: "_",
           STATUS:
@@ -435,24 +432,37 @@
           this.constants.STATUS_GROUP,
           this.constants.STATUS_GROUP_INFO.PARSE,
           "Validate");
-        try {
-          let folders = this.json.folders;
-          this.base.xidFolderAfter = folders.slice();
-          this.base.counterToParse = this.base.xidFolderAfter.length;
-          if (folders == undefined) {
-            this.showStatus(
-              this.constants.STATUS,
-              this.constants.STATUS_INFO.WARNING,
-              "Folders information required");
-          } else {
-            this.base.xidFolderToCheck = folders;
-            this.check();
-          }
-        } catch (err) {
+
+
+        let ajv = new Ajv();
+        let validate = ajv.compile(this.constants.SCHEMA);
+        let valid = validate(this.json);
+        if (!valid) {
+          console.log(validate.errors);
           this.showStatus(
             this.constants.STATUS,
             this.constants.STATUS_INFO.ERROR,
-            "Incorrect date format:" + err);
+            validate.errors);
+        } else {
+          try {
+            let folders = this.json.folders;
+            this.base.xidFolderAfter = folders.slice();
+            this.base.counterToParse = this.base.xidFolderAfter.length;
+            if (folders == undefined) {
+              this.showStatus(
+                this.constants.STATUS,
+                this.constants.STATUS_INFO.WARNING,
+                "Folders information required");
+            } else {
+              this.base.xidFolderToCheck = folders;
+              this.check();
+            }
+          } catch (err) {
+            this.showStatus(
+              this.constants.STATUS,
+              this.constants.STATUS_INFO.ERROR,
+              "Incorrect date format:" + err);
+          }
         }
       },
       check() {

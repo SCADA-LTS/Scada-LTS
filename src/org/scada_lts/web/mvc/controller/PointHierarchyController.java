@@ -119,6 +119,7 @@ public class PointHierarchyController {
 				// is point
 			  ok = phService.move(parentId, 0, key, isFolder);
 			}
+
 			String json = "";
 			ObjectMapper mapper = new ObjectMapper();
 			try {

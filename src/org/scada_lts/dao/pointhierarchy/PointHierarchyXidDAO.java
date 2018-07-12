@@ -157,8 +157,14 @@ public class PointHierarchyXidDAO extends PointHierarchyDAO {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED,
             rollbackFor = SQLException.class)
     public boolean updateFolder(String xidFolder, String newParentXidFolder) {
+
         int id = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLER_ID_BASE_ON_XID, new Object[]{xidFolder}, Integer.class);
-        int newParentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLER_ID_BASE_ON_XID, new Object[]{newParentXidFolder}, Integer.class);
+        int newParentId = 0;
+        try {
+            newParentId = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_FOLER_ID_BASE_ON_XID, new Object[]{newParentXidFolder}, Integer.class);
+        } catch(EmptyResultDataAccessException e) {
+            newParentId = 0;
+        }
         return updateParentId(id, newParentId);
     }
 

@@ -82,6 +82,7 @@ public class PointHierarchyAPI {
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
+
                 if (pointHierarchyXidService.moveFolder(xidFolder, newParentXidFolder)) {
                     result = new ResponseEntity<String>(String.valueOf(true), HttpStatus.OK);
                 } else {

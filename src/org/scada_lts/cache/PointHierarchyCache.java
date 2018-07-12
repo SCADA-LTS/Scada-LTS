@@ -62,7 +62,8 @@ public class PointHierarchyCache {
 	
 	private void checkAndCorrectOrphanedPointHierarchy(PointHierarchyNode phn) {
 		if ( ((cache.get(phn.getParentId())==null) && (phn.getParentId()>0))) {
-			phn.setParentId(0);
+			List<PointHierarchyNode> lst = new ArrayList<PointHierarchyNode>();
+			cache.put(phn.getParentId(),lst);
 		}
 	}
 	
@@ -83,7 +84,7 @@ public class PointHierarchyCache {
 		return instance;
 	}
 	
-	public void printTreeInCash(String str, int key)  {
+	public void printTreeInCash(String str, int key) throws Exception {
 		if (getOnBaseParentId(key)!=null) {
 			for (PointHierarchyNode p: getOnBaseParentId(key)){
 				LOG.trace(str+"-"+p.getTitle()+" key:"+p.getKey()+" isFolder:"+p.isFolder());
@@ -157,7 +158,7 @@ public class PointHierarchyCache {
 		
 		checkAndRootFolder();
 		
-		if (cache.get(phn.getParentId())!=null) {
+		if (cache.get(phn.getParentId())!=null ) {
 			if ( checkIsAdded(phn)<0) {
 				cache.get(phn.getParentId()).add(phn);
 				if (cache.get(phn.getKey())==null){
@@ -178,7 +179,7 @@ public class PointHierarchyCache {
 	/**
 	 * Add point do cache
 	 */
-	public void addPoint(PointHierarchyNode phn) {
+	public void addPoint(PointHierarchyNode phn) throws Exception {
 		
 		if (LOG.isTraceEnabled()) {
 			  LOG.trace("Add point hierarchy:"+phn.toString());
@@ -206,7 +207,7 @@ public class PointHierarchyCache {
 	 * @param parentId
 	 * @return
 	 */
-	public List<PointHierarchyNode> getOnBaseParentId(int parentId) {
+	public List<PointHierarchyNode> getOnBaseParentId(int parentId) throws Exception {
 		return cache.get(parentId);
 	}
 	
@@ -310,7 +311,7 @@ public class PointHierarchyCache {
 		}
 	}
 	
-	public void deletePoint(int parentId, int key) {
+	public void deletePoint(int parentId, int key) throws Exception {
 		if (LOG.isTraceEnabled()) {
 			  LOG.trace("before delete point parentId:"+parentId+" key:"+key);
 			  printTreeInCash("-", 0);
@@ -342,7 +343,7 @@ public class PointHierarchyCache {
 	 * @see MangoPointHierarchy
 	 * @param ids
 	 */
-	public void delete(int[] ids) {
+	public void delete(int[] ids) throws Exception {
 		if (LOG.isTraceEnabled()) {
 		  LOG.trace("delete ids:"+ids);
 		  printTreeInCash("_",0);
@@ -371,7 +372,7 @@ public class PointHierarchyCache {
 	 * @see MangoPointHierarchy
 	 * @param phds
 	 */
-	public void update(PointHierarchyDataSource phds) {
+	public void update(PointHierarchyDataSource phds) throws Exception {
 		if (LOG.isTraceEnabled()){
 			LOG.trace("update phds:"+phds);
 			printTreeInCash("_",0);
@@ -399,7 +400,7 @@ public class PointHierarchyCache {
 	 * @param key
 	 * @see PointHierarchyCache
 	 */
-	public void move(int oldParendId, int newParentId, int key, boolean isFolder ) {
+	public void move(int oldParendId, int newParentId, int key, boolean isFolder ) throws Exception {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Move oldParentId:"+oldParendId+" newParentId:"+newParentId+" key:"+key);
 			printTreeInCash("_",0);
@@ -434,7 +435,7 @@ public class PointHierarchyCache {
 	 * @param key
 	 * @param newTitle
 	 */
-	public void edit(int parentId, int key, String newTitle, boolean isFolder) {
+	public void edit(int parentId, int key, String newTitle, boolean isFolder) throws Exception {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Edit parentId:"+parentId+" key:"+key+" newTtile:"+newTitle);
 			printTreeInCash("_",0);
@@ -467,7 +468,7 @@ public class PointHierarchyCache {
 		}
 		if (init) {
 			updateData();
-			cacheInitialize();
+			//cacheInitialize();
 		}
 	}
 	

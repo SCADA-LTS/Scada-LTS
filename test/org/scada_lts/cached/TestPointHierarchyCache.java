@@ -131,7 +131,7 @@ public class TestPointHierarchyCache {
 		
 	
 	@Test
-	public void addPoints() {
+	public void addPoints() throws Exception {
 
 		cache.addPoint(phnP1);
 		boolean contain = containInCache(cache.getOnBaseParentId(PointHierarchyCache.ROOT),keyPoint1, PointHierarchyCache.IS_NOT_FOLDER);

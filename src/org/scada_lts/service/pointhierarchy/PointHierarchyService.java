@@ -67,15 +67,10 @@ public class PointHierarchyService {
 		try {
 			if (isFolder) {
 			  res = phDAO.deleteFolder(key, parentId);
-			  if (res) {
-				  PointHierarchyCache.getInstance().deleteFolder(parentId, key);
-			  }
 			} else {
 				res = phDAO.updateParentIdDataPoint(key, 0);
-				if (res) {
-					PointHierarchyCache.getInstance().deletePoint(parentId, key);
-				}
 			}
+			PointHierarchyCache.getInstance().updateData();
 		} catch (Exception e) {
 			  LOG.error(new CacheHierarchyException(e));
 		}
@@ -94,7 +89,7 @@ public class PointHierarchyService {
 		boolean res = phDAO.updateTitle(id, newTitle);
 		if (res) {
 			try {
-				PointHierarchyCache.getInstance().edit(parentId, id, newTitle, isFolder);
+				PointHierarchyCache.getInstance().updateData();
 			} catch (Exception e) {
 				LOG.error(new CacheHierarchyException(e));
 			}
@@ -119,7 +114,7 @@ public class PointHierarchyService {
 		}
 		if (res) {
 		  try {
-			PointHierarchyCache.getInstance().move( oldParentId, newParentId, key, isFolder);
+		  	PointHierarchyCache.getInstance().updateData();
 	      } catch (Exception e) {
 			LOG.error(new CacheHierarchyException(e));
 		  }
@@ -166,11 +161,7 @@ public class PointHierarchyService {
 					true, 
 					null);
 			try {
-			  if (phn.isFolder()) {
-				  PointHierarchyCache.getInstance().addFolder(phn);
-			  } else {
-				  PointHierarchyCache.getInstance().addPoint(phn);
-			  }
+				PointHierarchyCache.getInstance().updateData();
 			} catch (Exception e) {
 				LOG.error(new CacheHierarchyException(e));
 				return -1;

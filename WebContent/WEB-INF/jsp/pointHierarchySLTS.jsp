@@ -419,7 +419,7 @@ thead th {
 				<td colspan="2">&nbsp;</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="footer" align="center">&copy;2016 <fmt:message
+				<td colspan="2" class="footer" align="center">&copy;2012-2018 Scada-LTS All rights reserved. <fmt:message
 						key="footer.rightsReserved" /></td>
 			</tr>
 		</table>
@@ -742,7 +742,7 @@ var messages = {
 
     function reload() {
        var tree = $("#tree").fancytree("getTree");
-       tree.reload(0);
+       tree.reload();
     }
 
     $(function () {
@@ -827,11 +827,12 @@ var messages = {
     	 			        	dataType: "json",
     	 			        	url:myLocation+'/pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(),
     	 			        	success: function(msg){
-    	 			        	  nodeDragAndDrop.moveTo(data.node, "child");
     	 			        	  $button.hide();
     	 			 		      $button.stopSpin();
     	 			 		      dialog.setClosable(true);
     	 			 		      dialog.getButton('btn-Close').enable();
+    	 			 		      dialog.close();
+    	 			 		      reload();
     	 			        	},
     	 			        	  error: function(XMLHttpRequest, textStatus, errorThrown) {
     	 			        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotMove+'</h3><p>'+pointHierarchySLTS.errorThrown+':'+errorThrown+'</p></div>');
@@ -856,7 +857,10 @@ var messages = {
     	      },
     	      glyph: glyph_opts,
     	      selectMode: 2,
-    	      source: {url: myLocation+"/pointHierarchy/0", debugDelay: 0},
+    	      source: {
+    	        url: myLocation+"/pointHierarchy/0",
+    	        debugDelay: 0,
+    	        cache: false},
     	      toggleEffect: { effect: "drop", options: {direction: "left"}, duration: 100 },
     	      wide: {
     	        iconWidth: "1em",     // Adjust this if @fancy-icon-width != "16px"
@@ -908,14 +912,8 @@ var messages = {
 		 		      $button.stopSpin();
 		 		      dialog.setClosable(true);
 		 		      dialog.getButton('btn-Close').enable();
-		 		      var tree = $("#tree").fancytree("getTree");
-				      var rootNode = tree.getRootNode();
-		 		      var childNode = rootNode.addChildren({
-		 		         title:    titleNewNode,
-		 		         tooltip:  titleNewNode,
-		 		         folder:   true,
-		 		         key:      msg
-		 		       });
+		 		       dialog.close();
+		 		       reload();
 		        	  },
 		        	  error: function(XMLHttpRequest, textStatus, errorThrown) {
 		        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotAdd+'</h3><p>'+ messages.errorThrown +':'+errorThrown+'</p></div>');
@@ -980,15 +978,8 @@ var messages = {
 						           $button.stopSpin();
 						           dialog.setClosable(true);
 						           dialog.getButton('btn-Close').enable();
-						           var tree = $("#tree").fancytree("getTree");
-						           var selNodes = tree.getSelectedNodes();
-								   selNodes.push(nodeActivate);
-						           selNodes.forEach(function(node) {
-						             while( node.hasChildren() ) {
-						               node.getFirstChild().moveTo(tree.rootNode, "child");
-						             }
-						             node.remove();
-						           });
+						           dialog.close();
+						           reload();
 				        	   },
 				        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
 				        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
@@ -1037,12 +1028,8 @@ var messages = {
     							           $button.stopSpin();
     							           dialog.setClosable(true);
     							           dialog.getButton('btn-Close').enable();
-    							           var tree = $("#tree").fancytree("getTree");
-    							           var selNodes = tree.getSelectedNodes();
-    									   selNodes.push(nodeActivate);
-    							           selNodes.forEach(function(node) {
-    							             node.moveTo(tree.rootNode, "child");
-    							           });
+    							           dialog.close();
+    							           reload();
     					        	   },
     					        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
     					        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
@@ -1125,7 +1112,8 @@ var messages = {
 				          $button.stopSpin();
 				          dialog.setClosable(true);
 				          dialog.getButton('btn-Close').enable();
-				          nodeActivate.setTitle(newTitle);
+				          dialog.close();
+				          reload();
 			        	},
 			        	error: function(XMLHttpRequest, textStatus, errorThrown) {
 			        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotEdit+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
@@ -1161,7 +1149,6 @@ var messages = {
 		});
     	$("button#reloadNode").click(()=>{
     		reload();
-    		node=undefined;
     	});
     	$("button#infoNode").click(()=>{
     		if (nodeActivate != undefined) {
