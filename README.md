@@ -133,7 +133,7 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 
 ## Support
 
-If you need support for deployment please contact us and find more information on [our website](http://scada-lts.com)
+If you need support for deployment please contact us and find more information on [our website](http://scada-lts.comhttp://scada-lts.com/#support)
 
 
 ## Copyright and license
