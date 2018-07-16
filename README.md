@@ -131,6 +131,10 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 
 * <https://github.com/TomashHawk>
 
+## Support
+
+If you need support for deployment please contact us and find more information on [our website](http://scada-lts.comhttp://scada-lts.com/#support)
+
 
 ## Copyright and license
 
