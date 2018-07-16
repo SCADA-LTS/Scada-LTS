@@ -745,6 +745,20 @@ var messages = {
        tree.reload();
     }
 
+    function refreshCache() {
+        $.ajax({
+                type: "POST",
+            	dataType: "json",
+            	url:myLocation+"api/pointHierarchy/cacheRefresh/",
+            	success: function(msg){
+            		reload();
+            	},
+            	error: function(XMLHttpRequest, textStatus, errorThrown) {
+            	  console.log(textStatus);
+            	}
+         });
+    }
+
     $(function () {
     	$('[data-toggle="tooltip"]').tooltip();
     	var getParentId = function(node) {
@@ -1148,7 +1162,8 @@ var messages = {
     	   }
 		});
     	$("button#reloadNode").click(()=>{
-    		reload();
+
+    		refreshCache();
     	});
     	$("button#infoNode").click(()=>{
     		if (nodeActivate != undefined) {

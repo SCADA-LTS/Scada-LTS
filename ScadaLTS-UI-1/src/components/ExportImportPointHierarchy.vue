@@ -195,7 +195,7 @@
               },
             },
             "required": ["folders"]
-          }, 
+          },
           // if new parentId is # then move to root
           ROOT: "_",
           STATUS:
