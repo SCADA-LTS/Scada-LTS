@@ -89,6 +89,7 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.serorepl.db.IntStringPair;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -582,7 +583,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<MutablePair<Integer, String>> imageStates, int defaultImage, boolean displayText, String imageSetId) {
+	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<IntStringPair> imageStates, int defaultImage, boolean displayText, String imageSetId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		// Validate

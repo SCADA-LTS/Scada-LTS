@@ -41,6 +41,7 @@ import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.scada_lts.serorepl.db.IntStringPair;
 
 /**
  * @author Matthew Lohbihler
@@ -113,14 +114,14 @@ public class MultistateGraphicComponent extends ImageSetComponent {
         return result;
     }
 
-    public void setImageStateList(List<MutablePair<Integer, String>> imageStateList) {
+    public void setImageStateList(List<IntStringPair> imageStateList) {
         stateImageMap.clear();
-        for (MutablePair ivp : imageStateList) {
-            String[] states = ivp.getValue().toString().split(",");
+        for (IntStringPair ivp : imageStateList) {
+            String[] states = Integer.toString(ivp.getKey()).split(","); // ivp.getLeft().toString().split(",");
             for (String stateStr : states) {
                 try {
                     int state = Integer.parseInt(stateStr.trim());
-                    stateImageMap.put(state, (Integer) ivp.getKey());
+                    stateImageMap.put(state, Integer.parseInt(ivp.getValue()) );
                 }
                 catch (NumberFormatException e) {
                     // Ignore

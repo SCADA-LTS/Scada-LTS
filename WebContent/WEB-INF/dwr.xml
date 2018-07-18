@@ -132,6 +132,8 @@
     
     <!--<convert converter="bean" match="com.serotonin.db.IntValuePair"/>-->
     <convert converter="bean" match="org.apache.commons.lang3.tuple.MutablePair"/>
+    <convert converter="bean" match="org.scada_lts.serorepl.db.IntStringPair"/>
+    <convert converter="bean" match="java.lang.Object"/>
     <!--<convert converter="bean" match="com.serotonin.db.KeyValuePair"/>-->
 
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.http.HttpReceiverPointSample"/>
@@ -280,6 +282,10 @@
       
       import com.serotonin.mango.web.dwr.beans.IntegerPair;
       SystemSettingsDwr.saveSystemEventAlarmLevels(List<IntegerPair>);
+
+      import org.scada_lts.serorepl.db.IntStringPair;
+      ViewDwr.saveMultistateGraphicComponent(String , List<IntStringPair> , int , boolean , String );
+
     ]]>
   </signatures>
 </dwr>

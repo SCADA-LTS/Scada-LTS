@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api.dto;
 
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.scada_lts.serorepl.db.IntStringPair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,12 @@ public class ViewMultistateGraphicComponentDTO extends ViewImageSetComponentDTO 
         this.defaultImage = defaultImage;
     }
 
-    public List<MutablePair<Integer, String>> getStateImageMap() {
-        return stateImageMap;
+    public  List<IntStringPair> getStateImageMap() {
+        List<IntStringPair> listToReturn = new ArrayList<>();
+        for (MutablePair pair : stateImageMap){
+            listToReturn.add(new IntStringPair((Integer)pair.getLeft(), pair.getRight().toString()));
+        }
+        return  listToReturn;
     }
 
     public void setStateImageMap(List<MutablePair<Integer, String>> stateImageMap) {
