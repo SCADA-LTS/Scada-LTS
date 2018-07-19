@@ -13,26 +13,25 @@
       </h4>
       <h5 class="progress-label">&nbsp;{{base.statusGroup}}</h5>
       <div class="progress">
-        <div class="progress-bar progress-bar-striped"
+        <div id="group-progress" class="progress-bar progress-bar-striped"
              v-bind:class="{ active: base.progressImport.isActive }" role="progressbar"
-             aria-valuenow=""
-             aria-valuemin="0" aria-valuemax="100"
              v-bind:style="{ width: base.progressImport.group.percent + '%'}">
           <span v-if="base.canceled">canceled</span>
           <span v-else>{{base.progressImport.group.percent}}%</span>
         </div>
       </div>
       <h5 class="progress-label">{{base.statusDetail}}</h5>
+      <!--
       <div class="progress">
-        <div class="progress-bar progress-bar-striped"
+        <div id="detail-progress" class="progress-bar progress-bar-striped"
              v-bind:class="{ active: base.progressImport.isActive }"
-             role="progressbar" aria-valuenow=""
-             aria-valuemin="0" aria-valuemax="100"
+             role="progressbar"
              v-bind:style="{ width: base.progressImport.detail.percent + '%'}">
           <span v-if="base.canceled">canceled</span>
           <span v-else>{{base.progressImport.detail.percent}}%</span>
         </div>
       </div>
+      -->
 
       <div class="table-responsive">
         <table class="table table-striped table-bordered">
@@ -394,6 +393,7 @@
       },
       showStatus(status, infoStatus, str, detailsElementsDoing, detailsElementsToDo) {
 
+
         if (status == this.constants.STATUS) {
           this.base.status = str;
           if (
@@ -404,24 +404,25 @@
             console.log("STATUS INFO:" + infoStatus);
 
             this.base.progressImport.isActive = false;
-            this.base.progressImport.detail.percent = 100;
+            this.base.progressImport.detail.percent = 0;
             this.base.statusDetail = "";
             this.base.statusGroup = "";
-
-            this.timer.stopImport = performance.now();
-            this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
           } else if (
             infoStatus == this.constants.STATUS_INFO.RUN
           ) {
             this.base.progressImport.isActive = true;
+            this.base.progressImport.detail.percent = 0;
           }
         } else if (status == this.constants.STATUS_GROUP) {
           this.base.statusGroup = str;
           this.calculateProgressGroup(infoStatus);
+          this.base.progressImport.detail.percent = 0;
         } else if (status == this.constants.STATUS_DETAIL) {
           this.calculateProgressDetail(detailsElementsDoing, detailsElementsToDo)
           this.base.statusDetail = str;
         }
+        this.timer.stopImport = performance.now();
+        this.timer.timeImport = this.timer.stopImport - this.timer.startImport;
       },
       parse() {
         this.showStatus(

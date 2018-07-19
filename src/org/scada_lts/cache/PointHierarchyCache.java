@@ -61,9 +61,9 @@ public class PointHierarchyCache {
 	private TreeMap<Integer, List<PointHierarchyNode>> cache = new TreeMap<Integer, List<PointHierarchyNode>>();
 	
 	private void checkAndCorrectOrphanedPointHierarchy(PointHierarchyNode phn) {
-		if ( ((cache.get(phn.getParentId())==null) && (phn.getParentId()>0))) {
+		if (cache.get(phn.getParentId())==null) {
 			List<PointHierarchyNode> lst = new ArrayList<PointHierarchyNode>();
-			cache.put(phn.getParentId(),lst);
+			cache.put(phn.getParentId(), lst);
 		}
 	}
 	

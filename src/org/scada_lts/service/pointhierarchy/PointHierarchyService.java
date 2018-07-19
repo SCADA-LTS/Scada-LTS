@@ -149,6 +149,7 @@ public class PointHierarchyService {
 	public int add(int parentId, String title) {
 		//TODO check title null only folder to change
 		LOG.info("add parentId:"+parentId+" title:"+title);
+
 		int id = phDAO.insert(parentId, title);
 		String xid = phDAO.getFolderXid(id);
 		//actualize cache //TODO

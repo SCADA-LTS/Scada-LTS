@@ -22,14 +22,19 @@
 
 <link href=resources/new-ui/css/app.css rel=stylesheet>
 
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
+
 <link
 	href="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
     rel="stylesheet" type="text/css">
 
+
 <style type="text/css">
 
-<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
-
+/* correcting jsoneditor */
+button.jsoneditor-compact {
+  background-images: url("../resources/npm/node_modules/vue-jsoneditor/dist/docs/img/jsoneditor-icons.bfab7b1.svg");
+}
 /* Reduce bootstrap's default 'panel' padding: */
 div#tree {
 	padding: 3px 5px;
@@ -1381,8 +1386,7 @@ var messages = {
     	}).attr("disabled", true);
 
     });
-
-
+    $('.jsoneditor-menu').prop('hidden', true);
     </script>
 
 </html>
