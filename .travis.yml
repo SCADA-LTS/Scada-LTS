@@ -24,7 +24,7 @@ before_script:
 - ng build
 - cd ./war
 - ant war
-- ant 
+- ant
 - cd ../..
 language: java
 jdk:
@@ -33,7 +33,6 @@ services:
 - docker
 - mysql
 script: ant war && ant junit
-#script: ant war
 branches:
   only:
   - "/^PROC-.*$/"
@@ -49,10 +48,9 @@ env:
   matrix:
   - CATALINA_HOME=/usr/share/tomcat7
   global:
-  - secure: HcTjhqlNLGjg3FxSTmKFkvklseHH7DpzBjk8JGXpqHv/GgzSme36U5uENgpmiBrCRGyLfayMoBh5meYcYg+kB151RQpBY1AAMFPJsMSYLcHJPpZHZOgaVrOTm71jkHm9HgtYusCs8Xgkx1ZVfLmwxynX1biqrJXX31BlzqEWZWlbJKxnbDq+oR8cWoXr3w+GxgGHvyXm4qe7/P1FE0+N64xmlehtz//9Xm7478FezbcWe+t1VhKj+CbwdRPfeZQGQ4wdfVrSSd4jcjzBgMksYQPIMMBG++A/8UfiJrZeOfUjAZQMGg/DF4JfeIgSHaodslwCKIz6t3PJ79GupH88g4Tlzjcy1Xxu+ZBDYdwKbvc8PEhERr2FtXeTmhiJtRI6NBDhqAtp+MgJ7hQc3yGG6Dmv4CF+kjkD0wgXlI271IW0MyJVdPO+Id1uW5qhtcsks5AVH6Gfpu/AeTwyNjtwzKvao8minz2Tf1+VacjLHSKMFOiBGKrg8DCHeLddb+WkN8udjHlsC1+psGVhCOArx7QEJibonZ3vxx+PrFCmzVzg79Lgx4dcmCwF8/vGd2hZJvgk5NLVWZHb+iSFGYGwcBxDSJdTh0a8sJTq7WSq/zL10H4cAPqcQ5bYGBg0SdNVMhxrQjFRgvEkJpodiubphOwbWDUWO7bsDcDabSrMYgk=
-  - secure: U+Aj+qjKLTaJFoIysOGrwFFr5JTjpKaNn+LWl2pQeoEJAJmV9J/VGq4WzPdhmb/5ETlRR76V3N9sCFvoKWYqXWmIvuX8m28plbahZm0xO8RnEeqBYU6xdbWvoRwzazwuSxbY4vTLdwgEHzFGdGOus3p4ty36DW3TVvYK09DD2QwMxMpX/OLcJIFWzxg0y50kbeIH6r7rkw5+unz9ukxIg8rpP8UQMI/AolJ1+HsUPiTjDS7OJLsCF+j+bEJxfGgTZjYoY0Px8MnwKkB/YvOGktONXXF0OJbdDYFX20Nvln0X+iTzztFQLASkmv63Gb1wxeW6l16/ARtbN3RcJxgUmrA3IMjbHkO/ZpOeEpZNxNL87sIFv3HSx8GlpNc1B2s5ECM7OYbg7VNyu3Hh6diRSZYePDwffioAnfWZkAp7MYuuim1L9BrTYjF1QPqKbPvJxg/hBp59GK34x1AAjKMWBHB5cLfIgni4zdBlK0DT1kUzZiy46j7nbpFBTMNgA6C5Db7lmXvZxg+rEq6AlrZZpnROZfFk68G+utrJZAiGcG2q7DHpGiXfbiL2kgnp84hi+sudcmTeSHm6GeHkBH3aAkLtLZQWUpxLloRlJJGIY6mRo8i+hCaJCq1Nm4SPV9OhDlldKBQDYVIgAybifd5kLXiX3YUjrxHn60cTAHRITb8=
+  - secure: GnCELi5oMHoedyVybTME1gjAcHeqZe0ccJ1A+GnhPdrKMw721ccKVq37NraoSGkxawWiaOSghvMbi4+MI1Vy8VctFY1sKrs+uJ90fELpgkojYQsPMYBrBdT/eicUy2n8ZReGXsj5jbK6Esl1E2mL3BPlMm16tJ/bMV5uw/z3ViMv7Yshs26hZ5ToKc9DAf619N8+jnkCbJj9QD6sjxD49wzetwbCk5hRYaSoHrimuZ9UtPmtwcybf6AnqPHECxHNzm/opIlx//0HWY5SPkSQfN11qUtLZ+5UScAKP1MtRINmKiFFou1S/TdMFDDL5dKhDMjfXeNe+saubPiNsb5Ipj2D/HYdIAZn3/ZINpW3nwJIzw7gp6UvpmOPaAR5ZYedClnnFxwx3YMo9wwTCVIYnN5tLCCzJWhP3eEHhBAUznp2i7L3r4+zqhLaf4OAOhwyKNofrZbLjvjyMwwVGH7NcbYiB4RWcD4RVm/DYSjtc35SScfUCbxZB4pi7HWJbEHooO8ygJ4JuG1O/E0gbUESlZbi+8WpAR6egYjcxraQsUZCabEJZlSMLaXF6T5hr8pYrH7s3g13wWVBgnGzwmjV+M7R9yBVmK6J6y6G6WZYy02Vno29ohFjSqxY+2mQfu73MzcpUk5Q3YijhuSoJ8FL8hoQPCDWiZu10otctx0suZ8=
+  - secure: QS2kSguWY3ZOSEbD3Ykfa8I95hRujK0mW/IXKEPV8lpFMsb4PfrCWQGVFUgj6YE8oG9dw1TlS3kX6iW81EkvMmSN4QhiSgn0ejj9zQYCw4AqS1ZXiusW7Ckryw+FyBuKhC6iF+tj9xp3I+WIyndhZ17ye8bDKgOvzygPLzz3p/g/T6TPzXEbuvRssqlughwp13z5cm5kauilJBjT14Lpe+rbBGXYhQPEe2BE8EVSkVj4gOpfMF4a9uy7hS4PpcmbEXZXJ10K61KwZleNPlVP7sj8pCZ74z7hmOnzzmx7Y8u3xaJw5KnsrCCrOCYD0iz2mcQ8KBJksZJukEllP20PpC8QQ8+4mP/EBzAg0WeDZ5RHukx7u4tpl8Qrhsp/zefqp80rMDzhnYx/p+pZk8lSnQ34ZXCLE6QqSz/TYJiGNQt23r+1yALjEATYLD5jM2heMHTTA20SvWWvTM2Ji2IE5UQp7ABzhXTqKVA5BfClFmmVMRi+Q86nl/yMfEJ/lGggpXpofVt2Q5yAdmmsBgcfouOoGwW99k2YDZdAWoo1Fj/rStLtIc71hw1Z0EgARlAcEbCdaFh6w+A+39CCRUq7/6r2+DzEpqFbcEVOKL/K69pDZVQ7aNcgHx7bmlAo5OLNF3q6dCIO1hx1c34apKFN+xSRlV5Yt6vmEmPzxJfzfZw=
 after_script:
-# get tomcat7 to ./docker/app
 - wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
 - mkdir ./docker/app
 - mv apache-tomcat-7.0.85.tar.gz ./docker/app
@@ -72,21 +70,16 @@ after_script:
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
 - ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
 - ls -l ./lib/mysql-connector-java-5.1.38-bin.jar
-# config tomcat
 - cp -f ../config/context.xml ./conf/
 - cat ./conf/context.xml
-
-# docker
 - cd ../
 - pwd
-- ls 
+- ls
 - docker version
 - docker login -u=$DOCKER_USENAME -p=$DOCKER_PASSWORD
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH;
+  fi`
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
 - docker push $IMAGE_NAME:$TAG
-
-
-#- echo $TRAVIS_BUILD_DIR
