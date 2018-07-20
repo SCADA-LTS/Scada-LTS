@@ -26,6 +26,11 @@ before_script:
 - ant war
 - ant
 - cd ../..
+- cd ./ScadaLTS-UI-1
+- npm install
+- cd ../WebContent/resources/npm/
+- npm install
+- cd ../../..
 language: java
 jdk:
 - openjdk8

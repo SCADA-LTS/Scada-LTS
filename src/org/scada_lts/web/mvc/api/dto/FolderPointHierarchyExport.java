@@ -25,41 +25,21 @@ import java.util.Objects;
  *
  * @author grzegorz.bylica@gmail.com
  */
-public class FolderPointHierarchy {
-
-    private String name;
-    private int id;
-    private String xid;
+public class FolderPointHierarchyExport {
     private String parentXid;
-    private int parentId;
+    private String name;
+    private String xidFolder;
     private List<String> pointXids;
 
-    public FolderPointHierarchy() {
+    public FolderPointHierarchyExport() {
         //
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getXid() {
-        return xid;
-    }
-
-    public void setXid(String xid) {
-        this.xid = xid;
+    public FolderPointHierarchyExport(FolderPointHierarchy fph) {
+        this.parentXid = fph.getParentXid();
+        this.name = fph.getName();
+        this.xidFolder = fph.getXid();
+        this.pointXids = fph.getPointXids();
     }
 
     public String getParentXid() {
@@ -70,12 +50,20 @@ public class FolderPointHierarchy {
         this.parentXid = parentXid;
     }
 
-    public int getParentId() {
-        return parentId;
+    public String getName() {
+        return name;
     }
 
-    public void setParentId(int parentId) {
-        this.parentId = parentId;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getXidFolder() {
+        return xidFolder;
+    }
+
+    public void setXidFolder(String xidFolder) {
+        this.xidFolder = xidFolder;
     }
 
     public List<String> getPointXids() {
@@ -90,17 +78,15 @@ public class FolderPointHierarchy {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FolderPointHierarchy that = (FolderPointHierarchy) o;
-        return id == that.id &&
-                parentId == that.parentId &&
+        FolderPointHierarchyExport that = (FolderPointHierarchyExport) o;
+        return Objects.equals(parentXid, that.parentXid) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(xid, that.xid) &&
-                Objects.equals(parentXid, that.parentXid) &&
+                Objects.equals(xidFolder, that.xidFolder) &&
                 Objects.equals(pointXids, that.pointXids);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, id, xid, parentXid, parentId, pointXids);
+        return Objects.hash(parentXid, name, xidFolder, pointXids);
     }
 }
