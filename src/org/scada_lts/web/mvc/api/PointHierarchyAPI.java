@@ -23,11 +23,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.pointhierarchy.PointHierarchyXidService;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
+import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
+import org.scada_lts.web.mvc.api.dto.PointHierarchyExp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Create by at Grzesiek Bylica
@@ -79,7 +82,34 @@ public class PointHierarchyAPI {
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
+
                 if (pointHierarchyXidService.moveFolder(xidFolder, newParentXidFolder)) {
+                    result = new ResponseEntity<String>(String.valueOf(true), HttpStatus.OK);
+                } else {
+                    result = new ResponseEntity<String>(String.valueOf(false), HttpStatus.OK);
+                }
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/api/pointHierarchy/changeName/{xid_folder}/{new_name}", method = RequestMethod.PUT)
+    public ResponseEntity<String> folderUpdateName(
+            @PathVariable("xid_folder") String xidFolder,
+            @PathVariable("new_name") String newName,
+            HttpServletRequest request)  {
+
+        LOG.info("/api/pointHierarchy/changeName/{xid_folder}/{new_name} xidFolder:" + xidFolder + " newName:" + newName);
+        ResponseEntity<String> result = null;
+        try {
+            User user = Common.getUser(request);
+            if (user.isAdmin()) {
+                if (pointHierarchyXidService.updateNameFolder(xidFolder, newName)){
                     result = new ResponseEntity<String>(String.valueOf(true), HttpStatus.OK);
                 } else {
                     result = new ResponseEntity<String>(String.valueOf(false), HttpStatus.OK);
@@ -105,6 +135,7 @@ public class PointHierarchyAPI {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 pointHierarchyXidService.folderAdd(folderPointHierarchy);
+                result = new ResponseEntity<String>(HttpStatus.OK);
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }
@@ -116,23 +147,45 @@ public class PointHierarchyAPI {
     }
 
     @RequestMapping(value = "/api/pointHierarchy/folderCheckExist/{xid_folder}", method = RequestMethod.GET)
-    public ResponseEntity<String> folderCheckExist(
+    public ResponseEntity<FolderPointHierarchy> folderCheckExist(
             @PathVariable("xid_folder") String xidFolder,
             HttpServletRequest request)  {
 
         LOG.info("/api/pointHierarchy/folderCheckExist xidFolder:" + xidFolder);
-        ResponseEntity<String> result = null;
+        ResponseEntity<FolderPointHierarchy> result = null;
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
-                boolean is = pointHierarchyXidService.folderCheckExist(xidFolder);
-                result = new ResponseEntity<String>(String.valueOf(is), HttpStatus.OK);
+                FolderPointHierarchy fph = pointHierarchyXidService.folderCheckExist(xidFolder);
+                result = new ResponseEntity<FolderPointHierarchy>(fph, HttpStatus.OK);
             } else {
-                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                result = new ResponseEntity<FolderPointHierarchy>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             LOG.error(e);
-            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<FolderPointHierarchy>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/api/pointHierarchy/export", method = RequestMethod.GET)
+    public ResponseEntity<PointHierarchyExp> exportData(HttpServletRequest request) {
+
+        LOG.info("/api/pointHierarchy/exportData");
+        ResponseEntity<PointHierarchyExp> result = null;
+        try {
+            User user = Common.getUser(request);
+            if (user.isAdmin()) {
+                List<FolderPointHierarchy> lfph = pointHierarchyXidService.getFolders();
+                List<FolderPointHierarchyExport> nlfph = pointHierarchyXidService.fillInThePoints(lfph);
+
+                result = new ResponseEntity<PointHierarchyExp>(new PointHierarchyExp(nlfph), HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<PointHierarchyExp>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<PointHierarchyExp>(HttpStatus.BAD_REQUEST);
         }
         return result;
     }

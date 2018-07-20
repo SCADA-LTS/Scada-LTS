@@ -20,8 +20,21 @@
 	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.css"
 	rel="stylesheet" type="text/css">
 
+<link href=resources/new-ui/css/app.css rel=stylesheet>
+
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
+
+<link
+	href="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
+    rel="stylesheet" type="text/css">
+
+
 <style type="text/css">
 
+/* correcting jsoneditor */
+button.jsoneditor-compact {
+  background-images: url("../resources/npm/node_modules/vue-jsoneditor/dist/docs/img/jsoneditor-icons.bfab7b1.svg");
+}
 /* Reduce bootstrap's default 'panel' padding: */
 div#tree {
 	padding: 3px 5px;
@@ -297,7 +310,7 @@ thead th {
 		</div>
 
 		<div class="row">
-			<div class="col-md-12">
+			<div id="pointHierarchy" class="col-md-12">
 				<c:if test="${!empty sessionUser}">
 				    <!--
 					<div class="panel panel-default">
@@ -347,9 +360,7 @@ thead th {
 
 					<div class="panel panel-default">
 						<div class="panel-heading help">
-							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b> <span
-								class="glyphicon glyphicon-question-sign"></span> <span
-								class="label label-warning">rc version of the view</span>
+							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b>
 						</div>
 						<div class="menu panel-heading help">
 							<div class="btn-group">
@@ -379,38 +390,41 @@ thead th {
 									<span class="glyphicon glyphicon-info-sign"></span>
 								</button>
 							</div>
-							<!--
-							<div class="btn-group">
-								<div id="hierarchy-import-export">
 
-                                    <button id="Export_Import" class="btn" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+							<div class="btn-group">
+								<div id="hierarchy-import-export" >
+
+                                    <button onclick="collapseImportExport()" id="Export_Import" class="btn" data-toggle="collapse" href="#collapseImport" role="button" aria-expanded="false" aria-controls="collapseImport">
                                         <span class="glyphicon glyphicon-export"></span> <span class="glyphicon glyphicon-import"></span>
                                     </button>
 
-
-									<div class="collapse" id="collapseExample">
-										<div class="card card-body">
-										</div>
-										<export-import></export-import>
-
-									</div>
-
                             	</div>
 							</div>
-							-->
+
 						</div>
 						<div id="tree"
-							class=" panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
+							class=" panel-body fancytree-colorize-hover fancytree-fade-expander pre-scrollable" style="max-height: 65vh"></div>
 					</div>
+
 				</c:if>
 			</div>
+			<div class="collapse" id="collapseImport">
+			 <div class="btn-group">
+             	<button onclick="closeImportExport()" id="close-export-import" class="btn btn-default"
+             	    data-toggle="tooltip" data-placement="top"
+             			title='close export/import'>
+             			<span class="glyphicon glyphicon-resize-small"></span>
+             	</button>
+             </div>
+                <div id=export-import-ph></div>
+            </div>
 		</div>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td colspan="2">&nbsp;</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="footer" align="center">&copy;2016 <fmt:message
+				<td colspan="2" class="footer" align="center">&copy;2012-2018 Scada-LTS All rights reserved. <fmt:message
 						key="footer.rightsReserved" /></td>
 			</tr>
 		</table>
@@ -430,7 +444,14 @@ thead th {
 <script src="resources/npm/node_modules/vue-axios/dist/vue-axios.min.js"></script>
 <script src="resources/vue-mixins/shared/mixins-export-import.js"></script>
 <script src="resources/vue-components/export-import/export-import.js"></script>
-<script src="resources/npm/node_modules/jsonschema/lib/validator.js"></script>
+
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
+
+<script src=resources/new-ui/js/manifest.js></script>
+<script src=resources/new-ui/js/vendor.js></script>
+<script src=resources/new-ui/js/app.js></script>
+
 
 <script>
 "use strict";
@@ -440,10 +461,6 @@ header.onLoad = function() {
         //header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
 };
 
-
-
-
-
  var headers = {
 		 login: 'admin',
 		 passcode: 'passcode',
@@ -451,9 +468,6 @@ header.onLoad = function() {
  } ;
 
 var stompClient = null;
-
-
-
 
 var connectCallback = function(frame) {
     	console.log('Connected: ' + frame);
@@ -712,6 +726,40 @@ var messages = {
     	$("#btnSearch").click();
     };
 
+    function collapseImportExport() {
+
+        if ( $( "div#pointHierarchy" ).hasClass('col-md-8') ) {
+          $( "div#pointHierarchy" ).attr("class", "col-md-12");
+        } else {
+
+          $( "div#pointHierarchy" ).attr("class", "col-md-8");
+        }
+
+    };
+
+    function closeImportExport() {
+        $( "#collapseImport" ).attr("class", "collapse");
+        $( "div#pointHierarchy" ).attr("class", "col-md-12");
+    }
+
+    function reload() {
+       var tree = $("#tree").fancytree("getTree");
+       tree.reload();
+    }
+
+    function refreshCache() {
+        $.ajax({
+                type: "POST",
+            	dataType: "json",
+            	url:myLocation+"api/pointHierarchy/cacheRefresh/",
+            	success: function(msg){
+            		reload();
+            	},
+            	error: function(XMLHttpRequest, textStatus, errorThrown) {
+            	  console.log(textStatus);
+            	}
+         });
+    }
 
     $(function () {
     	$('[data-toggle="tooltip"]').tooltip();
@@ -795,11 +843,12 @@ var messages = {
     	 			        	dataType: "json",
     	 			        	url:myLocation+'/pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(),
     	 			        	success: function(msg){
-    	 			        	  nodeDragAndDrop.moveTo(data.node, "child");
     	 			        	  $button.hide();
     	 			 		      $button.stopSpin();
     	 			 		      dialog.setClosable(true);
     	 			 		      dialog.getButton('btn-Close').enable();
+    	 			 		      dialog.close();
+    	 			 		      reload();
     	 			        	},
     	 			        	  error: function(XMLHttpRequest, textStatus, errorThrown) {
     	 			        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotMove+'</h3><p>'+pointHierarchySLTS.errorThrown+':'+errorThrown+'</p></div>');
@@ -824,7 +873,10 @@ var messages = {
     	      },
     	      glyph: glyph_opts,
     	      selectMode: 2,
-    	      source: {url: myLocation+"/pointHierarchy/0", debugDelay: 0},
+    	      source: {
+    	        url: myLocation+"/pointHierarchy/0",
+    	        debugDelay: 0,
+    	        cache: false},
     	      toggleEffect: { effect: "drop", options: {direction: "left"}, duration: 100 },
     	      wide: {
     	        iconWidth: "1em",     // Adjust this if @fancy-icon-width != "16px"
@@ -876,14 +928,8 @@ var messages = {
 		 		      $button.stopSpin();
 		 		      dialog.setClosable(true);
 		 		      dialog.getButton('btn-Close').enable();
-		 		      var tree = $("#tree").fancytree("getTree");
-				      var rootNode = tree.getRootNode();
-		 		      var childNode = rootNode.addChildren({
-		 		         title:    titleNewNode,
-		 		         tooltip:  titleNewNode,
-		 		         folder:   true,
-		 		         key:      msg
-		 		       });
+		 		       dialog.close();
+		 		       reload();
 		        	  },
 		        	  error: function(XMLHttpRequest, textStatus, errorThrown) {
 		        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotAdd+'</h3><p>'+ messages.errorThrown +':'+errorThrown+'</p></div>');
@@ -948,15 +994,8 @@ var messages = {
 						           $button.stopSpin();
 						           dialog.setClosable(true);
 						           dialog.getButton('btn-Close').enable();
-						           var tree = $("#tree").fancytree("getTree");
-						           var selNodes = tree.getSelectedNodes();
-								   selNodes.push(nodeActivate);
-						           selNodes.forEach(function(node) {
-						             while( node.hasChildren() ) {
-						               node.getFirstChild().moveTo(tree.rootNode, "child");
-						             }
-						             node.remove();
-						           });
+						           dialog.close();
+						           reload();
 				        	   },
 				        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
 				        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
@@ -1005,12 +1044,8 @@ var messages = {
     							           $button.stopSpin();
     							           dialog.setClosable(true);
     							           dialog.getButton('btn-Close').enable();
-    							           var tree = $("#tree").fancytree("getTree");
-    							           var selNodes = tree.getSelectedNodes();
-    									   selNodes.push(nodeActivate);
-    							           selNodes.forEach(function(node) {
-    							             node.moveTo(tree.rootNode, "child");
-    							           });
+    							           dialog.close();
+    							           reload();
     					        	   },
     					        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
     					        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
@@ -1093,7 +1128,8 @@ var messages = {
 				          $button.stopSpin();
 				          dialog.setClosable(true);
 				          dialog.getButton('btn-Close').enable();
-				          nodeActivate.setTitle(newTitle);
+				          dialog.close();
+				          reload();
 			        	},
 			        	error: function(XMLHttpRequest, textStatus, errorThrown) {
 			        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotEdit+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
@@ -1128,8 +1164,8 @@ var messages = {
     	   }
 		});
     	$("button#reloadNode").click(()=>{
-    		location.reload();
-    		node=undefined;
+
+    		refreshCache();
     	});
     	$("button#infoNode").click(()=>{
     		if (nodeActivate != undefined) {
@@ -1144,6 +1180,7 @@ var messages = {
 		        		 	'<li>'+messages.title+':'+nodeActivate.title+'</li>'+
 		        		 	'<li>'+messages.keyParent+':'+getParentId(nodeActivate)+'</li>'+
 		        		 	'<li>'+messages.isFolder+':'+nodeActivate.isFolder()+'</li>'+
+		        		 	'<li> Folder xid : ' + nodeActivate.data.xid + '</li>'+
 		         		 '</ul></div>');
 		         } else {
 		        	   $content = $('<div><h3>'+nodeActivate.title+'</h3>'+
@@ -1152,6 +1189,7 @@ var messages = {
 			        		 	'<li>'+messages.title+':'+nodeActivate.title+'</li>'+
 			        		 	'<li>'+messages.keyParent+':'+getParentId(nodeActivate)+'</li>'+
 			        		 	'<li>'+messages.isFolder+':'+nodeActivate.isFolder()+'</li>'+
+			        		 	'<li> Folder xid : ' + nodeActivate.data.xid + '</li>'+
 			        		 	'<li>'+messages.dataSource+':'+nodeActivate.data.pointHierarchyDataSource.name+''+
 			        		 	'<ul>'+
 			        		 		'<li>'+messages.key+':'+nodeActivate.data.pointHierarchyDataSource.id+'</li>'+
@@ -1270,6 +1308,7 @@ var messages = {
 
 
         function search(query, page) {
+            console.log("SEARCH");
         	queryGlobal=$.trim(query);
         	console.log(queryGlobal);
         	console.log(page);
@@ -1347,15 +1386,7 @@ var messages = {
     	}).attr("disabled", true);
 
     });
-
-
+    $('.jsoneditor-menu').prop('hidden', true);
     </script>
 
-    <!-- export import -->
-    <script>
-        var app = new Vue({
-          el: '#hierarchy-import-export',
-          mixins: []
-        })
-    </script>
 </html>
