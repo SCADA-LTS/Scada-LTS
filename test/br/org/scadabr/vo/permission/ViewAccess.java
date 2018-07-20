@@ -7,8 +7,8 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.View;
+import org.scada_lts.mango.service.ViewService;
 
 @JsonRemoteEntity
 public class ViewAccess extends Permission implements JsonSerializable {
@@ -23,7 +23,7 @@ public class ViewAccess extends Permission implements JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("viewXid", new ViewDao().getView(id).getXid());
+		map.put("viewXid", new ViewService().getView(id).getXid());
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}
 
@@ -33,7 +33,7 @@ public class ViewAccess extends Permission implements JsonSerializable {
 		String xid = json.getString("viewXid");
 		int ImportedPermission = ACCESS_CODES.getId(json
 				.getString("permission"));
-		View view = new ViewDao().getViewByXid(xid);
+		View view = new ViewService().getViewByXid(xid);
 		int importedId = view.getId();
 		setId(importedId);
 		setPermission(ImportedPermission);

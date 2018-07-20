@@ -74,6 +74,7 @@ import com.serotonin.viconics.config.Thermostat;
 import com.serotonin.viconics.io.ViconicsIncomingResponse;
 import com.serotonin.viconics.io.ViconicsOutgoingRequest;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.WatchListService;
 
 /**
  * @author Matthew Lohbihler

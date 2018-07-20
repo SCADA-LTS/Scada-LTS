@@ -52,6 +52,7 @@ import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.WatchListService;
 
 public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {

@@ -59,7 +59,7 @@ public class WatchListDao  {
 
 	public WatchList getWatchList(int watchListId) {
 		WatchList watchList = watchListService.getWatchList(watchListId);
-		populateWatchlistData(watchList);
+		watchListService.populateWatchlistData(watchList);
 		return watchList;
 	}
 
@@ -67,9 +67,9 @@ public class WatchListDao  {
 		watchListService.populateWatchlistData(watchLists);
 	}
 
-	public void populateWatchlistData(WatchList watchList) {
-		watchListService.populateWatchlistData(watchList);
-	}
+//	public void populateWatchlistData(WatchList watchList) {
+//		watchListService.populateWatchlistData(watchList);
+//	}
 
 	/**
 	 * Note: this method only returns basic watchlist information. No data

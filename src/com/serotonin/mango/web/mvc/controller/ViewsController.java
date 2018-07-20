@@ -27,6 +27,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.PermissionViewACL;
 import org.scada_lts.permissions.model.EntryDto;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,6 +45,7 @@ public class ViewsController extends ParameterizableViewController {
 			HttpServletResponse response) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ViewDao viewDao = new ViewDao();
+		ViewService viewService = new ViewService();
 		User user = Common.getUser(request);
 		List<MutablePair<Integer, String>>  views;
 
@@ -94,13 +96,13 @@ public class ViewsController extends ParameterizableViewController {
 		View currentView = null;
 		String vid = request.getParameter("viewId");
 		try {
-			currentView = viewDao.getView(Integer.parseInt(vid));
+			currentView = viewService.getView(Integer.parseInt(vid));
 		} catch (NumberFormatException e) {
 			// no op
 		}
 
 		if (currentView == null && views.size() > 0)
-			currentView = viewDao.getView(views.get(0).getKey());
+			currentView = viewService.getView(views.get(0).getKey());
 
 		if (currentView != null) {
 			if (!user.isAdmin())

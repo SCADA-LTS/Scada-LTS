@@ -16,6 +16,8 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.WatchListService;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.TransactionStatus;
@@ -43,8 +45,11 @@ public class UsersProfileDao extends BaseDao {
     private static final String PROFILES_DELETE = "delete from usersProfiles where id = (?)";
 
     private WatchListDao watchlistDao = new WatchListDao();
+
     private ViewDao viewDao = new ViewDao();
     private UserDao userDao = new UserDao();
+    private ViewService viewService = new ViewService();
+
 
     public List<UsersProfileVO> getUsersProfiles() {
         if (currentProfileList == null) {
@@ -175,7 +180,7 @@ public class UsersProfileDao extends BaseDao {
         }
 
         for (View view : profile.retrieveViews()) {
-            viewDao.saveView(view);
+            viewService.saveView(view);
         }
 
         ListIterator<UsersProfileVO> iterator = currentProfileList
@@ -263,9 +268,8 @@ public class UsersProfileDao extends BaseDao {
                     }
                 }));
 
-        WatchListDao watchListDao = new WatchListDao();
-        List<WatchList> allwatchlists = watchListDao.getWatchLists();
-        watchListDao.populateWatchlistData(allwatchlists);
+        List<WatchList> allwatchlists = watchlistDao.getWatchLists();
+        watchlistDao.populateWatchlistData(allwatchlists);
         profile.defineWatchlists(allwatchlists);
     }
 
@@ -303,7 +307,7 @@ public class UsersProfileDao extends BaseDao {
                     }
                 }));
 
-        List<View> allviews = new ViewDao().getViews();
+        List<View> allviews = new ViewService().getViews();
         profile.defineViews(allviews);
     }
 
@@ -419,9 +423,9 @@ public class UsersProfileDao extends BaseDao {
         }
 
         // Remove user from Views
-        List<View> views = viewDao.getViews();
+        List<View> views = viewService.getViews();
         for (View view : views) {
-            viewDao.removeUserFromView(view.getId(), user.getId());
+            viewService.removeUserFromView(view.getId(), user.getId());
         }
 
         user.resetUserProfile();
@@ -440,9 +444,9 @@ public class UsersProfileDao extends BaseDao {
         }
 
         // Remove user from Views
-        List<View> views = viewDao.getViews();
+        List<View> views = viewService.getViews();
         for (View view : views) {
-            viewDao.removeUserFromView(view.getId(), user.getId());
+            viewService.removeUserFromView(view.getId(), user.getId());
         }
 
         user.resetUserProfile();

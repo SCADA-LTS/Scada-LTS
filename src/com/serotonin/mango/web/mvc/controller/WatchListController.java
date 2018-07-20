@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.scada_lts.mango.service.WatchListService;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionViewACL;
 import org.scada_lts.permissions.PermissionWatchlistACL;

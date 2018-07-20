@@ -35,19 +35,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
-import com.serotonin.mango.db.dao.PointLinkDao;
-import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
-import com.serotonin.mango.db.dao.WatchListDao;
+import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -75,6 +63,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
+import org.scada_lts.mango.service.ViewService;
 
 /**
  * @author Matthew Lohbihler
@@ -87,7 +76,7 @@ public class ImportTask extends ProgressiveTask {
 	private final UserDao userDao = new UserDao();
 	private final DataSourceDao dataSourceDao = new DataSourceDao();
 	private final DataPointDao dataPointDao = new DataPointDao();
-	private final ViewDao viewDao = new ViewDao();
+	private final ViewService viewService = new ViewService();
 	private final PointLinkDao pointLinkDao = new PointLinkDao();
 	private final ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
 	private final CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
@@ -556,7 +545,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.view.xid");
 		else {
-			View view = viewDao.getViewByXid(xid);
+			View view = viewService.getViewByXid(xid);
 			if (view == null) {
 				view = new View();
 				view.setXid(xid);
@@ -577,7 +566,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = view.isNew();
-					viewDao.saveView(view);
+					viewService.saveView(view);
 					addSuccessMessage(isnew, "emport.view.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {

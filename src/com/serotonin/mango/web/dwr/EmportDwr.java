@@ -61,6 +61,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.ViewService;
 
 /**
  * @author Matthew Lohbihler
@@ -111,7 +112,7 @@ public class EmportDwr extends BaseDwr {
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 
 		if (graphicalViews)
-			data.put(GRAPHICAL_VIEWS, new ViewDao().getViews());
+			data.put(GRAPHICAL_VIEWS, new ViewService().getViews());
 		if (dataSources)
 			data.put(DATA_SOURCES, new DataSourceDao().getDataSources());
 

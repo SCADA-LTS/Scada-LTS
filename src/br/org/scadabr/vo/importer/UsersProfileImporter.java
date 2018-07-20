@@ -27,6 +27,7 @@ import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.ViewService;
 
 public class UsersProfileImporter {
 
@@ -171,7 +172,7 @@ public class UsersProfileImporter {
 
 					shouldUpdateView = true;
 
-					ViewDao viewDao = new ViewDao();
+					ViewService viewDao = new ViewService();
 					View viewToUpdate = viewDao.getView(viewId);
 
 					for (Iterator<ShareUser> iterator = viewToUpdate
@@ -210,8 +211,8 @@ public class UsersProfileImporter {
 
 					shouldUpdateWatchlist = true;
 
-					WatchListDao watchlistDao = new WatchListDao();
-					WatchList watchlistToUpdate = watchlistDao
+					WatchListDao watchListDao = new WatchListDao();
+					WatchList watchlistToUpdate = watchListDao
 							.getWatchList(watchlistId);
 
 					for (Iterator<ShareUser> iterator = watchlistToUpdate
@@ -232,7 +233,7 @@ public class UsersProfileImporter {
 					}
 
 					if (shouldUpdateWatchlist) {
-						watchlistDao.saveWatchList(watchlistToUpdate);
+						watchListDao.saveWatchList(watchlistToUpdate);
 					}
 
 				}

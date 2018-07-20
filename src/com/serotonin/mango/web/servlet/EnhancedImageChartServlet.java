@@ -7,6 +7,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.ViewService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,9 +26,9 @@ public class EnhancedImageChartServlet extends BaseInfoServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int viewId = getIntRequestParameter(request, "viewId", -1);
         int viewComponentId = getIntRequestParameter(request, "vcId", -1);
-        ViewDao viewDao = new ViewDao();
+        ViewService viewService = new ViewService();
         User user = Common.getUser(request);
-        View view = viewDao.getView(viewId);
+        View view = viewService.getView(viewId);
         if (view == null) {
             view = user.getView();
         }

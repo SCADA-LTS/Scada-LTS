@@ -24,11 +24,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.mango.service.ViewService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 
@@ -38,14 +38,14 @@ import com.serotonin.mango.view.View;
 public class PublicViewController extends ParameterizableViewController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
-        ViewDao viewDao = new ViewDao();
+        ViewService viewService = new ViewService();
 
         // Get the view by id.
         String vid = request.getParameter("viewId");
         View view = null;
         if (vid != null) {
             try {
-                view = viewDao.getView(Integer.parseInt(vid));
+                view = viewService.getView(Integer.parseInt(vid));
             }
             catch (NumberFormatException e) { /* no op */
             }
@@ -53,11 +53,11 @@ public class PublicViewController extends ParameterizableViewController {
         else {
             String name = request.getParameter("viewName");
             if (name != null)
-                view = viewDao.getView(name);
+                view = viewService.getView(name);
             else {
                 String xid = request.getParameter("viewXid");
                 if (xid != null)
-                    view = viewDao.getViewByXid(xid);
+                    view = viewService.getViewByXid(xid);
             }
         }
 

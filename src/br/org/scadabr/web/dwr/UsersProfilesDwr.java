@@ -30,6 +30,8 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.WatchListService;
 
 public class UsersProfilesDwr {
 
@@ -69,12 +71,12 @@ public class UsersProfilesDwr {
 
 		initData.put("dataSources", dataSources);
 
-		WatchListDao watchlistDao = new WatchListDao();
-		List<WatchList> watchlists = watchlistDao.getWatchLists();
+		WatchListDao watchListDao = new WatchListDao();
+		List<WatchList> watchlists = watchListDao.getWatchLists();
 		initData.put("watchlists", watchlists);
 
-		ViewDao viewDao = new ViewDao();
-		List<View> views = viewDao.getViews();
+		ViewService viewService = new ViewService();
+		List<View> views = viewService.getViews();
 		initData.put("views", views);
 
 		return initData;

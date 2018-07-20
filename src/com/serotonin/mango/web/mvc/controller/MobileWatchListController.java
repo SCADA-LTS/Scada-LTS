@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.mango.service.WatchListService;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.serotonin.mango.Common;

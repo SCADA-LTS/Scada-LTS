@@ -40,6 +40,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.WatchListService;
 
 /**
  * @author Matthew Lohbihler

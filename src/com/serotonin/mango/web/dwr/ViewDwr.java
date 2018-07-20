@@ -89,6 +89,8 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.dao.model.IdName;
+import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.serorepl.db.IntStringPair;
 
 /**
@@ -127,12 +129,13 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public List<MutablePair<Integer, String>>  getViews() {
+	public List<MutablePair<Integer, String>> getViews() {
 		ViewDao viewDao = new ViewDao();
+		ViewService viewService = new ViewService();
 		User user = Common.getUser();
 
 		List<MutablePair<Integer, String>>  views = viewDao.getViewNames(user.getId(), user.getUserProfile());
-
+		List<IdName> viewNames = viewService.getViewNames(user.getId(), user.getUserProfile());
 		return views;
 	}
 
@@ -342,7 +345,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public void deleteViewShare() {
 		User user = Common.getUser();
-		new ViewDao().removeUserFromView(user.getView().getId(), user.getId());
+		new ViewService().removeUserFromView(user.getView().getId(), user.getId());
 	}
 
 	@MethodFilter
