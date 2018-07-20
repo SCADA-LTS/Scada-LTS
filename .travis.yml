@@ -81,9 +81,12 @@ after_script:
 - pwd
 - ls 
 - docker version
-- docker build -t dockergb/scadalts-dev .
-- docker images
 - docker login -u=$DOCKER_USENAME -p=$DOCKER_PASSWORD
-- docker push dockergb/scadalts-dev 
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- export IMAGE_NAME=scadalts/scadalts
+- docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
+- docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
+- docker push $IMAGE_NAME:$TAG
+
 
 #- echo $TRAVIS_BUILD_DIR
