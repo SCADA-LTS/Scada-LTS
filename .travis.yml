@@ -68,7 +68,7 @@ after_script:
 - mv ./apache-tomcat-7.0.85/* ./
 - rm -rf ./apache-tomcat-7.0.85
 - cp ../../ScadaBR.war ./webapps
-- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
+#- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
 - ls -l ./webapps/ScadaLTS.war
 - ls -l ./webapps/ScadaBR.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
@@ -82,9 +82,9 @@ after_script:
 - ls
 - docker version
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH;
-  fi`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
 - docker push $IMAGE_NAME:$TAG
+
