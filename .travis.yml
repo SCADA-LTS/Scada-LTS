@@ -53,8 +53,8 @@ env:
   matrix:
   - CATALINA_HOME=/usr/share/tomcat7
   global:
-  - secure: "GnCELi5oMHoedyVybTME1gjAcHeqZe0ccJ1A+GnhPdrKMw721ccKVq37NraoSGkxawWiaOSghvMbi4+MI1Vy8VctFY1sKrs+uJ90fELpgkojYQsPMYBrBdT/eicUy2n8ZReGXsj5jbK6Esl1E2mL3BPlMm16tJ/bMV5uw/z3ViMv7Yshs26hZ5ToKc9DAf619N8+jnkCbJj9QD6sjxD49wzetwbCk5hRYaSoHrimuZ9UtPmtwcybf6AnqPHECxHNzm/opIlx//0HWY5SPkSQfN11qUtLZ+5UScAKP1MtRINmKiFFou1S/TdMFDDL5dKhDMjfXeNe+saubPiNsb5Ipj2D/HYdIAZn3/ZINpW3nwJIzw7gp6UvpmOPaAR5ZYedClnnFxwx3YMo9wwTCVIYnN5tLCCzJWhP3eEHhBAUznp2i7L3r4+zqhLaf4OAOhwyKNofrZbLjvjyMwwVGH7NcbYiB4RWcD4RVm/DYSjtc35SScfUCbxZB4pi7HWJbEHooO8ygJ4JuG1O/E0gbUESlZbi+8WpAR6egYjcxraQsUZCabEJZlSMLaXF6T5hr8pYrH7s3g13wWVBgnGzwmjV+M7R9yBVmK6J6y6G6WZYy02Vno29ohFjSqxY+2mQfu73MzcpUk5Q3YijhuSoJ8FL8hoQPCDWiZu10otctx0suZ8="
-  - secure: "QS2kSguWY3ZOSEbD3Ykfa8I95hRujK0mW/IXKEPV8lpFMsb4PfrCWQGVFUgj6YE8oG9dw1TlS3kX6iW81EkvMmSN4QhiSgn0ejj9zQYCw4AqS1ZXiusW7Ckryw+FyBuKhC6iF+tj9xp3I+WIyndhZ17ye8bDKgOvzygPLzz3p/g/T6TPzXEbuvRssqlughwp13z5cm5kauilJBjT14Lpe+rbBGXYhQPEe2BE8EVSkVj4gOpfMF4a9uy7hS4PpcmbEXZXJ10K61KwZleNPlVP7sj8pCZ74z7hmOnzzmx7Y8u3xaJw5KnsrCCrOCYD0iz2mcQ8KBJksZJukEllP20PpC8QQ8+4mP/EBzAg0WeDZ5RHukx7u4tpl8Qrhsp/zefqp80rMDzhnYx/p+pZk8lSnQ34ZXCLE6QqSz/TYJiGNQt23r+1yALjEATYLD5jM2heMHTTA20SvWWvTM2Ji2IE5UQp7ABzhXTqKVA5BfClFmmVMRi+Q86nl/yMfEJ/lGggpXpofVt2Q5yAdmmsBgcfouOoGwW99k2YDZdAWoo1Fj/rStLtIc71hw1Z0EgARlAcEbCdaFh6w+A+39CCRUq7/6r2+DzEpqFbcEVOKL/K69pDZVQ7aNcgHx7bmlAo5OLNF3q6dCIO1hx1c34apKFN+xSRlV5Yt6vmEmPzxJfzfZw="
+  - secure: "ZXkg2Dm3k8riijlVIZl5za7H07cO0G2Z3ELQxUtpSSasdQy7oIl0uwgNhiy2mKvTCSXl639j8IH9s9cer8TMkBjXr4ML/5OcDzvJWltqvOMNOIPlX3+28echTAm/emIrVuziTn/nhtZ1YcnHdmshmmNYb+7TD1NX2ds8PGII9OuQsU96w46/YPeTsdTs2VYJz/6D8GPTGUWSu3YjABsYobLqUFfV5QgJKe48MVaRxh7S8bRrwODQk5WpSIFnnhBWR5cHGKlrHx3pdnyBuW4ATQTH4BKgx+GMDYFvM2VCwr/bk+yuYE9j/LZJvxcv1E13OvFyvKdkUGcF34W85YOrG4pKzJP2r6S9ouZT1y6a4THBtzwimk9aae7Vauc1BNh4bYnRI/2HLIxAeYcwncc9KolcuYv2WdSyRxNnT24eXidj+nq1qfb82zWWVyj3fuIw76DfguJX2GeTGGGhXwV3HnyJNlxyN8dd7xmosM4cqmlLfk3hVB8NbuD6/5aN++anKZb4NkIGCi/zGjyRfpnbe7rw6bsrk7TqlAf6/gm4/CC1FG09POkmnYWL0DKjAOV2Z/W/1cdiUC9oeBuK1SJWqU/6p/51UJJrtUT13RQWF4kl85DZ1IJzQXAF0p1ROdTlyhKL3wYSOWJWzaaK/DP63G20zDL/FdCNLTLq/uYbazE="
+  - secure: "Cjz0OxIlJzAs66SHv9wFCWW4XdOoUv8YnED8mQG1Ds+I7KwoK7UTglsyzMmaOYYtzlDkAmuwn55wV6aS9lEPh5baT97phlDlUqrv6A/g7KBSS2qRfxt4G6zhoIOg8FCto5D6FU3FVKATbjZ9niT+96LOx61mFi5cLL1DpyylRk7EX4TiZGj4324ymZwItC8aRbdTD24+4zpTNI1irMF8c3TAmF+4/rUcYb0RYGKnbxylWjL83rqszICCce/Bg8ObYIv5a7xTUJX8kF/50iEHyOWJzLxo0IURiwuHdU6CyvFcorZJnQF/wTbZsxpDPhJBwgWE9umz1NekIX3/1+6EJ+nzc1W56lX4Atp5wntj9Bft8gngSmbR51dVxL0kbIiYcvfZvTrjQ00qoZbLlk8FWsfEIdVOqq2Dh0psPVOuzMcUQqAf/4jArxVXKnuzu0V8Z0dVq2zgpzW8DwGIGTBwJ8ySBnJRYsL9vkF/exT43mc9omBVJ5Ec1+WzFDjwMW8+VSwERDxF3Zubj8SXL8gSY2J2YmKEBTPY63qrTc5cWDtVjksYGKmTPKzvhfBn8Ykv8qA1SZSpnKS/4/YF7POxhFeJwyNfn5PWqcpe80JtG701gaRqzKFeB6RMr3NIgi6EAuIBxhsKL0ECISXFf3UsdcxU0rZ4yBESsW9x6jcEarI="
 after_script:
 - wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
 - mkdir ./docker/app
@@ -82,7 +82,8 @@ after_script:
 - ls
 - docker version
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH;
+  fi`
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
