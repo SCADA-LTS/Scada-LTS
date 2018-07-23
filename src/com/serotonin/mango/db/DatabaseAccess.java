@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.mango.service.UserService;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,7 +35,6 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.upgrade.DBUpgrade;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -159,7 +159,7 @@ abstract public class DatabaseAccess {
 					user.setDisabled(false);
 					user.setDataSourcePermissions(new LinkedList<Integer>());
 					user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-					new UserDao().saveUser(user);
+					new UserService().saveUser(user);
 
 					// Record the current version.
 					new SystemSettingsDAO().setValue(

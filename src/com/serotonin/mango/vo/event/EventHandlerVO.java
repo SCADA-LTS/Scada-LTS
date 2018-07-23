@@ -39,7 +39,6 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
 import com.serotonin.mango.rt.event.handlers.ProcessHandlerRT;
@@ -56,6 +55,7 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UserService;
 
 @JsonRemoteEntity
 public class EventHandlerVO implements Serializable,
@@ -632,7 +632,7 @@ public class EventHandlerVO implements Serializable,
 	private static LocalizableMessage createRecipientMessage(
 			List<RecipientListEntryBean> recipients) {
 		MailingListDao mailingListDao = new MailingListDao();
-		UserDao userDao = new UserDao();
+		UserService userDao = new UserService();
 		ArrayList<LocalizableMessage> params = new ArrayList<LocalizableMessage>();
 		for (RecipientListEntryBean recip : recipients) {
 			LocalizableMessage msg;

@@ -34,7 +34,6 @@ import com.serotonin.bacnet4j.type.enumerated.EngineeringUnits;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -74,6 +73,7 @@ import com.serotonin.viconics.config.Thermostat;
 import com.serotonin.viconics.io.ViconicsIncomingResponse;
 import com.serotonin.viconics.io.ViconicsOutgoingRequest;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.WatchListService;
 
 /**
@@ -203,7 +203,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 
 			// Get a list of all existing points.
 			DataPointDao dataPointDao = new DataPointDao();
-			UserDao userDao = new UserDao();
+			UserService userService = new UserService();
 			WatchListDao watchListDao = new WatchListDao();
 			List<DataPointVO> points = dataPointDao.getDataPoints(vo.getId(),
 					null);
@@ -340,7 +340,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 						// Initialize the list of watchlists
 						watchlists = new ArrayList<WatchList>();
 
-						for (User user : userDao.getActiveUsers()) {
+						for (User user : userService.getActiveUsers()) {
 							if (!Permissions.hasDataSourcePermission(user,
 									vo.getId()))
 								continue;

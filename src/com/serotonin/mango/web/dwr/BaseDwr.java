@@ -39,7 +39,6 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
@@ -62,6 +61,7 @@ import com.serotonin.web.content.ContentGenerator;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UserService;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";
@@ -82,9 +82,10 @@ abstract public class BaseDwr {
      * 
      * @param componentId
      *            a unique id for the browser side component. Required for set point snippets.
+     * @param componentId
      * @param state
+     * @param pointVO
      * @param point
-     * @param status
      * @param model
      * @return
      */
@@ -213,8 +214,9 @@ abstract public class BaseDwr {
 
     /**
      * Logs a user comment after validation.
-     * 
-     * @param eventId
+     *
+     * @param typeId
+     * @param referenceId
      * @param comment
      * @return
      */
@@ -232,7 +234,7 @@ abstract public class BaseDwr {
         if (typeId == UserComment.TYPE_EVENT)
             EVENT_DAO.insertEventComment(referenceId, c);
         else if (typeId == UserComment.TYPE_POINT)
-            new UserDao().insertUserComment(UserComment.TYPE_POINT, referenceId, c);
+            new UserService().insertUserComment(UserComment.TYPE_POINT, referenceId, c);
         else
             throw new ShouldNeverHappenException("Invalid comment type: " + typeId);
 
@@ -326,7 +328,7 @@ abstract public class BaseDwr {
 
     protected List<User> getShareUsers(User excludeUser) {
         List<User> users = new ArrayList<User>();
-        for (User u : new UserDao().getUsers()) {
+        for (User u : new UserService().getUsers()) {
             if (u.getId() != excludeUser.getId())
                 users.add(u);
         }

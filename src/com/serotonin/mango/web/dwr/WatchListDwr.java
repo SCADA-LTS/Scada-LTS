@@ -32,7 +32,6 @@ import org.joda.time.DateTime;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -52,7 +51,7 @@ import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.mango.service.WatchListService;
+import org.scada_lts.mango.service.UserService;
 
 public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {
@@ -214,7 +213,7 @@ public class WatchListDwr extends BaseDwr {
 		watchList.getPointList().add(point);
 		new WatchListDao().saveWatchList(watchList);
 		updateSetPermission(point, watchList.getUserAccess(user),
-				new UserDao().getUser(watchList.getUserId()));
+				new UserService().getUser(watchList.getUserId()));
 
 		// Return the watch list state for it.
 		return createWatchListState(request, point,
@@ -408,7 +407,7 @@ public class WatchListDwr extends BaseDwr {
 		}
 
 		access = watchList.getUserAccess(user);
-		User owner = new UserDao().getUser(watchList.getUserId());
+		User owner = new UserService().getUser(watchList.getUserId());
 		for (DataPointVO point : watchList.getPointList())
 			updateSetPermission(point, access, owner);
 	}

@@ -10,8 +10,8 @@ import org.quartz.Trigger;
 
 import br.org.scadabr.api.constants.ServerStateCode;
 
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.UserService;
 
 public class ServerStateChecker implements org.quartz.SchedulerListener, Job {
 
@@ -77,7 +77,7 @@ public class ServerStateChecker implements org.quartz.SchedulerListener, Job {
 	private static boolean isDatabaseRunning() {
 		boolean result = true;
 		try {
-			List<User> users = new UserDao().getUsers();
+			List<User> users = new UserService().getUsers();
 			if (users.size() < 1)
 				result = false;
 		} catch (Exception e) {

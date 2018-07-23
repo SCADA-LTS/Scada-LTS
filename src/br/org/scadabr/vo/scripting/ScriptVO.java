@@ -17,10 +17,10 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.UserService;
 
 public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 		JsonSerializable {
@@ -164,14 +164,14 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 	public void jsonDeserialize(JsonReader reader, JsonObject object)
 			throws JsonException {
 		String username = object.getString("user");
-		User user = new UserDao().getUser(username);
+		User user = new UserService().getUser(username);
 		this.userId = user.getId();
 	}
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		map.put("type", getType().name());
-		map.put("user", new UserDao().getUser(userId).getUsername());
+		map.put("user", new UserService().getUser(userId).getUsername());
 	}
 
 	public static ScriptVO<?> createScriptVO(int typeId) {

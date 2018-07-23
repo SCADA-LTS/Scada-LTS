@@ -19,7 +19,6 @@ import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataSource.meta.AlphanumericPointWrapper;
 import com.serotonin.mango.rt.dataSource.meta.BinaryPointWrapper;
@@ -29,6 +28,7 @@ import com.serotonin.mango.rt.dataSource.meta.NumericPointWrapper;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.rt.dataSource.meta.WrapperContext;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.UserService;
 
 public class ContextualizedScriptRT extends ScriptRT {
 	private static final String SCRIPT_PREFIX = "function __scriptExecutor__() {";
@@ -111,7 +111,7 @@ public class ContextualizedScriptRT extends ScriptRT {
 
 			List<MutablePair<Integer, String>> objectsContext = ((ContextualizedScriptVO) vo).getObjectsOnContext();
 
-			User user = new UserDao().getUser(vo.getUserId());
+			User user = new UserService().getUser(vo.getUserId());
 			for (MutablePair object : objectsContext) {
 				ScriptContextObject o = ScriptContextObject.Type.valueOf((Integer) object.getKey()).createScriptContextObject();
 				o.setUser(user);

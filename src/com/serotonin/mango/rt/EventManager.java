@@ -27,11 +27,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.service.UserHighestAlarmLevelListener;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
@@ -55,7 +55,7 @@ public class EventManager implements ILifecycle {
 	private final List<UserHighestAlarmLevelListener> userHighestAlarmLevelListeners = new CopyOnWriteArrayList<UserHighestAlarmLevelListener>();
 	private final List<EventInstance> activeEvents = new CopyOnWriteArrayList<EventInstance>();
 	private EventDao eventDao;
-	private UserDao userDao;
+	private UserService userService;
 	private long lastAlarmTimestamp = 0;
 	private int highestActiveAlarmLevel = 0;
 
@@ -112,7 +112,7 @@ public class EventManager implements ILifecycle {
 		List<Integer> eventUserIds = new ArrayList<Integer>();
 		Set<String> emailUsers = new HashSet<String>();
 
-		for (User user : userDao.getActiveUsers()) {
+		for (User user : userService.getActiveUsers()) {
 			// Do not create an event for this user if the event type says the
 			// user should be skipped.
 			if (type.excludeUser(user))
@@ -286,7 +286,7 @@ public class EventManager implements ILifecycle {
 	//
 	public void initialize() {
 		eventDao = new EventDao();
-		userDao = new UserDao();
+		userService = new UserService();
 
 		// Get all active events from the database.
 		activeEvents.addAll(eventDao.getActiveEvents());

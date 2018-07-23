@@ -6,7 +6,6 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.BaseDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.View;
@@ -16,8 +15,8 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
-import org.scada_lts.mango.service.WatchListService;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.TransactionStatus;
@@ -47,7 +46,7 @@ public class UsersProfileDao extends BaseDao {
     private WatchListDao watchlistDao = new WatchListDao();
 
     private ViewDao viewDao = new ViewDao();
-    private UserDao userDao = new UserDao();
+    private UserService userService = new UserService();
     private ViewService viewService = new ViewService();
 
 
@@ -149,12 +148,12 @@ public class UsersProfileDao extends BaseDao {
                         + " where u.userProfileId=?", new Object[]{profile.getId()},
                 Integer.class);
 
-        UserDao userDao = new UserDao();
+        UserService userService = new UserService();
 
         for (Integer userId : usersIds) {
-            User profileUser = userDao.getUser(userId);
+            User profileUser = userService.getUser(userId);
             profile.apply(profileUser);
-            userDao.saveUser(profileUser);
+            userService.saveUser(profileUser);
             this.updateUsersProfile(profile);
         }
 
@@ -473,7 +472,7 @@ public class UsersProfileDao extends BaseDao {
 
         // Reset user profile
         for (Integer userId : usersIds) {
-            this.resetUserProfile(userDao.getUser(userId));
+            this.resetUserProfile(userService.getUser(userId));
         }
 
         getTransactionTemplate().execute(

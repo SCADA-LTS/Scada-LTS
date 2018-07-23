@@ -2,9 +2,9 @@ package br.org.scadabr.db.utils;
 
 import java.util.ArrayList;
 
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.scada_lts.mango.service.UserService;
 
 public class TestUtils {
 
@@ -22,7 +22,7 @@ public class TestUtils {
 		user.setDataSourcePermissions(new ArrayList<Integer>());
 		user.setDataPointPermissions(new ArrayList<DataPointAccess>());
 
-		new UserDao().saveUser(user);
+		new UserService().saveUser(user);
 		return user;
 	}
 

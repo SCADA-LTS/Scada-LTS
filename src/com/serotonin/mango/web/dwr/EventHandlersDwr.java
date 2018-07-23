@@ -38,7 +38,6 @@ import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -65,6 +64,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.PublisherDAO;
 import org.scada_lts.mango.service.PublisherService;
+import org.scada_lts.mango.service.UserService;
 
 public class EventHandlersDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(EventHandlersDwr.class);
@@ -200,7 +200,7 @@ public class EventHandlersDwr extends BaseDwr {
 		model.put("mailingLists", new MailingListDao().getMailingLists());
 
 		// Get the users.
-		model.put("users", new UserDao().getUsers());
+		model.put("users", new UserService().getUsers());
 
 		model.put("allPoints", allPoints);
 		model.put("dataPoints", dataPoints);

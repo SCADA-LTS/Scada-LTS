@@ -21,7 +21,6 @@ package com.serotonin.mango.web.dwr;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -32,6 +31,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.mango.service.UserService;
 
 import java.util.*;
 
@@ -126,7 +126,7 @@ public class DataSourceListDwr extends BaseDwr {
 		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
 		int dsId = new DataSourceDao().copyDataSource(dataSourceId,
 				getResourceBundle());
-		new UserDao().populateUserPermissions(Common.getUser());
+		new UserService().populateUserPermissions(Common.getUser());
 		return dsId;
 	}
 }

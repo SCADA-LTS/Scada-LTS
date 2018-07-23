@@ -13,6 +13,7 @@ import br.org.scadabr.db.scenarios.DatalessDatabaseScenario;
 import br.org.scadabr.db.scenarios.ScenarioWithAdministrador;
 
 import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.UserService;
 
 public class UserDaoTest extends AbstractMySQLDependentTest {
 
@@ -23,7 +24,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void saveUserShouldSaveUsernamePasswordEmailPhoneAdminDisabledHomeUrlReceiveAlarmEmailsAndReceiveOwnAuditEvents() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
+		UserService userService = new UserService();
 
 		User user = new User();
 		user.setUsername("anUser");
@@ -35,11 +36,11 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 		user.setHomeUrl("url");
 		user.setReceiveAlarmEmails(1);
 		user.setReceiveOwnAuditEvents(true);
-		userDao.saveUser(user); // username, password, email, phone, admin,
+		userService.saveUser(user); // username, password, email, phone, admin,
 								// disabled, homeUrl, receiveAlarmEmails,
 								// receiveOwnAuditEvents
 
-		User retrievedUser = userDao.getUser("anUser");
+		User retrievedUser = userService.getUser("anUser");
 		assertEquals("anUser", retrievedUser.getUsername());
 		assertEquals("password", retrievedUser.getPassword());
 		assertEquals("An email", retrievedUser.getEmail());
@@ -54,7 +55,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void saveUserShouldUpdateId() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
+		UserService userService = new UserService();
 
 		User user = new User();
 		user.setUsername("anUser");
@@ -67,21 +68,21 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 		user.setReceiveAlarmEmails(1);
 		user.setReceiveOwnAuditEvents(true);
 
-		userDao.saveUser(user); // username, password, email, phone, admin,
+		userService.saveUser(user); // username, password, email, phone, admin,
 								// disabled, homeUrl, receiveAlarmEmails,
 								// receiveOwnAuditEvents
 
-		User retrievedUser = userDao.getUser("anUser");
+		User retrievedUser = userService.getUser("anUser");
 		assertEquals(retrievedUser.getId(), user.getId());
 	}
 
 	@Test
 	public void getUserByIdShouldReturnAnUserWithThatId() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userService = new UserService();
 
-		User expectedUser = userDao.getUser("admin");
-		User received = userDao.getUser(expectedUser.getId());
+		User expectedUser = userService.getUser("admin");
+		User received = userService.getUser(expectedUser.getId());
 		assertNotNull(received);
 		assertEquals("admin", received.getUsername());
 	}
@@ -89,15 +90,15 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getUsersShouldReturnAnEmptyListIfThereIsNoUsers() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
-		assertTrue(userDao.getUsers().isEmpty());
+		UserService userService = new UserService();
+		assertTrue(userService.getUsers().isEmpty());
 	}
 
 	@Test
 	public void getUsersShouldReturnTheAdminUserWhenHeIsTheOnlyUser() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
-		final List<User> users = userDao.getUsers();
+		UserService userService = new UserService();
+		final List<User> users = userService.getUsers();
 		assertEquals(1, users.size());
 		assertEquals("admin", users.get(FIRST).getUsername());
 	}
@@ -105,13 +106,13 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getUsersShouldReturnAllUsersOrderedByUsername() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userService = new UserService();
 		User joão = createUserWithUserName("joão");
 		User daniel = createUserWithUserName("daniel");
-		userDao.saveUser(joão);
-		userDao.saveUser(daniel);
+		userService.saveUser(joão);
+		userService.saveUser(daniel);
 
-		final List<User> users = userDao.getUsers();
+		final List<User> users = userService.getUsers();
 		assertEquals(3, users.size());
 		assertEquals("admin", users.get(FIRST).getUsername());
 		assertEquals("daniel", users.get(SECOND).getUsername());
@@ -121,25 +122,25 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getActiveUsersShouldReturnEmptyListWhenThereIsNoUser() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
-		final List<User> users = userDao.getActiveUsers();
+		UserService userService = new UserService();
+		final List<User> users = userService.getActiveUsers();
 		assertTrue(users.isEmpty());
 	}
 
 	@Test
 	public void getActiveUsersShouldReturnEmptyListWhenThereIsOnlyInactiveUsers() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
-		userDao.saveUser(createInactiveUserWithUserName("joão"));
-		final List<User> users = userDao.getActiveUsers();
+		UserService userService = new UserService();
+		userService.saveUser(createInactiveUserWithUserName("joão"));
+		final List<User> users = userService.getActiveUsers();
 		assertTrue(users.isEmpty());
 	}
 
 	@Test
 	public void getActiveUsersShouldReturnTheAdminUserWhenHeIsTheOnlyActiveUser() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
-		final List<User> users = userDao.getActiveUsers();
+		UserService userService = new UserService();
+		final List<User> users = userService.getActiveUsers();
 		assertEquals(1, users.size());
 		assertEquals("admin", users.get(FIRST).getUsername());
 	}
@@ -147,15 +148,15 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getActiveUsersShouldReturnAllActiveUsers() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userService = new UserService();
 		User joão = createUserWithUserName("joão");
 		User daniel = createUserWithUserName("daniel");
 		User pedro = createInactiveUserWithUserName("pedro");
-		userDao.saveUser(joão);
-		userDao.saveUser(daniel);
-		userDao.saveUser(pedro);
+		userService.saveUser(joão);
+		userService.saveUser(daniel);
+		userService.saveUser(pedro);
 
-		final List<User> users = userDao.getActiveUsers();
+		final List<User> users = userService.getActiveUsers();
 
 		Set<String> retrievedActiveUsernames = new HashSet<String>();
 		for (User u : users) {
@@ -172,38 +173,38 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void deleteUser() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userService = new UserService();
 		User joão = createUserWithUserName("joão");
-		userDao.saveUser(joão);
+		userService.saveUser(joão);
 
-		userDao.deleteUser(joão.getId());
-		assertNull("user does not exists", userDao.getUser(joão.getId()));
+		userService.deleteUser(joão.getId());
+		assertNull("user does not exists", userService.getUser(joão.getId()));
 	}
 
 	@Test
 	public void saveHomeUrl() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userService = new UserService();
 		User joão = createUserWithUserName("joão");
-		userDao.saveUser(joão);
+		userService.saveUser(joão);
 
-		userDao.saveHomeUrl(joão.getId(), "joão.example.com");
+		userService.saveHomeUrl(joão.getId(), "joão.example.com");
 
-		assertEquals("joão.example.com", userDao.getUser(joão.getId())
+		assertEquals("joão.example.com", userService.getUser(joão.getId())
 				.getHomeUrl());
 	}
 
 	@Test
 	public void recordLogin() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
-		User admin = userDao.getUser("admin");
+		UserService userService = new UserService();
+		User admin = userService.getUser("admin");
 
 		long before = System.currentTimeMillis();
-		userDao.recordLogin(admin.getId());
+		userService.recordLogin(admin.getId());
 		long after = System.currentTimeMillis();
 
-		long recordedLoginTime = userDao.getUser("admin").getLastLogin();
+		long recordedLoginTime = userService.getUser("admin").getLastLogin();
 		assertTrue(before <= recordedLoginTime);
 		assertTrue(recordedLoginTime <= after);
 	}

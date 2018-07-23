@@ -37,8 +37,6 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.component.CompoundComponent;
 import com.serotonin.mango.view.component.PointComponent;
@@ -48,6 +46,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
 @JsonRemoteEntity
@@ -150,7 +149,7 @@ public class View implements Serializable, JsonSerializable {
 	 * the components that render them
 	 */
 	public void validateViewComponents(boolean makeReadOnly) {
-		User owner = new UserDao().getUser(userId);
+		User owner = new UserService().getUser(userId);
 		for (ViewComponent viewComponent : viewComponents)
 			viewComponent.validateDataPoint(owner, makeReadOnly);
 	}
@@ -358,7 +357,7 @@ public class View implements Serializable, JsonSerializable {
 			if (StringUtils.isEmpty(username))
 				throw new LocalizableJsonException("emport.error.missingValue",
 						"user");
-			User user = new UserDao().getUser(username);
+			User user = new UserService().getUser(username);
 			if (user == null)
 				throw new LocalizableJsonException("emport.error.missingUser",
 						username);
@@ -405,7 +404,7 @@ public class View implements Serializable, JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("user", new UserDao().getUser(userId).getUsername());
+		map.put("user", new UserService().getUser(userId).getUsername());
 		map.put("anonymousAccess",
 				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
 		map.put("viewComponents", viewComponents);

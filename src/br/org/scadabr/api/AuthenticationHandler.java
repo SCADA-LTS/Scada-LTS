@@ -13,8 +13,8 @@ import org.apache.axis.handlers.BasicHandler;
 import org.apache.axis.message.SOAPEnvelope;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.UserService;
 
 public class AuthenticationHandler extends BasicHandler {
 	private static ThreadLocal _username = new ThreadLocal();
@@ -76,7 +76,7 @@ public class AuthenticationHandler extends BasicHandler {
 			String password = Common.getEnvironmentProfile().getString(
 					"api.password", "admin");
 
-			User user = new UserDao().getUser(username);
+			User user = new UserService().getUser(username);
 			if (user == null)
 				throw new AxisFault("Invalid Default Username!");
 
@@ -92,7 +92,7 @@ public class AuthenticationHandler extends BasicHandler {
 		String username = getUsername(hel);
 		String password = getPassword(hel);
 
-		User user = new UserDao().getUser(username);
+		User user = new UserService().getUser(username);
 
 		if (user == null)
 			throw new AxisFault("Invalid Username!");

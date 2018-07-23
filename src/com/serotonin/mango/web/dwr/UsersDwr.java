@@ -37,7 +37,6 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
@@ -51,6 +50,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UserService;
 
 public class UsersDwr extends BaseDwr {
 	public Log LOG = LogFactory.getLog(UsersDwr.class);
@@ -62,7 +62,7 @@ public class UsersDwr extends BaseDwr {
 		if (Permissions.hasAdmin(user)) {
 			// Users
 			initData.put("admin", true);
-			initData.put("users", new UserDao().getUsers());
+			initData.put("users", new UserService().getUsers());
 			initData.put("usersProfiles",
 					new UsersProfileDao().getUsersProfiles());
 
@@ -106,7 +106,7 @@ public class UsersDwr extends BaseDwr {
 			user.setDataSourcePermissions(new ArrayList<Integer>(0));
 			user.setDataPointPermissions(new ArrayList<DataPointAccess>(0));
 		} else {
-			user = new UserDao().getUser(id);
+			user = new UserService().getUser(id);
 
 			UsersProfileDao usersProfileDao = new UsersProfileDao();
 			if (usersProfileDao.getUserProfileByUserId(user.getId()) != null) {
@@ -130,7 +130,7 @@ public class UsersDwr extends BaseDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 		User currentUser = Common.getUser(request);
-		UserDao userDao = new UserDao();
+		UserService userDao = new UserService();
 
 		User user;
 		if (id == Common.NEW_ID)
@@ -215,8 +215,8 @@ public class UsersDwr extends BaseDwr {
 			throw new PermissionException("Cannot update a different user",
 					user);
 
-		UserDao userDao = new UserDao();
-		User updateUser = userDao.getUser(id);
+		UserService userService = new UserService();
+		User updateUser = userService.getUser(id);
 		if (!StringUtils.isEmpty(password))
 			updateUser.setPassword(Common.encrypt(password));
 		updateUser.setEmail(email);
@@ -228,7 +228,7 @@ public class UsersDwr extends BaseDwr {
 		updateUser.validate(response);
 
 		if (!response.getHasMessages()) {
-			userDao.saveUser(updateUser);
+			userService.saveUser(updateUser);
 			Common.setUser(request, updateUser);
 		}
 
@@ -265,7 +265,7 @@ public class UsersDwr extends BaseDwr {
 			response.addMessage(new LocalizableMessage(
 					"users.validate.badDelete"));
 		else
-			new UserDao().deleteUser(id);
+			new UserService().deleteUser(id);
 
 		return response;
 	}

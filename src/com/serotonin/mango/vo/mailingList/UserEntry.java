@@ -27,9 +27,9 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.UserService;
 
 @JsonRemoteEntity
 public class UserEntry extends EmailRecipient {
@@ -91,7 +91,7 @@ public class UserEntry extends EmailRecipient {
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
         if (user == null)
-            user = new UserDao().getUser(userId);
+            user = new UserService().getUser(userId);
         map.put("username", user.getUsername());
     }
 
@@ -103,7 +103,7 @@ public class UserEntry extends EmailRecipient {
         if (username == null)
             throw new LocalizableJsonException("emport.error.recipient.missing.reference", "username");
 
-        user = new UserDao().getUser(username);
+        user = new UserService().getUser(username);
         if (user == null)
             throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "username", username);
 

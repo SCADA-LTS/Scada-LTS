@@ -63,6 +63,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
 /**
@@ -73,7 +74,7 @@ public class ImportTask extends ProgressiveTask {
 	private final ResourceBundle bundle;
 	private final User user;
 	private final DwrResponseI18n response;
-	private final UserDao userDao = new UserDao();
+	private final UserService userService = new UserService();
 	private final DataSourceDao dataSourceDao = new DataSourceDao();
 	private final DataPointDao dataPointDao = new DataPointDao();
 	private final ViewService viewService = new ViewService();
@@ -368,7 +369,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(username))
 			response.addGenericMessage("emport.user.username");
 		else {
-			User user = userDao.getUser(username);
+			User user = userService.getUser(username);
 			if (user == null) {
 				user = new User();
 				user.setUsername(username);
@@ -392,7 +393,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = user.getId() == Common.NEW_ID;
-					userDao.saveUser(user);
+					userService.saveUser(user);
 					addSuccessMessage(isnew, "emport.user.prefix", username);
 
 					// Add the user to the second pass list.
@@ -583,11 +584,11 @@ public class ImportTask extends ProgressiveTask {
 		// This method uses user objects from the second pass list, which have
 		// already been validated.
 		String username = userJson.getString("username");
-		User user = userDao.getUser(username);
+		User user = userService.getUser(username);
 
 		try {
 			user.jsonDeserializePermissions(reader, userJson);
-			userDao.saveUser(user);
+			userService.saveUser(user);
 			addSuccessMessage(false, "emport.userPermission.prefix", username);
 		} catch (LocalizableJsonException e) {
 			response.addGenericMessage("emport.userPermission.prefix",

@@ -28,13 +28,13 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.mailingList.AddressEntry;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.mailingList.UserEntry;
+import org.scada_lts.mango.service.UserService;
 
 @JsonRemoteEntity
 public class RecipientListEntryBean implements Serializable, JsonSerializable {
@@ -91,7 +91,7 @@ public class RecipientListEntryBean implements Serializable, JsonSerializable {
         if (recipientType == EmailRecipient.TYPE_MAILING_LIST)
             map.put("mailingList", new MailingListDao().getMailingList(referenceId).getXid());
         else if (recipientType == EmailRecipient.TYPE_USER)
-            map.put("username", new UserDao().getUser(referenceId).getUsername());
+            map.put("username", new UserService().getUser(referenceId).getUsername());
         else if (recipientType == EmailRecipient.TYPE_ADDRESS)
             map.put("address", referenceAddress);
     }
@@ -123,7 +123,7 @@ public class RecipientListEntryBean implements Serializable, JsonSerializable {
             if (text == null)
                 throw new LocalizableJsonException("emport.error.recipient.missing.reference", "username");
 
-            User user = new UserDao().getUser(text);
+            User user = new UserService().getUser(text);
             if (user == null)
                 throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "user", text);
 

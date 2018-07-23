@@ -41,7 +41,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.ReportDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -58,6 +57,7 @@ import com.serotonin.web.email.EmailContent;
 import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
+import org.scada_lts.mango.service.UserService;
 
 /**
  * @author Matthew Lohbihler
@@ -73,7 +73,7 @@ public class ReportWorkItem implements WorkItem {
 		LOG.info("Queuing report with id " + report.getId());
 
 		// Verify that the user is not disabled.
-		User user = new UserDao().getUser(report.getUserId());
+		User user = new UserService().getUser(report.getUserId());
 		if (user.isDisabled())
 			return;
 

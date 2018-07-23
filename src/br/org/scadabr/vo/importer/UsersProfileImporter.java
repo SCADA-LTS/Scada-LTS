@@ -17,8 +17,6 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonValue;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
@@ -27,6 +25,7 @@ import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
 public class UsersProfileImporter {
@@ -61,14 +60,14 @@ public class UsersProfileImporter {
 
 		createOrUpdateProfile(newProfile);
 
-		UserDao usersDao = new UserDao();
+		UserService userService = new UserService();
 		UsersProfileVO savedProfile = usersProfileDao
 				.getUserProfileByXid(newProfile.getXid());
 
 		for (User user : getUsers(profileJson)) {
 			copyUsersOldAdditionalPermissions(user, savedProfile);
 			savedProfile.apply(user);
-			usersDao.saveUser(user);
+			userService.saveUser(user);
 			usersProfileDao.updateUsersProfile(savedProfile);
 			restoreUsersOldAdditionalPermissions(user, savedProfile);
 		}
@@ -261,7 +260,7 @@ public class UsersProfileImporter {
 						.addAll(user.getDataSourcePermissions());
 				newDataSourcePermissions.add(dataSourceId);
 				user.setDataSourcePermissions(newDataSourcePermissions);
-				new UserDao().saveUser(user);
+				new UserService().saveUser(user);
 			}
 
 		}
@@ -288,7 +287,7 @@ public class UsersProfileImporter {
 				newDataPointPermissions.addAll(user.getDataPointPermissions());
 				newDataPointPermissions.add(oldPermission);
 				user.setDataPointPermissions(newDataPointPermissions);
-				new UserDao().saveUser(user);
+				new UserService().saveUser(user);
 			}
 
 		}
@@ -375,7 +374,7 @@ public class UsersProfileImporter {
 
 		for (JsonValue jv : jsonUsersIds.getElements()) {
 			int userid = jv.toJsonNumber().getIntValue();
-			User user = new UserDao().getUser(userid);
+			User user = new UserService().getUser(userid);
 			users.add(user);
 		}
 

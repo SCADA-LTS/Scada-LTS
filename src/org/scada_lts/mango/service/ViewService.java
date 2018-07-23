@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
@@ -92,7 +91,7 @@ public class ViewService {
 		List<IdName> allPermissions;
 		allPermissions = viewDAO.getViewNames(userId, userProfileId);
 
-		User user = new UserDao().getUser(userId);
+		User user = new UserService().getUser(userId);
 
 		for (Iterator<IdName> iterator = allPermissions.iterator(); iterator.hasNext();) {
 

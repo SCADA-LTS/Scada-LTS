@@ -33,14 +33,13 @@ import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.mango.service.WatchListService;
+import org.scada_lts.mango.service.UserService;
 
 /**
  * @author Matthew Lohbihler
@@ -140,7 +139,7 @@ public class WatchList implements JsonSerializable {
     public void jsonSerialize(Map<String, Object> map) {
         map.put("xid", xid);
 
-        map.put("user", new UserDao().getUser(userId).getUsername());
+        map.put("user", new UserService().getUser(userId).getUsername());
 
         List<String> dpXids = new ArrayList<String>();
         for (DataPointVO dpVO : pointList)
@@ -155,7 +154,7 @@ public class WatchList implements JsonSerializable {
         String username = json.getString("user");
         if (StringUtils.isEmpty(username))
             throw new LocalizableJsonException("emport.error.missingValue", "user");
-        User user = new UserDao().getUser(username);
+        User user = new UserService().getUser(username);
         if (user == null)
             throw new LocalizableJsonException("emport.error.missingUser", username);
         userId = user.getId();

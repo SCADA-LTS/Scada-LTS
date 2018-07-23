@@ -32,6 +32,7 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.UserService;
 
 import java.util.*;
 
@@ -39,7 +40,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	private User user;
 
 	public MangoDaoImpl(String username) {
-		User us = new UserDao().getUser(username);
+		User us = new UserService().getUser(username);
 		this.user = us;
 	}
 

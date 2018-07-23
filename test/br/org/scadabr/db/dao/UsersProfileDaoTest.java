@@ -23,7 +23,6 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.ShareUser;
@@ -33,6 +32,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.scada_lts.mango.service.UserService;
 
 public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 
@@ -380,7 +380,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		profile.setDataSourcePermissions(newpermissions);
 		dao.saveUsersProfile(profile);
 
-		User retrievedUser = new UserDao().getUser(user.getId());
+		User retrievedUser = new UserService().getUser(user.getId());
 		assertEquals(dsId, retrievedUser.getDataSourcePermissions().get(FIRST));
 		assertEquals(1, retrievedUser.getDataSourcePermissions().size());
 	}

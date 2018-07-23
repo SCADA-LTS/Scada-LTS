@@ -49,8 +49,6 @@ import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import org.scada_lts.dao.SystemSettingsDAO;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.util.LocalizableJsonException;
@@ -61,6 +59,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
 /**
@@ -130,7 +129,7 @@ public class EmportDwr extends BaseDwr {
 		if (pointLinks)
 			data.put(POINT_LINKS, new PointLinkDao().getPointLinks());
 		if (users)
-			data.put(USERS, new UserDao().getUsers());
+			data.put(USERS, new UserService().getUsers());
 		if (mailingLists)
 			data.put(MAILING_LISTS, new MailingListDao().getMailingLists());
 		if (publishers)
