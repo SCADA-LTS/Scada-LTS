@@ -1,0 +1,44 @@
+<html>
+<head>
+	<script type="text/javascript">
+		djConfig = { 
+			isDebug: true
+		};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.DropdownContainer");
+	</script>
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+		}
+		.popup { background-color: white; }
+	</style>
+</head>
+<body>
+<h1> DropdownContainer tests </h1>
+
+<div dojoType="dropdowncontainer" id="foo"><div style="border: 1px solid blue;" class="popup">some content for the first <br/>dropdown container</div></div>
+<br><br>
+<h3>Instantiation from Script:</h3>
+<div id="dropdown"><div style="border: 1px solid black;" class="popup">some content for the second <br/>dropdown container</div></div>
+<script type="text/javascript">
+	dojo.addOnLoad(function(){
+		var params = {id: "dropdown"};
+		var widget = dojo.widget.createWidget("DropdownContainer", params, dojo.byId("dropdown"));
+	});
+</script>
+
+<h3>Dynamically disabled DropdownContainer</h3>
+<div>
+	<input id="enabler" type="checkbox" onchange="dojo.widget.byId('bar')[this.checked ? 'enable' : 'disable']();" />
+	<label for="enabler">enable</label>
+	<div dojoType="dropdowncontainer" id="bar" disabled="1">
+		<div style="border: 1px solid blue;" class="popup">some content for the 3rd <br/>dropdown container</div>
+	</div>
+</div>
+
+</body>
+</html>

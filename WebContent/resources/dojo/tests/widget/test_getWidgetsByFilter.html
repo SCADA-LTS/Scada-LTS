@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<title>getWidgetsByFilter() test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true /*, debugAtAllCosts: true*/ };
+</script>
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.event.*");
+	dojo.require("dojo.widget.Button");
+	dojo.require("dojo.widget.Menu2");
+	
+	dojo.hostenv.writeIncludes();
+</script>
+
+<script>
+	dojo.addOnLoad(function(){
+		var w;
+		var shouldFind = function(wid) {
+			return wid.menuId=="editMenu";
+		}
+		w = dojo.widget.getWidgetsByFilter(shouldFind);
+		alert('getWidgetsByFilter(shouldFind) found ' + w.length + ' widgets');
+		w = dojo.widget.getWidgetsByFilter(shouldFind, true);
+		alert('getWidgetsByFilter(shouldFind, true) found ' + (w ? 'one' : 'no') + ' widget');
+		var shantFind = function(wid) {
+			return wid.menuId=="NOMATCH";
+		}
+		w = dojo.widget.getWidgetsByFilter(shantFind);
+		alert('getWidgetsByFilter(shantFind) found ' + w.length + ' widgets');
+		w = dojo.widget.getWidgetsByFilter(shantFind, true);
+		alert('getWidgetsByFilter(shantFind, true) found ' + (w ? 'one' : 'no') + ' widget');
+	});
+</script>
+
+<style>
+	/* group multiple buttons in a row */
+	.box {
+		display: block;
+		text-align: center;
+	}
+	.box .dojoButton {
+		float: left;
+		margin-right: 10px;
+	}
+</style>
+
+<h1>getWidgetsByFilter() test</h1>
+
+This test calls getWidgetsByFilter(), searching for buttons referencing editMenu (there are four of them),
+and then searching for buttons referencing the "NOMATCH" menu (there are no buttons like that)...
+
+<div class="box">
+	<button dojoType="Button">
+		<img src="images/plus.gif"> Create
+	</button>
+	<button dojoType="Button">
+		<img src="images/plus.gif"><br>Create
+	</button>
+	<button dojoType="dropdownButton" menuId='editMenu'>
+		<img src="images/note.gif"> Edit
+	</button>
+	<button dojoType="dropdownButton" menuId='editMenu'>
+		<img src="images/note.gif"><br>Edit
+	</button>
+</div>
+<br clear=both>
+<div class="box">
+	<button dojoType="Button" disabled="true">
+		<img src="images/plus.gif"> Create
+	</button>
+	<button dojoType="Button" disabled="true">
+		<img src="images/plus.gif"><br>Create
+	</button>
+	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
+		<img src="images/note.gif"> Edit
+	</button>
+	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
+		<img src="images/note.gif"><br>Edit
+	</button>
+	<div style="clear: both;"></div>
+</div>
+
+<div dojoType="PopupMenu2" id="editMenu" toggle="wipe">
+	<div dojoType="MenuItem2" iconSrc="images/tango-actions-edit-copy.png" caption="Cut" accelKey="Ctrl+C"
+		onClick="dojo.debug('not actually cutting anything, just a test!')"></div>
+	<div dojoType="MenuItem2" iconSrc="images/tango-actions-edit-cut.png" caption="Copy" accelKey="Ctrl+X"
+		onClick="dojo.debug('not actually copying anything, just a test!')"></div>
+	<div dojoType="MenuItem2" iconSrc="images/tango-actions-edit-paste.png" caption="Paste" accelKey="Ctrl+V"
+		onClick="dojo.debug('not actually pasting anything, just a test!')"></div>
+</div>

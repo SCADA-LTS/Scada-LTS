@@ -1,0 +1,59 @@
+<!--
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Programmatic FilteringTable Test</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+	<script type="text/javascript">
+		var djConfig = { isDebug: true, debugAtAllCosts: true };
+	</script>
+	<link rel="stylesheet" type="text/css" href="testRemoteTabController.css" />
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+	//	dojo.require("dojo.debug.Firebug");
+		dojo.require("dojo.widget.FilteringTable");
+		dojo.hostenv.writeIncludes();
+	</script>
+	<style type="text/css">
+		body { font-family : sans-serif; }
+		/* add padding to each contentpane inside the tab container, and scrollbar if necessary */
+		.dojoTabPane {
+		  padding : 10px 10px 10px 10px;
+		  overflow: auto;
+		}
+	</style>
+	<script type="text/javascript">
+		var testColumns = [
+			{ field: "ColumnA" },
+			{ field: "ColumnB", dataType:"number" },
+			{ field: "ColumnC" }
+		];
+		var testData = [
+			{ myId:0, "ColumnA": "abc", "ColumnB": "123", "ColumnC": "!@#" },
+			{ myId:1, "ColumnA": "def", "ColumnB": "456", "ColumnC": "asdfasd" },
+			{ myId:2, "ColumnA": "hij", "ColumnB": "789", "ColumnC": "asdfasdf" },
+			{ myId:3, "ColumnA": "klm", "ColumnB": "098", "ColumnC": "asdfasdf"},
+			{ myId:4, "ColumnA": "opq", "ColumnB": "765", "ColumnC": "qowie" },
+			{ myId:5, "ColumnA": "rst", "ColumnB": "432", "ColumnC": "xcvms" },
+			{ myId:6, "ColumnA": "uvw", "ColumnB": "101", "ColumnC": "lwqkejr" },
+			{ myId:7, "ColumnA": "xyz", "ColumnB": "234", "ColumnC": "zpxocivu" }
+		];
+
+		dojo.addOnLoad(function() {
+			filteringTable = dojo.widget.createWidget("dojo:FilteringTable",{valueField: "myId"},dojo.byId("content"));
+
+			for (var x = 0; x<testColumns.length; x++) {
+				filteringTable.columns.push(filteringTable.createMetaData(testColumns[x]));
+			}
+
+			filteringTable.store.setData(testData);
+		});
+	</script>
+</head>
+<body>
+	<table id="content" style="width: 400px; height: 200px;"></table>
+</body>
+</html>

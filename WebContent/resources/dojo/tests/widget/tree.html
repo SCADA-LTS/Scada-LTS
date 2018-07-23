@@ -1,0 +1,32 @@
+<!-- Used from test_LayoutContainerHref.html -->
+<body>
+
+<h1>Tree</h1>
+<p>Clicking on doc1/doc2 in the tree below should make the contents show up on the right.</p>
+<div dojoType="TreeSelector" eventNames="select:nodeSelected" widgetId="treeSelector"></div>
+<div dojoType="Tree" toggle="wipe" toggleDuration="500" selector="treeSelector">
+	<div dojoType="TreeNode" title="Item 1">
+		<div dojoType="TreeNode" title="doc0"></div>
+		<div dojoType="TreeNode" title="doc1"></div>
+		<div dojoType="TreeNode" title="test pathfixes" object="acme/test_RemotePaths.html"></div>
+		<div dojoType="TreeNode" title="test customWidgets" object="acme/test_RemoteAcmeButton.html"></div>
+		<div dojoType="TreeNode" title="test loaderror" object="badurl.err"></div>
+		<div dojoType="TreeNode" title="test execerror" object="acme/test_ExecError.html"></div>
+		<div dojoType="TreeNode" title="doc2">
+			<div dojoType="TreeNode" title="Item 1.2.1">
+				<div dojoType="TreeNode" title="Item 1.2.1.1"></div>
+			</div>
+			<div dojoType="TreeNode" title="Item 1.2.2"></div>
+		</div>
+		<div dojoType="TreeNode" title="Item 1.3">
+			<div dojoType="TreeNode" title="Item 1.3.1"></div>
+			<div dojoType="TreeNode" title="Item 1.3.2"></div>
+		</div>
+		<div dojoType="TreeNode" title="Item 1.4">
+			<div dojoType="TreeNode" title="Item 1.4.1"></div>
+		</div>
+	</div>
+	<div dojoType="TreeNode" title="Item 2"></div>
+</div>
+
+</body>

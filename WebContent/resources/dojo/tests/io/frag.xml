@@ -1,0 +1,20 @@
+<response>
+<script><![CDATA[
+(function() {
+	alert("added a div!");
+	document.getElementById("cool").style.display = "none";
+	alert("hid the div!");
+})();
+]]></script>
+<html><![CDATA[
+<style type="text/css">
+#cool {
+	border : 1px solid;
+	width : 30%;
+	padding : 4px;
+	background : #fcc;
+}
+</style>
+<div id="cool">The div</div>
+]]></html>
+</response>

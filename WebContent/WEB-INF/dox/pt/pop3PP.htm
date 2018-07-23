@@ -1,0 +1,74 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<p>The <b>Data type</b> is the ScadaBR representation of the value.-->
+<!--Received data is automatically converted to the required data type. The-->
+<!--<b>Value RegEx</b> determines where in the email content to find the-->
+<!--point value. See the "Regular Expressions" documentation for more-->
+<!--information. Note that only the <i>first instance</i> of the expression-->
+<!--found in the content is used.</p>-->
+<p>O <b>Tipo do dado</b> &eacute; a representa&ccedil;&atilde;o do valor no ScadaBR.
+Dados recebidos s&atilde;o automaticamente convertidos ao tipo de dado
+requerido. O <b>Valor RegEx</b> determina onde no conte&uacute;do do email
+encontrar o valor do ponto. Veja a documenta&ccedil;&atilde;o "Express&otilde;es Regulares"
+para mais informa&ccedil;&otilde;es. Note que somente a <i>primeira inst&acirc;ncia</i> da
+express&atilde;o encontrada no conte&uacute;do &eacute; usada.</p>
+
+<!--<p>The <b>Ignore if missing</b> checkbox indicates whether missing-->
+<!--values in email content should be considered error conditions. If-->
+<!--unchecked and the value is not found in the content, a data source-->
+<!--exception event will be raised. If checked, the event is suppressed, and-->
+<!--the point is not updated.</p>-->
+<p>A op&ccedil;&atilde;o <b>Ignore se n&atilde;o encontrado</b> indica se valores n&atilde;o
+encontrados no conte&uacute;do do email devem ser considerados erros. Se n&atilde;o
+selecionada e o valor n&atilde;o for encontrado no conte&uacute;do, uma exce&ccedil;&atilde;o do
+data source ser&aacute; levantada. Se selecionado, o evento &eacute; suprimido, e o
+ponto n&atilde;o &eacute; atualizado.</p>
+
+<!--<p>For the binary data type, the <b>Binary 0 value</b> can be-->
+<!--defined. If the value found in the content matches it, the point will be-->
+<!--updated with 0. Otherwise, the point is updated with 1. For the numeric-->
+<!--data type a <b>Number format</b> can be defined, which provides-->
+<!--information on how the text value found by the RegEx should be parsed.-->
+<!--See the "Number formats" documentation for more information.</p>-->
+<p>Para o tipo de dado bin&aacute;rio, o <b>Valor 0 bin&aacute;rio</b> pode ser
+definido. Se o valor encontrado no conte&uacute;do casar com ele, o ponto ser&aacute;
+atualizado com 0. Caso contr&aacute;rio, o ponto &eacute; atualizado com 1. Para o
+tipo de dado num&eacute;rico um <b>Formato Num&eacute;rico</b> pode ser definido, o
+qual fornece informa&ccedil;&atilde;o de como o texto encontrado pela RegEx deve ser
+analisado. Veja a documenta&ccedil;&atilde;o "Formatos Num&eacute;ricos" para mais
+informa&ccedil;&otilde;es.</p>
+
+<!--<p>A <b>Time RegEx</b> can be defined to locate the value's time-->
+<!--stamp in the returned content. If the RegEx is defined, a <b>Time-->
+<!--format</b> must also be entered, which provides information on how the text-->
+<!--time found by the RegEx should be parsed. See the "Date/time formats"-->
+<!--documentation for more information.</p>-->
+<p>Uma <b>RegEx de tempo</b> pode ser definida para localizar o
+timestamp do valor no conte&uacute;do retornado. Se a RegEx for
+definida, um <b>Formato de tempo</b> tamb&eacute;m deve ser definido, o
+qual fornece informa&ccedil;&atilde;o de como o texto encontrado pela
+RegEx deve ser analisado. Veja a documenta&ccedil;&atilde;o "Formado de
+data/hora" para mais informa&ccedil;&otilde;es.</p>
+
+<!--<p>You may test your RegEx by entering sample email content into the-->
+<!--<b>Test content</b> area and clicking the associated <img-->
+<!--	src="images/accept.png" /> icon.</p>-->
+<p>Voce pode testar sua RegEx entrando com uma amostra de conte&uacute;do de um email
+na &aacute;rea <b>Testar conte&uacute;do</b> e clicando no &iacute;cone associado <img
+src="images/accept.png"/>.</p>

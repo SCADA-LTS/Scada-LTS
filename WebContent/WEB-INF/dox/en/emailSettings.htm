@@ -1,0 +1,45 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  Email settings are used for all emailing activities within the application instance.
+</p>
+
+<p>
+  <b>SMTP host</b> is the name of the host where your MTA is running. If your host requires authentication, check the 
+  <b>Use authorization</b> box, and fill in the <b>Username</b> and <b>Password</b> fields. Check the <b>Enable TLS</b>
+  checkbox if your server requires it.
+</p>
+
+<p>
+  The <b>'From' address</b> is the address that will be used as the from address on each email. The <b>'From' name</b> 
+  is an optional field with which to specify an alias&mdash;or 'personal' name&mdash;to display as the email sender.
+</p>
+
+<p>
+  Use the <b>Content type</b> select box to choose the type of content you wish to have in the Mango emails. By default
+  <b>HTML and text</b> is selected, which causes Mango to create a multi-part MIME email with both "text/html" and 
+  "text/text" parts. If <b>HTML only</b> is chosen the email may still be a multi-part if there are attachments or 
+  in-line content, but will be otherwise be single part. If <b>Text only</b> is chosen, the email will always be a 
+  simple single part. <b>Note:</b> scheduled report emails are always sent as HTML-only due to the content they include.
+</p>
+
+<p>
+  When you are finished with your email settings, you can test them by clicking the <img src="images/email_go.png"/> 
+  icon. This will attempt to send an email to your email address using the settings you have entered.
+</p>

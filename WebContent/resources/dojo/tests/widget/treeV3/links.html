@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeLinkExtension");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body>
+	
+<h2>A basic tree with TreeLinkExtension</h2>
+
+	
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
+<div dojoType="TreeLinkExtension" widgetId="link" params="target:_blank"></div>	
+
+<div dojoType="TreeV3" listeners="link;controller">
+	<div dojoType="TreeNodeV3" title="Item 1" object="href:http://ya.ru?href=1" widgetId="Item 1">
+		<div dojoType="TreeNodeV3" title="Item 1.1" object="href:http://ya.ru?href=1.1" widgetId="Item 1.1"></div>
+		<div dojoType="TreeNodeV3" title="Item 1.2" object="href:http://ya.ru?href=1.2" widgetId="Item 1.2"></div>
+	</div>
+</div>
+
+
+</body>
+</html>

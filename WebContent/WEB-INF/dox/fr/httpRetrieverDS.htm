@@ -1,0 +1,24 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>This data source is used to collect generic information from the web sites available on the internet, or internal equipment available on an intranet. Using mechanisms similar to a web browser, the data source requests information from HTTP-enabled devices, and then uses Regular Expressions to extract the desired information. This is a polling data source.</p>
+
+<h1>Configuration</h1>
+<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Update period</b> determines how often the HTTP request is made. The <b>URL</b> is the address of the page that is to be parsed. Use the <img src="images/bullet_go.png"/> icon to test the URL. (Opens in a new window or browser tab.)</p>
+<p>The <b>Timeout</b> and <b>Retry</b> fields determine how long to wait for the web server to return the page, and how many times to retry the connection in the event of failures. If all of the retries are exhausted, a data source exception event is raised.</p>

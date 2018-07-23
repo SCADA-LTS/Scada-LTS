@@ -1,0 +1,183 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Vis&atilde;o Geral</h1>
+<p>Data points em um data source virtual geram dados sem nenhuma
+influ&ecirc;ncia externa, sejam aleat&oacute;rios ou determin&iacute;sticos. Qualquer tipo
+de dado suportado pode ser gerado e v&aacute;rias op&ccedil;&otilde;es para o modo como os
+valores ser&atilde;o alterados est&atilde;o dispon&iacute;veis.</p>
+
+<!--<h1>Overview</h1>-->
+<!--<p>Points within a Virtual Data Source generate data without any-->
+<!--external influence, either randomly or deterministically. Any supported-->
+<!--data type can be created, and a number of options for changing values-->
+<!--are available.</p>-->
+
+<p>Atributos comuns a todos os data points virtuais s&atilde;o:</p>
+<ul>
+	<li><b>Nome</b>: o nome do ponto para identifica&ccedil;&atilde;o.</li>
+	<li><b>"Set&aacute;vel"</b>: permiss&atilde;o se o ponto pode ou n&atilde;o ser
+	alterado manualmente.</li>
+	<li><b>Tipo do dado</b>: o tipo de dado. Veja mais abaixo para
+	detalhes.</li>
+	<li><b>Tipo da troca</b>: o algoritmo que determina como os
+	valores ser&atilde;o alterados. Veja mais abaixo para detalhes.</li>
+	<li><b>Valor inicial</b>: o valor inicial para quando o data
+	source for habilitado.</li>
+</ul>
+
+<!--<p>Attributes common to all virtual points are:</p>-->
+<!--<ul>-->
+<!--	<li><b>Name</b>: the name of the point for use as an identifier in-->
+<!--	lists of points.</li>-->
+<!--	<li><b>Settable</b>: whether the point can be manually set or not.</li>-->
+<!--	<li><b>Data type</b>: the data type of the point. See below for-->
+<!--	details.</li>-->
+<!--	<li><b>Change type</b>: the algorithm that determines how the-->
+<!--	point changes. See below for details.</li>-->
+<!--	<li><b>Start value</b>: the initial state of the point when the-->
+<!--	data source starts.</li>-->
+<!--</ul>-->
+
+<h1>Data points bin&aacute;rios</h1>
+<p>Valores bin&aacute;rios possuem apenas dois estados poss&iacute;veis: ligado ou
+desligado, verdadeiro ou falso, etc. Existem tr&ecirc;s tipos de altera&ccedil;&atilde;o
+desses valores poss&iacute;veis:</p>
+<ul>
+	<li><b>Alternada</b>: o valor alterna entre seus estados a cada
+	ciclo.</li>
+	<li><b>Sem altera&ccedil;&otilde;es</b>: o valor n&atilde;o altera automaticamente
+	(&uacute;til para data points set&aacute;veis manualmente)</li>
+	<li><b>Rand&ocirc;mica</b>: o valor muda randomicamente (somente a cada
+	ciclo)</li>
+</ul>
+
+<!--<h1>Binary Points</h1>-->
+<!--<p>Binary points are in only one of two possible states: on or off,-->
+<!--true or false, yes or no, etc. Three change types are available:-->
+<!--<ul>-->
+<!--	<li><b>Alternate</b>: the point alternates at each run time-->
+<!--	between its two possible states</li>-->
+<!--	<li><b>No change</b>: the point does not automatically change-->
+<!--	(useful for points that are manually settable)</li>-->
+<!--	<li><b>Random</b>: the point changes state randomly (but will only-->
+<!--	change at a run time)</li>-->
+<!--</ul>-->
+<!--<p>-->
+
+
+<h1>Data points de m&uacute;ltiplos estados</h1>
+<p>Pontos de m&uacute;ltiplos estados permanecem em apenas um de seus
+m&uacute;ltiplos estados poss&iacute;veis: como ligado, desligado e habilitado. Os
+valores poss&iacute;veis de estado para cada ponto devem ser definidos no campo
+de <b>valores</b>. Existem tr&ecirc;s tipos poss&iacute;veis de altera&ccedil;&atilde;o de seus
+valores:</p>
+<ul>
+	<li><b>Incremental</b>: o ponto passa por todos os estados
+	poss&iacute;veis. Se <b>Roll</b> est&aacute; habilitado, o data point retornar&aacute; ao
+	valor inicial uma vez que o mesmo alcan&ccedil;ar seu &uacute;ltimo valor. Se Roll
+	est&aacute; desabilitado, the point will pass through all of the points in
+	reverse before starting over at the beginning.</li>
+	<li><b>Sem altera&ccedil;&otilde;es</b>: o valor n&atilde;o altera automaticamente
+	(&uacute;til para data points set&aacute;veis manualmente)</li>
+	<li><b>Aleat&oacute;ria</b>: o valor muda randomicamente (somente a cada
+	ciclo)</li>
+</ul>
+
+<!--<h1>Multistate Points</h1>-->
+<!--<p>Multistate points are in only one of multiple distinct states,-->
+<!--such as on, off, or disabled. For all change types the possible values-->
+<!--for the point much be defined using the <b>Values</b> control. Three-->
+<!--change types are available:-->
+<!--<ul>-->
+<!--	<li><b>Increment</b>: the point passes though each possible state-->
+<!--	in turn. If <b>Roll</b> is on, the point will return to the beginning-->
+<!--	once it reaches the last value. If Roll is off, the point will pass-->
+<!--	through all of the points in reverse before starting over at the-->
+<!--	beginning.</li>-->
+<!--	<li><b>No change</b>: the point does not automatically change-->
+<!--	(useful for points that are manually settable)</li>-->
+<!--	<li><b>Random</b>: the point changes state randomly (but will only-->
+<!--	change at a run time)</li>-->
+<!--</ul>-->
+
+<h1>Valores num&eacute;ricos</h1>
+<p>Valores num&eacute;ricos s&atilde;o valores anal&oacute;gicos, e podem ser qualquer
+n&uacute;mero real capaz de ser representado por um ponto flutuante de 64 bits.
+Existem cinco tipos poss&iacute;veis de altera&ccedil;&atilde;o de seu valor:</p>
+<ul>
+	<li><b>Brownian</b>: altera&ccedil;&atilde;o browniana aleat&oacute;ria &mdash; o ponto
+	ir&aacute; mudar pe acordo com uma varia&ccedil;&atilde;o diferencial aleat&oacute;ria de seu valor
+	anterior. Limites m&iacute;nimos e m&aacute;ximos para o valor podem ser definidos em
+	<b>M&iacute;nimo</b> e <b>M&aacute;ximo</b> respectivamente. A <b>varia&ccedil;&atilde;o m&aacute;xima</b>
+	determina o maior diferencial aleat&oacute;rio que pode ser gerado.</li>
+	<li><b>Incremental</b>: o ponto altera do n&uacute;mero <b>altera&ccedil;&atilde;o</b>
+	especificado a cada ciclo. Este valor pode ser negativo. Os valores
+	m&aacute;ximos e m&iacute;nimos podem ser determinados. Se <b>Roll</b> est&aacute;
+	habilitada, o valor retornar&aacute; ao limite uma vez que exceda o limite
+	oposto. Se Roll est&aacute; desabilitada, o data point utilizar&aacute; o valor de
+	altera&ccedil;&atilde;o inverso uma vez que exceda os limites.</li>
+	<li><b>Sem altera&ccedil;&otilde;es</b>: the point does not automatically change
+	(useful for points that are manually settable)</li>
+	<li><b>Aleat&oacute;rio</b>: o ponto assume uma valores contidos em uma
+	distribui&ccedil;&atilde;o uniforme entre os valores m&aacute;ximo e m&iacute;nimo, incluindo esses
+	limites.</li>
+	<li><b>Atra&ccedil;&atilde;o</b>: o ponto se aproxima de maneira assint&oacute;tica a
+	um outro ponto no sistema. A <b>varia&ccedil;&atilde;o m&aacute;xima</b> determina qu&atilde;o
+	grande pode ser o incremento em dire&ccedil;&atilde;o ao ponto&mdash;alvo. A <b>volatilidade</b>
+	pode ser usada para representar flutua&ccedil;&otilde;es aleat&oacute;rias no ponto.</li>
+</ul>
+
+<!--<h1>Numeric Points</h1>-->
+<!--<p>Numeric points represent analog values, and can be any real-->
+<!--number that can be represented as a 64-bit floating point. Five change-->
+<!--types are available:-->
+<!--<ul>-->
+<!--    <li><b>Brownian</b>: randomly generated Brownian motion, meaning-->
+<!--    that the point will change some randomly generated differential from-->
+<!--    its previous value. Lower and upper bounds for the value can be set-->
+<!--    with <b>Minimum</b> and <b>Maximum</b> respectively. The <b>Maximum-->
+<!--    change</b> value determines the maximum random differential that can be-->
+<!--    generated.</li>-->
+<!--    <li><b>Increment</b>: the point changes by the <b>Change</b>-->
+<!--    amount every run time. The Change value may be negative. Lower and-->
+<!--    upper bounds for the value can be set with <b>Minimum</b> and <b>Maximum</b>-->
+<!--    respectively. If <b>Roll</b> is on, the point will return to the bound-->
+<!--    once it exceeds the opposite bound. If Roll is off, the point will use-->
+<!--    the negative value of Change once it exceeds a bound.</li>-->
+<!--    <li><b>No change</b>: the point does not automatically change-->
+<!--    (useful for points that are manually settable)</li>-->
+<!--    <li><b>Random</b>: the point will randomly assume (uniformly-->
+<!--    distributed) a value between the minimum and maximum bounds-->
+<!--    (inclusive).</li>-->
+<!--    <li><b>Attractor</b>: the point will asymptotically approach the-->
+<!--    value of another numeric point in the system. The <b>Maximum change</b>-->
+<!--    value determines how large the jump toward the target value can be. The-->
+<!--    <b>Volitility</b> value can be used to represent random fluctuations in-->
+<!--    the point.</li>-->
+<!--</ul>-->
+
+<h1>Pontos alfanum&eacute;ricos</h1>
+<p>Pontos alfanum&eacute;ricos representam seq&uuml;&ecirc;ncias de caracteres e,
+assim, n&atilde;o est&atilde;o sujeitos a altera&ccedil;&otilde;es significativas por algoritmos.
+Assim, o &uacute;nico tipo de altera&ccedil;&atilde;o poss&iacute;vel &eacute; <b>sem altera&ccedil;&atilde;o</b>.</p>
+
+<!--<h1>Alphanumeric Points</h1>-->
+<!--<p>Alphanumeric points represent strings of characters, and thus are-->
+<!--not subject to meaningful change via algorithm. As such, the only-->
+<!--available change type is <b>No change</b>.</p>-->

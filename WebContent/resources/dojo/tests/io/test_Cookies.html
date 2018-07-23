@@ -1,0 +1,48 @@
+<html>
+<head>
+	<title>Cookie Test</title>
+<script language="JavaScript" type="text/javascript">
+// Dojo configuration
+djConfig = { 
+	isDebug: true
+};
+</script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+dojo.require("dojo.io.*");
+
+var obj = {
+	help: "I'm some help!",
+	"Eggy-Yolk!": "wee be three g'",
+	doIt: function() {
+		alert("ya");
+	}
+};
+
+function objprops(o) {
+	var p, a = [];
+	for(p in o) {
+		a.push(p + " : " + o[p]);
+	}
+	return a.sort().join("<br>");
+}
+
+dojo.addOnLoad(function() {
+	var ck = dojo.io.cookie;
+	dojo.debug("obj = " + objprops(obj));
+	ck.setCookie("foo", "bar", 30);
+	ck.setObjectCookie("obj", obj, 60, null);
+	ck.isSupported();
+	var foo = ck.getCookie("foo");
+	dojo.debug("foo = " + foo);
+	dojo.debug("obj = " + objprops(ck.getObjectCookie("obj")));
+	ck.deleteCookie("foo");
+	ck.deleteCookie("obj");
+});
+</script>
+</head>
+<body>
+</body>
+</html>
+

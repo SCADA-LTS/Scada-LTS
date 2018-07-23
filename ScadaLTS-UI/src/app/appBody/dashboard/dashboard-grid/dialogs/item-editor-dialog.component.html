@@ -1,0 +1,8 @@
+<h1>Edit Component</h1>
+<div *ngFor="let label of items">
+    <md-input-container>
+        <input mdInput placeholder="{{label.label}}:" [(ngModel)]="label.value" value="{{label.value}}">
+    </md-input-container>
+</div>
+<button md-button [md-dialog-close]="items">Save</button>
+<button md-button [md-dialog-close]="">Cancel</button>

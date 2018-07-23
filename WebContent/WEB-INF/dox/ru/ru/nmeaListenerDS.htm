@@ -1,0 +1,27 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Обзор</h1>
+<p>Приемник NMEA используется для получения сообщений от совместимого с NMEA 0183 оборудования. Устройства подключаются через порты последовательных интерфейсов RS232 или RS485 (требуется преобразователь). Этот источник данных получает регулярные обновления с подключенных устройств; он не выполняет опрос сети.</p>
+
+<h1>Конфигурация</h1>
+<p>Каждый источник данных должен иметь произвольно заданное Имя. При задании Порта выдается список всех доступных последовательных портов в оборудовании хоста. Выбор должен соответствовать порту, к которому подключено оборудование NMEA. Скорость передачи битов – это скорость, с которой Ваше оборудование может обмениваться сообщениями. Обычно это значение равно 4800, но также возможны и другие значения. Подробности вы можете узнать в документации на NMEA. Значения контрольной суммы вступают в силу, если они включены в сообщение. Если подтвердить значение не удается, сообщение игнорируется.</p>
+
+<h1>Приемник сообщений NMEA</h1>
+<p>Приемник может начать прослушивать сообщения сразу же после подключения оборудования NMEA к хосту. Скорость приема сообщений зависит от оборудования. Сообщения будут отображаться за исключением их «оболочки», т.е. стартового индикатора «$», индикатора конца строки (CRLF), и &quot;*&quot; со значением контрольной суммы, если оно имеется.</p>
+<p>Сообщения, которые выводятся на экран, можно копировать и вставлять в окошко Текста сообщений регулярных выражений, чтобы проверить Ваше регулярное выражение для объекта.</p>

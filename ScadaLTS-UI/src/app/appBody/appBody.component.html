@@ -1,0 +1,125 @@
+<div class="sideMenu" [ngClass]="{ 'shrunkMenu':isMenuShrunken, 'hideMenu':isMenuHidden }">
+    <div class="sideMenuContent">
+
+        <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[0] = !isHiddenSubMenu[0]"
+              [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[0] }">
+            <md-icon class="icon">visibility</md-icon>
+            <span class="menuItemText">Dashboard</span>
+        </span>
+        <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[0] }">
+            <!--<a class="subMenuLink" [routerLink]="['./']">Main dashboard</a>-->
+            <a class="subMenuLink" [routerLink]="['./watchlist']">Watchlist</a>
+            <!--><a class="subMenuLink">Watchlist edit</a>
+            <a class="subMenuLink" [routerLink]="['./oldWatchlist']">Old watchlist</a>-->
+            <a class="subMenuLink" [routerLink]="['./views']">Views</a>
+            <!--<a class="subMenuLink" [routerLink]="['./alarms']">Alarms</a>
+            <a class="subMenuLink" [routerLink]="['./reports']">Reports</a>-->
+        </div>
+
+        <!--<span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[1] = !isHiddenSubMenu[1]"
+              [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[1] }">
+            <md-icon class="icon">subject</md-icon>
+            <span class="menuItemText">Project</span>
+        </span>
+        <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[1] }">
+            <a class="subMenuLink" [routerLink]="['./eventHandlers']">Event handlers</a>
+            <a class="subMenuLink" [routerLink]="['./dataSources']">Data sources</a>
+            <a class="subMenuLink" [routerLink]="['./scheduledEvents']">Scheduled events</a>
+            <a class="subMenuLink" [routerLink]="['./compoundEvents']">Compound event detectors</a>
+            <a class="subMenuLink" [routerLink]="['./pointLinks']">Point links</a>
+            <a class="subMenuLink" [routerLink]="['./scripting']">Scripting</a>
+        </div>-->
+
+        <!--<span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[2] = !isHiddenSubMenu[2]"
+              [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[2] }">
+            <md-icon class="icon">settings</md-icon>
+            <span class="menuItemText">Settings</span>
+        </span>
+        <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[2] }">
+            <a class="subMenuLink" [routerLink]="['./users']">Users</a>
+            <a class="subMenuLink" [routerLink]="['./pointHierarchy']">Point hierarchy</a>
+            <a class="subMenuLink" [routerLink]="['./mailingList']">Mailing list</a>
+            <a class="subMenuLink" [routerLink]="['./maintenanceEvents']">Maintenance events</a>
+            <a class="subMenuLink" [routerLink]="['./system']">System</a>
+            <a class="subMenuLink" [routerLink]="['./importExport']">Import/Export</a>
+            <a class="subMenuLink" [routerLink]="['./log']">Log</a>
+        </div>-->
+
+        <!--<span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[3] = !isHiddenSubMenu[3]"
+              [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[3] }">
+            <md-icon class="icon">trending_up</md-icon>
+            <span class="menuItemText">Trends</span>
+        </span>
+        <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[3] }">
+            <a class="subMenuLink" [routerLink]="['./trends']">Trends</a>
+        </div>-->
+
+        <!--<span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[4] = !isHiddenSubMenu[4]"
+              [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[4] }">
+            <md-icon class="icon">search</md-icon>
+            <span class="menuItemText">Search</span>
+        </span>
+        <div class="subMenuItemContainer subMenuHide" [ngClass]="{ 'subMenuShow':isHiddenSubMenu[4] }">
+            <a class="subMenuLink" [routerLink]="['./search']">Search</a>
+        </div>-->
+
+        <span class="menuItem" (click)="isMenuHidden=false;isMenuShrunken=false;hideElements();isHiddenSubMenu[5] = !isHiddenSubMenu[5]" [ngClass]="{ 'activeMenuItem':isHiddenSubMenu[5] }">
+            <md-icon class="icon">info_outline</md-icon>
+            <span class="menuItemText" [routerLink]="['./about']">About us</span>
+        </span>
+
+        <span class="menuItem" >
+            <md-icon class="icon">flip to back</md-icon>
+            <span class="menuItemText"><a href="../ScadaBR/views.shtm">Back to old UI</a></span>
+        </span>
+
+    </div>
+</div>
+
+<div class="header" (window:resize)="checkScreenWidth()">
+
+    <a href="#" class="logoScada clearfix">
+        <img class="logo" src="../ScadaLTS/app/media/ScadaLogo.png">
+    </a>
+
+    <span class="collapseMenuIcon" (click)="toggleMenu();hideElements()">
+    <md-icon class="iconMenu">menu</md-icon>
+  </span>
+
+
+    <div class="userTools">
+
+        <a class="dropdownInfo" (mouseover)="isNotificationDropdownHidden=true" (mouseleave)="isNotificationDropdownHidden=false" (click)="isNotificationDropdownHidden=false">
+            <md-icon class="iconInfo">notifications_none</md-icon>
+        </a>
+        <div class="notificationsDropdown" [ngClass]="{ 'hidden':!isNotificationDropdownHidden }" (mouseover)="isNotificationDropdownHidden=true" (mouseleave)="isNotificationDropdownHidden=false">
+            <div class="notificationsHeader clearfix">
+                <strong>Notifications</strong><span>Mark all as read</span>
+            </div>
+            <div class="msgList">
+                <ul class="">
+                    <li *ngFor="let message of messages">{{ message.title }}</li>
+                </ul>
+            </div>
+            <div class="allNotifications">See all notifications</div>
+
+        </div>
+
+
+
+        <img class="userImage" src="../ScadaLTS/app/media/defaultUser.png" (mouseover)="isUserDropdownHidden=true" (mouseleave)="isUserDropdownHidden=false" (click)="isUserDropdownHidden=false">
+        <ul class="userDropdown" [ngClass]="{ 'hidden':!isUserDropdownHidden }" (mouseover)="isUserDropdownHidden=true" (mouseleave)="isUserDropdownHidden=false">
+            <li><md-icon class="icon">settings</md-icon>Settings</li>
+            <li (click)="logout()"><md-icon class="icon">power_settings_new</md-icon>Sign out</li>
+        </ul>
+
+    </div>
+
+
+</div>
+
+<div class="content" [ngClass]="{ 'enlargedContent':isMenuShrunken, 'fullContent':isMenuHidden }">
+    <div class="contentInside">
+        <router-outlet></router-outlet>
+    </div>
+</div>

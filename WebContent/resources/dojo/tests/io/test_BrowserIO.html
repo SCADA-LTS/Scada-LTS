@@ -1,0 +1,57 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				preventBackButtonFix: false,
+				dojoIframeHistoryUrl: "../../iframe_history.html", //for xdomain
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.io.BrowserIO");
+
+			function init(){
+				var initialState = {
+					back: function(){
+						alert("We are BACK at initial state.");
+					},
+					forward: function(){
+						alert("We are FORWARD at initial state (you should never see this alert.");
+					}
+				};
+
+				dojo.undo.browser.setInitialState(initialState);
+				
+				var bindArgs = {
+					url: "test_BrowserIO_data.txt",
+					load: function(type, data, evt){
+						dojo.debug(data);
+						// we could just set mimetype: "text/javascript" to
+						// have it auto-eval, but that's not as interesting
+						// dj_eval(data); 
+					},
+					backButton: function(){
+						alert("we intercepted the back button");
+					},
+					forwardButton: function(){
+						alert("onward ho!");
+					},
+					changeURL: "foo"+(new Date()).getTime()
+				};
+				var canBind = dojo.io.bind(bindArgs);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		Check your javascript log; the scripts were all loaded in the head.
+	</body>
+</html>
+

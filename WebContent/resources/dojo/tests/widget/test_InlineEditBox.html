@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Inline Edit Box Widget Demo</title>
+
+<script type="text/javascript"> var djConfig = {isDebug: true}; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.InlineEditBox");
+	dojo.require("dojo.event.*");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+	function saveHandler(newValue, oldValue,name) {
+		dojo.debug("onSave was called -- New Value: " + newValue + " : Old Value: " + oldValue);
+	};
+	function cancelCall(){
+		dojo.debug('onCancel was called.');
+	};
+	function changeCall(newValue,oldValue){
+		dojo.debug('onChange was called'+"New Value: " + newValue + " : Old Value: " + oldValue);
+	};		
+	dojo.addOnLoad(function(){
+		var editable = dojo.widget.byId("editable");
+		dojo.event.connect(editable, "onSave", "saveHandler");
+		dojo.event.connect(editable,'onChange','changeCall');
+		dojo.event.connect(editable,'onCancel','cancelCall');
+	});
+	
+
+
+</script>
+
+<style type="text/css">
+	body { font-family : sans-serif; background:#fff; }
+	
+	.inlineEdit { background-color: #CCC76A; }
+</style>
+</head>
+
+<body>
+<h1 id="editable" dojoType="inlineEditBox">Edit me - I trigger the callbacks onSave,onCancel,onChange</h1>
+
+<p id="areaEditable" dojoType="inlineEditBox" mode="textarea">
+I'm one big paragraph.  Go ahead and edit me.
+I dare you. 
+The quick brown fox jumped over the lazy dog.
+  Blah blah blah blah blah blah blah ...
+</p>
+
+<p>
+These links will
+<a href="#" onClick="dojo.widget.byId('areaEditable').disable()">disable</a>
+/
+<a href="#" onClick="dojo.widget.byId('areaEditable').enable()">enable</a>
+the text area above.
+
+</p>
+
+<p id="backgroundArea" class="inlineEdit" dojoType="inlineEditBox" >
+This text should have a colored background when not in editing mode.
+</p>
+
+<h2 dojoType="inlineEditBox" value="Parameter text value"></h2>
+
+</body>
+</html>

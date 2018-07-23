@@ -1,0 +1,87 @@
+
+#subHeader
+
+  .labelDiv
+    transform: translateX(-$icon_size/2) translateY($icon_size*1.5)
+
+div.content
+
+  .login-container
+    background-image: url("./images/Background.jpg")
+    background-size: cover
+    height: calc(100vh - 166px)
+    margin: auto
+    text-align: center
+
+
+    .login-browser
+      display: block
+      position: relative
+      top: 66px
+      left: 50%
+      color: white
+      transform: translateX(-50%)
+      opacity: .85
+
+    .login-box
+      position: relative
+      padding: 5rem
+      padding-bottom: 3rem
+      width: 600px
+      top: calc(50vh - 100px)
+      left: 50vw
+      transform: translateY(-50%) translateX(-50%)
+      background-color: rgba(232,234,246, 0.75)
+      box-shadow: 4px 8px 14px 1px rgba(0, 0, 0, 0.5)
+      border: 1px solid black
+      text-align: center
+      opacity: .9
+
+      .formLabelRequired
+        margin-bottom: -0.5rem
+        font-size: 1.2rem
+        font-weight: bolder
+        text-align: left
+        text-transform: uppercase
+
+      .formField
+        width: 100%
+        text-align: left
+        font-size: 1.3rem
+        font-weight: bold
+
+        input
+          text-align: left
+          width: 90%
+      
+      .form-box
+        width: 100%
+
+      .login-button
+        width: 100%
+        margin: auto
+        
+        input
+          width: 180px
+          margin-top: 3rem
+          padding: 4px 65px
+          font-weight: 700
+          text-align: center
+          text-transform: uppercase
+          background-color: rgba(119,192,85, 0.40)
+          border: 1px solid rgba(0, 0, 0, 0.07)
+          transition: all .3s ease-in-out
+
+          &:hover
+            box-shadow: 0 2px  5px rgba(0, 0, 0, 0.24)
+            background-color: $primary_color
+            border: 1px solid rgba(0, 0, 0, 0.55)
+            cursor: pointer
+
+    .ptr
+      position: absolute
+      left: 1rem
+      top: 1rem
+      display: none //fixed in future
+
+

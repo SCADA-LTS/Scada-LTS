@@ -1,0 +1,6 @@
+name=Encanamento em L - 3D Modelo A vazio/enchendo
+type=imageSet
+#width=243
+#height=136
+text.x=14
+text.y=2

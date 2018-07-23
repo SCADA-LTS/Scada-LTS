@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Untitled Document</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    
+    <script type="text/javascript">
+        var djConfig = {isDebug: true, debugAtAllCosts: true };
+    </script>
+    <script type="text/javascript" src="../../../dojo.js"></script>
+    <script type="text/javascript">
+    
+        dojo.require("dojo.widget.*");
+        dojo.require("dojo.widget.TreeV3");
+        dojo.require("dojo.widget.TreeNodeV3");
+        dojo.require("dojo.widget.TreeBasicControllerV3");
+        dojo.hostenv.writeIncludes();
+    
+    </script>
+    <style>
+        .myCssClass {
+	    font-family: Arial, Helvetica, sans-serif;
+            font-size: 18px;
+            font-style: italic;
+        }
+    </style>
+    </head>
+    <body>
+        
+        <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>
+        
+        
+        
+        <div dojoType="TreeV3" listeners="controller" widgetId="tree">
+            <div dojoType="TreeNodeV3" title="Item 1" widgetId="Item 1" contentClass="myCssClass">
+                <div dojoType="TreeNodeV3" title="Item 1.1" widgetId="Item 1.1" contentClass="myCssClass"></div>
+                <div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2" contentClass="myCssClass"></div>
+                <div dojoType="TreeNodeV3" title="Item 1.3" widgetId="Item 1.3" contentClass="myCssClass">
+                    <div dojoType="TreeNodeV3" title="Item 1.3.1" widgetId="Item 1.3.1" contentClass="myCssClass"></div>
+                    <div dojoType="TreeNodeV3" title="Item 1.3.2" widgetId="Item 1.3.2" contentClass="myCssClass">
+                        <div dojoType="TreeNodeV3" title="Item 1.3.2.1" widgetId="Item 1.3.2.1" contentClass="myCssClass"></div>
+                        <div dojoType="TreeNodeV3" title="Item 1.3.3.2" widgetId="Item 1.3.3.2" contentClass="myCssClass">
+                            <div dojoType="TreeNodeV3" title="Item 1.3.3.2.1" widgetId="Item 1.3.3.2.1" contentClass="myCssClass"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

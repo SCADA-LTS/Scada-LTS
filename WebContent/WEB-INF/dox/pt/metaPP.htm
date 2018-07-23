@@ -1,0 +1,603 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>Meta points are configured by creating a "context" of existing-->
+<!--points, which become available for access within the script when it-->
+<!--executes. These context points can be any point saved in ScadaBR at the-->
+<!--time, including the current point being edited. (The current point must-->
+<!--be saved&mdash;i.e. cannot be "new"&mdash;before it will appear in the-->
+<!--context point list.)</p>-->
+<h1>Vis&atilde;o Geral</h1>
+<p>Meta pontos s&atilde;o configurados criando um "contexto" de
+pontos existentes acessados pelo script quando executado. Estes pontos
+de contexto podem ser quaisquer pontos salvos no ScadaBR, incluindo o
+ponto sendo editado. (O ponto corrente deve ser salvo&mdash;ou seja,
+n&atilde;o pode ser "novo"&mdash; antes de aparecer na lista de pontos
+de contexto.)</p>
+
+<!--<h1>Point configuration</h1>-->
+<!--<p>The <b>Data type</b> determines the type that will be expected to-->
+<!--be returned from the script. The point attempts to convert the returned-->
+<!--value to this type.</p>-->
+<!--<p>The <b>Script context</b> defines the points that will be-->
+<!--available to the script when it executes. Each point that is added must-->
+<!--be given a <b>Var</b>, which is the variable name the point data will be-->
+<!--assigned to in the script. These script var names must be valid-->
+<!--ECMAScript variable names: they must start with either a letter or an-->
+<!--underscore, and may not contain spaces. Other constraints may apply. You-->
+<!--will receive validation or script execution exceptions if script var-->
+<!--names are not correctly defined. To add a point to the context, select-->
+<!--it from the list and click the <img src="images/add.png" /> icon. To-->
+<!--delete an existing point from the context click the <img-->
+<!--	src="images/bullet_delete.png" /> icon associated with the point.-->
+<!--Points that are not needed in the script should not be added to the-->
+<!--context since some overhead is involved in preparing the data for the-->
+<!--script. Also, unnecessary script vars may cause unintended script-->
+<!--executions. (See "Script execution" below.) However, the contrary may-->
+<!--also be true: it may be useful to include a script var in a context in-->
+<!--order to cause script execution.</p>-->
+
+<h1>Configura&ccedil;&atilde;o de pontos</h1>
+<p>O <b>Tipo de dado</b> determina o tipo esperado de retorno para o
+script. O ponto tenta converter valor retornado do script para este
+tipo.</p>
+<p>O <b>Contexto do script</b> define os pontos que estar&atilde;o
+dispon&iacute;veis para o script quando for executado. Cada ponto
+adicionado deve receber um nome de vari&aacute;vel, chamado de <b>Var</b>,
+que referencia o ponto no script. Estes nomes var devem ser nomes
+v&aacute;lidos de vari&aacute;veis de acordo com a linguagem ECMAScript:
+devem iniciar com tanto uma letra ou com um sublinhado e n&atilde;o
+devem conter espa&ccedil;os. Outras restri&ccedil;&otilde;es podem
+existir. Ser&aacute; exibida uma valida&ccedil;&atilde;o ou
+exce&ccedil;&otilde;es de execu&ccedil;&atilde;o do script se os nomes
+das vari&aacute;veis n&atilde;o estiverem definidos corretamente. Para
+adicionar um ponto ao contexto, selecione o mesmo na lista e clique no
+&iacute;cone <img src="images/add.png" />. Para apagar um ponto
+existente do contexto clique no &iacute;cone <img
+	src="images/bullet_delete.png" /> associado ao ponto. Pontos que
+n&atilde;o s&atilde;o necess&aacute;rios no script n&atilde;o devem ser
+adicionados ao contexto, pois existe um consumo de mem&oacute;ria na
+prepara&ccedil;&atilde;o dos dados. Tamb&eacute;m &eacute;
+poss&iacute;vel que vari&aacute;veis desnecess&aacute;rias causem
+execu&ccedil;&otilde;es n&atilde;o intencionais do script. (Veja
+"Execu&ccedil;&atilde;o do script" abaixo.) Entretanto, o
+contr&aacute;rio tamb&eacute;m pode ser verdade: pode ser importante
+incluir uma vari&aacute;vel no contexto para que a
+execu&ccedil;&atilde;o do script ocorra.</p>
+<!--<h1>Scripts</h1>-->
+<!--<p>The <b>Script</b> area is where the script to execute is entered.-->
+<!--Scripts can be any valid ECMAScript that would be written within a-->
+<!--function, and <b>must always return a value</b>. A simple script may-->
+<!--look like this:</p>-->
+<!--<pre>return x.value;</pre>-->
+<!--<p>... where x is a script var name defined in the context. The-->
+<!--value returned from this script is the present value of the point that-->
+<!--'x' refers to. Typical mathematical functions can be performed. Here is-->
+<!--a more complex example:</p>-->
+<!--<pre>return Math.sqrt(x.value * 3);</pre>-->
+<!--<p>This returns the square root of the present value of the point-->
+<!--'x' multiplied by 3. (Note: the Math object is defined by JavaScript.-->
+<!--Please refer to the ECMAScript documentation for more information.) More-->
+<!--complex scripts can also be written including locally defined variables,-->
+<!--loops, and logical structures. For example:</p>-->
+<!--<pre>var t = x.value + y.value;-->
+<!--if (b.value) {-->
+<!--    for (var i=0; i&lt;5; i++) {-->
+<!--        tmp += x.value - y.value;-->
+<!--    }-->
+<!--}-->
+<!--else {-->
+<!--    tmp = -tmp;-->
+<!--}-->
+<!--return tmp;</pre>-->
+<!--<p>The above is not intended to calculate any useful value, but-->
+<!--rather to show the potential for script complexity.</p>-->
+<!--<p>In addition to the ECMAScript context, ScadaBR also defines a few-->
+<!--useful global functions including max(), min(), avg(), and sum(). (These-->
+<!--functions are implemented in a script file located at-->
+<!--WEB-INF/scripts/scriptFunctions.js. This file can be altered or extended-->
+<!--as necessary to implement your own global functions. The file is loaded-->
+<!--once per ScadaBR runtime, and so to deploy changes a system restart is-->
+<!--required.) To use them, simply call them from your script, for example:</p>-->
+<!--<pre>return max(x.value, y.value, z.value);</pre>-->
+<!--<p>This returns the maximum of the present values of 'x', 'y', and-->
+<!--'z'. Any number of parameters can be provided to any of these global-->
+<!--functions.</p>-->
+<!--<p>Once the script has been entered, click the <img-->
+<!--	src="images/accept.png" /> icon to execute it and attempt to calculate-->
+<!--the result.</p>-->
+
+
+<h1>Scripts</h1>
+<p>A &aacute;rea do <b>Script</b> &eacute; onde o script a ser
+executado deve ser programado. Scripts podem ser quaisquer ECMAScript
+v&aacute;lido que seria escrito dentro de uma fun&ccedil;&atilde;o e
+function e <b>sempre devem retornar um valor</b>. Um script simples pode
+ser algo como:</p>
+<pre>return x.value;</pre>
+<p>... onde x &eacute; o nome de uma vari&aacute;vel do script
+definida no contexto. O valor retornado do script &eacute; o valor atual
+do ponto cuja refer&ecirc;ncia &eacute; 'x'. Fun&ccedil;&otilde;es
+matem&aacute;ticas t&iacute;picas podem ser executadas. Um exemplo mais
+complexo &eacute; apresentado abaixo:</p>
+<pre>return Math.sqrt(x.value * 3);</pre>
+<p>Este retorna a raiz quadrada do valor atual do ponto 'x'
+multiplicado por 3.(Nota: o objeto Math &eacute; definido por
+JavaScript. Favor consultar a documenta&ccedil;&atilde;o da ECMAScript
+para maiores informa&ccedil;&otilde;es.) Scripts mais complexos
+tamb&eacute;m podem ser escritos incluindo vari&aacute;veis definidas
+logicamente, la&ccedil;os e estruturoas l&oacute;gicas. Por exemplo:</p>
+<pre>var t = x.value + y.value;
+if (b.value) {
+    for (var i=0; i&lt;5; i++) {
+        tmp += x.value - y.value;
+    }
+}
+else {
+    tmp = -tmp;
+}
+return tmp;</pre>
+<p>O script acima n&atilde;o tem inten&ccedil;&atilde;o de calcular
+qualquer valor em particular, mas demonstrar o potencial de complexidade
+para escrita de scripts.</p>
+<p>Adicionando ao contexto de ECMAScript, o ScadaBR tamb&eacute;m
+define algumas fun&ccedil;&otilde;es globais &uacute;teis, incluindo
+max(), min(), avg() e sum(). (Estas fun&ccedil;&otilde;es s&atilde;o
+implementadas em um arquivo de scripts localizado em
+WEB-INF/scripts/scriptFunctions.js. Este arquivo pode ser alterado ou
+extendido conforme necess&aacute;rio para implementar
+fun&ccedil;&otilde;es globais particulares. O arquivo &eacute;
+carregardo na inicializa&ccedil;&atilde;o do ScadaBR e, para instalar
+altera&ccedil;&otilde;es deve-se reiniciar o ScadaBR.) Para serem usados,
+basta que sejam chamados pelo script, por exemplo:</p>
+<pre>return max(x.value, y.value, z.value);</pre>
+<p>Isto retorna o valor m&aacute;ximo dos valores atuais de 'x', 'y'
+e 'z'. Qualquer n&uacute;mero de parâmetros pode ser passasso a qualquer
+uma dessas fun&ccedil;&otilde;es globais.</p>
+<p>Ap&oacute;s a escrita do script, clique no &iacute;cone <img
+	src="images/accept.png" /> para que seja executado e tentar calcular o
+resultado.</p>
+
+<!--<h1>Time values</h1>-->
+<!--<p>The timestamp of the latest value is also available to the-->
+<!--script. The following fields can be use:</p>-->
+<!--<dl>-->
+<!--	<dt>p.time</dt>-->
+<!--	<dd>returns the timestamp of the value in milliseconds since the-->
+<!--	epoch</dd>-->
+<!--	<dt>p.millis</dt>-->
+<!--	<dd>0-999 the millisecond portion of p.time</dd>-->
+<!--	<dt>p.second</dt>-->
+<!--	<dd>0-60</dd>-->
+<!--	<dt>p.minute</dt>-->
+<!--	<dd>0-60</dd>-->
+<!--	<dt>p.hour</dt>-->
+<!--	<dd>0-23</dd>-->
+<!--	<dt>p.day</dt>-->
+<!--	<dd>1-28,31</dd>-->
+<!--	<dt>p.dayOfWeek</dt>-->
+<!--	<dd>1-7 where 1 is Sunday</dd>-->
+<!--	<dt>p.dayOfYear</dt>-->
+<!--	<dd>1-365,366</dd>-->
+<!--	<dt>p.month</dt>-->
+<!--	<dd>1-12</dd>-->
+<!--	<dt>p.year</dt>-->
+<!--	<dd>four digits</dd>-->
+<!--</dl>-->
+<!--<p>To explicitly set the timestamp of a value, set the TIMESTAMP-->
+<!--context variable before your return statement. The value to which to set-->
+<!--this variable must be milliseconds since the epoch (not a native date).-->
+<!--For example:</p>-->
+<!--<pre>TIMESTAMP = new Date().getTime();-->
+<!--return p.value + 1;-->
+<!--</pre>-->
+
+<h1>Valores de tempo</h1>
+<p>O timestamp do valor mais recente est&aacute; dispon&iacute;vel
+para o script. Os campos abaixo podem ser usados:</p>
+<dl>
+	<dt>p.time</dt>
+	<dd>retorna o timestamp do valor em milisegundos a partir do valor
+	de refer&ecirc;ncia: 00:00:00 UTC em 01/01/1970 (ou 1970-01-01T00:00:00Z ISO
+	8601).</dd>
+	<dt>p.millis</dt>
+	<dd>0-999, a por&ccedil;&atilde;o em milissegundos de p.time</dd>
+	<dt>p.second</dt>
+	<dd>0-60</dd>
+	<dt>p.minute</dt>
+	<dd>0-60</dd>
+	<dt>p.hour</dt>
+	<dd>0-23</dd>
+	<dt>p.day</dt>
+	<dd>1-28,31</dd>
+	<dt>p.dayOfWeek</dt>
+	<dd>1-7 onde 1 &eacute; Domingo</dd>
+	<dt>p.dayOfYear</dt>
+	<dd>1-365,366</dd>
+	<dt>p.month</dt>
+	<dd>1-12</dd>
+	<dt>p.year</dt>
+	<dd>quatro d&iacute;gitos</dd>
+</dl>
+<p>Para explicitamente definir o valor de um timestamp, defina a
+vari&aacute;vel de contexto TIMESTAMP antes da declara&ccedil;&atilde;o
+do retorno. O valor para definir essa vari&aacute;vel deve ser em
+milisegundos a partir do valor de refer&ecirc;ncia: 00:00:00 UTC em 01/01/1970
+(ou 1970-01-01T00:00:00Z ISO 8601). N&atilde;o deve ser uma data nativa.
+Por exemplo:</p>
+<pre>TIMESTAMP = new Date().getTime();
+return p.value + 1;
+</pre>
+
+<!--<h1>Context objects</h1>-->
+<!--<p>The script var that represents a point in a script is actually an-->
+<!--'object', in JavaScript terminology. An object is a container of values-->
+<!--and functions that can be referenced by their property names. To get a-->
+<!--description of the properties available for use in a script var, use the-->
+<!--help property, e.g.:</p>-->
+<!--<pre>return x.help;</pre>-->
+<!--<p>This script works best if the data type is set to alphanumeric,-->
+<!--but this is not required. The help property is identical to the-->
+<!--toString() function, which is available on all context objects (i.e. not-->
+<!--just script vars).</p>-->
+<!--<p>The <b>value</b> property is the present value of the point. The-->
+<!--JavaScript type of the value is analogous to its ScadaBR type: Binary-->
+<!--become boolean, Numeric becomes float, Multistate becomes integer, and-->
+<!--Alphanumeric becomes string.</p>-->
+<!--<p>Each script var also implements four functions. The objects-->
+<!--returned by these functions depend upon the data type of the point the-->
+<!--var refers to. Again, the help property can be used to get a description-->
+<!--of the returned object's properties. For the "periodType" parameter in-->
+<!--all of the functions below, the following pre-defined global variables-->
+<!--can be used: SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, and YEAR.</p>-->
+<!--<p>The <b>ago()</b> function returns the value that the point had-->
+<!--the given amount of time ago. For example, the call "x.ago(HOUR, 3)"-->
+<!--returns the point's value exactly 3 hours ago.</p>-->
+<!--<p>The <b>past()</b> function returns an object containing-->
+<!--statistics over the given period ending now. See below for a description-->
+<!--of the various statistics objects.</p>-->
+<!--<p>The <b>prev()</b> and <b>previous()</b> functions are identical;-->
+<!--the latter is provided for its linguistic completeness. The functions-->
+<!--return the same statistically object as past(), but over a different-->
+<!--time span. The start and end times are quantized such that they-->
+<!--correspond to the period type. For example, if the period type is HOURLY-->
+<!--and periods is 1, and the function runs at 18:05, the time span that-->
+<!--will be used is from 17:00 (inclusive) to 18:00 (exclusive). If the-->
+<!--periods were, say, 3, the time span would be from 15:00 to 18:00.-->
+<!--Similarly, MONTH starts the time span at midnight on the first day of-->
+<!--the previous month and ends it on the last day of the previous month-->
+<!--(when periods is 1). Other period types work the same. A WEEK starts on-->
+<!--Monday at midnight in accordance with ISO standards.</p>-->
+
+<h1>Objetos de contexto</h1>
+<p>A vari&aacute;vel do script var que representa um ponto no script
+&eacute;, na realidade, um 'objeto' na terminologia JavaScript. Um
+objeto &eacute; um recipiente de valores e fun&ccedil;&otilde;es que
+pode ser referenciado pelo nome de suas propriedades. Para obter uma
+descri&ccedil;&atilde;o das propriedades dispon&iacute;veis para
+utiliza&ccedil;&atilde;o em vari&aacute;veis de script, use a
+propriedade help, por exemplo: use in a script var, use the help
+property, e.g.:</p>
+<pre>return x.help;</pre>
+<p>Este script funciona melhor se o tipo de dados &eacute; definido
+como alfanum&eacute;rico, mas isso n&atilde;o &eacute;
+necess&aacute;rio. A propriedade help &eacute; id&ecirc;ntica à
+fun&ccedil;&atilde;o toString(), que est&aacute; dispon&iacute;vel em
+todos os objetos de contexto e n&atilde;o apenas em vari&aacute;veis de
+script.</p>
+<p>A propriedade <b>valor</b> representa o valor atual do ponto. O
+tipo JavaScript do valor &eacute; an&aacute;logo ao tipo definido no
+ScadaBR: Bin&aacute;rio se torna boolean, Num&eacute;rico se torna float,
+Multi-estado se torna integer e Alnum&eacute;rico se torna string.</p>
+<p>Cada vari&aacute;vel de script tamb&eacute;m implementa quatro
+fun&ccedil;&otilde;es. Os objetos retornado por essas
+fun&ccedil;&otilde;es dependem do tipo de dado que a vari&aacute;vel
+representa. A propriedade help pode ser usada para obter uma
+descri&ccedil;&atilde;o das propriedades do objeto retornado. Para o
+parâmetro "periodType" em todas as fun&ccedil;&otilde;es abaixo, as
+seguintes vari&aacute;veis globais podem ser usadas: SECOND, MINUTE,
+HOUR, DAY, WEEK, MONTH e YEAR.</p>
+<p>A fun&ccedil;&atilde;o <b>ago()</b> retorna o valor que o ponto
+teve algum tempo atr&aacute;s. Por exemplo, a chamada "x.ago(HOUR, 3)"
+retorna o valor do ponto exatamente 3 horas atr&aacute;s.</p>
+<p>A fun&ccedil;&atilde;o <b>past()</b> returna um objeto que
+cont&eacute;m estat&iacute;sticas sobre um per&iacute;odo informado, que
+inicia no valor passado e termina agora. Veja abaixo uma
+descri&ccedil;&atilde;o dos v&aacute;rios objetos estat&iacute;sticos.</p>
+<p>As fun&ccedil;&otilde;es <b>prev()</b> e <b>previous()</b>
+s&atilde;o id&ecirc;nticas; a &uacute;ltima &eacute; fornecida por sua
+plenitude lingü&iacute;stica. As fun&ccedil;&otilde;es retornam o mesmo
+objeto estat&iacute;stico fornecido por past(), mas em um lapso de tempo
+diferente. Os tempos de in&iacute;cio e fim s&atilde;o quantificados
+para que correspondam ao per&iacute;odo em quest&atilde;o. Por exemplo,
+se o tipo do per&iacute;odo for HOURLY, o per&iacute;odo for 1 e a
+fun&ccedil;&atilde;o &eacute; executada às 18h05, o lapso de tempo que
+ser&aacute; usado inicia as 17h00 (inclusive) e termina as 18h00
+(exclusive). Se o per&iacute;odo for 3, o lapso de tempo seria das 15h00
+às 18h00. De maneira similar, MONTH inicia à meia noite do primeiro dia
+do m&ecirc;s anterior e termina às 23h59:59 do &uacute;ltimo dia do m&ecirc;s
+anterior (quando o per&iacute;odo for 1). Outros tipos de per&iacute;odo
+funcionam da mesma maneira. Um per&iacute;odo do tipo WEEK inicia à meia
+noite de Segunda-feira em concordância com padr&otilde;es ISO.</p>
+
+<!--<h1>Statistics objects</h1>-->
+<!--<p>Statistics objects are returned from the past(), prev(), and-->
+<!--previous() functions. (See "Context objects" above.) The properties of-->
+<!--the object returned depend upon the data type of point upon which they-->
+<!--were generated. Time values in objects are stored as integers, but but-->
+<!--represent the number of milliseconds since midnight Jan 1, 1970.</p>-->
+<!--<p>The <b>AnalogStatistics</b> object is returned by Numeric points.-->
+<!--It contains the following properties:</p>-->
+<!--<ul>-->
+<!--	<li><b>minimum</b>: (float) the minimum value the point reached-->
+<!--	over the period</li>-->
+<!--	<li><b>minimum time</b>: (integer) the time at which the minimum-->
+<!--	value was reached</li>-->
+<!--	<li><b>maximum</b>: (float) the maximum value the point reached-->
+<!--	over the period</li>-->
+<!--	<li><b>maximum time</b>: (integer) the time at which the maximum-->
+<!--	value was reached</li>-->
+<!--	<li><b>average</b>: (float) the average value of the point over-->
+<!--	the period</li>-->
+<!--	<li><b>sum</b>: (float) the sum of all value updates over the-->
+<!--	period (appropriate for pulse counting)</li>-->
+<!--	<li><b>count</b>: (integer) the number of updates over the period</li>-->
+<!--	<li><b>noData</b>: (boolean) whether the period contained any data-->
+<!--	(true if the period precedes the point's first known value)</li>-->
+<!--	<li><b>realStart</b>: (integer) the actual start time used for-->
+<!--	calculations (in case the start time precedes the point's first known-->
+<!--	value</li>-->
+<!--	<li><b>end</b>: (integer) the end time used for calculations</li>-->
+<!--</ul>-->
+<!--<p>For example, the following returns the minimum value of 'n' over-->
+<!--the past hour:</p>-->
+<!--<pre>return n.past(HOUR).minimum;</pre>-->
+<!---->
+<!--<p>The <b>StartsAndRuntimeList</b> object is returned by Binary and-->
+<!--Multistate points. It contains the following properties:</p>-->
+<!--<ul>-->
+<!--	<li><b>realStart</b>: (integer) the actual start time used for-->
+<!--	calculations (in case the start time precedes the point's first known-->
+<!--	value)</li>-->
+<!--	<li><b>end</b>: (integer) the end time used for calculations</li>-->
+<!--	<li><b>data</b>: (array) the list of individual StartAndRuntime-->
+<!--	objects.</li>-->
+<!--</ul>-->
+<!--Each StartAndRuntime object has the following properties:-->
+<!--<ul>-->
+<!--	<li><b>value</b>: (boolean for Binary, integer for Multistate) the-->
+<!--	point state to which the remaining properties apply</li>-->
+<!--	<li><b>starts</b>: (integer) the number of times the state was-->
+<!--	entered over the period</li>-->
+<!--	<li><b>runtime</b>: (integer) the amount of time in milliseconds-->
+<!--	the point was in the state over the period</li>-->
+<!--	<li><b>proportion</b>: (float) the proportion of the period the-->
+<!--	point was in the state (runtime / real duration)</li>-->
+<!--	<li><b>percentage</b>: (float) proportion * 100</li>-->
+<!--</ul>-->
+<!---->
+<!--<p>To access a specific StartAndRuntime object in the list, use the-->
+<!--get() function. For example, the following returns the proportion of-->
+<!--time that 'b' was in state 'false' over the previous 2 months.</p>-->
+<!--<pre>return b.past(MONTH, 2).get(false).proportion;</pre>-->
+<!---->
+<!--<p>The <b>ValueChangeCounter</b> object is returned by Alphanumeric-->
+<!--points. It contains the single property <b>changes</b>, which is the-->
+<!--number of times the point changed during the period. For example, the-->
+<!--following returns the number of times 'a' changed during the previous 45-->
+<!--minutes.</p>-->
+<!--<pre>return b.previous(MINUTE, 45);</pre>-->
+<!---->
+<!--<p>For convenience, if a script var object is returned by a script,-->
+<!--it's present value will be used. Thus, the following script will return-->
+<!--the present value of 'x':</p>-->
+<!--<pre>return x;</pre>-->
+<!--<p>However, this script will not return the sum of 'x' and 'y':</p>-->
+<!--<pre>return x + y;</pre>-->
+<!--<p>... but this script would:</p>-->
+<!--<pre>return x.value + y.value;</pre>-->
+
+<h1>Objetos estat&iacute;sticos</h1>
+<p>Objetos estat&iacute;sticos s&atilde;o retornados das
+fun&ccedil;&otilde;es past(), prev() e previous(). (Veja "Objetos de
+contexto" acima.) As propriedades do objeto retornado dependem do tipo
+de dados do ponto a partir do foi gerado. Valores de tempo em objetos
+s&atilde;o armazenados como integers, mas representam o n&uacute;mero de
+milisegundos a partir de meia noite de 01/01/1970.</p>
+<p>O objeto <b>AnalogStatistics</b> &eacute; retornado por pontos
+Num&eacute;ricos e cont&eacute;m as seguintes propriedades:</p>
+<ul>
+	<li><b>minimum</b>: (float) o valor m&iacute;nimo do ponto obtido
+	no per&iacute;odo</li>
+	<li><b>minimum time</b>: (integer) o tempo quando o valor
+	m&iacute;nimo foi alcan&ccedil;ado</li>
+	<li><b>maximum</b>: (float) o valor m&iacute;nimo do ponto obtido
+	no per&iacute;odo</li>
+	<li><b>maximum time</b>: (integer) o tempo quando o valor
+	m&iacute;nimo foi alcan&ccedil;ado</li>
+	<li><b>average</b>: (float) o valor m&eacute;dio do ponto
+	calculado para o per&iacute;odo</li>
+	<li><b>sum</b>: (float) a soma de todas as
+	atualiza&ccedil;&otilde;es durante o per&iacute;odo (apropriado para
+	contagem de pulsos)</li>
+	<li><b>count</b>: (integer) o n&uacute;mero de
+	atualiza&ccedil;&otilde;es no per&iacute;odo</li>
+	<li><b>noData</b>: (boolean) se o per&iacute;odo cont&eacute;m
+	quaisquer dados (true se o per&iacute;odo precede o primeiro valor
+	conhecido para o ponto)</li>
+	<li><b>realStart</b>: (integer) o tempo de in&iacute;cio real
+	utilizado para c&aacute;lculos (para o caso do tempo inicial preceder o
+	primeiro valor conhecido para o ponto)</li>
+	<li><b>end</b>: (integer) o tempo final usado em c&aacute;lculos</li>
+</ul>
+<p>Por exemplo, o script abaixo retorna o valor m&iacute;nimo de 'n'
+na &uacute;ltima hora:</p>
+<pre>return n.past(HOUR).minimum;</pre>
+
+<p>O objeto <b>StartsAndRuntimeList</b> &eacute; retornado por
+pontos Bin&aacute;rios e Multi-estados e cont&eacute;m as seguintes
+propriedades:</p>
+<ul>
+	<li><b>realStart</b>: (integer) o tempo real de in&iacute;cio
+	usado para c&aacute;lculos (no caso do tempo inicial preceder o
+	primeiro valor conhecido)</li>
+	<li><b>end</b>: (integer) o tempo final utilizado nos
+	c&aacute;lculos</li>
+	<li><b>data</b>: (array) a lista de objetos StartAndRuntime
+	individuais.</li>
+</ul>
+Cada objeto StartAndRuntime tem as seguintes propriedades:
+<ul>
+	<li><b>value</b>: (boolean para Bin&aacute;rio, integer para
+	Multi-estado) o estado do ponto para o qual as outras propriedades se
+	aplicam</li>
+	<li><b>starts</b>: (integer) o n&uacute;mero de vezes que o estado
+	foi atingido durante o per&iacute;odo</li>
+	<li><b>runtime</b>: (integer) a quantidade de tempo em
+	milisegundos que o ponto esteve no estado ao longo do per&iacute;odo</li>
+	<li><b>proportion</b>: (float) a propor&ccedil;&atilde;o do
+	per&iacute;odo em que o ponto esteve no estado (tempo de
+	execu&ccedil;&atilde;o / dura&ccedil;&atilde;o real)</li>
+	<li><b>percentage</b>: (float) proportion * 100</li>
+</ul>
+
+<p>Para acessar um objeto StartAndRuntime espec&iacute;fico na
+lista, deve ser utilizada a fun&ccedil;&atilde;o get(). Por exemplo, o
+script a seguir retorna a propor&ccedil;&atilde;o do tempo que 'b'
+esteve no estado 'false' ao longo dos dois meses anteriores.</p>
+<pre>return b.past(MONTH, 2).get(false).proportion;</pre>
+
+<p>O objeto <b>ValueChangeCounter</b> &eacute; retornado por pontos
+Alfanum&eacute;ricos. Cont&eacute;m apenas a propriedade <b>changes</b>,
+que informa o n&uacute;mero de vezes que o valor do ponto foi alterado
+ao longo do per&iacute;odo. Por exemplo, o script a seguir retorna o
+n&uacute;mero de vezes que o valor de 'a' mudou nos &uacute;ltimos 45
+minutos.</p>
+<pre>return b.previous(MINUTE, 45);</pre>
+
+<p>Por conveni&ecirc;ncia, se uma vari&aacute;vel de objeto de script for
+retornado por um script, seu valor atual ser&aacute; utilizado. Assim, o
+script abaixo retorna o valor atual de 'x':</p>
+<pre>return x;</pre>
+<p>Entretanto, este script ir&aacute; retornar o valor da soma de
+'x' e 'y':</p>
+<pre>return x + y;</pre>
+<p>... mas este sim:</p>
+<pre>return x.value + y.value;</pre>
+
+
+<!--<h1>Script execution</h1>-->
+<!--<p>Each time a point's script is run, the result is assigned to the-->
+<!--point as a value update. The times at which a script gets executed can-->
+<!--be controlled with the <b>Update event</b> value. The "Context update"-->
+<!--setting causes the script to be run whenever a point within its context-->
+<!--is updated. The other setting cause the script to run at the indicated-->
+<!--time event.</p>-->
+<!--<p>The <b>Execution delay</b> setting can be used to prevent-->
+<!--unwanted multiple executions of a script. Often, a script's context will-->
+<!--use multiple points, but&mdash;when using "Context update"-->
+<!--execution&mdash;because each point's update causes a script execution,-->
+<!--the update of all points each, say, hour, will cause the script to run-->
+<!--as many times as it has points each hour. Similarly, for time-based-->
+<!--script runs, the script may execute slightly before its context points-->
+<!--are updated, and so may yield spurious results. The execution delay can-->
+<!--be used to have scripts execute more as intended. When using "Context-->
+<!--update" execution, the script will not run following a context update-->
+<!--until the given number of seconds has passed without a subsequent-->
+<!--update. For time-based execution, the script will run the given number-->
+<!--of seconds after the given time event.</p>-->
+
+<h1>Execu&ccedil;&atilde;o de scripts</h1>
+<p>Cada vez que um script de um ponto for executado, o resultado
+&eacute; atribu&iacute;do ao ponto como um valor atualizado. Os momentos
+em que um script &eacute; executado podem ser controlados pelo valor <b>Update
+event</b>. A configura&ccedil;&atilde;o "Context update" for&ccedil;a a
+execu&ccedil;&atilde;o do script sempre que um ponto dentro de seu
+contexto &eacute; atualizado. A outra configura&ccedil;&atilde;o chama a
+execu&ccedil;&atilde;o do script no tempo indicado.</p>
+<p>A configura&ccedil;&atilde;o <b>Execution delay</b> (atraso de
+execu&ccedil;&atilde;o) pode ser usada para prevenir
+execu&ccedil;&otilde;es m&uacute;ltiplas e n&atilde;o solicitadas do
+script. Frequentemente, um contexto do script ir&aacute; utilizar
+m&uacute;ltiplos pontos, mas &mdash;quando usando execu&ccedil;&atilde;o
+em "Context update"&mdash;por que a atualiza&ccedil;&atilde;o em cada
+ponto chama a execu&ccedil;&atilde;o do script, a
+atualiza&ccedil;&atilde;o de todos os pontos a cada, por exemplo, hora
+ir&aacute; for&ccedil;ar a execu&ccedil;&atilde;o script tantas vezes
+quanto o n&uacute;mero de pontos a cada hora. De maneira similar, para
+execu&ccedil;&otilde;es baseados em tempos, o script pode ser executado
+pouco antes de seus pontos de contexto serem atualizados e oferecer
+resultados incorretos. O atraso na execu&ccedil;&atilde;o de um script
+pode trazer resultados mais pr&oacute;ximos dos esperados. Quando usando
+execu&ccedil;&atilde;o em atualiza&ccedil;&atilde;o de contexto, o
+script n&atilde;o ser&aacute; executado ap&oacute;s uma
+atualiza&ccedil;&atilde;o de contexto at&eacute; que o tempo de atraso
+seja atingido e n&atilde;o exista nova atualiza&ccedil;&atilde;o de
+contexto. Para execu&ccedil;&otilde;es baseadas em tempo, o script
+ser&aacute; executado ap&oacute;s a quantidade de segundos definda a
+partir do tempo definido.</p>
+
+<!--<h1>More examples</h1>-->
+<!--<p>The following script calculates the rolling hourly average of-->
+<!--points 'n1' and 'n2':</p>-->
+<!--<pre>return avg(b1.past(HOUR).average, b2.past(HOUR).average);</pre>-->
+<!---->
+<!--<p>This script calculates the daily number of pulses from an-->
+<!--increasing pulse counter 'pulse' (when executed on "Start of day"):</p>-->
+<!--<pre>return pulse.value - pulse.ago(DAY);</pre>-->
+<!---->
+<!--<p>This next script is not very practically useful, but is-->
+<!--interesting nonetheless. It cycles through the numbers 1, 2, and 3, but-->
+<!--only changes randomly 1 in 100 executions.</p>-->
+<!--<pre>var r = Math.random();-->
+<!--if (r &gt; 0.01)-->
+<!--    return x.value;-->
+<!---->
+<!--if (x.value == 3)-->
+<!--    return 1;-->
+<!--return x.value + 1;</pre>-->
+<!---->
+<!--<p>This script returns the sum of the integer values of two numeric-->
+<!--points 'r' and 't':</p>-->
+<!--<pre>return parseInt(t.value) + parseInt(r.value);</pre>-->
+
+<h1>Mais exemplos</h1>
+<p>O script abaixo calcula a m&eacute;dia hor&aacute;ria circulante
+dos pontos 'n1' e 'n2':</p>
+<pre>return avg(b1.past(HOUR).average, b2.past(HOUR).average);</pre>
+
+<p>Este script calcula o n&uacute;mero di&aacute;rio de pulsos de um
+contador de pulsos incremental (quando executado no "in&iacute;cio do
+dia"):</p>
+<pre>return pulse.value - pulse.ago(DAY);</pre>
+
+<p>Este pr&oacute;ximo script n&atilde;o &eacute; muito &uacute;til,
+mas &eacute; interessante. Ele circula entre os valores 1, 2 e 3, mas
+apenas muda aleat&oacute;riamente 1 a cada 100 execu&ccedil;&otilde;es.</p>
+<pre>var r = Math.random();
+if (r &gt; 0.01)
+    return x.value;
+
+if (x.value == 3)
+    return 1;
+return x.value + 1;</pre>
+
+<p>Este script retorna o valor da soma dos valores inteiros de dois
+pontos num&eacute;ricos'r' e 't':</p>
+<pre>return parseInt(t.value) + parseInt(r.value);</pre>

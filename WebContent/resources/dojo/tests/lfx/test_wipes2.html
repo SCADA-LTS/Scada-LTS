@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+	<head>
+		<title>lfx</title>
+
+		<style>
+			body {
+				background-color: #DEDEDE;
+			}
+
+			.box {
+				font-family: Trebuchet MS, Trebuchet, Bitstream Vera Sans, Verdana, sans-serif;
+				font-size: 12px;
+				line-height: 17px;
+				color: #292929;
+				width: 300px;
+				border: 1px solid #BABABA;
+				background-color: white;
+				padding-left: 10px;
+				padding-right: 10px;
+				margin-left: 10px;
+				-moz-border-radius: 12px;
+				-webkit-border-radius: 10px;
+				border-radius: 10px;
+				-moz-box-sizing: border-box;
+				-opera-sizing: border-box;
+				-webkit-box-sizing: border-box;
+				-khtml-box-sizing: border-box;
+				box-sizing: border-box;
+			}
+		</style>
+		<script type="text/javascript">
+			var djConfig = {
+				isDebug: true // ,
+				// debugAtAllCosts: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.lfx.*");
+			dojo.require("dojo.lfx.extras");
+			dojo.require("dojo.event.*");
+			// dojo.hostenv.writeIncludes();
+		</script>
+	</head>
+	<body>
+			<div>
+				Box 1:
+				<button onclick="dojo.lfx.html.wipeIn('one', 1000).play();">wipe in</button>
+				<button onclick="dojo.lfx.html.wipeOut('one', 1000).play();">wipe out</button>
+			</div>
+			<div>
+				Box 2:
+				<button onclick="dojo.lfx.html.wipeIn('two', 1000).play();">wipe in</button>
+				<button onclick="dojo.lfx.html.wipeOut('two', 1000).play();">wipe out</button>
+			</div>
+			<div>
+				Box 3:
+				<button onclick="dojo.lfx.html.wipeIn('three', 1000).play();">wipe in</button>
+				<button onclick="dojo.lfx.html.wipeOut('three', 1000).play();">wipe out</button>
+			</div>
+			<div id="one" class="box">
+				<h1>Box one</h1>
+				<p>This box is content sized (ie, no height is specified)</p>
+				<p>
+				Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+				semper sagittis velit. Cras in mi. Duis porta mauris ut ligula.
+				Proin porta rutrum lacus. Etiam consequat scelerisque quam. Nulla
+				facilisi.  Maecenas luctus venenatis nulla. In sit amet dui non mi
+				semper iaculis.  Sed molestie tortor at ipsum. Morbi dictum rutrum
+				magna. Sed vitae risus.
+				</p>
+			</div>
+			<br>
+			<div id="two" class="box" style="height: 10em; overflow: auto;">
+				<h1>Box two</h1>
+				<p>This box is explicity sized to 10em, w/overflow: auto.
+				Make sure that wiping in/out the box doesn't lose track of the explicitly set height.</p>
+				<p>
+				Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+				imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer
+				lorem nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean
+				id mi in massa bibendum suscipit. Integer eros. Nullam suscipit
+				mauris. In pellentesque. Mauris ipsum est, pharetra semper,
+				pharetra in, viverra quis, tellus. Etiam purus. Quisque egestas,
+				tortor ac cursus lacinia, felis leo adipiscing nisi, et rhoncus
+				elit dolor eget eros. Fusce ut quam. Suspendisse eleifend leo vitae
+				ligula. Nulla facilisi. Nulla rutrum, erat vitae lacinia dictum,
+				pede purus imperdiet lacus, ut semper velit ante id metus. Praesent
+				massa dolor, porttitor sed, pulvinar in, consequat ut, leo. Nullam
+				nec est. Aenean id risus blandit tortor pharetra congue.
+				Suspendisse pulvinar.
+				</p>
+			</div>
+			<br>
+			<div id="three" class="box" style="height: 10em; overflow: auto;">
+				<h1>Box three</h1>
+				<p>This box is explicity sized to 10em, w/overflow: auto</p>
+			</div>
+			<br>
+			<div class="box">
+				this box sits directly under the box above, so it should slide up/down as the aboves box contract or expand
+			</div>
+		</div>
+	</body>
+</html>

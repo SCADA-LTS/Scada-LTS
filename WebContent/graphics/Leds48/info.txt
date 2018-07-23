@@ -1,0 +1,6 @@
+name=Leds48
+type=imageSet
+#width=48
+#height=48
+text.x=0
+text.y=48

@@ -1,0 +1,29 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  Регулярные выражения (или регексы) – это мощный и лаконичный способ обработки текстовых данных. Несмотря на то, что создание регулярных выражений первоначально кажется сложным и непонятным, даже небольшой опыт их использования показывает, насколько много проблем обработки текста становятся легко решаемыми. Различные реализации регулярных выражений имеют немного отличающиеся реализации их функций. Курс обучения созданию регулярных выражений Java можно найти <a href="http://java.sun.com/docs/books/tutorial/essential/regex/" target="_blank">здесь.</a></p>
+
+<p>
+  Многие шаблоны регулярных выражений, используемых в ScadaBR, похожи. Обычно целью использования регулярных выражений является поиск конкретного значения в некотором тексте. Шаблон состоит из префикса и суффикса, которые однозначно определяют значение, и группового шаблона, который вытягивает значение. Например, текст, который необходимо обработать, выглядит так:</p>
+
+<pre>This is the text to parse with my value of 1234 embedded in the middle,</pre>
+<p>Если искомое значение - «1234», то шаблон регулярного выражения может быть таким: </p>
+<pre>my value of (.*?) embedded</pre>
+
+<p>  Важно отметить, что префикс (например, &quot;my value of &quot;) и суффикс (&quot;embedded&quot;) никогда не меняются в новых экземплярах текста, и они будут однозначно определять положение требуемого значения. Более того, обратите внимание, что префикс &quot;f &quot; и суффикс &quot; &quot; также работают в этом случае, но гораздо реже работают в случаях большого текста или при значительных изменениях текста.</p>

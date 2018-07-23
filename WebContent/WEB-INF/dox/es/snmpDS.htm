@@ -1,0 +1,52 @@
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<h1>Descripci&oacute;n General</h1>
+<p>La fuente de datos SNMP se utiliza para recopilar datos desde un dispositivo que tenga una implementaci&oacute;n del protocolo SNMP.
+ Esta fuente de datos realiza encuestas SNMP y tambi&eacute;n acepta Trap.</p>
+
+<h1>Configuraci&oacute;n</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser una descripci&oacute;n. El <b>Per&iacute;odo de actualizaci&oacute;n</b> determina cu&aacute;n frecuentemente
+ los puntos SNMP ser&aacute;n encuestados para obtener informaci&oacute;n de ellos. Los campos restantes son necesarios para configurar correctamente la comunicaci&oacute;n SNMP.</p>
+
+<h1>Prueba del Servidor SNMP</h1>
+<p>la prueba del servidor puede utilizarse para verificar la correcta configuraci&oacute;n de la fuente de datos y la existencia de un objeto espec&iacute;fico OID
+ (Identificador de Objeto). Introduzca el OID a verificar y haga clic en "Obtener valor OID". Los valores de configuraci&oacute;n se utilizar&aacute;n para enviar
+ una solicitud GET del SNMP (get request). Al ser exitosa la solicitud, se mostrar&aacute; el valor correspondiente al OID. Cuando falla la solicitud, es desplegado
+ un mensaje con el detalle del error.</p>

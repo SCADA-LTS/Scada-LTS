@@ -1,0 +1,156 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Vis&atilde;o Geral</h1>
+<!-- <h1>Overview</h1> -->
+
+<p>Point links s&atilde;o utilizados para atualizar o valor de pontos
+baseados no valor de outros pontos. Mantendo os dois pontos em sincronia
+de acordo com alguma rela&ccedil;&atilde;o definida pelo usu&aacute;rio. De maneira mais
+direta, os point links podem ser utilizados para ler valores em um
+sistema (de um ou mais data sources) e imediamente definir valores em
+outro sistema (para um ou mais data sources).</p>
+
+<!--<p>-->
+<!--  Point links are used to update target points based upon the value of source points. They keep two points in "sync", -->
+<!--  according to an optional transformation formula that can be defined. Practically speaking, point linking can be used-->
+<!--  to read the values in one system (from one or more data sources) and immediately set the values in another system-->
+<!--  (to one or more data sources).-->
+<!--</p>-->
+
+<p>O mesmo resultado tamb&eacute;m pode ser obtido criando detectores de
+eventos do tipo "change" ou "update" nos pontos de origem (source data
+points) e ent&atilde;o criar um tratador de eventos do tipo "set point" para
+cada ponto definido nos pontos destino (target data points). Contudo, os
+point links s&atilde;o recomendados por algumas raz&otilde;es:</p>
+<!--<p>-->
+<!--  Point linking can also be achieved by using a change or update event detector on source points, and then creating an-->
+<!--  set point event handler for each to have the value set in a target point. However, point linking serves this purpose-->
+<!--  better for a few reasons:-->
+<!--</p>-->
+
+<ul>
+	<li>Point links n&atilde;o iniciam eventos, diminuindo o overhead do
+	sistema e resultando em melhor performance</li>
+	<li>Point links permitem a defini&ccedil;&atilde;o de scripts, dando mais
+	liberdade ao usu&aacute;rio</li>
+	<li>A interface de usu&aacute;rio de point links est&aacute; em uma &uacute;nica e
+	simples p&aacute;gina, tornando mais f&aacute;cil sua configura&ccedil;&atilde;o</li>
+</ul>
+
+<!--<ul>-->
+<!--	<li>Point links do not raise events, creating less system-->
+<!--	overhead, and so result in better performance</li>-->
+<!--	<li>Point links allow for an optional script to be defined that-->
+<!--	can transform the source value in arbitrary ways</li>-->
+<!--	<li>The point link interface is contained in a single page, making-->
+<!--	them much easier to set up</li>-->
+<!--</ul>-->
+
+
+<p><b>Nota:</b> point links podem ser configurados de modo que
+infinitos loops de escrita podem ocorrer. O ScadaBR detectar&aacute; este
+problema e informar&aacute; ao usu&aacute;rio atrav&eacute;s de um evento (recursion failure
+event).</p>
+
+<!--<p><b>Note:</b> point links can be set up such that infinite loops-->
+<!--of setting can occur. ScadaBR will detect such loops at runtime, stop the-->
+<!--propagation, and raise a recurrsion failure event.</p>-->
+
+<h1>Lista de Point Links</h1>
+<p>Para adicionar um novo point link, clique no &iacute;cone <img
+	src="images/link_add.png" />. Para editar um point link existente,
+clique sobre o point link na lista.</p>
+
+<!--<h1>Point link list</h1>-->
+<!--<p>To add a new point link, click the <img src="images/link_add.png" />-->
+<!--icon. To edit an existing link, click the link's description in the-->
+<!--"Point links" list.</p>-->
+
+<h1>Configurando Point Links</h1>
+<p>O <b>Export ID</b> &eacute; o valor utilizado para identificar o point
+link em diferentes inst&acirc;ncias do ScadaBR. &Eacute; utilizado pela funcionalidade
+de Importar/Exportar. Este valor deve ser &uacute;nico e &eacute; gerado
+automaticamente, embora o usu&aacute;rio tenha a op&ccedil;&atilde;o de defin&iacute;-lo
+manualmente.</p>
+
+<!--<h1>Editing point link details</h1>-->
+<!--<p>The <b>Export ID</b> is the value used to identify the point link-->
+<!--across multiple ScadaBR instances. It is used by the Import/Export-->
+<!--facility. This value must be unique among point links. A unique and-->
+<!--random value is automatically generated, but it can be changed to be-->
+<!--more intuitive.</p>-->
+
+<p>O <b>ponto de origem</b> &eacute; o ponto que ter&aacute; seu valor monitorado.
+&Eacute; o ponto que define a <i>origem</i> dos valores.</p>
+
+<!--<p>The <b>Source point</b> is the point that will be monitored for-->
+<!--value. It is the point <i>from</i> which values come.</p>-->
+
+<p>O <b>ponto de destino</b> &eacute; o ponto que ter&aacute; seus valores
+alterados. &Eacute; o ponto que define o <i>destino</i> dos valores.</p>
+
+<!--<p>The <b>Target point</b> is the point that will be set with-->
+<!--values. It is the point <i>to</i> which values go.</p>-->
+
+<p>O <b>script</b> &eacute; um valor opcional que ir&aacute; transformar os
+valores utilizados conforme necess&aacute;rio. Mais informa&ccedil;&otilde;es sobre o script
+podem ser encontradas na documenta&ccedil;&atilde;o sobre propriedades do ponto do
+tipo Meta. O nome da vari&aacute;vel no contexto &eacute; "source". Ent&atilde;o, um script
+como "return source.value / 2;" alterar&aacute; o valor do data point (target)
+para metade do valor do data point (source). Note que transforma&ccedil;&otilde;es de
+tipos de dados tamb&eacute;m podem ser feitas, como "if (source.value &gt; 0)
+return true; return false;", que converteria um valor num&eacute;rico para um
+valor bin&aacute;rio do target. Use o &iacute;cone <img src="images/accept.png" />
+para validar o seu script.</p>
+
+<!--<p>The <b>Script</b> is an optional value that will transform the-->
+<!--source value as necessary. More information on scripting can be found in-->
+<!--the Meta point properties documentation. The context variable name is-->
+<!--"source". So, a script such as "return source.value / 2;" will set the-->
+<!--target point with half the value of the source point. Note that data-->
+<!--type transformations can also be done, such as "if (source.value &gt; 0)-->
+<!--return true; return false;", which would convert a numeric source value-->
+<!--to a binary target value. Use the <img src="images/accept.png" /> icon-->
+<!--to validate your script (the source point must be available).</p>-->
+
+<p><b>Evento</b> determinar&aacute; se o data point de destino ser&aacute;
+alterado sempre que o data point de origem for alterado (por exemplo,
+receber um novo timestamp mas n&atilde;o necessariamente um novo valor), ou
+somente quando seu valor mudar (por exemplo, receber um novo timestamp e
+valor).</p>
+
+<!--<p><b>Event</b> determines if the target point is set whenever the-->
+<!--source point is updated (i.e. receives a new timestamp but not-->
+<!--necessarily a new value), or only when it is changed (i.e. receives a-->
+<!--new timestamp and value).</p>-->
+
+<p>Um point link pode ser <b>Desabilitado</b>, para n&atilde;o ser
+executado. Isto pode ser &uacute;til caso voc&ecirc; n&atilde;o queira exclu&iacute;-lo, mas tamb&eacute;m
+n&atilde;o o queira habilitado no momento.</p>
+
+<!--<p>A point link can be <b>Disabled</b> so that it does not run. This-->
+<!--can be useful if you do not wish to delete the link, but also do not-->
+<!--currently want it enabled.</p>-->
+
+<p>Para salvar um point link, clique no &iacute;cone <img src="images/save.png" />.
+Para apagar um existente, clique no &iacute;cone <img src="images/delete.png" />.</p>
+
+<!--<p>To save a point link, click the <img src="images/save.png" />-->
+<!--icon at the top right. To delete an existing link, click the <img-->
+<!--	src="images/delete.png" /> icon.</p>-->

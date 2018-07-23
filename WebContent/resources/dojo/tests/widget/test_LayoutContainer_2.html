@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>LayoutContainer / StatusBar Widget Test</title>
+
+<script type="text/javascript">
+
+	var djConfig = {isDebug: true};
+
+	//djConfig.debugAtAllCosts = true;
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+
+	dojo.require("dojo.widget.LayoutContainer");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.ResizeHandle");
+
+	dojo.hostenv.writeIncludes();
+</script>
+<style>
+
+div.statusBar {
+	background-color: ThreeDFace;
+	height: 28px;
+	padding: 1px;
+}
+
+div.statusPanel {
+	background-color: ThreeDFace;
+	border: 1px solid;
+	border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;
+	margin: 1px;
+	padding: 2px 6px;
+}
+
+</style>
+</head>
+<body>
+
+<p>HTML before</p>
+<p>HTML before</p>
+
+<div dojoType="LayoutContainer"
+	widgetId="mywindow"
+	minHeight="20"
+	style="border: 2px solid black; width: 90%; height: 200px;"
+>
+	<div dojoType="LayoutContainer" layoutAlign="bottom" class="statusBar" style="height: 28px" widgetId="statusBar">
+
+		<div dojoType="ContentPane" layoutAlign="left" class="statusPanel">
+			panel 1
+		</div>
+		<div dojoType="ContentPane" layoutAlign="left" class="statusPanel">
+			panel 2
+		</div>
+		<div dojoType="ContentPane" layoutAlign="client" class="statusPanel" style="padding-right: 0px; z-index: 1;">
+			panel 3
+		</div>
+		<div dojoType="ResizeHandle" targetElmId="mywindow"></div>
+	</div>
+</div>
+
+<p>HTML after</p>
+<p>HTML after</p>
+
+</body>
+</html>

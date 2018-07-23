@@ -1,0 +1,104 @@
+//> 
+
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<h1>Descripci&oacute;n General</h1>
+<p>
+
+ Los enlaces a puntos son utilizados para actualizar los puntos de destino basado en el valor de los puntos de origen.
+ Los dos puntos dos puntos se mantienen "sincronizados", permitiendo utilizar una f&oacute;rmula para transformarlo si se requiere.
+ Esencialmente, el punto origen puede ser utilizado para leer los valores en el sistema (de una o m&aacute;s fuentes de datos)
+ e inmediatamente actualizar los valores en otro sistema (a una o m&aacute;s fuentes de datos).
+</p>
+<p>
+ El enlace a punto tambi&eacute;n se puede obtener con el uso de evento por cambio o actualizaci&oacute;n en los puntos de origen
+ y, posteriormente, crear un punto en el manejador de eventos para fijar en cada punto
+ destino el nuevo valor. Sin embargo, utilizar el enlace a punto tiene algunas ventajas para este prop&oacute;sito:
+</p>
+<ul>
+  <li>Los enlaces a puntos no levantan eventos por lo que no sobrecargan el sistema, con lo que mejorar&aacute; el rendimiento</li>
+  <li>Los enlaces a puntos permiten la definici&oacute;n y utilizaci&oacute;n de un script opcional que puede transformar el valor original como se requiera</li>
+  <li>La interface de los enlaces a punto es mostrada en una p&aacute;gina sencilla, con lo su configuraci&oacute;n es mucho m&aacute;s f&aacute;cil</li>
+</ul>
+<p>
+  <b>Nota:</b> los enlaces a puntos pueden haber sido configurados de forma de lazos infinitos.
+ Esta condici&oacute;n ser&aacute; detectada por el sistema en tiempo de ejecuci&oacute;n, y este detendr&aacute;
+ su propagaci&oacute;n y levantar&aacute; un evento de falla recursiva.
+</p>
+
+<h1>Lista de enlaces a puntos</h1>
+<p>
+  Para agregar un nuevo enlace a punto, haga clic en el icono <img src="images/link_add.png"/>. Para editar un enlace existente,
+ haga clic en la descripci&oacute;n de &eacute;ste en la lista "Enlaces de Puntos".
+</p>
+
+<h1>Editando los detalles del enlace a punto</h1>
+<p>
+  El <b>ID de Exportaci&oacute;n</b> es el valor utilizado para identificar en enlace del punto a trav&eacute;s de m&uacute;ltiples instancias del ScadaBR.
+ Este es utilizado por la funci&oacute;n de Importar/Exportar. Este valor debe ser &uacute;nico entre todos los enlaces a puntos.
+ Un valor aleatorio y &uacute;nico ser&aacute; autom&aacute;ticamente asignado por el sistema, pero puede ser cambiado para ser m&aacute;s adecuado a su aplicaci&oacute;n.
+</p>
+<p>
+  El <b>Punto de origen</b> es el punto que le ser&aacute; monitoreado su valor. este es el punto <i>desde</i> donde proviene el valor.
+</p>
+<p>El <b>Punto destino</b> es el punto que ser&aacute; configurado con un valor. Este es el punto <i>para</i> donde el valor ser&aacute; enviado.</p>
+<p>
+  El <b>Script</b> es un valor opcional que puede transformar el valor del punto origen como se requiera. Para m&aacute;s informaci&oacute;n de
+ del uso de los scripts puede ser encontrada en la documentaci&oacute;n de las propiedades de los puntos Meta. A la variable de contexto se le denomina
+ "source" (origen o fuente). As&iacute;, un script pudiera ser "return source.value / 2;" lo que configurar&aacute; en el punto destino la mitad del
+ valor del punto origen. Note que puede realizar transformaciones en los tipos de datos,
+ por ejemplo "if (source.value &gt; 0) return true; return false;", lo cual puede convertir
+ un valor de tipo num&eacute;rico en uno de tipo binario. Utilice el icono <img src="images/accept.png"/> para validar su script
+ (El punto origen debe estar disponible).
+</p>
+<p>
+  El campo <b>Evento</b> determina si el punto destino es configurado cuando el punto se actualiza (p.e. recibe una nueva
+ estampa de tiempo pero no necesariamente un valor nuevo), o cuando su valor cambia (p.e. recibe una estampa de tiempo nueva
+ y un nuevo valor).
+</p>
+<p>
+  Puede <b>deshabilitar</b> un enlace a punto de forma que este no se realice. Esto puede ser &uacute;til 
+ cuando prefiera conservar el enlace en lugar de eliminarlo y que este s&oacute;lo requiere ser habilitado para utilizarlo.
+</p>
+
+<p>
+  Para almacenar un enlace a punto, haga clic en el icono <img src="images/save.png"/> en la parte superior derecha.
+ Para borrar un enlace existente, haga clic en el icono <img src="images/delete.png"/>.
+</p>

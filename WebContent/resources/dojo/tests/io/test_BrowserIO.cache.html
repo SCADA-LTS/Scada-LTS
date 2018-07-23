@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<title>BrowserIO Cache Test</title>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.io.*");
+
+			function init(x){
+				var url = "test_BrowserIO_cacheData";
+				if(x) { url += "2"; }
+				url += ".js";
+
+				var bindArgs = {
+					url: url,
+					mimetype: "text/javascript",
+					load: function(type, data, evt){
+						var props = [], p;
+						dojo.debug("Event info:: status: " + evt.status +
+								", statusText: " + evt.statusText);
+					},
+					useCache: true
+				};
+				var canBind = dojo.io.bind(bindArgs);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<strong>Check your javascript log; the scripts were all loaded in the head.
+		You really need to look at this with something like LiveHTTPHeaders so you can
+		see when requests are and aren't made.</strong>
+	</body>
+</html>
+

@@ -1,0 +1,6 @@
+name=Tanque 3D Vermelho enchendo/vazio
+type=imageSet
+#width=121
+#height=197
+text.x=5
+text.y=25

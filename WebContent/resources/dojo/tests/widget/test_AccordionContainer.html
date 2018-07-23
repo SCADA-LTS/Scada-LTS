@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+	
+		<title>Accordion Widget Demo</title>
+		
+		<script type="text/javascript">
+			var djConfig = {isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.widget.*");
+			dojo.require("dojo.widget.AccordionContainer");
+			dojo.require("dojo.widget.ContentPane");
+			dojo.require("dojo.widget.TreeV3");
+			dojo.require("dojo.widget.TreeBasicControllerV3");
+			dojo.require("dojo.widget.SplitContainer");
+		</script>
+		
+		<!-- programatic creation -->
+		<script>
+			var accordion;
+		
+			function init() {
+				accordion = dojo.widget.createWidget("AccordionContainer", null,
+					dojo.byId("accordionShell"));
+				var label=["pane 1", "pane 2", "pane 3"];
+				for(i=0; i<label.length; ++i) {
+					var content = dojo.widget.createWidget("ContentPane", {label: label[i], selected: i==1});
+					content.setContent("this is " + label[i]);
+					dojo.debug("adding content pane " + content.widgetId);
+					accordion.addChild(content);
+				}
+				accordion.onResized();
+			}
+			dojo.addOnLoad(init);
+			
+			function destroyChildren(){
+				accordion.destroyChildren();
+			}
+		</script>
+	</head>
+	<body style="padding: 50px;">
+
+		<h2>Accordion from markup:</h2>
+		<p>HTML before</p>
+		<p>HTML before</p>
+		<p>HTML before</p>
+
+		<div dojoType="AccordionContainer" duration="200" labelNodeClass="label" containerNodeClass="accBody"
+			style="float: left; margin-right: 30px;  width: 400px; height: 300px; overflow: hidden"
+		>
+		        <div dojoType="ContentPane" selected="true" label="Pane 1" style="overflow: scroll;"
+		        	onShow="dojo.debug('pane 1 shown');" onHide="dojo.debug('pane 1 hidden');" >
+				<h2>Pane 1 w/ tree</h2>
+						<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
+						
+						<div dojoType="TreeV3" listeners="controller" toggle="fade">
+		                    <div dojoType="TreeNodeV3" title="Item 1">
+		                        <div dojoType="TreeNodeV3" title="Item 1.1"><br/></div>
+		                        <div dojoType="TreeNodeV3" title="Item 1.2">
+		                            <div dojoType="TreeNodeV3" title="Item 1.2.1"></div>
+		                            <div dojoType="TreeNodeV3" title="Item 1.2.2"></div>
+		                        </div>
+		                        <div dojoType="TreeNodeV3" title="Item 1.3">
+		                            <div dojoType="TreeNodeV3" title="Item 1.3.1"></div>
+		                            <div dojoType="TreeNodeV3" title="Item 1.3.2"></div>
+		                        </div>
+		                        <div dojoType="TreeNodeV3" title="Item 1.4">
+		                            <div dojoType="TreeNodeV3" title="Item 1.4.1"></div>
+		                        </div>
+		                    </div>
+		                </div>
+		
+		                <p>
+		                        Nunc consequat nisi vitae quam. Suspendisse sed nunc. Proin
+		                        suscipit porta magna. Duis accumsan nunc in velit. Nam et nibh.
+		                        Nulla facilisi. Cras venenatis urna et magna. Aenean magna mauris,
+		                        bibendum sit amet, semper quis, aliquet nec, sapien.  Aliquam
+		                        aliquam odio quis erat. Etiam est nisi, condimentum non, lacinia
+		                        ac, vehicula laoreet, elit. Sed interdum augue sit amet quam
+		                        dapibus semper. Nulla facilisi. Pellentesque lobortis erat nec
+		                        quam.
+		                </p>
+		                <p>
+		                        Sed arcu magna, molestie at, fringilla in, sodales eu, elit.
+		                        Curabitur mattis lorem et est. Quisque et tortor. Integer bibendum
+		                        vulputate odio. Nam nec ipsum. Vestibulum mollis eros feugiat
+		                        augue. Integer fermentum odio lobortis odio. Nullam mollis nisl non
+		                        metus. Maecenas nec nunc eget pede ultrices blandit. Ut non purus
+		                        ut elit convallis eleifend. Fusce tincidunt, justo quis tempus
+		                        euismod, magna nulla viverra libero, sit amet lacinia odio diam id
+		                        risus. Ut varius viverra turpis. Morbi urna elit, imperdiet eu,
+		                        porta ac, pharetra sed, nisi. Etiam ante libero, ultrices ac,
+		                        faucibus ac, cursus sodales, nisl. Praesent nisl sem, fermentum eu,
+		                        consequat quis, varius interdum, nulla. Donec neque tortor,
+		                        sollicitudin sed, consequat nec, facilisis sit amet, orci. Aenean
+		                        ut eros sit amet ante pharetra interdum.
+		                </p>
+		        </div>
+
+			<!-- test lazy loading -->
+			<div dojoType="ContentPane" label="Pane 2" href="doc0.php" style="display:none;"></div>
+
+			<div dojoType="SplitContainer" label="Pane 3">
+		        <p dojoType="ContentPane">
+		                Sed arcu magna, molestie at, fringilla in, sodales eu, elit.
+		                Curabitur mattis lorem et est. Quisque et tortor. Integer bibendum
+		                vulputate odio. Nam nec ipsum. Vestibulum mollis eros feugiat
+		                augue. Integer fermentum odio lobortis odio. Nullam mollis nisl non
+		                metus. Maecenas nec nunc eget pede ultrices blandit. Ut non purus
+		                ut elit convallis eleifend. Fusce tincidunt, justo quis tempus
+		                euismod, magna nulla viverra libero, sit amet lacinia odio diam id
+		                risus. Ut varius viverra turpis. Morbi urna elit, imperdiet eu,
+		                porta ac, pharetra sed, nisi. Etiam ante libero, ultrices ac,
+		                faucibus ac, cursus sodales, nisl. Praesent nisl sem, fermentum eu,
+		                consequat quis, varius interdum, nulla. Donec neque tortor,
+		                sollicitudin sed, consequat nec, facilisis sit amet, orci. Aenean
+		                ut eros sit amet ante pharetra interdum.
+		        </p>
+		        <p dojoType="ContentPane">
+		                Sed arcu magna, molestie at, fringilla in, sodales eu, elit.
+		                Curabitur mattis lorem et est. Quisque et tortor. Integer bibendum
+		                vulputate odio. Nam nec ipsum. Vestibulum mollis eros feugiat
+		                augue. Integer fermentum odio lobortis odio. Nullam mollis nisl non
+		                metus. Maecenas nec nunc eget pede ultrices blandit. Ut non purus
+		                ut elit convallis eleifend. Fusce tincidunt, justo quis tempus
+		                euismod, magna nulla viverra libero, sit amet lacinia odio diam id
+		                risus. Ut varius viverra turpis. Morbi urna elit, imperdiet eu,
+		                porta ac, pharetra sed, nisi. Etiam ante libero, ultrices ac,
+		                faucibus ac, cursus sodales, nisl. Praesent nisl sem, fermentum eu,
+		                consequat quis, varius interdum, nulla. Donec neque tortor,
+		                sollicitudin sed, consequat nec, facilisis sit amet, orci. Aenean
+		                ut eros sit amet ante pharetra interdum.
+				</p>
+			</div>
+		</div>
+		<p style="clear: both;">HTML after</p>
+		<p>HTML after</p>
+		<p>HTML after</p>
+
+		<h2>Programatically created:</h2>
+		<button onclick="destroyChildren();">destroy children</button>
+		<br>
+		<div id="accordionShell" style="width: 400px; height: 400px;"></div>
+	</body>
+</html>

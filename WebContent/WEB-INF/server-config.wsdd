@@ -1,0 +1,124 @@
+<ns1:deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns1="http://xml.apache.org/axis/wsdd/">
+ <ns1:globalConfiguration>
+  <ns1:parameter name="sendMultiRefs" value="true"/>
+  <ns1:parameter name="disablePrettyXML" value="true"/>
+  <ns1:parameter name="adminPassword" value="admin"/>
+  <ns1:parameter name="attachments.Directory" value="/home/mrg/Development/eclipseWorkspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp2/wtpwebapps/WSDLRefactor/WEB-INF/attachments"/>
+  <ns1:parameter name="dotNetSoapEncFix" value="true"/>
+  <ns1:parameter name="enableNamespacePrefixOptimization" value="false"/>
+  <ns1:parameter name="sendXMLDeclaration" value="true"/>
+  <ns1:parameter name="sendXsiTypes" value="true"/>
+  <ns1:parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+  <ns1:requestFlow>
+   <ns1:handler type="java:org.apache.axis.handlers.JWSHandler">
+    <ns1:parameter name="scope" value="session"/>
+   </ns1:handler>
+   <ns1:handler type="java:org.apache.axis.handlers.JWSHandler">
+    <ns1:parameter name="scope" value="request"/>
+    <ns1:parameter name="extension" value=".jwr"/>
+   </ns1:handler>
+  </ns1:requestFlow>
+ </ns1:globalConfiguration>
+ <ns1:handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+ <ns1:handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+ <ns1:handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+ <ns1:service name="API" provider="java:RPC" style="document" use="literal">
+ 	<requestFlow>
+   		<handler type="java:br.org.scadabr.api.AuthenticationHandler"/>
+  	</requestFlow>
+  <ns1:parameter name="allowedMethods" value="*"/>
+  <ns1:parameter name="typeMappingVersion" value="1.2"/>
+  <ns1:parameter name="wsdlPortType" value="ScadaBRAPI"/>
+  <ns1:parameter name="className" value="br.org.scadabr.api.ScadaBRAPISkeleton"/>
+  <ns1:parameter name="wsdlServicePort" value="API"/>
+  <ns1:parameter name="schemaQualified" value="http://vo.api.scadabr.org.br,http://da.api.scadabr.org.br,http://constants.api.scadabr.org.br,http://config.api.scadabr.org.br,http://ae.api.scadabr.org.br,http://hda.api.scadabr.org.br"/>
+  <ns1:parameter name="wsdlTargetNamespace" value="http://scadabr.org.br/api/"/>
+  <ns1:parameter name="wsdlServiceElement" value="API"/>
+  <ns2:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns1:&gt;GetDataHistoryParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.hda.GetDataHistoryParams" xmlns:ns1="http://hda.api.scadabr.org.br" xmlns:ns2="http://xml.apache.org/axis/wsdd/"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns2:&gt;BrowseTagsParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.BrowseTagsParams" xmlns:ns2="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns3:AlarmLevel" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:br.org.scadabr.api.constants.AlarmLevel" xmlns:ns3="http://constants.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns4:&gt;GetEventsHistoryResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.GetEventsHistoryResponse" xmlns:ns4="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns5:EventsHistoryOptions" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.EventsHistoryOptions" xmlns:ns5="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns6:&gt;BrowseEventsResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.BrowseEventsResponse" xmlns:ns6="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns7:ModbusRegisterRange" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:br.org.scadabr.api.constants.ModbusRegisterRange" xmlns:ns7="http://constants.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns8:&gt;ConfigureDataPointParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.ConfigureDataPointParams" xmlns:ns8="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns9:&gt;BrowseDataPointsResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.BrowseDataPointsResponse" xmlns:ns9="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns10:&gt;AnnotateEventParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.AnnotateEventParams" xmlns:ns10="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns11:ReplyBase" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.ReplyBase" xmlns:ns11="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns12:WriteDataOptions" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.WriteDataOptions" xmlns:ns12="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns13:&gt;GetDataHistoryResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.hda.GetDataHistoryResponse" xmlns:ns13="http://hda.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns14:DataSourceType" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:br.org.scadabr.api.constants.DataSourceType" xmlns:ns14="http://constants.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns15:&gt;RemoveDataSourceResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.RemoveDataSourceResponse" xmlns:ns15="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns16:EventDefinition" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.EventDefinition" xmlns:ns16="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns17:EventNotification" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.EventNotification" xmlns:ns17="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns18:&gt;AckEventsParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.AckEventsParams" xmlns:ns18="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns19:BrowseEventsOptions" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.BrowseEventsOptions" xmlns:ns19="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns20:ReadDataOptions" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.ReadDataOptions" xmlns:ns20="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns21:&gt;WriteDataResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.WriteDataResponse" xmlns:ns21="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns22:&gt;WriteDataParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.WriteDataParams" xmlns:ns22="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns23:&gt;RemoveDataPointParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.RemoveDataPointParams" xmlns:ns23="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns24:ItemInfo" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.ItemInfo" xmlns:ns24="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns25:APIError" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.APIError" xmlns:ns25="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns26:&gt;ReadDataParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.ReadDataParams" xmlns:ns26="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns27:&gt;GetEventsHistoryParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.GetEventsHistoryParams" xmlns:ns27="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns28:ActiveEventsOptions" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.ActiveEventsOptions" xmlns:ns28="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns29:&gt;ConfigureDataPointResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.ConfigureDataPointResponse" xmlns:ns29="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns30:EventMessage" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.EventMessage" xmlns:ns30="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns31:&gt;BrowseDataSourcesResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.BrowseDataSourcesResponse" xmlns:ns31="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns32:&gt;BrowseEventsParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.BrowseEventsParams" xmlns:ns32="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns33:&gt;ConfigureDataSourceParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.ConfigureDataSourceParams" xmlns:ns33="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns34:&gt;RemoveDataPointResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.RemoveDataPointResponse" xmlns:ns34="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns35:AckEventsOptions" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.AckEventsOptions" xmlns:ns35="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns36:EventType" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:br.org.scadabr.api.constants.EventType" xmlns:ns36="http://constants.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns37:&gt;BrowseDataSourcesParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.BrowseDataSourcesParams" xmlns:ns37="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns38:QualityCode" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:br.org.scadabr.api.constants.QualityCode" xmlns:ns38="http://constants.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns39:&gt;ConfigureDataSourceResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.ConfigureDataSourceResponse" xmlns:ns39="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns40:BrowseTagsOptions" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.BrowseTagsOptions" xmlns:ns40="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns41:&gt;GetStatusResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.GetStatusResponse" xmlns:ns41="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns42:ServerStatus" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.ServerStatus" xmlns:ns42="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns43:&gt;AckEventsResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.AckEventsResponse" xmlns:ns43="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns44:ErrorCode" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:br.org.scadabr.api.constants.ErrorCode" xmlns:ns44="http://constants.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns45:ModbusIPConfig" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.ModbusIPConfig" xmlns:ns45="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns46:ItemValue" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.ItemValue" xmlns:ns46="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns47:&gt;RemoveDataSourceParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.RemoveDataSourceParams" xmlns:ns47="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns48:ModbusDataType" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:br.org.scadabr.api.constants.ModbusDataType" xmlns:ns48="http://constants.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns49:&gt;BrowseDataPointsParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.config.BrowseDataPointsParams" xmlns:ns49="http://config.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns50:DataType" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:br.org.scadabr.api.constants.DataType" xmlns:ns50="http://constants.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns51:&gt;BrowseTagsResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.BrowseTagsResponse" xmlns:ns51="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns52:ModbusPointConfig" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.ModbusPointConfig" xmlns:ns52="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns53:GetDataHistoryOptions" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.hda.GetDataHistoryOptions" xmlns:ns53="http://hda.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns54:&gt;ReadDataResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.da.ReadDataResponse" xmlns:ns54="http://da.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns55:ModbusSerialConfig" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.vo.ModbusSerialConfig" xmlns:ns55="http://vo.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns56:&gt;GetActiveEventsParams" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.GetActiveEventsParams" xmlns:ns56="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns57:ServerStateCode" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:br.org.scadabr.api.constants.ServerStateCode" xmlns:ns57="http://constants.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns58:&gt;GetActiveEventsResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.GetActiveEventsResponse" xmlns:ns58="http://ae.api.scadabr.org.br"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns59:&gt;AnnotateEventResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:br.org.scadabr.api.ae.AnnotateEventResponse" xmlns:ns59="http://ae.api.scadabr.org.br"/>
+ </ns1:service>
+ <ns1:service name="AdminService" provider="java:MSG">
+  <ns1:parameter name="allowedMethods" value="AdminService"/>
+  <ns1:parameter name="enableRemoteAdmin" value="false"/>
+  <ns1:parameter name="className" value="org.apache.axis.utils.Admin"/>
+  <ns1:namespace>http://xml.apache.org/axis/wsdd/</ns1:namespace>
+ </ns1:service>
+ <ns1:service name="Version" provider="java:RPC">
+  <ns1:parameter name="allowedMethods" value="getVersion"/>
+  <ns1:parameter name="className" value="org.apache.axis.Version"/>
+ </ns1:service>
+ <ns1:transport name="http">
+  <ns1:requestFlow>
+   <ns1:handler type="URLMapper"/>
+   <ns1:handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+  </ns1:requestFlow>
+  <ns1:parameter name="qs:list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <ns1:parameter name="qs:wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+  <ns1:parameter name="qs.list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <ns1:parameter name="qs.method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <ns1:parameter name="qs:method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <ns1:parameter name="qs.wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+ </ns1:transport>
+ <ns1:transport name="local">
+  <ns1:responseFlow>
+   <ns1:handler type="LocalResponder"/>
+  </ns1:responseFlow>
+ </ns1:transport>
+</ns1:deployment>

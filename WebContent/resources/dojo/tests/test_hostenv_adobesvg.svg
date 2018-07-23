@@ -1,0 +1,48 @@
+<?xml version='1.0'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
+	"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" 	
+	xmlns:xlink="http://www.w3.org/1999/xlink" onload="dojo.hostenv.modulesLoaded();">
+	<script type="text/ecmascript"><![CDATA[
+		// Dojo configuration
+		window.djConfig = { 
+			baseRelativePath: "../",
+			baseScriptUri: "../",
+			isDebug: true
+		};
+	]]></script>
+	<script type="text/ecmascript" xlink:href="../src/bootstrap1.js" />
+	<script type="text/ecmascript" xlink:href="../src/hostenv_adobesvg.js" />
+	<script type="text/ecmascript" xlink:href="../src/bootstrap2.js" />
+	<script type="text/ecmascript"><![CDATA[
+		try{
+			dojo.hostenv.loadModule("dojo.event.*");
+		}catch(e){
+			alert(e);
+		}
+		dojo.hostenv.modulesLoadedListeners.push(init);
+
+		function init(evt) {
+			dojo.event.connect(window, "bar", window, "baz");
+			dojo.hostenv.getText("../templates/tree.xml", treeLoader, true);
+		}
+
+		function treeLoader(result){
+			try {
+				dojo.debug(result);
+			} catch(err) {
+				alert(err.message);
+			}
+			bar(result);
+		}
+
+		function bar(result){ return; }
+
+		function baz(result){
+			dojo.debug("baz!: "+result.length);
+		}
+	]]></script>
+	<g>
+		<text x="20" y="20" style="stroke:none;fill:#000000;">Check your javascript log; the scripts were all loaded in the head.</text>
+	</g>
+</svg>

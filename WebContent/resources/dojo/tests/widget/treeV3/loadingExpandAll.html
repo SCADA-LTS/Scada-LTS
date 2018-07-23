@@ -1,0 +1,65 @@
+
+<html>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeLoadingControllerV3");
+	dojo.hostenv.writeIncludes();
+
+	function printOk() {
+		dojo.debug("OK");
+		for(var i=0;i<arguments.length;i++) {
+			dojo.debug(arguments[i]);
+		}
+
+	}
+	function printErr(err) {
+		dojo.debug("Error");
+		dojo.debugShallow(err);
+	}
+
+	
+	function expandAllEnd() {	
+		dojo.profile.end("expandAll + timeouts");
+		alert("expandAll finished");
+	}
+
+	function testExpandToLevel(level) {
+		var d = dojo.widget.byId('controller').expandToLevel(dojo.widget.byId('tree'),level);
+		d.addCallback(function() { alert('done') });
+	}
+</script>
+
+
+</head>
+<body>
+
+<h3>Dynamically loads nodes from server</h3>
+
+<input type="button" value="Expand to level 3" onClick="testExpandToLevel(2)"/>
+
+
+<br/>
+
+<div dojoType="TreeLoadingControllerV3" widgetId="controller" RpcUrl="rpc.php"></div>
+
+
+<div dojoType="TreeV3" widgetId="tree" listeners="controller">
+    <div dojoType="TreeNodeV3" title="Node 2" id="1">
+        <div dojoType="TreeNodeV3" title="Node 2.1"></div>
+        <div dojoType="TreeNodeV3" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNodeV3" title="Node 3" isFolder="true" id="3">
+    </div>	
+
+</div>
+
+</html>

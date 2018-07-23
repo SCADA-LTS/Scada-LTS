@@ -1,0 +1,40 @@
+<html>
+<head>
+<title>layout test</title>
+<script src="../../dojo.js" type="text/javascript"></script>
+<script type="text/javascript">
+   dojo.require("dojo.widget.ContentPane");
+   dojo.require("dojo.widget.LayoutContainer");
+</script>
+<style>div{ border: dotted blue 3px;} </style>
+</head>
+<body>
+<p>
+This tests layout w/multiple panes w/the same layout alignment
+(<a href="http://trac.dojotoolkit.org/ticket/808">Bug #808</a>)
+</p>
+The panes are added from the outside in, so the result should be:
+<ul>
+  <li>top 1</li>
+  <li>top 2</li>
+  <li>top 3</li>
+  <li>top 4</li>
+  <li>client</li>
+  <li>bottom 4</li>
+  <li>bottom 3</li>
+  <li>bottom 2</li>
+  <li>bottom 1</li>
+</ul>
+<div dojoType="LayoutContainer"  layoutChildPriority='top-bottom' style="width: 50%; height: 20em; border: 5px solid green;">
+   <div id="top1" dojoType="ContentPane" layoutAlign="top" executeScripts="true">top 1</div>
+   <div id="top2" dojoType="ContentPane" layoutAlign="top" executeScripts="true">top 2</div>
+   <div id="top3" dojoType="ContentPane" layoutAlign="top" executeScripts="true">top 3</div>
+   <div id="top4" dojoType="ContentPane" layoutAlign="top" executeScripts="true">top 4</div>
+   <div id="bottom1" dojoType="ContentPane" layoutAlign="bottom" executeScripts="true">bottom 1</div>
+   <div id="bottom2" dojoType="ContentPane" layoutAlign="bottom" executeScripts="true">bottom 2</div>
+   <div id="bottom3" dojoType="ContentPane" layoutAlign="bottom" executeScripts="true">bottom 3</div>
+   <div id="bottom4" dojoType="ContentPane" layoutAlign="bottom" executeScripts="true">bottom 4</div>
+   <div id="client" dojoType="ContentPane" layoutAlign="client" executeScripts="true">client area</div>
+</div>
+</body>
+</html> 

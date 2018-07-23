@@ -1,0 +1,50 @@
+<?xml version='1.0'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
+	"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" 	
+	xmlns:xlink="http://www.w3.org/1999/xlink" >
+	<style type="text/css">
+		<![CDATA[
+			ellipse, rect, circle {
+				fill: url(#buttonGradient);
+				stroke:black;
+				stroke-width:1;
+			}
+			text {
+				/*font-size: 12;*/
+			}
+		]]>
+	</style>
+
+	<defs>
+		<radialGradient id="buttonGradient" cx="0" cy="0" fx="0%" fy="0%"
+r="100%">
+			<stop offset="0%" style="stop-color:#555555"/>
+			<stop offset="100%" style="stop-color:#f0f0f0"/>
+		</radialGradient>
+	</defs>
+<!--	<g>
+		<ellipse cx='35' cy='15' rx='35' ry='15'/>
+		<text x="15" y="20">huzzah</text>
+	</g>
+-->
+<!--	<g style="font-size:24">
+		<ellipse cx='70' cy='30' rx='70' ry='30'/>
+		<text x="30" y="40">huzzah</text>
+	</g>
+-->	
+	<g>
+		<ellipse cx='70' cy='15' rx='70' ry='15'/>
+		<text x="30" y="20">huzzahhuzzah</text>
+	</g>
+
+	<g>
+		<rect x='110' y='45' width='70' height='30'/>
+		<text x="125" y="65">huzzah</text>
+	</g>
+	<g>
+		<circle cx='210' cy='60' r='23'/>
+		<text x="190" y="65">huzzah</text>
+	</g>
+</svg>
+

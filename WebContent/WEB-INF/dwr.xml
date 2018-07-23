@@ -1,0 +1,284 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+<!DOCTYPE dwr PUBLIC "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" "http://getahead.org/dwr/dwr20.dtd">
+
+<dwr>
+  <init>
+    <converter id="localizableMessage" class="com.serotonin.web.dwr.LocalizableMessageConverter"/>
+  </init>
+  
+  <allow>
+    <filter class="com.serotonin.mango.web.filter.ExceptionDetectionFilter"/>
+    <filter class="com.serotonin.web.dwr.LocalizationFilter">
+      <param name="localeResolverName">localeResolver</param>
+      <param name="bundleBaseName">messages</param>
+    </filter>
+  
+    <create creator="spring" javascript="CompoundEventsDwr">
+      <param name="beanName" value="CompoundEventsDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="CustomViewDwr">
+      <param name="beanName" value="CustomViewDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxMethodFilter"/>
+    </create>
+    <create creator="spring" javascript="DataPointDetailsDwr">
+      <param name="beanName" value="DataPointDetailsDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="DataPointEditDwr">
+      <param name="beanName" value="DataPointEditDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="DataSourceEditDwr">
+      <param name="beanName" value="DataSourceEditDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="DataSourceListDwr">
+      <param name="beanName" value="DataSourceListDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="EmportDwr">
+      <param name="beanName" value="EmportDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="EventHandlersDwr">
+      <param name="beanName" value="EventHandlersDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="EventsDwr">
+      <param name="beanName" value="EventsDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="MailingListsDwr">
+      <param name="beanName" value="MailingListsDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="MaintenanceEventsDwr">
+      <param name="beanName" value="MaintenanceEventsDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="MiscDwr">
+      <param name="beanName" value="MiscDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxMethodFilter"/>
+    </create>
+    <create creator="spring" javascript="PointHierarchyDwr">
+      <param name="beanName" value="PointHierarchyDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="PointLinksDwr">
+      <param name="beanName" value="PointLinksDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="PublisherEditDwr">
+      <param name="beanName" value="PublisherEditDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="PublisherListDwr">
+      <param name="beanName" value="PublisherListDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="ReportsDwr">
+      <param name="beanName" value="ReportsDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="ScheduledEventsDwr">
+      <param name="beanName" value="ScheduledEventsDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="SystemSettingsDwr">
+      <param name="beanName" value="SystemSettingsDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="UsersDwr">
+      <param name="beanName" value="UsersDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="ViewDwr">
+      <param name="beanName" value="ViewDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxMethodFilter"/>
+    </create>
+    <create creator="spring" javascript="WatchListDwr">
+      <param name="beanName" value="WatchListDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="ScriptsDwr">
+      <param name="beanName" value="ScriptsDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    <create creator="spring" javascript="UsersProfilesDwr">
+      <param name="beanName" value="UsersProfilesDwr"/>
+      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
+    </create>
+    
+    <convert converter="bean" match="br.org.scadabr.OPCItem" />
+    <convert converter="bean" match="br.org.scadabr.api.vo.*" />
+    
+    <convert converter="bean" match="com.serotonin.db.IntValuePair"/>
+    <convert converter="bean" match="com.serotonin.db.KeyValuePair"/>
+    
+    <convert converter="bean" match="com.serotonin.mango.rt.dataSource.http.HttpReceiverPointSample"/>
+    <convert converter="bean" match="com.serotonin.mango.rt.dataSource.onewire.OneWireContainerInfo"/>
+    <convert converter="bean" match="com.serotonin.mango.rt.dataSource.onewire.OneWireContainerAttribute"/>
+    
+    <convert converter="bean" match="com.serotonin.mango.util.IntMessagePair"/>
+    
+    <convert converter="bean" match="com.serotonin.mango.view.chart.*"/>
+    <convert converter="bean" match="com.serotonin.mango.view.component.*"/>
+    <convert converter="bean" match="br.org.scadabr.view.component.*"/>
+    <convert converter="bean" match="com.serotonin.mango.view.text.*"/>
+    <convert converter="bean" match="com.serotonin.mango.view.DynamicImage"/>
+    <convert converter="bean" match="com.serotonin.mango.view.ImageSet"/>
+    <convert converter="bean" match="com.serotonin.mango.view.ImplDefinition"/>
+    <convert converter="bean" match="com.serotonin.mango.view.ShareUser"/>
+    
+    <convert converter="bean" match="com.serotonin.mango.vo.bean.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO">
+      <param name="exclude" value="dataPointSaveHandler"/>
+    </convert>
+    <convert converter="bean" match="com.serotonin.mango.vo.dataSource.DataSourceVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.dataSource.galil.PointTypeVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.dataSource.virtual.*"/>
+    
+    <convert converter="bean" match="com.serotonin.mango.vo.event.handlers.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.event.CompoundEventDetectorVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.event.EventTypeVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.event.MaintenanceEventVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.event.PointEventDetectorVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.event.ScheduledEventVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.hierarchy.PointFolder"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.link.PointLinkVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.mailingList.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.permission.DataPointAccess"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.publish.PublishedPointVO"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.publish.PublisherVO">
+      <param name="exclude" value="type,eventCodes"/>
+    </convert>
+    <convert converter="bean" match="com.serotonin.mango.vo.publish.httpSender.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.publish.pachube.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.publish.persistent.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.report.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.DataPointVO">
+      <param name="include" value="id,xid,name,extendedName,dataSourceId,enabled,dataTypeMessage,pointLocator"/>
+    </convert>
+    <convert converter="bean" match="com.serotonin.mango.vo.User">
+      <param name="include" value="id,username,email,phone,admin,disabled,receiveAlarmEmails,receiveOwnAuditEvents,dataSourcePermissions,dataPointPermissions, userProfile"/>
+    </convert>
+    <convert converter="bean" match="br.org.scadabr.vo.permission.WatchListAccess">
+     	<param name="include" value="id,permission"/>
+    </convert>
+    <convert converter="bean" match="br.org.scadabr.vo.permission.ViewAccess">
+     	<param name="include" value="id,permission"/>
+    </convert>
+    <convert converter="bean" match="com.serotonin.mango.view.View">
+     	<param name="include" value="id,name"/>
+    </convert>
+    <convert converter="bean" match="br.org.scadabr.vo.usersProfiles.UsersProfileVO">
+      <param name="include" value="id,name,dataSourcePermissions,dataPointPermissions, watchlistPermissions, viewPermissions"/>
+    </convert>
+    <convert converter="bean" match="com.serotonin.mango.vo.WatchList">
+      <param name="include" value="id,name"/>
+    </convert>
+    <convert converter="bean" match="com.serotonin.mango.vo.UserComment"/>
+    
+    <convert converter="bean" match="com.serotonin.mango.web.dwr.beans.*"/>
+    <convert converter="bean" match="com.serotonin.mango.web.dwr.longPoll.LongPollRequest"/>
+    <convert converter="bean" match="com.serotonin.mango.web.mvc.form.PointViewForm"/>
+    
+    <convert converter="bean" match="com.serotonin.web.dwr.DwrMessageI18n"/>
+    <convert converter="bean" match="com.serotonin.web.dwr.DwrResponseI18n"/>
+    
+    <convert converter="localizableMessage" match="com.serotonin.web.i18n.LocalizableMessage"/>
+    <convert converter="bean" match="br.org.scadabr.vo.scripting.ScriptVO">
+    	<param name="exclude" value="type"/>
+    </convert>
+     <!-- MBus4J stuff-->
+    <convert converter="bean" match="net.sf.mbus4j.Connection">
+      <param name="include" value="bitPerSecond,responseTimeOutOffset"/><!--copy to child classes-->
+    </convert>
+    <convert converter="bean" match="net.sf.mbus4j.SerialPortConnection" javascript="SerialDirectConnection"/>
+    <convert converter="bean" match="net.sf.mbus4j.TcpIpConnection" javascript="TcpIpConnection">
+      <param name="include" value="bitPerSecond,responseTimeOutOffset,host,port"/>
+    </convert>
+    <convert converter="bean" match="com.serotonin.mango.vo.dataSource.mbus.MBusSearchByAddressing"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.dataSource.mbus.PrimaryAddressingSearch" javascript="PrimaryAddressingSearch"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.dataSource.mbus.SecondaryAddressingSearch" javascript="SecondaryAddressingSearch"/>
+    <convert converter="enum" match="com.serotonin.dataframes.MBusMedium" />
+    <convert converter="enum" match="com.serotonin.MBusAddressing" />
+    
+    <!-- End MBus4J stuff-->
+    
+    <!-- EnhancedImageChart -->
+    <convert converter="enum" match="com.serotonin.mango.view.component.EnhancedImageChartType"/>
+    <convert converter="enum" match="com.serotonin.mango.view.component.EnhancedPointLineType"/>
+    <!-- End EnhancedImageChart -->
+
+    <!-- Fhz4J stuff- ->
+    <convert converter="bean" match="net.sf.fhz4j.FhzProperty" />
+    <convert converter="enum" match="net.sf.fhz4j.fht.FhtProperty" />
+    <convert converter="enum" match="net.sf.fhz4j.FhzProtocol" />
+    <convert converter="enum" match="net.sf.fhz4j.FhzDeviceTypes" />
+    <!- - Fhz4J stuff-->
+
+
+  
+    <convert converter="exception" match="java.lang.Exception">
+      <param name="include" value="message"/>
+    </convert>
+  </allow>
+  <signatures>
+    <![CDATA[
+      import java.util.List;
+      
+      import com.serotonin.db.IntValuePair;
+      import com.serotonin.mango.web.dwr.DataPointEditDwr;
+      import com.serotonin.mango.view.text.RangeValue;
+      import com.serotonin.mango.view.text.MultistateValue;
+      import com.serotonin.mango.vo.permission.DataPointAccess;
+      
+      DataPointEditDwr.setRangeRenderer(String, List<RangeValue>);
+      DataPointEditDwr.setMultistateRenderer(List<MultistateValue>);
+      
+      import com.serotonin.mango.web.dwr.MailingListsDwr;
+      import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
+      MailingListsDwr.saveMailingList(int, String, String, List<RecipientListEntryBean>, List<Integer>);
+      MailingListsDwr.sendTestEmail(int, String, List<RecipientListEntryBean>);
+      
+      import com.serotonin.mango.web.dwr.MiscDwr;
+      MiscDwr.sendTestEmail(List<RecipientListEntryBean>, String, String);
+      
+      import com.serotonin.mango.web.dwr.UsersDwr;
+      import br.org.scadabr.web.dwr.UsersProfilesDwr
+      UsersDwr.saveUserAdmin(int, String, String, String, String, boolean, boolean, int, boolean, List<Integer>, List<DataPointAccess>, int usersProfileId);
+      
+      import br.org.scadabr.vo.permission.WatchListAccess;
+      import br.org.scadabr.vo.permission.ViewAccess;
+      import com.serotonin.mango.view.View;
+      UsersProfilesDwr.saveUserAdmin(int, String, List<Integer>, List<DataPointAccess>, List<WatchListAccess>, List<ViewAccess>);
+      
+      import com.serotonin.mango.vo.hierarchy.PointFolder;
+      PointFolder.setPoints(List<IntValuePair>);
+      PointFolder.setSubfolders(List<PointFolder>);
+      
+      import com.serotonin.mango.web.dwr.beans.IntegerPair;
+      SystemSettingsDwr.saveSystemEventAlarmLevels(List<IntegerPair>);
+    ]]>
+  </signatures>
+</dwr>

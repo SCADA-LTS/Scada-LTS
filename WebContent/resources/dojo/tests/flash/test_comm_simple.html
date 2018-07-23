@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<html>
+
+<head>
+	<title>dojo.flash.comm Simple Test</title>
+
+	<script type="text/javascript">
+		var djConfig = { isDebug: true };
+	</script>
+	
+	<script type="text/javascript" src="../../dojo.js"></script>
+
+	<script language="JavaScript">
+		dojo.require("dojo.event.*");
+		dojo.require("dojo.flash");
+		
+		dojo.event.connect(dojo.flash, "loaded", "flashLoaded");
+		dojo.flash.setSwf({flash6: "resources/HelloWorld_version6.swf",
+										   flash8: "resources/HelloWorld_version8.swf",
+											 visible: false});
+		
+		function flashLoaded(){
+			dojo.debug("Flash is loaded");
+			var results = dojo.flash.comm.sayHello("Did I leave the iron on?");
+			dojo.debug(results);
+			results = dojo.flash.comm.sayHello("Did I leave the iron on2?");
+			dojo.debug(results);
+			results = dojo.flash.comm.sayHello("Did I leave the iron on3?");
+			dojo.debug(results);
+		}
+		
+		function javascriptSayHello(msg){
+			dojo.debug("javascriptSayHello");
+			
+			return "Hello from JavaScript, msg=" + msg;
+		}
+	</script>	
+</head>
+
+<body>
+	<h1>dojo.flash.comm Simple Test</h1>
+</body>
+
+</html>

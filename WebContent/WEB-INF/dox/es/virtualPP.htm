@@ -1,0 +1,92 @@
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<h1>Descripci&oacute;n General</h1>
+<p>Los puntos dentro de una fuente de datos virtual son generados sin ninguna influencia externa, ya sea de forma aleatoria o determinista.
+ Puede crearse cualquier tipo de dato soportado, y seg&uacute;n el tipo habr&aacute;n un n&uacute;mero de opciones disponibles.</p>
+
+<p>
+  Los atributos comunes a todos los puntos virtuales son:
+</p>
+<ul>
+  <li><b>Nombre</b>: es el nombre que ser&aacute; utilizado para identificar el punto dentro de la lista de puntos.</li>
+  <li><b>Modificable</b>: indica si el valor del punto puede ser ajustado manualmente o no.</li>
+  <li><b>Tipo de Dato</b>: el tipo de dato del punto. Ver m&aacute;s abajo para m&aacute;s detalles.</li>
+  <li><b>Tipo de cambio</b>: algoritmo que determina el tipo de cambio del punto. Ver m&aacute;s abajo para m&aacute;s detalles.</li>
+  <li><b>Valor de inicio</b>: es el valor asignado al estado inicial del punto cuando se inicia la fuente de datos.</li>
+</ul>
+
+<h1>Puntos Binarios</h1>
+<p>Los puntos Binarios tienen solamente dos posibles estados: encendido o apagado, on o off, true o false, si o no, etc. Hay tres tipos de cambios disponibles:</p>
+<ul>
+  <li><b>Alternado</b>: el estado del punto cambia de forma alterna entre cada uno de sus dos valores en tiempo de ejecuci&oacute;n</li>
+  <li><b>Sin cambio</b>: el punto mantiene el valor de su estado sin cambios autom&aacute;ticos (es un punto manualmente configurable)</li>
+  <li><b>Aleatorio</b>: el punto cambia el valor de su estado de forma aleatoria (s&oacute;lo cambia en tiempo de ejecuci&oacute;n)</li>
+</ul>
+
+<h1>Puntos de Estado M&uacute;ltiple</h1>
+<p>Los puntos de estado m&uacute;ltiple tienen uno de m&uacute;ltiples estados, como encendido, apagado, o deshabilitado. Para todos cambios de sus posibles valores
+ debe utilizarse el control <b>Valores</b>. Hay tres tipos de cambios disponibles</p>
+<ul>
+  <li><b>Incremental</b>: el punto pasar&aacute; por cada uno de sus valores de estado de forma secuencial. Si est&aacute; activada la casilla <b>Repetir</b>,
+ el punto regresar&aacute; al valor inicial al llegar al &uacute;ltimo estado. Si la opci&oacute;n Repetir est&aacute; desactivada, el punto tomara los valores de los estados
+ de forma reversa antes de llegar al valor inicial.</li>
+  <li><b>Sin cambio</b>: el punto mantiene el valor de su estado sin cambios autom&aacute;ticos (es un punto manualmente configurable)</li>
+  <li><b>Aleatorio</b>: el punto cambia el valor de su estado de forma aleatoria (s&oacute;lo cambia en tiempo de ejecuci&oacute;n)</li>
+</ul>
+
+<h1>Puntos Num&eacute;ricos</h1>
+<p>Los puntos num&eacute;ricos representan valores anal&oacute;gicos, y pueden tomar valores de n&uacute;meros reales hasta de 64-bit de punto flotante. Hay disponibles cinco tipos de cambios:</p>
+<ul>
+  <li><b>Browniano</b>: son generados en forma browniana, esto significa que el valor del punto cambiar&aacute; generando de forma aleatoria su diferencial con el valor previo.
+ Los l&iacute;mites de los valores m&aacute;ximos y m&iacute;nimos pueden ser configura con con las casillas <b>M&aacute;ximo</b> y <b>M&iacute;nimo</b> respectivamente. El valor del <b>Cambio M&aacute;ximo</b>
+ determina cual es el valor diferencial m&aacute;ximo que puede ser generado aleatoriamente.</li>
+  <li><b>Incremental</b>: el valor del punto variar&aacute; seg&uacute;n lo configurado en la casilla <b>Cambio</b> en tiempo de ejecuci&oacute;n. El valor del cambio puede ser negativo.
+ Los l&iacute;mites de los valores m&aacute;ximos y m&iacute;nimos pueden ser configura con con las casillas <b>M&aacute;ximo</b> y <b>M&iacute;nimo</b> respectivamente. Si est&aacute; activada la casilla <b>Repetir</b>,
+ el punto regresar&aacute; al valor inicial al llegar al l&iacute;mite opuesto. Si la opci&oacute;n Repetir est&aacute; desactivada, el punto tomara valores negativos a lo establecido en Cambio
+ al llegar al l&iacute;mite establecido.</li>
+  <li><b>Sin cambio</b>: el punto mantiene el valor de su estado sin cambios autom&aacute;ticos (es un punto manualmente configurable)</li>
+  <li><b>Aleatorio</b>: el punto tomar&aacute; valores aleatorios (uniformemente distribuidos) en los los l&iacute;mites m&aacute;ximos y m&iacute;nimo (incluy&eacute;ndolos).</li>
+  <li><b>Atractor</b>: el valor del punto se aproximar&aacute; asint&oacute;ticamente al valor de otro punto del sistema. El <b>Cambio M&aacute;ximo</b> determina
+ la variaci&oacute;n m&aacute;xima que puede realizar para alcanzar el valor. Puede utilizar el valor de <b>Volatilidad</b> para representar fluctuaciones aleatorias en el punto.</li>
+</ul>
+
+<h1>Puntos Alfanum&eacute;ricos</h1>
+<p>Los puntos alfanum&eacute;ricos son cadenas de caracteres, y por lo tanto no est&aacute;n sujetos a cambios utilizando algoritmos. Por esta caracter&iacute;stica,
+ solamente hay un &uacute;nico tipo de cambio: <b>Sin Cambio</b>.</p>

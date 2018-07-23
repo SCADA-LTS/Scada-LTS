@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+        "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">	
+	<head>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../dojo.js"></script>
+		<script>
+			dojo.require("dojo.docs");
+			dojo.require("dojo.widget.TabContainer");
+			dojo.require("dojo.widget.ContentPane");
+			dojo.require("dojo.json");
+			dojo.addOnLoad(function(){
+				djConfig.debugContainerId = "function_names";
+				dojo.docs.functionNames(0, functionNames);
+			});
+			function functionNames(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				for(var i = 0, fn; fn = data[i]; i++){
+					dojo.debug(dojo.json.serialize(fn));
+				}
+				djConfig.debugContainerId = "fnpkg";
+				dojo.docs.functionPackages(1, "dojo.lang.mixin", functionPackages);
+			}
+			function functionPackages(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				dojo.debug(dojo.json.serialize(data));
+				djConfig.debugContainerId = "pkgmeta";
+				dojo.docs.getPkgMeta(2, "dojo.lang.common", getPkgMeta);
+			}
+			function getPkgMeta(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				for(var key in data){
+					dojo.debug(key + ": " + dojo.json.serialize(data[key]));
+				}
+				djConfig.debugContainerId = "pkgdoc";
+				dojo.docs.getPkgDoc(3, "dojo.lang.common", getPkgDoc);
+			}
+			function getPkgDoc(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				dojo.debug(data.path);
+				dojo.debug(data.description);
+				djConfig.debugContainerId = "pkginfo";
+				dojo.docs.getPkgInfo(4, "dojo.doc", getPkgInfo);
+			}
+			function getPkgInfo(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				for(var key in data){
+					dojo.debug(key + ": " + dojo.json.serialize(data[key]));
+				}
+				djConfig.debugContainerId = "fnmeta";
+				dojo.docs.getMeta(5, "dojo.lang.common", "dojo.lang.mixin", getMeta);
+			}
+			function getMeta(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				dojo.debug(dojo.json.serialize(data));
+				dojo.debug("");
+				dojo.debug("=== WITHOUT PACKAGE ===");
+				dojo.docs.getMeta(6, "dojo.lang.mixin", getMeta2);
+			}
+			function getMeta2(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				dojo.debug(dojo.json.serialize(data));
+				djConfig.debugContainerId = "fndoc";
+				dojo.docs.getDoc(7, "dojo.lang.mixin", getDoc);
+			}
+			function getDoc(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				dojo.debug(dojo.json.serialize(data));
+				djConfig.debugContainerId = "fninfo";
+				dojo.docs.getInfo(8, "dojo.lang.mixin", getInfo);
+			}
+			function getInfo(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				dojo.debug(dojo.json.serialize(data));
+				djConfig.debugContainerId = "fnsrc";
+				dojo.docs.getSrc(9, "dojo.lang.mixin", getSrc);
+			}
+			function getSrc(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				dojo.debug(data);
+			}
+		</script>
+	</head>
+	<body>
+		<div dojoType="tabcontainer" style="width: 100%; height: 20em">
+			<div dojoType="contentpane" label="Function Names">
+				<div id="function_names" style="padding: 15px;">
+					<p>This should return an array of function pairs</p>
+				</div>
+			</div>
+			<div dojoType="contentpane" label="Packages Containing Function">
+				<div id="fnpkg" style="padding: 15px;">
+					<p>Find a package for a given function</p>
+				</div>
+			</div>
+			<div dojoType="contentpane" label="Package Meta">
+				<div id="pkgmeta" style="padding: 15px;">
+					<p>Should return a list of all functions with their summaries and requires</p>
+				</div>
+			</div>
+			<div dojoType="contentpane" label="Package Doc">
+				<div id="pkgdoc" style="padding: 15px;">
+					<p>This is the wiki-level package documentation</p>
+				</div>
+			</div>
+			<div dojoType="contentpane" label="Package Info">
+				<div id="pkginfo" style="padding: 15px;">
+					<p>This is the combination of meta and doc</p>
+				</div>
+			</div>
+			<div dojoType="contentpane" label="Function Meta">
+				<div id="fnmeta" style="padding: 15px;">
+					<p>Should return basic meta for a given function</p>
+				</div>
+			</div>
+			<div dojoType="contentpane" label="Function Doc">
+				<div id="fndoc" style="padding: 15px;">
+					<p>This is the wiki-level function documentation</p>
+				</div>
+			</div>
+			<div dojoType="contentpane" label="Function Info">
+				<div id="fninfo" style="padding: 15px;">
+					<p>This is the combination of meta and doc</p>
+				</div>
+			</div>
+			<div dojoType="contentpane" label="Function Source">
+				<div style="padding: 15px;">
+					<p>This is the source of a given function</p>
+					<pre id="fnsrc"></pre>
+				</div>
+		</div>
+	</body>
+</html>

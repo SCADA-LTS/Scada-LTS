@@ -1,0 +1,25 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<p>Атрибуты, используемые для конфигурирования точек источника данных SQL, немного различаются в зависимости от способа построения запроса – по строкам или по столбцам. В обоих случаях поле Тип данных определяет <strong>типа данных</strong> точки ScadaBR. Значения из результирующего множества автоматически преобразовываются в заданный тип.</p>
+
+<p>Для запросов по строкам значение<strong> Идентификатора строки</strong> сопоставляется с первым столбцом результирующего множества, чтобы найти строку или строки, которые содержат значения (во втором столбце) для данной точки. Время значения берется из третьего столбца, если он существует. </p>
+<p>Для запросов по столбцам значение <strong>Имени столбца</strong> соответствует имени столбца в результирующем множестве данных, из которого извлекается значение объекта. Столбец<strong> Времени значения </strong>(необязательный) определяет столбец, который используется для хранения времени значения. Обратите внимание, что группа объектов может иметь одинаковое время.</p>
+<h1>Выражения для обновления</h1>
+<p>По желанию на точку можно установить Выражение для обновления, которое будет определять, каким образом в базе данных устанавливается значение. Это стандартное SQL выражение, использующее оператор &quot;update&quot; (обновить) или &quot;insert&quot; вставить. Если это выражение не задано, объект рассматривается как неустанавливаемый.</p>

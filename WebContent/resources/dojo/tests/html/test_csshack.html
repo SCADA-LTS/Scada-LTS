@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html class="some_classes_here before-hand">
+<head>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<style type="text/css">
+.hello {
+	display: none;
+}
+.b_ie55 #hello_ie55 {
+	display: inline;
+}
+.b_ie6 #hello_ie6 {
+	display: inline;
+}
+.b_ie7 #hello_ie7 {
+	display: inline;
+}
+.b_gecko #hello_gecko {
+	display: inline;
+}
+.b_safari #hello_safari {
+	display: inline;
+}
+.b_khtml #hello_khtml {
+	display: inline;
+}
+.b_opera #hello_opera {
+	display: inline;
+}
+
+</style>
+<script type="text/javascript">
+	dojo.require('dojo.html.csshack');
+</script>
+
+</head>
+<body>
+
+<h1 class="hello" id="hello_ie55">Hello IE5.5</h1>
+<h1 class="hello" id="hello_ie6">Hello IE6</h1>
+<h1 class="hello" id="hello_ie7">Hello IE7</h1>
+<h1 class="hello" id="hello_gecko">Hello Mozilla gecko engine!</h1>
+<h1 class="hello" id="hello_safari">Hiya Mac</h1>
+<h1 class="hello" id="hello_khtml">Hello KHTML/Safari</h1>
+<h1 class="hello" id="hello_opera">Hello Opera</h1>
+<h2 class="hello" id="hello_quirks">You seem to be in quirks mode (for this browser)</h2>
+<br>
+
+<p id="pid">[replaced on load]</p>
+<script>
+	dojo.byId('pid').innerHTML = 'HTML.className = "' + document.documentElement.className + '"';
+</script>
+<p style="font-size:smaller">Note that the html tag declared in this file was: &lt;html class="some_classes_here before-hand"&gt;
+</p>
+
+</body>
+</html>

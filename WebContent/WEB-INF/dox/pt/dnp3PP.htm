@@ -1,0 +1,49 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Configura&ccedil;&atilde;o</h1>
+<p>Você pode adicionar um &uacute;nico ponto, definindo seu &iacute;ndice,
+ou <b>Adicionar v&aacute;rios datapoints</b> definindo os &iacute;ndices m&iacute;nimo e
+m&aacute;ximo.</p>
+<h1>Comandos</h1>
+<p>Para pontos do tipo OUTPUT, devem ser definidos quais os par&acirc;metros
+do comando que ser&atilde;o utilizados como padr&atilde;o caso n&atilde;o sejam especificados
+na hora da execu&ccedil;&atilde;o do comando. Para pontos do tipo BYNARY OUTPUT, os
+comandos v&aacute;lidos (que devem ser executados na watchlist no &iacute;cone
+apropriado, como nos outros datasources) s&atilde;o os seguintes:</p>
+<p>pon/poff -> pulse on/off</p>
+<p>lon/loff -> latch on/off</p>
+<p>close/trip -> close/trip</p>
+<p>Todos os comandos podem ser seguidos por mais dois par&acirc;metros,
+que ser&atilde;o o TIME ON e o TIME OFF do comando em milissegundos. Exemplo:
+pon,500,200</p>
+<p>Pode-se tamb&eacute;m entrar apenas com "1", "0", "true" ou "false".
+Neste caso, o comando enviado ser&aacute; o comando padr&atilde;o (especificado para o
+ponto quando cadastrado).</p>
+<h1>Exemplo</h1>
+<p>Ponto bin&aacute;rio cadastrado como CLOSE/TRIP, TIME ON 1000 e TIME OFF
+0</p>
+<p>1 -> o sistema enviar&aacute; o comando CLOSE com TIME ON 1000 e TIME
+OFF 0</p>
+<p>0 -> o sistema enviar&aacute; o comando TRIP com TIME ON 1000 e TIME OFF
+0</p>
+<p>pon -> o sistema enviar&aacute; o comando PULSE ON com TIME ON 1000 e
+TIME OFF 0</p>
+<p>poff,300,0 -> o sistema enviar&aacute; o comando PULSE OFF com TIME ON
+300 e TIME OFF 0</p>

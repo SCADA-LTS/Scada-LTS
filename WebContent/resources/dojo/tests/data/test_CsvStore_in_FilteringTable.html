@@ -1,0 +1,49 @@
+<!--
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Test using CsvStore to load FilteringTable</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+	<script type="text/javascript">
+		var djConfig = {
+			isDebug: true,
+			baseScriptUri: "../../", //added for xdomain testing.
+			debugAtAllCosts: true
+		};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.registerModulePath("tests", "tests");  // relative to dojo.js
+		dojo.require("tests.data.displayFilteringTable");
+		dojo.require("tests.data.displayViaDojoDebug");
+		dojo.require("dojo.data.CsvStore");
+		dojo.hostenv.writeIncludes();
+	</script>
+	<link rel="stylesheet" type="text/css" href="filteringTableStyles.css" />
+	<script type="text/javascript">
+		function loadFilteringTable() {
+			var csvStore = new dojo.data.CsvStore({queryUrl:"movies.csv"});
+			var tableElement = dojo.byId("content");
+			var query = null;
+			tests.data.displayFilteringTable(csvStore, query, tableElement);
+		}
+		function displayItemsAsText() {
+			var csvStore = new dojo.data.CsvStore({queryUrl:"movies.csv"});
+			var query = null;
+			tests.data.displayViaDojoDebug(csvStore, query);
+		}
+		
+		dojo.addOnLoad(loadFilteringTable);
+		dojo.addOnLoad(displayItemsAsText);
+	</script>
+</head>
+<body>
+	<h2>Test CsvStore in a FilteringTable</h2>
+	<table id="content" style="width: 500px; height: 100px;"></table>
+	<p>&nbsp;</p>
+	<h2>dojo.debug output</h2>
+</body>
+</html>

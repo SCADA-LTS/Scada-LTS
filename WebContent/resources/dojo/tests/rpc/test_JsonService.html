@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>Dojo Testing Script</title>
+
+<script type="text/javascript">
+        var djConfig = {isDebug: true,debugContainerId: "dojoDebug" };
+        //djConfig.debugAtAllCosts = true;
+</script>
+
+<script type="text/javascript" src="../../dojo.js"></script>
+
+<script type="text/javascript">
+	dojo.require("dojo.debug.Firebug");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Button");
+	dojo.require("dojo.rpc.JsonService");
+	dojo.require("dojo.rpc.Deferred");
+</script>
+
+</head>
+
+
+<body>
+
+<div id="example">
+	<h2> How to initialize a JSON-RPC Service: </h2>
+	<pre>
+	//You need the package of course
+	dojo.require("dojo.rpc.JsonService");
+
+	// Create a callback function to handle the results generated
+	// by a method A second optional parameter to your call back
+	// will allow the callback to use the submission Id of the 
+	// json-rpc request
+
+        function contentCallBack(result) {
+	 	dojo.debug("in contentCallBack");
+                var handlerNode = document.getElementById("content");
+                handlerNode.innerHTML = result;
+        }
+
+	function contentErrBack(obj) {
+		dojo.debug(obj);
+	}
+
+	// Create a new object
+        var testClass = new dojo.rpc.JsonService("testClass.smd");
+	</pre>
+</div>
+
+<div id="actions">
+	<h2>Push these buttons to execute code in the button.</h2>
+	<h3>Results will be returned below under "Returned Content"</h3>
+
+	<h4>This button will perform a simple echo</h4>
+	<div id="myecho" dojoType="Button" onClick='testClass.myecho("blah").addCallbacks(contentCallBack,contentErrBack);'>testClass.myecho("blah").addCallbacks(contentCallBack,contentErrBack); </div><br>
+	<h4>This Button will simply call the function contentB() </h4>
+	<div id="contentB" dojoType="Button" onClick='testClass.contentB().addCallbacks(contentCallBack,contentErrBack);'>testClass.contentB().addCallbacks(contentCallBack,contentErrBack);</div><br>
+	<h4>This button will call add() to add two numbers together</h4>
+	<div id="add" dojoType="Button" onClick='testClass.add(5,6).addCallbacks(contentCallBack,contentErrBack);'>testClass.add(5,6).addCallbacks(contentCallBack,contentErrBack);</div><br>
+	<h4>This button will make a call that returns an RPC error (as opposed to a transport error)</h4>
+	<div id="triggerRpcError" dojoType="Button" onClick='testClass.triggerRpcError().addCallbacks(contentCallBack,contentErrBack);'>testClass.triggerRpcError().addCallbacks(contentCallBack,contentErrBack);</div><br>
+	<h4>This button will make a call that returns a transport error</h4>
+	<div id="triggerTransportError" dojoType="Button" onClick='erroringClass.content().addCallbacks(contentCallBack,contentErrBack);'>erroringClass.content().addCallbacks(contentCallBack,contentErrBack);</div><br>
+</div>
+<br>
+
+<br>
+<h2>Returned Content:</h2>
+<div id="ReturnedContent">
+None.
+</div>
+
+<div id="dojoDebug">
+<h2>Debug Log:</h2>      
+</div>
+
+<script type="text/javascript">
+
+	function contentCallBack(result) {
+		var handlerNode = document.getElementById("ReturnedContent");
+		handlerNode.innerHTML = "<p>" + result + "</p>" ;
+	}
+
+	function contentErrBack(obj) {
+		dojo.debug(obj);
+	}
+
+	dojo.addOnLoad(function(){
+		testClass = new dojo.rpc.JsonService("testClass.smd");
+		erroringClass=new dojo.rpc.JsonService("erroringClass.smd");
+	});
+</script>
+</head>
+</html>

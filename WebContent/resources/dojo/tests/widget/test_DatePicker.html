@@ -1,0 +1,105 @@
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+<title>Dojo Date Picker Widget Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true,
+					extraLocale: ['en-us', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx']
+	};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.DatePicker");
+	dojo.require("dojo.debug.console");
+	dojo.addOnLoad(init);
+	var formDp, dpInput, setDate, dp;
+	function init(){
+		formDp = dojo.widget.createWidget("DatePicker", {value: '2006-10-31'}, dojo.byId("dpNode")); 
+		dpInput = dojo.byId('dpInput');
+		setDate = dojo.byId('setDate');
+		dojo.event.connect(formDp,'onValueChanged','setDpInput');
+		dojo.event.connect(setDate,'onclick','updateDp');
+	};
+	function setDpInput(){
+		dpInput.value = formDp.getValue();
+	};
+	function updateDp(){
+		var d = dojo.date.fromRfc3339(dpInput.value,'dateOnly');
+		var s = dpInput.value;
+		var s = s.split('-');
+		if(d.getFullYear()==s[0]&&d.getMonth()+1==s[1]&&d.getDate()==s[2]){
+			formDp.setDate(dpInput.value);
+		}else{
+			alert("You need to enter a date in the format of YYYY-mm-dd");
+		}
+	};
+</script>
+</head>
+<body>
+<h1>Dojo DatePicker Demo</h1>
+<p>A DatePicker mimicking a formNode (requires extra coding on developers part) You can also see how setDate() affects the UI by clicking the setDate button (this is also created via createWidget not markup) and has a initial value of "2006-10-31"</p>
+
+<div id="dpNode" style="border:1px solid blue;padding:1px;"></div><input name="date" id="dpInput" type="text" size="10"/><button id="setDate">setDate</button>
+<br/><br/>
+This should have the month label all on one line (problem in IE) appears fine in FF though.
+<div dojoType="datepicker" widgetId="foo" lang="en-us" displayWeeks="1" staticDisplay="true"></div>
+
+<p>A calendar in your locale, or the closest thing to it we currently provide</p>
+<div id="test" dojoType="datepicker"  style="border:1px solid red;padding:1px;"></div>
+
+<p>Same as above, but Friday is the first day of the week. WOOHOO! value="today"</p>
+<div dojoType="datepicker" value="today" weekStartsOn="5"></div>
+
+<p>Same as first, but with only 3 weeks displayed</p>
+<div dojoType="datepicker" displayWeeks="3"></div>
+
+<p>Same as first, but with adjustWeeks="true"</p>
+<div dojoType="datepicker" adjustWeeks="true"></div>
+
+<p>Same as first, with startDate of 10 September 2006</p>
+<div dojoType="datepicker" startDate="2006-09-10"></div>
+
+<p>Same as first, with endDate of 10 September 2006</p>
+<div dojoType="datepicker" endDate="2006-09-10"></div>
+
+<p>Same as first, with startDate of 1 January 2006 and endDate of 31 December 2006</p>
+<div dojoType="datepicker" startDate="2006-01-01" endDate="2006-12-31"></div>
+
+<p>Same as first, with startDate of 10 September 2006 and endDate of 24 September 2006 (note how the controls<br/>
+ are disabled). This is considered a static display, because the range of startDate and endDate is less than the displayWeeks.</p>
+
+<div dojoType="datepicker" startDate="2006-09-10" endDate="2006-09-24"></div>
+
+<p>Same as first, with startDate of 23 September 2006 and endDate of 10 October 2006 (note where the calendar<br/>
+display starts since the range overlaps the end of a month and the beginning of a month and how the controls are disabled).<br/>
+ This is considered a static display, because the range of startDate and endDate is less than the displayWeeks.</p>
+<div dojoType="datepicker" startDate="2006-09-23" endDate="2006-10-10"></div>
+
+<p>Same as first with staticDisplay=true and an initial of value="2005-12-25" (Sunday, December 25, 2005)</p>
+<div dojoType="datepicker" staticDisplay="true" value="2005-12-25"></div>
+
+<p>now on to the locale stuff...</p>
+
+<p>en-us locale</p>
+<div lang="en-us" dojoType="datepicker"></div>
+<p>nl-nl locale</p>
+<div lang="nl-nl" dojoType="datepicker"></div>
+<p>zh-cn locale</p>
+<div lang="zh-cn" dojoType="datepicker"></div>
+<p>zh-tw locale</p>
+<div lang="zh-tw" dojoType="datepicker"></div>
+<p>ja-jp locale</p>
+<div lang="ja-jp" dojoType="datepicker"></div>
+<p>fi-fi locale</p>
+
+<div lang="fi-fi" dojoType="datepicker"></div>
+<p>sv-se locale</p>
+<div lang="sv-se" dojoType="datepicker"></div>
+<p>xx locale</p>
+<div lang="xx" dojoType="datepicker"></div>
+<p><span style="text-decoration: line-through; color: #FF0000;">still doesn't</span> <b>now we</b> take into account localizations for first day of week...</p>
+
+</body>
+</html>

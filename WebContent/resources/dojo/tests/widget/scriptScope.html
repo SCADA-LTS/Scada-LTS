@@ -1,0 +1,171 @@
+<!-- used in test_ContentPane_executeScripts.html to set links and do the action -->
+<script>
+	var self = this;
+
+	// used to set and unset eventconnects in docpane 100 times
+	function runConnectTest(){
+		var cont = "<scr"+"ipt>"
+		+"	var connected = false;"
+		+"	var obj = { "
+		+"		click: function(evt){"
+		+"			evt.preventDefault();"
+		+"			var node = evt.currentTarget;"
+		+"			alert('you clicked: '+node.id);"
+		+"		}"
+		+"	};"
+		+"	_container_.addOnLoad(function(){dojo.event.connect(['_paths','_mem'], 'onclick', obj, 'click');});"
+		+"	_container_.addOnUnload(function(){ dojo.event.disconnect(['_paths','_mem'], 'onclick', obj, 'click');});"
+		+"</scr"+"ipt>"
+		+"Memory leak (check manually if browser eats resources)<br>"
+		+"<a href='acme/test_RemotePaths.html' id='_paths'>stub link, Paths</a><br/>"
+		+"<a href='memorytest' id='_mem'>stub link, Mem</a>";
+
+		var pane = dojo.widget.byId('docpane');
+		var i = 0;
+		for(; i<100; i++){
+			pane.setContent(cont);
+		}
+		dojo.debug("set and clear content with event connects in each "+i+" times");
+	}
+
+	// create a new contentPane from code
+	var createdPanes = [];
+	function createPane(){
+		var div = document.createElement("div");
+		document.body.appendChild(div);
+		var l = createdPanes.length + 1;
+		var cssTxt = "background-color:lightgreen; position: absolute; left:"+(50 + l * 20)+"px; top:"+(30+ l * 20)+"px; z-index:"
+					+l+";  width: 300px; height: 200px; border: 2px solid red;";
+
+		// treat IE css special
+		if(dojo.render.html.ie){
+			div.style.cssText = cssTxt;
+		}else{
+			div.setAttribute("style", cssTxt);
+		}
+
+		var pane = dojo.widget.createWidget("ContentPane",{ executeScripts: true }, div);
+
+		createdPanes.push(pane);
+
+		var cont = "<scr"+"ipt>"
+		+"dojo.require('dojo.widget.Button');"
+		+"_container_.addOnLoad(function(){"
+		+"	/* test that 'this' is isolated to scriptScope and is not a ptr to window*/"
+		+"	var d = _container_.domNode; var p = document.createElement('p');"
+		+"	p.appendChild(document.createTextNode('this.scriptScope defined before='+(!!this.definedBefore)+'"
+		+"		s should always be false, regardless of number of simultanious contentpanes'));"
+		+"	d.appendChild(p);p.setAttribute('style', 'font-weight: bold;color: '+(this.definedBefore ? 'red': 'black'));"
+		+"	this.definedBefore = true;"
+		+"});"
+		+"this.destroyMe = function(){"
+		+"	dojo.widget.byId('linkPane').scriptScope.destroyPane(_container_);"
+		+"};"
+		+"</scr"+"ipt>"
+		+"<div style='text-align:center; font-size:20pt;'>Pane "+createdPanes.length+"</div>"
+		+"<button dojoType='Button' onClick='scriptScope.destroyMe();'>Destroy me with widget event please!</button>"
+		+"<a href='javascript:scriptScope[\"destroyMe\"]();'>Destroy me from &lt;a href='javascript:handler...</a><br>";
+
+		pane.setContent(cont);
+	}
+
+	// destroy the newly created pane
+	this.destroyPane = function(panePtr){
+		for(var i=0; i<createdPanes.length; i++){
+			if(createdPanes[i] == panePtr){
+				createdPanes.splice(i,1);
+			}
+		}
+		panePtr.destroy();
+	}
+
+	function inlineTest(){
+		var cont = "<scr"+"ipt>"
+			+"this.i = 100;"
+			+"</scr"+"ipt>"
+			+"<a href='javascript:window[\"alert\"](scriptScope.i++) ;'>Alert me the value of scriptScope.i</a><br/>"
+			+"<a href='javascript:window.alert(scriptScope.i++) ;'>Alert me the value of scriptScope.i</a><br/>"
+			+"<a href='#' onclick='alert(scriptScope.i++) ;'>Alert me the value of scriptScope.i</a><br/>"
+			+"<scr"+"ipt>"
+			+"	this.message = function(debug){"
+			+"		if(debug){"
+			+"			dojo.debug('hello');"
+			+"		}else{"
+			+"			alert('hello');"
+			+"		}"
+  			+"}"
+			+"</scr"+"ipt>"
+			+"<style>#docpane div{cursor: pointer; color:blue;}</style>"
+			+"<div onclick='scriptScope.message()'>Shall alert hello</div>"
+			+"<div onclick=' scriptScope.message()'>Shall alert hello</div>"
+			+"<div id='cl' onclick='scriptScope.message()'>Shall alert hello</div>"
+			+"<div onmousedown=\"dojo.widget.byType('contentpane')[0].scriptScope.j = 0;scriptScope.message(true);\" "
+			+"onmouseup=\"scriptScope.j++;alert(scriptScope.j);\">Shall debug hello then alert 1</div>"
+			+"<div onclick='dojo.widget.byType(\"contentpane\")[0].scriptScope.message()'>Shall alert hello</div>"
+			+"<div onclick='dojo.scriptScope.message()'>Shall NOT alert</div>";
+		dojo.widget.byId('docpane').setContent(cont);
+	}
+
+	this.globalTest = function (){
+		var cont = "<scr"+"ipt>"
+			+" if(typeof myGlobalVar=='undefined'){"
+			+"	alert('called first time!');"
+			+"	myGlobalVar=true;"
+			+" }else{"
+			+"	alert('called before');"
+			+" }"
+			+"</scr"+"ipt>"
+			+"<a href='javascript:dojo.widget.byId(\"linkPane\").scriptScope.globalTest();'>Test again</a>";
+		dojo.widget.byId('docpane').setContent(cont);
+	}
+
+	function collisionTest(){
+		var cont = "<scr"+"ipt>"
+			+" this.executeScripts = false;"
+			+" this.setContent = false;"
+			+" this.scriptScope = null;"
+			+" this.href=null;"
+			+"</scr"+"ipt>"
+			+"<a href='javascript:alert(\"href collision? = \"+(scriptScope.href==dojo.widget.byId(\"docpane\").href)+\"\\nshould be false\");'>test for widget collision</a>";
+		dojo.widget.byId('docpane').setContent(cont);
+	}
+
+	var connected = false;
+	var obj = {
+		click: function(evt){
+			var node = evt.currentTarget;
+			dojo.event.browser.stopEvent(evt);
+			if(node.id=='mem'){
+				runConnectTest();
+			}else if(node.id=='create'){
+				createPane();
+			}else if(node.id=='inline'){
+				inlineTest();
+			}else if(node.id=='global'){
+				self.globalTest();
+			}else if(node.id=='collision'){
+				collisionTest();
+			}else if(node.id=='paths'){
+				dojo.widget.byId('docpane').setUrl(node.href);
+			}
+		},
+		hook: function(){
+			var connectType = 'connect';
+			if(connected){
+				connectType = 'disconnect';
+				dojo.event.disconnect(_container_, 'onLoad', obj, 'hook');
+				dojo.event.disconnect(_container_, 'onUnLoad', obj, 'hook');
+			}
+			connected = true;
+			dojo.event[connectType](['paths','mem', 'create', 'inline', 'global', 'collision'], 'onclick', obj, 'click');
+		}
+	};
+	dojo.event.connect(_container_, 'onLoad', obj, 'hook');
+	dojo.event.connect(_container_, 'onUnLoad', obj, 'hook');
+</script>
+<a href='acme/test_RemotePaths.html' id='paths'>Paths</a><br/>
+<a href='memorytest' id='mem'>set and unset content</a><br/>
+<a href='create' id='create'>Create a ContentPane</a><br/>
+<a href='inline' id='inline'>test Inline calls</a><br/>
+<a href='global' id='global'>test global scope</a><br/>
+<a href='collision' id='collision'>test variable collision safe</a>

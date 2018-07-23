@@ -1,0 +1,84 @@
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<h1>Descripci&oacute;n General</h1>
+<p>
+  La programaci&oacute;n de eventos es utilizados para levantar eventos en momentos espec&iacute;ficos en el tiempo.
+ Su comportamiento es similar al detector de eventos (en la forma como levanta los eventos), y con la diferencia
+ que estos son basados en momentos de tiempo en lugar de condiciones de puntos.
+</p>
+
+<h1>Lista de Eventos Programados</h1>
+<p>
+  Para agregar un evento planificado, haga clic en el icono <img src="images/clock_add.png"/>. Para editar un evento planificado existente, 
+  haga clic en la descripci&oacute;n del evento en la lista de "Eventos Programados".
+</p>
+
+<h1>Editando los detalles de un Evento Programado</h1>
+<p>
+  La configuraci&oacute;n de un valor del <b>Alias</b> es opcional, y puede ser utilizada como descripci&oacute;n del evento en el sistema cuando se asigna.
+ En el caso que no se asigne valor al alias, el sistema utilizar&aacute; la descripci&oacute;n autom&aacute;tica.
+</p>
+<p>Al configurar el <b>Nivel de Alarma</b> este actuar&aacute; cuando sea levantado un evento programado y le asiganar&aacute; la severidad seleccionada.
+ Vea la p&aacute;gina de ayuda general para m&aacute;s informaci&oacute;n de las Alarmas.
+</p>
+<p>El <b>Tipo de Evento</b> determina el per&iacute;odo b&aacute;sico de ejecuci&oacute;n del evento. Los tipos de frecuencia de programaci&oacute;n incluyen: cada hora,
+ di&aacute;rio, etc. Por ejemplo, un evento planificado con el tipo "cada hora" ser&aacute; ejecutado una vez por hora. En el caso que requiera que sea
+ ejecutado dos veces al d&iacute;a, se requerir&iacute;a defirnir el mismo evento con 2 programaciones di&aacute;rias en horas diferentes, una por vez. (Vea la
+ documentaci&oacute;n de "Patrones Cron" para m&aacute;s informaci&oacute;n.)
+</p>
+<p>Seleccionando la opci&oacute;n <b>Regreso a Normal</b> determina si la alarma levantada cuando el evento se activa regresa autom&aacute;ticamente a normal
+ cuando el evento se convierte en inactivo. Cuando es seleccionada esta casilla, es necesario definir el tiempo que requerir&aacute; que el evento se
+ inactive.
+</p>
+<p>Un evento programado puede ser <b>Deshabilitado</b> para que &eacute;ste no se ejecute. Esto puede ser &uacute;til 
+ cuando prefiera conservar el evento en lugar de eliminarlo y que este s&oacute;lo requiere ser habilitado para utilizarlo.</p>
+
+<h1>Horas de Activaci&oacute;n/inactivaci&oacute;n</h1>
+<p>Los campos disponibles para la edici&oacute;n de las horas de activavi&oacute;n e inactivaci&oacute;n depender&aacute;n del tipo del evento que seleccion&oacute;.
+ La mayor&iacute;a de los campos se explican por s&iacute; solos, y estos est&aacute;n exclusivamente basados en el calendario gregoriano. Para m&aacute;s informaci&oacute;n
+ sobre patrones cron, vea la documentaci&oacute;n de "Patrones Cron".
+</p>
+<p>Las horas de Activaci&oacute;n/Inactivaci&oacute;n se establecen para per&iacute;odos determinados de tiempo. Por ejemplo, una programaci&oacute;n cada hora puede
+ comenzar activandose en el minuto 55:00 e inactivandose en el minuto 05:00 (por lo que est&aacute;r&aacute; activo durante 10 cont&iacute;nuos). Note que esto es
+ posible, pero no muy &uacute;til, el definir patrones de cron que se activan y desactivan muy cerca (es decir, puedieran activarse varias veces antes
+ de la desactivaci&oacute;n y viceversa).</p>
+
+<p>Para guardar un evento programado, haga clic en el icono <img src="images/save.png"/> en el tope derecho. Para elimiar un evento existente,
+ haga clic en el icono <img src="images/delete.png"/>.</p>

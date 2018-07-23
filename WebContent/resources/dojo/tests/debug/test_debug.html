@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Object Debugger Test</title>
+<script type="text/javascript">
+
+	var djConfig = {
+		debugAtAllCosts: true,
+		isDebug: true
+	};
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.uri.*"); //Needed for dojo.debugDeep()
+	dojo.require("dojo.widget.Tree");
+	dojo.hostenv.writeIncludes();
+
+	dojo.arrayOfStuff = ['woo', 'yay', 'hoopla', 'foo', 'bar', 'baz'];
+
+	dojo.hugeArray = [];
+	for (var i=0; i<50; i++){
+		dojo.hugeArray.push('hello world');
+	}
+
+	dojo.SortMeRight = 'I have an uppercase key, but would like to be sorted correctly!';
+</script>
+<style>
+
+body {
+	background-color: #3A6EA5;
+	color: white;
+}
+
+a {
+	color: white;
+}
+
+</style>
+</head>
+<body>
+
+<h1>Debug testing</h1>
+
+<p><a href="#" onclick="dojo.debug(dojo);">Plain debug of the root dojo object</a></p>
+<p><a href="#" onclick="dojo.debugShallow(dojo);">Shallow debug of the root dojo object</a></p>
+<p><a href="#" onclick="dojo.debugDeep(dojo);">Deep debug of the root dojo object</a></p>
+
+</body>
+</html>

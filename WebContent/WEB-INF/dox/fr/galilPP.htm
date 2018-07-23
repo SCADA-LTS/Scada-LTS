@@ -1,0 +1,37 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>Most points types within a Galil data source reflect values within the Galil equipment. The exception is the Command point type, which is more abstract. Details are provided below.</p>
+
+<p>All point types require a name for display purposes, which can be any value.</p>
+
+<h1>Command</h1>
+<p>The command point type allows the sending of arbitrary commands to the Galil equipment. Commands can be entered in the Watchlist, from graphical views, or via set point event handlers. The value of the command <i>and</i> the value of the response will be saved into the point history (one after the other), except if an error occurs, in which case the command will be saved and an event will be raised that describes the error.</p>
+
+<h1>Input</h1>
+<p>Input point types use the @IN and @AN commands to retrieve current values. These points are not settable. The <b>Data type</b>determines which command will be used to request the value. The <b>Input number</b> is the index of the value to be retrieved. For numeric points, linear value scaling can also be automatically done by setting the <b>Scale</b> values accordingly.</p>
+
+<h1>Output</h1>
+<p>Output point types use the CB, SB, and @OUT commands to retrieve and set binary output values. The <b>Output number</b> is the index of the value to be managed.</p>
+
+<h1>Tell position</h1>
+<p>Tell position point types use the TP command to retrieve a particular axis position. These points are not settable. The <b>Axis</b> is the label of the required axis. Linear value scaling can be automatically done by setting the <b>Scale</b> values accordingly. Select <b>Round to integer</b> to round off decimal values from the retrieve (and scaled) value.</p>
+
+<h1>Variable</h1>
+<p>Variable point types use the "Var=" command to set and retrieve variable values in the equipment. The <b>Variable name</b> is the name of the desired variable. Values to set and receive are automatically converted according to the given <b>Data type</b>.</p>

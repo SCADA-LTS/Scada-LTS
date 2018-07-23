@@ -1,0 +1,34 @@
+<html>
+	<head>
+		<script type="text/javascript">
+			djConfig = { isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.event.*");
+			dojo.addOnLoad(function(){
+				dojo.event.connect([
+						"source1", dojo.byId("source2"), "source3"
+					], 
+					"onclick", 
+					function(){ dojo.debug("clicked"); }
+				);
+			});
+		</script>
+	</head>
+	<body>
+		Check your javascript log; the scripts were all loaded in the head.
+
+		<div id="source1">
+			click me!
+		</div>
+
+		<div id="source2">
+			click me too
+		</div>
+
+		<div id="source3">
+			click me as well!
+		</div>
+    </body>
+</html>

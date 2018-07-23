@@ -1,0 +1,79 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>The Pachube publisher sends each point update (or change, as-->
+<!--appropriate) to Pachube using the given API key, feed ID, and data-->
+<!--stream ID as a separate HTTP request.</p>-->
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>O publicador Pachube envia cada atualiza&ccedil;&atilde;o de
+ponto (ou altera&ccedil;&atilde;o, como for apropriado) para o Pachube
+usando a <i>API key</i> fornecida, o <i>feed ID</i>, e o <i>data
+stream ID</i> como uma requisi&ccedil;&atilde;o HTTP a parte.</p>
+
+<!--<h1>Properties</h1>-->
+<!--<p>The <b>API Key</b> is needed to update private data. You can find-->
+<!--it in the "my settings" area when you log in to your Pachube account. <b>Timeout</b>-->
+<!--and <b>Retries</b> parameters are used to handle failures.</p>-->
+<h1>Propriedades</h1>
+<p>A <b>Chave da API</b> &eacute; necess&aacute;ria para atualizar
+dados privados. Voc&ecirc; pode encontr&aacute;-la na &aacute;rea "my
+settings" quando voc&ecirc; entra em sua conta Pachube. Os
+par&acirc;metros <b>Timeout</b> e <b>Retries</b> s&atilde;o usados para
+tratar falhas.</p>
+
+<!--<h1>HTTP response</h1>-->
+<!--<p>Any other response code than a "200 OK" is considered an error,-->
+<!--and an alarm will be raised. Note that - depending on your account with-->
+<!--Pachube - API request restrictions may apply. See <a-->
+<!--	href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a>-->
+<!--for details.</p>-->
+<h1>Resposta HTTP</h1>
+<p>Qualquer outro c&oacute;digo de resposta que n&atilde;o seja um
+"200 OK" &eacute; considerado um erro, e um alarme ser&aacute;
+disparado. Note que - dependendo de sua conta no Pachube -
+restri&ccedil;&otilde;es em requisi&ccedil;&otilde;es &agrave; API podem
+ser aplicadas. Veja <a
+	href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a>
+para detalhes.</p>
+
+<!--<h1>Published points</h1>-->
+<!--<p>The <b>Points</b> section lists the points to be published. Point-->
+<!--publishing can be enabled (<img src="images/brick_go.png" />) or-->
+<!--disabled (<img src="images/brick_stop.png" />). Disabling a point-->
+<!--allows it to not be used without having to explicitly delete it. The <b>Feed-->
+<!--ID</b> and <b>Data stream ID</b> values determine the data stream that will-->
+<!--be updated.</p>-->
+<h1>Pontos publicados</h1>
+<p>A se&ccedil;&atilde;o <b>Pontos</b> lista os pontos a serem
+publicados.A publica&ccedil;&atilde;o de pontos pode ser habilitada (<img
+	src="images/brick_go.png" />) ou desabilitada (<img
+	src="images/brick_stop.png" />). Desabilitar um ponto permite que ele
+n&atilde;o seja utilizado sem necessidade de delet&aacute;-lo. Os
+valores <b>Feed ID</b> e <b>Data stream ID</b> determinam o fluxo de
+dados que ser&aacute; atualizado.</p>
+
+<!--<p>To add a point to the point list, select it in the points list-->
+<!--and click the <img src="images/icon_comp_add.png" /> icon. To delete an-->
+<!--existing point, click its associated <img src="images/bullet_delete.png" />-->
+<!--icon.</p>-->
+<p>Para adicionar um ponto &agrave; lista de pontos, selecione-o na
+lista de pontos e clique no &iacute;cone <img
+	src="images/icon_comp_add.png" />. Para deletar um ponto existente,
+clique em seu &iacute;cone <img src="images/bullet_delete.png" />
+associado.</p>

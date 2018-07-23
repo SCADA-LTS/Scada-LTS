@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<script type="text/javascript">
+    var djConfig = {isDebug: true};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+    dojo.require("dojo.io.*");
+</script>
+<script>
+	var calls = 0;
+
+	var url = location.href;
+	var pos = location.href.lastIndexOf("/") || location.href.lastIndexOf("\\");
+	var url = url.substr(pos + 1);
+
+	function bind(){
+		calls++;
+		var c = Number(calls);
+		return dojo.io.bind({
+			url: url,
+			async: true,
+			load: function(type, data){
+				dojo.debug(+c+" downloaded, check that "+c+" has'nt been aborted.");
+				check(c);
+			},
+			error: function(type, err){
+				dojo.debug("Error getting "+url);
+				dojo.debugShallow(err);
+			}
+		});
+	}
+
+	function check(downloaded){
+		var div = dojo.byId("check");
+		if(typeof downloaded == "number"){
+			if((downloaded==3 || downloaded==6) && (div.firstChild.nodeValue != "Failure...")){
+				div.style.backgroundColor = "green";
+				div.firstChild.nodeValue = "Success!";
+			}else{
+				div.style.backgroundColor = "red";
+				div.firstChild.nodeValue = "Failure...";
+			}
+		}
+	}
+
+	dojo.addOnLoad(function(){
+		dojo.debug("requesting 1");
+		var one = bind();
+		one.abort();dojo.debug("1 aborted");
+		dojo.debug("requesting 2");
+		var two = bind();
+		two.abort();dojo.debug("2 aborted");
+		dojo.debug("requesting 3");
+		var three = bind();
+		dojo.debug("requesting 4");
+		var four = bind();
+		four.abort();dojo.debug("4 aborted");
+		dojo.debug("requesting 5");
+		var five = bind();
+		five.abort();dojo.debug("5 aborted");
+		dojo.debug("requesting 6");
+		var six = bind();
+	});
+</script>
+</head>
+<body>
+	<h2>Check that we have exactly one downloaded file, no more no less.<h2/>
+	<div id="check" style="background-color: yellow;">Probing....</div>
+</body>
+</html>

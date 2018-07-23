@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Dojo Editor2 shared Toolbar and ContextMenu Test</title>
+	<script type="text/javascript">
+		djConfig = {
+			isDebug: true,
+			dojoRichTextFrameUrl: "../../../src/widget/templates/richtextframe.html" //for xdomain
+		};
+	</script>
+
+	<script type="text/javascript" src="../../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.Editor2");
+		dojo.require("dojo.widget.Editor2Plugin.ContextMenu");
+		dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
+		dojo.addOnLoad(function(){
+			dojo.widget.Editor2Plugin.ContextMenuManager.registerGroupSet('menugroup1',['Generic']);
+		});
+	</script>
+</head>
+<body bgcolor="white">
+<p>the first two Editor2 instances share the same toolbar, while the last two share another one.</p>
+<p>the second and third instance share the same ContextMenu Group. To check that, right click on links in each of the instance, you can see extra items in the first and fourth editor, but not in the other two.</p>
+<div style="position: relative;">
+	<div style="border: 1px solid black;">
+		<div dojoType="Editor2"
+			toolbarTemplatePath="EditorToolbarLight.html",
+			useActiveX="false" focusOnLoad="true"
+			toolbarGroup="group1" id="editor1" toolbarAlwaysVisible="true">
+			look ma! it's <a href='#'>editable</a> content!
+			<ul>
+				<li>foo</li>
+				<li>bar</li>
+				<li>baz</li>
+				<ul>
+					<li>thud</li>
+				</ul>
+			</ul>
+			<h1>Lorem!</h1>
+		</div>
+	</div>
+	text below the first editor instance
+</div>
+<br>
+text above the second editor instance. This second editor shares a toolbar with the first.
+	<!-- FIXME: currently, enabling 2 editors for the same toolbar screws them both on IE -->
+<div style="border: 1px solid black;" dojoType="Editor2" toolbarGroup="group1" contextMenuGroupSet="menugroup1" widgetId="editor2">
+		<p>Lorem ipsum dolor sit amet, <a href='#'>consectetuer</a> adipiscing elit. Vivamus risus. Praesent eu lacus et enim laoreet sollicitudin. Quisque mollis mi a lectus. Cras ante. Aliquam tempus justo laoreet justo. Vestibulum egestas feugiat nisi. Nulla ultrices consequat felis. Curabitur dignissim augue vel enim. Fusce tempus tempor mauris. Praesent suscipit pede in nunc. Duis mi neque, malesuada non, volutpat et, nonummy et, ante. Aliquam neque. Nulla rhoncus, turpis eget mattis molestie, magna nulla dictum ligula, quis tempor odio justo vel pede. Donec sit amet tellus. Phasellus sapien. Nulla id massa at nunc condimentum fringilla. Fusce suscipit ipsum et lorem consequat pulvinar. Quisque lacinia sollicitudin tellus.</p>
+
+		<p>Nulla massa lectus, porttitor vitae, dignissim vel, iaculis eget, mi. Vestibulum sed lorem. Nullam convallis elit id leo. Aliquam est purus, rutrum at, sodales non, nonummy a, justo. Proin at diam vel nibh dictum rhoncus. Duis nisl. Etiam orci. Integer hendrerit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In ac erat. Sed velit orci, sodales quis, commodo ut, elementum sed, nibh. Cras mattis vulputate nisl. Mauris eu nulla sed orci dignissim laoreet. Morbi commodo, est vitae pharetra ullamcorper, ante nisl ultrices velit, sit amet vulputate turpis elit id lacus. Vestibulum diam. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+
+		<p>Praesent rutrum nunc quis felis. Morbi tempor. Quisque porta magna imperdiet magna. Ut gravida, ipsum eu euismod consectetuer, nisl lectus posuere diam, vel dignissim elit nisi sit amet lorem. Curabitur non nunc. Morbi metus. Nulla facilisi. Sed et ante. Etiam ac lectus. Duis tristique molestie sem. Pellentesque nec quam. Nullam pellentesque ullamcorper sem.</p>
+</div>
+<br>
+<div style="border: 1px solid black;" dojoType="Editor2" toolbarGroup="group2" contextMenuGroupSet="menugroup1" widgetId="editor3">
+		<p>Lorem ipsum dolor sit amet, <a href='#'>consectetuer</a> adipiscing elit. Vivamus risus. Praesent eu lacus et enim laoreet sollicitudin. Quisque mollis mi a lectus. Cras ante. Aliquam tempus justo laoreet justo. Vestibulum egestas feugiat nisi. Nulla ultrices consequat felis. Curabitur dignissim augue vel enim. Fusce tempus tempor mauris. Praesent suscipit pede in nunc. Duis mi neque, malesuada non, volutpat et, nonummy et, ante. Aliquam neque. Nulla rhoncus, turpis eget mattis molestie, magna nulla dictum ligula, quis tempor odio justo vel pede. Donec sit amet tellus. Phasellus sapien. Nulla id massa at nunc condimentum fringilla. Fusce suscipit ipsum et lorem consequat pulvinar. Quisque lacinia sollicitudin tellus.</p>
+
+		<p>Nulla massa lectus, porttitor vitae, dignissim vel, iaculis eget, mi. Vestibulum sed lorem. Nullam convallis elit id leo. Aliquam est purus, rutrum at, sodales non, nonummy a, justo. Proin at diam vel nibh dictum rhoncus. Duis nisl. Etiam orci. Integer hendrerit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In ac erat. Sed velit orci, sodales quis, commodo ut, elementum sed, nibh. Cras mattis vulputate nisl. Mauris eu nulla sed orci dignissim laoreet. Morbi commodo, est vitae pharetra ullamcorper, ante nisl ultrices velit, sit amet vulputate turpis elit id lacus. Vestibulum diam. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+
+		<p>Praesent rutrum nunc quis felis. Morbi tempor. Quisque porta magna imperdiet magna. Ut gravida, ipsum eu euismod consectetuer, nisl lectus posuere diam, vel dignissim elit nisi sit amet lorem. Curabitur non nunc. Morbi metus. Nulla facilisi. Sed et ante. Etiam ac lectus. Duis tristique molestie sem. Pellentesque nec quam. Nullam pellentesque ullamcorper sem.</p>
+</div>
+<br>
+this is forth instance of Editor2
+<br>
+<div style="border: 1px solid black;" dojoType="Editor2" toolbarGroup="group2" widgetId="editor4">
+		<p>Lorem ipsum dolor sit amet, <a href='#'>consectetuer</a> adipiscing elit. Vivamus risus. Praesent eu lacus et enim laoreet sollicitudin. Quisque mollis mi a lectus. Cras ante. Aliquam tempus justo laoreet justo. Vestibulum egestas feugiat nisi. Nulla ultrices consequat felis. Curabitur dignissim augue vel enim. Fusce tempus tempor mauris. Praesent suscipit pede in nunc. Duis mi neque, malesuada non, volutpat et, nonummy et, ante. Aliquam neque. Nulla rhoncus, turpis eget mattis molestie, magna nulla dictum ligula, quis tempor odio justo vel pede. Donec sit amet tellus. Phasellus sapien. Nulla id massa at nunc condimentum fringilla. Fusce suscipit ipsum et lorem consequat pulvinar. Quisque lacinia sollicitudin tellus.</p>
+
+		<p>Nulla massa lectus, porttitor vitae, dignissim vel, iaculis eget, mi. Vestibulum sed lorem. Nullam convallis elit id leo. Aliquam est purus, rutrum at, sodales non, nonummy a, justo. Proin at diam vel nibh dictum rhoncus. Duis nisl. Etiam orci. Integer hendrerit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In ac erat. Sed velit orci, sodales quis, commodo ut, elementum sed, nibh. Cras mattis vulputate nisl. Mauris eu nulla sed orci dignissim laoreet. Morbi commodo, est vitae pharetra ullamcorper, ante nisl ultrices velit, sit amet vulputate turpis elit id lacus. Vestibulum diam. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+
+		<p>Praesent rutrum nunc quis felis. Morbi tempor. Quisque porta magna imperdiet magna. Ut gravida, ipsum eu euismod consectetuer, nisl lectus posuere diam, vel dignissim elit nisi sit amet lorem. Curabitur non nunc. Morbi metus. Nulla facilisi. Sed et ante. Etiam ac lectus. Duis tristique molestie sem. Pellentesque nec quam. Nullam pellentesque ullamcorper sem.</p>
+</div>
+</body>
+</html>
+

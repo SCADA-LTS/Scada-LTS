@@ -1,0 +1,6 @@
+name=Small battery
+type=imageSet
+#width=16
+#height=9
+text.x=14
+text.y=2

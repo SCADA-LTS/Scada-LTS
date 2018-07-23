@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.profile");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	
+	dojo.addOnLoad(function(){
+		var depth = 0;
+		
+		function addChildren(title) {
+			//dojo.debug("addChildren to "+nodeOrTree+" depth" + depth)
+			depth++;
+			
+			var children = [];
+			for (var i=1; i<=5; i++) {
+				var t = title+'.'+i;
+				var node = {title: t};
+				
+				if (depth<3) {
+					node.children = addChildren(t);
+				}
+				
+				children.push(node);				
+			}
+			//dojo.debug("out "+nodeOrTree);
+			
+			depth--;
+			
+			return children;			
+		}	
+
+		dojo.profile.start("createController");
+		var controller = dojo.widget.createWidget("TreeBasicControllerV3");
+		dojo.profile.end("createController");
+		
+		dojo.profile.start("createTree");
+		var tree = dojo.widget.createWidget("TreeV3", {listeners: [controller.widgetId]});	
+		dojo.profile.end("createTree");
+				
+		document.body.appendChild(tree.domNode);
+
+	
+		dojo.profile.start("prepareNodes");		
+		var nodes = addChildren('node', tree);
+		dojo.profile.end("prepareNodes");
+			
+		dojo.profile.start("addNodes");
+		
+		tree.setChildren(nodes);
+		dojo.profile.end("addNodes");
+		
+		var nodeCount = 0;
+		dojo.lang.forEach(tree.getDescendants(), function() { nodeCount++  });
+		
+		dojo.debug("Nodes total: "+nodeCount);
+			
+		dojo.profile.dump(true);
+		
+	});
+
+</script>
+</head>
+<body>
+
+<h4>Test/profile fast nested nodes generation and adoptation</h4>
+
+<div style="display:none">	
+	<img src="../../../src/widget/templates/images/TreeV3/i.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_half.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_plus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_long.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/document.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/open.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/closed.gif">
+</div>	
+
+
+</body>
+</html>

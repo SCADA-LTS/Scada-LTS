@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+	<title>Position function tests (HTML strict mode)</title>
+	
+	<script type="text/javascript">	
+		var djConfig = {
+			isDebug: true
+		};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		dojo.require("dojo.debug.console");
+		dojo.require("dojo.html.layout");
+		dojo.require("dojo.html.util");
+		dojo.require("dojo.event.*");
+	</script>
+	<script>
+		function onMouseMove(e){
+			dojo.byId("m").innerHTML= e.pageX + ", " + e.pageY;
+			var btn=dojo.byId("btn");
+			var pns = dojo.html.getAbsolutePosition(btn, false);
+			var pws = dojo.html.getAbsolutePosition(btn, true);
+			dojo.byId("f").innerHTML= pns.x + ", " + pns.y;
+			dojo.byId("t").innerHTML= pws.x + ", " + pws.y;
+			dojo.byId("o").innerHTML= dojo.html.overElement(btn, e);
+			var scroll = dojo.html.getScroll();
+			dojo.byId("s").innerHTML=
+				scroll.left + ", " + scroll.top;
+		}
+		
+		dojo.addOnLoad(function(){
+			dojo.event.connect(document.documentElement, "onmousemove", "onMouseMove");
+		});
+	</script>
+</head>
+<body>
+<h1>Position function tests</h1>
+<p>
+This file tests the code to determine mouse position and element position with respect to the document or viewport.
+</p>
+<p>
+<b>dojo.html.getAbsolutePosition(xyz, true)</b> tells you where you would position a node
+inside document.body such that it was on top of xyz.
+It works well in conjunction with <b>event.pageX/Y</b>.</p>
+<p>
+<b>dojo.html.getAbsolutePosition(xyz, false)</b> returns the position that would be returned
+by event.clientX/Y if the mouse were directly over the top/left of this node.
+</p>
+
+<ul>
+ <li>Move the mouse; scroll down the browser window; check that event.pageX/pageY returns the position within
+ the document, rather than the viewport</li>
+ <li>Scrolling the browser window should affect getAbsolutePosition(btn, false), but it shouldn't affect
+ 		getAbsolutePosition(btn, true);</li>
+ <li>Scrolling the div should affect both return values</li>
+ <li>Try it on IE, FF, and Safari.</li>
+</ul>
+
+<!-- make horizontal scrollbar on the browser -->
+<div style="width: 1000px; height: 0px;"></div>
+
+<div style="position: relative; margin-left: 10px; margin-top: 10px; overflow: scroll; height: 100px; width: 300px;">
+	1<br>2<br>3<br><button id="btn" style="margin-left: 150px;">btn</button><br>4<br>5<br>6<br>7
+	<nobr>This is a very long sentence just to make sure there is a horizontal scrollbar</nobr>
+</div>
+<table border=1 style="margin: 20px 20px 20px 20px;">
+<tr><td>event.pageX/pageY</td><td id="m"></td></tr>
+<tr><td width=30%>getAbsolutePosition(btn, true)<br> (document)</td><td id="t"></td></tr>
+<tr><td>getAbsolutePosition(btn, false)<br> (viewport)</td><td id="f"></td></tr>
+<tr><td>dojo.html.overElement(btn, e)</td><td id="o"></td></tr>
+<tr><td>dojo.html.getScrollLeft()/Top()</td><td id="s"></td></tr>
+</table>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+</body>
+</html>

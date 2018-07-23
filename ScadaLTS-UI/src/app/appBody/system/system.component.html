@@ -1,0 +1,14 @@
+<md-card>
+
+<div class="systemPerformance">
+  <h2>System performance:</h2>
+  <select [(ngModel)]="systemPerformance" class="performanceSelect" (ngModelChange)="exportUserSystemPerformance()">
+    <option value="low">low</option>
+    <option value="medium">medium</option>
+    <option value="high">high</option>
+  </select>
+</div>
+
+</md-card>
+
+<iframe src="/ScadaBR/system_settings.shtm" frameborder="0" allowfullscreen id="ifr" style="visibility: hidden; width:100%; height:600px;"></iframe>

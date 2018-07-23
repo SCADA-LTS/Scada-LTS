@@ -1,0 +1,29 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p><b>Number formats</b> are used to determine how to display and parse numbers values, converting between internal floating point or integer representations and text. For example, the number 1234.5678 could be formatted as shown, but it may be preferred to be viewed as '1,234.6', or '1 234,567', or '1.2345678E3' depending upon the context and the value's semantics. The same patterns can be used to format a value for display as well as parsing text input into numeric values.</p>
+
+<p>Number formatting in Mango is implemented by the DecimalFormat Java class, the details for which can be found <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/DecimalFormat.html" target="_blank">here</a>. Some common patterns are provided below for convenience.</p>
+
+<ul>
+  <li><b>#,##0.00</b> Comma separation at thousands. Always displays the first integer digit and two decimal places (rounded).</li>
+  <li><b>0.000</b> Always displays the first integer digit and three decimal places.</li>
+  <li><b>0.00;(0.00)</b> Always displays the first integer digit and two decimal places. Displays negative numbers in parentheses.</li>
+</ul>
+
+<p>Formatting may be localized depending upon your Java VM defaults.</p>

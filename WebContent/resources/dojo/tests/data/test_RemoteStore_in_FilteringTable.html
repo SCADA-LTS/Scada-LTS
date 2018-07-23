@@ -1,0 +1,54 @@
+<!--
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Test using RemoteStore to load FilteringTable</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+	<script type="text/javascript">
+		var djConfig = { isDebug: true, debugAtAllCosts: true };
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.registerModulePath("tests", "tests");  // relative to dojo.js
+		dojo.require("tests.data.displayFilteringTable");
+		dojo.require("tests.data.displayViaDojoDebug");
+		dojo.require("tests.MockXMLHttpRequest");
+		dojo.require("dojo.data.core.RemoteStore");
+		dojo.hostenv.writeIncludes();
+	</script>
+	<script type="text/javascript" src="test_RemoteStore.js"></script>
+	<link rel="stylesheet" type="text/css" href="filteringTableStyles.css" />
+	<script type="text/javascript">
+		function newMockRemoteStore() {
+			var remoteStore = new dojo.data.core.RemoteStore({});
+			var dataString = '{ "data" : { "1" :{ "Title": ["City of God"],	 "Year" : [2002], "Producer" : ["Katia Lund"] }, "2" :{ "Title" : ["Rain"], "Year" : [2001],	"Producer" : ["Christine Jeffs"] } } }';
+			tests.MockXMLHttpRequest.wrap(remoteStore, 'find', dataString, 200);
+			return remoteStore;
+		}
+
+		function loadFilteringTable() {
+			var mockStore = newMockRemoteStore();
+			var tableElement = dojo.byId("content");
+			var query = null;
+			tests.data.displayFilteringTable(mockStore, query, tableElement);
+		}
+		function displayItemsAsText() {
+			var mockStore = newMockRemoteStore();
+			var query = null;
+			tests.data.displayViaDojoDebug(mockStore, query);
+		}
+		
+		dojo.addOnLoad(loadFilteringTable);
+		dojo.addOnLoad(displayItemsAsText);
+	</script>
+</head>
+<body>
+	<h2>Test RemoteStore in a FilteringTable</h2>
+	<table id="content" style="width: 500px; height: 100px;"></table>
+	<p>&nbsp;</p>
+	<h2>dojo.debug output</h2>
+</body>
+</html>

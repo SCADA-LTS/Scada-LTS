@@ -1,0 +1,111 @@
+<html xmlns:dojo xmlns:myown>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+	// Warning: To use debugAtAllCosts each set of calls to require needs to be within
+	// their own script tag, with a call before the closing tag to 
+	// dojo.hostenv.writeIncludes(true); Also there *must* be a final call to 
+	// dojo.hostenv.writeIncludes(); without the true
+	// See example in test_Custom_Widget_Debugging.html
+</script>
+<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+
+<script>
+	dojo.require('dojo.ns');
+	dojo.registerNamespace("myown", "myown");      // Get exception here if debugAtAllCosts set to true - see above.
+
+	// declaring a custom button widget that overrides a single function
+	dojo.require('dojo.widget.Button');
+	dojo.widget.defineWidget('myown.TestButton', dojo.widget.Button, {
+
+		buttonName : '',
+
+		// override the buttonClick() method declared in Button
+		buttonClick: function() {
+			alert('button ' + this.buttonName + ' clicked');
+			myown.TestButton.superclass.buttonClick.apply(this, arguments);
+		}
+
+	});
+</script>
+</head>
+<body>
+<div id="test" style="width:10px"></div>
+	<h2>Creating a Dojo widget entirely within page markup</h2>
+	<p>Very useful when developing your own widgets, or you just want to quickly test something.</p>
+	<p>Also useful when you just want to slightly change an exising widget e.g. change the CSS template, change the HTML template, or just override one or two methods.</p>
+	<p>You should see two blue buttons with custom properties below. They show an alert when clicked:</p>
+	<br>
+
+	<!-- our custom button declared above -->
+	<div dojoType="myown:TestButton" buttonName="1st button">
+		myown:TestButton widget
+	</div>
+	<br>
+	<div dojoType="myown:TestButton" buttonName="Wow!">
+		Wow button.
+	</div>
+	<br>
+
+
+    <!-- Declaring a custom widget with it's own template and css declared in file -->
+
+
+	<!-- xmp is a very special element type - browser ignores all markup until it reaches /xmp tag -->
+	<!-- You might want to use a plain javascript string instead -->
+	<xmp id="TestTemplate" style="display:none">
+		<div class="myTest" dojoAttachEvent="onMouseMove; onClick:buttonClick;">
+			<p>And a myown:Test Widget</p>
+			<p dojoAttachPoint="mousePosNode">mouse.clientX: [Set on mouseover]</p>
+		</div>
+	</xmp>
+	<!-- You could put this in the page style, but this way dojo can fixup any urls. Or just use a string! -->
+	<xmp id="TestTemplateCss" style="display:none">
+		/* ---- myTest css --- */
+		.myTest {
+			background-color:yellow;
+			width: 20em;
+			height: 5em;
+			border: 3px dotted blue;
+		}
+	</xmp>
+	<!-- Declared in BODY so can refer to XMP elements. -->
+	<script>
+		dojo.widget.defineWidget('myown.Test', dojo.widget.HtmlWidget, {
+
+			templateString: dojo.byId('TestTemplate').textContent || dojo.byId('TestTemplate').innerText,
+
+			templateCssString: dojo.byId('TestTemplateCss').textContent || dojo.byId('TestTemplateCss').innerText,
+
+			mousePosNode: null,
+			clickTimes: 0,
+
+			onMouseMove: function(ev) {
+				this.mousePosNode.innerHTML = 'mouse.clientX: ' + ev.clientX;
+			},
+
+			buttonClick: function(ev) {
+				this.clickTimes++;
+				alert('clicked. You have clicked this ' + this.clickTimes + ' times.');
+			}
+		});
+	</script>
+
+
+	<br>
+	<p>
+		The yellow divs below show an alert when clicked, and they update the mouse.clientX text when the mouse is moved over it.
+		The second yellow div shows how widget namespaces are used.
+	</p>
+
+	<!-- can use widget immediately in markup - no parsing occurs until document loaded and scripts run -->
+	<div dojoType="myown:Test">
+	</div>
+
+	<br>
+	<!-- example using XML style - dont forget xmlns in the HTML tag! -->
+	<myown:Test></myown:Test>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+	"SMDVersion":".1",
+	"objectName":"erroringClass",
+	"serviceType":"JSON-RPC",
+	"serviceURL":"badUrlForTesting",
+	"methods":[
+		{
+			"name":"content"
+		},
+	]
+}

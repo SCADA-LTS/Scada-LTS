@@ -1,0 +1,51 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Matrix Math</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+</style>
+<script language="JavaScript" type="text/javascript">
+	// Dojo configuration
+	djConfig = { 
+		isDebug: true
+	};
+</script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+
+dojo.require("dojo.math.matrix");
+
+dojo.addOnLoad(function(){
+	test_matrix([[1,2,3]]);
+	test_matrix([[1,2,3],[4,5,6],[7,8,1]]);
+});
+
+function test_matrix(m){
+	dojo.debug('----------------------------------------------------------------------');
+	debug_matrix('Source', m);
+	dojo.debug('Determinant', dojo.math.matrix.determinant(m));
+	debug_matrix('Scaled', dojo.math.matrix.scale(2, m));
+	debug_matrix('Squared', dojo.math.matrix.multiply(m, m));
+	debug_matrix('Adjoint', dojo.math.matrix.adjoint(m));
+	debug_matrix('Inverse', dojo.math.matrix.inverse(m));
+	debug_matrix('Upper', dojo.math.matrix.upperTriangle(m));
+	debug_matrix('Tranpose', dojo.math.matrix.transpose(m));
+}
+
+function debug_matrix(l,m){
+	dojo.debug(l+': '+dojo.math.matrix.format(m));
+}
+
+
+</script>
+</head>
+<body>
+	Tests happened in head. This should be moved to a JS-only file.
+</body>
+</html>
+

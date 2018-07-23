@@ -1,0 +1,26 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>Источник данных Spinwave используется для сбора данных с устройств Spinwave, подключенных к локальному шлюзу и доступных через последовательные интерфейсы RS232 или RS485 (требуется преобразователь). Этот источник данных получает регулярные обновления с подключенных устройств; он не выполняет опрос.</p>
+
+<h1>Конфигурация</h1>
+<p>Каждый источник данных должен иметь произвольно заданное Имя. Для выбора Порта предлагается список всех доступных последовательных портов в оборудовании хоста. Необходимо задать порт, к которому подключен шлюз Spinwave. Значение Версии сообщения зависит от устройства, которое вы используете. Более подробную информацию вы найдете в документации на оборудование Spinwave.</p>
+<p>Поиск Адресов сенсоров обычно выполняется при помощи функции прослушивания сенсоров, описанной ниже. Однако, если вы знаете уникальные адреса Ваших устройств, вы можете ввести их вручную. После ввода адреса, нажмите пиктограмму <img src="images/add.png"/> и добавьте его в список известных адресов.</p>
+<h1>Программа прослушивания сенсоров Spinwave</h1>
+<p>Как только шлюз Spinwave подключается к хосту, можно запустить программу, которая будет прослушивать поступающие сообщения. Обычно устройства настроены на отправку сообщений каждую 21 секунду, но эту настройку можно изменить. Чтобы добавить в Список адресов сенсоров адреса всех прослушанных устройств, нажмите кнопку «Добавить найденные сенсоры в список».</p>

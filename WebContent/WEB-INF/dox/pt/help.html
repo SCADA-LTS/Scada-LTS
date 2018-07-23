@@ -1,0 +1,331 @@
+<pre>
+    ScadaBR - Sistema Open-Source para Aquisi&ccedil;&atilde;o de Dados, Supervis&atilde;o e Controle - <a
+    href="http://www.scadabr.org.br">http://www.scadabr.org.br</a>
+    Copyright (C) 2010 Funda&ccedil;&atilde;o Certi.
+    Release 1.0.0 baseado no Mango M2M - <a
+    href="http://mango.serotoninsoftware.com">http://mango.serotoninsoftware.com</a>.
+    
+    Este programa &eacute; um software livre: voc&ecirc; pode redistribuir e/ou modifica-lo 
+    sob os termos da Licen&ccedil;a P&uacute;blica Geral GNU como &eacute; publicada pela 
+    Funda&ccedil;&atilde;o para o Software Livre, na vers&atilde;o 3 da licen&ccedil;a, ou (sua decis&atilde;o) 
+    qualquer vers&atilde;o posterior.
+    
+    Este programa &eacute; distribu&iacute;do na esperan&ccedil;a que ser&aacute; &uacute;til, mas 
+    SEM NENHUM GARANTIA; sem mesmo a garantia expl&iacute;cita do 
+    VALOR COMERCIAL ou ADEQUA&Ccedil;&Atilde;O PARA UM PROP&Oacute;SITO EM PARTICULAR. 
+    Veja a Licen&ccedil;a P&uacute;blica Geral GNU para mais detalhes.
+
+    Voc&ecirc; deveria ter recebido uma c&oacute;pia da Licen&ccedil;a P&uacute;blica Geral GNU
+    junto com este programa.  Caso n&atilde;o tenha recebido, favor acessar <a
+    href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+</pre>
+<br />
+<br />
+
+<p>Segue abaixo uma apresenta&ccedil;&atilde;o geral de como essa
+aplica&ccedil;&atilde;o funciona e conceitos de projetos que os
+usu&aacute;rios devariam saber. Detalhes particulares podem ser achados
+dentro da aplica&ccedil;&atilde;o usando as ajudas contextuais,
+indicadas pelo &iacute;cone (<img src="images/help.png">). Clique
+neste &iacute;cone onde quer que apare&ccedil;a para obter mais
+informa&ccedil;&otilde;es na funcionalidade que voc&ecirc; est&aacute;
+utilizando.</p>
+
+<h1>Apresenta&ccedil;&atilde;o da Aplica&ccedil;&atilde;o</h1>
+<p>As funcionalidades nesta aplica&ccedil;&atilde;o s&atilde;o
+acessadas pelos controles no cabe&ccedil;alho. Dependendo das
+permiss&otilde;es de sua conta de usu&aacute;rio, v&aacute;rios
+&iacute;cones ser&atilde;o exibidos abaixo do logotipo da
+aplica&ccedil;&atilde;o. Quando o cursor do mouse pairar sobre um
+&iacute;cone, ser&aacute; exibida um bal&atilde;o de texto com uma
+descri&ccedil;&atilde;o resumida da funcionalidade daquele &iacute;cone.</p>
+
+<p>Al&eacute;m dos &iacute;cones de controle, no lado direito do
+cabe&ccedil;alho &eacute; mostrado o nome de usu&aacute;rio que
+est&aacute; logado no sistema.</p>
+<p>Quando sua aplica&ccedil;&atilde;o tiver um alarme ativo, um
+&iacute;cone de uma bandeira (<img src="images/flag_white.png" />)
+ficara piscando e ser&aacute; associada uma descri&ccedil;&atilde;o do
+alarme pr&oacute;ximo ao centro do cabe&ccedil;alho. A cor da bandeira
+indicar&aacute; a severidade do alarme:</p>
+<ul style="list-style-type: none;">
+    <li><img src="images/flag_blue.png">
+    Informa&ccedil;&atilde;o</li>
+    <li><img src="images/flag_yellow.png"> Urgente</li>
+    <li><img src="images/flag_orange.png"> Cr&iacute;tico</li>
+    <li><img src="images/flag_red.png"> Risco de Vida</li>
+</ul>
+<p>&Eacute; poss&iacute;vel clicar no &iacute;cone ou na
+descri&ccedil;&atilde;o para exibir a lista de alarmes ativos.</p>
+
+<h1>Tipos de Dados</h1>
+<p>S&atilde;o suportados cinco tipos de dados:</p>
+<ul>
+    <li>Valores <b>Bin&aacute;rios</b> (ou booleanos) podem ter apenas
+    dois estados, referidos no sistema com os valores <b>zero</b> (<b>0</b>)
+    e <b>um</b> (<b>1</b>). &Eacute; poss&iacute;vel utilizar conversores
+    para exibir os valores bin&aacute;rios em quaisquer r&oacute;tulos
+    necess&aacute;rios, como "on/off", "ligado/desligado", "high/low",
+    "alto/baixo", "iniciado/parado", "started/stopped", etc.</li>
+    <li>Valores de <b>Estados M&uacute;ltiplos</b> t&ecirc;m
+    m&uacute;ltiplos estados distintos. Por essa abordagem, o tipo
+    bin&aacute;rio &eacute; um caso particular de um estado
+    m&uacute;ltiplo. Valores s&atilde;o primitivamente representados como
+    inteiros (ex. 0, 1, 2, 7, ...), mas, como nos valores bin&aacute;rios
+    &eacute; poss&iacute;vel atribuir r&oacute;tulos a cada valor como, por
+    exemplo, "on/off/disabled", "ligado/desligado/desativado",
+    "aquecer/resfriar/desligado", "cool/heat/off", ou quaisquer outros.</li>
+    <li>Valores <b>Num&eacute;ricos</b> (ou anal&oacute;gicos)
+    s&atilde;o valores decimais representados no sistema com uma
+    vari&aacute;vel de ponto flutuante. Podem ser citados como exemplos de
+    valores num&eacute;ricos: temperatura, umidade, pre&ccedil;o e
+    altitude. Renderizadores de texto podem ser usados para determinar
+    exibi&ccedil;&atilde;o de caracter&iacute;sticas como n&uacute;mero de
+    casas decimais, separa&ccedil;&atilde;o de milhar (com pontos ou
+    v&iacute;rgulas), exibi&ccedil;&atilde;o de sufixos (&deg;F, kW/h,
+    moles, etc.). Renderizadores de faixas podem ser usados para converter
+    faixas de valores em r&oacute;tulos de texto.</li>
+    <li>Valores <b>Alfanum&eacute;ricos</b> s&atilde;o simplesmente
+    seq&uuml;&ecirc;ncias de caracteres, como a descri&ccedil;&atilde;o O/S
+    de uma fonte SNMP.</li>
+    <li>Valores em <b>Imagens</b> s&atilde;o
+    representa&ccedil;&otilde;es bin&aacute;rias de dados de imagens.
+    S&atilde;o armazenados em arquivos no sistema de arquivos do servidor
+    host (e n&atilde;o no banco de dados) e s&atilde;o guardados em
+    mem&oacute;ria. Renderizadores podem ser usados para criar imagens
+    escaladas, como thumbnails, para exibi&ccedil;&atilde;o.</li>
+</ul>
+
+<h1>Data sources</h1>
+<p>Data sources (fontes de dados) s&atilde;o parte fundamental para
+a opera&ccedil;&atilde;o desta aplica&ccedil;&atilde;o. Um <b>data
+source</b> &eacute; um "lugar" de onde os dados s&atilde;o recebidos.
+Virtualmente, qualquer coisa pode ser um data source, desde que o
+protocolo de comunica&ccedil;&atilde;o seja suportado pela
+aplica&ccedil;&atilde;o. Alguns exemplos:</p>
+<ul>
+    <li>Se voc&ecirc; tem uma rede Modbus acess&iacute;vel por RS232,
+    RS485, TCP/IP ou UDP/IP, voc&ecirc; pode criar um data source Modbus
+    que ir&aacute; "pollar" (poll) a rede em um intervalo definido.</li>
+    <li>Se voc&ecirc; tem equipamentos ou aplica&ccedil;&otilde;es que
+    podem enviar dados sobre HTTP, voc&ecirc; pode iniciar um data source
+    HTTP receiver que ir&aacute; escutar conex&otilde;es recebidas e enviar
+    os dados aos pontos apropriados.</li>
+    <li>Para hardware qeu suporta SNMP, inicie um data source SNMP.
+    Valores poder&atilde;o ser "pollados" em intervalos definidos, ou traps
+    podem ser recebidos para report-on-exception.</li>
+    <li>Dados podem ser lidos e atualizados em uma base de dados SQL
+    externa ao sistema.</li>
+    <li>Dados podem ser gerados randomicamente ou preditivamente
+    usando um data source Virtual.</li>
+</ul>
+<p>Valores de dados recebidos ou coletados por um data source
+s&atilde;o armazenados em data points.</p>
+
+<h1>Data points</h1>
+<p>Um <b>data point</b> &eacute; uma cole&ccedil;&atilde;o de
+valores hist&oacute;ricos associados. Por exemplo, um ponto particular
+pode ser uma leitura de temperatura de um quarto, enquanto outro ponto
+poderia ser a leitura de umidade do mesmo quarto. Pontos tamb&eacute;m
+podem ser valores de controle, como um indicador para ligar ou desligar
+um equipamento.</p>
+<p>Existem muitos atributos que s&atilde;o usados para controlar o
+comportamento de pontos. Inicialmente existe o conceito de um <b>point
+locator</b>. <i>Locators</i> s&atilde;o usados por data sources para
+determinar como "achar" os dados para o ponto particular. Por exemplo,
+um data source SQL tem atributos incluindo onde achar a inst&acirc;ncia
+da base de dados; point locators para o data source indicam o nome da
+tabela e dos campos onde podem ser achados valores espec&iacute;ficos. A
+separa&ccedil;&atilde;o l&oacute;gica de data source e de data point
+dependem do protocolo de comunica&ccedil;&atilde;o em quest&atilde;o.</p>
+<p>Atributos de data points tamb&eacute;m podem determinar muitos
+outros aspectos do ponto, como seu nome, como deve ser registrado (todos
+os dados, apenas mudan&ccedil;as no valor, ou nenhum), por quanto tempo
+manter os dados, como formatar os dados para exibi&ccedil;&atilde;o e
+como tra&ccedil;ar um gr&aacute;fico com os valores.</p>
+<p>Voc&ecirc; tamb&eacute;m pode configurar data points com <b>event
+detectors</b>, que s&atilde;o usados para detectar condi&ccedil;&otilde;es
+de interesse nos valores dos pontos, como por exemplo, se o valor esteve
+muito alto por muito tempo, se &eacute; muito baixo, se muda com
+freq&uuml;&ecirc;ncia, se n&atilde;o muda, etc.</p>
+<p>Pontos podem ser arranjados em um uma hierarquia, ou
+&aacute;rvore, para simplificar sua ger&ecirc;ncia e
+exibi&ccedil;&atilde;o usando a funcionalidade de Point Hierarchy.</p>
+
+<h1>Monitoramento</h1>
+<p>Monitoramento de pontos dentro do sistema pode ser feito de duas
+maneiras. &Eacute; poss&iacute;vel usar uma <b>watch list</b> para criar
+listas din&acirc;micas de pontos com seus valores, &uacute;ltimos tempos
+de atualiza&ccedil;&atilde;o, e gr&aacute;ficos de
+informa&ccedil;&otilde;es hist&oacute;ricas (se a
+configura&ccedil;&atilde;o do ponto permitir). Valores e gr&aacute;ficos
+s&atilde;o atualizados em tempo real sem ter que atualizar a janela do
+navegador. Gr&aacute;ficos de m&uacute;ltiplos pontos tamb&eacute;m
+podem ser exibidos sob demanda.</p>
+<p>Tamb&eacute;m &eacute; poss&iacute;vel criar <b>graphical
+views</b> de pontos usando a funcionalidade drag and drop para posicionar
+representa&ccedil;&otilde;es gr&aacute;ficas de pontos sobre uma imagem
+de fundo arbitr&aacute;ria. Imagens animadas podem ser usadas para criar
+uma visualiza&ccedil;&atilde;o altamente din&acirc;mica do comportamento
+do sistema, e, como as watch lists, valores s&atilde;o representados em
+tempo real sem necessitar de atualiza&ccedil;&atilde;o do navegador.
+Essas visualiza&ccedil;&otilde;es podem ser marcadas como
+"p&uacute;blicas" para que possam ser utilizadas em web sites
+p&uacute;blicos.</p>
+
+<h1>Controle</h1>
+<p>O controle de sistemas externos pode ser obtido para pontos que
+podem ser "setados" (ou que permitem escrita ou sa&iacute;da). Um ponto
+<b>settable</b> pode ser "setado" para um valor definido pelo
+usu&aacute;rio, como uma configura&ccedil;&atilde;o de um termostato ou
+de um controle interruptor para um equipamento. Ambas watch lists e
+graphical views proporcionam meios simples para determinar a entrada de
+um valor. O point locator para um ponto "set&aacute;vel" determina como
+o data source define o valor no equipamento externo.</p>
+
+<h1>Eventos</h1>
+<p>Um <b>event</b> &eacute; a ocorr&ecirc;ncia de uma
+condi&ccedil;&atilde;o definida no sistema. Existem tanto eventos
+definidos pelo sistema como definidos pelo usu&aacute;rio. Eventos
+definidos pelo sistema incluem erros de opera&ccedil;&atilde;o de data
+sources, logins de usu&aacute;rios, e inicializa&ccedil;&atilde;o e
+parada do sistema. Eventos definidos pelo usu&aacute;rio incluem point
+event detectors (veja "event detectors" acima), scheduled events, e
+eventos compostos que detectam condi&ccedil;&otilde;es sobre pontos
+m&uacute;ltiplos usando argumentos l&oacute;gicos. Tamb&eacute;m existem
+"audit events" que ocorrem quando usu&aacute;rios fazem
+altera&ccedil;&otilde;es (adi&ccedil;&otilde;es,
+modifica&ccedil;&otilde;es e remo&ccedil;&otilde;es) que afetam objetos
+em tempo de execu&ccedil;&atilde;o, incluindo data sources, data points,
+point event detectors, scheduled events, compound event detectors e
+event handlers.</p>
+<p>Uma vez que um evento foi detectado, &eacute; manipulado por
+handlers. Um <b>event handler</b> &eacute; um comportamento definido
+pelo usu&aacute;rio que deve ser executado quando um evento particular
+ocorre, como envio de email ou "setar" o valor a um settable point.</p>
+
+<h1>&Iacute;cones da Aplica&ccedil;&atilde;o</h1>
+<ul style="list-style-type: none;">
+    <li><img src="images/icon_ds.png"> Data source</li>
+    <li><img src="images/icon_comp.png"> Data point</li>
+    <li><img src="images/icon_chart.png"> Chart</li>
+    <li><img src="images/icon_edit.png"> Set point</li>
+    <li><img src="images/eye.png"> Watch list</li>
+    <li><img src="images/icon_view.png"> Graphical view</li>
+    <li><img src="images/control_repeat_blue.png"> Refresh</li>
+    <li><img src="images/bell.png"> Event detector</li>
+    <li><img src="images/multi_bell.png"> Compound detector</li>
+    <li><img src="images/clock.png"> Scheduled event</li>
+    <li><img src="images/cog.png"> Event handler</li>
+    <li><img src="images/flag_white.png"> Alarm</li>
+    <li><img src="images/user.png"> User</li>
+    <li><img src="images/comment.png"> User comment</li>
+    <li><img src="images/report.png"> Report</li>
+    <li><img src="images/book.png"> Mailing list</li>
+    <li><img src="images/transmit.png"> Publisher</li>
+    <li><img src="images/warn.png"> Warning</li>
+    <li><img src="images/control_stop_blue.png"> Logout</li>
+</ul>
+
+<h1>Sons de Alarmes</h1>
+<p>O Mango M2M pode executar sons quando alarmes est&atilde;o
+ativos. Por defini&ccedil;&atilde;o, sons para alarmes s&atilde;o
+executados para alames urgentes, cr&iacute;ticos e de risco de vida e
+n&atilde;o para alarmes de informa&ccedil;&atilde;o, mas os sons dos
+alarmes podem ser definidos individualmente. Para habilitar sons de
+alarmes particulares, arquivos v&aacute;lidos no formato mp3 devem ser
+colocados em:</p>
+<ul>
+    <li>&lt;mango_home&gt;/audio/information.mp3</li>
+    <li>&lt;mango_home&gt;/audio/urgent.mp3</li>
+    <li>&lt;mango_home&gt;/audio/critical.mp3</li>
+    <li>&lt;mango_home&gt;/audio/lifesafety.mp3</li>
+</ul>
+<p>Para desabilitar um som, remova o arquivo de som associado. Uma
+cole&ccedil;&atilde;o de sons pode ser achada na pasta
+&lt;mango_home&gt;/audio/lib.</p>
+
+<h1>Graficos</h1>
+<p>O ScadaBR cont&eacute;m uma pequena biblioteca de gr&aacute;ficos
+que pode ser achada na pasta &lt;ScadaBR_home&gt;/graphics. Cada
+sub-pasta cont&eacute;m todas as imagens daquela defini&ccedil;&atilde;o
+de imagem e um arquivo opcional de propriedades chamado <b>info.txt</b>.
+Este arquivo de propriedades cont&eacute;m pares nome/valor para os
+seguintes atributos (todos opcionais):</p>
+<ul>
+    <li><b>name</b>: O nome que ser&aacute; usado para descrever a
+    imagem na interface de usu&aacute;rio. Se n&atilde;o fornecido, a
+    imagem assume por padr&atilde;o o nome da pasta.</li>
+    <li><b>width</b>: A largura da imagem. Por padr&atilde;o, todas as
+    imagens s&atilde;o do mesmo tamanho. Se n&atilde;o fornecido, a largura
+    da primeira imagem ser&aacute; utilizada.</li>
+    <li><b>height</b>: A altura da imagem. Por padr&atilde;o, todas as
+    imagens s&atilde;o do mesmo tamanho. Se n&atilde;o fornecido, a altura
+    da primeira imagem ser&aacute; utilizada.</li>
+    <li><b>text.x</b>: A posi&ccedil;&atilde;o de texto relativo ao
+    limite esquerdo da imagem, em pixels. Se n&atilde;o fornecido, o valor
+    padr&atilde;o &eacute; 5.</li>
+    <li><b>text.y</b>: A posic&atilde;o de texto relativo ao limite
+    superior da imagem, em pixels. Se n&atilde;o fornecido, o valor
+    padr&atilde;o &eacute; 5.</li>
+</ul>
+<p><b>Uma vez que &eacute; utilizada uma defini&ccedil;&atilde;o
+de imagem nas views a pasta n&atilde;o deve ser renomeada!</b> O nome da
+pasta &eacute; usada internamente como o identificador da
+defini&ccedil;&atilde;o de imagem.</p>
+<p>Arquivos de imagens s&atilde;o arranjados alfabeticamente por
+nome e s&atilde;o sens&iacute;veis &agrave; caixa. Pares nome/valor
+s&atilde;o separados por '='. Linhas iniciadas por '#' s&atilde;o
+consideradas coment&aacute;rios. Arquivos 'thumbs.db' s&atilde;o
+ignorados. Arquivos compactados (zip, gz, tar, etc) n&atilde;o podem ser
+usados por que os arquivos de imagens devem ser acessados pelo web
+server. As defini&ccedil;&otilde;es de imagens s&atilde;o carregadas na
+inicializa&ccedil;&atilde;o do sistema, ent&atilde;o quaisquer
+altera&ccedil;&otilde;es requerem reinicializa&ccedil;&atilde;o.</p>
+<p>Para que as futuras vers&otilde;es do ScadaBR tenham mais
+gr&aacute;ficos, por favor forne&ccedil;a os gr&aacute;ficos que
+voc&ecirc; criar para o projeto ScadaBR. Por favor apoie open source
+software.</p>
+<p>Se voc&ecirc; tem d&uacute;vidas a respeito de algum texto de
+ajuda oferecido nesta sess&atilde;o e entende ingl&ecirc;s, por favor
+mude o idioma de exibi&ccedil;&atilde;o para que o texto orinigal seja
+exibido. E por gentileza nos envie sua sugest&atilde;o de
+tradu&ccedil;&atilde;o!</p>
+
+<h1>Views remotas</h1>
+<p>Views p&uacute;blicas do ScadaBR podem ser acessadas de outros
+web sites ao simplesmente colocar um iframe em suas p&aacute;ginas. Por
+exemplo, a home page do ScadaBR home page usa o seguinte c&oacute;digo
+para exibir uma pequena view de um termostato:</p>
+<pre>&lt;div style="position:relative;width:80px;height:150px"&gt;
+&lt;iframe frameBorder="0" style="position:absolute;width:450px;height:300px" scrolling="no" allowTransparency="true"
+        src="http://mango.serotoninsoftware.com/test/public_view.htm?viewId=3"&gt;&lt;/iframe&gt;
+&lt;/div&gt;</pre>
+<p>Recursos de posicionamento absoluto e transpar&ecirc;ncia
+s&atilde;o utilizados para permitir a exibi&ccedil;&atilde;o de
+gr&aacute;ficos e controles de componentes sem rolagem ou ajustes no
+c&oacute;digo HTML, mas s&atilde;o opcionais. O par&acirc;metro 'viewId'
+&eacute; o id gerado internamente para a exibi&ccedil;&atilde;o da view,
+mas pode ser substitu&iacute;do pelo par&acirc;metro 'viewName' e o nome
+da view como valor. (Entretanto, o nome da view n&atilde;o deve ser
+subseq&uuml;entemente alterado sem atualiza&ccedil;&atilde;o desta
+refer&ecirc;ncia.)</p>
+
+<h1>Views customizadas</h1>
+<p>Views customizadas s&atilde;o views publicamente
+acess&iacute;veis que s&atilde;o escritas pelo usu&aacute;rio, usando
+uma biblioteca de tags JSP para facilmente adicionar componentes. Para
+mais informa&ccedil;&atilde;o veja o exemplo em customViewExample.jsp.</p>
+
+<h1>Altera&ccedil;&atilde;o do Banco de Dados</h1>
+
+<p>O ScadaBR atualmente suporta dois sistemas gerenciadores de banco
+de dados: <b>Derby</b> and <b>MySQL</b>. O arquivo <b>ScadaBR.war</b> vem por
+padr&atilde;o configurado com o Derby por quest&otilde;es de facilidade
+para o usu&aacute;rio, pois o mesmo roda embarcado e n&atilde;o exige a
+instala&ccedil;&atilde;o do SGBD ou a configura&ccedil;&atilde;o de
+par&acirc;metros como login e senha. </p>
+
+<p>Para alterar o banco de dados, entre em <b>Configura&ccedil;&otilde;es do Sistema</b> e escolha o banco
+de sua prefer&ecirc;ncia em <b>Configura&ccedil;&atilde;o do Banco de Dados</b>. 
+</p>

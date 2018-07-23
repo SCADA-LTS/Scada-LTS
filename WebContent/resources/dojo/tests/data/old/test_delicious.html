@@ -1,0 +1,58 @@
+<html>
+	<head>
+		<title>dojo.data -- del.icio.us data-binding tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../../../dojo.js"></script>
+		<script type="text/javascript" src="../../jsunit_browser.js"></script>
+		<script type="text/javascript" src="BindingHack.js"></script>
+		<script type="text/javascript" src="http://del.icio.us/feeds/json/gumption?count=7"></script>
+		<script type="text/javascript" src="test_delicious.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.data.old.*");
+
+			function init(){
+				data_binding_init();
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+		<style type="text/css">
+			/***
+				The following is just an example of how to use the table.
+				You can override any class names to be used if you wish.
+			***/
+			table {
+				font-family:Lucida Grande, Verdana;
+				font-size:0.8em;
+				border:1px solid #ccc;
+				cursor:default;
+			}
+			table tr td { padding:0.2em; }
+			table thead { background-color:#ccc; }
+			table thead tr td{ }
+			table thead tr td.selected { background-color:#999; }
+			table tbody {
+				/* Seems like only FF/Moz respects this, that's too bad. */
+				height:18em;
+				overflow:auto;
+				overflow-x:hidden;
+			}
+			table tbody tr.alt { background-color:#ede; }
+			table tbody tr.selected,
+			table tbody tr.selected:hover { background-color:#ff3; }
+			table tbody tr:hover,
+			table tbody tr.alt:hover { background-color:#cfc; }
+		</style>
+	</head>
+	<body>
+		<div id="putFirstQueryTableHere"></div>
+		<div id="putSecondQueryTableHere"></div>
+	</button>
+	</body>
+</html>
+

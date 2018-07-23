@@ -1,0 +1,49 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>NLS Select test</title>
+	
+	<script type="text/javascript"> 
+		var djConfig = {
+			isDebug: true};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.Select");
+	</script>
+	<script>
+		function setVal1(val){
+			dojo.byId('value1').value=val;
+		}
+	</script>
+</head>
+
+<body>
+	<h1>Dojo NLS Select Widget Test</h1>
+	<h2>Japanese</h2>
+	<p>Try typing 東、西、北、南  (north, south, east west) and a few choices will pop up.</p>
+	 
+	<select name="state3" dojoType="Select" style="width: 300px;" autocomplete="false"
+		onValueChanged="setVal1">
+		<option value="nanboku">南北</option>
+		<option value="touzai">東西</option>
+		<option value="toukyou">東京</option>
+		<option value="higashiguchi">東口</option>
+		<option value="nishiguchi">西口</option>
+		<option value="minamiguchi">南口</option>
+		<option value="kitaguchi">北口</option>
+		<option value="higashiku">東区</option>
+		<option value="nishiku">西区</option>
+		<option value="minamiku">南区</option>
+		<option value="kitaku">北区</option>
+	</select>    
+	<br>
+	<div>Value: <input id="value1" disabled></div>
+	<hr>
+	
+	<!-- maintain state of select if user presses back/forward button -->
+	<form name="_dojo_form" style="display:none" disabled="true"><textarea name="stabile" cols="80" rows="10"></textarea></form>
+</body>
+</html>

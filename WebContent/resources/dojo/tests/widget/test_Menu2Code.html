@@ -1,0 +1,140 @@
+<html>
+<head>
+	<title>Dojo Menu/MenuBar Programatic Test</title>
+	
+	<script type="text/javascript">
+		var djConfig = { //parseWidgets: false,// appears to make no difference, alas
+		  isDebug: true
+		 };
+	</script>
+	<script language="JavaScript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.Menu2");
+		dojo.hostenv.writeIncludes();
+	</script>
+
+	<script>
+		// Create a menu bar w/sub menus by simple static calls
+		function bar(){
+			var menubar = dojo.widget.createWidget("MenuBar2", {id: "mbar"});
+			document.body.appendChild(menubar.domNode);
+
+			var menu1 = dojo.widget.createWidget("PopupMenu2", {id: "menu1"});
+			menu1.addChild(dojo.widget.createWidget("MenuItem2", {caption: "MENU 1"}));
+			
+			var menu2 = dojo.widget.createWidget("PopupMenu2", {id: "menu2"});
+			menu2.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Page Info"}));
+			menu2.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Set Permissions"}));
+			menu2.addChild(dojo.widget.createWidget("MenuItem2", {caption: "List All Pages"}));
+			menu2.addChild(dojo.widget.createWidget("MenuItem2", {caption: "List My Pages"}));
+			menu2.addChild(dojo.widget.createWidget("MenuItem2", {caption: "List Recent Changes"}));
+			menu2.addChild(dojo.widget.createWidget("MenuItem2", {caption: "List Recent Comments"}));
+			menu2.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Save Page"}));
+			menu2.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Save {{NoWiki}}Space{{/NoWiki}}"}));
+			menu2.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Load {{NoWiki}}Space{{/NoWiki}}"}));
+			
+			var menu3 = dojo.widget.createWidget("PopupMenu2", {id: "menu3"});
+			menu3.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Edit Page"}));
+			menu3.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Copy Page"}));
+			menu3.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Rename Page"}));
+			menu3.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Delete Page"}));
+			
+			var menu4 = dojo.widget.createWidget("PopupMenu2", {id: "menu4"});
+			menu4.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Show All Notes"}));
+			menu4.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Hide All Notes"}));
+			menu4.addChild(dojo.widget.createWidget("MenuSeparator2"));
+			menu4.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Lists"}));
+			menu4.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Commands"}));
+			menu4.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Bookmarks"}));
+			
+			var menu5 = dojo.widget.createWidget("PopupMenu2", {id: "menu5"});
+			menu5.addChild(dojo.widget.createWidget("MenuItem2", {caption: "DojoTest"}));
+			menu5.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Home Page"}));
+			menu5.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Yadda Yadda"}));
+			
+			var menu6 = dojo.widget.createWidget("PopupMenu2", {id: "menu6"});
+			menu6.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Change Settings"}));
+			menu6.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Logout"}));
+			menu6.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Manage Users"}));
+			menu6.addChild(dojo.widget.createWidget("MenuItem2", {caption: "Refresh QED Palette"}));
+			
+			var menu7 = dojo.widget.createWidget("PopupMenu2", {id: "menu7"});
+			menu7.addChild(dojo.widget.createWidget("MenuItem2", {caption: "About"}));
+			menu7.addChild(dojo.widget.createWidget("MenuItem2", {caption: "User Manual"}));
+			
+			menubar.addChild(dojo.widget.createWidget("MenuBarItem2", {caption: "Help", submenuId: "menu7"}));
+			menubar.addChild(dojo.widget.createWidget("MenuBarItem2", {caption: "User", submenuId: "menu6"}));
+			menubar.addChild(dojo.widget.createWidget("MenuBarItem2", {caption: "History", submenuId: "menu5"}));
+			menubar.addChild(dojo.widget.createWidget("MenuBarItem2", {caption: "View", submenuId: "menu4"}));
+			menubar.addChild(dojo.widget.createWidget("MenuBarItem2", {caption: "Edit", submenuId: "menu3"}));
+			menubar.addChild(dojo.widget.createWidget("MenuBarItem2", {caption: "Page", submenuId: "menu2"}));
+			menubar.addChild(dojo.widget.createWidget("MenuBarItem2", {caption: "Home", submenuId: "menu1"}));			
+	 	}
+
+		// This is a JSON structure representing a menu
+		var myMenu =
+		[
+			{
+				caption: "File",
+				submenu:
+				[
+					{
+						caption: "Save",
+						iconSrc: "images/tools.gif"
+					},
+					{
+						caption: "Recent",
+						iconSrc: "images/plus.gif",
+						submenu: 
+						[
+							{ caption: "foo.txt", iconSrc: "images/graph.gif", onClick: function(){ alert("opening foo"); } },
+							{ caption: "bar.txt", iconSrc: "images/check.gif", onClick: function(){ alert("opening bar"); } },
+							{ caption: "doh.txt", iconSrc: "images/graph.gif", onClick: function(){ alert("opening doh"); } }
+						]
+					}
+				]
+			},
+
+			{
+				caption: "Edit",
+				submenu:
+				[
+					{ caption: "Cut", accelKey: "Ctrl+X", iconSrc: "../../src/widget/templates/buttons/cut.gif" },
+					{ caption: "Copy", accelKey: "Ctrl+P", iconSrc: "../../src/widget/templates/buttons/copy.gif" },
+					{ caption: "Paste", accelKey: "Ctrl+V", iconSrc: "../../src/widget/templates/buttons/paste.gif" }
+				]
+			},
+
+			{
+				caption: "Help",
+				onClick: function(){ alert("Help me!"); }
+			}
+		];
+		
+		function makeMenu(items, isTop){
+			var menu2 = dojo.widget.createWidget("PopupMenu2", {contextMenuForWindow: isTop});
+			dojo.lang.forEach(items, function(itemJson){
+				// if submenu is specified, create the submenu and then make submenuId point to it
+				if(itemJson.submenu){
+					var submenu = makeMenu(itemJson.submenu, false);
+					itemJson.submenuId = submenu.widgetId;
+				}
+				var item = dojo.widget.createWidget("MenuItem2",  itemJson);
+				menu2.addChild(item);
+			});
+			return menu2;
+		}
+
+		// Make a popup menu
+		function menu(){
+			makeMenu(myMenu, true);
+			dojo.debug("Menu created, right-click to see it (ctrl-click on opera)");
+		}
+	</script>
+</head>
+<body>
+<h1>Test of programatic creation of menu and menubar</h1>
+<button onClick="bar();">Create menu bar</button>
+<button onClick="menu();">Create context menu</button>
+</body>
+</html>

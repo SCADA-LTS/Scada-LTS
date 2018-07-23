@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<degrafa:GraphicBorderSkin xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:degrafa="http://www.degrafa.com/2007">
+
+		<degrafa:fills>
+			<degrafa:SolidFill color="#FF0000" id="RedFill" alpha=".8"/>
+		</degrafa:fills>
+		<degrafa:strokes>
+			<degrafa:SolidStroke color="#FFFFFF" id="whiteStroke" weight="2" alpha=".8"/>
+		</degrafa:strokes>
+	
+	<degrafa:geometry>
+		<degrafa:VerticalLine stroke="{whiteStroke}" y="0" y1="16" x="4"/>
+		<degrafa:Circle stroke="{whiteStroke}" centerY="20" centerX="4" fill="{RedFill}" radius="4"/>
+	</degrafa:geometry>
+		
+</degrafa:GraphicBorderSkin>

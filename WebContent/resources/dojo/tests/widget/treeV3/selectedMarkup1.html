@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.widget.TreeSelectorV3");
+	dojo.require("dojo.widget.TreeEmphasizeOnSelect");
+	dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body>
+	
+<h3>Markup tree with basic controller attached, multiline content and empty folder</h3>
+
+	
+    <div dojoType="TreeBasicControllerV3" widgetId="treeController" ></div>
+    <div dojoType="TreeSelectorV3" widgetId="treeSelector" ></div>
+    <div dojoType="TreeEmphasizeOnSelect" selector="treeSelector"></div>
+
+    <div dojoType="TreeV3" widgetId="firstTree" listeners="treeController;treeSelector">
+        <div dojoType="TreeNodeV3" title="Node A" expandLevel="2">
+            <div dojoType="TreeNodeV3" title="Node B" selected="true">
+                <div dojoType="TreeNodeV3" title="Node C">
+                    <div dojoType="TreeNodeV3" title="Node D"></div>
+                </div>
+            </div>
+        </div> 
+    </div>
+
+
+</body>
+</html>

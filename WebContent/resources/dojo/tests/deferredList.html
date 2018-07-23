@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.DeferredList");
+	dojo.hostenv.writeIncludes();
+
+	dojo.addOnLoad(function() {
+
+		var d1 = new dojo.Deferred();
+		var d2 = new dojo.Deferred();
+		var l1 = new dojo.DeferredList([d1, d2], false, false, true);
+		l1.addCallback(function (resultList) {
+			for(var i=0;i<resultList.length;i++) {
+				dojo.debug(i+':'+resultList[i]);
+			}
+		});
+
+		d1.callback(1);
+		d2.errback(new Error(2));
+	});
+
+
+</script>
+</head>
+<body>
+
+</body>
+</html>

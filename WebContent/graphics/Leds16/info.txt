@@ -1,0 +1,6 @@
+name=Leds16
+type=imageSet
+#width=16
+#height=16
+text.x=0
+text.y=16

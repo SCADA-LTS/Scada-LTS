@@ -1,0 +1,2 @@
+driver 'org.apache.derby.jdbc.EmbeddedDriver';
+connect 'jdbc:derby:C:/JavaApis/apache-tomcat-5.5.20/bin/scadabrDB';

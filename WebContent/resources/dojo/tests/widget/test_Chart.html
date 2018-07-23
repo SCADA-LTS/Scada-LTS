@@ -1,0 +1,217 @@
+<html>
+	<head>
+		<title>dojo: Chart demo</title>
+		<script type="text/javascript">
+			var djConfig = { isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.widget.Chart");
+			//dojo.hostenv.writeIncludes();
+		</script>
+	</head>
+	<body>
+		<p>
+			The following only works on browsers that support inline SVG (FF1.5+ and Opera 9) and Internet Explorer.
+		</p>
+		<div dojoType="chart" style="border:1px solid black;width:600px;background-color:#ededde;">
+			<table 
+				width="600" 
+				height="400" 
+				padding="20 20 20 40" 
+				plotType="line" 
+				axisAt="0 xmin" 
+				rangeX="0 100" 
+				rangeY="-20 60"
+			>
+				<thead>
+					<tr>
+						<th>X</th>
+						<th plotType="bar">Series A</th>
+						<th>Series B</th>
+						<th plotType="bubble">Series C</th>
+						<th plotType="scatter" color="#963">Series D</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr><td>2</td><td>22</td><td>17</td><td size="2.28">18</td><td>1.04137618667233</td></tr>
+					<tr><td>4</td><td>19</td><td>14.7224318643355</td><td size="1.4">24</td><td>8.5</td></tr>
+					<tr><td>6</td><td>16</td><td>8.5</td><td size="0.85">30</td><td>14.7224318643355</td></tr>
+					<tr><td>8</td><td>13</td><td>2.08275237334465</td><td>36</td><td>17</td></tr>
+					<tr><td>10</td><td>-23</td><td>8.5</td><td>42</td><td>14.7224318643355</td></tr>
+					<tr><td>12</td><td>-20</td><td>14.7224318643355</td><td>48</td><td>8.50000000000001</td></tr>
+					<tr><td>14</td><td>17</td><td>17</td><td>54</td><td>3.12412856001698</td></tr>
+					<tr><td>16</td><td>-14</td><td>14.7224318643355</td><td size="4.84">15</td><td>8.5</td></tr>
+					<tr><td>18</td><td>-24</td><td>8.50000000000001</td><td>21</td><td>14.7224318643355</td></tr>
+					<tr><td>20</td><td>21</td><td>4.16550474668931</td><td>27</td><td>17</td></tr>
+					<tr><td>22</td><td>18</td><td>8.5</td><td>33</td><td>14.7224318643355</td></tr>
+					<tr><td>24</td><td>15</td><td>14.7224318643355</td><td>39</td><td>8.49999999999999</td></tr>
+					<tr><td>26</td><td>12</td><td>17</td><td>45</td><td>5.20688093336164</td></tr>
+					<tr><td>28</td><td>22</td><td>14.7224318643355</td><td>51</td><td>8.49999999999999</td></tr>
+					<tr><td>30</td><td>-19</td><td>8.5</td><td>12</td><td>14.7224318643355</td></tr>
+					<tr><td>32</td><td>-16</td><td>6.24825712003396</td><td>18</td><td>17</td></tr>
+					<tr><td>34</td><td>-13</td><td>8.49999999999999</td><td>24</td><td>14.7224318643355</td></tr>
+					<tr><td>36</td><td>23</td><td>14.7224318643355</td><td>30</td><td>8.5</td></tr>
+					<tr><td>38</td><td>-20</td><td>17</td><td>36</td><td>7.28963330670629</td></tr>
+					<tr><td>40</td><td>17</td><td>14.7224318643355</td><td>42</td><td>8.49999999999999</td></tr>
+					<tr><td>42</td><td>-14</td><td>8.5</td><td>48</td><td>14.7224318643355</td></tr>
+					<tr><td>44</td><td>-24</td><td>8.33100949337862</td><td>54</td><td>17</td></tr>
+					<tr><td>46</td><td>21</td><td>8.49999999999998</td><td>15</td><td>14.7224318643355</td></tr>
+					<tr><td>48</td><td>18</td><td>14.7224318643355</td><td>21</td><td>8.5</td></tr>
+					<tr><td>50</td><td>15</td><td>17</td><td>27</td><td>9.37238568005094</td></tr>
+					<tr><td>52</td><td>12</td><td>14.7224318643355</td><td>33</td><td>8.50000000000001</td></tr>
+					<tr><td>54</td><td>22</td><td>8.5</td><td>39</td><td>14.7224318643355</td></tr>
+					<tr><td>56</td><td>19</td><td>1.04137618667233</td><td>45</td><td>17</td></tr>
+					<tr><td>58</td><td>-16</td><td>8.49999999999998</td><td>51</td><td>14.7224318643355</td></tr>
+					<tr><td>60</td><td>-13</td><td>14.7224318643354</td><td>12</td><td>8.50000000000003</td></tr>
+					<tr><td>62</td><td>-23</td><td>17</td><td>18</td><td>1.87429282164087</td></tr>
+					<tr><td>64</td><td>-20</td><td>14.7224318643355</td><td>24</td><td>8.50000000000001</td></tr>
+					<tr><td>66</td><td>-17</td><td>8.5</td><td>30</td><td>14.7224318643355</td></tr>
+					<tr><td>68</td><td>-14</td><td>1.24965142400679</td><td>36</td><td>17</td></tr>
+					<tr><td>70</td><td>24</td><td>8.49999999999998</td><td>42</td><td>14.7224318643355</td></tr>
+					<tr><td>72</td><td>21</td><td>14.7224318643354</td><td>48</td><td>8.50000000000003</td></tr>
+					<tr><td>74</td><td>18</td><td>17</td><td>54</td><td>1.6660175843064</td></tr>
+					<tr><td>76</td><td>15</td><td>14.7224318643355</td><td>15</td><td>8.50000000000001</td></tr>
+					<tr><td>78</td><td>12</td><td>8.5</td><td>21</td><td>14.7224318643355</td></tr>
+					<tr><td>80</td><td>22</td><td>1.45792666134126</td><td>27</td><td>17</td></tr>
+					<tr><td>82</td><td>19</td><td>8.49999999999998</td><td>33</td><td>14.7224318643355</td></tr>
+					<tr><td>84</td><td>16</td><td>14.7224318643354</td><td>39</td><td>8.50000000000003</td></tr>
+					<tr><td>86</td><td>13</td><td>17</td><td>45</td><td>1.45774234697194</td></tr>
+					<tr><td>88</td><td>23</td><td>14.7224318643355</td><td>51</td><td>8.5</td></tr>
+					<tr><td>90</td><td>20</td><td>8.50000000000001</td><td>12</td><td>14.7224318643355</td></tr>
+					<tr><td>92</td><td>17</td><td>1.66620189867572</td><td>18</td><td>17</td></tr>
+					<tr><td>94</td><td>14</td><td>8.49999999999998</td><td>24</td><td>14.7224318643355</td></tr>
+					<tr><td>96</td><td>24</td><td>14.7224318643354</td><td>30</td><td>8.50000000000003</td></tr>
+					<tr><td>98</td><td>21</td><td>17</td><td>36</td><td>1.24946710963747</td></tr>
+					<tr><td>100</td><td>18</td><td>14.7224318643355</td><td>42</td><td>8.5</td></tr>
+					<tr><td>102</td><td>15</td><td>8.50000000000001</td><td>48</td><td>14.7224318643355</td></tr>
+					<tr><td>104</td><td>12</td><td>1.87447713601019</td><td>54</td><td>17</td></tr>
+					<tr><td>106</td><td>22</td><td>8.49999999999998</td><td>15</td><td>14.7224318643355</td></tr>
+					<tr><td>108</td><td>19</td><td>14.7224318643355</td><td>21</td><td>8.49999999999998</td></tr>
+					<tr><td>110</td><td>16</td><td>17</td><td>27</td><td>1.041191872303</td></tr>
+					<tr><td>112</td><td>13</td><td>14.7224318643355</td><td>33</td><td>8.5</td></tr>
+					<tr><td>114</td><td>23</td><td>8.50000000000001</td><td>39</td><td>14.7224318643355</td></tr>
+					<tr><td>116</td><td>20</td><td>2.08275237334465</td><td>45</td><td>17</td></tr>
+				</tbody>
+			</table>
+		</div>
+		<div style="float:right;">
+			<p>this one, kind of like a sparkline.</p>
+			<div dojoType="chart" style="border:1px solid black;width:200px;background-color:#ededde;">
+				<table 
+					width="200" 
+					height="80" 
+					padding="12" 
+					plotType="line" 
+					axisAt="0 xmax" 
+					rangeX="-50 50" 
+					rangeY="-50 50"
+				>
+					<thead>
+						<tr>
+							<th>X</th>
+							<th plotType="bar">Series A</th>
+							<th>Series B</th>
+							<th>Series C</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>-50</td><td>0</td><td>0</td><td size="1.23">-17.327</td></tr>
+						<tr><td>-47</td><td>5.352</td><td>5.352</td><td size="3.54">-16.349</td></tr>
+						<tr><td>-44</td><td>10.612</td><td>10.612</td><td size="1.62">-15.359</td></tr>
+						<tr><td>-41</td><td>15.69</td><td>15.69</td><td size="3.93">-14.359</td></tr>
+						<tr><td>-38</td><td>20.5</td><td>20.5</td><td size="2.00999999999999">-13.348</td></tr>
+						<tr><td>-35</td><td>24.959</td><td>24.959</td><td size="4.31999999999999">-12.329</td></tr>
+						<tr><td>-32</td><td>28.991</td><td>28.991</td><td size="2.39999999999999">-11.301</td></tr>
+						<tr><td>-29</td><td>32.527</td><td>32.527</td><td size="4.70999999999999">-10.266</td></tr>
+						<tr><td>-26</td><td>35.507</td><td>35.507</td><td size="2.78999999999999">-9.223</td></tr>
+						<tr><td>-23</td><td>37.879</td><td>37.879</td><td size="5.09999999999999">-8.174</td></tr>
+						<tr><td>-20</td><td>39.603</td><td>39.603</td><td size="3.17999999999999">-7.12</td></tr>
+						<tr><td>-17</td><td>40.649</td><td>40.649</td><td size="1.25999999999998">-6.06</td></tr>
+						<tr><td>-14</td><td>41</td><td>41</td><td size="3.56999999999998">-4.997</td></tr>
+						<tr><td>-11</td><td>40.649</td><td>40.649</td><td size="1.64999999999998">-3.93</td></tr>
+						<tr><td>-8</td><td>39.603</td><td>39.603</td><td size="3.95999999999998">-2.86</td></tr>
+						<tr><td>-5</td><td>37.879</td><td>37.879</td><td size="2.03999999999998">-1.788</td></tr>
+						<tr><td>-2</td><td>35.507</td><td>35.507</td><td size="4.34999999999998">-0.716</td></tr>
+						<tr><td>1</td><td>32.527</td><td>32.527</td><td size="2.42999999999997">0.358</td></tr>
+						<tr><td>4</td><td>28.991</td><td>28.991</td><td size="4.73999999999997">1.431</td></tr>
+						<tr><td>7</td><td>24.959</td><td>24.959</td><td size="2.81999999999997">2.503</td></tr>
+						<tr><td>10</td><td>20.5</td><td>20.5</td><td size="5.12999999999997">3.573</td></tr>
+						<tr><td>13</td><td>15.69</td><td>15.69</td><td size="3.20999999999997">4.641</td></tr>
+						<tr><td>16</td><td>10.612</td><td>10.612</td><td size="1.28999999999997">5.706</td></tr>
+						<tr><td>19</td><td>5.352</td><td>5.352</td><td size="3.59999999999997">6.767</td></tr>
+						<tr><td>22</td><td>0</td><td>0</td><td size="1.67999999999996">7.823</td></tr>
+						<tr><td>25</td><td>-5.352</td><td>-5.352</td><td size="3.98999999999996">8.874</td></tr>
+						<tr><td>28</td><td>-10.612</td><td>-10.612</td><td size="2.06999999999996">9.919</td></tr>
+						<tr><td>31</td><td>-15.69</td><td>-15.69</td><td size="4.37999999999996">10.957</td></tr>
+						<tr><td>34</td><td>-20.5</td><td>-20.5</td><td size="2.45999999999996">11.987</td></tr>
+						<tr><td>37</td><td>-24.959</td><td>-24.959</td><td size="4.76999999999996">13.009</td></tr>
+						<tr><td>40</td><td>-28.991</td><td>-28.991</td><td size="2.84999999999995">14.023</td></tr>
+						<tr><td>43</td><td>-32.527</td><td>-32.527</td><td size="5.15999999999995">15.027</td></tr>
+						<tr><td>46</td><td>-35.507</td><td>-35.507</td><td size="3.23999999999995">16.02</td></tr>
+						<tr><td>49</td><td>-37.879</td><td>-37.879</td><td size="1.31999999999995">17.002</td></tr>
+						<tr><td>52</td><td>-39.603</td><td>-39.603</td><td size="3.62999999999995">17.973</td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<p>...and another one...</p>
+		<div dojoType="chart" style="border:1px solid black;width:420px;background-color:#ededde;">
+			<table 
+				width="420" 
+				height="200" 
+				padding="24" 
+				plotType="line" 
+				axisAt="0 0" 
+				rangeX="-50 50" 
+				rangeY="-50 50"
+			>
+				<thead>
+					<tr>
+						<th>X</th>
+						<th plotType="bar">Series A</th>
+						<th>Series B</th>
+						<th plotType="bubble">Series C</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr><td>-50</td><td>0</td><td>0</td><td size="1.23">-17.327</td></tr>
+					<tr><td>-47</td><td>5.352</td><td>5.352</td><td size="3.54">-16.349</td></tr>
+					<tr><td>-44</td><td>10.612</td><td>10.612</td><td size="1.62">-15.359</td></tr>
+					<tr><td>-41</td><td>15.69</td><td>15.69</td><td size="3.93">-14.359</td></tr>
+					<tr><td>-38</td><td>20.5</td><td>20.5</td><td size="2.00999999999999">-13.348</td></tr>
+					<tr><td>-35</td><td>24.959</td><td>24.959</td><td size="4.31999999999999">-12.329</td></tr>
+					<tr><td>-32</td><td>28.991</td><td>28.991</td><td size="2.39999999999999">-11.301</td></tr>
+					<tr><td>-29</td><td>32.527</td><td>32.527</td><td size="4.70999999999999">-10.266</td></tr>
+					<tr><td>-26</td><td>35.507</td><td>35.507</td><td size="2.78999999999999">-9.223</td></tr>
+					<tr><td>-23</td><td>37.879</td><td>37.879</td><td size="5.09999999999999">-8.174</td></tr>
+					<tr><td>-20</td><td>39.603</td><td>39.603</td><td size="3.17999999999999">-7.12</td></tr>
+					<tr><td>-17</td><td>40.649</td><td>40.649</td><td size="1.25999999999998">-6.06</td></tr>
+					<tr><td>-14</td><td>41</td><td>41</td><td size="3.56999999999998">-4.997</td></tr>
+					<tr><td>-11</td><td>40.649</td><td>40.649</td><td size="1.64999999999998">-3.93</td></tr>
+					<tr><td>-8</td><td>39.603</td><td>39.603</td><td size="3.95999999999998">-2.86</td></tr>
+					<tr><td>-5</td><td>37.879</td><td>37.879</td><td size="2.03999999999998">-1.788</td></tr>
+					<tr><td>-2</td><td>35.507</td><td>35.507</td><td size="4.34999999999998">-0.716</td></tr>
+					<tr><td>1</td><td>32.527</td><td>32.527</td><td size="2.42999999999997">0.358</td></tr>
+					<tr><td>4</td><td>28.991</td><td>28.991</td><td size="4.73999999999997">1.431</td></tr>
+					<tr><td>7</td><td>24.959</td><td>24.959</td><td size="2.81999999999997">2.503</td></tr>
+					<tr><td>10</td><td>20.5</td><td>20.5</td><td size="5.12999999999997">3.573</td></tr>
+					<tr><td>13</td><td>15.69</td><td>15.69</td><td size="3.20999999999997">4.641</td></tr>
+					<tr><td>16</td><td>10.612</td><td>10.612</td><td size="1.28999999999997">5.706</td></tr>
+					<tr><td>19</td><td>5.352</td><td>5.352</td><td size="3.59999999999997">6.767</td></tr>
+					<tr><td>22</td><td>0</td><td>0</td><td size="1.67999999999996">7.823</td></tr>
+					<tr><td>25</td><td>-5.352</td><td>-5.352</td><td size="3.98999999999996">8.874</td></tr>
+					<tr><td>28</td><td>-10.612</td><td>-10.612</td><td size="2.06999999999996">9.919</td></tr>
+					<tr><td>31</td><td>-15.69</td><td>-15.69</td><td size="4.37999999999996">10.957</td></tr>
+					<tr><td>34</td><td>-20.5</td><td>-20.5</td><td size="2.45999999999996">11.987</td></tr>
+					<tr><td>37</td><td>-24.959</td><td>-24.959</td><td size="4.76999999999996">13.009</td></tr>
+					<tr><td>40</td><td>-28.991</td><td>-28.991</td><td size="2.84999999999995">14.023</td></tr>
+					<tr><td>43</td><td>-32.527</td><td>-32.527</td><td size="5.15999999999995">15.027</td></tr>
+					<tr><td>46</td><td>-35.507</td><td>-35.507</td><td size="3.23999999999995">16.02</td></tr>
+					<tr><td>49</td><td>-37.879</td><td>-37.879</td><td size="1.31999999999995">17.002</td></tr>
+					<tr><td>52</td><td>-39.603</td><td>-39.603</td><td size="3.62999999999995">17.973</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

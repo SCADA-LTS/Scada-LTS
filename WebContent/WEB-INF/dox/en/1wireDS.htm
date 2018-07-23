@@ -1,0 +1,27 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>The 1-wire data source is used to gather data from a local 1-wire network, accessible via RS232 or RS485 (requires adapter) communication. This is a polling data source.</p>
+<p>The data source is able to tolerate physical network reconfigurations. When changes to the topography of a network are detected, and automatic rescan is done. If all points are still located following the scan, no event is raised.</p>
+
+<h1>Configuration</h1>
+<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Port</b> selection provides a list of all available serial ports on the host hardware. This corresponds to the port into which the 1-wired is connected. The <b>Update period</b> determines how often the network is polled for data.</p>
+
+<h1>Network scanning</h1>
+<p>Networks can be scanned for devices using the scan utility. This feature will scan through paths connected by couplers to locate all equipment on the network. The results are displayed in a table providing the 1-wire address and a description of the device. To quickly add a device as a point, click the associated <img src="images/icon_comp_add.png"/> icon. A new point will be created with the device's attributes defaulted.</p>

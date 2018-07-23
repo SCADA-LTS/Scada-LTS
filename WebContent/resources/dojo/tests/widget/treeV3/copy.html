@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+    var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+    dojo.require("dojo.widget.*");
+    dojo.require("dojo.widget.TreeV3");
+    dojo.require("dojo.widget.TreeNodeV3");
+    dojo.require("dojo.widget.TreeBasicControllerV3");
+    dojo.hostenv.writeIncludes();
+
+    dojo.addOnLoad(function() {
+        var tree = dojo.widget.byId('tree');
+        var treeNode = dojo.widget.byId('Item 1');
+        
+        var newNode = treeNode.clone(false);
+        newNode.setTitle("Non-deep clone of "+newNode.title);
+        tree.addChild(newNode);
+        
+        var newNode = treeNode.clone(true);
+        newNode.setTitle("Deep clone of "+newNode.title);
+        tree.addChild(newNode);
+    
+    });
+
+</script>
+
+</head>
+<body>
+    
+<h3>First node is cloned with and w/o deep and appended to tree on dojo load</h3>
+
+    
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>  
+
+<div dojoType="TreeV3" listeners="controller" widgetId="tree">
+    <div dojoType="TreeNodeV3" title="Item 1" widgetId="Item 1">
+        <div dojoType="TreeNodeV3" title="Item 1.1" widgetId="Item 1.1"></div>
+        <div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2"></div>
+        
+        <div dojoType="TreeNodeV3" title="Item 1.3<br/>title long yeah" widgetId="Item 1.3">
+            <div dojoType="TreeNodeV3" title="Item 1.4" widgetId="Item 1.4"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Empty Item" isFolder="true"></div>
+    
+    </div>
+
+
+    <div dojoType="TreeNodeV3" title="Item 4" widgetId="Item 4"></div>
+</div>
+
+
+</body>
+</html>

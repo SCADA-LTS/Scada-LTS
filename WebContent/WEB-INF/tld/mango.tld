@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" 
+    version="2.0">
+  <tlib-version>1.0</tlib-version>
+  <jsp-version>1.2</jsp-version>
+  <short-name>mango</short-name>
+  <description>Custom tag library for the ScadaBR application. Author: Matthew Lohbihler</description>
+  
+  <tag>
+    <name>viewInit</name>
+    <tag-class>com.serotonin.mango.web.taglib.CustomViewInitTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>username</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>simplePoint</name>
+    <tag-class>com.serotonin.mango.web.taglib.SimplePointTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>xid</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>raw</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>disabledValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>time</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>staticPoint</name>
+    <tag-class>com.serotonin.mango.web.taglib.StaticPointTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>xid</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>raw</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>disabledValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>chart</name>
+    <tag-class>com.serotonin.mango.web.taglib.ChartTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>duration</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>durationType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>width</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>height</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>chartPoint</name>
+    <tag-class>com.serotonin.mango.web.taglib.ChartPointTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>xid</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>color</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <!-- 
+    Functions
+   -->
+  <function>
+    <name>renderedText</name>
+    <function-class>com.serotonin.mango.web.taglib.Functions</function-class>
+    <function-signature>
+      String getRenderedText(com.serotonin.mango.vo.DataPointVO, com.serotonin.mango.rt.dataImage.PointValueTime)
+    </function-signature>
+  </function> 
+  
+  <function>
+    <name>htmlText</name>
+    <function-class>com.serotonin.mango.web.taglib.Functions</function-class>
+    <function-signature>
+      String getHtmlText(com.serotonin.mango.vo.DataPointVO, com.serotonin.mango.rt.dataImage.PointValueTime)
+    </function-signature>
+  </function> 
+  
+  <function>
+    <name>htmlTextValue</name>
+    <function-class>com.serotonin.mango.web.taglib.Functions</function-class>
+    <function-signature>
+      String getHtmlTextValue(com.serotonin.mango.vo.DataPointVO, com.serotonin.mango.rt.dataImage.types.MangoValue)
+    </function-signature>
+  </function> 
+  
+  <function>
+    <name>specificHtmlTextValue</name>
+    <function-class>com.serotonin.mango.web.taglib.Functions</function-class>
+    <function-signature>
+      String getSpecificHtmlTextValue(com.serotonin.mango.vo.DataPointVO, double)
+    </function-signature>
+  </function> 
+  
+  <function>
+    <name>rawText</name>
+    <function-class>com.serotonin.mango.web.taglib.Functions</function-class>
+    <function-signature>
+      String getRawText(com.serotonin.mango.vo.DataPointVO, com.serotonin.mango.rt.dataImage.PointValueTime)
+    </function-signature>
+  </function> 
+  
+  <function>
+    <name>pointValueTime</name>
+    <function-class>com.serotonin.mango.web.taglib.Functions</function-class>
+    <function-signature>String getTime(com.serotonin.mango.rt.dataImage.PointValueTime)</function-signature>
+  </function> 
+  
+  <function>
+    <name>padZeros</name>
+    <function-class>com.serotonin.mango.web.taglib.Functions</function-class>
+    <function-signature>String padZeros(int, int)</function-signature>
+  </function> 
+  
+  <function>
+    <name>escapeScripts</name>
+    <function-class>com.serotonin.mango.web.taglib.Functions</function-class>
+    <function-signature>String escapeScripts(java.lang.String)</function-signature>
+  </function> 
+</taglib>

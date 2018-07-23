@@ -1,0 +1,6 @@
+name=Fan
+type=imageSet
+#width=61
+#height=72
+text.x=5
+text.y=55

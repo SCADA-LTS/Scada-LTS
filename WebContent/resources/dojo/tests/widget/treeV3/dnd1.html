@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<script type="text/javascript">
+    var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+    dojo.require("dojo.widget.*");
+    dojo.require("dojo.widget.TreeV3");
+    dojo.require("dojo.widget.TreeBasicControllerV3");
+    dojo.require("dojo.widget.TreeDndControllerV3");    
+    dojo.require("dojo.dnd.TreeDragAndDropV3");
+    dojo.hostenv.writeIncludes();
+</script>
+
+
+</head>
+<body>
+
+
+<h3>Typed Drag'n'drop. Some nodes from firstTree have disabled actions.</h3>
+
+<h4>firstTree. Between Dnd mode. Accepts firstTree only.</h4>
+
+
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>  
+<div dojoType="TreeDndControllerV3" controller="controller" widgetId="dndcontroller"></div> 
+
+<!-- FIXME: toggle="fade" has bug when showing empty node, wipe also has problems with hide/show -->
+MyTree
+<div dojoType="TreeV3" expandLevel="1" DndMode="onto;between" DndAcceptTypes="firstTree" widgetId="firstTree" listeners="controller;dndcontroller">
+    <div dojoType="TreeNodeV3" title="Item 1">
+        <div dojoType="TreeNodeV3" title="Item 1.1<br/>blas"><br/></div>
+        <div dojoType="TreeNodeV3" title="Item 1.2">
+            <div dojoType="TreeNodeV3" title="Item 1.2.1"></div>
+            <div dojoType="TreeNodeV3" title="Item 1.2.2"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Can't add child to this node" actionsDisabled="addchild">
+            <div dojoType="TreeNodeV3" isFolder="true" title="Empty folder"></div>
+            <div dojoType="TreeNodeV3" title="Item 1.3.2"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Item 1.4">
+            <div dojoType="TreeNodeV3" title="Item 1.4.1"></div>
+        </div>
+    <div dojoType="TreeNodeV3" actionsDisabled="MOVE" title="Can't move this node"></div>
+    <div dojoType="TreeNodeV3" title="Item 1.6">
+            <div dojoType="TreeNodeV3" title="Item 1.6.1"></div>
+            <div dojoType="TreeNodeV3" title="Item 1.6.2"></div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>ContentPane Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.Button");
+</script>
+<style>
+
+body {
+	margin: 2px;
+	padding: 2px;
+}
+
+.box {
+  position: relative;
+	background-color: white;
+	border: 2px solid black;
+	padding: 8px;
+	margin: 4px;
+}
+
+</style>
+</head>
+<body>
+
+<p>pre-container paragraph</p>
+
+<div dojoType="ContentPane" class="box">
+	some text (top-level container)
+
+	<div dojoType="ContentPane" class="box">
+
+		text in the inner container (1)
+
+		<div dojoType="ContentPane" class="box" href="tab1.html" hasShadow="true">
+    hi
+		</div>
+
+		text in the inner container (2)
+
+		<div dojoType="ContentPane" class="box">
+
+			inner-inner 2
+		</div>
+
+		text in the inner container (3)
+
+		<div dojoType="ContentPane" class="box">
+
+			inner-inner 3
+		</div>
+
+		text in the inner container (4)
+
+	</div>
+
+	some more text (top-level container)
+</div>
+
+<p>mid-container paragraph</p>
+
+<div dojoType="ContentPane" class="box" hasShadow="true">
+	2nd top-level container
+</div>
+
+<p>post-container paragraph</p>
+
+<div id="ContentPane3" class="box" hasShadow="true">
+	some content pane blah blah blah
+</div>
+
+<script type="text/javascript">
+	dojo.addOnLoad(function(){
+		dojo.debug(dojo.widget.createWidget("ContentPane", {}, dojo.byId("ContentPane3")));
+	});
+</script>
+
+</body>
+</html>
+<html><body></body></html>

@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+			"http://www.w3.org/TR/html4/strict.dtd"> 
+
+<html>
+
+<head>
+	<title>Dojo Flash Test 2</title>
+
+	<script type="text/javascript">
+		var djConfig = { isDebug: true };
+		
+		// if the query parameter ?forceFlashComm is appended to this page's
+		// location, then use that value to force Flash communication for these
+		// tests to a certain value
+		var queryParams = document.location.search;
+		if(queryParams != null && queryParams.indexOf("forceFlashComm") != -1){
+			var flashComm = queryParams.match(/\?+forceFlashComm=([0-9]*)/)[1];
+			flashComm = parseInt(flashComm);
+			djConfig["forceFlashComm"] = flashComm;
+		}
+	</script>
+	
+	<script type="text/javascript" src="../../dojo.js"></script>
+
+	<script language="JavaScript">
+		dojo.require("dojo.event.*");
+		dojo.require("dojo.io.*");
+		dojo.require("dojo.flash");
+		
+		/** A very simple in-browser unit testing class. */
+		/**
+				FIXME: Replace this with a real assertions and testing framework
+				when Dojo gets one that works in the browser.
+		*/
+		var Test = new Object();
+		Test.success = 0;
+		Test.failed = 0;
+		
+		Test.assertTrue = function(expression, message){
+			if(expression == false){
+				Test.print("ASSERTION FAILED: " + message);
+				Test.failed++;
+			}else if (expression == true){
+				Test.success++;
+			}
+		}
+		
+		Test.assertFailed = function(message){
+			Test.print("ASSERTION FAILED: " + message);
+			Test.failed++;
+		}
+		
+		Test.print = function(msg){
+			// we use this instead of dojo.debug because we aren't always assured
+			// the page is fully loaded when we print assertions, which dojo.debug
+			// needs
+			var msgElem = document.createElement("div");
+			msg = msg.replace("<", "&lt;");
+			msg = msg.replace(">", "&gt;");
+			msgElem.innerHTML = msg;
+			document.body.appendChild(msgElem);
+		}
+		
+		Test.finished = function(){
+			if(Test.failed > 0){
+				Test.print("UNIT TESTS FAILED");
+			}else{
+				Test.print("UNIT TESTS PASSED");
+			}
+			
+			Test.print(Test.success + " successful assertions; "
+									+ Test.failed + " failed assertions");
+		}
+		
+		/** Print out some info on our environment. */
+		dojo.debug("User agent: " + navigator.userAgent);
+		
+		/** Make a timer that fails if the Flash doesn't load after 5 seconds. */
+		var flashReady = false;
+		var failedLoad = function(){
+			// if flash is being installed don't fail
+			if(dojo.flash.info.installing == false){
+				window.clearInterval(window.loadingFlashInterval);
+				dojo.debug("Flash available: " + dojo.flash.info.capable);
+				dojo.debug("Flash version: " + dojo.flash.info.version);
+				Test.assertFailed("Flash did not load");
+				Test.finished();
+			}
+		}
+		window.loadingFlashInterval = window.setInterval(failedLoad, 10000);
+
+		/** Load our Flash file to test */
+		dojo.debug("Loading flash...");
+		dojo.event.connect(dojo.flash, "loaded", "flashLoaded");
+		dojo.event.connect(dojo.flash, "installing", "flashInstalling");
+		dojo.flash.setSwf({flash6: "resources/UnitTestsComm_version6.swf",
+										   flash8: "resources/UnitTestsComm_version8.swf",
+											 visible: false});
+											 
+		/** Find out when the page is finished loading */
+		var pageReady = false;
+
+		dojo.addOnLoad(function(){
+			/** 
+					Load our test data files used to test saving XML and for testing
+					the performance of serializing large data sets 
+			*/
+			testXML = null;
+			testBook = null;
+	
+			dojo.io.bind({
+					url: "resources/test.xml",
+					load: function(type, data, evt){ 
+						dojo.debug("Test XML data loaded");
+						testXML = data;
+					},
+					error: function(type, error){ 
+						Test.assertFailed("Unable to load test.xml");
+						Test.finished();
+					},
+					mimetype: "text/plain"
+			});
+	
+			dojo.io.bind({
+					url: "resources/testBook.txt",
+					load: function(type, data, evt){ 
+						dojo.debug("Test large data file loaded");
+						testBook = data;
+					},
+					error: function(type, error){ 
+						Test.assertFailed("Unable to load testBook.txt");
+						Test.finished();
+					},
+					mimetype: "text/plain"
+			});
+
+			pageReady = true;
+		});
+		
+		// setup an interval that keeps checking to see if our resources are
+		// all ready for testing; once they are, we can run the unit tests
+		var resourcesReadyID = window.setInterval(resourcesReady, 200);
+		
+		function resourcesReady(){
+			if(flashReady == true && pageReady == true && testXML != null 
+					&& testBook != null){
+				window.clearTimeout(resourcesReadyID);
+				startTests();
+			}
+		}
+
+		// our testing methods
+		function flashLoaded(){
+			//dojo.debug("Flash loaded");
+			window.clearInterval(window.loadingFlashInterval);
+			flashReady = true;
+		}
+		
+		function flashInstalling(){
+			dojo.debug("Flash installing");
+			window.clearTimeout(window.loadingFlashInterval);
+		}
+		
+		function startTests(){
+			/** Print out some data about our environment. */
+			dojo.debug();
+			dojo.debug("Flash version: " + dojo.flash.info.version);
+			dojo.debug("Using Flash communication method: " + dojo.flash.info.commVersion);
+			
+			// make sure the info object has values
+			Test.assertTrue(dojo.flash.info != null &&
+											typeof dojo.flash.info != "undefined",
+											"dojo.flash.info unavailable");
+			Test.assertTrue(dojo.flash.info.capable,
+											"dojo.flash.info.capable broken");
+			
+			// test sending a String to Flash and getting it back
+			dojo.debug();
+			dojo.debug("Testing JavaScript to Flash method call with return value...");
+			var results = dojo.flash.comm.testString("Did I leave the iron on?");
+			Test.assertTrue(results == "Did I leave the iron on?",
+											"Calling a Flash method from JavaScript with a String "
+											+ "and receiving String results back failed");
+			
+			// test sending characters that are known to have issues in Flash 8's
+			// ExternalInterface
+			dojo.debug();
+			dojo.debug("Testing JavaScript to Flash method call with characters "
+									+ "that are known to fail with Flash 8 ExternalInterface...");
+			var testStr = 
+							"This\n"
+							+ "is\n"
+							+ "some\n"
+							+ "text\n"
+							+ "here are some bad characters:\r" 
+							+ "&amp;&apos;&lt;&gt;&quot;\n"
+							+ "&%<>\'\""
+							+ "\0null\u0000"
+							+ "\r\\\f\v\t\b\u0008\u0009\u000C\u000D\u000D\u000A\u000B"
+							+ "\xFF\377\77\7"
+							+ "more stuff";
+			results = dojo.flash.comm.testString(testStr);
+			Test.assertTrue(results == testStr,
+											"Calling Flash method from JavaScript with characters "
+											+ "that Flash has trouble serializing failed; incorrect "
+											+ "string that was returned: " + results);
+
+			// now try to push some XML over to see how that serializes
+			dojo.debug();
+			dojo.debug("Testing sending complex XML RSS feed between JavaScript and Flash...");
+			results = dojo.flash.comm.testString(testXML);
+			Test.assertTrue(results == testXML,
+											"Passing XML between JavaScript and Flash failed");
+
+			// now push over a large text, Walt Whitman's Leaves of Grass, which
+			// is ~700K; ensure that the performance is below one second
+			dojo.debug();
+			dojo.debug("Testing sending 700K text of Walt Whitman's Leaves of Grass "
+									+ "over to Flash, and ensuring performance is below five seconds...");
+			// store the value and test its performance
+			var startTime = new Date().getTime();
+			dojo.flash.comm.setValue("testBook", testBook);
+			var endTime = new Date().getTime();
+			var totalTime = endTime - startTime;
+			Test.assertTrue(totalTime <= 5000,
+											"Sending text took longer than five seconds, actual "
+											+ "time: " + totalTime + " ms");
+			dojo.debug("Actual time sending 700K to Flash: " + totalTime + " ms");
+			// now get the value, making sure the text is the same and getting
+			// values from Flash have good enough performance
+			dojo.debug();
+			dojo.debug("Testing getting 700K text of Walt Whitman's Leaves of Grass "
+									+ "from Flash, and ensuring performance is below five seconds...");
+			startTime = new Date().getTime();
+			results = dojo.flash.comm.getValue("testBook");
+			var endTime = new Date().getTime();
+			var totalTime = endTime - startTime;
+			Test.assertTrue(totalTime <= 5000,
+											"Getting text took longer than five seconds, actual "
+											+ "time: " + totalTime + " ms");
+			Test.assertTrue(results == testBook,
+											"Passing 700K text between JavaScript and Flash failed");
+			dojo.debug("Actual time getting 700K from Flash: " + totalTime + " ms");
+
+			// only Flash communication using version 6 can handle this level 
+			// of data
+			dojo.debug();
+			if(dojo.flash.info.commVersion == 6){
+				dojo.debug("Testing sending and receiving ~10 megabytes of data, and ensuring that the "
+										+ "performance happens under 3 seconds "
+										+ "(only possible using Flash 6 communication)...");
+				var bigData = "";
+				for(var i = 1; i <= 14; i++){
+					bigData = bigData + testBook;
+				} 
+				startTime = new Date().getTime();
+				results = dojo.flash.comm.testString(bigData);
+				endTime = new Date().getTime();
+				totalTime = endTime - startTime;
+				Test.assertTrue(results == bigData,
+												"Passing 10 MB text between JavaScript and Flash failed");
+				Test.assertTrue(totalTime <= 3000,
+												"Sending 10 MB text took longer than three seconds, actual "
+												+ "time: " + totalTime + " ms");
+				dojo.debug("Actual sending and receiving 10 MB from Flash: " + totalTime + " ms");
+			}else{
+				dojo.debug("This platform can not handle storing 10 MB of data "
+									 + "fast enough; only Flash 6 communication can handle "
+									 + "this; bypassing 10MB test");
+			}
+
+			// now test the Flash calling one of our JavaScript methods
+			dojo.debug();
+			dojo.debug("Testing Flash to JavaScript communication...");
+			testStr = "Hello from JavaScript";
+			dojo.flash.comm.testCallingJavaScript(testStr);
+			
+			// since this is asynchronous, make sure we have a result after a
+			// period of time
+			var timeChecked = 0;
+			var resultsInterval = window.setInterval(function(){
+				timeChecked += 50;
+				if(timeChecked >= 500){
+					window.clearInterval(resultsInterval);
+					Test.assertFailed("Flash called JavaScript but no results "
+														+ "were returned by JavaScript");
+					Test.finished();
+					return;
+				}
+				
+				if(typeof window.returnValue != "undefined"){
+					window.clearInterval(resultsInterval);
+					Test.assertTrue(window.returnValue == testStr,
+												  "Flash called JavaScript but the return results "
+												  + "were incorrect, actual results: " 
+												  + window.returnValue);
+					Test.finished();
+				}
+			}, 50);
+		}
+		
+		function testCallingJavaScript(msg){
+			//dojo.debug("testCallingJavaScript, msg="+msg);
+			return msg;
+		}
+		
+		/** Called by Flash so that we can assert that testCallingJavaScript
+				above, when called from Flash, returned the right return results. */
+		function returnResults(msg){
+			//dojo.debug("returnResults, msg="+msg);
+			window.returnValue = msg;
+		}
+	</script>	
+</head>
+
+<body>
+	<h1>Dojo.Plugin.Flash Unit Tests</h1>
+	<h3>This page tests bidirectional Flash to JavaScript communication using
+			dojo.flash; tests and output on page may take up to 30 seconds to run
+			and appear.</h3>
+</body>
+
+</html>

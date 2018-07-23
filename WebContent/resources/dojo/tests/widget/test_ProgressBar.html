@@ -1,0 +1,102 @@
+
+<html>
+	<head>
+		<title>Dojo Toolkit - ProgressBar test</title>
+
+		<meta http-equiv="content-type"
+			content="text/html; charset=ISO-8859-1">
+		<style type="text/css">
+			@import url("style/main.css");
+		</style>
+		<script type="text/javascript">
+		    var djConfig = {isDebug: true, debugAtAllCosts: false};
+		</script>
+		<script type="text/javascript" src="../../dojo.js">
+		</script> 
+		<script type="text/javascript">
+			dojo.require("dojo.widget.ProgressBar");
+			dojo.require("dojo.io.*");
+			dojo.require("dojo.io.IframeIO");
+		</script>
+		
+		<script type="text/javascript">
+			dojo.addOnLoad(go);
+			function go(){
+				var theBar = dojo.widget.byId("testBar");
+				dojo.event.connect(dojo.byId("start"), "onclick", dojo.lang.hitch(theBar,theBar.startAnimation));
+				dojo.event.connect(dojo.byId("stop"), "onclick", dojo.lang.hitch(theBar,theBar.stopAnimation));
+
+				dojo.byId("test").value="";
+				dojo.byId("progressValue").focus();
+				dojo.byId("progressValue").value = dojo.widget.byId("setTestBar").getProgressValue();
+				dojo.byId("maxProgressValue").value = dojo.widget.byId("setTestBar").getMaxProgressValue();
+				dojo.event.connect(dojo.byId("test"), "onkeyup", keyUpHandler);
+				dojo.event.connect(dojo.byId("set"), "onclick", setParameters);
+//				loadFile();
+			}
+			function loadFile(){
+				var bArgs = {
+					url: "http://armadillo:8080/Dojotoolkit/trunk/tests/widget/grossofile.txt",
+					mimetype: "text/plain",
+					method: "POST",
+					handle: function(type, data, evt){
+						var str="";
+//						for (var i in data){
+//							str+=i + " ---> " + data[i]+"\n";
+//						}
+						window.alert(type);
+					}
+				}
+				dojo.io.bind(bArgs);
+			}
+			function setParameters(){
+				dojo.widget.byId("setTestBar").setMaxProgressValue(dojo.byId("maxProgressValue").value, true);
+				dojo.widget.byId("setTestBar").setProgressValue(dojo.byId("progressValue").value, true);
+				dojo.widget.byId("setTestBar").render();
+			}
+			function keyUpHandler(){
+				dojo.widget.byId("testBar").setProgressValue(dojo.byId("test").value.length);
+				dojo.widget.byId("testBarInt").setProgressValue(dojo.byId("test").value.length);
+				dojo.widget.byId("testBar2").setProgressValue(dojo.byId("test").value.length);
+				dojo.widget.byId("smallTestBar").setProgressValue(dojo.byId("test").value.length);
+			}
+		</script>
+	</head> 
+
+	<body>
+		<h3>Test 1</h3>
+		Progress Value <input type="text" name="progressValue" id="progressValue" />
+		<br />
+		Max Progress Value <input type="text" name="maxProgressValue" id="maxProgressValue" />
+		<br />
+		<input type="button" name="set" id="set" value="set!" />
+		<br />
+		<div width="400" hasText="true"
+			maxProgressValue="200" id="setTestBar" progressValue="20" dojoType="ProgressBar"></div>		
+		<br />
+		<br />
+		<h3>Test 2</h3>
+		Write here: <input type="text" value="" name="test" maxlength="256" id="test" style="width:300"/>
+		<br />
+		<br />
+		<div width="400" hasText="true"  
+			maxProgressValue="256" id="testBar" duration="2000" dojoType="ProgressBar"></div>		
+		<input type="button" name="start" id="start" value="start" />
+		<input type="button" name="stop" id="stop" value="stop" />
+		<br />
+		Small, without text and background image:
+		<br />
+		<div width="440" height="10" frontBarClass="simpleFrontBar" hasText="false" isVertical="false" 
+			maxProgressValue="256" id="smallTestBar" dojoType="ProgressBar"></div>		
+		<br />
+		Only Integer values:
+		<div showOnlyIntegers="true" width="400" hasText="true" isVertical="false" 
+			maxProgressValue="256" id="testBarInt" dojoType="ProgressBar"></div>		
+		<br />
+		<div style="position:absolute;top:70px;left:530px">
+		Vertical:
+			<div progressValue="0" height="420" frontBarClass="h-frontBar" width="50" hasText="true" isVertical="true" 
+				maxProgressValue="256" id="testBar2" dojoType="ProgressBar"></div>
+		</div>
+	</body>
+</html>

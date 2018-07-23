@@ -1,0 +1,99 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>RadioGroup Demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+
+<script type="text/javascript">
+    var djConfig = { isDebug: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+    dojo.require("dojo.widget.RadioGroup");
+</script>
+
+<style type="text/css">
+body {
+    font-family : sans-serif;
+}
+
+ol, ul, li {
+    margin: 0px;
+    padding: 0px;
+}
+
+p {
+    margin-bottom: 2em;
+    border-left:3px solid #1F6BBA;
+    padding-left: 1em;
+}
+
+.radioGroup {
+    list-style: none;
+    border-left: 1px solid #efefef;
+    border-bottom: 1px solid #aaa;
+}
+
+.radioGroup li {
+    padding: 2px 10px 1px;
+}
+
+.radioGroup li.selected {
+    background: #efefef;
+    border: 1px solid #000;
+}
+
+</style>
+</head>
+
+<script type="text/javascript">
+function initTest() {
+    dojo.event.connect(dojo.widget.byId("group1"), "onSelect", function(e) {
+        dojo.debug("RadioGroup selected");
+    });
+    
+    dojo.event.connect(dojo.widget.byId("group1"), "onItemSelect", function(e) {
+        dojo.dom.removeChildren(dojo.byId("debugContainer"));
+        dojo.debug("RadioGroup item with value <" 
+                   + dojo.dom.textContent(dojo.widget.byId("group1").selectedItem)
+                   + "> selected");
+    });
+    
+    dojo.widget.createWidget("RadioGroup",{},dojo.byId("group4"));
+}
+dojo.addOnLoad(initTest);
+</script>
+
+<body>
+    
+    <p>This test does various things with <code>ul</code> and <code>ol</code> lists to
+    test that the RadioGroup widget works correctly. The individual li's contained by these
+    lists should be exclusively selectable within their groups.
+    <ol id="group1" dojoType="RadioGroup">
+    	<li>Value 1</li>
+        <li>Value 2</li>
+        <li>Value 3</li>
+    </ol>
+    </p>
+    
+    <p>This grouping should have "Contact Us" selected by default.
+        <ul id="group3" dojoType="RadioGroup" selected="contact">
+            <li id="home">Home</li>
+            <li id="news">News</li>
+            <li id="contact">Contact Us</li>
+        </ul>
+    </p>
+    
+    <p>
+    	This widget was created dynamically with dojo.widget.createWidget. 
+        <ol id="group4">
+            <li>Lists</li>
+            <li>are</li>
+            <li>boring</li>
+        </ol>
+    </p>
+    
+</body>
+</html>

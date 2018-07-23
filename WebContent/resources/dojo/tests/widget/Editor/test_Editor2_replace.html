@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+	<title>Dojo Editor2 Test</title>
+	<script type="text/javascript">
+		djConfig = {
+			isDebug: true,
+			dojoRichTextFrameUrl: "../../../src/widget/templates/richtextframe.html" //for xdomain
+		};
+	</script>
+
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+	</style>
+	<script type="text/javascript" src="../../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.debug.Firebug");
+		dojo.require("dojo.widget.Editor2Plugin.SimpleSignalCommands");
+		dojo.require("dojo.widget.Editor2");
+		dojo.require("dojo.widget.Button");
+
+		function updateContent(contentId, content) {
+			dojo.byId(contentId).innerHTML=content;
+		}
+
+		function edit(contentId) {
+			var content = dojo.byId(contentId).innerHTML;
+			dojo.debug("Editing " + content);
+
+			var div = document.createElement("div");
+			document.body.appendChild(div);
+			div.style.width="810px";
+			div.style.height="400px";
+
+			var newFloat =dojo.widget.createWidget("dojo:FloatingPane", {displayCloseAction: true, title: contentId},div);
+
+			var newEditor= dojo.widget.createWidget("Editor2", {height: 100, shareToolbar: false, toolbarTemplatePath: "../../../tests/widget/Editor/EditorToolbarLight.html"});
+			newEditor.contentSource=contentId;
+			dojo.event.connect(newEditor, "editorOnLoad", dojo.lang.hitch(newEditor, function() {
+				dojo.debug("contentId: " + this.contentSource);
+				dojo.debug(dojo.byId(this.contentSource));
+				dojo.debug("content from div: " + dojo.byId(this.contentSource).innerHTML)
+				this.replaceEditorContent(dojo.byId(this.contentSource).innerHTML);
+				this.parent.onResized();
+				dojo.event.connect(this, "save", dojo.lang.hitch(this, function() {
+					dojo.debug("**** editor" + this.contentSource);
+					updateContent(this.contentSource,this.getEditorContent());
+				}));
+			}));
+
+			dojo.event.connect(dj_global, "updateContent", 
+				dojo.lang.hitch(newEditor, function(contentId, content){
+					if (contentId == this.contentSource) {
+						this.replaceEditorContent(content);
+					}
+				})
+			);
+
+			newFloat.addChild(newEditor);
+
+		}
+
+		dojo.addOnLoad(function() {
+			var editAButton = dojo.widget.byId("editA");
+			dojo.event.connect(editAButton, "onClick", function() { edit("content1"); } );
+	
+			var editBButton = dojo.widget.byId("editB");
+			dojo.event.connect(editBButton, "onClick", function() { edit("content2"); } );
+		});
+	</script>
+
+</head>
+<body>
+	<p>Some more editor tests, primarily dealing with programmatically created editors</p>
+	<ul>
+		<li>Open up an arbitrary number of editors on either of the two source data areas</li>
+		<li>Open up multiple editors on the same source area, changes to one editor, should be reflected everywhere that source data is opened</li>
+		<li>Closing an editor (which destroys it) shouldn't throw an error when a new one is created</li>
+	</ul>
+
+	<div id="editA" dojoType="dojo:Button" label="Edit Content A">Edit Content A</div>
+	<div id="content1">
+		this is the first content area holding some data
+	</div>
+		
+	<br>
+	<br>
+
+	<div id="editB" dojoType="dojo:Button" label="Edit Content B">Edit Content B</div>
+
+	<div id="content2">
+		this is the second content area holding some data
+	</div>
+</body>
+</html>
+

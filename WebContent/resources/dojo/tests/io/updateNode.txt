@@ -1,0 +1,1 @@
+<p style="background-color: cyan; margin:0.3em;">This is the replaced content</p>

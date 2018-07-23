@@ -1,0 +1,77 @@
+﻿<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<p>
+  El rendimiento de la UI corresponde respuesta de la interfaz de usuario.  
+  Esto incluye todas las actividades que se administran por el mecanismo de encuestas largas, como el indicador de alarma de nivel m&aacute;ximo, 
+la actualizaci&oacute;n de la lista de supervisi&oacute;n, actualizaciones de la  lista de eventos, etc. Si el servidor de la aplicaci&oacute;n 
+tiene poca capacidad de procesamiento (CPU peque&ntilde;o), puede ajustar el rendimiento de la interfaz de usuario en un nivel menor 
+para disminuir el consumo producido por los navegadores clientes en el  CPU del servidor.
+</p>
+
+<p>
+  Cuando la opci&oacute;n "Enviar errores a Serotonin" est&aacute; activada, las excepciones observadas por esta instancia de Mango ser&aacute;n enviadas 
+a Serotonin Software para su revisi&oacute;n. Por favor mantenga esta casilla inactiva, si est&aacute; realizando cambios en el c&oacute;digo de la aplicaci&oacute;n 
+para sus propios prop&oacute;sitos.
+</p>
+
+<p>
+  Utilice la configuraci&oacute;n de "Purgar eventos" para configurar el tiempo m&aacute;ximo de permanencia de un evento dentro de la base de datos 
+antes de ser eliminado del hist&oacute;rico. Purgar elimina los eventos de forma permanente de la base de datos, al igual que cualquier comentario 
+que haya sido ingresado por los usuarios sobre estos.
+</p>
+
+<p>
+  Utilice la configuraci&oacute;n "Purgar reporte de instancias" para configurar el tiempo m&aacute;ximo que permanecer&aacute; un reporte antes de ser eliminado 
+de la base de datos. Al purgar se elimina permanetemente el reporte de la instancia. La mejor pr&aacute;ctica es mantener este valor lo m&aacute;s bajo posible 
+ya que los reportes consumen grandes cantidades de espacio de almacenamiento en disco. La acci&oacute;n de purgar los reportes puede evitarse 
+configurando el atributo "Prevenir la purga" en la instancia del reporte.
+</p>
+
+<p>
+  Haga clic en el bot&oacute;n <b>Purgar todos los Datos</b> para eliminar todos los puntos de ejemplo que est&eacute;n en la base de datos. 
+Esto es &uacute;til cuando se quiere dar a la instalaci&oacute;n del sistema un "inicio limpio", especialmente si existen datos "no esenciales" 
+en las actividades de configuraci&oacute;n y de instalaci&oacute;n. 
+</p>
+
+<p>
+ Utilice la configuraci&oacute;n "Descarte valores de puntos fechados en el futuro" para definir la cantidad m&aacute;xima de tiempo en el futuro 
+que se aceptar&aacute;n datos nuevos para los valores de los puntos. Entonces al presentarse datos con estampa de tiempo mayor a este valor se descartar&aacute;n, 
+y se escribir&aacute; un mensaje de error en el registro.
+</p>

@@ -1,0 +1,102 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>A Graphical view is similar to a watch list, but instead provides a graphical representation of selected points. Point values and value times update automatically&mdash;you do not need to refresh the page. (In fact, the system operates more efficiently if you don't.)</p>-->
+
+<h1>Geral</h1>
+<p>Uma representa&ccedil;&atilde;o gr&aacute;fica &eacute; semelhante a uma watch list, por&eacute;m prov&ecirc; uma representa&ccedil;&atilde;o gr&aacute;fica dos data points selecionados. Os valores dos data points 
+e timestamps s&atilde;o atualizados automaticamente&mdash;voc&ecirc; n&atilde;o precisa recarregar a p&aacute;gina. (Na verdade, o sistema opera mais eficientemente 
+se n&atilde;o recarregar)</p>
+
+<!--<h1>Selecting a graphical view</h1>-->
+<!--<p>-->
+<!--  A user may have multiple graphical views, but may only view one at a time. Use the dropdown control to select the -->
+<!--  view that you wish to display. To create a new view, click the add icon (<img src="images/icon_view_new.png"/>) in -->
+<!--  the top right-hand corner of the watch list section. To edit an existing view, click the edit icon -->
+<!--  (<img src="images/icon_view_edit.png"/>). In either case, the <b>Graphical view edit</b> page will be displayed.-->
+<!--</p>-->
+
+<h1>Selecionado uma representa&ccedil;&atilde;o gr&aacute;fica</h1>
+<p>
+  Um usu&aacute;rio pode ter m&uacute;ltiplas representa&ccedil;&otilde;es gr&aacute;ficas, por&eacute;m pode visualizar apenas uma por vez. Use o controle "dropdown" para selecionar a
+  tela que voc&ecirc; deseja. Para criar uma nova, clique no &iacute;cone (<img src="images/icon_view_new.png"/>) no 
+  canto direito superior da se&ccedil;&atilde;o de watch list. Para editar uma representa&ccedil;&atilde;o existente, clique no &iacute;cone (<img src="images/icon_view_edit.png"/>).
+  Em outros casos, a p&aacute;gina de <b>edi&ccedil;&atilde;o de representa&ccedil;&otilde;es gr&aacute;ficas</b> ser&aacute; mostrada.
+</p>
+
+<!--<p>-->
+<!--  You may see graphical views in your list that you did not create. If so, these views were "shared" with you by the -->
+<!--  person who created them. You will be at least allowed to view them, but you may not be allowed to set values via the-->
+<!--  view if you were not granted "set" permission. If you no longer wish to have the view in your list, use the delete -->
+<!--  icon (<img src="images/icon_view_delete.png"/>) to "unshare" the view. (Unsharing does not delete the view.)-->
+<!--</p>-->
+
+<p>
+  Voc&ecirc; pode ver representa&ccedil;&otilde;es gr&aacute;ficas que voc&ecirc; n&atilde;o criou em sua lista. Neste caso, elas foram compartilhadas com voc&ecirc; pelas
+  pessoas que as criaram. Voc&ecirc; com certeza poder&aacute; visualiz&aacute;-las por completo, mas pode ser que voc&ecirc; n&atilde;o tenha permiss&atilde;o de escrita de valores atrav&eacute;s
+  da parte gr&aacute;fica se voc&ecirc; n&atilde;o recebeu essa permiss&atilde;o. Se voc&ecirc; deseja n&atilde;o ter mais uma representa&ccedil;&atilde;o gr&aacute;fica na sua lista, use o &iacute;cone para excluir
+  (<img src="images/icon_view_delete.png"/>) para n&atilde;o compartilhar mais a representa&ccedil;&atilde;o.
+</p>
+
+<!--<h1>Background images</h1>-->
+<!--<p>Graphical views may optionally be presented upon background images. Backgrounds can be set in the graphical view editing page.</p>-->
+
+<h1>Imagens de fundo</h1>
+<p>Representa&ccedil;&otilde;es gr&aacute;ficas podem ser opcionalmente apresentadas com imagens de fundo. Imagens de fundo podem ser configuradas na p&aacute;gina de edi&ccedil;&atilde;o.</p>
+
+<!--<h1>Points in graphical views</h1>-->
+<!--<p>A point can belong to multiple graphical views, so you can create views that are as specific as you require.</p>-->
+
+<h1>Data points em vis&otilde;es gr&aacute;ficas</h1>
+<p>Um data point pode pertencer a m&uacute;ltiplas representa&ccedil;&otilde;es, para que voc&ecirc; possa cri&aacute;-las t&atilde;o espec&iacute;ficas quanto precisar.</p>
+
+<!--<p>-->
+<!--  The representation of each point in your view depends upon that point's configuration. Points can be rendered as -->
+<!--  simply a current value, or an arbitrary icon set can be used that visually represents the point's value. When the -->
+<!--  user rolls over the point with the mouse, a set of controls will be displayed (unless they have been explicitly -->
+<!--  suppressed). The actual controls displayed will also depend upon the point's configuration. Hovering over the info -->
+<!--  icon (<img src="images/information.png"/>) will display the point's current value and last change time. Points that -->
+<!--  are settable (and for which you have permission to set) will show a set icon (<img src="images/icon_edit.png"/>). -->
+<!--  Hovering your mouse over this icon will present options for setting the point. Points that are configured for -->
+<!--  charting will show a chart icon (<img src="images/icon_chart.png"/>). Hovering over this icon will present the -->
+<!--  current chart. Charts are updated automatically, like values and times, so when new data is available the chart will -->
+<!--  update itself. If a warning icon (<img src="images/warn.png"/>) is displayed beside a point, it indicates that is -->
+<!--  inactive, either because it or its data source are disabled. A wait indicator (<img src="images/hourglass.png"/>) -->
+<!--  means that the point currently has no value, and is likely waiting for its value to be received.-->
+<!--</p>-->
+
+<p>
+  A representa&ccedil;&atilde;o de cada data point em sua representa&ccedil;&atilde;o depende da configura&ccedil;&atilde;o dos mesmos. Data points podem ser renderizados simplesmente com
+  seu valor corrente, ou um &iacute;cone arbitr&aacute;rio que pode ser usado para visualmente representar os valores dos "points". Quando o
+  usu&aacute;rio passa o mouse sobre o data point, um campo de controles ser&aacute; mostrado (ao menos que eles estejam explicitamente n&atilde;o permitidos).
+  Os controles mostrados tamb&eacute;m dependem da configura&ccedil;&atilde;o dos data points. Navegar sobre o &iacute;cone de informa&ccedil;&atilde;o (<img src="images/information.png"/>)
+  ir&aacute; mostrar os valores correntes dos data points e o &uacute;ltimo valor mudado. Data points que  
+  s&atilde;o set&aacute;veis (e os quais voc&ecirc; tem permiss&atilde;o para setar) ir&atilde;o mostrar um &iacute;cone para escrita (<img src="images/icon_edit.png"/>). 
+  Navegando o mouse sobre esse &iacute;cone ir&aacute; mostrar as op&ccedil;&otilde;es para alterar o data point. Data points que s&atilde;o configurados para
+  a parte gr&aacute;fica ir&atilde;o mostrar um &iacute;cone de gr&aacute;fico (<img src="images/icon_chart.png"/>). Navegando sobre esse &iacute;cone ir&aacute; mostrar
+  o gr&aacute;fico atual. Os gr&aacute;ficos tamb&eacute;m s&atilde;o atualizados automaticamente, ent&atilde;o quando um novo dado est&aacute; dispon&iacute;vel o gr&aacute;fico ir&aacute;
+  atualizar automaticamente. Se um &iacute;cone de aviso (<img src="images/warn.png"/>) &eacute; mostrado do lado de um data point, isso indica que ou o data point
+  ou seu data source est&atilde;o desativados. Um indicador de espera (<img src="images/hourglass.png"/>) significa que o data point
+  atualmente n&atilde;o tem valor, e est&aacute; esperando por um.
+</p>
+
+<h1>Full Screen</h1>
+<p>No modo Full Screen, o conteúdo da Representa&ccedil;&atilde;o Gr&aacute;fica apresentado na tela ser&aacute; somente os componentes presentes na Representa&ccedil;&atilde;o. Ou seja,
+o restante como o cabe&ccedil;alho n&atilde;o ser&aacute; apresentado.</p>
+<p>Para sair do modo Full Screen utilize o seguinte atalho: "Ctrl+Shift+F".</p>

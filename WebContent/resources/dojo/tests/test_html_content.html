@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<title>Dojo: Test of embeded html document</title>
+<style type="text/css"> h2, h3 { font-size: 1em; margin-top: 2.5em; } h3 { color: black; font-weight: normal; font-style: italic; } </style>
+</head>
+<body>
+
+<!---------------------------------------------------------------------------->
+<h2><code>getScroll</code></h2>
+
+<p>Scroll top: <span id="scrollTop">0</span><br>Scroll left: <span id="scrollLeft">0</span></p>
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getScroll().offset</code></h2>
+
+<p>Scroll offset x: <span id="scrollOffsetX">0</span><br>Scroll offset y: <span id="scrollOffsetY">0</span></p>
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getViewport</code></h2>
+
+<p>
+	Viewport width: <span id="viewportWidth">0</span><br>
+	Viewport height: <span id="viewportHeight">0</span><br>
+	Viewport size: <span id="viewportSize">0</span>
+</p>
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getElementsByClass</code></h2>
+
+<div style="font-weight: bold; color: red;">
+
+<h3>default (ContainsAll)</h3>
+<p class="foo1 bar1">this should be green</p>
+<p class="foo1">this should be red</p>
+<p class="bar1">this should be red</p>
+
+<h3>ContainsAll</h3>
+<p class="foo2 bar2">this should be green</p>
+<p class="foo2">this should be green</p>
+<p class="bar2">this should be red</p>
+
+<h3>ContainsOnly</h3>
+<p class="foo3 bar3">this should be green</p>
+<p class="foo3 bar3 baz3">this should be red</p>
+<p class="foo3">this should be red</p>
+
+<h3>ContainsOnly</h3>
+<p class="foo4">this should be green</p>
+<p class="foo4 bar4">this should be red</p>
+<p class="bar4">this should be red</p>
+</body>
+</html>

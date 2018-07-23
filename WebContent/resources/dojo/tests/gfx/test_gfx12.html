@@ -1,0 +1,328 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" >
+   <head>
+   <title>Dojo Unified 2D Graphics</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   <script type="text/javascript">
+   // Dojo configuration
+   djConfig = { 
+      isDebug: true
+   };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<!--<script type="text/javascript" src="../../src/gfx/vml.js"></script>-->
+<!--<script type="text/javascript" src="../../src/gfx/svg.js"></script>-->
+<script type="text/javascript">
+
+dojo.require("dojo.gfx.*");
+dojo.require("dojo.event.*");
+dojo.require("dojo.lang.assert");
+
+var gTestContainer = null;
+var gTests = {};
+
+function isEqual(foo, bar, prefix)
+{
+    var flag = true;
+    if( foo != bar ) {
+        dojo.debug(prefix+":"+foo + "!=" + bar + " try dig into it" );
+        if( typeof(foo) == "string" ) {
+            return false;
+        } else if ( foo instanceof Array ) {
+            for( var i = 0; i< foo.length; i++ ) {
+                flag = isEqual(foo[i], bar[i], prefix+"["+i+"]") && flag;
+            }
+            flag = false;
+        } else {
+            for(var x in foo) {
+                if(bar[x] != undefined ) {
+                    flag = isEqual(foo[x], bar[x], prefix+"."+x) && flag;
+                } else {
+                    dojo.debug(prefix+":"+ x + " is undefined in bar" );
+                    flag = false;
+                }
+            }
+        }
+    }
+    return flag;
+}
+
+
+function getTestSurface(testName, testDescription, width, height) 
+{
+   width = width ? width : 300;
+   height = height ? height : 300;
+
+   // Create a DOM node for the surface
+   var testRow = document.createElement('tr');
+   var testCell = document.createElement('td');
+   var testHolder = document.createElement('div');
+   testHolder.id = testName + '_holder';
+
+   testCell.appendChild(testHolder);
+   testRow.appendChild(testCell);
+   gTestContainer.appendChild(testRow);
+   var descRow = document.createElement('tr');
+   var desc = document.createElement('td');
+   desc.innerHTML = testDescription;
+   descRow.appendChild(desc);
+   gTestContainer.appendChild(descRow);
+   var surface = dojo.gfx.createSurface(testHolder, width, height);
+   return surface;
+}
+
+
+function addTest(testName, fn)
+{
+   gTests[testName] = fn;
+}
+
+function runTest_nodebug(testName)
+{
+   try {
+      var t = gTests[testName];
+      if (!t) {
+         return 'no test named ' + t;
+      }
+      t(testName);
+      return null; // the success condition
+   } catch (e) {
+      return e.message;
+   }
+}
+
+function runTest_debug(testName)
+{
+      var t = gTests[testName];
+      if (!t) {
+         return 'no test named ' + t;
+      }
+      t(testName);
+      return null; // the success condition
+}
+
+var runTest = djConfig.isDebug ? runTest_debug : runTest_nodebug;
+
+function attachAssert(reference, attached, prefix)
+{
+        dojo.debug(prefix+": check rawNode...");
+		dojo.lang.assert( reference.rawNode == attached.rawNode );
+
+		// FIXME: more generic method to compare two dictionary?
+		dojo.debug(prefix+": check shape... ");
+		isEqual(reference.shape, attached.shape, "shape");
+		dojo.debug(prefix+": check matrix... ");
+		isEqual(reference.matrix, attached.matrix, "matrix");
+		dojo.debug(prefix+": check strokeStyle...");
+		isEqual(reference.strokeStyle, attached.strokeStyle, "strokeStyle");
+		dojo.debug(prefix+": check fillStyle...");
+		isEqual(reference.fillStyle, attached.fillStyle, "fillStyle");
+}
+
+dojo.addOnLoad(function() 
+{
+	gTestContainer = dojo.byId('testcontainer');
+	var rect = { x: 0, y: 0, width: 100, height: 100 };
+
+	addTest('attach', function(testName){
+		var surface = getTestSurface(testName, 'Attach to an typical shape, skewed rect with color fill, color stroke');
+		var ref = surface.createRect(rect)
+			.setShape({ width: 75 })
+			.setFill([255, 0, 0, 0.5])
+			.setStroke({ color: "blue", width: 1 })
+			.setTransform({ dx: 50, dy: 50, xx: 1, xy: 0.5, yx: 0.7, yy: 1.1 })
+			;
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+	});
+
+	addTest('attach2', function(testName){
+		var surface = getTestSurface(testName, 'Attach to an line, with null fill, color stroke');
+		var ref = surface.createRect(rect)
+            .setStroke({color: "red", width: 1})
+            .setTransform({ dx:70, dy: 100 })
+			;
+        surface.createRect(rect)
+            .setFill([0, 255, 0, 0.6])
+            .setTransform({ dx:50, dy:80 })
+            ;
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+	});
+
+	addTest('attach3', function(testName){
+		var surface = getTestSurface(testName, 'Attach to an circle, with color fill, null stroke');
+		var circle = { cx: 130, cy: 130, r: 50 };
+		var ref = surface.createCircle(circle)
+            .setFill([0, 255, 0, 0.7])
+            .setTransform({ dx: 20, dy: 20 })
+            ;
+		
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+	});
+
+	addTest('attach_line', function(testName){
+		var surface = getTestSurface(testName, 'Attach to an line, with color fill, color stroke');
+		var line = { x1: 0, y1:0, x2:80, y2:80 };
+		var ref = surface.createLine(line)
+            .setFill([0, 255, 0, 0.7])
+            .setStroke({color:[0, 0, 255, 0.7], width:3} )
+            .setTransform({ dx: 20, dy: 20 })
+            ;
+		
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+	});
+
+	addTest('attach_image', function(testName){
+		var surface = getTestSurface(testName, 'Attach to an image, with color fill, color stroke');
+        var image = {
+            width: 96, height: 96,
+            src: "http://dojotoolkit.org/img/viewcvs.png"
+        };
+		var ref = surface.createImage(image)
+            .setFill([0, 255, 0, 0.7])
+            .setStroke({color:[0, 0, 255, 0.7], width:3} )
+            .setTransform({ dx: 20, dy: 20 })
+            ;
+		
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+	});
+
+	addTest('attach_path', function(testName){
+		var surface = getTestSurface(testName, 'Attach to an path, with null fill, color stroke');
+		var ref = surface.createPath()
+			.moveTo(10, 20).lineTo(80, 150)
+			.setAbsoluteMode(false).lineTo(40, 0)
+			.setAbsoluteMode(true).lineTo(180, 100)
+			.setAbsoluteMode(true).curveTo(10, -80, -150, -10, -90, -10)
+			.closePath()
+            .setStroke({color:[0, 0, 255, 0.7], width:1} )
+            .setTransform({ dx: 120, dy: 120 })
+            ;
+		
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+	});
+
+	addTest('attach_polyline', function(testName){
+		var surface = getTestSurface(testName, 'Attach to polyline, with color stroke, color fill');
+		var points = [ {x:70, y:15}, {x:40, y:70}, {x:100, y:80}, {x:130, y:-20}];
+		var ref = surface.createPolyline(points)
+            .setFill([0, 255, 0, 0.7])
+            .setStroke({color:[255, 0, 0, 0.7], width:1})
+            .setTransform({ dx: 50, dy: 20 })
+            ;
+		
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+	});
+
+	addTest('attach_gradient', function(testName) {
+		var surface = getTestSurface(testName, 'attach gradient fill');
+		var lg = {
+			type: "linear",
+			x1: 0, y1: 0, x2: 75, y2: 50,
+			colors: [
+				{ offset:   0, color: "#F60" },
+				{ offset: 0.5, color: "#FAF" },
+				{ offset:   1, color: "#FF6" }
+			]
+		};
+
+		var ref = surface.createRect(rect)
+            .setFill(lg)
+            .setTransform({ dx: 40, dy: 100 });
+
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+	});
+
+	addTest('attach_pattern', function(testName) {
+		var surface = getTestSurface(testName, 'attach pattern fill');
+        var pattern = {
+            type: "pattern",
+            x: 0, y: 0, width: 120, height: 96,
+            src: "http://dojotoolkit.org/img/viewcvs.png"
+        };
+
+	    var ellipse = {cx: 150, cy: 100, rx: 150, ry: 100};
+		var ref = surface.createEllipse(ellipse)
+            .setStroke({color: "blue", width: 1 })
+            .setFill(pattern)
+            ;
+
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+    });
+
+	addTest('attach_radial', function(testName) {
+		var surface = getTestSurface(testName, 'attach radial gradient fill');
+		var rg = {
+			type: "radial",
+			cx: 100, cy: 100, r: 100,
+			colors: [
+				{ offset:   0, color: "red" },
+				{ offset: 0.5, color: "green" },
+				{ offset:   1, color: "blue" }
+			]
+		};
+
+	    var circle = {cx: 100, cy: 100, r: 100 };
+		var ref = surface.createCircle(circle)
+            .setStroke({color: "blue", width: 1 })
+            .setFill(rg)
+			.setTransform({dx: 40, dy: 30})
+            ;
+
+		// now attach it!
+		var ar = dojo.gfx.attachNode(ref.rawNode);
+        attachAssert(ref, ar, testName);
+    });
+
+	var gTestsToRun = [
+		'attach',
+		'attach2',
+		'attach3',
+        'attach_line',
+        'attach_polyline',
+        'attach_image',
+        'attach_path',
+        'attach_gradient',
+        'attach_radial',
+        'attach_pattern'
+    ];
+
+	for (var i = 0; i < gTestsToRun.length; ++i) {
+		var testName = gTestsToRun[i];
+		var err = runTest(testName);
+		if (err) {
+			getTestSurface(testName, testName + ' FAILED (' + err + ')');
+		}
+	}
+}); // end onload
+</script>
+<style>
+   td { border: 1px solid black; text-align: left; vertical-align: top; }
+   v:group { text-align: left; }
+</style>
+   </head>
+   <body>
+   <table>
+   <tbody id="testcontainer">
+   </tbody>
+   </table>
+   </body>
+   </html>
+
+

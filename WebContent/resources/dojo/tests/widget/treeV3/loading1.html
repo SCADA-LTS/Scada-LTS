@@ -1,0 +1,55 @@
+<html>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeLoadingControllerV3");
+
+	dojo.require("dojo.widget.TreeEmphasizeOnSelect");	
+	dojo.require("dojo.widget.TreeSelectorV3");	
+	dojo.require("dojo.widget.TreeDeselectOnDblselect");	
+
+	dojo.hostenv.writeIncludes();
+
+</script>
+
+
+</head>
+<body>
+
+<h3>Dynamically loads nodes from server</h3>
+
+<input type="button" value="Expand tree to level 3" onClick="dojo.widget.byId('treeController').expandToLevel(dojo.widget.byId('firstTree'),3)"/>
+<br/>
+
+<input type="button" value="Expand node 2 tree to level 3" onClick="dojo.widget.byId('treeController').expandToLevel(dojo.widget.byId('2'),3)"/>
+<br/>
+
+<div dojoType="TreeLoadingControllerV3" widgetId="treeController" RpcUrl="local"></div>
+
+
+<div dojoType="TreeSelectorV3" widgetId="selector"></div>	
+
+<div dojoType="TreeDeselectOnDblselect" selector="selector"></div>
+<div dojoType="TreeEmphasizeOnSelect" selector="selector"></div>
+
+
+<div dojoType="TreeV3" widgetId="firstTree" listeners="treeController;selector">
+    <div dojoType="TreeNodeV3" title="Node 1"></div>
+    <div dojoType="TreeNodeV3" title="Node 2" widgetId="2">
+        <div dojoType="TreeNodeV3" title="Node 2.1"></div>
+        <div dojoType="TreeNodeV3" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNodeV3" title="Node 3" isFolder="true">
+    </div>	
+
+</div>
+
+</html>

@@ -1,0 +1,85 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Geral</h1>
+<p>
+  <b>Usu&aacute;rios</b> representam cada indiv&iacute;duo que usa o sistema. V&aacute;rios privil&eacute;gios podem ser associados a usu&aacute;rios para garantir a eles a 
+  habilidade de ler e alterar dados e caracter&iacute;sticas do sistema.
+</p>
+
+<p>
+  H&aacute; dois n&iacute;veis b&aacute;sicos de usu&aacute;rios: administradores (<img src="images/user_suit.png"/>), e outros usu&aacute;rios .
+  (<img src="images/user_green.png"/>). Administradores possuem acesso a todas as funcionalidade do sistema. Outros usu&aacute;rios possuem 
+  v&aacute;rios privil&eacute;gios de acordo com a configura&ccedil;&atilde;o.
+</p>
+
+<h1>Editando Usu&aacute;rios</h1>
+<p>
+  Para adicionar um novo usu&aacute;rio, clique no <img src="images/user_add.png"/> &iacute;cone. O Usu&aacute;rio n&atilde;o ser&aacute; adicionado at&eacute; ser 
+  salvado corretamente. Para editar um usu&aacute;rio existente, clique no nome do usu&aacute;rio na lista de usu&aacute;rios.
+</p>
+<p>
+  Senhas n&atilde;o s&atilde;o recuper&aacute;veis desde que sejam salvas; elas s&oacute; podem ser resetadas especificando uma nova senha.
+</p>
+<p>
+  Usu&aacute;rios n&atilde;o podem ser deletados devido a referencias com outros sistemas de objetos que o usuario possa ter. Um usu&aacute;rio desativado n&atilde;o 
+  tem a permiss&atilde;o de logar no sistema.
+</p>
+<p>
+  Para testar um endere&ccedil;o de email de usu&aacute;rio, clique no <img src="images/email_go.png"/> &iacute;cone. Isto far&aacute; com que um email seja enviado 
+  para um endere&ccedil;o de email especificado.
+</p>
+<!--<p>-->
+<!--  Users may have alarm notification emails sent to their email addresses without explicitly being specified on an email -->
+<!--  event handler. Selecting a <b>Send alarm emails</b> alarm level above "none" will cause these notifications to be -->
+<!--  sent when the event's alarm level is greater than or equal to the user's minimum alarm level, but only when the event -->
+<!--  is raised (i.e. no escalation or inactive notifications). Note also that if the user is already specified on an email -->
+<!--  event handler, they will not be sent multiple emails.-->
+<!--</p>-->
+<p>
+  Usu&aacute;rio podem ter notifica&ccedil;&atilde;o de alarme enviados para seu endere&ccedil;o de email sem explicitamente ser espec&iacute;ficado um gerenciador 
+  de eventos de email. Selecionando <b>Send alarm emails</b> n&iacute;vel de alarme acima "nenhum" far&aacute; essas notifica&ccedil;&otilde;es serem 
+  enviadas quando o n&iacute;vel de alarme de evento &eacute; maior ou igual ao m&iacute;nimo n&iacute;vel de alarme de evento do usu&aacute;rio, por&eacute;m somente quando o evento 
+  "aumentou" (i.e. no escalation or inactive notifications). Veja tamb&eacute;m que se o usu&aacute;rio j&aacute; esta especificado no gerenciador de 
+  eventos de email, n&atilde;o ser&atilde;o enviados multiplos emails.
+</p>
+
+<!--<h1>User privileges</h1>-->
+<!--<p>The <b>Administrator</b> checkbox determines if this user is an administrator.<p>-->
+<!--<p>-->
+<!--  If the user is not an administrator, all data sources for the customer will be listed. Checking the box next to the -->
+<!--  data source name indicates that the user can alter the data source settings, as well as access all data produced by -->
+<!--  that data source.-->
+<!--</p>-->
+<h1>Privil&eacute;gio de Usu&aacute;rio</h1>
+<p>O checkbox <b>Administrador</b> determina se o usu&aacute;rio &eacute; um administrador.</p>
+<p>
+  Se o usu&aacute;rio n&atilde;o &eacute; um administrador, todos os "data sources" para o cliente ser&atilde;o listados. Selecionado a caixa perto 
+  do nome do "data source" indica que o usu&aacute;rio pode alterar a configura&ccedil;&atilde;o do "data source", como tamb&eacute;m todos os dados produzidos 
+  por esse "data source".
+</p>
+<!--<p>-->
+<!--  If the data source is not checked, a list of all points within the data source will be displayed. Each point can be -->
+<!--  individually set for no access, read access, or&mdash;if the point is settable&mdash;write access. (Having write -->
+<!--  access implies have read access.)-->
+<!--</p>-->
+<p>
+  Se o "data source" n&atilde;o est&aacute; selecionado, uma lista de todos os "data points" dentro do "data source" ser&atilde;o mostrados. Cada "data point" pode ser 
+  individualmente setados para nenhum acesso, acesso de leitura, ou&mdash;se o "data point" est&aacute; setado&mdash;acesso de escrita. (Possuir acesso a escrita 
+  implica em acesso a leitura.)
+</p>

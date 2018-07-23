@@ -1,0 +1,48 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<!--<h1>Configuração</h1>-->
+<h1>Configuration</h1>
+<!--<p>Todo datasource exige um <b>Nome</b>, que pode ser qualquer-->
+<!--descrição.</p>-->
+<p>Every datasource requires a <b>Name</b>, that can contain any
+description.</p>
+<!--<p>Todos os parâmetros iniciais dependem das configurações do-->
+<!--dispositivo escravo com o qual se deseja comunicar e devem ser-->
+<!--configuradas corretamente.</p>-->
+<p>All initial parameters depend on the slave device configurations
+and should be configured correctly..</p>
+<!--<p>O <b>Período de atualização</b> corresponde ao período de tempo-->
+<!--em que o sistema fará requisição da classe 2 e, se necessário, da classe-->
+<!--1 ao dispositivo escravo.</p>-->
+<p>The <b>Update period</b> corresponds the time interval upon which
+the system makes calls 2 and, if necessary, class 1 requisitions to the
+slave device.</p>
+<!--<p>O <b>Período Relativo de GI</b> corresponde ao período em que o-->
+<!--sistema fará a requisição de um <b> General Interrogation</b> ao-->
+<!--dispositivo e é <b>relativo ao período de atualização </b> definido-->
+<!--anteriormente, isso é, se período de atualização = 2s e Período de GI =-->
+<!--30,<b> o datasource enviará um General Interrogation a cada 60-->
+<!--segundos ao dispositivo.</b></p>-->
+<p>The <b> GI relative period</b> corresponds to the time interval
+upon which the system makes the requisition of one <b>General
+Interrogation</b> to the device and is <b>relative to the update period</b>
+defined beforehand. So, if the update period = 2s and the GI period =
+30, <b>the datasource sends one General Interrogation every 60
+seconds to the device</b>.</p>

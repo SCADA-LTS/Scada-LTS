@@ -1,0 +1,318 @@
+<html xmlns:dojo xmlns:myown>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {
+		// debugAtAllCosts: true,
+		isDebug: true
+	};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require('dojo.widget.HtmlWidget');
+	dojo.require("dojo.widget.TabContainer");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.Button");
+	// dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+	dojo.registerNamespace("myown", "myown"); 
+</script>
+</head>
+<body>
+
+<!-- TEST 1 -->
+
+<!-- test that widgets are attached correctly -->
+
+<!-- xmp is a very special element type - browser ignores all markup until it reaches /xmp tag -->
+<!-- You might want to use a plain javascript string instead -->
+<xmp id="Test1Template" style="display:block;">
+	<div>
+		<div dojoAttachPoint="subContainerWidget" dojoType="dojo:TabContainer" doLayout="false" >
+			<div dojoAttachPoint="contentPane1" dojoType="dojo:ContentPane" label="pane 1">
+				Pane 1
+				<div dojoAttachPoint="testElement"></div>
+			</div>
+			<div dojoAttachPoint="contentPane2" dojoType="dojo:ContentPane" label="pane 2">
+				Pane 2
+			</div>
+		</div>
+	</div>
+</xmp>
+
+<!-- Declared in BODY so can refer to XMP elements. -->
+<script>
+	dojo.widget.defineWidget('myown.Test1', dojo.widget.HtmlWidget, {
+		widgetsInTemplate: true,
+		isContainer: true,
+
+		templateString: dojo.byId('Test1Template').textContent || dojo.byId('Test1Template').innerText,
+
+		subContainerWidget: null,
+		contentPane1: null,
+		contentPane2: null,
+		contentPane3: null,
+		testElement: null,
+
+		testSubWidgets1: function() {
+			var strs = [];
+
+			if (!this.subContainerWidget) {
+				strs.push('subContainerWidget missing');
+			} else if (this.subContainerWidget.constructor != dojo.widget.TabContainer) {
+				strs.push('subContainerWidget is not a TabContainer');
+			} else {
+				if (this.subContainerWidget.contentPane1) {
+					strs.push('this.subContainerWidget.contentPane1 exists and it shouldnt');
+				}
+				if (this.subContainerWidget.contentPane3) {
+					strs.push('this.subContainerWidget.contentPane3 exists and it shouldnt?');
+				}
+			}
+
+			if (!this.contentPane1) {
+				strs.push('this.contentPane1 missing');
+			} else if (this.contentPane1.constructor != dojo.widget.ContentPane) {
+				strs.push('this.contentPane1 is not a ContentPane');
+			} else if (this.contentPane1.parent != this.subContainerWidget){
+				strs.push('this.contentPane1 has wrong widget parent');
+			} else if (!this.contentPane1._processedSubWidgets){
+				strs.push('this.contentPane1._processedSubWidgets should be set!');
+			}
+
+			if (!this.contentPane2) {
+				strs.push('this.contentPane2 missing');
+			} else if (this.contentPane2.constructor != dojo.widget.ContentPane) {
+				strs.push('this.contentPane2 is not a ContentPane');
+			} else if (!this.contentPane2._processedSubWidgets){
+				strs.push('this.contentPane2._processedSubWidgets should be set!');
+			}
+
+			if (this.contentPane3) {
+				strs.push('this.contentPane3 exists and it shouldnt');
+			}
+
+			if (!this.testElement) {
+				strs.push('testElement missing');
+			} else if (this.testElement.tagName != 'DIV') {
+				strs.push('testElement is not a DIV');
+			}
+
+			return strs;
+		}
+	});
+</script>
+
+
+<!-- can use widget immediately in markup - no parsing occurs until document loaded and scripts run -->
+<div dojoType="myown:Test1" widgetId="test1Widget" >
+	<div dojoAttachPoint="contentPane3" widgetId="contentPane3" dojoType="dojo:ContentPane" label="pane 3">
+		Pane 3
+	</div>
+</div>
+^ Pane 3 ooops - In code how to set test1Widget.containerNode = test1Widget.subContainerWidget.containerNode <em>before</em> child nodes are added? Cannot do automagically because widget template may have multiple containers. Same issue with ButtonA missing below.
+
+<script>
+	function doTest1() {
+		var strs = [];
+		var test1Widget = dojo.widget.byId('test1Widget');
+		if (!test1Widget) {
+			strs.push('test1Widget not created');
+		} else {
+			strs = strs.concat(test1Widget.testSubWidgets1());
+		}
+
+		var contentPane3 = dojo.widget.byId('contentPane3');
+		if (!contentPane3) {
+			strs.push('contentPane3 missing');
+		} else if (contentPane3.constructor != dojo.widget.ContentPane) {
+			strs.push('contentPane3 is not a ContentPane');
+		} else if (contentPane3._processedSubWidgets){
+			strs.push('contentPane3._processedSubWidgets should NOT be set!');
+		}
+
+		if (test1Widget && contentPane3) {
+			if (contentPane3.domNode.parentNode != test1Widget.subContainerWidget.containerNode) {
+				strs.push('contentPane3 domNode isnt child of correct dom node');
+			}
+		}
+
+ 		if(strs.length == 0){
+			strs.push('all tests are passed!');
+		}
+
+		alert(strs.join('\n'));
+
+	}
+</script>
+<br>
+<button onClick="doTest1()">Run test 1</button>
+<hr>
+
+
+
+
+<!-- TEST 2 -->
+
+<xmp id="Test2Template" style="display:block;">
+	<div>
+		<div dojoType="myown:Test2"></div>
+	</div>
+</xmp>
+<script>
+	dojo.widget.defineWidget('myown.Test2', dojo.widget.HtmlWidget, {
+		widgetsInTemplate: true,
+		isContainer: true,
+		templateString: dojo.byId('Test2Template').textContent || dojo.byId('Test2Template').innerText
+	});
+
+	function doTest2() {
+		var test2Widget = dojo.widget.createWidget('myown:Test2');
+		alert('This alert shouldnt show?' + test2Widget);
+	}
+</script>
+<br>
+<br>
+<br>
+<br>
+This test is recursive and hangs the browser or maybe even cause a PC problems. Should we detect this?<br>
+<button onClick="doTest2()">Run test 2</button>
+<hr>
+
+
+
+
+<!-- TEST 3 -->
+
+<!-- test that can have subcontainers in subcontainers. More attachpoint checks, especially that subwidget attachpoints dont affect this widget -->
+
+
+<xmp id="Test3Template" style="display:block;">
+	<div>
+		<div dojoAttachPoint="subContainerWidget" dojoType="myown:Test1" >
+			<div dojoType="dojo:ContentPane" label="pane 3">
+				<div dojoAttachPoint="buttonwidgetA" dojoType="dojo:Button">button A</div>
+				<div dojoAttachPoint="testElement3"></div>
+			</div>
+		</div>
+		<div dojoType="button" dojoAttachPoint="buttonWidgetB">button B
+			<div dojoAttachPoint="testElement3"></div>
+		</div>
+	</div>
+</xmp>
+
+<script>
+	dojo.widget.defineWidget('myown.Test3', dojo.widget.HtmlWidget, {
+		widgetsInTemplate: true,
+		isContainer: true,
+
+		templateString: dojo.byId('Test3Template').textContent || dojo.byId('Test3Template').innerText,
+
+		// should be set
+		subContainerWidget: null,
+		buttonWidgetB: null,
+		testElement3: null,
+
+		// should not be set
+		buttonwidgetA: null,
+		buttonwidgetB: null,
+		testElement3: null,
+
+		// should not be set
+		testElement: null,
+		contentPane1: null,
+		contentPaneX: null,
+
+		testSubWidgets3: function() {
+			var strs = [];
+
+			if (!this.subContainerWidget) {
+				strs.push('this.subContainerWidget missing');
+			} else if (this.subContainerWidget.constructor != myown.Test1) {
+				strs.push('this.subContainerWidget is not a myown:Test1');
+			}
+
+			if (!this.buttonWidgetB) {
+				strs.push('this.buttonWidgetB missing');
+			} else if (this.buttonWidgetB.constructor != dojo.widget.Button) {
+				strs.push('this.buttonWidgetB is not a Button');
+			} else if (this.buttonWidgetB.domNode.parentNode != this.domNode) {
+				strs.push('this.buttonWidgetB.domNode is on wrong element node');
+			}
+
+			if (!this.testElement3) {
+				strs.push('this.testElement3 missing');
+			} else if (this.testElement3.parentNode != this.buttonWidgetB.containerNode) {
+				strs.push('this.testElement3 is on wrong node');
+			}
+
+
+			if (this.contentPane1) {
+				strs.push('this.contentPane1 exists and it shouldnt');
+			}
+
+			if (this.testElement) {
+				strs.push('this.testElement exists and it shouldnt');
+			}
+
+			if (this.contentPaneX) {
+				strs.push('this.contentPaneX exists and it shouldnt');
+			}
+
+			if (this.buttonWidgetB && this.buttonWidgetB.contentPaneX) {
+				strs.push('this.contentPaneX exists on buttonB and it shouldnt');
+			}
+
+			if (this.subContainerWidget) {
+				if (this.subContainerWidget.contentPaneX) {
+					strs.push('this.contentPaneX exists on subContainerWidget and it shouldnt');
+				}
+				if (this.subContainerWidget.subContainerWidget && this.subContainerWidget.subContainerWidget.contentPaneX) {
+					strs.push('this.contentPaneX exists on subContainerWidget.subContainerWidget and it shouldnt');
+				}
+			}
+
+
+			return strs;
+		}
+	});
+</script>
+
+<br>
+<br>
+<br>
+<br>
+<!-- misdefined dojoAttachPoint shouldnt affect anything -->
+<div dojoType="myown:Test3" widgetId="test3Widget">
+	<div dojoAttachPoint="contentPaneX" dojoType="dojo:ContentPane" label="pane X">
+		Pane X in myown:Test3
+	</div>
+</div>
+
+<script>
+	function doTest3() {
+		var strs = [];
+		var test3Widget = dojo.widget.byId('test3Widget');
+		if (!test3Widget) {
+			strs.push('test3Widget not created');
+		} else {
+			strs = strs.concat(test3Widget.testSubWidgets3());
+		}
+
+ 		if(strs.length == 0){
+			strs.push('all tests are passed!');
+		}
+
+		alert(strs.join('\n'));
+
+	}
+</script>
+<br>
+<button onClick="doTest3()">Run test 3</button>
+<br>
+<hr>
+
+
+</body>
+</html>

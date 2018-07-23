@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	dojo.addOnLoad(function(){
+
+		var controller = dojo.widget.createWidget("TreeBasicControllerV3");
+
+		var treeNodes = [
+			{
+				title: "Node 1" ,
+				children: [
+					{title: "Node 1.1"},
+					{title: "Node 1.2"}
+				]
+			},
+			{title: "Node 2" }
+		]
+	
+
+		
+		var tree = dojo.widget.createWidget("TreeV3", {listeners: [controller.widgetId]});
+
+		/**
+			 lazy initialization is in effect 
+			only root-level widgets will be created
+		*/
+		tree.setChildren(treeNodes);
+
+		document.body.appendChild(tree.domNode);
+
+	});
+
+</script>
+</head>
+<body>
+
+<h4>Create whole tree from js object</h4>
+
+
+</body>
+</html>

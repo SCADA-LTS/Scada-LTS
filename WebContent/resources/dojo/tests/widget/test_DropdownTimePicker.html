@@ -1,0 +1,48 @@
+<html>
+<head>
+<script type="text/javascript">
+	var djConfig = {isDebug: true, extraLocale: ["en-us","es-es","de-de"]};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+dojo.require("dojo.debug.console");
+dojo.require("dojo.widget.DropdownTimePicker");
+</script>
+<style>
+html, body { width: 100%; height: 100%; }
+</style>
+<title>DropdownTimePicker tests</title>
+</head>
+<body>
+<h1>DropdownTimePicker tests</h1>
+<p>
+Here are some time pickers positioned statically.
+Drop down should appear below the input box.
+</p>
+<p>
+Wipe:
+	<input dojoType="dropdowntimepicker" lang="en-us" value="12:00" containertoggle="wipe" containerToggleDuration="300">
+Explode:
+	<input dojoType="dropdowntimepicker" lang="en-us" value="11:00" containertoggle="explode" containerToggleDuration="500">
+Fade:
+	<input dojoType="dropdowntimepicker" lang="en-us" value="10:00" containertoggle="fade" containerToggleDuration="500">
+Nothing:
+	<input dojoType="dropdowntimepicker" lang="en-us" value="9:00">
+</p>
+<p>
+	<input id="enabler" type="checkbox" onchange="dojo.widget.byId('bar')[this.checked ? 'enable' : 'disable']();" />
+	<label for="enabler">enable</label>
+	<input id="bar" dojoType="dropdowntimepicker" value="13:00" disabled>
+</p>	
+<p>
+German:
+	<input dojoType="dropdowntimepicker" lang="de-de" value="9:00">
+Spanish:
+	<input dojoType="dropdowntimepicker" lang="es-es" value="9:00">
+Custom:
+	<input dojoType="dropdowntimepicker" displayFormat="HH:mm" value="0:00">
+Custom:
+	<input dojoType="dropdowntimepicker" displayFormat="k:mm:ss" value="0:00">
+</p>
+</body>
+</html>

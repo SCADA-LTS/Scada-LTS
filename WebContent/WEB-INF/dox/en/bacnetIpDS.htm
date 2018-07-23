@@ -1,0 +1,31 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>The BACnet I/P data source is used to gather data from BACnet I/P compatible devices accessible over an I/P network. Equipment can be in a local network or intranet, or could also be anywhere in the internet. This data source uses both polling and COV (Change Of Value) subscriptions for updating as applicable.</p>
+
+<h1>Configuration</h1>
+<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Update period</b> determines how often the BACnet equipment is polled for data. Polling is only used if a desired object does not support COV subscriptions. The device is automatically queried for its supported services to make this determination.</p>
+<p>The <b>Device ID</b> is the identifier that Mango will provide to other equipment in its IAm message. An IAm message is automatically sent upon startup of the data source to declare its presence to the network, and is also sent in response to appropriate WhoIs requests.</p>
+<p>The <b>Broadcast address</b> is the IP address for broadcast messages. Your network administrator will provide you with an appropriate value to use. The <b>Port</b> is the port number upon which Mango will listen for incoming messages. Note that Mango supports situations where other equipment within the BACnet network listens on other ports, but broadcases messages will only be sent to the port number that Mango listens on.</p>
+<p>The <b>Timeout</b>, <b>Segment timeout</b>, <b>Segment window</b>, and <b>Retries</b> values are BACnet messaging attributes. In most cases the given default values should be appropriate. Consult the BACnet I/P documentation or your network administrator to determine if other values should be used for your network.</p>
+<p>The <b>COV lease time</b> is the number of minutes that Mango will request to hold a COV lease. Mango will automatically attempt to refresh its COV subscriptions after half of the given time has elapsed. So, if the least time is 60 minutes, Mango will request the device honour the lease for 60 minutes, and will resubscribe after 30.</p>
+<p>Where COV subscriptions are not available, polling at the given rate is used instead. Devices are polled individually. Devices that support ReadPropertyMultiple requests are sent this message, partitioned to contain no more than 200 properties in a single request if necessary. Otherwise, individual ReadProperty requests are sent.</p>
+
+<h1>BACnet I/P discovery</h1>
+<p>BACnet I/P networks can be discovered automatically by broadcasting WhoIs messages. Devices are required to respond with an IAm message, which contains some basic information about the device. To test configuration settings and determine what devices are available for points, enter the <b>Port</b> number to which to broadcast and click the "Send WhoIs" button. (If the port number is not provided, the value from the configuration is used.) A single WhoIs message will be sent, and then the device will listen for IAm messages indefinitely. (Clicking "Cancel" will stop the listener.) As IAm messages are received, information about the devices will be displayed in the table below button. The information can be used for the creation of points.</p>

@@ -1,0 +1,24 @@
+﻿<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Конфигурация</h1>
+<p>Каждый источник данных должен иметь одно произвольно заданное Имя.</p>
+<p>Адрес источника является адресом главного устройства или адресом источника данных, который необходимо зарегистрировать. Адрес подчиненного устройства – это адрес удаленного устройства, с которым необходимо установить связь.</p>
+<p>Значение поля Период опроса RBE соответствует интервалу времени, по истечении которого система отправляет подчиненному устройству требование (запрос) классов 1, 2 и 3 (события). Постоянный период опроса соответствует интервалу времени, по истечении которого система направляет устройству требование (запрос) класса 0 и который имеет следующее отношение к периоду опроса RBE: если Период опроса RBE = 2 с, а постоянный период опроса = 30, то источник данных будет направлять устройству запросы класса 0 каждые 60 секунд.</p>
+

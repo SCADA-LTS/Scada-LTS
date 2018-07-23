@@ -1,0 +1,114 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  An event detector's purpose is to determine if the value of a point satisfies one or more related conditions, and if 
+  so, to become "active" and raise an event that can be appropriately handled. A point can have an unlimited number of 
+  event detectors. The ways in which events can be detected depend upon the data type of point, and so only the event 
+  detectors that apply to the current point's data type are listed in the <b>Type</b> selection.
+</p>
+<p>
+  Event detectors can detect a large number of conditions, but only apply to a single point. If conditions across 
+  multiple points or conditions that include scheduled events are required, compound event detectors can be used. See 
+  the documentation for compound event detectors.
+</p>
+<p>
+  A point may have as many detectors as necessary, and can have multiple detectors of the same type. (i.e. multiple 
+  high limit or low limit detectors.)
+</p>
+<p>
+  To add a new detector select the <b>Type</b> from the list and click the <img src="images/bell_add.png"/> icon. Note 
+  that the "Save" button must be clicked to have the detector actually be saved with the point. To delete an existing 
+  detector click the <img src="images/bell_delete.png"/> icon associated with the detector.
+</p>
+<p>
+  Each detector type has an <b>Alarm level</b> attribute. This determines whether the detector raises an alarm when 
+  active, and if so the severity of the alarm. See the general help page for information on Alarms.
+</p>
+
+<h1>High limit</h1>
+<p>
+  This detector applies only to Numeric points. The <b>High limit</b> is the value above which the detector becomes 
+  active. The detector may optionally be configured with a <b>Duration</b>; the point's value must stay above the high 
+  limit for at least the given duration before the detector becomes active. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+
+<h1>Low limit</h1>
+<p>
+  This detector applies only to Numeric points. The <b>Low limit</b> is the value below which the detector becomes 
+  active. The detector may optionally be configured with a <b>Duration</b>; the point's value must stay below the low 
+  limit for at least the given duration before the detector becomes active. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+
+<h1>Change</h1>
+<p>
+  This detector applies to all data types. It raises an event whenever the point value changes. Events raised by this 
+  detector do not automatically return to normal.
+</p>
+
+<h1>No change</h1>
+<p>
+  This detector applies to all data types. It raises an event whenever the value has not changed within the given 
+  <b>Duration</b>. This can be useful  to detect when equipment is malfunctioning. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+
+<h1>No update</h1>
+<p>
+  This detector applies to all data types. It raises an event whenever the value has not been updated within the 
+  given <b>Duration</b>. (A point value change requires the new point value to be different from the previous point 
+  value. A point value update only requires the time of the point value to change; the value itself can remain the 
+  same.) This can be useful  to detect when equipment is malfunctioning. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+
+<h1>State</h1>
+<p>
+  This detector applies to Binary, Multistate, and Alphanumeric points. It becomes active whenever the point enters the 
+  given <b>State</b>. The detector may optionally be configured with a <b>Duration</b>; the point must stay in the 
+  given state for at least the given duration before the detector becomes active. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+
+<h1>State change count</h1>
+<p>
+  This detector applies only to Binary, Multistate, and Alphanumeric points. It becomes active whenever the point value 
+  changes at least <b>Change count</b> times within the given <b>Duration</b>. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+
+<h1>Positive CUSUM</h1>
+<p>
+  This detector applies only to Numeric points. The <b>Positive limit</b> is the CUSUM above which the detector becomes 
+  active, and the <b>Weight</b> is the constant weight value to use for CUSUM calculation. The detector may optionally 
+  be configured with a <b>Duration</b>; the CUSUM must stay above the limit for at least the given duration before the 
+  detector becomes active. Events raised by this detector will automatically return to normal when the condition is no 
+  longer satisfied.
+</p>
+
+<h1>Negative CUSUM</h1>
+<p>
+  This detector applies only to Numeric points. The <b>Negative limit</b> is the CUSUM below which the detector becomes 
+  active, and the <b>Weight</b> is the constant weight value to use for CUSUM calculation. The detector may optionally 
+  be configured with a <b>Duration</b>; the CUSUM must stay below the limit for at least the given duration before the 
+  detector becomes active. Events raised by this detector will automatically return to normal when the condition is no 
+  longer satisfied.
+</p>

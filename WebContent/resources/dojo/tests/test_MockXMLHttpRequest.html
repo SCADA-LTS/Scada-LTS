@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<title>MockXMLHttpRequest Tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../dojo.js"></script>
+		<script type="text/javascript" src="jsunit_browser.js"></script>
+		<script type="text/javascript" src="MockXMLHttpRequest.js"></script>
+		<script type="text/javascript" src="test_MockXMLHttpRequest.js"></script>
+		<script type="text/javascript">
+			function init(){
+				dojo.debug("Starting MockXMLHttpRequest test");
+				test_MockXMLHttpRequest();
+				setTimeout(function() { dojo.debug("Tests complete");}, 1200);
+			}			
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
+

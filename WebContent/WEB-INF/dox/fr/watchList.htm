@@ -1,0 +1,34 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Vue d'ensemble</h1>
+<p>Une liste de surveillance est l'ensemble des points que vous voulez visualiser ensemble. Les valeurs des points et leurs temps sont mis &agrave; jour automatiquement&mdash;il est inutile d'actualiser cette page. (En fait, le syst&egrave;me est plus efficace si vous ne le faites pas.)</p>
+
+<h1>Nommer les listes de surveillance</h1>
+<p>Un utilisateur peut avoir plusieurs listes de surveillance, mais une seule peut s'afficher en m&ecirc;me temps. Pour cr&eacute;er une nouvelle liste, cliquez sur l'ic&ocirc;ne <img src="images/add.png"/> dans l'angle droit du haut de la section liste de surveillance. Par d&eacute;faut les nouvelles listes sont nomm&eacute;es "(sans nom)". Pour la renommer, survoler l'ic&ocirc;ne <img src="images/pencil.png"/> pour faire apparaitre le panneau d'&eacute;dition, entrer le nouveau nom, et cliquez sur "enregistrer". Pour supprimer une liste de surveillance, cliquez sur l'ic&ocirc;ne <img src="images/delete.png"/> dans l'angle droit du haut de la section liste de surveillance. Chaque utilisateur doit poss&eacute;der au moins une liste de surveillance, ainsi l'icone de suppresion n'apparait que si le nombre de liste est sup&eacute;rieur &agrave; un.</p>
+
+<h1>Points de la liste de surveillance</h1>
+<p>Un point peut appartenir &agrave; plusieurs listes, ainsi vous pouvez cr&eacute;er autant de listes que n&eacute;cessaire.</p>
+<p>Les donn&eacute;es affich&eacute;es pour chaque point d&eacute;pendent de la configuration des points. Les points qui sont r&egrave;glables (ceux pour lesquels vous avez la permission) affichent l'ic&ocirc;ne (<img src="images/icon_edit.png"/>). En survolant cette ic&ocirc;ne avec la souris vous aurez acc&egrave;s au param&egrave;tres du point. Les points qui possedent des param&egrave;tres graphiques seront pr&eacute;c&eacute;d&eacute;s de l'ic&ocirc;ne (<img src="images/icon_chart.png"/>). Survoler cette ic&ocirc;ne affichera le graphe actuel. Les graphes sont automatiquement actualis&eacute;s, dates et valeurs, ainsi d&egrave;s qu'une valeur est disponible le graphique se met &agrave; jour. L'ic&ocirc;ne point details (<img src="images/icon_comp.png"/>) vous affichera la page de d&eacute;tail du point s&eacute;lectionn&eacute;.</p>
+
+<p>Pour changer l'ordre des points de la liste, utilisez les ic&ocirc;nes <em>move</em> . Cliquez <img src="images/arrow_down_thin.png"/> descendra le point d'une ligne dans la liste, alors que cliquez <img src="images/arrow_up_thin.png"/> le montera d'une ligne.</p>
+
+<p>Pour ajouter des points dans une liste de surveillance, cliquer sur le nom du point dans la section <em>Points</em>. Ils apparaitront dans le bas de la liste. Pour supprimer des points, cliquer sur l'ic&ocirc;ne supprimer (<img src="images/bullet_delete.png"/>) &agrave; droite sur la ligne du point. Cliquez sur cette ic&ocirc;nen retire seulement le point de la liste actuelle&mdash;cela ne supprime pas le point du syst&egrave;me. Ne confondez pas l'ic&ocirc;ne <em>enlever le point</em> avec l'ic&ocirc;ne <em>supprimer de la liste de surveillance</em> du haut de la page.</p>
+
+<h1>Surbrillance</h1>
+<p>Les valeurs et dates de la liste sont bri&egrave;vement en surbrillance lorsqu'elle changent. La surbrillance reste jusqu'&agrave; la fin du cycle d'actuallisation. G&eacute;n&eacute;ralement la surbrillance implique toujours un changement de date,mais pas forc&eacute;ment un changement de valeur.</p>

@@ -1,0 +1,143 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Colorspaces</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+</style>
+<script language="JavaScript" type="text/javascript">
+	// Dojo configuration
+	djConfig = { 
+		isDebug: true
+	};
+</script>
+<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+dojo.require("dojo.graphics.Colorspace");
+
+function convert_test(c, col, model_from, model_to){
+
+	return convert_test_do(c, col, model_from, model_to);
+	//convert_test_do(c, col, model_to, model_from);
+}
+
+function convert_test_do(c, col, model_from, model_to){
+
+	var r1 = c.convert(col, model_from, model_to);
+	var r2 = c.convert(r1, model_to, model_from);
+
+	// figure out colorspace drift [0..1]
+
+	if (r2){
+
+		var tot = 0;
+
+		for(var i=0; i<col.length; i++){
+			tot += Math.abs(col[i] - r2[i]);
+		}
+
+		tot /= col.length;
+
+		var d = Math.round(tot * 10000)/10000;
+
+		//dojo.debug("Convert from "+model_from+' to '+model_to);
+		//dojo.debug("In: "+col);
+		//dojo.debug("Out: "+r1);
+		//dojo.debug("Out: "+r2);
+
+		return '('+d+')';
+	}else{
+		return 'FAILED';
+	}
+}
+
+
+dojo.addOnLoad(function(){
+
+	var c = new dojo.graphics.Colorspace();
+
+	var spaces = ['RGB', 'XYZ', 'xyY', 'Lab', 'LCHab', 'Luv', 'LCHuv', 'CMY', 'CMYK', 'HSV', 'HSL'];
+
+
+	// create table
+
+	var tbl = document.createElement('table');
+	var tb = document.createElement('tbody');
+	tbl.appendChild(tb);
+	document.getElementById('main').appendChild(tbl);
+	tbl.border = 1;
+
+	// create header row
+
+	var tr = document.createElement('tr');
+	tb.appendChild(tr);
+
+	var th = document.createElement('th');
+	tr.appendChild(th);
+	th.appendChild(document.createTextNode('-'));
+
+	for(var i=0; i<spaces.length; i++){
+
+		var th = document.createElement('th');
+		tr.appendChild(th);
+		th.appendChild(document.createTextNode(spaces[i]));
+	}
+
+	for(var i=0; i<spaces.length; i++){
+
+		var tr = document.createElement('tr');
+		tb.appendChild(tr);
+
+		var th = document.createElement('th');
+		tr.appendChild(th);
+		th.appendChild(document.createTextNode(spaces[i]));
+
+		for(var j=0; j<spaces.length; j++){
+
+			if (spaces[i] == spaces[j]){
+
+				var text = '-';
+			}else{
+
+				var col = (spaces[i] == 'CMYK') ? [0.2, 0.5, 0.7, 0.4] : [0.2, 0.5, 0.7];
+
+				var text = convert_test(c, col, spaces[i], spaces[j]);
+			}
+
+			var td = document.createElement('td');
+			td.align = 'center';
+			tr.appendChild(td);
+			td.appendChild(document.createTextNode(text));
+
+		}
+	}
+
+
+
+	//d(c.chromaticAdaptation([0.5, 0.5, 0.5], 'A', 'B'));
+
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(5000));
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(6000));
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(7000));
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(8000));
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(9000));
+
+});
+
+</script>
+</head>
+<body>
+
+	<br />
+	<div id="main"></div>
+	<br />
+	The CMYK model is quite lossy when we convert back to RGB, so we expect to see some drift greater than 0.<br />
+	The HSL model <i>seems</i> lossy in some cases, but that might be programmer error.<br />
+	<br />
+
+</body>
+</html>
+

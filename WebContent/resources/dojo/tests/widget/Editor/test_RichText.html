@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<script type="text/javascript"> 
+	djConfig = { 
+		//debugAtAllCosts: true,
+		isDebug: true,
+		ieClobberMinimal: true,
+		dojoRichTextFrameUrl: "../../../src/widget/templates/richtextframe.html" //for xdomain
+	};
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.RichText");
+</script>
+
+<script type="text/javascript">
+/*
+// If we wanted to do this pragmatically...
+dojo.event.connect(window, "onload", function (e) {
+	var div = dojo.byId("editable");
+	var editor = dojo.widget.createWidget("RichText", {}, div);
+});
+*/
+	//dojo.hostenv.writeIncludes();
+</script>
+
+<div id="editable" dojoType="RichText" widgetId="editdiv" style="border: 1px solid black;"><!-- don't want space here
+
+--><h1>Lorem Ipsum</h1>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
+<h2>More Ipsum...</h2>
+<p>Sed sollicitudin suscipit risus. Nam ullamcorper. Sed nisl lectus, pellentesque nec, malesuada eget, ornare a, libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+<ul>
+	<li>list item one
+		<ol>
+			<li>sub list item two
+			<li>this is a sub item two
+		</ol>
+	<li>more wonderful list items
+	<li>and a last one for every list fan out there
+</ul>
+<p>In lacinia varius odio. Fusce elementum dolor at massa. Suspendisse ullamcorper arcu vitae enim feugiat ultrices. Duis neque metus, gravida sit amet, mollis at, nonummy id, eros. Mauris aliquet quam quis nibh. Curabitur sit amet arcu et erat commodo tincidunt.
+</div>
+
+<p><input type="button" value="save" id="savebutton">
+<input type="button" value="paste in gunk" id="pastebutton">
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	editable = dojo.byId("editable");
+	savebutton = dojo.byId("savebutton");
+	editableRT = dojo.widget.manager.getWidgetById("editdiv");
+
+	dojo.event.connect(savebutton, "onclick", function (e) {
+		if (editableRT) {
+			editableRT.close(true);
+			savebutton.value = "edit";
+			editableRT = null;
+		} else {
+			editableRT = dojo.widget.createWidget("RichText", {}, editable);
+			savebutton.value = "save";
+		}
+	});
+	
+	pasteButton = dojo.byId("pastebutton");
+	dojo.event.connect(pasteButton, "onclick", function(){
+		editableRT.execCommand("inserthtml", "<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.</p>");
+	});
+});
+</script>
+
+<h2>Not Editable!</h2>
+
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	dojo.event.connect(dojo, "loaded", function (e) {
+		function makeEditable (e) {
+			// create an editor from the table cell and keep it's width
+			var editor = dojo.widget.createWidget("RichText",
+				{inheritWidth: true}, e.currentTarget);
+			editor.placeCursorAtEnd();
+	
+			// save and exit on a blur
+			dojo.event.connect(editor, "onBlur", function (e) {
+				editor.close();
+			});
+		}
+	
+		table = dojo.byId("editabletable");
+		tds = table.getElementsByTagName("td");
+		for (var i = 0; i < tds.length; i++) {
+			dojo.event.connect(tds[i], "onclick", makeEditable);
+		}
+	});
+});
+</script>
+
+<table id="editabletable" border="1">
+	<tr>
+		<td>cell one
+		<td>cell two
+	</tr>
+	<tr>
+		<td>cell three
+		<td>cell four
+	</tr>
+</table>
+
+<h2>Blank area!</h2>
+
+<p style="border: 1px inset gray;" dojoType="RichText" widgetId="blank"> </p>
+
+<h2>Fixed size rich text area</h2>
+<div id="fixed" dojoType="RichText" widgetId="fixed" style="width: 300px; height: 200px; overflow: auto; border: solid black 1px;"><!--no
+spaces--><h1>Lorem Ipsum</h1>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
+<h2>More Ipsum...</h2>
+<p>Sed sollicitudin suscipit risus. Nam ullamcorper. Sed nisl lectus, pellentesque nec, malesuada eget, ornare a, libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+<ul>
+	<li>list item one
+		<ol>
+			<li>sub list item two
+			<li>this is a sub item two
+		</ol>
+	<li>more wonderful list items
+	<li>and a last one for every list fan out there
+</ul>
+<p>In lacinia varius odio. Fusce elementum dolor at massa. Suspendisse ullamcorper arcu vitae enim feugiat ultrices. Duis neque metus, gravida sit amet, mollis at, nonummy id, eros. Mauris aliquet quam quis nibh. Curabitur sit amet arcu et erat commodo tincidunt.
+</div>

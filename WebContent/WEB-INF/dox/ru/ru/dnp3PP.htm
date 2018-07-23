@@ -1,0 +1,34 @@
+﻿<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Конфигурация</h1>
+<p>Вы можете добавить один отдельный объект, указав его индекс, или вы можете Добавить группу объектов данных, определив минимальный и максимальный индексы.</p>
+<h1>Команды</h1>
+<p>Для объектов типа OUTPUT (ВЫВОД) Вам необходимо определить параметры команд, которые будут использоваться по умолчанию, в случае, если они не должны задаваться в режиме исполнения. Для объектов типа BINARY OUTPUT (ДВОИЧНЫЙ ВЫВОД) существуют следующие команды (которые должны исполняться при нажатии соответствующей пиктограммы листа наблюдения, а также других источников данных):</p>
+<p>pon/poff -&gt; импульс вкл/выкл<br>
+  lon/loff -&gt; триггер-защелка вкл/выкл<br>
+close/trip -&gt; закрыто/ход</p>
+<p>  Все команды сопровождаются двумя параметрами: время запуска команды и время остановки команды в миллисекундах. Например, pon,500,200<br>
+  Существует возможность ввести только &quot;1&quot;, &quot;0&quot;, &quot;true&quot; или &quot;false&quot;. В этом случае отправленная команда будет считаться командой по умолчанию, назначенной для этой точки.</p>
+<h1>Пример</h1>
+<p>Двоичная точка типа ЗАКРЫТО/ХОД, ВРЕМЯ ЗАПУСКА 1000 e, ВРЕМЯ ОСТАНОВКИ 0</p>
+<p>  1 -&gt; система отправит команду ЗАКРЫТЬ со временем запуска 1000 и временем остановки 0.</p>
+<p>  0 -&gt; система отправит команду ХОД со временем запуска 1000 и временем остановки 0</p>
+<p>pon -&gt; система отправит команду ИМПУЛЬС ВКЛ. со ВРЕМЕНЕМ ЗАПУСКА 1000 и ВРЕМЕНЕМ ОСТАНОВКИ 0</p>
+<p>  poff,300,0 -&gt; система отправит команду ИМПУЛЬС ВЫКЛ. со ВРЕМЕНЕМ ЗАПУСКА 300 и ВРЕМЕНЕМ ОСТАНОВКИ 0.</p>

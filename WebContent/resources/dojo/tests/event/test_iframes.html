@@ -1,0 +1,33 @@
+<html>
+	<head>
+		<title>Connecting to events in other frames</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.event.*");
+
+			function init() {
+				var ifr = window.frames[0];
+				var doc = ifr.document;
+				dojo.event.connect(doc, "onkeypress", "click");
+				dojo.event.connect(document, "onkeypress", "click");
+			}
+
+			function click(e) {
+				dojo.debugShallow(e);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+
+		<iframe id="ifr" src="empty.html"></iframe>
+	</body>
+</html>

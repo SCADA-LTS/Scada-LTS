@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+	<title>Toolbar Test</title>
+	<link type="text/css" rel="stylesheet" href="templates/HtmlToolbar.css"/>
+	
+	<script type="text/javascript">
+	var djConfig = {
+		isDebug: true,
+		ieClobberMinimal : true
+	};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.*");
+		dojo.require("dojo.widget.Toolbar");
+		dojo.require("dojo.widget.ColorPalette");
+	</script>
+	
+	<script type="text/javascript">
+	
+	function img(name) {
+		return dojo.uri.dojoUri("src/widget/templates/buttons/" + name + ".gif").toString();
+	}
+	
+	function init(e) {
+		var now = new Date();
+		tc = dojo.widget.createWidget("ToolbarContainer");
+		dojo.byId("markup").appendChild(tc.domNode);
+		tb = dojo.widget.createWidget("Toolbar");
+		tc.addChild(tb);
+		var bg = dojo.widget.createWidget("ToolbarButtonGroup", {
+			name: "justify",
+			defaultButton: "justifyleft",
+			preventDeselect: true
+		});
+		bg.addChild(img("justifyleft"));
+		bg.addChild(img("justifycenter"));
+		bg.addChild(img("justifyright"));
+		bg.addChild(img("justifyfull"));
+		var items = [img("bold"), img("italic"), img("underline"),
+			"|", dojo.widget.createWidget("ToolbarColorDialog", {toggleItem: true, icon: new dojo.widget.Icon(img("backcolor"))}), img("forecolor"),
+			"|", bg, //["justify", img("justifyleft"), img("justifycenter"), img("justifyright"), img("justifyfull")],
+			"|", img("createlink"), img("insertimage"),
+			"|", img("indent"), img("outdent"),
+			img("insertorderedlist"), img("insertunorderedlist"),
+			"|", img("undo"), img("redo")];
+		for(var i = 0; i < items.length; i++) {
+			tb.addChild(items[i], null, {toggleItem:i<3});
+		}
+		//tb.getItem("wikiword").setLabel("WikiWord");
+		var headings = dojo.widget.createWidget("ToolbarSelect", {
+			name: "formatBlock",
+			values: {
+				"Normal": "p",
+				"Heading 1": "h1"
+			}
+		});
+		dojo.event.connect(headings, "onSetValue", function(item, val) {
+			alert(item + "\n" + val);
+		});
+		tb.addChild(headings);
+		var timeSpent = (new Date() - now);
+		dojo.debug("Total build time: " + timeSpent);
+		return timeSpent;
+	}
+	
+	dojo.addOnLoad(function(){
+		var total = 0;
+		for(var i = 0; i < 1; i++) {
+			total += init();
+		}
+		dojo.debug("Avg time: " + (total/i));
+	});
+	</script>
+</head>
+
+<body>
+	<h1>Programatically created toolbar:</h1>
+	<div id="markup"></div>
+	<a href="javascript:tc.enable()">Enable</a> /
+	<a href="javascript:tc.disable()">Disable</a>
+	<br />
+	Justification: 
+	<a href="javascript:tc.enable('justify')">Enable</a> /
+	<a href="javascript:tc.disable('justify')">Disable</a>
+
+    <h1>Toolbar from Markup</h1>
+
+    <div id="toolbar1" dojo:type="ToolbarContainer">
+        <div dojo:type="toolbar">
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/cut.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/copy.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/paste.gif"/>
+
+            <span dojo:type="ToolbarSeparator">&nbsp;</span>
+
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/bold.gif" toggleItem="true"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/italic.gif" toggleItem="true"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/underline.gif" toggleItem="true"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/strikethrough.gif" toggleItem="true"/>
+
+            <span dojo:type="ToolbarSeparator">&nbsp;</span>
+
+            <span dojo:type="ToolbarButtonGroup" name="justify" defaultButton="justifyleft" preventDeselect="true">
+                <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/justifyleft.gif" toggleItem="true" name="justifyleft"/>
+                <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/justifycenter.gif" toggleItem="true" name="justifycenter"/>
+                <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/justifyright.gif" toggleItem="true" name="justifyright"/>
+                <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/justifyfull.gif" toggleItem="true" name="justifyfull"/>
+            </span>
+
+            <span dojo:type="ToolbarSeparator"></span>
+
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/insertorderedlist.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/insertunorderedlist.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/indent.gif"/>
+            <img dojo:type="ToolbarButton" dojo:icon="../../src/widget/templates/buttons/outdent.gif"/>
+        </div>
+    </div>
+
+    <h1>dojo Trac #448 Test case</h1>
+	<script>
+		
+	      function dumpOutput(val) {
+	      var obj=document.getElementById("output");
+	      obj.innerHTML=obj.innerHTML+" "+val;
+	      }
+	
+	      function toolbarclick(){
+	      dumpOutput("onClick")
+	      }
+	      
+	      function toolbarmouseover(){
+	      dumpOutput("onMouseOver")
+	      }
+	
+	      function toolbarmouseout(){
+	      dumpOutput("onMouseOut")
+	      }
+	
+	      
+	</script>
+	
+	Test case for dojo Trac #448 - ToolbarItem needs to have handlers defined to work in markup.
+	<br>Supported events: onclick, onmouseover, onmouseout
+	<br>Each event outputs event name string to output outline
+	<br>
+	
+	<div dojoType="toolbar">
+	<img dojoType="ToolbarButton" name="toolitem" label="Cut" onMouseOver="toolbarmouseover()" onClick="toolbarclick()" onMouseOut="toolbarmouseout()"icon="../../src/widget/templates/buttons/cut.gif">
+	</img>
+	</div>
+	<div id="output" onclick="this.innerHTML = ''" style="font-size:0.8em;overflow:auto;z-index:300;border:2px solid black;background:#ffffff;float:right;width:500px;height:200px;"></div>
+	
+	
+	
+	    <hr>
+	    <address><a href="mailto:neildev@gmail.com">Neil J</a></address>
+	<!-- Created: Tue Jul 11 03:27:49 EDT 2006 -->
+	<!-- hhmts start -->
+	Last modified: Tue Jul 11 05:32:43 EDT 2006
+	<!-- hhmts end -->
+  </body>
+</html>

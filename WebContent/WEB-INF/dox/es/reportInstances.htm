@@ -1,0 +1,78 @@
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<h1>Descripci&oacute;n General</h1>
+<p>Los reportes en el ScadaBR tienen dos representaciones: <b>plantilla</b> (o templates) con los cuales se define el contenido de un reporte,
+ y las <b>instancias</b> las cuales son el resultado de la ejecuci&oacute;n de un reporte seg&uacute;n una plantilla. Simplemente: el motor del reporte
+ crea instancias a partir de una plantilla. Las plantillas tienen atributos tales como: nombre, lista de puntos que la conforman,
+ rangos de fecha y hora en los que se tomar&aacute; la informaci&oacute;n, etc. Una instancia tomar&aacute; su nombre de la plantilla, y se conformar&aacute;
+ con sus propios atributos: como fecha y hora de ejecuci&oacute;n, duraci&oacute;n de la ejecuci&oacute;n, n&uacute;mero de registros incluidos, enter otros.</p>
+<p>Una instancia puede ser considerada como una instant&aacute;nea (snapshot) de los datos presentes en el sistema cuando &eacute;sta se ejecut&oacute;.
+ Notese que los atributos de una instancia no pueden ser cambiados luego que esta se gener&oacute;. Igualmente, los datos recolectados
+ por la instancia permanecer&aacute;n almacenados en el sistema mientras exista la instancia (mientras &eacute;sta no sea purgada).
+ Es por esto, la importancia de purgar las instancias con frecuencia &mdash;especialmente cuando son muy grandes&mdash; 
+ ya ocupan grandes cantidades de espacio de almacenamiento y ya no son requeridas.</p>
+<p>Las plantillas de reportes&mdash;y las instancias que &eacute;stas generan &mdash; pertenecen al usuario que las cre&oacute;.
+ Ellas no pueden ser compartidas expl&iacute;citamente en el sistema, m&aacute;s s&iacute; impl&iacute;citamente. Vea la documentaci&oacute;n de "Plantillas de reporte"
+ para m&aacute;s informaci&oacute;n.</p>
+
+<h1>Cola de Reportes</h1>
+<p>La cola de reportes es una lista con todas las instancias de reportes del usuario actual. Esta lista no se actualiza de forma autom&aacute;tica,
+ por lo que deber&aacute; presionar el icono <img src="images/control_play_blue.png"/> para realizar un refrescamiento manual de la lista.
+ De igual manera esta lista es actualizada por eventos tales como el ejecutar un nuevo reporte.</p>
+<p>Las instancias de los reportes ser&aacute;n listadas sin importar su estado, ya sea que se han completado o a&uacute;n est&eacute;n ejecutando, y 
+podr&aacute; observar su estado en la columna duraci&oacute;n de la ejecuci&oacute;n en la lista.</p>
+<p>Las columnas que conforman la lista contienen las siguientes informaciones:</p>
+<ul>
+  <li><b>Nombre del Reporte</b>: Es el nombre heredado de la plantilla de reportes. Luego que es creada una instancia en nombre del reporte
+ no cambiar&aacute;, ni siquiera cuando se cambie el nombre a la plantilla que lo gener&oacute;.</li>
+  <li><b>Hora de inicio de ejecuci&oacute;n</b>: Momento en el tiempo cuando la instancia del reporte comenzar&aacute; a ser generada.</li>
+  <li><b>Duraci&oacute;n de la Ejecuci&oacute;n</b>: Cantidad de tiempo que requiri&oacute; generar la instancia.</li>
+  <li><b>Desde</b>: Momento en el tiempo desde que el reporte tom&oacute; los registros seleccionado desde la base de datos.</li>
+  <li><b>Hasta</b>: Momento en el tiempo en el cual el reporte dej&oacute; de considerar los registros seleccionados.</li>
+  <li><b>Registros</b>: Es el n&uacute;mero total de registros considerados en el reporte.</li>
+</ul>
+<p>La casilla <b>No purgar</b> permite a los usuarios evitar que instancias de reportes importantes sean eliminadas por procesos planificados
+ de purga o limpieza (Vea la documentaci&oacute;n de "Otras configuraciones" para m&aacute;s informaci&oacute;n sobre el proceso de purga de reportes.)
+ Esta caracter&iacute;stica s&oacute;lo es usada cuando existen instancias de reportes que potencialmente consumir&aacute;n grandes cantidades de espacio de almacenamiento.</p>
+<p>La &uacute;ltima columna de la lista proporciona los controles para la administraci&oacute;n de la instancias. El icono <img src="images/bullet_down.png"/> 
+ realiza una descarga de la data del reporte a un archivo con formato CSV.
+ El icono <img src="images/icon_chart.png"/> abrir&aacute; una nueva ventana del navegador que mostrar&aacute; la informaci&oacute;n de la instancia, datos estad&iacute;sticos,
+ y un gr&aacute;fico de valores de los datos del reporte. Haciendo clic en el icono <img src="images/bullet_delete.png"/> eliminar&aacute; la instancia del reporte.
+ Recuerde que cuando una instancia de un reporte es muy grande, eliminarla del sistema tomar&aacute; alg&uacute;n tiempo.</p>

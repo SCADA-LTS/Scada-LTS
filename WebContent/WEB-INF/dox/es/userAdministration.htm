@@ -1,0 +1,85 @@
+﻿<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+
+<h1>Resumen</h1>
+<p>
+  Los <b>Usuarios</b> representan individuos que utilizan el sistema. Diferentes tipos de privilegios 
+  les pueden ser asignados para garantizarles la habilidad de leer, modificar y leer datos, adem&aacute;s de modificar el comportamiento del sistema.
+</p>
+
+<p>
+  Hay dos niveles b&aacute;sicos para los Usuarios: los Administradores (<img src="images/user_suit.png"/>), y  el resto de los usuarios 
+  (<img src="images/user_green.png"/>). Los Administradores tienen acceso a todas las funcionalidades del sistema. Lo dem&aacute;s usuarios tienen 
+  privilegios que se basan en la configuraci&oacute;n que se les realice.
+</p>
+
+<h1>Editando los Usuarios</h1>
+<p>
+  Para agregar un nuevo usuario haga clic en el icono <img src="images/user_add.png"/>. El usuario ser&aacute; adicionado &uacute;nicamente al ser guardado.
+  Si desea editar un usuario existente, selecci&oacute;nelo de la lista de usuarios haciendo clic en su nombre.
+</p>
+<p>
+  Las contrase&ntilde;as no pueden ser recuperadas luego que son asignadas; s&oacute;lo podr&aacute; reiniciar una contrase&ntilde;a especificando una nueva.
+</p>
+<p>
+  Un usuario deshabilitado no podr&aacute; ingresar al sistema. Para eliminar un usuario haga clic en el icono <img src="images/delete.png"/>.
+</p>
+<p>
+  Para probar una direcci&oacute;n de correo haga clic en el icono <img src="images/email_go.png"/>. Esto enviar&aacute; un correo a la direcci&oacute;n indicada.
+</p>
+<p>
+  Los usuarios pueden recibir en sus correos notificaciones de alarmas sin necesidad de realizar una configuraci&oacute;n espec&iacute;fica en el manejador de eventos.
+  Al seleccionar un nivel de alarmas en <b>Enviar correo  de alarmas </b> se enviar&aacute; el nivel correspondiente y sus inferiores, y al seleccionar     
+  <em>"Ninguno"</em> no ser&aacute; enviado ning&uacute;n correo para este usuario por este concepto.</p>
+<p>
+  Note que si ya se ha especificado el correo del usuario en un evento del Manejador de Eventos, el sistema s&oacute;lo enviar&aacute; un correo a&uacute;n que est&eacute; configurado en varias opciones similares (no se le enviar&aacute; un duplicado del mismo correo).
+</p>
+
+<h1>Privilegios de los Usuarios</h1>
+<p>La casilla del <b>Administrador</b> determina si este usuario ser&aacute; un administrador.</p>
+<p>
+  Cuando el usuario no es administrador se listar&aacute;n todas las fuentes de datos y sus puntos. Marcando la casilla correspondiente al nombre 
+  de la fuente de datos permitir&aacute; que el usuario pueda alterar sus configuraciones, de igual forma acceder&aacute; a todo lo relacionado con esta fuente de datos.
+</p>
+<p>
+  Cuando est&aacute; desmarcada la casilla de la fuente de datos, se mostrar&aacute; la lista de puntos configurados en ella. El acceso a cada punto ser&aacute;
+  individualmente configurado para:  Sin acceso, lectura, o escritura (cuando el punto sea modificable).</p>
+
+<p>Nota: El  acceso de escritura a un punto implica que el usuario podr&aacute; leer este punto.</p>

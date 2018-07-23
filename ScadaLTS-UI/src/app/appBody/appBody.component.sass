@@ -1,0 +1,315 @@
+=border-radius($radius)
+  -webkit-border-radius: $radius
+  -moz-border-radius: $radius
+  border-radius: $radius
+
+=transition($trans)
+  -webkit-transition: $trans
+  -moz-transition: $trans
+  -ms-transition: $trans
+  -o-transition: $trans
+  transition: $trans
+
+=boxshadow($shadow)
+  -webkit-box-shadow: $shadow
+  -moz-box-shadow: $shadow
+  box-shadow: $shadow
+
+=selectText($text)
+  -webkit-user-select: $text
+  -moz-user-select: $text
+  -ms-user-select: $text
+  -o-user-select: $text
+  user-select: $text
+
+/* MENU */
+.sideMenu
+  background-color: #f2f2f2
+  overflow: hidden
+  width: 250px
+  position: fixed
+  top: 65px
+  display: block
+  left: 0
+  min-height: 100%
+  +boxshadow(0 0 5px 0 rgba(0, 0, 0, 0.5))
+  +transition(width .3s cubic-bezier(0.82, 0, 0.11, 1))
+  z-index: 6
+
+.sideMenuContent
+  width: auto
+  height: auto
+
+.menuItem
+  line-height: 40px
+  display: block
+  vertical-align: middle
+  padding: 6px 0 6px 12px
+  cursor: pointer
+  width: auto
+  +transition(background-color .5s ease)
+
+.menuItem:nth-child(11)
+  border-bottom: 1px solid #b3b3b3
+
+.menuItem:hover
+  background-color: #e6e6e6
+  +transition(background-color .5s ease)
+
+.menuItem:active
+  +boxshadow(inset 0 0 3px 0 rgba(0, 0, 0, 0.4))
+
+.icon
+  color: #404040
+  width: 20px
+  line-height: 40px
+  float: left
+  display: inline-block
+  vertical-align: middle
+
+.menuItemText
+  margin: 0 0 0 38px
+  display: block
+  vertical-align: middle
+  width: 150px
+
+.subMenuItemContainer
+  width: auto
+  padding: 20px 0
+  overflow: hidden
+  background-color: #f9f9f9
+  border-bottom: 1px solid #b3b3b3
+  margin-bottom: 2px
+  white-space: nowrap
+
+.subMenuLink
+  width: 100%
+  display: inline-block
+  float: left
+  padding: 15px 0 15px 30px
+  cursor: pointer
+  color: #666
+  font-size: 14px
+  box-sizing: border-box
+  border-left: 5px solid transparent
+  +transition(all .1s ease)
+
+.subMenuLink:hover
+  border-left: 5px solid rgba(0, 0, 0, 0.5)
+  color: #000
+  +transition(all .2s ease)
+
+.subMenuHide
+  overflow: hidden
+  max-height: 0
+  padding-top: 0
+  padding-bottom: 0
+  margin-top: 0
+  margin-bottom: 0
+  +transition(all .4s cubic-bezier(0.86, 0, 0.07, 1))
+
+.subMenuShow
+  +transition(all 0.4s cubic-bezier(0.86, 0, 0.07, 1))
+  max-height: 500px
+
+.activeMenuItem
+  background-color: #e6e6e6
+
+.shrunkMenu
+  width: 48px
+  +transition(all .3s cubic-bezier(0.86, 0, 0.07, 1))
+
+.hideMenu
+  width: 0
+  +transition(all .3s cubic-bezier(0.86, 0, 0.07, 1))
+
+/* HEADER */
+.logoScada
+  color: #fff
+  display: block
+  white-space: nowrap
+  float: left
+  line-height: 85px
+  padding-left: 20px
+  +transition(.5s padding ease)
+
+.logoScada img
+  width: 160px
+  height: 30px
+
+.collapseMenuIcon
+  line-height: 80px
+  margin-left: 20px
+  cursor: pointer
+  +selectText(none)
+  +transition(.5s margin ease)
+
+.iconMenu:active
+  color: #000
+
+.header
+  overflow: hidden
+  z-index: 999999
+  width: 100%
+  min-width: 320px
+  background-color: #FFFFFF
+  position: fixed
+  height: 65px
+  +boxshadow(2px 0 3px rgba(0,0,0,.5))
+
+.userTools
+  float: right
+  margin-right: 50px
+  z-index: 999999
+  +transition(.5s margin ease)
+
+.userTools img
+  height: 45px
+  width: 45px
+  border: 2px solid #777
+  cursor: pointer
+  margin-top: 10px
+  +border-radius(50%)
+
+.dropdownInfo
+  cursor: pointer
+  position: absolute
+  right: 120px
+  top: 24px
+  +selectText(none)
+  +transition(.5s right ease)
+
+.userDropdown
+  position: fixed
+  top: 50px
+  right: 40px
+  border: 1px dotted #999
+  +border-radius(3px)
+  background-color: #fff
+  line-height: 40px
+  +boxshadow(1px 1px 0 0 rgba(0,0,0,.3))
+  z-index: 2
+  width: 140px
+
+.userDropdown li
+  vertical-align: middle
+  color: #000
+  cursor: pointer
+
+.userDropdown li a
+  font-size: 14px
+
+.userDropdown li:nth-child(odd)
+  border-bottom: 1px solid #ccc
+
+.userDropdown li:hover
+  background-color: #f2f2f2
+
+.userDropdown .icon
+  font-size: 16px
+  margin-left: 10px
+  margin-right: 10px
+
+.notificationsDropdown
+  width: 300px
+  right: 40px
+  top: 50px
+  position: fixed
+  border: 1px dotted #999
+  border-radius: 3px
+  background-color: #fff
+  +border-radius(3px)
+  +boxshadow(1px 1px 0 0 rgba(0,0,0,.3))
+
+.notificationsHeader
+  padding: 10px 12px
+  border-bottom: 1px dotted #ccc
+  font-size: 14px
+
+.msgList
+  max-height: 280px
+
+.msgList li
+  padding: 5px 20px
+  cursor: pointer
+  font-size: 14px
+
+.msgList li:hover
+  background-color: #f2f2f2
+
+.allNotifications
+  border-top: 1px dotted #ccc
+  text-align: center
+  font-size: 14px
+  padding: 10px 5px
+  cursor: pointer
+
+.allNotifications:hover
+  background-color: #e6e6e6
+
+.notificationsHeader span
+  float: right
+  cursor: pointer
+
+/* BONUS */
+a:visited
+  color: #000
+
+.hidden
+  display: none
+
+a
+  text-decoration: none
+  outline: none
+
+*:focus, *:active
+  outline: none
+
+.content
+  margin-left: 250px
+  padding: 66px 0 34px
+  min-height: 500px
+  z-index: -99999999999
+  +transition(margin .3s cubic-bezier(0.82, 0, 0.11, 1))
+
+.enlargedContent
+  margin-left: 48px
+  +transition(margin .3s cubic-bezier(0.82, 0, 0.11, 1))
+
+.fullContent
+  margin-left: 0
+  +transition(margin .3s cubic-bezier(0.82, 0, 0.11, 1))
+
+.contentInside
+  padding: 40px
+  z-index: -99999999
+
+/* MEDIA QUERIES */
+@media (max-width: 1200px)
+  .content
+    margin-left: 48px
+
+@media (max-width: 500px)
+  .userTools
+    margin-right: 10px
+    +transition(.5s margin ease)
+  .dropdownInfo
+    right: 70px
+    +transition(.5s right ease)
+  .collapseMenuIcon
+    margin-left: 10px
+    +transition(.5s margin ease)
+  .logoScada
+    padding-left: 10px
+    +transition(.5s padding ease)
+  .notificationsDropdown
+    right: 10px
+    width: 250px
+  .userDropdown
+    right: 10px
+  .content
+    margin-left: 0
+
+.selectedSection
+  border-left: 5px solid rgba(0, 0, 0, 0.7)
+  background-color: #f2f2f2

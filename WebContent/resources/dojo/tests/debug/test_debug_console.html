@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Console Debugger Test</title>
+<script type="text/javascript">
+
+	var djConfig = {
+		isDebug: true
+	};
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.debug.console");
+	dojo.require("dojo.widget.Tree");
+	
+	dojo.arrayOfStuff = ['woo', 'yay', 'hoopla', 'foo', 'bar', 'baz'];
+
+	dojo.hugeArray = [];
+	for (var i=0; i<50; i++){
+		dojo.hugeArray.push('hello world');
+	}
+	
+	function generateDebugError(){
+		try {
+			throw new Error("This exception is expected..");
+		} catch (e) {
+			dojo.log.exception("Error caught generating exception! ;)", e);
+		}
+	}
+	
+</script>
+<style>
+
+</style>
+</head>
+<body>
+
+<h1>Debug testing</h1>
+
+<p><a href="#" onclick="dojo.log.debug('TEST STRING');">Plain debug of a string</a></p>
+<p><a href="#" onclick="dojo.log.info('Info STRING');">Plain info of a string</a></p>
+<p><a href="#" onclick="dojo.log.warn('WARN STRING');">Plain warn of a string</a></p>
+<p><a href="#" onclick="dojo.log.error('ERROR STRING');">Plain error of a string</a></p>
+<p><a href="#" onclick="dojo.debug(dojo);">Plain debug of the root dojo object</a></p>
+<p><a href="#" onclick="dojo.debugShallow(dojo);">Shallow debug of the root dojo object</a></p>
+<p><a href="#" onclick="dojo.debugDeep(dojo);">Deep debug of the root dojo object</a></p>
+<p><a href="#" onclick="generateDebugError()">Debug logging exceptions</a></p>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>Dojo: Test of style.js: show/hide methods</title>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+
+dojo.require("dojo.html.display");
+
+</script>
+<style type="text/css"> 
+body { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px;}
+h2, h3 { font-size: 1em; } 
+h3 { color: black; font-weight: normal; font-style: italic; } 
+.box, .hidden { background-color: lightblue; width: 100px; height: 100px; padding: 16px; }
+.hidden { display: none; };
+</style>
+<!---------------------------------------------------------------------------->
+
+<h2><code>style: show</code></h2>
+
+<button onclick="dojo.html.setShowing('b0', true)">dojo.html.setShowing('Box', true)</button>
+<button onclick="dojo.html.setShowing('b0', false)">dojo.html.setShowing('Box', false)</button>
+<button onclick="dojo.html.toggleShowing('b0')">dojo.html.toggleShowing('Box')</button>
+<br />
+<button onclick="dojo.html.show('b0')">dojo.html.show('Box')</button>
+<button onclick="dojo.html.hide('b0')">dojo.html.hide('Box')</button>
+<br />
+<button onclick="alert(dojo.html.isShowing('b0'))">dojo.html.isShowing('Box')</button><br>
+<br>
+<button onclick="dojo.html.setShowing(null, 'block')">dojo.html.setShowing(null, 'block')</button>
+<button onclick="alert(dojo.html.isShowing(null))">dojo.html.isShowing(null)</button><br>
+
+<br>
+
+<div id="b0" class="box">Box</div>
+
+<br>
+<!---------------------------------------------------------------------------->
+<hr />
+
+<h2><code>style: show, preserve style.display</code></h2>
+
+<button onclick="dojo.html.setShowing('h0', true)">dojo.html.setShowing('Box', true)</button>
+<button onclick="dojo.html.setShowing('h0', false)">dojo.html.setShowing('Box', false)</button>
+<button onclick="dojo.html.toggleShowing('h0')">dojo.html.toggleShowing('Box')</button>
+<br />
+<button onclick="dojo.html.show('h0')">dojo.html.show('Box')</button>
+<button onclick="dojo.html.hide('h0')">dojo.html.hide('Box')</button>
+<br />
+<button onclick="alert(dojo.html.isShowing('h0'))">dojo.html.isShowing('Box')</button><br>
+
+<br>
+
+Box is hidden by stylesheet style. Displayed by virtue of inline style.
+<div id="h0" class="hidden" style="display: block">Box</div>
+
+<br>
+<!---------------------------------------------------------------------------->
+<hr />
+
+<h2><code>style: display (block element)</code></h2>
+
+<button onclick="dojo.html.setDisplay('b1', true)">dojo.html.setDisplay('Box', true)</button>
+<button onclick="dojo.html.setDisplay('b1', false)">dojo.html.setDisplay('Box', false)</button>
+<button onclick="dojo.html.toggleDisplay('b1')">dojo.html.toggleDisplay('Box')</button>
+<br>
+<button onclick="dojo.html.setDisplay('b1', 'block')">dojo.html.setDisplay('Box', 'block')</button>
+<button onclick="dojo.html.setDisplay('b1', 'inline')">dojo.html.setDisplay('Box', 'inline')</button>
+<br>
+<button onclick="alert(dojo.html.isDisplayed('b1'))">dojo.html.isDisplayed('Box')</button><br>
+<br>
+<button onclick="dojo.html.setDisplay(null, 'block')">dojo.html.setDisplay(null, 'block')</button>
+<button onclick="alert(dojo.html.isDisplayed(null))">dojo.html.isDisplayed(null)</button><br>
+
+<br>
+<br>
+
+Before
+<div id="b1" class="box">Box</div>
+After
+
+<br>
+<br>
+<!---------------------------------------------------------------------------->
+<hr />
+
+<h2><code>style: display (inline element)</code></h2>
+
+<button onclick="dojo.html.setDisplay('s0', true)">dojo.html.setDisplay('Span', true)</button>
+<button onclick="dojo.html.setDisplay('s0', false)">dojo.html.setDisplay('Span', false)</button>
+<button onclick="dojo.html.toggleDisplay('s0')">dojo.html.toggleDisplay('Span')</button>
+<br>
+<button onclick="dojo.html.setDisplay('s0', 'block')">dojo.html.setDisplay('Span', 'block')</button>
+<button onclick="dojo.html.setDisplay('s0', 'inline')">dojo.html.setDisplay('Span', 'inline')</button>
+<br>
+<button onclick="alert(dojo.html.isDisplayed('s0'))">dojo.html.isDisplayed('Span')</button><br>
+
+<br>
+<br>
+
+Before<span id="s0" class="box">Span</span>After
+
+<br>
+<br>
+<br>
+<!---------------------------------------------------------------------------->
+<hr />
+
+<h2><code>style: visibility </code></h2>
+
+<button onclick="dojo.html.setVisibility('b2', true)">dojo.html.setVisibility('Box', true)</button>
+<button onclick="dojo.html.setVisibility('b2', false)">dojo.html.setVisibility('Box', false)</button>
+<button onclick="dojo.html.toggleVisibility('b2')">dojo.html.toggleVisibility('Box')</button>
+<br>
+<button onclick="dojo.html.setVisibility('b2', '')">dojo.html.setVisibility('Box', '')</button>
+<button onclick="dojo.html.setVisibility('b2', 'hidden')">dojo.html.setVisibility('Box', 'none')</button>
+<br>
+<button onclick="alert(dojo.html.isVisible('b2'))">dojo.html.isVisible('Box')</button><br>
+<br>
+<button onclick="dojo.html.setVisibility(null, 'block')">dojo.html.setVisibility(null, 'block')</button>
+<button onclick="alert(dojo.html.isVisible(null))">dojo.html.isVisible(null)</button><br>
+
+<br>
+<br>
+
+Before
+<div id="b2" class="box">Box</div>
+After
+
+<br>
+<br>

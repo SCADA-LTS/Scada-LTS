@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<title>dojo: Chart--Area chart test</title>
+		<script type="text/javascript">
+			var djConfig = { isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.widget.Chart");
+		</script>
+	</head>
+	<body>
+		<div dojoType="chart" style="border:1px solid black;width:800px;height:400px;background-color:#ededde;">
+			<table padding="12 12 20 30" axisAt="0 xmin" rangeX="0 100" rangeY="-100 100">
+				<thead>
+					<tr>
+						<th>X</th>
+						<th plotType="area">Series A</th>
+						<th plotType="area">Series B</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr><td>0</td><td>-92.45</td><td>63.06</td></tr>
+					<tr><td>4</td><td>94.23</td><td>-100</td></tr>
+					<tr><td>8</td><td>-93.12</td><td>-33.54</td></tr>
+					<tr><td>12</td><td>89.16</td><td>29.71</td></tr>
+					<tr><td>16</td><td>-82.47</td><td>100</td></tr>
+					<tr><td>20</td><td>73.25</td><td>-69.5</td></tr>
+					<tr><td>24</td><td>-61.79</td><td>6.07</td></tr>
+					<tr><td>28</td><td>48.44</td><td>100</td></tr>
+					<tr><td>32</td><td>-33.6</td><td>-100</td></tr>
+					<tr><td>36</td><td>17.74</td><td>-15.99</td></tr>
+					<tr><td>40</td><td>-1.33</td><td>51.1</td></tr>
+					<tr><td>44</td><td>-15.11</td><td>-100</td></tr>
+					<tr><td>48</td><td>31.1</td><td>-42.5</td></tr>
+					<tr><td>52</td><td>-46.13</td><td>22.04</td></tr>
+					<tr><td>56</td><td>59.75</td><td>100</td></tr>
+					<tr><td>60</td><td>-71.54</td><td>-86.06</td></tr>
+					<tr><td>64</td><td>81.14</td><td>-0.51</td></tr>
+					<tr><td>68</td><td>-88.26</td><td>83.18</td></tr>
+					<tr><td>72</td><td>92.67</td><td>-100</td></tr>
+					<tr><td>76</td><td>-94.24</td><td>-23.19</td></tr>
+					<tr><td>80</td><td>92.93</td><td>41.02</td></tr>
+					<tr><td>84</td><td>-88.77</td><td>100</td></tr>
+					<tr><td>88</td><td>81.89</td><td>-52.83</td></tr>
+					<tr><td>92</td><td>-72.51</td><td>14.91</td></tr>
+					<tr><td>96</td><td>60.9</td><td>100</td></tr>
+					<tr><td>100</td><td>-47.43</td><td>-100</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

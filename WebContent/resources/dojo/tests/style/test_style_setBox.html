@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>Dojo: Test of style.js: test setMarginBox[Width|Height]</title>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+
+dojo.require("dojo.html.layout");
+dojo.require("dojo.event");
+function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : id; }
+
+</script>
+<style type="text/css"> 
+body { cursor: wait; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px;}
+h2, h3 { font-size: 1em; margin-top: 2.5em; } 
+h3 { color: black; font-weight: normal; font-style: italic; } 
+.test { font-size: 8px; }  
+.bar { background-color:#3C3CFF; height: 2px; overflow: hidden }
+.success { background-color:lightgreen;  }
+.unknown { background-color:yellow;  }
+.failure { background-color:#FFCECE;  }
+#report { white-space: nowrap; }
+</style>
+
+<!---------------------------------------------------------------------------->
+<h2><code>setMarginBox</code></h2>
+
+<ul>
+  <li>Colored bars bracket test boxes to reveal exterior margins</li>
+  <li>Styles are all specified inline. Other tests should be run with other style specifications.</li>
+  <li>Test boxes are DIVs. Other tests should be run on other elements. </li>
+</ul>
+<h3>Test Report</h3>
+<div id="report"></div>
+<div id="pacify"><h1>Working...</h1></div>
+
+<h3>Test Boxes</h3>
+<div id="boxTests"></div>
+
+<script type="text/javascript">
+var sizes = [ '', 'width: auto; height: auto;', 'width: 450px; height: 80px;', 'width: 20em; height: 10em;' ];
+var margins = [ '', 'margin: 0;', 'margin: auto;', 'margin: 8px;', 'margin: 1em;' ];
+var paddings = [ '', 'padding: 8px;', 'padding: 1em;' ];
+var borders = [ '', 'border: 1px solid green;', 'border: 0.5em solid green' ];
+var boxes = [ '', '-moz-box-sizing: border-box; box-sizing: border-box;' ];
+
+var h = '';
+var results = [ ];
+var styles = [ ];
+var index = 0;
+for (bx in boxes) 
+{
+	results.push('<h4>Test box-sizing: ' + (boxes[bx] ? boxes[bx] : '(none)') + '</h4>');
+	for (var bo in borders) 
+	{
+		results.push('<h4>Test border: ' + (borders[bo] ? borders[bo] : '(none)') + '</h4>');
+		for (var pa in paddings)
+		{
+			results.push('<h4>Test padding: ' + (paddings[pa] ? paddings[pa] : '(none)') + '</h4>');
+			for (var si in sizes)
+			{
+				results.push('<h4>Test size: ' + (sizes[si] ? sizes[si] : '(none)') + '</h4>');
+				for (var ma in margins)
+				{
+					//results.push('<h4>Test margins: ' + (margins[ma] ? margins[ma] : '(none)') + '</h4>');
+					var style = [ paddings[pa], margins[ma], sizes[si], borders[bo], boxes[bx] ].join(' ');
+					styles.push(style);
+					h = '<div class="test" id="box-' + index + '" style="' + style + '">' + 'Box: ' + style + '</div>';
+					h = '<div class="bar">&nbsp;</div>' + h + '<div class="bar">&nbsp;</div>';
+					h += '<div id="dump-' + index + '"></div><hr>';
+					results.push(h);
+					index++;
+				}
+			}
+		}
+	}
+}
+results.push(h);
+document.getElementById('boxTests').innerHTML = results.join('');
+
+window.setTimeout(processMetrics, 500);
+function processMetrics()
+{
+	var report = [ ];
+	var targetW = 200;
+	var targetH = 60;
+	for (var i=0; i<index; i++)
+	{
+		var dump = document.getElementById('dump-' + i);
+		var box = document.getElementById('box-' + i);
+		var ok = dojo.html.setMarginBox(box, { width: targetW, height: targetH });
+		if (!ok)	{
+			dump.className = 'failure';
+			dump.innerHTML = "Failed to set size.";
+			report.push('<span class="failure">FAILED:</span> could not set size for style [' + styles[i] + ']');
+			continue;
+		}
+		var mbox = dojo.html.getMarginBox(box);
+		ok = !isNaN(mbox.width) && !isNaN(mbox.height);
+		if (!ok){
+			dump.className = 'unknown';
+			dump.innerHTML = "uknown result";
+			report.push('<span class="unknown">UNKNOWN<span> result for style [' + styles[i] + ']');
+		}else if (mbox.width == targetW && mbox.height == targetH)	{
+			dump.className = 'success';
+			dump.innerHTML = "success";
+			report.push('<span class="success">Success:</span> for style [' + styles[i] + ']');
+		}else{
+			dump.className = 'failure';
+			dump.innerHTML = "Final size (" + mbox.width + ', ' + mbox.height + ") doesn't match target (" + targetW + ', ' + targetH + ')';
+			report.push('<span class="failure">FAILED:</span> final size (' + mbox.width + ', ' + mbox.height + ') doesn`t match target (' + targetW + ', ' + targetH + '): for style [' + styles[i] + ']');
+		}
+	}
+	document.getElementById('pacify').innerHTML = '';
+	document.getElementById('report').innerHTML = report.join('<br>');
+	document.body.style.cursor = 'default';
+}
+</script>
+
+</script>
+

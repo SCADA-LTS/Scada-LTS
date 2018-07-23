@@ -1,0 +1,253 @@
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<pre>
+    ScadaBR - Sistema de Adquisici&oacute;n de Datos en C&oacute;digo Abierto - <a
+	href="http://www.scadabr.org.br">http://www.scadabr.org.br</a>
+    Copyright (C) 2010 Funda&ccedil;&atilde;o Certi.
+    Versi&oacute;n 1.0.0 impulsado por Mango M2M - <a
+	href="http://mango.serotoninsoftware.com">http://mango.serotoninsoftware.com</a>.
+    
+    Este programa es Software Libre: Puede redistribuirlo y/o modificarlo
+    bajo los t&eacute;rminos de GNU General Public License y tambi&eacute;n publicado por 
+    La Fundaci&oacute;n de Software Libre, tanto para su versi&oacute;n 3 de su Licencia, o
+    (seg&uacute;n su opci&oacute;n) cualquier versi&oacute;n posterior.
+
+    Este programa es distribuido con la esperanza que sea &uacute;til, pero 
+    SIN NINGUNA GARANTIA; sin las implicaciones de garant&iacute;as por 
+    COMERCIALIZACION o IDONEIDAD PARA UN PROPOSITO PARTICULAR.  
+    Vea la Licencia P&uacute;blica General GNU para m&aacute;s detalles.
+
+    Ud. ha recibido una copia de la Licencia P&uacute;blica General GNU 
+    junto con este programa.  Si no,  vea <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+
+    Adecuaci&oacute;n y Traducci&oacute;n al Espa&ntilde;ol: Copyright (C) 2012 por M&iacute;lmero Gonz&aacute;lez milmero@gmail.com
+
+</pre>
+<br/>
+<br/>
+
+<p>A continuaci&oacute;n se muestra una visi&oacute;n general de c&oacute;mo funciona la aplicaci&oacute;n, y los conceptos para dise&ntilde;ar en esta. 
+Puede encontrar detalles espec&iacute;ficos de la aplicaci&oacute;n utilizando las ayudas contextuales que se indican con el icono 
+(<img src="images/help.png">). Haga clic en este icono para obtener mayor informaci&oacute;n de la caracter&iacute;stica que est&aacute; utilizando.</p>
+
+<h1>Descripci&oacute;n General de la Aplicaci&oacute;n</h1>
+<p>Las funciones de esta aplicaci&oacute;n primordialmente se accesan desde los controles en la cabecera de la aplicaci&oacute;n. 
+Seg&uacute;n los permisos configurados para su cuenta de usuario podr&aacute; ver diferentes iconos debajo del logo. Cuando se pasa con 
+el cursor del rat&oacute;n sobre cualquiera de estos iconos se despliega un mensaje con una descripci&oacute;n corta de su uso.</p>
+<p>En la parte derecha del encabezado puede observarse es el nombre de usuario que ha iniciado sesi&oacute;n</p>
+<p>Cuando en la aplicaci&oacute;n se presente una alarma, aparecer&aacute; sobre la cabecera de controles un icono de una bandera parpadeante (<img src="images/flag_white.png"/>) 
+y junto a este se muestra la descripci&oacute;n asociada ella. El color del icono indicar&aacute; la severidad de la alarma:</p>
+<ul style="list-style-type:none;">
+  <li><img src="images/flag_blue.png"> Informaci&oacute;n</li>
+  <li><img src="images/flag_yellow.png"> Urgente</li>
+  <li><img src="images/flag_orange.png"> Critico</li>
+  <li><img src="images/flag_red.png"> Riesgo a la vida</li>
+</ul>
+<p>Haga clic sobre la descripci&oacute;n de la alarma para ir a la lista de alarmas activas.</p>
+
+<h1>Tipos de Datos</h1>
+<p>Hay 5 tipos de datos soportados:</p>
+<ul>
+  <li><b>Binarios</b> (o booleanos): son datos que s&oacute;lo toman 2 posibles valores manejados por el sistema: <b>cero</b> y 
+ <b>uno</b>. Puede identificarlos con textos seg&uacute;n su necesidad para que se muestren las etiquetas diferentes, 
+  tales como "on/off", "alto/bajo", "iniciado/detenido", etc.</li>
+  <li><b>Estado M&uacute;ltiple:</b> sus valores pueden tomar m&uacute;ltiples estados. (El tipo de dato binario es un caso especial 
+  de un tipo de estado m&uacute;ltiple.) Los valores se representan como enteros en su forma b&aacute;sica (p.e. 0, 1, 2, 7, ...) y, al
+  igual que con los valores binarios, puede editarlos para que se muestren con representaciones de texto (etiquetas) 
+  como "encendido/apagado/deshabilitado", "fr&iacute;o/caliente/apagado", o cualquier otra combinaci&oacute;n.</li>
+  <li><b>Num&eacute;ricos</b> (o anal&oacute;gicos): Son datos que pueden tomar valores decimales (dentro del sistema son variables de punto flotante). 
+  La temperatura, humedad, presi&oacute;n, altitud... son ejemplos de valores num&eacute;ricos. Puede utilizar textos para determinar 
+  sus caracter&iacute;sticas, como cuantos lugares decimales se mostrar&aacute;n, cual separador de miles utilizar&aacute; (comas o puntos), y
+  mostrar un sufijo (p.e. &deg;F, kW/h, moles, etc). Puede definir rangos para convertirlos de un segmento de valor num&eacute;rico a etiquetas espec&iacute;ficas.</li>
+  <li><b>Alfanum&eacute;ricos:</b> estos datos simplemente son cadenas de caracteres, tal como las descripciones en el S/O de una fuente de datos SNMP.</li>
+  <li><b>Imagen:</b> son representaciones gr&aacute;ficas de los estados o de los valores del dato. Son almacenados en archivos en el servidor (no en la base
+  de datos) y son mantenidos en la memoria cach&eacute; por prop&oacute;sitos de rendimiento. Los graficadores pueden ser utilizados para crear im&aacute;genes escaladas -
+  como las miniaturas - de una presentaci&oacute;n.</li>
+</ul>
+
+
+<h1>Fuente de Datos</h1>
+<p>Las fuentes de datos son la base de la operaci&oacute;n de la aplicaci&oacute;n. Una <b>Fuente de datos</b> es un "lugar" desde donde se recibir&aacute;n los datos. Pr&aacute;cticamente 
+todo  puede ser una fuente de datos, s&oacute;lo requiere que el protocolo de comunicaci&oacute;n sea soportado por la aplicaci&oacute;n. Algunos ejemplos:</p>
+<ul>
+  <li>Si tienen acceso a una red Modbus v&iacute;a RS232, RS485, TCP/IP, o UDP/IP, puede crear una fuente de datos Modbus 
+  que interrogar&aacute; los datos de la red en los intervalos que Ud. defina.</li>
+  <li>Si tiene un  equipo o aplicaci&oacute;n que pueda enviar datos sobre HTTP, puede iniciar una fuente de datos HTTP receiver 
+  que escuchar&aacute; las conexiones entrantes y enviar&aacute; los datos a los puntos configurados.</li>
+  <li>Para hardware que soporte protocolo SNMP, inicie una fuente de datos SNMP. Los valores ser&aacute;n muestreados en intervalos programados,
+  o pueden ser capturados por v&iacute;a de un reporte por excepci&oacute;n.</li>
+  <li>Puede leer y actualizar datos en una Base de Datos SQL externa al sistema.</li>
+  <li>Puede generar datos aleatorios o predictivos utilizando una fuente de datos virtual.</li>
+</ul>
+<p>Los valores que son recibidos o colectados por alguna fuente de datos son almacenados en los datos del punto.</p>
+
+<h1>Datos del punto</h1>
+<p>Los <b>datos del punto</b> son una colecci&oacute;n de los valores hist&oacute;ricos del punto. Entonces, un dato de un punto puede ser
+el valor de la lectura de la temperatura de un cuarto, mientras la lectura de su humedad puede ser otro. Los puntos tambi&eacute;n 
+pueden controlar valores, para utilizar un interruptor que encender&aacute; o apagar&aacute; un equipo.</p>
+<p>Hay muchos atributos que pueden utilizar para controlar el comportamiento de los puntos. Inicialmente, est&aacute; el concepto de un  
+<b>localizador de punto</b>. Los localizadores son utilizados por las fuentes de datos para determinar c&oacute;mo "encontrar" 
+un dato de un punto en particular. Por ejemplo, una fuente de datos SQL tiene atributos que incluyen el donde se encuentra la instancia 
+de la base de datos; as&iacute; un punto de localizaci&oacute;n para la fuente de datos indicar&aacute; los nombres de la tabla y el campo en los cuales 
+puede encontrar ese valor espec&iacute;fico. La l&oacute;gica de la separaci&oacute;n de la fuente de datos y de los atributos de sus puntos depender&aacute;n 
+espec&iacute;ficamente del protocolo de su comunicaciones .</p>
+<p>Los atributos de los datos del punto igualmente determinan otros aspectos del punto, tales como su nombre, como ser&aacute; registrado en el hist&oacute;rico 
+(todos los datos, solamente cambios en su valor, o ninguno), por cuanto tiempo se almacenar&aacute; el dato, c&oacute;mo se mostrar&aacute; el valor (formato num&eacute;rico),
+y c&oacute;mo ser&aacute; graficado.</p>
+<p>Tambi&eacute;n es posible configurarle <b>detectores de evento</b>, que pueden ser utilizados para detectar condiciones de inter&eacute;s
+en los valores del punto (pe. el valor ha estado alto por mucho tiempo, es muy bajo, est&aacute; cambiando muy a menudo, no cambia, etc).</p>
+<p>Los puntos pueden ser organizados dentro de una jerarqu&iacute;a, o &aacute;rbol, para simplificar la administraci&oacute;n y mostrarlos utilizando 
+la funcionalidad de jerarqu&iacute;a de puntos.</p>
+
+<h1>Monitoreo</h1>
+<p>La revisi&oacute;n del estado de los puntos del sistema puede hacerse de dos formas: Utilizando las <b>listas de supervisi&oacute;n</b> 
+para crear din&aacute;micamente tablas con la lista de los puntos con sus valores, estampa de tiempo de la &uacute;ltima actualizaci&oacute;n, 
+gr&aacute;ficos de su informaci&oacute;n hist&oacute;rica (cuando el punto est&aacute; configurado para realizar esto). Los valores y los gr&aacute;ficos 
+son actualizados en tiempo real sin requerir refrescar la ventana de su navegador. Los gr&aacute;ficos de m&uacute;ltiples puntos 
+tambi&eacute;n pueden mostrarse seg&uacute;n se requiera.</p>
+<p>Puede crear <b>vistas gr&aacute;ficas</b> de puntos utilizando la funcionalidad de agarrar y soltar (drag and drop) 
+para ubicar las representaciones gr&aacute;ficas de los puntos de forma arbitraria sobre la imagen del fondo. 
+Igualmente tiene la posibilidad de utilizar im&aacute;genes animadas para crear visualizaciones con movimiento din&aacute;mico 
+del comportamiento del sistema, y, de la misma forma que en las listas de supervisi&oacute;n, los valores son actualizados en tiempo real
+sin requerir refrescamiento del navegador. Estas vistas pueden ser marcadas como "p&uacute;blicas" para ser utilizadas 
+en sitios web p&uacute;blicos.</p>
+
+<h1>Control</h1>
+<p>El Control de los sistemas externos tambi&eacute;n se puede lograr enviando una consigna a los puntos que permiten ser modificados 
+(escritos). Un punto <b>ajustable</b> puede ser establecido por un valor introducido por el usuario, como un ajuste a un termostato 
+o interruptor de control de un equipo. Desde la lista de supervisi&oacute;n o desde una vista gr&aacute;fica se proporcionan medios simples
+para realizar la entrada de un valor que se desee establece. Utilizando el localizador de punto con un punto ajustable podr&aacute; 
+determina la fuente de datos establece el valor en el equipo.</p>
+
+<h1>Los Eventos</h1>
+<p>
+  Un <b>Evento</b> es la ocurrencia de una condici&oacute;n definida dentro del sistema. Se dispone de eventos definidos por el usuario y 
+  de eventos propios del sistema. Los eventos del sistema incluyen errores sobre las fuentes de datos, acceso de usuarios, e inicio y 
+  apagado del sistema. Los eventos definidos por el usuario incluyen detectores de eventos de punto (vea "detectores de eventos"), 
+  Eventos planificados, y eventos compuestos, lo que permite detectar condiciones sobre puntos m&uacute;ltiples utilizando instrucciones l&oacute;gicas. 
+  Tambi&eacute;n se cuenta con los "eventos de auditor&iacute;a", los cuales se activan cuando el usuario realiza cambios (adiciones, modificaciones, 
+  eliminaciones) en tiempo de ejecuci&oacute;n que afecten objetos (fuentes de datos, datos del punto, detectores de evento de punto, 
+  eventos de punto, eventos programados, detectores de eventos compuestos , y a los manejadores de eventos).
+</p>
+<p>
+  Cuando es detectado un evento, &eacute;ste activa a los manejadores de eventos. Un <b>manejador de eventos</b> es 
+  un comportamiento definido por el usuario que se configura para realizar una acci&oacute;n en espec&iacute;fico, 
+  tal como enviar un correo electr&oacute;nico o establecer un valor a un punto configurable.
+</p>
+
+<h1>Iconos de la Aplicaci&oacute;n</h1>
+<ul style="list-style-type:none;">
+  <li><img src="images/icon_ds.png"> Fuente de Datos</li>
+  <li><img src="images/icon_comp.png"> Detalles del punto</li>
+  <li><img src="images/icon_chart.png"> Gr&aacute;fico</li>
+  <li><img src="images/icon_edit.png"> Establecer valor</li>
+  <li><img src="images/eye.png"> Lista de Supervisi&oacute;n</li>
+  <li><img src="images/icon_view.png"> Vistas Gr&aacute;ficas</li>
+  <li><img src="images/control_repeat_blue.png"> Refrescar</li>
+  <li><img src="images/bell.png"> Detector de Eventos</li>
+  <li><img src="images/multi_bell.png"> Detector de eventos compuestos</li>
+  <li><img src="images/clock.png"> Planificador de eventos</li>
+  <li><img src="images/cog.png"> Manejador de eventos</li>
+  <li><img src="images/flag_white.png"> Alarmas</li>
+  <li><img src="images/user.png"> Usuario</li>
+  <li><img src="images/comment.png"> Comentario del Usuario</li>
+  <li><img src="images/report.png"> Reporte</li>
+  <li><img src="images/book.png"> Lista de correo</li>
+  <li><img src="images/transmit.png"> Publicador</li>
+  <li><img src="images/warn.png"> Advertencia</li>
+  <li><img src="images/control_stop_blue.png"> Cerrar Sesi&oacute;n</li>
+</ul>
+
+<h1>Sonido de las Alarmas</h1>
+<p>El ScadaBR puede reproducir sonidos cuando hay alarmas activas. De forma predeterminada, los sonidos son reproducidos 
+para los niveles: Urgente, Cr&iacute;tico y de riesgo de vida (inicialmente no reproducir&aacute; para las informaciones). Puede configurar 
+o activar para cada tipo de alarma su sonido correspondiente utilizando un archivo en formato mp3 en su ubicaci&oacute;n correspondiente:</p>
+<ul>
+  <li>&lt;mango_home&gt;/audio/information.mp3</li>
+  <li>&lt;mango_home&gt;/audio/urgent.mp3</li>
+  <li>&lt;mango_home&gt;/audio/critical.mp3</li>
+  <li>&lt;mango_home&gt;/audio/lifesafety.mp3</li>
+</ul>
+<p>Para desactivar un sonido simplemente elimine el archivo de sonido asociado. Puede encontrar una librer&iacute;a de sonidos en la carpeta
+&lt;mango_home&gt;/audio/lib.</p>
+
+<h1>Gr&aacute;ficos</h1>
+<p>El ScadaBR trae una peque&ntilde;a librer&iacute;a de gr&aacute;ficos que puede encontrar en la carpeta &lt;mango_home&gt;/graphics. Cada
+subcarpeta representa un conjunto de im&aacute;genes. El contenido de las subcarpeta incluye todas las im&aacute;genes del conjunto y 
+un archivo de propiedades (opcional) denominado <b>info.txt</b>. (Puede encontrar ejemplos en los directorios mencionados)
+Este archivo de propiedades contiene pares de nombre/valor para los siguientes par&aacute;metros (todos opcionales):</p>
+<ul>
+  <li><b>name</b>: Ser&aacute; el nombre que ser&aacute; mostrado para identificar el conjunto de im&aacute;genes en la interfaz de usuario. Cuando no se proporciona este    
+  par&aacute;metro la interfaz de usuario utilizar&aacute; se tomar&aacute; el nombre del directorio.</li>
+  <li><b>width</b>: Corresponde con el ancho de las im&aacute;genes. (Idealmente todas las im&aacute;genes deber&iacute;an tener las mismas dimensiones.) En el caso de no
+  especificar el ancho, el sistema tomar&aacute; el correspondiente a la primera imagen al ser utilizada.</li>
+  <li><b>height</b>: Corresponde con el alto de las im&aacute;genes. (Idealmente todas las im&aacute;genes deber&iacute;an tener las mismas dimensiones.) En el caso de no
+  especificar el ancho, el sistema tomar&aacute; el correspondiente a la primera imagen al ser utilizada.</li>
+  <li><b>text.x</b>: Indicar&aacute; la posici&oacute;n del texto desde el borde izquierdo de la imagen y es medida en p&iacute;xeles. Si no se especifica el sistema utilizar&aacute;
+  5 p&iacute;xeles</li>
+  <li><b>text.y</b>: Indicar&aacute; la posici&oacute;n del texto desde la parte superior de la imagen y es medida en p&iacute;xeles. Si no se especifica el sistema utilizar&aacute;
+  5 p&iacute;xeles</li>
+</ul>
+<p><b>Una vez que utilice el conjunto de im&aacute;genes en sus vistas de puntos NO cambie el nombre del directorio que la contiene!</b> El nombre del directorio se utiliza internamente como identificador del conjunto de im&aacute;genes.</p>
+<p>Los archivos de las im&aacute;genes se ordenan por su nombre de forma alfab&eacute;tica siendo &eacute;stos sensibles a las may&uacute;sculas. los pares de Nombre/valor son separados con '='. Las l&iacute;neas que comiencen con '#' son consideradas como comentarios. Se ignoran los archivos 'Thumbs.db' y los tipos de archivos como: zip, gz, tar, etc, no pueden ser utilizados desde archivos de im&aacute;genes ya que no ser&aacute;n accesibles desde el servidor web. Los conjuntos de las im&aacute;genes son cargados por el sistema en su inicio, por lo que debe reiniciarlo cuando realice un cambio.</p>
+<p>Puede contribuir con el software de c&oacute;digo abierto compartiendo sus librer&iacute;as gr&aacute;ficas preferidas con Serotonin Software y as&iacute; se adicionar&aacute;n en nuevas versiones del ScadaBR.</p>
+
+<h1>Vistas remotas</h1>
+<p>Vistas p&uacute;blicas del sistema pueden ser accedidas desde otros sitios web simplemente ingresando un iframe en sus p&aacute;ginas. 
+Por ejemplo en la p&aacute;gina principal de Mango se utiliz&oacute; el siguiente c&oacute;digo para mostrar una vista de un peque&ntilde;o termostato:</p>
+<pre>&lt;div style="position:relative;width:80px;height:150px"&gt;
+&lt;iframe frameBorder="0" style="position:absolute;width:450px;height:300px" scrolling="no" allowTransparency="true"
+        src="http://mango.serotoninsoftware.com/test/public_view.htm?viewId=3"&gt;&lt;/iframe&gt;
+&lt;/div&gt;</pre>
+<p>La posici&oacute;n absoluta y su transparencia se utilizan para permitir mostrar los gr&aacute;ficos sus controles sin realizar desplazamientos o ajustes en el HTML (opcional). El par&aacute;metro del 'Id de la Vista' se genera internamente identificar la vista y para ser mostrada. Este identificador puede ser reemplazado con el par&aacute;metro 'Nombre de la vista' y el nombre de la vista ser&aacute; su valor. (Debe alterar la referencia cuando altere este par&aacute;metro)</p>
+
+<h1>Vistas personalizadas</h1>
+<p>
+  Las vistas personalizadas son vistas accesibles de forma p&uacute;blica que son creadas por el usuario utilizando una librer&iacute;a deetiquetas JSP 
+ para a&ntilde;adirle f&aacute;cilmente sus componentes. Para m&aacute;sinformaci&oacute;n vea el ejemplo en el customViewExample.jsp.
+</p>
+
+<h1>Configuraci&oacute;n de la Base de Datos</h1>
+
+<p>El ScadaBR actualmente soporta dos sistemas manejadores de base de datos: <b>Derby</b> y <b>MySQL</b>. El archivo <b> ScadaBR.war </b> 
+viene configurado inicialmente con Derby para facilidad del usuario, ya que corre directamente y no requiere instalaci&oacute;n de DBMS embebido o de par&aacute;metros de configuraci&oacute;n particulares, como nombre de usuario y contrase&ntilde;a. </p>
+
+<p>Para cambiar la base de datos selecci&oacute;nela de las la opciones mostradas en <b>Configuraci&oacute;n de la Base de Datos</b> de en la <b>Configuraci&oacute;n del Sistema</b>. 
+</p>

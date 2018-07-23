@@ -1,0 +1,138 @@
+	<html>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+	dojo.require("dojo.profile");
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.widget.TreeDndControllerV3");
+	dojo.require("dojo.widget.TreeDisableWrapExtension");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	var nodeCount = 0;
+	var nodeCountMax = 500;
+	dojo.addOnLoad(function(){
+		var depth = 0;
+		
+
+		function addChildren(title) {
+			//dojo.debug("addChildren title "+title);
+			
+			depth++;
+			
+			var children = [];
+			for (var i=1; i<=5; i++) {				
+
+				var t = title+'.'+i;
+				var node = {title: t};
+				
+				children.push(node);		
+				nodeCount++	
+				if (nodeCount >= nodeCountMax) break;			
+			}
+
+			var i=1;
+			dojo.lang.forEach(children, function(child) {
+				var t = title+'.'+i;
+				i++;
+		
+				// first node is always folder for tests
+				if (nodeCount<nodeCountMax && (
+					depth==1 && child === children[0] || depth<5 && Math.random()>0.3 )
+				  ) {
+					//dojo.debug("add child "+t);
+					child.children = addChildren(t);        		
+				}
+			});
+				
+
+			//dojo.debug("out "+nodeOrTree);
+			
+			depth--;
+			
+			return children;			
+		}	
+
+		controller = dojo.widget.createWidget("TreeBasicControllerV3");
+		dndcontroller = dojo.widget.createWidget("TreeDndControllerV3", { controller: controller });
+		disableWrap = dojo.widget.createWidget("TreeDisableWrapExtension");
+		
+		dojo.profile.start("createTree");
+		tree = dojo.widget.createWidget("TreeV3", {
+			listeners: [controller.widgetId,dndcontroller.widgetId,disableWrap.widgetId],
+			DndAcceptTypes: "firstTree",
+			widgetId: "firstTree",
+			DndMode:"between;onto"
+		});	
+		dojo.profile.end("createTree");
+				
+		document.body.appendChild(tree.domNode);
+
+	
+		dojo.profile.start("prepareNodes");		
+		var nodes = addChildren('node ', tree);
+		dojo.profile.end("prepareNodes");
+			
+		dojo.profile.start("addNodes");
+		
+		tree.setChildren(nodes);
+		dojo.profile.end("addNodes");
+		
+		dojo.debug("Nodes total: "+nodeCount);
+			
+	
+	});
+	
+	function expandAllStart() {	
+		dojo.profile.start("expandAll + timeouts");
+	}
+	
+	function expandAllEnd() {	
+		dojo.profile.end("expandAll + timeouts");
+		alert("expandAll finished");
+	}
+
+</script>
+</head>
+<body>
+
+<div style="display:none">
+	<!-- IE has a bug: it reloads all dynamically resolved images, no matter, is it
+	new Image() or CSS background. If you don't specify images like that,
+	it will reload them every time a node is expanded -->
+	<img src="../../../src/widget/templates/images/TreeV3/i.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_half.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_plus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_long.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/document.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/open.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/closed.gif">
+</div>	
+
+
+<h4>Test drag'n'drop &amp; lazy creation &amp; batch expand stuff</h4>
+
+<input type="button" value="Expand first node to level 2" onClick="controller.expandToLevel(tree.children[0],2)"/>
+<input type="button" value="Expand tree to level 2" onClick="controller.expandToLevel(tree,2)"/>
+<input type="button" value="Expand all with callback at finish" onClick="expandAllStart();controller.expandAll(tree,expandAllEnd)"/>
+<br/>
+<input type="button" value="Collapse all nodes" onClick="controller.collapseAll(tree)"/>
+<br/>
+<input type="button" value="Clone first node and append to tree" onClick="tree.addChild(tree.children[0].clone(true))">
+<br/>
+
+<input type="button" value="dump profile" onClick="dojo.profile.dump(true)">
+</body>
+</html>

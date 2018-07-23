@@ -1,0 +1,191 @@
+﻿<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<h1>Descripci&oacute;n General</h1>
+<p>
+  Todos los atributos de una vista gr&aacute;fica y los puntos asociados a estas son editables desde la p&aacute;gina de edici&oacute;n de las vistas
+ gr&aacute;ficas. Las vistas contienen una colecci&oacute;n de <b>componentes de vista</b>, los cuales pueden ser de contenido est&aacute;tico o din&aacute;mico
+ basados en uno a m&aacute;s puntos.
+</p>
+
+<h1>Atributos de las vistas gr&aacute;ficas</h1>
+<p>
+  Todas las vistas gr&aacute;ficas tienen un nombre con el cual son referidas dentro de la lista de la vistas gr&aacute;ficas. 
+ Este nombre puede, aunque no es requerido, ser &uacute;nico. Opcionalmente una vista puede tener una <b>imagen de fondo</b> sobre la cual
+ sus componentes ser&aacute;n superpuestos. Los Usuarios pueden utilizar sobre la imagen de fondo cualquier tipo de formato de imagen
+ mostrable en un navegador, incluyendo GIF, JPEG, y PNG. El atributo de <b>Acceso Anonymous</b> determina cuando un usuario que no ha
+ ingresado al sistema puede acceder a la vista. La opci&oacute;n <b>Modificar</b> le permite a usuarios an&oacute;nimos establecer valores en los
+ puntos modificables de la vista, y la opci&oacute;n <b>Leer</b> &uacute;nicamente les dar&aacute; acceso a la vista. Si no desea tener accesos an&oacute;nimos a
+ la vista, seleccione la opci&oacute;n <b>Ninguno</b>.
+</p>
+
+<h1>Componentes de la Vistas</h1>
+<p>
+  Los componentes de las vistas pueden ser agregados a una vista seleccionando el tipo del componente de la lista, y haciendo clic en
+ el icono <img src="images/plugin_add.png"/>. De forma predefinida, los nuevos componentes ser&aacute;n mostrados en el centro de la vista, y
+ posteriormente pueden se reubicados seleccion&aacute;ndolos y arrastr&aacute;ndolos a donde requiera sean posicionados sobre la imagen de fondo.
+ Note que las vistas de puntos pueden solaparse con otras. Durante la edici&oacute;n de una vista, los componentes ser&aacute;n escritos en el orden
+ en el cual estos fueron definidos. Esto puede afectar en el c&oacute;mo se sobrepondr&aacute;n cuando hay solapamientos. 
+</p>
+
+<h1>Contenido Est&aacute;tico</h1>
+<p>
+  Seleccione el tipo de componente <b>HTML</b> para agregar contenido est&aacute;tico. De forma predefinida el icono
+ <img src="images/html_add.png"/> representa este contenido. (Este icono ser&aacute; utilizado cuando no exista ning&uacute;n contenido definido.)
+ Estos componentes son independientes de los valores de los puntos, son generados al cargarse la vista y permanecer&aacute;n sin cambios.
+ Arrastre el elemento a su ubicaci&oacute;n definitiva. Para editarlo, pase con el puntero del rat&oacute;n sobre el contenido para mostrar los
+ controles de edici&oacute;n. Para cambiar el contenido, haga clic en el icono (<img src="images/pencil.png"/>)
+ e introduzca cualquier c&oacute;digo html v&aacute;lido. El contenido ser&aacute; escrito textualmente como se defini&oacute; en la vista, por lo que cualquier
+ c&oacute;digo HTML v&aacute;lido (incluyendo contenido Javascript) puede ser utilizado. Los Style classes de los archivos CSS pueden ser
+ referenciados en este c&oacute;digo, o puede definirlos aqu&iacute;, si as&iacute; lo desea. Por ejemplo, para adicionar una etiqueta (label) el siguiente
+ c&oacute;digo puede ser utilizado:
+</p>
+<pre>
+  &lt;span style="background-color:yellow;font-size:25px;font-weight:bold;border:2px solid orange;"&gt;Mi Etiqueta&lt;/span&gt;
+</pre>
+<p>
+  Esta definici&oacute;n se mostrar&aacute; en la vista como sigue:: <span style="background-color:yellow;font-size:25px;font-weight:bold;border:2px solid orange;">Mi Etiqueta</span>
+</p>
+
+<p>
+  El contenido est&aacute;tico tambi&eacute;n puede ser referenciado en otros servidores. Por ejemplo, una imagen externa puede ser ubicada en su en
+ sus vistas:
+</p>
+<pre>
+  &lt;img src="http://bluebrain.epfl.ch/webdav/site/bluebrain/shared/21june_06_singleNeuron_200.jpg"/&gt;
+</pre>
+<p>
+  Esto mostrar&aacute;: <img src="http://bluebrain.epfl.ch/webdav/site/bluebrain/shared/21june_06_singleNeuron_200.jpg"/>
+</p>
+
+<h1>Componentes para los puntos</h1>
+<p>
+  Todos los dem&aacute;s tipos de componentes en la lista depende de uno o m&aacute;s puntos para su funcionamiento. Una vez que se a adicionado
+ a la vista un componente, su representaci&oacute;n gen&eacute;rica ser&aacute; mostrada por el icono (<img src="images/icon_comp.png"/>).
+ Esto ser&aacute; hasta que el componente est&eacute; suficientemente configurado para generarse como corresponde. El componente requerir&aacute; de
+ informaci&oacute;n dependiendo de su tipo. La p&aacute;gina de edici&oacute;n de la vista tiene un comportamiento similar a la vista ya que mostrar&aacute; los
+ valores actuales del punto y lo actualizar&aacute; de manera que los usuarios puedan ver exactamente como ser&aacute; en la vista.
+</p>
+
+<h1>Componente de Representaci&oacute;n de Puntos</h1>
+<p>
+  La representaci&oacute;n del componente de un punto puede cambiarse mediante el uso de sus controles. Los controles son mostrados
+ en la p&aacute;gina de edici&oacute;n, la cuan se diferencia por la posibilidad realizar los cambios en los controles
+ (<img src="images/information.png"/>), ya que de igual forma que la vista muestra los valores actuales y los cambios de tiempo del
+ punto.
+</p>
+
+<p>
+  Los atributos de una vista pueden ser configurados haciendo clic en el icono (<img src="images/plugin_edit.png"/>)
+ para la edici&oacute;n del punto. Cuando se hace clic se despliega un panel de edici&oacute;n que contiene todos los atributos del punto
+ a ser sobre escrito en el contexto de la vista gr&aacute;fica. Por ejemplo, si un punto es normalmente modificable, este puede ser alterado
+ para que no sea modificable en esa vista (de forma diferente, un punto no modificable no podr&aacute; convertirse en modificable).
+ Este panel del componente tambi&eacute;n permite la selecci&oacute;n del punto o puntos involucrados con el componente. Unicamente los puntos con
+ el tipo de dato apropiado para el componente ser&aacute;n presentados en la lista de selecci&oacute;n de puntos.
+</p>
+
+<p>
+  La representaci&oacute;n gr&aacute;fica de un componente puede cambiarse haciendo clic en el icono de representaci&oacute;n gr&aacute;fica 
+ (<img src="images/graphic.png"/>). Al hacer clic en el se desplegar&aacute; un panel donde podr&aacute; editar los atributos de
+ la representaci&oacute;n del componente. Por ejemplo, el componente <b>Gr&aacute;fico Anal&oacute;gico</b> puede utilizarse para
+ cuantificar visualmente un punto num&eacute;rico. Utilizando los valores <b>Min</b> y <b>Max</b>, las im&aacute;genes ser&aacute;n uniformemente
+ distribuidas sobre el rango num&eacute;rico seleccionado y mostradas apropiadamente con este. Una representaci&oacute;n gr&aacute;fica
+ <b>Imagen Binaria</b> aplicar&aacute; &uacute;nicamente a puntos binarios, y permite mostrar una imagen, de dos posibles, dependiendo
+ del valor actual del punto. Las im&aacute;genes animadas son soportadas, por lo que puede utilizar una animaci&oacute;n para indicar que
+ un equipo se encuentra movi&eacute;ndose para un valor del punto y en el otro valor no. Si desea mostrar la representaci&oacute;n en texto
+ de un punto sobre las im&aacute;genes, seleccione la opci&oacute;n <b>Mostrar Texto</b>. Un <b>Punto simple</b> mostrar&aacute; solamente
+ la representaci&oacute;n en texto del punto. 
+</p>
+
+<p>
+  El componente <b>Gr&aacute;fico Din&aacute;mico</b> es similar al generador de de imagen anal&oacute;gica ya que en este es posible visualizar
+ puntos num&eacute;ricos, la diferencia consiste en que este dibuja autom&aacute;ticamente el indicador del valor en lugar de mostrar un 
+ conjunto de im&aacute;genes. Por ejemplo, el puntero puede dibujar una imagen simple de disco. Para agregar un nuevo representador din&aacute;mico
+ agregue un nuevo subdirectorio en la direcci&oacute;n del directorio de gr&aacute;ficos y coloque la imagen est&aacute;tica con su archivo de
+ informaci&oacute;n dentro. Luego, a&ntilde;ada la funci&oacute;n de generaci&oacute;n en el archivo resources/view.js. La funci&oacute;n debe nombrarse acorde con
+ el nombre dado al subdirectorio. Vea el gr&aacute;fico de disco como un ejemplo.
+</p>
+
+<p>
+  El componente <b>Script Server-side</b> puede ser utilizado para definir su propia l&oacute;gica de representaci&oacute;n.
+ El lenguaje utilizado para realizar los scripts es JavaScript, tambi&eacute;n conocido como ECMAScript.
+ (Las especificaciones completas del ECMAScript est&aacute;n disponibles <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">aqu&iacute;</a>). Es por esto que no hay "ventanas" u objetos de "documentos" disponibles desde el script
+ por lo que es evaluado en el servidor en lugar de el navegador. El lugar de esto, est&aacute; disponible el valor actual del punto 
+ utilizando la variable <b>value</b>, y su estampa de tiempo con la variable <b>time</b>. Adicionalmente, las variables  
+ <b>pointComponent</b> y <b>point</b> tambi&eacute;n est&aacute;n definidas, con valores anal&oacute;gicos, "htmlText" y "renderedText" que
+ representan la versi&oacute;n a representar del valor. Finalmente, "events" proporciona una lista de los eventos activos para el punto,
+ y "hasUnacknowledgedEvent" es un valor booleano que indica si el &uacute;ltimo evento activo a&uacute;n no ha sido reconocido.
+</p>
+<p>
+  Cualquier valor puede ser regresado por el script, pero este debe ser escrito textualmente sobre el contenido para la vista del
+ punto, por esto se recomienda utilizar c&oacute;digo HTML. El contexto del Script (in &lt;script&gt; tags) tambi&eacute;n puede ser incluido,
+ y este ser&aacute; detectado y ejecutado dentro del navegador. Por ejemplo, el siguiente c&oacute;digo condicionar&aacute; un mensaje parpadeante cuando
+ el punto binario tenga el valor de "1" (en el script "true"):
+</p>
+<pre>
+  if (value)
+      return '&lt;blink&gt;&lt;span style="background-color:orange;font-size:15px;font-weight:bold;"&gt;Advertencia: El punto est&aacute; en ON&lt;/span&gt;&lt;/blink&gt;';
+  return "";
+</pre>
+<p>
+  Note que en la p&aacute;gina de edici&oacute;n cuando un script no regrese ning&uacute;n contenido, se mostrar&aacute; el icono <img src='images/logo_icon.gif'/>
+  para que sean mostrados los controles del componente a pasar sobre el.
+</p>
+
+<p>
+  La estampa de tiempo del ejemplo se muestra en milisegundos tomados desde el 1ero de Enero de 1970. Esta puede ser convertida en
+ un objeto de datos ECMA con el siguiente c&oacute;digo:
+</p>
+<pre>
+  var d = new Date();
+  d.setTime(time);
+</pre>
+<p>
+  El objeto de dato "d" puede ser utilizado tantas veces como sea necesario dentro de un script.
+</p>
+
+<p>
+  Las vistas de punto pueden ser eliminadas haciendo clic sobre el icono para eliminar la vista de punto (<img src="images/plugin_delete.png"/>), el cual se mostrar&aacute; al pasar sobre el componente.
+</p>
+
+<h1>Guardando las vistas gr&aacute;ficas</h1>
+<p>
+  Todos los cambios de las vistas gr&aacute;ficas ser&aacute;n almacenados &uacute;nicamente cuando haga clic en el bot&oacute;n <b>Guardar</b>. Si ha realizado cambios incorrectos
+ a una vista, puede deshacerlos haciendo clic en el bot&oacute;n <b>Cancelar</b>. Para eliminar una vista completa, utilice el bot&oacute;n <b>Eliminar</b>.
+</p>

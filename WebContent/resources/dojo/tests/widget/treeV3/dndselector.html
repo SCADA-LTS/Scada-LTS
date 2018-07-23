@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<script type="text/javascript">
+    var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+    dojo.require("dojo.widget.*");
+    dojo.require("dojo.widget.TreeV3");
+    dojo.require("dojo.widget.TreeBasicControllerV3");
+    dojo.require("dojo.widget.TreeDndControllerV3");    
+    dojo.require("dojo.widget.TreeEmphasizeOnSelect");  
+    dojo.require("dojo.widget.TreeSelectorV3"); 
+    dojo.require("dojo.widget.TreeDeselectOnDblselect");    
+    dojo.require("dojo.dnd.TreeDragAndDropV3");
+    dojo.hostenv.writeIncludes();
+    
+    dojo.addOnLoad(function() {
+        tree = dojo.widget.byId('firstTree')
+        dojo.event.browser.addListener(tree.domNode, "onclick", function(e) { dojo.debug(e) });
+    })
+    
+</script>
+
+
+</head>
+<body>
+
+<div style="display:none">  
+    <img src="../../../src/widget/templates/images/TreeV3/i.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/i_half.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/expand_plus.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/i_long.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/document.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/open.gif">
+    <img src="../../../src/widget/templates/images/TreeV3/closed.gif">
+</div>  
+
+
+<h2>Tree with drag'n'drop and selector</h2>
+
+<h3>Selector has TreeEmphasizeOnSelect extension attached, meaning that a selected node will be highlighted</h3>
+
+<h3>Currently, selector with allowedMulti option may have troubles when used with Dnd</h3>
+
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>  
+<div dojoType="TreeSelectorV3" widgetId="selector"></div>   
+
+<div dojoType="TreeDeselectOnDblselect" selector="selector"></div>
+<div dojoType="TreeEmphasizeOnSelect" selector="selector"></div>
+<div dojoType="TreeDndControllerV3" controller="controller" widgetId="dndcontroller"></div>
+
+
+MyTree
+<div dojoType="TreeV3" style="background-color:gray" expandLevel="2" DndMode="between;onto" DndAcceptTypes="firstTree" widgetId="firstTree" listeners="controller;dndcontroller;selector">
+    <div dojoType="TreeNodeV3" widgetId="Item 1" title="Item 1">
+        <div dojoType="TreeNodeV3" widgetId="Item 1.1" title="Item 1.1<br/>blas"><br/></div>
+        <div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2">
+            <div dojoType="TreeNodeV3" title="Item 1.2.1" widgetId="Item 1.2.1"></div>
+            <div dojoType="TreeNodeV3" title="Item 1.2.2" widgetId="Item 1.2.2"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Can't add child to this node" actionsDisabled="ADDCHILD">
+            <div dojoType="TreeNodeV3" isFolder="true" title="Empty folder"></div>
+            <div dojoType="TreeNodeV3" title="Item 1.3.2"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Item 1.4">
+            <div dojoType="TreeNodeV3" title="Item 1.4.1"></div>
+        </div>
+    <div dojoType="TreeNodeV3" actionsDisabled="MOVE" title="Can't move this node"></div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

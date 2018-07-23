@@ -1,0 +1,133 @@
+<html>
+  <head>
+    <title>Dojo Tree Widget Test</title><style type="text/css">
+
+
+
+/* indent for all tree children excepts root */
+.TreeNode {
+    background-image : url(../../../src/widget/templates/images/TreeV3/i.gif);
+    background-position : top left;
+    background-repeat : repeat-y;
+    margin-left: 19px;
+}
+.TreeNode.TreeIsRoot {
+    margin-left: 0;
+}
+
+/* left vertical line (grid) for all nodes */
+.TreeNode.TreeIsLast {
+    background-image: url(../../../src/widget/templates/images/TreeV3/i_half.gif);
+    background-repeat : no-repeat;
+}
+
+
+.TreeExpandOpen .TreeExpand {
+    background-image: url(../../../src/widget/templates/images/TreeV3/expand_minus.gif);
+}
+
+/* closed is higher priority than open */
+.TreeExpandClosed .TreeExpand {
+    background-image: url(../../../src/widget/templates/images/TreeV3/expand_plus.gif);
+}
+
+/* highest priority */
+.TreeExpandLeaf .TreeExpand {
+    background-image: url(../../../src/widget/templates/images/TreeV3/expand_leaf.gif);
+}
+
+
+.TreeContent {
+    min-height: 18px;
+    min-width: 18px;
+    margin-left:18px;
+    cursor: default;
+    /* can't make inline - multiline bugs */
+}
+
+.TreeContentIE {
+    height: 18px;
+}
+
+.TreeContentSafari {
+    height: 18px;
+}
+
+
+
+.TreeExpand {
+    width: 18px;
+    height: 18px;
+    float: left;
+    display: inline;
+    background-repeat : no-repeat;
+}
+
+
+    </style>
+  </head>
+  <body>
+    <h3>
+       Markup tree with basic controller attached, multiline content and empty folder 
+    </h3>
+
+
+    <div class="TreeContainer">
+      <div class="TreeNode TreeExpandClosed TreeChildrenYes TreeIsRoot">
+        <div class="TreeExpand">
+        </div>
+        <div class="TreeContent">
+          <span class="TreeLabel">Item 1</span>
+        </div>
+        <div class="TreeContainer" style="display: none;">
+          <div class="TreeNode TreeChildrenNo TreeExpandLeaf">
+            <div class="TreeExpand">
+            </div>
+            <div class="TreeContent">
+              <span class="TreeLabel">Item 1.1</span>
+            </div>
+          </div>
+          <div class="TreeNode TreeChildrenNo TreeExpandLeaf TreeIsLast">
+            <div class="TreeExpand">
+            </div>
+            <div class="TreeContent">
+              <span class="TreeLabel">Item 1.2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="TreeNode TreeExpandClosed TreeChildrenYes TreeIsRoot">
+        <div class="TreeExpand">
+        </div>
+        <div class="TreeContent">
+          <span class="TreeLabel">Item 2<br>title long yeah</span>
+        </div>
+        <div class="TreeContainer" style="display: none;">
+          <div class="TreeNode TreeChildrenNo TreeExpandLeaf TreeIsLast">
+            <div class="TreeExpand">
+            </div>
+            <div class="TreeContent">
+              <span class="TreeLabel">Item 2.1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="TreeNode TreeChildrenNo TreeExpandClosed TreeIsRoot">
+        <div class="TreeExpand">
+        </div>
+        <div class="TreeContent">
+          <span class="TreeLabel">Empty Folder</span>
+        </div>
+        <div class="TreeContainer" style="display: none;">
+        </div>
+      </div>
+      <div class="TreeNode TreeChildrenNo TreeExpandLeaf TreeIsRoot TreeIsLast">
+        <div class="TreeExpand">
+        </div>
+        <div class="TreeContent">
+          <span class="TreeLabel">Item 4</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

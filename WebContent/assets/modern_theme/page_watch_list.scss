@@ -1,0 +1,77 @@
+
+.dojoSplitPane {
+    overflow-y: visible;
+    height: 100%
+}
+  
+#wlEdit {
+    font-family: $theme_font_family;
+    font-size: 1.2rem;
+
+    padding: 1rem 1rem;
+    transform: translateY(40%);
+    .labelDiv{
+        color: blue;
+    }
+        
+    a {
+        @include button();
+        font-size: 1rem;
+        text-decoration: none;
+    }
+        
+    div {
+        margin: 1rem;
+    }
+        
+    input {
+        margin: 1rem 0;
+    }
+}
+
+#newWatchListName {
+    font-family: $theme_font_family;
+}
+  
+
+.dojoTreeNode {
+    img {
+        background-size: cover;
+        min-height: $icon_size;
+        min-width:  $icon_size;
+    }  
+}
+
+span.dojoTreeNodeLabel span {
+    font-family: $theme_font_family;
+    font-size: 1rem;
+}
+
+#treeDiv {
+    img {
+        height: $icon_size;
+    }
+    
+    span {
+        font-family: 'Lato' , sans-serif;
+        color: inherit;
+        margin: 0;
+        margin-right: 10px;
+
+    }
+
+}
+  
+#imageChartDiv {
+    img {
+        width: 100%;
+        height: calc(100% - 4rem);
+    }
+}
+
+#chartContainer {
+    table tr td label {
+        float: left;
+        margin-left: 12px;
+    }
+}

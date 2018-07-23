@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration>
+  <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+    <layout class="org.apache.log4j.PatternLayout">
+<!--      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c.%l] %m%n"/> -->
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
+  
+  <appender name="logfile" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/mango.log"/>
+<!--    <param name="MaxFileSize" value="100KB"/> -->
+    <param name="DatePattern" value="yyyy-MM-dd"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
+  
+  <appender name="grove" class="com.serotonin.mango.util.MangoGroveLogAppender"/>
+  
+  <appender name="async" class="org.apache.log4j.AsyncAppender">
+    <param name="LocationInfo" value="true"/>
+    <appender-ref ref="logfile"/>
+    <appender-ref ref="grove"/>
+  </appender>
+  
+  <category name="org.directwebremoting">
+    <level value="warn"/>
+  </category>
+  
+  <category name="org">
+    <level value="@logThreshold@"/>
+  </category>
+  
+  <category name="org.springframework.web.servlet.FrameworkServlet"><level value="error"/></category>
+  <category name="com.serotonin.db.spring.ExtendedJdbcTemplate"><level value="error"/></category>
+  
+  <category name="com.serotonin.mango.rt.dataSource.viconics"><level value="info"/></category>
+  
+  <category name="com.serotonin.mango">
+    <level value="@logThreshold@"/>
+  </category>
+  
+  <root>
+    <level value="info"/>
+    <appender-ref ref="async"/>
+    <appender-ref ref="stdout"/>
+  </root>
+
+</log4j:configuration>

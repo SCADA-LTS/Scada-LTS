@@ -1,0 +1,33 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Обзор</h1>
+<p>Публикатор Pachube отправляет обновление (или изменение) каждого объекта в Pachube как отдельный HTTP-запрос с использованием заданных API-ключа, идентификатора ленты и идентификатора потока.</p>
+
+<h1>Свойства</h1>
+<p>API-ключ нужен для обновления частных данных. Вы можете найти его в разделе «мои настройки» при входе в учетную запись Pachube. Параметры Время ожидания и Повторы используются в случае возникновения ошибок.</p>
+
+<h1>HTTP-ответ</h1>
+<p>
+  Любой код ответа, кроме «200 ОК», считается ошибкой и служит основанием для возникновения аварийного события. Обратите внимание, что в зависимости от Вашей учетной записи в Pachube, могут налагаться ограничения на API-запросы. Смотрите подробное описание по ссылке:<br>
+  <a href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a> </p>
+
+<h1>Публикуемые точки </h1>
+<p>
+В разделе Точки приводится список точке, которые должны быть опубликованы. Публикация точки может быть включена (<img src="images/brick_go.png"/>) или выключена (<img src="images/brick_stop.png"/>). Отключение точки позволяет не использовать его, при это не удаляя его полостью. Значения полей Идентификатор ленты и Идентификатор потока данных определяют поток данных, который будет обновляться. </p>
+<p>Чтобы добавить точку в список объектов, выберите его в списке и нажмите пиктограмму (<img src="images/icon_comp_add.png"/>). Чтобы удалить существующую точку, нажмите связанную с ним пиктограмму (<img src="images/bullet_delete.png"/>). </p>

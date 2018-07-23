@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Test dojo.io.bind()</title>
+<style>
+	.value  { background-color: #FFFFC0; }
+	.hilite { background-color: #FFC0C0; }
+</style>
+<script language="JavaScript" type="text/javascript">
+	// Dojo configuration
+	djConfig = { 
+		isDebug: true
+	};
+</script>
+<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+
+	dojo.require("dojo.io.*");
+	dojo.require("dojo.io.IframeIO");
+	dojo.require("dojo.event.*");
+
+	methodWatcher = function(){
+		var	m = dojo.byId("method");
+		var	f = dojo.byId("form");
+		switch(m.value){
+			case "post":
+				f.method = "post";
+				if(f.encoding){
+					f.encoding = "application/x-www-form-urlencoded";
+				}else{
+					f.enctype = "application/x-www-form-urlencoded";
+				}
+				break;
+			case "postx":
+				f.method = "post";
+				if(f.encoding){
+					f.encoding = "multipart/form-data";
+				}else{
+					f.enctype = "multipart/form-data";
+				}
+				break;
+			default: // get
+				f.method = "get";
+				break;
+		}
+	}
+
+	var useDojo = false;
+
+	transportWatching = function(){
+		var	t = dojo.byId("transport");
+		switch(t.value){
+			case "dojo":
+				useDojo = true;
+				break;
+			default:
+				useDojo = false;
+				break;
+		}
+	}
+
+	submitForm = function(e){
+		if(!useDojo){ return; }
+		e.preventDefault();
+		var meth = "GET";
+		var part = false;
+		var	m = dojo.byId("method");
+		switch(m.value){
+			case "post":
+				meth = "POST";
+				break;
+			case "postx":
+				meth = "POST";
+				part = true;
+				break;
+		}
+		var kw = {
+			url:		"reflector.cgi",
+			content:	{ inline: "yes" },
+			formNode:	dojo.byId("form"),
+			load:		function(type, data)	{ dojo.byId("result").innerHTML = data; },
+			error:		function(type, error)	{ alert(String(type) + "\n" + String(error)); },
+			method:		meth,
+			multipart:	part
+		};
+		if(part){
+			kw.file = [
+				{ name: "file1", fileName: "file1.txt", content: dojo.byId("sim1").innerText },
+				{ name: "file2", content: dojo.byId("sim2").innerText, contentType: "text/plain" }
+			];
+		}
+		dojo.io.bind(kw);
+	}
+
+	dojo.addOnLoad(function() {
+		methodWatcher();
+		dojo.event.connect(dojo.byId("method"), "onchange", "methodWatcher");
+		transportWatching();
+		dojo.event.connect(dojo.byId("transport"), "onchange", "transportWatching");
+		dojo.event.connect(dojo.byId("form"), "onsubmit", "submitForm");
+	});
+
+</script>
+</head>
+<body>
+<h1>Test dojo.io.bind()</h1>
+<p>This page tests different post methods of <tt>dojo.io.bind()</tt> and 
+compare them with conventional form submitting.</p>
+
+<h2>Select method and transport</h2>
+<fieldset><table><tbody>
+	<tr><td>Method:</td><td><select id="method" NAME="method">
+		<option value="get">GET</option>
+		<option value="post">POST</option>
+		<option value="postx">POST; multipart/form-data</option>
+	</select></td></tr>
+	<tr><td>Transport:</td><td><select id="transport" NAME="method">
+		<option value="int">Browser</option>
+		<option value="dojo">Dojo</option>
+	</select></td></tr>
+</tbody></table></fieldset>
+
+<h2>Submit a form</h2>
+<p>If you submit this form using Dojo, you can see results below. Otherwise you will be redirected to results screen.</p>
+<fieldset>
+	<form id="form" action="reflector.cgi">
+		<table><tbody>
+			<tr><td><label for="text">text:</label></td><td><input type="text" id="text" name="text" /></td></tr>
+			<tr><td><label for="password">password:</label></td><td><input type="password" id="password" name="password" /></td></tr>
+			<tr><td>radio:</td>
+				<td>
+					<input type="radio" id="radio1" name="radio" value="radio1" checked /><label for="radio1">radio1</label>
+					<input type="radio" id="radio2" name="radio" value="radio2" /><label for="radio2">radio2</label>
+				</td>
+			</tr>
+			<tr><td>checkbox:</td>
+				<td>
+					<input type="checkbox" id="check" name="check" value="check" /><label for="check">check</label>
+				</td>
+			</tr>
+			<tr><td><label for="select">select:</label></td>
+				<td><select id="select" name="select">
+					<option value="select1" selected>select1</option>
+					<option value="select2">select2</option>
+				</select></td>
+			</tr>
+			<tr><td><label for="textarea">textarea:</label></td><td><textarea id="textarea" name="textarea"></textarea></td></tr>
+			<!--<tr><td><label for="file">file:</label></td><td><input type="file" id="file" name="file" /></td></tr>-->
+		</tbody></table>
+		<p><input type="hidden" id="hidden" name="hidden" value="nidden" />
+		<input type="submit" value="Submit" id="submit" name="submit"/>&nbsp;
+		<input type="reset" value="Reset" id="reset" name="reset" /></p>
+	</form>
+	<p>Following simulated files will be submitted only by Dojo transport.<br/>
+	File #1 is submitted with following parameters: <tt>name="file1" fileName="file1.txt"</tt>.<br/>
+	File #2 is submitted with following parameters: <tt>name="file2" contentType="text/plain"</tt>.</p>
+	<p><label for="sim1">Simulated file #1:</label><br/><textarea id="sim1" name="sim1"></textarea></p>
+	<p><label for="sim2">Simulated file #2:</label><br/><textarea id="sim2" name="sim2"></textarea></p>
+</fieldset>
+
+<h2>Traditional file submit form</h2>
+<p>This is a static form with <tt>method="post" enctype="multipart/form-data"</tt> options.</p>
+<fieldset><form action="reflector.cgi" method="post" enctype="multipart/form-data">
+	<p>
+		<label for="file">file:</label>&nbsp;
+		<input type="file" id="file" name="file" />
+	</p>
+	<p><input type="submit" value="Submit" id="submit2" name="submit2" /></p>
+</form></fieldset>
+
+<h2>Check results</h2>
+<p>If the form was submitted asynchronously by Dojo, you will see results below.</p>
+<hr/>
+<div id="result"></div>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				parseWidgets: false,
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.event.*");
+
+			function generateClick(){
+				dojo.byId("click-canvas").click();
+				setTimeout(generateClick, 10);
+			}
+			
+			function handle(evt){
+				evt.preventDefault();
+			}
+
+			function init(){
+				if(dojo.render.html.ie){
+					dojo.event.connect(dojo.byId("click-canvas"), "onclick", "handle");
+					// dojo.byId("click-canvas").onclick = function(){ }
+					generateClick();
+				}
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<div id="click-canvas">
+		</div>
+	</body>
+</html>

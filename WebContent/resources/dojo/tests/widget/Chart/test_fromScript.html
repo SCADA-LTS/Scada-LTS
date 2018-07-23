@@ -1,0 +1,83 @@
+<html>
+	<head>
+		<title>dojo: Chart--Area chart test</title>
+		<script type="text/javascript">
+			var djConfig = { isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.widget.Chart");
+
+			dojo.addOnLoad(function(e){
+				var seriesA = new dojo.widget.Chart.DataSeries("SeriesA", "First series", "area");
+				seriesA.values=[
+					{x:0,value:-92.45},
+					{x:4,value:94.23},
+					{x:8,value:-93.12},
+					{x:12,value:89.16},
+					{x:16,value:-82.47},
+					{x:20,value:73.25},
+					{x:24,value:-61.79},
+					{x:28,value:48.44},
+					{x:32,value:-33.6},
+					{x:36,value:17.74},
+					{x:40,value:-1.33},
+					{x:44,value:-15.11},
+					{x:48,value:31.1},
+					{x:52,value:-46.13},
+					{x:56,value:59.75},
+					{x:60,value:-71.54},
+					{x:64,value:81.14},
+					{x:68,value:-88.26},
+					{x:72,value:92.67},
+					{x:76,value:-94.24},
+					{x:80,value:92.93},
+					{x:84,value:-88.77},
+					{x:88,value:81.89},
+					{x:92,value:-72.51},
+					{x:96,value:60.9},
+					{x:100,value:-47.43}
+				];
+				var seriesB = new dojo.widget.Chart.DataSeries("SeriesB", "Second series", "area");
+				seriesB.values=[
+					{x:0,value:63.06},
+					{x:4,value:-100},
+					{x:8,value:-33.54},
+					{x:12,value:29.71},
+					{x:16,value:100},
+					{x:20,value:-69.5},
+					{x:24,value:6.07},
+					{x:28,value:100},
+					{x:32,value:-100},
+					{x:36,value:-15.99},
+					{x:40,value:51.1},
+					{x:44,value:-100},
+					{x:48,value:-42.5},
+					{x:52,value:22.04},
+					{x:56,value:100},
+					{x:60,value:-86.06},
+					{x:64,value:-0.51},
+					{x:68,value:83.18},
+					{x:72,value:-100},
+					{x:76,value:-23.19},
+					{x:80,value:41.02},
+					{x:84,value:100},
+					{x:88,value:-52.83},
+					{x:92,value:14.91},
+					{x:96,value:100},
+					{x:100,value:-100}
+				];
+
+				var test = dojo.widget.createWidget("dojo:Chart", {}, dojo.byId("test"));
+				test.series.push(seriesA);
+				test.series.push(seriesB);
+				test.properties.axes.x.range={min:0, max:100};
+				test.properties.axes.y.range={min:-100, max:100};
+				test.render();
+			});
+		</script>
+	</head>
+	<body>
+		<div id="test" style="border:1px solid black;width:800px;height:400px;background-color:#dedeed;"></div>
+	</body>
+</html>

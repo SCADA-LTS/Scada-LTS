@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>Dojo: Testing the scope of svg functions</title>
+	</head>
+	<body>
+		<iframe src="test_svgScope.svg" id="svgWindow">
+		</iframe>
+		<script type="text/javascript">
+		<!--
+			function scopeTest(svgDoc,svgDocTest) {
+				svgDoc = svgDoc;
+				if(svgDoc.test){
+					svgDoc.test("html");
+				}
+				if(window.frames[0].test){
+					window.frames[0].test("html (through frames reference)");
+				}
+				if(svgDocTest){
+					svgDocTest("html (reference passed though)");
+				}
+				test("html");
+			}
+			
+			function test(sourceDocumentType){
+				alert("found html test function scope correctly from a(n) " + sourceDocumentType + " document");
+			}
+
+		// -->
+		</script>
+	</body>
+</html>

@@ -1,0 +1,97 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>The Modbus serial data source is used to gather data from a local-->
+<!--modbus network, accessible via RS232 or RS485 (requires adapter)-->
+<!--communication. This is a polling data source.</p>-->
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>O data source Modbus serial &eacute; usado para adquirir dados a
+partir de uma rede local modbus, acess&iacute;vel via
+comunica&ccedil;&atilde;o RS232 ou RS485 (requer adaptador). Trata-se de
+um <i>polling data source</i>.</p>
+
+<!--<h1>Configuration</h1>-->
+<!--<p>Every data source requires a <b>Name</b>, which can be any-->
+<!--description. The <b>Update period</b> determines how often the Modbus-->
+<!--network is polled for data. The <b>Timeout</b> and <b>Retries</b> fields-->
+<!--determine the system behaviour in the case of a polling failure. The-->
+<!--data source waits the given number of timeout milliseconds for a-->
+<!--response from the network. If it is not received the request will be-->
+<!--retried the given number of times.</p>-->
+<h1>Configura&ccedil;&atilde;o</h1>
+<p>Todo data source requer um <b>Nome</b>, o qual pode ser qualquer
+descri&ccedil;&atilde;o. O <b>Per&iacute;odo de
+atualiza&ccedil;&atilde;o</b> determina com que frequ&ecirc;ncia a rede
+Modbus ser&aacute; consultada por dados. Os campos <b>Timeout</b> e <b>Retries</b>
+determinam o comportamento do sistema no caso de uma falha em uma
+consulta. O data source aguarda um determinado n&uacute;mero de
+milisegundos por uma resposta da rede. Se nenhuma resposta for recebida,
+a requisi&ccedil;&atilde;o ser&aacute; refeita um dado n&uacute;mero de
+vezes.</p>
+
+<!--<p>The <b>Contiguous batches only</b> checkbox can be used to-->
+<!--specify that the modbus implementation should not attempt to optimize-->
+<!--disparate value requests into a single request. Checking this field will-->
+<!--cause the implementation to only make requests for multiple values when-->
+<!--those value form contiguous register space.</p>-->
+<p>A op&ccedil;&atilde;o <b>Apenas lotes cont&iacute;nuos</b> pode
+ser usado para especificar que a implementa&ccedil;&atilde;o modbus
+n&atilde;o deve tentar otimizar diferentes requisi&ccedil;&atilde;o de
+valores em uma &uacute;nica requisi&ccedil;&atilde;o. Selecionar esta
+op&ccedil;&atilde;o far&aacute; com que a implementa&ccedil;&atilde;o
+somente fa&ccedil;a requisi&ccedil;&otilde;es para m&uacute;ltiplos
+valores quando esses valores formarem um espa&ccedil;o de registro
+cont&iacute;nuo.</p>
+
+<!--<p>Serial communication is controlled with the <b>Baud rate</b>, <b>Flow-->
+<!--control in</b>, <b>Flow control out</b>, <b>Data bits</b>, <b>Stop bits</b>,-->
+<!--and <b>Parity</b> values. The <b>Echo</b> setting can be used with RS485-->
+<!--networks as appropriate.</p>-->
+<p>A comunca&ccedil;&atilde;o serial &eacute; controlada com os
+valores de <b>Baud rate</b>, de <b>Controle de fluxo de entrada</b>, de
+<b>Controle de fluxo de sa&iacute;da</b>, dos <b>Bits de dados</b>, dos
+<b>Bits de parada</b>, e da <b>Paridade</b>. O <b>Eco</b> pode ser usado
+com redes com redes RS485 como for apropriado.</p>
+
+<!--<p>The <b>Encoding</b> value determines how Modbus requests are-->
+<!--formatted. Most production hardware uses RTU formatted messages. See the-->
+<!--Modbus documentation for your equipment to determine how to set this-->
+<!--field.</p>-->
+<p>O valor de <b>Encoding</b> determina como as
+requisi&ccedil;&otilde;es Modbus s&atilde;o formatadas. A maioria dos
+hardware de produ&ccedil;&atilde;o usam mensagens RTU formatadas. Veja a
+documenta&ccedil;&atilde;o Modbus do seu equipamento para determinar
+como definir este campo.</p>
+
+<!--<h1>Node scanning</h1>-->
+<!--<p>Networks can be scanned for slave nodes using the scan utility.-->
+<!--This feature iterates from slave id 1 to 240, sending each a-->
+<!--ReadExceptionStatus (function code 7). If a response is received (using-->
+<!--the given timeout and retries settings), the node is considered-->
+<!--available. Note that not all equipment supports this function code, so-->
+<!--false negatives are possible.</p>-->
+<h1>Pesquisa em n&oacute;s</h1>
+<p>Pode-se pesquisar n&oacute;s escravos nas redes utilizando-se a
+fun&ccedil;&atilde;o de scan. Esta funcionalidade itera entre os ids dos
+escravos de 1 a 240, enviando a cada um uma ReadExceptionStatus (<i>function
+code</i> 7). Se uma resposta for recebida (usando as
+configura&ccedil;&otilde;es de timeout e retries definidas), o n&oacute;
+&eacute; considerado dispon&iacute;vel. Note que nem todo equipamento
+suporta este <i>function code</i>, ent&atilde;o falsos negativos
+s&atilde;o poss&iacute;veis.</p>

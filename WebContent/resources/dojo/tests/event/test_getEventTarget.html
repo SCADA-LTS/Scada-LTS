@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				parseWidgets: false,
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.html");
+			
+			function over(e) {
+				var t = dojo.html.getEventTarget(e);
+				dojo.debug(t ? "mouseover tag = [" + t.tagName + "]" : "bad target");
+			}
+		</script>
+	</head>
+	<body>
+		<p>Check your javascript log; the scripts were all loaded in the head.</p>
+		<!-- comment node -->
+		<div onMouseOver="over(event)">
+			Creamy takes <span onMouseOver="over(event)"><!--comment--><em>chocolatey</em> however more snappy</span>, can't calories families, permanent crispy big exclusive aromatic. Stimulates convenient, dual can't exclusive limited unique space supreme incredible drink double, <b>spectacular</b> more escape. 
+		</div>
+		<!-- comment node -->
+	</body>
+</html>

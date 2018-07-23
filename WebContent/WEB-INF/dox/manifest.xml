@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<doxManifest>
+  <item id="httpRetrieverDS">
+    <relation id="httpRetrieverPP"/>
+  </item>
+  
+  <item id="httpRetrieverPP">
+    <relation id="httpRetrieverDS"/>
+  </item>
+  
+  <item id="chartRenderers"/>
+  
+  <item id="cronPatterns">
+    <relation id="scheduledEvents"/>
+    <relation id="reportTemplates"/>
+  </item>
+
+  <item id="reportInstances">
+    <relation id="otherSettings"/>
+    <relation id="reportTemplates"/>
+  </item>
+  
+  <item id="modbusPP">
+    <relation id="modbusIpDS"/>
+    <relation id="modbusSerialDS"/>
+  </item>
+
+  <item id="scheduledEvents">
+    <relation id="compoundEventDetectors"/>
+    <relation id="cronPatterns"/>
+    <relation id="eventDetectors"/>
+  </item>
+  
+  <item id="bacnetIpDS"/>
+  
+  <item id="modbusSerialDS">
+    <relation id="modbusIpDS"/>
+    <relation id="modbusPP"/>
+  </item>
+  
+  <item id="pop3PP">
+    <relation id="pop3DS"/>
+  </item>
+  
+  <item id="nmeaListenerPP">
+    <relation id="nmeaListenerDS"/>
+  </item>
+  
+  <item id="galilPP">
+    <relation id="galilDS"/>
+  </item>
+  
+  <item id="userAdministration"/>
+
+  <item id="generalPublisherProperties"/>
+  
+  <item id="editingGraphicalViews">
+    <relation id="graphicalViews"/>
+    <relation id="viewSharing"/>
+  </item>
+
+  <item id="pointHierarchy">
+    <relation id="watchListPoints"/>
+  </item>
+  
+  <item id="eventHandlers"/>
+  
+  <item id="httpReceiverDS">
+    <relation id="datetimeFormats"/>
+    <relation id="httpSenderPublishing"/>
+    <relation id="httpReceiverPP"/>
+  </item>
+
+  <item id="emailSettings"/>
+  
+  <item id="galilDS">
+    <relation id="galilPP"/>
+  </item>
+  
+  <item id="sqlPP">
+    <relation id="sqlDS"/>
+  </item>
+
+  <item id="watchListCharts">
+    <relation id="watchListPoints"/>
+    <relation id="watchList"/>
+  </item>
+  
+  <item id="metaDS">
+    <relation id="metaPP"/>
+  </item>
+  
+  <item id="metaPP">
+    <relation id="metaDS"/>
+  </item>
+
+  <item id="watchList">
+    <relation id="graphicalViews"/>
+    <relation id="watchListCharts"/>
+    <relation id="watchListPoints"/>
+    <relation id="watchListSharing"/>
+  </item>
+  
+  <item id="watchListSharing">
+    <relation id="watchList"/>
+  </item>
+  
+  <item id="virtualPP">
+    <relation id="virtualDS"/>
+  </item>
+
+  <item id="reportTemplates">
+    <relation id="cronPatterns"/>
+    <relation id="reportInstances"/>
+  </item>
+  
+  <item id="1wirePP"/>
+
+  <item id="bacnetIpPP"/>
+  
+  <item id="pointViewSettingsEditor"/>
+  
+  <item id="httpSettings"/>
+
+  <item id="directQuerying"/>
+  
+  <item id="virtualDS">
+    <relation id="virtualPP"/>
+  </item>
+  
+  <item id="nmeaListenerDS">
+    <relation id="nmeaListenerPP"/>
+  </item>
+  
+  <item id="welcomeToMango"/>
+
+  <item id="1wireDS"/>
+  
+  <item id="snmpPP"/>
+
+  <item id="regex"/>
+  
+  <item id="sqlDS">
+    <relation id="sqlPP"/>
+  </item>
+  
+  <item id="pointValueLogging"/>
+  
+  <item id="publisherList"/>
+
+  <item id="httpSenderPublishing">
+    <relation id="datetimeFormats"/>
+  </item>
+  
+  <item id="modbusIpDS">
+    <relation id="modbusSerialDS"/>
+    <relation id="modbusPP"/>
+  </item>
+  
+  <item id="watchListPoints">
+    <relation id="watchListCharts"/>
+    <relation id="pointHierarchy"/>
+    <relation id="watchList"/>
+  </item>
+
+  <item id="datetimeFormats">
+    <relation id="httpReceiverDS"/>
+    <relation id="httpSenderPublishing"/>
+    <relation id="textRenderers"/>
+  </item>
+  
+  <item id="dataPointEditing"/>
+  
+  <item id="numberFormats">
+    <relation id="textRenderers"/>
+  </item>
+  
+  <item id="dataSourceList"/>
+
+  <item id="eventDetectors">
+    <relation id="scheduledEvents"/>
+    <relation id="compoundEventDetectors"/>
+  </item>
+  
+  <item id="pointValueLogPurging"/>
+  
+  <item id="mailingLists"/>
+  
+  <item id="compoundEventDetectors">
+    <relation id="scheduledEvents"/>
+    <relation id="eventDetectors"/>
+  </item>
+
+  <item id="textRenderers">
+    <relation id="numberFormats"/>
+    <relation id="datetimeFormats"/>
+  </item>
+  
+  <item id="systemInformation"/>
+  
+  <item id="pop3DS">
+    <relation id="pop3PP"/>
+  </item>
+
+  <item id="otherSettings">
+    <relation id="reportInstances"/>
+  </item>
+  
+  <item id="snmpDS"/>
+
+  <item id="graphicalViews">
+    <relation id="editingGraphicalViews"/>
+    <relation id="watchList"/>
+  </item>
+  
+  <item id="httpReceiverPP">
+    <relation id="httpReceiverDS"/>
+  </item>
+  
+  <item id="languageSettings"/>
+  
+  <item id="viewSharing">
+    <relation id="editingGraphicalViews"/>
+  </item>
+  
+  <item id="systemAlarmLevels"/>
+  
+  <item id="auditAlarmLevels"/>
+  
+  <item id="httpImageDS">
+    <relation id="httpImagePP"/>
+  </item>
+  
+  <item id="httpImagePP">
+    <relation id="httpImageDS"/>
+  </item>
+  
+  <item id="emport"/>
+  
+  <item id="pointLinks">
+    <relation id="metaPP"/>
+  </item>
+  
+  <item id="vmstatDS">
+    <relation id="vmstatPP"/>
+  </item>
+  
+  <item id="vmstatPP">
+    <relation id="vmstatDS"/>
+  </item>
+  
+  <item id="viconicsDS">
+    <relation id="viconicsPP"/>
+  </item>
+  
+  <item id="viconicsPP">
+    <relation id="viconicsDS"/>
+  </item>
+  
+  <item id="dnp3DS">
+    <relation id="dnp3PP"/>
+  </item>
+  
+  <item id="dnp3PP">
+    <relation id="dnp3DS"/>
+  </item>
+  
+  <item id="opcDS">
+  	<relation id="opcPP"/>
+  </item>	
+  
+  <item id="opcPP">
+  	<relation id="opcDS"/>
+  </item>	
+  
+  <item id="drStorageHt5bDS">
+  	<relation id="drStorageHt5bPP"/>
+  </item>	
+  
+  <item id="drStorageHt5bPP">
+  	<relation id="drStorageHt5bDS"/>
+  </item>
+  
+  <item id="asciiFileReaderDS">
+    <relation id="asciiFileReaderPP"/>
+  </item>
+  
+  <item id="asciiFileReaderPP">
+    <relation id="asciiFileReaderDS"/>
+  </item>
+  
+   <item id="asciiSerialDS">
+    <relation id="asciiSerialPP"/>
+  </item>
+  
+  <item id="asciiSerialPP">
+    <relation id="asciiSerialDS"/>
+  </item>
+  
+  <item id="iec101DS">
+    <relation id="iec101PP"/>
+  </item>
+  
+  <item id="iec101PP">
+    <relation id="iec101DS"/>
+  </item>
+  
+  <item id="pachubeDS">
+    <relation id="pachubePP"/>
+    <relation id="pachubePublishing"/>
+  </item>
+  
+  <item id="pachubePP">
+    <relation id="pachubeDS"/>
+  </item>
+  
+  <item id="pachubePublishing">
+    <relation id="pachubeDS"/>
+  </item>
+  
+  <item id="persistentDS">
+    <relation id="persistentPP"/>
+    <relation id="persistentPublishing"/>
+  </item>
+  
+  <item id="persistentPP">
+    <relation id="persistentDS"/>
+  </item>
+  
+  <item id="persistentPublishing">
+    <relation id="persistentDS"/>
+  </item>
+  
+  <item id="maintenanceEvents">
+    <relation id="cronPatterns"/>
+    <relation id="eventDetectors"/>
+  </item>
+  
+  <item id="scriptDSObject">
+  </item>
+  
+  <item id="scriptDPObject">
+  </item>
+  
+  <item id="scripts">
+  </item>
+  
+  <item id="exportProject">
+  </item>
+  
+  <item id="importProject">
+  </item>
+  
+  <item id="dbConfiguration">
+  </item>
+
+   <item id="radiuinoDS">
+    <relation id="radiuinoPP"/>
+   </item>
+  
+   <item id="radiuinoPP">
+    <relation id="radiuinoDS"/>
+   </item>
+  
+</doxManifest>

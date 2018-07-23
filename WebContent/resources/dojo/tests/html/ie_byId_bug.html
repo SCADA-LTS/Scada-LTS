@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>document.getElementById bug</title>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta name="author" content="" />
+		<meta name="robots" content="all" />
+		<meta name="MSSmartTagsPreventParsing" content="true" />
+		<meta name="Description" content="" />
+
+		<meta name="DC.Date" content="2005-01-10" />
+		<meta name="Keywords" content="" />
+
+		<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+function testMe(){
+alert('dojo.byId(\'foo\'): value='+dojo.byId('foo').value + ' , id=' + dojo.byId('foo').id + ', name:' + dojo.byId('foo').name + "\n" + ' dojo.byId( \'bar\') =: value='+dojo.byId('bar').value + ', id=' + dojo.byId('bar').id + ', name:' + dojo.byId('bar').name );
+
+}
+</script>
+	  <style type="text/css">
+<!--
+.style1 {color: #FF0000}
+.style2 {color: #009900}
+-->
+    </style>
+	</head>
+	<body>
+	original: <a href="http://www.csb7.com/test/ie_getelementbyid_bug/index.php">http://www.csb7.com/test/ie_getelementbyid_bug/index.php</a>
+	<p>This page tests a bug in Internet Explorer whereby the document.getElementById()
+	function may return an element with a name attribute equal to the id that is
+	specified. This can cause unexpected results.</p>
+
+	<p>Test case:</p>
+
+	<form name="form1" id="form1" method="get" action="javascript: void(0)" style="border: 1px dashed red;">
+		<table width="100%%"  border="0" cellspacing="0" cellpadding="2">
+    	<tr>
+    		<td nowrap="nowrap"><input name="bar" type="text" id="foo" value="foo" readonly="readonly" /></td>
+    		<td>&nbsp;</td>
+    		<td width="100%">&lt;input name=&quot;bar&quot; type=&quot;text&quot; id=&quot;foo&quot; value=&quot;foo&quot; /&gt;</td>
+
+   		</tr>
+    	<tr>
+    		<td nowrap="nowrap"><input name="foo" type="text" id="bar" value="bar" readonly="readonly" /></td>
+    		<td>&nbsp;</td>
+    		<td width="100%">&lt;input name=&quot;foo&quot; type=&quot;text&quot; id=&quot;bar&quot; value=&quot;bar&quot; /&gt;</td>
+
+   		</tr>
+    	<tr>
+    		<td nowrap="nowrap">&nbsp;</td>
+    		<td>&nbsp;</td>
+    		<td width="100%">&nbsp;</td>
+   		</tr>
+    	<tr>
+    		<td nowrap="nowrap"><input type="button" name="Button" value="Test" onclick="testMe();" /></td>
+    		<td>&nbsp;</td>
+
+    		<td width="100%">This <em>should</em> show an alert box where foo=foo and
+   			bar=bar </td>
+   		</tr>
+    	</table>
+	</form>
+	<p>Reported at <a href="http://www.quirksmode.org/bugreports/index.html">http://www.quirksmode.org/bugreports/index.html</a> 2005-08-29</p>
+
+	<p>Noted on <a href="http://channel9.msdn.com/wiki/default.aspx/Channel9.InternetExplorerProgrammingBugs">http://channel9.msdn.com/wiki/default.aspx/Channel9.InternetExplorerProgrammingBugs </a></p>
+	</body>
+</html>

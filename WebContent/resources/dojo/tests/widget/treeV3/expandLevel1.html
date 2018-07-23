@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body>
+	
+<h3>Markup tree with basic controller attached, multiline content and empty folder</h3>
+
+	
+ <div dojoType="TreeBasicControllerV3" widgetId="treeController" ></div>
+
+ <div dojoType="TreeV3" widgetId="firstTree" listeners="treeController">
+ <div dojoType="TreeNodeV3" title="Node A" expandLevel="1">
+ <div dojoType="TreeNodeV3" title="Node B">
+<div dojoType="TreeNodeV3" title="Node C">
+ <div dojoType="TreeNodeV3" title="Node D"></div>
+                </div>
+            </div>
+</div> 
+ </div>
+
+
+</body>
+</html>

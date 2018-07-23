@@ -1,0 +1,24 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+URL – это адрес изображения, которое необходимо найти. Для проверки URL используйте пиктограмму <img src="images/bullet_go.png"/> (при этом должно открыться новое окно или закладка браузера). Значения полей Время ожидания и Повторы задают время ожидания изображения от веб-сервера и количество повторных попыток в случае ошибки соединения. Если количество повторов исчерпано, генерируется событие об исключительной ошибке объекта данных. </p>
+<p>Изображения могут быть автоматически масштабированы для экономии занимаемой памяти или места в файловой системе. (Изображения также можно пропорционально увеличить, но, так как это не влияет на разрешение изображения, в этом нет особого смысла). Масштабирование в процентах является методом относительного масштабирования, при котором исходное изображение сжимается до размеров, уменьшенных в Процентном соотношении (масштабе). Масштабирование в размер окна является методом абсолютного масштабирования, при котором исходное изображение сжимается до размеров окна, заданных в полях Высота масштабирования и Ширина масштабирования. </p>
+<p>Предел считывания позволяет установить максимальный размер ответа, который может принять система. Если размер изображения превышает заданное значение, данные будут отклонены, и будет вызвано событие поиска данных.</p>
+<p>Если источником изображений является веб-камера, вы можете вставить в предлагаемую текстовую область код прямой трансляции. Код будет вставлен в новое окно или закладку браузера один к одному (в окружении html и тэгов). Если для прямой трансляции с веб-камеры требуется компонент ActiveХ или Java-апплет, Вам потребуется правильно установить такие компоненты в экземпляре ScadaBR. <br>
+</p>

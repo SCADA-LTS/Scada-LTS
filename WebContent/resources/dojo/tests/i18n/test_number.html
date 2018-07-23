@@ -1,0 +1,127 @@
+<html>
+	<head>
+		<title>dojo.i18n.number Tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../jsunit/css/jsUnitStyle.css">
+		<script language="JavaScript" type="text/javascript" src="../../jsunit/app/jsUnitCore.js"></script>
+		<script type="text/javascript" src="../jsunit_browser.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.i18n.number");
+
+			function init(){
+//				testUnformattedInteger();
+				testIsValidInteger();
+				testIsValidRealNumber();
+				testGetFormattedInteger();
+//				testGetFormattedDouble();
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+		
+		<script language="JavaScript" type="text/javascript">
+
+		// JsUnit Assertion Tests
+		function testUnformattedInteger() {
+				jum.assertEquals("num_0_0", 1000, dojo.i18n.number.parse("1000", "en-us"));
+				jum.assertEquals("num_0_1", 1000, dojo.i18n.number.parse("1,000", "en-us"));
+				jum.assertEquals("num_0_2", -1000, dojo.i18n.number.parse("-1000", "en-us"));
+				jum.assertEquals("num_0_3", -1234567, dojo.i18n.number.parse("-1,234,567", "en-us"));
+				
+				//invalid - returns "NaN"
+				jum.assertEquals("num_0_4", "NaN", dojo.i18n.number.parse("10,00", "en-us"));
+				jum.assertEquals("num_0_5", "NaN", dojo.i18n.number.parse("1000.1", "en-us"));
+				
+				//test whitespace
+				jum.assertEquals("num_0_6", -1234567, dojo.i18n.number.parse("  -1,234,567  ", "en-us"));
+				
+				//test without locale (Defaults to en-us)
+				jum.assertEquals("num_0_3", -1234567, dojo.i18n.number.parse("-1,234,567"));
+		}
+	
+		function testIsValidInteger() {
+				//----------------------Test number.isInteger method
+				jum.assertFalse("num_1_0", dojo.i18n.number.isInteger("1000", "en-us"));
+				jum.assertTrue("num_1_0_1", dojo.i18n.number.isInteger("1000", "en-us", {separator:""}));
+				jum.assertTrue("num_1_1", dojo.i18n.number.isInteger("1,000", "en-us"));
+				jum.assertFalse("num_1_2", dojo.i18n.number.isInteger("-1000", "en-us"));
+				jum.assertTrue("num_1_2_1", dojo.i18n.number.isInteger("-1000", "en-us", {separator:""}));
+				jum.assertTrue("num_1_3", dojo.i18n.number.isInteger("-1,234,567", "en-us"));
+				
+				//invalid
+				jum.assertFalse("num_1_4", dojo.i18n.number.isInteger("10,00", "en-us"));
+				jum.assertFalse("num_1_5", dojo.i18n.number.isInteger("1000.1", "en-us"));
+				
+				//test whitespace -- we don't trim it
+				jum.assertFalse("num_1_6", dojo.i18n.number.isInteger("  -1,234,567  ", "en-us"));
+				
+				//test indian separators
+				jum.assertTrue("num_1_7", dojo.i18n.number.isInteger("-12,34,567", "en-in"));				
+				jum.assertFalse("num_1_8", dojo.i18n.number.isInteger("-1,234,567", "en-in"));				
+		}
+		
+		function testIsValidRealNumber() {
+				//----------------------Test isValidInteger method
+				jum.assertFalse("num_2_0", dojo.i18n.number.isReal("1000", "en-us"));
+				jum.assertTrue("num_2_0_1", dojo.i18n.number.isReal("1000", "en-us", {separator:""}));
+				jum.assertTrue("num_2_0_1_1", dojo.i18n.number.isReal("1000.00", "en-us", {separator:""}));
+				jum.assertTrue("num_2_1", dojo.i18n.number.isReal("1,000", "en-us"));
+				jum.assertTrue("num_2_1_1", dojo.i18n.number.isReal("1,000.00", "en-us"));
+				jum.assertFalse("num_2_2", dojo.i18n.number.isReal("-1000", "en-us"));
+				jum.assertTrue("num_2_2_1", dojo.i18n.number.isReal("-1000", "en-us", {separator:""}));
+				jum.assertTrue("num_2_3", dojo.i18n.number.isReal("-1,234,567", "en-us"));
+
+				//invalid - returns "NaN"
+				jum.assertFalse("num_2_4", dojo.i18n.number.isReal("10,00", "en-us"));
+				jum.assertFalse("num_2_5", dojo.i18n.number.isReal("1000.1", "en-us"));
+				
+				//test whitespace
+				jum.assertFalse("num_2_6", dojo.i18n.number.isReal("  -1,234,567  ", "en-us"));
+
+				jum.assertTrue("num_2_7", dojo.i18n.number.isReal("9.1093826E-31"));
+		}
+		
+		function testGetFormattedInteger() {
+				//----------------------Test format method
+				jum.assertEquals("num_2_0", "-12", dojo.i18n.number.format(-12.3, {places:0}));
+				jum.assertEquals("num_2_1", "-1,234,568", dojo.i18n.number.format(-1234567.89, {places:0}));
+				jum.assertEquals("num_2_2", "-12,34,568", dojo.i18n.number.format(-1234567.89, {places:0}, "en-in"));
+				jum.assertEquals("num_2_3", "-1 000,10", dojo.i18n.number.format(-1000.1, {places:2}, "fr-fr"));
+				jum.assertEquals("num_2_4", "-1,000.10", dojo.i18n.number.format(-1000.1, {places:2}, "en-us"));
+				jum.assertEquals("num_2_5", "-1,000.10", dojo.i18n.number.format(-1000.1, {places:2}));
+		}
+
+		function testGetFormattedDouble() {
+				//----------------------Test format method
+				jum.assertEquals("num_2_0", "-1 000,10", dojo.i18n.number.format(-1000.1, 2, "fr-fr"));
+				jum.assertEquals("num_2_1", "-1,000.10", dojo.i18n.number.format(-1000.1, 2, "en-us"));
+				jum.assertEquals("num_2_2", "-1,000.10", dojo.i18n.number.format(-1000.1, 2));
+				
+				//rounding
+				jum.assertEquals("num_2_3", "-1,000.11", dojo.i18n.number.format(-1000.114, 2));
+				jum.assertEquals("num_2_4", "-1,000.12", dojo.i18n.number.format(-1000.115, 2));
+				jum.assertEquals("num_2_5", "-0.00", dojo.i18n.number.format(-0.0001, 2));
+				jum.assertEquals("num_2_6", "0.00", dojo.i18n.number.format(0, 2));
+				
+				//change decimal places
+				jum.assertEquals("num_2_7", "-1 000,100", dojo.i18n.number.format(-1000.1, 3, "fr-fr"));
+				jum.assertEquals("num_2_8", "-1,000.100", dojo.i18n.number.format(-1000.1, 3));
+		}
+		
+		</script>
+		<style type="text/css">
+			body { background: white; color: red; font-weight: bold; }
+			.msg { color: black; font-weight: normal; }
+		</style>
+	</head>
+	<body>
+		<p class="msg">Test output (passes have no output):</p>
+	</body>
+</html>
+

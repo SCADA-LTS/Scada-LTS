@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,IAAI;EACA,MAAM,EAAE,IAAI;EACZ,KAAK,EAAE,IAAI;;AAEf,OAAO;EACH,MAAM,EAAE,KAAK;EACb,KAAK,EAAE,IAAI",
+"sources": ["reports.component.sass"],
+"names": [],
+"file": "reports.component.css"
+}

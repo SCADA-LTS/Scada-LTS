@@ -1,0 +1,57 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true,
+				useXDomain: true,
+				baseLoaderUri: "http://tagneto.org/dojo/noxd/",
+				xdWaitSeconds: 5
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="http://tagneto.org/dojo/xd/dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.registerModulePath("dojo", "http://tagneto.org/dojo/noxd/src");
+
+			dojo.require("dojo.event.*");
+
+			function collectionsLoaded(){
+				var d = new dojo.collections.Dictionary();
+				d.add("foo",{test:"bar"});
+				d.add("baz","fab");
+				d.add("buck","shot");
+				dojo.debug("Collections loaded successfully");
+			}
+
+			function click1(){
+				dojo.require("dojo.collections.*");
+				dojo.addOnLoad(collectionsLoaded);
+			}
+
+
+			function init(){
+				dojo.debug("init was called.");
+				var clickNode = document.getElementById("testButton1");
+				dojo.event.connect(clickNode, "onclick", "click1");
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<h1>XDomain Error Test Page</h1>
+		<p>
+		Clicking the button should cause an error. About 5 seconds after you click
+		on the button, you should get a message about not being able to
+		load a cross-domain package.
+		</p>
+		<p><b>IMPORTANT:</b> Change the domain name in the source of this file
+		to be the domain name that you want to test. You can change the paths too.
+		In this file, /dojo/noxd refers to a dojo installation that has not run the xdgen
+		build command to build cross-domain compatible packages.
+		<p>
+				<button id="testButton1">Test Button</button>
+		</p>
+	</body>
+</html>

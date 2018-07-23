@@ -1,0 +1,6 @@
+name=Liga/Desliga Triangulo
+type=imageSet
+#width=114
+#height=128
+text.x=14
+text.y=2

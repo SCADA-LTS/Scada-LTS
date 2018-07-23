@@ -1,0 +1,73 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>Event handlers provide user-defined behaviour that is to be performed upon the raising of a particular event. Events can be raised due to various system conditions (see the Events section on the general help page for more information). When this happens, associated event handlers are executed.</p>-->
+<!--<p>-->
+<!--  There are currently two types of event handlers:-->
+<!--</p>-->
+<h1>Vis&atilde;o Geral</h1>
+<p>Tratadores de eventos possibilitam ao usu&aacute;rio definir o comportamento do sistema frente ao disparo de um evento. Eventos podem ser disparados devido a v&aacute;rias condi&ccedil;&otilde;es (veja a se&ccedil;&atilde;o de eventos na p&aacute;gina de ajuda geral para mais informa&ccedil;&otilde;es). Quando isso acontece, tratadores de eventos associados s&atilde;o executados.</p>
+<p>
+  H&aacute; dois tipos de tratadores de eventos:
+</p>
+
+<!--<ul>-->
+<!--  <li><b>Email handlers</b>: send email messages to lists of recipients</li>-->
+<!--  <li><b>Set point handlers</b>: cause a settable point to be set with a given value</li>-->
+<!--</ul>-->
+<ul>
+  <li><b>Notifica&ccedil;&otilde;es(e-mail)</b>: enviam e-mail para uma lista </li>
+  <li><b>Set point</b>: escrevem valores em data points (que devem ser configurados como set&aacute;veis)</li>
+</ul>
+
+<!--<h1>Event types</h1>-->
+<!--<p>The event types section arranges all available event types in the system in a tree. The Point event detectors branch contains a list of all points (indicated with <img src="images/icon_comp.png"/>) in the system that have event detectors. The event detectors are listed under their respective point branches.</p>-->
+<!--<p>Event types for scheduled events, compound event detectors, and system events are listed under their respective branches. The Data source events branch contains a list of all data sources that can raise events. The events are listed under their respective data source.</p>-->
+<!--<p>To add a new event handler, click the event type that you wish to handle; the event handler details section will be displayed. The actual event handler will not be saved until you click the <img src="images/save_add.png"/> icon. To edit an existing handler, click the handler's name in the list of handlers under the event type's branch.</p>-->
+<!--<p>When you add a new handler, you must select the handler's <b>Type</b>. Once you save a handler, it's type is not longer editable.</p>-->
+
+<h1>Tipos de Eventos</h1>
+<p>A se&ccedil;&atilde;o de tipos de eventos mostra todos os tipos de eventos dispon&iacute;veis em uma "&aacute;rvore". A parte de detectores de valores contem uma lista de todos os data points (indicados como <img src="images/icon_comp.png"/>) no sistema que possuem detectores associados. Os detectores de evento s&atilde;o listados abaixo de suas respectivas &aacute;reas.</p>
+<p>Tipos de eventos para eventos agendados, detectores de eventos compostos, e eventos de sistemas s&atilde;o listados s&atilde;o listados abaixo de sua respectiva parte. A parte de eventos de data source contem uma lista de todos os data sources que podem disparar eventos. Os eventos s&atilde;o listados abaixo de seus respectivos data sources.</p>
+<p>Para adicionar um novo tratador de eventos, selecione o tipo que deseja; a se&ccedil;&atilde;o de detalhes do tipo selecionado ser&aacute; mostrada. O tratador n&atilde;o ser&aacute; salvo at&eacute; voc&ecirc; clicar em <img src="images/save_add.png"/>. Para editar um tratador j&aacute; existente, clique no nome do mesmo na lista.</p>
+<p>Quando voc&ecirc; adiciona um novo, voc&ecirc; deve selecionar o <b>tipo</b> do tratador. Uma vez que voc&ecirc; o salvou, seu tipo n&atilde;o &eacute; mais edit&aacute;vel.</p>
+
+<!--<h1>Editing existing handlers</h1>-->
+<!--<p>To save changes to a handler, click the <img src="images/save.png"/> icon at the top right of the Event handler section. To delete a handler, click the <img src="images/delete.png"/> icon.</p>-->
+
+<h1>Editando</h1>
+<p>Para salvar mudan&ccedil;as em um tratador, clique em <img src="images/save.png"/>. Para deletar, clique em <img src="images/delete.png"/>.</p>
+
+<!--<h1>Editing email handlers</h1>-->
+<!--<p>Email handlers maintain two recipient lists. The first is the list to which a message is sent when the event is initially raised. The second is an optional list to which to send escalations.</p>-->
+<!--<p>To add a mailing list to a recipient list, select it from the <b>Add mailing list</b> drop-down list and click the <img src="images/add.png"/> icon beside the drop-down. To add a user, select it from the <b>Add user</b> list and click the <img src="images/add.png"/> icon beside the drop-down. To add a free-form email address, enter the address in the <b>Add address</b> box and click the <img src="images/add.png"/> icon beside the box. To delete any recipient from a list, click the <img src="images/bullet_delete.png"/> icon beside the recipient. To test a recipient list, click the <img src="images/email_go.png"/> icon for the list.</p>-->
+<!--<p>To have escalation emails sent, check the <b>Send escalation</b> box, and enter the <b>Escalation recipients</b>. The escalation email will only be sent if the associated event has remained active for the <b>Escalate if active for</b> period.</p>-->
+<!--<p>An event inactive notification can be sent by checking the <b>Send inactive notification</b> box. If checked, the notification will be send to all event recipients once the event becomes inactive. Note that, if an escalation email was not sent, the inactive notification will not be sent to the escalation list. Only those recipients that received an active notification will receive an inactive notification.</p>-->
+
+<h1>Editando (notifica&ccedil;&otilde;es)</h1>
+<p>Notifica&ccedil;&otilde;es de email mant&eacute;m duas listas de recebedores. A primeira &eacute; a lista para a qual uma mensagem &eacute; enviada quando o evento &eacute; disparado. A segunda &eacute; uma lista opcional para enviar "escalations".</p>
+<p>Para adicionar uma lista de email para uma lista de recebedores, selecione-a da lista de <b>adicionar recebedores</b> e clique em <img src="images/add.png"/>. Para adicionar um usu&aacute;rio, selecione um usu&aacute;rio da lista <b>Add user</b> e clique em <img src="images/add.png"/>. Para adicionar um outro endere&ccedil;o qualquer, entre com o mesmo no campo <b>adicionar endere&ccedil;o</b> e clique em <img src="images/add.png"/>. Para excluir qualquer recebedor da lista, clique em <img src="images/bullet_delete.png"/>. Para testar uma lista de recebedores, clique em <img src="images/email_go.png"/>.</p>
+<p>Para ter email de "escalation" enviados, selecione o campo <b>Send escalation</b>, e entre com <b>Escalation recipients</b>. O "escalation" email ser&aacute; somente enviado se o evento associado estiver ativo para o per&iacute;odo <b>Escalate if active for</b> </p>
+<p>Um evento inativo de notifica&ccedil;&atilde;o pode ser enviado selecionado o <b>Send inactive notification</b> campo. Se selecionado, a notifica&ccedil;&atilde;o ser&aacute; enviada para todos os recebedores de eventos uma vez que o evento se tornou inativo. Note que, se uma email de "escalation" n&atilde;o foi enviado, a notifica&ccedil;&atilde;o inativa n&atilde;o ser&aacute; enviada para a lista de "escalation". Somente aqueles recipientes que receberam uma notifica&ccedil;&atilde;o ativa ir&atilde;o receber uma notifica&ccedil;&atilde;o inativa.</p>
+
+<!--<h1>Editing set point handlers</h1>-->
+<!--<p>When an event is raised, this handler will set the value of a given settable point. The <b>Target</b> is the settable point that will be set. Optionally, the point may be set with the value which raised the event, but this is only possible if the event was raised by a "value changed" point event detector, and the data type of the target is the same as the data type of the source. To have the target be set with the source value, check the <b>Use source value</b> box. Otherwise, enter the value to which to set the target in the <b>Value to set</b> area.</p>-->
+
+<h1>Editando (set point) </h1>
+<p>Quando um evento &eacute; disparado, esse tratador ir&aacute; escrever o valor em um dado data point. O <b>target</b> &eacute; o data point que ter&aacute; seu valor alterado. Opcionalmente, o data point pode ser setado com o valor que alterou o evento, porem isso &eacute; poss&iacute;vel somente se o evento foi disparado por um detector de valores do tipo "value changed", e o tipo de dado do caminho &eacute; o mesmo que o tipo de dado da fonte. Para setar o caminho com o valor da fonte, selecione o campo <b>Use source value</b>. Ou ent&atilde;o, entre com o valor que deseja escrever no campo <b>Value to set</b>.</p>

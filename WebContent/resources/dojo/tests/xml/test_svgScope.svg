@@ -1,0 +1,22 @@
+<?xml version='1.0'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
+	"http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd">
+<svg onload="init(evt)" width="111" height="111">
+<script type="text/javascript"><![CDATA[
+function init(evt){
+	if(evt.getTarget){
+		svgDoc = evt.getTarget().getOwnerDocument();
+	} else if (evt.target){
+		svgDoc = evt.target.documentElement;
+	}
+	parent.scopeTest(svgDoc,svgDoc.test);
+	parent.test("svg");
+	test("svg");
+}
+
+function test(sourceDocumentType){
+	alert("found svg test function scope correctly from a(n) " + sourceDocumentType + " document");
+}
+
+]]></script>
+</svg>

@@ -1,0 +1,6 @@
+name=Car battery
+type=imageSet
+#width=36
+#height=36
+text.x=5
+text.y=32

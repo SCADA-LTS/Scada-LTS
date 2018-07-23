@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+	<title>Dojo Editor2 Test</title>
+	<script type="text/javascript">
+		var djConfig = {
+			isDebug: true,
+			dojoRichTextFrameUrl: "../../../src/widget/templates/richtextframe.html" //for xdomain
+		};
+	</script>
+
+	<script type="text/javascript" src="../../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.FloatingPane");
+		dojo.require("dojo.widget.Editor2");
+	</script>
+</head>
+<body>
+
+<div dojoType="FloatingPane"
+    title="Editor in floating pane" constrainToContainer="true" hasShadow="true" resizable="true" displayMinimizeAction="true" displayMaximizeAction="true" contentWrapper="none" style="width: 300px; height: 200px; top: 100px; left: 400px;" executeScripts="true" title="externally loaded">
+
+    <textarea dojoType="Editor2" name="editorContent"> some content
+
+    </textarea> 
+</div>
+</body>
+</html>
+

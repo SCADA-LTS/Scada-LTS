@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>ColorPalette Widget Demo</title>
+
+<script type="text/javascript"> var djConfig = {isDebug: true}; </script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.ColorPalette");
+	var palette;
+	function init(){
+		palette = dojo.widget.createWidget("dojo:ColorPalette",{palette:"7x10"}, dojo.byId("programPalette"));
+	}
+	dojo.addOnLoad(init);
+</script>
+
+<p>Default color palette (7x10):</p>
+<div dojoType="ColorPalette"></div>
+
+<p>Small color palette (3x4):</p>
+<div dojoType="ColorPalette" palette="3x4"></div>
+
+<p>Default color palette (7x10) created via createWidget:</p>
+<div id="programPalette"></div>

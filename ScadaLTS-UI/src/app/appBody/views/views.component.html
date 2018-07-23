@@ -1,0 +1,18 @@
+
+<md-toolbar>
+    <!--<h6>Graphic view:</h6> &nbsp; 
+    <b><span id="infoSelectedViews">None selected</span></b>&nbsp;-->
+    <button class="button_toolbar" md-mini-fab (click)="openDlgSelectViewWithEdtHierarchyView()" mdTooltip="Show view hierarchy" [mdTooltipPosition]="'below'"><md-icon>find_in_page</md-icon></button>
+    <span class="fill-remaining-space"></span>
+    <span>    
+        <button class="button_toolbar" md-mini-fab (click)="addView()" mdTooltip="Add view" [mdTooltipPosition]="'below'"><md-icon>note_add</md-icon></button>
+        <button class="button_toolbar" md-mini-fab (click)="editView()" mdTooltip="Edit view" [mdTooltipPosition]="'below'"><md-icon>edit</md-icon></button>
+        <!--
+        <button md-mini-fab (click)="fullscreen()" mdTooltip="fullscreen" [mdTooltipPosition]="'below'"><md-icon>zoom_out_map</md-icon></button>
+        -->
+    </span>
+</md-toolbar> 
+    <iframe src="/ScadaBR/views.shtm" frameborder="0" allowfullscreen id="ifr" style="visibility: hidden; width:2300px; height:1300px;"></iframe>
+
+    
+    

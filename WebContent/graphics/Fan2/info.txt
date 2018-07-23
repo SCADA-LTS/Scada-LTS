@@ -1,0 +1,6 @@
+name=Fan 3
+type=imageSet
+#width=80
+#height=90
+text.x=5
+text.y=90

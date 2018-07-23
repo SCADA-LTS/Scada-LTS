@@ -1,0 +1,27 @@
+<!-- this file is loaded into the dialog widget -->
+
+<script>
+	var btn = document.getElementById("hider");
+	_container_.setCloseControl(btn);
+</script>
+
+<form onsubmit="return false;">
+	<table>
+		<tr>
+			<td>Name:</td>
+			<td><input type="text"/></td>
+		</tr>
+		<tr>
+			<td>Location:</td>
+			<td><input type="text"/></td>
+		</tr>
+		<tr>
+			<td>Description:</td>
+			<td><input type="text"/></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="right">
+				<input type="button" id="hider" value="OK"/></td>
+		</tr>
+	</table>
+</form>

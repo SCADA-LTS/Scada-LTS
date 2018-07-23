@@ -1,0 +1,226 @@
+<html>
+<head>
+
+<title>FloatingPane Widget Programatic Creation</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.FloatingPane");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.TabContainer");
+	dojo.require("dojo.widget.LayoutContainer");
+	dojo.require("dojo.widget.Tree");
+	dojo.require("dojo.widget.ComboBox");
+	dojo.require("dojo.widget.DebugConsole");
+	dojo.require("dojo.widget.TaskBar");
+</script>
+
+<script>
+
+// description of parameters for floating pane
+var paramDesc = [
+	//basic
+	{name: "widgetId", type: "string", value: ""},
+	{name: "title", type: "string", value: "Window"},
+	{name: "href", type: "string", value: "doc0.html"},
+	{name: "iconSrc", type: "image", values: ["images/note.gif", "images/flatScreen.gif", "images/openFolder.gif"] },
+	
+	// hide/show
+	{name: "displayCloseAction", type: "boolean"},
+	{name: "displayMinimizeAction", type: "boolean"},
+	{name: "displayMaximizeAction", type: "boolean"},
+	{name: "toggle", type: "string", values: ["wipe", "fade", "explode"]},
+	{name: "toggleDuration", type: "number", value: 500},
+	{name: "taskBarId", type: "string", value: "mytaskbar"},
+	{name: "resizable", type: "boolean"},
+	{name: "windowState", type: "string", values: ["normal", "minimized", "maximized"]},
+	
+	// appearance
+	{name: "hasShadow", type: "boolean"}
+];
+
+// must also specify size/position parameters
+var sizeDesc = [
+	{name: "top", type: "string", value: "100px"},
+	{name: "left", type: "string", value: "200px"},
+	{name: "width", type: "string", value: "400px"},
+	{name: "height", type: "string", value: "300px"}
+];
+	
+// creates a form for setting the parameters in descriptor
+function makeTable(descriptor){
+	// make table of parameters
+	var text = "";
+	dojo.lang.forEach(descriptor, function(item){
+		text += "<tr><td>" + item.name + "</td><td>";
+		var values = item.type=="boolean" ? [true, false] : item.values;
+		if(values){
+			dojo.lang.forEach(values, function(val){
+				text += "<input type='radio' name='" + item.name + "' value='" + val + "'> " +
+				((item.type=="image" && val != "none") ? "<img src='"+val+"'>" : val);
+			});
+		}else{
+			text += "<input id='" + item.name + "' name='" + item.name + "' value='" + (item.value||"") + "'>";
+		}
+		text += "</td></tr>";
+	});
+	return "<table class='params'>"+text+"</table>";
+}
+
+// Runs on page load
+function init(){
+	// Fill in tables with parameters the user can set
+	var form = dojo.byId("params");
+	form.innerHTML= makeTable(paramDesc);
+	var sizeForm = dojo.byId("size");
+	sizeForm.innerHTML= makeTable(sizeDesc);
+}
+dojo.addOnLoad(init);
+
+// return all the values in the given form as name/value pairs
+// (see also dojo.io.encodeForm)
+function serializeForm(formNode, description){
+	formNode=dojo.byId(formNode);
+	var params = {};
+	for(var i = 0; i < formNode.elements.length; i++){
+		var elm = formNode.elements[i];
+		if(elm.type=="checkbox"){
+			params[elm.name]= elm.checked ? true : false;
+		}else if(elm.type=="radio"){
+			if(elm.checked){
+				switch(elm.value){
+					case "true":
+						params[elm.name]=true;
+						break;
+					case "false":
+						params[elm.name]=false;
+						break;
+					default:
+						params[elm.name]=elm.value;
+				}
+			}
+		}else{
+			if(elm.value!=""){
+				if(/^[0-9]*$/.test(elm.value)){
+					params[elm.name]=parseInt(elm.value);// convert from string --> number
+				}else{
+					params[elm.name]=elm.value;
+				}
+			}
+		}
+	}
+	return params;
+}
+
+// Make a floating pane according to user set parameters
+var cnt=0;
+function makePane(){
+	// get parameters for this floating pane (as json object)
+	var params = serializeForm("params");
+	dojo.debug("Making pane w/parameters:");
+	for(var p in params){ dojo.debug("  " + p + ": " + params[p]); }
+
+	// get size for floating pane, and setup dummy div to hold it
+	var size = serializeForm("size");
+	var div=document.createElement("div");
+	div.style.position="absolute";
+	div.innerHTML="Initial <i>dummy</i> <b>div</b> contents";
+	document.body.appendChild(div);	// this didn't used to be necessary ?!
+	for(var s in size){
+		div.style[s] = size[s];
+	}
+	dojo.debug("Sizing div CSS: " + div.style.cssText);
+
+	// make the widget
+	var widget = dojo.widget.createWidget("FloatingPane", params, div);
+	
+	// pop-up a window so we can see what we created
+	if( dojo.byId("debug").checked ){
+		dojo.debugDeep(widget);
+	}
+	dojo.debug("**Created widget " + widget.widgetId);
+
+	// change the title for next time
+	dojo.byId("title").value="Window #" + (++cnt+1);
+	
+	// setup so we can test methods on this div
+	dojo.byId("id").value=widget.widgetId;
+}
+
+// Return current (most recently created) widget
+function currentPane(){
+	var widgetId = dojo.byId("id").value;
+	return dojo.widget.byId(widgetId);
+}
+
+</script>
+<style>
+	html, body {
+		height: 100%;
+		width: 100%;
+	}
+	#params, #size {
+		background: #eeeeee; border: solid black 3px;
+		margin-right: 20px;
+	}
+</style>
+</head>
+<body>
+<h1>FloatingPane Widget Programatic Creation</h1>
+
+<!-- the above code will fill in these divs -->
+<div dojoType="TabContainer" style="width: 100%; height: 70%">
+	<div dojoType="ContentPane" label="Create">
+		<table valign=top id="creator">
+			<tr><td><h3>Parameters</h3></td><td><h3>Sizing</h3></td></tr>
+			<tr>
+				<td>
+					<form id="params"></form>
+				</td>
+				<td valign=top>
+					<form id="size"></form>
+				</td>
+			</tr>
+			<tr>
+			<td colspan=2 align=center>
+				<button onClick="makePane();">Create</button>
+				<input type="checkbox" id="debug"> Debug widget
+			</td>
+		</table>
+	</div>
+
+	<div id="methods" dojoType="ContentPane" label="Methods">
+		<h3>Method call tests:</h3>
+		<table>
+			<tr>
+				<td>Id:</td>
+				<td><input id="id"></td>
+			</tr>
+			<tr>
+				<td>Content/URL:</td>
+				<td><textarea id="content" cols=70 rows=4>Type content or a URL in here. <b>OK?</b></textarea></td>
+			</tr>
+		</table>
+		<br>
+		<div align=center>
+			<button onclick="currentPane().destroy();">destroy()</button>
+			<button onclick="currentPane().show();">show()</button>
+			<button onclick="currentPane().hide();">hide()</button>
+			<button onclick="currentPane().setUrl(dojo.byId('content').value);">setUrl()</button>
+			<button onclick="currentPane().setContent(dojo.byId('content').value);">setContent()</button>
+		</div>
+	</div>
+</div>
+
+<div dojoType="DebugConsole" title="Debug output"
+	style="position: absolute; width: 300px; height: 300px; right: 50px; top: 300px;">
+</div>
+
+<div dojoType="TaskBar" id="mytaskbar" hasShadow="true" resizable="false";
+	style="width: 90%; height: 72px;margin: 0px; padding:0px; bottom: 30px; left: 5%; overflow: hidden;">
+</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+
+<p>Los <b>Formatos Num&eacute;ricos</b> son utilizados para determinar como se mostrar&aacute;n y analizar&aacute;n los valores num&eacute;ricos, 
+as&iacute; se convierten de n&uacute;meros de punto flotante manejados internamente por enteros o sus representaciones en texto. 
+Por ejemplo, el n&uacute;mero 1234.5678 puede ser formateado como se muestra, pero puede preferirse mostrarlo como '1,234.6', 
+o '1 234,567', o '1.2345678E3' seg&uacute;n el contexto y la sem&aacute;ntica del valor. Los mismos patrones pueden ser utilizados 
+para dar formato a un valor a visualizar, y para analizar un texto de entrada para un valores num&eacute;ricos.</p>
+
+<p>El formato num&eacute;rico en Mango est&aacute; implementado en la clase DecimalFormat de Java, 
+los detalles de esta clase se pueden obtener en <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/DecimalFormat.html" target="_blank">aqu&iacute;</a>. 
+Algunos patrones com&uacute;nmente utilizados:</p>
+
+<ul>
+  <li><b>#,##0.00</b> Separador de miles utilizando coma. Siempre se mostrar&aacute; el primer d&iacute;gito entero y dos lugares decimales (redondeados).</li>
+  <li><b>0.000</b> Siempre mostrar el primer d&iacute;gito entero y tres lugares decimales.</li>
+  <li><b>0.00;(0.00)</b> Siempre mostrar el primer d&iacute;gito entero y dos lugares decimales. Los n&uacute;meros negativos se representan  entre par&eacute;ntesis.</li>
+</ul>
+
+<p>Los formatos pueden ser localizados seg&uacute;n sus valores iniciales de la Java VM.</p>

@@ -1,0 +1,6 @@
+name=Bullets
+type=imageSet
+#width=6
+#height=6
+text.x=0
+text.y=6

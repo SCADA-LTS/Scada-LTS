@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Test Textbox Validation Widgets</title>
+
+	<script type="text/javascript">
+		var djConfig = {
+			isDebug: true, extraLocale: ['de-de', 'en-us']
+		};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.*");
+		dojo.require("dojo.widget.Textbox");
+		dojo.require("dojo.widget.ValidationTextbox");
+		dojo.require("dojo.widget.UsTextbox");
+		dojo.require("dojo.widget.IntegerTextbox");
+		dojo.require("dojo.widget.InternetTextbox");
+		dojo.require("dojo.widget.RealNumberTextbox");
+		dojo.require("dojo.widget.CurrencyTextbox");
+		dojo.require("dojo.widget.DateTextbox");
+		dojo.require("dojo.widget.RegexpTextbox");
+
+	</script>
+
+	<style>
+	body {
+		padding: 1em;
+	}
+	.formQuestion {
+		background-color:#d0e3f5;
+		padding:0.3em;
+		font-weight:900;
+		font-family:Verdana, Arial, sans-serif;
+		font-size:0.8em;
+		color:#5a5a5a;
+	}
+	.formAnswer {
+		background-color:#f5eede;
+		padding:0.3em;
+		margin-bottom:1em;
+	}
+	.pageSubContentTitle {
+			color:#8e8e8e;
+			font-size:1em;
+			font-family:Verdana, Arial, sans-serif;
+			margin-bottom:0.75em;
+	}
+	.small {
+		width: 2.5em;
+	}
+	.medium {
+		width: 10em;
+	}
+	.long {
+		width: 20em;
+	}
+
+	span.invalid, span.missing {
+		display: inline;
+		margin-left: 1em;
+		font-weight: bold;
+		font-style: italic;
+		font-family: Arial, Verdana, sans-serif;
+		color: #f66;
+		font-size: 0.9em;
+	}
+
+	.errorMessage {
+		font-weight:bold;
+		font-family:Arial, Verdana, sans-serif;
+		color:#ff0000;
+		font-size:0.9em;
+	}
+	.warningMessage {
+		font-weight:bold;
+		font-family:Arial, Verdana, sans-serif;
+		color:#ff9900;
+		font-size:0.9em;
+	}
+	.noticeMessage {
+		font-weight: normal;
+		font-family:Arial, Verdana, sans-serif;
+		color:#663;
+		font-size:0.9em;
+	}
+	.myValidateColorValid {
+		background-color: #FF0000;
+	}
+	.myValidateColorInvalid {
+		background-color: #00FF00;
+	}
+	.myValidateColorEmpty {
+		background-color: #0000FF;
+	}
+	</style>
+</head>
+
+	<body >
+		<h2 class="pageSubContentTitle">Test Textbox Validation Widgets</h2>
+		<form  method="get" id="form1" action="">
+
+			<div class="formQuestion">
+				<span class="emphasise">First Name:  </span>
+				<span class="noticeMessage"> Textbox class, Attributes: {trim: true, ucFirst: true, class: 'medium'}, First letter of each word is upper case.</span>
+			</div>
+			<div class="formAnswer">
+				<input id="q1" type="text" name="firstname" value="testing testing" class="medium"
+					dojoType="Textbox"
+					trim="true" 
+					ucfirst="true" />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise">Last Name:  </span>
+				<span class="noticeMessage"> Textbox class, Attributes: {trim: true, uppercase: true, class: 'medium'}, all letters converted to upper case. </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="lastname" value="testing testing" class="medium"
+					dojoType="Textbox"
+					trim="true" 
+					uppercase="true" />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise">Age:  </span>
+				<span class="noticeMessage"> Textbox class, Attributes: {trim: true, digit: true, class: 'small'}, all but digits extracted. </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="age" value="38" class="small"
+					dojoType="Textbox"
+					trim="true" 
+					digit="true" />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise">Occupation:  </span>
+				<span class="noticeMessage">ValidationTextbox class, 
+					Attributes: {lowercase: true, required: true}. Displays message if field is missing. </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="occupation" class="medium"
+					dojoType="ValidationTextbox"
+					lowercase="true" 
+					required="true" 
+					missingMessage="* The occupation is required." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise">Elevation:  </span>
+				<span class="noticeMessage">IntegerTextbox class, 
+					Attributes: {trim: true, required: true, signed: true classPrefix: "myValidateColor"}, Enter feet above sea level with a sign. (note: these colors are drastically different due to demonstrating the effects of classPrefix.)</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="elevation" class="medium" value="300"
+					dojoType="IntegerTextbox"
+					trim="true"
+					classPrefix="myValidateColor"
+					required="true" 
+					signed="true" 
+					invalidMessage="Invalid elevation.  Be sure to use a plus or minus sign." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise">Population:  </span>
+				<span class="noticeMessage">IntegerTextbox class, 
+					Attributes: {trim: true, required: true, signed: false, separator: ","}. <br><b> This widget was added in script, not markup. </b> </span>
+			</div>
+			<div class="formAnswer" >
+				<input id="attach-here" type="text" name="population" class="medium" value="1500000"/>
+			</div>
+
+<script>
+	// See if we can make a widget in script and attach it to the DOM ourselves.
+	dojo.addOnLoad(function(){
+		var name = "IntegerTextbox";
+		var props = {
+			name: "population",
+			value: "1,500,000",
+			trim: "true",
+			required: "true",
+			signed: "false",
+			separator: ",",
+			invalidMessage: "Invalid population.  Be sure to use commas."
+		};
+		var refNode = document.getElementById("attach-here");
+	
+		var w = dojo.widget.createWidget(name, props, refNode);
+	});
+</script>
+
+			<div class="formQuestion">
+				<span class="emphasise">Real Number:  </span>
+				<span class="noticeMessage">RealNumberTextbox class, 
+					Attributes: {trim: true, required: true}. Enter any sort of real number.</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="real1" class="medium" value="+0.1234"
+					dojoType="RealNumberTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="This is not a valid real number." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise">Exponential Notation:  </span>
+				<span class="noticeMessage">RealNumberTextbox class, 
+					Attributes: {exponent: true}. Enter a real number in exponential notation.</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="real2" class="medium" value="+0.12"
+					dojoType="RealNumberTextbox"
+					trim="true" 
+					required="true" 
+					exponent = "true"
+					invalidMessage="Number must be in exponential notation. Example +5E-28" />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise">Annual Income:  </span>
+				<span class="noticeMessage">CurrencyTextbox class, 
+					Attributes: {fractional: true}. Enter dollars and cents.</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="income" class="medium" value="$54,775.53"
+					dojoType="CurrencyTextbox"
+					trim="true" 
+					required="true" 
+					fractional = "true"
+					invalidMessage="Invalid amount.  Include dollar sign, commas, and cents. Example: $12,000.00" />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise">IPv4 Address:  </span>
+				<span class="noticeMessage">IpAddressTextbox class, 
+					Attributes: {allowIPv6: false, allowHybrid: false}. Also Dotted Hex works, 0x18.0x11.0x9b.0x28</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="ipv4" class="medium" value="24.17.155.40"
+					dojoType="IpAddressTextbox"
+					trim="true" 
+					required="true" 
+					allowIPv6 = "false"
+					allowHybrid = "false"
+					invalidMessage="Invalid IPv4 address." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> IPv6 Address:  </span>
+				<span class="noticeMessage">IpAddressTextbox class, 
+					Attributes: {allowDottedDecimal: false, allowDottedHex: false}. 
+					Also hybrid works, x:x:x:x:x:x:d.d.d.d</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="ipv6" class="long" value="0000:0000:0000:0000:0000:0000:0000:0000"
+					dojoType="IpAddressTextbox"
+					trim="true" 
+					uppercase = "true" 
+					required="true" 
+					allowDottedDecimal = "false"
+					allowDottedHex = "false"
+					allowDottedOctal = "false"
+					invalidMessage="Invalid IPv6 address, please enter eight groups of four hexadecimal digits. x:x:x:x:x:x:x:x" />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> URL:  </span>
+				<span class="noticeMessage">UrlTextbox class, 
+					Attributes: {required: true, trim: true, scheme: true}. </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="url" class="long" value="http://www.xyz.com/a/b/c?x=2#p3"
+					dojoType="UrlTextbox"
+					trim="true" 
+					required="true" 
+					scheme = "true"
+					invalidMessage="Invalid URL.  Be sure to include the scheme, http://..." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> Email Address  </span>
+				<span class="noticeMessage">EmailTextbox class, 
+					Attributes: {required: true, trim: true}. </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="email" class="long" value="fred&barney@stonehenge.com"
+					dojoType="EmailTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="Invalid Email Address." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> Email Address List </span>
+				<span class="noticeMessage">EmailListTextbox class, 
+					Attributes: {required: true, trim: true}. </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="email" class="long" value="a@xyz.com; b@xyz.com; c@xyz.com; "
+					dojoType="EmailListTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="Invalid Email Address List." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> Date (American format) </span>
+				<span class="noticeMessage">DateTextbox class, 
+					Attributes: {lang: "en-us", required: true, trim: true}. Works for leap years</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="date1" class="medium" value="12/30/05" lang="en-us"
+					dojoType="DateTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="Invalid date. Use M/d/yy format." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> Date (German format) </span>
+				<span class="noticeMessage">DateTextbox class, 
+					Attributes: {formatLength:"medium", lang: "de-de", required: true, trim: true}. Works for leap years</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="date2" class="medium" value="30.12.2005" lang="de-de" formatLength="medium"
+					dojoType="DateTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="Invalid date. Use dd.MM.yyyy format." />
+			</div>
+
+
+			<div class="formQuestion">
+				<span class="emphasise"> Date (European format) using format (deprecated in 0.5) </span>
+				<span class="noticeMessage">DateTextbox class, 
+					Attributes: {format:"YYYY.MM.DD", required: true, trim: true}. Works for leap years</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="date2" class="medium" value="2005.12.30"
+					dojoType="DateTextbox"
+					trim="true" 
+					required="true" 
+					format = "YYYY.MM.DD"
+					invalidMessage="Invalid date. Use YYYY.MM.DD format." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> 12 Hour Time </span>
+				<span class="noticeMessage">TimeTextbox class, 
+					Attributes: {formatLength: "medium", required: true, trim: true}</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="time1" class="medium" value="5:45:00 pm" formatLength="medium"
+					dojoType="TimeTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="Invalid time." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> 24 Hour Time</span>
+				<span class="noticeMessage">TimeTextbox class, 
+					Attributes: {displayFormat:"HH:mm:ss", required: true, trim: true}</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="time2" class="medium" value="17:45:00"
+					dojoType="TimeTextbox"
+					trim="true" 
+					required="true" 
+					format = "HH:mm:ss"
+					invalidMessage="Invalid time. Use HH:mm:ss where HH is 00 - 23 hours." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> 24 Hour Time using format attribute (deprecated in 0.5)</span>
+				<span class="noticeMessage">TimeTextbox class, 
+					Attributes: {format:"HH:mm:ss", required: true, trim: true}</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="time2" class="medium" value="17:45:00"
+					dojoType="TimeTextbox"
+					trim="true" 
+					required="true" 
+					format = "HH:mm:ss"
+					invalidMessage="Invalid time. Use HH:mm:ss where HH is 00 - 23 hours." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> US State 2 letter abbr. </span>
+				<span class="noticeMessage">UsStateTextbox class, 
+					Attributes: {required: true, trim: true, uppercase: true}</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="state" class="small" value="CA"
+					dojoType="UsStateTextbox"
+					allowTerritories = "false"
+					trim="true" 
+					uppercase="true" 
+					required="true" 
+					invalidMessage="Invalid US state abbr." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> US Zip Code </span>
+				<span class="noticeMessage">UsZipTextbox class, 
+					Attributes: {required: true, trim: true} Five digit Zip code or 5 + 4.</span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="zip" class="medium" value="98225-1649"
+					dojoType="UsZipTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="Invalid US Zip Code." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> US Social Security Number </span>
+				<span class="noticeMessage">UsSocialSecurityNumberTextbox class, 
+					Attributes: {required: true, trim: true} </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="ssn" class="medium" value="123-45-6789"
+					dojoType="UsSocialSecurityNumberTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="Invalid US Social Security Number." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> 10-digit US Phone Number </span>
+				<span class="noticeMessage">UsPhoneNumberTextbox class, 
+					Attributes: {required: true, trim: true} </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="phone" class="medium" value="(123) 456-7890"
+					dojoType="UsPhoneNumberTextbox"
+					trim="true" 
+					required="true" 
+					invalidMessage="Invalid US Phone Number." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> Regular Expression </span>
+				<span class="noticeMessage">RegexpTextbox class, 
+					Attributes: {required: true, trim: true} </span>
+			</div>
+			<div class="formAnswer">
+				<input type="text" name="phone" class="medium" value="someTestString"
+					dojoType="RegexpTextbox"
+                    regexp="^[\w]+$"
+					required="true" 
+                    invalidMessage="Invalid Non-Space Text." />
+			</div>
+
+			<div class="formQuestion">
+				<span class="emphasise"> Password </span>
+				<span class="noticeMessage">(just a test that type attribute is obeyed) </span>
+			</div>
+			<div class="formAnswer">
+				<input type="password" name="password" class="medium"
+					dojoType="Textbox" />
+			</div>
+<script>
+	function displayData() {
+		var f = document.getElementById("form1");
+		var s = "";
+		for (var i = 0; i < f.elements.length; i++) {
+			var elem = f.elements[i];
+			if (elem.name == "button")  { continue; }
+			s += elem.name + ": " + elem.value + "\n";
+		}
+		alert(s);
+	}
+</script>
+
+			<div><button name="button" onclick="displayData(); return false;">view data</button></div>
+
+		</form>
+	</body>
+</html>
+

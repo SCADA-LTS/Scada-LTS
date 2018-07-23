@@ -1,0 +1,131 @@
+﻿<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<h1>Descripci&oacute;n General</h1>
+<p>
+  Los manejadores de eventos definidos por el usuario permiten comportamientos a realizarse  cuando se produzca un evento en particular.
+ Los eventos pueden ocurrir desde varias condiciones del sistema (vea la secci&oacute;n de Eventos en la secci&oacute;n de la p&aacute;gina general de ayuda para m&aacute;s   
+ informaci&oacute;n). Cuando esto ocurra, el evento asociado ser&aacute; ejecutado.
+</p>
+<p>
+  Hay tres tipo de de manejadores de eventos:
+</p>
+<ul>
+  <li><b>Manejadores de Correo</b>: Env&iacute;a un mensaje de correo electr&oacute;nico a listas de destinatarios definidas.</li>
+  <li><b>Manejador de Consignas</b>: Asigna un valor especifico a un punto modificable.</li>
+  <li><b>Manejador de Procesos</b>: Ejecuta procesos especificados del S.O.</li>
+</ul>
+
+<h1>Tipos de Eventos</h1>
+<p>
+  La secci&oacute;n de los tipos de eventos organiza todos los tipos de eventos disponibles en un sistema en un &aacute;rbol. La ramificaci&oacute;n de los detectores de
+ eventos de punto contiene una lista de todos los puntos en el sistema que tienen detectores definidos (indicados con <img src="images/icon_comp.png"/>). 
+ Los detectores de evento se listan bajo las ramas de cada punto.
+</p>
+<p>
+  Los tipos de eventos para eventos planificados, para detectores de eventos compuestos, y los eventos del sistema son listados bajo sus respectivas ramas. 
+ Las ramas de los eventos de las fuentes de datos contienen una lista de las fuentes de datos que pueden levantar eventos. Los eventos son listados bajo    
+ sus respectivas fuentes de datos.
+</p>
+<p>
+  Para a&ntilde;adir un manejador de evento haga clic en el tipo de evento que desea manejar; luego se mostrar&aacute; la secci&oacute;n de detalles para el evento.
+ El actual manejador de eventos no se almacenar&aacute; hasta que haga clic en el icono <img src="images/save_add.png"/>. Para editar un manejador de evento existente, haga clic en su nombre dentro de la rama correspondiente de la lista de eventos.
+</p>
+<p>
+  Cuando se a&ntilde;ade un nuevo manejador deber&aacute; seleccionar su <b>Tipo</b>. Luego que haya guardado el manejador, su tipo ya no ser&aacute; editable.
+</p>
+
+<h1>Alias</h1>
+<p>
+  Puede configurarle un alias a un manejador de eventos, como un identificador visual (etiqueta). Este alias tambi&eacute;n es utilizada como
+ base para el asunto de los correos enviados por un manejador de eventos.
+</p>
+
+<h1>Editando manejadores existentes</h1>
+<p>
+  Para guardar cambios en un Manejador haga clic en el icono <img src="images/save.png"/> en la parte superior derecha de la secci&oacute;n del manejador de eventos. Para eliminar un manejador haga clic en el icono <img src="images/delete.png"/>.
+</p>
+
+<h1>Manejador de correo</h1>
+<p>
+  Los manejadores de correo mantienen hasta tres listas de acci&oacute;n. La primera es la lista de los destinatarios a los cuales 
+ les ser&aacute; enviado el mensaje cuando el evento se levante. La segunda y tercera lista son opcionales y permiten enviar mensajes de escalamiento y 
+ mensajes cuando el evento se inactive.
+</p>
+<p>
+  Para adicionar una lista de correos a una lista de destinatarios, selecci&oacute;nela en <b>Agregar lista de correo</b> del grupo desplegable
+ de la lista y haga clic en el icono <img src="images/add.png"/> junto a &eacute;sta. Para agregar un usuario del sistema, selecci&oacute;nelo de la lista 
+ <b>Agregar Usuario</b> del grupo desplegable y haga clic en el icono <img src="images/add.png"/>  junto a &eacute;sta. Para adicionar una direcci&oacute;n
+ de correo libre, ingrese la direcci&oacute;n en la caja de texto <b>Agregar direcci&oacute;n</b> y haga clic en el icono <img src="images/add.png"/> junto a &eacute;sta.
+ Para eliminar cualquier destinatario de la lista, haga clic en el icono <img src="images/bullet_delete.png"/> junto al destinatario.
+ Para realizar una prueba a la lista de destinatarios, utilice el icono <img src="images/email_go.png"/> de la lista.
+</p>
+<p>
+  Para enviar correos de escalamiento, active la casilla <b>Enviar escalamiento</b>, y especifique los <b>Destinatarios de escalamiento</b>.
+ El correo de escalamiento ser&aacute; enviado si se le ha asociado un evento <b>Escalar si est&aacute; activo durante</b> el per&iacute;odo.
+</p>
+<p>
+  Una notificaci&oacute;n por inactividad puede ser enviada activando la casilla <b>Env&iacute;o de notificaciones al inactivar evento</b>. Cuando est&aacute; activada
+ ser&aacute; enviado un correo de notificaci&oacute;n a los destinatarios definidos cuando un evento se inactive. Tenga presente que si
+ no se ha env&iacute;a un correo de escalamiento, la notificaci&oacute;n de inactivaci&oacute;n igualmente no ser&aacute; enviada a la lista de escalamiento.
+ S&oacute;lo los destinatarios que reciben una notificaci&oacute;n de activaci&oacute;n de un evento, recibir&aacute;n la notificaci&oacute;n de inactivaci&oacute;n. Este comportamiento
+ puede ser cambiado activando la casilla <b>Modificar destinatarios de notificaci&oacute;n por inactivaci&oacute;n</b>, que permite configurar una lista
+ de destinatarios espec&iacute;fico para las inactivaciones. Esto puede ser &uacute;til si hay destinatarios para la notificaci&oacute;n de activaci&oacute;n que no se requieren
+ correos posteriores (como un sistema de tickets). 
+</p>
+
+<h1>Manejador de consigna</h1>
+<p>
+  Este manejador establecer&aacute; un valor en un punto modificable cuando se active, o se desactive un evento definido. El <b>Destino</b> es el punto modificable
+ que se le establecer&aacute; el valor. Adicionalmente, puede hacer una asignaci&oacute;n en otro punto modificable manteniendo presente que el tipo de datos corresponde con el valor a asignar. Para configurar un valor en un punto destino, seleccione de la lista desplegable <b>Configurar valor est&aacute;tico</b> y luego introduzca el valor en la casilla utilice habilite la casilla <b>valor a configurar</b>. Si requiere hacerlo en otro punto utilice <b>Configurar valor en punto</b> y fije el valor a asignar.
+</p>
+
+<h1>Manejador de procesos</h1>
+<p>
+  Este manejador permite ejecutar procesos localmente utilizando comandos shell, tanto cuando se levanta un evento, como cuando se desactiva. 
+ Los comandos deben ser especificados tal y como se utilizar&iacute;an en una l&iacute;nea de comandos del sistema. En el caso de comandos muy complejos
+ se recomienda escribirlos en un script en el servidor y hacer su llamado desde el ScadaBR.
+</p>
+
+<p>
+  Cuando por alguna raz&oacute;n un proceso falla, se levantar&aacute; un evento del sistema suministrando la descripci&oacute;n de la falla. 
+ Igualmente, se finalizar&aacute; un proceso cuando este deje de ejecutarse por m&aacute;s de 15 segundos. Las salidas fuera de est&aacute;ndar de
+ alg&uacute;n proceso, se escribir&aacute; en el log de registro del ScadaBR como una alarma de nivel de "informaci&oacute;n". Un error est&aacute;ndar de
+ salida ser&aacute; escrito en el log de registro del Mango como un "error".
+</p>

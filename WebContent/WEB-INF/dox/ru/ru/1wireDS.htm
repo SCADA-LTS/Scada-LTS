@@ -1,0 +1,27 @@
+﻿<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Обзор</h1>
+<p>Источник данных сети 1-wire используется для сбора данных из локальной сети 1-wire, доступной через последовательные интерфейсы RS232 или RS485 (необходим преобразователь). Это источник данных, работающий в режиме опроса.</p>
+<p>Физическая конфигурация сети может произвольно меняться в процессе её работы, не создавая помех эксплуатации и работоспособности источника данных. При обнаружении изменений в топологии сети автоматически выполняется повторное сканирование. Если положение объектов после предыдущего сканирования не изменилось, событие не возникает</p>
+
+<h1>Конфигурация</h1>
+<p>Каждый источник данных должен иметь произвольно выбранное Имя. При выборе Порта предлагается список всех доступных последовательных портов, имеющихся в аппаратном обеспечении хоста. Необходимо выбрать порт, к которому подключается сеть 1-wire. Значение поля Период обновления определяет частоту опроса сети.</p>
+
+<h1>Сканирование сети</h1>
+<p>Сеть можно сканировать при помощи утилиты сканирования. Эта функция позволяет выполнять сканирование сети по каналам связи, соединенным разветвителями, с целью поиска всех устройств, подключенных в сеть. Результаты поиска отражаются в таблице, где указаны адреса и описания устройств сети 1-wire. Чтобы быстро добавить найденное устройство в качестве объекта, необходимо нажать связанную с ним пиктограмму <img src="images/icon_comp_add.png"/>. Новый объект будет создан с атрибутами устройства по умолчанию. </p>

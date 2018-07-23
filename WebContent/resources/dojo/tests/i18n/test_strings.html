@@ -1,0 +1,78 @@
+<html>
+	<head>
+		<title>Tests for test_strings.html</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true,
+				baseScriptUri: "../../" //for xdomain testing.
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript" src="../_bootstrap.js"></script>
+		<script type="text/javascript">
+			dojo.requireLocalization("tests.i18n","salutations","en-au");
+			dojo.requireLocalization("tests.i18n","salutations","en-us-new_york-brooklyn");
+			dojo.requireLocalization("tests.i18n","salutations","en-us-hawaii");
+			dojo.requireLocalization("tests.i18n","salutations","en-us-texas");
+			dojo.requireLocalization("tests.i18n","salutations","de");
+			dojo.requireLocalization("tests.i18n","salutations","ar");
+			dojo.requireLocalization("tests.i18n","salutations","cs");
+			dojo.requireLocalization("tests.i18n","salutations","de");
+			dojo.requireLocalization("tests.i18n","salutations","el");
+			dojo.requireLocalization("tests.i18n","salutations","es");
+			dojo.requireLocalization("tests.i18n","salutations","fa");
+			dojo.requireLocalization("tests.i18n","salutations","fr");
+			dojo.requireLocalization("tests.i18n","salutations","he");
+			dojo.requireLocalization("tests.i18n","salutations","hi");
+			dojo.requireLocalization("tests.i18n","salutations","it");
+			dojo.requireLocalization("tests.i18n","salutations","ja");
+			dojo.requireLocalization("tests.i18n","salutations","ko");
+			dojo.requireLocalization("tests.i18n","salutations","pl");
+			dojo.requireLocalization("tests.i18n","salutations","pt");
+			dojo.requireLocalization("tests.i18n","salutations","ru");
+			dojo.requireLocalization("tests.i18n","salutations","sw");
+			dojo.requireLocalization("tests.i18n","salutations","th");
+			dojo.requireLocalization("tests.i18n","salutations","tr");
+			dojo.requireLocalization("tests.i18n","salutations","yi");
+			dojo.requireLocalization("tests.i18n","salutations","zh-cn");
+			dojo.requireLocalization("tests.i18n","salutations","zh-tw");
+
+			dojo.require('dojo.i18n.common');
+			dojo.require('dojo.string.extras');
+		</script>
+
+		<script type="text/javascript">
+		//TODO: Need to rework this to use jum
+			function init() {
+				var salutations_default = dojo.i18n.getLocalization("tests.i18n", "salutations");
+				dojo.debug("In the local language: "+salutations_default.hello);
+
+				var salutations_en = dojo.i18n.getLocalization("tests.i18n", "salutations", "en");
+
+				for (i in tests.i18n.nls.salutations) {
+					var loc = i.replace('_', '-');
+					var salutations = dojo.i18n.getLocalization("tests.i18n", "salutations", loc);
+					var language_as_english = salutations_en[loc];
+					var language_as_native = salutations[loc];
+					var hello_dojo = dojo.string.substituteParams(salutations.hello_dojo, salutations);
+					if (!dojo.i18n.isLTR(loc)) {
+						var RLE = "\u202b";
+						var PDF = "\u202c";
+						hello_dojo = RLE + hello_dojo + PDF;					
+					}
+					dojo.debug(hello_dojo
+						+"\tLocale "+loc+"="
+						+ language_as_english
+						+" ("+language_as_native+") ");
+				}
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<p class="msg"></p>
+	</body>
+</html>
+

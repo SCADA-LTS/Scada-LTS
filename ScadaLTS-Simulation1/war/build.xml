@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <project basedir="." name="ScadaLTS-Simulations1">
+    
+    <target name="war" description="Bundles the application as a WAR file" >
+        <mkdir dir="WebContent/WEB-INF/classes"/>
+        <copy includeemptydirs="false" todir="WebContent">
+                    <fileset dir="/">
+                        <include name="*.html"/>
+                        <include name="*.js"/>
+                        <include name="*.css"/>
+                    	<include name="*.png"/>
+                    	<include name="./resources/*"/>
+                    </fileset>
+        </copy>
+        
+        <war destfile="ScadaLTS-Simulations1.war"
+             basedir="WebContent"
+           needxmlfile="false">
+        </war>
+    </target>    
+   
+</project>

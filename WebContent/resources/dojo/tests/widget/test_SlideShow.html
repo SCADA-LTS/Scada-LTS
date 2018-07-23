@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Slideshow Widget Demo</title>
+		
+		<script type="text/javascript"> var djConfig = {isDebug: true}; </script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.widget.*");
+			dojo.require("dojo.widget.SlideShow");
+		</script>
+		
+		<style>
+		html, body {
+			height: 100%; width: 100%;
+			overflow: hidden;
+		}
+		</style>
+	</head>
+	<body>
+		<img dojoType="SlideShow" 
+			imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg;images/5.jpg;images/6.jpg" 
+			transitionInterval="700"
+			delay="7000" 
+			src="images/1.jpg"
+			imgWidth="400" imgHeight="300" />
+	</body>
+</html>

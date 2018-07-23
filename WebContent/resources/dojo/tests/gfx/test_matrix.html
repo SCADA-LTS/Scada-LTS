@@ -1,0 +1,73 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" >
+<head>
+<title>Dojo 2D Matrix</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript">djConfig = {isDebug: true};</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+
+dojo.require("dojo.gfx.*");
+dojo.require("dojo.event.*");
+
+mdebug = function(matrix){
+	var m = dojo.gfx.matrix.normalize(matrix);
+	dojo.debug("xx: " + m.xx + ", xy: " + m.xy + " | dx:" + m.dx);
+	dojo.debug("yx: " + m.yx + ", yy: " + m.yy + " | dy:" + m.dy);
+};
+
+pdebug = function(point){
+	dojo.debug("x: " + point.x + ", y: " + point.y);
+};
+
+dojo.addOnLoad(function(){
+	var a = new dojo.gfx.matrix.Matrix2D();
+	mdebug(a);
+	a = dojo.gfx.matrix.rotateg(30);
+	mdebug(a);
+	a = dojo.gfx.matrix.rotateg(45);
+	mdebug(a);
+	a = dojo.gfx.matrix.rotateg(90);
+	mdebug(a);
+	a = [new dojo.gfx.matrix.Matrix2D(), new dojo.gfx.matrix.Matrix2D(), new dojo.gfx.matrix.Matrix2D()];
+	mdebug(a);
+	a = [dojo.gfx.matrix.rotateg(30), dojo.gfx.matrix.rotateg(-30)];
+	mdebug(a);
+	a = [dojo.gfx.matrix.rotateg(30), dojo.gfx.matrix.invert(dojo.gfx.matrix.rotateg(30))];
+	mdebug(a);
+	a = dojo.gfx.matrix.rotategAt(90, 10, 10);
+	mdebug(a);
+	var b = dojo.gfx.matrix.multiplyPoint(a, 10, 10);
+	pdebug(b);
+	b = dojo.gfx.matrix.multiplyPoint(a, 10, 5);
+	pdebug(b);
+	b = dojo.gfx.matrix.multiplyPoint(a, 10, 15);
+	pdebug(b);
+	a = [dojo.gfx.matrix.scale(2,1), dojo.gfx.matrix.invert(dojo.gfx.matrix.rotateg(45))];
+	mdebug(a);
+	a = [dojo.gfx.matrix.scale(1,2), dojo.gfx.matrix.invert(dojo.gfx.matrix.rotateg(45))];
+	mdebug(a);
+	a = [dojo.gfx.matrix.invert(dojo.gfx.matrix.rotateg(45)), dojo.gfx.matrix.scale(2,1)];
+	mdebug(a);
+	a = [dojo.gfx.matrix.invert(dojo.gfx.matrix.rotateg(45)), dojo.gfx.matrix.scale(1,2)];
+	mdebug(a);
+	a = [dojo.gfx.matrix.rotategAt(45, 100, 100), dojo.gfx.matrix.scale(2)];
+	mdebug(a);
+	a = [dojo.gfx.matrix.scale(2), dojo.gfx.matrix.rotategAt(45, 100, 100)];
+	mdebug(a);
+	a = [dojo.gfx.matrix.rotateg(45), dojo.gfx.matrix.scale(2)];
+	mdebug(a);
+	a = [dojo.gfx.matrix.scale(2), dojo.gfx.matrix.rotateg(45)];
+	mdebug(a);
+	a = [dojo.gfx.matrix.rotategAt(45, 300, 200), dojo.gfx.matrix.translate(100, 100), dojo.gfx.matrix.scale(2,1)];
+	mdebug(a);
+	a = [dojo.gfx.matrix.translate(100, 100), dojo.gfx.matrix.rotateg(45), dojo.gfx.matrix.scale(2,1)];
+	mdebug(a);
+	a = [dojo.gfx.matrix.rotategAt(45, 250, 250), { dx: 150, dy: 150 }];
+	mdebug(a);
+});
+
+</script>
+</head>
+<body>
+</body>
+</html>

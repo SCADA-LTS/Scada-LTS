@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+
+<title></title>
+<!-- The xtree script file -->
+<script src="xtree/xtree.js"></script>
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+	dojo.require("dojo.profile");
+	dojo.hostenv.writeIncludes();
+</script>
+
+<!-- Modify this file to change the way the tree looks -->
+<link type="text/css" rel="stylesheet" href="xtree/xtree.css">
+
+<style>
+        body { background: white; color: black; }
+        input { width: 120px; }
+</style>
+</head>
+<body>
+
+<script>
+
+var tree = new WebFXTree('Root');
+var depth = 0
+function addChildren(title,nodeOrTree) {
+	//dojo.debug("addChildren to "+nodeOrTree+" depth" + depth)
+	depth++;
+			
+	for (var i=1; i<=5; i++) {
+		var t = title+'.'+i
+		dojo.profile.start("createWidget");
+		var node = new WebFXTreeItem(t)
+		dojo.profile.end("createWidget");
+		
+		if (depth<3) {
+			addChildren(t, node);
+		}
+		
+		nodeOrTree.add(node);				
+	}
+	//dojo.debug("out "+nodeOrTree);
+	depth--;
+}	
+
+
+dojo.profile.start("createNodes");		
+addChildren('node', tree)
+document.write(tree)
+dojo.profile.end("createNodes");
+
+dojo.profile.dump(true);
+
+</script>
+</body>
+</html>

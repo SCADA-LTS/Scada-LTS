@@ -1,0 +1,6 @@
+name=Liga/Desliga (sensor)
+type=imageSet
+#width=45
+#height=15
+text.x=14
+text.y=2

@@ -1,0 +1,359 @@
+@font-face
+{
+	font-family: MyriadPro;
+	fontWeight: normal;
+	fontStyle: normal;
+	src: url("../fonts/myriad/MyriadPro-Regular.otf");
+	unicodeRange: U+0041-U+005A, 
+	  U+0061-U+007A,
+	  U+00C0-U+00F6,  
+	  U+0030-U+0039, 
+	  U+0020-U+002F, 
+	  U+003A-U+0040, 
+	  U+005B-U+0060, 
+	  U+00F9-U+00FA,
+	  U+007B-U+007E,
+	  U+00AB-U+00AB,
+	  U+00BB-U+00BB,
+	  U+00A9-U+00A9;
+}
+@font-face
+{
+	font-family: MyriadPro;
+	fontWeight: bold;
+	fontStyle: normal;
+	src: url("../fonts/myriad/MyriadPro-Bold.otf");
+	unicodeRange: U+0041-U+005A, 
+	  U+0061-U+007A,
+	  U+00C0-U+00F6,  
+	  U+0030-U+0039, 
+	  U+0020-U+002F, 
+	  U+003A-U+0040, 
+	  U+005B-U+0060, 
+	  U+00F9-U+00FA,
+	  U+007B-U+007E,
+	  U+00AB-U+00AB,
+	  U+00BB-U+00BB,
+	  U+00A9-U+00A9;
+}
+@font-face
+{
+	font-family: MyriadPro;
+	fontWeight: normal;
+	fontStyle: italic;
+	src: url("../fonts/myriad/MyriadPro-It.otf");
+	unicodeRange: U+0041-U+005A, 
+	  U+0061-U+007A,
+	  U+00C0-U+00F6,  
+	  U+0030-U+0039, 
+	  U+0020-U+002F, 
+	  U+003A-U+0040, 
+	  U+005B-U+0060, 
+	  U+00F9-U+00FA,
+	  U+007B-U+007E,
+	  U+00AB-U+00AB,
+	  U+00BB-U+00BB,
+	  U+00A9-U+00A9;
+}
+@font-face
+{
+	font-family: MyriadPro;
+	fontWeight: bold;
+	fontStyle: italic;
+	src: url("../fonts/myriad/MyriadPro-BoldIt.otf");
+	unicodeRange: U+0041-U+005A, 
+	  U+0061-U+007A,
+	  U+00C0-U+00F6,  
+	  U+0030-U+0039, 
+	  U+0020-U+002F, 
+	  U+003A-U+0040, 
+	  U+005B-U+0060, 
+	  U+00F9-U+00FA,
+	  U+007B-U+007E,
+	  U+00AB-U+00AB,
+	  U+00BB-U+00BB,
+	  U+00A9-U+00A9;
+}
+
+
+Application
+{
+	color: #333333;
+	fontFamily: "MyriadPro";
+	backgroundColor: #E9E9E9;
+}
+
+.header
+{
+	paddingLeft: 10;
+	paddingTop: 15;
+	verticalGap: 7;
+}
+
+
+/* BUTTONS */
+Button.headerButton
+{
+	color: #FFFFFF;
+	textRollOverColor: #FFFFFF;
+	textSelectedColor: #FFFFFF;
+	paddingLeft: 10;
+	paddingRight: 10;
+	paddingTop: 5;
+	fontSize: 13;
+	fontWeight: normal;
+	fontFamily: "MyriadPro";
+	fontSharpness: -50;
+	upSkin: Embed(source="../images/button_header_up.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+	downSkin: Embed(source="../images/button_header_down.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+	overSkin: Embed(source="../images/button_header_over.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+	disabledSkin: Embed(source="../images/button_header_disabled.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+}
+Button.toolbarButton
+{
+	color: #FFFFFF;
+	textRollOverColor: #FFFFFF;
+	textSelectedColor: #FFFFFF;
+	paddingLeft: 2;
+	paddingRight: 2;
+	fontSize: 10;
+	fontWeight: normal;
+	fontFamily: "MyriadPro";
+	fontSharpness: -50;
+	upSkin: Embed(source="../images/button_toolbar_up.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+	downSkin: Embed(source="../images/button_toolbar_down.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+	overSkin: Embed(source="../images/button_toolbar_over.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+	disabledSkin: Embed(source="../images/button_toolbar_disabled.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+}
+Button.iconButton
+{
+	color: #FFFFFF;
+	textRollOverColor: #FFFFFF;
+	textSelectedColor: #FFFFFF;
+	paddingLeft: 10;
+	paddingRight: 10;
+	paddingTop: 5;
+	fontSize: 13;
+	fontWeight: normal;
+	fontFamily: "MyriadPro";
+	fontSharpness: -50;
+	upSkin: Embed(source="../images/button_icon_up.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+	downSkin: Embed(source="../images/button_icon_down.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+	overSkin: Embed(source="../images/button_icon_over.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+	disabledSkin: Embed(source="../images/button_icon_disabled.png", scaleGridTop="4", scaleGridBottom="18", scaleGridLeft="4", scaleGridRight="94");
+}
+LinkButton
+{
+	color: #d8d8d8;
+	textRollOverColor: #FFFFFF; 
+	fontSize: 12;
+	fontWeight: normal;
+	paddingTop: 0;
+	paddingBottom: 0;
+	skin: ClassReference(null);
+}
+ComboBox.toolBarComboBox
+{
+	color: #FFFFFF;
+	textRollOverColor: #FFFFFF;
+	textSelectedColor: #FFFFFF;
+	fontSize: 12;
+	fontWeight: normal;
+	fontFamily: "MyriadPro";
+	fontSharpness: -50;
+	selectionColor: #5f5f5f;
+	rollOverColor: #333333;
+	alternatingItemColors: #000000, #000000;
+	dropdownStyleName: "toolBarComboBoxDropDowns";
+	upSkin: Embed(source="../images/combo_toolbar_up.png", scaleGridTop="4", scaleGridBottom="20", scaleGridLeft="4", scaleGridRight="97");
+	downSkin: Embed(source="../images/combo_toolbar_down.png", scaleGridTop="4", scaleGridBottom="20", scaleGridLeft="4", scaleGridRight="97");
+	overSkin: Embed(source="../images/combo_toolbar_over.png", scaleGridTop="4", scaleGridBottom="20", scaleGridLeft="4", scaleGridRight="97");
+	disabledSkin: Embed(source="../images/combo_toolbar_disabled.png", scaleGridTop="4", scaleGridBottom="20", scaleGridLeft="4", scaleGridRight="97");
+}
+.toolBarComboBoxDropDowns {
+   borderColor: #2e2e2e;
+}
+
+
+/* CONTROL PANEL */
+VBox.configPanel
+{
+	cornerRadius: 7;
+	backgroundColor: #3c3c3c;
+	borderStyle: solid;
+	borderColor: #3c3c3c;
+	verticalGap: 0;
+}
+HBox.controlPanelHeaderBackground
+{
+	paddingLeft: 5;
+	paddingRight: 7;
+	paddingTop: 4;
+	verticalAlign: top;
+	backgroundImage: Embed(source="../images/builder_controlPanel_header_bg.png");
+}
+VBox.controlPanelMiddle 
+{
+	paddingBottom: 8;
+	paddingTop: 8;
+	paddingLeft: 10;
+	paddingRight: 10;
+}
+Tree.widgetsList
+{
+	color: #aeaeae;
+	fontSize: 12;
+	borderThickness: 1;
+	borderStyle: solid;
+	borderColor: #333333;
+	backgroundColor: #545454;
+	rollOverColor: #5f5f5f;
+	selectionColor: #484848;
+	themeColor: #333333;
+}
+Label.controlPanelLabel 
+{
+	color: #aeaeae;
+	fontSize: 12;
+	fontWeight: bold;
+}
+
+
+/* TEXTS */
+Text.controlPanelHeaderTitle
+{
+	color: #E1E1E1;
+	fontSize: 16;
+}
+Text.controlPanelHeaderTitle2
+{
+	color: #e7e7e7;
+	fontSize: 14;
+	fontWeight: bold;
+}
+
+
+/* STATUS BAR */
+HBox.statusBar
+{
+	backgroundColor: #F20016;
+}
+.statusLabel
+{
+	color: #800000;
+}
+
+
+Canvas.dashboardContainer
+{
+	backgroundColor: #E9E9E9;
+}
+
+Canvas.dragObjectFeedback
+{
+	borderStyle: solid;
+	borderColor: #DBDBDB;
+	backgroundColor: #F2F2F2;
+}
+
+Button {
+   highlightAlphas: 0, 0;
+   fillAlphas: 1, 1, 1, 1;
+   fillColors: #e9e9e9, #e9e9e9, #ffffff, #eeeeee;
+   color: #006633;
+   textRollOverColor: #669900;
+   textSelectedColor: #003300;
+   borderColor: #009900;
+   themeColor: #009900;
+}
+Button.toogleBarButton {
+   highlightAlphas: 0, 0;
+   fillAlphas: 1, 1, 1, 1;
+   fillColors: #e9e9e9, #e9e9e9, #ffffff, #eeeeee;
+   color: #006633;
+   textRollOverColor: #669900;
+   textSelectedColor: #003300;
+   borderColor: #009900;
+   themeColor: #009900;
+}
+Button.toogleBarButtonSelected {
+   highlightAlphas: 0, 0;
+   fillAlphas: 1, 1, 1, 1;
+   fillColors: #a9da80, #97c770, #ffffff, #eeeeee;
+   color: #006633;
+   textRollOverColor: #669900;
+   textSelectedColor: #003300;
+   borderColor: #7bad51;
+   themeColor: #009900;
+}
+Button.editWidgetButton {
+	upSkin: Embed(source="../images/icons/pencil.png");
+	overSkin: Embed(source="../images/icons/pencil.png");
+	downSkin: Embed(source="../images/icons/pencil.png");
+}
+Button.deleteWidgetButton {
+	upSkin: Embed(source="../images/icons/delete.png");
+	overSkin: Embed(source="../images/icons/delete.png");
+	downSkin: Embed(source="../images/icons/delete.png");
+}
+Text.titleWindowTitle
+{
+	color: #495153;
+	fontSize: 14;
+	fontWeight: bold;
+}
+TitleWindow
+{
+	backgroundColor: #3c3c3c;
+	borderColor: #3c3c3c;
+	borderAlpha: 1.0;
+	backgroundAlpha: 1.0;
+	cornerRadius: 10;
+	color: #e1e1e1;
+	fontSize: 14;
+	borderThicknessLeft: 0;
+	borderThicknessRight: 0;
+	borderThicknessBottom: 10;
+	titleStyleName: alertTitle;
+	statusStyleName: alertStatus;
+	controlBarStyleName: alertControlBar;
+	buttonStyleName: alertButton;
+	roundedBottomCorners: true;
+	headerHeight: 45;
+	verticalAlign: top;
+	paddingTop: 0;
+	modalTransparencyColor: #000000;
+	modalTransparency: 0.5;
+	modalTransparencyDuration: 300;
+}
+.alertTitle
+{
+	color: #FFFFFF;
+	fontSize: 24;
+	fontWeight: normal;
+	textAlign: left;
+}
+.alertButton
+{
+	paddingLeft: 24;
+	paddingRight: 24;
+	fontWeight: normal;
+}
+.alertControlBar
+{
+}
+.alertStatus
+{
+}
+TextInput
+{
+	color: #3c3c3c;
+}
+CheckBox
+{
+	color: #e1e1e1;
+}
+DataGrid
+{
+	color: #3c3c3c;
+}

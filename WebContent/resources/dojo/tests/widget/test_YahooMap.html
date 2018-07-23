@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Y! Maps Widget Demo</title>
+	<script type="text/javascript">
+		var djConfig={
+			isDebug:true
+		};
+	</script>
+	<!--
+	<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=dojotoolkit"></script>
+	-->
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.YahooMap");
+	</script>
+	<style type="text/css">
+		#mapTest{
+			width:100%;
+			height:480px;
+			border:1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<h1>Dojo Yahoo Map Widget</h1>
+	<p>This is an example of the Dojo Yahoo Map widget. Note that you have to include the Yahoo Map script tag (as written in this file) at the top of your document.  You may use the Dojo Toolkit application ID, as Yahoo's API is IP-address dependant and not domain-dependant.</p>
+	<div dojoType="yahoomap" id="mapTest" datasrc="mapData"></div>
+	<table id="mapData">
+		<thead><tr><th>Lat</th><th>Long</th><th>Icon</th><th>Description</th></tr></thead>
+		<tbody>
+			<tr><td>37.4419</td><td>-122.14193</td><td></td><td><div>This is the first place on the map.</div></td></tr>
+			<tr><td>37.42189</td><td>-122.084692</td><td></td><td><div>This is the second place on the map.</div></td></tr>
+			<tr><td>37.3318</td><td>-122.029009</td><td></td><td><div>This is the third place on the map.</div></td></tr>
+			<tr><td>37.832912</td><td>-122.284055</td><td></td><td><div>This is the fourth place on the map.</div></td></tr>
+			<tr><td>37.688643</td><td>-122.0703753</td><td></td><td><div>This is the fifth place on the map.</div></td></tr>
+			<tr><td>37.413775</td><td>-122.060369</td><td></td><td><div>This is the sixth place on the map.</div></td></tr>
+		</tbody>
+	</table>
+	<p>HTML after</p>
+</body>
+</html>

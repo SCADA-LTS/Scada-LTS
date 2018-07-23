@@ -1,0 +1,42 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" >
+<head>
+<title>Testing polyline and line transforms</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript">djConfig = { isDebug: true };</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">dojo.require("dojo.debug.console");</script>
+<!--<script type="text/javascript" src="../../src/gfx/shape.js"></script>-->
+<!--<script type="text/javascript" src="../../src/gfx/path.js"></script>-->
+<!--<script type="text/javascript" src="../../src/gfx/vml.js"></script>-->
+<!--<script type="text/javascript" src="../../src/gfx/svg.js"></script>-->
+<script type="text/javascript">
+dojo.require("dojo.gfx.*");
+
+makeShapes = function(){
+	var surface = dojo.gfx.createSurface("test", 500, 500);
+	var line = surface.createLine({x1: 250, y1: 50, x2: 250, y2: 250})
+		.setStroke({color: "blue"})
+		;
+	var poly = surface.createPolyline([{x: 250, y: 250}, {x: 300, y: 300}, {x: 250, y: 350}, {x: 200, y: 300}, {x: 250, y: 250}])
+		.setStroke({color: "blue"})
+		;
+	var rotate = dojo.gfx.matrix.rotategAt(-5, 250, 250);
+		
+	window.setInterval(function() {
+			line.applyTransform(rotate);
+			poly.applyTransform(rotate);
+		},
+		100
+	);
+};
+
+dojo.addOnLoad(makeShapes);
+
+</script>
+</head>
+<body>
+<p>Testing polyline and line transforms</p>
+<div id="test" style="width: 500px; height: 500px;"></div>
+<p>That's all Folks!</p>
+</body>
+</html>

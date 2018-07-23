@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<title>Dojo: Test of dojo.html</title>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../dojo.js"></script>
+<script type="text/javascript">
+
+dojo.require("dojo.html.common");
+dojo.require("dojo.html.style");
+dojo.require("dojo.event");
+function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : id; }
+
+</script>
+<style type="text/css"> h2, h3 { font-size: 1em; margin-top: 2.5em; } h3 { color: black; font-weight: normal; font-style: italic; } </style>
+</head>
+<body>
+
+<!---------------------------------------------------------------------------->
+<h2><code>getScroll</code></h2>
+
+<p>Scroll top: <span id="scrollTop">0</span><br>Scroll left: <span id="scrollLeft">0</span></p>
+<p><input type="button" id="updateScroll" value="Update Scroll Values"></p>
+
+<script type="text/javascript">
+dojo.event.connect($("updateScroll"), "onclick", function (e) {
+	dojo.debug("updateScroll "+e);
+	var scroll = dojo.html.getScroll();
+	$("scrollTop").firstChild.nodeValue = scroll.top;
+	$("scrollLeft").firstChild.nodeValue = scroll.left;
+});
+</script>
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getScroll().offset</code></h2>
+
+<p>Scroll offset x: <span id="scrollOffsetX">0</span><br>Scroll offset y: <span id="scrollOffsetY">0</span></p>
+<p><input type="button" id="updateScrollOffset" value="Update Scroll Values"></p>
+
+<script type="text/javascript">
+dojo.event.connect($("updateScrollOffset"), "onclick", function (e) {
+	var offset = dojo.html.getScroll().offset;
+	$("scrollOffsetX").firstChild.nodeValue = offset.x;
+	$("scrollOffsetY").firstChild.nodeValue = offset.y;
+});
+</script>
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getViewport</code></h2>
+
+<p>
+	Viewport width: <span id="viewportWidth">0</span><br>
+	Viewport height: <span id="viewportHeight">0</span><br>
+	Viewport size: <span id="viewportSize">0</span>
+</p>
+<p><input type="button" id="updateViewport" value="Update Size Values"></p>
+
+<script type="text/javascript">
+dojo.event.connect($("updateViewport"), "onclick", function (e) {
+	var viewport = dojo.html.getViewport();
+	$("viewportWidth").firstChild.nodeValue = viewport.width;
+	$("viewportHeight").firstChild.nodeValue = viewport.height;
+	$("viewportSize").firstChild.nodeValue = viewport;
+});
+</script>
+
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getParentByType</code></h2>
+
+<p>This <b id="bold">is <u>some <i id="italic">crazy <span style="color:red;" id="redChild">text</span></i></u></b></p>
+
+<p>The id on the <code>&lt;b&gt;</code> element is "<b><script type="text/javascript">
+document.write(dojo.html.getParentByType($("redChild"), "b").id);
+</script></b>" (should be "<b>bold</b>")<br>The id on the <code>&lt;i&gt;</code> element is "<b><script type="text/javascript">
+document.write(dojo.html.getParentByType($("redChild"), "i").id);
+</script></b>" (should be "<b>italic</b>")</p>
+
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getElementsByClass</code></h2>
+
+<div style="font-weight: bold; color: red;">
+<script type="text/javascript">
+function makeGreen (nodes) { for (var i = 0; node = nodes[i]; i++) { node.style.color = "green"; } }
+</script>
+
+<h3>default (ContainsAll)</h3>
+<p class="foo1 bar1">this should be green</p>
+<p class="foo1">this should be red</p>
+<p class="bar1">this should be red</p>
+
+<script type="text/javascript">
+makeGreen(dojo.html.getElementsByClass("foo1 bar1")); // defaults to ContainsAll
+</script>
+
+<h3>ContainsAll</h3>
+<p class="foo2 bar2">this should be green</p>
+<p class="foo2">this should be green</p>
+<p class="bar2">this should be red</p>
+
+<script type="text/javascript">
+makeGreen(dojo.html.getElementsByClass("foo2", null, null, dojo.html.classMatchType.ContainsAll));
+</script>
+
+<h3>ContainsOnly</h3>
+<p class="foo3 bar3">this should be green</p>
+<p class="foo3 bar3 baz3">this should be red</p>
+<p class="foo3">this should be red</p>
+
+<script type="text/javascript">
+makeGreen(dojo.html.getElementsByClass("foo3 bar3", null, null, dojo.html.classMatchType.IsOnly));
+</script>
+
+<h3>ContainsOnly</h3>
+<p class="foo4">this should be green</p>
+<p class="foo4 bar4">this should be red</p>
+<p class="bar4">this should be red</p>
+
+<script type="text/javascript">
+makeGreen(dojo.html.getElementsByClass("foo4", null, null, dojo.html.classMatchType.IsOnly));
+</script>
+
+<h3>ContainsAny</h3>
+<p class="foo5">this should be green</p>
+<p class="foo0 bar5">this should be green</p>
+<p class="bar0 foo0">this should be red</p>
+
+<script type="text/javascript">
+makeGreen(dojo.html.getElementsByClass("foo5 bar5", null, null, dojo.html.classMatchType.ContainsAny));
+</script>
+</body></html>

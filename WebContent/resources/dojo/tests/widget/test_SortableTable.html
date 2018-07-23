@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Sortable Table Widget Demo</title>
+	<script type="text/javascript">
+		var djConfig = {isDebug: true};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.html.*");
+		dojo.require("dojo.widget.*");
+		dojo.require("dojo.widget.SortableTable");
+
+		function showSelected(){
+			var w=dojo.widget.byId("testTable");
+			if(w){
+				var s=w.getValue();
+				if(s.length>0) alert(s);
+				else alert("No rows are selected.");
+			}
+		}
+	</script>
+	<style type="text/css">
+		/***
+			The following is just an example of how to use the table.
+			You can override any class names to be used if you wish.
+		***/
+
+		table {
+			font-family:Lucida Grande, Verdana;
+			font-size:0.8em;
+			width:100%;
+			border:1px solid #ccc;
+			cursor:default;
+		}
+
+		* html div.tableContainer {	/* IE only hack */
+			width:95%;
+			border:1px solid #ccc;
+			height: 285px;
+			overflow-x:hidden;
+			overflow-y: auto;
+		}
+
+		table td,
+		table th{
+			border-right:1px solid #999;
+			padding:2px;
+			font-weight:normal;
+		}
+		table thead td, table thead th {
+			background:#94BEFF;
+		}
+		
+		* html div.tableContainer table thead tr td,
+		* html div.tableContainer table thead tr th{
+			/* IE Only hacks */
+			position:relative;
+			top:expression(dojo.html.getFirstAncestorByTag(this,'table').parentNode.scrollTop-2);
+		}
+		
+		html>body tbody.scrollContent {
+			height: 262px;
+			overflow-x:hidden;
+			overflow-y: auto;
+		}
+
+		tbody.scrollContent td, tbody.scrollContent tr td {
+			background: #FFF;
+			padding: 2px;
+		}
+
+		tbody.scrollContent tr.alternateRow td {
+			background: #e3edfa;
+			padding: 2px;
+		}
+
+		tbody.scrollContent tr.selected td {
+			background: yellow;
+			padding: 2px;
+		}
+		tbody.scrollContent tr:hover td {
+			background: #a6c2e7;
+			padding: 2px;
+		}
+		tbody.scrollContent tr.selected:hover td {
+			background: #ff3;
+			padding: 2px;
+		}
+
+	</style>
+</head>
+<body>
+	<p>
+		The SortableTable widget takes a table of data, parses it, and re-renders it to allow you to sort the columns based on attributes set in the thead.
+	</p>
+	<div><button onclick="showSelected();">Show the selected object</button></div>
+	<div class="tableContainer">
+	<table dojoType="SortableTable" widgetId="testTable" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" cellpadding="0" cellspacing="0" border="0">
+	<thead>
+		<tr>
+			<th field="Id" dataType="Number">Id</th>
+			<th field="Name" dataType="String">Name</th>
+			<th field="DateAdded" dataType="Date" sort="asc">Date Added</th>
+			<th field="DateModified" dataType="Date" format="%b %d, %Y">Date Modified</th>
+			<th dataType="html">Label</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr><td>1</td><td>Adam</td><td>3/1/2004</td><td>11/1/2003</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr><td>2</td><td>Betty</td><td>6/15/2005</td><td>1/7/2006</td><td>adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+		<tr><td>3</td><td>Carla</td><td>4/23/2002</td><td>3/1/2004</td><td>tincidunt ut laoreet dolore magna aliquam erat volutpat.</td></tr>
+		<tr><td>4</td><td>David</td><td>11/1/2003</td><td>6/15/2005</td><td>Ut wisi enim ad minim veniam, quis</td></tr>
+		<tr><td>5</td><td>Esther</td><td>1/7/2006</td><td>4/23/2002</td><td>nostrud exerci tation ullamcorper</td></tr>
+		<tr><td>6</td><td>Fred</td><td>3/1/2004</td><td>11/1/2003</td><td>suscipit lobortis nisl ut aliquip ex ea commodo consequat.</td></tr>
+		<tr><td>7</td><td>Greg</td><td>6/15/2005</td><td>1/7/2006</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr><td>8</td><td>Helga</td><td>4/23/2002</td><td>3/1/2004</td><td>adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+		<tr><td>9</td><td>Ianna</td><td>11/1/2003</td><td>6/15/2005</td><td>tincidunt ut laoreet dolore magna aliquam erat volutpat.</td></tr>
+		<tr><td>10</td><td>Jane</td><td>1/7/2006</td><td>4/23/2002</td><td>Ut wisi enim ad minim veniam, quis</td></tr>
+		<tr><td>11</td><td>Kathy</td><td>3/1/2004</td><td>11/1/2003</td><td>nostrud exerci tation ullamcorper</td></tr>
+		<tr><td>12</td><td>Leonard</td><td>6/15/2005</td><td>1/7/2006</td><td>suscipit lobortis nisl ut aliquip ex ea commodo consequat.</td></tr>
+		<tr><td>13</td><td>Mike</td><td>4/23/2002</td><td>3/1/2004</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr><td>14</td><td>Nancy</td><td>11/1/2003</td><td>11/1/2003</td><td>adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+		<tr><td>15</td><td>Oswald</td><td>1/7/2006</td><td>1/7/2006</td><td>tincidunt ut laoreet dolore magna aliquam erat volutpat.</td></tr>
+		<tr><td>16</td><td>Peter</td><td>3/1/2004</td><td>3/1/2004</td><td>Ut wisi enim ad minim veniam, quis</td></tr>
+		<tr><td>17</td><td>Qunicy</td><td>6/15/2005</td><td>6/15/2005</td><td>nostrud exerci tation ullamcorper</td></tr>
+		<tr><td>18</td><td>Ronald</td><td>4/23/2002</td><td>4/23/2002</td><td>suscipit lobortis nisl ut aliquip ex ea commodo consequat.</td></tr>
+		<tr><td>19</td><td>Stacy</td><td>11/1/2003</td><td>11/1/2003</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr><td>20</td><td>Tim</td><td>1/7/2006</td><td>1/7/2006</td><td>adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+		<tr><td>21</td><td>Uylsses</td><td>3/1/2004</td><td>3/1/2004</td><td>tincidunt ut laoreet dolore magna aliquam erat volutpat.</td></tr>
+		<tr><td>22</td><td>Victor</td><td>6/15/2005</td><td>6/15/2005</td><td>Ut wisi enim ad minim veniam, quis</td></tr>
+		<tr><td>23</td><td>Walter</td><td>4/23/2002</td><td>4/23/2002</td><td>nostrud exerci tation ullamcorper</td></tr>
+		<tr><td>24</td><td>Xerxes</td><td>11/1/2003</td><td>11/1/2003</td><td>suscipit lobortis nisl ut aliquip ex ea commodo consequat.</td></tr>
+		<tr><td>25</td><td>Yanni</td><td>1/7/2006</td><td>1/7/2006</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr><td>26</td><td>Zelda</td><td>3/1/2004</td><td>3/1/2004</td><td>adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+	</tbody>
+	</table>
+	</div>
+</body>
+</html>

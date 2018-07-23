@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>SplitContainer Widget Demo</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.LayoutContainer");
+	dojo.require("dojo.widget.SplitContainer");
+	dojo.require("dojo.widget.ContentPane");
+</script>
+</head>
+<body style="padding: 50px;">
+
+<p>HTML before</p>
+<p>HTML before</p>
+<p>HTML before</p>
+
+<div dojoType="SplitContainer"
+	orientation="vertical"
+	sizerWidth="5"
+	activeSizing="true"
+	style="border: 2px solid black; width: 700px; height: 400px;">
+
+	<div dojoType="ContentPane" sizeMin="60" sizeShare="1">
+		woo
+	</div>
+
+	<div dojoType="SplitContainer"
+		orientation="horizontal"
+		sizerWidth="5"
+		activeSizing="1"
+		layoutAlign="client"
+		style="border: 2px solid black;"
+		sizeMin="100" sizeShare="3">
+
+		<div dojoType="LayoutContainer" sizeMin="100" sizeShare="80">
+
+			<div dojoType="ContentPane" layoutAlign="right" style="background-color: #b39b86; padding: 8px;">
+				right<br />bar
+			</div>
+
+			<div dojoType="ContentPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;">
+				main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
+			</div>
+
+		</div>
+
+		<div dojoType="ContentPane" sizeMin="60" sizeShare="20">
+			yay
+		</div>
+	</div>
+
+</div>
+
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+
+</body>
+</html>

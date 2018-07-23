@@ -1,0 +1,40 @@
+/***
+	This is just an example of how to use the table.
+	You can override any class names.
+***/
+table {
+	border:1px solid #ccc;
+	border-collapse:collapse;
+}
+table td, table th {
+	padding:8px;
+	font-weight:normal;
+}
+table thead td, table thead th {
+	background-image:url(../widget/images/ft-head.gif);
+	background-repeat:no-repeat;
+	background-position:top right;
+}
+table thead td.selectedUp, table thead th.selectedUp {
+	background-image:url(../widget/images/ft-headup.gif);
+}
+table thead td.selectedDown, table thead th.selectedDown {
+	background-image:url(../widget/images/ft-headdown.gif);
+}
+	
+table tbody tr td {
+	border-bottom:1px solid #ddd;
+}
+table tbody tr.alt td {
+	background: #e3edfa;
+}
+table tbody tr.selected td {
+	background: yellow;
+}
+table tbody tr:hover td {
+	background: #a6c2e7;
+}
+table tbody tr.selected:hover td {
+	background:#ff9;
+}
+

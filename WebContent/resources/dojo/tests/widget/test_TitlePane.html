@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>TitlePane Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: false};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.TitlePane");
+	dojo.hostenv.writeIncludes();
+</script>
+<style>
+
+div.container {
+	background-color: white;
+	border: 2px solid black;
+	width: 200px;
+	height: 600px;
+	padding: 0px;
+	margin: 0px;
+	overflow: hidden;
+}
+
+.label , .content {
+	width: 300px;
+}
+
+.label {
+	background: gray;
+	height: 20px;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+}
+
+.content {
+	background: #eeeeee;
+	border-top: 1px solid #eeeeee;	/* w/out this, an <h1> on the top line causes a gap between the .content and .label */
+}
+
+.innerLabel {
+	background: blue;
+	height: 20px;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	width: 250px;
+}
+
+.innerContent {
+	background: #aaaaaa;
+	border-top: 1px solid #aaaaaa;	/* w/out this, an <h1> on the top line causes a gap between the .content and .label */
+	width: 250px;
+}
+
+
+</style>
+</head>
+<body>
+	<div dojoType="TitlePane" label="Title Pane #1" labelNodeClass="label" containerNodeClass="content">
+		Lorem Ipsum
+
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
+More Ipsum...
+
+Sed sollicitudin suscipit risus. Nam ullamcorper. Sed nisl lectus, pellentesque nec, malesuada eget, ornare a, libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+
+	</div>
+
+	<br>
+
+	<div dojoType="TitlePane" label="Title Pane #2" labelNodeClass="label" containerNodeClass="content">
+		<form>
+			Age: <input><br>
+			Discount card <input type=checkbox><br>
+			<button>Submit</button><br>
+		</form>
+	</div>
+
+	<br>
+
+	<div dojoType="TitlePane" label="Pane from href" labelNodeClass="label" containerNodeClass="content" href="doc0.html"></div>
+
+	<br>
+	<div dojoType="TitlePane" label="Initially closed pane" labelNodeClass="label" containerNodeClass="content" open="false">
+		<form>
+			Age: <input><br>
+			Discount card <input type=checkbox><br>
+			<button>Submit</button><br>
+		</form>
+	</div>
+
+	<br>
+	
+	<div dojoType="TitlePane" label="Outer pane" labelNodeClass="label" containerNodeClass="content">
+		<p>This is a title pane, containing another title pane ...
+		<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
+More Ipsum...
+
+		<div dojoType="TitlePane" label="Inner pane" labelNodeClass="innerLabel" containerNodeClass="innerContent">
+			<p>And this is the inner title pane...
+			<p>Sed sollicitudin suscipit risus. Nam ullamcorper. Sed nisl lectus, pellentesque nec, malesuada eget, ornare a, libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+		</div>
+		
+		<p>And this is the closing line for the outer title pane.
+	</div>
+
+	<table style="border: solid blue 2px; margin-top: 1em;">
+		<tr>
+			<td>
+				Here's some text below the title panes (to make sure that closing a title pane releases the space that the content was taking up)
+			</td>
+		</tr>
+	</table>
+
+</body>
+</html>

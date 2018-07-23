@@ -1,0 +1,87 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.io.*");
+
+			function dojoForm(form) {
+				var kw = {
+					mimetype: "text/plain",
+					formNode: form,
+					load: function(t, txt, e) {
+						dojo.debug(txt);
+					},
+					error: function(t, e) {
+						dojo.debug("Error!... " + e.message);
+					}
+				};
+				dojo.io.bind(kw);
+				return false;
+			}
+		</script>
+	</head>
+	<body>
+		<form method="get" action="test_postResponse.txt" onsubmit="try{dojoForm(this)}catch(E){};return false;">
+			<fieldset><legend>Your info</legend>
+				Name: <br>
+				<input type="text" name="name" value="Joe User"><br>
+				Nickname: <br>
+				<input type="text" name="nick" value="JoeUser"><br>
+				<input type="text" value="InputWithNoName"><br>
+				<select name="getone">
+					<option value="1">One</option>
+					<option value="2">Two</option>
+					<option value="3">Three</option>
+					<option value="4">Four</option>
+				</select>
+				<br>
+				<select name="grabber" multiple="multiple">
+					<option value="1">One</option>
+					<option value="2">Two</option>
+					<option value="3">Three</option>
+					<option value="4">Four</option>
+				</select>
+				<br>
+				<input type="image" name="imgbaby" src="button.png" />
+				<input type="submit" value="Submit (GET)">
+			</fieldset>
+		</form>
+
+		<form method="post" action="test_postResponse.txt" onsubmit="try{dojoForm(this)}catch(E){};return false;">
+			<fieldset><legend>Your info</legend>
+				Name: <br>
+				<input type="text" name="name" value="Joe User"><br>
+				Nickname: <br>
+				<input type="text" name="nick" value="JoeUser"><br>
+				<input type="text" value="InputWithNoName"><br>
+				<select name="getone">
+					<option value="1">One</option>
+					<option value="2">Two</option>
+					<option value="3">Three</option>
+					<option value="4">Four</option>
+				</select>
+				<br>
+				<select name="grabber" multiple="multiple">
+					<option value="1">One</option>
+					<option value="2">Two</option>
+					<option value="3">Three</option>
+					<option value="4">Four</option>
+				</select>
+				<br>
+				<input type="image" name="imgbaby" src="button.png" />
+				<input type="submit" value="Submit (POST)">
+			</fieldset>
+		</form>
+	</body>
+</html>
+

@@ -1,0 +1,35 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" >
+<head>
+<title>Testing pattern</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript">djConfig = { isDebug: true };</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">dojo.require("dojo.debug.console");</script>
+<!--<script type="text/javascript" src="../../src/gfx/vml.js"></script>-->
+<!--<script type="text/javascript" src="../../src/gfx/svg.js"></script>-->
+<script type="text/javascript">
+dojo.require("dojo.gfx.*");
+
+makeShapes = function(){
+    var pattern = {
+        type: "pattern",
+        x: 0, y: 0, width: 96, height: 96,
+        src: "http://dojotoolkit.org/img/viewcvs.png"
+    };
+	var ellipse = {cx: 400, cy: 200, rx: 350, ry: 150};
+	var surface = dojo.gfx.createSurface("test", 800, 600);
+	surface.createEllipse(ellipse)
+        .setStroke({color: "blue", width: 1 })
+        .setFill(pattern);
+};
+
+dojo.addOnLoad(makeShapes);
+
+</script>
+</head>
+<body>
+<p>Testing pattern: </p>
+<div id="test"></div>
+<p>That's all Folks!</p>
+</body>
+</html>

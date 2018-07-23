@@ -1,0 +1,6 @@
+name=Reservatorio 3D enchendo/vazio
+type=imageSet
+#width=143
+#height=262
+text.x=5
+text.y=25

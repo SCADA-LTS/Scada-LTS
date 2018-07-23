@@ -1,0 +1,66 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  Both serial and IP networks use the same point attributes to locate values. The <b>Slave id</b> is the id with which 
+  the Modbus node was configured; it is a number between 1 and 240.
+</p>
+<p>
+  The <b>Register range</b> determines in which of the four ranges the value is to be found. Consult the documentation 
+  for your equipment to determine what should be used.
+</p>
+<ul>
+  <li>
+    Coil status represents the hexadecimal range 0x00000 to 0x0FFFF. Each register contains a single, writable bit. 
+    Values in this range are always Binary.
+  </li>
+  <li>
+    Input status represents the hexadecimal range 0x10000 to 0x1FFFF. Each register contains a single, read-only bit. 
+    Values in this range are always Binary.
+  </li>
+  <li>
+    Holding register represents the hexadecimal range 0x40000 to 0x4FFFF. Each register is a 2 bytes (or a "word"), 
+    and is writable. Values in this range can be Binary or Numeric depending upon further settings.
+  </li>
+  <li>
+    Input register represents the hexadecimal range 0x30000 to 0x3FFFF. Each register is a 2 bytes (or a "word"), and 
+    is read-only. Values in this range can be Binary or Numeric depending upon further settings.
+  </li>
+</ul>
+
+<p>
+  Coil status and Input status values are always Binary. However, Modbus vendors are often very creative in the ways 
+  that Holding and Input registers are used. The <b>Modbus data type</b> field reflects the many ways in which data can 
+  be encoded. Consult the documentation for your Modbus equipment to determine the proper setting.
+</p>
+<p>
+  Specific values are located with the <b>Offset</b> setting. This is a 0-indexed value, meaning that counting starts 
+  from 0. Some Modbus vendors provide documentation that is 1-indexed, where counting starts from one. As such, it is 
+  sometimes necessary to subtract one from documented index to determine the 0-indexed offset. When registers include 
+  their range, e.g. written as 0x30001, 1-indexing is typically implied. The <b>Bit</b> field is used when binary 
+  values are encoded into individual register bits.
+</p>
+<p>
+  The <b>Settable</b> field can be used to make a point that would normally be settable (according to its range) not
+  settable.
+</p>
+<p>
+  The <b>Multiplier</b> and <b>Additive</b> fields can be used when trivial value conversions are required. Numeric 
+  values read from the network are calculated as follows: (raw value) * multiplier + additive. The reverse is applied 
+  when a numeric value is written to the network.
+</p>

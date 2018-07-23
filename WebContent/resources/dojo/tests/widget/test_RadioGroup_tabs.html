@@ -1,0 +1,145 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>RadioGroup Tab Navigation Demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+
+<script type="text/javascript">
+    var djConfig = { isDebug: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+    dojo.require("dojo.widget.RadioGroup");
+</script>
+
+<style type="text/css">
+body {
+    font-family : sans-serif;
+}
+
+ol, ul, li {
+    margin: 0px;
+    padding: 0px;
+}
+
+p {
+    margin-bottom: 2em;
+    border-left:3px solid #1F6BBA;
+    padding-left: 1em;
+}
+
+.radioGroup {
+    border-left: 1px solid #efefef;
+    border-bottom: 1px solid #aaa;
+    white-space: nowrap;
+}
+
+.radioGroup li {
+    display: inline;
+    list-style-type: none;
+    padding: 3px 10px 1px;
+}
+
+.radioGroup li:hover {
+    background: #efefef;
+    cursor:hand;
+    cursor:pointer;
+}
+
+.radioGroup li.selected {
+    background: #efefef;
+    border: 1px solid #000;
+}
+
+.showContent{ display:block; }
+.hideContent{ display:none; }
+</style>
+</head>
+
+<script type="text/javascript">
+function initTest() {
+    dojo.event.connect(dojo.widget.byId("group1"), "onSelect", function(e) { });
+    dojo.event.connect(dojo.widget.byId("group1"), "onItemSelect", function(e) { });
+}
+dojo.addOnLoad(initTest);
+
+function show(radioWidgetId, liNode) {
+    var widg = dojo.widget.byId(radioWidgetId);
+    if (!widg) return;
+    
+    var domNode = dojo.byId(liNode.getAttribute("contentId"));
+    var contentId=null;
+    var node=null;
+    for (var i=0; i < widg.items.length; i++) {
+        contentId = dojo.html.getAttribute(widg.items[i], "contentId");
+        node = dojo.byId(contentId);
+        if (!node) continue;
+        dojo.html.replaceClass(node, "hideContent", "showContent");
+    }
+    dojo.html.replaceClass(domNode, "showContent", "hideContent");
+}
+
+function remove(){
+	var li=dojo.byId("liNew");
+	var w=dojo.widget.byId('group1');
+	w.remove(li);
+}
+
+function add(radioWidgetId, contentId){
+	var widg = dojo.widget.byId(radioWidgetId);
+	if (!widg) return;
+
+	var li=dojo.byId("liNew");
+	if(li) return;
+	
+	var li=document.createElement("li");
+	li.id="liNew";
+	li.setAttribute("contentId", contentId);
+	li.setAttribute("onItemSelect", "show('group1', dojo.byId('liNew'));");
+	li.appendChild(document.createTextNode("New Tab by Add"));
+	widg.add(li);
+}
+</script>
+
+<body>
+    
+    <p>This test does various things with <code>ul</code> and <code>ol</code> lists to
+    test that the RadioGroup widget works correctly. The individual li's contained by these
+    lists should be exclusively selectable within their groups.
+        <ol id="group1" dojoType="RadioGroup" selected="li2">
+            <li id="li1" contentId="value1Content" 
+                         onItemSelect="show('group1', dojo.byId('li1'))">Value 1</li>
+            <li id="li2" contentId="value2Content" 
+                         onItemSelect="show('group1', dojo.byId('li2'))">Value 2</li>
+            <li id="li3" contentId="value3Content" 
+                         onItemSelect="show('group1', dojo.byId('li3'))">Value 3</li>
+        </ol>
+    </p>
+    
+    <div id="value1Content" class="hideContent">
+        This is the content for value 1. It has a lot going for it. Mostly content. Maybe someday
+        it will have children and a job too. You never know..
+    </div>
+    
+    <div id="value2Content" class="hideContent">
+		<p>This is the content for value 2. It seems rather hopeless.</p>
+		<p/>I wouldn't expect much out of this one. Sort of a middle content node complex.</p>
+    </div>
+    
+    <div id="value3Content" class="hideContent">
+        This is the content for value 3. You don't even want to know..
+    </div>
+
+	<div id="testContent" class="hideContent">
+		This is a test, we will attach a node on the fly here and hook it to this content.
+	</div>
+	
+	<a href="#" onclick="remove();return false;">Remove new item</a> | <a href="#" onclick="add('group1','testContent');return false;">Add new item</a>
+    <div id="debugContainer" ></div>
+
+
+	
+</body>
+</html>

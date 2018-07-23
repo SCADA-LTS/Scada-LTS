@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Filtering Table Widget Demo</title>
+	<script type="text/javascript">
+		var djConfig = {
+			isDebug: true
+			,debugAtAllCosts: true
+		};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.FilteringTable");
+		dojo.hostenv.writeIncludes();
+
+		//	a simple filtering function
+		function dateFilter(dt){
+			return (dt > new Date('6/1/2004') && dt < new Date('2/1/2006'));
+		}
+		function nameFilter(name){
+			return (name.charAt(0) >= 'M' && name.charAt(0) <= 'Z');
+		}
+		function accountFilter(num){
+			return (num < 4);
+		}
+
+		function applyDate(key){
+			dojo.widget.byId(key).setFilter("DateAdded", dateFilter);
+		}
+		function applyName(key){
+			dojo.widget.byId(key).setFilter("Name", nameFilter);
+		}
+		function applyAccounts(key){
+			dojo.widget.byId(key).setFilter("getAccounts().length", accountFilter);
+		}
+		function clearFilters(key){
+			dojo.widget.byId(key).clearFilters();
+		}
+		function clearData(key){
+			dojo.widget.byId(key).store.clearData();
+		}
+
+		var getAccounts=function(){
+			return this.accounts;
+		};
+		var getDescription=function(){
+			return this.description;
+		};
+		var getHtml=function(){
+			return this.html;
+		};
+		var theJSONData=[];
+		var names=["William Smith", "Davy Jones", "Lucinda Williams", "Robert Appleton", "Wilma Flintstone", "Charo", "Fluufy the Lamb" ];
+		var dates=["1/1/2004","12/15/2001","4/15/2000","1/1/2006","6/21/2005","9/18/2004"];
+		var outer=10;
+		var inner=10;
+		for(var i=0; i<outer; i++){
+			for(var j=0; j<inner; j++){
+				var o ={
+					Id:(i*outer)+j,
+					Name:names[i%names.length],
+					DateAdded:dates[j%dates.length],
+					accounts:[],
+					description:{ 
+						html:'<p>testing the description...</p>',
+						getHtml:getHtml
+					},
+					getAccounts:getAccounts,
+					getDescription:getDescription
+				};
+				var l=(i*outer+j)%9;
+				for(var k=0; k<l; k++){
+					o.accounts.push((i*outer+j)%11);
+				}
+				theJSONData.push(o);
+			}
+		}
+
+		function populateTable(){
+			var w=dojo.widget.byId("fromJSONData");
+			if(w.store.get().length > 0){
+				alert("you already pressed this button :)");
+				return;
+			}
+			w.store.setData(theJSONData);
+		}
+		
+		function updateCell(inp){
+			var w=dojo.widget.byId("parsedFromHtml");
+			var v=inp.value;
+			w.store.update(
+				w.getDataByRow(w.domNode.tBodies[0].rows[0]),
+				"Label",
+				v
+			);
+		}
+
+		var addCount = 0;
+		function addRow(){
+			var w=dojo.widget.byId("parsedFromHtml");
+			w.store.addData({
+				Name:names[addCount%names.length],
+				DateAdded:dates[addCount+2%dates.length],
+				DateModified:dates[addCount%dates.length],
+				Label:"<i>This is an <strong>added</strong> row</i>."
+			});
+			addCount++;	
+		}
+	</script>
+	<style type="text/css">
+		/***
+			The following is just an example of how to use the table.
+			You can override any class names to be used if you wish.
+		***/
+		table {
+			font-family:Lucida Grande, Verdana;
+			font-size:0.8em;
+			width:100%;
+			border:1px solid #ccc;
+			border-collapse:collapse;
+			cursor:default;
+		}
+		table td,
+		table th{
+			padding:2px;
+			font-weight:normal;
+		}
+		table thead td, table thead th {
+			background-image:url(images/ft-head.gif);
+			background-repeat:no-repeat;
+			background-position:top right;
+		}
+		table thead td.selectedUp, table thead th.selectedUp {
+			background-image:url(images/ft-headup.gif);
+		}
+		table thead td.selectedDown, table thead th.selectedDown {
+			background-image:url(images/ft-headdown.gif);
+		}
+			
+		table tbody tr td{
+			border-bottom:1px solid #ddd;
+		}
+		table tbody tr.alt td{
+			background: #e3edfa;
+		}
+		table tbody tr.selected td{
+			background: yellow;
+		}
+		table tbody tr:hover td{
+			background: #a6c2e7;
+		}
+		table tbody tr.selected:hover td{
+			background:#ff9;
+		}
+
+		#inputArea{
+			margin:1em 0;
+			padding:1em;
+			background-color:#eef;
+		}
+		#updateTestInput{
+			border:1px solid #ccc;
+			width:100%;
+			height:80px;
+			font-family:serif;
+			font-size:0.9em;
+			overflow:auto;
+		}
+	</style>
+</head>
+<body>
+	<h1>Filtering Table</h1>
+	<p>
+	The FilteringTable widget is the second Dojo widget that can take a plain table of data
+	and add functionality to it.  Like SortableTable, you can sort columns by clicking on the
+	column heading.  Unlike SortableTable, FilteringTable can also:
+	</p>
+	<ul>
+		<li>Multiple column sorting (no limit, default is 1)</li>
+		<li>Sort in place: no destruction of markup takes place to sort</li>
+		<li>Allow you to set up "filterers", which will show/hide records based on criteria</li>
+	</ul>
+	<p>
+	However, the biggest changes are under the hood: a brand new data store model is underlying the
+	FilteringTable (a preview of what is coming with dojo.data).  This data store (accessible programmatically
+	as [widget].store) allows you to pass it an array of JSON objects that may or may not be complex in nature.
+	</p>
+	<p>
+	What does that mean?  It means that you can pass the store nested objects <strong>and show them within the
+	FilteringTable as a field</strong>.  Take a look at the source of this page to see a demonstration.
+	</p>
+	<h2>Filtering Table, parsed from existing HTML data</h2>
+	<div id="inputArea">
+		<div style=font-size:0.85em;">
+			<h3>Data manipulation</h3>
+			<input type="button" value="Add a new row" onclick="addRow();" />
+			<div>Change the value of Adam's Label (html allowed):</div>
+			<textarea id="updateTestInput" value="" onchange="updateCell(this);"></textarea>
+		</div>
+		<div style=font-size:0.85em;">
+			<h3>Filtering</h3>
+			<input type="button" value="Show only DateModified between 6/1/2004 and 2/1/2006" onclick="applyDate('parsedFromHtml');" /> 
+			<input type="button" value="Show only names between M and Z" onclick="applyName('parsedFromHtml');" /> 
+			<input type="button" value="Clear Filters" onclick="clearFilters('parsedFromHtml');" />
+		</div> 
+	</div>
+	<table dojoType="filteringTable" id="parsedFromHtml" 
+		multiple="true" alternateRows="true" maxSortable="2"
+		cellpadding="0" cellspacing="0" border="0">
+	<thead>
+		<tr>
+			<th field="Name" dataType="String" valign="top">Name</th>
+			<th field="DateAdded" dataType="Date" align="center" valign="top">Date Added</th>
+			<th field="DateModified" dataType="Date" sort="asc" format="%b %d, %Y" align="center" valign="top">Date Modified</th>
+			<th dataType="html">Label</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr value="1"><td>Adam</td><td>3/1/2004</td><td>11/1/2003</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr value="2"><td>Betty</td><td>6/15/2005</td><td>1/7/2006</td><td>Adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+		<tr value="3"><td>Carla</td><td>4/23/2002</td><td>3/1/2004</td><td>tincidunt ut laoreet dolore magna aliquam erat volutpat.</td></tr>
+		<tr value="4" selected="true"><td>David</td><td>11/1/2003</td><td>6/15/2005</td><td>Ut wisi enim ad minim veniam, quis</td></tr>
+		<tr value="5"><td>Esther</td><td>1/7/2006</td><td>4/23/2002</td><td>nostrud exerci tation ullamcorper</td></tr>
+		<tr value="6"><td>Fred</td><td>3/1/2004</td><td>11/1/2003</td><td>suscipit lobortis nisl ut aliquip ex ea commodo consequat.</td></tr>
+		<tr value="7"><td>Greg</td><td>6/15/2005</td><td>1/7/2006</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr value="8"><td>Helga</td><td>4/23/2002</td><td>3/1/2004</td><td>adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+		<tr value="9"><td>Ianna</td><td>11/1/2003</td><td>6/15/2005</td><td>tincidunt ut laoreet dolore magna aliquam erat volutpat.</td></tr>
+		<tr value="10"><td>Jane</td><td>1/7/2006</td><td>4/23/2002</td><td>Ut wisi enim ad minim veniam, quis</td></tr>
+		<tr value="11"><td>Kathy</td><td>3/1/2004</td><td>11/1/2003</td><td>nostrud exerci tation ullamcorper</td></tr>
+		<tr value="12" selected="true"><td>Leonard</td><td>6/15/2005</td><td>1/7/2006</td><td>suscipit lobortis nisl ut aliquip ex ea commodo consequat.</td></tr>
+		<tr value="13"><td>Mike</td><td>4/23/2002</td><td>3/1/2004</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr value="14"><td>Nancy</td><td>11/1/2003</td><td>11/1/2003</td><td>Adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+		<tr value="15"><td>Oswald</td><td>1/7/2006</td><td>1/7/2006</td><td>tincidunt ut laoreet dolore magna aliquam erat volutpat.</td></tr>
+		<tr value="16"><td>Peter</td><td>3/1/2004</td><td>3/1/2004</td><td>Ut wisi enim ad minim veniam, quis</td></tr>
+		<tr value="17"><td>Qunicy</td><td>6/15/2005</td><td>6/15/2005</td><td>nostrud exerci tation ullamcorper</td></tr>
+		<tr value="18"><td>Ronald</td><td>4/23/2002</td><td>4/23/2002</td><td>suscipit lobortis nisl ut aliquip ex ea commodo consequat.</td></tr>
+		<tr value="19"><td>Stacy</td><td>11/1/2003</td><td>11/1/2003</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr value="20"><td>Tim</td><td>1/7/2006</td><td>1/7/2006</td><td>adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+		<tr value="21"><td>Uylsses</td><td>3/1/2004</td><td>3/1/2004</td><td>tincidunt ut laoreet dolore magna aliquam erat volutpat.</td></tr>
+		<tr value="22"><td>Victor</td><td>6/15/2005</td><td>6/15/2005</td><td>Ut wisi enim ad minim veniam, quis</td></tr>
+		<tr value="23"><td>Walter</td><td>4/23/2002</td><td>4/23/2002</td><td>nostrud exerci tation ullamcorper</td></tr>
+		<tr value="24"><td>Xerxes</td><td>11/1/2003</td><td>11/1/2003</td><td>suscipit lobortis nisl ut aliquip ex ea commodo consequat.</td></tr>
+		<tr value="25"><td>Yanni</td><td>1/7/2006</td><td>1/7/2006</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
+		<tr value="26"><td>Zelda</td><td>3/1/2004</td><td>3/1/2004</td><td>adipiscing elit, sed diam nonummy nibh euismod</td></tr>
+	</tbody>
+	</table>
+	<h2>Filtering Table, populated from JSON data</h2>
+	<input type="button" value="Click to populate using JSON data" onclick="populateTable();" />
+	<div style=font-size:0.65em;">
+		<input type="button" value="Show only DateAdded between 6/1/2004 and 2/1/2006" onclick="applyDate('fromJSONData');" /> 
+		<input type="button" value="Show only names between M and Z" onclick="applyName('fromJSONData');" /> 
+		<input type="button" value="Show only # accounts less than 4" onclick="applyAccounts('fromJSONData');" /> 
+		<input type="button" value="Clear Filters" onclick="clearFilters('fromJSONData');" />
+		<input type="button" value="Clear Data" onclick="clearData('fromJSONData');" />
+	</div> 
+	<table dojoType="filteringTable" id="fromJSONData" 
+		multiple="true" alternateRows="true"
+		cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+	<thead>
+		<tr>
+			<th field="Name" dataType="String">Name</th>
+			<th field="DateAdded" dataType="Date" align="center">Date Added</th>
+			<th field="getAccounts().length" dataType="Number" sort="desc" align="center"># of accounts</th>
+			<th field="getDescription().getHtml()" dataType="html">Description</th>
+		</tr>
+	</thead>
+	</table>
+</body>
+</html>

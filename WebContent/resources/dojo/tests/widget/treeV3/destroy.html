@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.hostenv.writeIncludes();
+
+
+	dojo.addOnLoad(function() {
+
+		// Hook before dojo.event.publish to print all events
+		var reporter = {
+			beforePublish: function(topic, message) {
+				dojo.debug("Going to publish:"+topic);
+			},
+
+			beforeSubscribe: function(topic, message) {
+				dojo.debug("Going to subscribe:"+topic);
+			}
+		}
+
+		dojo.event.kwConnect({
+			type: "before",
+			srcObj: dojo.event.topic,
+			srcFunc: "publish",
+			targetObj: reporter,
+			targetFunc: "beforePublish"
+		});
+
+
+		dojo.event.kwConnect({
+			type: "before",
+			srcObj: dojo.event.topic.TopicImpl,
+			srcFunc: "subscribe",
+			targetObj: reporter,
+			targetFunc: "report"
+		});
+
+	});
+
+
+	function kill(id) {
+		dojo.debug("RUN DESTROY...");
+		var widget = dojo.widget.byId(id);
+        if (widget.isTreeNode) {
+            var controller = dojo.widget.byId('controller');
+            if (!controller) {
+                dojo.debug("No controller to destroy");
+                return;
+            }
+            controller.destroyChild(widget);
+        } else {
+            widget.destroy();
+        }
+		dojo.debug("...DONE DESTROY");
+	}
+
+	function print() {
+		dojo.debug('---');
+		dojo.debug("Dumping all widgets:");
+		dojo.lang.forEach(dojo.widget.manager.getAllWidgets(),
+			function(t) { dojo.debug(t) }
+		);
+		dojo.debug('---');
+	}
+
+	function test(id) {
+		print();
+		kill(id);
+		print();
+	}
+
+
+</script>
+
+</head>
+<body>
+
+<h2>Destroy Tree</h2>
+
+<div dojoType="TreeBasicControllerV3" id="controller"></div>
+
+
+<div dojoType="TreeV3" id="tree" listeners="controller">
+	<div dojoType="TreeNodeV3" title="Item 1" id="node1">
+		<div dojoType="TreeNodeV3" title="Item 1.1" ></div>
+	</div>
+	<div dojoType="TreeNodeV3" title="Item 2" ></div>
+</div>
+
+<p>
+<input type=button onClick="test('node1'); this.parentNode.removeChild(this)" value="Destroy firstNode"/>
+<br/>
+<input type=button onClick="test('tree'); this.parentNode.removeChild(this)" value="Destroy tree"/>
+<br/>
+<input type=button onClick="test('controller'); this.parentNode.removeChild(this)" value="Destroy controller"/>
+<br/>
+
+</body>
+</html>

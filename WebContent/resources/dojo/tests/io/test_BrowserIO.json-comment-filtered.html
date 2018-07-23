@@ -1,0 +1,66 @@
+<html>
+<head>
+	<title>dojo.io.bind mimetype text/json test</title>
+	<script type="text/javascript">
+		djConfig = { isDebug: true };
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.io.*");
+	</script>
+	<script type="text/javascript">
+
+		function doit() {
+			var loaded = function(type, json, http, args){
+				dojo.debug("----------------------------------------------");
+				dojo.debug("url:", args.url);
+				dojo.debug("http:", http);
+				dojo.debug("response:", http.responseText);
+				dojo.debug("state:", http.readyState);
+				dojo.debug("mimetype:", args.mimetype);
+				dojo.debug("--------");
+				dojo.debug("json:", json);
+				dojo.debug("- Key/value pairs -------");
+				for(var key in json){
+					dojo.debug(key, ":", json[key]);
+				}
+				dojo.debug("");
+				dojo.debug("");
+				dojo.debug("");
+			}
+
+			var kw = {
+				url: "data-json.js",
+				mimetype: "application/json",
+				load: loaded
+			};
+			dojo.io.bind(kw);
+
+
+			setTimeout(function(){
+				var kw2 = {
+					url: "data-json.js",
+					mimetype: "application/json-comment-filtered",
+					load: loaded
+				};
+				dojo.io.bind(kw2);
+			}, 500);
+
+			setTimeout(function(){
+				var kw3 = {
+					url: "data-json-comment-filtered.js",
+					mimetype: "application/json-comment-filtered",
+					load: loaded
+				};
+				dojo.io.bind(kw3);
+			}, 500);
+		}
+
+		dojo.addOnLoad(doit);
+	</script>
+</head>
+<body>
+	Stuff shoulda happened.
+</body>
+</html>
+

@@ -1,0 +1,62 @@
+<!--
+  ScadaBR 1.0  - Pacote de Modificações Community Edition
+  http://www.scadabr.org.br
+  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
+  
+  This file is free software: you may copy, redistribute and/or modify it  
+  under the terms of the GNU General Public License as published by the  
+  Free Software Foundation, either version 3 of the License, or (at your  
+  option) any later version.  
+  
+  This file is distributed in the hope that it will be useful, but  
+  WITHOUT ANY WARRANTY; without even the implied warranty of  
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+  General Public License for more details.  
+  
+  You should have received a copy of the GNU General Public License  
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+   
+  This file incorporates work covered by the following copyright and  
+  permission notice:
+
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+
+<h1>Descripci&oacute;n General</h1>
+<p>
+  Este tipo de fuente de datos es utilizada para recolectar informaci&oacute;n gen&eacute;rica de Pachube. La data es organizada en Pachube en feeds, los cuales son una
+  colecci&oacute;n de flujos de datos. Desde los mapas de flujo de datos a un punto en Mango, la definici&oacute;n de un punto Pachube requiere especificar que lo 
+  alimenta (feed) y su ID de flujo. Entonces, esta es una fuente de datos de sondeo. Desde los flujos de datos de los mapas hasta el punto en Mango. Desde 
+  los mapas de un flujo de datos a un punto de Mango, un punto Pachube logra especificando su alimentaci&oacute;n y el ID de flujo. Entonces se trata de una 
+  fuente de datos de sondeo.
+</p>
+
+<h1>Configuraci&oacute;n</h1>
+<p>
+  Cada fuente de datos requiere un <b>Nombre</b>, el cual puede ser su descripci&oacute;n. El <b>per&iacute;odo de actualizaci&oacute;n</b> establece cuan a menudo 
+  se realizan para realizar la solicitud de HTTP del Pachube. Note que  - dependiendo de su cuenta en Pachube - API pueden aplicar algunas  
+  restricciones.    
+  Vea <a href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a>
+  Para detalles.
+</p>
+<p>
+  Se requiere de la <b>clave API</b> para acceder a datos privados. Puede definirla en el &aacute;rea de "mis configuraciones" cuando inicie sesi&oacute;n en su cuenta 
+  Pachube. Los campos <b>tiempo de espera</b> y <b>reintentos</b> determina cuento tiempo se esperar&aacute; por el regreso de la data del servidor, y cuantas
+  veces se intentar&aacute; realizar la conexi&oacute;n cuando el evento falla. Cuando todos los reintentos se agotan, se generar&aacute; un evento de excepci&oacute;n por la falla de
+  la fuente de datos.
+</p>

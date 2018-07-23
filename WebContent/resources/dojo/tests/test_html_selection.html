@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>dojo.html selection test</title>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../dojo.js"></script>
+<script type="text/javascript">
+
+dojo.require("dojo.html.selection");
+dojo.require("dojo.event");
+function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : id; }
+
+</script>
+<style type="text/css"> h2, h3 { font-size: 1em; margin-top: 2.5em; } h3 { color: black; font-weight: normal; font-style: italic; } </style>
+
+<h2><code>clearSelection</code></h2>
+
+<p id="clearSelection" onmouseover="">The current selection should be cleared when you mouse over this paragraph.</p>
+
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	dojo.event.connect($("clearSelection"), "onmouseover", function (e) {
+		dojo.html.clearSelection();
+	});
+});
+</script>
+
+<h2><code>disableSelection</code> and <code>enableSelection</code></h2>
+
+<p id="enabletest">This is some test text!</p>
+<p><input type="checkbox" id="toggleSelection"><label for="toggleSelection"> toggling this checkbox should enable and disable the ability to select the above paragraph.</label></p>
+
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	dojo.event.connect($("toggleSelection"), "onchange", function (e) {
+		if ($("toggleSelection").checked) {
+			dojo.html.disableSelection($("enabletest"));
+		} else {
+			dojo.html.enableSelection($("enabletest"));
+		}
+	});
+});
+</script>
+
+<h2><code>selectElement</code></h2>
+
+<p id="selectElementtest">This is some test text!</p>
+<p><input type="button" id="selectElement" value="select the above paragraph"></p>
+
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	dojo.event.connect($("selectElement"), "onclick", function (e) {
+		dojo.html.selection.selectElementChildren($("selectElementtest"));
+	});
+});
+</script>
+
+<h2><code>dojo.html.selection.isCollapsed and other information</code></h2>
+
+<p>selection collapsed: <b id="selectionCollapsed"></b></p>
+<p>selection parentElement: <b id="selectionParentElement"></b></p>
+
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+setInterval(function () {
+	$("selectionCollapsed").innerHTML = dojo.html.selection.isCollapsed();
+	var p = dojo.html.selection.getParentElement();
+	if(p)
+		$("selectionParentElement").innerHTML = p.toString();
+	else
+		$("selectionParentElement").innerHTML = "null";
+}, 100);
+});
+</script>
+
+<h2><code>delete selection</code></h2>
+<textarea>delete this</textarea>
+<p><span id="deleteSelection" onmouseover="">The current selection should be deleted when you mouse over this text span.</span></p>
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	dojo.event.connect($("deleteSelection"), "onmouseover", function (e) {
+		dojo.html.selection.remove();
+	});
+});
+</script>

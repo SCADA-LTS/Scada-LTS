@@ -1,0 +1,70 @@
+<html>
+	<head>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.event.topic");
+
+			function Subscriber(displayNode){
+                this.displayNode = displayNode;
+
+                this.update = function(message) {
+                    this.displayNode.innerHTML = message;
+                };
+			}
+
+			var clickCount = 0;
+	
+			function sendMessage1() {
+					topic1.sendMessage("Message " + ++clickCount);
+			}
+	
+			function sendMessage2() {
+					topic2.sendMessage("Message " + ++clickCount);
+			}
+
+			var subCounter = 0;
+			function addSubscriber(subName){
+				var container = dojo.byId("container");
+				var newSub = document.createElement("div");
+				newSub.id = "subscriber"+subCounter++;
+				newSub.innerHTML = newSub.id;
+				container.appendChild(newSub);
+				return new Subscriber(newSub);
+			}
+
+			dojo.addOnLoad(function(){
+				topic1 = dojo.event.topic.getTopic("testTopic1");
+				topic2 = dojo.event.topic.getTopic("testTopic2");
+
+				var sub1 = addSubscriber();
+				var sub2 = addSubscriber();
+
+                topic1.subscribe(sub1, "update");
+                topic1.subscribe(sub2, "update");
+
+                topic2.subscribe(sub2, "update");
+			});
+		</script>
+	</head>
+	<body>
+		Check your javascript log; the scripts were all loaded in the head.
+
+		<div id="container">
+		</div>
+
+		<button id="publisher" onclick="sendMessage1();">
+			Publish a message on Topic1
+		</button>
+
+		<button id="publisher2" onclick="sendMessage2();">
+			Publish a message on Topic2 
+		</button>
+
+		<button onclick="dojo.event.topic.subscribe('testTopic1', addSubscriber(), 'update');"> Add a new subscriber </button>
+
+    </body>
+</html>

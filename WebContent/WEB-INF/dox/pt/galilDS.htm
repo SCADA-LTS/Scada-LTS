@@ -1,0 +1,93 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>The Galil data source is used to exchange data with Galil-->
+<!--DMC-21x2 equipment accessible over an I/P network. Equipment can be in a-->
+<!--local network or intranet, or could also be anywhere in the internet.-->
+<!--This is a polling data source.</p>-->
+
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>O data source Galil &eacute; usado para trocar dados com
+equipamentos Galil DMC-21x2 acessados sobre uma rede I/P. Os
+equipamentos podem estar dispon&iacute;veis em uma rede local ou
+intranet, bem como podem estar em qualquer lugar na internet. Este
+&eacute; um data source do tipo polling.</p>
+
+<!--<h1>Configuration</h1>-->
+<!--<p>Every data source requires a <b>Name</b>, which can be any-->
+<!--description. The <b>Host</b> and <b>Port</b> settings determine how to-->
+<!--find the equipment on the network. The host can be a domain name or an-->
+<!--IP address. The <b>Timeout</b> and <b>Retries</b> fields determine the-->
+<!--system behaviour in the case of a polling failure. The data source waits-->
+<!--the given number of timeout milliseconds for a response from the-->
+<!--equipment. If it is not received the request will be retried the given-->
+<!--number of times. The <b>Update period</b> determines how often the-->
+<!--equipment is polled for data.</p>-->
+<!--<p>Once a connection is established with the equipment, it is kept-->
+<!--alive for as long as the equipment allows. Closed connections cause an-->
+<!--automatic reopen attempt.</p>-->
+
+<h1>Configura&ccedil;&atilde;o</h1>
+<p>Todo data source deve ter um <b>Nome</b>, que pode ser qualquer
+descri&ccedil;&atilde;o. As configura&ccedil;&otilde;es de <b>Host</b> e
+<b>Porta</b> determinam como localizar o equipamento na rede. O host
+pode ser um nome de dom&iacute;nio ou um endere&ccedil;o IP. Os campos <b>Timeout</b>
+e <b>Retries</b> determinam o comportamento do sistema no caso de uma
+falha no polling. O data source aguarda por um timeout com o
+n&uacute;mero fornecido de milissegundos por uma resposta do
+equipamento. Se n&atilde;o houver resposta, a solicita&ccedil;&atilde;o
+ser&aacute; o n&uacute;mero de vezes determinado. O <b>Per&iacute;odo
+de atualiza&ccedil;&atilde;o</b> determin com que freq&uuml;&ecirc;ncia o
+equipamento &eacute; solicitado por dados.</p>
+<p>Uma vez que a conex&atilde;o &eacute; estabelecida com o
+equipamento, ela &eacute; mantida aberta por tanto tempo quanto o
+equipamento permitir. Conex&otilde;es fechadas for&ccedil;am uma
+tentativa autom&aacute;tica de abertura de uma nova conex&atilde;o.</p>
+
+<!--<h1>Command testing</h1>-->
+<!--<p>Equipment connectivity and state can be tested using the <b>Galil-->
+<!--command testing</b> section. This feature opens a new connection over which-->
+<!--to send the command, so it will not conflict with any running data-->
+<!--source. However, if the equipment only allows a restricted number of-->
+<!--simultaneous connections, connectivity could fail.</p>-->
+<!--<p>The <b>Command</b> value can be any valid command string-->
+<!--(excluding the CRLF terminator, and optionally excluding a closing-->
+<!--semi-colon). The result of the command will be displayed below the-->
+<!--Execute button. If the connection to the equipment failed, the error-->
+<!--message will be displayed. The connection will timeout after the given-->
+<!--timeout duration if no response is received. If an error response is-->
+<!--received (i.e. '?' is received), the message "(error response)" will be-->
+<!--displayed.</p>-->
+
+<h1>Testes de comandos</h1>
+<p>A conectividade e estado de equipamentos podem ser testados
+usando a se&ccedil;&atilde;o de <b>comando de testes Galil</b>. Esta
+funcionalidade abre uma nova conex&atilde;o para enviar o comando,
+ent&atilde;o n&atilde;o ir&aacute; conflitar com qualquer data source em
+funcionamento. Entretanto, se o equipamente apenas permitir um
+n&uacute;mero limitado de conex&otilde;es, a conectividade pode falhar.</p>
+<p>O valor <b>Comando</b> pode ser qualquer string de comando
+(excluindo o finalizador CRLF e opcionalmente excluindo um
+ponto-e-v&iacute;rgula de fechamento). O resultado do comando
+ser&aacute; mostrado abaixo do bot&atilde;o Executar. Se a
+conex&atilde;o com o equipamento falhar, uma mensagem de erro
+ser&aacute; mostrada. A conex&atilde;o ir&aacute; expirar ap&oacute;s a
+dura&ccedil;&atilde;o do timeout se nenhuma resposta for recebida. Se
+uma resposta de erro for recebida (como, por exemplo, se '?' for
+recebida), ser&aacute; mostrada a mensagem "(error response)".</p>

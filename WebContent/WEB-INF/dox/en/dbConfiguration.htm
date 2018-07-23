@@ -1,0 +1,43 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  The ScadaBR currently allows the use of two Database Management Systems (DBMS): <b>Derby</b> and <b>MySQL</b>.
+</p>
+
+<p>
+  The <b>Derby</b> is used as default by the system. However, if you need some change in its initial configuration,
+  is necessary to modify the file located in <b>"ScadaBR*/WEB-INF/classes/env.properties"</b> and <b>"ScadaBR*/WEB-INF/classes/env.properties.derby"</b>.
+</p>
+
+<p>
+  To use <b>MySQL</b>, you must enter the data necessary for its correct use. Thus, the file needed to be modified
+  is in <b>"ScadaBR*/WEB-INF/classes/env.properties.mysql"</b>. Basically, the following parameters must be entered:
+  	<p>
+	  <b>db.username: </b> Username.
+  	</p>
+	<p>
+	  <b>db.password: </b> User password.
+  	</p>
+  
+ Made the necessary changes, you must choose <b>MySQL</b> as an option and click the icon to save. Then restart the application server (e.g Tomcat). 
+</p>
+
+<p>
+  <b>ScadaBR*: </b> ScadaBR location on the application server(ex: "Pasta_Tomcat/webapps/ScadaBR"). 
+</p>

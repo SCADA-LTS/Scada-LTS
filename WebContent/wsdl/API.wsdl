@@ -1,0 +1,1136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:ae="http://ae.api.scadabr.org.br" xmlns:config="http://config.api.scadabr.org.br" xmlns:const="http://constants.api.scadabr.org.br" xmlns:da="http://da.api.scadabr.org.br" xmlns:hda="http://hda.api.scadabr.org.br" xmlns:sbr="http://scadabr.org.br/api/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:vo="http://vo.api.scadabr.org.br" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="api" targetNamespace="http://scadabr.org.br/api/">
+		
+	<wsdl:types>
+		<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Constants Definition xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+	   	<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://constants.api.scadabr.org.br">
+		   	<import namespace="http://hda.api.scadabr.org.br"/>
+		   	<import namespace="http://ae.api.scadabr.org.br"/>
+		   	<import namespace="http://da.api.scadabr.org.br"/>
+		   	
+	   		<xsd:simpleType name="ErrorCode">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="OK"/>
+		   			<xsd:enumeration value="UNSPECIFIED_ERROR"/>
+		   			<xsd:enumeration value="INSUFFICIENT_PARAMETERS"/>
+		   			<xsd:enumeration value="INVALID_PARAMETER"/>
+		   			<xsd:enumeration value="ACCESS_DENIED"/>
+		   			<xsd:enumeration value="SERVER_BUSY"/>
+		   			<xsd:enumeration value="INVALID_ID"/>
+		   			<xsd:enumeration value="NOT_SUPPORTED"/>
+		   			<xsd:enumeration value="READ_ONLY"/>
+		   			<xsd:enumeration value="WRITE_ONLY"/>
+		   			<xsd:enumeration value="TIMED_OUT"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+		   	<xsd:simpleType name="QualityCode">
+		   		<xsd:restriction base="xsd:string">
+			   		<xsd:enumeration value="BAD"/>
+			   		<xsd:enumeration value="BAD_CONFIGURATION_ERROR"/>
+			   		<xsd:enumeration value="BAD_NOT_CONNECTED"/>
+			   		<xsd:enumeration value="BAD_DEVICE_FAILURE"/>
+			   		<xsd:enumeration value="BAD_SENSOR_FAILURE"/>
+			   		<xsd:enumeration value="BAD_LAST_KNOWN_VALUE"/>
+			   		<xsd:enumeration value="BAD_COMM_FAILURE"/>
+			   		<xsd:enumeration value="BAD_OUT_OF_SERVICE"/>
+			   		<xsd:enumeration value="BAD_WAITING_FOR_INITIAL_DATA"/>
+			   		<xsd:enumeration value="UNCERTAIN"/>
+			   		<xsd:enumeration value="UNCERTAIN_LAST_USABLE_VALUE"/>
+			   		<xsd:enumeration value="UNCERTAIN_SENSOR_NOT_ACCURATE"/>
+			   		<xsd:enumeration value="UNCERTAIN_EU_EXCEEDED"/>
+			   		<xsd:enumeration value="UNCERTAIN_SUB_NORMAL"/>
+			   		<xsd:enumeration value="GOOD"/>
+			   		<xsd:enumeration value="GOOD_LOCAL_OVERRIDE"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	<xsd:simpleType name="ServerStateCode">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="RUNNING"/>
+		   			<xsd:enumeration value="FAILED"/>
+		   			<xsd:enumeration value="NO_CONFIG"/>
+		   			<xsd:enumeration value="SUSPENDED"/>
+		   			<xsd:enumeration value="TEST"/>
+		   			<xsd:enumeration value="COMM_FAULT"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+		   	<xsd:simpleType name="DataType">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="INTEGER"/>
+		   			<xsd:enumeration value="UNSIGNED_INTEGER"/>
+		   			<xsd:enumeration value="LONG"/>
+		   			<xsd:enumeration value="UNSIGNED_LONG"/>
+		   			<xsd:enumeration value="STRING"/>
+		   			<xsd:enumeration value="BOOLEAN"/>
+		   			<xsd:enumeration value="FLOAT"/>
+		   			<xsd:enumeration value="DOUBLE"/>
+		   			<xsd:enumeration value="BYTE"/>
+		   			<xsd:enumeration value="UNSIGNED_BYTE"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+		   	<xsd:simpleType name="EventType">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="SYSTEM_EVENT"/>
+		   			<xsd:enumeration value="AUDIT_EVENT"/>
+		   			<xsd:enumeration value="SCHEDULED_EVENT"/>
+		   			<xsd:enumeration value="POINT_CONDITION_EVENT"/>
+		   			<xsd:enumeration value="ASYNCHRONOUS_DATA"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+		   	<!--<xsd:simpleType name="PointConditionType">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="HIGH_LIMIT"/>
+		   			<xsd:enumeration value="LOW_LIMIT"/>
+		   			<xsd:enumeration value="CHANGE"/>
+		   			<xsd:enumeration value="NO_CHANGE"/>
+		   			<xsd:enumeration value="STATE"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+		   	<xsd:simpleType name="ScheduleEventType">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="HOURLY"/>
+		   			<xsd:enumeration value="DAILY"/>
+		   			<xsd:enumeration value="WEEKLY"/>
+		   			<xsd:enumeration value="MONTHLY"/>
+		   			<xsd:enumeration value="YEARLY"/>
+		   			<xsd:enumeration value="ONCE"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+		   	
+		   	--><xsd:simpleType name="AlarmLevel">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="NONE"/>
+		   			<xsd:enumeration value="INFORMATION"/>
+		   			<xsd:enumeration value="URGENT"/>
+		   			<xsd:enumeration value="CRITICAL"/>
+		   			<xsd:enumeration value="LIFE_SAFETY"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+		   	<xsd:simpleType name="DataSourceType">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="MODBUS_IP"/>
+		   			<xsd:enumeration value="MODBUS_SERIAL"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+		   	<xsd:simpleType name="ModbusRegisterRange">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="COIL_STATUS"/>
+		   			<xsd:enumeration value="INPUT_STATUS"/>
+		   			<xsd:enumeration value="HOLDING_REGISTER"/>
+		   			<xsd:enumeration value="INPUT_REGISTER"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+		   	<xsd:simpleType name="ModbusDataType">
+		   		<xsd:restriction base="xsd:string">
+		   			<xsd:enumeration value="BINARY"/>
+		   			<xsd:enumeration value="TWO_BYTE_UNSIGNED_INT"/>
+		   			<xsd:enumeration value="TWO_BYTE_SIGNED_INT"/>
+		   			<xsd:enumeration value="TWO_BYTE_BCD"/>
+		   			<xsd:enumeration value="FOUR_BYTE_UNSIGNED_INT"/>
+		   			<xsd:enumeration value="FOUR_BYTE_SIGNED_INT"/>
+		   			<xsd:enumeration value="FOUR_BYTE_UNSIGNED_INT_SWAPPED"/>
+		   			<xsd:enumeration value="FOUR_BYTE_SIGNED_INT_SWAPPED"/>
+		   			<xsd:enumeration value="FOUR_BYTE_FLOAT"/>
+		   			<xsd:enumeration value="FOUR_BYTE_FLOAT_SWAPPED"/>
+		   			<xsd:enumeration value="FOUR_BYTE_FLOAT_SWAPPED_INVERTED"/>
+		   			<xsd:enumeration value="FOUR_BYTE_BCD"/>
+		   			<xsd:enumeration value="EIGHT_BYTE_UNSIGNED_INT"/>
+		   			<xsd:enumeration value="EIGHT_BYTE_SIGNED_INT"/>
+		   			<xsd:enumeration value="EIGHT_BYTE_UNSIGNED_INT_SWAPPED"/>
+		   			<xsd:enumeration value="EIGHT_BYTE_SIGNED_INT_SWAPPED"/>
+		   			<xsd:enumeration value="EIGHT_BYTE_FLOAT"/>
+		   			<xsd:enumeration value="EIGHT_BYTE_FLOAT_SWAPPED"/>
+		   		</xsd:restriction>
+		   	</xsd:simpleType>
+		   	
+	   	</schema>
+	   	
+	   	<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Virtual Objects Types Definition xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+	   	<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://vo.api.scadabr.org.br">
+		   	<import namespace="http://hda.api.scadabr.org.br"/>
+		   	<import namespace="http://ae.api.scadabr.org.br"/>
+		   	<import namespace="http://da.api.scadabr.org.br"/>
+      		<import namespace="http://constants.api.scadabr.org.br"/>
+		   	
+		   	<element name="Authentication">
+    			<complexType>
+     			<sequence>
+      				<element maxOccurs="1" minOccurs="1" name="username" type="xsd:string"/>
+      				<element maxOccurs="1" minOccurs="1" name="password" type="xsd:string"/>
+     			</sequence>
+    			</complexType>
+   			</element>
+		   	
+      		<complexType name="APIError">
+	    		<sequence>
+	     			<element name="code" type="const:ErrorCode"/>
+	     			<element name="description" nillable="true" type="xsd:string"/>
+	    		</sequence>
+	   		</complexType>
+	   		<complexType name="ItemInfo">
+		   		<sequence>
+				    <element name="itemName" nillable="true" type="xsd:string"/>
+				    <element name="dataType" nillable="true" type="const:DataType"/>
+				    <element name="writable" nillable="true" type="xsd:boolean"/>
+		    	</sequence>
+		    </complexType>
+		   	<complexType name="ItemValue">
+		   		<sequence>
+				    <element name="itemName" nillable="true" type="xsd:string"/>
+				    <element name="dataType" nillable="true" type="const:DataType"/>
+				    <element name="value" nillable="true" type="xsd:anyType"/>
+				    <element name="quality" nillable="true" type="const:QualityCode"/>
+				    <element name="timestamp" nillable="true" type="xsd:dateTime"/>
+		    	</sequence>
+		    </complexType>
+		    <complexType name="ItemStringValue">
+		   		<sequence>
+				    <element name="itemName" nillable="true" type="xsd:string"/>
+				    <element name="dataType" nillable="true" type="const:DataType"/>
+				    <element name="value" nillable="true" type="xsd:string"/>
+				    <element name="quality" nillable="true" type="const:QualityCode"/>
+				    <element name="timestamp" nillable="true" type="xsd:dateTime"/>
+		    	</sequence>
+		    </complexType>
+	   		<complexType name="ReplyBase">
+	    		<sequence>
+	     			<element name="rcvTime" nillable="true" type="xsd:dateTime"/>
+	     			<element name="replyTime" nillable="true" type="xsd:dateTime"/>
+	    		</sequence>
+	   		</complexType>
+	   		<complexType name="EventMessage">
+		    	<sequence>
+		    		<element minOccurs="0" name="user" type="xsd:string"/>
+				    <element minOccurs="0" name="message" type="xsd:string"/>
+				    <element name="timestamp" nillable="true" type="xsd:dateTime"/>
+		    	</sequence>
+		   	</complexType>
+		   	<complexType name="EventNotification">
+		    	<sequence>
+		    		<element name="id" type="xsd:int"/>
+		    		<element name="alias" type="xsd:string"/>
+				    <element name="eventType" type="const:EventType"/>
+				    <element name="alarmLevel" type="const:AlarmLevel"/>
+				    <element maxOccurs="unbounded" minOccurs="0" name="message" type="vo:EventMessage"/>
+				    <element name="timestamp" nillable="true" type="xsd:dateTime"/>
+				    <element name="ackTime" nillable="true" type="xsd:dateTime"/>
+				    <element name="rtnTime" nillable="true" type="xsd:dateTime"/>
+		    	</sequence>
+		   	</complexType>
+		    <complexType name="EventDefinition">
+			    <sequence>
+				    <element name="eventName" nillable="true" type="xsd:string"/>
+				    <element name="message" nillable="true" type="xsd:string"/>
+				    <element name="eventType" type="const:EventType"/>
+				    <element name="alarmLevel" type="const:AlarmLevel"/>
+				    <element name="configuration" nillable="true" type="xsd:string"/>
+			    </sequence>
+		    </complexType>
+		    
+		    <complexType name="ModbusIPConfig">
+			    <sequence>
+			    	<element name="id" type="xsd:int"/>
+			    	<element name="enabled" type="xsd:boolean"/>
+			    	<element name="name" nillable="true" type="xsd:string"/>
+			    	<element name="pollingPeriod" type="xsd:long"/>
+			    	<element name="contiguousBatches" type="xsd:boolean"/>
+			    	<element name="createSlaveMonitorPoints" type="xsd:boolean"/>
+			    	<element name="timeout" type="xsd:int"/>
+			    	<element name="retries" type="xsd:int"/>
+			    	<element name="host" nillable="true" type="xsd:string"/>
+			    	<element name="port" type="xsd:int"/>
+			    </sequence>
+		    </complexType> 
+		    
+		    <complexType name="ModbusSerialConfig">
+			    <sequence>
+			    	<element name="id" type="xsd:int"/>
+			    	<element name="enabled" type="xsd:boolean"/>
+			    	<element name="name" nillable="true" type="xsd:string"/>
+			    	<element name="pollingPeriod" type="xsd:long"/>
+			    	<element name="contiguousBatches" type="xsd:boolean"/>
+			    	<element name="createSlaveMonitorPoints" type="xsd:boolean"/>
+			    	<element name="timeout" type="xsd:int"/>
+			    	<element name="retries" type="xsd:int"/>
+			    	<element name="serialPort" nillable="true" type="xsd:string"/>
+			    	<element name="baudrate" type="xsd:int"/>
+			    </sequence>
+		    </complexType>
+		     
+		    <complexType name="ModbusPointConfig">
+			    <sequence>
+			    	<element name="id" type="xsd:int"/>
+			    	<element name="enabled" type="xsd:boolean"/>
+			    	<element name="name" nillable="true" type="xsd:string"/>
+			    	<element name="slaveId" nillable="true" type="xsd:int"/>
+			    	<element name="registerRange" nillable="true" type="const:ModbusRegisterRange"/>
+			    	<element name="dataType" nillable="true" type="const:ModbusDataType"/>
+			    	<element name="settable" type="xsd:boolean"/>
+			    	<element name="offset" type="xsd:int"/>
+			    	<element name="multiplier" type="xsd:int"/>
+			    	<element name="aditive" type="xsd:int"/>
+			    </sequence>
+		    </complexType>
+		    
+		    
+		    <!--<complexType name="PointConditionEventConfig">
+			    <sequence>
+			    	<element name="script" type="xsd:string"/>
+			    	<element maxOccurs="unbounded" name="conditions" type="vo:Condition"/>
+			    </sequence>
+		    </complexType>
+		    
+		    <complexType name="Condition">
+			    <sequence>
+			    	<element name="itemName" type="xsd:string"/>
+				    <element name="conditionType" nillable="true" type="const:PointConditionType"/>
+				    <element name="limit" type="xsd:double"/>
+				    <element name="duration" type="xsd:long"/>
+				    <element name="state" type="xsd:int"/>
+			    </sequence>
+		    </complexType>
+		    
+		    
+		    <complexType name="ScheduledEventConfig">
+			    <sequence>
+				    <element name="scheduleType" nillable="true" type="const:ScheduleEventType"/>
+				    <element name="activeYear" type="xsd:int"/>
+				    <element name="activeMonth" type="xsd:int"/>
+				    <element name="activeDay" type="xsd:int"/>
+				    <element name="activeMinute" type="xsd:int"/>
+				    <element name="activeHour" type="xsd:int"/>
+				    <element name="activeSecond" type="xsd:int"/>
+				    <element name="inactiveYear" type="xsd:int"/>
+				    <element name="inactiveMonth" type="xsd:int"/>
+				    <element name="inactiveDay" type="xsd:int"/>
+				    <element name="inactiveMinute" type="xsd:int"/>
+				    <element name="inactiveHour" type="xsd:int"/>
+				    <element name="inactiveSecond" type="xsd:int"/>
+			    </sequence>
+		    </complexType>
+		   	-->
+		   	<complexType name="ServerStatus">
+			    <sequence>
+			    	<element name="startTime" nillable="true" type="xsd:dateTime"/>
+			    	<element name="serverState" type="const:ServerStateCode"/>
+				    <element name="productVersion" nillable="true" type="xsd:string"/>
+				    <element maxOccurs="unbounded" minOccurs="0" name="supportedLocaleIDs" type="xsd:string"/>
+			    </sequence>
+		   	</complexType>
+	  	</schema>
+	  	
+	  	
+	  	<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx DataSource Config Definition xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+	   	<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://config.api.scadabr.org.br">
+	   		<import namespace="http://hda.api.scadabr.org.br"/>
+		   	<import namespace="http://ae.api.scadabr.org.br"/>
+		   	<import namespace="http://da.api.scadabr.org.br"/>
+      		<import namespace="http://constants.api.scadabr.org.br"/>
+      		<import namespace="http://vo.api.scadabr.org.br"/>
+      		
+      		<xsd:element name="RemoveDataPointParams">
+			   	<complexType>
+				    <sequence>
+					    <element name="id" type="xsd:int"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		<xsd:element name="RemoveDataPointResponse">
+			   	<complexType>
+				    <sequence>
+				        <element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		<xsd:element name="ConfigureDataPointParams">
+			   	<complexType>
+				    <sequence>
+					    <element name="dataSourceId" nillable="true" type="xsd:int"/>
+					    <element name="type" nillable="true" type="const:DataSourceType"/>
+					    <element name="dataPoint" nillable="true" type="xsd:anyType"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		<xsd:element name="ConfigureDataPointResponse">
+			   	<complexType>
+				    <sequence>
+				    	<element name="id" type="xsd:int"/>
+				        <element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		<xsd:element name="BrowseDataPointsParams">
+			   	<complexType>
+				    <sequence>
+					    <element name="dataSourceId" type="xsd:int"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		<xsd:element name="BrowseDataPointsResponse">
+			   	<complexType>
+				    <sequence>
+				        <element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+					    <element name="type" nillable="true" type="const:DataSourceType"/>
+					    <element maxOccurs="unbounded" name="dataPoints" nillable="true" type="xsd:anyType"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+			
+      		
+      		<xsd:element name="RemoveDataSourceParams">
+			   	<complexType>
+				    <sequence>
+					    <element name="id" type="xsd:int"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		<xsd:element name="RemoveDataSourceResponse">
+			   	<complexType>
+				    <sequence>
+				        <element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		
+      		<xsd:element name="ConfigureDataSourceParams">
+			   	<complexType>
+				    <sequence>
+					    <element name="type" nillable="true" type="const:DataSourceType"/>
+					    <element name="dataSource" nillable="true" type="xsd:anyType"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		<xsd:element name="ConfigureDataSourceResponse">
+			   	<complexType>
+				    <sequence>
+				    	<element name="id" type="xsd:int"/>
+				        <element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		
+      		<xsd:element name="BrowseDataSourcesParams">
+			   	<complexType>
+				    <sequence>
+					    <element name="type" nillable="true" type="const:DataSourceType"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+      		
+      		<xsd:element name="BrowseDataSourcesResponse">
+			   	<complexType>
+				    <sequence>
+				        <element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+					    <element name="type" nillable="true" type="const:DataSourceType"/>
+					    <element maxOccurs="unbounded" minOccurs="0" name="dataSources" nillable="true" type="xsd:anyType"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+			
+			
+      		
+	   	</schema>
+	  	
+		<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Data Access Types Definition xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->	  	
+	  	<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://da.api.scadabr.org.br">
+		   	<import namespace="http://hda.api.scadabr.org.br"/>
+		   	<import namespace="http://ae.api.scadabr.org.br"/>
+		   	<import namespace="http://vo.api.scadabr.org.br"/>
+		   	
+		   	<xsd:element name="GetStatusResponse">
+			   	<complexType>
+				    <sequence>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+					    <element name="serverStatus" nillable="true" type="vo:ServerStatus"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+		   	<complexType name="ReadDataOptions">
+			    <sequence>
+			    	<element name="maxReturn" type="xsd:int"/>
+			    </sequence>
+			</complexType>
+			<xsd:element name="ReadDataParams">
+				<complexType>
+				    <sequence>
+					    <element maxOccurs="unbounded" name="itemPathList" type="xsd:string"/>
+					    <element name="options" nillable="true" type="da:ReadDataOptions"/>
+					</sequence>
+				</complexType>
+			</xsd:element>
+			<xsd:element name="ReadDataResponse">
+				<complexType>
+				    <sequence>
+					    <element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element maxOccurs="unbounded" minOccurs="0" name="itemsList" type="vo:ItemValue"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+			<complexType name="WriteDataOptions">
+			    <sequence>
+				    <element name="returnItemValues" type="xsd:boolean"/>
+			    </sequence>
+			</complexType>
+			<complexType name="WriteStringDataOptions">
+			    <sequence>
+				    <element name="returnItemValues" type="xsd:boolean"/>
+			    </sequence>
+			</complexType>
+			<xsd:element name="WriteDataParams">
+				<complexType>
+				    <sequence>
+					    <element maxOccurs="unbounded" minOccurs="0" name="itemsList" type="vo:ItemValue"/>
+					    <element name="options" nillable="true" type="da:WriteDataOptions"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+			<xsd:element name="WriteStringDataParams">
+				<complexType>
+				    <sequence>
+					    <element maxOccurs="unbounded" minOccurs="0" name="itemsList" type="vo:ItemStringValue"/>
+					    <element name="options" nillable="true" type="da:WriteDataOptions"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+			<xsd:element name="WriteDataResponse">
+				<complexType>
+					<sequence>
+					    <element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element maxOccurs="unbounded" minOccurs="0" name="itemsList" type="vo:ItemValue"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+			<xsd:element name="WriteStringDataResponse">
+				<complexType>
+					<sequence>
+					    <element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element maxOccurs="unbounded" minOccurs="0" name="itemsList" type="vo:ItemStringValue"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+			<complexType name="BrowseTagsOptions">
+			    <sequence>
+				    <element name="maxReturn" type="xsd:int"/>
+			    </sequence>
+			</complexType>
+			<xsd:element name="BrowseTagsParams">
+				<complexType>
+				    <sequence>
+					    <element name="itemsPath" nillable="true" type="xsd:string"/>
+					    <element name="options" nillable="true" type="da:BrowseTagsOptions"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+			<xsd:element name="BrowseTagsResponse">
+				<complexType>
+				    <sequence>
+				    	<element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+					    <element maxOccurs="unbounded" minOccurs="0" name="itemsList" type="vo:ItemInfo"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+				    </sequence>
+				</complexType>
+			</xsd:element>
+	  	</schema>
+	  	
+	  	<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Historian Data Access Types Definition xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+	  	<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://hda.api.scadabr.org.br">
+		    <import namespace="http://ae.api.scadabr.org.br"/>
+		   	<import namespace="http://da.api.scadabr.org.br"/>
+		   	<import namespace="http://vo.api.scadabr.org.br"/>
+		   	
+		   	<complexType name="GetDataHistoryOptions">
+		    	<sequence>
+		    		<element name="maxReturn" type="xsd:int"/>
+		    		<element name="initialDate" nillable="true" type="xsd:dateTime"/>
+		    		<element name="finalDate" nillable="true" type="xsd:dateTime"/>
+		    	</sequence>
+		    </complexType>
+		    <xsd:element name="GetDataHistoryParams">
+			    <complexType>
+			    	<sequence>
+			     	 	<element minOccurs="0" name="itemName" type="xsd:string"/>
+			     		<element name="options" nillable="true" type="hda:GetDataHistoryOptions"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<xsd:element name="GetDataHistoryResponse">
+			   	<complexType>
+				    <sequence>
+				    	<element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+				    	<element name="moreValues" type="xsd:boolean"/>
+					    <element maxOccurs="unbounded" minOccurs="0" name="itemsList" type="vo:ItemValue"/>
+					    <element name="replyBase" type="vo:ReplyBase"/>
+				    </sequence>
+			   	</complexType>
+		   	</xsd:element>
+		</schema>
+		
+		<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Alarms & Events Types Definition xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+		<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://ae.api.scadabr.org.br">
+			<import namespace="http://hda.api.scadabr.org.br"/>
+		   	<import namespace="http://da.api.scadabr.org.br"/>
+		   	<import namespace="http://vo.api.scadabr.org.br"/>
+		   	<import namespace="http://constants.api.scadabr.org.br"/>
+		   	
+		   	<complexType name="ActiveEventsOptions">
+		    	<sequence>
+		    		<element name="maxReturn" type="xsd:int"/>
+		     		<element name="alarmLevel" nillable="true" type="const:AlarmLevel"/>
+		    	</sequence>
+		   	</complexType>
+		   	<xsd:element name="GetActiveEventsParams" nillable="false">
+			   	<complexType>
+			    	<sequence>
+			     		<element name="eventsPath" nillable="true" type="xsd:string"/>
+			     		<element name="options" nillable="true" type="ae:ActiveEventsOptions"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<xsd:element name="GetActiveEventsResponse">
+			   	<complexType>
+			    	<sequence>
+			     		<element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+			     		<element maxOccurs="unbounded" name="eventsList" type="vo:EventNotification"/>
+			     		<element name="replyBase" type="vo:ReplyBase"/>
+			    </sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<complexType name="EventsHistoryOptions">
+		    	<sequence>
+		     		<element name="alarmLevel" nillable="true" type="const:AlarmLevel"/>
+		     		<element name="initialDate" nillable="true" type="xsd:dateTime"/>
+		    		<element name="finalDate" nillable="true" type="xsd:dateTime"/>
+		    		<element name="maxReturn" type="xsd:int"/>
+		    	</sequence>
+		   	</complexType>
+		   	<xsd:element name="GetEventsHistoryParams" nillable="false">
+			   	<complexType>
+			    	<sequence>
+			     		<element name="eventsPath" nillable="true" type="xsd:string"/>
+			     		<element name="options" nillable="true" type="ae:EventsHistoryOptions"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<xsd:element name="GetEventsHistoryResponse">
+			   	<complexType>
+			    	<sequence>
+			     		<element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+			     		<element maxOccurs="unbounded" minOccurs="0" name="eventsList" type="vo:EventNotification"/>
+			     		<element name="replyBase" type="vo:ReplyBase"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<complexType name="AckEventsOptions">
+		    	<sequence>
+		     		<element name="returnEventDetails" type="xsd:boolean"/>
+		    	</sequence>
+		   	</complexType>
+		   	<xsd:element name="AckEventsParams" nillable="true">
+			   	<complexType>
+			    	<sequence>
+			     		<element maxOccurs="unbounded" name="eventsId" nillable="true" type="xsd:int"/>
+			    		<element name="options" nillable="true" type="ae:AckEventsOptions"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<xsd:element name="AckEventsResponse">
+			   	<complexType>
+			    	<sequence>
+			     		<element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+			     		<element maxOccurs="unbounded" minOccurs="0" name="events" type="vo:EventNotification"/>
+			     		<element name="replyBase" type="vo:ReplyBase"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<complexType name="BrowseEventsOptions">
+		    	<sequence>
+		     		<element name="eventType" nillable="true" type="const:EventType"/>
+		     		<element default="false" name="returnEventsConfig" type="xsd:boolean"/>
+		    	</sequence>
+		   	</complexType>
+		   	<xsd:element name="BrowseEventsParams" nillable="false">
+			   	<complexType>
+			    	<sequence>
+			     		<element name="eventsPath" nillable="true" type="xsd:string"/>
+			     		<element name="options" nillable="true" type="ae:BrowseEventsOptions"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<xsd:element name="BrowseEventsResponse">
+			   	<complexType>
+			    	<sequence>
+			     		<element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+			     		<element maxOccurs="unbounded" minOccurs="0" name="eventsList" type="vo:EventDefinition"/>
+			     		<element name="replyBase" type="vo:ReplyBase"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<xsd:element name="AnnotateEventParams" nillable="false">
+			   	<complexType>
+			    	<sequence>
+			    		<element name="eventId" nillable="true" type="xsd:int"/>
+						<element name="message" nillable="true" type="vo:EventMessage"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		   	<xsd:element name="AnnotateEventResponse">
+			   	<complexType>
+			    	<sequence>
+			     		<element maxOccurs="unbounded" minOccurs="0" name="errors" type="vo:APIError"/>
+			     		<element maxOccurs="unbounded" minOccurs="0" name="eventMessagesList" type="vo:EventMessage"/>
+			     		<element name="replyBase" type="vo:ReplyBase"/>
+			    	</sequence>
+			   	</complexType>
+		   	</xsd:element>
+		</schema>
+	</wsdl:types>
+	
+	<wsdl:message name="headerRQ">
+      <wsdl:part element="vo:Authentication" name="header"/> 	        
+   </wsdl:message>
+	
+	<wsdl:message name="ConfigureDataPointParams">
+    	<wsdl:part element="config:ConfigureDataPointParams" name="parameters"/>
+    </wsdl:message>
+    
+    <wsdl:message name="ConfigureDataPointResponse">
+    	<wsdl:part element="config:ConfigureDataPointResponse" name="response"/>
+   	</wsdl:message> 
+	
+	<wsdl:message name="RemoveDataPointParams">
+    	<wsdl:part element="config:RemoveDataPointParams" name="parameters"/>
+    </wsdl:message>
+    
+    <wsdl:message name="RemoveDataPointResponse">
+    	<wsdl:part element="config:RemoveDataPointResponse" name="response"/>
+   	</wsdl:message> 
+	
+	<wsdl:message name="BrowseDataPointsParams">
+    	<wsdl:part element="config:BrowseDataPointsParams" name="parameters"/>
+    </wsdl:message>
+    
+    <wsdl:message name="BrowseDataPointsResponse">
+    	<wsdl:part element="config:BrowseDataPointsResponse" name="response"/>
+   	</wsdl:message> 
+	
+	<wsdl:message name="RemoveDataSourceParams">
+    	<wsdl:part element="config:RemoveDataSourceParams" name="parameters"/>
+    </wsdl:message>
+    
+    <wsdl:message name="RemoveDataSourceResponse">
+    	<wsdl:part element="config:RemoveDataSourceResponse" name="response"/>
+   	</wsdl:message>  
+	
+	<wsdl:message name="ConfigureDataSourceParams">
+    	<wsdl:part element="config:ConfigureDataSourceParams" name="parameters"/>
+    </wsdl:message>
+    
+	<wsdl:message name="ConfigureDataSourceResponse">
+    	<wsdl:part element="config:ConfigureDataSourceResponse" name="response"/>
+   	</wsdl:message>  
+	  
+	<wsdl:message name="BrowseDataSourcesParams">
+    	<wsdl:part element="config:BrowseDataSourcesParams" name="parameters"/>
+    </wsdl:message>
+    
+	<wsdl:message name="BrowseDataSourcesResponse">
+    	<wsdl:part element="config:BrowseDataSourcesResponse" name="response"/>
+   	</wsdl:message>  
+	  
+	<wsdl:message name="GetStatusParams"/>
+   	<wsdl:message name="GetStatusResponse">
+    	<wsdl:part element="da:GetStatusResponse" name="response"/>
+   	</wsdl:message>
+   	
+	<wsdl:message name="BrowseTagsParams">
+    	<wsdl:part element="da:BrowseTagsParams" name="parameters"/>
+    </wsdl:message>
+    
+	<wsdl:message name="BrowseTagsResponse">
+    	<wsdl:part element="da:BrowseTagsResponse" name="response"/>
+   	</wsdl:message>
+   
+   	<wsdl:message name="ReadDataParams">
+    	<wsdl:part element="da:ReadDataParams" name="parameters"/>
+   	</wsdl:message>
+   	<wsdl:message name="ReadDataResponse">
+    	<wsdl:part element="da:ReadDataResponse" name="response"/>
+   	</wsdl:message>
+
+	<wsdl:message name="WriteDataParams">
+    	<wsdl:part element="da:WriteDataParams" name="parameters"/>
+   	</wsdl:message>
+   	<wsdl:message name="WriteStringDataParams">
+    	<wsdl:part element="da:WriteStringDataParams" name="parameters"/>
+   	</wsdl:message>
+   	
+	<wsdl:message name="WriteDataResponse">
+    	<wsdl:part element="da:WriteDataResponse" name="response"/>
+	</wsdl:message>
+	<wsdl:message name="WriteStringDataResponse">
+    	<wsdl:part element="da:WriteStringDataResponse" name="response"/>
+	</wsdl:message>
+
+   	<wsdl:message name="BrowseEventsParams">
+    	<wsdl:part element="ae:BrowseEventsParams" name="parameters"/>
+   	</wsdl:message>
+   
+	<wsdl:message name="BrowseEventsResponse">
+    	<wsdl:part element="ae:BrowseEventsResponse" name="response"/>
+   	</wsdl:message>
+
+   	<wsdl:message name="GetDataHistoryParams">
+    	<wsdl:part element="hda:GetDataHistoryParams" name="parameters"/>
+   	</wsdl:message>
+
+	<wsdl:message name="GetDataHistoryResponse">
+      <wsdl:part element="hda:GetDataHistoryResponse" name="response"/>
+	</wsdl:message>
+
+   	<wsdl:message name="GetActiveEventsParams">
+    	<wsdl:part element="ae:GetActiveEventsParams" name="parameters"/>
+   	</wsdl:message>
+   	
+	<wsdl:message name="GetActiveEventsResponse">
+    	<wsdl:part element="ae:GetActiveEventsResponse" name="response"/>
+   	</wsdl:message>
+
+	<wsdl:message name="AckEventsParams">
+    	<wsdl:part element="ae:AckEventsParams" name="parameters"/>
+   	</wsdl:message>
+   	
+   	<wsdl:message name="AckEventsResponse">
+    	<wsdl:part element="ae:AckEventsResponse" name="response"/>
+   	</wsdl:message>
+
+	<wsdl:message name="GetEventsHistoryParams">
+    	<wsdl:part element="ae:GetEventsHistoryParams" name="parameters"/>
+   	</wsdl:message>   
+
+   	<wsdl:message name="GetEventsHistoryResponse">
+    	<wsdl:part element="ae:GetEventsHistoryResponse" name="response"/>
+   	</wsdl:message>
+   	
+   	<wsdl:message name="AnnotateEventParams">
+    	<wsdl:part element="ae:AnnotateEventParams" name="parameters"/>
+   	</wsdl:message>
+   	
+   	<wsdl:message name="AnnotateEventResponse">
+    	<wsdl:part element="ae:AnnotateEventResponse" name="parameters"/>
+   	</wsdl:message>    
+	  
+
+  <wsdl:portType name="ScadaBRAPI">
+  		
+  		<wsdl:operation name="configureDataPoint">
+        	<wsdl:input message="sbr:ConfigureDataPointParams" name="configureDataPointRequest"/>
+        	<wsdl:output message="sbr:ConfigureDataPointResponse" name="configureDataPointResponse"/>
+      	</wsdl:operation>
+      	
+      	<wsdl:operation name="removeDataPoint">
+        	<wsdl:input message="sbr:RemoveDataPointParams" name="removeDataPointRequest"/>
+        	<wsdl:output message="sbr:RemoveDataPointResponse" name="removeDataPointResponse"/>
+      	</wsdl:operation>
+      	
+      	<wsdl:operation name="browseDataPoints">
+        	<wsdl:input message="sbr:BrowseDataPointsParams" name="browseDataPointsRequest"/>
+        	<wsdl:output message="sbr:BrowseDataPointsResponse" name="browseDataPointsResponse"/>
+      	</wsdl:operation>
+  
+  	    <wsdl:operation name="removeDataSource">
+        	<wsdl:input message="sbr:RemoveDataSourceParams" name="removeDataSourceRequest"/>
+        	<wsdl:output message="sbr:RemoveDataSourceResponse" name="removeDataSourceResponse"/>
+      	</wsdl:operation>
+  
+  	    <wsdl:operation name="configureDataSource">
+        	<wsdl:input message="sbr:ConfigureDataSourceParams" name="configureDataSourceRequest"/>
+        	<wsdl:output message="sbr:ConfigureDataSourceResponse" name="configureDataSourceResponse"/>
+      	</wsdl:operation>
+  
+	  	<wsdl:operation name="browseDataSources">
+        	<wsdl:input message="sbr:BrowseDataSourcesParams" name="browseDataSourcesRequest"/>
+        	<wsdl:output message="sbr:BrowseDataSourcesResponse" name="browseDataSourcesResponse"/>
+      	</wsdl:operation>
+	
+		<wsdl:operation name="getStatus">
+        	<wsdl:input message="sbr:GetStatusParams" name="getStatusRequest"/>
+        	<wsdl:output message="sbr:GetStatusResponse" name="getStatusResponse"/>
+      	</wsdl:operation>
+
+    	<wsdl:operation name="writeData">
+        	<wsdl:input message="sbr:WriteDataParams" name="writeDataRequest"/>
+        	<wsdl:output message="sbr:WriteDataResponse" name="writeDataResponse"/>
+      	</wsdl:operation>
+      	<wsdl:operation name="writeStringData">
+        	<wsdl:input message="sbr:WriteStringDataParams" name="writeStringDataRequest"/>
+        	<wsdl:output message="sbr:WriteStringDataResponse" name="writeStringDataResponse"/>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="browseTags">
+        	<wsdl:input message="sbr:BrowseTagsParams" name="browseTagsRequest"/>
+        	<wsdl:output message="sbr:BrowseTagsResponse" name="browseTagsResponse"/>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="getDataHistory">
+        	<wsdl:input message="sbr:GetDataHistoryParams" name="getDataHistoryRequest"/>
+        	<wsdl:output message="sbr:GetDataHistoryResponse" name="getDataHistoryResponse"/>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="getActiveEvents">
+        	<wsdl:input message="sbr:GetActiveEventsParams" name="getActiveEventsRequest"/>
+        	<wsdl:output message="sbr:GetActiveEventsResponse" name="getActiveEventsResponse"/>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="getEventsHistory">
+        	<wsdl:input message="sbr:GetEventsHistoryParams" name="getEventsHistoryRequest"/>
+        	<wsdl:output message="sbr:GetEventsHistoryResponse" name="getEventsHistoryResponse"/>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="ackEvents">
+        	<wsdl:input message="sbr:AckEventsParams" name="ackEventsRequest"/>
+        	<wsdl:output message="sbr:AckEventsResponse" name="ackEventsResponse"/>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="browseEventsDefinitions">
+        	<wsdl:input message="sbr:BrowseEventsParams" name="browseEventsDefinitionsRequest"/>
+        	<wsdl:output message="sbr:BrowseEventsResponse" name="browseEventsDefinitionsResponse"/>
+      	</wsdl:operation>
+      	
+      	<wsdl:operation name="readData">
+      		<wsdl:input message="sbr:ReadDataParams" name="readDataRequest"/>
+      		<wsdl:output message="sbr:ReadDataResponse" name="readDataResponse"/>
+    	</wsdl:operation>
+    	
+    	<wsdl:operation name="annotateEvent">
+      		<wsdl:input message="sbr:AnnotateEventParams" name="annotateEventRequest"/>
+      		<wsdl:output message="sbr:AnnotateEventResponse" name="annotateEventResponse"/>
+    	</wsdl:operation>
+	</wsdl:portType>
+	  
+	<wsdl:binding name="ScadaBRAPI" type="sbr:ScadaBRAPI">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		
+		<wsdl:operation name="configureDataPoint">
+        	<soap:operation/>
+         	<wsdl:input name="configureDataPointRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="configureDataPointResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+		
+		<wsdl:operation name="removeDataPoint">
+        	<soap:operation/>
+         	<wsdl:input name="removeDataPointRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="removeDataPointResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+		
+		<wsdl:operation name="browseDataPoints">
+        	<soap:operation/>
+         	<wsdl:input name="browseDataPointsRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="browseDataPointsResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+		
+		<wsdl:operation name="removeDataSource">
+        	<soap:operation/>
+         	<wsdl:input name="removeDataSourceRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="removeDataSourceResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+		
+		
+		<wsdl:operation name="configureDataSource">
+        	<soap:operation/>
+         	<wsdl:input name="configureDataSourceRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="configureDataSourceResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+		
+		<wsdl:operation name="browseDataSources">
+        	<soap:operation/>
+         	<wsdl:input name="browseDataSourcesRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="browseDataSourcesResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+		
+		<wsdl:operation name="getStatus">
+        	<soap:operation/>
+         	<wsdl:input name="getStatusRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="getStatusResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+
+    	
+    	<wsdl:operation name="readData">
+      		<soap:operation/>
+      		<wsdl:input name="readDataRequest">
+        		<soap:body use="literal"/>
+        		<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+      		</wsdl:input>
+      		<wsdl:output name="readDataResponse">
+        		<soap:body use="literal"/>
+      		</wsdl:output>
+    	</wsdl:operation>
+
+    	<wsdl:operation name="writeData">
+    		<soap:operation/>
+        	<wsdl:input name="writeDataRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="writeDataResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+      	
+      	<wsdl:operation name="writeStringData">
+    		<soap:operation/>
+        	<wsdl:input name="writeStringDataRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="writeStringDataResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+ 
+      	<wsdl:operation name="browseTags">
+        	<soap:operation/>
+         	<wsdl:input name="browseTagsRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="browseTagsResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="getDataHistory">
+        	<soap:operation/>
+        	<wsdl:input name="getDataHistoryRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="getDataHistoryResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="getActiveEvents">
+        	<soap:operation/>
+         	<wsdl:input name="getActiveEventsRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="getActiveEventsResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="getEventsHistory">
+        	<soap:operation/>
+         	<wsdl:input name="getEventsHistoryRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+	        </wsdl:input>
+         	<wsdl:output name="getEventsHistoryResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="ackEvents">
+        	<soap:operation/>
+         	<wsdl:input name="ackEventsRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="ackEventsResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+
+      	<wsdl:operation name="browseEventsDefinitions">
+        	<soap:operation/>
+         	<wsdl:input name="browseEventsDefinitionsRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="browseEventsDefinitionsResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+      	
+      	<wsdl:operation name="annotateEvent">
+        	<soap:operation/>
+         	<wsdl:input name="annotateEventRequest">
+            	<soap:body use="literal"/>
+            	<soap:header message="sbr:headerRQ" part="header" use="literal"/>
+         	</wsdl:input>
+         	<wsdl:output name="annotateEventResponse">
+            	<soap:body use="literal"/>
+         	</wsdl:output>
+      	</wsdl:operation>
+    	
+	</wsdl:binding>
+	  
+	<wsdl:service name="API">
+		<wsdl:port binding="sbr:ScadaBRAPI" name="API">
+	    	<soap:address location="http://localhost:8080/ScadaBR/services/API"/>
+	    </wsdl:port>
+	</wsdl:service>
+	
+</wsdl:definitions>

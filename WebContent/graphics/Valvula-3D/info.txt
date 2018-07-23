@@ -1,0 +1,6 @@
+name=Valvula 3D aberta/fechando/fechada
+type=imageSet
+#width=75
+#height=79
+text.x=14
+text.y=2

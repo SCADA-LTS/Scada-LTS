@@ -1,0 +1,93 @@
+<html>
+	<head>
+		<title>test</title>
+		<script type="text/javascript">
+			djConfig = { 
+				isDebug: true,
+				debugAtAllCosts:true,
+				debugContainerId:"dojoDebug"
+			};
+		</script>
+		<script src="../../dojo.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.io.*");
+			dojo.require("dojo.widget.*");
+			dojo.require("dojo.widget.ContentPane");
+			dojo.require("dojo.widget.Tree");
+			dojo.require("dojo.widget.TreeRPCController");
+			dojo.require("dojo.xml.XslTransform");
+
+			dojo.hostenv.writeIncludes();
+			
+			var siteXmlDom = null;
+			var navTreeProc = null;
+			var simpleProc = null;
+			var fullPageProc = null;
+
+			function init() {
+				navTreeProc = new dojo.xml.XslTransform("nav-tree.xsl");
+				simpleProc = new dojo.xml.XslTransform("simple.xsl");
+				fullPageProc = new dojo.xml.XslTransform("full-page.xsl");
+
+				var siteTree = {
+					url: "site.xml",
+					mimetype: "text/xml",
+					load: function(type, xmlDom, httpreq){ 
+						siteXmlDom = xmlDom;
+						var params = new Array();
+						var content = navTreeProc.getResultString(xmlDom, params, document);
+					},
+					error: function(type, error){ 
+						dojo.debug("type: " + type);
+						dojo.debug("error: " + error);
+					}
+				}
+				dojo.io.bind(siteTree);
+			}
+
+			function loadRegion() {
+				var region = document.getElementById("testRegion");
+				var params = new Array();
+				params[params.length] = ["foo", "bar"];
+				params[params.length] = ["focus-id", "site_ind"];
+				simpleProc.transformToRegion(siteXmlDom, params, region, document);
+			}
+
+			function loadContentPane1() {
+				var cPane = dojo.widget.byId("navTreeCP");
+				navTreeProc.transformToContentPane(siteXmlDom, null, cPane, document);
+			}
+
+			function loadWindow() {
+				var iFrameDoc = null;
+				var iFrameObj = document.getElementById("testWindow");
+				if (iFrameObj.contentDocument) {
+					iFrameDoc = iFrameObj.contentDocument; 
+				} else if (iFrameObj.contentWindow) {
+					iFrameDoc = iFrameObj.contentWindow.document;
+				} else if (iFrameObj.document) {
+					iFrameDoc = iFrameObj.document;
+				} else {
+					alert("could not get iframe document object!");
+				}
+				fullPageProc.transformToWindow(siteXmlDom, null, iFrameDoc, document);
+			}
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<h1>Test dojo.xml.XslTransform</h1>
+		<ul>
+			<li><a href="#" onclick="loadRegion()">transformToRegion</a></li>
+			<li><a href="#" onclick="loadContentPane1()">transformToContentPane</a></li>
+			<li><a href="#" onclick="loadWindow()">transformToWindow</a></li>
+		</ul>
+		<h2>Result:</h2>
+		<div id="target">
+			<div id="testRegion"></div>
+			<div id="navTreeCP" widgetId="navTreeCP" dojoType="ContentPane" sizeShare="20"></div>
+			<iframe id="testWindow" src="placeholder.html" style="width:100%; height:20%"></iframe>
+		</div>
+		<div id="dojoDebug"></div>
+	</body>
+</html>

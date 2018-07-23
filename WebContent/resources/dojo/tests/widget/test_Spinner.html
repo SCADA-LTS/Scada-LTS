@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Dojo Spinner Widget Demo</title>
+
+		<script type="text/javascript">
+			var djConfig = {isDebug: true};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.widget.*");
+			dojo.require("dojo.widget.Spinner"); // must require explicitly, since some widgets are experimental
+		</script>
+	</head>
+
+	<body>
+		Try typing values, and use the up/down arrow keys and/or the arrow push
+		buttons to spin
+		<br>
+		<h1>integer spinner</h1>
+		<br>
+		initial value=+1,000, delta=10, min=9 max=1550, signed=always separator=,<br>
+		<input dojoType="IntegerSpinner" 
+			value="+1,000" 
+			delta="10" 
+			min="9" 
+			max="1550" 
+			signed="always" 
+			separator="," 
+			maxlength="20" 
+			widgetId="integertextbox1">
+		<br>
+		<br>
+		initial value=900, no delta specified, no min specified, max=1550, signed=never separator=!<br>
+		<input dojoType="IntegerSpinner" 
+			value="900" 
+			max="1550" 
+			signed="never" 
+			separator="!" 
+			maxlength="20" 
+			widgetId="integertextbox2">
+		<br>
+		<br>
+		initial value not specified, delta not specified, min not specified, max not specified, signed not specified, separator not specified<br>
+		[verify no line break just after this text]<input dojoType="IntegerSpinner" widgetId="integertextbox3">[verify no line break just before this text]
+		<br>
+		<br>
+		<h1>real number spinner</h1>
+		<br>
+		Move the cursor left and right within the input field to see the effect on the spinner.
+		<br>
+		initial value=+1.00e3, delta=0.01e1, min=-10950, max=155000, signed=always, exponent=always, esigned=never, places=2, separator=,<br>
+		<input dojoType="RealNumberSpinner"
+			value="+1.00e3"
+			delta="0.01e1" 
+			min="-10950" 
+			max="155000" 
+			signed="always" 
+			esigned="never" 
+			exponent="always" 
+			separator=',' 
+			places="2" 
+			maxlength="20" 
+			widgetId="realtextbox1">
+		<br>
+		<br>
+		initial value=1 045.0, delta=1e2, min not specified, max=155000, signed=never, exponent=never, esigned=always, places=1, separator=(space) <br>
+		<input dojoType="RealNumberSpinner" 
+			value="1 045.0" 
+			delta="1e2" 
+			max="155000" 
+			signed="never"
+			esigned="always"
+			exponent="never"
+			separator=' '
+			places="1"
+			maxlength="20"
+			widgetId="realtextbox2">
+		<br>
+		<br>
+		initial value not specified, delta not specified, min not specified, max not specified, signed not specified, exponent not specified, esigned not specified, places not specified, separator not specified <br>
+		[verify no line break just after this text]<input dojoType="RealNumberSpinner" widgetId="realtextbox3">[verify no line break just before this text]
+		<br>
+		<br>
+		<br>
+		<h1>time spinner</h1>
+		<br>
+		Move the cursor left and right within the input field to see the effect on the spinner.
+		<br>
+		initial value=10:00:00a, delta=1:01:01a, am symbol=a, pm symbol=p, format=h:mm:sst<br>
+		<input dojoType="TimeSpinner"
+			value="10:00:00a"
+			delta="1:01:01a" 
+			amsymbol="a"
+			pmsymbol="p"
+			format="h:mm:sst" 
+			maxlength="20" 
+			widgetId="timetextbox1">
+		<br>
+		<br>
+		initial value=1000, delta=0101, am symbol not specified, pm symbol not specified, format=HHmm<br>
+		<input dojoType="TimeSpinner"
+			value="1000"
+			delta="0101" 
+			format="HHmm" 
+			maxlength="20" 
+			widgetId="timetextbox2">
+		<br>
+		<br>
+		initial value not specified, delta not specified (default is 01:01:01), am symbol not specified (default is AM), pm symbol not specified (default is PM), format not specified (default is h:mm:ss t) <br>
+		[verify no line break just after this text]<input dojoType="TimeSpinner" widgetId="timetextbox3">[verify no line break just before this text]
+		<br>
+		<br>
+	</body>
+</html>

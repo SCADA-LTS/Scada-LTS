@@ -1,0 +1,109 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>Most points types within a Galil data source reflect values-->
+<!--within the Galil equipment. The exception is the Command point type,-->
+<!--which is more abstract. Details are provided below.</p>-->
+
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>A maioria dos tipos de ponts em um um data source Galil refletem
+valores dentro do equipamento Galil. A exce&ccedil;&atilde;o &eacute; o
+tipo de ponto Comando, que &eacute; mais abstrato. Detalhes abaixo.</p>
+
+<!--<p>All point types require a name for display purposes, which can be-->
+<!--any value.</p>-->
+
+<p>Todos os tipos de pontos necessitam de um nome para sua
+exibi&ccedil;&atilde;o, que pode ser qualquer valor.</p>
+
+<!--<h1>Command</h1>-->
+<!--<p>The command point type allows the sending of arbitrary commands-->
+<!--to the Galil equipment. Commands can be entered in the Watchlist, from-->
+<!--graphical views, or via set point event handlers. The value of the-->
+<!--command <i>and</i> the value of the response will be saved into the-->
+<!--point history (one after the other), except if an error occurs, in which-->
+<!--case the command will be saved and an event will be raised that-->
+<!--describes the error.</p>-->
+
+<h1>Comando</h1>
+<p>O tipo de ponto comando permite o envio de comandos
+arbitr&aacute;rios para o equipamento Galil. Comandos pode ser entrados
+na Watchlist, em representa&ccedil;&otilde;es gr&aacute;ficas ou por
+manipuladores de eventos em pontos. O valor do comando <i>e</i> o valor
+da resposta ser&atilde;o salvos dentro do hist&oacute;rico do ponto (um
+ap&oacute;s o outro), exceto se um erro ocorrer. Neste caso, o comando
+ser&aacute; salvo e um evento que descreve o erro ser&aacute; levantado.</p>
+
+<!--<h1>Input</h1>-->
+<!--<p>Input point types use the @IN and @AN commands to retrieve-->
+<!--current values. These points are not settable. The <b>Data type</b>determines-->
+<!--which command will be used to request the value. The <b>Input number</b>-->
+<!--is the index of the value to be retrieved. For numeric points, linear-->
+<!--value scaling can also be automatically done by setting the <b>Scale</b>-->
+<!--values accordingly.</p>-->
+
+<h1>Entrada</h1>
+<p>Tipos de pontos de entrada usam os comandos @IN e @AN para
+recuperar os valores atuais. N&atilde;o &eacute; poss&iacute;vel definir
+valores para estes pontos. O <b>Tipo de dados</b> determina qual comando
+ser&aacute; usado para solicitar o valor. O <b>N&uacute;mero de
+entrada</b> &eacute; o &iacute;ndice do valor a ser recuperado. Para pontos
+num&eacute;ricos, uma escala linear tamb&eacute;m pode ser
+automaticamente recuperada definindo o valor da <b>Escala</b>
+correspondente.</p>
+
+<!--<h1>Output</h1>-->
+<!--<p>Output point types use the CB, SB, and @OUT commands to retrieve-->
+<!--and set binary output values. The <b>Output number</b> is the index of-->
+<!--the value to be managed.</p>-->
+
+<h1>Sa&iacute;da</h1>
+<p>Tipos de pontos de sa&iacute;da usam os comandos CB, SB, e @OUT
+para recuperar e definir valores bin&aacute;rios de sa&iacute;da. O <b>N&uacute;mero
+da sa&iacute;da</b> &eacute; o &iacute;ndice do valor a ser gerenciado.</p>
+
+<!--<h1>Tell position</h1>-->
+<!--<p>Tell position point types use the TP command to retrieve a-->
+<!--particular axis position. These points are not settable. The <b>Axis</b>-->
+<!--is the label of the required axis. Linear value scaling can be-->
+<!--automatically done by setting the <b>Scale</b> values accordingly.-->
+<!--Select <b>Round to integer</b> to round off decimal values from the-->
+<!--retrieve (and scaled) value.</p>-->
+
+<h1>Informar posi&ccedil;&atilde;o</h1>
+<p>O tipo de ponto informar posi&ccedil;&atilde;o usa o comando TP
+para recuperar uma posi&ccedil;&atilde;o em um eixo particular. Os
+valores destes pontos n&atilde;o podem ser definidos. O <b>Eixo</b>
+&eacute; o r&oacute;tulo do eixo solicitado. Dimensionamento linear pode
+ser obtido automaticament definindo o valor da <b>Escala</b>
+correspondente. Selecione <b>Arredondar para inteiro</b> para arredondar
+valores decimais do valor recuperado ou dimensionado.</p>
+
+<!--<h1>Variable</h1>-->
+<!--<p>Variable point types use the "Var=" command to set and retrieve-->
+<!--variable values in the equipment. The <b>Variable name</b> is the name-->
+<!--of the desired variable. Values to set and receive are automatically-->
+<!--converted according to the given <b>Data type</b>.</p>-->
+
+<h1>Vari&aacute;vel</h1>
+<p>O tipo de ponto vari&aacute;vel usa o comando "Var=" para definir
+e recuperar valores de vari&aacute;veis do equipamento. O <b>Nome da
+vari&aacute;vel</b> &eacute; o nome da vari&aacute;vel em quest&atilde;o.
+Valores a definir e recuperar s&atilde;o automaticamente convertidos
+para o <b>Tipo de dado</b> fornecido.</p>

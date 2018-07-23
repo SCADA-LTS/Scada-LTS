@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Tree");
+	dojo.require("dojo.widget.TreeSelector");
+	dojo.hostenv.writeIncludes();
+
+
+	dojo.addOnLoad(function() {
+
+		// Hook before dojo.event.publish to print all events
+		var reporter = {
+			beforePublish: function(topic, message) {
+				dojo.debug("Going to publish:"+topic);
+			},
+
+			beforeSubscribe: function(topic, message) {
+				dojo.debug("Going to subscribe:"+topic);
+			}
+		}
+
+		dojo.event.kwConnect({
+			type: "before",
+			srcObj: dojo.event.topic,
+			srcFunc: "publish",
+			targetObj: reporter,
+			targetFunc: "beforePublish"
+		});
+
+
+		dojo.event.kwConnect({
+			type: "before",
+			srcObj: dojo.event.topic.TopicImpl,
+			srcFunc: "subscribe",
+			targetObj: reporter,
+			targetFunc: "report"
+		});
+
+	});
+
+
+	function kill() {
+		dojo.debug("RUN DESTROY...");
+		dojo.widget.byId('tree').destroy();
+		dojo.debug("...DONE DESTROY");
+	}
+
+	function print() {
+		dojo.debug('---');
+		dojo.debug("Dumping all widgets:");
+		dojo.lang.forEach(dojo.widget.manager.getAllWidgets(),
+			function(t) { dojo.debug(t.widgetType) }
+		);
+		dojo.debug('---');
+	}
+
+	function test() {
+		print();
+		kill();
+		dojo.debug("Must be no widgets now");
+		print();
+	}
+
+
+</script>
+
+</head>
+<body>
+
+<h2>Destroy Tree</h2>
+
+<div dojoType="Tree" id="tree">
+	<div dojoType="TreeNode" title="Item 1">
+		<div dojoType="TreeNode" title="Item 1.1" ></div>
+	</div>
+	<div dojoType="TreeNode" title="Item 2" ></div>
+</div>
+
+
+<input type=button onClick="test(); this.disabled='disabled'" value="Destroy tree"/>
+
+
+
+</body>
+</html>

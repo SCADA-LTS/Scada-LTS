@@ -1,0 +1,63 @@
+.controller1 {
+	width: 200px;
+}
+
+.controller1 .dojoTab {
+	padding-left : 9px;
+	border-bottom : 1px solid #6290d2;
+	background : url(images/tab_left.gif) no-repeat left top;
+	cursor: pointer;
+	white-space: nowrap;
+	z-index: 3;
+}
+
+.controller1 .dojoTab div {
+	padding : 4px 15px 4px 6px;
+	background : url(images/tab_right.gif) no-repeat right top;
+	color : #333;
+	font-size : 90%;
+}
+
+.controller1 .dojoTab.current {
+	padding-bottom : 1px;
+	/*border-bottom : 0;*/
+	background-position : 0 -150px;
+}
+
+.controller1 .dojoTab.current div {
+	padding-bottom : 5px;
+	margin-bottom : -1px;
+	background-position : 100% -150px;
+}
+
+
+.controller2 .dojoTab {
+	/*position : relative;*/
+	float : left;
+	padding-left : 9px;
+	border-bottom : 1px solid #6290d2;
+	background : url(images/customTabLeft.gif) no-repeat left top;
+	cursor: pointer;
+	white-space: nowrap;
+	z-index: 3;
+}
+
+.controller2 .dojoTab div {
+	display : block;
+	padding : 4px 15px 4px 6px;
+	background : url(images/customTabRight.gif) no-repeat right top;
+	color : #ffffff;
+	font-size : 90%;
+}
+
+.controller2 .dojoTab.current {
+	padding-bottom : 1px;
+	/*border-bottom : 0;*/
+	background-position : 0 -150px;
+}
+
+.controller2 .dojoTab.current div {
+	padding-bottom : 5px;
+	margin-bottom : -1px;
+	background-position : 100% -150px;
+}

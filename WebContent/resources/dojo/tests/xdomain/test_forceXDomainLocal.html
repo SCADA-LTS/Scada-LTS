@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true,
+				forceXDomain: true,
+				xdWaitMs: 10000
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.event.*");
+
+			function click1(){
+				dojo.debug("click1");
+			}
+
+			function init(){
+				dojo.debug("init was called.");
+				var clickNode = document.getElementById("testButton1");
+				dojo.event.connect(clickNode, "onclick", "click1");
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<h1>Force XDomain Test Page</h1>
+		<p>
+		This test should succeed. If you click on the Test Button, there should be
+		a debug message saying "click1".
+		</p>
+		<p>This page tests the djConfig.forceXDomain option, which forces even XHR loaded
+		packages to be treated like cross-domain packages (do async loading, and use the
+		dojo.hostenv.createXdPackage() to transform the XHR package content into a
+		xdomain-compatible package.
+		<p>
+				<button id="testButton1">Test Button</button>
+		</p>
+	</body>
+</html>

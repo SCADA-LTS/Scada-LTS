@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+	<head>
+			
+		<title>Monthly Calendar Demo</title>
+
+		<script type="text/javascript"> var djConfig = {isDebug: true}; </script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.widget.*");
+			dojo.require("dojo.widget.MonthlyCalendar");
+			dojo.require("dojo.event.*");
+			dojo.require("dojo.io.*");
+			dojo.require("dojo.cal.iCalendar");
+			
+			var calendar="test_Calendar.ics";
+			dojo.debug("Calendar: " + calendar);
+			dojo.addOnLoad(function(){
+				dojo.io.bind({
+					url: calendar,
+					load: function(type, data, evt){
+						dojo.debug("Got ICS file");
+						var cal = dojo.cal.iCalendar.fromText(data);
+						var monthly = dojo.widget.byId("Calendar");
+						if(!monthly){
+							dojo.debug("ERROR: Calendar widget wasn't instantiated!");
+							return;
+						}
+						for (var x=0; x<cal.length; x++) {
+							monthly.addCalendar(cal[x]);
+						} 
+						dojo.debug("Done Adding Calendar");
+					},
+					mimetype: "text/plain"
+				});
+			});
+
+		</script>
+			
+	</head>
+	<body bgcolor="white">
+		<h1>Experimental</h1>
+		<div id="Calendar" dojoType="monthlycalendar" ></div>
+	</body>
+</html>

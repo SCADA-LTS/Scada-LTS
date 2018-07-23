@@ -1,0 +1,295 @@
+=border-radius($radius)
+  -webkit-border-radius: $radius
+  -moz-border-radius: $radius
+  border-radius: $radius
+
+=transition($trans)
+  -webkit-transition: $trans
+  -moz-transition: $trans
+  -o-transition: $trans
+  transition: $trans
+
+=boxshadow($shadow)
+  -webkit-box-shadow: $shadow
+  -moz-box-shadow: $shadow
+  box-shadow: $shadow
+
+input:focus
+  border: 1px solid #666
+
+li
+  text-decoration: none
+  list-style-type: none
+  cursor: pointer
+
+.dataTableContainer, .chartContainer
+  margin-bottom: 1px
+  position: relative
+
+.chartSettings, .dataTableContainer
+  margin-top: -30px
+
+table
+  width: 100%
+  border-radius: 6px
+  -moz-border-radius: 6px
+  border: none
+  border-collapse: collapse
+
+tr:nth-of-type(odd)
+  background: #eee
+
+table td
+  padding: 6px
+  border: 1px solid #ccc
+  text-align: left
+  white-space: nowrap
+  font-size: 14px
+
+table td.checkBox
+  width: 2%
+
+table td.date
+  width: 5%
+
+tr
+  border-radius: 5px
+
+table td:first-child
+  border-left: none
+
+table td:last-child
+  border-right: none
+
+.watchlistChart
+  min-height: 250px
+  height: 40vh
+  z-index: -5
+
+select
+  height: 40px
+  width: 100%
+  border-radius: 3px
+  text-align: center
+  border: 1px solid #ccc
+  outline: 0
+  cursor: pointer
+  padding-left: 15px
+  margin: 0
+  color: #333
+
+@-webkit-keyframes blink
+  0%, 100%
+    opacity: 0
+  40%, 60%
+    opacity: 1
+
+@keyframes blink
+  0%, 100%
+    opacity: 0
+  40%, 60%
+    opacity: 1
+
+.chartBtn:hover
+  border-color: #666
+  +transition(border-color .3s ease-out)
+
+.lastActualizationDate
+  margin: 15px 0
+
+.dataLoadOff
+  opacity: .3
+  +transition(opacity .3s ease)
+
+.dataTable
+  +transition(opacity .3s ease-out)
+
+.chartLoadOff
+  opacity: .3
+  +transition(opacity .3s ease)
+
+#plotly
+  +transition(opacity .3s ease-out)
+
+.backlightOnDataChange
+  -webkit-animation: backlight 1.5s ease
+  animation: backlight 1.5s ease
+
+@-webkit-keyframes backlight
+  0%
+    background-color: #d7f4e4
+  100%
+    background-color: transparent
+
+@keyframes backlight
+  0%
+    background-color: #d7f4e4
+  100%
+    background-color: transparent
+
+h2
+  font-size: 14px
+
+.md-card
+  overflow: hidden
+  +transition(height .5s ease)
+
+.chartContainer
+  height: 0
+  overflow: hidden
+  margin-top: 30px
+  +transition(all .4s ease-in-out)
+
+.openFirstStage
+  margin-top: -30px
+  height: 625px
+  +transition(all .4s ease-in)
+
+.openSecondStage
+  margin-top: -30px
+  height: 895px
+  +transition(all .4s ease-in)
+
+.inputFromPast, .selectFromPast
+  width: 49%
+
+.buttonFromPast, .inputFromPast, .selectFromPast, .datePickerInput, .revealChartButton
+  border: 1px dotted #666
+  height: 30px
+  line-height: 20px
+  font-size: 18px
+  border-radius: 5px
+  outline: none
+  padding: 0 15px
+  margin-bottom: 10px
+  box-sizing: border-box
+
+.buttonFromPast
+  background-color: #666
+  color: #fff
+  width: 150px
+
+.bottomButton
+  margin-bottom: 0
+  width: 150px
+
+.datePickerInput
+  width: 100%
+
+.active
+  background-color: #006622
+
+.spinner
+  margin: 0 auto
+  width: 70px
+  text-align: center
+  > div
+    width: 10px
+    height: 10px
+    background-color: #333
+    border-radius: 100%
+    display: inline-block
+    -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both
+    animation: sk-bouncedelay 1.4s infinite ease-in-out both
+  .bounce1
+    -webkit-animation-delay: -0.32s
+    animation-delay: -0.32s
+  .bounce2
+    -webkit-animation-delay: -0.16s
+    animation-delay: -0.16s
+
+@-webkit-keyframes sk-bouncedelay
+  0%, 80%, 100%
+    -webkit-transform: scale(0)
+
+  40%
+    -webkit-transform: scale(1)
+
+@keyframes sk-bouncedelay
+  0%, 80%, 100%
+    -webkit-transform: scale(0)
+    transform: scale(0)
+
+  40%
+    -webkit-transform: scale(1)
+    transform: scale(1)
+
+.spinnerSpecifiedTime, .spinnerTimeRange
+  position: absolute
+
+.spinnerSpecifiedTime
+  top: 70px
+  left: 64px
+
+.spinnerTimeRange
+  top: 237px
+  left: 64px
+
+#plotlyLoader
+  position: absolute
+  z-index: 20
+  min-height: 87%
+  width: 94%
+  top: 70px
+  background-color: rgba(255, 255, 255, 0.5)
+  .spinner
+    position: absolute
+    top: 36%
+    left: 50%
+    transform: translate(-50%, -50%)
+
+.chartButtons
+  position: absolute
+  z-index: 5
+  opacity: 0
+  top: 15px
+  left: 73px
+  +transition(all .4s ease)
+  button
+    width: 20px
+    height: 20px
+    color: #fff
+    font-size: 14px
+    -webkit-font-smoothing: antialiased
+    text-align: center
+    background-color: #999999
+    cursor: pointer
+    +border-radius(2px)
+
+.showButtons
+  opacity: 1
+  +transition(all .4s ease)
+
+.mat-fab, .mat-mini-fab
+  background-color: #FFF
+  +transition(opacity .5s ease)
+
+.chartIconOpen
+  left: 50%
+  transform: translateX(-50%)
+  margin: -20px 0 10px 0
+  z-index: 5
+
+.chartContainer .chartIconClose
+  position: absolute
+  bottom: 30px
+  right: 30px
+  z-index: 21
+
+.hide
+  opacity: 0
+  +transition(opacity .5s ease)
+
+.moveChartListAndSettings
+  margin-top: 0
+  +transition(all .3s ease-in)
+
+.urlButton
+  z-index: 5
+  top: 0
+  +transition(all .4s ease-in)
+
+.urlButtonStageTwo
+  top: 36px
+  +transition(all .4s ease-in)
+

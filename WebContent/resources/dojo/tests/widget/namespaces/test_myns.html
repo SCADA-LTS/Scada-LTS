@@ -1,0 +1,112 @@
+<html xmlns:dojo xmlns:myns>
+<head>
+<script type="text/javascript">
+	djConfig = { 
+		isDebug: true,
+		debugAtAllCosts: false,
+		excludeNamespace: [ "foo" ]
+	};
+</script>
+
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript" src="../../_bootstrap.js"></script>
+<script type="text/javascript">
+dojo.require("dojo.widget.*");
+
+// manifest.js would usually belong in <dojo root>/../myns/manifest.js and would be loaded implicitly
+// merely by using myns: widgets.  
+// This reference is put here because we cannot ship a test outside the dojo src/ tree.
+dojo.require('tests.widget.namespaces.myns.manifest');
+
+dojo.hostenv.writeIncludes();
+
+dojo.addOnLoad(function(){
+	var progWidget1 = dojo.byId("progWidget1"); 
+	dojo.widget.createWidget("Button", null, progWidget1);
+
+	var progWidget2 = dojo.byId("progWidget2"); 
+	dojo.widget.createWidget("dojo:Button", null, progWidget2);
+
+	var progWidget3 = dojo.byId("progWidget3"); 
+	dojo.widget.createWidget("myns:Check", null, progWidget3);
+});
+</script>
+
+</head>
+<body>
+<h1>Test various markup for namespaced widgets</h1>
+<h3>dojoType tests</h3>
+<div dojoType="Checkbox"></div> Dojo Checkbox using <code>&lt;div dojoType="Checkbox"&gt;</code>
+<br/>------<br/>
+
+<div dojoType="dojo:Checkbox"></div> Dojo Checkbox using <code>&lt;div dojoType="dojo:Checkbox"&gt;</code>
+<br/>------<br/>
+
+<div dojoType="myns:Check"></div> MyNs checkbox using <code>&lt;div dojoType="myns:Check"&gt;</code>
+<br/>------<br/>
+
+
+<button id="progWidget1">Click me!</button> Dojo button added programatically without any namespace using <code>dojo.widget.createWidget("Button")</code>
+<br/>------<br/>
+<button id="progWidget2">Click me!</button> Dojo button added programatically with dojo namespace specified <code>dojo.widget.createWidget("dojo:Button")</code>
+<br/>------<br/>
+<div id="progWidget3">Click me!</div> MyNs checkbox added programatically <code>dojo.widget.createWidget("myns:Check")</code>
+<br/>------<br/>
+
+<h3>XML namespaces</h3>
+<h3>
+	(To use the following with IE you MUST declare the xmlns in your html tag.)
+</h3>
+<ul>
+<li>
+	Or serve xhtml pages with a content-type of text/xhtml (not just xhtml doctype!).
+</li>
+</ul>
+<br>
+<!--
+	If you don't declare xmlns in the HTML tag, then in IE you get the following problems:
+		1) A tag like <dojo:Checkbox> is actually treated like <dojo:Checkbox />
+			* The <dojo:Button> example below wouldn't have the
+			  caption inside the button in IE.
+		2) A tag like </dojo:Checkbox> is added as a DOM node rather than
+			acting as a closing tag. Use the MS DOM inspector  to see.
+			
+	Don't try to use custom tags in IE that dont have a namespace.
+		* <div><Checkbox></Checkbox></div> is parsed as <div></div>
+		* <div>xxx<Test></div> is parsed as <div>xxx<Test/></div> but
+		  IE6 barfs if you try to set innerHTML on the <Test> element
+		  or if you try to use appendChild() to add a child node.
+		* might be able to if serving with content-type XHTML or XML (not just !DOCTYPE)
+
+	Other relevant links:
+		http://www.hixie.ch/advocacy/xhtml
+		http://lachy.id.au/log/2005/12/xhtml-beginners
+-->
+
+<dojo:Checkbox></dojo:Checkbox> Dojo Checkbox using namespaces <code>&lt;dojo:Checkbox&gt;</code>
+<br/>------<br/>
+
+<dojo:Checkbox dojoDomain="html"></dojo:Checkbox> Dojo checkbox with the default HTML domain <code>&lt;dojo:Checkbox dojoDomain="html"&gt;</code>
+<br/>------<br/>
+
+<dojo:Button>MyButton</dojo:Button> Dojo Button using namespaces <code>&lt;dojo:Button&gt;</code>
+<br/>------<br/>
+
+<!--
+<myns:Check dojoDomain="svg"></myns:Check>	MyNs checkbox using namespaces and SVG domain (this should NOT work since the namespace resolver for myns namespace doesn't handle the SVG domain, just HTML)
+<br/>------<br/>
+<myns:Check dojoDomain="html"></myns:Check>	MyNs checkbox using namespaces and HTML domain (which is the default anyway)
+<br/>------<br/>
+-->
+
+<myns:Check></myns:Check>	MyNs checkbox using namespaces <code>&lt;myns:Check&gt;</code>
+<br/>------<br/>
+
+<div dojoType="myns:Check"></div> MyNs checkbox using dojoType <code>&lt;div dojoType="myns:Check"&gt;</code>
+<br/>------<br/>
+
+<foo:Check></foo:Check> Declaration using an exluded namespace (should cause no error). <code>&lt;foo:Check&gt;</code>
+<br/>------<br/>
+
+</body>
+</html>

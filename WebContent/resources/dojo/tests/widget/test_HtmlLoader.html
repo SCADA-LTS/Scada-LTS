@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Test content loader</title>
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+	djConfig.debugAtAllCosts = true;
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.html.loader");
+	dojo.require("dojo.lang.assert");
+	dojo.hostenv.writeIncludes();
+</script>
+<script>
+	var postCreate = false;
+	var show = false;
+	var del = false;
+	
+	// make a custom widget
+	dojo.widget.defineWidget(
+		"dojo.widget.testLoader",
+		dojo.widget.HtmlWidget,
+		function(){
+			dojo.widget.html.loader.hookUp({widget: this});
+		},
+		{
+			isContainer: true,
+ 
+			// should still fire these 3 functions
+			postCreate: function(){
+				// test infinites loop
+				dojo.debug("postCreate "+this.widgetId);
+				this.constructor.superclass.postCreate.apply(this, arguments);
+				postCreate = true;
+			},
+			show: function(){
+				// test infinites loop
+				dojo.debug("show "+this.widgetId);
+				this.constructor.superclass.show.apply(this, arguments);
+				show = true;
+			},
+			destroy: function(){
+				// test inifinite loop
+				dojo.debug("destroy "+this.widgetId);
+				this.constructor.superclass.destroy.apply(this, arguments);
+				del = true;
+			}
+		}
+	);
+
+
+	dojo.addOnLoad(function(){
+		try{
+			var isFunc = dojo.lang.isFunction;
+			var unDef = dojo.lang.isUndefined;
+			var a = dojo.lang.assert;
+			var mess = " wrong type, not a func";
+			var messu = " wrong type, is undefined";
+			var w = dojo.widget.byId("test");
+			var cont = "This content should abort our doc0.html initial href, aka this should win"
+			w.setContent(cont);dojo.debug("here");
+			
+			dojo.debug("start testing");
+			// test functions
+			a(isFunc(w.setContent), "setContent"+mess);
+			a(isFunc(w.setUrl), "setUrl"+mess);
+			a(isFunc(w.loadContents, "loadContents"+mess));
+			a((postCreate==true), "widget specific postCreate not called");
+	
+			w.show();
+	
+			a((show==true), "widget specific show not called");
+			a(isFunc(w.refresh), "refresh"+mess);
+			a(isFunc(w.abort), "abort"+mess);
+			a(isFunc(w.onLoad), "onLoad"+mess);
+			a(isFunc(w.onUnLoad), "onUnLoad"+mess);
+			a(isFunc(w.addOnLoad), "addOnLoad"+mess);
+			a(isFunc(w.addOnUnLoad), "addOnUnLoad"+mess);
+			a(isFunc(w.onDownloadStart), "onDownloadStart"+mess);
+			a(isFunc(w.onDownloadEnd), "onDownloadEnd"+mess);
+			a(isFunc(w.onDownloadError), "onDownloadError"+mess);
+			a(isFunc(w.onExecError), "onExecError"+mess);
+			a(isFunc(w.onSetContent), "onSetContent"+mess);
+			a(isFunc(w.onContentParse), "onContentParse"+mess);
+			a(isFunc(w.onExecScript), "onExecScript"+mess);
+			a(isFunc(w.setHandler), "setHandler"+mess);
+			a((typeof w.loader == 'object'), "loader object wasent found")
+			// test properties
+			a(!unDef(w.adjustPaths), "adjustPaths"+messu);
+			a(!unDef(w.href), "href"+messu);
+			a(!unDef(w.extractContent), "extractContent"+messu);
+			a(!unDef(w.parseContent), "parseContent"+messu);
+			a(!unDef(w.cacheContent), "cacheContent"+messu);
+			a(!unDef(w.bindArgs), "bindArgs"+messu);
+			a(!unDef(w.preload), "preload"+messu);
+			a(!unDef(w.refreshOnShow), "refreshOnShow"+messu);
+			a(!unDef(w.handler), "handler"+messu);
+			a(!unDef(w.trackHistory), "trackHistory"+messu);
+			a(!unDef(w.executeScripts), "executeScripts"+messu);
+			a(!unDef(w.scriptScope), "scriptScope"+messu);
+			// make sure we havent calles destroy yet
+			a((del==false), "destroy called prematurely");
+			// now make sure we have aborted href load
+			a((w.domNode.innerHTML==cont), cont+" wasnt set, or overriden by a async call");
+			a((w.href==""), "href!='', setContent should clear href");
+	
+			dojo.debug("Testing to unHook")
+			// dettach loader form our widget
+			w.loader.unHook();
+			// let the browser do its stuff
+	
+			// make sure it cleaned up after itself
+			// test functions
+			mess = " isnt cleared on loader.unHook()";
+			messu = " wrong type should be undefined";
+			a(!isFunc(w.setContent), "setContent"+mess);
+			a(!isFunc(w.setUrl), "setUrl"+mess);
+			a(!isFunc(w.loadContents, "loadContents"+mess));
+			a(!isFunc(w.refresh), "refresh"+mess);
+			a(!isFunc(w.abort), "abort"+mess);
+			a(!isFunc(w.onLoad), "onLoad"+mess);
+			a(!isFunc(w.onUnLoad), "onUnLoad"+mess);
+			a(!isFunc(w.addOnLoad), "addOnLoad"+mess);
+			a(!isFunc(w.addOnUnLoad), "addOnUnLoad"+mess);
+			a(!isFunc(w.onDownloadStart), "onDownloadStart"+mess);
+			a(!isFunc(w.onDownloadEnd), "onDownloadEnd"+mess);
+			a(!isFunc(w.onDownloadError), "onDownloadError"+mess);
+			a(!isFunc(w.onExecError), "onExecError"+mess);
+			a(!isFunc(w.onSetContent), "onSetContent"+mess);
+			a(!isFunc(w.onContentParse), "onContentParse"+mess);
+			a(!isFunc(w.onExecScript), "onExecScript"+mess);
+			a(!isFunc(w.setHandler), "setHandler"+mess);;
+			a(unDef(w.loader), "loader object"+mess);
+	
+			// test properties
+	// 		a(unDef(w.adjustPaths), "adjustPaths"+messu); // cant make these work
+	// 		a(unDef(w.href), "href"+messu);
+			a(unDef(w.extractContent), "extractContent"+messu);
+			a(unDef(w.parseContent), "parseContent"+messu);
+			a(unDef(w.cacheContent), "cacheContent"+messu);
+			a(unDef(w.bindArgs), "bindArgs"+messu);
+			a(unDef(w.preload), "preload"+messu);
+			a(unDef(w.refreshOnShow), "refreshOnShow"+messu);
+			a(unDef(w.handler), "handler"+messu);
+			a(unDef(w.trackHistory), "trackHistory"+messu);
+			a(unDef(w.executeScripts), "executeScripts"+messu);
+			a(unDef(w.scriptScope), "scriptScope"+messu);
+	
+			// make sure we havent calles destroy yet
+			a((del==false), "destroy called prematurely");
+	
+			// now make sure we have aborted href load
+			a((w.domNode.innerHTML==cont), cont+" unhook affected innerHTML");
+	
+			// destroy our widget
+			w.destroy();
+			a((del==true), "destroy wasent called");
+			var div = dojo.byId("status");
+			div.innerHTML = "<p>Success!</p>"
+			div.style.backgroundColor = "green";
+		}catch(e){dojo.debug("error: "+e)}
+	});
+</script>
+
+</head>
+<body>
+	<h1>Test for loader (base class for ContentPane etc.)</h1>
+	<h2>Experimental!</h2>
+	<div dojoType="testLoader" widgetId="test" href="doc0.html" style="border: 2px dashed red;">this is a widget</div>
+
+	<div id="status" style="text-align: center; font-size: 16pt; background-color: red">If test passes this gets green</div>
+</body>
+</html>

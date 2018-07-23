@@ -1,0 +1,13 @@
+<md-toolbar *ngIf="editMode">
+    <md-select placeholder="Component List" [(ngModel)]="selectedId">
+        <md-option *ngFor="let componentType of componentTypes" [value]="componentType.id">
+            {{componentType.label}}
+        </md-option>
+    </md-select>
+    <button type="button" md-icon-button (click)="addComponent()"><md-icon>add</md-icon></button>
+</md-toolbar>
+<div *ngIf="items">
+    <div *ngFor="let item of items">
+        <app-item-frame [item]="item" [editMode]="editMode" (savedItem)="savedItem($event)" (removedItem)="removedItem($event)"></app-item-frame>
+    </div>
+</div>

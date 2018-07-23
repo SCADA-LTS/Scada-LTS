@@ -1,0 +1,220 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>
+<p>
+  An event detector's purpose is to determine if the value of a point satisfies one or more related conditions, and if 
+  so, to become "active" and raise an event that can be appropriately handled. A point can have an unlimited number of 
+  event detectors. The ways in which events can be detected depend upon the data type of point, and so only the event 
+  detectors that apply to the current point's data type are listed in the <b>Type</b> selection.
+</p>
+--><h1>Vis&atilde;o Geral</h1>
+<p>
+  O prop&oacute;sito dos detectores de valores &eacute; determinar se o valor de um determinado data point satisfaz uma ou mais condi&ccedil;&otilde;es e
+  se o faz, se tornar ativo e disparar um evento que poder&aacute; ser ent&atilde;o tratado. Um data point pode ter um n&uacute;mero ilimitado de 
+  detectores de valores. A maneira de detec&ccedil;&atilde;o depende do tipo de dado do data point, portanto somente os tipos aplic&aacute;veis ao 
+  data point em quest&atilde;o constam na lista.
+</p>
+
+<!--<p>
+  Event detectors can detect a large number of conditions, but only apply to a single point. If conditions across 
+  multiple points or conditions that include scheduled events are required, compound event detectors can be used. See 
+  the documentation for compound event detectors.
+</p>
+-->
+<p>
+  Detectores de valores podem detectar v&aacute;rios tipos diferentes de condi&ccedil;&otilde;es, mas s&oacute; se aplicam a um &uacute;nico ponto. Se voc&ecirc;
+  necessita de condi&ccedil;&otilde;es para v&aacute;rios pontos ou do tipo agendadas pode utilizar detectores de eventos compostos.Veja 
+  a documenta&ccedil;&atilde;o de eventos compostos para mais informa&ccedil;&otilde;es.
+</p>
+<!--<p>
+  A point may have as many detectors as necessary, and can have multiple detectors of the same type. (i.e. multiple 
+  high limit or low limit detectors.)
+</p>
+--><p>
+  Um data point pode possuir quanto detectores forem necess&aacute;rios, inclusive v&aacute;rios detectores do mesmo tipo. (i.e. v&aacute;rios 
+  do tipo limite superior.)
+</p>
+<!--<p>
+  To add a new detector select the <b>Type</b> from the list and click the <img src="images/bell_add.png"/> icon. Note 
+  that the "Save" button must be clicked to have the detector actually be saved with the point. To delete an existing 
+  detector click the <img src="images/bell_delete.png"/> icon associated with the detector.
+</p>
+--><p>
+  Para adicionar um novo selecione o <b>tipo</b> na lista e clique em <img src="images/bell_add.png"/>. Note
+  que voc&ecirc; precisa clicar no bot&atilde;o "Salvar" para que os detectores sejam realmente associados ao data point. Para excluir um existente, 
+  clique em <img src="images/bell_delete.png"/>.
+</p>
+<!--<p>
+  Each detector type has an <b>Alarm level</b> attribute. This determines whether the detector raises an alarm when 
+  active, and if so the severity of the alarm. See the general help page for information on Alarms.
+</p>
+--><p>
+  Cada detector tem um <b>n&iacute;vel de alarme</b> associado. Isso determina se o detector iniciar&aacute; um alarme quando ativo e a gravidade 
+  do mesmo. Veja a p&aacute;gina de ajuda geral para mais informa&ccedil;&otilde;es sobre alarmes.
+</p>
+<!--<h1>High limit</h1>
+<p>
+  This detector applies only to Numeric points. The <b>High limit</b> is the value above which the detector becomes 
+  active. The detector may optionally be configured with a <b>Duration</b>; the point's value must stay above the high 
+  limit for at least the given duration before the detector becomes active. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+-->
+<h1>Limite Superior</h1>
+<!--<p>
+  This detector applies only to Numeric points. The <b>High limit</b> is the value above which the detector becomes 
+  active. The detector may optionally be configured with a <b>Duration</b>; the point's value must stay above the high 
+  limit for at least the given duration before the detector becomes active. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+
+-->
+<p>
+  Esse detector s&oacute; se aplica a data points do tipo num&eacute;rico. O <b>limite m&aacute;ximo</b> &eacute; o valor acima do qual o detector se tornar&aacute; 
+  ativo. O detector pode ser opcionalmente configurado com uma <b>dura&ccedil;&atilde;o</b>; o valor do data point dever&aacute; permanecer
+  acima do limite por pelo menos o tempo de dura&ccedil;&atilde;o especificado para que o detector se torne ativo. Eventos disparados por este detector 
+  automaticamente retornar&atilde;o ao normal quando a condi&ccedil;&atilde;o n&atilde;o for mais satisfeita.
+</p>
+
+
+<!--<h1>Low limit</h1>
+<p>
+  This detector applies only to Numeric points. The <b>Low limit</b> is the value below which the detector becomes 
+  active. The detector may optionally be configured with a <b>Duration</b>; the point's value must stay below the low 
+  limit for at least the given duration before the detector becomes active. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+-->
+<h1>Limite inferior</h1>
+<p>
+  Esse detector s&oacute; se aplica a data points do tipo num&eacute;rico. O <b>limite m&iacute;nimo</b> &eacute; o valor abaixo do qual o detector se tornar&aacute; 
+  ativo. O detector pode ser opcionalmente configurado com uma <b>dura&ccedil;&atilde;o</b>; o valor do data point dever&aacute; permanecer
+  abaixo do limite por pelo menos o tempo de dura&ccedil;&atilde;o especificado para que o detector se torne ativo. Eventos disparados por este detector 
+  automaticamente retornar&atilde;o ao normal quando a condi&ccedil;&atilde;o n&atilde;o for mais satisfeita.
+</p>
+
+<!--<h1>Change</h1>
+<p>
+  This detector applies to all data types. It raises an event whenever the point value changes. Events raised by this 
+  detector do not automatically return to normal.
+</p>
+-->
+<h1>Mudan&ccedil;a</h1>
+<p>
+  Este detector se aplica a todos os tipos de dados. Iniciar&aacute; um evento quando o valor do data point alterar. Eventos disparados por 
+  este detector n&atilde;o possuem retorno ao normal autom&aacute;tico.
+</p>
+
+<!--
+<h1>No change</h1>
+<p>
+  This detector applies to all data types. It raises an event whenever the value has not changed within the given 
+  <b>Duration</b>. This can be useful  to detect when equipment is malfunctioning. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+-->
+<h1>Sem mudan&ccedil;a</h1>
+<p>
+  Este detector se aplica a todos os tipos de dados. Iniciar&aacute; um evento caso o valor do data point n&atilde;o se altere por determinado tempo,
+  especificado no campo <b>dura&ccedil;&atilde;o</b>. Pode ser &uacute;til, por exemplo, na detec&ccedil;&atilde;o de equipamentos com falhas. Eventos disparados por este detector 
+  automaticamente retornar&atilde;o ao normal quando a condi&ccedil;&atilde;o n&atilde;o for mais satisfeita.
+</p>
+
+<!--<h1>No update</h1>
+<p>
+  This detector applies to all data types. It raises an event whenever the value has not been updated within the 
+  given <b>Duration</b>. (A point value change requires the new point value to be different from the previous point 
+  value. A point value update only requires the time of the point value to change; the value itself can remain the 
+  same.) This can be useful  to detect when equipment is malfunctioning. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+--><h1>Sem atualiza&ccedil;&otilde;es</h1>
+<p>
+  Este detector se aplica a todos os tipos de dados. Iniciar&aacute; um evento caso o valor do data point n&atilde;o seja atualizado por determinado tempo,
+  especificado no campo <b>dura&ccedil;&atilde;o</b>. (uma mudan&ccedil;a no valor de um data point requer que o novo valor seja diferente do anterior. Uma  
+  atualiza&ccedil;&atilde;o no data point apenas requer que o timestamp seja atualizado, mesmo o seu valor continuando o mesmo).  
+  Pode ser &uacute;til, por exemplo, na detec&ccedil;&atilde;o de equipamentos com falhas. Eventos disparados por este detector 
+  automaticamente retornar&atilde;o ao normal quando a condi&ccedil;&atilde;o n&atilde;o for mais satisfeita.
+</p>
+
+
+<!--<h1>Estado</h1>
+<p>
+  This detector applies to Binary, Multistate, and Alphanumeric points. It becomes active whenever the point enters the 
+  given <b>State</b>. The detector may optionally be configured with a <b>Duration</b>; the point must stay in the 
+  given state for at least the given duration before the detector becomes active. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+-->
+<h1>Estado</h1>
+<p>
+  Esse detector se aplica a tipos bin&aacute;rios, m&uacute;ltiplos estados e alfanum&eacute;ricos. Se torna ativo assim que o data point se 
+  encontre no <b>estado</b> especificado. O detector pode ser opcionalmente configurado com uma <b>dura&ccedil;&atilde;o</b>; o valor do data point dever&aacute; 
+  permanecer no estado determinado por pelo menos o tempo de dura&ccedil;&atilde;o especificado para que o detector se torne ativo. Eventos disparados por este detector 
+  automaticamente retornar&atilde;o ao normal quando a condi&ccedil;&atilde;o n&atilde;o for mais satisfeita.
+</p>
+
+<!--<h1>State change count</h1>
+<p>
+  This detector applies only to Binary, Multistate, and Alphanumeric points. It becomes active whenever the point value 
+  changes at least <b>Change count</b> times within the given <b>Duration</b>. Events raised by this detector will 
+  automatically return to normal when the condition is no longer satisfied.
+</p>
+-->
+<h1>Contagem de troca de estados</h1>
+<p>
+  Esse detector se aplica a tipos bin&aacute;rios, m&uacute;ltiplos estados e alfanum&eacute;ricos. Se torna ativo caso o valor do data point
+  mude pelo menos um <b>n&uacute;mero de vezes</b> especificado na <b>dura&ccedil;&atilde;o</b> determinada. Eventos disparados por este detector 
+  automaticamente retornar&atilde;o ao normal quando a condi&ccedil;&atilde;o n&atilde;o for mais satisfeita.
+</p>
+
+
+<!--<h1>Positive CUSUM</h1>
+<p>
+  This detector applies only to Numeric points. The <b>Positive limit</b> is the CUSUM above which the detector becomes 
+  active, and the <b>Weight</b> is the constant weight value to use for CUSUM calculation. The detector may optionally 
+  be configured with a <b>Duration</b>; the CUSUM must stay above the limit for at least the given duration before the 
+  detector becomes active. Events raised by this detector will automatically return to normal when the condition is no 
+  longer satisfied.
+</p>
+
+-->
+<h1>CUSUM Positivo</h1>
+<p>
+  Esse detector s&oacute; se aplica a tipos num&eacute;ricos. O <b>limite positivo</b> &eacute; a CUSUM (soma acumulada) acima da qual  
+  o detector se tornar&aacute; ativo, e o  <b>peso</b> &eacute; a constante utilizada no c&aacute;lculo da soma.  O detector pode ser opcionalmente configurado com uma <b>dura&ccedil;&atilde;o</b>; o valor do data point dever&aacute; 
+  permanecer acima do limite determinado por pelo menos o tempo de dura&ccedil;&atilde;o especificado para que o detector se torne ativo. Eventos disparados por este detector 
+  automaticamente retornar&atilde;o ao normal quando a condi&ccedil;&atilde;o n&atilde;o for mais satisfeita.
+</p>
+
+<!--<h1>Negative CUSUM</h1>
+<p>
+  This detector applies only to Numeric points. The <b>Negative limit</b> is the CUSUM below which the detector becomes 
+  active, and the <b>Weight</b> is the constant weight value to use for CUSUM calculation. The detector may optionally 
+  be configured with a <b>Duration</b>; the CUSUM must stay below the limit for at least the given duration before the 
+  detector becomes active. Events raised by this detector will automatically return to normal when the condition is no 
+  longer satisfied.
+</p>-->
+<h1>CUSUM Negativo</h1>
+<p>
+  Esse detector s&oacute; se aplica a tipos num&eacute;ricos. O <b>limite negativo</b> &eacute; a CUSUM (soma acumulada) abaixo da qual  
+  o detector se tornar&aacute; ativo, e o  <b>peso</b> &eacute; a constante utilizada no c&aacute;lculo da soma.  O detector pode ser opcionalmente configurado com uma <b>dura&ccedil;&atilde;o</b>; o valor do data point dever&aacute; 
+  permanecer abaixo do limite determinado por pelo menos o tempo de dura&ccedil;&atilde;o especificado para que o detector se torne ativo. Eventos disparados por este detector 
+  automaticamente retornar&atilde;o ao normal quando a condi&ccedil;&atilde;o n&atilde;o for mais satisfeita.
+</p>

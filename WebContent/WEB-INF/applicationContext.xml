@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
+
+  <!-- DWR -->
+  <bean id="CompoundEventsDwr" class="com.serotonin.mango.web.dwr.CompoundEventsDwr"/>
+  <bean id="CustomViewDwr" class="com.serotonin.mango.web.dwr.CustomViewDwr"/>
+  <bean id="DataPointDetailsDwr" class="com.serotonin.mango.web.dwr.DataPointDetailsDwr"/>
+  <bean id="DataPointEditDwr" class="com.serotonin.mango.web.dwr.DataPointEditDwr"/>
+  <bean id="DataSourceEditDwr" class="com.serotonin.mango.web.dwr.DataSourceEditDwr"/>
+  <bean id="DataSourceListDwr" class="com.serotonin.mango.web.dwr.DataSourceListDwr"/>
+  <bean id="EmportDwr" class="com.serotonin.mango.web.dwr.EmportDwr"/>
+  <bean id="EventHandlersDwr" class="com.serotonin.mango.web.dwr.EventHandlersDwr"/>
+  <bean id="EventsDwr" class="com.serotonin.mango.web.dwr.EventsDwr"/>
+  <bean id="MailingListsDwr" class="com.serotonin.mango.web.dwr.MailingListsDwr"/>
+  <bean id="MaintenanceEventsDwr" class="com.serotonin.mango.web.dwr.MaintenanceEventsDwr"/>
+  <bean id="MiscDwr" class="com.serotonin.mango.web.dwr.MiscDwr"/>
+  <bean id="PointHierarchyDwr" class="com.serotonin.mango.web.dwr.PointHierarchyDwr"/>
+  <bean id="PointLinksDwr" class="com.serotonin.mango.web.dwr.PointLinksDwr"/>
+  <bean id="PublisherEditDwr" class="com.serotonin.mango.web.dwr.PublisherEditDwr"/>
+  <bean id="PublisherListDwr" class="com.serotonin.mango.web.dwr.PublisherListDwr"/>
+  <bean id="ReportsDwr" class="com.serotonin.mango.web.dwr.ReportsDwr"/>
+  <bean id="ScheduledEventsDwr" class="com.serotonin.mango.web.dwr.ScheduledEventsDwr"/>
+  <bean id="SystemSettingsDwr" class="com.serotonin.mango.web.dwr.SystemSettingsDwr"/>
+  <bean id="UsersDwr" class="com.serotonin.mango.web.dwr.UsersDwr"/>
+  <bean id="ViewDwr" class="com.serotonin.mango.web.dwr.ViewDwr"/>
+  <bean id="WatchListDwr" class="com.serotonin.mango.web.dwr.WatchListDwr"/>
+  <bean id="ScriptsDwr" class="br.org.scadabr.web.dwr.ScriptsDwr"/>
+  <bean id="UsersProfilesDwr" class="br.org.scadabr.web.dwr.UsersProfilesDwr"/>
+  
+  <!-- i18n -->
+  <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+  	<property name="defaultLocale" value="en"/>
+  </bean>
+  
+  <bean id="messageSource" class="com.serotonin.web.i18n.Utf8ResourceBundleMessageSource">
+    <property name="basename"><value>messages</value></property>
+  </bean>
+  
+  
+</beans>

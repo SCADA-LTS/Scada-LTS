@@ -1,0 +1,59 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Currency Unit tests</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+</style>
+<script language="JavaScript" type="text/javascript">
+	// Dojo configuration
+	djConfig = { 
+		isDebug: true
+	};
+</script>
+<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+<link rel="stylesheet" type="text/css" href="../../jsunit/css/jsUnitStyle.css">
+<script language="JavaScript" type="text/javascript" src="../../jsunit/app/jsUnitCore.js"></script>
+<script type="text/javascript" src="../jsunit_browser.js"></script>
+<script language="JavaScript" type="text/javascript">
+dojo.require("dojo.i18n.currency.common");
+
+			function init(){
+				testIsValidCurrency();
+				testFormatCurrency();
+			}
+
+			dojo.addOnLoad(init);
+
+</script>
+		<script language="JavaScript" type="text/javascript">
+
+		// JsUnit Assertion Tests
+		function testIsValidCurrency() {
+			jum.assertTrue("cur_0_0", dojo.i18n.currency.isCurrency("$1,000", "USD"));
+			jum.assertTrue("cur_0_1", dojo.i18n.currency.isCurrency("-$1,000", "USD"));
+		}
+
+		function testFormatCurrency() {
+			for (i in dojo.i18n.currency.FORMAT_TABLE) {
+				dojo.debug(i + ": " + dojo.i18n.currency.format("1234.567", i));
+				dojo.debug(i + ": " + dojo.i18n.currency.format("-1234.567", i));
+			}
+		}
+		</script>
+		
+</head>
+<body>
+
+	<br />
+	<div id="main"></div>
+	<br />
+	This page executes the Currency unit tests.  These tests don't work yet.<br />
+	<br />
+
+</body>
+</html>
+

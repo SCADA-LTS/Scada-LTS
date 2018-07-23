@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<style>
+	.treeCheckBox {
+		height: 14px;
+		margin: 0px;
+		padding: 0px;
+		border: 1px;
+		vertical-align: middle;
+	}
+</style>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+
+<!-- include separately to make sure everything is loaded until next piece -->
+<script type="text/javascript">
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Tree");
+	dojo.require("dojo.event.*");
+
+	dojo.hostenv.writeIncludes();
+</script>
+
+<!-- now use dojo.event. Will not work in IE if joined with previous fragment -->
+<script>
+
+
+	// Process every DOMNode at creation-time for tree, add checkbox to it
+	function addCheckBox(message) {
+		// add checkBox before titleNode
+		var node = message.source;
+
+		var checkBox = document.createElement('input');
+		checkBox.setAttribute('name', node.objectId);
+		checkBox.setAttribute('type', 'checkbox');
+
+		dojo.html.setClass(checkBox, 'treeCheckBox');
+
+		dojo.dom.insertBefore(checkBox, node.titleNode);
+	}
+
+	// need to subscribe BEFORE dojo.addOnLoad
+	// BEFORE widgets are made.
+	dojo.event.topic.subscribe("tree/createDOMNode", addCheckBox);
+
+
+</script>
+
+</head>
+<body>
+
+<h2>Tree with checkboxes</h2>
+
+
+
+<form method="get">
+
+<div dojoType="Tree" widgetId="tree">
+	<div dojoType="TreeNode" title="Item 1" objectId="1">
+		<div dojoType="TreeNode" title="Item 1.1" objectId="1.1"></div>
+		<div dojoType="TreeNode" title="Item 1.2" objectId="1.2">
+			<div dojoType="TreeNode" title="Item 1.2.1" objectId="1.2.1">
+				<div dojoType="TreeNode" title="Item 1.2.1.1" objectId="1.2.1.1"></div>
+			</div>
+			<div dojoType="TreeNode" title="Item 1.2.2" objectId="1.2.2"></div>
+		</div>
+	</div>
+	<div dojoType="TreeNode" title="Item 2" objectId="2"></div>
+</div>
+
+<input type="submit" value="Press to see checked boxes in the URL-string of your browser">
+
+</form>
+
+</body>
+</html>

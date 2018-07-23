@@ -1,0 +1,29 @@
+<md-sidenav-container>
+    
+    <md-sidenav #sidenav mode="over">
+        <app-dashboard-grid-navigator [viewPagesArray]="viewPages" (updateViewPages)="updateViewPage($event)" (openViewPage)="openViewPage($event)">
+        </app-dashboard-grid-navigator>
+    </md-sidenav>
+
+    <md-toolbar>
+        <button md-icon-button (click)="sidenav.toggle()"><md-icon>menu</md-icon></button>
+        <span style='flex: 1 1 auto;'></span>
+        <span *ngIf="viewPage && !editMode" id="title">{{viewPage.name}}</span>
+        <span *ngIf="viewPage && editMode" class="example-fill-remaining-space"></span>
+        <md-input-container *ngIf="viewPage && editMode">
+            <input id="viewPage-name" mdInput placeholder='' [(ngModel)]="viewPage.name">
+        </md-input-container>
+        <span style='flex: 1 1 auto;'></span>
+        <md-input-container *ngIf="editMode">
+            <input mdInput placeholder='Configuration: DPXID' [(ngModel)]="dataPointExportID">
+        </md-input-container>
+        <button *ngIf="editMode" md-icon-button (click)="reloadConfiguration()"><md-icon>refresh</md-icon></button>
+        <button *ngIf="!editMode" md-icon-button (click)="saveConfiguration()"><md-icon>save</md-icon></button>
+        <button md-icon-button (click)="editMode = !editMode"><md-icon>edit</md-icon></button>
+    </md-toolbar>
+
+    <div *ngIf="viewPage">
+        <app-dashboard-grid-page [viewPage]="viewPage" [editMode]="editMode" (saveViewPage)="saveViewPage($event)"></app-dashboard-grid-page>
+    </div>
+
+</md-sidenav-container>

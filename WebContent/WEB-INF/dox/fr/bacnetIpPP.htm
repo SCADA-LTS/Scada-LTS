@@ -1,0 +1,23 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>The <b>Remote device IP</b> is the IP address at which the device can be found. The <b>Remote device port</b> is the port number at which it listens for requests.</p>
+<p>The <b>Object type</b> is the type of object from which values will be requested. The <b>Object instance number</b> is the unique identifier of the obect/type from which values will be requested. Points request the <i>present value</i> of an object instance.</p>
+<p>The <b>Use COV subscription</b> determines whether Mango will attempt to subscribe to COV events for the object on the device. Not all objects support COV subscriptions, and not all devices support them even on object that normally would.</p>
+<p>Use <b>Settable</b> to determine whether the interface will allow users to enter value with which to update the object. Only "output" values are considered to be settable.</p>
+<p>The <b>Data Type</b> field determines what Mango data type the point will have. Values returned from the BACnet network will automatically be converted to the required type.</p>

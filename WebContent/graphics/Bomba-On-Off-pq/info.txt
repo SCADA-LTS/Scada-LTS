@@ -1,0 +1,6 @@
+name=Bomba Simples On/Off (Pequena)
+type=imageSet
+#width=50
+#height=38
+text.x=14
+text.y=2

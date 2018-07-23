@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<script type="text/javascript">var djConfig = {isDebug: true};</script>
+		<script type="text/javascript" src="../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.io.*");
+			dojo.require("dojo.text.textDirectory");
+			dojo.debug("----------------------------------Why is there data between here and Ical Test Start");
+			dojo.require("dojo.iCalendar");
+			dojo.debug("----------------------------------Ical test start");
+	
+			dojo.io.bind({
+				url: "test_calendar.ics",
+				load: function(type, data, evt){
+					dojo.debug("Got ICS file"); 
+					var cal = dojo.iCalendar.fromText(data);
+					/*var evts = cal.getEvents("01-25-2006");
+					for (var x=0; x<evts.length;x++) {
+						dojo.debug("Evt " +x+ ": " + evts[x].summary.value + " Start: " + dojo.date.fromIso8601(evts[x].dtstart.value) + " End: " + dojo.date.fromIso8601(evts[x].dtend.value));
+					}*/
+				},
+				mimetype: "text/plain"
+			});
+	
+		</script>
+	</head>
+
+	
+	<body>
+	</body>
+</html>

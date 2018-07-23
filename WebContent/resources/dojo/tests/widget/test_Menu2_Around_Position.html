@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<script type="text/javascript">
+	var djConfig = {
+	//	debugAtAllCosts: true,
+		isDebug: true
+	};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Menu2");
+	dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body>
+<h1>Popup Around-Positioning Tests</h1>
+<p>This page tests the positioning of popup menus poping up around another node. 
+	The blue ones are fixed positioned: one is working in IE while the other works in other browsers.
+	The yellow box is a padded div, the lime box is relatively positioned and the pink box is absolutely positioned.</p>
+
+<p>Left-clicking in any of these boxes should show a menu below the box clicked (or above if there is not enough space below the element). Change the select value below
+	to popup around different box of element.</p>
+	dojo.html.boxSizing <select id="aroundBoxSelect">
+		<option value="margin-box">MARGIN_BOX</option>
+		<option value="border-box">BORDER_BOX</option>
+		<option value="padding-box">PADDING_BOX</option>
+		<option value="content-box">CONTENT_BOX</option>
+	</select>
+<div style="clear: both">&nbsp;</div>
+<div style="position: absolute; top: expression(eval((document.documentElement||document.body).scrollTop+200)); left: 700px;">
+	<div style="padding: 10px 10px 10px 10px; border: 10px solid black; margin: 10px 10px 10px 10px; background-color: blue; display: block; width: 200px;" id="test0IE">IE fixed positioned block</div>
+</div>
+
+<div style="zIndex: 10000; position: fixed; top: 5; left: 200px;">
+	<div style="background-color: blue; display: block; width: 200px; padding: 10px 10px 10px 10px; border: 10px solid black; margin: 10px 10px 10px 10px;" id="test0">fixed positioned block</div>
+</div>
+
+<br/><br/>
+<br/><br/>
+	<br />
+	<br />
+		<br />
+	<br />
+<div style="padding: 0 5em; position: relative;">
+
+	<div style="background-color: yellow; display: block; width: 200px;  padding: 10px 10px 10px 10px; border: 10px solid black; margin: 10px 10px 10px 10px;" id="test1">
+		Statically positioned block
+	</div>
+
+	<br />
+	<br />
+
+	<br />
+	<br />
+
+	<div style="background-color: lime; display: block; width: 200px; position: relative; left: 100px;  padding: 10px 10px 10px 10px; border: 10px solid black; margin: 10px 10px 10px 10px;" id="test2">
+		Relatively positioned block
+	</div>
+
+	<br />
+	<br />
+	<br />
+	<br />
+		<br />
+	<br />
+	<div style="position: relative">
+		<div style="background-color: pink; display: block; width: 200px; position: absolute; left: 100px;  padding: 10px 10px 10px 10px; border: 10px solid black; margin: 10px 10px 10px 10px;" id="test3">
+
+			Absolute positioned block
+
+			<div dojoType="PopupMenu2" widgetId="test3">
+				<div dojoType="MenuItem2" caption="MENU4-Item 1"></div>
+				<div dojoType="MenuItem2" caption="MENU4-Item 2"></div> 
+			</div>
+		</div>
+	</div>
+
+	<br />
+	<br />
+	<br />
+	<br />
+<script type="text/javascript">
+	var menu;
+	function testAroundPlace(e){
+		menu.aroundBox = dojo.byId("aroundBoxSelect").value;
+		menu.open(e.currentTarget, null, e.currentTarget);
+	}
+	dojo.addOnLoad(function(){
+		menu=dojo.widget.byId("test3");
+		dojo.event.connect(dojo.byId("test0"), "onclick", testAroundPlace);
+		dojo.event.connect(dojo.byId("test0IE"), "onclick", testAroundPlace);
+		
+		dojo.event.connect(dojo.byId("test1"), "onclick", testAroundPlace);
+		dojo.event.connect(dojo.byId("test2"), "onclick", testAroundPlace);
+		dojo.event.connect(dojo.byId("test3"), "onclick", testAroundPlace);
+	});
+</script>
+</div>
+</body>
+</html>

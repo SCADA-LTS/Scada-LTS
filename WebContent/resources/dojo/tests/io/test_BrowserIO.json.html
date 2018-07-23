@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>dojo.io.bind mimetype text/json test</title>
+<script type="text/javascript">
+djConfig = { 
+	isDebug: true,
+	//debugAtAllCosts: true,
+	dummyValue: 0
+};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+dojo.require("dojo.io.*");
+//Test to be sure that IframeIO does not handle the request.
+dojo.require("dojo.io.IframeIO");
+dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+function doit() {
+	var kw = {
+		url: "data-json.js",
+		mimetype: "application/json",
+		load: function(type, json, http) {
+			dojo.debug("http:", http);
+			dojo.debug("response:", http.responseText);
+			dojo.debug("state:", http.readyState);
+			dojo.debug("--------");
+			dojo.debug("json:", json);
+			dojo.debug("- Key/value pairs -------");
+			for(var key in json) {
+				dojo.debug(key, ":", json[key]);
+			}
+		}
+	};
+	dojo.io.bind(kw);
+}
+
+dojo.addOnLoad(doit);
+</script>
+</head>
+
+<body>
+	Stuff shoulda happened.
+</body>
+</html>
+

@@ -1,0 +1,34 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>A watch list is a tabular set of points that you wish to view all at once. Point values and value times update automatically&mdash;you do not need to refresh the page. (In fact, the system operates more efficiently if you don't.)</p>
+
+<h1>Named watch lists</h1>
+<p>A user may have multiple watch lists, but may only view one at a time. To create a new watch list, click the <img src="images/add.png"/> icon in the top right-hand corner of the watch list section. New watch lists are named "(unnamed)" by default. To rename it, hover over the <img src="images/pencil.png"/> icon to expose the name editing panel, enter the new name, and press Enter or click "Save" to save. To delete a watch list, click the <img src="images/delete.png"/> icon in the top right-hand corner of the watch list section. Each user must have at least one watch list, so the delete icon only appears if there is currently more than one.</p>
+
+<h1>Points in watch lists</h1>
+<p>A point can belong to multiple watch lists, so you can create lists that are as specific as you require.</p>
+<p>The data shown for each point in your list depends upon that point's configuration. Points that are settable (and for which you have permission to set) will show a set icon (<img src="images/icon_edit.png"/>). Hovering your mouse over this icon will present options for setting the point. Points that are configured for charting will show a chart icon (<img src="images/icon_chart.png"/>). Hovering over this icon will present the current chart. Charts are updated automatically, like values and times, so when new data is available the chart will update itself. The point details icon (<img src="images/icon_comp.png"/>) will take you to the point details page for the selected point.</p>
+
+<p>To re-order the points in your list, use the <em>move</em> icons. Clicking <img src="images/arrow_down_thin.png"/> will move the point one row down in the list, while clicking <img src="images/arrow_up_thin.png"/> will move it one row up.</p>
+
+<p>To add points to your current list, click the point name in the <em>Points</em> section. They will be appended to the bottom of the list. To remove points, click the remove icon (<img src="images/bullet_delete.png"/>) at the right-hand side of the point row. Clicking this icon only removes the point from your current watch list&mdash;it does not delete the point from the system. Do not confuse the <em>remove point</em> icon with the <em>delete watch list</em> icon at the top of the page.</p>
+
+<h1>Highlighting</h1>
+<p>Watch list values and times will briefly highlight when they change. Highlighting remains until the next refresh cycle completes. Times will typically highlight more than values since point updates always involve a time change, but not necessarily a value change.</p>

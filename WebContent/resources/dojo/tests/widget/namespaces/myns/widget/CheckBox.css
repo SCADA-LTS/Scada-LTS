@@ -1,0 +1,30 @@
+.myNsCheckbox {
+	border: 2px red solid;
+	text-decoration: none;
+
+	width: 40px;
+	height: 40px;
+	display: -moz-inline-box;
+	display: inline-block;
+
+	margin-right: 5px;
+}
+
+.myNsCheckboxOn {
+	background: url(check.gif) 0px 0px;
+}
+.myNsCheckboxOff {
+	background: url(check.gif) -40px 0px;
+}
+.myNsCheckboxDisabledOn {
+	background: url(check.gif) -80px 0px;
+}
+.myNsCheckboxDisabledOff {
+	background: url(check.gif) -120px 0px;
+}
+.myNsCheckboxOn:hover {
+	background: url(check.gif) -160px 0px;
+}
+.myNsCheckboxOff:hover {
+	background: url(check.gif) -200px 0px;
+}

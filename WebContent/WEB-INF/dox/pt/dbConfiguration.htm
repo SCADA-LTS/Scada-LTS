@@ -1,0 +1,43 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  O ScadaBR permite no momento a utilização de dois Sistemas Gerenciadores de Banco de Dados (SGBD): <b>Derby</b> e <b>MySQL</b>.
+</p>
+
+<p>
+  O Derby é utilizado como padrão pelo sistema. Porém, caso seja necessário alguma modificação em sua configuração inicial, 
+  é necessário a modificação do arquivo localizado em: <b>"ScadaBR*/WEB-INF/classes/env.properties"</b> e <b>"ScadaBR*/WEB-INF/classes/env.properties.derby"</b>. 
+</p>
+
+<p>
+  Para utilizar o <b>MySQL</b>, é necessário inserir os dados necessários para a sua utilização correta. Dessa maneira, o arquivo necessário a ser modificado
+  encontra-se em: <b>"ScadaBR*/WEB-INF/classes/env.properties.mysql"</b>. Basicamente os seguintes parâmetros devem ser inseridos:
+  	<p>
+	  <b>db.username: </b> Nome do usuário.
+  	</p>
+	<p>
+	  <b>db.password: </b> Senha do usuário.
+  	</p>
+  
+  Feito as devidas modificações, é necessário escolher o <b>MySQL</b> como opção e clicar no ícone de salvar. Na sequência reinicie o Servidor de Aplicação(ex. Tomcat). 
+</p>
+
+<p>
+  <b>ScadaBR*: </b> Localização do ScadaBR no servidor de aplicação(ex: "Pasta_Tomcat/webapps/ScadaBR"). 
+</p>

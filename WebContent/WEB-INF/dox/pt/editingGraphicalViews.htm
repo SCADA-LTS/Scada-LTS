@@ -1,0 +1,392 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<!--<h1>Overview</h1>-->
+<!--<p>-->
+<!--  All attributes of a graphical view and its associated points are editable in-->
+<!--the graphical view edit page. Views-->
+<!--  contain a collection of <b>view components</b>, which can be static content or-->
+<!--dynamic content based upon one or more-->
+<!--  points.-->
+<!--</p>-->
+
+<h1>Descri&ccedil;&atilde;o</h1>
+<p>Todos os atributos de uma visualiza&ccedil;&atilde;o
+gr&aacute;fica e seus pontos associados s&atilde;o edit&aacute;veis na
+p&aacute;gina de edi&ccedil;&atilde;o da visualiza&ccedil;&atilde;o
+gr&aacute;fica. Visualiza&ccedil;&otilde;es cont&eacute;m uma
+cole&ccedil;&atilde;o de <b>compontentes de
+visualiza&ccedil;&atilde;o</b>, que podem ser conte&uacute;do
+est&aacute;tico ou din&acirc;mico baseados em um ou mais pontos.</p>
+
+<!--<h1>Graphical view attributes</h1>-->
+<!--<p>-->
+<!--  All graphical views have a name by which they are referred within lists of-->
+<!--graphical views. This name should, but is -->
+<!--  not required to, be unique. A view may optionally have a <b>Background-->
+<!--image</b> upon which its components are -->
+<!--  superimposed. Users can use any type of image displayable within a browser for-->
+<!--the background image, including GIF, -->
+<!--  JPEG, and PNG. The <b>Anonymous access</b> attribute determines whether users-->
+<!--who have not logged in may access the -->
+<!--  view. <b>Edit</b> means that anonymous users can set the values of settable-->
+<!--points in the view. <b>Read</b> means -->
+<!--  that anonymous users can access the view, but not set point values.-->
+<!--<b>None</b> means that anonymous users may not -->
+<!--  access the view.-->
+<!--</p>-->
+
+<h1>Atributos de visualiza&ccedil;&otilde;es gr&aacute;ficas</h1>
+<p>Todas as visualiza&ccedil;&otilde;es gr&aacute;ficas t&ecirc;m um
+nome pelo qual s&atilde;o referenciadas dentro das listas de
+visualiza&ccedil;&otilde;es gr&aacute;ficas. Este nome deveria ser
+&uacute;nico, mas n&atilde;o &eacute; obrigat&oacute;rio. Uma
+visualiza&ccedil;&atilde;o pode, opcionalmente, ter uma <b>Imagem de
+fundo</b> sobre a qual seus componentes s&atilde;o superpostos.
+Usu&aacute;rios podem usar qualquer tipo de de imagem que pode ser
+exibida em um navegador como imagem de fundo, incluindo imagens com os
+formatos GIF, JPEG e PNG. O atributo <b>Acesso an&ocirc;nimo</b>
+determina se os usu&aacute;rios que n&atilde;o logados podem acessar a
+visualiza&ccedil;&atilde;o. <b>Editar</b> significa que usu&aacute;rios
+an&ocirc;nimos podem definir valores de pontos "set&aacute;veis" na
+visualiza&ccedil;&atilde;o. <b>Leitura</b> significa que usu&aacute;rios
+an&ocirc;nimos podem acessar a visualiza&ccedil;&atilde;o, mas
+n&atilde;o definir valores a pontos. <b>Nenhum</b> significa que
+usu&aacute;rios an&ocirc;nimos n&atilde;o podem acessar a
+visualiza&ccedil;&atilde;o.</p>
+
+<!--<h1>View components</h1>-->
+<!--<p>-->
+<!--  View components can be added to a view by selecting the type of component from-->
+<!--the list, and clicking the -->
+<!--  <img src="images/plugin_add.png"/> icon. New components default to being-->
+<!--displayed in the center of the view, but can-->
+<!--  be repositioned by dragging and dropping them anywhere within the bounds of-->
+<!--the background. Note that point views can -->
+<!--  overlap one another. During view editing, components are written in the order-->
+<!--in which they are defined. This may -->
+<!--  affect how components will overlay each, when overlap occurs.-->
+<!--</p>-->
+
+<h1>Componentes de visualiza&ccedil;&atilde;o</h1>
+<p>Componentes de visualiza&ccedil;&atilde;o podem ser adicionados a
+uma visualiza&ccedil;&atilde;o atrav&eacute;s da sele&ccedil;&atilde;o
+do tipo de componente da lista e clicando no &iacute;cone <img
+	src="images/plugin_add.png" />. Novos componentes s&atilde;o exibidos
+por padr&atilde;o no centro da visualiza&ccedil;&atilde;o, mas podem ser
+reposicionados em qualquer lugar sobre a imagem de fundo ao serem
+arrastados e soltos no local desejadoS. Aten&ccedil;&atilde;o que
+visualiza&ccedil;&otilde;es de pontos podem cobrir umas &agrave;s
+outras. Enquanto a visualiza&ccedil;&atilde;o estiver sendo editad, os
+componentes s&atilde;o escritos na ordem que forem definidos. Este
+comportamento pode afetar como componentes ir&atilde;o se sobrepor,
+quando uma sobreposi&ccedil;&atilde;o ocorrer.</p>
+
+<!--<h1>Static content</h1>-->
+<!--<p>-->
+<!--  Select the <b>HTML</b> component type to add static content. By default the-->
+<!--<img src="images/html_add.png"/> icon-->
+<!--  represents the content. (This icon will be used whenever no content is-->
+<!--defined.) Since these components are -->
+<!--  independent of the values of points, they are rendered once at the load of the-->
+<!--view and remain unchanged from then on.-->
+<!--  Drag the element to the required location. To edit, hover over the content to-->
+<!--expose the editing controls. To change -->
+<!--  the content, click the (<img src="images/pencil.png"/>) icon and enter any-->
+<!--valid html. The content will be written -->
+<!--  verbatim into the view, so any valid HTML (including Javascript content) can-->
+<!--be used. Style classes from CSS files -->
+<!--  can be referenced, or styles can be defined directly. For example, to add a-->
+<!--label the following could be used:-->
+<!--</p>-->
+
+<h1>Conte&uacute;do est&aacute;tico</h1>
+<p>Selecione um componente do tipo <b>HTML</b> para adicionar
+conte&uacute;do est&aacute;tico. Por padr&atilde;o o &iacute;cone <img
+	src="images/html_add.png" /> representa o conte&uacute;do (Este
+&iacute;cone ser&aacute; sempre que n&atilde;o houver conte&uacute;do
+definido). Como estes componentes s&atilde;o independentes de valores de
+pontos, ele s&atilde;o processados uma vez quando a
+visualiza&ccedil;&atilde;o &eacute; carregada e permanecem inalterados a
+partir de ent&atilde;o. Arraste o elemento para a posi&ccedil;&atilde;o
+desejada. Para edita, paire o cursor sobre o conte&uacute;do para expor
+os controles de edi&ccedil;&atilde;o. Para alterar o conte&uacute;do,
+clique no &iacute;cone (<img src="images/pencil.png" />) e insira
+qualquer trecho html v&aacute;lido. O conte&uacute;do ser&aacute;
+escrito literalmente na visualiza&ccedil;&atilde;o, assim qualquer
+trecho HTML v&aacute;lido incluindo Javascript pode ser usado. Classes
+de estilo de arquivos CSS podem ser referenciada ou estilos podem ser
+definidos diretamente. Por exemplo, para incluir um r&oacute;tulo, o
+seguinte poderia ser usado:</p>
+
+<pre>
+  &lt;span
+style="background-color:yellow;font-size:25px;font-weight:bold;border:2px solid
+orange;"&gt;My label&lt;/span&gt;
+</pre>
+<!--<p>-->
+<!--  This would result in the following: <span-->
+<!--style="background-color:yellow;font-size:25px;font-weight:bold;border:2px solid-->
+<!--orange;">My label</span>-->
+<!--</p>-->
+
+<p>Isto iria resultar em: <span
+	style="background-color: yellow; font-size: 25px; font-weight: bold; border: 2px solid orange;">My
+label</span></p>
+
+<!--<p>-->
+<!--  Static content can also reference content on other servers. For example,-->
+<!--external images can be placed on your views:-->
+<!--</p>-->
+
+<p>Conte&uacute;do est&aacute;tico tamb&eacute;m pode ser
+referenciado em outros servidores. Por examplo, imagens externas podem
+ser colocadas nas views:</p>
+
+<pre>
+  &lt;img
+src="http://bluebrain.epfl.ch/webdav/site/bluebrain/shared/
+21june_06_singleNeuron_200.jpg"/&gt;
+</pre>
+<!--<p>This would display: <img-->
+<!--	src="http://bluebrain.epfl.ch/webdav/site/bluebrain/shared/-->
+<!--21june_06_singleNeuron_200.jpg" />-->
+<!--</p>-->
+
+<p>Isto seria mostrado:<img
+	src="http://bluebrain.epfl.ch/webdav/site/bluebrain/shared/
+21june_06_singleNeuron_200.jpg" />
+</p>
+
+
+<!--<h1>Point components</h1>-->
+<!--<p>All other component types in the component list depend on one or-->
+<!--more points for their rendering. Once a component has been added to the-->
+<!--view, its default representation is the generic point icon (<img-->
+<!--	src="images/icon_comp.png" />). This will be the case until the-->
+<!--component has enough information to properly render. Required-->
+<!--information depends upon the component type. The view editing page-->
+<!--behaves similar to the view page in that the current value of the point-->
+<!--is displayed and updated so that users can see exactly how the point-->
+<!--will appear on the view.</p>-->
+
+<h1>Componentes de pontos</h1>
+<p>Todos os outros tipos de componentes na lista de componentes
+dependem de um ou mais pontos para serem processados. Uma vez que um
+componente for adicionado &agrave; visualiza&ccedil;&atilde;o, sua
+representa&ccedil;&atilde;o padr&atilde;o &eacute; o &iacute;cone de
+ponto gen&eacute;rico (<img src="images/icon_comp.png" />). Este
+ser&aacute; o caso at&eacute; que o componente tenha
+informa&ccedil;&atilde;o para ser processado apropriadamente. A
+informa&ccedil;&atilde;o necess&aacute;ria depende do tipo de
+componente. A p&aacute;gina de edi&ccedil;&atilde;o de
+visualiza&ccedil;&atilde;o se comporta de maneira similar &agrave;
+p&aacute;gina de visualiza&ccedil;&atilde;o onde o valor atual do ponto
+&eacute; mostrado e atualizado para que os usu&aacute;rios possam ver
+exatamente como o ponto ir&aacute; aparecer na
+visualiza&ccedil;&atilde;o.</p>
+
+<!--<h1>Point component rendering</h1>-->
+<!--<p>The rendering of a point component can be changed by hovering-->
+<!--over the component to display the editing controls. The controls shown-->
+<!--in the view editing page differ from those in the view page except for-->
+<!--the information control (<img src="images/information.png" />), which-->
+<!--displays the current value and last change time for the point.</p>-->
+
+<h1>Processamento de componentes de ponto</h1>
+<p>O processamento de um componente de ponto pode ser alterado ao
+pairar o cursor sobre o componente para mostrar os controles de
+edi&ccedil;&atilde;o. Os controles mostrados na p&aacute;gina de
+edi&ccedil;&atilde;o diferem daqueles mostrados na página de
+visualiza&ccedil;&atilde;o exceto pelo controle de
+informa&ccedil;&atilde;o (<img src="images/information.png" />), que
+mostra o valor atual e tempo da &uacute;ltima altera&ccedil;&atilde;o
+para o ponto.</p>
+
+<!--<p>Attributes of the point view can be set by clicking on the point-->
+<!--view edit icon (<img src="images/plugin_edit.png" />). When clicked, an-->
+<!--editing panel will be displayed that allows attributes of the point to-->
+<!--be overridden within the context of the graphical view. For example, if-->
+<!--a point is normally settable, it can be altered so that it is not-->
+<!--settable within the view (although non-settable points cannot be made-->
+<!--settable). This panel is also where the point or points that back the-->
+<!--component can be set. Only points with a data type appropriate to the-->
+<!--component will be presented in the point list.</p>-->
+
+<p>Os atributos da visualiza&ccedil;&atilde;o do ponto podem ser
+definidos ao clicar no &iacute;cone de edi&ccedil;&atilde;o de
+visualiza&ccedil;&atilde;o de ponto (<img src="images/plugin_edit.png" />).
+Quando clicado, um pain&eacute;l de edi&ccedil;&atilde;o ser&aacute;
+mostrado e ter&aacute; prioridade dentro do contexto da
+visualiza&ccedil;&atilde;o gr&aacute;fica. Por exemplo, se um ponto
+normalmente pode ser definido pelo usu&aacute;rio, este ponto pode ser
+alterado de maneira contr&aacute;ria. Pontos que originalmente
+n&atilde;o n&atilde;o poderiam ter seu valor definido pelo
+usu&aacute;rio n&atilde;o podem ser reconfigurados para aceitar esse
+tipo de defini&ccedil;&atilde;o. Neste pain&eacute;l tamb&eacute;m
+&eacute; onde o ponto ou pontos que suportam o componente podem ser
+definidos. Apenas pontos com o tipo de dados apropriado para o
+componente ser&atilde;o mostrados na lista de pontos.</p>
+
+<!--<p>The graphical rendering of a component can be changed by clicking-->
+<!--on the graphical rendering icon (<img src="images/graphic.png" />). When-->
+<!--clicked, a panel will be displayed allowing the rendering attributes of-->
+<!--the component to be edited. For example, the <b>Analog graphic</b>-->
+<!--component can be used to visually quantize a numeric point. Using the <b>Min</b>-->
+<!--and <b>Max</b> values, the images are uniformly distributed over the-->
+<!--numeric range and displayed appropriately. A <b>Binary Image</b>-->
+<!--graphical renderer applies only to binary points, and allows the one of-->
+<!--two images to be displayed depending upon the current value of the-->
+<!--point. Animated images are supported, so animations can be used to-->
+<!--visually indicate when a piece of equipment as running vs. when it is-->
+<!--not. The textual representation of a point can also be displayed over-->
+<!--the images by selecting the <b>Display Text</b> option. A <b>Simple-->
+<!--point</b> displays only the textual representation of the point.</p>-->
+
+<p>O processamento gr&aacute;fico de um componente pode ser alterado
+ao clicar no &iacute;cone de processamento gr&aacute;fico (<img
+	src="images/graphic.png" />). Quando clicado, um pain&eacute;l
+ser&aacute; exibido que permite que os atributos de processamento do
+componente sejam editados. Por examplo, o componente <b>Gr&aacute;fico
+an&aacute;logo</b> pode ser usado para visualmente quantificar um ponto
+num&eacute;rico. Usando os valores <b>Min</b> e <b>M&acute;x</b>,as
+imagens s&atilde;o uniformemente distribu&iacute;das sobre uma faixa
+num&eacute;rica e mostrados apropriadamente. Um processamento
+gr&aacute;fico para uma <b>Imagem bin&aacute;</b> &eacute;
+aplic&aacute;vel apenas a pontos bin&aacute;rios, e permite que uma de
+duas imagens seja mostrada dependendo do valor atual do ponto. Imagens
+animadas s&atilde;o suportadas de maneira que uma anima&ccedil;&atilde;o
+pode ser usada para visualmente diferenciar um equipamento de quando
+est&aacute; ou n&atilde;o funcionando. A representa&ccedil;&atilde;o
+textual de um ponto tamb&eacute;m podem ser mostrada em imagens ao
+selcionar a op&ccedil;&atilde;o <b>Mostrar texto</b>. Um <b>Ponto
+simples</b> mostra apenas a representa&ccedil;&atilde;o textual do ponto.</p>
+
+<!--<p>The <b>Dynamic graphic</b> component is similar to the analog-->
+<!--image renderer in that it can visualize a numeric point, but instead of-->
+<!--choosing one out of a set of images it dynamically draws the indicator-->
+<!--of the value. For example, the pointer can be drawn on a single dial-->
+<!--image. To add a new dynamic renderer, add a new subdirectory to the-->
+<!--graphics directory and put the static image and an appropriate info file-->
+<!--there. Then, add a rendering function to the resources/view.js file. The-->
+<!--function must be named according to the name given to the subdirectory.-->
+<!--See the Dial graphic as an example.</p>-->
+
+<p>O componente <b>Gr&aacute;fico din&acirc;mico</b> &eacute;
+similar ao processador de imagens anal&oacute;gicos, em que pode
+visualizar um ponto num&eacute;rico, mas ao inv&eacute;s de escolher uma
+imagem de um conjunto, o indicador do valor &acute; desenhado
+dinamicamente. Por examplo, o ponteiro pode ser desenhado em uma imagem
+&uacute;nica de um mostrado. Para adicionar um novo processador
+din&acirc;mico, adicione um subdiret&oacute;rio no diret&oacute;rio de
+imagens com a imagem est&aacute;tica e um arquido de
+informa&ccedil;&otilde;es apropriado. Ent&atilde;o, adicione uma
+fun&ccedil;&atilde;o de processamento no arquivo resources/view.js. A
+fun&ccedil;&atilde;o deve ser nomeada de acordo com o nome dado ao
+subdiret&oacute;rio. Veja o gr&acute;fico do Mostrador como exemplo.</p>
+
+
+<!--<p>A <b>Server-side script</b> component can be used to define your-->
+<!--own rendering logic. The scripting language used here is JavaScript,-->
+<!--also known as ECMAScript. (The full specification for ECMAScript is-->
+<!--available <a-->
+<!--	href="http://www.ecma-international.org/publications/standards/Ecma-262.htm"-->
+<!--	target="_blank">here</a>.) There are, however, no "window" or-->
+<!--"document" objects available since the script is evaluated on the server-->
+<!--rather than the browser. Instead, the current value of the point is-->
+<!--available via the <b>value</b> var, and the timestamp of the sample is-->
+<!--given in the <b>time</b> var. In addition, <b>pointComponent</b> and <b>point</b>-->
+<!--vars are also defined, with analogous values. Any value can be returned-->
+<!--from the script, but it will be written verbatim to the point view-->
+<!--content, so valid HTML is the most useful. For example, the following-->
+<!--will conditionally display a blinking message when the binary point has-->
+<!--the value "1" (translated to "true" for the script):</p>-->
+
+<p>Um componente de <b>Script de servidor</b> pode ser usado para
+definir sua l&oacute;gica de processamento particular. A linguagem de
+script usada aqui &eacute; JavaScript, tamb&eacute;m conhecida como
+ECMAScript (A especifica&ccedil;&atilde;o completa para ECMAScript
+est&aacute; dispon&iacute;vel <a
+	href="http://www.ecma-international.org/publications/standards/Ecma-262.htm"
+	target="_blank">aqui</a>). N&atilde;o exitem, entretanto, objetos
+"window" ou "document" dispon&iacute;veis pelo fato do script ser
+executado no servidor ao inv&eacute;s do navegador. Como alternativa, o
+valor atual do ponto fica dispon&iacute;vel pela vari&aacute;vel <b>value</b>
+var e o timestamp da amostra &eacute; dado pela var <b>time</b>.
+Al&eacute;m destas, as vars <b>pointComponent</b> and <b>point</b>
+tamb&eacute;m s&atilde;o definidas, como valores an&aacute;logos.
+Qualquer valor pode retornar do script, mas ser&aacute; escrito
+textualmente para o conte&uacute;do da visualiza&ccedil;&atilde;o do
+ponto, assim HTML v&aacute;lido &eacute; o mais &uacute;til. Por
+exemplo, o c&oacute;digo a seguir ir&aacute; condicionalmente mostrar
+uma mensagem piscando quando o ponto bin&aacute;rio tiver valor "1"
+(traduzido como "true" para o script):</p>
+
+<pre>
+  if (value)
+      return '&lt;blink&gt;&lt;span
+style="background-color:orange;font-size:15px;font-weight:bold;"&gt;Warning:
+point is ON&lt;/span&gt;&lt;/blink&gt;';
+  return "";
+</pre>
+<!--<p>Note that, on the editing page, if a script returns no content-->
+<!--the icon <img src='images/logo_icon.gif' /> will be displayed so that-->
+<!--the controls can still be exposed upon hover.</p>-->
+
+<p>Note that, on the editing page, if a script returns no content
+the icon <img src='images/logo_icon.gif' /> will be displayed so that
+the controls can still be exposed upon hover.</p>
+
+<!--<p>The timestamp of the sample is provided in milliseconds since Jan-->
+<!--1, 1970. It can be converted to an ECMA Date object with the following-->
+<!--code:</p>-->
+
+<p>O timestamp da amostra &eacute; fornecido em milissegundos desde
+de 01 de janeiro de 1970. Pode ser convertido para um objeto ECMA Date
+com o seguinte c&oacute;digo:</p>
+<pre>
+  var d = new Date();
+  d.setTime(time);
+</pre>
+<!--The Date object "d" can then be used as necessary in remainder of the-->
+<!--script.-->
+O objeto Date "d" pode ent&atilde;o ser usado como for necess&aacute;rio
+pelo restante do script.
+</p>
+
+<!--<p>Point views can be deleted by clicking the delete point view icon-->
+<!--(<img src="images/plugin_delete.png" />), which is exposed on hover.</p>-->
+
+<p>Visualiza&ccedil;&otilde;es de pontos podem ser apagadas clicando
+no &iacute;cone apagar visualiza&ccedil;&atilde;o de ponto (<img
+	src="images/plugin_delete.png" />), que &eacute; mostrado ao pairar o
+cursor do mouse.</p>
+
+<!--<h1>Saving graphical views</h1>-->
+<!--<p>All changes to graphical views are saved only when the <b>Save</b>-->
+<!--button is clicked. If incorrect changes have been made to a view, they-->
+<!--may be aborted by clicking the <b>Cancel</b> button. To delete the-->
+<!--entire view, click the <b>Delete</b> button.</p>-->
+
+<h1>Salvando visualiza&ccedil;&otilde;es gr&aacute;ficas</h1>
+<p>Todas as alteraç&ccedil;&otilde;s a visualiza&ccedil;&otilde;es
+gr&aacute;ficas s&atilde;o salvas apenas quando o bot&atilde;o <b>Salvar</b>
+&eacute; clicado. Se altera&ccedil;&otilde;s incorretas foram feitas a
+uma visualiza&ccedil;&atilde;o, essas podem ser abortadas clicando no
+bot&atilde;o <b>Cancelar</b>. Para apagar uma visualiza&ccedil;&atilde;o
+inteira, clique no bot&atilde;o <b>Apagar</b>.</p>

@@ -1,0 +1,6 @@
+name=Dial
+type=dynamic
+#width=155
+#height=155
+text.x=10
+text.y=136

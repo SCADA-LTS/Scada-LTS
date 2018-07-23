@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<title>dojo.undo.Manager Tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.undo.Manager");
+			function foo(n) {
+				return function() {
+					dojo.debug(n);
+				}
+			}
+
+			function init(){
+				x = new dojo.undo.Manager();
+				x.push(foo(1), foo(-1));
+				x.push(foo(2), foo(-2));
+				x.beginTransaction();
+				x.push(foo(3), foo(-3));
+				x.push(foo(4), foo(-4));
+				x.push(foo(5), foo(-5));
+				x.beginTransaction();
+				x.push(foo("a"), foo("-a"));
+				x.push(foo("b"), foo("-b"));
+				x.endTransaction();
+				x.push(foo(6), foo(-6));
+				x.endTransaction();
+
+				x.undo();
+				dojo.debug("more to undo?", x.canUndo);
+				x.redo();
+				dojo.debug("more to undo?", x.canUndo);
+				x.undo();
+				dojo.debug("more to undo?", x.canUndo);
+				x.redo();
+				dojo.debug("more to undo?", x.canUndo);
+				x.undo();
+				dojo.debug("more to undo?", x.canUndo);
+				x.undo();
+				dojo.debug("more to undo?", x.canUndo);
+				x.redo();
+				dojo.debug("more to undo?", x.canUndo);
+				x.undo();
+				x.undo();
+				dojo.debug("more to undo?", x.canUndo);
+				x.redo();
+				x.undo();
+				x.undo();
+				dojo.debug("more to undo?", x.canUndo);
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
+
