@@ -27,11 +27,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
@@ -170,14 +170,14 @@ public class RuntimeManager {
 		}
 
 		// Initialize the compound events.
-		CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
-		List<CompoundEventDetectorVO> compoundDetectors = compoundEventDetectorDao
+		CompoundEventDetectorService compoundEventDetectorService = new CompoundEventDetectorService();
+		List<CompoundEventDetectorVO> compoundDetectors = compoundEventDetectorService
 				.getCompoundEventDetectors();
 		for (CompoundEventDetectorVO ced : compoundDetectors) {
 			if (!ced.isDisabled()) {
 				if (safe) {
 					ced.setDisabled(true);
-					compoundEventDetectorDao.saveCompoundEventDetector(ced);
+					compoundEventDetectorService.saveCompoundEventDetector(ced);
 				} else
 					startCompoundEventDetector(ced);
 			}
@@ -637,7 +637,7 @@ public class RuntimeManager {
 		// If the CED is running, stop it.
 		stopCompoundEventDetector(vo.getId());
 
-		new CompoundEventDetectorDao().saveCompoundEventDetector(vo);
+		new CompoundEventDetectorService().saveCompoundEventDetector(vo);
 
 		// If the scheduled event is enabled, start it.
 		if (!vo.isDisabled())

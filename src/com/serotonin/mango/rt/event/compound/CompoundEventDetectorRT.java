@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.rt.event.EventDetectorListener;
 import com.serotonin.mango.rt.event.SimpleEventDetector;
 import com.serotonin.mango.rt.event.type.CompoundDetectorEventType;
@@ -34,6 +33,7 @@ import com.serotonin.util.LifecycleException;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.CompoundEventDetectorService;
 
 /**
  * @author Matthew Lohbihler
@@ -209,7 +209,7 @@ public class CompoundEventDetectorRT implements EventDetectorListener, ILifecycl
         SystemEventType eventType = new SystemEventType(SystemEventType.TYPE_COMPOUND_DETECTOR_FAILURE, vo.getId());
         SystemEventType.raiseEvent(eventType, System.currentTimeMillis(), false, message);
         vo.setDisabled(true);
-        new CompoundEventDetectorDao().saveCompoundEventDetector(vo);
+        new CompoundEventDetectorService().saveCompoundEventDetector(vo);
     }
 
     //

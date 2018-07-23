@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
@@ -39,6 +38,7 @@ import com.serotonin.mango.web.dwr.beans.EventSourceBean;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.CompoundEventDetectorService;
 
 /**
  * @author Matthew Lohbihler
@@ -56,7 +56,7 @@ public class CompoundEventsDwr extends BaseDwr {
         Map<String, Object> model = new HashMap<String, Object>();
 
         // All existing compound events.
-        model.put("compoundEvents", new CompoundEventDetectorDao().getCompoundEventDetectors());
+        model.put("compoundEvents", new CompoundEventDetectorService().getCompoundEventDetectors());
 
         // Get the data points
         List<EventSourceBean> dataPoints = new LinkedList<EventSourceBean>();
@@ -93,10 +93,10 @@ public class CompoundEventsDwr extends BaseDwr {
 
         if (id == Common.NEW_ID) {
             CompoundEventDetectorVO vo = new CompoundEventDetectorVO();
-            vo.setXid(new CompoundEventDetectorDao().generateUniqueXid());
+            vo.setXid(new CompoundEventDetectorService().generateUniqueXid());
             return vo;
         }
-        return new CompoundEventDetectorDao().getCompoundEventDetector(id);
+        return new CompoundEventDetectorService().getCompoundEventDetector(id);
     }
 
     public DwrResponseI18n saveCompoundEvent(int id, String xid, String name, int alarmLevel, boolean returnToNormal,
@@ -116,11 +116,11 @@ public class CompoundEventsDwr extends BaseDwr {
         // Check that condition is ok.
         DwrResponseI18n response = new DwrResponseI18n();
 
-        CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
+        CompoundEventDetectorService compoundEventDetectorService = new CompoundEventDetectorService();
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!compoundEventDetectorDao.isXidUnique(xid, id))
+        else if (!compoundEventDetectorService.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         ced.validate(response);
@@ -139,7 +139,7 @@ public class CompoundEventsDwr extends BaseDwr {
 
     public void deleteCompoundEvent(int cedId) {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        new CompoundEventDetectorDao().deleteCompoundEventDetector(cedId);
+        new CompoundEventDetectorService().deleteCompoundEventDetector(cedId);
         Common.ctx.getRuntimeManager().stopCompoundEventDetector(cedId);
     }
 

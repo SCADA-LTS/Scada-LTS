@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.EventDao;
@@ -63,6 +62,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.PublisherDAO;
+import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.scada_lts.mango.service.PublisherService;
 import org.scada_lts.mango.service.UserService;
 
@@ -119,7 +119,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 		// Get the compound event detectors
 		List<EventTypeVO> compoundEvents = new ArrayList<EventTypeVO>();
-		List<CompoundEventDetectorVO> ceds = new CompoundEventDetectorDao()
+		List<CompoundEventDetectorVO> ceds = new CompoundEventDetectorService()
 				.getCompoundEventDetectors();
 		for (CompoundEventDetectorVO ced : ceds) {
 			EventTypeVO et = ced.getEventType();

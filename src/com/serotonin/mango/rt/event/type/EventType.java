@@ -25,7 +25,6 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
@@ -40,6 +39,7 @@ import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
+import org.scada_lts.mango.service.CompoundEventDetectorService;
 
 /**
  * An event class specifies the type of event that was raised.
@@ -271,7 +271,7 @@ abstract public class EventType implements JsonSerializable {
         String xid = json.getString(name);
         if (xid == null)
             throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
-        CompoundEventDetectorVO ced = new CompoundEventDetectorDao().getCompoundEventDetector(xid);
+        CompoundEventDetectorVO ced = new CompoundEventDetectorService().getCompoundEventDetector(xid);
         if (ced == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return ced.getId();

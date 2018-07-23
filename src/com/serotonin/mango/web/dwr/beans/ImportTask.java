@@ -63,6 +63,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
+import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
@@ -80,7 +81,7 @@ public class ImportTask extends ProgressiveTask {
 	private final ViewService viewService = new ViewService();
 	private final PointLinkDao pointLinkDao = new PointLinkDao();
 	private final ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
-	private final CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
+	private final CompoundEventDetectorService compoundEventDetectorService = new CompoundEventDetectorService();
 	private final EventDao eventDao = new EventDao();
 	private final MailingListDao mailingListDao = new MailingListDao();
 	private final PublisherDao publisherDao = new PublisherDao();
@@ -707,7 +708,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.compoundEvent.xid");
 		else {
-			CompoundEventDetectorVO vo = compoundEventDetectorDao
+			CompoundEventDetectorVO vo = compoundEventDetectorService
 					.getCompoundEventDetector(xid);
 			if (vo == null) {
 				vo = new CompoundEventDetectorVO();

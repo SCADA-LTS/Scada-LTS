@@ -32,7 +32,6 @@ import br.org.scadabr.api.vo.ModbusPointConfig;
 import br.org.scadabr.api.vo.ModbusSerialConfig;
 
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
@@ -43,6 +42,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
+import org.scada_lts.mango.service.CompoundEventDetectorService;
 
 public final class APIUtils {
 
@@ -805,7 +805,7 @@ public final class APIUtils {
 			event.setEventType(EventType.POINT_CONDITION_EVENT);
 			int compoundId = eventInstance.getEventType()
 					.getCompoundEventDetectorId();
-			event.setAlias(new CompoundEventDetectorDao()
+			event.setAlias(new CompoundEventDetectorService()
 					.getCompoundEventDetector(compoundId).getName());
 
 		} else if (eventInstance.getEventType().getScheduleId() != -1) {

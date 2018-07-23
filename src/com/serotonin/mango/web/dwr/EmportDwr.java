@@ -38,7 +38,6 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonValue;
 import com.serotonin.json.JsonWriter;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.EventDao;
@@ -59,6 +58,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
@@ -125,7 +125,7 @@ public class EmportDwr extends BaseDwr {
 					new ScheduledEventDao().getScheduledEvents());
 		if (compoundEventDetectors)
 			data.put(COMPOUND_EVENT_DETECTORS,
-					new CompoundEventDetectorDao().getCompoundEventDetectors());
+					new CompoundEventDetectorService().getCompoundEventDetectors());
 		if (pointLinks)
 			data.put(POINT_LINKS, new PointLinkDao().getPointLinks());
 		if (users)
