@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
@@ -63,6 +62,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.PublisherDAO;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PublisherService;
 import org.scada_lts.mango.service.UserService;
 
@@ -82,7 +82,7 @@ public class EventHandlersDwr extends BaseDwr {
 		// Get the data points
 		List<DataPointBean> allPoints = new ArrayList<DataPointBean>();
 		List<EventSourceBean> dataPoints = new ArrayList<EventSourceBean>();
-		List<DataPointVO> dps = new DataPointDao().getDataPoints(
+		List<DataPointVO> dps = new DataPointService().getDataPoints(
 				DataPointExtendedNameComparator.instance, true);
 		for (DataPointVO dp : dps) {
 			if (!Permissions
@@ -211,7 +211,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 	public String createSetValueContent(int pointId, String valueStr,
 			String idSuffix) {
-		DataPointVO pointVO = new DataPointDao().getDataPoint(pointId);
+		DataPointVO pointVO = new DataPointService().getDataPoint(pointId);
 		Permissions.ensureDataSourcePermission(Common.getUser(),
 				pointVO.getDataSourceId());
 

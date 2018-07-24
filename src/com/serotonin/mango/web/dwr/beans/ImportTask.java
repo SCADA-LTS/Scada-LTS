@@ -64,6 +64,7 @@ import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
@@ -77,7 +78,7 @@ public class ImportTask extends ProgressiveTask {
 	private final DwrResponseI18n response;
 	private final UserService userService = new UserService();
 	private final DataSourceDao dataSourceDao = new DataSourceDao();
-	private final DataPointDao dataPointDao = new DataPointDao();
+	private final DataPointService dataPointService = new DataPointService();
 	private final ViewService viewService = new ViewService();
 	private final PointLinkDao pointLinkDao = new PointLinkDao();
 	private final ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
@@ -174,7 +175,7 @@ public class ImportTask extends ProgressiveTask {
 							name == null ? "(undefined)" : name);
 				else {
 					DataSourceVO<?> dsvo;
-					DataPointVO vo = dataPointDao.getDataPoint(xid);
+					DataPointVO vo = dataPointService.getDataPoint(xid);
 					if (vo == null) {
 						// Locate the data source for the point.
 						String dsxid = dataPoint.getString("dataSourceXid");
@@ -478,7 +479,7 @@ public class ImportTask extends ProgressiveTask {
 					name == null ? "(undefined)" : name);
 		else {
 			DataSourceVO<?> dsvo;
-			DataPointVO vo = dataPointDao.getDataPoint(xid);
+			DataPointVO vo = dataPointService.getDataPoint(xid);
 			if (vo == null) {
 				// Locate the data source for the point.
 				String dsxid = dataPoint.getString("dataSourceXid");
@@ -608,13 +609,13 @@ public class ImportTask extends ProgressiveTask {
 					pointHierarchyJson, List.class, PointFolder.class);
 			root.setSubfolders(subfolders);
 
-			for (DataPointVO dp : dataPointDao.getDataPoints(null, false)) {
+			for (DataPointVO dp : dataPointService.getDataPoints(null, false)) {
 				dp.setPointFolderId(0);
-				dataPointDao.updateDataPointShallow(dp);
+				dataPointService.updateDataPointShallow(dp);
 			}
 
 			// Save the new values.
-			dataPointDao.savePointHierarchy(root);
+			dataPointService.savePointHierarchy(root);
 			response.addGenericMessage("emport.pointHierarchy.prefix",
 					I18NUtils.getMessage(bundle, "emport.saved"));
 		} catch (LocalizableJsonException e) {
@@ -1024,7 +1025,7 @@ public class ImportTask extends ProgressiveTask {
 
 	private void importPointValues(JsonObject json) {
 		String pointXid = json.getString("pointXid");
-		DataPointVO dp = new DataPointDao().getDataPoint(pointXid);
+		DataPointVO dp = new DataPointService().getDataPoint(pointXid);
 		if (dp == null) {
 			// response.addGenericMessage("emport.script.xid");
 			response.addGenericMessage("emport.pointValue.missingPoint",

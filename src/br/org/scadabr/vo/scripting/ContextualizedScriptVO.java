@@ -4,12 +4,12 @@ import br.org.scadabr.rt.scripting.ContextualizedScriptRT;
 import br.org.scadabr.rt.scripting.ScriptRT;
 import br.org.scadabr.rt.scripting.context.ScriptContextObject;
 import com.serotonin.json.*;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.scada_lts.mango.service.DataPointService;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -111,7 +111,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		if (jsonContext != null) {
 //			pointsOnContext.clear();
 			pointsOnContext2.clear();
-			DataPointDao dataPointDao = new DataPointDao();
+			DataPointService dataPointService = new DataPointService();
 
 			for (JsonValue jv : jsonContext.getElements()) {
 				JsonObject jo = jv.toJsonObject();
@@ -120,7 +120,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 					throw new LocalizableJsonException(
 							"emport.error.meta.missing", "dataPointXid");
 
-				DataPointVO dp = dataPointDao.getDataPoint(xid);
+				DataPointVO dp = dataPointService.getDataPoint(xid);
 				if (dp == null)
 					throw new LocalizableJsonException(
 							"emport.error.missingPoint", xid);
@@ -168,7 +168,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		super.jsonSerialize(map);
 		List<Map<String, Object>> pointList = new ArrayList<Map<String, Object>>();
 		for (MutablePair p : pointsOnContext2) {
-			DataPointVO dp = new DataPointDao().getDataPoint((int)p.getKey());
+			DataPointVO dp = new DataPointService().getDataPoint((int)p.getKey());
 			if (dp != null) {
 				Map<String, Object> point = new HashMap<String, Object>();
 				pointList.add(point);

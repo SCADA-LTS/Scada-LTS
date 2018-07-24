@@ -21,7 +21,6 @@ package com.serotonin.mango.web.dwr;
 import java.util.List;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.view.chart.ChartRenderer;
@@ -43,6 +42,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.scada_lts.mango.service.DataPointService;
 
 public class DataPointEditDwr extends BaseDwr {
     private DataPointVO getDataPoint() {
@@ -156,7 +156,7 @@ public class DataPointEditDwr extends BaseDwr {
     public PointEventDetectorVO addEventDetector(int typeId) {
         DataPointVO dp = getDataPoint();
         PointEventDetectorVO ped = new PointEventDetectorVO();
-        ped.setXid(new DataPointDao().generateEventDetectorUniqueXid(dp.getId()));
+        ped.setXid(new DataPointService().generateEventDetectorUniqueXid(dp.getId()));
         ped.setAlias("");
         ped.setDetectorType(typeId);
 

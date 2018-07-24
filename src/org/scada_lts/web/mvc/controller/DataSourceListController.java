@@ -18,7 +18,6 @@
 package org.scada_lts.web.mvc.controller;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.ListParent;
@@ -28,6 +27,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionWatchlistACL;
 import org.scada_lts.permissions.model.EntryDto;
@@ -69,7 +69,7 @@ public class DataSourceListController {
 	
     protected List<ListParent<DataSourceVO<?>, DataPointVO>> getData(HttpServletRequest request, final String sortFieldName, boolean desc) {
         User user = Common.getUser(request);
-        DataPointDao dataPointDao = new DataPointDao();
+        DataPointService dataPointService = new DataPointService();
 
         List<DataSourceVO<?>> data = Common.ctx.getRuntimeManager().getDataSources();
         List<ListParent<DataSourceVO<?>, DataPointVO>> dataSources = new ArrayList<ListParent<DataSourceVO<?>, DataPointVO>>();
@@ -81,7 +81,7 @@ public class DataSourceListController {
                 if(mapToCheckId.get(ds.getId())!=null) {
                     listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
                     listParent.setParent(ds);
-                    listParent.setList(dataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
+                    listParent.setList(dataPointService.getDataPoints(ds.getId(), DataPointNameComparator.instance));
                     dataSources.add(listParent);
                 }
                 //ACL End
@@ -90,7 +90,7 @@ public class DataSourceListController {
                     //TODO why variable listParent don't in loop
                     listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
                     listParent.setParent(ds);
-                    listParent.setList(dataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
+                    listParent.setList(dataPointService.getDataPoints(ds.getId(), DataPointNameComparator.instance));
                     dataSources.add(listParent);
                 }
             }

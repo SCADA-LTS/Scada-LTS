@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,7 +34,6 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.chart.ImageChartRenderer;
@@ -52,7 +52,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 		User user = Common.getUser(request);
 
 		int id;
-		DataPointDao dataPointDao = new DataPointDao();
+		DataPointService dataPointService = new DataPointService();
 		String idStr = request.getParameter("dpid");
 		DataPointVO point = null;
 
@@ -67,18 +67,18 @@ public class DataPointDetailsController extends ParameterizableViewController {
 							"One of dpid, dpxid, or pedid must be provided for this view");
 
 				model.put("currentXid", xid);
-				point = dataPointDao.getDataPoint(xid);
+				point = dataPointService.getDataPoint(xid);
 				id = point == null ? -1 : point.getId();
 			} else {
 				int pedid = Integer.parseInt(pedStr);
-				id = dataPointDao.getDataPointIdFromDetectorId(pedid);
+				id = dataPointService.getDataPointIdFromDetectorId(pedid);
 			}
 		} else
 			id = Integer.parseInt(idStr);
 
 		// Put the point in the model.
 		if (point == null)
-			point = dataPointDao.getDataPoint(id);
+			point = dataPointService.getDataPoint(id);
 
 		if (point != null) {
 			//Permissions.ensureDataPointReadPermission(user, point);

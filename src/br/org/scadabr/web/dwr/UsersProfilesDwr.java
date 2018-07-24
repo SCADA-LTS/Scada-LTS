@@ -17,9 +17,7 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.DataPointNameComparator;
@@ -30,8 +28,8 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ViewService;
-import org.scada_lts.mango.service.WatchListService;
 
 public class UsersProfilesDwr {
 
@@ -51,13 +49,13 @@ public class UsersProfilesDwr {
 				dataSourceVOs.size());
 		Map<String, Object> ds, dp;
 		List<Map<String, Object>> points;
-		DataPointDao dataPointDao = new DataPointDao();
+		DataPointService dataPointService = new DataPointService();
 		for (DataSourceVO<?> dsvo : dataSourceVOs) {
 			ds = new HashMap<String, Object>();
 			ds.put("id", dsvo.getId());
 			ds.put("name", dsvo.getName());
 			points = new LinkedList<Map<String, Object>>();
-			for (DataPointVO dpvo : dataPointDao.getDataPoints(dsvo.getId(),
+			for (DataPointVO dpvo : dataPointService.getDataPoints(dsvo.getId(),
 					DataPointNameComparator.instance)) {
 				dp = new HashMap<String, Object>();
 				dp.put("id", dpvo.getId());

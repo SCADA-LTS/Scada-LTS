@@ -14,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.publish.PublishQueueEntry;
@@ -30,6 +29,7 @@ import com.serotonin.timer.TimerTask;
 import com.serotonin.timer.TimerTrigger;
 import com.serotonin.util.StringUtils;
 import com.serotonin.util.queue.ByteQueue;
+import org.scada_lts.mango.service.DataPointService;
 
 class PersistentSendThread extends SendThread {
     static final Log LOG = LogFactory.getLog(PersistentSendThread.class);
@@ -416,7 +416,7 @@ class PersistentSendThread extends SendThread {
         Common.timer.execute(new Runnable() {
             @Override
             public void run() {
-                writePointHierarchy(new DataPointDao().getPointHierarchy());
+                writePointHierarchy(new DataPointService().getPointHierarchy());
             }
         });
     }

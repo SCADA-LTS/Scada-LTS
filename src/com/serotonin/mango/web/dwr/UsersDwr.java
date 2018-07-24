@@ -35,7 +35,6 @@ import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.DataPointNameComparator;
@@ -50,6 +49,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 
 public class UsersDwr extends BaseDwr {
@@ -74,13 +74,13 @@ public class UsersDwr extends BaseDwr {
 					dataSourceVOs.size());
 			Map<String, Object> ds, dp;
 			List<Map<String, Object>> points;
-			DataPointDao dataPointDao = new DataPointDao();
+			DataPointService dataPointService = new DataPointService();
 			for (DataSourceVO<?> dsvo : dataSourceVOs) {
 				ds = new HashMap<String, Object>();
 				ds.put("id", dsvo.getId());
 				ds.put("name", dsvo.getName());
 				points = new LinkedList<Map<String, Object>>();
-				for (DataPointVO dpvo : dataPointDao.getDataPoints(
+				for (DataPointVO dpvo : dataPointService.getDataPoints(
 						dsvo.getId(), DataPointNameComparator.instance)) {
 					dp = new HashMap<String, Object>();
 					dp.put("id", dpvo.getId());

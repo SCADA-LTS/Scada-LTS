@@ -28,11 +28,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
+import org.scada_lts.mango.service.DataPointService;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PointLinkDao;
@@ -320,7 +320,7 @@ public class RuntimeManager {
 			runningDataSources.add(dataSource);
 
 			// Add the enabled points to the data source.
-			List<DataPointVO> dataSourcePoints = new DataPointDao()
+			List<DataPointVO> dataSourcePoints = new DataPointService()
 					.getDataPoints(vo.getId(), null);
 			for (DataPointVO dataPoint : dataSourcePoints) {
 				if (dataPoint.isEnabled())
@@ -393,7 +393,7 @@ public class RuntimeManager {
 				peds.remove();
 		}
 
-		new DataPointDao().saveDataPoint(point);
+		new DataPointService().saveDataPoint(point);
 
 		if (point.isEnabled())
 			startDataPoint(point);
@@ -402,7 +402,7 @@ public class RuntimeManager {
 	public void deleteDataPoint(DataPointVO point) {
 		if (point.isEnabled())
 			stopDataPoint(point.getId());
-		new DataPointDao().deleteDataPoint(point.getId());
+		new DataPointService().deleteDataPoint(point.getId());
 		Common.ctx.getEventManager().cancelEventsForDataPoint(point.getId());
 	}
 

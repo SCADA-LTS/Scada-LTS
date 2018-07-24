@@ -20,7 +20,6 @@ package com.serotonin.mango.web.servlet;
 
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.PointValueFacade;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
@@ -30,6 +29,7 @@ import com.serotonin.mango.vo.report.PointTimeSeriesCollection;
 import com.serotonin.util.StringUtils;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.utils.ColorUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -149,7 +149,7 @@ public class ImageChartServlet extends BaseInfoServlet {
                     else
                         data = pointValueFacade.getPointValuesBetween(from, to);
 
-                    DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
+                    DataPointVO dp = new DataPointService().getDataPoint(dataPointId);
                     if (dp == null || dp.getName() == null)
                         ; // no op
                     else if (dp.getPointLocator().getDataTypeId() == DataTypes.NUMERIC) {

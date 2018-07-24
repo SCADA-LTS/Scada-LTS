@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
@@ -52,6 +51,7 @@ import com.serotonin.modbus4j.locator.BaseLocator;
 import com.serotonin.modbus4j.sero.messaging.MessagingExceptionHandler;
 import com.serotonin.modbus4j.sero.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 
 abstract public class ModbusDataSource extends PollingDataSource implements
 		MessagingExceptionHandler {
@@ -98,10 +98,10 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				slaveMonitors.put(slaveId, null);
 
 				// Check if a monitor point already exists.
-				DataPointDao dataPointDao = new DataPointDao();
+				DataPointService dataPointService = new DataPointService();
 				boolean found = false;
 
-				List<DataPointVO> points = dataPointDao.getDataPoints(
+				List<DataPointVO> points = dataPointService.getDataPoints(
 						vo.getId(), null);
 				for (DataPointVO dp : points) {
 					ModbusPointLocatorVO loc = dp.getPointLocator();
@@ -114,7 +114,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				if (!found) {
 					// A monitor was not found, so create one
 					DataPointVO dp = new DataPointVO();
-					dp.setXid(dataPointDao.generateUniqueXid());
+					dp.setXid(dataPointService.generateUniqueXid());
 					dp.setName(Common.getMessage(
 							"dsEdit.modbus.monitorPointName", slaveId));
 					dp.setDataSourceId(vo.getId());

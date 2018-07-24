@@ -33,7 +33,6 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.bacnet4j.type.enumerated.EngineeringUnits;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -73,6 +72,7 @@ import com.serotonin.viconics.config.Thermostat;
 import com.serotonin.viconics.io.ViconicsIncomingResponse;
 import com.serotonin.viconics.io.ViconicsOutgoingRequest;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.WatchListService;
 
@@ -202,10 +202,10 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 					+ sdf.format(new Date());
 
 			// Get a list of all existing points.
-			DataPointDao dataPointDao = new DataPointDao();
+			DataPointService dataPointService = new DataPointService();
 			UserService userService = new UserService();
 			WatchListDao watchListDao = new WatchListDao();
-			List<DataPointVO> points = dataPointDao.getDataPoints(vo.getId(),
+			List<DataPointVO> points = dataPointService.getDataPoints(vo.getId(),
 					null);
 
 			// Add a point for each address if it doesn't already exist.
@@ -231,7 +231,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 				//
 				// Point hierarchy folder
 				if (folderId == -1) {
-					PointHierarchy pointHierarchy = dataPointDao
+					PointHierarchy pointHierarchy = dataPointService
 							.getPointHierarchy();
 
 					PointFolder root = pointHierarchy.getRoot();
@@ -252,7 +252,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 
 						pointHierarchy.addPointFolder(folder, pointHierarchy
 								.getRoot().getId());
-						dataPointDao.savePointHierarchy(pointHierarchy
+						dataPointService.savePointHierarchy(pointHierarchy
 								.getRoot());
 					}
 

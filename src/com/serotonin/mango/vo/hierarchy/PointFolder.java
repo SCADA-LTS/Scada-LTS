@@ -32,10 +32,10 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.scada_lts.mango.service.DataPointService;
 
 /**
  * @author Matthew Lohbihler
@@ -155,10 +155,10 @@ public class PointFolder implements JsonSerializable {
     //
     @Override
     public void jsonSerialize(Map<String, Object> map) {
-        DataPointDao dataPointDao = new DataPointDao();
+        DataPointService dataPointService = new DataPointService();
         List<String> pointList = new ArrayList<String>();
         for (MutablePair p : points) {
-            DataPointVO dp = dataPointDao.getDataPoint((Integer) p.getKey());
+            DataPointVO dp = dataPointService.getDataPoint((Integer) p.getKey());
             if (dp != null)
                 pointList.add(dp.getXid());
         }
@@ -170,12 +170,12 @@ public class PointFolder implements JsonSerializable {
         JsonArray jsonPoints = json.getJsonArray("points");
         if (jsonPoints != null) {
             points.clear();
-            DataPointDao dataPointDao = new DataPointDao();
+            DataPointService dataPointService = new DataPointService();
 
             for (JsonValue jv : jsonPoints.getElements()) {
                 String xid = jv.toJsonString().getValue();
 
-                DataPointVO dp = dataPointDao.getDataPoint(xid);
+                DataPointVO dp = dataPointService.getDataPoint(xid);
                 if (dp == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
 

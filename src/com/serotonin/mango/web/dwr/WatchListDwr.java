@@ -31,7 +31,6 @@ import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -51,16 +50,17 @@ import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 
 public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {
-		DataPointDao dataPointDao = new DataPointDao();
+		DataPointService dataPointService = new DataPointService();
 		Map<String, Object> data = new HashMap<String, Object>();
 
-		PointHierarchy ph = dataPointDao.getPointHierarchy().copyFoldersOnly();
+		PointHierarchy ph = dataPointService.getPointHierarchy().copyFoldersOnly();
 		User user = Common.getUser();
-		List<DataPointVO> points = dataPointDao.getDataPoints(
+		List<DataPointVO> points = dataPointService.getDataPoints(
 				DataPointExtendedNameComparator.instance, false);
 		for (DataPointVO point : points) {
 			if (Permissions.hasDataPointReadPermission(user, point))
@@ -200,7 +200,7 @@ public class WatchListDwr extends BaseDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 		User user = Common.getUser();
-		DataPointVO point = new DataPointDao().getDataPoint(pointId);
+		DataPointVO point = new DataPointService().getDataPoint(pointId);
 		if (point == null)
 			return null;
 		WatchList watchList = user.getWatchList();

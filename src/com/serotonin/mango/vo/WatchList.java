@@ -32,13 +32,13 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 
 /**
@@ -162,10 +162,10 @@ public class WatchList implements JsonSerializable {
         JsonArray jsonDataPoints = json.getJsonArray("dataPoints");
         if (jsonDataPoints != null) {
             pointList.clear();
-            DataPointDao dataPointDao = new DataPointDao();
+            DataPointService dataPointService = new DataPointService();
             for (JsonValue jv : jsonDataPoints.getElements()) {
                 String xid = jv.toJsonString().getValue();
-                DataPointVO dpVO = dataPointDao.getDataPoint(xid);
+                DataPointVO dpVO = dataPointService.getDataPoint(xid);
                 if (dpVO == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
                 pointList.add(dpVO);

@@ -22,9 +22,7 @@ import java.util.*;
 
 import javax.script.ScriptException;
 
-//import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.PointLinkDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
@@ -42,6 +40,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.scada_lts.mango.service.DataPointService;
 
 /**
  * @author Matthew Lohbihler
@@ -52,7 +51,7 @@ public class PointLinksDwr extends BaseDwr {
         Map<String, Object> data = new HashMap<String, Object>();
 
         // Get the points that this user can access.
-        List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> allPoints = new DataPointService().getDataPoints(DataPointExtendedNameComparator.instance, false);
         /* List<IntValuePair> sourcePoints = new ArrayList<IntValuePair>();
         List<IntValuePair> targetPoints = new ArrayList<IntValuePair>();*/
         List<MutablePair<Integer, String>> sPoints = new ArrayList<>();
@@ -149,7 +148,7 @@ public class PointLinksDwr extends BaseDwr {
         else {
             Map<String, IDataPoint> context = new HashMap<String, IDataPoint>();
             context.put(PointLinkRT.CONTEXT_VAR_NAME, point);
-            int targetDataType = new DataPointDao().getDataPoint(targetPointId).getPointLocator().getDataTypeId();
+            int targetDataType = new DataPointService().getDataPoint(targetPointId).getPointLocator().getDataTypeId();
 
             try {
                 PointValueTime pvt = scriptExecutor.execute(script, context, System.currentTimeMillis(),

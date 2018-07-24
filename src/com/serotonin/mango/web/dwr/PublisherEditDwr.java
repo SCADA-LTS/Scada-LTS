@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.publish.persistent.PersistentSenderRT;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
@@ -39,6 +38,7 @@ import com.serotonin.mango.web.dwr.beans.HttpSenderTester;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.scada_lts.mango.service.DataPointService;
 
 /**
  * @author Matthew Lohbihler
@@ -61,7 +61,7 @@ public class PublisherEditDwr extends BaseDwr {
     }
 
     public DwrResponseI18n initSender() {
-        List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> allPoints = new DataPointService().getDataPoints(DataPointExtendedNameComparator.instance, false);
 
         // Remove image points
         Iterator<DataPointVO> iter = allPoints.iterator();

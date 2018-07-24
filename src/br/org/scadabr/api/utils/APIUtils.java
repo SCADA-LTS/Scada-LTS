@@ -32,7 +32,6 @@ import br.org.scadabr.api.vo.ModbusPointConfig;
 import br.org.scadabr.api.vo.ModbusSerialConfig;
 
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.EventInstance;
@@ -43,6 +42,7 @@ import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
+import org.scada_lts.mango.service.DataPointService;
 
 public final class APIUtils {
 
@@ -638,7 +638,7 @@ public final class APIUtils {
 
 	public static String toCondition(PointEventDetectorVO pointEvent) {
 
-		DataPointVO dp = new DataPointDao().getDataPoint(new DataPointDao()
+		DataPointVO dp = new DataPointService().getDataPoint(new DataPointService()
 				.getDataPointIdFromDetectorId(pointEvent.getId()));
 
 		String config = "[" + dp.getName() + " - ";
@@ -787,7 +787,7 @@ public final class APIUtils {
 			int pointDetectorId = eventInstance.getEventType()
 					.getReferenceId2();
 
-			List<PointEventDetectorVO> peDetectors = new DataPointDao()
+			List<PointEventDetectorVO> peDetectors = new DataPointService()
 					.getDataPoint(dataPointId).getEventDetectors();
 
 			for (PointEventDetectorVO pointEventDetectorVO : peDetectors) {

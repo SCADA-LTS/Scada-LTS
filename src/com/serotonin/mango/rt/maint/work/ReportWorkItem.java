@@ -38,7 +38,6 @@ import org.joda.time.DateTime;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.ReportDao;
 import com.serotonin.mango.vo.DataPointVO;
@@ -57,6 +56,7 @@ import com.serotonin.web.email.EmailContent;
 import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 
 /**
@@ -111,11 +111,11 @@ public class ReportWorkItem implements WorkItem {
 		ResourceBundle bundle = Common.getBundle();
 
 		// Create a list of DataPointVOs to which the user has permission.
-		DataPointDao dataPointDao = new DataPointDao();
+		DataPointService dataPointService = new DataPointService();
 		List<ReportInstancePointDAO.PointInfo> points = new ArrayList<ReportInstancePointDAO.PointInfo>(
 				reportConfig.getPoints().size());
 		for (ReportPointVO reportPoint : reportConfig.getPoints()) {
-			DataPointVO point = dataPointDao.getDataPoint(reportPoint
+			DataPointVO point = dataPointService.getDataPoint(reportPoint
 					.getPointId());
 			if (point != null
 					&& Permissions.hasDataPointReadPermission(user, point)) {

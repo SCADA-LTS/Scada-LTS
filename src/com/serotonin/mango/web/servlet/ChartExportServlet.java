@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -19,6 +18,7 @@ import com.serotonin.mango.vo.report.ReportCsvStreamer;
 import com.serotonin.mango.vo.report.ReportDataValue;
 import com.serotonin.mango.vo.report.ReportPointInfo;
 import com.serotonin.mango.web.dwr.beans.DataExportDefinition;
+import org.scada_lts.mango.service.DataPointService;
 
 public class ChartExportServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -33,7 +33,7 @@ public class ChartExportServlet extends HttpServlet {
         if (def == null)
             return;
 
-        DataPointDao dataPointDao = new DataPointDao();
+        DataPointService dataPointService = new DataPointService();
         PointValueDao pointValueDao = new PointValueDao();
 
         long from = def.getFrom() == null ? -1 : def.getFrom().getMillis();
@@ -60,7 +60,7 @@ public class ChartExportServlet extends HttpServlet {
         };
 
         for (int pointId : def.getPointIds()) {
-            DataPointVO dp = dataPointDao.getDataPoint(pointId);
+            DataPointVO dp = dataPointService.getDataPoint(pointId);
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 ReportPointInfo pointInfo = new ReportPointInfo();
                 pointInfo.setPointName(dp.getName());

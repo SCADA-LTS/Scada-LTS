@@ -40,7 +40,6 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -58,6 +57,7 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -472,10 +472,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 			if (jsonPoints != null) {
 				// Get a list of points to which permission already exists due
 				// to data source access.
-				DataPointDao dataPointDao = new DataPointDao();
+				DataPointService dataPointService = new DataPointService();
 				List<Integer> permittedPoints = new ArrayList<Integer>();
 				for (Integer dsId : dataSourcePermissions) {
-					for (DataPointVO dp : dataPointDao
+					for (DataPointVO dp : dataPointService
 							.getDataPoints(dsId, null))
 						permittedPoints.add(dp.getId());
 				}

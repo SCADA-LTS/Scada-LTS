@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
@@ -39,6 +38,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
+import org.scada_lts.mango.service.DataPointService;
 
 /**
  * @author Matthew Lohbihler
@@ -61,7 +61,7 @@ public class CompoundEventsDwr extends BaseDwr {
         // Get the data points
         List<EventSourceBean> dataPoints = new LinkedList<EventSourceBean>();
         EventSourceBean source;
-        for (DataPointVO dp : new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, true)) {
+        for (DataPointVO dp : new DataPointService().getDataPoints(DataPointExtendedNameComparator.instance, true)) {
             if (!Permissions.hasDataSourcePermission(user, dp.getDataSourceId()))
                 continue;
 

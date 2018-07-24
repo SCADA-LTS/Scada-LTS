@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
@@ -37,7 +36,6 @@ import org.joda.time.IllegalFieldValueException;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -61,6 +59,7 @@ import com.serotonin.web.content.ContentGenerator;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 
 abstract public class BaseDwr {
@@ -179,7 +178,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public int setPoint(int pointId, int componentId, String valueStr) {
         User user = Common.getUser();
-        DataPointVO point = new DataPointDao().getDataPoint(pointId);
+        DataPointVO point = new DataPointService().getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointSetPermission(user, point);
@@ -204,7 +203,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public void forcePointRead(int pointId) {
         User user = Common.getUser();
-        DataPointVO point = new DataPointDao().getDataPoint(pointId);
+        DataPointVO point = new DataPointService().getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointReadPermission(user, point);
@@ -244,7 +243,7 @@ abstract public class BaseDwr {
     protected List<DataPointBean> getReadablePoints() {
         User user = Common.getUser();
 
-        List<DataPointVO> points = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> points = new DataPointService().getDataPoints(DataPointExtendedNameComparator.instance, false);
         if (!Permissions.hasAdmin(user)) {
             List<DataPointVO> userPoints = new ArrayList<DataPointVO>();
             for (DataPointVO dp : points) {

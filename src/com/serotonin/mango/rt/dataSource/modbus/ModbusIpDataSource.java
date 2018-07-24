@@ -19,7 +19,6 @@
 package com.serotonin.mango.rt.dataSource.modbus;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
@@ -34,6 +33,7 @@ import com.serotonin.modbus4j.ip.IpParameters;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.DataSourcePointsCache;
+import org.scada_lts.mango.service.DataPointService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,14 +64,14 @@ public class ModbusIpDataSource extends ModbusDataSource {
 			} else {
 				// Check if a monitor point already exists.
 				LOG.trace("Check if monitor already exists!");
-				DataPointDao dataPointDao = new DataPointDao();
+				DataPointService dataPointService = new DataPointService();
 				boolean found = false;
 
 				List<DataPointVO> points;
 				if (DataSourcePointsCache.getInstance().isCacheEnabled()) {
 					points = DataSourcePointsCache.getInstance().getDataPoints((long) configuration.getId());
 				} else {
-					points = dataPointDao.getDataPoints(
+					points = dataPointService.getDataPoints(
 						configuration.getId(), null);
 				}
 				for (DataPointVO dp : points) {
@@ -89,7 +89,7 @@ public class ModbusIpDataSource extends ModbusDataSource {
 					LOG.trace("socketMonitor not found! Create one!");
 
 					DataPointVO dp = new DataPointVO();
-					dp.setXid(dataPointDao.generateUniqueXid());
+					dp.setXid(dataPointService.generateUniqueXid());
 					dp.setName(Common
 							.getMessage("dsEdit.modbusIp.socketPointName"));
 					dp.setDataSourceId(configuration.getId());

@@ -37,7 +37,6 @@ import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.Common.TimePeriods;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -51,6 +50,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.scada_lts.mango.service.DataPointService;
 
 /**
  * @author Matthew Lohbihler
@@ -233,11 +233,11 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     }
 
     private String contextToString() {
-        DataPointDao dataPointDao = new DataPointDao();
+        DataPointService dataPointService = new DataPointService();
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (MutablePair ivp : context) {
-            DataPointVO dp = dataPointDao.getDataPoint((Integer) ivp.getKey());
+            DataPointVO dp = dataPointService.getDataPoint((Integer) ivp.getKey());
             if (first)
                 first = false;
             else
@@ -334,7 +334,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         JsonArray jsonContext = json.getJsonArray("context");
         if (jsonContext != null) {
             context.clear();
-            DataPointDao dataPointDao = new DataPointDao();
+            DataPointService dataPointService = new DataPointService();
 
             for (JsonValue jv : jsonContext.getElements()) {
                 JsonObject jo = jv.toJsonObject();
@@ -342,7 +342,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 if (xid == null)
                     throw new LocalizableJsonException("emport.error.meta.missing", "dataPointXid");
 
-                DataPointVO dp = dataPointDao.getDataPoint(xid);
+                DataPointVO dp = dataPointService.getDataPoint(xid);
                 if (dp == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
 
@@ -361,10 +361,10 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
         map.put("updateEvent", UPDATE_EVENT_CODES.getCode(updateEvent));
 
-        DataPointDao dataPointDao = new DataPointDao();
+        DataPointService dataPointService = new DataPointService();
         List<Map<String, Object>> pointList = new ArrayList<Map<String, Object>>();
         for (MutablePair p : context) {
-            DataPointVO dp = dataPointDao.getDataPoint((Integer) p.getKey());
+            DataPointVO dp = dataPointService.getDataPoint((Integer) p.getKey());
             if (dp != null) {
                 Map<String, Object> point = new HashMap<String, Object>();
                 pointList.add(point);

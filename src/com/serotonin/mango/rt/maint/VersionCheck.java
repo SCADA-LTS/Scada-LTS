@@ -37,7 +37,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -51,6 +50,7 @@ import com.serotonin.timer.TimerTask;
 import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 
 /**
  * @author Matthew Lohbihler
@@ -159,11 +159,11 @@ public class VersionCheck extends TimerTask {
 		postMethod.addParameter("instanceVersion", Common.getVersion());
 
 		StringBuilder datasourceTypes = new StringBuilder();
-		DataPointDao dataPointDao = new DataPointDao();
+		DataPointService dataPointService = new DataPointService();
 		for (DataSourceVO<?> config : new DataSourceDao().getDataSources()) {
 			if (config.isEnabled()) {
 				int points = 0;
-				for (DataPointVO point : dataPointDao.getDataPoints(
+				for (DataPointVO point : dataPointService.getDataPoints(
 						config.getId(), null)) {
 					if (point.isEnabled())
 						points++;

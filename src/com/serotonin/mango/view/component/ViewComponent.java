@@ -37,7 +37,6 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.json.TypeFactory;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.vo.DataPointVO;
@@ -53,6 +52,7 @@ import br.org.scadabr.view.component.ChartComparatorComponent;
 import br.org.scadabr.view.component.FlexBuilderComponent;
 import br.org.scadabr.view.component.LinkComponent;
 import br.org.scadabr.view.component.ScriptButtonComponent;
+import org.scada_lts.mango.service.DataPointService;
 
 /**
  * @author Matthew Lohbihler
@@ -299,7 +299,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 
 	protected DataPointVO readDataPoint(ObjectInputStream in)
 			throws IOException {
-		return new DataPointDao().getDataPoint(in.readInt());
+		return new DataPointService().getDataPoint(in.readInt());
 	}
 
 	/**
@@ -332,7 +332,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 				comp.tsetDataPoint(null);
 			else {
 				String xid = jsonXid.toJsonString().getValue();
-				DataPointVO dataPoint = new DataPointDao().getDataPoint(xid);
+				DataPointVO dataPoint = new DataPointService().getDataPoint(xid);
 				if (dataPoint == null)
 					throw new LocalizableJsonException(
 							"emport.error.missingPoint", xid);

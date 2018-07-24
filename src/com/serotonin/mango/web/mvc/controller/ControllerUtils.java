@@ -26,12 +26,12 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.scada_lts.mango.service.DataPointService;
 import org.springframework.ui.Model;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.LocaleResolver;
 
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -54,7 +54,7 @@ public class ControllerUtils {
     }
 
     public static void addPointListDataToModel(User user, int pointId, Map<String, Object> model) {
-        List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> allPoints = new DataPointService().getDataPoints(DataPointExtendedNameComparator.instance, false);
         List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
         int pointIndex = -1;
         for (DataPointVO dp : allPoints) {
@@ -74,7 +74,7 @@ public class ControllerUtils {
     }
     
     public static void addPointListDataToModel(User user, int pointId, Model model){
-        List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> allPoints = new DataPointService().getDataPoints(DataPointExtendedNameComparator.instance, false);
         List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
         int pointIndex = -1;
         for (DataPointVO dp : allPoints) {

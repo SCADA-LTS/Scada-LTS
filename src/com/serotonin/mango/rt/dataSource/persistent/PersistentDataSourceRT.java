@@ -17,7 +17,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -44,6 +43,7 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 
 public class PersistentDataSourceRT extends EventDataSource implements Runnable {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
@@ -477,7 +477,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
             }
 
             // Doesn't exist in the RT list. Check if it exists at all.
-            DataPointVO oldDpvo = new DataPointDao().getDataPoint(xid);
+            DataPointVO oldDpvo = new DataPointService().getDataPoint(xid);
 
             if (oldDpvo != null) {
                 // The point exists. Make sure it belongs to this data source.
@@ -522,21 +522,21 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
         private void updatePointHierarchy(String xid, List<String> path) {
             // Only update if we accept point updates.
             if (PersistentDataSourceRT.this.vo.isAcceptPointUpdates()) {
-                DataPointDao dataPointDao = new DataPointDao();
+                DataPointService dataPointService = new DataPointService();
 
                 // Get the point vo.
                 DataPointRT dprt = pointXids.get(xid);
                 DataPointVO dpvo;
                 if (dprt == null)
                     // Not currently enabled.
-                    dpvo = dataPointDao.getDataPoint(xid);
+                    dpvo = dataPointService.getDataPoint(xid);
                 else
                     dpvo = dprt.getVO();
 
                 if (dpvo == null)
                     return;
 
-                PointHierarchy pointHierarchy = dataPointDao.getPointHierarchy();
+                PointHierarchy pointHierarchy = dataPointService.getPointHierarchy();
 
                 // Get the current path to the point.
                 List<PointFolder> folders = pointHierarchy.getFolderPath(dpvo.getId());
@@ -560,7 +560,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                     newFolder.addDataPoint(new MutablePair<>(dpvo.getId(), dpvo.getName()));
 
                     // Save the hierarchy
-                    dataPointDao.savePointHierarchy(pointHierarchy.getRoot());
+                    dataPointService.savePointHierarchy(pointHierarchy.getRoot());
                 }
             }
         }

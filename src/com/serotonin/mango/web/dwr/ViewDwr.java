@@ -49,7 +49,6 @@ import br.org.scadabr.vo.scripting.ScriptVO;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -90,6 +89,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 import org.scada_lts.dao.model.IdName;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.serorepl.db.IntStringPair;
 
@@ -376,7 +376,7 @@ public class ViewDwr extends BaseDwr {
 		result.put("componentTypes", components);
 
 		// Available points
-		List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+		List<DataPointVO> allPoints = new DataPointService().getDataPoints(DataPointExtendedNameComparator.instance, false);
 		List<DataPointBean> availablePoints = new ArrayList<DataPointBean>();
 		for (DataPointVO dataPoint : allPoints) {
 			if (Permissions.hasDataPointReadPermission(user, dataPoint))
@@ -417,7 +417,7 @@ public class ViewDwr extends BaseDwr {
 		PointComponent pc = (PointComponent) getViewComponent(pointComponentId);
 		User user = Common.getUser();
 
-		DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
+		DataPointVO dp = new DataPointService().getDataPoint(dataPointId);
 		if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
 			response.addContextualMessage("settingsPointList", "validate.required");
 		else {
@@ -886,7 +886,7 @@ public class ViewDwr extends BaseDwr {
 				// no op
 			}
 
-			DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
+			DataPointVO dp = new DataPointService().getDataPoint(dataPointId);
 
 			if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
 				c.setDataPoint(String.valueOf(kvp.getKey()) , null);
@@ -953,7 +953,7 @@ public class ViewDwr extends BaseDwr {
 
 			List<DataPointVO> dps = new ArrayList<DataPointVO>();
 			for (Integer dpId : dataPoints) {
-				DataPointVO dp = new DataPointDao().getDataPoint(dpId);
+				DataPointVO dp = new DataPointService().getDataPoint(dpId);
 				dps.add(dp);
 			}
 

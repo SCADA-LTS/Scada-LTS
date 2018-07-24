@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.WatchList;
@@ -86,9 +85,9 @@ public class WatchListService implements MangoWatchList {
 		List<Integer> pointIds = watchListDAO.getPointsWatchList(watchList.getId());
 		
 		List<DataPointVO> points = watchList.getPointList();
-		DataPointDao dataPointDao = new DataPointDao();
+		DataPointService dataPointService = new DataPointService();
 		for (Integer pointId : pointIds)
-			points.add(dataPointDao.getDataPoint(pointId));
+			points.add(dataPointService.getDataPoint(pointId));
 
 		setWatchListUsers(watchList);
 	}

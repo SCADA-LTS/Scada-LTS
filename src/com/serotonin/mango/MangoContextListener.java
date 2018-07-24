@@ -22,7 +22,6 @@ package com.serotonin.mango;
 import br.org.scadabr.api.utils.APIUtils;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.db.DatabaseAccess;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.ReportDao;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.RuntimeManager;
@@ -64,6 +63,7 @@ import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.scripting.SandboxContextFactory;
 
 import javax.servlet.ServletContext;
@@ -206,8 +206,8 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void dataPointsNameToIdMapping(ServletContext ctx) {
-		PointHierarchy pH = new DataPointDao().getPointHierarchy();
-		List<DataPointVO> datapoints = new DataPointDao().getDataPoints(null,
+		PointHierarchy pH = new DataPointService().getPointHierarchy();
+		List<DataPointVO> datapoints = new DataPointService().getDataPoints(null,
 				false);
 
 		Map<String, Integer> mapping = new HashMap<String, Integer>();

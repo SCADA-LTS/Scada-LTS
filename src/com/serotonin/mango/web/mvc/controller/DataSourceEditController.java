@@ -26,13 +26,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.mango.service.DataPointService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.util.CommPortConfigException;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
@@ -67,7 +67,7 @@ public class DataSourceEditController extends ParameterizableViewController {
             }
             else {
                 int pid = Integer.parseInt(pidStr);
-                DataPointVO dp = new DataPointDao().getDataPoint(pid);
+                DataPointVO dp = new DataPointService().getDataPoint(pid);
                 if (dp == null)
                     throw new ShouldNeverHappenException("DataPoint not found with id " + pid);
                 id = dp.getDataSourceId();
@@ -101,7 +101,7 @@ public class DataSourceEditController extends ParameterizableViewController {
             model.put("commPortError", e.getMessage());
         }
 
-        List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> allPoints = new DataPointService().getDataPoints(DataPointExtendedNameComparator.instance, false);
         List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
         List<DataPointVO> analogPoints = new LinkedList<DataPointVO>();
         for (DataPointVO dp : allPoints) {

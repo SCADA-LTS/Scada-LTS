@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -20,6 +19,7 @@ import com.serotonin.mango.vo.publish.persistent.PersistentSenderVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 
 public class PersistentSenderRT extends PublisherRT<PersistentPointVO> {
     static final Log LOG = LogFactory.getLog(PersistentSenderRT.class);
@@ -114,10 +114,10 @@ public class PersistentSenderRT extends PublisherRT<PersistentPointVO> {
     @Override
     public void initialize() {
         // Cache the data point VOs for use during runtime.
-        DataPointDao dataPointDao = new DataPointDao();
+        DataPointService dataPointService = new DataPointService();
         int index = 0;
         for (PersistentPointVO p : vo.getPoints()) {
-            DataPointVO dpvo = dataPointDao.getDataPoint(p.getDataPointId());
+            DataPointVO dpvo = dataPointService.getDataPoint(p.getDataPointId());
             p.setIndex(index++);
             updatePublishedPointVO(p, dpvo);
         }

@@ -7,7 +7,6 @@ package com.serotonin.mango.web.servlet;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
@@ -21,6 +20,7 @@ import com.serotonin.sync.Synchronizer;
 import com.serotonin.util.StringUtils;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.utils.ColorUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ import java.util.List;
 public class AsyncImageChartServlet extends BaseInfoServlet {
     private static final long serialVersionUID = -1;
 
-    final DataPointDao dataPointDao = new DataPointDao();
+    final DataPointService dataPointService = new DataPointService();
     final PointValueDao pointValueDao = new PointValueDao();
 
     /**
@@ -180,7 +180,7 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
 
         @Override
         public void run() {
-            DataPointVO dp = dataPointDao.getDataPoint(dataPointId);
+            DataPointVO dp = dataPointService.getDataPoint(dataPointId);
             try {
                 if (colour == null && !StringUtils.isEmpty(dp.getChartColour()))
                     colour = ColorUtils.toColor(dp.getChartColour());

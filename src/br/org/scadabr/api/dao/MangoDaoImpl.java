@@ -33,6 +33,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 
 import java.util.*;
@@ -59,7 +60,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		List<ItemValue> itemsList = new ArrayList<ItemValue>();
 		List<DataPointVO> ldpvo = null;
 
-		pH = new DataPointDao().getPointHierarchy();
+		pH = new DataPointService().getPointHierarchy();
 		for (String itemQName : itemList) {
 			ArrayList<ItemValue> itemValueList = new ArrayList<ItemValue>();
 			try {
@@ -67,7 +68,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 				if (itemQName == null)
 					itemQName = "";
 				int dataPointId = Common.ctx.getDataPointByName(itemQName);
-				DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
+				DataPointVO dp = new DataPointService().getDataPoint(dataPointId);
 				if (dp != null) {
 					if (isValidDataPoint(dp)) {
 						ItemValue iv = toItemValue(dp);
@@ -76,7 +77,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 					}
 				} else {
 					if (ldpvo == null)
-						ldpvo = new DataPointDao().getDataPoints(null, false);
+						ldpvo = new DataPointService().getDataPoints(null, false);
 					for (DataPointVO dataPointVO : ldpvo) {
 						String completeName = APIUtils.getCompletePath(
 								dataPointVO.getPointFolderId(), pH)
@@ -218,11 +219,11 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			error.setDescription(APIConstants.INSUFFICIENT_PARAMETER);
 			throw new ScadaBRAPIException(error);
 		}
-		PointHierarchy pH = new DataPointDao().getPointHierarchy();
+		PointHierarchy pH = new DataPointService().getPointHierarchy();
 
 		int dataPointId = Common.ctx
 				.getDataPointByName(itemValue.getItemName());
-		DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
+		DataPointVO dp = new DataPointService().getDataPoint(dataPointId);
 
 		if (dp != null) {
 			checkValidWriteCommand(dp, itemValue);
@@ -236,7 +237,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			newItemValue.setItemName(dp.getName());
 
 		} else {
-			List<DataPointVO> listDPVO = new DataPointDao().getDataPoints(null,
+			List<DataPointVO> listDPVO = new DataPointService().getDataPoints(null,
 					false);
 			for (DataPointVO dataPointVO : listDPVO) {
 				String completeName = APIUtils.getCompletePath(
@@ -372,9 +373,9 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			newItemValue.setItemName(dp.getName());
 
 		} else {
-			List<DataPointVO> listDPVO = new DataPointDao().getDataPoints(null,
+			List<DataPointVO> listDPVO = new DataPointService().getDataPoints(null,
 					false);
-			PointHierarchy pH = new DataPointDao().getPointHierarchy();
+			PointHierarchy pH = new DataPointService().getPointHierarchy();
 			for (DataPointVO dataPointVO : listDPVO) {
 				String completeName = APIUtils.getCompletePath(
 						dataPointVO.getPointFolderId(), pH)
@@ -413,8 +414,8 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		checkUser();
 		ArrayList<ItemInfo> itemInfoList = new ArrayList<ItemInfo>();
 
-		List<DataPointVO> ldpvo = new DataPointDao().getDataPoints(null, false);
-		PointHierarchy pH = new DataPointDao().getPointHierarchy();
+		List<DataPointVO> ldpvo = new DataPointService().getDataPoints(null, false);
+		PointHierarchy pH = new DataPointService().getPointHierarchy();
 
 		Map<String, Integer> mapping = new HashMap<String, Integer>();
 
@@ -469,10 +470,10 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			Calendar initialDate, Calendar finalDate, int maxReturn)
 			throws ScadaBRAPIException {
 		checkUser();
-		List<DataPointVO> listDPVO = new DataPointDao().getDataPoints(null,
+		List<DataPointVO> listDPVO = new DataPointService().getDataPoints(null,
 				false);
 		List<ItemValue> itemHistory = null;
-		PointHierarchy pH = new DataPointDao().getPointHierarchy();
+		PointHierarchy pH = new DataPointService().getPointHierarchy();
 		for (DataPointVO dataPointVO : listDPVO) {
 			String completeName = APIUtils.getCompletePath(
 					dataPointVO.getPointFolderId(), pH)
@@ -659,7 +660,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			List<PointEventDetectorVO> pointEventDetectors = new ArrayList<PointEventDetectorVO>();
 
 			for (DataSourceVO<?> dataSourceVO : dataSources) {
-				List<DataPointVO> dataPoints = new DataPointDao()
+				List<DataPointVO> dataPoints = new DataPointService()
 						.getDataPoints(dataSourceVO.getId(), null);
 				for (DataPointVO dataPointVO : dataPoints) {
 					pointEventDetectors.addAll(dataPointVO.getEventDetectors());
@@ -982,7 +983,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			throw new ScadaBRAPIException(error);
 		}
 
-		List<DataPointVO> mangoPoints = new DataPointDao().getDataPoints(
+		List<DataPointVO> mangoPoints = new DataPointService().getDataPoints(
 				dataSourceId, null);
 		List<Object> dataPoints = new ArrayList<Object>();
 
@@ -1207,14 +1208,14 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		ModbusPointLocatorVO mangoLocator = null;
 		if (point.getId() == Common.NEW_ID) {
 			mangoPoint = new DataPointVO();
-			mangoPoint.setXid(new DataPointDao().generateUniqueXid());
+			mangoPoint.setXid(new DataPointService().generateUniqueXid());
 			mangoLocator = new ModbusPointLocatorVO();
 			mangoPoint
 					.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
 
 		} else {
 			checkValidDataPointId(point.getId());
-			mangoPoint = new DataPointDao().getDataPoint(point.getId());
+			mangoPoint = new DataPointService().getDataPoint(point.getId());
 			mangoLocator = mangoPoint.getPointLocator();
 		}
 
@@ -1247,7 +1248,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	private void validate(DataPointVO dataPoint, DwrResponseI18n response) {
 		if (StringUtils.isEmpty(dataPoint.getXid()))
 			response.addContextualMessage("xid", "validate.required");
-		else if (!new DataPointDao().isXidUnique(dataPoint.getXid(),
+		else if (!new DataPointService().isXidUnique(dataPoint.getXid(),
 				dataPoint.getId()))
 			response.addContextualMessage("xid", "validate.xidUsed");
 		if (StringUtils.isEmpty(dataPoint.getName()))
@@ -1255,7 +1256,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	}
 
 	private void checkValidDataPointId(int id) throws ScadaBRAPIException {
-		DataPointVO mangoVO = new DataPointDao().getDataPoint(id);
+		DataPointVO mangoVO = new DataPointService().getDataPoint(id);
 		if (mangoVO == null)
 			throw new ScadaBRAPIException(new APIError(ErrorCode.INVALID_ID,
 					"Data Point inexistent!"));
@@ -1266,7 +1267,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	public void removeDataPoint(int id) throws ScadaBRAPIException {
 		checkValidDataPointId(id);
 		checkUser();
-		DataPointVO dp = new DataPointDao().getDataPoint(id);
+		DataPointVO dp = new DataPointService().getDataPoint(id);
 		if (!Permissions.hasDataSourcePermission(user, dp.getDataSourceId())) {
 			APIError error = new APIError();
 			error.setCode(ErrorCode.ACCESS_DENIED);

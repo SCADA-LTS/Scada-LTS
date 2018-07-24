@@ -35,6 +35,7 @@ import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.utils.ColorUtils;
 
@@ -247,9 +248,9 @@ public class ReportsDwr extends BaseDwr {
             response.addContextualMessage("pastPeriodCount", "reports.validate.periodCountLessThan1");
 
         User user = Common.getUser();
-        DataPointDao dataPointDao = new DataPointDao();
+        DataPointService dataPointService = new DataPointService();
         for (ReportPointVO point : points) {
-            Permissions.ensureDataPointReadPermission(user, dataPointDao.getDataPoint(point.getPointId()));
+            Permissions.ensureDataPointReadPermission(user, dataPointService.getDataPoint(point.getPointId()));
 
             try {
                 if (!StringUtils.isEmpty(point.getColour()))

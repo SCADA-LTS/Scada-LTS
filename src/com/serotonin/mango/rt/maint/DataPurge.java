@@ -29,7 +29,6 @@ import org.joda.time.DateTime;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.ReportDao;
@@ -40,6 +39,7 @@ import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.timer.TimerTask;
+import org.scada_lts.mango.service.DataPointService;
 
 public class DataPurge {
     private final Log log = LogFactory.getLog(DataPurge.class);
@@ -65,8 +65,8 @@ public class DataPurge {
         log.info("Data purge started");
 
         // Get the data point information.
-        DataPointDao dataPointDao = new DataPointDao();
-        List<DataPointVO> dataPoints = dataPointDao.getDataPoints(null, false);
+        DataPointService dataPointService = new DataPointService();
+        List<DataPointVO> dataPoints = dataPointService.getDataPoints(null, false);
         int deleteCount = 0;
         for (DataPointVO dataPoint : dataPoints)
             deleteCount += purgePoint(dataPoint);

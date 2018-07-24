@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -39,7 +40,6 @@ import org.springframework.web.util.WebUtils;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.view.chart.BaseChartRenderer;
 import com.serotonin.mango.view.text.BaseTextRenderer;
@@ -63,8 +63,8 @@ import com.serotonin.util.StringUtils;
 @RequestMapping("/data_point_edit.shtm") 
 public class DataPointEditController {
 	private static final Log LOG = LogFactory.getLog(LoginController.class);
-	
-	DataPointDao dataPointDao;
+
+    DataPointService dataPointService;
 	
     public static final String SUBMIT_SAVE = "save";
     public static final String SUBMIT_DISABLE = "disable";
@@ -86,7 +86,7 @@ public class DataPointEditController {
 		LOG.trace("/data_point_edit.shtm");
 		
         User user = Common.getUser(request);
-        dataPointDao = new DataPointDao();
+        dataPointService = new DataPointService();
         int id;
         String idStr = request.getParameter("dpid");
         if (idStr == null) {
@@ -95,12 +95,12 @@ public class DataPointEditController {
                 throw new ShouldNeverHappenException("dpid or pedid must be provided for this page");
 
             int pedid = Integer.parseInt(pedStr);
-            id = dataPointDao.getDataPointIdFromDetectorId(pedid);
+            id = dataPointService.getDataPointIdFromDetectorId(pedid);
         }
         else
             id = Integer.parseInt(idStr);
 
-        DataPointVO dataPoint = dataPointDao.getDataPoint(id);
+        DataPointVO dataPoint = dataPointService.getDataPoint(id);
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());

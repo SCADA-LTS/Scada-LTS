@@ -27,7 +27,7 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.mango.db.dao.DataPointDao;
+import org.scada_lts.mango.service.DataPointService;
 
 @JsonRemoteEntity
 public class DataPointEventType extends EventType {
@@ -55,7 +55,7 @@ public class DataPointEventType extends EventType {
 	@Override
 	public int getDataSourceId() {
 		if (dataSourceId == -1)
-			dataSourceId = new DataPointDao().getDataPoint(dataPointId)
+			dataSourceId = new DataPointService().getDataPoint(dataPointId)
 					.getDataSourceId();
 		LOG.debug(toString() + " - getDataSourceId() - "
 				+ Integer.toString(dataSourceId));
@@ -126,10 +126,10 @@ public class DataPointEventType extends EventType {
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		super.jsonSerialize(map);
-		DataPointDao dataPointDao = new DataPointDao();
-		map.put("dataPointXID", dataPointDao.getDataPoint(dataPointId).getXid());
+		DataPointService dataPointService = new DataPointService();
+		map.put("dataPointXID", dataPointService.getDataPoint(dataPointId).getXid());
 		map.put("detectorXID",
-				dataPointDao.getDetectorXid(pointEventDetectorId));
+				dataPointService.getDetectorXid(pointEventDetectorId));
 	}
 
 	@Override
