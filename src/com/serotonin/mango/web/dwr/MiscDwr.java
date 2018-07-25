@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
+import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.UserService;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.web.servlet.LocaleResolver;
@@ -46,7 +47,6 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.MailingListDao;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.event.EventInstance;
@@ -206,7 +206,7 @@ public class MiscDwr extends BaseDwr {
 			String message) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
-		String[] toAddrs = new MailingListDao().getRecipientAddresses(
+		String[] toAddrs = new MailingListService().getRecipientAddresses(
 				recipientList, null).toArray(new String[0]);
 		if (toAddrs.length == 0)
 			response.addGenericMessage("js.email.noRecipForEmail");

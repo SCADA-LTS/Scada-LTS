@@ -81,7 +81,7 @@ public class ImportTask extends ProgressiveTask {
 	private final ScheduledEventService scheduledEventService = new ScheduledEventService();
 	private final CompoundEventDetectorService compoundEventDetectorService = new CompoundEventDetectorService();
 	private final EventDao eventDao = new EventDao();
-	private final MailingListDao mailingListDao = new MailingListDao();
+	private final MailingListService mailingListService = new MailingListService();
 	private final PublisherDao publisherDao = new PublisherDao();
 	private final WatchListDao watchListDao = new WatchListDao();
 	private final MaintenanceEventDao maintenanceEventDao = new MaintenanceEventDao();
@@ -746,7 +746,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.mailingList.xid");
 		else {
-			MailingList vo = mailingListDao.getMailingList(xid);
+			MailingList vo = mailingListService.getMailingList(xid);
 			if (vo == null) {
 				vo = new MailingList();
 				vo.setXid(xid);
@@ -766,7 +766,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = vo.getId() == Common.NEW_ID;
-					mailingListDao.saveMailingList(vo);
+					mailingListService.saveMailingList(vo);
 					addSuccessMessage(isnew, "emport.mailingList.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {

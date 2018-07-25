@@ -40,12 +40,10 @@ import com.serotonin.json.JsonWriter;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PointLinkDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.RuntimeManager;
@@ -128,7 +126,7 @@ public class EmportDwr extends BaseDwr {
 		if (users)
 			data.put(USERS, new UserService().getUsers());
 		if (mailingLists)
-			data.put(MAILING_LISTS, new MailingListDao().getMailingLists());
+			data.put(MAILING_LISTS, new MailingListService().getMailingLists());
 		if (publishers)
 			data.put(PUBLISHERS, new PublisherDao().getPublishers());
 		if (pointHierarchy)

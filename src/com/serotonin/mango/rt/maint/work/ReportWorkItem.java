@@ -38,7 +38,6 @@ import org.joda.time.DateTime;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.ReportDao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -57,6 +56,7 @@ import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.UserService;
 
 /**
@@ -162,7 +162,7 @@ public class ReportWorkItem implements WorkItem {
 					reportConfig.isIncludeData());
 
 			// Create the to list
-			Set<String> addresses = new MailingListDao().getRecipientAddresses(
+			Set<String> addresses = new MailingListService().getRecipientAddresses(
 					reportConfig.getRecipients(),
 					new DateTime(reportInstance.getReportStartTime()));
 			String[] toAddrs = addresses.toArray(new String[0]);

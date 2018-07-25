@@ -32,10 +32,8 @@ import org.directwebremoting.WebContextFactory;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -60,7 +58,6 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.PublisherDAO;
 import org.scada_lts.mango.service.*;
 
 public class EventHandlersDwr extends BaseDwr {
@@ -194,7 +191,7 @@ public class EventHandlersDwr extends BaseDwr {
 		}
 
 		// Get the mailing lists.
-		model.put("mailingLists", new MailingListDao().getMailingLists());
+		model.put("mailingLists", new MailingListService().getMailingLists());
 
 		// Get the users.
 		model.put("users", new UserService().getUsers());

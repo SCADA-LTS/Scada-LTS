@@ -37,7 +37,6 @@ import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
 import com.serotonin.mango.rt.event.handlers.ProcessHandlerRT;
@@ -55,6 +54,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.UserService;
 
 @JsonRemoteEntity
@@ -631,14 +631,14 @@ public class EventHandlerVO implements Serializable,
 
 	private static LocalizableMessage createRecipientMessage(
 			List<RecipientListEntryBean> recipients) {
-		MailingListDao mailingListDao = new MailingListDao();
+		MailingListService mailingListService = new MailingListService();
 		UserService userDao = new UserService();
 		ArrayList<LocalizableMessage> params = new ArrayList<LocalizableMessage>();
 		for (RecipientListEntryBean recip : recipients) {
 			LocalizableMessage msg;
 			if (recip.getRecipientType() == EmailRecipient.TYPE_MAILING_LIST)
 				msg = new LocalizableMessage("event.audit.recip.mailingList",
-						mailingListDao.getMailingList(recip.getReferenceId())
+						mailingListService.getMailingList(recip.getReferenceId())
 								.getName());
 			else if (recip.getRecipientType() == EmailRecipient.TYPE_USER)
 				msg = new LocalizableMessage("event.audit.recip.user", userDao

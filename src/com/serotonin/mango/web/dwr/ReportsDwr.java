@@ -36,6 +36,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.utils.ColorUtils;
 
@@ -52,7 +53,7 @@ public class ReportsDwr extends BaseDwr {
         User user = Common.getUser();
 
         response.addData("points", getReadablePoints());
-        response.addData("mailingLists", new MailingListDao().getMailingLists());
+        response.addData("mailingLists", new MailingListService().getMailingLists());
         response.addData("users", new UserService().getUsers());
         response.addData("reports", reportDao.getReports(user.getId()));
         response.addData("instances", getReportInstances(user));
