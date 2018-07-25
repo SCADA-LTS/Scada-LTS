@@ -58,6 +58,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -497,9 +498,9 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	public void jsonSerialize(Map<String, Object> map) {
 		if (!admin) {
 			List<String> dsXids = new ArrayList<String>();
-			DataSourceDao dataSourceDao = new DataSourceDao();
+			DataSourceService dataSourceService = new DataSourceService();
 			for (Integer dsId : dataSourcePermissions)
-				dsXids.add(dataSourceDao.getDataSource(dsId).getXid());
+				dsXids.add(dataSourceService.getDataSource(dsId).getXid());
 			map.put("dataSourcePermissions", dsXids);
 
 			map.put("dataPointPermissions", dataPointPermissions);

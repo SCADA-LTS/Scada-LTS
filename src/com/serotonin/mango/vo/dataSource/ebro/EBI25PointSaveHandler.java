@@ -24,6 +24,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataPointSaveHandler;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.web.dwr.beans.EBI25InterfaceUpdater;
+import org.scada_lts.mango.service.DataSourceService;
 
 /**
  * @author Matthew Lohbihler
@@ -33,7 +34,7 @@ public class EBI25PointSaveHandler implements DataPointSaveHandler {
     public void handleSave(DataPointVO point) {
         // The limit point event detectors may have changed. Ensure that the locator limits and the values on the
         // device all match.
-        EBI25DataSourceVO ds = (EBI25DataSourceVO) new DataSourceDao().getDataSource(point.getDataSourceId());
+        EBI25DataSourceVO ds = (EBI25DataSourceVO) new DataSourceService().getDataSource(point.getDataSourceId());
         EBI25PointLocatorVO locator = point.getPointLocator();
 
         PointEventDetectorVO ped;

@@ -108,7 +108,7 @@ public class EmportDwr extends BaseDwr {
 		if (graphicalViews)
 			data.put(GRAPHICAL_VIEWS, new ViewService().getViews());
 		if (dataSources)
-			data.put(DATA_SOURCES, new DataSourceDao().getDataSources());
+			data.put(DATA_SOURCES, new DataSourceService().getDataSources());
 
 		List<DataPointVO> allDataPoints = new DataPointService().getDataPoints(
 				null, true);
@@ -267,7 +267,7 @@ public class EmportDwr extends BaseDwr {
 	}
 
 	private void stopRunningDataSources() {
-		List<DataSourceVO<?>> dataSources = new DataSourceDao()
+		List<DataSourceVO<?>> dataSources = new DataSourceService()
 				.getDataSources();
 
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();

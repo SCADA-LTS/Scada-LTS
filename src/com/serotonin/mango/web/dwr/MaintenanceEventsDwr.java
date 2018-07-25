@@ -37,6 +37,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataSourceService;
 
 /**
  * @author Matthew Lohbihler
@@ -59,7 +60,7 @@ public class MaintenanceEventsDwr extends BaseDwr {
         response.addData("events", events);
 
         List<MutablePair<Integer, String>> dataSources = new ArrayList<>();
-        for (DataSourceVO<?> ds : new DataSourceDao().getDataSources())
+        for (DataSourceVO<?> ds : new DataSourceService().getDataSources())
             dataSources.add(new MutablePair<>(ds.getId(), ds.getName()));
         response.addData("dataSources", dataSources);
 

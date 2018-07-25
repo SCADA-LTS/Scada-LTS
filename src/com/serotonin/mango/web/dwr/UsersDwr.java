@@ -50,6 +50,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.UserService;
 
 public class UsersDwr extends BaseDwr {
@@ -67,7 +68,7 @@ public class UsersDwr extends BaseDwr {
 					new UsersProfileDao().getUsersProfiles());
 
 			// Data sources
-			List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
+			List<DataSourceVO<?>> dataSourceVOs = new DataSourceService()
 					.getDataSources();
 
 			List<Map<String, Object>> dataSources = new ArrayList<Map<String, Object>>(

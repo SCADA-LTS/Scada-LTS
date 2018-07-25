@@ -32,10 +32,7 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import org.scada_lts.mango.service.CompoundEventDetectorService;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.ScheduledEventService;
-import org.scada_lts.mango.service.UserService;
+import org.scada_lts.mango.service.*;
 
 import java.util.*;
 
@@ -314,7 +311,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		}
 
 		if (!dataPointVO.isEnabled()
-				|| !new DataSourceDao().getDataSource(
+				|| !new DataSourceService().getDataSource(
 						dataPointVO.getDataSourceId()).isEnabled()) {
 			APIError error = new APIError();
 			error.setCode(ErrorCode.INVALID_PARAMETER);
@@ -656,7 +653,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		List<EventDefinition> events = new ArrayList<EventDefinition>();
 
 		if ((eventType == null) || eventType == EventType.POINT_CONDITION_EVENT) {
-			List<DataSourceVO<?>> dataSources = new DataSourceDao()
+			List<DataSourceVO<?>> dataSources = new DataSourceService()
 					.getDataSources();
 			List<PointEventDetectorVO> pointEventDetectors = new ArrayList<PointEventDetectorVO>();
 
@@ -740,7 +737,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		checkUser();
 		Type dsType = getDataSourceType(dataSourceType);
 
-		List<DataSourceVO<?>> allDataSources = new DataSourceDao()
+		List<DataSourceVO<?>> allDataSources = new DataSourceService()
 				.getDataSources();
 
 		List<Object> dataSources = new ArrayList<Object>();
@@ -854,7 +851,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 				ds.setXid(new DataSourceDao().generateUniqueXid());
 			} else {
 				checkValidDataSourceId(config.getId(), dataSourceType);
-				ds = (ModbusIpDataSourceVO) new DataSourceDao()
+				ds = (ModbusIpDataSourceVO) new DataSourceService()
 						.getDataSource(config.getId());
 			}
 			if (!Permissions.hasDataSourcePermission(user, config.getId())) {
@@ -896,7 +893,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 			} else {
 				checkValidDataSourceId(config.getId(), dataSourceType);
-				ds = (ModbusSerialDataSourceVO) new DataSourceDao()
+				ds = (ModbusSerialDataSourceVO) new DataSourceService()
 						.getDataSource(config.getId());
 			}
 
@@ -938,10 +935,10 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			throws ScadaBRAPIException {
 		try {
 			if (dataSourceType == DataSourceType.MODBUS_IP) {
-				ModbusIpDataSourceVO ds = (ModbusIpDataSourceVO) new DataSourceDao()
+				ModbusIpDataSourceVO ds = (ModbusIpDataSourceVO) new DataSourceService()
 						.getDataSource(id);
 			} else if (dataSourceType == DataSourceType.MODBUS_SERIAL) {
-				ModbusSerialDataSourceVO ds = (ModbusSerialDataSourceVO) new DataSourceDao()
+				ModbusSerialDataSourceVO ds = (ModbusSerialDataSourceVO) new DataSourceService()
 						.getDataSource(id);
 			}
 		} catch (Exception e) {
@@ -953,7 +950,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 	@Override
 	public void removeDataSource(int id) throws ScadaBRAPIException {
-		DataSourceVO ds = new DataSourceDao().getDataSource(id);
+		DataSourceVO ds = new DataSourceService().getDataSource(id);
 		checkUser();
 		if (ds == null)
 			throw new ScadaBRAPIException(new APIError(ErrorCode.INVALID_ID,
@@ -1181,7 +1178,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 	private void checkSupportedDataPoints(int dataSourceId)
 			throws ScadaBRAPIException {
-		DataSourceVO ds = new DataSourceDao().getDataSource(dataSourceId);
+		DataSourceVO ds = new DataSourceService().getDataSource(dataSourceId);
 		if (ds == null)
 			throw new ScadaBRAPIException(new APIError(ErrorCode.INVALID_ID,
 					"Data Source inexistent"));

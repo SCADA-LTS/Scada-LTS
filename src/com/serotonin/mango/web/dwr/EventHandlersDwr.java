@@ -124,7 +124,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 		// Get the data sources
 		List<EventSourceBean> dataSources = new ArrayList<EventSourceBean>();
-		for (DataSourceVO<?> ds : new DataSourceDao().getDataSources()) {
+		for (DataSourceVO<?> ds : new DataSourceService().getDataSources()) {
 			if (!Permissions.hasDataSourcePermission(user, ds.getId()))
 				continue;
 

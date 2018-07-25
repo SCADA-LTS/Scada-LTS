@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.ScheduledEventService;
 import org.springframework.util.Assert;
 
@@ -273,7 +274,7 @@ public class RuntimeManager {
 	}
 
 	public DataSourceVO<?> getDataSource(int dataSourceId) {
-		return new DataSourceDao().getDataSource(dataSourceId);
+		return new DataSourceService().getDataSource(dataSourceId);
 	}
 
 	public void deleteDataSource(int dataSourceId) {

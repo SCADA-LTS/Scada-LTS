@@ -51,6 +51,7 @@ import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 
 /**
  * @author Matthew Lohbihler
@@ -160,7 +161,7 @@ public class VersionCheck extends TimerTask {
 
 		StringBuilder datasourceTypes = new StringBuilder();
 		DataPointService dataPointService = new DataPointService();
-		for (DataSourceVO<?> config : new DataSourceDao().getDataSources()) {
+		for (DataSourceVO<?> config : new DataSourceService().getDataSources()) {
 			if (config.isEnabled()) {
 				int points = 0;
 				for (DataPointVO point : dataPointService.getDataPoints(

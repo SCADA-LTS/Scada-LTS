@@ -29,6 +29,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.ViewService;
 
 public class UsersProfilesDwr {
@@ -43,7 +44,7 @@ public class UsersProfilesDwr {
 		initData.put("profiles", profiles);
 
 		// Data sources
-		List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
+		List<DataSourceVO<?>> dataSourceVOs = new DataSourceService()
 				.getDataSources();
 		List<Map<String, Object>> dataSources = new ArrayList<Map<String, Object>>(
 				dataSourceVOs.size());
