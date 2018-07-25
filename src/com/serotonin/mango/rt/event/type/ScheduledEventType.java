@@ -25,6 +25,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
+import org.scada_lts.mango.service.ScheduledEventService;
 
 /**
  * @author Matthew Lohbihler
@@ -107,7 +108,7 @@ public class ScheduledEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        map.put("XID", new ScheduledEventDao().getScheduledEvent(scheduleId).getXid());
+        map.put("XID", new ScheduledEventService().getScheduledEvent(scheduleId).getXid());
     }
 
     @Override

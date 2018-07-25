@@ -40,6 +40,7 @@ import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.ScheduledEventService;
 
 /**
  * An event class specifies the type of event that was raised.
@@ -291,7 +292,7 @@ abstract public class EventType implements JsonSerializable {
         String xid = json.getString(name);
         if (xid == null)
             throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
-        ScheduledEventVO se = new ScheduledEventDao().getScheduledEvent(xid);
+        ScheduledEventVO se = new ScheduledEventService().getScheduledEvent(xid);
         if (se == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return se.getId();

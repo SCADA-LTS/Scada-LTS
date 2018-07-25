@@ -28,6 +28,7 @@ import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.ScheduledEventService;
 
 /**
  * @author Matthew Lohbihler
@@ -41,7 +42,7 @@ public class ScheduledEventsDwr extends BaseDwr {
     //
     public List<ScheduledEventVO> getScheduledEvents() {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        return new ScheduledEventDao().getScheduledEvents();
+        return new ScheduledEventService().getScheduledEvents();
     }
 
     public ScheduledEventVO getScheduledEvent(int id) {
@@ -50,14 +51,14 @@ public class ScheduledEventsDwr extends BaseDwr {
         if (id == Common.NEW_ID) {
             DateTime dt = new DateTime();
             ScheduledEventVO se = new ScheduledEventVO();
-            se.setXid(new ScheduledEventDao().generateUniqueXid());
+            se.setXid(new ScheduledEventService().generateUniqueXid());
             se.setActiveYear(dt.getYear());
             se.setInactiveYear(dt.getYear());
             se.setActiveMonth(dt.getMonthOfYear());
             se.setInactiveMonth(dt.getMonthOfYear());
             return se;
         }
-        return new ScheduledEventDao().getScheduledEvent(id);
+        return new ScheduledEventService().getScheduledEvent(id);
     }
 
     public DwrResponseI18n saveScheduledEvent(int id, String xid, String alias, int alarmLevel, int scheduleType,
@@ -91,11 +92,11 @@ public class ScheduledEventsDwr extends BaseDwr {
         se.setInactiveCron(inactiveCron);
 
         DwrResponseI18n response = new DwrResponseI18n();
-        ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
+        ScheduledEventService scheduledEventService = new ScheduledEventService();
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!scheduledEventDao.isXidUnique(xid, id))
+        else if (!scheduledEventService.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         se.validate(response);
@@ -110,7 +111,7 @@ public class ScheduledEventsDwr extends BaseDwr {
 
     public void deleteScheduledEvent(int seId) {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        new ScheduledEventDao().deleteScheduledEvent(seId);
+        new ScheduledEventService().deleteScheduledEvent(seId);
         Common.ctx.getRuntimeManager().stopSimpleEventDetector(ScheduledEventVO.getEventDetectorKey(seId));
     }
 }

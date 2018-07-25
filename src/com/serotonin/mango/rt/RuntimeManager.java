@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.ScheduledEventService;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -156,14 +157,14 @@ public class RuntimeManager {
 			startDataSourcePolling(config);
 
 		// Initialize the scheduled events.
-		ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
-		List<ScheduledEventVO> scheduledEvents = scheduledEventDao
+		ScheduledEventService scheduledEventService = new ScheduledEventService();
+		List<ScheduledEventVO> scheduledEvents = scheduledEventService
 				.getScheduledEvents();
 		for (ScheduledEventVO se : scheduledEvents) {
 			if (!se.isDisabled()) {
 				if (safe) {
 					se.setDisabled(true);
-					scheduledEventDao.saveScheduledEvent(se);
+					scheduledEventService.saveScheduledEvent(se);
 				} else
 					startScheduledEvent(se);
 			}
@@ -581,7 +582,7 @@ public class RuntimeManager {
 		// If the scheduled event is running, stop it.
 		stopSimpleEventDetector(vo.getEventDetectorKey());
 
-		new ScheduledEventDao().saveScheduledEvent(vo);
+		new ScheduledEventService().saveScheduledEvent(vo);
 
 		// If the scheduled event is enabled, start it.
 		if (!vo.isDisabled())

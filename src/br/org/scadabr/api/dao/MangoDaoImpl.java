@@ -34,6 +34,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.ScheduledEventService;
 import org.scada_lts.mango.service.UserService;
 
 import java.util.*;
@@ -693,7 +694,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		}
 
 		if ((eventType == null) || eventType == EventType.SCHEDULED_EVENT) {
-			List<ScheduledEventVO> scheduledEvents = new ScheduledEventDao()
+			List<ScheduledEventVO> scheduledEvents = new ScheduledEventService()
 					.getScheduledEvents();
 			for (ScheduledEventVO pointEvent : scheduledEvents) {
 				EventDefinition event = APIUtils.toEventDefinition(

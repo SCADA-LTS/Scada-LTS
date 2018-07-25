@@ -61,10 +61,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.PublisherDAO;
-import org.scada_lts.mango.service.CompoundEventDetectorService;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.PublisherService;
-import org.scada_lts.mango.service.UserService;
+import org.scada_lts.mango.service.*;
 
 public class EventHandlersDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(EventHandlersDwr.class);
@@ -108,7 +105,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 		// Get the scheduled events
 		List<EventTypeVO> scheduledEvents = new ArrayList<EventTypeVO>();
-		List<ScheduledEventVO> ses = new ScheduledEventDao()
+		List<ScheduledEventVO> ses = new ScheduledEventService()
 				.getScheduledEvents();
 		for (ScheduledEventVO se : ses) {
 			EventTypeVO et = se.getEventType();

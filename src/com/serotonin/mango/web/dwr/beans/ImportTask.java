@@ -63,10 +63,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
-import org.scada_lts.mango.service.CompoundEventDetectorService;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.UserService;
-import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.*;
 
 /**
  * @author Matthew Lohbihler
@@ -81,7 +78,7 @@ public class ImportTask extends ProgressiveTask {
 	private final DataPointService dataPointService = new DataPointService();
 	private final ViewService viewService = new ViewService();
 	private final PointLinkDao pointLinkDao = new PointLinkDao();
-	private final ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
+	private final ScheduledEventService scheduledEventService = new ScheduledEventService();
 	private final CompoundEventDetectorService compoundEventDetectorService = new CompoundEventDetectorService();
 	private final EventDao eventDao = new EventDao();
 	private final MailingListDao mailingListDao = new MailingListDao();
@@ -670,7 +667,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.scheduledEvent.xid");
 		else {
-			ScheduledEventVO vo = scheduledEventDao.getScheduledEvent(xid);
+			ScheduledEventVO vo = scheduledEventService.getScheduledEvent(xid);
 			if (vo == null) {
 				vo = new ScheduledEventVO();
 				vo.setXid(xid);

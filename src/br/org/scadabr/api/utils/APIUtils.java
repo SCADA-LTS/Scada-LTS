@@ -43,6 +43,7 @@ import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.ScheduledEventService;
 
 public final class APIUtils {
 
@@ -811,7 +812,7 @@ public final class APIUtils {
 		} else if (eventInstance.getEventType().getScheduleId() != -1) {
 			event.setEventType(EventType.SCHEDULED_EVENT);
 			int scheduleId = eventInstance.getEventType().getScheduleId();
-			event.setAlias(new ScheduledEventDao()
+			event.setAlias(new ScheduledEventService()
 					.getScheduledEvent(scheduleId).getAlias());
 		} else {
 			event.setEventType(EventType.SYSTEM_EVENT);

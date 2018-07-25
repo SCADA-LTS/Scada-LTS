@@ -39,6 +39,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.CompoundEventDetectorService;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.ScheduledEventService;
 
 /**
  * @author Matthew Lohbihler
@@ -80,7 +81,7 @@ public class CompoundEventsDwr extends BaseDwr {
 
         // Get the scheduled events
         List<EventTypeVO> scheduledEvents = new LinkedList<EventTypeVO>();
-        List<ScheduledEventVO> ses = new ScheduledEventDao().getScheduledEvents();
+        List<ScheduledEventVO> ses = new ScheduledEventService().getScheduledEvents();
         for (ScheduledEventVO se : ses)
             scheduledEvents.add(se.getEventType());
         model.put("scheduledEvents", scheduledEvents);

@@ -57,10 +57,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import org.scada_lts.mango.service.CompoundEventDetectorService;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.UserService;
-import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.*;
 
 /**
  * @author Matthew Lohbihler
@@ -122,7 +119,7 @@ public class EmportDwr extends BaseDwr {
 			data.put(DATA_POINTS, allDataPoints);
 		if (scheduledEvents)
 			data.put(SCHEDULED_EVENTS,
-					new ScheduledEventDao().getScheduledEvents());
+					new ScheduledEventService().getScheduledEvents());
 		if (compoundEventDetectors)
 			data.put(COMPOUND_EVENT_DETECTORS,
 					new CompoundEventDetectorService().getCompoundEventDetectors());
