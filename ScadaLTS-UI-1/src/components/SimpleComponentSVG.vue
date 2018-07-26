@@ -1,28 +1,18 @@
 <template>
-  <svg width="100" height="100">
-    <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+  <svg width="100" height="20">
+    <rect width="100" height="20" style="fill:rgb(255,255,255);stroke-width:2;stroke:rgb(0,0,0)" />
+    <text x="5" y="16" fill="red">{{text}}</text>
   </svg>
 </template>
 <script>
-  export default {
-    props: {
-      iconName: {
-        type: String,
-        default: 'box'
-      },
-      width: {
-        type: [Number, String],
-        default: 18
-      },
-      height: {
-        type: [Number, String],
-        default: 18
-      },
-      iconColor: {
-        type: String,
-        default: 'currentColor'
+    export default {
+      propos: ['text'],
+      name: "simple-component-svg",
+      data() {
+        return {
+          text: '00'
+        }
       }
-    }
   }
 </script>
 

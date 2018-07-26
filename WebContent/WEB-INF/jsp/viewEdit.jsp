@@ -640,4 +640,19 @@
     </table>
   </form>
 </tag:page>
-<%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>
+<script>
+//console.log('vuejs');
+setTimeout(function(){
+    //console.log('vuejs1');
+    jQuery.getScript('./resources/new-ui/js/manifest.js');
+    setTimeout(function(){
+        //console.log('vuejs2');
+        jQuery.getScript('./resources/new-ui/js/vendor.js');
+        setTimeout(function(){
+            //console.log('vuejs3');
+            jQuery.getScript('./resources/new-ui/js/app.js');
+        }, 200);
+    }, 200);
+}, 200);
+
+</script>
