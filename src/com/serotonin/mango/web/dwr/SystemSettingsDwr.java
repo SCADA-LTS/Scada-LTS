@@ -390,7 +390,11 @@ public class SystemSettingsDwr extends BaseDwr {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
 		SystemSettingsDAO.setValue(SystemSettingsDAO.LANGUAGE, language);
-		Common.setSystemLanguage(language);
+		String toSetLanguageLocale = new String(language);
+		if (toSetLanguageLocale.equals("lu")) {
+			toSetLanguageLocale = "fr_LU";
+		}
+		Common.setSystemLanguage(toSetLanguageLocale);
 	}
 
 	@MethodFilter

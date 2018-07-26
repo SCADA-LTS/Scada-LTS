@@ -267,3 +267,4 @@
 
 	<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />
 </tag:page>
+<%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>

@@ -524,9 +524,9 @@ public class Common {
 	}
 
 	public static void setSystemLanguage(String language) {
-		if (findLocale(language) == null)
+		/*if (findLocale(language) == null)
 			throw new IllegalArgumentException(
-					"Locale for given language not found: " + language);
+					"Locale for given language not found: " + language);*/
 		new SystemSettingsDAO().setValue(SystemSettingsDAO.LANGUAGE, language);
 		systemLanguage = null;
 		systemBundle = null;

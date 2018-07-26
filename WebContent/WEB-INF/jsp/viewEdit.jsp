@@ -640,3 +640,4 @@
     </table>
   </form>
 </tag:page>
+<%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>
