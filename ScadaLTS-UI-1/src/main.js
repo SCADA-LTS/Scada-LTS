@@ -35,8 +35,11 @@ new Vue({
   template: '<ExportImportPointHierarchy/>'
 })
 
+
 new Vue({
-  el: '#simple-component-svg',
-  components: { SimpleComponentSVG },
-  template: '<SimpleComponentSVG/>'
+   el: '#app',
+   components: {
+     "simple-component-svg": SimpleComponentSVG,
+     "export-import-ph": ExportImportPointHierarchy
+   }
 })
