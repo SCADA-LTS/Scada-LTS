@@ -1,12 +1,14 @@
-package com.serotonin.mango.util.timeout;
+package com.serotonin.timer;
 
 import java.util.Date;
 
-import com.serotonin.mango.Common;
-import com.serotonin.timer.OneTimeTrigger;
-import com.serotonin.timer.TimerTrigger;
-import com.serotonin.timer.TimerTask;
-
+/**
+ * A parameterizable one-time task. Allows the pass-through of a model to the target.
+ * 
+ * @author Matthew
+ * 
+ * @param <T>
+ */
 public class ModelTimeoutTask<T> extends TimerTask {
     private final ModelTimeoutClient<T> client;
     private final T model;
@@ -23,7 +25,6 @@ public class ModelTimeoutTask<T> extends TimerTask {
         super(trigger);
         this.client = client;
         this.model = model;
-        Common.timer.schedule(this);
     }
 
     @Override
