@@ -9,9 +9,9 @@ before_script:
 - npm -v
 - node -v
 - env
-- npm install -g @angular/cli@latest
+#- npm install -g @angular/cli@latest
 - npm install -g bower
-- npm install @angular/core@latest
+#- npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
@@ -19,15 +19,15 @@ before_script:
 - sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
-- cd ./ScadaLTS-UI
-- npm install
-- ls -l ./src/app/media
-- ng version
-- ng build
-- cd ./war
-- ant war
-- ant
-- cd ../..
+#- cd ./ScadaLTS-UI
+#- npm install
+#- ls -l ./src/app/media
+#- ng version
+#- ng build
+#- cd ./war
+#- ant war
+#- ant
+#- cd ../..
 - cd ./ScadaLTS-UI-1
 - npm install
 - cd ../WebContent/resources/npm/
@@ -71,7 +71,7 @@ after_script:
 - rm -rf ./apache-tomcat-7.0.85
 - cp ../../ScadaBR.war ./webapps
 #- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
-- ls -l ./webapps/ScadaLTS.war
+#- ls -l ./webapps/ScadaLTS.war
 - ls -l ./webapps/ScadaBR.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
@@ -89,4 +89,3 @@ after_script:
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
 - docker push $IMAGE_NAME:$TAG
-
