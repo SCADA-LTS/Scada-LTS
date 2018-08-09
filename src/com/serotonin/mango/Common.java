@@ -138,9 +138,7 @@ public class Common {
 
 	/**
 	 * Returns the length of time in milliseconds that the
-	 * 
-	 * @param timePeriod
-	 * @param numberOfPeriods
+	 *
 	 * @return
 	 */
 	public static long getMillis(int periodType, int periods) {
