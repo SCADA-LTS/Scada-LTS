@@ -457,11 +457,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 					.getJsonArray("dataSourcePermissions");
 			if (jsonDataSources != null) {
 				dataSourcePermissions.clear();
-				DataSourceDao dataSourceDao = new DataSourceDao();
+				DataSourceService dataSourceService = new DataSourceService();
 
 				for (JsonValue jv : jsonDataSources.getElements()) {
 					String xid = jv.toJsonString().getValue();
-					DataSourceVO<?> ds = dataSourceDao.getDataSource(xid);
+					DataSourceVO<?> ds = dataSourceService.getDataSource(xid);
 					if (ds == null)
 						throw new LocalizableJsonException(
 								"emport.error.missingSource", xid);

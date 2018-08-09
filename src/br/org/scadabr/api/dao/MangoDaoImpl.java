@@ -848,7 +848,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 			if (config.getId() == Common.NEW_ID) {
 				ds = new ModbusIpDataSourceVO();
-				ds.setXid(new DataSourceDao().generateUniqueXid());
+				ds.setXid(new DataSourceService().generateUniqueXid());
 			} else {
 				checkValidDataSourceId(config.getId(), dataSourceType);
 				ds = (ModbusIpDataSourceVO) new DataSourceService()
@@ -889,7 +889,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 			if (config.getId() == Common.NEW_ID) {
 				ds = new ModbusSerialDataSourceVO();
-				ds.setXid(new DataSourceDao().generateUniqueXid());
+				ds.setXid(new DataSourceService().generateUniqueXid());
 
 			} else {
 				checkValidDataSourceId(config.getId(), dataSourceType);

@@ -74,7 +74,7 @@ public class ImportTask extends ProgressiveTask {
 	private final User user;
 	private final DwrResponseI18n response;
 	private final UserService userService = new UserService();
-	private final DataSourceDao dataSourceDao = new DataSourceDao();
+	private final DataSourceService dataSourceService = new DataSourceService();
 	private final DataPointService dataPointService = new DataPointService();
 	private final ViewService viewService = new ViewService();
 	private final PointLinkDao pointLinkDao = new PointLinkDao();
@@ -176,7 +176,7 @@ public class ImportTask extends ProgressiveTask {
 					if (vo == null) {
 						// Locate the data source for the point.
 						String dsxid = dataPoint.getString("dataSourceXid");
-						dsvo = dataSourceDao.getDataSource(dsxid);
+						dsvo = dataSourceService.getDataSource(dsxid);
 						if (dsvo == null)
 							response.addGenericMessage(
 									"emport.dataPoint.badReference", xid);
@@ -347,7 +347,7 @@ public class ImportTask extends ProgressiveTask {
 
 			// Restart any data sources that were disabled.
 			for (Integer id : disabledDataSources) {
-				DataSourceVO<?> ds = dataSourceDao.getDataSource(id);
+				DataSourceVO<?> ds = dataSourceService.getDataSource(id);
 				ds.setEnabled(true);
 				Common.ctx.getRuntimeManager().saveDataSource(ds);
 			}
@@ -415,7 +415,7 @@ public class ImportTask extends ProgressiveTask {
 			response.addGenericMessage("emport.dataSource.xid",
 					name == null ? "(undefined)" : name);
 		else {
-			DataSourceVO<?> vo = dataSourceDao.getDataSource(xid);
+			DataSourceVO<?> vo = dataSourceService.getDataSource(xid);
 			if (vo == null) {
 				String typeStr = dataSource.getString("type");
 				if (StringUtils.isEmpty(typeStr))
@@ -480,7 +480,7 @@ public class ImportTask extends ProgressiveTask {
 			if (vo == null) {
 				// Locate the data source for the point.
 				String dsxid = dataPoint.getString("dataSourceXid");
-				dsvo = dataSourceDao.getDataSource(dsxid);
+				dsvo = dataSourceService.getDataSource(dsxid);
 				if (dsvo == null)
 					response.addGenericMessage("emport.dataPoint.badReference",
 							xid);
@@ -495,7 +495,7 @@ public class ImportTask extends ProgressiveTask {
 
 				}
 			} else
-				dsvo = dataSourceDao.getDataSource(vo.getDataSourceId());
+				dsvo = dataSourceService.getDataSource(vo.getDataSourceId());
 
 			if (vo != null) {
 				try {

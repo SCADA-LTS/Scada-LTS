@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -63,7 +64,7 @@ public class DataSourceEditController extends ParameterizableViewController {
                 // A new data source
                 dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
                 dataSourceVO.setId(Common.NEW_ID);
-                dataSourceVO.setXid(new DataSourceDao().generateUniqueXid());
+                dataSourceVO.setXid(new DataSourceService().generateUniqueXid());
             }
             else {
                 int pid = Integer.parseInt(pidStr);

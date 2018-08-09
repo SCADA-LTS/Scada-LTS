@@ -125,14 +125,14 @@ public class RuntimeManager {
 		started = true;
 
 		// Initialize data sources that are enabled.
-		DataSourceDao dataSourceDao = new DataSourceDao();
-		List<DataSourceVO<?>> configs = dataSourceDao.getDataSources();
+		DataSourceService dataSourceService = new DataSourceService();
+		List<DataSourceVO<?>> configs = dataSourceService.getDataSources();
 		List<DataSourceVO<?>> pollingRound = new ArrayList<DataSourceVO<?>>();
 		for (DataSourceVO<?> config : configs) {
 			if (config.isEnabled()) {
 				if (safe) {
 					config.setEnabled(false);
-					dataSourceDao.saveDataSource(config);
+					dataSourceService.saveDataSource(config);
 				} else if (initializeDataSource(config))
 					pollingRound.add(config);
 			}
@@ -270,7 +270,7 @@ public class RuntimeManager {
 	}
 
 	public List<DataSourceVO<?>> getDataSources() {
-		return new DataSourceDao().getDataSources();
+		return new DataSourceService().getDataSources();
 	}
 
 	public DataSourceVO<?> getDataSource(int dataSourceId) {
@@ -292,7 +292,7 @@ public class RuntimeManager {
 		// In case this is a new data source, we need to save to the database
 		// first so that it has a proper id.
 		LOG.debug("Saving DS: " + vo.getName());
-		new DataSourceDao().saveDataSource(vo);
+		new DataSourceService().saveDataSource(vo);
 		LOG.debug("DS saved!");
 		// If the data source is enabled, start it.
 		if (vo.isEnabled()) {
