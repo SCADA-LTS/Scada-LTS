@@ -781,10 +781,10 @@ var messages = {
 
     	var toMove ={};
     	$("#tree").fancytree({
-    	      extensions: ["dnd","glyph", "wide"],
+    	      extensions: ["dnd","glyph"],
     	      debugLevel: 0,
     	      checkbox: false,
-    	      autoScroll: true,
+    	      autoScroll: false,
     	      autoActivate: true,
     	      activeVisible: false,
     	      clickFolderMode: 4,

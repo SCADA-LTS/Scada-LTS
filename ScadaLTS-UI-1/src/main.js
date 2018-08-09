@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import Test from './components/Test'
 import ExportImportPointHierarchy from './components/ExportImportPointHierarchy'
+import SimpleComponentSVG from './components/SimpleComponentSVG'
 import router from './router'
 import VJsoneditor from 'vue-jsoneditor';
 import Vuetify from 'vuetify';
@@ -32,4 +33,13 @@ new Vue({
   el: '#export-import-ph',
   components: { ExportImportPointHierarchy },
   template: '<ExportImportPointHierarchy/>'
+})
+
+
+new Vue({
+   el: '#app',
+   components: {
+     "simple-component-svg": SimpleComponentSVG,
+     "export-import-ph": ExportImportPointHierarchy
+   }
 })
