@@ -36,7 +36,6 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
 import com.serotonin.mango.rt.event.handlers.ProcessHandlerRT;
@@ -54,6 +53,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.UserService;
 
@@ -786,7 +786,7 @@ public class EventHandlerVO implements Serializable,
 
 	public void jsonSerialize(Map<String, Object> map) {
 		DataPointService dataPointService = new DataPointService();
-		map.put("eventType", new EventDao().getEventHandlerType(id));
+		map.put("eventType", new EventService().getEventHandlerType(id));
 
 		map.put("xid", xid);
 		map.put("handlerType", TYPE_CODES.getCode(handlerType));

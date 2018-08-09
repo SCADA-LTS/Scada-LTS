@@ -21,7 +21,6 @@ package com.serotonin.mango.web.dwr;
 import br.org.scadabr.db.configuration.ConfigurationDB;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -40,6 +39,7 @@ import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.File;
@@ -193,7 +193,7 @@ public class SystemSettingsDwr extends BaseDwr {
 
 		data.put("historyCount", sum);
 		data.put("topPoints", counts);
-		data.put("eventCount", new EventDao().getEventCount());
+		data.put("eventCount", new EventService().getEventCount());
 
 		return data;
 	}

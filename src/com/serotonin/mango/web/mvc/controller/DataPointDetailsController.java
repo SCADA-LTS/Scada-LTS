@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +35,6 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.chart.ImageChartRenderer;
 import com.serotonin.mango.view.chart.ImageFlipbookRenderer;
@@ -121,7 +121,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 
 			// Put the events in the model.
 			model.put("events",
-					new EventDao().getEventsForDataPoint(id, user.getId()));
+					new EventService().getEventsForDataPoint(id, user.getId()));
 
 			// Put the default history table count into the model. Default to
 			// 10.

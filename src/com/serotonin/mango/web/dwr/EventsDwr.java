@@ -30,7 +30,6 @@ import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.vo.User;
@@ -40,6 +39,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.EventService;
 
 public class EventsDwr extends BaseDwr {
 	private static final int PAGE_SIZE = 50;
@@ -79,7 +79,7 @@ public class EventsDwr extends BaseDwr {
 			keywords.toArray(keywordArr);
 		}
 
-		List<EventInstance> results = new EventDao().searchOld(eventId,
+		List<EventInstance> results = new EventService().searchOld(eventId,
 				eventSourceType, status, alarmLevel, keywordArr, maxResults,
 				user.getId(), getResourceBundle());
 
@@ -133,22 +133,22 @@ public class EventsDwr extends BaseDwr {
 				fromHour, fromMinute, fromSecond, toNone, toYear, toMonth,
 				toDay, toHour, toMinute, toSecond);
 
-		EventDao eventDao = new EventDao();
-		List<EventInstance> results = eventDao.search(eventId, eventSourceType,
+		EventService eventService = new EventService();
+		List<EventInstance> results = eventService.search(eventId, eventSourceType,
 				status, alarmLevel, getKeywords(keywordStr), dateRange.getL1(),
 				dateRange.getL2(), user.getId(), getResourceBundle(), from, to,
 				date);
 
 		Map<String, Object> model = new HashMap<String, Object>();
-		int searchRowCount = eventDao.getSearchRowCount();
+		int searchRowCount = eventService.getSearchRowCount();
 		int pages = (int) Math.ceil(((double) searchRowCount) / PAGE_SIZE);
 
 		if (date != null) {
-			int startRow = eventDao.getStartRow();
+			int startRow = eventService.getStartRow();
 			if (startRow == -1)
 				page = pages - 1;
 			else
-				page = eventDao.getStartRow() / PAGE_SIZE;
+				page = eventService.getStartRow() / PAGE_SIZE;
 		}
 
 		if (pages > 1) {

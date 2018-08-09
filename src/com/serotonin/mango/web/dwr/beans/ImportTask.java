@@ -80,7 +80,7 @@ public class ImportTask extends ProgressiveTask {
 	private final PointLinkDao pointLinkDao = new PointLinkDao();
 	private final ScheduledEventService scheduledEventService = new ScheduledEventService();
 	private final CompoundEventDetectorService compoundEventDetectorService = new CompoundEventDetectorService();
-	private final EventDao eventDao = new EventDao();
+	private final EventService eventService = new EventService();
 	private final MailingListService mailingListService = new MailingListService();
 	private final PublisherDao publisherDao = new PublisherDao();
 	private final WatchListDao watchListDao = new WatchListDao();
@@ -843,7 +843,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.eventHandler.xid");
 		else {
-			EventHandlerVO handler = eventDao.getEventHandler(xid);
+			EventHandlerVO handler = eventService.getEventHandler(xid);
 			if (handler == null) {
 				handler = new EventHandlerVO();
 				handler.setXid(xid);
@@ -871,11 +871,11 @@ public class ImportTask extends ProgressiveTask {
 
 					if (!isnew) {
 						// Check if the event type has changed.
-						EventType oldEventType = eventDao
+						EventType oldEventType = eventService
 								.getEventHandlerType(handler.getId());
 						if (!oldEventType.equals(eventType)) {
 							// Event type has changed. Delete the old one.
-							eventDao.deleteEventHandler(handler.getId());
+							eventService.deleteEventHandler(handler.getId());
 
 							// Call it new
 							handler.setId(Common.NEW_ID);
@@ -884,7 +884,7 @@ public class ImportTask extends ProgressiveTask {
 					}
 
 					// Save it.
-					eventDao.saveEventHandler(eventType, handler);
+					eventService.saveEventHandler(eventType, handler);
 					addSuccessMessage(isnew, "emport.eventHandler.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {

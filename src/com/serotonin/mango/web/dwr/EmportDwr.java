@@ -38,8 +38,6 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonValue;
 import com.serotonin.json.JsonWriter;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PointLinkDao;
 import com.serotonin.mango.db.dao.PointValueDao;
@@ -133,7 +131,7 @@ public class EmportDwr extends BaseDwr {
 			data.put(POINT_HIERARCHY, new DataPointService().getPointHierarchy()
 					.getRoot().getSubfolders());
 		if (eventHandlers)
-			data.put(EVENT_HANDLERS, new EventDao().getEventHandlers());
+			data.put(EVENT_HANDLERS, new EventService().getEventHandlers());
 		if (watchLists) {
 			WatchListDao watchListDao = new WatchListDao();
 			List<WatchList> wls = watchListDao.getWatchLists();

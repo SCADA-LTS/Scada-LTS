@@ -16,11 +16,11 @@ import org.directwebremoting.WebContextFactory;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.web.dwr.BaseDwr;
+import org.scada_lts.mango.service.EventService;
 
 @JsonRemoteEntity
 public class AlarmListComponent extends CustomComponent {
@@ -46,7 +46,7 @@ public class AlarmListComponent extends CustomComponent {
 		Map<String, Object> model = new HashMap<String, Object>();
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
-		List<EventInstance> events = new EventDao().getPendingEvents(Common
+		List<EventInstance> events = new EventService().getPendingEvents(Common
 				.getUser().getId());
 
 		filter(events, minAlarmLevel);

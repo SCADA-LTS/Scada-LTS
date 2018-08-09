@@ -30,8 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
@@ -58,6 +56,7 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.mango.service.*;
 
 public class EventHandlersDwr extends BaseDwr {
@@ -70,7 +69,7 @@ public class EventHandlersDwr extends BaseDwr {
 		User user = Common.getUser();
 		Permissions.ensureDataSourcePermission(user);
 
-		EventDao eventDao = new EventDao();
+		EventService eventService = new EventService();
 		Map<String, Object> model = new HashMap<String, Object>();
 
 		// Get the data points
@@ -92,7 +91,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 				for (PointEventDetectorVO ped : dp.getEventDetectors()) {
 					EventTypeVO dpet = ped.getEventType();
-					dpet.setHandlers(eventDao.getEventHandlers(dpet));
+					dpet.setHandlers(eventService.getEventHandlers(dpet));
 					source.getEventTypes().add(dpet);
 				}
 
@@ -106,7 +105,7 @@ public class EventHandlersDwr extends BaseDwr {
 				.getScheduledEvents();
 		for (ScheduledEventVO se : ses) {
 			EventTypeVO et = se.getEventType();
-			et.setHandlers(eventDao.getEventHandlers(et));
+			et.setHandlers(eventService.getEventHandlers(et));
 			scheduledEvents.add(et);
 		}
 		model.put("scheduledEvents", scheduledEvents);
@@ -117,7 +116,7 @@ public class EventHandlersDwr extends BaseDwr {
 				.getCompoundEventDetectors();
 		for (CompoundEventDetectorVO ced : ceds) {
 			EventTypeVO et = ced.getEventType();
-			et.setHandlers(eventDao.getEventHandlers(et));
+			et.setHandlers(eventService.getEventHandlers(et));
 			compoundEvents.add(et);
 		}
 		model.put("compoundEvents", compoundEvents);
@@ -134,7 +133,7 @@ public class EventHandlersDwr extends BaseDwr {
 				source.setName(ds.getName());
 
 				for (EventTypeVO dset : ds.getEventTypes()) {
-					dset.setHandlers(eventDao.getEventHandlers(dset));
+					dset.setHandlers(eventService.getEventHandlers(dset));
 					source.getEventTypes().add(dset);
 				}
 
@@ -153,7 +152,7 @@ public class EventHandlersDwr extends BaseDwr {
 					source.setName(p.getName());
 
 					for (EventTypeVO pet : p.getEventTypes()) {
-						pet.setHandlers(eventDao.getEventHandlers(pet));
+						pet.setHandlers(eventService.getEventHandlers(pet));
 						source.getEventTypes().add(pet);
 					}
 
@@ -168,7 +167,7 @@ public class EventHandlersDwr extends BaseDwr {
 					.getMaintenanceEvents();
 			for (MaintenanceEventVO me : mes) {
 				EventTypeVO et = me.getEventType();
-				et.setHandlers(eventDao.getEventHandlers(et));
+				et.setHandlers(eventService.getEventHandlers(et));
 				maintenanceEvents.add(et);
 			}
 			model.put("maintenanceEvents", maintenanceEvents);
@@ -176,7 +175,7 @@ public class EventHandlersDwr extends BaseDwr {
 			// Get the system events
 			List<EventTypeVO> systemEvents = new ArrayList<EventTypeVO>();
 			for (EventTypeVO sets : SystemEventType.getSystemEventTypes()) {
-				sets.setHandlers(eventDao.getEventHandlers(sets));
+				sets.setHandlers(eventService.getEventHandlers(sets));
 				systemEvents.add(sets);
 			}
 			model.put("systemEvents", systemEvents);
@@ -184,7 +183,7 @@ public class EventHandlersDwr extends BaseDwr {
 			// Get the audit events
 			List<EventTypeVO> auditEvents = new ArrayList<EventTypeVO>();
 			for (EventTypeVO aets : AuditEventType.getAuditEventTypes()) {
-				aets.setHandlers(eventDao.getEventHandlers(aets));
+				aets.setHandlers(eventService.getEventHandlers(aets));
 				auditEvents.add(aets);
 			}
 			model.put("auditEvents", auditEvents);
@@ -298,10 +297,10 @@ public class EventHandlersDwr extends BaseDwr {
 		EventTypeVO type = new EventTypeVO(eventSourceId, eventTypeRef1,
 				eventTypeRef2);
 		Permissions.ensureEventTypePermission(Common.getUser(), type);
-		EventDao eventDao = new EventDao();
+		EventService eventDao = new EventService();
 
 		vo.setId(handlerId);
-		vo.setXid(StringUtils.isEmpty(xid) ? eventDao.generateUniqueXid() : xid);
+		vo.setXid(StringUtils.isEmpty(xid) ? DAO.getInstance().generateUniqueXid(EventHandlerVO.XID_PREFIX, "eventHandlers") : xid);
 		vo.setAlias(alias);
 		vo.setDisabled(disabled);
 
@@ -317,10 +316,10 @@ public class EventHandlersDwr extends BaseDwr {
 	}
 
 	public void deleteEventHandler(int handlerId) {
-		EventDao eventDao = new EventDao();
+		EventService eventService = new EventService();
 		Permissions.ensureEventTypePermission(Common.getUser(),
-				eventDao.getEventHandlerType(handlerId));
-		eventDao.deleteEventHandler(handlerId);
+				eventService.getEventHandlerType(handlerId));
+		eventService.deleteEventHandler(handlerId);
 	}
 
 	public LocalizableMessage testProcessCommand(String command) {
