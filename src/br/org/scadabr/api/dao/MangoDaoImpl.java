@@ -881,7 +881,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 						ErrorCode.INVALID_PARAMETER,
 						"Check the configuration parameters."));
 
-			new DataSourceDao().saveDataSource(ds);
+			new DataSourceService().saveDataSource(ds);
 			return ds.getId();
 		} else if (dataSourceType == DataSourceType.MODBUS_SERIAL) {
 			ModbusSerialConfig config = (ModbusSerialConfig) dataSource;
@@ -923,7 +923,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 						ErrorCode.INVALID_PARAMETER,
 						"Check the configuration parameters."));
 
-			new DataSourceDao().saveDataSource(ds);
+			new DataSourceService().saveDataSource(ds);
 			return ds.getId();
 		}
 		throw new ScadaBRAPIException(new APIError(ErrorCode.UNSPECIFIED_ERROR,

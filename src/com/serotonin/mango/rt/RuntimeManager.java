@@ -279,7 +279,7 @@ public class RuntimeManager {
 
 	public void deleteDataSource(int dataSourceId) {
 		stopDataSource(dataSourceId);
-		new DataSourceDao().deleteDataSource(dataSourceId);
+		new DataSourceService().deleteDataSource(dataSourceId);
 		Common.ctx.getEventManager().cancelEventsForDataSource(dataSourceId);
 	}
 

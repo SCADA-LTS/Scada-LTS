@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.UserService;
 
 import java.util.*;
@@ -124,7 +125,7 @@ public class DataSourceListDwr extends BaseDwr {
 
 	public int copyDataSource(int dataSourceId) {
 		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
-		int dsId = new DataSourceDao().copyDataSource(dataSourceId,
+		int dsId = new DataSourceService().copyDataSource(dataSourceId,
 				getResourceBundle());
 		new UserService().populateUserPermissions(Common.getUser());
 		return dsId;
