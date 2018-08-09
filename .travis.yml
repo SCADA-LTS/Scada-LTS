@@ -58,15 +58,15 @@ env:
 after_script:
 - wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.32/bin/apache-tomcat-8.5.32.tar.gz
 - mkdir ./docker/app
-- mv apache-tomcat-7.0.85.tar.gz ./docker/app
-- ls -l ./docker/app/apache-tomcat-7.0.85.tar.gz
+- mv apache-tomcat-8.5.32.tar.gz ./docker/app
+- ls -l ./docker/app/apache-tomcat-8.5.32.tar.gz
 - cd ./docker/app
 - echo `pwd`
 - echo `ls -l`
-- tar -zxvf apache-tomcat-7.0.85.tar.gz
+- tar -zxvf apache-tomcat-8.5.32.tar.gz
 - ls -l
-- mv ./apache-tomcat-7.0.85/* ./
-- rm -rf ./apache-tomcat-7.0.85
+- mv ./apache-tomcat-8.5.32/* ./
+- rm -rf ./apache-tomcat-8.5.32
 - cp ../../ScadaBR.war ./webapps
 #- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
 - ls -l ./webapps/ScadaLTS.war
