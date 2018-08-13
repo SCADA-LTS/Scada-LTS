@@ -4,7 +4,7 @@ before_install:
 before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
-- nvm install node
+- nvm install 8
 - nvm use node
 - npm -v
 - node -v
