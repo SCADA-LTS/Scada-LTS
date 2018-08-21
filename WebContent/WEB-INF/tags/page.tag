@@ -169,7 +169,7 @@
           <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
                 
           <c:if test="${sessionUser.dataSourcePermission}">
-            <img src="images/menu_separator.png" class="separator"/>
+            <img src="./images/menu_separator.png" class="separator"/>
             <tag:menuItem href="event_handlers.shtm" png="cog" key="header.eventHandlers"/>
             <tag:menuItem href="data_sources.shtm" png="icon_ds" key="header.dataSources"/>
             <tag:menuItem href="scheduled_events.shtm" png="clock" key="header.scheduledEvents"/>
@@ -178,7 +178,7 @@
             <tag:menuItem href="scripting.shtm" png="script_gear" key="header.scripts"/>
           </c:if>
           
-          <img src="images/menu_separator.png" class="separator"/>
+          <img src="./images/menu_separator.png" class="separator"/>
           <tag:menuItem href="users.shtm" png="user" key="header.users"/>
           
           <c:if test="${sessionUser.admin}">
@@ -192,7 +192,7 @@
             <tag:menuItem href="sql.shtm" png="script" key="header.sql"/>
           </c:if>
           
-          <img src="images/menu_separator.png" class="separator"/>
+          <img src="./images/menu_separator.png" class="separator"/>
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
         </c:if>
