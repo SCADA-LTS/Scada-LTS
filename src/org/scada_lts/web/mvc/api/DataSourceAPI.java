@@ -42,7 +42,6 @@ import java.util.List;
 public class DataSourceAPI {
 
     private static final Log LOG = LogFactory.getLog(DataSourceAPI.class);
-    private static final int ID_USER_ADMIN = 1;
 
     DataSourceService dataSourceService = new DataSourceService();
 
@@ -73,9 +72,8 @@ public class DataSourceAPI {
                     }
                 }
 
-                int userId = user.getId();
                 List<DataSourceVO<?>> lstDS;
-                if (userId == ID_USER_ADMIN) {
+                if (user.isAdmin()) {
                     lstDS = dataSourceService.getDataSources();
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
