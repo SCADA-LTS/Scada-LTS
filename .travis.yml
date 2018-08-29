@@ -42,13 +42,8 @@ services:
 script: ant war && ant junit
 branches:
   only:
-  - "/^PROC-.*$/"
-  - "/^develop-sdtabilit.*$/"
-  - "/^#179*$/"
-  - "/^master-sdtabilit.*$/"
-  - "/^v*$/"
-  - "/^develop*$/"
-  - "/^master*$/"
+  - "/^develop.*$/"
+  - "/^master.*$/"
 notifications:
   email: false
 env:
