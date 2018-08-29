@@ -94,7 +94,7 @@ public class DataPointAPI {
                     }
                 };
 
-                if (userId == ID_USER_ADMIN) {
+                if (user.isAdmin()) {
                     lstDP = dataPointService.getDataPoints(comparator, false);
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);

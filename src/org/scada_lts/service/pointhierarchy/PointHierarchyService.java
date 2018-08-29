@@ -18,17 +18,22 @@
 
 package org.scada_lts.service.pointhierarchy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.exception.CacheHierarchyException;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.service.model.PointHierarchyConsistency;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.serotonin.mango.Common;
@@ -49,6 +54,8 @@ public class PointHierarchyService {
 
 	//TODO replace to @Autowire
 	private PointHierarchyXidDAO phDAO = new PointHierarchyXidDAO();
+
+	private DataPointDAO dpDAO = new DataPointDAO();
 	
 	public PointHierarchyService() {
 		//
@@ -206,6 +213,30 @@ public class PointHierarchyService {
 		PointHierarchyDAO.cachedPointHierarchy = null;
 		PointHierarchyDAO.cachedPointHierarchy = dpService.getPointHierarchy();
 		PointHierarchyEventDispatcher.firePointHierarchySaved(pointFolder);
+	}
+
+	public List<PointHierarchyConsistency> checkPointHierarchyConsistency() {
+		List<PointHierarchyConsistency> result = new ArrayList<PointHierarchyConsistency>();
+		List<DataPointVO> dps = dpDAO.getDataPoints();
+		for (DataPointVO dp : dps) {
+			int id = dp.getPointFolderId();
+			String xid = "";
+			boolean xidNotExis = false;
+			try {
+				xid = phDAO.getFolderXid(id);
+			} catch (EmptyResultDataAccessException e) {
+				xidNotExis = true;
+			}
+			if (xidNotExis) {
+				result.add(new PointHierarchyConsistency(
+					dp.getXid(),
+					"",
+					id,
+					xidNotExis
+				));
+			}
+		}
+		return result;
 	}
 
 }
