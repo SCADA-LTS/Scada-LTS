@@ -31,7 +31,7 @@ Here is two of the several start options:
 * Run Docker and Docker Toolbox.
 * When the download is completed in the Docker Toolbox run Docker CLI (bottom-left corner).
 * In the Docker CLI type in: `docker pull dockergb/scadalts-dev` to download repository.
-* Type in: `docker images` to check if repository is created. It should show "dockergb/scadalts" on the list.
+* Type in: `docker images` to check if repository is created. It should show "scadalts/scadalts" on the list.
 * To run Scada on Docker type in: 
 ``docker run -it -e DOCKER_HOST_IP=`docker-machine ip` -p 81:8080 scadalts/scadalts /root/start.sh``.
 * Type in: `Get-NetIPAddress` and find IPAdrress for "DockerNAT" InterfaceAlias (You need a new CLI window to do it).
