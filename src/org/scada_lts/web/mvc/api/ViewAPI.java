@@ -51,7 +51,6 @@ import java.util.List;
 @Controller
 public class ViewAPI {
 
-
     private static final Log LOG = LogFactory.getLog(ViewAPI.class);
     private static final String NULL_IMAGE_PATH = "null";
 

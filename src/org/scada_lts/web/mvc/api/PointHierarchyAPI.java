@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.pointhierarchy.PointHierarchyXidService;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
+import org.scada_lts.web.mvc.api.dto.PointHierarchyConsistencyCheck;
 import org.scada_lts.web.mvc.api.dto.PointHierarchyExp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -228,5 +229,28 @@ public class PointHierarchyAPI {
         }
         return result;
     }
+
+    @RequestMapping(value = "/api/pointHierarchy/checkConsitencyPointHierarchy", method = RequestMethod.GET)
+    public ResponseEntity<PointHierarchyConsistencyCheck> checkConsistencyPointHierarchy(
+            HttpServletRequest request)  {
+
+        LOG.info("/api/pointHierarchy/checkConsitencyPointHierarchy");
+        ResponseEntity<PointHierarchyConsistencyCheck> result = null;
+        try {
+            User user = Common.getUser(request);
+            if (user.isAdmin()) {
+                PointHierarchyConsistencyCheck phcc = new PointHierarchyConsistencyCheck();
+                phcc.setPoints(pointHierarchyXidService.checkPointHierarchyConsistency());
+                result = new ResponseEntity<PointHierarchyConsistencyCheck>(phcc, HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<PointHierarchyConsistencyCheck>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<PointHierarchyConsistencyCheck>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+
 
 }
