@@ -44,7 +44,6 @@ import java.util.List;
 public class DataPointAPI {
 
     private static final Log LOG = LogFactory.getLog(DataPointAPI.class);
-    private static final int ID_USER_ADMIN = 1;
 
     DataPointService dataPointService = new DataPointService();
 
@@ -84,7 +83,6 @@ public class DataPointAPI {
                     }
                 }
 
-                int userId = user.getId();
                 List<DataPointVO> lstDP;
 
                 Comparator<DataPointVO> comparator = new Comparator<DataPointVO>() {

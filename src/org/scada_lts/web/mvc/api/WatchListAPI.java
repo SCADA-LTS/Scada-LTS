@@ -80,13 +80,12 @@ public class WatchListAPI {
 					}
 				}
 
-				int userId = user.getId();
 				List<WatchList> lstWL;
 				if (user.isAdmin()) {
 					lstWL = watchListService.getWatchLists();
 				} else {
 					int profileId = user.getUserProfile();
-					lstWL = watchListService.getWatchLists(userId, profileId);
+					lstWL = watchListService.getWatchLists(user.getId(), profileId);
 				}
 
 				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();
@@ -146,7 +145,7 @@ public class WatchListAPI {
 					lstWL = watchListService.getWatchLists();
 				} else {
 					int profileId = user.getUserProfile();
-					lstWL = watchListService.getWatchLists(userId, profileId);
+					lstWL = watchListService.getWatchLists(user.getId(), profileId);
 				}				
 				
 				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();
