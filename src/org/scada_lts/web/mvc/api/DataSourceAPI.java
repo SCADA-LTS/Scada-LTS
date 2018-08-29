@@ -73,7 +73,6 @@ public class DataSourceAPI {
                     }
                 }
 
-                int userId = user.getId();
                 List<DataSourceVO<?>> lstDS;
                 if (user.isAdmin()) {
                     lstDS = dataSourceService.getDataSources();

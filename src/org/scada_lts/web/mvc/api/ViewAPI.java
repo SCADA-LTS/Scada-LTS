@@ -91,7 +91,6 @@ public class ViewAPI {
                     }
                 }
 
-
                 List<View> lstV;
                 if (user.isAdmin()) {
                     lstV = viewService.getViews();
