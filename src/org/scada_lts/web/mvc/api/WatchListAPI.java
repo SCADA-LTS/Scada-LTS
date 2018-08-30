@@ -36,7 +36,6 @@ import com.serotonin.mango.vo.WatchList;
 public class WatchListAPI {
 	
 	private static final Log LOG = LogFactory.getLog(WatchListAPI.class);
-	private static final int ID_USER_AMIN = 1;
 	
 	@Resource
 	private WatchListService watchListService;
@@ -81,13 +80,12 @@ public class WatchListAPI {
 					}
 				}
 
-				int userId = user.getId();
 				List<WatchList> lstWL;
-				if (userId == ID_USER_AMIN) {
+				if (user.isAdmin()) {
 					lstWL = watchListService.getWatchLists();
 				} else {
 					int profileId = user.getUserProfile();
-					lstWL = watchListService.getWatchLists(userId, profileId);
+					lstWL = watchListService.getWatchLists(user.getId(), profileId);
 				}
 
 				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();
@@ -143,11 +141,11 @@ public class WatchListAPI {
 				
 				int userId = user.getId();
 				List<WatchList> lstWL;
-				if (userId == ID_USER_AMIN) {
+				if (user.isAdmin()) {
 					lstWL = watchListService.getWatchLists();
 				} else {
 					int profileId = user.getUserProfile();
-					lstWL = watchListService.getWatchLists(userId, profileId);
+					lstWL = watchListService.getWatchLists(user.getId(), profileId);
 				}				
 				
 				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();

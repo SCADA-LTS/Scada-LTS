@@ -640,3 +640,15 @@
     </table>
   </form>
 </tag:page>
+<script>
+setTimeout(function(){
+    jQuery.getScript('./resources/new-ui/js/manifest.js');
+    setTimeout(function(){
+        jQuery.getScript('./resources/new-ui/js/vendor.js');
+        setTimeout(function(){
+            jQuery.getScript('./resources/new-ui/js/app.js');
+        }, 200);
+    }, 200);
+}, 200);
+
+</script>

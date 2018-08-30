@@ -119,7 +119,20 @@ public class PointHierarchyController {
 		if (user.isAdmin()) {
 			boolean ok = false;
 			if (isFolder) {
-			  ok = phService.delete(parentId, key, isFolder);  
+				try {
+
+					List<PointHierarchyNode> elements = PointHierarchyCache.getInstance().getOnBaseParentId(key);
+					for (PointHierarchyNode element : elements) {
+						if (!element.isFolder()) {
+							phService.move(parentId, 0, element.getKey(), false);
+						}
+					}
+				} catch (Exception e) {
+					LOG.error(e.getMessage());
+					ok = false;
+				}
+
+			  	ok = phService.delete(parentId, key, isFolder);
 			} else {
 				// is point
 			  ok = phService.move(parentId, 0, key, isFolder);
