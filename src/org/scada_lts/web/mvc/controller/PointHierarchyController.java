@@ -18,12 +18,13 @@
 package org.scada_lts.web.mvc.controller;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,19 +32,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
-import org.scada_lts.service.PointHierarchyService;
+import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 /** 
  * Controller for points hierarchy.
@@ -56,11 +59,8 @@ public class PointHierarchyController {
 
 	private static final Log LOG = LogFactory.getLog(PointHierarchyController.class);
 
-	@Resource
-	private ServletContext servletContext;
-
-	@Resource
-	PointHierarchyService phService;
+	//TODO add @Autowire
+	private PointHierarchyService phService = new PointHierarchyService();
 
 	@RequestMapping(value = "/pointHierarchySLTS", method = RequestMethod.GET)
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
@@ -119,11 +119,25 @@ public class PointHierarchyController {
 		if (user.isAdmin()) {
 			boolean ok = false;
 			if (isFolder) {
-			  ok = phService.delete(parentId, key, isFolder);  
+				try {
+
+					List<PointHierarchyNode> elements = PointHierarchyCache.getInstance().getOnBaseParentId(key);
+					for (PointHierarchyNode element : elements) {
+						if (!element.isFolder()) {
+							phService.move(parentId, 0, element.getKey(), false);
+						}
+					}
+				} catch (Exception e) {
+					LOG.error(e.getMessage());
+					ok = false;
+				}
+
+			  	ok = phService.delete(parentId, key, isFolder);
 			} else {
 				// is point
 			  ok = phService.move(parentId, 0, key, isFolder);
 			}
+
 			String json = "";
 			ObjectMapper mapper = new ObjectMapper();
 			try {
@@ -144,9 +158,10 @@ public class PointHierarchyController {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("/pointHierarchy/new/{newParentId}/{newTitle} newParentId:" + newParentId + " newTitle:" + newTitle);
 		}
+
 		User user = Common.getUser(request);
 		if (user.isAdmin()) {
-			int id = phService.add(newParentId, newTitle);
+			int id = phService.add(PointHierarchyCache.ROOT, newTitle);
 			ObjectMapper mapper = new ObjectMapper();
 			String json = "";
 			try {

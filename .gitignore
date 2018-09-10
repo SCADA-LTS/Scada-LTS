@@ -78,6 +78,13 @@ seroUtils.jar
 /ScadaLTS-UI/.editorconfig
 /ScadaLTS-UI/dist
 ###########################
+# ScadaLTS-UI-1
+###########################
+/ScadaLTS-UI-1/node_modules/
+/ScadaLTS-UI-1/.idea
+/ScadaLTS-UI-1/dist
+/ScadaLTS-UI-1/package-lock.json
+###########################
 # docker
 ###########################
 docker/app/**
@@ -87,6 +94,7 @@ docker/app/**
 ###########################
 .idea
 scadabr-1.1.0-RC.iml
+scadabr-1.1.0-RC_.iml
 
 ###########################
 # jrebel

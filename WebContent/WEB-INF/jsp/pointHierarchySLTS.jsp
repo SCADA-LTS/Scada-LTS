@@ -16,8 +16,25 @@
 	href="resources/app/bower_components/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css"
 	rel="stylesheet" type="text/css">
 
+<link
+	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.css"
+	rel="stylesheet" type="text/css">
+
+<link href=resources/new-ui/css/app.css rel=stylesheet>
+
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
+
+<link
+	href="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
+    rel="stylesheet" type="text/css">
+
+
 <style type="text/css">
 
+/* correcting jsoneditor */
+button.jsoneditor-compact {
+  background-images: url("../resources/npm/node_modules/vue-jsoneditor/dist/docs/img/jsoneditor-icons.bfab7b1.svg");
+}
 /* Reduce bootstrap's default 'panel' padding: */
 div#tree {
 	padding: 3px 5px;
@@ -91,7 +108,7 @@ div#tree {
 table {
     font-size: 12px;
     border-color: white;
-    
+
 }
 
 thead th {
@@ -116,10 +133,10 @@ thead th {
 							<input type="button" value="UserSessions" onclick="OnListUserSessions();">
 							<input type="button" value="SessonAttributes" onclick="OnListSessionsAttributes();">
 							<input type="button" value="WebsocketStats" onclick="OnListWebsocketStats();">
-							
+
 						</span>
 						<a
-							href="events.shtm"> 
+							href="events.shtm">
 <!-- 							<span id="__header__alarmLevelDiv" -->
 <!-- 								style="display: none;"> <img id="__header__alarmLevelImg" -->
 <!-- 									src="images/spacer.gif" alt="" border="0" title="" /> <span -->
@@ -293,9 +310,9 @@ thead th {
 		</div>
 
 		<div class="row">
-			<div class="col-md-12">
+			<div id="pointHierarchy" class="col-md-12">
 				<c:if test="${!empty sessionUser}">
-				    <!-- 
+				    <!--
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<h3 class="panel-title">
@@ -330,9 +347,9 @@ thead th {
 										</tr>
 									</thead>
 									<tbody>
-										
+
 									</tbody>
-									
+
 								</table>
 							</div>
 						   </div>
@@ -340,12 +357,10 @@ thead th {
 						   </div>
 						</div>
 					</div> -->
-					
+
 					<div class="panel panel-default">
 						<div class="panel-heading help">
-							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b> <span
-								class="glyphicon glyphicon-question-sign"></span> <span
-								class="label label-warning">rc version of the view</span>
+							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b>
 						</div>
 						<div class="menu panel-heading help">
 							<div class="btn-group">
@@ -375,19 +390,41 @@ thead th {
 									<span class="glyphicon glyphicon-info-sign"></span>
 								</button>
 							</div>
+
+							<div class="btn-group">
+								<div id="hierarchy-import-export" >
+
+                                    <button onclick="collapseImportExport()" id="Export_Import" class="btn" data-toggle="collapse" href="#collapseImport" role="button" aria-expanded="false" aria-controls="collapseImport">
+                                        <span class="glyphicon glyphicon-export"></span> <span class="glyphicon glyphicon-import"></span>
+                                    </button>
+
+                            	</div>
+							</div>
+
 						</div>
 						<div id="tree"
-							class=" panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
+							class=" panel-body fancytree-colorize-hover fancytree-fade-expander pre-scrollable" style="max-height: 65vh"></div>
 					</div>
+
 				</c:if>
 			</div>
+			<div class="collapse" id="collapseImport">
+			 <div class="btn-group">
+             	<button onclick="closeImportExport()" id="close-export-import" class="btn btn-default"
+             	    data-toggle="tooltip" data-placement="top"
+             			title='close export/import'>
+             			<span class="glyphicon glyphicon-resize-small"></span>
+             	</button>
+             </div>
+                <div id=export-import-ph></div>
+            </div>
 		</div>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td colspan="2">&nbsp;</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="footer" align="center">&copy;2016 <fmt:message
+				<td colspan="2" class="footer" align="center">&copy;2012-2018 Scada-LTS All rights reserved. <fmt:message
 						key="footer.rightsReserved" /></td>
 			</tr>
 		</table>
@@ -396,14 +433,25 @@ thead th {
 
 <script src="resources/app/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="resources/app/bower_components/jquery-ui/jquery-ui.min.js"></script>
-<script
-	src="resources/app/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script
-	src="resources/app/bower_components/fancytree/dist/jquery.fancytree-all.min.js"></script>
-<script
-	src="resources/app/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
+<script	src="resources/app/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script	src="resources/app/bower_components/fancytree/dist/jquery.fancytree-all.min.js"></script>
+<script	src="resources/app/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
 <script src="resources/sockjs-0.3.4.js"></script>
 <script src="resources/stomp.js"></script>
+
+<script src="resources/npm/node_modules/axios/dist/axios.min.js"></script>
+<script src="resources/npm/node_modules/vue/dist/vue.min.js"></script>
+<script src="resources/npm/node_modules/vue-axios/dist/vue-axios.min.js"></script>
+<script src="resources/vue-mixins/shared/mixins-export-import.js"></script>
+<script src="resources/vue-components/export-import/export-import.js"></script>
+
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
+<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
+
+<script src=resources/new-ui/js/manifest.js></script>
+<script src=resources/new-ui/js/vendor.js></script>
+<script src=resources/new-ui/js/app.js></script>
+
 
 <script>
 "use strict";
@@ -413,20 +461,13 @@ header.onLoad = function() {
         //header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
 };
 
-
-    
-
-
  var headers = {
 		 login: 'admin',
 		 passcode: 'passcode',
 		 client_id: '564389'
  } ;
- 
+
 var stompClient = null;
-
-
-
 
 var connectCallback = function(frame) {
     	console.log('Connected: ' + frame);
@@ -455,7 +496,7 @@ var connectCallback = function(frame) {
     		stompClient.send("/ws/alarmLevel", {priority: 1}, "Hello, Spring STOMP - gimme my alarmLevel");
     	} );
     	stompClient.send("/ws/alarmLevel", {priority: 9}, "Hello, Spring STOMP");
-    	
+
     	stompClient.subscribe("/ws/listusers", function(message) {
     		console.log("message[/ws/listusers]:" + message.body);
     	} );
@@ -465,8 +506,8 @@ var connectCallback = function(frame) {
     	} );
 
 };
-    
-    
+
+
 function setAlarmLevelImg(alarmLevel, imgNode) {
     if (alarmLevel == 0)
         updateImg(imgNode, "images/flag_green.png", "undef", false, "none");
@@ -497,7 +538,7 @@ function setAlarmLevelText(alarmLevel, textNode) {
     else
         textNode.innerHTML = "Unknown: "+ alarmLevel;
 }
-    
+
 function updateImg(imgNode, src, text, visible, styleType) {
     imgNode = document.getElementById(imgNode);
     //if (visible) {
@@ -519,7 +560,7 @@ var errorCallback = function(error) {
 
 function connect(url) {
     var socket = new SockJS(url);
-    stompClient = Stomp.over(socket);  
+    stompClient = Stomp.over(socket);
     stompClient.heartbeat.outgoing = 20000;
     stompClient.heartbeat.incoming = 0;
     stompClient.connect(headers,  connectCallback, errorCallback);
@@ -617,7 +658,7 @@ var messages = {
 	var nodeActivate;
 	var nodeDragAndDrop;
 	var newNode;
-	
+
 	var pathArray = location.href.split( '/' );
     var protocol = pathArray[0];
     var host = pathArray[2];
@@ -629,7 +670,7 @@ var messages = {
  	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
     }
 
-    
+
     function onloadHandler() {
     	// connecting to server websocket endpoint...
        connect(myLocation + '/ws/alarmLevel');
@@ -639,7 +680,7 @@ var messages = {
    	   disconnect();
    	}
 
-    
+
 	/* function selectTree(key, folder) {
     	console.log("selectTree:"+key+" folder:"+folder);
     	 //var tree = $("#tree").fancytree("getTree");
@@ -648,7 +689,7 @@ var messages = {
     	$.ajax({
             type: "GET",
         	dataType: "json",
-        	url:myLocation+"/pointHierarchy/paths/"+key+"/"+folder, 
+        	url:myLocation+"/pointHierarchy/paths/"+key+"/"+folder,
         	success: function(msg){
         		var path="/";
         		if (msg.length>0) {
@@ -677,15 +718,49 @@ var messages = {
 
     var pageGlobal=1;
     var pageStart=0;
-    
-    
+
+
     function pages(page) {
     	console.log(page);
     	pageGlobal=page;
     	$("#btnSearch").click();
     };
-    
-    
+
+    function collapseImportExport() {
+
+        if ( $( "div#pointHierarchy" ).hasClass('col-md-8') ) {
+          $( "div#pointHierarchy" ).attr("class", "col-md-12");
+        } else {
+
+          $( "div#pointHierarchy" ).attr("class", "col-md-8");
+        }
+
+    };
+
+    function closeImportExport() {
+        $( "#collapseImport" ).attr("class", "collapse");
+        $( "div#pointHierarchy" ).attr("class", "col-md-12");
+    }
+
+    function reload() {
+       var tree = $("#tree").fancytree("getTree");
+       tree.reload();
+    }
+
+    function refreshCache() {
+        $.ajax({
+                type: "POST",
+            	dataType: "json",
+            	url:myLocation+"api/pointHierarchy/cacheRefresh/",
+            	success: function(msg){
+            		reload();
+            	},
+            	error: function(XMLHttpRequest, textStatus, errorThrown) {
+            	  console.log(textStatus);
+            	}
+         });
+    }
+
     $(function () {
     	$('[data-toggle="tooltip"]').tooltip();
     	var getParentId = function(node) {
@@ -703,13 +778,13 @@ var messages = {
     			return undefined;
     		}
     	}
-    	
+
     	var toMove ={};
     	$("#tree").fancytree({
-    	      extensions: ["dnd","glyph", "wide"],
+    	      extensions: ["dnd","glyph"],
     	      debugLevel: 0,
     	      checkbox: false,
-    	      autoScroll: true,
+    	      autoScroll: false,
     	      autoActivate: true,
     	      activeVisible: false,
     	      clickFolderMode: 4,
@@ -726,9 +801,9 @@ var messages = {
     	        focusOnClick: true,    // gb disable becouse when expand (not want change focus)
   	            preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
   	            preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
-    	        dragStart: function(node, data) {    	        	
+    	        dragStart: function(node, data) {
       			    nodeDragAndDrop = data.node;
-    	        	return true; 
+    	        	return true;
     	        },
     	        dragEnter: function(node, data) {
     	        	if( data.node.isFolder() ) {
@@ -737,7 +812,7 @@ var messages = {
     	    	      return false;
     	    	    }
     	        },
-    	        dragDrop: function(node, data) {    	        	
+    	        dragDrop: function(node, data) {
     	        	BootstrapDialog.show({
     	 		       title: messages.move +':'+ nodeDragAndDrop.title,
     	 		       message: function(dialog) {
@@ -749,7 +824,7 @@ var messages = {
 					    		 '<ul><li>'+messages.key+':'+nodeDragAndDrop.key+'</li><li>'+messages.title+':<b>'+nodeDragAndDrop.title+'</b></li><li>'+ messages.keyParent + ':'+nodeDragAndDrop.parent.key+'</li><li>'+messages.parent+':<b>'+nodeDragAndDrop.parent.title+'</b></li></ul>'+
 					    		 '<ul><li>'+messages.key+':'+newNode.key+'</li><li>'+messages.title+':<b>'+newNode.title+'</b></li><li>'+messages.keyParent+':'+newNode.parent.key+'</li><li>'+messages.parent+':<b>'+newNode.parent.title+'</b></li></ul>'
 					     );
-					     
+
     	 		         dialog.setType(BootstrapDialog.TYPE_WARNING);
     	 		         return $content;
     	 		       },
@@ -759,20 +834,21 @@ var messages = {
     	 		         cssClass: 'btn-warning',
     	 		         action: function(dialog) {
     	 		           dialog.getButton('btn-Close').disable();
-    	 		           var $button = this; 
+    	 		           var $button = this;
     	 		           $button.disable();
     	 		           $button.spin();
-    	 		           dialog.setClosable(false);   	 		           
+    	 		           dialog.setClosable(false);
                            $.ajax({
     	 			            type: "POST",
     	 			        	dataType: "json",
-    	 			        	url:myLocation+'/pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(), 
+    	 			        	url:myLocation+'/pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(),
     	 			        	success: function(msg){
-    	 			        	  nodeDragAndDrop.moveTo(data.node, "child");
     	 			        	  $button.hide();
     	 			 		      $button.stopSpin();
     	 			 		      dialog.setClosable(true);
     	 			 		      dialog.getButton('btn-Close').enable();
+    	 			 		      dialog.close();
+    	 			 		      reload();
     	 			        	},
     	 			        	  error: function(XMLHttpRequest, textStatus, errorThrown) {
     	 			        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotMove+'</h3><p>'+pointHierarchySLTS.errorThrown+':'+errorThrown+'</p></div>');
@@ -792,12 +868,15 @@ var messages = {
     	 		         }
     	 		       }]
     	 		     });
-    	        	
+
     	        }
     	      },
     	      glyph: glyph_opts,
     	      selectMode: 2,
-    	      source: {url: myLocation+"/pointHierarchy/0", debugDelay: 0},
+    	      source: {
+    	        url: myLocation+"/pointHierarchy/0",
+    	        debugDelay: 0,
+    	        cache: false},
     	      toggleEffect: { effect: "drop", options: {direction: "left"}, duration: 100 },
     	      wide: {
     	        iconWidth: "1em",     // Adjust this if @fancy-icon-width != "16px"
@@ -834,14 +913,14 @@ var messages = {
  		        cssClass: 'btn-su',
  		        action: function(dialog) {
  		          dialog.getButton('btn-Close').disable();
- 		          var $button = this; 
+ 		          var $button = this;
  		          $button.disable();
  		          $button.spin();
  		          dialog.setClosable(false);
  		          $.ajax({
 		            type: "POST",
 		        	dataType: "json",
-		        	url:myLocation+"/pointHierarchy/new/0/"+dialog.getModalBody().find('input').val(), 
+		        	url:myLocation+"/pointHierarchy/new/0/"+dialog.getModalBody().find('input').val(),
 		        	success: function(msg){
 		        	  var titleNewNode = dialog.getModalBody().find('input').val();
 		        	  dialog.getModalBody().html('<div><h3>'+messages.folder+':</h3><ul><li>'+messages.key+':<b>'+msg+'</b></li><li>'+messages.title+':<b>'+titleNewNode+'</b></li></ul></div>');
@@ -849,14 +928,8 @@ var messages = {
 		 		      $button.stopSpin();
 		 		      dialog.setClosable(true);
 		 		      dialog.getButton('btn-Close').enable();
-		 		      var tree = $("#tree").fancytree("getTree"); 
-				      var rootNode = tree.getRootNode();
-		 		      var childNode = rootNode.addChildren({
-		 		         title:    titleNewNode,
-		 		         tooltip:  titleNewNode,
-		 		         folder:   true,
-		 		         key:      msg
-		 		       });
+		 		       dialog.close();
+		 		       reload();
 		        	  },
 		        	  error: function(XMLHttpRequest, textStatus, errorThrown) {
 		        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotAdd+'</h3><p>'+ messages.errorThrown +':'+errorThrown+'</p></div>');
@@ -865,7 +938,7 @@ var messages = {
 			 		    dialog.setClosable(true);
 			 		    dialog.getButton('btn-Close').enable();
 		        	  }
-		        	});   
+		        	});
  		        }
  		      },
  		      {
@@ -878,7 +951,7 @@ var messages = {
  		    });
     	});
     	$("button#deleteNode").click(()=>{
-    		if (nodeActivate != undefined) {  			
+    		if (nodeActivate != undefined) {
     			if ( (getParentId(nodeActivate)==0) && (nodeActivate.isFolder()==false) ) {
     				BootstrapDialog.show({
                         type: BootstrapDialog.TYPE_WARNING,
@@ -907,29 +980,22 @@ var messages = {
 				         cssClass: 'btn-danger',
 				         action: function(dialog) {
 				           dialog.getButton('btn-Close').disable();
-				           var $button = this; 
+				           var $button = this;
 				           $button.disable();
 				           $button.spin();
-				           dialog.setClosable(false);   
+				           dialog.setClosable(false);
 				           $.ajax({
 				        	   type: "POST",
 				        	   dataType: "json",
-				        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(), 
+				        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
 				        	   success: function(msg){
 				        		   dialog.getModalBody().html('<div><h3>'+messages.folderRemoved+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
 						           $button.hide();
 						           $button.stopSpin();
 						           dialog.setClosable(true);
 						           dialog.getButton('btn-Close').enable();
-						           var tree = $("#tree").fancytree("getTree"); 
-						           var selNodes = tree.getSelectedNodes();
-								   selNodes.push(nodeActivate);
-						           selNodes.forEach(function(node) {
-						             while( node.hasChildren() ) {
-						               node.getFirstChild().moveTo(tree.rootNode, "child");
-						             }
-						             node.remove();
-						           });
+						           dialog.close();
+						           reload();
 				        	   },
 				        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
 				        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
@@ -938,7 +1004,7 @@ var messages = {
 						 		   dialog.setClosable(true);
 						 		   dialog.getButton('btn-Close').enable();
 				        	   }
-				        	});   
+				        	});
 				         }
 				       },
 				       {
@@ -964,26 +1030,22 @@ var messages = {
     					         cssClass: 'btn-danger',
     					         action: function(dialog) {
     					           dialog.getButton('btn-Close').disable();
-    					           var $button = this; 
+    					           var $button = this;
     					           $button.disable();
     					           $button.spin();
     					           dialog.setClosable(false);
     					           $.ajax({
     					        	   type: "POST",
     					        	   dataType: "json",
-    					        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(), 
+    					        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
     					        	   success: function(msg){
     					        		   dialog.getModalBody().html('<div><h3>'+messages.movedElement+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
     							           $button.hide();
     							           $button.stopSpin();
     							           dialog.setClosable(true);
     							           dialog.getButton('btn-Close').enable();
-    							           var tree = $("#tree").fancytree("getTree"); 
-    							           var selNodes = tree.getSelectedNodes();
-    									   selNodes.push(nodeActivate);
-    							           selNodes.forEach(function(node) {	             
-    							             node.moveTo(tree.rootNode, "child");
-    							           });
+    							           dialog.close();
+    							           reload();
     					        	   },
     					        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
     					        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
@@ -992,7 +1054,7 @@ var messages = {
     							 		   dialog.setClosable(true);
     							 		   dialog.getButton('btn-Close').enable();
     					        	   }
-    					        	});   
+    					        	});
     					         }
     					       },
     					       {
@@ -1016,7 +1078,7 @@ var messages = {
       		             dialog.close();
       		           }
                    }]
-               });     
+               });
     	   }
 		});
     	$("button#editNode").click(()=>{
@@ -1031,7 +1093,7 @@ var messages = {
        		              dialog.close();
        		           }
                     }]
-                });  
+                });
     			return;
     		} else if ( (nodeActivate != undefined) && (nodeActivate.isFolder()) ) {
  		      BootstrapDialog.show({
@@ -1050,7 +1112,7 @@ var messages = {
 		         cssClass: 'btn-warning',
 		         action: function(dialog) {
 		           dialog.getButton('btn-Close').disable();
-		           var $button = this; 
+		           var $button = this;
 		           $button.disable();
 		           $button.spin();
 		           dialog.setClosable(false);
@@ -1058,7 +1120,7 @@ var messages = {
 		           $.ajax({
 			            type: "POST",
 			        	dataType: "json",
-			        	url:myLocation+"/pointHierarchy/edit/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+newTitle, 
+			        	url:myLocation+"/pointHierarchy/edit/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+newTitle,
 			        	success: function(msg){
 			        	  var titleNewNode = dialog.getModalBody().find('input').val();
 			        	  dialog.getModalBody().html('<div><h3>'+messages.folderChange+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.oldTitle+':<b>'+nodeActivate.title+'</b></li><li>'+messages.newTitle+':<b>'+newTitle+'</b></li></ul></div>');
@@ -1066,7 +1128,8 @@ var messages = {
 				          $button.stopSpin();
 				          dialog.setClosable(true);
 				          dialog.getButton('btn-Close').enable();
-				          nodeActivate.setTitle(newTitle);
+				          dialog.close();
+				          reload();
 			        	},
 			        	error: function(XMLHttpRequest, textStatus, errorThrown) {
 			        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotEdit+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
@@ -1097,12 +1160,12 @@ var messages = {
       		             dialog.close();
       		           }
                    }]
-               });     
+               });
     	   }
 		});
     	$("button#reloadNode").click(()=>{
-    		location.reload();
-    		node=undefined;
+
+    		refreshCache();
     	});
     	$("button#infoNode").click(()=>{
     		if (nodeActivate != undefined) {
@@ -1117,6 +1180,7 @@ var messages = {
 		        		 	'<li>'+messages.title+':'+nodeActivate.title+'</li>'+
 		        		 	'<li>'+messages.keyParent+':'+getParentId(nodeActivate)+'</li>'+
 		        		 	'<li>'+messages.isFolder+':'+nodeActivate.isFolder()+'</li>'+
+		        		 	'<li> Folder xid : ' + nodeActivate.data.xid + '</li>'+
 		         		 '</ul></div>');
 		         } else {
 		        	   $content = $('<div><h3>'+nodeActivate.title+'</h3>'+
@@ -1125,13 +1189,14 @@ var messages = {
 			        		 	'<li>'+messages.title+':'+nodeActivate.title+'</li>'+
 			        		 	'<li>'+messages.keyParent+':'+getParentId(nodeActivate)+'</li>'+
 			        		 	'<li>'+messages.isFolder+':'+nodeActivate.isFolder()+'</li>'+
+			        		 	'<li> Folder xid : ' + nodeActivate.data.xid + '</li>'+
 			        		 	'<li>'+messages.dataSource+':'+nodeActivate.data.pointHierarchyDataSource.name+''+
 			        		 	'<ul>'+
 			        		 		'<li>'+messages.key+':'+nodeActivate.data.pointHierarchyDataSource.id+'</li>'+
 			        		 		'<li>'+messages.xid+':'+nodeActivate.data.pointHierarchyDataSource.xid+'</li>'+
 			        		 		'<li>'+messages.type+':'+nodeActivate.data.pointHierarchyDataSource.dataSourceType+'</li>'+
 			        		 	'</ul></li>'+
-			         		 '</ul></div>');   	 
+			         		 '</ul></div>');
 		         }
 		         dialog.setType(BootstrapDialog.TYPE_INFO);
 		         return $content;
@@ -1156,14 +1221,14 @@ var messages = {
       		             dialog.close();
       		           }
                    }]
-               });     
+               });
     	   }
 		});
     	var setLocale=function(locale) {
     		 $.ajax({
 		            type: "POST",
 		        	dataType: "json",
-		        	url:myLocation+"/viewutil/"+locale, 
+		        	url:myLocation+"/viewutil/"+locale,
 		        	success: function(msg){
 		        		location.reload();
 		        	},
@@ -1178,16 +1243,16 @@ var messages = {
 		       		             dialog.close();
 		       		           }
 		                    }]
-		                })     
+		                })
 		        	}
     		});
     	};
-    
+
 	    // search
-	    
+
 	    var queryGlobal="";
-	    
-	    
+
+
         function updateControls() {
         	var queryGlobal = $.trim($("input[name=query]").val());
         	$("#btnResetSearch")
@@ -1195,7 +1260,7 @@ var messages = {
         	$("#btnSearch")
         		.attr("disabled", queryGlobal.length < 2);
         };
-        
+
         function createPagination() {
         	$('#searchResultTree > tbody').append('<tr><td colspan="2">'+
         			'<nav aria-label="Page navigation">'+
@@ -1217,11 +1282,11 @@ var messages = {
       	    				'</li>'+
       	  				'</ul>'+
       				'</nav>'+
-      			'</td></tr>');	
+      			'</td></tr>');
         	$("li[id^=page]").removeClass("active");
     		$('#page'+pageGlobal).addClass("active");
         }
-        
+
         function setElement(element, index, array) {
         	$('#searchResultTree > tbody > tr').remove();
         	for( var i=0; i<array.length;i++) {
@@ -1231,7 +1296,7 @@ var messages = {
         		} else {
         			folderOrPoint="<span class='fancytree-icon glyphicon glyphicon-file'></span>";
         		}
-        		
+
         		$('#searchResultTree > tbody').append('<tr>'+
         				'<td>'+array[i].title+'</td>'+
         				//'<td><button onclick="selectTree('+array[i].key+','+array[i].folder+')" class="btn btn-warning btn-xs">Select</button></td>'+
@@ -1239,19 +1304,20 @@ var messages = {
         				'<td>'+folderOrPoint+'</td></tr>');
         	}
         };
-        
-        
-        	            
+
+
+
         function search(query, page) {
+            console.log("SEARCH");
         	queryGlobal=$.trim(query);
         	console.log(queryGlobal);
         	console.log(page);
         	$.ajax({
 	            type: "GET",
 	        	dataType: "json",
-	        	url:myLocation+"/pointHierarchy/find/"+queryGlobal+"/"+page, 
+	        	url:myLocation+"/pointHierarchy/find/"+queryGlobal+"/"+page,
 	        	success: function(msg){
-	        		
+
 	        	  	if(msg !== undefined ) {
 	        	  		$("#searchResultTree").addClass("busy");
 	        	  		$('#searchResultTree > tbody > tr').remove();
@@ -1269,18 +1335,18 @@ var messages = {
                 	$('#searchResultTree > tbody').append('<tr><td>empty</td><td></td><td>empty</td></tr>');
 	        	  	console.log(textStatus);
 	        	}
-	        }); 
+	        });
         	// Store the source options for optional paging
         	$("#searchResultTree").addClass("busy");
         };
-        
-        
-        
+
+
+
 	    $("input[name=query]").keyup(function(e){
-	    	
-	    	queryGlobal = $.trim($(this).val()); 
+
+	    	queryGlobal = $.trim($(this).val());
 	    	var lastQuery = $(this).data("lastQuery");
-	
+
 	    	if(e && e.which === $.ui.keyCode.ESCAPE || queryGlobal === ""){
 	    		$("#btnResetSearch").click();
 	    		console.log("btnResetSearch");
@@ -1299,14 +1365,14 @@ var messages = {
 	    	}
 	    	pageGlobal=1;
 	    	$(this).data("lastQuery", queryGlobal);
-	    	
+
 	    	$("#btnSearch").click();
-	    	
+
 	    	$("#btnResetSearch").attr("disabled", queryGlobal.length === 0);
 	    	$("#btnSearch").attr("disabled", queryGlobal.length < 2);
-	    	
+
 	    }).focus();
-	    
+
     	$("#btnResetSearch").click(function(e){
     		$("#searchResultPane").collapse("hide");
     		$("input[name=query]").val("");
@@ -1320,7 +1386,7 @@ var messages = {
     	}).attr("disabled", true);
 
     });
-    
-    
+    $('.jsoneditor-menu').prop('hidden', true);
     </script>
+
 </html>

@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.model.IdName;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 
+@Service
 public class ViewService {
 	
 	private Log LOG = LogFactory.getLog(ViewService.class);
@@ -125,7 +127,11 @@ public class ViewService {
 		view.setViewUsers(viewDAO.getShareUsers(view.getId()));
 		return view;
 	}
-	
+
+	public List<ShareUser> getShareUsers(View view) {
+		return viewDAO.getShareUsers(view.getId());
+	}
+
 	public String generateUniqueXid() {
 		return DAO.getInstance().generateUniqueXid(View.XID_PREFIX, "mangoViews");
 	}

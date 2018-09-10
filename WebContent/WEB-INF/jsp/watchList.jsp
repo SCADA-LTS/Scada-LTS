@@ -468,7 +468,7 @@
     	  var dataT;
     	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
     	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
-    	  height = height < 100 ? 100 : height;
+    	  height = height < 200 ? 200 : height;
     	  $("imageChartDiv").height=height;
     	  var sourcet = "\"chart/"+Date.now()+"_"+period;
     	  var pointIds = $get("chartCB");
@@ -517,15 +517,12 @@
     		  isChartLive=false;
     		  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
           document.getElementById("imageChartDiv").style.display = "none";
-          document.getElementById("chartContainer").style.height = "auto";
     	   } else {
     		  isChartLive=true;
-          document.getElementById("chartContainer").style.height = "500px";
     		  jQuery("#imageChartLiveImg").attr('src', 'images/control_stop_blue.png');
     		  getImageChartLive(calculatePeriod());
-          // height = document.getElementById("imageChartDiv").height;
           document.getElementById("imageChartDiv").style.display = "table-cell";
-          document.getElementById("chartContainer").style.height = "auto";
+          document.getElementById("chartContainer").style.height = getCookie("chart_container_height")
     	  }
       }
 
@@ -540,8 +537,14 @@
 
       // calculate period for live chart
       function calculatePeriod(){
-    	  var period=$get("prevPeriodCount")*1000*60;
-    	  var type=$get("prevPeriodType");
+          let period
+          if(!isNaN($get("prevPeriodCount"))) {
+              period=$get("prevPeriodCount")*1000*60;
+          } else {
+              period=1*1000*60;
+          }
+
+    	  let type=$get("prevPeriodType");
 
     	  if(type>2)
 			  period*=60;

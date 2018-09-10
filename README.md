@@ -30,10 +30,10 @@ Here is two of the several start options:
 * Download Docker Toolbox from: https://kitematic.com/
 * Run Docker and Docker Toolbox.
 * When the download is completed in the Docker Toolbox run Docker CLI (bottom-left corner).
-* In the Docker CLI type in: `docker pull dockergb/scadalts-dev` to download repository.
-* Type in: `docker images` to check if repository is created. It should show "dockergb/scadalts" on the list.
+* In the Docker CLI type in: `docker pull scadalts/scadalts` to download repository.
+* Type in: `docker images` to check if repository is created. It should show "scadalts/scadalts" on the list.
 * To run Scada on Docker type in: 
-``docker run -it -e DOCKER_HOST_IP=`docker-machine ip` -p 81:8080 dockergb/scadalts-dev /root/start.sh``.
+``docker run -it -e DOCKER_HOST_IP=`docker-machine ip` -p 81:8080 scadalts/scadalts /root/start.sh``.
 * Type in: `Get-NetIPAddress` and find IPAdrress for "DockerNAT" InterfaceAlias (You need a new CLI window to do it).
 * Type in docker IP adrress in the browser with port 81 and `/ScadaLTS/` sufix. Example:
 `http://10.0.75.2:81/ScadaLTS/`
@@ -87,6 +87,10 @@ See [the Releases section of our GitHub project](https://github.com/grzesiekb/Sc
 
 Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=directory)
 
+**Michał Rokitiański**
+
+* <https://github.com/SoftQ>
+
 **Grzesiek Bylica**
 
 * <https://github.com/grzesiekb>
@@ -94,10 +98,6 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 **Arkadiusz Parafiniuk**
 
 * <https://github.com/ArkadiuszParafiniuk>
-
-**Rafał Kotyla**
-
-* <https://github.com/RandemRafaeL> UI/UX
 
 **Konrad Daniek**
 
@@ -126,6 +126,14 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 **Marcin Gołda**
 
 * <https://github.com/marcingolda>
+
+**Tomasz Skrobol**
+
+* <https://github.com/TomashHawk>
+
+## Support
+
+If you need support for deployment please contact us and find more information on [our website](http://scada-lts.comhttp://scada-lts.com/#support)
 
 
 ## Copyright and license
