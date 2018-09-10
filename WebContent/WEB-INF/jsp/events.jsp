@@ -223,7 +223,7 @@
 
 		<tr>
           <td class="formLabel"><fmt:message key="events.search.maxResults"/></td>
-          <td class="formField"><input id="maxResults" type="text"/></td>
+          <td class="formField"><input id="maxResults" type="text" value="100"/></td>
         </tr>
 		
         

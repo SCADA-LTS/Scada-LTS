@@ -35,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PointHierarchyNode {
 	
 	private int key;
+	private String xid;
 	private String title;
 	private Boolean expanded;
 	private Boolean folder;
@@ -52,16 +53,18 @@ public class PointHierarchyNode {
 	/**
 	 * 
 	 * @param key
+	 * @param xid
 	 * @param parentId
 	 * @param title
 	 * @param isFolder
 	 * @param phds
 	 */
-	public PointHierarchyNode(int key, int parentId, String title, boolean isFolder, PointHierarchyDataSource phds) {
+	public PointHierarchyNode(int key, String xid, int parentId, String title, boolean isFolder, PointHierarchyDataSource phds) {
 		this.setKey(key);
 		this.setParentId(parentId);
 		this.setTitle(title);
 		this.setFolder(isFolder);
+		this.xid = xid;
 		
 		if (isFolder) {
 		   //List<PointHierarchyNode> children = new ArrayList<PointHierarchyNode>();	
@@ -79,6 +82,12 @@ public class PointHierarchyNode {
 	}
 	public void setKey(int key) {
 		this.key = key;
+	}
+	public String getXid() {
+		return xid;
+	}
+	public void setXid(String xid) {
+		this.xid = xid;
 	}
 	public String getTitle() {
 		return title;

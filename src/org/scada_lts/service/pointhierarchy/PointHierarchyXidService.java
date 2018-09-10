@@ -19,12 +19,18 @@ package org.scada_lts.service.pointhierarchy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
+import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Create by at Grzesiek Bylica
@@ -38,11 +44,15 @@ public class PointHierarchyXidService extends PointHierarchyService {
 
     private PointHierarchyXidDAO pointHierarchyXidDAO = new PointHierarchyXidDAO();
 
+    public List<FolderPointHierarchy> getFolders() {
+        return pointHierarchyXidDAO.getFolders();
+    }
+
     public boolean movePoint(String xidPoint, String xidFolder) {
         boolean res = false;
         try {
             //TODO use java.utils.Optional
-            res = pointHierarchyXidDAO.updateParent(xidPoint, xidFolder);
+            res = pointHierarchyXidDAO.updateParentPoint(xidPoint, xidFolder);
         } catch (Exception e) {
             LOG.error(e);
         }
@@ -64,15 +74,55 @@ public class PointHierarchyXidService extends PointHierarchyService {
         pointHierarchyXidDAO.add(folderPointHierarchy);
     }
 
-    public boolean folderCheckExist(String xidFolder) {
-        return pointHierarchyXidDAO.folderCheckExist(xidFolder);
+    public List<FolderPointHierarchyExport> fillInThePoints(List<FolderPointHierarchy> folders) throws Exception {
+        List<FolderPointHierarchy> lfph = folders;
+        List<FolderPointHierarchyExport> nlfph = new ArrayList<FolderPointHierarchyExport>();
+
+        for(FolderPointHierarchy fph : lfph) {
+            nlfph.add(new FolderPointHierarchyExport(fill(fph)));
+        }
+
+        return  nlfph;
+    }
+
+    public FolderPointHierarchy folderCheckExist(String xidFolder) throws Exception {
+
+        FolderPointHierarchy fph = pointHierarchyXidDAO.folderCheckExist(xidFolder);
+        fph = fill(fph);
+        return fph;
+    }
+
+    public boolean updateNameFolder(String xidFolder, String newName) {
+        return pointHierarchyXidDAO.updateNameFolder(xidFolder, newName);
     }
 
     public void cacheRefresh() {
-        PointHierarchyDAO.cachedPointHierarchy = null;
+        try {
+            PointHierarchyCache.getInstance().updateData();
+        } catch (Exception e) {
+            LOG.error(e);
+        }
     }
 
     public void deleteFolderXid(String xidFolder) {
         pointHierarchyXidDAO.deleteFolderXid(xidFolder);
     }
+
+    private FolderPointHierarchy fill(FolderPointHierarchy fph) throws Exception {
+
+        List<PointHierarchyNode> childrens = PointHierarchyCache.getInstance().getOnBaseParentId(fph.getId());
+
+        List<String> pointXids = childrens.stream()
+                .filter(
+                        f -> !f.isFolder())
+                .map(
+                        child -> child.getXid())
+                .collect(Collectors.toList());
+
+
+        fph.setPointXids(pointXids);
+
+        return fph;
+    }
+
 }

@@ -51,9 +51,7 @@ import java.util.List;
 @Controller
 public class ViewAPI {
 
-
     private static final Log LOG = LogFactory.getLog(ViewAPI.class);
-    private static final int ID_USER_AMIN = 1;
     private static final String NULL_IMAGE_PATH = "null";
 
     @Resource
@@ -93,9 +91,8 @@ public class ViewAPI {
                     }
                 }
 
-                int userId = user.getId();
                 List<View> lstV;
-                if (userId == ID_USER_AMIN) {
+                if (user.isAdmin()) {
                     lstV = viewService.getViews();
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
@@ -155,9 +152,8 @@ public class ViewAPI {
                     }
                 }
 
-                int userId = user.getId();
                 View view = new View();
-                if (userId == ID_USER_AMIN) {
+                if (user.isAdmin()) {
                     view = viewService.getViewByXid(xid);
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);

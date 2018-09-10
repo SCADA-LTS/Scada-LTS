@@ -18,16 +18,22 @@
 
 package org.scada_lts.service.pointhierarchy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
+import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.exception.CacheHierarchyException;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.service.model.PointHierarchyConsistency;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.serotonin.mango.Common;
@@ -47,7 +53,9 @@ public class PointHierarchyService {
 	private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);
 
 	//TODO replace to @Autowire
-	private PointHierarchyDAO phDAO = new PointHierarchyDAO();
+	private PointHierarchyXidDAO phDAO = new PointHierarchyXidDAO();
+
+	private DataPointDAO dpDAO = new DataPointDAO();
 	
 	public PointHierarchyService() {
 		//
@@ -66,15 +74,10 @@ public class PointHierarchyService {
 		try {
 			if (isFolder) {
 			  res = phDAO.deleteFolder(key, parentId);
-			  if (res) {
-				  PointHierarchyCache.getInstance().deleteFolder(parentId, key);
-			  }
 			} else {
 				res = phDAO.updateParentIdDataPoint(key, 0);
-				if (res) {
-					PointHierarchyCache.getInstance().deletePoint(parentId, key);
-				}
 			}
+			PointHierarchyCache.getInstance().updateData();
 		} catch (Exception e) {
 			  LOG.error(new CacheHierarchyException(e));
 		}
@@ -93,7 +96,7 @@ public class PointHierarchyService {
 		boolean res = phDAO.updateTitle(id, newTitle);
 		if (res) {
 			try {
-				PointHierarchyCache.getInstance().edit(parentId, id, newTitle, isFolder);
+				PointHierarchyCache.getInstance().updateData();
 			} catch (Exception e) {
 				LOG.error(new CacheHierarchyException(e));
 			}
@@ -108,7 +111,6 @@ public class PointHierarchyService {
 	 * @param key
 	 * @param isFolder
 	 * @return
-	 * @throws PointHierarchyException
 	 */
 	public boolean move(int oldParentId,int newParentId, int key, boolean isFolder) {
 		boolean res = false;
@@ -119,7 +121,7 @@ public class PointHierarchyService {
 		}
 		if (res) {
 		  try {
-			PointHierarchyCache.getInstance().move( oldParentId, newParentId, key, isFolder);
+		  	PointHierarchyCache.getInstance().updateData();
 	      } catch (Exception e) {
 			LOG.error(new CacheHierarchyException(e));
 		  }
@@ -152,23 +154,22 @@ public class PointHierarchyService {
 	 * @return
 	 */
 	public int add(int parentId, String title) {
-		//TODO check title null
+		//TODO check title null only folder to change
 		LOG.info("add parentId:"+parentId+" title:"+title);
+
 		int id = phDAO.insert(parentId, title);
-		//actualize cache
+		String xid = phDAO.getFolderXid(id);
+		//actualize cache //TODO
 		if (id>0) {
 			PointHierarchyNode phn = new PointHierarchyNode(
-					id, 
+					id,
+					xid,
 					parentId, 
 					title, 
 					true, 
 					null);
 			try {
-			  if (phn.isFolder()) {
-				  PointHierarchyCache.getInstance().addFolder(phn);
-			  } else {
-				  PointHierarchyCache.getInstance().addPoint(phn);
-			  }
+				PointHierarchyCache.getInstance().updateData();
 			} catch (Exception e) {
 				LOG.error(new CacheHierarchyException(e));
 				return -1;
@@ -212,6 +213,30 @@ public class PointHierarchyService {
 		PointHierarchyDAO.cachedPointHierarchy = null;
 		PointHierarchyDAO.cachedPointHierarchy = dpService.getPointHierarchy();
 		PointHierarchyEventDispatcher.firePointHierarchySaved(pointFolder);
+	}
+
+	public List<PointHierarchyConsistency> checkPointHierarchyConsistency() {
+		List<PointHierarchyConsistency> result = new ArrayList<PointHierarchyConsistency>();
+		List<DataPointVO> dps = dpDAO.getDataPoints();
+		for (DataPointVO dp : dps) {
+			int id = dp.getPointFolderId();
+			String xid = "";
+			boolean xidNotExis = false;
+			try {
+				xid = phDAO.getFolderXid(id);
+			} catch (EmptyResultDataAccessException e) {
+				xidNotExis = true;
+			}
+			if (xidNotExis) {
+				result.add(new PointHierarchyConsistency(
+					dp.getXid(),
+					"",
+					id,
+					xidNotExis
+				));
+			}
+		}
+		return result;
 	}
 
 }

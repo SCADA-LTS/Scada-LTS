@@ -13,10 +13,10 @@ import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
 import com.serotonin.timer.CronTimerTrigger;
+import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.timer.OneTimeTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.timer.TimerTrigger;
-import com.serotonin.web.i18n.LocalizableMessage;
 
 public class MaintenanceEventRT implements ModelTimeoutClient<Boolean> {
     private final MaintenanceEventVO vo;

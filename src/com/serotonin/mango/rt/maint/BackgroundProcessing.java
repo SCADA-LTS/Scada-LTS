@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.rt.maint;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -71,7 +73,17 @@ public class BackgroundProcessing implements ILifecycle {
 					try {
 						item.execute();
 					} catch (Throwable t) {
-						log.error("Error in work item: " + t.getMessage());
+						if (t != null) {
+							StringWriter sw = new StringWriter();
+							PrintWriter pw = new PrintWriter(sw);
+							t.printStackTrace(pw);
+							String sStackTrace = sw.toString();
+							if ((sStackTrace != null) && (log != null)) {
+								if (!sStackTrace.contains("java.lang.NullPointerException")) {
+									log.error("Error in work item: " + sStackTrace);
+								}
+							}
+						}
 					} finally {
 						mediumPriorityService.remove(this);
 					}

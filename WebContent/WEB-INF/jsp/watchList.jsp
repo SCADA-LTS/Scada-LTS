@@ -468,8 +468,8 @@
     	  var dataT;
     	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
     	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
-    	  height = height < 100 ? 100 : height;
-    	  $("imageChartDiv").height=height+10;
+    	  height = height < 200 ? 200 : height;
+    	  $("imageChartDiv").height=height;
     	  var sourcet = "\"chart/"+Date.now()+"_"+period;
     	  var pointIds = $get("chartCB");
     	  if(isChartLive){
@@ -517,15 +517,12 @@
     		  isChartLive=false;
     		  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
           document.getElementById("imageChartDiv").style.display = "none";
-          document.getElementById("chartContainer").style.height = "auto";
     	   } else {
     		  isChartLive=true;
-          document.getElementById("chartContainer").style.height = "500px";
     		  jQuery("#imageChartLiveImg").attr('src', 'images/control_stop_blue.png');
     		  getImageChartLive(calculatePeriod());
-          // height = document.getElementById("imageChartDiv").height;
           document.getElementById("imageChartDiv").style.display = "table-cell";
-          document.getElementById("chartContainer").style.height = "auto";
+          document.getElementById("chartContainer").style.height = getCookie("chart_container_height")
     	  }
       }
 

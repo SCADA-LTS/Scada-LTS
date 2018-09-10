@@ -4,28 +4,35 @@ before_install:
 before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
-- nvm install node
+- nvm install 8
 - nvm use node
 - npm -v
 - node -v
 - env
-- npm install -g @angular/cli@latest
+#- npm install -g @angular/cli@latest
 - npm install -g bower
-- npm install @angular/core@latest
+#- npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
+# correct version base on Milestones
+- sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
-- cd ./ScadaLTS-UI
+#- cd ./ScadaLTS-UI
+#- npm install
+#- ls -l ./src/app/media
+#- ng version
+#- ng build
+#- cd ./war
+#- ant war
+#- ant
+#- cd ../..
+- cd ./ScadaLTS-UI-1
 - npm install
-- ls -l ./src/app/media
-- ng version
-- ng build
-- cd ./war
-- ant war
-- ant 
-- cd ../..
+- cd ../WebContent/resources/npm/
+- npm install
+- cd ../../..
 language: java
 jdk:
 - openjdk8
@@ -33,26 +40,19 @@ services:
 - docker
 - mysql
 script: ant war && ant junit
-#script: ant war
 branches:
   only:
-  - "/^PROC-.*$/"
-  - "/^develop-sdtabilit.*$/"
-  - "/^#179*$/"
-  - "/^master-sdtabilit.*$/"
-  - "/^v*$/"
-  - "/^develop*$/"
-  - "/^master*$/"
+  - "/^develop.*$/"
+  - "/^master.*$/"
 notifications:
   email: false
 env:
   matrix:
   - CATALINA_HOME=/usr/share/tomcat7
   global:
-  - secure: iWTA/pJ1p0yuflPAYi5FwQnB6qWjNpnAfUvGT4bXiEi9X0Gy0IFhjzP9acO+sG/SAc2H+YA9KbRWc7CVbilxXfLRE6yOEiPQW9M9wg+EMYnPtLcnQqpqJ8DJWhwks8oNqX95PlyLy0UkIFAfDgNNsOI6xNrtSt/pL6kDf5EXypzHnhAAPvMlo3qLsmB/5I0JZvcEUGN6fXZkVczuBhQnN7mbhYouMScZJdvNo8VbVsSmFj66u6KT82lKoEP74cD1dCRiCHtNTUIBMN7igb8byD9k0eOty89H+BGoCLUvWpghYl0fBwW9djaK/gu+Vhf+6h1lFMYsqdm7eWJDwDDlkIqllzGIRbBwjKi+We3cCMMubvwXUATkkPYKPS6SshBkwybG9/6/6cHu5Y69Sh7shgurbc40wWUMm9BoHX+DDfJf1coFBAMXnPFkupnMkDTLPaC44FbjndAIectf72J6x8MqZ/lSAY5q0c6Hg/tdKofwA92Cx13KDrNVxTP2oC2lIvHCYtuS8/6fToAHIdpCpv+l/nkUBrEdpSNjSPHHB7+jY3R2+G8mv4yX5Jj74q/OL3B2OcVL/BsxDWUYUjLRsMUxoBe5oW3/c+2mpcBQp6spMd6kceBM6L7d+pHkZV4Ce+CJoaej8BXdyfSqq/aTkG/RMQ1qsa4GYIfu0IaNZMg=
-  - secure: KNfVmgjr2ZNsnvIfuhSkZ/kPrSTjn6WSDxEJt/3ioTCgeEGGvPL7UGonHHozZu3WzpzBVyUr60hXjb1nmb9dk6A3Dg05UPZmuS7NiHEA4Ub2zQKgefSbK0AJEhXSDg+bT16Hqxf1aZDaAEpMXGWTGLdpbKkGAW56UZu6LpOlOvoX9pFoSWAyzh1jKiYQsaKJ3eCncHKug5WqTVidOL/ENR6CAYyVLkgZ0yffwsCyVAnh14vri2lswPhPsPvMzYxtLQGkKkUOYkuPOZvBD7l5mp5Y4QLv86iKTFlOteim7yD+RpZZDFpb+3+OhRuj6jlBYWina33RKqBqjhhsayyYN/tYnPUefZhT+ALs8JfUaDXqMdgd7NQj8i5ZvrB+YsCTUVGrnPVbmEq8A4l/An5ushQpK5CrASiAC0K4dOBVT+U89QHtYWuE3ZOmSb518dlbH084ljypAj3JTQpUgRAAxn21VUMKb6QyIPsSPVEQ+zPQnaxBLhYVqafO7iX1tyvdr0mGhLZjXaaGwQu8Y/RoHdmRYcQAGn6zVFNuxWxTlr2OQ0fJ5l6/qBVyqZvqNirYa5hX8KtDu3dVMo5VOirIsoJTw75qTpGxYjhCNCb/woxtRvfX9xoT7tINWOxi2ucFfObSCsTv+BPeZeJiq7UDuFQYsQtWjNRp/iQNJ+rclpQ=
+  - secure: "ZXkg2Dm3k8riijlVIZl5za7H07cO0G2Z3ELQxUtpSSasdQy7oIl0uwgNhiy2mKvTCSXl639j8IH9s9cer8TMkBjXr4ML/5OcDzvJWltqvOMNOIPlX3+28echTAm/emIrVuziTn/nhtZ1YcnHdmshmmNYb+7TD1NX2ds8PGII9OuQsU96w46/YPeTsdTs2VYJz/6D8GPTGUWSu3YjABsYobLqUFfV5QgJKe48MVaRxh7S8bRrwODQk5WpSIFnnhBWR5cHGKlrHx3pdnyBuW4ATQTH4BKgx+GMDYFvM2VCwr/bk+yuYE9j/LZJvxcv1E13OvFyvKdkUGcF34W85YOrG4pKzJP2r6S9ouZT1y6a4THBtzwimk9aae7Vauc1BNh4bYnRI/2HLIxAeYcwncc9KolcuYv2WdSyRxNnT24eXidj+nq1qfb82zWWVyj3fuIw76DfguJX2GeTGGGhXwV3HnyJNlxyN8dd7xmosM4cqmlLfk3hVB8NbuD6/5aN++anKZb4NkIGCi/zGjyRfpnbe7rw6bsrk7TqlAf6/gm4/CC1FG09POkmnYWL0DKjAOV2Z/W/1cdiUC9oeBuK1SJWqU/6p/51UJJrtUT13RQWF4kl85DZ1IJzQXAF0p1ROdTlyhKL3wYSOWJWzaaK/DP63G20zDL/FdCNLTLq/uYbazE="
+  - secure: "Cjz0OxIlJzAs66SHv9wFCWW4XdOoUv8YnED8mQG1Ds+I7KwoK7UTglsyzMmaOYYtzlDkAmuwn55wV6aS9lEPh5baT97phlDlUqrv6A/g7KBSS2qRfxt4G6zhoIOg8FCto5D6FU3FVKATbjZ9niT+96LOx61mFi5cLL1DpyylRk7EX4TiZGj4324ymZwItC8aRbdTD24+4zpTNI1irMF8c3TAmF+4/rUcYb0RYGKnbxylWjL83rqszICCce/Bg8ObYIv5a7xTUJX8kF/50iEHyOWJzLxo0IURiwuHdU6CyvFcorZJnQF/wTbZsxpDPhJBwgWE9umz1NekIX3/1+6EJ+nzc1W56lX4Atp5wntj9Bft8gngSmbR51dVxL0kbIiYcvfZvTrjQ00qoZbLlk8FWsfEIdVOqq2Dh0psPVOuzMcUQqAf/4jArxVXKnuzu0V8Z0dVq2zgpzW8DwGIGTBwJ8ySBnJRYsL9vkF/exT43mc9omBVJ5Ec1+WzFDjwMW8+VSwERDxF3Zubj8SXL8gSY2J2YmKEBTPY63qrTc5cWDtVjksYGKmTPKzvhfBn8Ykv8qA1SZSpnKS/4/YF7POxhFeJwyNfn5PWqcpe80JtG701gaRqzKFeB6RMr3NIgi6EAuIBxhsKL0ECISXFf3UsdcxU0rZ4yBESsW9x6jcEarI="
 after_script:
-# get tomcat7 to ./docker/app
 - wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
 - mkdir ./docker/app
 - mv apache-tomcat-7.0.85.tar.gz ./docker/app
@@ -65,25 +65,22 @@ after_script:
 - mv ./apache-tomcat-7.0.85/* ./
 - rm -rf ./apache-tomcat-7.0.85
 - cp ../../ScadaBR.war ./webapps
-- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
-- ls -l ./webapps/ScadaLTS.war
+#- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
+#- ls -l ./webapps/ScadaLTS.war
 - ls -l ./webapps/ScadaBR.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
 - ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
 - ls -l ./lib/mysql-connector-java-5.1.38-bin.jar
-# config tomcat
 - cp -f ../config/context.xml ./conf/
 - cat ./conf/context.xml
-
-# docker
 - cd ../
 - pwd
-- ls 
+- ls
 - docker version
-- docker build -t dockergb/scadalts-dev .
-- docker images
-- docker login -u=$DOCKER_USENAME -p=$DOCKER_PASSWORD
-- docker push dockergb/scadalts-dev 
-
-#- echo $TRAVIS_BUILD_DIR
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- export IMAGE_NAME=scadalts/scadalts
+- docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
+- docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
+- docker push $IMAGE_NAME:$TAG

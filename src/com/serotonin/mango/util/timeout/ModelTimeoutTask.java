@@ -4,8 +4,8 @@ import java.util.Date;
 
 import com.serotonin.mango.Common;
 import com.serotonin.timer.OneTimeTrigger;
-import com.serotonin.timer.TimerTask;
 import com.serotonin.timer.TimerTrigger;
+import com.serotonin.timer.TimerTask;
 
 public class ModelTimeoutTask<T> extends TimerTask {
     private final ModelTimeoutClient<T> client;
