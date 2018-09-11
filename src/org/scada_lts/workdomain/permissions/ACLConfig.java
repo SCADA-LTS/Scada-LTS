@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.permissions;
+package org.scada_lts.workdomain.permissions;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -34,6 +34,7 @@
 
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/amqp-client-5.4.1.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/RXTXcomm.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/SNMP4J.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/activation.jar"/>
@@ -247,7 +248,7 @@
 	</target>
 
 	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-	<target name="war" description="Bundles the application as a WAR file" depends="clean, build, new-ui">
+	<target name="war" description="Bundles the application as a WAR file" depends="clean, build">
 
 		<delete dir="WebContent/resources/new-ui"></delete>
 		<mkdir dir="WebContent/resources/new-ui"></mkdir>

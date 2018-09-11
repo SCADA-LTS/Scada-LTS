@@ -1,6 +1,6 @@
-package org.scada_lts.permissions;
+package org.scada_lts.workdomain.permissions;
 
-import org.scada_lts.permissions.model.EntryDto;
+import org.scada_lts.workdomain.permissions.model.EntryDto;
 
 import java.util.List;
 

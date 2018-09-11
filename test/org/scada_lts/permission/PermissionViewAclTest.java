@@ -20,9 +20,9 @@ package org.scada_lts.permission;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.scada_lts.permissions.ACLConfig;
-import org.scada_lts.permissions.PermissionViewACL;
-import org.scada_lts.permissions.model.EntryDto;
+import org.scada_lts.workdomain.permissions.ACLConfig;
+import org.scada_lts.workdomain.permissions.PermissionViewACL;
+import org.scada_lts.workdomain.permissions.model.EntryDto;
 
 import java.io.IOException;
 import java.util.Map;
