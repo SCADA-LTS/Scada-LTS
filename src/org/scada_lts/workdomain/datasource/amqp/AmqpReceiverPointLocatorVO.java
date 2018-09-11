@@ -14,6 +14,14 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * AMQP Receiver data point Virtual Object definition
+ *
+ * @author Radek Jajko
+ * @version 1.0
+ * @since 2018-09-11
+ *
+ */
 public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
 
     public interface ExchangeType {

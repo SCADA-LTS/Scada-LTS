@@ -3,21 +3,20 @@ package org.scada_lts.workdomain.datasource.amqp;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
-import com.serotonin.mango.rt.dataSource.EventDataSource;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeoutException;
-
+/**
+ * Real Time Behaviour of AMQP Receiver DataSource
+ *
+ * @author Radek Jajko
+ * @version 1.0
+ * @since 2018-09-11
+ */
 public class AmqpReceiverDataSourceRT extends PollingDataSource {
 
     private final Log log = LogFactory.getLog(AmqpReceiverDataSourceRT.class);

@@ -19,7 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * AMQP Receiver DataSource Virtual Object
+ *
  * @author Radek Jajko
+ * @version 1.0
+ * @since 2018-09-11
  */
 @JsonRemoteEntity
 public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourceVO> {

@@ -1,5 +1,10 @@
-<%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
+<%--
+    SoftQ - http://www.softq.pl/
+    Copyright (C) 2018 Softq
+    @author Radek Jajko
+--%>
 
+<%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <script type="text/javascript">
 
   function initImpl() {
@@ -43,7 +48,7 @@
 </script>
 
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.sql.desc"/></c:set>
+<c:set var="dsDesc"><fmt:message key="dsEdit.amqpReceiver.desc"/></c:set>
 <c:set var="dsHelpId" value="amqpReceiverDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
@@ -57,20 +62,20 @@
   </tr>
 
   <tr>
-    <td class="formLabelRequired">Server IP address</td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.addresss"/></td>
     <td class="formField"><input type="text" id="serverIpAddress" value="${dataSource.serverIpAddress}"/></td>
   </tr>
 
   <tr>
-    <td class="formLabelRequired">Server Port</td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.port"/></td>
     <td class="formField"><input type="text" id="serverPortNumber" value="${dataSource.serverPortNumber}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired">RabbitMQ username</td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.username"/></td>
     <td class="formField"><input type="text" id="serverUsername" value="${dataSource.serverUsername}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired">RabbitMQ user password</td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.password"/></td>
     <td class="formField"><input type="text" id="serverPassword" value="${dataSource.serverPassword}"/></td>
   </tr>
 
