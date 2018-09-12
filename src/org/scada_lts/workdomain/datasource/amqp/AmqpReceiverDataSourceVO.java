@@ -102,11 +102,6 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
         SerializationHelper.writeSafeUTF(out, serverPortNumber);
         SerializationHelper.writeSafeUTF(out, serverUsername);
         SerializationHelper.writeSafeUTF(out, serverPassword);
-//        out.writeInt(Integer.parseInt(serverPortNumber));
-//        out.writeChars(serverIpAddress);
-//        out.writeChars(serverPortNumber);
-//        out.writeChars(serverUsername);
-//        out.writeChars(serverPassword);
 
     }
 

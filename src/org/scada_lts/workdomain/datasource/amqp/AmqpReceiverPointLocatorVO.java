@@ -25,6 +25,7 @@ import java.util.Map;
 public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
 
     public interface ExchangeType {
+        String A_NONE     = "";
         String A_DIRECT   = "Direct";
         String A_TOPIC    = "Topic";
         String A_HEADERS  = "Headers";
@@ -53,7 +54,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
 
     @Override
     public LocalizableMessage getConfigurationDescription() {
-        return new LocalizableMessage("common.default", routingKey);
+        return new LocalizableMessage("common.default", queueName);
     }
 
     @Override
@@ -74,13 +75,19 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
 
     @Override
     public void addProperties(List<LocalizableMessage> list) {
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeType", exchangeType);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeName", exchangeName);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueName", queueName);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.routingKey", routingKey);
     }
 
     @Override
     public void addPropertyChanges(List<LocalizableMessage> list, Object o) {
-
+        AmqpReceiverPointLocatorVO from = (AmqpReceiverPointLocatorVO) o;
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeType", from.exchangeType, exchangeType);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeName", from.exchangeName, exchangeName);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueName", from.queueName, queueName);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.routingKey", from.routingKey, routingKey);
     }
 
     // Getters and Setters //

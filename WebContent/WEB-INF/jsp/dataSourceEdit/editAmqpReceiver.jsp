@@ -5,6 +5,7 @@
 --%>
 
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
+<%@page import="org.scada_lts.workdomain.datasource.amqp.AmqpReceiverPointLocatorVO"%>
 <script type="text/javascript">
 
   function initImpl() {
@@ -99,7 +100,15 @@
 
   <tr>
     <td class="formLabelRequired">Exchange Type</td>
-    <td class="formField"><input type="text" id="exchangeType"/></td>
+    <td class="formField">
+        <select id="exchangeType">
+            <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.ExchangeType.A_NONE %>"/>">Empty</option>
+            <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT %>"/>">Direct</option>
+            <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC %>"/>">Topic</option>
+            <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.ExchangeType.A_HEADERS %>"/>">Headers</option>
+            <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT %>"/>">Fanout</option>
+        </select>
+    </td>
   </tr>
   <tr>
     <td class="formLabelRequired">Exchange Name</td>
