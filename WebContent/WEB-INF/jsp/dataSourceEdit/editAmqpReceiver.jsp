@@ -30,16 +30,15 @@
   function savePointImpl(locator) {
 
     delete locator.settable;
+    delete locator.relinquishable;
+    locator.dataTypeId = $get("dataTypeId");
+    locator.exchangeType = $get("exchangeType");
+    locator.exchangeName = $get("exchangeName");
+    locator.queueName = $get("queueName");
+    locator.routingKey = $get("routingKey");
 
-
-                locator.dataTypeId = $get("dataTypeId");
-                locator.exchangeType = $get("exchangeType");
-                locator.exchangeName = $get("exchangeName");
-                locator.queueName = $get("queueName");
-                locator.routingKey = $get("routingKey");
-
-                DataSourceEditDwr.saveAmqpReceiverPointLocator(
-                currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
+    DataSourceEditDwr.saveAmqpReceiverPointLocator(
+    currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
     }
 
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions)  {
@@ -63,7 +62,7 @@
   </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.addresss"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.address"/></td>
     <td class="formField"><input type="text" id="serverIpAddress" value="${dataSource.serverIpAddress}"/></td>
   </tr>
 
@@ -86,14 +85,14 @@
 
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
-    <td class="formField"><input type="checkbox" id="settable"/></td>
+    <td class="formField"><input type="checkbox" id="settable" disabled /></td>
   </tr>
 
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId">
-        <tag:dataTypeOptions excludeImage="true"/>
+        <tag:dataTypeOptions excludeBinary="true" excludeMultistate="true" excludeImage="true" />
       </select>
     </td>
   </tr>
