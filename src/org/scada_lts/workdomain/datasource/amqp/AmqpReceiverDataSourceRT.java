@@ -99,19 +99,60 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
 
     }
 
+    /**
+     * Initialize AMQP Data Point
+     * Before initializing make sure you have got created exchange type,
+     * exchange name, queue name and bindings between them.
+     *
+     * Any connection error breaks the connection between ScadaLTS
+     * and RabbitMQ server
+     *
+     * @param dp - single AMQP DataPoint
+     * @param channel - RabbitMQ channel (with prepared connection)
+     * @throws IOException
+     */
     private void initDataPoint(DataPointRT dp, Channel channel) throws IOException {
 
         AmqpReceiverPointLocatorRT locator = dp.getPointLocator();
-        String queueName = locator.getVO().getQueueName();
+        String exchangeType = locator.getVO().getExchangeType();
+        String exchangeName = locator.getVO().getExchangeName();
+        String queueName    = locator.getVO().getQueueName();
+        String routingKey = locator.getVO().getRoutingKey();
+        Boolean durable = locator.getVO().getQueueDurability().equalsIgnoreCase("1");
 
-        try {
-            channel.queueDeclare(queueName, false, false, false, null);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT)) {
+            channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT, durable);
+//            queueName = channel.queueDeclare().getQueue();
+//            System.out.println("FANOUT QUEUE: " + queueName);
+            channel.queueBind(queueName, exchangeName, "");
+
+            basicGetMessage(channel, queueName, true, dp);
+
+        } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT)) {
+            channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT, durable);
+//            queueName = channel.queueDeclare().getQueue();
+            channel.queueBind(queueName, exchangeName, routingKey);
+
+            basicGetMessage(channel, queueName, true, dp);
+
+        } else if ( exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
+            channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
+//            queueName = channel.queueDeclare().getQueue();
+
+            channel.queueBind(queueName, exchangeName, routingKey);
+
+            basicGetMessage(channel, queueName, true, dp);
+        } else if ( exchangeType.isEmpty() ) {
+            channel.queueDeclare(queueName, false, durable, false, null);
+
+            basicGetMessage(channel, queueName, true, dp);
         }
 
-        GetResponse response = channel.basicGet(queueName, true);
-        if(response != null) {
+    }
+
+    private void basicGetMessage(Channel channel, String queueName, boolean autoAck, DataPointRT dp) throws IOException {
+        GetResponse response = channel.basicGet(queueName, autoAck);
+        if (response != null) {
             byte[] body = response.getBody();
             String result = new String(body);
 
@@ -119,15 +160,13 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
                 dp.updatePointValue( new PointValueTime(
                         new AlphanumericValue(result), System.currentTimeMillis()
                 ));
-            }
-            else if (dp.getDataTypeId() == DataTypes.NUMERIC) {
+            } else if (dp.getDataTypeId() == DataTypes.NUMERIC) {
                 dp.updatePointValue( new PointValueTime(
                         new NumericValue(Double.parseDouble(result)), System.currentTimeMillis()
                 ));
             } else {
                 System.out.println("AMQP DP: New value [other] " + result);
             }
-
         }
 
     }

@@ -37,6 +37,9 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
     private String serverIpAddress = new String("localhost");
     @JsonRemoteProperty
     private String serverPortNumber = new String("5672");
+    //TODO: Create RabbitMQ virtual host parameter
+    //@JsonRemoteProperty
+    //private String serverVirtualHost = new String("/");
     @JsonRemoteProperty
     private String serverUsername = new String("");
     @JsonRemoteProperty

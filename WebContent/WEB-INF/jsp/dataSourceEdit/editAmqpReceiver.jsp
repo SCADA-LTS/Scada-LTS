@@ -8,9 +8,19 @@
 <%@page import="org.scada_lts.workdomain.datasource.amqp.AmqpReceiverPointLocatorVO"%>
 <script type="text/javascript">
 
-  function initImpl() {
-
+    function exchangeTypeChange() {
+        var exType = $get("exchangeType");
+        if (exType === "" ) {
+            hide("exFields");
+        } else {
+            show("exFields");
+        }
     }
+
+  function initImpl() {
+    exchangeTypeChange()
+
+  }
 
 
   function saveDataSourceImpl() {
@@ -24,6 +34,7 @@
         $set("exchangeType", locator.exchangeType);
         $set("exchangeName", locator.exchangeName);
         $set("queueName", locator.queueName);
+        $set("queueDurability", locator.queueDurability);
         $set("routingKey", locator.routingKey);
     }
 
@@ -35,6 +46,7 @@
     locator.exchangeType = $get("exchangeType");
     locator.exchangeName = $get("exchangeName");
     locator.queueName = $get("queueName");
+    locator.queueDurability = $get("queueDurability");
     locator.routingKey = $get("routingKey");
 
     DataSourceEditDwr.saveAmqpReceiverPointLocator(
@@ -100,7 +112,7 @@
   <tr>
     <td class="formLabelRequired">Exchange Type</td>
     <td class="formField">
-        <select id="exchangeType">
+        <select id="exchangeType" onchange="exchangeTypeChange()">
             <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.ExchangeType.A_NONE %>"/>">Empty</option>
             <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT %>"/>">Direct</option>
             <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC %>"/>">Topic</option>
@@ -110,16 +122,27 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired">Exchange Name</td>
-    <td class="formField"><input type="text" id="exchangeName"/></td>
-  </tr>
-  <tr>
     <td class="formLabelRequired">Queue Name</td>
     <td class="formField"><input type="text" id="queueName"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired">Routing Key</td>
-    <td class="formField"><input type="text" id="routingKey"/></td>
+    <td class="formLabelRequired">Queue Durability</td>
+    <td class="formField">
+        <select id="queueDurability">
+            <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.DurabilityType.DURABLE %>"/>">Durable</option>
+            <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.DurabilityType.TRANSIENT %>"/>">Transient</option>
+        </select>
+    </td>
   </tr>
+  <tbody id="exFields" style="display:none;">
+    <tr>
+      <td class="formLabelRequired">Exchange Name</td>
+      <td class="formField"><input type="text" id="exchangeName"/></td>
+    </tr>
+    <tr>
+      <td class="formLabelRequired">Routing Key</td>
+      <td class="formField"><input type="text" id="routingKey"/></td>
+    </tr>
+  </tbody>
 
 </tag:pointList>

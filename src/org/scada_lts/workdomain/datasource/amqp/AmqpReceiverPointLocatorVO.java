@@ -26,23 +26,27 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
 
     public interface ExchangeType {
         String A_NONE     = "";
-        String A_DIRECT   = "Direct";
-        String A_TOPIC    = "Topic";
-        String A_HEADERS  = "Headers";
-        String A_FANOUT   = "Fanout";
+        String A_DIRECT   = "direct";
+        String A_TOPIC    = "topic";
+        String A_HEADERS  = "headers";
+        String A_FANOUT   = "fanout";
+    }
+
+    public interface DurabilityType {
+        String DURABLE    = "1";
+        String TRANSIENT   = "0";
     }
 
     @JsonRemoteProperty
     private String exchangeType;
-
     @JsonRemoteProperty
-    private String exchangeName;
-
+    private String exchangeName = new String("");
     @JsonRemoteProperty
-    private String  queueName;
-
+    private String  queueName = new String("");
     @JsonRemoteProperty
-    private String  routingKey;
+    private String  routingKey = new String("");
+    @JsonRemoteProperty
+    private String queueDurability = new String("");
 
     private int     dataTypeId;
 
@@ -78,6 +82,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeType", exchangeType);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeName", exchangeName);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueName", queueName);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueDurability", queueDurability);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.routingKey", routingKey);
     }
 
@@ -87,6 +92,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeType", from.exchangeType, exchangeType);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeName", from.exchangeName, exchangeName);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueName", from.queueName, queueName);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueDurability", from.queueDurability, queueDurability);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.routingKey", from.routingKey, routingKey);
     }
 
@@ -115,6 +121,14 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         this.queueName = queueName;
     }
 
+    public String getQueueDurability() {
+        return queueDurability;
+    }
+
+    public void setQueueDurability(String queueDurability) {
+        this.queueDurability = queueDurability;
+    }
+
     public String getRoutingKey() {
         return routingKey;
     }
@@ -136,6 +150,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         SerializationHelper.writeSafeUTF(out, exchangeType);
         SerializationHelper.writeSafeUTF(out, exchangeName);
         SerializationHelper.writeSafeUTF(out, queueName);
+        SerializationHelper.writeSafeUTF(out, queueDurability);
         SerializationHelper.writeSafeUTF(out, routingKey);
     }
 
@@ -146,6 +161,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
             exchangeType    = SerializationHelper.readSafeUTF(in);
             exchangeName    = SerializationHelper.readSafeUTF(in);
             queueName       = SerializationHelper.readSafeUTF(in);
+            queueDurability = SerializationHelper.readSafeUTF(in);
             routingKey      = SerializationHelper.readSafeUTF(in);
         }
     }
