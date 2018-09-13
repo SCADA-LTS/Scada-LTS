@@ -91,7 +91,8 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
     public void terminate(){
         try {
             connection.close();
-        } catch (IOException e) {
+            channel.close();
+        } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
         super.terminate();
@@ -114,9 +115,18 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
             byte[] body = response.getBody();
             String result = new String(body);
 
-            dp.updatePointValue( new PointValueTime(
-                    new AlphanumericValue(result), System.currentTimeMillis()
-            ));
+            if (dp.getDataTypeId() == DataTypes.ALPHANUMERIC) {
+                dp.updatePointValue( new PointValueTime(
+                        new AlphanumericValue(result), System.currentTimeMillis()
+                ));
+            }
+            else if (dp.getDataTypeId() == DataTypes.NUMERIC) {
+                dp.updatePointValue( new PointValueTime(
+                        new NumericValue(Double.parseDouble(result)), System.currentTimeMillis()
+                ));
+            } else {
+                System.out.println("AMQP DP: New value [other] " + result);
+            }
 
         }
 

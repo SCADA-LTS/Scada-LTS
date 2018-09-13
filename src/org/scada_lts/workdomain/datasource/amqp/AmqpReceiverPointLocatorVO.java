@@ -127,10 +127,12 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         this.dataTypeId = dataTypeId;
     }
 
+
     private static final int version = 1;
     // Serialization //
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
+        out.writeInt(dataTypeId);
         SerializationHelper.writeSafeUTF(out, exchangeType);
         SerializationHelper.writeSafeUTF(out, exchangeName);
         SerializationHelper.writeSafeUTF(out, queueName);
@@ -140,10 +142,11 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
     private void readObject(ObjectInputStream in) throws IOException {
         int ver = in.readInt();
         if(ver == 1) {
-            exchangeType = SerializationHelper.readSafeUTF(in);
-            exchangeName = SerializationHelper.readSafeUTF(in);
-            queueName = SerializationHelper.readSafeUTF(in);
-            routingKey = SerializationHelper.readSafeUTF(in);
+            dataTypeId      = in.readInt();
+            exchangeType    = SerializationHelper.readSafeUTF(in);
+            exchangeName    = SerializationHelper.readSafeUTF(in);
+            queueName       = SerializationHelper.readSafeUTF(in);
+            routingKey      = SerializationHelper.readSafeUTF(in);
         }
     }
     @Override
