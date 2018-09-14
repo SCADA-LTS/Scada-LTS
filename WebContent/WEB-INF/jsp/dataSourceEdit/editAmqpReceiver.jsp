@@ -10,10 +10,26 @@
 
     function exchangeTypeChange() {
         var exType = $get("exchangeType");
-        if (exType === "" ) {
-            hide("exFields");
-        } else {
-            show("exFields");
+        if (exType === "<%= AmqpReceiverPointLocatorVO.ExchangeType.A_NONE %>" ) {
+            hide("exchangeFields");
+            hide("routingFields");
+            show("queueFields");
+        } else if ( exType === "<%= AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT %>" ) {
+            hide("queueFields");
+            show("exchangeFields");
+            show("routingFields");
+        } else if ( exType === "<%= AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC %>" ) {
+            hide("queueFields");
+            show("exchangeFields");
+            show("routingFields");
+        } else if ( exType === "<%= AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT %>" ) {
+            hide("queueFields");
+            show("exchangeFields");
+            hide("routingFields");
+        } else if ( exType === "<%= AmqpReceiverPointLocatorVO.ExchangeType.A_HEADERS %>" ) {
+            show("queueFields");
+            show("exchangeFields");
+            show("routingFields");
         }
     }
 
@@ -124,10 +140,12 @@
         </select>
     </td>
   </tr>
-  <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.queueName"/></td>
-    <td class="formField"><input type="text" id="queueName"/></td>
-  </tr>
+  <tbody id="queueFields" style="display:none;">
+    <tr>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.queueName"/></td>
+      <td class="formField"><input type="text" id="queueName"/></td>
+    </tr>
+  </tbody>
   <tr>
     <td class="formLabelRequired">Queue Durability</td>
     <td class="formField">
@@ -137,11 +155,13 @@
         </select>
     </td>
   </tr>
-  <tbody id="exFields" style="display:none;">
+  <tbody id="exchangeFields" style="display:none;">
     <tr>
       <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.exchangeName"/></td>
       <td class="formField"><input type="text" id="exchangeName"/></td>
     </tr>
+  </tbody>
+  <tbody id="routingFields" style="display:none;">
     <tr>
       <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.routingKey"/></td>
       <td class="formField"><input type="text" id="routingKey"/></td>

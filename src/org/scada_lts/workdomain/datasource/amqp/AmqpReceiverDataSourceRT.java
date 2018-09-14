@@ -1,9 +1,6 @@
 package org.scada_lts.workdomain.datasource.amqp;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.GetResponse;
+import com.rabbitmq.client.*;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -15,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -24,13 +22,14 @@ import java.util.concurrent.TimeoutException;
  * @version 1.0
  * @since 2018-09-11
  */
-public class AmqpReceiverDataSourceRT extends PollingDataSource{
+public class AmqpReceiverDataSourceRT extends PollingDataSource {
 
     private final Log log = LogFactory.getLog(AmqpReceiverDataSourceRT.class);
 
     private final AmqpReceiverDataSourceVO vo;
-    private Connection  connection;
-    private Channel     channel;
+    private Connection connection;
+    private Channel channel;
+    private boolean running = false;
 
     public AmqpReceiverDataSourceRT(AmqpReceiverDataSourceVO vo) {
         super(vo);
@@ -53,7 +52,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
         rabbitFactory.setHost(vo.getServerIpAddress());
         rabbitFactory.setPort(Integer.parseInt(vo.getServerPortNumber()));
 
-        if(!vo.getServerUsername().isEmpty()){
+        if (!vo.getServerUsername().isEmpty()) {
             rabbitFactory.setUsername(vo.getServerUsername());
         }
 
@@ -61,7 +60,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
             rabbitFactory.setPassword(vo.getServerPassword());
         }
 
-        if ( !vo.getServerVirtualHost().isEmpty() ) {
+        if (!vo.getServerVirtualHost().isEmpty()) {
             rabbitFactory.setVirtualHost(vo.getServerVirtualHost());
         }
 
@@ -83,21 +82,29 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
 
     @Override
     protected void doPoll(long time) {
-        for(DataPointRT dp : dataPoints) {
-            try {
-                initDataPoint(dp,channel);
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        //If not running initialize DataPoints
+        if (!running) {
+            for (DataPointRT dp : dataPoints) {
+                System.out.println("Initialization: " + dp.getVO().getXid());
+                try {
+                    initDataPoint(dp, channel);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            running = true;
         }
+
     }
 
     // Disable DataSource //
     @Override
-    public void terminate(){
+    public void terminate() {
         try {
             channel.close();
             connection.close();
+            running = false;
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
@@ -113,68 +120,80 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
      * Any connection error breaks the connection between ScadaLTS
      * and RabbitMQ server
      *
-     * @param dp - single AMQP DataPoint
+     * @param dp      - single AMQP DataPoint
      * @param channel - RabbitMQ channel (with prepared connection)
      * @throws IOException - Errors
      */
     private void initDataPoint(DataPointRT dp, Channel channel) throws IOException {
 
         AmqpReceiverPointLocatorRT locator = dp.getPointLocator();
+
         String exchangeType = locator.getVO().getExchangeType();
         String exchangeName = locator.getVO().getExchangeName();
-        String queueName    = locator.getVO().getQueueName();
+        String queueName = locator.getVO().getQueueName();
         String routingKey = locator.getVO().getRoutingKey();
         boolean durable = locator.getVO().getQueueDurability().equalsIgnoreCase("1");
 
         if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT)) {
             channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT, durable);
-//            queueName = channel.queueDeclare().getQueue();
-//            System.out.println("FANOUT QUEUE: " + queueName);
+            queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, exchangeName, "");
 
-            basicGetMessage(channel, queueName, dp);
+            Consumer consumer = new ScadaConsumer(channel, dp);
+            channel.basicConsume(queueName, true, consumer);
 
         } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT)) {
+
             channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT, durable);
-//            queueName = channel.queueDeclare().getQueue();
+            queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, exchangeName, routingKey);
 
-            basicGetMessage(channel, queueName, dp);
+            Consumer consumer = new ScadaConsumer(channel, dp);
+            channel.basicConsume(queueName, true, consumer);
 
-        } else if ( exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
+        } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
             channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
 //            queueName = channel.queueDeclare().getQueue();
 
             channel.queueBind(queueName, exchangeName, routingKey);
 
-            basicGetMessage(channel, queueName, dp);
-        } else if ( exchangeType.isEmpty() ) {
-            channel.queueDeclare(queueName, durable, false, false, null);
 
-            basicGetMessage(channel, queueName, dp);
+        } else if (exchangeType.isEmpty()) {
+
+            channel.queueDeclare(queueName, durable, false, false, null);
+            Consumer consumer = new ScadaConsumer(channel,dp);
+            channel.basicConsume(queueName,true,consumer);
+
         }
 
     }
 
-    private void basicGetMessage(Channel channel, String queueName, DataPointRT dp) throws IOException {
-        GetResponse response = channel.basicGet(queueName, true);
-        if (response != null) {
-            byte[] body = response.getBody();
-            String result = new String(body);
+    private class ScadaConsumer extends DefaultConsumer {
 
-            if (dp.getDataTypeId() == DataTypes.ALPHANUMERIC) {
-                dp.updatePointValue( new PointValueTime(
-                        new AlphanumericValue(result), System.currentTimeMillis()
-                ));
-            } else if (dp.getDataTypeId() == DataTypes.NUMERIC) {
-                dp.updatePointValue( new PointValueTime(
-                        new NumericValue(Double.parseDouble(result)), System.currentTimeMillis()
-                ));
-            } else {
-                System.out.println("AMQP DP: New value [other] " + result);
-            }
+        DataPointRT dataPoint;
+
+        ScadaConsumer(Channel channel, DataPointRT dataPoint) {
+            super(channel);
+            this.dataPoint = dataPoint;
         }
 
+        @Override
+        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+            super.handleDelivery(consumerTag, envelope, properties, body);
+
+            String message = new String(body, StandardCharsets.UTF_8);
+
+            if (dataPoint.getDataTypeId() == DataTypes.ALPHANUMERIC) {
+                dataPoint.updatePointValue(new PointValueTime(
+                        new AlphanumericValue(message), System.currentTimeMillis()
+                ));
+            } else if (dataPoint.getDataTypeId() == DataTypes.NUMERIC) {
+                dataPoint.updatePointValue(new PointValueTime(
+                        new NumericValue(Double.parseDouble(message)), System.currentTimeMillis()
+                ));
+            }
+
+        }
     }
 
 }
