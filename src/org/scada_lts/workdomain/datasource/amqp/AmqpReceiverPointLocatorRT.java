@@ -22,11 +22,6 @@ public class AmqpReceiverPointLocatorRT extends PointLocatorRT {
         this.queue = new AMQP.Queue();
     }
 
-    public MangoValue variableToValue(String variable) {
-//        vo.get
-        return new AlphanumericValue(variable.toString());
-    }
-
     public AmqpReceiverPointLocatorVO getVO() {return vo;}
 
     @Override

@@ -1,6 +1,5 @@
 package org.scada_lts.workdomain.datasource.amqp;
 
-import br.org.scadabr.api.constants.DataType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -46,6 +45,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
 
     }
 
+    // Enable DataSource //
     @Override
     public void initialize() {
 
@@ -53,17 +53,22 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
         rabbitFactory.setHost(vo.getServerIpAddress());
         rabbitFactory.setPort(Integer.parseInt(vo.getServerPortNumber()));
 
-        if(!vo.getServerUsername().isEmpty() || !vo.getServerPassword().isEmpty()){
+        if(!vo.getServerUsername().isEmpty()){
             rabbitFactory.setUsername(vo.getServerUsername());
+        }
+
+        if (!vo.getServerPassword().isEmpty()) {
             rabbitFactory.setPassword(vo.getServerPassword());
+        }
+
+        if ( !vo.getServerVirtualHost().isEmpty() ) {
+            rabbitFactory.setVirtualHost(vo.getServerVirtualHost());
         }
 
         try {
             connection = rabbitFactory.newConnection();
-        } catch (IOException e) {
-
-        } catch (TimeoutException e) {
-
+        } catch (IOException | TimeoutException e) {
+            e.printStackTrace();
         }
 
         try {
@@ -87,11 +92,12 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
         }
     }
 
+    // Disable DataSource //
     @Override
     public void terminate(){
         try {
-            connection.close();
             channel.close();
+            connection.close();
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
@@ -109,7 +115,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
      *
      * @param dp - single AMQP DataPoint
      * @param channel - RabbitMQ channel (with prepared connection)
-     * @throws IOException
+     * @throws IOException - Errors
      */
     private void initDataPoint(DataPointRT dp, Channel channel) throws IOException {
 
@@ -118,7 +124,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
         String exchangeName = locator.getVO().getExchangeName();
         String queueName    = locator.getVO().getQueueName();
         String routingKey = locator.getVO().getRoutingKey();
-        Boolean durable = locator.getVO().getQueueDurability().equalsIgnoreCase("1");
+        boolean durable = locator.getVO().getQueueDurability().equalsIgnoreCase("1");
 
         if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT)) {
             channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT, durable);
@@ -126,14 +132,14 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
 //            System.out.println("FANOUT QUEUE: " + queueName);
             channel.queueBind(queueName, exchangeName, "");
 
-            basicGetMessage(channel, queueName, true, dp);
+            basicGetMessage(channel, queueName, dp);
 
         } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT)) {
             channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT, durable);
 //            queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, exchangeName, routingKey);
 
-            basicGetMessage(channel, queueName, true, dp);
+            basicGetMessage(channel, queueName, dp);
 
         } else if ( exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
             channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
@@ -141,17 +147,17 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource{
 
             channel.queueBind(queueName, exchangeName, routingKey);
 
-            basicGetMessage(channel, queueName, true, dp);
+            basicGetMessage(channel, queueName, dp);
         } else if ( exchangeType.isEmpty() ) {
-            channel.queueDeclare(queueName, false, durable, false, null);
+            channel.queueDeclare(queueName, durable, false, false, null);
 
-            basicGetMessage(channel, queueName, true, dp);
+            basicGetMessage(channel, queueName, dp);
         }
 
     }
 
-    private void basicGetMessage(Channel channel, String queueName, boolean autoAck, DataPointRT dp) throws IOException {
-        GetResponse response = channel.basicGet(queueName, autoAck);
+    private void basicGetMessage(Channel channel, String queueName, DataPointRT dp) throws IOException {
+        GetResponse response = channel.basicGet(queueName, true);
         if (response != null) {
             byte[] body = response.getBody();
             String result = new String(body);

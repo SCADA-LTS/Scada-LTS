@@ -37,9 +37,8 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
     private String serverIpAddress = new String("localhost");
     @JsonRemoteProperty
     private String serverPortNumber = new String("5672");
-    //TODO: Create RabbitMQ virtual host parameter
-    //@JsonRemoteProperty
-    //private String serverVirtualHost = new String("/");
+    @JsonRemoteProperty
+    private String serverVirtualHost = new String("");
     @JsonRemoteProperty
     private String serverUsername = new String("");
     @JsonRemoteProperty
@@ -91,8 +90,11 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
     @Override
     public void validate(DwrResponseI18n response) {
         super.validate(response);
-        if (StringUtils.isEmpty(serverIpAddress) || StringUtils.isEmpty(serverPortNumber))
+        if (StringUtils.isEmpty(serverIpAddress))
             response.addContextualMessage("serverIpAddress","validate.invalidValue");
+        if (StringUtils.isEmpty(serverPortNumber)) {
+            response.addContextualMessage("serverPortNumber","validate.invalidValue");
+        }
     }
 
     private static final int version = 1;
@@ -103,6 +105,7 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
         out.writeInt(updatePeriods);
         SerializationHelper.writeSafeUTF(out, serverIpAddress);
         SerializationHelper.writeSafeUTF(out, serverPortNumber);
+        SerializationHelper.writeSafeUTF(out, serverVirtualHost);
         SerializationHelper.writeSafeUTF(out, serverUsername);
         SerializationHelper.writeSafeUTF(out, serverPassword);
 
@@ -115,6 +118,7 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
             updatePeriods       = in.readInt();
             serverIpAddress     = SerializationHelper.readSafeUTF(in);
             serverPortNumber    = SerializationHelper.readSafeUTF(in);
+            serverVirtualHost   = SerializationHelper.readSafeUTF(in);
             serverUsername      = SerializationHelper.readSafeUTF(in);
             serverPassword      = SerializationHelper.readSafeUTF(in);
 
@@ -165,6 +169,14 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
 
     public void setServerPortNumber(String serverPortNumber) {
         this.serverPortNumber = serverPortNumber;
+    }
+
+    public String getServerVirtualHost() {
+        return serverVirtualHost;
+    }
+
+    public void setServerVirtualHost(String serverVirtualHost) {
+        this.serverVirtualHost = serverVirtualHost;
     }
 
     public String getServerUsername() {

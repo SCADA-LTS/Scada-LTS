@@ -25,7 +25,7 @@
 
   function saveDataSourceImpl() {
         DataSourceEditDwr.saveAmqpReceiverDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
-                      $get("updatePeriodType"),$get("serverIpAddress"), $get("serverPortNumber"),$get("serverUsername"), $get("serverPassword"), saveDataSourceCB);
+                      $get("updatePeriodType"),$get("serverIpAddress"), $get("serverPortNumber"),$get("serverUsername"), $get("serverPassword"), $get("serverVirtualHost"), saveDataSourceCB);
     }
 
   function editPointCBImpl(locator) {
@@ -54,8 +54,8 @@
     }
 
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions)  {
-      pointListColumnHeaders[pointListColumnHeaders.length] = function(td) { td.id = "fieldNameTitle"; };
-      pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.fieldName; };
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.amqpReceiver.queueName"/>";
+      pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.queueName; };
   }
 </script>
 
@@ -90,7 +90,10 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.password"/></td>
     <td class="formField"><input type="text" id="serverPassword" value="${dataSource.serverPassword}"/></td>
   </tr>
-
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.virtualhost"/></td>
+    <td class="formField"><input type="text" id="serverVirtualHost" value="${dataSource.serverVirtualHost}"/></td>
+  </tr>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsEventsFoot.jspf" %>
 
 <tag:pointList pointHelpId="amqpReceiverPP">
@@ -110,7 +113,7 @@
   </tr>
 
   <tr>
-    <td class="formLabelRequired">Exchange Type</td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.exchangeType"/></td>
     <td class="formField">
         <select id="exchangeType" onchange="exchangeTypeChange()">
             <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.ExchangeType.A_NONE %>"/>">Empty</option>
@@ -122,7 +125,7 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired">Queue Name</td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.queueName"/></td>
     <td class="formField"><input type="text" id="queueName"/></td>
   </tr>
   <tr>
@@ -136,11 +139,11 @@
   </tr>
   <tbody id="exFields" style="display:none;">
     <tr>
-      <td class="formLabelRequired">Exchange Name</td>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.exchangeName"/></td>
       <td class="formField"><input type="text" id="exchangeName"/></td>
     </tr>
     <tr>
-      <td class="formLabelRequired">Routing Key</td>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.routingKey"/></td>
       <td class="formField"><input type="text" id="routingKey"/></td>
     </tr>
   </tbody>
