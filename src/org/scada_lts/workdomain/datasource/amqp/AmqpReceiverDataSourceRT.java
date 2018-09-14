@@ -116,7 +116,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
      * Initialize AMQP Data Point
      * Before initializing make sure you have got created exchange type,
      * exchange name, queue name and bindings between them.
-     *
+     * <p>
      * Any connection error breaks the connection between ScadaLTS
      * and RabbitMQ server
      *
@@ -153,16 +153,18 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
 
         } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
             channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
-//            queueName = channel.queueDeclare().getQueue();
-
+            queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, exchangeName, routingKey);
+
+            Consumer consumer = new ScadaConsumer(channel, dp);
+            channel.basicConsume(queueName, true, consumer);
 
 
         } else if (exchangeType.isEmpty()) {
 
             channel.queueDeclare(queueName, durable, false, false, null);
-            Consumer consumer = new ScadaConsumer(channel,dp);
-            channel.basicConsume(queueName,true,consumer);
+            Consumer consumer = new ScadaConsumer(channel, dp);
+            channel.basicConsume(queueName, true, consumer);
 
         }
 
