@@ -57,6 +57,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
     @Override
     public void initialize() {
 
+        log.debug("AMQP Datasource initializing started");
         ConnectionFactory rabbitFactory = new ConnectionFactory();
         rabbitFactory.setHost(vo.getServerIpAddress());
         rabbitFactory.setPort(Integer.parseInt(vo.getServerPortNumber()));
@@ -143,7 +144,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
      * Initialize AMQP Data Point
      * Before initializing make sure you have got created exchange type,
      * exchange name, queue name and bindings between them.
-     * <p>
+     *
      * Any connection error breaks the connection between ScadaLTS
      * and RabbitMQ server
      *
@@ -230,7 +231,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
     }
 
     /**
-     * Recconection Class
+     * Reconnection Class
      * Tries to restore connection with RabbitMQ broker server
      */
     private class Reconnection extends Thread {
