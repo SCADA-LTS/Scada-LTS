@@ -133,6 +133,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
         String queueName = locator.getVO().getQueueName();
         String routingKey = locator.getVO().getRoutingKey();
         boolean durable = locator.getVO().getQueueDurability().equalsIgnoreCase("1");
+        boolean noAck   = locator.getVO().getMessageAck().equalsIgnoreCase("1");
 
         if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT)) {
             channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT, durable);
@@ -140,7 +141,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
             channel.queueBind(queueName, exchangeName, "");
 
             Consumer consumer = new ScadaConsumer(channel, dp);
-            channel.basicConsume(queueName, true, consumer);
+            channel.basicConsume(queueName, noAck, consumer);
 
         } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT)) {
 
@@ -149,7 +150,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
             channel.queueBind(queueName, exchangeName, routingKey);
 
             Consumer consumer = new ScadaConsumer(channel, dp);
-            channel.basicConsume(queueName, true, consumer);
+            channel.basicConsume(queueName, noAck, consumer);
 
         } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
             channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
@@ -157,14 +158,14 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
             channel.queueBind(queueName, exchangeName, routingKey);
 
             Consumer consumer = new ScadaConsumer(channel, dp);
-            channel.basicConsume(queueName, true, consumer);
+            channel.basicConsume(queueName, noAck, consumer);
 
 
         } else if (exchangeType.isEmpty()) {
 
             channel.queueDeclare(queueName, durable, false, false, null);
             Consumer consumer = new ScadaConsumer(channel, dp);
-            channel.basicConsume(queueName, true, consumer);
+            channel.basicConsume(queueName, noAck, consumer);
 
         }
 

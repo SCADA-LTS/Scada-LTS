@@ -28,13 +28,17 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         String A_NONE     = "";
         String A_DIRECT   = "direct";
         String A_TOPIC    = "topic";
-        String A_HEADERS  = "headers";
         String A_FANOUT   = "fanout";
     }
 
     public interface DurabilityType {
         String DURABLE    = "1";
         String TRANSIENT   = "0";
+    }
+
+    public interface MessageAckType {
+        String ACK      = "0";
+        String NO_ACK   = "1";
     }
 
     @JsonRemoteProperty
@@ -47,6 +51,8 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
     private String  routingKey = new String("");
     @JsonRemoteProperty
     private String queueDurability = new String("");
+    @JsonRemoteProperty
+    private String messageAck = new String("1");
 
     private int     dataTypeId;
 
@@ -84,6 +90,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueName", queueName);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueDurability", queueDurability);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.routingKey", routingKey);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.messageAck", messageAck);
     }
 
     @Override
@@ -94,6 +101,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueName", from.queueName, queueName);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueDurability", from.queueDurability, queueDurability);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.routingKey", from.routingKey, routingKey);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.messageAck", from.messageAck, routingKey);
     }
 
     // Getters and Setters //
@@ -141,6 +149,13 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         this.dataTypeId = dataTypeId;
     }
 
+    public String getMessageAck() {
+        return messageAck;
+    }
+
+    public void setMessageAck(String messageAck) {
+        this.messageAck = messageAck;
+    }
 
     private static final int version = 1;
     // Serialization //
@@ -152,6 +167,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
         SerializationHelper.writeSafeUTF(out, queueName);
         SerializationHelper.writeSafeUTF(out, queueDurability);
         SerializationHelper.writeSafeUTF(out, routingKey);
+        SerializationHelper.writeSafeUTF(out, messageAck);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -163,6 +179,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
             queueName       = SerializationHelper.readSafeUTF(in);
             queueDurability = SerializationHelper.readSafeUTF(in);
             routingKey      = SerializationHelper.readSafeUTF(in);
+            messageAck      = SerializationHelper.readSafeUTF(in);
         }
     }
     @Override
