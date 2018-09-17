@@ -37,7 +37,7 @@
 
   function saveDataSourceImpl() {
         DataSourceEditDwr.saveAmqpReceiverDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
-                      $get("updatePeriodType"),$get("serverIpAddress"), $get("serverPortNumber"),$get("serverUsername"), $get("serverPassword"), $get("serverVirtualHost"), saveDataSourceCB);
+                      $get("updatePeriodType"),$get("updateAttempts"),$get("serverIpAddress"), $get("serverPortNumber"),$get("serverUsername"), $get("serverPassword"), $get("serverVirtualHost"), saveDataSourceCB);
     }
 
   function editPointCBImpl(locator) {
@@ -68,7 +68,7 @@
     }
 
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions)  {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.amqpReceiver.queueName"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.amqpReceiver.exchangeType"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.exchangeType; };
   }
 </script>
@@ -82,11 +82,14 @@
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
-        <tag:timePeriodOptions sst="true" ms="true" s="true" min="true" h="true"/>
+        <tag:timePeriodOptions sst="false" ms="false" s="true" min="true" h="true"/>
       </sst:select>
     </td>
   </tr>
-
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.updateAttempts"/></td>
+    <td class="formField"><input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
+  </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.address"/></td>
     <td class="formField"><input type="text" id="serverIpAddress" value="${dataSource.serverIpAddress}"/></td>
@@ -164,7 +167,7 @@
     </tr>
   </tbody>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.dsEdit.amqpReceiver.messageAck"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqpReceiver.messageAck"/></td>
     <td class="formField">
         <select id="messageAck">
             <option value="<c:out value="<%= AmqpReceiverPointLocatorVO.MessageAckType.NO_ACK %>"/>">No ACK</option>

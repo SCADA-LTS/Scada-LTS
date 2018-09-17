@@ -20,6 +20,7 @@ import java.util.Map;
 
 /**
  * AMQP Receiver DataSource Virtual Object
+ * RabbitMQ AMQP version = 0.9.1 (default)
  *
  * @author Radek Jajko
  * @version 1.0
@@ -33,6 +34,8 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
     private int updatePeriodType = Common.TimePeriods.MINUTES;
     @JsonRemoteProperty
     private int updatePeriods = 5;
+    @JsonRemoteProperty
+    private int updateAttempts = 5;
     @JsonRemoteProperty
     private String serverIpAddress = new String("localhost");
     @JsonRemoteProperty
@@ -103,6 +106,7 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
         out.writeInt(version);
         out.writeInt(updatePeriodType);
         out.writeInt(updatePeriods);
+        out.writeInt(updateAttempts);
         SerializationHelper.writeSafeUTF(out, serverIpAddress);
         SerializationHelper.writeSafeUTF(out, serverPortNumber);
         SerializationHelper.writeSafeUTF(out, serverVirtualHost);
@@ -116,6 +120,7 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
         if (ver == 1) {
             updatePeriodType    = in.readInt();
             updatePeriods       = in.readInt();
+            updateAttempts      = in.readInt();
             serverIpAddress     = SerializationHelper.readSafeUTF(in);
             serverPortNumber    = SerializationHelper.readSafeUTF(in);
             serverVirtualHost   = SerializationHelper.readSafeUTF(in);
@@ -153,6 +158,14 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
 
     public void setUpdatePeriods(int updatePeriods) {
         this.updatePeriods = updatePeriods;
+    }
+
+    public int getUpdateAttempts() {
+        return updateAttempts;
+    }
+
+    public void setUpdateAttempts(int updateAttempts) {
+        this.updateAttempts = updateAttempts;
     }
 
     public String getServerIpAddress() {

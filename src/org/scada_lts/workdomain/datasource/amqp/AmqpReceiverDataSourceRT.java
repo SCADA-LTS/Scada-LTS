@@ -1,6 +1,7 @@
 package org.scada_lts.workdomain.datasource.amqp;
 
 import com.rabbitmq.client.*;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -8,6 +9,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -17,19 +19,26 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Real Time Behaviour of AMQP Receiver DataSource
+ * Receive messages from RabbitMQ Queue by AMQP protocol datapoints.
+ * AMQP Receiver extends PollingDataSource to check the connection to RabbitMQ server
+ * with interval set in update period time. While polling it checks the amqpBindEstablished
+ * flag to not duplicate connections within data points and Rabbit server.
+ * RabbitMQ AMQP version = 0.9.1 (default)
  *
  * @author Radek Jajko
  * @version 1.0
  * @since 2018-09-11
  */
 public class AmqpReceiverDataSourceRT extends PollingDataSource {
+    public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
+    private static final int DATA_POINT_EXCEPTION_EVENT = 2;
 
     private final Log log = LogFactory.getLog(AmqpReceiverDataSourceRT.class);
 
     private final AmqpReceiverDataSourceVO vo;
     private Connection connection;
     private Channel channel;
-    private boolean running = false;
+    private boolean amqpBindEstablished = false;
 
     public AmqpReceiverDataSourceRT(AmqpReceiverDataSourceVO vo) {
         super(vo);
@@ -64,17 +73,7 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
             rabbitFactory.setVirtualHost(vo.getServerVirtualHost());
         }
 
-        try {
-            connection = rabbitFactory.newConnection();
-        } catch (IOException | TimeoutException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            channel = connection.createChannel();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        initializeChannel(rabbitFactory);
 
         super.initialize();
 
@@ -83,18 +82,25 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
     @Override
     protected void doPoll(long time) {
 
-        //If not running initialize DataPoints
-        if (!running) {
-            for (DataPointRT dp : dataPoints) {
-                System.out.println("Initialization: " + dp.getVO().getXid());
-                try {
-                    initDataPoint(dp, channel);
-                } catch (IOException e) {
-                    e.printStackTrace();
+        //If not amqpBindEstablished initialize DataPoints
+        if (channel != null) {
+            if (channel.isOpen() && !amqpBindEstablished) {
+
+                for (DataPointRT dp : dataPoints) {
+                    try {
+                        initDataPoint(dp, channel);
+                        returnToNormal(DATA_POINT_EXCEPTION_EVENT, System.currentTimeMillis());
+                    } catch (IOException e) {
+                        raiseEvent(DATA_POINT_EXCEPTION_EVENT, System.currentTimeMillis(), false,
+                                new LocalizableMessage("event.amqpReceiver.bindError", dp.getVO().getXid()));
+                    }
                 }
+                amqpBindEstablished = true;
+
             }
-            running = true;
+
         }
+
 
     }
 
@@ -104,11 +110,32 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
         try {
             channel.close();
             connection.close();
-            running = false;
-        } catch (IOException | TimeoutException e) {
-            e.printStackTrace();
+            amqpBindEstablished = false;
+        } catch (IOException | TimeoutException | AlreadyClosedException e) {
+            this.vo.setEnabled(false);
+            amqpBindEstablished = false;
+            raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+                    new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage()));
+
         }
         super.terminate();
+
+    }
+
+    /**
+     * Initialize Connection and Channel
+     *
+     * @param connectionFactory - RabbitMQ connector with prepared connection values
+     */
+    private void initializeChannel(ConnectionFactory connectionFactory) {
+
+        try {
+            connection = connectionFactory.newConnection();
+            channel = connection.createChannel();
+        } catch (IOException | TimeoutException e) {
+            Reconnection reconnect = new Reconnection(connectionFactory, this);
+            reconnect.start();
+        }
 
     }
 
@@ -133,39 +160,42 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
         String queueName = locator.getVO().getQueueName();
         String routingKey = locator.getVO().getRoutingKey();
         boolean durable = locator.getVO().getQueueDurability().equalsIgnoreCase("1");
-        boolean noAck   = locator.getVO().getMessageAck().equalsIgnoreCase("1");
+        boolean noAck = locator.getVO().getMessageAck().equalsIgnoreCase("1");
 
-        if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT)) {
-            channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT, durable);
-            queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, exchangeName, "");
+        if (channel != null) {
+            if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT)) {
+                channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT, durable);
+                queueName = channel.queueDeclare().getQueue();
+                channel.queueBind(queueName, exchangeName, "");
 
-            Consumer consumer = new ScadaConsumer(channel, dp);
-            channel.basicConsume(queueName, noAck, consumer);
+                Consumer consumer = new ScadaConsumer(channel, dp);
+                channel.basicConsume(queueName, noAck, consumer);
 
-        } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT)) {
+            } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT)) {
 
-            channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT, durable);
-            queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, exchangeName, routingKey);
+                channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT, durable);
+                queueName = channel.queueDeclare().getQueue();
+                channel.queueBind(queueName, exchangeName, routingKey);
 
-            Consumer consumer = new ScadaConsumer(channel, dp);
-            channel.basicConsume(queueName, noAck, consumer);
+                Consumer consumer = new ScadaConsumer(channel, dp);
+                channel.basicConsume(queueName, noAck, consumer);
 
-        } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
-            channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
-            queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, exchangeName, routingKey);
+            } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
+                channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
+                queueName = channel.queueDeclare().getQueue();
+                channel.queueBind(queueName, exchangeName, routingKey);
 
-            Consumer consumer = new ScadaConsumer(channel, dp);
-            channel.basicConsume(queueName, noAck, consumer);
+                Consumer consumer = new ScadaConsumer(channel, dp);
+                channel.basicConsume(queueName, noAck, consumer);
 
 
-        } else if (exchangeType.isEmpty()) {
+            } else if (exchangeType.isEmpty()) {
 
-            channel.queueDeclare(queueName, durable, false, false, null);
-            Consumer consumer = new ScadaConsumer(channel, dp);
-            channel.basicConsume(queueName, noAck, consumer);
+                channel.queueDeclare(queueName, durable, false, false, null);
+                Consumer consumer = new ScadaConsumer(channel, dp);
+                channel.basicConsume(queueName, noAck, consumer);
+
+            }
 
         }
 
@@ -199,4 +229,56 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
         }
     }
 
+    /**
+     * Recconection Class
+     * Tries to restore connection with RabbitMQ broker server
+     */
+    private class Reconnection extends Thread {
+
+        ConnectionFactory connectionFactory;
+        AmqpReceiverDataSourceRT dataSourceRT;
+        int multiplier;
+
+        Reconnection(ConnectionFactory connectionFactory, AmqpReceiverDataSourceRT dataSourceRT) {
+            this.connectionFactory = connectionFactory;
+            this.dataSourceRT = dataSourceRT;
+            this.setName("AMQP Reconnection");
+        }
+
+        @Override
+        public void run() {
+            switch (dataSourceRT.vo.getUpdatePeriodType()) {
+                case Common.TimePeriods.SECONDS: {
+                    multiplier = 1000;
+                    break;
+                }
+                case Common.TimePeriods.MINUTES: {
+                    multiplier = 1000 * 60;
+                    break;
+                }
+                case Common.TimePeriods.HOURS: {
+                    multiplier = 1000 * 3600;
+                    break;
+                }
+            }
+            for (int i = 1; i <= dataSourceRT.vo.getUpdateAttempts(); i++) {
+                try {
+                    sleep(dataSourceRT.vo.getUpdatePeriods() * multiplier);
+//                    System.out.println(this.getName() + " :: Retry no." + i);
+                    log.debug(this.getName() + " :: Retry no." + i);
+                    connection = connectionFactory.newConnection();
+                    if (connection.isOpen()) {
+                        channel = connection.createChannel();
+                        if (channel.isOpen()) {
+                            dataSourceRT.doPoll(System.currentTimeMillis());
+                            terminate();
+                            break;
+                        }
+                    }
+                } catch (IOException | TimeoutException | InterruptedException exception) {
+                    log.debug("AMQP_RECEIVER: Reconnect attempt failed");
+                }
+            }
+        }
+    }
 }
