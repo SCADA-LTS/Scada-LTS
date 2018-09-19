@@ -61,7 +61,7 @@
     locator.queueName = $get("queueName");
     locator.queueDurability = $get("queueDurability");
     locator.routingKey = $get("routingKey");
-    locator.routingKey = $get("messageAck");
+    locator.messageAck = $get("messageAck");
 
     DataSourceEditDwr.saveAmqpReceiverPointLocator(
     currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);

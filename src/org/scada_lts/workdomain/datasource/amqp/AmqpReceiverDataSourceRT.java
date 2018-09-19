@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class AmqpReceiverDataSourceRT extends PollingDataSource {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
-    private static final int DATA_POINT_EXCEPTION_EVENT = 2;
+    public static final int DATA_POINT_EXCEPTION_EVENT = 2;
 
     private final Log log = LogFactory.getLog(AmqpReceiverDataSourceRT.class);
 
@@ -249,18 +249,15 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
         @Override
         public void run() {
             switch (dataSourceRT.vo.getUpdatePeriodType()) {
-                case Common.TimePeriods.SECONDS: {
+                case Common.TimePeriods.SECONDS:
                     multiplier = 1000;
                     break;
-                }
-                case Common.TimePeriods.MINUTES: {
+                case Common.TimePeriods.MINUTES:
                     multiplier = 1000 * 60;
                     break;
-                }
-                case Common.TimePeriods.HOURS: {
+                case Common.TimePeriods.HOURS:
                     multiplier = 1000 * 3600;
                     break;
-                }
             }
             for (int i = 1; i <= dataSourceRT.vo.getUpdateAttempts(); i++) {
                 try {

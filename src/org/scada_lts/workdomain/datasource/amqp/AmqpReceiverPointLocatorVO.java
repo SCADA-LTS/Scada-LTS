@@ -88,6 +88,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
             }
         }
         if (exchangeType.equalsIgnoreCase(ExchangeType.A_DIRECT) || exchangeType.equalsIgnoreCase(ExchangeType.A_TOPIC)){
+            queueName = "";
             if (StringUtils.isEmpty(exchangeName)) {
                 response.addContextualMessage("exchangeName", "validate.invalidValue");
             }

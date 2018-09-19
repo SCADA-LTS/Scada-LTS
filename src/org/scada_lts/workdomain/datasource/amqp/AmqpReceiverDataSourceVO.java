@@ -3,6 +3,7 @@ package org.scada_lts.workdomain.datasource.amqp;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
@@ -15,6 +16,8 @@ import org.scada_lts.serorepl.utils.StringUtils;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -49,17 +52,30 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
 
     @Override
     protected void addEventTypes(List<EventTypeVO> eventTypes) {
+        eventTypes.add(createEventType(AmqpReceiverDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.dataSource") ));
+        eventTypes.add(createEventType(AmqpReceiverDataSourceRT.DATA_POINT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.amqpReceiver") ));
 
     }
 
     @Override
     protected void addPropertiesImpl(List<LocalizableMessage> list) {
+        AuditEventType.addPeriodMessage(list, "dsEdit.updatePeriod", updatePeriodType, updatePeriods);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverIpAddress" , serverIpAddress);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverPortNumber" , serverPortNumber);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverVirtualHost" , serverVirtualHost);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverUsername" , serverUsername);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverPassword" , serverPassword);
 
     }
 
     @Override
     protected void addPropertyChangesImpl(List<LocalizableMessage> list, AmqpReceiverDataSourceVO from) {
-
+        AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType, from.updatePeriods ,updatePeriodType, updatePeriods);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverIpAddress",from.serverIpAddress,serverIpAddress);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverPortNumber",from.serverPortNumber,serverPortNumber);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverVirtualHost",from.serverVirtualHost,serverVirtualHost);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverUsername",from.serverUsername,serverUsername);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverPassword",from.serverPassword,serverPassword);
     }
 
     @Override
@@ -79,9 +95,15 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
         return null;
     }
 
+    private static final ExportCodes EVENT_CODES = new ExportCodes();
+    static {
+        EVENT_CODES.addElement(AmqpReceiverDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
+        EVENT_CODES.addElement(AmqpReceiverDataSourceRT.DATA_POINT_EXCEPTION_EVENT, "DATA_POINT_EXCEPTION");
+    }
+
     @Override
     public ExportCodes getEventCodes() {
-        return null;
+        return EVENT_CODES;
     }
 
     @Override
@@ -93,8 +115,14 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
     @Override
     public void validate(DwrResponseI18n response) {
         super.validate(response);
-        if (StringUtils.isEmpty(serverIpAddress))
+        if (StringUtils.isEmpty(serverIpAddress)) {
+            response.addContextualMessage("serverIpAddress","validate.required");
+        }
+        try {
+            InetAddress.getByName(serverIpAddress);
+        } catch (UnknownHostException e) {
             response.addContextualMessage("serverIpAddress","validate.invalidValue");
+        }
         if (StringUtils.isEmpty(serverPortNumber) || Integer.parseInt(serverPortNumber) < 0) {
             response.addContextualMessage("serverPortNumber","validate.invalidValue");
         }
@@ -107,6 +135,7 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
     private static final int version = 1;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
+
         out.writeInt(version);
         out.writeInt(updatePeriodType);
         out.writeInt(updatePeriods);
