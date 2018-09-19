@@ -382,11 +382,11 @@
    </item>
 
   <item id="amqpReceiverPP">
-    <relation id="radiuinoDS"/>
+    <relation id="amqpReceiverPP"/>
   </item>
 
   <item id="amqpReceiverDS">
-    <relation id="radiuinoDS"/>
+    <relation id="amqpReceiverDS"/>
   </item>
   
 </doxManifest>

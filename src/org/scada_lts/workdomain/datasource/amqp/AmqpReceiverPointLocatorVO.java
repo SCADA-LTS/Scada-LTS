@@ -5,6 +5,7 @@ import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
 import com.serotonin.util.SerializationHelper;
+import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -79,7 +80,28 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
 
     @Override
     public void validate(DwrResponseI18n response) {
-//        super.validate(response);
+        if (exchangeType.equalsIgnoreCase(ExchangeType.A_NONE)) {
+            routingKey = "";
+            exchangeName = "";
+            if (StringUtils.isEmpty(queueName)) {
+                response.addContextualMessage("queueName", "validate.invalidValue");
+            }
+        }
+        if (exchangeType.equalsIgnoreCase(ExchangeType.A_DIRECT) || exchangeType.equalsIgnoreCase(ExchangeType.A_TOPIC)){
+            if (StringUtils.isEmpty(exchangeName)) {
+                response.addContextualMessage("exchangeName", "validate.invalidValue");
+            }
+            if (StringUtils.isEmpty(routingKey)) {
+                response.addContextualMessage("routingKey", "validate.invalidValue");
+            }
+        }
+
+        if (exchangeType.equalsIgnoreCase(ExchangeType.A_FANOUT)) {
+            routingKey = "";
+            if (StringUtils.isEmpty(exchangeName)) {
+                response.addContextualMessage("exchangeName", "validate.invalidValue");
+            }
+        }
 
     }
 

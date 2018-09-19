@@ -95,9 +95,13 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
         super.validate(response);
         if (StringUtils.isEmpty(serverIpAddress))
             response.addContextualMessage("serverIpAddress","validate.invalidValue");
-        if (StringUtils.isEmpty(serverPortNumber)) {
+        if (StringUtils.isEmpty(serverPortNumber) || Integer.parseInt(serverPortNumber) < 0) {
             response.addContextualMessage("serverPortNumber","validate.invalidValue");
         }
+        if (updateAttempts < 0 || updateAttempts > 10) {
+            response.addContextualMessage("updateAttempts", "validate.updateAttempts");
+        }
+
     }
 
     private static final int version = 1;
