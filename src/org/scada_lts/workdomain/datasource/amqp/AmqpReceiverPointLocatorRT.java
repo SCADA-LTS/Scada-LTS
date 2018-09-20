@@ -1,7 +1,5 @@
 package org.scada_lts.workdomain.datasource.amqp;
 
-import com.rabbitmq.client.AMQP;
-import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 
@@ -15,11 +13,16 @@ import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 public class AmqpReceiverPointLocatorRT extends PointLocatorRT {
 
     private final AmqpReceiverPointLocatorVO vo;
-    private final AMQP.Queue queue;
+    private String queueName;
+    private String exchangeName;
+    private String routingKey;
+    private MangoValue currentValue;
 
     public AmqpReceiverPointLocatorRT(AmqpReceiverPointLocatorVO vo){
         this.vo = vo;
-        this.queue = new AMQP.Queue();
+        this.queueName = vo.getQueueName();
+        this.exchangeName = vo.getExchangeName();
+        this.routingKey = vo.getRoutingKey();
     }
 
     public AmqpReceiverPointLocatorVO getVO() {return vo;}
@@ -27,5 +30,37 @@ public class AmqpReceiverPointLocatorRT extends PointLocatorRT {
     @Override
     public boolean isSettable() {
         return vo.isSettable();
+    }
+
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
+    }
+
+    public String getQueueName() {
+        return this.queueName;
+    }
+
+    public String getExchangeName() {
+        return exchangeName;
+    }
+
+    public void setExchangeName(String exchangeName) {
+        this.exchangeName = exchangeName;
+    }
+
+    public String getRoutingKey() {
+        return routingKey;
+    }
+
+    public void setRoutingKey(String routingKey) {
+        this.routingKey = routingKey;
+    }
+
+    public void setCurrentValue(MangoValue currentValue) {
+        this.currentValue = currentValue;
+    }
+
+    public MangoValue getCurrentValue() {
+        return this.currentValue;
     }
 }

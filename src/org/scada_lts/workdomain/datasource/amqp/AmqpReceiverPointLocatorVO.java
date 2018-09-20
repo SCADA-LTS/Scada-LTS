@@ -43,6 +43,8 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
     }
 
     @JsonRemoteProperty
+    private boolean settable;
+    @JsonRemoteProperty
     private String exchangeType;
     @JsonRemoteProperty
     private String exchangeName = new String("");
@@ -70,7 +72,11 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
 
     @Override
     public boolean isSettable() {
-        return false;
+        return settable;
+    }
+
+    public void setSettable(boolean settable) {
+        this.settable = settable;
     }
 
     @Override
@@ -108,6 +114,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
 
     @Override
     public void addProperties(List<LocalizableMessage> list) {
+        AuditEventType.addPropertyMessage(list, "dsEdit.settable", settable);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeType", exchangeType);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeName", exchangeName);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueName", queueName);
@@ -119,6 +126,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
     @Override
     public void addPropertyChanges(List<LocalizableMessage> list, Object o) {
         AmqpReceiverPointLocatorVO from = (AmqpReceiverPointLocatorVO) o;
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.settable", from.settable, settable);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeType", from.exchangeType, exchangeType);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeName", from.exchangeName, exchangeName);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueName", from.queueName, queueName);
@@ -184,6 +192,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
     // Serialization //
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
+        out.writeBoolean(settable);
         out.writeInt(dataTypeId);
         SerializationHelper.writeSafeUTF(out, exchangeType);
         SerializationHelper.writeSafeUTF(out, exchangeName);
@@ -196,6 +205,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
     private void readObject(ObjectInputStream in) throws IOException {
         int ver = in.readInt();
         if(ver == 1) {
+            settable        = in.readBoolean();
             dataTypeId      = in.readInt();
             exchangeType    = SerializationHelper.readSafeUTF(in);
             exchangeName    = SerializationHelper.readSafeUTF(in);

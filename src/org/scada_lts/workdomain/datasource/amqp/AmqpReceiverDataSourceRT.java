@@ -49,7 +49,26 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
 
     @Override
     public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source) {
-        AmqpReceiverPointLocatorVO dataPointVO = dataPoint.getVO().getPointLocator();
+
+        AmqpReceiverPointLocatorRT locator = dataPoint.getPointLocator();
+        String message = valueTime.getStringValue();
+        try {
+            switch (locator.getVO().getExchangeType()) {
+                case AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT:
+                case AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC:
+                    channel.basicPublish(locator.getExchangeName(), locator.getRoutingKey(), null, message.getBytes());
+                    break;
+                case AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT:
+                    channel.basicPublish(locator.getExchangeName(), "", null, message.getBytes());
+                    break;
+                default:
+                    channel.basicPublish("", locator.getQueueName(), null, message.getBytes());
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -155,46 +174,43 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
     private void initDataPoint(DataPointRT dp, Channel channel) throws IOException {
 
         AmqpReceiverPointLocatorRT locator = dp.getPointLocator();
-
         String exchangeType = locator.getVO().getExchangeType();
-        String exchangeName = locator.getVO().getExchangeName();
-        String queueName = locator.getVO().getQueueName();
-        String routingKey = locator.getVO().getRoutingKey();
+
         boolean durable = locator.getVO().getQueueDurability().equalsIgnoreCase("1");
         boolean noAck = locator.getVO().getMessageAck().equalsIgnoreCase("1");
 
         if (channel != null) {
             if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT)) {
-                channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT, durable);
-                queueName = channel.queueDeclare().getQueue();
-                channel.queueBind(queueName, exchangeName, "");
+                channel.exchangeDeclare(locator.getExchangeName(), AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT, durable);
+                locator.setQueueName(channel.queueDeclare().getQueue());
+                channel.queueBind(locator.getQueueName(), locator.getExchangeName(), "");
 
                 Consumer consumer = new ScadaConsumer(channel, dp);
-                channel.basicConsume(queueName, noAck, consumer);
+                channel.basicConsume(locator.getQueueName(), noAck, consumer);
 
             } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT)) {
 
-                channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT, durable);
-                queueName = channel.queueDeclare().getQueue();
-                channel.queueBind(queueName, exchangeName, routingKey);
+                channel.exchangeDeclare(locator.getExchangeName(), AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT, durable);
+                locator.setQueueName(channel.queueDeclare().getQueue());
+                channel.queueBind(locator.getQueueName(), locator.getExchangeName(), locator.getRoutingKey());
 
                 Consumer consumer = new ScadaConsumer(channel, dp);
-                channel.basicConsume(queueName, noAck, consumer);
+                channel.basicConsume(locator.getQueueName(), noAck, consumer);
 
             } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
-                channel.exchangeDeclare(exchangeName, AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
-                queueName = channel.queueDeclare().getQueue();
-                channel.queueBind(queueName, exchangeName, routingKey);
+                channel.exchangeDeclare(locator.getExchangeName(), AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
+                locator.setQueueName(channel.queueDeclare().getQueue());
+                channel.queueBind(locator.getQueueName(), locator.getExchangeName(), locator.getRoutingKey());
 
                 Consumer consumer = new ScadaConsumer(channel, dp);
-                channel.basicConsume(queueName, noAck, consumer);
+                channel.basicConsume(locator.getQueueName(), noAck, consumer);
 
 
             } else if (exchangeType.isEmpty()) {
 
-                channel.queueDeclare(queueName, durable, false, false, null);
+                channel.queueDeclare(locator.getQueueName(), durable, false, false, null);
                 Consumer consumer = new ScadaConsumer(channel, dp);
-                channel.basicConsume(queueName, noAck, consumer);
+                channel.basicConsume(locator.getQueueName(), noAck, consumer);
 
             }
 

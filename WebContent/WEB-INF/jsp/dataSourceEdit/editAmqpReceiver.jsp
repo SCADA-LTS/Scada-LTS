@@ -53,8 +53,9 @@
 
   function savePointImpl(locator) {
 
-    delete locator.settable;
+
     delete locator.relinquishable;
+    locator.settable = $get("settable");
     locator.dataTypeId = $get("dataTypeId");
     locator.exchangeType = $get("exchangeType");
     locator.exchangeName = $get("exchangeName");
@@ -116,7 +117,7 @@
 
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
-    <td class="formField"><input type="checkbox" id="settable" disabled /></td>
+    <td class="formField"><input type="checkbox" id="settable"/></td>
   </tr>
 
   <tr>
