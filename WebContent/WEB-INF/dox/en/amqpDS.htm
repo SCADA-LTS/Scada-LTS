@@ -3,7 +3,7 @@ SoftQ - http://www.softq.pl/
 Copyright (C) 2018 Softq
 @author Radek Jajko
 -->
-<p>AMQP v0.9.1 Receiver Data Source is a data source which allows to connect to external RabbitMQ instance via AMQP protocol</p>
+<p>AMQP v0.9.1 Data Source is a data source which allows to connect to external RabbitMQ instance via AMQP protocol</p>
 <p>AMQP (Advanced Message Queuing Protocol) is an Open Standard for messaging between different platforms
 in different languages in middleware.</p>
 <p>Some technical information:
@@ -12,8 +12,9 @@ in different languages in middleware.</p>
     <li><b>Dedicated Broker:</b> RabbitMQ</li>
     </ul>
 </p>
+<h4>After data point change - remember to reconnect the DataSource<br>Click on: Disable and Enable button</h4>
 <h2>Usage:</h2>
-<p>AMQP Receiver Data Source can be useful in a number of ways.<br>For example:
+<p>AMQP Data Source can be useful in a number of ways.<br>For example:
 <ul>
     <li>Receiving data queued in the broker from IoT Devices</li>
     <li>It can receive logs messages from different devices which produce logs to specific topic</li>
@@ -47,4 +48,20 @@ in different languages in middleware.</p>
     <li><b>RabbitMQ user password</b> - username password required to authenticate the user</li>
     <li><b>Virtual Host</b> - Virtual host of the broker instance. In the single machine there could be more than one virtual machines. (default = "/")</li>
 </ul>
+</p>
+<h2>Extras</h2>
+<p>
+    From <a href="https://github.com/SCADA-LTS/Scada-LTS">official repository</a> there are some mini-applications
+    which allow user to test the connectivity between ScadaLTS and other remote systems. There are two python 2.7 scripts
+    (Producer - sendRabbitMQ.py and Consumer - recvRabbitMQ.py) which can be configured to produce data to your ScadaLTS
+    Consumer can also receive data sent from Scada if it is bind to proper exchange with required routing key. To run this
+    scripts there is required "pika" library which can be installed from the Internet. You can do it very simple just open your CommandLine
+    and type 'pip install pika' and wait for the end.
+</p>
+<p>
+    Script files are located in directory: <b>examples/dataSources/amqp</b>
+</p>
+<p>
+    ScadaLTS can also send a messages to related queue. It is as simple as it was for other DataPoint. Just open "watch list" menu
+    select wrench button, type a new message which you want to send, and press link [send]. You can check your message on the other device.
 </p>
