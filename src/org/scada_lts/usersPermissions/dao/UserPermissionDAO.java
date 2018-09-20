@@ -60,6 +60,16 @@ public class UserPermissionDAO {
         return userPermissions;
     }
 
+    public UserPermission getUserPermission(String entityXid) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("getUserPermission()");
+        }
+
+        UserPermission userPermission = new UserPermission();
+        userPermission = (UserPermission) DAO.getInstance().getJdbcTemp().query(USER_PERMISSION_SELECT_WHERE_ENTITY_XID, new Object[]{entityXid}, new UserPermissionRowMapper());
+        return userPermission;
+    }
+
     private class UserPermissionRowMapper implements RowMapper<UserPermission> {
 
         @Override
