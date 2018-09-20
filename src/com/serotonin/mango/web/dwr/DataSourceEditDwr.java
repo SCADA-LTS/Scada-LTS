@@ -88,8 +88,8 @@ import com.serotonin.bacnet4j.type.constructed.Address;
 import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
-import org.scada_lts.workdomain.datasource.amqp.AmqpReceiverDataSourceVO;
-import org.scada_lts.workdomain.datasource.amqp.AmqpReceiverPointLocatorVO;
+import org.scada_lts.workdomain.datasource.amqp.AmqpDataSourceVO;
+import org.scada_lts.workdomain.datasource.amqp.AmqpPointLocatorVO;
 import org.scada_lts.workdomain.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -2757,9 +2757,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 	// AMQP Receiver //
     @MethodFilter
-    public DwrResponseI18n saveAmqpReceiverDataSource(String name, String xid, int updatePeriods, int updatePeriodType, int updateAttempts,
+    public DwrResponseI18n saveAmqpDataSource(String name, String xid, int updatePeriods, int updatePeriodType, int updateAttempts,
                                                       String serverIpAddress, String serverPortNumber, String serverUsername, String serverPassword, String serverVirtualHost) {
-        AmqpReceiverDataSourceVO ds = (AmqpReceiverDataSourceVO) Common.getUser().getEditDataSource();
+        AmqpDataSourceVO ds = (AmqpDataSourceVO) Common.getUser().getEditDataSource();
 
         ds.setXid(xid);
         ds.setName(name);
@@ -2776,7 +2776,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     }
 
     @MethodFilter
-    public DwrResponseI18n saveAmqpReceiverPointLocator(int id, String xid, String name, AmqpReceiverPointLocatorVO locator){
+    public DwrResponseI18n saveAmqpPointLocator(int id, String xid, String name, AmqpPointLocatorVO locator){
 	    return validatePoint(id, xid, name, locator, null);
     }
 

@@ -1,5 +1,6 @@
 package org.scada_lts.workdomain.datasource.amqp;
 
+import br.org.scadabr.api.constants.DataType;
 import com.rabbitmq.client.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -7,6 +8,7 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
+import com.serotonin.mango.rt.dataImage.types.BinaryValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -29,18 +31,18 @@ import java.util.concurrent.TimeoutException;
  * @version 1.0
  * @since 2018-09-11
  */
-public class AmqpReceiverDataSourceRT extends PollingDataSource {
+public class AmqpDataSourceRT extends PollingDataSource {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int DATA_POINT_EXCEPTION_EVENT = 2;
 
-    private final Log log = LogFactory.getLog(AmqpReceiverDataSourceRT.class);
+    private final Log log = LogFactory.getLog(AmqpDataSourceRT.class);
 
-    private final AmqpReceiverDataSourceVO vo;
+    private final AmqpDataSourceVO vo;
     private Connection connection;
     private Channel channel;
     private boolean amqpBindEstablished = false;
 
-    public AmqpReceiverDataSourceRT(AmqpReceiverDataSourceVO vo) {
+    public AmqpDataSourceRT(AmqpDataSourceVO vo) {
         super(vo);
         this.vo = vo;
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
@@ -50,15 +52,22 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
     @Override
     public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source) {
 
-        AmqpReceiverPointLocatorRT locator = dataPoint.getPointLocator();
-        String message = valueTime.getStringValue();
+        AmqpPointLocatorRT locator = dataPoint.getPointLocator();
+        String message = "";
+        if (locator.getVO().getDataTypeId()==DataTypes.ALPHANUMERIC) {
+            message = valueTime.getStringValue();
+        } else if (locator.getVO().getDataTypeId() == DataTypes.NUMERIC) {
+            message = String.valueOf(valueTime.getDoubleValue());
+        } else if (locator.getVO().getDataTypeId() == DataTypes.BINARY) {
+            message = String.valueOf(valueTime.getBooleanValue());
+        }
         try {
             switch (locator.getVO().getExchangeType()) {
-                case AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT:
-                case AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC:
+                case AmqpPointLocatorVO.ExchangeType.A_DIRECT:
+                case AmqpPointLocatorVO.ExchangeType.A_TOPIC:
                     channel.basicPublish(locator.getExchangeName(), locator.getRoutingKey(), null, message.getBytes());
                     break;
-                case AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT:
+                case AmqpPointLocatorVO.ExchangeType.A_FANOUT:
                     channel.basicPublish(locator.getExchangeName(), "", null, message.getBytes());
                     break;
                 default:
@@ -112,16 +121,12 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
                         returnToNormal(DATA_POINT_EXCEPTION_EVENT, System.currentTimeMillis());
                     } catch (IOException e) {
                         raiseEvent(DATA_POINT_EXCEPTION_EVENT, System.currentTimeMillis(), false,
-                                new LocalizableMessage("event.amqpReceiver.bindError", dp.getVO().getXid()));
+                                new LocalizableMessage("event.amqp.bindError", dp.getVO().getXid()));
                     }
                 }
                 amqpBindEstablished = true;
-
             }
-
         }
-
-
     }
 
     // Disable DataSource //
@@ -173,32 +178,32 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
      */
     private void initDataPoint(DataPointRT dp, Channel channel) throws IOException {
 
-        AmqpReceiverPointLocatorRT locator = dp.getPointLocator();
+        AmqpPointLocatorRT locator = dp.getPointLocator();
         String exchangeType = locator.getVO().getExchangeType();
 
         boolean durable = locator.getVO().getQueueDurability().equalsIgnoreCase("1");
         boolean noAck = locator.getVO().getMessageAck().equalsIgnoreCase("1");
 
         if (channel != null) {
-            if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT)) {
-                channel.exchangeDeclare(locator.getExchangeName(), AmqpReceiverPointLocatorVO.ExchangeType.A_FANOUT, durable);
+            if (exchangeType.equalsIgnoreCase(AmqpPointLocatorVO.ExchangeType.A_FANOUT)) {
+                channel.exchangeDeclare(locator.getExchangeName(), AmqpPointLocatorVO.ExchangeType.A_FANOUT, durable);
                 locator.setQueueName(channel.queueDeclare().getQueue());
                 channel.queueBind(locator.getQueueName(), locator.getExchangeName(), "");
 
                 Consumer consumer = new ScadaConsumer(channel, dp);
                 channel.basicConsume(locator.getQueueName(), noAck, consumer);
 
-            } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT)) {
+            } else if (exchangeType.equalsIgnoreCase(AmqpPointLocatorVO.ExchangeType.A_DIRECT)) {
 
-                channel.exchangeDeclare(locator.getExchangeName(), AmqpReceiverPointLocatorVO.ExchangeType.A_DIRECT, durable);
+                channel.exchangeDeclare(locator.getExchangeName(), AmqpPointLocatorVO.ExchangeType.A_DIRECT, durable);
                 locator.setQueueName(channel.queueDeclare().getQueue());
                 channel.queueBind(locator.getQueueName(), locator.getExchangeName(), locator.getRoutingKey());
 
                 Consumer consumer = new ScadaConsumer(channel, dp);
                 channel.basicConsume(locator.getQueueName(), noAck, consumer);
 
-            } else if (exchangeType.equalsIgnoreCase(AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC)) {
-                channel.exchangeDeclare(locator.getExchangeName(), AmqpReceiverPointLocatorVO.ExchangeType.A_TOPIC, durable);
+            } else if (exchangeType.equalsIgnoreCase(AmqpPointLocatorVO.ExchangeType.A_TOPIC)) {
+                channel.exchangeDeclare(locator.getExchangeName(), AmqpPointLocatorVO.ExchangeType.A_TOPIC, durable);
                 locator.setQueueName(channel.queueDeclare().getQueue());
                 channel.queueBind(locator.getQueueName(), locator.getExchangeName(), locator.getRoutingKey());
 
@@ -241,8 +246,11 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
                 dataPoint.updatePointValue(new PointValueTime(
                         new NumericValue(Double.parseDouble(message)), System.currentTimeMillis()
                 ));
+            } else if (dataPoint.getDataTypeId() == DataTypes.BINARY) {
+                dataPoint.updatePointValue(new PointValueTime(
+                        new BinaryValue(Boolean.parseBoolean(message)), System.currentTimeMillis())
+                );
             }
-
         }
     }
 
@@ -253,10 +261,10 @@ public class AmqpReceiverDataSourceRT extends PollingDataSource {
     private class Reconnection extends Thread {
 
         ConnectionFactory connectionFactory;
-        AmqpReceiverDataSourceRT dataSourceRT;
+        AmqpDataSourceRT dataSourceRT;
         int multiplier;
 
-        Reconnection(ConnectionFactory connectionFactory, AmqpReceiverDataSourceRT dataSourceRT) {
+        Reconnection(ConnectionFactory connectionFactory, AmqpDataSourceRT dataSourceRT) {
             this.connectionFactory = connectionFactory;
             this.dataSourceRT = dataSourceRT;
             this.setName("AMQP Reconnection");

@@ -30,7 +30,7 @@ import java.util.Map;
  * @since 2018-09-11
  */
 @JsonRemoteEntity
-public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourceVO> {
+public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
     public static final Type TYPE = Type.AMQP_RECEIVER;
 
@@ -52,53 +52,53 @@ public class AmqpReceiverDataSourceVO extends DataSourceVO<AmqpReceiverDataSourc
 
     @Override
     protected void addEventTypes(List<EventTypeVO> eventTypes) {
-        eventTypes.add(createEventType(AmqpReceiverDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.dataSource") ));
-        eventTypes.add(createEventType(AmqpReceiverDataSourceRT.DATA_POINT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.amqpReceiver") ));
+        eventTypes.add(createEventType(AmqpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.dataSource") ));
+        eventTypes.add(createEventType(AmqpDataSourceRT.DATA_POINT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.amqpReceiver") ));
 
     }
 
     @Override
     protected void addPropertiesImpl(List<LocalizableMessage> list) {
         AuditEventType.addPeriodMessage(list, "dsEdit.updatePeriod", updatePeriodType, updatePeriods);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverIpAddress" , serverIpAddress);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverPortNumber" , serverPortNumber);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverVirtualHost" , serverVirtualHost);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverUsername" , serverUsername);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqpReceiver.serverPassword" , serverPassword);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverIpAddress" , serverIpAddress);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPortNumber" , serverPortNumber);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverVirtualHost" , serverVirtualHost);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverUsername" , serverUsername);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPassword" , serverPassword);
 
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, AmqpReceiverDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, AmqpDataSourceVO from) {
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType, from.updatePeriods ,updatePeriodType, updatePeriods);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverIpAddress",from.serverIpAddress,serverIpAddress);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverPortNumber",from.serverPortNumber,serverPortNumber);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverVirtualHost",from.serverVirtualHost,serverVirtualHost);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverUsername",from.serverUsername,serverUsername);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqpReceiver.serverPassword",from.serverPassword,serverPassword);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverIpAddress",from.serverIpAddress,serverIpAddress);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverPortNumber",from.serverPortNumber,serverPortNumber);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverVirtualHost",from.serverVirtualHost,serverVirtualHost);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverUsername",from.serverUsername,serverUsername);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverPassword",from.serverPassword,serverPassword);
     }
 
     @Override
     public DataSourceRT createDataSourceRT() {
-        return new AmqpReceiverDataSourceRT(this);
+        return new AmqpDataSourceRT(this);
     }
 
     @Override
     public PointLocatorVO createPointLocator() {
-        return new AmqpReceiverPointLocatorVO();
+        return new AmqpPointLocatorVO();
     }
 
     @Override
     public LocalizableMessage getConnectionDescription() {
         if (serverIpAddress.length() == 0 || serverPortNumber.length() == 0)
-            return new LocalizableMessage("dsEdit.amqpReceiver");
+            return new LocalizableMessage("dsEdit.amqp");
         return null;
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
     static {
-        EVENT_CODES.addElement(AmqpReceiverDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
-        EVENT_CODES.addElement(AmqpReceiverDataSourceRT.DATA_POINT_EXCEPTION_EVENT, "DATA_POINT_EXCEPTION");
+        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
+        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_POINT_EXCEPTION_EVENT, "DATA_POINT_EXCEPTION");
     }
 
     @Override

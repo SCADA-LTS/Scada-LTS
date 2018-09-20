@@ -10,22 +10,22 @@ import com.serotonin.mango.rt.dataSource.PointLocatorRT;
  * @version 1.0
  * @since 2018-09-11
  */
-public class AmqpReceiverPointLocatorRT extends PointLocatorRT {
+public class AmqpPointLocatorRT extends PointLocatorRT {
 
-    private final AmqpReceiverPointLocatorVO vo;
+    private final AmqpPointLocatorVO vo;
     private String queueName;
     private String exchangeName;
     private String routingKey;
     private MangoValue currentValue;
 
-    public AmqpReceiverPointLocatorRT(AmqpReceiverPointLocatorVO vo){
+    public AmqpPointLocatorRT(AmqpPointLocatorVO vo){
         this.vo = vo;
         this.queueName = vo.getQueueName();
         this.exchangeName = vo.getExchangeName();
         this.routingKey = vo.getRoutingKey();
     }
 
-    public AmqpReceiverPointLocatorVO getVO() {return vo;}
+    public AmqpPointLocatorVO getVO() {return vo;}
 
     @Override
     public boolean isSettable() {

@@ -381,12 +381,12 @@
     <relation id="radiuinoDS"/>
    </item>
 
-  <item id="amqpReceiverPP">
-    <relation id="amqpReceiverPP"/>
+  <item id="amqpPP">
+    <relation id="amqpPP"/>
   </item>
 
-  <item id="amqpReceiverDS">
-    <relation id="amqpReceiverDS"/>
+  <item id="amqpDS">
+    <relation id="amqpDS"/>
   </item>
   
 </doxManifest>

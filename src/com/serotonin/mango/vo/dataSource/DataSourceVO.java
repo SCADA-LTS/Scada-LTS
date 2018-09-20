@@ -67,7 +67,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.workdomain.datasource.amqp.AmqpReceiverDataSourceVO;
+import org.scada_lts.workdomain.datasource.amqp.AmqpDataSourceVO;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -295,9 +295,9 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
 				return new RadiuinoDataSourceVO();
 			}
 		},
-		AMQP_RECEIVER(45, "dsEdit.amqpReceiver", true){
+		AMQP_RECEIVER(45, "dsEdit.amqp", true){
 		 	@Override
-			public DataSourceVO<?> createDataSourceVO() { return new AmqpReceiverDataSourceVO(); }
+			public DataSourceVO<?> createDataSourceVO() { return new AmqpDataSourceVO(); }
 		};
 
 		private Type(int id, String key, boolean display) {

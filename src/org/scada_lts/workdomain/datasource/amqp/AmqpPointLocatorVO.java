@@ -23,7 +23,7 @@ import java.util.Map;
  * @since 2018-09-11
  *
  */
-public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
+public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
 
     public interface ExchangeType {
         String A_NONE     = "";
@@ -81,7 +81,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
 
     @Override
     public PointLocatorRT createRuntime() {
-        return new AmqpReceiverPointLocatorRT(this);
+        return new AmqpPointLocatorRT(this);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class AmqpReceiverPointLocatorVO extends AbstractPointLocatorVO implement
 
     @Override
     public void addPropertyChanges(List<LocalizableMessage> list, Object o) {
-        AmqpReceiverPointLocatorVO from = (AmqpReceiverPointLocatorVO) o;
+        AmqpPointLocatorVO from = (AmqpPointLocatorVO) o;
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.settable", from.settable, settable);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeType", from.exchangeType, exchangeType);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeName", from.exchangeName, exchangeName);
