@@ -1,4 +1,6 @@
 name=SmallDial
 type=dynamic
+width=78
+height=78
 text.x=5
 text.y=68
