@@ -295,7 +295,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
 				return new RadiuinoDataSourceVO();
 			}
 		},
-		AMQP_RECEIVER(45, "dsEdit.amqp", true){
+		AMQP(45, "dsEdit.amqp", true){
 		 	@Override
 			public DataSourceVO<?> createDataSourceVO() { return new AmqpDataSourceVO(); }
 		};

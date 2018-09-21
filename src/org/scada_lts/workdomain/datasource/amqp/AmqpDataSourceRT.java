@@ -108,6 +108,24 @@ public class AmqpDataSourceRT extends PollingDataSource {
 
     }
 
+    // Disable DataSource //
+    @Override
+    public void terminate() {
+        try {
+            channel.close();
+            connection.close();
+            amqpBindEstablished = false;
+        } catch (IOException | TimeoutException | AlreadyClosedException e) {
+            this.vo.setEnabled(false);
+            amqpBindEstablished = false;
+            raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+                    new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage()));
+
+        }
+        super.terminate();
+
+    }
+
     @Override
     protected void doPoll(long time) {
 
@@ -127,24 +145,6 @@ public class AmqpDataSourceRT extends PollingDataSource {
                 amqpBindEstablished = true;
             }
         }
-    }
-
-    // Disable DataSource //
-    @Override
-    public void terminate() {
-        try {
-            channel.close();
-            connection.close();
-            amqpBindEstablished = false;
-        } catch (IOException | TimeoutException | AlreadyClosedException e) {
-            this.vo.setEnabled(false);
-            amqpBindEstablished = false;
-            raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
-                    new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage()));
-
-        }
-        super.terminate();
-
     }
 
     /**
@@ -223,13 +223,15 @@ public class AmqpDataSourceRT extends PollingDataSource {
 
     }
 
-    private class ScadaConsumer extends DefaultConsumer {
+    class ScadaConsumer extends DefaultConsumer {
 
         DataPointRT dataPoint;
+        AmqpPointLocatorRT locator;
 
         ScadaConsumer(Channel channel, DataPointRT dataPoint) {
             super(channel);
             this.dataPoint = dataPoint;
+            this.locator = dataPoint.getPointLocator();
         }
 
         @Override
@@ -238,18 +240,20 @@ public class AmqpDataSourceRT extends PollingDataSource {
 
             String message = new String(body, StandardCharsets.UTF_8);
 
-            if (dataPoint.getDataTypeId() == DataTypes.ALPHANUMERIC) {
-                dataPoint.updatePointValue(new PointValueTime(
-                        new AlphanumericValue(message), System.currentTimeMillis()
-                ));
-            } else if (dataPoint.getDataTypeId() == DataTypes.NUMERIC) {
-                dataPoint.updatePointValue(new PointValueTime(
-                        new NumericValue(Double.parseDouble(message)), System.currentTimeMillis()
-                ));
-            } else if (dataPoint.getDataTypeId() == DataTypes.BINARY) {
-                dataPoint.updatePointValue(new PointValueTime(
-                        new BinaryValue(Boolean.parseBoolean(message)), System.currentTimeMillis())
-                );
+            if (locator.getVO().isWritable()) {
+                if (dataPoint.getDataTypeId() == DataTypes.ALPHANUMERIC) {
+                    dataPoint.updatePointValue(new PointValueTime(
+                            new AlphanumericValue(message), System.currentTimeMillis()
+                    ));
+                } else if (dataPoint.getDataTypeId() == DataTypes.NUMERIC) {
+                    dataPoint.updatePointValue(new PointValueTime(
+                            new NumericValue(Double.parseDouble(message)), System.currentTimeMillis()
+                    ));
+                } else if (dataPoint.getDataTypeId() == DataTypes.BINARY) {
+                    dataPoint.updatePointValue(new PointValueTime(
+                            new BinaryValue(Boolean.parseBoolean(message)), System.currentTimeMillis())
+                    );
+                }
             }
         }
     }
@@ -258,7 +262,7 @@ public class AmqpDataSourceRT extends PollingDataSource {
      * Reconnection Class
      * Tries to restore connection with RabbitMQ broker server
      */
-    private class Reconnection extends Thread {
+    class Reconnection extends Thread {
 
         ConnectionFactory connectionFactory;
         AmqpDataSourceRT dataSourceRT;
@@ -286,7 +290,6 @@ public class AmqpDataSourceRT extends PollingDataSource {
             for (int i = 1; i <= dataSourceRT.vo.getUpdateAttempts(); i++) {
                 try {
                     sleep(dataSourceRT.vo.getUpdatePeriods() * multiplier);
-//                    System.out.println(this.getName() + " :: Retry no." + i);
                     log.debug(this.getName() + " :: Retry no." + i);
                     connection = connectionFactory.newConnection();
                     if (connection.isOpen()) {

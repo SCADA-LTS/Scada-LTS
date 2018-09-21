@@ -42,41 +42,31 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         String NO_ACK   = "1";
     }
 
+    private static String DEFAULT_NOT_SET = "";
+    private static boolean DEFAULT_WRITABLE = true;
+
     @JsonRemoteProperty
     private boolean settable;
     @JsonRemoteProperty
+    private boolean writable = DEFAULT_WRITABLE;
+    @JsonRemoteProperty
     private String exchangeType;
     @JsonRemoteProperty
-    private String exchangeName = new String("");
+    private String exchangeName = ExchangeType.A_NONE;
     @JsonRemoteProperty
-    private String  queueName = new String("");
+    private String  queueName = DEFAULT_NOT_SET;
     @JsonRemoteProperty
-    private String  routingKey = new String("");
+    private String  routingKey = DEFAULT_NOT_SET;
     @JsonRemoteProperty
-    private String queueDurability = new String("");
+    private String queueDurability = DurabilityType.DURABLE;
     @JsonRemoteProperty
-    private String messageAck = new String("1");
+    private String messageAck = MessageAckType.NO_ACK;
 
     private int     dataTypeId;
-
-
-    @Override
-    public int getDataTypeId() {
-        return dataTypeId;
-    }
 
     @Override
     public LocalizableMessage getConfigurationDescription() {
         return new LocalizableMessage("common.default", queueName);
-    }
-
-    @Override
-    public boolean isSettable() {
-        return settable;
-    }
-
-    public void setSettable(boolean settable) {
-        this.settable = settable;
     }
 
     @Override
@@ -136,6 +126,28 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     }
 
     // Getters and Setters //
+    @Override
+    public int getDataTypeId() {
+        return dataTypeId;
+    }
+
+    @Override
+    public boolean isSettable() {
+        return settable;
+    }
+
+    public void setSettable(boolean settable) {
+        this.settable = settable;
+    }
+
+    public boolean isWritable() {
+        return writable;
+    }
+
+    public void setWritable(boolean writable) {
+        this.writable = writable;
+    }
+
     public String getExchangeType() {
         return exchangeType;
     }
@@ -193,6 +205,7 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
         out.writeBoolean(settable);
+        out.writeBoolean(writable);
         out.writeInt(dataTypeId);
         SerializationHelper.writeSafeUTF(out, exchangeType);
         SerializationHelper.writeSafeUTF(out, exchangeName);
@@ -206,6 +219,7 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         int ver = in.readInt();
         if(ver == 1) {
             settable        = in.readBoolean();
+            writable        = in.readBoolean();
             dataTypeId      = in.readInt();
             exchangeType    = SerializationHelper.readSafeUTF(in);
             exchangeName    = SerializationHelper.readSafeUTF(in);

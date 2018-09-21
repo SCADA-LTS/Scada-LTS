@@ -41,6 +41,7 @@
 
   function editPointCBImpl(locator) {
         $set("settable", locator.settable);
+        $set("writable", locator.writable);
         $set("dataTypeId", locator.dataTypeId);
         $set("exchangeType", locator.exchangeType);
         $set("exchangeName", locator.exchangeName);
@@ -54,6 +55,7 @@
 
     delete locator.relinquishable;
     locator.settable = $get("settable");
+    locator.writable = $get("writable");
     locator.dataTypeId = $get("dataTypeId");
     locator.exchangeType = $get("exchangeType");
     locator.exchangeName = $get("exchangeName");
@@ -117,6 +119,10 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
     <td class="formField"><input type="checkbox" id="settable"/></td>
   </tr>
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.writable"/></td>
+    <td class="formField"><input type="checkbox" id="writable"/></td>
+   </tr>
 
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>

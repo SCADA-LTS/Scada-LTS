@@ -32,23 +32,83 @@ import java.util.Map;
 @JsonRemoteEntity
 public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
-    public static final Type TYPE = Type.AMQP_RECEIVER;
+    public static final Type TYPE = Type.AMQP;
+
+    private static final ExportCodes EVENT_CODES = new ExportCodes();
+
+    static {
+        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
+        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_POINT_EXCEPTION_EVENT, "DATA_POINT_EXCEPTION");
+    }
+
+    private static String DEFAULT_HOST = "localhost";
+    private static String DEFAULT_PORT = "5672";
+    private static String DEFAULT_NOT_SET = "";
 
     private int updatePeriodType = Common.TimePeriods.MINUTES;
+
+    //Dependent of updatePeriodType (5 MINUTES update period)
     @JsonRemoteProperty
     private int updatePeriods = 5;
     @JsonRemoteProperty
     private int updateAttempts = 5;
     @JsonRemoteProperty
-    private String serverIpAddress = new String("localhost");
+    private String serverIpAddress = DEFAULT_HOST;
     @JsonRemoteProperty
-    private String serverPortNumber = new String("5672");
+    private String serverPortNumber = DEFAULT_PORT;
     @JsonRemoteProperty
-    private String serverVirtualHost = new String("");
+    private String serverVirtualHost = DEFAULT_NOT_SET;
     @JsonRemoteProperty
-    private String serverUsername = new String("");
+    private String serverUsername = DEFAULT_NOT_SET;
     @JsonRemoteProperty
-    private String serverPassword = new String("");
+    private String serverPassword = DEFAULT_NOT_SET;
+
+    @Override
+    public DataSourceRT createDataSourceRT() {
+        return new AmqpDataSourceRT(this);
+    }
+
+    @Override
+    public PointLocatorVO createPointLocator() {
+        return new AmqpPointLocatorVO();
+    }
+
+    @Override
+    public LocalizableMessage getConnectionDescription() {
+        if (serverIpAddress.length() == 0 || serverPortNumber.length() == 0)
+            return new LocalizableMessage("dsEdit.amqp");
+        return null;
+    }
+
+    @Override
+    public ExportCodes getEventCodes() {
+        return EVENT_CODES;
+    }
+
+    @Override
+    public Type getType() {
+        return TYPE;
+    }
+
+    @Override
+    public void validate(DwrResponseI18n response) {
+        super.validate(response);
+        if (StringUtils.isEmpty(serverIpAddress)) {
+            response.addContextualMessage("serverIpAddress","validate.required");
+        }
+        try {
+            InetAddress.getByName(serverIpAddress);
+        } catch (UnknownHostException e) {
+            response.addContextualMessage("serverIpAddress","validate.invalidValue");
+        }
+        if (StringUtils.isEmpty(serverPortNumber) || Integer.parseInt(serverPortNumber) < 0) {
+            response.addContextualMessage("serverPortNumber","validate.invalidValue");
+        }
+        if (updateAttempts < 0 || updateAttempts > 10) {
+            response.addContextualMessage("updateAttempts", "validate.updateAttempts");
+        }
+
+    }
 
     @Override
     protected void addEventTypes(List<EventTypeVO> eventTypes) {
@@ -76,60 +136,6 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverVirtualHost",from.serverVirtualHost,serverVirtualHost);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverUsername",from.serverUsername,serverUsername);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverPassword",from.serverPassword,serverPassword);
-    }
-
-    @Override
-    public DataSourceRT createDataSourceRT() {
-        return new AmqpDataSourceRT(this);
-    }
-
-    @Override
-    public PointLocatorVO createPointLocator() {
-        return new AmqpPointLocatorVO();
-    }
-
-    @Override
-    public LocalizableMessage getConnectionDescription() {
-        if (serverIpAddress.length() == 0 || serverPortNumber.length() == 0)
-            return new LocalizableMessage("dsEdit.amqp");
-        return null;
-    }
-
-    private static final ExportCodes EVENT_CODES = new ExportCodes();
-    static {
-        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
-        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_POINT_EXCEPTION_EVENT, "DATA_POINT_EXCEPTION");
-    }
-
-    @Override
-    public ExportCodes getEventCodes() {
-        return EVENT_CODES;
-    }
-
-    @Override
-    public Type getType() {
-        return TYPE;
-    }
-
-
-    @Override
-    public void validate(DwrResponseI18n response) {
-        super.validate(response);
-        if (StringUtils.isEmpty(serverIpAddress)) {
-            response.addContextualMessage("serverIpAddress","validate.required");
-        }
-        try {
-            InetAddress.getByName(serverIpAddress);
-        } catch (UnknownHostException e) {
-            response.addContextualMessage("serverIpAddress","validate.invalidValue");
-        }
-        if (StringUtils.isEmpty(serverPortNumber) || Integer.parseInt(serverPortNumber) < 0) {
-            response.addContextualMessage("serverPortNumber","validate.invalidValue");
-        }
-        if (updateAttempts < 0 || updateAttempts > 10) {
-            response.addContextualMessage("updateAttempts", "validate.updateAttempts");
-        }
-
     }
 
     private static final int version = 1;
