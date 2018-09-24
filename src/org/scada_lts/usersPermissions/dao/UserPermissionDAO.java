@@ -1,14 +1,26 @@
 package org.scada_lts.usersPermissions.dao;
 
 
+import com.mysql.jdbc.Statement;
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.SerializationData;
 import org.scada_lts.usersPermissions.model.UserPermission;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,6 +59,12 @@ public class UserPermissionDAO {
             + "from " + TABLE_NAME + " where "
             + COLUMN_NAME_ENTITY_XID + "=?;";
 
+    private static final String USER_PERMISSION_INSERT = ""
+            + "insert into " + TABLE_NAME + " ("
+            + COLUMN_NAME_ENTITY_XID + ", "
+            + COLUMN_NAME_PERMISSION + ") "
+            + "values (?,?)";
+
     // @formatter:on
 
     public List<UserPermission> getAllUsersPermissions() {
@@ -75,6 +93,30 @@ public class UserPermissionDAO {
         }
 
         return userPermission;
+    }
+
+    @Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+    public int insert(final UserPermission userPermission) {
+
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("insert(final UserPermission userPermission) userPermission:" + userPermission.toString());
+        }
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(USER_PERMISSION_INSERT, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[] {
+                        userPermission.getEntityXid(),
+                        userPermission.getPermission()
+                }).setValues(ps);
+                return ps;
+            }
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue();
     }
 
     private class UserPermissionRowMapper implements RowMapper<UserPermission> {

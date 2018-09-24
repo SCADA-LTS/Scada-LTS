@@ -14,7 +14,7 @@ public class V1_4__AddUsersPermissions implements SpringJdbcMigration {
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
         final String usersPermissionsSQL = ""
                 + "CREATE table usersPermissions (  "
-                + "id int not null,  "
+                + "id int not null PRIMARY KEY auto_increment,  "
                 + "entityXid varchar(50) not null,  "
                 + "permission int not null"
                 + ") ENGINE=InnoDB;";
