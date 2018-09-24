@@ -1,4 +1,4 @@
-package org.scada_lts.modbus;
+package org.scada_lts.workdomain.modbus;
 
 import java.io.InputStream;
 import java.io.OutputStream;

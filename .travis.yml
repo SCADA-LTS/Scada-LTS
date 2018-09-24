@@ -30,6 +30,7 @@ before_script:
 #- cd ../..
 - cd ./ScadaLTS-UI-1
 - npm install
+- npm run build
 - cd ../WebContent/resources/npm/
 - npm install
 - cd ../../..
