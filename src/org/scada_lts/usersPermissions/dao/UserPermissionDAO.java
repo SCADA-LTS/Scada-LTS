@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.usersPermissions.model.UserPermission;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -65,8 +66,14 @@ public class UserPermissionDAO {
             LOG.trace("getUserPermission()");
         }
 
-        UserPermission userPermission = new UserPermission();
-        userPermission = (UserPermission) DAO.getInstance().getJdbcTemp().query(USER_PERMISSION_SELECT_WHERE_ENTITY_XID, new Object[]{entityXid}, new UserPermissionRowMapper());
+        UserPermission userPermission;
+
+        try {
+            userPermission = (UserPermission) DAO.getInstance().getJdbcTemp().queryForObject(USER_PERMISSION_SELECT_WHERE_ENTITY_XID, new Object[]{entityXid}, new UserPermissionRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+
         return userPermission;
     }
 
