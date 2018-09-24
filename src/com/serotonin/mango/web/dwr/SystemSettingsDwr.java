@@ -81,6 +81,20 @@ public class SystemSettingsDwr extends BaseDwr {
 		// System event types
 		settings.put("auditEventTypes", AuditEventType.getAuditEventTypes());
 
+		// Alarm Export
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_TYPE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE, 1));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_HOST,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_HOST));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_PORT,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_PORT, 5672));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_VIRTUAL,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_VIRTUAL));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_USERNAME,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_USERNAME));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_PASSWORD,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_PASSWORD));
+
 		// Http
 		settings.put(SystemSettingsDAO.HTTP_CLIENT_USE_PROXY, SystemSettingsDAO
 				.getBooleanValue(SystemSettingsDAO.HTTP_CLIENT_USE_PROXY));
@@ -264,6 +278,21 @@ public class SystemSettingsDwr extends BaseDwr {
 		for (IntegerPair eventAlarmLevel : eventAlarmLevels)
 			AuditEventType.setEventTypeAlarmLevel(eventAlarmLevel.getI1(),
 					eventAlarmLevel.getI2());
+	}
+
+	@MethodFilter
+	public void saveAlarmExportSettings(int aeType, String aeHost, int aePort,
+										String aeVirtual, String aeUsername, String aePassword) {
+		Permissions.ensureAdmin();
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE, aeType);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_HOST, aeHost);
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.ALARM_EXPORT_PORT, aePort);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_VIRTUAL, aeVirtual);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_USERNAME, aeUsername);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_PASSWORD, aePassword);
+
+
 	}
 
 	@MethodFilter
