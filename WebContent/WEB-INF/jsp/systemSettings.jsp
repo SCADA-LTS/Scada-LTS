@@ -17,6 +17,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@page import="org.scada_lts.dao.SystemSettingsDAO"%>
+<%@page import="org.scada_lts.workdomain.event.EventExporter"%>
 <%@page import="com.serotonin.mango.Common"%>
 <%@page import="com.serotonin.mango.rt.event.AlarmLevels"%>
 <%@page import="com.serotonin.mango.rt.event.type.EventType"%>
@@ -569,9 +570,9 @@
       <tr>
         <td>
             <select id="<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_TYPE %>"/>"  onchange="alarmTypeChange()">
-                <option value=1>Defalut (save to Scada)</option>
-                <option value=2>Export  (save to RabbitMQ)</option>
-                <option value=3>Both (ScadaLTS and RabbitMQ)</option>
+                <option value="<c:out value="<%= EventExporter.DEFAULT %>"/>">Defalut (save to Scada)</option>
+                <option value="<c:out value="<%= EventExporter.RABBIT_MQ %>"/>">Export  (save to RabbitMQ)</option>
+                <option value="<c:out value="<%= EventExporter.SCADA_AND_RABBBIT %>"/>">Both (ScadaLTS and RabbitMQ)</option>
             </select>
         </td>
       </tr>

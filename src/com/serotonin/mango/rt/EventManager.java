@@ -18,9 +18,6 @@
  */
 package com.serotonin.mango.rt;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.UserDao;
@@ -41,19 +38,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.service.UserHighestAlarmLevelListener;
+import org.scada_lts.workdomain.event.EventExporter;
+import org.scada_lts.workdomain.event.RabbitMqExporter;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Matthew Lohbihler
  */
 public class EventManager implements ILifecycle {
-    private static String EXCHANGE_NAME = "ScadaLTS-Events";
-    private static int ALARM_EXPORT_TYPE_RABBITMQ   = 2;
-    private static int ALARM_EXPORT_TYPE_BOTH       = 3;
 
     private final Log log = LogFactory.getLog(EventManager.class);
     private final List<UserHighestAlarmLevelListener> userHighestAlarmLevelListeners = new CopyOnWriteArrayList<UserHighestAlarmLevelListener>();
@@ -65,9 +59,7 @@ public class EventManager implements ILifecycle {
     private int highestActiveAlarmLevel = 0;
 
     // RabbitMQ variables
-    private Connection connection;
-    private Channel channel;
-    private boolean rabbitEnabled = false;
+    private RabbitMqExporter rabbitExporter;
 
     //
     //
@@ -117,31 +109,15 @@ public class EventManager implements ILifecycle {
 
         // Get id from database by inserting event immediately.
 
-        if (rabbitEnabled) {
+        if (SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == EventExporter.RABBIT_MQ
+                || SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == EventExporter.SCADA_AND_RABBBIT) {
 
-            String amqpMessage;
-            StringBuilder sbMessage = new StringBuilder();
-            for (Object amqp : message.getArgs()) {
-                sbMessage.append(String.valueOf(amqp));
-                sbMessage.append(";");
+            if (rabbitExporter.isConnected()) {
+                rabbitExporter.export(evt);
             }
-            if(context != null) {
-                for (Map.Entry<String, Object> entry : context.entrySet()) {
-                    String key = entry.getKey();
-                    String value = entry.getValue().toString();
-                    sbMessage.append(key+" :: " + value + ";");
-                }
-            }
-
-            amqpMessage = message.getKey() + ":" + sbMessage.toString();
-
-            try {
-                sendToRabbitMQ(String.valueOf(alarmLevel), amqpMessage);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == 1
-                || SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == 3) {
+        }
+        if (SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == EventExporter.DEFAULT
+                || SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == EventExporter.SCADA_AND_RABBBIT) {
 
             eventDao.saveEvent(evt);
 
@@ -324,10 +300,12 @@ public class EventManager implements ILifecycle {
     //
     public void initialize() {
 
-        if (SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == ALARM_EXPORT_TYPE_RABBITMQ
-            || SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == ALARM_EXPORT_TYPE_BOTH) {
+        if (SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == EventExporter.SCADA_AND_RABBBIT
+                || SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == EventExporter.RABBIT_MQ) {
 
-            initializeRabbitMQ();
+            rabbitExporter = new RabbitMqExporter();
+            rabbitExporter.initialize();
+
         }
 
         eventDao = new EventDao();
@@ -341,14 +319,10 @@ public class EventManager implements ILifecycle {
 
     public void terminate() {
 
-        if (SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == ALARM_EXPORT_TYPE_RABBITMQ
-                || SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == ALARM_EXPORT_TYPE_BOTH) {
+        if (SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == EventExporter.RABBIT_MQ
+                || SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE) == EventExporter.SCADA_AND_RABBBIT) {
 
-            try {
-                terminateRabbitMQ();
-            } catch (IOException | TimeoutException e) {
-                e.printStackTrace();
-            }
+            rabbitExporter.terminate();
         }
 
     }
@@ -496,49 +470,6 @@ public class EventManager implements ILifecycle {
         for (UserHighestAlarmLevelListener listener : userHighestAlarmLevelListeners) {
             listener.onEventToggle(eventId, userId, isSilenced);
         }
-    }
-
-    private void initializeRabbitMQ() {
-        String host = SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_HOST);
-        String virtual = SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_VIRTUAL);
-        int port = SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_PORT);
-        String username = SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_USERNAME);
-        String password = SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_PASSWORD);
-
-        log.info(" - Initializing RabbitMQ instance with host = " + host + ":" + port + virtual);
-        ConnectionFactory connFactory = new ConnectionFactory();
-        connFactory.setHost(host);
-        connFactory.setPort(port);
-        connFactory.setVirtualHost(virtual);
-        connFactory.setUsername(username);
-        connFactory.setPassword(password);
-
-        try {
-            connection = connFactory.newConnection();
-            channel = connection.createChannel();
-            String exchangeType = "topic";
-            channel.exchangeDeclare(EXCHANGE_NAME, exchangeType, true);
-
-            log.info(" - Initialized RabbitMQ instance!");
-            rabbitEnabled = true;
-        } catch (IOException | TimeoutException e) {
-            log.error(" - Initializing RabbitMQ instance failed!");
-            log.error(e);
-        }
-
-    }
-
-    private void terminateRabbitMQ() throws IOException, TimeoutException {
-
-        if (connection.isOpen()) {
-            channel.close();
-            connection.close();
-        }
-
-    }
-
-    private void sendToRabbitMQ(String routingKey, String message) throws IOException {
-        channel.basicPublish(EXCHANGE_NAME, routingKey, null, message.getBytes());
     }
 
 }
