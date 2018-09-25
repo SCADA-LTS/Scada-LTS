@@ -13,15 +13,17 @@ public class UserPermission implements Serializable {
     int id;
     String entityXid;
     int permission;
+    int userId;
 
     public UserPermission() {
         //
     }
 
-    public UserPermission(int id, String entityXid, int permission) {
+    public UserPermission(int id, String entityXid, int permission, int userId) {
         this.id = id;
         this.entityXid = entityXid;
         this.permission = permission;
+        this.userId = userId;
     }
 
     public int getId() {
@@ -48,12 +50,21 @@ public class UserPermission implements Serializable {
         this.permission = permission;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return "UserPermission{" +
                 "id=" + id +
                 ", entityXid='" + entityXid + '\'' +
                 ", permission=" + permission +
+                ", userId=" + userId +
                 '}';
     }
 
@@ -64,12 +75,13 @@ public class UserPermission implements Serializable {
         UserPermission that = (UserPermission) o;
         return id == that.id &&
                 permission == that.permission &&
+                userId == that.userId &&
                 Objects.equals(entityXid, that.entityXid);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, entityXid, permission);
+        return Objects.hash(id, entityXid, permission, userId);
     }
 }

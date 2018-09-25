@@ -38,6 +38,7 @@ public class UserPermissionDAO {
 
     private static final String TABLE_NAME = "usersPermissions";
     private static final String COLUMN_NAME_ID = "id";
+    private static final String COLUMN_NAME_USER_ID = "userId";
     private static final String COLUMN_NAME_ENTITY_XID = "entityXid";
     private static final String COLUMN_NAME_PERMISSION = "permission";
 
@@ -54,16 +55,28 @@ public class UserPermissionDAO {
     private static final String USER_PERMISSION_SELECT_WHERE_ENTITY_XID = ""
             + "select "
             + COLUMN_NAME_ID + ", "
+            + COLUMN_NAME_USER_ID + ", "
             + COLUMN_NAME_ENTITY_XID + ", "
             + COLUMN_NAME_PERMISSION + " "
             + "from " + TABLE_NAME + " where "
             + COLUMN_NAME_ENTITY_XID + "=?;";
 
+    private static final String USER_PERMISSION_SELECT_WHERE_USER_ID_AND_ENTITY_XID = ""
+            + "select "
+            + COLUMN_NAME_ID + ", "
+            + COLUMN_NAME_USER_ID + ", "
+            + COLUMN_NAME_ENTITY_XID + ", "
+            + COLUMN_NAME_PERMISSION + " "
+            + "from " + TABLE_NAME + " where "
+            + COLUMN_NAME_ENTITY_XID + "=? AND "
+            + COLUMN_NAME_USER_ID + "=?;";
+
     private static final String USER_PERMISSION_INSERT = ""
             + "insert into " + TABLE_NAME + " ("
+            + COLUMN_NAME_USER_ID + ", "
             + COLUMN_NAME_ENTITY_XID + ", "
             + COLUMN_NAME_PERMISSION + ") "
-            + "values (?,?)";
+            + "values (?,?,?)";
 
     // @formatter:on
 
@@ -79,15 +92,31 @@ public class UserPermissionDAO {
         return userPermissions;
     }
 
-    public UserPermission getUserPermission(String entityXid) {
+    public UserPermission findUserPermissionByEntityXid(String entityXid) {
         if (LOG.isTraceEnabled()) {
-            LOG.trace("getUserPermission()");
+            LOG.trace("findUserPermissionByEntityXid()");
         }
 
         UserPermission userPermission;
 
         try {
             userPermission = (UserPermission) DAO.getInstance().getJdbcTemp().queryForObject(USER_PERMISSION_SELECT_WHERE_ENTITY_XID, new Object[]{entityXid}, new UserPermissionRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+
+        return userPermission;
+    }
+
+    public UserPermission findUserPermissionByUserIdAndEntityXid(int userId, String entityXid) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("findUserPermissionByUserIdAndEntityXid()");
+        }
+
+        UserPermission userPermission = new UserPermission();
+
+        try {
+            userPermission = (UserPermission) DAO.getInstance().getJdbcTemp().queryForObject(USER_PERMISSION_SELECT_WHERE_USER_ID_AND_ENTITY_XID, new Object[]{entityXid, userId}, new UserPermissionRowMapper());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -109,6 +138,7 @@ public class UserPermissionDAO {
             public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
                 PreparedStatement ps = connection.prepareStatement(USER_PERMISSION_INSERT, Statement.RETURN_GENERATED_KEYS);
                 new ArgumentPreparedStatementSetter(new Object[] {
+                        userPermission.getUserId(),
                         userPermission.getEntityXid(),
                         userPermission.getPermission()
                 }).setValues(ps);
@@ -127,6 +157,7 @@ public class UserPermissionDAO {
             UserPermission userPermission = new UserPermission();
 
             userPermission.setId(resultSet.getInt(COLUMN_NAME_ID));
+            userPermission.setUserId(resultSet.getInt(COLUMN_NAME_USER_ID));
             userPermission.setEntityXid(resultSet.getString(COLUMN_NAME_ENTITY_XID));
             userPermission.setPermission(resultSet.getInt(COLUMN_NAME_PERMISSION));
 
