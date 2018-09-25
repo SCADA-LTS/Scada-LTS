@@ -77,7 +77,13 @@
             $set("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_VIRTUAL %>"/>", settings.<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_VIRTUAL %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_USERNAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_USERNAME %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_PASSWORD %>"/>", settings.<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_PASSWORD %>"/>);
-            alarmTypeChange()
+            $set("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_EX_NAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_EX_NAME %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_Q_NAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_Q_NAME %>"/>);
+            alarmTypeChange();
+            if( "<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_TYPE %>"/>" == 2 ||  "<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_TYPE %>"/>" == 3) {
+                testExportConnection();
+            }
+
             
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>);
@@ -244,12 +250,37 @@
             $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_VIRTUAL %>"/>"),
             $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_USERNAME %>"/>"),
             $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_PASSWORD %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_EX_NAME %>"/>"),
+            $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_Q_NAME %>"/>"),
             function() {
                 stopImageFader("saveAlarmExportSettingsImg");
                 setUserMessage("saveAlarmExportSettingsMessage", "Saved Export Settings");
         });
         setUserMessage("saveAlarmExportSettingsMessage");
         startImageFader("saveAlarmExportSettingsImg");
+    }
+
+    function testExportConnection() {
+        SystemSettingsDwr.testExportConnection(
+                $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_TYPE %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_HOST %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_PORT %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_VIRTUAL %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_USERNAME %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_PASSWORD %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_EX_NAME %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_Q_NAME %>"/>"),
+                function(msg) {
+                    var exportConnectionIcon = document.getElementById('testExportSettingsImg');
+                    if (msg == "Connected") {
+                        exportConnectionIcon.src = "images/database_go.png";
+                    } else {
+                        exportConnectionIcon.src = "images/database_stop.png";
+                        alert("<fmt:message key="systemSettings.reServer"/>" + " Event Export Settings - RabbitMQ broker " + msg);
+                    }
+
+            });
+
     }
     
     function smtpAuthChange() {
@@ -558,9 +589,10 @@
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle">Alarm Export Settings</span>
+          <span class="smallTitle"><fmt:message key="systemSettings.eventExport"/></span>
         </td>
         <td align="right">
+          <tag:img id="testExportSettingsImg" png="database_go" onclick="testExportConnection();" title="Test Connection"/>
           <tag:img id="saveAlarmExportSettingsImg" png="save" onclick="saveAlarmExportSettings();" title="common.save"/>
         </td>
       </tr>
@@ -570,32 +602,40 @@
       <tr>
         <td>
             <select id="<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_TYPE %>"/>"  onchange="alarmTypeChange()">
-                <option value="<c:out value="<%= EventExporter.DEFAULT %>"/>">Defalut (save to Scada)</option>
-                <option value="<c:out value="<%= EventExporter.RABBIT_MQ %>"/>">Export  (save to RabbitMQ)</option>
-                <option value="<c:out value="<%= EventExporter.SCADA_AND_RABBBIT %>"/>">Both (ScadaLTS and RabbitMQ)</option>
+                <option value="<c:out value="<%= EventExporter.DEFAULT %>"/>"><fmt:message key="systemSettings.eventExport.eType.default"/></option>
+                <option value="<c:out value="<%= EventExporter.RABBIT_MQ %>"/>"><fmt:message key="systemSettings.eventExport.eType.rabbitMq"/></option>
+                <option value="<c:out value="<%= EventExporter.SCADA_AND_RABBBIT %>"/>"><fmt:message key="systemSettings.eventExport.eType.all"/></option>
             </select>
         </td>
       </tr>
       <tbody id="alarmExportFields" style="display:none;">
         <tr>
-          <td>RabbitMQ broker IP address</td>
+          <td><fmt:message key="systemSettings.eventExport.host"/></td>
           <td><input type="text" id="<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_HOST %>"/>"></input></td>
         </tr>
         <tr>
-          <td>RabbitMQ broker port</td>
+          <td><fmt:message key="systemSettings.eventExport.port"/></td>
           <td><input type="number" id="<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_PORT %>"/>"></input></td>
         </tr>
         <tr>
-          <td>RabbitMQ virtual host</td>
+          <td><fmt:message key="systemSettings.eventExport.virtualHost"/></td>
           <td><input type="text" id="<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_VIRTUAL %>"/>"></input></td>
         </tr>
         <tr>
-          <td>RabbitMQ username</td>
+          <td><fmt:message key="systemSettings.eventExport.username"/></td>
           <td><input type="text" id="<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_USERNAME %>"/>"></input></td>
         </tr>
         <tr>
-          <td>RabbitMQ password</td>
+          <td><fmt:message key="systemSettings.eventExport.password"/></td>
           <td><input type="password" id="<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_PASSWORD %>"/>"></input></td>
+        </tr>
+        <tr>
+          <td><fmt:message key="systemSettings.eventExport.exchangeName"/></td>
+          <td><input type="text" id="<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_EX_NAME %>"/>"></input></td>
+        </tr>
+        <tr>
+          <td><fmt:message key="systemSettings.eventExport.queueName"/></td>
+          <td><input type="text" id="<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_Q_NAME %>"/>"></input></td>
         </tr>
       </tbody>
     </table>

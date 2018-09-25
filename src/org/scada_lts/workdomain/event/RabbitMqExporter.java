@@ -4,16 +4,18 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
  * RabbitMQ Exporter
- * <p>
+ *
  * Export ScadaLTS Events to remote broker by AMQPv0.9.1 module.
  *
  * @author Radek Jajko
@@ -23,10 +25,10 @@ import java.util.concurrent.TimeoutException;
 public class RabbitMqExporter implements EventExporter {
 
     private final Log log = LogFactory.getLog(RabbitMqExporter.class);
-    private final String EXCHANGE_NAME = "ScadaLTS-Events";
 
     private Connection connection;
     private Channel channel;
+    private String exchangeName;
 
     @Override
     public void initialize() {
@@ -36,6 +38,9 @@ public class RabbitMqExporter implements EventExporter {
         int port = SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_PORT);
         String username = SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_USERNAME);
         String password = SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_PASSWORD);
+        String queueName = SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_Q_NAME);
+        exchangeName = SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_EX_NAME);
+
 
         log.info("Initializing RabbitMQ instance with host = " + host + ":" + port + virtual);
         ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -54,7 +59,9 @@ public class RabbitMqExporter implements EventExporter {
             String exchangeType = "topic";
             boolean durability = true;
 
-            channel.exchangeDeclare(EXCHANGE_NAME, exchangeType, durability);
+            channel.queueDeclare(queueName, durability, false, false, null);
+            channel.exchangeDeclare(exchangeName, exchangeType, durability);
+            channel.queueBind(queueName, exchangeName, "#");
             log.info("Initialized RabbitMqExporter instance!");
         } catch (IOException | TimeoutException e) {
             log.error("Initializing RabbitMQ instance failed!");
@@ -80,19 +87,76 @@ public class RabbitMqExporter implements EventExporter {
     @Override
     public void export(EventInstance eventInstance) {
 
-        String location = String.valueOf(eventInstance.getEventType().getEventSourceId());
-        String message = eventInstance.getMessage().getKey();
+        String routingKey = eventInstance.getAlarmLevel()
+                + "." + eventInstance.getEventType().getEventSourceId()
+                + "." + eventInstance.getMessage().getKey();
+
+        String message = parseMessageToJSON(eventInstance);
 
         try {
-            channel.basicPublish(EXCHANGE_NAME, location, null, message.getBytes());
+            channel.basicPublish(exchangeName, routingKey, null, message.getBytes());
         } catch (IOException e) {
             log.error("Failed to publish a message : " + message);
             log.error(e);
         }
+
     }
 
     public boolean isConnected() {
-        return channel.isOpen();
+        if (channel != null) {
+            return channel.isOpen();
+        } else {
+            return false;
+        }
+
     }
+
+    private String parseMessageToJSON(EventInstance eventInstance) {
+
+        StringBuilder messageJson = new StringBuilder("{");
+        messageJson.append("\"eventType\":").append(eventInstance.getEventType().getEventSourceId());
+        messageJson.append(",\"alarmLevel\":").append(eventInstance.getAlarmLevel());
+        messageJson.append(",\"messageKey\":\"").append(eventInstance.getMessage().getKey()).append("\"");
+
+        if (eventInstance.getMessage().getArgs() != null) {
+            messageJson.append(",\"messageArgs\":[");
+            Object last = null;
+
+            for (Object arg : eventInstance.getMessage().getArgs()) {
+                messageJson.append("\"").append(arg).append("\",");
+                last = arg;
+            }
+            if (last != null) {
+                messageJson.replace(messageJson.length() - 1, messageJson.length(), "]");
+            } else {
+                messageJson.replace(messageJson.length() - 16, messageJson.length(), "");
+            }
+
+        }
+
+
+        if (eventInstance.getContext() != null) {
+            messageJson.append(parseContextToJson(eventInstance.getContext()));
+        }
+        messageJson.append("}");
+
+        return messageJson.toString();
+    }
+
+    private String parseContextToJson(Map<String, Object> context) {
+
+        StringBuilder contextMessage = new StringBuilder(",");
+        DataPointVO dp = (DataPointVO) context.get("point");
+        if (dp != null) {
+            contextMessage.append("\"handler\":\"pointEventDetector\"");
+            contextMessage.append(",\"dataPoint\":{");
+            contextMessage.append("\"xid\":\"").append(dp.getXid()).append("\"");
+            contextMessage.append(",\"id\":").append(dp.getId());
+            contextMessage.append(",\"name\":\"").append(dp.getName()).append("\"");
+            contextMessage.append("}");
+        }
+        return contextMessage.toString();
+    }
+
 
 }
