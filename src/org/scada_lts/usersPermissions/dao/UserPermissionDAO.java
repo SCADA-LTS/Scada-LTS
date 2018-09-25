@@ -149,6 +149,10 @@ public class UserPermissionDAO {
         return keyHolder.getKey().intValue();
     }
 
+    public int update(final UserPermission userPermission){
+        return 0;
+    }
+
     private class UserPermissionRowMapper implements RowMapper<UserPermission> {
 
         @Override

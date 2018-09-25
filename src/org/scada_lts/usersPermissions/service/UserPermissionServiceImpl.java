@@ -2,9 +2,11 @@ package org.scada_lts.usersPermissions.service;
 
 import org.scada_lts.usersPermissions.dao.UserPermissionDAO;
 import org.scada_lts.usersPermissions.model.UserPermission;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Class created by Arkadiusz Parafiniuk
@@ -14,7 +16,6 @@ import javax.annotation.Resource;
 @Service
 public class UserPermissionServiceImpl implements UserPermissionService {
 
-//    @Resource
     UserPermissionDAO userPermissionDAO = new UserPermissionDAO();
 
     @Override
@@ -23,8 +24,18 @@ public class UserPermissionServiceImpl implements UserPermissionService {
     }
 
     @Override
-    public void createUserPermission(int userId, String entityXid, int permission) {
+    public List<UserPermission> getAllUserPermissions() {
+        return userPermissionDAO.getAllUsersPermissions();
+    }
 
+    @Override
+    public void setUserPermission(int userId, String entityXid, int permission) {
+        UserPermission userPermission = new UserPermission(entityXid, userId, permission);
+        if(userPermissionDAO.findUserPermissionByUserIdAndEntityXid(userId, entityXid)!=null) {
+            userPermissionDAO.update(userPermission);
+        } else {
+            userPermissionDAO.insert(userPermission);
+        }
     }
 
     @Override

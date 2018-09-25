@@ -19,6 +19,12 @@ public class UserPermission implements Serializable {
         //
     }
 
+    public UserPermission(String entityXid, int permission, int userId) {
+        this.entityXid = entityXid;
+        this.permission = permission;
+        this.userId = userId;
+    }
+
     public UserPermission(int id, String entityXid, int permission, int userId) {
         this.id = id;
         this.entityXid = entityXid;
