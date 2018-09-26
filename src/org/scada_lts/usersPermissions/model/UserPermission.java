@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public class UserPermission implements Serializable {
 
-    int id;
+    long id;
     String entityXid;
     int permission;
     int userId;
@@ -25,18 +25,11 @@ public class UserPermission implements Serializable {
         this.userId = userId;
     }
 
-    public UserPermission(int id, String entityXid, int permission, int userId) {
-        this.id = id;
-        this.entityXid = entityXid;
-        this.permission = permission;
-        this.userId = userId;
-    }
-
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -65,16 +58,6 @@ public class UserPermission implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "UserPermission{" +
-                "id=" + id +
-                ", entityXid='" + entityXid + '\'' +
-                ", permission=" + permission +
-                ", userId=" + userId +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -89,5 +72,15 @@ public class UserPermission implements Serializable {
     public int hashCode() {
 
         return Objects.hash(id, entityXid, permission, userId);
+    }
+
+    @Override
+    public String toString() {
+        return "UserPermission{" +
+                "id=" + id +
+                ", entityXid='" + entityXid + '\'' +
+                ", permission=" + permission +
+                ", userId=" + userId +
+                '}';
     }
 }

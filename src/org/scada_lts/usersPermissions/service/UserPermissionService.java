@@ -13,7 +13,7 @@ public interface UserPermissionService {
 
     UserPermission getUserPermission(String entityXid);
 
-    List<UserPermission> getAllUserPermissions();
+    List<UserPermission> getAllUserPermissions(int userId);
 
     List<UserPermission> getLimitedUserPermissions(int offset, int number);
 

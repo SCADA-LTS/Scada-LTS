@@ -24,8 +24,8 @@ public class UserPermissionServiceImpl implements UserPermissionService {
     }
 
     @Override
-    public List<UserPermission> getAllUserPermissions() {
-        return userPermissionDAO.getAllUsersPermissions();
+    public List<UserPermission> getAllUserPermissions(int userId) {
+        return userPermissionDAO.getAllUserPermissionsForUser(userId);
     }
 
     @Override

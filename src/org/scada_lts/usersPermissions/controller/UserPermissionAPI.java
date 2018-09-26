@@ -31,7 +31,7 @@ public class UserPermissionAPI {
     UserPermissionServiceImpl userPermissionService = new UserPermissionServiceImpl();
 
     @RequestMapping(value = "/api/userPermission/getAll", method = RequestMethod.GET)
-    public ResponseEntity<String> getAllUsersPermissions(HttpServletRequest request) {
+    public ResponseEntity<String> getAllUsersPermissions(@RequestHeader("userId") int userId, HttpServletRequest request) {
         LOG.info("/api/userPermission/getAll");
 
         try {
@@ -41,7 +41,7 @@ public class UserPermissionAPI {
 
                 List<UserPermission> userPermissions = new ArrayList<>();
                 if (user.isAdmin()) {
-                    userPermissions = userPermissionService.getAllUserPermissions();
+                    userPermissions = userPermissionService.getAllUserPermissions(userId);
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
                 }
@@ -104,9 +104,9 @@ public class UserPermissionAPI {
         }
     }
 
-    @RequestMapping(value = "/api/userPermission/setPermissionForDatasource/{entityXid}/{userId}/{permission}", method = RequestMethod.GET)
-    public ResponseEntity<String> setPermission(@PathVariable("entityXid") String entityXid, @PathVariable("userId") int userId, @PathVariable("permission") int permission, HttpServletRequest request) {
-        LOG.info("/api/permission/set/" + entityXid + "/" + userId + "/" + permission);
+    @RequestMapping(value = "/api/userPermission/setPermission", method = RequestMethod.POST)
+    public ResponseEntity<String> setPermission(@RequestHeader("entityXid") String entityXid, @RequestHeader("userId") int userId, @RequestHeader("permission") int permission, HttpServletRequest request) {
+        LOG.info("/api/userPermission/setPermission/");
         try {
             User user = Common.getUser(request);
             if (user != null) {
@@ -125,23 +125,23 @@ public class UserPermissionAPI {
     }
 
     class UserPermissionJSON implements Serializable {
-        private int id;
+        private long id;
         private int userId;
         private String entityXid;
         private int permission;
 
-        public UserPermissionJSON(int id, int userId, String entityXid, int permission) {
+        public UserPermissionJSON(long id, int userId, String entityXid, int permission) {
             this.id = id;
             this.userId = userId;
             this.entityXid = entityXid;
             this.permission = permission;
         }
 
-        public int getId() {
+        public long getId() {
             return id;
         }
 
-        public void setId(int id) {
+        public void setId(long id) {
             this.id = id;
         }
 

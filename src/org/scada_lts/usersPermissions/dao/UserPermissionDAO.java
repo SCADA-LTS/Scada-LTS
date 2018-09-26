@@ -2,11 +2,9 @@ package org.scada_lts.usersPermissions.dao;
 
 
 import com.mysql.jdbc.Statement;
-import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.SerializationData;
 import org.scada_lts.usersPermissions.model.UserPermission;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -44,14 +42,15 @@ public class UserPermissionDAO {
 
     // @formatter:off
 
-    private static final String USER_PERMISSION_SELECT_ALL = ""
+    private static final String USER_PERMISSION_SELECT_ALL_FOR_USER = ""
             + "select "
             + COLUMN_NAME_ID + ", "
             + COLUMN_NAME_USER_ID + ", "
             + COLUMN_NAME_ENTITY_XID + ", "
             + COLUMN_NAME_PERMISSION + " "
             + "from "
-            + TABLE_NAME + ";";
+            + TABLE_NAME + " where "
+            + COLUMN_NAME_USER_ID + "=?;";
 
     private static final String USER_PERMISSION_SELECT_ALL_WITH_LIMIT = ""
             + "select "
@@ -60,7 +59,7 @@ public class UserPermissionDAO {
             + COLUMN_NAME_ENTITY_XID + ", "
             + COLUMN_NAME_PERMISSION + " "
             + "from "
-            + TABLE_NAME + " LIMIT ?,?;";
+            + TABLE_NAME + " limit ?,?;";
 
 
     private static final String USER_PERMISSION_SELECT_WHERE_ENTITY_XID = ""
@@ -91,14 +90,14 @@ public class UserPermissionDAO {
 
     // @formatter:on
 
-    public List<UserPermission> getAllUsersPermissions() {
+    public List<UserPermission> getAllUserPermissionsForUser(int userId) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("getAllUsersPermissions()");
         }
 
         List<UserPermission> userPermissions = new ArrayList<>();
 
-        userPermissions = (List<UserPermission>) DAO.getInstance().getJdbcTemp().query(USER_PERMISSION_SELECT_ALL, new Object[]{}, new UserPermissionRowMapper() );
+        userPermissions = (List<UserPermission>) DAO.getInstance().getJdbcTemp().query(USER_PERMISSION_SELECT_ALL_FOR_USER, new Object[]{userId}, new UserPermissionRowMapper() );
 
         return userPermissions;
     }
