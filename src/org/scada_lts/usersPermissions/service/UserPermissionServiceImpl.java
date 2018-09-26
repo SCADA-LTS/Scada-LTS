@@ -29,6 +29,11 @@ public class UserPermissionServiceImpl implements UserPermissionService {
     }
 
     @Override
+    public List<UserPermission> getLimitedUserPermissions(int offset, int number) {
+        return userPermissionDAO.getLimitedUsersPermissions(offset, number);
+    }
+
+    @Override
     public void setUserPermission(int userId, String entityXid, int permission) {
         UserPermission userPermission = new UserPermission(entityXid, userId, permission);
         if(userPermissionDAO.findUserPermissionByUserIdAndEntityXid(userId, entityXid)!=null) {
