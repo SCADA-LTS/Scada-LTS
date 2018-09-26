@@ -1,0 +1,58 @@
+<!--
+SoftQ - http://www.softq.pl/
+Copyright (C) 2018 Softq
+@author Radek Jajko
+-->
+<p>Exporting Events to remote location</p>
+<p>Events from ScadaLTS can be now stored inside application but also could be exported to remote Data Store
+in this case RabbitMQ broker. That allows to ease behaviour of ScadaLTS and speed-up the efficiency of the application
+    when there is lots of input/output number of operations caused by Events.</p>
+<p>
+    What is more this feature can be used to remote managing of the events that has occurred inside Scada application.
+    It can notify remote message broker about the new event which has risen. It is delivered to RabbitMQ with special routing key
+    which allows to filter messages and receive only desired ones. Each message sent to RabbitMQ has JSON Object format.
+</p>
+<p>
+    Exchange routing key format is <b>X.Y.Z...</b> which means:<br>
+</p>
+<ul>
+    <li><b>X</b> - Alarm level [number]</li>
+    <li><b>Y</b> - Event type [number]</li>
+    <li><b>Z</b> - Message key [alphanumeric]</li>
+</ul>
+<p>
+    Alarm level numbers:
+</p>
+<ul>
+    <li>1 - Informational</li>
+    <li>2 - Urgent</li>
+    <li>3 - Critical</li>
+    <li>4 - Life safety</li>
+</ul>
+<p>
+    Event type numbers:
+</p>
+<ul>
+    <li>1 - Data Point</li>
+    <li>3 - Data Source</li>
+    <li>4 - System</li>
+    <li>5 - Compound</li>
+    <li>6 - Scheduled</li>
+    <li>7 - Publisher</li>
+    <li>8 - Audit</li>
+    <li>9 - Maintenance</li>
+</ul>
+<p>
+Using RabbitMQ route mask we can set receiver for example to receive:
+</p>
+<ul>
+    <li>Only URGENT alarms from SYSTEM events. <br>Routing key: <b>2.4.#</b></li>
+    <li>All DATAPOINT events. <br>Routing key: <b>*.1.#</b></li>
+    <li>All URGENT events. <br>Routing key: <b>2.#</b></li>
+    <li>System login events. <br>Routing key: <b>*.*.event.login</b></li>
+</ul>
+<p>
+    From <b>examples/DataSources/amqp/recvRabbitMQ.py</b> you are able to run this script
+    with option "-s true" to save received EventLogs to file. If you want specify location
+    of log saving directory use "-d [example_path]" option. Files will be saved as JSONs.
+</p>

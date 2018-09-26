@@ -5,6 +5,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -114,7 +116,8 @@ public class RabbitMqExporter implements EventExporter {
     private String parseMessageToJSON(EventInstance eventInstance) {
 
         StringBuilder messageJson = new StringBuilder("{");
-        messageJson.append("\"eventType\":").append(eventInstance.getEventType().getEventSourceId());
+        messageJson.append("\"eventTime\":").append(eventInstance.getActiveTimestamp());
+        messageJson.append(",\"eventType\":").append(eventInstance.getEventType().getEventSourceId());
         messageJson.append(",\"alarmLevel\":").append(eventInstance.getAlarmLevel());
         messageJson.append(",\"messageKey\":\"").append(eventInstance.getMessage().getKey()).append("\"");
 
@@ -123,7 +126,13 @@ public class RabbitMqExporter implements EventExporter {
             Object last = null;
 
             for (Object arg : eventInstance.getMessage().getArgs()) {
-                messageJson.append("\"").append(arg).append("\",");
+                if (arg instanceof LocalizableMessage) {
+                    for ( Object arg2 : ((LocalizableMessage) arg).getArgs()) {
+                        messageJson.append("\"").append(arg2).append("\",");
+                    }
+                } else if( arg != null ) {
+                    messageJson.append("\"").append(arg).append("\",");
+                }
                 last = arg;
             }
             if (last != null) {
@@ -133,7 +142,6 @@ public class RabbitMqExporter implements EventExporter {
             }
 
         }
-
 
         if (eventInstance.getContext() != null) {
             messageJson.append(parseContextToJson(eventInstance.getContext()));
@@ -155,8 +163,21 @@ public class RabbitMqExporter implements EventExporter {
             contextMessage.append(",\"name\":\"").append(dp.getName()).append("\"");
             contextMessage.append("}");
         }
+
+        DataSourceVO ds = (DataSourceVO) context.get("dataSource");
+        if (ds != null) {
+            if (dp != null) {
+                contextMessage.append(",");
+            }
+            contextMessage.append("\"handler\":\"dataSourceEventDetector\"");
+            contextMessage.append(",\"dataSource\":{");
+            contextMessage.append("\"xid\":\"").append(ds.getXid()).append("\"");
+            contextMessage.append(",\"id\":").append(ds.getId());
+            contextMessage.append(",\"name\":\"").append(ds.getName()).append("\"");
+            contextMessage.append("}");
+        }
+
         return contextMessage.toString();
     }
-
 
 }

@@ -590,6 +590,7 @@
       <tr>
         <td>
           <span class="smallTitle"><fmt:message key="systemSettings.eventExport"/></span>
+          <tag:help id="systemEventExport"/>
         </td>
         <td align="right">
           <tag:img id="testExportSettingsImg" png="database_go" onclick="testExportConnection();" title="Test Connection"/>
