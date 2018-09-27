@@ -596,6 +596,7 @@
           <tag:img id="testExportSettingsImg" png="database_go" onclick="testExportConnection();" title="Test Connection"/>
           <tag:img id="saveAlarmExportSettingsImg" png="save" onclick="saveAlarmExportSettings();" title="common.save"/>
         </td>
+        <td colspan="2" id="saveAlarmExportSettingsMessage" class="formError"></td>
       </tr>
     </table>
     <table>
