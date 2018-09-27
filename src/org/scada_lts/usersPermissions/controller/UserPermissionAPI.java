@@ -48,7 +48,7 @@ public class UserPermissionAPI {
 
                 List<UserPermissionJSON> lst = new ArrayList<UserPermissionJSON>();
                 for (UserPermission u:userPermissions) {
-                    UserPermissionJSON up = new UserPermissionJSON(u.getId(), u.getUserId(), u.getEntityXid(), u.getPermission());
+                    UserPermissionJSON up = new UserPermissionJSON(u.getId(), u.getUserId(), u.getEntityXid(), u.getPermission(), u.getEntityType());
                     lst.add(up);
                 }
 
@@ -67,9 +67,9 @@ public class UserPermissionAPI {
         }
     }
 
-    @RequestMapping(value = "/api/userPermission/getLimited", method = RequestMethod.GET)
-    public ResponseEntity<String> getLimitedUsersPermissions(@RequestHeader("offset") int offset, @RequestHeader("number") int number, HttpServletRequest request) {
-        LOG.info("/api/userPermission/getLimited");
+    @RequestMapping(value = "/api/userPermission/getPermissionsForDatasourceLimited", method = RequestMethod.GET)
+    public ResponseEntity<String> getPermissionsForDatasourceLimited(@RequestHeader("offset") int offset, @RequestHeader("number") int number, HttpServletRequest request) {
+        LOG.info("/api/userPermission/getPermissionsForDatasourceLimited");
 
         try {
             User user = Common.getUser(request);
@@ -78,14 +78,14 @@ public class UserPermissionAPI {
 
                 List<UserPermission> userPermissions = new ArrayList<>();
                 if (user.isAdmin()) {
-                    userPermissions = userPermissionService.getLimitedUserPermissions(offset, number);
+                    userPermissions = userPermissionService.getLimitedUserPermissions(offset, number, UserPermission.UserPermissionEntityType.DATASOURCE.toInt());
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
                 }
 
                 List<UserPermissionJSON> lst = new ArrayList<UserPermissionJSON>();
                 for (UserPermission u:userPermissions) {
-                    UserPermissionJSON up = new UserPermissionJSON(u.getId(), u.getUserId(), u.getEntityXid(), u.getPermission());
+                    UserPermissionJSON up = new UserPermissionJSON(u.getId(), u.getUserId(), u.getEntityXid(), u.getPermission(), u.getEntityType());
                     lst.add(up);
                 }
 
@@ -104,14 +104,14 @@ public class UserPermissionAPI {
         }
     }
 
-    @RequestMapping(value = "/api/userPermission/setPermission", method = RequestMethod.POST)
-    public ResponseEntity<String> setPermission(@RequestHeader("entityXid") String entityXid, @RequestHeader("userId") int userId, @RequestHeader("permission") int permission, HttpServletRequest request) {
-        LOG.info("/api/userPermission/setPermission/");
+    @RequestMapping(value = "/api/userPermission/setPermissionForDatasource", method = RequestMethod.POST)
+    public ResponseEntity<String> setPermissionForDatasource(@RequestHeader("entityXid") String entityXid, @RequestHeader("userId") int userId, @RequestHeader("permission") int permission, HttpServletRequest request) {
+        LOG.info("/api/userPermission/setPermissionForDatasource/");
         try {
             User user = Common.getUser(request);
             if (user != null) {
                 if(user.isAdmin()) {
-                    userPermissionService.setUserPermission(userId, entityXid, permission);
+                    userPermissionService.setUserPermission(userId, entityXid, permission, UserPermission.UserPermissionEntityType.DATASOURCE.toInt());
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
                 }
@@ -129,12 +129,14 @@ public class UserPermissionAPI {
         private int userId;
         private String entityXid;
         private int permission;
+        private int entityType;
 
-        public UserPermissionJSON(long id, int userId, String entityXid, int permission) {
+        public UserPermissionJSON(long id, int userId, String entityXid, int permission, int entityType) {
             this.id = id;
             this.userId = userId;
             this.entityXid = entityXid;
             this.permission = permission;
+            this.entityType = entityType;
         }
 
         public long getId() {
@@ -167,6 +169,14 @@ public class UserPermissionAPI {
 
         public void setPermission(int permission) {
             this.permission = permission;
+        }
+
+        public int getEntityType() {
+            return entityType;
+        }
+
+        public void setEntityType(int entityType) {
+            this.entityType = entityType;
         }
     }
 }

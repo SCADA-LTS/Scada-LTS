@@ -15,9 +15,9 @@ public interface UserPermissionService {
 
     List<UserPermission> getAllUserPermissions(int userId);
 
-    List<UserPermission> getLimitedUserPermissions(int offset, int number);
+    List<UserPermission> getLimitedUserPermissions(int offset, int number, int entityTypes);
 
-    void setUserPermission(int userId, String entityXid, int permission);
+    void setUserPermission(int userId, String entityXid, int permission, int entityType);
 
     boolean hasUserPermission(int userId, String entityXid, int permission);
 

@@ -18,7 +18,7 @@ public class V1_4__AddUsersPermissions implements SpringJdbcMigration {
                 + "entityXid varchar(50) not null,  "
                 + "userId int not null,"
                 + "permission int not null,"
-                + "entityType smallint not null,"
+                + "entityType smallint not null"
                 + ") ENGINE=InnoDB;";
 
         jdbcTmp.execute(usersPermissionsSQL);

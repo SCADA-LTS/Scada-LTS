@@ -39,27 +39,38 @@ public class UserPermissionDAO {
     private static final String COLUMN_NAME_USER_ID = "userId";
     private static final String COLUMN_NAME_ENTITY_XID = "entityXid";
     private static final String COLUMN_NAME_PERMISSION = "permission";
+    private static final String COLUMN_NAME_ENTITY_TYPE = "entityType";
 
     // @formatter:off
 
     private static final String USER_PERMISSION_SELECT_ALL_FOR_USER = ""
-            + "select "
+            + "SELECT "
             + COLUMN_NAME_ID + ", "
             + COLUMN_NAME_USER_ID + ", "
             + COLUMN_NAME_ENTITY_XID + ", "
             + COLUMN_NAME_PERMISSION + " "
-            + "from "
-            + TABLE_NAME + " where "
+            + "FROM "
+            + TABLE_NAME + " WHERE "
             + COLUMN_NAME_USER_ID + "=?;";
 
     private static final String USER_PERMISSION_SELECT_ALL_WITH_LIMIT = ""
-            + "select "
+            + "SELECT "
             + COLUMN_NAME_ID + ", "
             + COLUMN_NAME_USER_ID + ", "
             + COLUMN_NAME_ENTITY_XID + ", "
             + COLUMN_NAME_PERMISSION + " "
-            + "from "
-            + TABLE_NAME + " limit ?,?;";
+            + "FROM "
+            + TABLE_NAME + " LIMIT ?,?;";
+
+    private static final String USER_PERMISSION_SELECT_FOR_ENTITY_WITH_LIMIT = ""
+            + "SELECT "
+            + COLUMN_NAME_ID + ", "
+            + COLUMN_NAME_USER_ID + ", "
+            + COLUMN_NAME_ENTITY_XID + ", "
+            + COLUMN_NAME_PERMISSION + ", "
+            + COLUMN_NAME_ENTITY_TYPE + " "
+            + "FROM "
+            + TABLE_NAME + " WHERE " + COLUMN_NAME_ENTITY_TYPE + "=? LIMIT ?,?;";
 
 
     private static final String USER_PERMISSION_SELECT_WHERE_ENTITY_XID = ""
@@ -85,8 +96,9 @@ public class UserPermissionDAO {
             + "insert into " + TABLE_NAME + " ("
             + COLUMN_NAME_USER_ID + ", "
             + COLUMN_NAME_ENTITY_XID + ", "
-            + COLUMN_NAME_PERMISSION + ") "
-            + "values (?,?,?)";
+            + COLUMN_NAME_PERMISSION + ", "
+            + COLUMN_NAME_ENTITY_TYPE + ") "
+            + "values (?,?,?,?)";
 
     // @formatter:on
 
@@ -110,6 +122,18 @@ public class UserPermissionDAO {
         List<UserPermission> userPermissions = new ArrayList<>();
 
         userPermissions = (List<UserPermission>) DAO.getInstance().getJdbcTemp().query(USER_PERMISSION_SELECT_ALL_WITH_LIMIT, new Object[]{offset, num}, new UserPermissionRowMapper() );
+
+        return userPermissions;
+    }
+
+    public List<UserPermission> getLimitedUsersPermissionsForDatasource(int offset, int number) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("getLimitedUsersPermissionsForDatasource(" + offset + ", " + number + ");");
+        }
+
+        List<UserPermission> userPermissions;
+
+        userPermissions = (List<UserPermission>) DAO.getInstance().getJdbcTemp().query(USER_PERMISSION_SELECT_FOR_ENTITY_WITH_LIMIT, new Object[]{1, offset, number}, new UserPermissionRowMapper() );
 
         return userPermissions;
     }
@@ -162,7 +186,8 @@ public class UserPermissionDAO {
                 new ArgumentPreparedStatementSetter(new Object[] {
                         userPermission.getUserId(),
                         userPermission.getEntityXid(),
-                        userPermission.getPermission()
+                        userPermission.getPermission(),
+                        userPermission.getEntityType()
                 }).setValues(ps);
                 return ps;
             }
@@ -186,6 +211,7 @@ public class UserPermissionDAO {
             userPermission.setUserId(resultSet.getInt(COLUMN_NAME_USER_ID));
             userPermission.setEntityXid(resultSet.getString(COLUMN_NAME_ENTITY_XID));
             userPermission.setPermission(resultSet.getInt(COLUMN_NAME_PERMISSION));
+            userPermission.setEntityType(resultSet.getInt(COLUMN_NAME_ENTITY_TYPE));
 
             return userPermission;
         }

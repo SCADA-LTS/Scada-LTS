@@ -14,6 +14,25 @@ public class UserPermission implements Serializable {
     String entityXid;
     int permission;
     int userId;
+    int entityType;
+
+    public enum UserPermissionEntityType {
+        DATASOURCE(1), DATAPOINT(2), VIEW(3), WATCHLIST(4);
+        private final int entityType;
+
+        UserPermissionEntityType(int entityType) {
+            this.entityType = entityType;
+        }
+
+        public int toInt() {
+            return entityType;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(entityType);
+        }
+    }
 
     public UserPermission() {
         //
@@ -23,6 +42,13 @@ public class UserPermission implements Serializable {
         this.entityXid = entityXid;
         this.permission = permission;
         this.userId = userId;
+    }
+
+    public UserPermission(String entityXid, int userId, int permission, int entityType) {
+        this.entityXid = entityXid;
+        this.permission = permission;
+        this.userId = userId;
+        this.entityType = entityType;
     }
 
     public long getId() {
@@ -55,6 +81,14 @@ public class UserPermission implements Serializable {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public int getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(int entityType) {
+        this.entityType = entityType;
     }
 
     @Override
