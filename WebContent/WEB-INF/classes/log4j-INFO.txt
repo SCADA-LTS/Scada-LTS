@@ -1,0 +1,58 @@
+    +-------------------------------------------------+
+    |                                                 |
+    +---     Log4J 1.X migration to Log4J 2.11     ---+
+    |                                                 |
+    +-------------------------------------------------+
+
+1. Changed API
+- Log4j2 uses now a new API, the main package is called:
+  "org.apache.logging.log4j" instead "org.apache.log4j"
+- "org.apache.log4j.Logger.getLogger()" must be modified
+  to "org.apache.logging.log4j.LogManager.getLogger()"
+- and much more info in the web:
+  https://logging.apache.org/log4j/2.x/manual/migration.html
+
+2. We are now using "Log4j 1.2 API" bridge to use the same
+   functions from 1.X version in 2.11 version.
+- You must not access to the methods and classes from
+  log4j1 such as Appender, LoggerRepository and Category
+- You must not programmatically configure Log4j
+- You must not configure by calling the classes
+  DOMConfigurator or PropertyConfigurator.
+
+  *** To use it whole code refactoring is obligatory ***
+
+3. Folder structure
+
+Now the log folder structure has changed. Logs are stored
+inside CATALINA_HOME/logs directory BUT it has its own directory.
+In the main folder there is a file "ScadaLTS.log" which has
+the <root> output inside.
+Other log files are stored inside ScadaLTS directory.
+When FileRoller reach the maximum size of the log file
+it will create a new directory with current date and it
+will place the old data int this folder to store archival data.
+
+There is a new structure of log files. There are the most important
+log separated into independent files. Each is saved by RollingFile
+mechanism wich uses "disruptor-3.3.4.jar" to make an asynchronous
+file saving operations by AsyncLogger.  More info about performance
+of this feature can be find via this link:
+https://logging.apache.org/log4j/2.x/manual/async.html
+
+File structure:
+ |
+ + ScadaLTS.log
+ \-+ ScadaLTS
+   |
+   + ScadaLTS_dao.log
+   + ScadaLTS_database.log
+   + ScadaLTS_datasources.log
+   + ScadaLTS_dwr.log
+   + ScadaLTS_flyway.log
+   + ScadaLTS_modbus.log
+   + ScadaLTS_runtime.log
+   + ScadaLTS_view_hierarchy.log
+   \ ScadaLTS_web.log
+
+

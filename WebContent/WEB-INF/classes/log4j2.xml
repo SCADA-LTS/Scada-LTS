@@ -63,7 +63,7 @@
         </RollingFile>
 
         <RollingFile name="RFL_DWR"
-                     filename="${env:CATALINA_HOME}/logs/ScadaLTS/Scada_dwr.log"
+                     filename="${env:CATALINA_HOME}/logs/ScadaLTS/ScadaLTS_dwr.log"
                      filepattern="${env:CATALINA_HOME}/logs/ScadaLTS/$${date:yyyy-MM}/dwr-%d{MM-dd-yyyy}-%i.log">
             <PatternLayout pattern="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
             <Policies>
@@ -73,7 +73,7 @@
         </RollingFile>
 
         <RollingFile name="RFL_RUNTIME"
-                     filename="${env:CATALINA_HOME}/logs/ScadaLTS/Scada_runtime.log"
+                     filename="${env:CATALINA_HOME}/logs/ScadaLTS/ScadaLTS_runtime.log"
                      filepattern="${env:CATALINA_HOME}/logs/ScadaLTS/$${date:yyyy-MM}/runtime-%d{MM-dd-yyyy}-%i.log">
             <PatternLayout pattern="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
             <Policies>
@@ -83,7 +83,7 @@
         </RollingFile>
 
         <RollingFile name="RFL_VIEW_HIERARCHY"
-                     filename="${env:CATALINA_HOME}/logs/ScadaLTS/Scada_view_hierarchy.log"
+                     filename="${env:CATALINA_HOME}/logs/ScadaLTS/ScadaLTS_view_hierarchy.log"
                      filepattern="${env:CATALINA_HOME}/logs/ScadaLTS/$${date:yyyy-MM}/view_hierarchy-%d{MM-dd-yyyy}-%i.log">
             <PatternLayout pattern="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
             <Policies>
@@ -92,12 +92,12 @@
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
-        <File name="LOG_FLYWAY" filename="${env:CATALINA_HOME}/logs/ScadaLTS/Scada_flyway.log">
+        <File name="LOG_FLYWAY" filename="${env:CATALINA_HOME}/logs/ScadaLTS/ScadaLTS_flyway.log">
             <PatternLayout pattern="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
         </File>
 
         <RollingFile name="LOG_FILE"
-                     filename="${env:CATALINA_HOME}/logs/ScadaLTS_mango.log"
+                     filename="${env:CATALINA_HOME}/logs/ScadaLTS.log"
                      filepattern="${env:CATALINA_HOME}/logs/ScadaLTS/$${date:yyyy-MM}/ScadaLTS-%d{MM-dd-yyyy}-%i.log">
             <PatternLayout pattern="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
             <Policies>
@@ -109,6 +109,10 @@
         <Async name="ASYNC">
             <AppenderRef ref="LOG_FILE"/>
         </Async>
+
+        <!-- Tested with <RabbitMQ></RabbitMQ> but it doesn't work (tomcat has started but messages hadn't been sent)   -->
+        <!-- Used org.springframework.amqp:spring-rabbit:1.6.0.M2 library and log4j-2.11 with WEB *.jar                 -->
+        <!-- Used also org.springframework.amqp:spring-rabbit:2.0.6 library and log4j-2.5                               -->
 
     </Appenders>
 
@@ -196,4 +200,3 @@
     </Loggers>
 
 </Configuration>
-
