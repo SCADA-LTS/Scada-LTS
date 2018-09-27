@@ -133,7 +133,7 @@ public class UserPermissionDAO {
 
         List<UserPermission> userPermissions;
 
-        userPermissions = (List<UserPermission>) DAO.getInstance().getJdbcTemp().query(USER_PERMISSION_SELECT_FOR_ENTITY_WITH_LIMIT, new Object[]{1, offset, number}, new UserPermissionRowMapper() );
+        userPermissions = (List<UserPermission>) DAO.getInstance().getJdbcTemp().query(USER_PERMISSION_SELECT_FOR_ENTITY_WITH_LIMIT, new Object[]{UserPermission.UserPermissionEntityType.DATASOURCE.toInt(), offset, number}, new UserPermissionRowMapper() );
 
         return userPermissions;
     }
