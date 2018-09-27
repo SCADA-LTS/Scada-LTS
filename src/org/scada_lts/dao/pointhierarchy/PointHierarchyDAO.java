@@ -48,7 +48,7 @@ import com.serotonin.mango.vo.DataPointVO;
  * person supporting and coreecting translation Jerzy Piejko
  */
 
-@Repository
+//@Repository
 public class PointHierarchyDAO {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyDAO.class);

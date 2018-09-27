@@ -38,7 +38,7 @@ import java.util.List;
  *
  * @author grzegorz.bylica@gmail.com
  */
-@Repository
+//@Repository
 public class PointHierarchyXidDAO extends PointHierarchyDAO {
 
     private static final String ROOT = "_";

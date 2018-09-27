@@ -88,7 +88,9 @@ import com.serotonin.bacnet4j.type.constructed.Address;
 import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
-import org.scada_lts.modbus.SerialParameters;
+import org.scada_lts.workdomain.datasource.amqp.AmqpDataSourceVO;
+import org.scada_lts.workdomain.datasource.amqp.AmqpPointLocatorVO;
+import org.scada_lts.workdomain.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -138,7 +140,6 @@ import com.serotonin.mango.vo.dataSource.jmx.JmxDataSourceVO;
 import com.serotonin.mango.vo.dataSource.jmx.JmxPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusDataSourceVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusPointLocatorVO;
-import com.serotonin.mango.vo.dataSource.mbus.MBusSearchByAddressing;
 import com.serotonin.mango.vo.dataSource.mbus.PrimaryAddressingSearch;
 import com.serotonin.mango.vo.dataSource.mbus.SecondaryAddressingSearch;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
@@ -200,7 +201,6 @@ import com.serotonin.modbus4j.ip.IpParameters;
 import com.serotonin.modbus4j.locator.BaseLocator;
 import com.serotonin.modbus4j.msg.ModbusRequest;
 import com.serotonin.modbus4j.msg.ReadResponse;
-import com.serotonin.modbus4j.serial.SerialPortWrapper;
 import com.serotonin.util.IpAddressUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.viconics.RequestFailureException;
@@ -2754,5 +2754,30 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 			String name, RadiuinoPointLocatorVO locator) {
 		return validatePoint(id, xid, name, locator, null);
 	}
+
+	// AMQP Receiver //
+    @MethodFilter
+    public DwrResponseI18n saveAmqpDataSource(String name, String xid, int updatePeriods, int updatePeriodType, int updateAttempts,
+                                                      String serverIpAddress, String serverPortNumber, String serverUsername, String serverPassword, String serverVirtualHost) {
+        AmqpDataSourceVO ds = (AmqpDataSourceVO) Common.getUser().getEditDataSource();
+
+        ds.setXid(xid);
+        ds.setName(name);
+        ds.setUpdatePeriods(updatePeriods);
+        ds.setUpdatePeriodType(updatePeriodType);
+		ds.setUpdateAttempts(updateAttempts);
+        ds.setServerIpAddress(serverIpAddress);
+        ds.setServerPortNumber(serverPortNumber);
+        ds.setServerVirtualHost(serverVirtualHost);
+        ds.setServerUsername(serverUsername);
+        ds.setServerPassword(serverPassword);
+
+	    return tryDataSourceSave(ds);
+    }
+
+    @MethodFilter
+    public DwrResponseI18n saveAmqpPointLocator(int id, String xid, String name, AmqpPointLocatorVO locator){
+	    return validatePoint(id, xid, name, locator, null);
+    }
 
 }

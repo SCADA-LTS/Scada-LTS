@@ -15,34 +15,34 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.permissions;
+package org.scada_lts.workdomain.permissions.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.permissions.model.EntryDto;
+import org.scada_lts.workdomain.permissions.PermissionEvaluatorAclImp;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @author Grzegorz Bylica grzegorz.bylica@gmail.com
- **/
-public class PermissionViewACL {
+ * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
+ */
+public class PermissionDataSourceACL {
 
-    private static final Log LOG = LogFactory.getLog(PermissionViewACL.class);
+    private static final Log LOG = LogFactory.getLog(PermissionDataSourceACL.class);
 
-    private static int CLAZZ_ID = 3;
+    private static int CLAZZ_ID = 1;
 
-    private static PermissionViewACL instance = null;
+    private static PermissionDataSourceACL instance = null;
 
-    private PermissionViewACL() {
+    private PermissionDataSourceACL() {
         //
     }
 
-    public static PermissionViewACL getInstance() {
+    public static PermissionDataSourceACL getInstance() {
         if (instance == null) {
-            instance = new PermissionViewACL();
+            instance = new PermissionDataSourceACL();
         }
 
         return instance;
@@ -65,11 +65,11 @@ public class PermissionViewACL {
 
         List<EntryDto> lst = PermissionEvaluatorAclImp.getInstance().filter(userId, CLAZZ_ID);
 
-        LOG.info("Filter PermissionViewACL lst:" + lst.toString());
+        LOG.info("Filter PermissionDataSourceACL lst:" + lst.toString());
         Map<Integer, EntryDto> map = lst.stream().collect(
                 Collectors.toMap(EntryDto::getId, EntryDto::getSelf));
 
         return map;
     }
-
+    
 }
