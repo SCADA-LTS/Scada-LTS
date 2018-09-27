@@ -1,5 +1,7 @@
-<!-- author: Radek Jajko -->
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+@author: Radek Jajko
+-->
 <Configuration>
 
     <Appenders>
@@ -17,7 +19,7 @@
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="20"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
         <RollingFile name="RFL_DATASOURCES"
@@ -27,7 +29,7 @@
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="20"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
         <RollingFile name="RFL_DATABASE"
@@ -37,7 +39,7 @@
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="50"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
         <RollingFile name="RFL_LTS_WEB"
@@ -47,7 +49,7 @@
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="20"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
         <RollingFile name="RFL_LTS_DAO"
@@ -57,7 +59,7 @@
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="20"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
         <RollingFile name="RFL_DWR"
@@ -67,7 +69,7 @@
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="20"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
         <RollingFile name="RFL_RUNTIME"
@@ -77,7 +79,7 @@
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="20"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
         <RollingFile name="RFL_VIEW_HIERARCHY"
@@ -87,16 +89,22 @@
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="20"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
         <File name="LOG_FLYWAY" filename="${env:CATALINA_HOME}/logs/ScadaLTS/Scada_flyway.log">
             <PatternLayout pattern="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
         </File>
 
-        <File name="LOG_FILE" filename="${env:CATALINA_HOME}/logs/ScadaLTS_mango.log">
+        <RollingFile name="LOG_FILE"
+                     filename="${env:CATALINA_HOME}/logs/ScadaLTS_mango.log"
+                     filepattern="${env:CATALINA_HOME}/logs/ScadaLTS/$${date:yyyy-MM}/ScadaLTS-%d{MM-dd-yyyy}-%i.log">
             <PatternLayout pattern="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
-        </File>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
 
         <Async name="ASYNC">
             <AppenderRef ref="LOG_FILE"/>
