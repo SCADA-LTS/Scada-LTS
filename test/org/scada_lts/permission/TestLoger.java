@@ -35,7 +35,7 @@ public class TestLoger {
         public boolean requiresLayout() {return false;}
         @Override
         protected void append(LoggingEvent event) {
-            System.out.println(""+event.getMessage());
+//            System.out.println(""+event.getMessage());
         }
     }
 

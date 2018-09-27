@@ -13,8 +13,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import br.org.scadabr.api.exception.DAOException;
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
+//import br.org.scadabr.vo.permission.ViewAccess;
+//import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.db.spring.GenericRowMapper;
@@ -243,10 +243,10 @@ public class UsersProfileDao extends BaseDao {
 		LOG.debug("populateDatapoints");
 		populateDatapoints(profile);
 		LOG.debug("populateWatchlists");
-		populateWatchlists(profile);
-		LOG.debug("populateViews");
-		populateViews(profile);
-		LOG.debug("populateUsers");
+//		populateWatchlists(profile);
+//		LOG.debug("populateViews");
+//		populateViews(profile);
+//		LOG.debug("populateUsers");
 		populateUsers(profile);
 		LOG.debug("end");
 
@@ -258,23 +258,23 @@ public class UsersProfileDao extends BaseDao {
 				Integer.class));
 	}
 
-	private void populateWatchlists(UsersProfileVO profile) {
-		profile.setWatchlistPermissions(query(SELECT_WATCHLIST_PERMISSIONS,
-				new Object[] { profile.getId() },
-				new GenericRowMapper<WatchListAccess>() {
-					public WatchListAccess mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						WatchListAccess a = new WatchListAccess(rs.getInt(1),
-								rs.getInt(2));
-						return a;
-					}
-				}));
-
-		WatchListDao watchListDao = new WatchListDao();
-		List<WatchList> allwatchlists = watchListDao.getWatchLists();
-		watchListDao.populateWatchlistData(allwatchlists);
-		profile.defineWatchlists(allwatchlists);
-	}
+////	private void populateWatchlists(UsersProfileVO profile) {
+////		profile.setWatchlistPermissions(query(SELECT_WATCHLIST_PERMISSIONS,
+////				new Object[] { profile.getId() },
+////				new GenericRowMapper<WatchListAccess>() {
+////					public WatchListAccess mapRow(ResultSet rs, int rowNum)
+////							throws SQLException {
+////						WatchListAccess a = new WatchListAccess(rs.getInt(1),
+////								rs.getInt(2));
+////						return a;
+////					}
+////				}));
+//
+//		WatchListDao watchListDao = new WatchListDao();
+//		List<WatchList> allwatchlists = watchListDao.getWatchLists();
+//		watchListDao.populateWatchlistData(allwatchlists);
+//		profile.defineWatchlists(allwatchlists);
+//	}
 
 	private void populateDatapoints(UsersProfileVO profile) {
 		profile.setDataPointPermissions(query(SELECT_DATA_POINT_PERMISSIONS,
@@ -296,21 +296,21 @@ public class UsersProfileDao extends BaseDao {
 				new Object[] { profile.getId() }, Integer.class));
 	}
 
-	private void populateViews(UsersProfileVO profile) {
-		profile.setViewPermissions(query(SELECT_VIEW_PERMISSIONS,
-				new Object[] { profile.getId() },
-				new GenericRowMapper<ViewAccess>() {
-					public ViewAccess mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						ViewAccess a = new ViewAccess(rs.getInt(1), rs
-								.getInt(2));
-						return a;
-					}
-				}));
-
-		List<View> allviews = new ViewDao().getViews();
-		profile.defineViews(allviews);
-	}
+//	private void populateViews(UsersProfileVO profile) {
+//		profile.setViewPermissions(query(SELECT_VIEW_PERMISSIONS,
+//				new Object[] { profile.getId() },
+//				new GenericRowMapper<ViewAccess>() {
+//					public ViewAccess mapRow(ResultSet rs, int rowNum)
+//							throws SQLException {
+//						ViewAccess a = new ViewAccess(rs.getInt(1), rs
+//								.getInt(2));
+//						return a;
+//					}
+//				}));
+//
+//		List<View> allviews = new ViewDao().getViews();
+//		profile.defineViews(allviews);
+//	}
 
 	private void populateUserProfilePermissions(List<UsersProfileVO> profiles) {
 		for (UsersProfileVO profile : profiles) {
@@ -361,39 +361,39 @@ public class UsersProfileDao extends BaseDao {
 					}
 				});
 
-		ejt.batchUpdate(
-				"insert into watchListUsersProfiles (watchlistId, userProfileId, permission) values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getWatchlistPermissions().size();
-					}
+//		ejt.batchUpdate(
+//				"insert into watchListUsersProfiles (watchlistId, userProfileId, permission) values (?,?,?)",
+//				new BatchPreparedStatementSetter() {
+//					public int getBatchSize() {
+//						return usersProfile.getWatchlistPermissions().size();
+//					}
+//
+//					public void setValues(PreparedStatement ps, int i)
+//							throws SQLException {
+//						ps.setInt(1, usersProfile.getWatchlistPermissions()
+//								.get(i).getId());
+//						ps.setInt(2, usersProfile.getId());
+//						ps.setInt(3, usersProfile.getWatchlistPermissions()
+//								.get(i).getPermission());
+//					}
+//				});
 
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getWatchlistPermissions()
-								.get(i).getId());
-						ps.setInt(2, usersProfile.getId());
-						ps.setInt(3, usersProfile.getWatchlistPermissions()
-								.get(i).getPermission());
-					}
-				});
-
-		ejt.batchUpdate(
-				"insert into viewUsersProfiles (viewId, userProfileId, permission) values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getViewPermissions().size();
-					}
-
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getViewPermissions().get(i)
-								.getId());
-						ps.setInt(2, usersProfile.getId());
-						ps.setInt(3, usersProfile.getViewPermissions().get(i)
-								.getPermission());
-					}
-				});
+//		ejt.batchUpdate(
+//				"insert into viewUsersProfiles (viewId, userProfileId, permission) values (?,?,?)",
+//				new BatchPreparedStatementSetter() {
+//					public int getBatchSize() {
+//						return usersProfile.getViewPermissions().size();
+//					}
+//
+//					public void setValues(PreparedStatement ps, int i)
+//							throws SQLException {
+//						ps.setInt(1, usersProfile.getViewPermissions().get(i)
+//								.getId());
+//						ps.setInt(2, usersProfile.getId());
+//						ps.setInt(3, usersProfile.getViewPermissions().get(i)
+//								.getPermission());
+//					}
+//				});
 	}
 
 	public UsersProfileVO getUserProfileByUserId(int userid) {

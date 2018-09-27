@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.org.scadabr.vo.permission.Permission;
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
+//import br.org.scadabr.vo.permission.Permission;
+//import br.org.scadabr.vo.permission.ViewAccess;
+//import br.org.scadabr.vo.permission.WatchListAccess;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -32,9 +32,9 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 
 	private List<DataPointAccess> dataPointPermissions;
 
-	private List<WatchListAccess> watchlistPermissions;
-
-	private List<ViewAccess> viewPermissions;
+//	private List<WatchListAccess> watchlistPermissions;
+//
+//	private List<ViewAccess> viewPermissions;
 
 	private String xid;
 
@@ -50,8 +50,8 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		name = "";
 		dataSourcePermissions = new ArrayList<Integer>();
 		dataPointPermissions = new ArrayList<DataPointAccess>();
-		watchlistPermissions = new ArrayList<WatchListAccess>();
-		viewPermissions = new ArrayList<ViewAccess>();
+//		watchlistPermissions = new ArrayList<WatchListAccess>();
+//		viewPermissions = new ArrayList<ViewAccess>();
 		watchlists = new ArrayList<WatchList>();
 		views = new ArrayList<View>();
 		usersIds = new ArrayList<Integer>();
@@ -98,22 +98,22 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		this.dataPointPermissions = dataPointPermissions;
 	}
 
-	public List<WatchListAccess> getWatchlistPermissions() {
-		return watchlistPermissions;
-	}
-
-	public void setWatchlistPermissions(
-			List<WatchListAccess> watchlistPermissions) {
-		this.watchlistPermissions = watchlistPermissions;
-	}
-
-	public void setViewPermissions(List<ViewAccess> viewPermissions) {
-		this.viewPermissions = viewPermissions;
-	}
-
-	public List<ViewAccess> getViewPermissions() {
-		return this.viewPermissions;
-	}
+//	public List<WatchListAccess> getWatchlistPermissions() {
+//		return watchlistPermissions;
+//	}
+//
+//	public void setWatchlistPermissions(
+//			List<WatchListAccess> watchlistPermissions) {
+//		this.watchlistPermissions = watchlistPermissions;
+//	}
+//
+//	public void setViewPermissions(List<ViewAccess> viewPermissions) {
+//		this.viewPermissions = viewPermissions;
+//	}
+//
+//	public List<ViewAccess> getViewPermissions() {
+//		return this.viewPermissions;
+//	}
 
 	// some getters/setters were renamed to retrieve/define to avoid Serotonin
 	// JSON writer implementation to find them
@@ -152,124 +152,124 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 
 	private void applyWatchlistPermissions(User user) {
 
-		if (this.watchlistPermissions.isEmpty()) {
-			List<ShareUser> nonePermissions = new ArrayList<ShareUser>();
-			for (Integer userId : this.usersIds) {
-				ShareUser newUserPermissions = new ShareUser();
-				newUserPermissions.setAccessType(ShareUser.ACCESS_NONE);
-				newUserPermissions.setUserId(userId);
-				nonePermissions.add(newUserPermissions);
-			}
-
-			for (WatchList watchList : this.watchlists) {
-				watchList.setWatchListUsers(nonePermissions);
-			}
-		}
-
-		else {
-
-			for (WatchList watchList : this.watchlists) {
-
-				Map<Integer, ShareUser> oldPermissionsByUserId = new HashMap<Integer, ShareUser>();
-				Map<Integer, Permission> newPermissionsByWatchListId = new HashMap<Integer, Permission>();
-
-				for (Permission newPermission : this.watchlistPermissions) {
-					newPermissionsByWatchListId.put(newPermission.getId(),
-							newPermission);
-				}
-
-				if (!newPermissionsByWatchListId.containsKey(watchList.getId())) {
-					WatchListAccess noneAccess = new WatchListAccess(
-							watchList.getId(), ShareUser.ACCESS_NONE);
-					this.watchlistPermissions.add(noneAccess);
-					newPermissionsByWatchListId.put(noneAccess.getId(),
-							noneAccess);
-				}
-
-				for (ShareUser oldPermission : watchList.getWatchListUsers()) {
-					oldPermissionsByUserId.put(oldPermission.getUserId(),
-							oldPermission);
-
-					if ((oldPermission.getUserId() == user.getId() || this.usersIds
-							.contains(oldPermission.getUserId()))
-							&& newPermissionsByWatchListId
-									.containsKey(watchList.getId())) {
-						oldPermission.setAccessType(newPermissionsByWatchListId
-								.get(watchList.getId()).getPermission());
-					}
-				}
-
-				if (!oldPermissionsByUserId.containsKey(user.getId())) {
-					ShareUser newUserPermissions = new ShareUser();
-					newUserPermissions
-							.setAccessType(newPermissionsByWatchListId.get(
-									watchList.getId()).getPermission());
-					newUserPermissions.setUserId(user.getId());
-					watchList.getWatchListUsers().add(newUserPermissions);
-				}
-
-			}
-		}
+//		if (this.watchlistPermissions.isEmpty()) {
+//			List<ShareUser> nonePermissions = new ArrayList<ShareUser>();
+//			for (Integer userId : this.usersIds) {
+//				ShareUser newUserPermissions = new ShareUser();
+//				newUserPermissions.setAccessType(ShareUser.ACCESS_NONE);
+//				newUserPermissions.setUserId(userId);
+//				nonePermissions.add(newUserPermissions);
+//			}
+//
+//			for (WatchList watchList : this.watchlists) {
+//				watchList.setWatchListUsers(nonePermissions);
+//			}
+//		}
+//
+//		else {
+//
+//			for (WatchList watchList : this.watchlists) {
+//
+//				Map<Integer, ShareUser> oldPermissionsByUserId = new HashMap<Integer, ShareUser>();
+//				Map<Integer, Permission> newPermissionsByWatchListId = new HashMap<Integer, Permission>();
+//
+//				for (Permission newPermission : this.watchlistPermissions) {
+//					newPermissionsByWatchListId.put(newPermission.getId(),
+//							newPermission);
+//				}
+//
+//				if (!newPermissionsByWatchListId.containsKey(watchList.getId())) {
+//					WatchListAccess noneAccess = new WatchListAccess(
+//							watchList.getId(), ShareUser.ACCESS_NONE);
+//					this.watchlistPermissions.add(noneAccess);
+//					newPermissionsByWatchListId.put(noneAccess.getId(),
+//							noneAccess);
+//				}
+//
+//				for (ShareUser oldPermission : watchList.getWatchListUsers()) {
+//					oldPermissionsByUserId.put(oldPermission.getUserId(),
+//							oldPermission);
+//
+//					if ((oldPermission.getUserId() == user.getId() || this.usersIds
+//							.contains(oldPermission.getUserId()))
+//							&& newPermissionsByWatchListId
+//									.containsKey(watchList.getId())) {
+//						oldPermission.setAccessType(newPermissionsByWatchListId
+//								.get(watchList.getId()).getPermission());
+//					}
+//				}
+//
+//				if (!oldPermissionsByUserId.containsKey(user.getId())) {
+//					ShareUser newUserPermissions = new ShareUser();
+//					newUserPermissions
+//							.setAccessType(newPermissionsByWatchListId.get(
+//									watchList.getId()).getPermission());
+//					newUserPermissions.setUserId(user.getId());
+//					watchList.getWatchListUsers().add(newUserPermissions);
+//				}
+//
+//			}
+//		}
 
 	}
 
 	private void applyViewPermissions(User user) {
 
-		if (this.viewPermissions.isEmpty()) {
-			List<ShareUser> nonePermissions = new ArrayList<ShareUser>();
-			for (Integer userId : this.usersIds) {
-				ShareUser newUserPermissions = new ShareUser();
-				newUserPermissions.setAccessType(ShareUser.ACCESS_NONE);
-				newUserPermissions.setUserId(userId);
-				nonePermissions.add(newUserPermissions);
-			}
-
-			for (View view : this.views) {
-				view.setViewUsers(nonePermissions);
-			}
-		}
-
-		else {
-
-			for (View view : this.views) {
-
-				Map<Integer, ShareUser> oldPermissionsByUserId = new HashMap<Integer, ShareUser>();
-				Map<Integer, Permission> newPermissionsByViewId = new HashMap<Integer, Permission>();
-
-				for (Permission newPermission : this.viewPermissions) {
-					newPermissionsByViewId.put(newPermission.getId(),
-							newPermission);
-				}
-
-				if (!newPermissionsByViewId.containsKey(view.getId())) {
-					ViewAccess noneAccess = new ViewAccess(view.getId(),
-							ShareUser.ACCESS_NONE);
-					this.viewPermissions.add(noneAccess);
-					newPermissionsByViewId.put(noneAccess.getId(), noneAccess);
-				}
-
-				for (ShareUser oldPermission : view.getViewUsers()) {
-					oldPermissionsByUserId.put(oldPermission.getUserId(),
-							oldPermission);
-
-					if ((oldPermission.getUserId() == user.getId() || this.usersIds
-							.contains(oldPermission.getUserId()))
-							&& newPermissionsByViewId.containsKey(view.getId())) {
-						oldPermission.setAccessType(newPermissionsByViewId.get(
-								view.getId()).getPermission());
-					}
-				}
-
-				if (!oldPermissionsByUserId.containsKey(user.getId())) {
-					ShareUser newUserPermissions = new ShareUser();
-					newUserPermissions.setAccessType(newPermissionsByViewId
-							.get(view.getId()).getPermission());
-					newUserPermissions.setUserId(user.getId());
-					view.getViewUsers().add(newUserPermissions);
-				}
-
-			}
-		}
+//		if (this.viewPermissions.isEmpty()) {
+//			List<ShareUser> nonePermissions = new ArrayList<ShareUser>();
+//			for (Integer userId : this.usersIds) {
+//				ShareUser newUserPermissions = new ShareUser();
+//				newUserPermissions.setAccessType(ShareUser.ACCESS_NONE);
+//				newUserPermissions.setUserId(userId);
+//				nonePermissions.add(newUserPermissions);
+//			}
+//
+//			for (View view : this.views) {
+//				view.setViewUsers(nonePermissions);
+//			}
+//		}
+//
+//		else {
+//
+//			for (View view : this.views) {
+//
+//				Map<Integer, ShareUser> oldPermissionsByUserId = new HashMap<Integer, ShareUser>();
+//				Map<Integer, Permission> newPermissionsByViewId = new HashMap<Integer, Permission>();
+//
+//				for (Permission newPermission : this.viewPermissions) {
+//					newPermissionsByViewId.put(newPermission.getId(),
+//							newPermission);
+//				}
+//
+//				if (!newPermissionsByViewId.containsKey(view.getId())) {
+//					ViewAccess noneAccess = new ViewAccess(view.getId(),
+//							ShareUser.ACCESS_NONE);
+//					this.viewPermissions.add(noneAccess);
+//					newPermissionsByViewId.put(noneAccess.getId(), noneAccess);
+//				}
+//
+//				for (ShareUser oldPermission : view.getViewUsers()) {
+//					oldPermissionsByUserId.put(oldPermission.getUserId(),
+//							oldPermission);
+//
+//					if ((oldPermission.getUserId() == user.getId() || this.usersIds
+//							.contains(oldPermission.getUserId()))
+//							&& newPermissionsByViewId.containsKey(view.getId())) {
+//						oldPermission.setAccessType(newPermissionsByViewId.get(
+//								view.getId()).getPermission());
+//					}
+//				}
+//
+//				if (!oldPermissionsByUserId.containsKey(user.getId())) {
+//					ShareUser newUserPermissions = new ShareUser();
+//					newUserPermissions.setAccessType(newPermissionsByViewId
+//							.get(view.getId()).getPermission());
+//					newUserPermissions.setUserId(user.getId());
+//					view.getViewUsers().add(newUserPermissions);
+//				}
+//
+//			}
+//		}
 	}
 
 	public void jsonDeserialize(JsonReader reader, JsonObject profileJson)
@@ -282,8 +282,8 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 	public void jsonSerialize(Map<String, Object> map) {
 		map.put("dataSourcePermissions", dataSourcePermissions);
 		map.put("dataPointPermissions", dataPointPermissions);
-		map.put("viewPermissions", viewPermissions);
-		map.put("watchlistPermissions", watchlistPermissions);
+//		map.put("viewPermissions", viewPermissions);
+//		map.put("watchlistPermissions", watchlistPermissions);
 		map.put("usersIds", usersIds);
 	}
 }

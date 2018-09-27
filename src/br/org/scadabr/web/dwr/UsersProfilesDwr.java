@@ -12,8 +12,8 @@ import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.exception.DAOException;
 import br.org.scadabr.db.dao.UsersProfileDao;
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
+//import br.org.scadabr.vo.permission.ViewAccess;
+//import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
@@ -88,62 +88,62 @@ public class UsersProfilesDwr {
 		return new UsersProfileDao().getUserProfileById(id);
 	}
 
-	public DwrResponseI18n saveUserAdmin(int id, String name,
-			List<Integer> dataSourcePermissions,
-			List<DataPointAccess> dataPointPermissions,
-			List<WatchListAccess> watchlistPermissions,
-			List<ViewAccess> viewsPermissions) {
-		Permissions.ensureAdmin();
+//	public DwrResponseI18n saveUserAdmin(int id, String name,
+//			List<Integer> dataSourcePermissions,
+//			List<DataPointAccess> dataPointPermissions,
+////			List<WatchListAccess> watchlistPermissions,
+////			List<ViewAccess> viewsPermissions) {
+////		Permissions.ensureAdmin();
+//
+//		HttpServletRequest request = WebContextFactory.get()
+//				.getHttpServletRequest();
+//
+//		UsersProfileDao userDao = new UsersProfileDao();
+//
+//		UsersProfileVO profile;
+//		if (id == Common.NEW_ID)
+//			profile = new UsersProfileVO();
+//		else
+//			profile = userDao.getUserProfileById(id);
+//
+//		profile.setName(name);
+//		profile.setDataSourcePermissions(dataSourcePermissions);
+//		profile.setDataPointPermissions(dataPointPermissions);
+//		profile.setWatchlistPermissions(watchlistPermissions);
+//		profile.setViewPermissions(viewsPermissions);
+//
+//		DwrResponseI18n response = new DwrResponseI18n();
+//
+//		try {
+//			userDao.saveUsersProfile(profile);
+//		} catch (DAOException e) {
+//			response.addMessage(new LocalizableMessage(
+//					"usersProfiles.validate.nameUnique"));
+//		}
+//
+//		if (!response.getHasMessages()) {
+//			response.addData("userProfileId", profile.getId());
+//		}
+//
+//		return response;
+//	}
 
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
-
-		UsersProfileDao userDao = new UsersProfileDao();
-
-		UsersProfileVO profile;
-		if (id == Common.NEW_ID)
-			profile = new UsersProfileVO();
-		else
-			profile = userDao.getUserProfileById(id);
-
-		profile.setName(name);
-		profile.setDataSourcePermissions(dataSourcePermissions);
-		profile.setDataPointPermissions(dataPointPermissions);
-		profile.setWatchlistPermissions(watchlistPermissions);
-		profile.setViewPermissions(viewsPermissions);
-
-		DwrResponseI18n response = new DwrResponseI18n();
-
-		try {
-			userDao.saveUsersProfile(profile);
-		} catch (DAOException e) {
-			response.addMessage(new LocalizableMessage(
-					"usersProfiles.validate.nameUnique"));
-		}
-
-		if (!response.getHasMessages()) {
-			response.addData("userProfileId", profile.getId());
-		}
-
-		return response;
-	}
-
-	public DwrResponseI18n deleteUsersProfile(int profileId) {
-		Permissions.ensureAdmin();
-		DwrResponseI18n response = new DwrResponseI18n();
-		UsersProfileDao profileDao = new UsersProfileDao();
-		try {
-			profileDao.deleteUserProfile(profileId);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			response.addMessage(new LocalizableMessage(
-					"userProfiles.validate.errorDeleting"));
-		}
-		response.addMessage(new LocalizableMessage(
-				"userProfiles.validate.successDeleting"));
-
-		return response;
-	}
+//	public DwrResponseI18n deleteUsersProfile(int profileId) {
+//		Permissions.ensureAdmin();
+//		DwrResponseI18n response = new DwrResponseI18n();
+//		UsersProfileDao profileDao = new UsersProfileDao();
+//		try {
+//			profileDao.deleteUserProfile(profileId);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			response.addMessage(new LocalizableMessage(
+//					"userProfiles.validate.errorDeleting"));
+//		}
+//		response.addMessage(new LocalizableMessage(
+//				"userProfiles.validate.successDeleting"));
+//
+//		return response;
+//	}
 
 }

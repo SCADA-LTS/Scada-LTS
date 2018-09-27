@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration>
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout patterm="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.apache.log4j.xml" level="info"/>
+    <Root level="debug">
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+  </Loggers>
+</Configuration>
+

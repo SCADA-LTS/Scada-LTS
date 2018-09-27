@@ -89,7 +89,9 @@
         <pathelement location="WebContent/WEB-INF/lib/jstl-api-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl-impl-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/log4j-1.2.17.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/log4j-1.2-api-2.11.1.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-api-2.11.1.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-core-2.11.1.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mail.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-core-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-master-0.1.4-SNAPSHOT.jar"/>
