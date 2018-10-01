@@ -37,6 +37,7 @@
   function saveDataSourceImpl() {
         DataSourceEditDwr.saveAmqpDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
                       $get("updatePeriodType"),$get("updateAttempts"),$get("serverIpAddress"), $get("serverPortNumber"),$get("serverUsername"), $get("serverPassword"), $get("serverVirtualHost"), saveDataSourceCB);
+        toggleDataSource();
     }
 
   function editPointCBImpl(locator) {
@@ -105,7 +106,7 @@
   </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.password"/></td>
-    <td class="formField"><input type="text" id="serverPassword" value="${dataSource.serverPassword}"/></td>
+    <td class="formField"><input type="password" id="serverPassword" value="${dataSource.serverPassword}"/></td>
   </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.virtualhost"/></td>

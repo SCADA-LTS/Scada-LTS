@@ -41,6 +41,7 @@ import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.workdomain.event.RabbitMqExporter;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
@@ -80,6 +81,24 @@ public class SystemSettingsDwr extends BaseDwr {
 
 		// System event types
 		settings.put("auditEventTypes", AuditEventType.getAuditEventTypes());
+
+		// Alarm Export
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_TYPE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE, 1));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_HOST,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_HOST));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_PORT,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.ALARM_EXPORT_PORT, 5672));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_VIRTUAL,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_VIRTUAL));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_USERNAME,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_USERNAME));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_PASSWORD,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_PASSWORD));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_EX_NAME,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_EX_NAME));
+		settings.put(SystemSettingsDAO.ALARM_EXPORT_Q_NAME,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ALARM_EXPORT_Q_NAME));
 
 		// Http
 		settings.put(SystemSettingsDAO.HTTP_CLIENT_USE_PROXY, SystemSettingsDAO
@@ -264,6 +283,42 @@ public class SystemSettingsDwr extends BaseDwr {
 		for (IntegerPair eventAlarmLevel : eventAlarmLevels)
 			AuditEventType.setEventTypeAlarmLevel(eventAlarmLevel.getI1(),
 					eventAlarmLevel.getI2());
+	}
+
+	@MethodFilter
+	public void saveAlarmExportSettings(int aeType, String aeHost, int aePort,
+										String aeVirtual, String aeUsername, String aePassword,
+										String aeExName, String aeQueueName) {
+		Permissions.ensureAdmin();
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.ALARM_EXPORT_TYPE, aeType);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_HOST, aeHost);
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.ALARM_EXPORT_PORT, aePort);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_VIRTUAL, aeVirtual);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_USERNAME, aeUsername);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_PASSWORD, aePassword);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_EX_NAME, aeExName);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_Q_NAME, aeQueueName);
+
+	}
+
+	@MethodFilter
+	public String testExportConnection(int aeType, String aeHost, int aePort,
+									 String aeVirtual, String aeUsername, String aePassword,
+									 String aeExName, String aeQueueName) {
+
+		boolean connected;
+		saveAlarmExportSettings(aeType, aeHost, aePort, aeVirtual, aeUsername, aePassword, aeExName, aeQueueName);
+		RabbitMqExporter rabbitExporterTest = new RabbitMqExporter();
+		rabbitExporterTest.initialize();
+
+		connected = rabbitExporterTest.isConnected();
+
+		if(connected){
+			rabbitExporterTest.terminate();
+		}
+
+		return connected ? "Connected" : "Disconnected";
 	}
 
 	@MethodFilter

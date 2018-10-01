@@ -29,6 +29,12 @@
 		</exec>
 	</target>
 
+	<target name="run-debug" depends="tomcat_clean_static_content">
+		<exec executable="cmd">
+			<arg value="/c"/>
+			<arg value="%CATALINA_HOME%\bin\catalina.bat jpda start"/>
+		</exec>
+	</target>
 	<!-- to option copy file to webapps :) -->
 
 
