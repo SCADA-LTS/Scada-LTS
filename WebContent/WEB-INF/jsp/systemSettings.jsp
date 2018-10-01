@@ -243,6 +243,10 @@
     }
 
     function saveAlarmExportSettings() {
+
+        var exportConnectionIcon = document.getElementById('testExportSettingsImg');
+        exportConnectionIcon.src = "images/database_stop.png";
+
         SystemSettingsDwr.saveAlarmExportSettings(
             $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_TYPE %>"/>"),
             $get("<c:out value="<%= SystemSettingsDAO.ALARM_EXPORT_HOST %>"/>"),
@@ -255,6 +259,12 @@
             function() {
                 stopImageFader("saveAlarmExportSettingsImg");
                 setUserMessage("saveAlarmExportSettingsMessage", "Saved Export Settings");
+        });
+
+        SystemSettingsDwr.eventManagerRestart(function(msg) {
+            if(msg == "Done") {
+                exportConnectionIcon.src = "images/database_go.png";
+            }
         });
         setUserMessage("saveAlarmExportSettingsMessage");
         startImageFader("saveAlarmExportSettingsImg");

@@ -23,6 +23,7 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
+import com.serotonin.mango.rt.EventManager;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -299,6 +300,17 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_PASSWORD, aePassword);
 		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_EX_NAME, aeExName);
 		systemSettingsDAO.setValue(SystemSettingsDAO.ALARM_EXPORT_Q_NAME, aeQueueName);
+
+	}
+
+	@MethodFilter
+	public String eventManagerRestart() {
+
+		EventManager em = Common.ctx.getEventManager();
+		em.terminate();
+		em.initialize();
+
+		return "Done!";
 
 	}
 

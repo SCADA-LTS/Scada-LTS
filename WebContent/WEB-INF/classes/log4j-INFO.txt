@@ -55,4 +55,15 @@ File structure:
    + ScadaLTS_view_hierarchy.log
    \ ScadaLTS_web.log
 
+ Max file set size (900MB):
+ ScadaLTS_modbus.log = 10 * 10MB = 100MB
+ ScadaLTS_datasources.log = 10 * 10MB = 100MB
+ ScadaLTS_database.log = 10 * 10MB = 100MB
+ ScadaLTS_web.log = 10 * 10MB = 100MB
+ ScadaLTS_dao.log = 10 * 10MB = 100MB
+ ScadaLTS_dwr.log = 10 * 10MB = 100MB
+ ScadaLTS_runtime.log = 10 * 10MB = 100MB
+ ScadaLTS_view_hierarchy.log = 10 * 10MB = 100MB
+ ScadaLTS.log = 10 * 10MB = 100MB
+
 
