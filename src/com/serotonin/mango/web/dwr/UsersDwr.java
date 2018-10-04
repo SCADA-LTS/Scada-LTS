@@ -197,7 +197,7 @@ public class UsersDwr extends BaseDwr {
 				profilesDao.resetUserProfile(user);
 				profilesDao.updateUsersProfile(profile);
 			} else {
-//				profilesDao.resetUserProfile(user);
+				profilesDao.resetUserProfile(user);
 			}
 
 			// If admin grant permissions to all WL and GViews
