@@ -162,35 +162,6 @@ public class UsersDwr extends BaseDwr {
 		user.setDataSourcePermissions(dataSourcePermissions);
 		user.setDataPointPermissions(dataPointPermissions);
 
-		ViewDao viewDao = new ViewDao();
-		List<View> views = viewDao.getViews();
-		Map<String, Object> viewsPermissionsMap = new HashMap<>();
-		for(View v:views) {
-			List<ShareUser> shareUsers = v.getViewUsers();
-			boolean userExsist = false;
-			for(ShareUser su:shareUsers) {
-				for(ViewAccess va:viewsPermissions) {
-					if((su.getUserId()==user.getId())&&(va.getId()==v.getId())) {
-						userExsist = true;
-						su.setAccessType(va.getPermission());
-					}
-				}
-			}
-			if(!userExsist) {
-				ShareUser shareUser = new ShareUser();
-				for(ViewAccess vp:viewsPermissions) {
-					vp.jsonSerialize(viewsPermissionsMap);
-					if(vp.getId()==v.getId()) {
-						shareUser.setAccessType(vp.getPermission());
-					}
-				}
-				shareUser.setUserId(user.getId());
-				shareUsers.add(shareUser);
-			}
-			v.setViewUsers(shareUsers);
-			viewDao.saveView(v);
-		}
-
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);
 
@@ -241,6 +212,35 @@ public class UsersDwr extends BaseDwr {
 				Common.setUser(request, user);
 
 			response.addData("userId", user.getId());
+		}
+
+		ViewDao viewDao = new ViewDao();
+		List<View> views = viewDao.getViews();
+		Map<String, Object> viewsPermissionsMap = new HashMap<>();
+		for(View v:views) {
+			List<ShareUser> shareUsers = v.getViewUsers();
+			boolean userPermissionExists = false;
+			for(ShareUser su:shareUsers) {
+				for(ViewAccess va:viewsPermissions) {
+					if((su.getUserId()==user.getId())&&(va.getId()==v.getId())) {
+						userPermissionExists = true;
+						su.setAccessType(va.getPermission());
+					}
+				}
+			}
+			if(!userPermissionExists) {
+				ShareUser shareUser = new ShareUser();
+				for(ViewAccess vp:viewsPermissions) {
+					vp.jsonSerialize(viewsPermissionsMap);
+					if(vp.getId()==v.getId()) {
+						shareUser.setAccessType(vp.getPermission());
+					}
+				}
+				shareUser.setUserId(user.getId());
+				shareUsers.add(shareUser);
+			}
+			v.setViewUsers(shareUsers);
+			viewDao.saveView(v);
 		}
 
 		return response;
