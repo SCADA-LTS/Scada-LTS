@@ -27,6 +27,11 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import br.org.scadabr.vo.permission.ViewAccess;
+import com.serotonin.mango.db.dao.ViewDao;
+import com.serotonin.mango.util.ExportCodes;
+import com.serotonin.mango.view.ShareUser;
+import com.serotonin.mango.view.View;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
@@ -52,6 +57,8 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.view.ShareUser.ACCESS_CODES;
+
 public class UsersDwr extends BaseDwr {
 	public Log LOG = LogFactory.getLog(UsersDwr.class);
 
@@ -65,6 +72,7 @@ public class UsersDwr extends BaseDwr {
 			initData.put("users", new UserDao().getUsers());
 			initData.put("usersProfiles",
 					new UsersProfileDao().getUsersProfiles());
+
 
 			// Data sources
 			List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
@@ -92,6 +100,11 @@ public class UsersDwr extends BaseDwr {
 				dataSources.add(ds);
 			}
 			initData.put("dataSources", dataSources);
+
+			ViewDao viewDao = new ViewDao();
+			List<View> views = viewDao.getViews();
+			initData.put("views", views);
+
 		} else
 			initData.put("user", user);
 
@@ -119,10 +132,10 @@ public class UsersDwr extends BaseDwr {
 	}
 
 	public DwrResponseI18n saveUserAdmin(int id, String username,
-			String password, String email, String phone, boolean admin,
-			boolean disabled, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
-			List<DataPointAccess> dataPointPermissions, int usersProfileId) {
+										 String password, String email, String phone, boolean admin,
+										 boolean disabled, int receiveAlarmEmails,
+										 boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
+										 List<DataPointAccess> dataPointPermissions, List<ViewAccess> viewsPermissions, int usersProfileId) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
@@ -148,6 +161,35 @@ public class UsersDwr extends BaseDwr {
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		user.setDataSourcePermissions(dataSourcePermissions);
 		user.setDataPointPermissions(dataPointPermissions);
+
+		ViewDao viewDao = new ViewDao();
+		List<View> views = viewDao.getViews();
+		Map<String, Object> viewsPermissionsMap = new HashMap<>();
+		for(View v:views) {
+			List<ShareUser> shareUsers = v.getViewUsers();
+			boolean userExsist = false;
+			for(ShareUser su:shareUsers) {
+				for(ViewAccess va:viewsPermissions) {
+					if((su.getUserId()==user.getId())&&(va.getId()==v.getId())) {
+						userExsist = true;
+						su.setAccessType(va.getPermission());
+					}
+				}
+			}
+			if(!userExsist) {
+				ShareUser shareUser = new ShareUser();
+				for(ViewAccess vp:viewsPermissions) {
+					vp.jsonSerialize(viewsPermissionsMap);
+					if(vp.getId()==v.getId()) {
+						shareUser.setAccessType(vp.getPermission());
+					}
+				}
+				shareUser.setUserId(user.getId());
+				shareUsers.add(shareUser);
+			}
+			v.setViewUsers(shareUsers);
+			viewDao.saveView(v);
+		}
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);
@@ -184,7 +226,7 @@ public class UsersDwr extends BaseDwr {
 				profilesDao.resetUserProfile(user);
 				profilesDao.updateUsersProfile(profile);
 			} else {
-				profilesDao.resetUserProfile(user);
+//				profilesDao.resetUserProfile(user);
 			}
 
 			// If admin grant permissions to all WL and GViews
@@ -205,8 +247,8 @@ public class UsersDwr extends BaseDwr {
 	}
 
 	public DwrResponseI18n saveUser(int id, String password, String email,
-			String phone, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, int usersProfileId) {
+									String phone, int receiveAlarmEmails,
+									boolean receiveOwnAuditEvents, int usersProfileId) {
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
