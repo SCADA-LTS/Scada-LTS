@@ -193,18 +193,16 @@
             stopImageFader($("u"+ user.id +"Img"));
 
             jQuery.ajax({
-                                            type: "GET",
-                                        	dataType: "text",
-                                        	url:myLocation+"/api/view/getAllPermissions/" + user.id,
-                                        	success: function(permissions){
-                                                permissionsJson = JSON.parse(permissions);
-                                                for(i = 0; i < permissionsJson.length; i++) {
-                                                    $set("vw"+ permissionsJson[i].viewId, permissionsJson[i].permission);
-                                                }
-                                            }
-                                });
-
-
+                  type: "GET",
+                  dataType: "text",
+                  url:myLocation+"/api/view/getAllPermissions/" + user.id,
+                  success: function(permissions){
+                    permissionsJson = JSON.parse(permissions);
+                    for(i = 0; i < permissionsJson.length; i++) {
+                        $set("vw"+ permissionsJson[i].viewId, permissionsJson[i].permission);
+                    }
+                  }
+            });
         }
 
         //setUserMessage();
@@ -274,19 +272,16 @@
             }
 
             var vwPermis = new Array();
-                    var vwval;
-                    if (views != null){
-            	        for (i=0; i<views.length; i++) {
-            	 			vwval = $get("vw"+ views[i].id);
-
-            		          if (vwval == "0" || vwval == "1" || vwval == "2") {
-            		        	  vwPermis.push({id: views[i].id, permission: parseInt(vwval)});
-            		          }
-            	        }
+            var vwval;
+            if (views != null){
+                for (i=0; i<views.length; i++) {
+                    vwval = $get("vw"+ views[i].id);
+                    if (vwval == "0" || vwval == "1" || vwval == "2") {
+                        vwPermis.push({id: views[i].id, permission: parseInt(vwval)});
                     }
+                }
+            }
 
-            
-            
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
                     dsPermis, dpPermis, vwPermis, $get("usersProfilesList"), saveUserCB);
