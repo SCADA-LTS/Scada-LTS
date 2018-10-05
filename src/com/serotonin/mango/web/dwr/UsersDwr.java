@@ -28,10 +28,12 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 
 import br.org.scadabr.vo.permission.ViewAccess;
-import com.serotonin.mango.db.dao.ViewDao;
+import br.org.scadabr.vo.permission.WatchListAccess;
+import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.vo.WatchList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
@@ -40,9 +42,6 @@ import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
@@ -101,6 +100,10 @@ public class UsersDwr extends BaseDwr {
 			}
 			initData.put("dataSources", dataSources);
 
+			WatchListDao watchListDao = new WatchListDao();
+			List<WatchList> watchLists = watchListDao.getWatchLists();
+			initData.put("watchlists", watchLists);
+
 			ViewDao viewDao = new ViewDao();
 			List<View> views = viewDao.getViews();
 			initData.put("views", views);
@@ -135,7 +138,7 @@ public class UsersDwr extends BaseDwr {
 										 String password, String email, String phone, boolean admin,
 										 boolean disabled, int receiveAlarmEmails,
 										 boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
-										 List<DataPointAccess> dataPointPermissions, List<ViewAccess> viewsPermissions, int usersProfileId) {
+										 List<DataPointAccess> dataPointPermissions, List<ViewAccess> viewsPermissions, List<WatchListAccess> watchListsPermissions, int usersProfileId) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an

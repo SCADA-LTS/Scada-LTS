@@ -134,6 +134,33 @@
             	           }
                        }
                        $("viewsList").innerHTML = vwhtml;
+
+                       var wlhtml = "";
+                                  watchlists = data.watchlists;
+                                  if (watchlists != null){
+                       	           for (i=0; i<watchlists.length; i++) {
+                       	        	   if(watchlists[i].name == '<fmt:message key="common.newName"/>') // skip unnamed lists
+                       	        		   continue;
+
+                       	        	   id = watchlists[i].id;
+                       	               wlhtml += '<label for="wllist'+ id +'"> '+ watchlists[i].name +'</label><br/>';
+                       	               wlhtml += '<div style="margin-left:25px;" id="wldiv'+ id +'">';
+                       	                   wlhtml +=   '<table cellspacing="0" cellpadding="1">';
+                       	                       wlhtml += '<tr>';
+                       	                       wlhtml +=   '<td>';
+                       	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/0" value="0" checked>';
+                       	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.none"/></label> ';
+                       	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/1" value="1">';
+                       	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.read"/></label> ';
+                       	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/2" value="2">';
+                       	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.set"/></label>';
+                       	                       wlhtml +=   '</td>';
+                       	                       wlhtml += '</tr>';
+                       	                   wlhtml +=   '</table>';
+                       	               wlhtml += '</div>';
+                       	           }
+                                  }
+                                  $("watchlistsList").innerHTML = wlhtml;
         });
     }
 
@@ -237,6 +264,7 @@
     		//setDataSourcesNone();
     		showDataSources();
     		show("views");
+    		show("watchlists");
     	}
     }
     
@@ -282,9 +310,22 @@
                 }
             }
 
+            //populate watchlist permissions paremeters
+                    var wlPermis = new Array();
+                    var wlval;
+                    if (watchlists != null){
+            	      	for (i=0; i<watchlists.length; i++) {
+            	 			wlval = $get("wl"+ watchlists[i].id);
+
+            		          if (vwval == "0" || wlval == "1" || wlval == "2") {
+            		        	  wlPermis.push({id: watchlists[i].id, permission: parseInt(wlval)});
+            		          }
+            	        }
+                    }
+
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
-                    dsPermis, dpPermis, vwPermis, $get("usersProfilesList"), saveUserCB);
+                    dsPermis, dpPermis, vwPermis, wlPermis, $get("usersProfilesList"), saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
@@ -484,6 +525,10 @@
               <tr id="dataSources">
                 <td class="formLabelRequired"><fmt:message key="users.dataSources"/></td>
                 <td class="formField" id="dataSourceList"></td>
+              </tr>
+              <tr id="watchlists">
+                <td class="formLabelRequired"><fmt:message key="header.watchLists"/></td>
+                <td class="formField" id="watchlistsList"></td>
               </tr>
               <tr id="views">
                 <td class="formLabelRequired"><fmt:message key="views.title"/></td>
