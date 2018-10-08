@@ -35,6 +35,9 @@ import com.serotonin.mango.vo.dataSource.http.HttpRetrieverDataSourceVO;
 import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.ds.StopDsRT;
+
+import java.util.Date;
 
 /**
  * @author Matthew Lohbihler
@@ -68,9 +71,8 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
     protected void doPoll(long time) {
         String data;
         try {
-            data = getData(vo.getUrl(), vo.getTimeoutSeconds(), vo.getRetries());
-        }
-        catch (Exception e) {
+            data = getData(vo.getUrl(), vo.getTimeoutSeconds(), vo.getRetries(), vo.isStop());
+        } catch (Exception e) {
             LocalizableMessage lm;
             if (e instanceof LocalizableException)
                 lm = ((LocalizableException) e).getLocalizableMessage();
@@ -100,14 +102,12 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
 
                 // Save the new value
                 dp.updatePointValue(new PointValueTime(value, valueTime));
-            }
-            catch (NoMatchException e) {
+            } catch (NoMatchException e) {
                 if (!locator.isIgnoreIfMissing()) {
                     if (parseErrorMessage == null)
                         parseErrorMessage = e.getLocalizableMessage();
                 }
-            }
-            catch (LocalizableException e) {
+            } catch (LocalizableException e) {
                 if (parseErrorMessage == null)
                     parseErrorMessage = e.getLocalizableMessage();
             }
@@ -119,6 +119,40 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
             returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }
 
+    public String getData(String url, int timeoutSeconds, int retries, boolean stop) throws LocalizableException {
+        String data = "";
+        for (int i = 0; i <= retries; i++) {
+            HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
+            GetMethod method = null;
+            LocalizableMessage message;
+            try {
+                method = new GetMethod(url);
+                int responseCode = client.executeMethod(method);
+                if (responseCode == HttpStatus.SC_OK) {
+                    data = HttpUtils.readResponseBody(method, READ_LIMIT);
+                    break;
+                }
+                message = new LocalizableMessage("event.http.response", url, responseCode);
+            } catch (Exception e) {
+                message = DataSourceRT.getExceptionMessage(e);
+            } finally {
+                if (method != null)
+                    method.releaseConnection();
+            }
+
+            if (retries == i && stop) {
+                LocalizableMessage lm = new LocalizableMessage("event.httpRetriever.retrievalError", vo.getUrl(), "Data source has been stopped/interrupted after several attempted connections had failed");
+                raiseEvent(DATA_RETRIEVAL_FAILURE_EVENT, new Date().getTime(), true, lm);
+                StopDsRT stopDsRT = new StopDsRT(vo.getId());
+                new Thread(stopDsRT).start();
+            } else if (retries == i) {
+                throw new LocalizableException(message);
+            }
+        }
+        return data;
+    }
+
+    @Deprecated
     public static String getData(String url, int timeoutSeconds, int retries) throws LocalizableException {
         // Try to get the data.
         String data;

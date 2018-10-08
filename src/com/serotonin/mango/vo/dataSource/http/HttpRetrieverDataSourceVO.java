@@ -97,6 +97,9 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
     @JsonRemoteProperty
     private int retries = 2;
 
+    @JsonRemoteProperty
+    private boolean stop = false;
+
     public String getUrl() {
         return url;
     }
@@ -137,6 +140,16 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
         this.retries = retries;
     }
 
+    public boolean isStop() {
+        return stop;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
+    }
+
+
+
     @Override
     public void validate(DwrResponseI18n response) {
         super.validate(response);
@@ -158,6 +171,7 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
         AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.url", url);
         AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.timeout", timeoutSeconds);
         AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.retries", retries);
+        AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.retries", stop );
     }
 
     @Override
@@ -168,6 +182,7 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.timeout", from.timeoutSeconds,
                 timeoutSeconds);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.retries", from.retries, retries);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.retries", from.stop, stop);
     }
 
     //
@@ -185,6 +200,7 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
         out.writeInt(updatePeriods);
         out.writeInt(timeoutSeconds);
         out.writeInt(retries);
+        out.writeBoolean(stop);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -198,6 +214,12 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
             timeoutSeconds = in.readInt();
             ;
             retries = in.readInt();
+            // We don't check version we work on latest when is not correctly set default value;
+            try {
+                stop = in.readBoolean();
+            } catch (Exception e) {
+                stop = false;
+            }
         }
     }
 
