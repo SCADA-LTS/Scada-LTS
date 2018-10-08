@@ -20,6 +20,7 @@ package org.scada_lts.mango.service;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.serotonin.mango.view.View;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
@@ -63,7 +64,12 @@ public class WatchListService implements MangoWatchList {
 	
 	@Override
 	public List<WatchList> getWatchLists() {
-		return watchListDAO.findAll();
+		List<WatchList> watchLists = watchListDAO.findAll();
+		for (WatchList watchList: watchLists) {
+			watchList.setWatchListUsers(watchListDAO.getWatchListUsers(watchList.getId()));
+		}
+		populateWatchlistData(watchLists);
+		return watchLists;
 	}
 
 	@Override

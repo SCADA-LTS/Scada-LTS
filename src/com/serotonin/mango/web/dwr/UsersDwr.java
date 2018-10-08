@@ -246,6 +246,35 @@ public class UsersDwr extends BaseDwr {
 			viewDao.saveView(v);
 		}
 
+		WatchListDao watchListDao = new WatchListDao();
+		List<WatchList> watchLists = watchListDao.getWatchLists();
+		Map<String, Object> watchListsPermissionsMap = new HashMap<>();
+		for(WatchList w:watchLists) {
+			List<ShareUser> shareUsers = w.getWatchListUsers();
+			boolean userPermissionExists = false;
+			for(ShareUser su: shareUsers) {
+				for(WatchListAccess wla:watchListsPermissions) {
+					if((su.getUserId()==user.getId())&&(wla.getId()==w.getId())) {
+						userPermissionExists = true;
+						su.setAccessType(wla.getPermission());
+					}
+				}
+			}
+			if(!userPermissionExists) {
+				ShareUser shareUser = new ShareUser();
+				for(WatchListAccess wlp:watchListsPermissions) {
+					wlp.jsonSerialize(watchListsPermissionsMap);
+					if(wlp.getId()==w.getId()) {
+						shareUser.setAccessType(wlp.getPermission());
+					}
+				}
+				shareUser.setUserId(user.getId());
+				shareUsers.add(shareUser);
+			}
+			w.setWatchListUsers(shareUsers);
+			watchListDao.saveWatchList(w);
+		}
+
 		return response;
 	}
 

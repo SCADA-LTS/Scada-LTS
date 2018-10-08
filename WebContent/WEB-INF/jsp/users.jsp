@@ -230,6 +230,18 @@
                     }
                   }
             });
+
+            jQuery.ajax({
+                              type: "GET",
+                              dataType: "text",
+                              url:myLocation+"/api/watchlist/getAllPermissions/" + user.id,
+                              success: function(permissions){
+                                permissionsJson = JSON.parse(permissions);
+                                for(i = 0; i < permissionsJson.length; i++) {
+                                    $set("wl"+ permissionsJson[i].watchListId, permissionsJson[i].permission);
+                                }
+                              }
+                        });
         }
 
         //setUserMessage();
@@ -248,6 +260,17 @@
         }
     }
 
+    function setWatchListAndViewsNone() {
+        var i;
+        for (i=0; i<views.length; i++) {
+            $set("vw"+ views[i].id, "0");
+        }
+        i = 0;
+        for (i=0; i<watchlists.length; i++) {
+                    $set("wl"+ watchlists[i].id, "0");
+        }
+    }
+
     function hideDataSources() {
     	hide("dataSources");
     }
@@ -260,6 +283,8 @@
     	var profile = document.getElementById("usersProfilesList");
     	if(profile.options[profile.selectedIndex].value > 0){
     		hideDataSources();
+    		hide("views");
+            hide("watchlists");
     	}else{
     		//setDataSourcesNone();
     		showDataSources();
@@ -280,11 +305,16 @@
             var dsPermis = new Array();
             var dpPermis = new Array();
             var dpval;
+            var vwPermis = new Array();
+            var vwval;
+            var wlPermis = new Array();
+            var wlval;
             
             // If a profile is select, reset other permissions on DSs.
             if($get("usersProfileList") == <c:out value="<%= Common.NEW_ID %>"/>)
             {
         		setDataSourcesNone();
+        		setWatchListAndViewsNone();
             }
             
             for (i=0; i<dataSources.length; i++) {
@@ -299,26 +329,21 @@
                 }
             }
 
-            var vwPermis = new Array();
-            var vwval;
             if (views != null){
                 for (i=0; i<views.length; i++) {
                     vwval = $get("vw"+ views[i].id);
                     if (vwval == "0" || vwval == "1" || vwval == "2") {
-                        vwPermis.push({id: views[i].id, permission: parseInt(vwval)});
+                        vwPermis.push({id: views[i].id, permission: vwval});
                     }
                 }
             }
 
             //populate watchlist permissions paremeters
-                    var wlPermis = new Array();
-                    var wlval;
                     if (watchlists != null){
             	      	for (i=0; i<watchlists.length; i++) {
             	 			wlval = $get("wl"+ watchlists[i].id);
-
             		          if (vwval == "0" || wlval == "1" || wlval == "2") {
-            		        	  wlPermis.push({id: watchlists[i].id, permission: parseInt(wlval)});
+            		        	  wlPermis.push({id: watchlists[i].id, permission: wlval});
             		          }
             	        }
                     }
