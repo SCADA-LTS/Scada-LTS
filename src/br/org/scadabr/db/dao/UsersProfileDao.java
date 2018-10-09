@@ -272,7 +272,6 @@ public class UsersProfileDao extends BaseDao {
 
 		WatchListDao watchListDao = new WatchListDao();
 		List<WatchList> allwatchlists = watchListDao.getWatchLists();
-		watchListDao.populateWatchlistData(allwatchlists);
 		profile.defineWatchlists(allwatchlists);
 	}
 
