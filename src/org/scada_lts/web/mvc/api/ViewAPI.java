@@ -308,7 +308,11 @@ public class ViewAPI {
 
                     public ViewPermissionsJSON(long viewId, int permission) {
                         this.viewId = viewId;
-                        this.permission = permission;
+                        if(permission>=2) {
+                            this.permission = 2;
+                        } else {
+                            this.permission = permission;
+                        }
                     }
 
                     public long getViewId() {
