@@ -1264,7 +1264,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	@MethodFilter
 	public DwrResponseI18n saveHttpRetrieverDataSource(String name, String xid,
 			int updatePeriods, int updatePeriodType, String url,
-			int timeoutSeconds, int retries) {
+			int timeoutSeconds, int retries, boolean stop) {
 		HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
 				.getUser().getEditDataSource();
 
@@ -1275,6 +1275,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		ds.setUrl(url);
 		ds.setTimeoutSeconds(timeoutSeconds);
 		ds.setRetries(retries);
+		ds.setStop(stop);
 
 		return tryDataSourceSave(ds);
 	}
