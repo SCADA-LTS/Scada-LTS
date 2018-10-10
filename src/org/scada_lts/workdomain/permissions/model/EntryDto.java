@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.permissions.model;
+package org.scada_lts.workdomain.permissions.model;
 
 import java.io.Serializable;
 

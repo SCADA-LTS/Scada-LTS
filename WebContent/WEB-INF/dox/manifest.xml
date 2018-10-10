@@ -245,6 +245,8 @@
   <item id="systemAlarmLevels"/>
   
   <item id="auditAlarmLevels"/>
+
+  <item id="systemEventExport"/>
   
   <item id="httpImageDS">
     <relation id="httpImagePP"/>
@@ -380,5 +382,13 @@
    <item id="radiuinoPP">
     <relation id="radiuinoDS"/>
    </item>
-  
+
+  <item id="amqpPP">
+    <relation id="amqpDS"/>
+  </item>
+
+  <item id="amqpDS">
+    <relation id="amqpPP"/>
+  </item>
+
 </doxManifest>

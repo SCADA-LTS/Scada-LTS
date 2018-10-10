@@ -29,11 +29,18 @@
 		</exec>
 	</target>
 
+	<target name="run-debug" depends="tomcat_clean_static_content">
+		<exec executable="cmd">
+			<arg value="/c"/>
+			<arg value="%CATALINA_HOME%\bin\catalina.bat jpda start"/>
+		</exec>
+	</target>
 	<!-- to option copy file to webapps :) -->
 
 
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
+
         <pathelement location="WebContent/WEB-INF/lib/RXTXcomm.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/SNMP4J.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/activation.jar"/>
@@ -164,6 +171,7 @@
 		<pathelement location="${env.CATALINA_HOME}/lib/tomcat-jdbc.jar"/>
 		<pathelement location="${env.CATALINA_HOME}/lib/tomcat-util.jar"/>
 	</path>
+
 	<path id="httpcomponents-client-4.5.3">
 		<pathelement location="WebContent/WEB-INF/lib/commons-codec-1.9.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/commons-logging-1.2.jar"/>
@@ -176,11 +184,17 @@
 		<pathelement location="WebContent/WEB-INF/lib/jna-4.1.0.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/jna-platform-4.1.0.jar"/>
 	</path>
+
+	<path id="datasource-library">
+		<pathelement location="WebContent/WEB-INF/lib/amqp-client-5.4.1.jar"/>
+	</path>
+
 	<path id="scadabr-1.1.0-RC.classpath">
 		<pathelement location="build/classes"/>
 		<path refid="Web App Libraries.libraryclasspath"/>
 		<path refid="EAR Libraries.libraryclasspath"/>
 		<path refid="httpcomponents-client-4.5.3"/>
+		<path refid="datasource-library"/>
 		<pathelement location="WebContent/WEB-INF/lib/wsdl4j-1.5.1.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/wss4j-1.5.8.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
@@ -196,6 +210,7 @@
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
 	</path>
+
 	<target name="update-static-web-dependecy" description="Update static web dependency">
 	  <exec dir="WebContent/resources/app" executable="bower">
 	    <arg  value="update"/>
@@ -247,7 +262,7 @@
 	</target>
 
 	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-	<target name="war" description="Bundles the application as a WAR file" depends="clean, build, new-ui">
+	<target name="war" description="Bundles the application as a WAR file" depends="clean, build">
 
 		<delete dir="WebContent/resources/new-ui"></delete>
 		<mkdir dir="WebContent/resources/new-ui"></mkdir>
