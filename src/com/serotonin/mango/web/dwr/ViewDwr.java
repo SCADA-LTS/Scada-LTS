@@ -235,23 +235,27 @@ public class ViewDwr extends BaseDwr {
 			if (pointComponent.tgetDataPoint() != null)
 				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint().getId());
 
-			ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
+			// Check permissions.
+			if (Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
+				ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
-			if (!edit) {
-				if (pointComponent.isSettable()) {
-					int access = view.getUserAccess(user);
-					if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
-						setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
+				if (!edit) {
+					if (pointComponent.isSettable()) {
+						int access = view.getUserAccess(user);
+						if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+							setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
+					}
+
+					if (pointComponent.tgetDataPoint() != null)
+						setChart(pointComponent.tgetDataPoint(), state, request, model);
 				}
 
-				if (pointComponent.tgetDataPoint() != null)
-					setChart(pointComponent.tgetDataPoint(), state, request, model);
+				if (add)
+					states.add(state);
+
+				model.clear();
 			}
 
-			if (add)
-				states.add(state);
-
-			model.clear();
 		}
 	}
 
