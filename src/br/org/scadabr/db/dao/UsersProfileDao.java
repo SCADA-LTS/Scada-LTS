@@ -69,7 +69,7 @@ public class UsersProfileDao extends BaseDao {
 		while (iterator.hasNext()) {
 			UsersProfileVO iterProfile = iterator.next();
 			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getName() == name) {
+			if (iterProfile.getName().equals(name)) {
 				return iterProfile;
 			}
 		}
@@ -139,6 +139,14 @@ public class UsersProfileDao extends BaseDao {
 			profile.setXid(generateUniqueXid(UsersProfileVO.XID_PREFIX,
 					"usersProfiles"));
 		}
+
+		int id = Common.NEW_ID;
+		try {
+			id = getUserProfileByName(profile.getName()).getId();
+		} catch (Exception e) {
+			//
+		}
+		profile.setId(id);
 
 		if (profile.getId() == Common.NEW_ID) {
 			insertProfile(profile);
