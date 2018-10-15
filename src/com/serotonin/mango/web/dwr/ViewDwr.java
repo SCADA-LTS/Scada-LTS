@@ -240,7 +240,7 @@ public class ViewDwr extends BaseDwr {
 				ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
 				if (!edit) {
-					if (pointComponent.isSettable()) {
+					if (pointComponent.isSettable() && Permissions.hasDataPointSetPermission(user, dataPointRT.getVO())) {
 						int access = view.getUserAccess(user);
 						if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
 							setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
