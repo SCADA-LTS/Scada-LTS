@@ -175,6 +175,10 @@ public class UsersProfileDao extends BaseDao {
 
 		saveRelationalData(profile);
 
+		currentProfileList = query(PROFILES_SELECT + " order by u.name",
+				new UsersProfilesRowMapper());
+		populateUserProfilePermissions(currentProfileList);
+
 	}
 
 	public void updateUsersProfile(UsersProfileVO profile) {
