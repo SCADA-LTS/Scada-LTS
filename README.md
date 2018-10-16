@@ -71,9 +71,13 @@ Below are ant tasks which we run step by step
 - `ant build`,
 - `ant war`
 
-3. Deploy
+3.Deploy
 
 For deploy war file to tomcat we use `ant clean_and_tomcat_deploy` task on Windows and Linux.
+
+4.Running and debugging application
+
+After deploying you can run tomcat by supplying either `ant run-debug` on windows or `ant run-debug-linux` on Linux
 
 ## Bugs and feature requests
 

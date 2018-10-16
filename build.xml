@@ -35,12 +35,21 @@
 			<arg value="%CATALINA_HOME%\bin\catalina.bat jpda start"/>
 		</exec>
 	</target>
-	<target name="run-debug-linux"  >
+
+	<target name="run-linux" depends="tomcat_clean_static_content">
+		<exec executable="/bin/sh" spawn="false">
+			<arg value="-c" />
+			<arg value="${env.CATALINA_HOME}/bin/startup.sh" />
+		</exec>
+	</target>
+
+	<target name="run-debug-linux" >
 		<exec executable="/bin/sh" spawn="false">
 			<arg value="-c" />
 			<arg value="${env.CATALINA_HOME}/bin/catalina.sh jpda run" />
 		</exec>
 	</target>
+
 	<target name="close-debug-linux" >
 		<exec executable="/bin/sh" spawn="false">
 			<arg line="${env.CATALINA_HOME}/bin/shutdown.sh"/>
