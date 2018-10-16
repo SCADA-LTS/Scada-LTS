@@ -35,6 +35,17 @@
 			<arg value="%CATALINA_HOME%\bin\catalina.bat jpda start"/>
 		</exec>
 	</target>
+	<target name="run-debug-linux"  >
+		<exec executable="/bin/sh" spawn="false">
+			<arg value="-c" />
+			<arg value="${env.CATALINA_HOME}/bin/catalina.sh jpda run" />
+		</exec>
+	</target>
+	<target name="close-debug-linux" >
+		<exec executable="/bin/sh" spawn="false">
+			<arg line="${env.CATALINA_HOME}/bin/shutdown.sh"/>
+		</exec>
+	</target>
 	<!-- to option copy file to webapps :) -->
 
 
