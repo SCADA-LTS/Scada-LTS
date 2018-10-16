@@ -50,7 +50,6 @@ Here is two of the several start options:
 * Change config file env.properties set connection to db: `vim /var/lib/tomcat7/webapps/ScadaBR/WEB-INF/classes/env.properties`.
 * Restart tomcat7: `/etc/init.d/tomcat7 restart`
 
-
 ### Building from sources
 
 1.Please checkout sources from git from master branch by command
