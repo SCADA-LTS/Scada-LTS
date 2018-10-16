@@ -67,13 +67,13 @@ Example for linux system:
 We have build.xml which is used to build scadalts.war file.
 
 Below are ant tasks which we run step by step
-- clean,
-- build,
-- war
+- `ant clean`,
+- `ant build`,
+- `ant war`
 
 3. Deploy
 
-For deploy war file to tomcat we use clean_and_tomcat_deploy ant task.
+For deploy war file to tomcat we use `ant clean_and_tomcat_deploy` task on Windows and Linux.
 
 ## Bugs and feature requests
 
