@@ -54,15 +54,15 @@ Here is two of the several start options:
 ### Building from sources
 
 1.Please checkout sources from git from master branch by command
-    git clone https://github.com/SCADA-LTS/Scada-LTS.git
+    `git clone https://github.com/SCADA-LTS/Scada-LTS.git`
 
-After that please open project on Intelij Community Edition
+After that You can open the project on Intellij Community Edition
 
 2.Build project by Ant
 
 Please set up environment variable CATALINA_HOME in your system.
 Example for linux system:
-CATALINA_HOME='home/yourusername/path_to_tomcat_directory'
+`CATALINA_HOME='home/yourusername/path_to_tomcat_directory'`
 
 We have build.xml which is used to build scadalts.war file.
 
