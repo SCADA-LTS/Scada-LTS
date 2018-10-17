@@ -47,7 +47,7 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-@Service
+//@Service
 public class PointHierarchyService {
 	// cache
 	private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);

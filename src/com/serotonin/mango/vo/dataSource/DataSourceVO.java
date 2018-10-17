@@ -69,6 +69,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
 import org.scada_lts.ds.state.IStateDs;
+import org.scada_lts.workdomain.datasource.amqp.AmqpDataSourceVO;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -295,6 +296,10 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
 			public DataSourceVO<?> createDataSourceVO() {
 				return new RadiuinoDataSourceVO();
 			}
+		},
+		AMQP(45, "dsEdit.amqp", true){
+		 	@Override
+			public DataSourceVO<?> createDataSourceVO() { return new AmqpDataSourceVO(); }
 		};
 
 		private Type(int id, String key, boolean display) {
