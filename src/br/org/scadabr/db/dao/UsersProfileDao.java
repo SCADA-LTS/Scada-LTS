@@ -36,6 +36,9 @@ public class UsersProfileDao extends BaseDao {
 	private static final String PROFILES_SELECT = "select u.id, u.name, u.xid "
 			+ "from usersProfiles u";
 
+	private static final String PROFILES_SELECT_ORDER_BY_NAME = "select u.id, u.name, u.xid "
+			+ "from usersProfiles u order by u.name";
+
 	private static final String PROFILES_INSERT = "insert into usersProfiles (xid, name) values (?, ?)";
 
 	private static final String PROFILES_UPDATE = "update usersProfiles set "
@@ -175,7 +178,7 @@ public class UsersProfileDao extends BaseDao {
 
 		saveRelationalData(profile);
 
-		currentProfileList = query(PROFILES_SELECT + " order by u.name",
+		currentProfileList = query(PROFILES_SELECT_ORDER_BY_NAME,
 				new UsersProfilesRowMapper());
 		populateUserProfilePermissions(currentProfileList);
 
