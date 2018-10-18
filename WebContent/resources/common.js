@@ -19,6 +19,10 @@
 
 var mango = {};
 
+// last time update
+
+var lasTimeUpdate;
+
 //
 // String prototypes
 //
@@ -103,7 +107,9 @@ mango.longPoll.pollCB = function(response) {
             mango.soundPlayer.stop();
         }
     }
-    
+    if (response.runtime) {
+      lasTimeUpdate = response.runtime;
+    }
     if (response.watchListStates)
         mango.view.watchList.setData(response.watchListStates);
     

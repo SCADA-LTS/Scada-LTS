@@ -24,12 +24,18 @@
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/shortcut.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
+  <link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
   <link
 	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.css"
 	rel="stylesheet" type="text/css">
-
+    <style>
+    	 table {
+             border-collapse: separate !important;
+             border-spacing: 2px !important;
+         }
+    </style>
     <script type="text/javascript" src="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.js"></script>
-	
+
 	<script type="text/javascript">
 	
 	jQuery.noConflict();
