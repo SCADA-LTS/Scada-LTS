@@ -44,16 +44,39 @@ Here is two of the several start options:
 * Install mysql: `apt-get install mysql-server`.
 * Login to mysql: `mysql -u [user] -p`.
 * Create db:`create dababase scadalts;`.
-* Copy ScadaBR.war & ScadaLTS.war to dir tomacat webapps: `cp ScadaBR.war /var/lib/tomcat7/webapps/`.
+* Copy ScadaBR.war to dir tomacat webapps: `cp ScadaBR.war /var/lib/tomcat7/webapps/`.
+    Optionally you can build ScadaBR.war. For this you have instruction how do it in section "Building from sources",which is below.
 * Restart tomcat7 to generate ScadaLTS folder: `/etc/init.d/tomcat7 restart`
 * Change config file env.properties set connection to db: `vim /var/lib/tomcat7/webapps/ScadaBR/WEB-INF/classes/env.properties`.
 * Restart tomcat7: `/etc/init.d/tomcat7 restart`
 
+### Building from sources
 
-### What's included
+1.Please checkout sources from git from master branch by command
+    `git clone https://github.com/SCADA-LTS/Scada-LTS.git`
 
-App ScadaBR.war 
-App ScadaLTS.war
+After that You can open the project on Intellij Community Edition
+
+2.Build project by Ant
+
+Please set up environment variable CATALINA_HOME in your system.
+Example for linux system:
+`CATALINA_HOME='home/yourusername/path_to_tomcat_directory'`
+
+We have build.xml which is used to build scadalts.war file.
+
+Below are ant tasks which we run step by step
+- `ant clean`,
+- `ant build`,
+- `ant war`
+
+3.Deploy
+
+For deploy war file to tomcat we use `ant clean_and_tomcat_deploy` task on Windows and Linux.
+
+4.Running and debugging application
+
+After deploying you can run tomcat by supplying either `ant run-debug` on windows or `ant run-debug-linux` on Linux
 
 ## Bugs and feature requests
 
