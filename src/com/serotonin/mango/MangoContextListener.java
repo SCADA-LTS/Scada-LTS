@@ -142,7 +142,11 @@ public class MangoContextListener implements ServletContextListener {
 		
 		
 		reportsInitialize();
-		maintenanceInitialize();
+		// DBH [2018-09-12]: Pass data purge CRON string to maintenaceInitialize function
+		String dataPurgeCron = SystemSettingsDAO
+			.getValue(SystemSettingsDAO.DATA_PURGE_CRON);
+		maintenanceInitialize(dataPurgeCron);
+		//maintenanceInitialize();
 		
 		scriptContextInitialize();
 
@@ -600,10 +604,12 @@ public class MangoContextListener implements ServletContextListener {
 	//
 	// Maintenance processes
 	//
-	private void maintenanceInitialize() {
+	private void maintenanceInitialize(String dataPurgeCron) {
 		// Processes are scheduled in the timer, so they are canceled when it
 		// stops.
-		DataPurge.schedule();
+		// DBH [2018-09-12]: Pass data purge CRON time to DataPurge class
+		DataPurge.schedule(dataPurgeCron);
+		//DataPurge.schedule();
 
 		// The version checking job reschedules itself after each execution so
 		// that requests from the various Mango

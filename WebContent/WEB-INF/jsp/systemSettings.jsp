@@ -96,11 +96,15 @@
             $set("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>);
+         	           
             $set("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>);
 
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>);
             
+         // DBH [2018-09-12]: Init the data purge CRON field with the value stored into the database
+            $set("<c:out value="<%= SystemSettingsDAO.DATA_PURGE_CRON %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_PURGE_CRON %>"/>);
+         
             $set("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>);
             
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
@@ -322,6 +326,7 @@
                 1,
                 $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.DATA_PURGE_CRON %>"/>"),
                 function() {
                     stopImageFader("saveMiscSettingsImg");
                     setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
@@ -836,6 +841,13 @@
           </select>
         </td>
       </tr>
+      <tr>
+        <td class="formLabelRequired"><fmt:message key="systemSettings.purgeCron"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.DATA_PURGE_CRON %>"/>" type="text" />
+        </td>
+      </tr>
+      <tr>
       <tr>
         <td colspan="2" id="miscMessage" class="formError"></td>
       </tr>
