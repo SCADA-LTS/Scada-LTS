@@ -217,8 +217,12 @@ public class ViewDwr extends BaseDwr {
 
 				states.add(state);
 
-			} else if (viewComponent.isPointComponent())
-				addPointComponentState(viewComponent, rtm, model, request, view, user, states, edit, true);
+			} else if (viewComponent.isPointComponent()) {
+				PointComponent pointComponent = (PointComponent) viewComponent;
+				if(pointComponent.tgetDataPoint()!=null) {
+					addPointComponentState(viewComponent, rtm, model, request, view, user, states, edit, true);
+				}
+			}
 			else if (viewComponent.isCustomComponent())
 				addCustomComponentState(viewComponent, rtm, model, request, view, user, states, edit, true);
 		}
@@ -240,7 +244,7 @@ public class ViewDwr extends BaseDwr {
 				ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
 				if (!edit) {
-					if (pointComponent.isSettable() && (Permissions.hasDataPointSetPermission(user, dataPointRT.getVO()) || user.isAdmin())) {
+					if (pointComponent.isSettable() && Permissions.hasDataPointSetPermission(user, dataPointRT.getVO())) {
 						int access = view.getUserAccess(user);
 						if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
 							setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
