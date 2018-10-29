@@ -124,12 +124,12 @@
         show(content);
         
         if (center) {
-            // Calculate the location for the new point. For now just put it in the center.
+            // Calculate the location for the new point. For now just put it above edit box.
             var bkgd = $("viewBackground");
             var bkgdBox = dojo.html.getMarginBox(bkgd);
             var compContentBox = dojo.html.getMarginBox(content);
-            content.style.left = parseInt((bkgdBox.width - compContentBox.width) / 2) +"px";
-            content.style.top = parseInt((bkgdBox.height - compContentBox.height) / 2) +"px";
+            content.style.left = document.getElementById("propertiesBox").offsetWidth + 20 +"px";
+            content.style.top = "-135px";
         }
         else {
             content.style.left = viewComponent.x +"px";
@@ -363,7 +363,7 @@
     <table>
       <tr>
         <td valign="top">
-          <div class="borderDiv marR">
+          <div id="propertiesBox" class="borderDiv marR">
             <table>
               <tr>
                 <td colspan="3">
