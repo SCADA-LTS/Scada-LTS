@@ -29,6 +29,8 @@
 
     mango.view.initEditView();
     mango.share.dwr = ViewDwr;
+
+    var newComponentPositionOffset = 0;
     
     function doOnload() {
         hide("sharedUsersDiv");
@@ -128,8 +130,9 @@
             var bkgd = $("viewBackground");
             var bkgdBox = dojo.html.getMarginBox(bkgd);
             var compContentBox = dojo.html.getMarginBox(content);
-            content.style.left = document.getElementById("propertiesBox").offsetWidth + 20 +"px";
+            content.style.left = document.getElementById("propertiesBox").offsetWidth + 20 + newComponentPositionOffset +"px";
             content.style.top = "-135px";
+            newComponentPositionOffset += 16;
         }
         else {
             content.style.left = viewComponent.x +"px";
