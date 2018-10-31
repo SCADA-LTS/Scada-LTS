@@ -18,6 +18,11 @@
 --%><%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 
 <table cellspacing="1" cellpadding="0" border="0" style="width: ${width}px;">
+        <c:if test="${!hideCriteriaHeader}"><td colspan="6" onmouseover="this.style.whiteSpace='normal'" onmouseout="this.style.whiteSpace='nowrap'" style=" white-space: nowrap; max-width:100vh;">
+            <p style="margin:auto; overflow: hidden; text-overflow: ellipsis;">
+                Min. alarm level: <b>${minAlarmLevel}</b>, Message content: <b>${messageContent}</b>, Max list size: <b>${maxListSize}</b>
+            </p>
+         </td></c:if>
     <tr class="rowHeader">
 	    <c:if test="${!hideIdColumn}"><td><fmt:message key="events.id"/></td></c:if>
 	    <c:if test="${!hideAlarmLevelColumn}"><td><fmt:message key="common.alarmLevel"/></td></c:if>
