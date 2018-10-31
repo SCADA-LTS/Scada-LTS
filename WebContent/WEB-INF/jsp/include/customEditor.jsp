@@ -38,6 +38,10 @@
           <td class="formLabel"><fmt:message key="common.alarmLevel"/></td>
           <td class="formField"><select id="customEditorAlarmListMinAlarmLevel"><tag:alarmLevelOptions allOption="true"/></select></td>
         </tr>
+        <tr>
+            <td class="formLabel"><fmt:message key="events.search.keywords"/></td>
+            <td class="formField"><input id="keywords" type="text"/></td>
+        </tr>
       	<tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.maxListSize"/></td>
           <td class="formField"><input id="customEditorAlarmListMaxListSize" type="text"/></td>
@@ -62,7 +66,7 @@
           <td class="formLabel"><fmt:message key="viewEdit.graphic.hideInactivityColumn"/></td>
           <td class="formField"><input id="customEditorAlarmListInactivityColumn" type="checkbox"/></td>
         </tr>
-        <tr>
+        <tr>http://localhost:8080/ScadaBR/images/spacer.gif
           <td class="formLabel"><fmt:message key="viewEdit.graphic.hideAckColumn"/></td>
           <td class="formField"><input id="customEditorAlarmListAckColumn" type="checkbox"/></td>
         </tr>
@@ -94,6 +98,7 @@
             // Update the data in the form.
             if (comp.typeName == "alarmlist") {
             	$set("customEditorAlarmListMinAlarmLevel",comp.minAlarmLevel);
+            	$set("keywords",comp.keywords);
                 $set("customEditorAlarmListMaxListSize",comp.maxListSize);
                 $set("customEditorAlarmListWidth",comp.width);
                 $set("customEditorAlarmListIdColumn",comp.hideIdColumn);
@@ -121,7 +126,8 @@
             //hideContextualMessages("graphicRendererEditorPopup");
             if (customEditor.typeName == "alarmlist")
             	ViewDwr.saveAlarmListComponent(customEditor.componentId,
-                    	$get("customEditorAlarmListMinAlarmLevel"), $get("customEditorAlarmListMaxListSize"),
+                    	$get("customEditorAlarmListMinAlarmLevel"), $get("keywords"),
+                    	$get("customEditorAlarmListMaxListSize"),
                         $get("customEditorAlarmListWidth"),$get("customEditorAlarmListIdColumn"),
                         $get("customEditorAlarmListAlarmLevelColumn"),$get("customEditorAlarmListTimestampColumn"),
                         $get("customEditorAlarmListInactivityColumn"),$get("customEditorAlarmListAckColumn"), 
