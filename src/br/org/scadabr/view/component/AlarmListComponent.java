@@ -42,6 +42,7 @@ public class AlarmListComponent extends CustomComponent {
 	private boolean hideTimestampColumn = false;
 	private boolean hideInactivityColumn = true;
 	private boolean hideAckColumn = false;
+	private boolean hideCriteriaHeader = false;
 
 	@Override
 	public String generateContent() {
@@ -64,6 +65,11 @@ public class AlarmListComponent extends CustomComponent {
 		model.put("hideTimestampColumn", hideTimestampColumn);
 		model.put("hideInactivityColumn", hideInactivityColumn);
 		model.put("hideAckColumn", hideAckColumn);
+		model.put("hideCriteriaHeader", hideCriteriaHeader);
+
+		model.put("maxListSize", maxListSize);
+		model.put("minAlarmLevel", AlarmLevels.getAlarmLevelMessage(minAlarmLevel).getLocalizedMessage(getResourceBundle()));
+		model.put("messageContent", messageContent);
 
 		String content = BaseDwr.generateContent(request, "alarmList.jsp",
 				model);
@@ -186,8 +192,16 @@ public class AlarmListComponent extends CustomComponent {
 		this.hideInactivityColumn = hideInactivityColumn;
 	}
 
-	private static final long serialVersionUID = -1;
-	private static final int version = 1;
+    public boolean isHideCriteriaHeader() {
+        return hideCriteriaHeader;
+    }
+
+    public void setHideCriteriaHeader(boolean hideCriteriaHeader) {
+        this.hideCriteriaHeader = hideCriteriaHeader;
+    }
+
+    private static final long serialVersionUID = -1;
+	private static final int version = 2;
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(version);
@@ -200,6 +214,7 @@ public class AlarmListComponent extends CustomComponent {
 		out.writeBoolean(hideTimestampColumn);
 		out.writeBoolean(hideInactivityColumn);
 		out.writeBoolean(hideAckColumn);
+		out.writeBoolean(hideCriteriaHeader);
 
 	}
 
@@ -209,6 +224,16 @@ public class AlarmListComponent extends CustomComponent {
 		// elegantly handled.
 		if (ver == 1) {
 			minAlarmLevel = in.readInt();
+			maxListSize = in.readInt();
+			width = in.readInt();
+			hideIdColumn = in.readBoolean();
+			hideAlarmLevelColumn = in.readBoolean();
+			hideTimestampColumn = in.readBoolean();
+			hideInactivityColumn = in.readBoolean();
+			hideAckColumn = in.readBoolean();
+		}
+		if (ver == 2) {
+			minAlarmLevel = in.readInt();
 			messageContent = SerializationHelper.readSafeUTF(in);
 			maxListSize = in.readInt();
 			width = in.readInt();
@@ -217,6 +242,7 @@ public class AlarmListComponent extends CustomComponent {
 			hideTimestampColumn = in.readBoolean();
 			hideInactivityColumn = in.readBoolean();
 			hideAckColumn = in.readBoolean();
+			hideCriteriaHeader = in.readBoolean();
 		}
 
 	}

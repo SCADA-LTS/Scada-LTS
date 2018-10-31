@@ -70,6 +70,10 @@
           <td class="formLabel"><fmt:message key="viewEdit.graphic.hideAckColumn"/></td>
           <td class="formField"><input id="customEditorAlarmListAckColumn" type="checkbox"/></td>
         </tr>
+        <tr>
+          <td class="formLabel">Hide Criteria Header</td>
+          <td class="formField"><input id="hideCriteriaHeader" type="checkbox"/></td>
+        </tr>
       </tbody>
       
       <tbody id="customEditor_button" style="display:none;">
@@ -106,6 +110,7 @@
                 $set("customEditorAlarmListTimestampColumn",comp.hideTimestampColumn);
                 $set("customEditorAlarmListInactivityColumn",comp.hideInactivityColumn);
                 $set("customEditorAlarmListAckColumn",comp.hideAckColumn);
+                $set("hideCriteriaHeader",comp.hideCriteriaHeader);
 
             } else if(comp.typeName == "yourCustomComponent") {
 
@@ -131,7 +136,7 @@
                         $get("customEditorAlarmListWidth"),$get("customEditorAlarmListIdColumn"),
                         $get("customEditorAlarmListAlarmLevelColumn"),$get("customEditorAlarmListTimestampColumn"),
                         $get("customEditorAlarmListInactivityColumn"),$get("customEditorAlarmListAckColumn"), 
-                        customEditor.saveCB);
+                        $get("hideCriteriaHeader"), customEditor.saveCB);
             else if (customEditor.typeName == "yourCustomComponent")
             	alert('save your custom component component!');
             
