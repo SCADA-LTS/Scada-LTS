@@ -3,13 +3,13 @@ package br.org.scadabr.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.jstl.core.Config;
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
+import com.serotonin.util.SerializationHelper;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -31,6 +31,8 @@ public class AlarmListComponent extends CustomComponent {
 	@JsonRemoteProperty
 	private int minAlarmLevel = 1;
 	@JsonRemoteProperty
+	private String messageContent = "";
+	@JsonRemoteProperty
 	private int maxListSize = 5;
 	@JsonRemoteProperty
 	private int width = 500;
@@ -49,7 +51,8 @@ public class AlarmListComponent extends CustomComponent {
 		List<EventInstance> events = new EventDao().getPendingEvents(Common
 				.getUser().getId());
 
-		filter(events, minAlarmLevel);
+		filterByAlarmLevel(events, minAlarmLevel);
+		filterByMessageContent(events, messageContent);
 
 		int max = events.size() > maxListSize ? maxListSize : events.size();
 
@@ -67,7 +70,7 @@ public class AlarmListComponent extends CustomComponent {
 		return content;
 	}
 
-	private void filter(List<EventInstance> list, int alarmLevel) {
+	private void filterByAlarmLevel(List<EventInstance> list, int alarmLevel) {
 
 		if (AlarmLevels.INFORMATION == alarmLevel) {
 			removeAlarmLevel(list, AlarmLevels.NONE);
@@ -87,7 +90,20 @@ public class AlarmListComponent extends CustomComponent {
 			removeAlarmLevel(list, AlarmLevels.URGENT);
 			removeAlarmLevel(list, AlarmLevels.CRITICAL);
 		}
+
 	}
+
+	private void filterByMessageContent(List<EventInstance> list, String keywords) {
+        List<EventInstance> copy = new ArrayList<EventInstance>();
+
+        list.stream().forEach(eventInstance -> {
+            if(!eventInstance.getMessage().getLocalizedMessage(getResourceBundle()).contains(keywords)) {
+                copy.add(eventInstance);
+            }
+        });
+
+        list.removeAll(copy);
+    }
 
 	private void removeAlarmLevel(List<EventInstance> source, int alarmLevel) {
 		List<EventInstance> copy = new ArrayList<EventInstance>();
@@ -98,7 +114,13 @@ public class AlarmListComponent extends CustomComponent {
 		}
 
 		source.removeAll(copy);
+	}
 
+	private ResourceBundle getResourceBundle() {
+		WebContext webContext = WebContextFactory.get();
+		LocalizationContext localizationContext = (LocalizationContext) Config.get(webContext.getHttpServletRequest(),
+				Config.FMT_LOCALIZATION_CONTEXT);
+		return localizationContext.getResourceBundle();
 	}
 
 	@Override
@@ -170,6 +192,7 @@ public class AlarmListComponent extends CustomComponent {
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(version);
 		out.writeInt(minAlarmLevel);
+		SerializationHelper.writeSafeUTF(out, messageContent);
 		out.writeInt(maxListSize);
 		out.writeInt(width);
 		out.writeBoolean(hideIdColumn);
@@ -186,6 +209,7 @@ public class AlarmListComponent extends CustomComponent {
 		// elegantly handled.
 		if (ver == 1) {
 			minAlarmLevel = in.readInt();
+			messageContent = SerializationHelper.readSafeUTF(in);
 			maxListSize = in.readInt();
 			width = in.readInt();
 			hideIdColumn = in.readBoolean();
@@ -213,4 +237,11 @@ public class AlarmListComponent extends CustomComponent {
 		return minAlarmLevel;
 	}
 
+	public String getMessageContent() {
+		return messageContent;
+	}
+
+	public void setMessageContent(String messageContent) {
+		this.messageContent = messageContent;
+	}
 }
