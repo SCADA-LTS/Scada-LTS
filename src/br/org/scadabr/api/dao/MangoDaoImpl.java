@@ -32,6 +32,7 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.ds.state.ApiChangeEnableStateDs;
 
 import java.util.*;
 
@@ -863,6 +864,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			ds.setId(config.getId());
 			ds.setName(config.getName());
 			ds.setEnabled(config.isEnabled());
+			ds.setState(new ApiChangeEnableStateDs());
 			ds.setHost(config.getHost());
 			ds.setPort(config.getPort());
 			ds.setUpdatePeriods((int) config.getPollingPeriod());
@@ -905,6 +907,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			ds.setId(config.getId());
 			ds.setName(config.getName());
 			ds.setEnabled(config.isEnabled());
+			ds.setState(new ApiChangeEnableStateDs());
 			ds.setCommPortId(config.getSerialPort());
 			ds.setBaudRate(config.getBaudrate());
 			ds.setUpdatePeriods((int) config.getPollingPeriod());

@@ -39,6 +39,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO.Type;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.ds.state.UserChangeEnableStateDs;
 
 /**
  * @author Matthew Lohbihler
@@ -100,8 +101,10 @@ public class DataSourceListDwr extends BaseDwr {
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		dataSource.setEnabled(!dataSource.isEnabled());
+		dataSource.setState(new UserChangeEnableStateDs());
 		runtimeManager.saveDataSource(dataSource);
 
+		result.put("state", dataSource.getState().getDescribe());
 		result.put("enabled", dataSource.isEnabled());
 		result.put("id", dataSourceId);
 		return result;
