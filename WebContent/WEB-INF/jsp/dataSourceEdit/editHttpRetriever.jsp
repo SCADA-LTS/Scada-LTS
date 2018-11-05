@@ -49,6 +49,7 @@
   function saveDataSourceImpl() {
       DataSourceEditDwr.saveHttpRetrieverDataSource($get("dataSourceName"), $get("dataSourceXid"),
               $get("updatePeriods"), $get("updatePeriodType"), $get("url"), $get("timeoutSeconds"), $get("retries"),
+              $get("stop"),
               saveDataSourceCB);
   }
   
@@ -105,6 +106,13 @@
       var timeRegexLen = $get("timeRegex").trim().length;
       display("timeFormatRow", timeRegexLen > 0);
   }
+
+  jQuery( document ).ready(function() {
+        console.log( "ready!" );
+        if (${dataSource.stop}) {
+                jQuery("#stop").prop("checked","true");
+          }
+   });
 </script>
 
 <c:set var="dsDesc"><fmt:message key="dsEdit.httpRetriever.desc"/></c:set>
@@ -137,6 +145,16 @@
           <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.retries"/></td>
           <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
         </tr>
+        <tr>
+          <td class="formLabelStop"><b>Stop</b> </br>
+          (It will disable the datasource </br>
+           &nbsp;when the attempted connections fail)
+
+          </td>
+          <td class="formField"><input type="checkbox" id="stop" value="${dataSource.stop}"/></td>
+        </tr>
+
+
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsEventsFoot.jspf" %>
 
 <tag:pointList pointHelpId="httpRetrieverPP">
