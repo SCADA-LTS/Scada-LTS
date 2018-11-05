@@ -28,16 +28,22 @@
         });
     }
     
+    function updateStateDescription(idDs, description) {
+        var idStateDesc = "stateDes"+idDs;
+        jQuery("#"+idStateDesc).html(description);
+    }
+
     function toggleDataSource(dataSourceId) {
         var imgNode = $("dsImg"+ dataSourceId);
         if (!hasImageFader(imgNode)) {
             DataSourceListDwr.toggleDataSource(dataSourceId, function(result) {
                 updateStatusImg($("dsImg"+ result.id), result.enabled, true);
+                updateStateDescription(result.id, result.state);
             });
             startImageFader(imgNode);
         }
     }
-    
+
     function toggleDataPoint(dataPointId) {
         var imgNode = $("dpImg"+ dataPointId);
         if (!hasImageFader(imgNode)) {
@@ -117,6 +123,7 @@
                   <td><fmt:message key="dsList.type"/></td>
                   <td><fmt:message key="dsList.connection"/></td>
                   <td><fmt:message key="dsList.status"/></td>
+                  <td><fmt:message key="dsList.statusDescribe"/></td>
                   <td></td>
                 </tr>
                 <c:set var="hideText"><fmt:message key="dsList.hide"/></c:set>
@@ -137,6 +144,9 @@
                                   onclick="toggleDataSource(${listParent.parent.id})"/>
                         </c:otherwise>
                       </c:choose>
+                    </td>
+                    <td id="stateDes${listParent.parent.id}">
+                      ${listParent.parent.state.describe}
                     </td>
                     <td>
                       <a href="data_source_edit.shtm?dsid=${listParent.parent.id}"><tag:img png="icon_ds_edit"
@@ -187,7 +197,6 @@
               </table>
             </td>
           </tr>
-          
         </table>  
       </td>
     </tr>

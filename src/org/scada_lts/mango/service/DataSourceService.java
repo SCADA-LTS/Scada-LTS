@@ -18,7 +18,6 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -26,9 +25,9 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
+import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -137,6 +136,8 @@ public class DataSourceService implements MangoDataSource {
 		dataSourceCopy.setId(Common.NEW_ID);
 		dataSourceCopy.setXid(generateUniqueXid());
 		dataSourceCopy.setEnabled(false);
+		dataSourceCopy.setState(new UserCpChangeEnableStateDs());
+
 		//TODO seroUtils
 		dataSourceCopy.setName(StringUtils.truncate(LocalizableMessage.getMessage(bundle, "common.copyPrefix", dataSource.getName()), 40));
 
