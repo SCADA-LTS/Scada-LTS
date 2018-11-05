@@ -222,7 +222,7 @@ public class AlarmListComponent extends CustomComponent {
 		int ver = in.readInt();
 		// Switch on the version of the class so that version changes can be
 		// elegantly handled.
-		if (ver == 1) {
+		if (ver == version) {
 			minAlarmLevel = in.readInt();
 			maxListSize = in.readInt();
 			width = in.readInt();
@@ -231,8 +231,7 @@ public class AlarmListComponent extends CustomComponent {
 			hideTimestampColumn = in.readBoolean();
 			hideInactivityColumn = in.readBoolean();
 			hideAckColumn = in.readBoolean();
-		}
-		if (ver == 2) {
+		} else if (ver == version) {
 			minAlarmLevel = in.readInt();
 			messageContent = SerializationHelper.readSafeUTF(in);
 			maxListSize = in.readInt();
