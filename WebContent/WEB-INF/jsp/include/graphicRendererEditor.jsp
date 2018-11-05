@@ -66,6 +66,12 @@
           <td class="formField"><input id="graphicRendererBinaryDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
+           <td class="formLabelRequired">x:</td>
+           <td class="formField"><input id="graphicRendererBinaryXPosition"/></td>
+           <td class="formLabelRequired">y:</td>
+           <td class="formField"><input id="graphicRendererBinaryYPosition"/></td>
+        </tr>
+        <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
           <td>
             <select id="graphicRendererBinaryImageSet" onchange="graphicRendererEditor.displayBinaryImages($get(this));">
@@ -252,6 +258,8 @@
                 graphicRendererEditor.updateSampleImageSet($("graphicRendererAnalogImageSet"));
             }
             else if (comp.typeName == "binaryGraphic") {
+                $set("graphicRendererBinaryXPosition", comp.x);
+                $set("graphicRendererBinaryYPosition", comp.y);
                 $set("graphicRendererBinaryDisplayText", comp.displayText);
                 $set("graphicRendererBinaryImageSet", comp.imageSetId);
                 graphicRendererEditor.displayBinaryImages(comp.imageSetId);
