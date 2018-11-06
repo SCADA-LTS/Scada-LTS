@@ -108,6 +108,13 @@
       
       <tbody id="graphicRenderer_dynamicGraphic" style="display:none;">
         <tr>
+           <td class="formLabelRequired">Position:</td>
+           <td class="formField">
+              x: <input id="graphicRendererDynamicXPosition"/>
+              y: <input id="graphicRendererDynamicYPosition"/>
+            </td>
+        </tr>
+        <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.min"/></td>
           <td class="formField"><input id="graphicRendererDynamicMin" type="text"/></td>
         </tr>
@@ -137,6 +144,13 @@
         <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayText"/></td>
           <td class="formField"><input id="graphicRendererMultistateDisplayText" type="checkbox"/></td>
+        </tr>
+        <tr>
+           <td class="formLabelRequired">Position:</td>
+           <td class="formField">
+              x: <input id="graphicRendererMultistateXPosition"/>
+              y: <input id="graphicRendererMultistateYPosition"/>
+           </td>
         </tr>
         <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
@@ -277,12 +291,16 @@
                 graphicRendererEditor.setOneImage(comp.oneImage);
             }
             else if (comp.typeName == "dynamicGraphic") {
+                $set("graphicRendererDynamicXPosition", comp.x);
+                $set("graphicRendererDynamicYPosition", comp.y);
                 $set("graphicRendererDynamicMin", comp.min);
                 $set("graphicRendererDynamicMax", comp.max);
                 $set("graphicRendererDynamicDisplayText", comp.displayText);
                 $set("graphicRendererDynamicImage", comp.dynamicImageId);
             }
             else if (comp.typeName == "multistateGraphic") {
+                $set("graphicRendererMultistateXPosition", comp.x);
+                $set("graphicRendererMultistateYPosition", comp.y);
                 $set("graphicRendererMultistateDisplayText", comp.displayText);
                 $set("graphicRendererMultistateImageSet", comp.imageSetId);
                 graphicRendererEditor.displayMultistateImages(comp.imageSetId);
@@ -337,12 +355,15 @@
                         ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererBinaryXPosition"), $get("graphicRendererBinaryYPosition"));
                         document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererBinaryXPosition") +"px";
                         document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererBinaryYPosition") +"px";
-            } else if (graphicRendererEditor.typeName == "dynamicGraphic")
+            } else if (graphicRendererEditor.typeName == "dynamicGraphic") {
                 ViewDwr.saveDynamicGraphicComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererDynamicMin"), $get("graphicRendererDynamicMax"),
                         $get("graphicRendererDynamicDisplayText"), $get("graphicRendererDynamicImage"),
                         graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "multistateGraphic") {
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererDynamicXPosition"), $get("graphicRendererDynamicYPosition"));
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererDynamicXPosition") +"px";
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererDynamicYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "multistateGraphic") {
                 var imageSet = $get("graphicRendererMultistateImageSet");
                 var i = 0, j;
                 var imageStates = new Array();
@@ -358,6 +379,9 @@
                 ViewDwr.saveMultistateGraphicComponent(graphicRendererEditor.componentId, imageStates,
                         $get("graphicRendererMultistateDefault"), $get("graphicRendererMultistateDisplayText"),
                         imageSet, graphicRendererEditor.saveCB);
+                ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererMultistateXPosition"), $get("graphicRendererMultistateYPosition"));
+                document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererMultistateXPosition") +"px";
+                document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererMultistateYPosition") +"px";
             }
             else if (graphicRendererEditor.typeName == "script")
                 ViewDwr.saveScriptComponent(graphicRendererEditor.componentId, $get("graphicRendererScriptScript"),
