@@ -35,6 +35,13 @@
     <table>
       <tbody id="graphicRenderer_analogGraphic" style="display:none;">
         <tr>
+            <td class="formLabelRequired">Position:</td>
+            <td class="formField">
+                x: <input id="graphicRendererAnalogXPosition"/>
+                y: <input id="graphicRendererAnalogYPosition"/>
+            </td>
+        </tr>
+        <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.min"/></td>
           <td class="formField"><input id="graphicRendererAnalogMin" type="text"/></td>
         </tr>
@@ -66,10 +73,11 @@
           <td class="formField"><input id="graphicRendererBinaryDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
-           <td class="formLabelRequired">x:</td>
-           <td class="formField"><input id="graphicRendererBinaryXPosition"/></td>
-           <td class="formLabelRequired">y:</td>
-           <td class="formField"><input id="graphicRendererBinaryYPosition"/></td>
+           <td class="formLabelRequired">Position:</td>
+           <td class="formField">
+                x: <input id="graphicRendererBinaryXPosition"/>
+                y: <input id="graphicRendererBinaryYPosition"/>
+           </td>
         </tr>
         <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
@@ -251,6 +259,8 @@
             graphicRendererEditor.displayMultistateImages(null);
             // Update the data in the form.
             if (comp.typeName == "analogGraphic") {
+                $set("graphicRendererAnalogXPosition", comp.x);
+                $set("graphicRendererAnalogYPosition", comp.y);
                 $set("graphicRendererAnalogMin", comp.min);
                 $set("graphicRendererAnalogMax", comp.max);
                 $set("graphicRendererAnalogDisplayText", comp.displayText);
@@ -313,11 +323,14 @@
         
         this.save = function() {
             hideContextualMessages("graphicRendererEditorPopup");
-            if (graphicRendererEditor.typeName == "analogGraphic")
+            if (graphicRendererEditor.typeName == "analogGraphic") {
                 ViewDwr.saveAnalogGraphicComponent(graphicRendererEditor.componentId, $get("graphicRendererAnalogMin"),
                         $get("graphicRendererAnalogMax"), $get("graphicRendererAnalogDisplayText"),
                         $get("graphicRendererAnalogImageSet"), graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "binaryGraphic") {
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererAnalogXPosition"), $get("graphicRendererAnalogYPosition"));
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererAnalogXPosition") +"px";
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererAnalogYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "binaryGraphic") {
                 ViewDwr.saveBinaryGraphicComponent(graphicRendererEditor.componentId, graphicRendererEditor.zeroImage,
                         graphicRendererEditor.oneImage, $get("graphicRendererBinaryDisplayText"),
                         $get("graphicRendererBinaryImageSet"), graphicRendererEditor.saveCB);
