@@ -317,11 +317,14 @@
                 ViewDwr.saveAnalogGraphicComponent(graphicRendererEditor.componentId, $get("graphicRendererAnalogMin"),
                         $get("graphicRendererAnalogMax"), $get("graphicRendererAnalogDisplayText"),
                         $get("graphicRendererAnalogImageSet"), graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "binaryGraphic")
+            else if (graphicRendererEditor.typeName == "binaryGraphic") {
                 ViewDwr.saveBinaryGraphicComponent(graphicRendererEditor.componentId, graphicRendererEditor.zeroImage,
                         graphicRendererEditor.oneImage, $get("graphicRendererBinaryDisplayText"),
                         $get("graphicRendererBinaryImageSet"), graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "dynamicGraphic")
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererBinaryXPosition"), $get("graphicRendererBinaryYPosition"));
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererBinaryXPosition") +"px";
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererBinaryYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "dynamicGraphic")
                 ViewDwr.saveDynamicGraphicComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererDynamicMin"), $get("graphicRendererDynamicMax"),
                         $get("graphicRendererDynamicDisplayText"), $get("graphicRendererDynamicImage"),
