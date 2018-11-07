@@ -63,6 +63,16 @@ public class SystemSettingsDAO {
 	public static final String EVENT_PURGE_PERIOD_TYPE = "eventPurgePeriodType";
 	public static final String EVENT_PURGE_PERIODS = "eventPurgePeriods";
 
+	// Alarm Export
+	public static final String ALARM_EXPORT_TYPE	= "alarmExportType";
+	public static final String ALARM_EXPORT_HOST 	= "alarmExportHost";
+	public static final String ALARM_EXPORT_PORT 	= "alarmExportPort";
+	public static final String ALARM_EXPORT_VIRTUAL = "alarmExportVirtual";
+	public static final String ALARM_EXPORT_USERNAME = "alarmExportUsername";
+	public static final String ALARM_EXPORT_PASSWORD = "alarmExportPassword";
+	public static final String ALARM_EXPORT_EX_NAME = "alarmExportExchangeName";
+	public static final String ALARM_EXPORT_Q_NAME = "alarmExportQueueName";
+
 	// Report purging
 	public static final String REPORT_PURGE_PERIOD_TYPE = "reportPurgePeriodType";
 	public static final String REPORT_PURGE_PERIODS = "reportPurgePeriods";
@@ -310,6 +320,15 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_GRIDLINE_COLOUR, "silver");
+
+		DEFAULT_VALUES.put(ALARM_EXPORT_TYPE, 1);
+		DEFAULT_VALUES.put(ALARM_EXPORT_HOST, "localhost");
+		DEFAULT_VALUES.put(ALARM_EXPORT_PORT, 5672);
+		DEFAULT_VALUES.put(ALARM_EXPORT_VIRTUAL, "/ScadaLTSEvents");
+		DEFAULT_VALUES.put(ALARM_EXPORT_USERNAME, "admin");
+		DEFAULT_VALUES.put(ALARM_EXPORT_PASSWORD, "");
+		DEFAULT_VALUES.put(ALARM_EXPORT_EX_NAME, "ScadaLTS_events");
+		DEFAULT_VALUES.put(ALARM_EXPORT_Q_NAME, "all_logs");
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
