@@ -36,6 +36,9 @@ public class UsersProfileDao extends BaseDao {
 	private static final String PROFILES_SELECT = "select u.id, u.name, u.xid "
 			+ "from usersProfiles u";
 
+	private static final String PROFILES_SELECT_ORDER_BY_NAME = "select u.id, u.name, u.xid "
+			+ "from usersProfiles u order by u.name";
+
 	private static final String PROFILES_INSERT = "insert into usersProfiles (xid, name) values (?, ?)";
 
 	private static final String PROFILES_UPDATE = "update usersProfiles set "
@@ -69,7 +72,7 @@ public class UsersProfileDao extends BaseDao {
 		while (iterator.hasNext()) {
 			UsersProfileVO iterProfile = iterator.next();
 			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getName() == name) {
+			if (iterProfile.getName().equals(name)) {
 				return iterProfile;
 			}
 		}
@@ -140,6 +143,14 @@ public class UsersProfileDao extends BaseDao {
 					"usersProfiles"));
 		}
 
+		int id = Common.NEW_ID;
+		try {
+			id = getUserProfileByName(profile.getName()).getId();
+		} catch (Exception e) {
+			//
+		}
+		profile.setId(id);
+
 		if (profile.getId() == Common.NEW_ID) {
 			insertProfile(profile);
 		} else {
@@ -166,6 +177,10 @@ public class UsersProfileDao extends BaseDao {
 		}
 
 		saveRelationalData(profile);
+
+		currentProfileList = query(PROFILES_SELECT_ORDER_BY_NAME,
+				new UsersProfilesRowMapper());
+		populateUserProfilePermissions(currentProfileList);
 
 	}
 
@@ -272,7 +287,6 @@ public class UsersProfileDao extends BaseDao {
 
 		WatchListDao watchListDao = new WatchListDao();
 		List<WatchList> allwatchlists = watchListDao.getWatchLists();
-		watchListDao.populateWatchlistData(allwatchlists);
 		profile.defineWatchlists(allwatchlists);
 	}
 
