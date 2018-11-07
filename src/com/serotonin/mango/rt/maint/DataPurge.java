@@ -47,10 +47,9 @@ public class DataPurge {
 
     private final RuntimeManager rm = Common.ctx.getRuntimeManager();
 
-    // DBH [2018-09-12]: Pass data purge cron time to DataPurgeTask 
-    public static void schedule(String dataPurgeCron) {
+    public static void schedule() {
         try {
-            Common.timer.schedule(new DataPurgeTask(dataPurgeCron));
+            Common.timer.schedule(new DataPurgeTask());
         }
         catch (ParseException e) {
             throw new ShouldNeverHappenException(e);
@@ -145,12 +144,11 @@ public class DataPurge {
     }
 
     static class DataPurgeTask extends TimerTask {
-    	//DBH [2018-09-12]: Pass data purge cron time to DataPurgeTask 
-    	DataPurgeTask(String dataPurgeCron) throws ParseException {
+        DataPurgeTask() throws ParseException {
             // Test trigger for running every 5 minutes.
             //super(new CronTimerTrigger("0 0/5 * * * ?"));
-            // Trigger to run at the time defined in system settings
-            super(new CronTimerTrigger(dataPurgeCron));
+            // Trigger to run at 3:05am every day
+            super(new CronTimerTrigger("0 5 3 * * ?"));
         }
 
         @Override

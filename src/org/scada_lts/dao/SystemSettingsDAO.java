@@ -76,9 +76,6 @@ public class SystemSettingsDAO {
 	// Report purging
 	public static final String REPORT_PURGE_PERIOD_TYPE = "reportPurgePeriodType";
 	public static final String REPORT_PURGE_PERIODS = "reportPurgePeriods";
-	
-	// DBH [2018-09-12]: Crontab purging
-	public static final String DATA_PURGE_CRON = "dataPurgeCron";
 
 	// HTTP Client configuration
 	public static final String HTTP_CLIENT_USE_PROXY = "httpClientUseProxy";
@@ -304,8 +301,6 @@ public class SystemSettingsDAO {
 
 		DEFAULT_VALUES.put(REPORT_PURGE_PERIOD_TYPE, Common.TimePeriods.MONTHS);
 		DEFAULT_VALUES.put(REPORT_PURGE_PERIODS, 1);
-		// DBH [20180912] : Default value for cron purge data
-		DEFAULT_VALUES.put(DATA_PURGE_CRON, "0 5 3 * * ?");
 
 		DEFAULT_VALUES.put(NEW_VERSION_NOTIFICATION_LEVEL,
 				NOTIFICATION_LEVEL_STABLE);

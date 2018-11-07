@@ -51,11 +51,3 @@
   data points will accept new values. Any values with timestamps that exceed this value will be discarded, and an error
   message will be written to the log.
 </p>
-
-<p>
-  Use the "Set periodic data purge based on Cron" settings to change the time when the periodic data purge is done 
-  based on CRON Format [&lt;Second&gt; &lt;Minute&gt; &lt;Hour&gt; &lt;Day_of_the_Month&gt; &lt;Month_of_the_Year&gt; &lt;Day_of_the_Week&gt;] .
-  This periodic purge is executed on all data points, deleting historical values older that the indicated in 
-  the logging properties of the data point. By default, previous data are purged every day at 3:05 AM. A restart of tomcat
-  service is needed after change the CRON expression for periodic data purge to takes effect.
-</p>
