@@ -128,6 +128,7 @@ public class SystemSettingsDwr extends BaseDwr {
 						.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE));
 		settings.put(SystemSettingsDAO.REPORT_PURGE_PERIODS, SystemSettingsDAO
 				.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
+		
 		settings.put(SystemSettingsDAO.UI_PERFORMANCE, SystemSettingsDAO
 				.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
 		// settings.put(SystemSettingsDAO.GROVE_LOGGING, SystemSettingsDAO
@@ -141,6 +142,11 @@ public class SystemSettingsDwr extends BaseDwr {
 				SystemSettingsDAO
 						.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
 
+		// DBH [2018-09-12]: Put in system settings the data purge cron value recovered from database
+		settings.put(
+				SystemSettingsDAO.DATA_PURGE_CRON, SystemSettingsDAO
+					.getValue(SystemSettingsDAO.DATA_PURGE_CRON));
+				
 		// System
 		// settings.put(
 		// SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL,
@@ -341,8 +347,9 @@ public class SystemSettingsDwr extends BaseDwr {
 	@MethodFilter
 	public void saveMiscSettings(int eventPurgePeriodType,
 			int eventPurgePeriods, int reportPurgePeriodType,
-			int reportPurgePeriods, int uiPerformance, boolean groveLogging,
-			int futureDateLimitPeriodType, int futureDateLimitPeriods) {
+			int reportPurgePeriods, int uiPerformance, 
+			boolean groveLogging,int futureDateLimitPeriodType, 
+			int futureDateLimitPeriods, String dataPurgeCron) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
 		SystemSettingsDAO
@@ -354,7 +361,7 @@ public class SystemSettingsDwr extends BaseDwr {
 				SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE,
 				reportPurgePeriodType);
 		SystemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS,
-				reportPurgePeriods);
+				reportPurgePeriods);		
 		SystemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
 				uiPerformance);
 		SystemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING,
@@ -365,6 +372,8 @@ public class SystemSettingsDwr extends BaseDwr {
 		SystemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
 				futureDateLimitPeriods);
+		//DBH [2018-09-12]: Save data purge CRON time into database
+		SystemSettingsDAO.setValue(SystemSettingsDAO.DATA_PURGE_CRON, dataPurgeCron);
 	}
 
 	@MethodFilter
