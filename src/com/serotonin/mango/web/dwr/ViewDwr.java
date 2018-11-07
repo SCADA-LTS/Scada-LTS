@@ -853,7 +853,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, int maxListSize, int width, boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn, boolean hideInactivityColumn, boolean hideAckColumn) {
+	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, String messageContent, int maxListSize, int width, boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn, boolean hideInactivityColumn, boolean hideAckColumn, boolean hideCriteriaHeader) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -865,6 +865,7 @@ public class ViewDwr extends BaseDwr {
 		if (!response.getHasMessages()) {
 			AlarmListComponent c = (AlarmListComponent) getViewComponent(viewComponentId);
 			c.setMinAlarmLevel(minAlarmLevel);
+			c.setMessageContent(messageContent);
 			c.setMaxListSize(maxListSize);
 			c.setWidth(width);
 			c.setHideIdColumn(hideIdColumn);
@@ -872,6 +873,7 @@ public class ViewDwr extends BaseDwr {
 			c.setHideTimestampColumn(hideTimestampColumn);
 			c.setHideInactivityColumn(hideInactivityColumn);
 			c.setHideAckColumn(hideAckColumn);
+			c.setHideCriteriaHeader(hideCriteriaHeader);
 			// resetPointComponent(c);
 		}
 
