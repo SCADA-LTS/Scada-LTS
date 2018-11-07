@@ -38,6 +38,10 @@
           <td class="formLabel"><fmt:message key="common.alarmLevel"/></td>
           <td class="formField"><select id="customEditorAlarmListMinAlarmLevel"><tag:alarmLevelOptions allOption="true"/></select></td>
         </tr>
+        <tr>
+            <td class="formLabel">Message content</td>
+            <td class="formField"><input id="messageContent" type="text"/></td>
+        </tr>
       	<tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.maxListSize"/></td>
           <td class="formField"><input id="customEditorAlarmListMaxListSize" type="text"/></td>
@@ -65,6 +69,10 @@
         <tr>
           <td class="formLabel"><fmt:message key="viewEdit.graphic.hideAckColumn"/></td>
           <td class="formField"><input id="customEditorAlarmListAckColumn" type="checkbox"/></td>
+        </tr>
+        <tr>
+          <td class="formLabel">Hide Criteria Header</td>
+          <td class="formField"><input id="hideCriteriaHeader" type="checkbox"/></td>
         </tr>
       </tbody>
       
@@ -94,6 +102,7 @@
             // Update the data in the form.
             if (comp.typeName == "alarmlist") {
             	$set("customEditorAlarmListMinAlarmLevel",comp.minAlarmLevel);
+            	$set("messageContent",comp.messageContent);
                 $set("customEditorAlarmListMaxListSize",comp.maxListSize);
                 $set("customEditorAlarmListWidth",comp.width);
                 $set("customEditorAlarmListIdColumn",comp.hideIdColumn);
@@ -101,6 +110,7 @@
                 $set("customEditorAlarmListTimestampColumn",comp.hideTimestampColumn);
                 $set("customEditorAlarmListInactivityColumn",comp.hideInactivityColumn);
                 $set("customEditorAlarmListAckColumn",comp.hideAckColumn);
+                $set("hideCriteriaHeader",comp.hideCriteriaHeader);
 
             } else if(comp.typeName == "yourCustomComponent") {
 
@@ -121,11 +131,12 @@
             //hideContextualMessages("graphicRendererEditorPopup");
             if (customEditor.typeName == "alarmlist")
             	ViewDwr.saveAlarmListComponent(customEditor.componentId,
-                    	$get("customEditorAlarmListMinAlarmLevel"), $get("customEditorAlarmListMaxListSize"),
+                    	$get("customEditorAlarmListMinAlarmLevel"), $get("messageContent"),
+                    	$get("customEditorAlarmListMaxListSize"),
                         $get("customEditorAlarmListWidth"),$get("customEditorAlarmListIdColumn"),
                         $get("customEditorAlarmListAlarmLevelColumn"),$get("customEditorAlarmListTimestampColumn"),
                         $get("customEditorAlarmListInactivityColumn"),$get("customEditorAlarmListAckColumn"), 
-                        customEditor.saveCB);
+                        $get("hideCriteriaHeader"), customEditor.saveCB);
             else if (customEditor.typeName == "yourCustomComponent")
             	alert('save your custom component component!');
             

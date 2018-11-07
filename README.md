@@ -99,6 +99,10 @@ In the process of making.
 
 [scada-lts.testquality.com](https://scada-lts.testquality.com)
 
+## Project Encoding
+
+Default project encoding is set to UTF-8.
+
 
 ## Versioning
 

@@ -214,7 +214,6 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
             timeoutSeconds = in.readInt();
             ;
             retries = in.readInt();
-            // We don't check version we work on latest when is not correctly set default value;
             try {
                 stop = in.readBoolean();
             } catch (Exception e) {
