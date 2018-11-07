@@ -143,8 +143,15 @@ public class ViewEditContorller {
         LOG.debug("ViewEditController:save");
         User user = Common.getUser(request);
         View view = user.getView();
+
         copyViewProperties(view, form.getView());
         form.setView(view);
+
+        form.getView().getViewComponents().stream().forEach(viewComponent -> {
+            if(viewComponent.getY()<0) {
+                form.getView().removeViewComponent(viewComponent);
+            }
+        });
         
         validator.validate(form, result);
         if(result.hasErrors())
