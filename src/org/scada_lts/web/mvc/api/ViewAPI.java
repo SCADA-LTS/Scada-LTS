@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.view.ViewDTO;
 import org.scada_lts.dao.model.view.ViewDTOValidator;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,8 @@ public class ViewAPI {
 
     @Resource
     ViewService viewService;
+
+    UserService userService = new UserService();
 
     @RequestMapping(value = "/api/view/getAll", method = RequestMethod.GET)
     public ResponseEntity<String> getAll(HttpServletRequest request) {
@@ -289,6 +292,59 @@ public class ViewAPI {
         }
         return result;
 
+    }
+
+    @RequestMapping(value = "/api/view/getAllPermissions/{userId}", method = RequestMethod.GET)
+    public ResponseEntity<String> getAllPermissions(@PathVariable("userId") int userId, HttpServletRequest request) {
+        LOG.info("/api/view/getAll");
+
+        try {
+            User user = Common.getUser(request);
+
+            if (user != null) {
+                class ViewPermissionsJSON implements Serializable {
+                    private long viewId;
+                    private int permission;
+
+                    public ViewPermissionsJSON(long viewId, int permission) {
+                        this.viewId = viewId;
+                        this.permission = (permission>=2) ? 2 : permission;
+                    }
+
+                    public long getViewId() {
+                        return viewId;
+                    }
+
+                    public void setViewId(long viewId) {
+                        this.viewId = viewId;
+                    }
+
+                    public int getPermission() {
+                        return permission;
+                    }
+
+                    public void setPermission(int permission) {
+                        this.permission = permission;
+                    }
+                }
+
+                List<ViewPermissionsJSON> viewPermissionsJSONS = new ArrayList<>();
+                viewService.getViews().stream().forEach(v -> {
+                    viewPermissionsJSONS.add(new ViewPermissionsJSON(v.getId(), v.getUserAccess(userService.getUser(userId))));
+                });
+
+                String json = null;
+                ObjectMapper mapper = new ObjectMapper();
+                json = mapper.writeValueAsString(viewPermissionsJSONS);
+
+                return new ResponseEntity<String>(json, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
