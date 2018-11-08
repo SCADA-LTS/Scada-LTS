@@ -35,6 +35,13 @@
     <table>
       <tbody id="graphicRenderer_analogGraphic" style="display:none;">
         <tr>
+            <td class="formLabelRequired">Position:</td>
+            <td class="formField">
+                x: <input id="graphicRendererAnalogXPosition"/>
+                y: <input id="graphicRendererAnalogYPosition"/>
+            </td>
+        </tr>
+        <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.min"/></td>
           <td class="formField"><input id="graphicRendererAnalogMin" type="text"/></td>
         </tr>
@@ -66,6 +73,13 @@
           <td class="formField"><input id="graphicRendererBinaryDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
+           <td class="formLabelRequired">Position:</td>
+           <td class="formField">
+                x: <input id="graphicRendererBinaryXPosition"/>
+                y: <input id="graphicRendererBinaryYPosition"/>
+           </td>
+        </tr>
+        <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
           <td>
             <select id="graphicRendererBinaryImageSet" onchange="graphicRendererEditor.displayBinaryImages($get(this));">
@@ -93,6 +107,13 @@
       </tbody>
       
       <tbody id="graphicRenderer_dynamicGraphic" style="display:none;">
+        <tr>
+           <td class="formLabelRequired">Position:</td>
+           <td class="formField">
+              x: <input id="graphicRendererDynamicXPosition"/>
+              y: <input id="graphicRendererDynamicYPosition"/>
+            </td>
+        </tr>
         <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.min"/></td>
           <td class="formField"><input id="graphicRendererDynamicMin" type="text"/></td>
@@ -125,6 +146,13 @@
           <td class="formField"><input id="graphicRendererMultistateDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
+           <td class="formLabelRequired">Position:</td>
+           <td class="formField">
+              x: <input id="graphicRendererMultistateXPosition"/>
+              y: <input id="graphicRendererMultistateYPosition"/>
+           </td>
+        </tr>
+        <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
           <td>
             <select id="graphicRendererMultistateImageSet" onchange="graphicRendererEditor.displayMultistateImages($get(this));">
@@ -144,6 +172,13 @@
       
       <tbody id="graphicRenderer_script" style="display:none;">
         <tr>
+            <td class="formLabelRequired">Position:</td>
+            <td class="formField">
+                x: <input id="graphicRendererScriptXPosition"/>
+                y: <input id="graphicRendererScriptYPosition"/>
+            </td>
+        </tr>
+        <tr>
           <td colspan="2">
             <span class="formLabelRequired"><fmt:message key="viewEdit.graphic.script"/></span><br/>
             <span class="formField"><textarea id="graphicRendererScriptScript" rows="10" cols="50"></textarea></span>
@@ -157,6 +192,13 @@
       
       <tbody id="graphicRenderer_simple" style="display:none;">
         <tr>
+            <td class="formLabelRequired">Position:</td>
+            <td class="formField">
+                x: <input id="graphicRendererSimpleXPosition"/>
+                y: <input id="graphicRendererSimpleYPosition"/>
+            </td>
+        </tr>
+        <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayPointName"/></td>
           <td class="formField"><input id="graphicRendererSimpleDisplayPointName" type="checkbox"/></td>
         </tr>
@@ -168,11 +210,26 @@
       
       <tbody id="graphicRenderer_thumbnailImage" style="display:none;">
         <tr>
+            <td class="formLabelRequired">Position:</td>
+            <td class="formField">
+                x: <input id="graphicRendererThumbnailXPosition"/>
+                y: <input id="graphicRendererThumbnailYPosition"/>
+            </td>
+        </tr>
+        <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.scale"/></td>
           <td class="formField"><input id="graphicRendererThumbnailScalePercent" type="text"/></td>
         </tr>
       </tbody>
+      
       <tbody id="graphicRenderer_button" style="display:none;">
+        <tr>
+            <td class="formLabelRequired">Position:</td>
+            <td class="formField">
+                x: <input id="graphicRendererButtomXPosition"/>
+                y: <input id="graphicRendererButtomYPosition"/>
+            </td>
+        </tr>
         <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.whenOnLabel"/></td>
           <td class="formField"><input id="graphicRendererButtonWhenOnLabel" type="text"/></td>
@@ -245,26 +302,31 @@
             graphicRendererEditor.displayMultistateImages(null);
             // Update the data in the form.
             if (comp.typeName == "analogGraphic") {
+                $set("graphicRendererAnalogXPosition", comp.x);
+                $set("graphicRendererAnalogYPosition", comp.y);
                 $set("graphicRendererAnalogMin", comp.min);
                 $set("graphicRendererAnalogMax", comp.max);
                 $set("graphicRendererAnalogDisplayText", comp.displayText);
                 $set("graphicRendererAnalogImageSet", comp.imageSetId);
                 graphicRendererEditor.updateSampleImageSet($("graphicRendererAnalogImageSet"));
-            }
-            else if (comp.typeName == "binaryGraphic") {
+            } else if (comp.typeName == "binaryGraphic") {
+                $set("graphicRendererBinaryXPosition", comp.x);
+                $set("graphicRendererBinaryYPosition", comp.y);
                 $set("graphicRendererBinaryDisplayText", comp.displayText);
                 $set("graphicRendererBinaryImageSet", comp.imageSetId);
                 graphicRendererEditor.displayBinaryImages(comp.imageSetId);
                 graphicRendererEditor.setZeroImage(comp.zeroImage);
                 graphicRendererEditor.setOneImage(comp.oneImage);
-            }
-            else if (comp.typeName == "dynamicGraphic") {
+            } else if (comp.typeName == "dynamicGraphic") {
+                $set("graphicRendererDynamicXPosition", comp.x);
+                $set("graphicRendererDynamicYPosition", comp.y);
                 $set("graphicRendererDynamicMin", comp.min);
                 $set("graphicRendererDynamicMax", comp.max);
                 $set("graphicRendererDynamicDisplayText", comp.displayText);
                 $set("graphicRendererDynamicImage", comp.dynamicImageId);
-            }
-            else if (comp.typeName == "multistateGraphic") {
+            } else if (comp.typeName == "multistateGraphic") {
+                $set("graphicRendererMultistateXPosition", comp.x);
+                $set("graphicRendererMultistateYPosition", comp.y);
                 $set("graphicRendererMultistateDisplayText", comp.displayText);
                 $set("graphicRendererMultistateImageSet", comp.imageSetId);
                 graphicRendererEditor.displayMultistateImages(comp.imageSetId);
@@ -276,15 +338,22 @@
                 for (var i=0; i<imageStates.length; i++)
                     $set("graphicRendererMultistateState"+ imageStates[i].key, imageStates[i].value);
                 $set("graphicRendererMultistateDefault", comp.defaultImage);
-            }
-            else if (comp.typeName == "script")
+            } else if (comp.typeName == "script") {
+                $set("graphicRendererScriptXPosition", comp.x);
+                $set("graphicRendererScriptYPosition", comp.y);
                 $set("graphicRendererScriptScript", comp.script);
-            else if (comp.typeName == "simple") {
+            } else if (comp.typeName == "simple") {
+                $set("graphicRendererSimpleXPosition", comp.x);
+                $set("graphicRendererSimpleYPosition", comp.y);
                 $set("graphicRendererSimpleDisplayPointName", comp.displayPointName);
                 $set("graphicRendererSimpleStyleAttribute", comp.styleAttribute);
-            } else if (comp.typeName == "thumbnailImage")
+            } else if (comp.typeName == "thumbnailImage") {
+                $set("graphicRendererThumbnailXPosition", comp.x);
+                $set("graphicRendererThumbnailYPosition", comp.y);
                 $set("graphicRendererThumbnailScalePercent", comp.scalePercent);
-            else if(comp.typeName == "button") {
+            } else if(comp.typeName == "button") {
+                $set("graphicRendererButtonXPosition", comp.x);
+                $set("graphicRendererButtonYPosition", comp.y);
             	$set("graphicRendererButtonWhenOnLabel", comp.whenOnLabel);
             	$set("graphicRendererButtonWhenOffLabel", comp.whenOffLabel);
             	$set("graphicRendererButtonWidth", comp.width);
@@ -305,20 +374,29 @@
         
         this.save = function() {
             hideContextualMessages("graphicRendererEditorPopup");
-            if (graphicRendererEditor.typeName == "analogGraphic")
+            if (graphicRendererEditor.typeName == "analogGraphic") {
                 ViewDwr.saveAnalogGraphicComponent(graphicRendererEditor.componentId, $get("graphicRendererAnalogMin"),
                         $get("graphicRendererAnalogMax"), $get("graphicRendererAnalogDisplayText"),
                         $get("graphicRendererAnalogImageSet"), graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "binaryGraphic")
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererAnalogXPosition"), $get("graphicRendererAnalogYPosition"));
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererAnalogXPosition") +"px";
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererAnalogYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "binaryGraphic") {
                 ViewDwr.saveBinaryGraphicComponent(graphicRendererEditor.componentId, graphicRendererEditor.zeroImage,
                         graphicRendererEditor.oneImage, $get("graphicRendererBinaryDisplayText"),
                         $get("graphicRendererBinaryImageSet"), graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "dynamicGraphic")
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererBinaryXPosition"), $get("graphicRendererBinaryYPosition"));
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererBinaryXPosition") +"px";
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererBinaryYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "dynamicGraphic") {
                 ViewDwr.saveDynamicGraphicComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererDynamicMin"), $get("graphicRendererDynamicMax"),
                         $get("graphicRendererDynamicDisplayText"), $get("graphicRendererDynamicImage"),
                         graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "multistateGraphic") {
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererDynamicXPosition"), $get("graphicRendererDynamicYPosition"));
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererDynamicXPosition") +"px";
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererDynamicYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "multistateGraphic") {
                 var imageSet = $get("graphicRendererMultistateImageSet");
                 var i = 0, j;
                 var imageStates = new Array();
@@ -334,23 +412,36 @@
                 ViewDwr.saveMultistateGraphicComponent(graphicRendererEditor.componentId, imageStates,
                         $get("graphicRendererMultistateDefault"), $get("graphicRendererMultistateDisplayText"),
                         imageSet, graphicRendererEditor.saveCB);
-            }
-            else if (graphicRendererEditor.typeName == "script")
+                ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererMultistateXPosition"), $get("graphicRendererMultistateYPosition"));
+                document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererMultistateXPosition") +"px";
+                document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererMultistateYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "script") {
                 ViewDwr.saveScriptComponent(graphicRendererEditor.componentId, $get("graphicRendererScriptScript"),
                         graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "simple")
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererScriptXPosition"), $get("graphicRendererScriptYPosition"));
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererScriptXPosition") +"px";
+                        document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererScriptYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "simple") {
                 ViewDwr.saveSimplePointComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererSimpleDisplayPointName"), 
                         $get("graphicRendererSimpleStyleAttribute"), graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "thumbnailImage")
+                ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererSimpleXPosition"), $get("graphicRendererSimpleYPosition"));
+                document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererSimpleXPosition") +"px";
+                document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererSimpleYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "thumbnailImage") {
                 ViewDwr.saveThumbnailComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererThumbnailScalePercent"), graphicRendererEditor.saveCB);
-            else if (graphicRendererEditor.typeName == "button") {
+                ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererThumbnailXPosition"), $get("graphicRendererThumbnailYPosition"));
+                document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererThumbnailXPosition") +"px";
+                document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererThumbnailYPosition") +"px";
+            } else if (graphicRendererEditor.typeName == "button") {
             	ViewDwr.saveButtonComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererButtonWhenOnLabel"), $get("graphicRendererButtonWhenOffLabel"),$get("graphicRendererButtonWidth"),
                         $get("graphicRendererButtonHeight"), graphicRendererEditor.saveCB);
-            }
-            else
+                ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererButtonXPosition"), $get("graphicRendererButtonYPosition"));
+                document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererButtonXPosition") +"px";
+                document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererButtonYPosition") +"px";
+            } else
                 graphicRendererEditor.close();
         };
         
