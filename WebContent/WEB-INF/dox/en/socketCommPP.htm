@@ -1,0 +1,46 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Configuration</h1>
+<p>
+Each datapoint configured into the Socket Communication datasource corresponding to a value received from the service, running at the <b>Host</b> defined into the datasource and 
+listening to socket connections at the configured <b>Port</b>.  
+</p>
+<p>
+Every new point added to this datasource is identified by a <b>Name</b> and an internal identifier automatically generated, <b>Export ID</b>.
+There are two communication possibilities depending on how the server service provides the data:
+</p>
+<ol>
+<li>Command sending and response receiving</li>
+<li>Periodically data receiving</li>
+</ol>
+<h3>Command sending and response receiving</h3>
+<p>
+If the server needs to be queried to provide a data value, the first thing to do is establish the <b>Number of commands</b> needed to get the desired response from the server. 
+If only one command is needed to get the sought response from the server, a <b>First Command</b> is sent. If two or three commands are needed to get the sought response from the server, 
+the response to the first command is compared to the <b>Expected response for first command</b>. If both match, a <b>Second command</b> is sent and the same process is done with the <b>Expected response for second command</b>,
+if a <b>Third Command</b> is needed. If the server responses match the expected ones configured into the data point, a value from the final response (the sought one) is stored as as a binary, numeric, multistate or 
+alphanumeric data (<b>Data Type</b>), based on the regular expression "mask" at <b>Value regex</b>.   
+</p>
+<h3>Periodically data receiving</h3>
+<p>
+If the server sends data periodically without receiving any command from the datasource, the <b>Number of commands</b> field from each datapoint should be kept with a <b>zero</b> value, indicating that the datasource
+is configured to only receive data from the server service (No command is sent to the server).The final value to be stored as datapoint is selected based on a regular expression (<b>Value regex</b>).      
+Depending on the <b>Data type</b>, the value obtained from the server is stored as a binary, numeric, multistate or alphanumeric data.
+</p>

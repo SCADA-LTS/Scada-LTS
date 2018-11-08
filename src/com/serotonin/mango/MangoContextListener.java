@@ -309,6 +309,9 @@ public class MangoContextListener implements ServletContextListener {
 				DataSourceVO.Type.INTERNAL.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.JMX",
 				DataSourceVO.Type.JMX.getId());
+		// DBH: Socket Communication added to the servlet context constants
+		ctx.setAttribute("constants.DataSourceVO.Types.SOCKET_COMM",
+				DataSourceVO.Type.SOCKET_COMM.getId());
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE",
 				Permissions.DataPointAccessTypes.NONE);
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.READ",

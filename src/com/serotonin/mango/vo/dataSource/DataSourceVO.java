@@ -67,6 +67,8 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import org.scada_lts.danibeni.vo.dataSource.socketComm.SocketCommDataSourceVO;
 import org.scada_lts.workdomain.datasource.amqp.AmqpDataSourceVO;
 
 import java.io.IOException;
@@ -298,7 +300,16 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
 		AMQP(45, "dsEdit.amqp", true){
 		 	@Override
 			public DataSourceVO<?> createDataSourceVO() { return new AmqpDataSourceVO(); }
+		},
+		// DBH: Datasource type for sockets communication to a defined server,
+		// listening at a concrete port
+		SOCKET_COMM(47, "dsEdit.socketComm", true) {
+		@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new SocketCommDataSourceVO();
+			}
 		};
+		
 
 		private Type(int id, String key, boolean display) {
 			this.id = id;
