@@ -40,12 +40,14 @@ public class SerializationData {
 	public Object readObject(final InputStream is) {
         
 		if (is != null) {
-	        try {
-	            return new ObjectInputStream(is).readObject();
-	        } catch (ClassNotFoundException | IOException e) {
-	        	LOG.error(e);
-	            throw new StreamDaoException(e);
-	        }
+			synchronized (is) {
+				try {
+					return new ObjectInputStream(is).readObject();
+				} catch (ClassNotFoundException | IOException e) {
+					LOG.error(e);
+					throw new StreamDaoException(e);
+				}
+			}
 		}
 		return null;
 	}

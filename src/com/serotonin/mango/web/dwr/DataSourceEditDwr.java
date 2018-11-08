@@ -88,6 +88,7 @@ import com.serotonin.bacnet4j.type.constructed.Address;
 import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
+import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -1279,6 +1280,28 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 		return tryDataSourceSave(ds);
 	}
+
+	@MethodFilter
+	public DwrResponseI18n saveHttpRetrieverDataSourceWithReactivationOptions(String name, String xid,
+																			  int updatePeriods, int updatePeriodType, String url,
+																			  int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation) {
+		HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
+				.getUser().getEditDataSource();
+
+		ds.setXid(xid);
+		ds.setName(name);
+		ds.setUpdatePeriods(updatePeriods);
+		ds.setUpdatePeriodType(updatePeriodType);
+		ds.setUrl(url);
+		ds.setTimeoutSeconds(timeoutSeconds);
+		ds.setRetries(retries);
+		ds.setStop(stop);
+		ReactivationDs rDs = new ReactivationDs(sleep, typeReactivation, valueReactivation);
+		ds.setReactivation(rDs);
+
+		return tryDataSourceSave(ds);
+	}
+
 
 	@MethodFilter
 	public DwrResponseI18n saveHttpRetrieverPointLocator(int id, String xid,

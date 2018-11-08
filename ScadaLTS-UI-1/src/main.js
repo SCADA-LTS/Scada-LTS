@@ -8,6 +8,8 @@ import Test from './components/Test'
 import IsAlive from './components/IsAlive'
 import ExportImportPointHierarchy from './components/ExportImportPointHierarchy'
 import SimpleComponentSVG from './components/SimpleComponentSVG'
+
+import SleepAndReactivationDS from './components/form/SleepAndReactivationDS'
 import router from './router'
 import VJsoneditor from 'vue-jsoneditor';
 import Vuetify from 'vuetify';
@@ -52,7 +54,8 @@ new Vue({
    el: '#app',
    components: {
      "simple-component-svg": SimpleComponentSVG,
-     "export-import-ph": ExportImportPointHierarchy
+     "export-import-ph": ExportImportPointHierarchy,
+     "sleep-reactivation-ds": SleepAndReactivationDS,
    }
 })
 

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
@@ -127,7 +128,14 @@ public class RuntimeManager {
 		List<DataSourceVO<?>> configs = dataSourceDao.getDataSources();
 		List<DataSourceVO<?>> pollingRound = new ArrayList<DataSourceVO<?>>();
 		for (DataSourceVO<?> config : configs) {
-			if (config.isEnabled()) {
+
+			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation);
+			boolean isToTrayEnable = false;
+			if (isCheckToTrayEnableRun) {
+				isToTrayEnable = ((ICheckReactivation) config).checkToTrayEnable();
+			}
+
+			if (config.isEnabled() || isToTrayEnable ) {
 				if (safe) {
 					config.setEnabled(false);
 					dataSourceDao.saveDataSource(config);
@@ -310,7 +318,7 @@ public class RuntimeManager {
 				return false;
 
 			// Ensure that the data source is enabled.
-			Assert.isTrue(vo.isEnabled());
+			// Assert.isTrue(vo.isEnabled());
 
 			// Create and initialize the runtime version of the data source.
 			DataSourceRT dataSource = vo.createDataSourceRT();
