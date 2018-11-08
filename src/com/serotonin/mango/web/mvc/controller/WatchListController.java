@@ -26,9 +26,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.scada_lts.workdomain.permissions.ACLConfig;
-import org.scada_lts.workdomain.permissions.PermissionWatchlistACL;
-import org.scada_lts.workdomain.permissions.model.EntryDto;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -48,7 +45,7 @@ public class WatchListController extends ParameterizableViewController {
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse response) {
+												 HttpServletResponse response) {
 		return new ModelAndView(getViewName(), createModel(request));
 	}
 
@@ -59,38 +56,13 @@ public class WatchListController extends ParameterizableViewController {
 		// The user's permissions may have changed since the last session, so
 		// make sure the watch lists are correct.
 		WatchListDao watchListDao = new WatchListDao();
-		List<WatchList> watchLists = new ArrayList<WatchList>();
-		List<IntValuePair> vwatchLists = vwatchLists = new ArrayList<IntValuePair>();
+		List<WatchList> watchLists;
 		if (!user.isAdmin()) {
-//			watchLists = watchListDao.getWatchLists(user.getId(),
-//					user.getUserProfile());
-
-			if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
-				// ACL start
-				watchLists = watchListDao.getWatchLists();
-				List<IntValuePair> watchListsIVP = new ArrayList<IntValuePair>();
-				for (WatchList wl : watchLists) {
-					watchListsIVP.add(new IntValuePair(wl.getId(), wl.getName()));
-				}
-
-				Map<Integer, EntryDto> mapToCheckId = PermissionWatchlistACL.getInstance().filter(user.getId());
-				for (IntValuePair vwl : watchListsIVP) {
-					if (mapToCheckId.get(vwl.getKey()) != null) {
-						vwatchLists.add(vwl);
-					}
-				}
-				//watchLists.stream().filter(watchList -> mapToCheckId.get(watchList.getKey()) != null );
-				// ACL end;
-			}
-
+			watchLists = watchListDao.getWatchLists(user.getId(),
+					user.getUserProfile());
 		} else {
 			watchLists = watchListDao.getWatchLists();
-			for(WatchList wl : watchLists){
-				vwatchLists.add(new IntValuePair(wl.getId(), wl.getName()));
-			}
 		}
-
-		List<IntValuePair> watchListNames = new ArrayList<IntValuePair>();
 
 		if (watchLists.size() == 0) {
 			// Add a default watch list if none exist.
@@ -105,37 +77,36 @@ public class WatchListController extends ParameterizableViewController {
 		int selected = user.getSelectedWatchList();
 		boolean found = false;
 
-		if (ACLConfig.getInstance().isPermissionFromServerAcl()) {
-			watchListNames = vwatchLists;
-		} else {
-			watchListNames = new ArrayList<IntValuePair>(
-					watchLists.size());
-			for (WatchList watchList : watchLists) {
-				if (watchList.getId() == selected)
-					found = true;
-				if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER
-						|| user.isAdmin()) {
-					// If this is the owner or admin, check that the user still has
-					// access to
-					// the points. If not, remove the
-					// unauthorized points, resave, and continue.
-					boolean changed = false;
-					List<DataPointVO> list = watchList.getPointList();
-					List<DataPointVO> copy = new ArrayList<DataPointVO>(list);
-					for (DataPointVO point : copy) {
-						if (point == null
-								|| !Permissions.hasDataPointReadPermission(user,
-								point)) {
-							list.remove(point);
-							changed = true;
-						}
+		List<IntValuePair> watchListNames = new ArrayList<IntValuePair>(
+				watchLists.size());
+		for (WatchList watchList : watchLists) {
+			if (watchList.getId() == selected)
+				found = true;
+
+			if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER
+					|| user.isAdmin()) {
+				// If this is the owner or admin, check that the user still has
+				// access to
+				// the points. If not, remove the
+				// unauthorized points, resave, and continue.
+				boolean changed = false;
+				List<DataPointVO> list = watchList.getPointList();
+				List<DataPointVO> copy = new ArrayList<DataPointVO>(list);
+				for (DataPointVO point : copy) {
+					if (point == null
+							|| !Permissions.hasDataPointReadPermission(user,
+							point)) {
+						list.remove(point);
+						changed = true;
 					}
-					if (changed)
-						watchListDao.saveWatchList(watchList);
 				}
-				watchListNames.add(new IntValuePair(watchList.getId(), watchList
-						.getName()));
+
+				if (changed)
+					watchListDao.saveWatchList(watchList);
 			}
+
+			watchListNames.add(new IntValuePair(watchList.getId(), watchList
+					.getName()));
 		}
 
 		if (!found) {
@@ -149,7 +120,6 @@ public class WatchListController extends ParameterizableViewController {
 		}
 
 		model.put(KEY_WATCHLISTS, watchListNames);
-
 		model.put(KEY_SELECTED_WATCHLIST, selected);
 
 		return model;

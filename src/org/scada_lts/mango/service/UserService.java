@@ -63,7 +63,9 @@ public class UserService implements MangoUser {
 
 	@Override
 	public List<User> getUsers() {
-		return userDAO.getUsers();
+		List<User> users = userDAO.getUsers();
+		populateUserPermissions(users);
+		return users;
 	}
 
 	@Override

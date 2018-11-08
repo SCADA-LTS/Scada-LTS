@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.WatchListService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,8 @@ public class WatchListAPI {
 	
 	@Resource
 	private DataPointService dataPointService;
+
+	UserService userService = new UserService();
 
 	@RequestMapping(value = "/api/watchlist/getAll", method = RequestMethod.GET)
 	public ResponseEntity<String> getAll(HttpServletRequest request) {
@@ -297,8 +300,62 @@ public class WatchListAPI {
 			LOG.error(e);
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-		
-		
+	}
+
+	@RequestMapping(value = "/api/watchlist/getAllPermissions/{userId}", method = RequestMethod.GET)
+	public ResponseEntity<String> getAllPermissions(@PathVariable("userId") int userId, HttpServletRequest request) {
+		LOG.info("/api/watchlist/getAll");
+
+		try {
+			User user = Common.getUser(request);
+
+			if (user != null) {
+				class WatchListPermissionsJSON implements Serializable {
+					private long watchListId;
+					private int permission;
+
+					public WatchListPermissionsJSON(long watchListId, int permission) {
+						this.watchListId = watchListId;
+						this.permission = permission;
+					}
+
+					public long getWatchListId() {
+						return watchListId;
+					}
+
+					public void setWatchListId(long watchListId) {
+						this.watchListId = watchListId;
+					}
+
+					public int getPermission() {
+						return permission;
+					}
+
+					public void setPermission(int permission) {
+						this.permission = permission;
+					}
+				}
+
+				List<WatchListPermissionsJSON> watchlistPermissionsJSONS = new ArrayList<>();
+
+				List<WatchList> watchLists = new ArrayList<>();
+				watchLists = watchListService.getWatchLists();
+				watchLists.stream().forEach(w -> {
+					watchlistPermissionsJSONS.add(new WatchListPermissionsJSON(w.getId(), w.getUserAccess(userService.getUser(userId))));
+				});
+
+				String json = null;
+				ObjectMapper mapper = new ObjectMapper();
+				json = mapper.writeValueAsString(watchlistPermissionsJSONS);
+
+				return new ResponseEntity<String>(json, HttpStatus.OK);
+			}
+
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 }
