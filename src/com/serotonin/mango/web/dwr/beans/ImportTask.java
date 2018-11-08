@@ -75,6 +75,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
+import org.scada_lts.ds.state.ImportChangeEnableStateDs;
 
 /**
  * @author Matthew Lohbihler
@@ -214,6 +215,7 @@ public class ImportTask extends ProgressiveTask {
 											.getId())) {
 								disabledDataSources.add(dsvo.getId());
 								dsvo.setEnabled(false);
+								dsvo.setState(new ImportChangeEnableStateDs());
 								Common.ctx.getRuntimeManager().saveDataSource(
 										dsvo);
 							}
@@ -360,6 +362,7 @@ public class ImportTask extends ProgressiveTask {
 			for (Integer id : disabledDataSources) {
 				DataSourceVO<?> ds = dataSourceDao.getDataSource(id);
 				ds.setEnabled(true);
+				ds.setState(new ImportChangeEnableStateDs());
 				Common.ctx.getRuntimeManager().saveDataSource(ds);
 			}
 		} catch (Exception e) {
@@ -427,6 +430,13 @@ public class ImportTask extends ProgressiveTask {
 					name == null ? "(undefined)" : name);
 		else {
 			DataSourceVO<?> vo = dataSourceDao.getDataSource(xid);
+			if (vo != null) {
+			    //Check the enable/disable is changed. And to test when don't have enable property when import data
+                boolean importedDsEnabled = dataSource.getBoolean("enabled");
+                if (vo.isEnabled() != importedDsEnabled) {
+                    vo.setState(new ImportChangeEnableStateDs());
+                }
+            }
 			if (vo == null) {
 				String typeStr = dataSource.getString("type");
 				if (StringUtils.isEmpty(typeStr))
@@ -464,6 +474,7 @@ public class ImportTask extends ProgressiveTask {
 					else {
 						// Sweet. Save it.
 						boolean isnew = vo.isNew();
+						vo.setState(new ImportChangeEnableStateDs());
 						Common.ctx.getRuntimeManager().saveDataSource(vo);
 						addSuccessMessage(isnew, "emport.dataSource.prefix",
 								xid);
@@ -534,6 +545,7 @@ public class ImportTask extends ProgressiveTask {
 								&& !disabledDataSources.contains(dsvo.getId())) {
 							disabledDataSources.add(dsvo.getId());
 							dsvo.setEnabled(false);
+							dsvo.setState(new ImportChangeEnableStateDs());
 							Common.ctx.getRuntimeManager().saveDataSource(dsvo);
 						}
 
