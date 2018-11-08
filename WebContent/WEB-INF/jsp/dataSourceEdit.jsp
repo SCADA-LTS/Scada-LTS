@@ -73,7 +73,7 @@
                 rowCreator: function(options) {
                     var tr = document.createElement("tr");
                     tr.mangoId = "p"+ options.rowData.id;
-                    tr.className = "row"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
+                    tr.className = ""+ (options.rowIndex % 2 == 0 ? "" : "rowAlt");
                     return tr;
                 },
                 cellCreator: function(options) {

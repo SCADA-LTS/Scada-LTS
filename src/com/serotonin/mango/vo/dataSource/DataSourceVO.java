@@ -69,6 +69,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
 import org.scada_lts.ds.state.IStateDs;
+import org.scada_lts.ds.state.change.ChangeStatus;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -76,7 +77,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
-abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
+abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
 		Serializable, Cloneable, JsonSerializable, ChangeComparable<T> {
 	public enum Type {
 		EBI25(16, "dsEdit.ebi25", false) {
@@ -397,11 +398,15 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> implements
 	}
 
 	public IStateDs getState() {
+
 		return state;
 	}
 
 	public void setState(IStateDs state) {
-		this.state = state;
+		notifyListeners(
+				this,
+				this.state,
+				this.state = state);
 	}
 
 	public int getId() {
