@@ -142,7 +142,6 @@ public class EmportDwr extends BaseDwr {
 		if (watchLists) {
 			WatchListDao watchListDao = new WatchListDao();
 			List<WatchList> wls = watchListDao.getWatchLists();
-			watchListDao.populateWatchlistData(wls);
 			data.put(WATCH_LISTS, wls);
 		}
 		if (maintenanceEvents)
