@@ -71,7 +71,23 @@ public class View implements Serializable, JsonSerializable {
 	private List<ViewComponent> viewComponents = new CopyOnWriteArrayList<ViewComponent>();
 	private int anonymousAccess = ShareUser.ACCESS_NONE;
 	private List<ShareUser> viewUsers = new CopyOnWriteArrayList<ShareUser>();
-	
+
+	public View() {
+	}
+
+	public View(View other) {
+		this.xid = other.xid;
+		this.name = other.name;
+		this.backgroundFilename = other.backgroundFilename;
+		this.width = other.width;
+		this.height = other.height;
+		this.resolution = other.resolution;
+		this.userId = other.userId;
+		this.viewComponents = other.viewComponents;
+		this.anonymousAccess = other.anonymousAccess;
+		this.viewUsers = other.viewUsers;
+	}
+
 	public void addViewComponent(ViewComponent viewComponent) {
 		// Determine an index for the component.
 		int min = 0;
@@ -82,6 +98,10 @@ public class View implements Serializable, JsonSerializable {
 		viewComponent.setIndex(min + 1);
 
 		viewComponents.add(viewComponent);
+	}
+
+	private void setViewComponents(List<ViewComponent> viewComponents) {
+		this.viewComponents = viewComponents;
 	}
 
 	public ViewComponent getViewComponent(int index) {
@@ -153,6 +173,7 @@ public class View implements Serializable, JsonSerializable {
 		for (ViewComponent viewComponent : viewComponents)
 			viewComponent.validateDataPoint(owner, makeReadOnly);
 	}
+
 
 	public String getBackgroundFilename() {
 		return backgroundFilename;

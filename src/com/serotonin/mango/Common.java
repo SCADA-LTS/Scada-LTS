@@ -26,12 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,8 +36,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.directwebremoting.WebContext;
-import org.directwebremoting.WebContextFactory;
+import org.directwebremoting.*;
 import org.joda.time.Period;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -66,7 +60,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
 
 public class Common {
-	
+
 	private static final String ANON_VIEW_KEY = "anonymousViews";
 	private static final String CUSTOM_VIEW_KEY = "customView";
 
@@ -210,6 +204,8 @@ public class Common {
 	// Session user
 	public static User getUser() {
 		WebContext webContext = WebContextFactory.get();
+		User user = null;
+
 		if (webContext == null) {
 			// If there is no web context, check if there is a background
 			// context
@@ -218,7 +214,11 @@ public class Common {
 				return null;
 			return backgroundContext.getUser();
 		}
-		return getUser(webContext.getHttpServletRequest());
+
+		user = getUser(webContext.getHttpServletRequest());
+
+		User scriptSessionAwareUser = ScriptSessionAndUsers.findScriptSessionUser(user,webContext);
+		return scriptSessionAwareUser == null ? user : scriptSessionAwareUser;
 	}
 
 	public static User getUser(HttpServletRequest request) {

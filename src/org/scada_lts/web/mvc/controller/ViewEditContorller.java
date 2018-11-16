@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.ScriptSessionAndUsers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.ViewEditForm;
@@ -98,6 +99,7 @@ public class ViewEditContorller {
             view.setXid(new ViewDao().generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
+
         user.setView(view);
         view.validateViewComponents(false);
 
@@ -141,18 +143,12 @@ public class ViewEditContorller {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
-        User user = Common.getUser(request);
+        User user = ScriptSessionAndUsers.getUserForScriptSessionId(form.getDwrscriptsessionid(),request);
         View view = user.getView();
 
         copyViewProperties(view, form.getView());
         form.setView(view);
 
-        form.getView().getViewComponents().stream().forEach(viewComponent -> {
-            if(viewComponent.getY()<0) {
-                form.getView().removeViewComponent(viewComponent);
-            }
-        });
-        
         validator.validate(form, result);
         if(result.hasErrors())
         {
@@ -161,11 +157,12 @@ public class ViewEditContorller {
             model.put(FORM_OBJECT_NAME, form);
             model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
             model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-            return new ModelAndView(FORM_VIEW, model);    
+            return new ModelAndView(FORM_VIEW, model);
         }
-        
-        view.setUserId(Common.getUser(request).getId());
+
+        view.setUserId(user.getId());
         new ViewDao().saveView(view);
+
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
@@ -264,6 +261,7 @@ public class ViewEditContorller {
     }
     
     private void copyViewProperties(View targetView, View sourceView) {
+        targetView.setId(sourceView.getId());
         targetView.setName(sourceView.getName());
         targetView.setXid(sourceView.getXid());
         targetView.setResolution(sourceView.getResolution());

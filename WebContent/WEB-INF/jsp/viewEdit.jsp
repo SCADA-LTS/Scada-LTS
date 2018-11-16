@@ -353,6 +353,12 @@
 			document.getElementById("deleteButton").style.visibility = 'hidden';
 		}
 	}
+    function appendScriptSessionParameter(){
+
+        if(document.getElementById("dwrscriptsessionid").value == '' )
+            document.getElementById("dwrscriptsessionid").value = dwr.engine._getScriptSessionId();
+
+    }
 
     window.onbeforeunload = confirmExit;
     function confirmExit(){
@@ -385,7 +391,20 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
+              <spring:bind path="form.view.id">
+                <tr>
+                  <td class="formField" width="250">
+                    <input type="hidden" id="id" name="view.id" value="${status.value}"/>
+                  </td>
+                </tr>
+              </spring:bind>
 
+                <tr>
+                  <td class="formField" width="250">
+                    <input type="hidden" id="dwrscriptsessionid" name="dwrscriptsessionid" value="">
+                  </td>
+                  <td class="formError">${status.errorMessage}</td>
+                </tr>
 
 
               <spring:bind path="form.view.xid">
@@ -505,7 +524,7 @@
 
             <tr>
               <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
+                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="appendScriptSessionParameter();window.onbeforeunload = null;"/>
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
                 <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
                 <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>

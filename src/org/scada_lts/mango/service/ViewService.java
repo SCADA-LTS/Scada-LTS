@@ -147,7 +147,6 @@ public class ViewService {
 		} else {
 			viewDAO.update(view);
 		}
-						
 		saveViewUsers(view);
 		
 		//TODO why don't update
