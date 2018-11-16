@@ -389,13 +389,13 @@
     function checkPurgeAllData() {
         if (confirm("<fmt:message key="systemSettings.purgeDataConfirm"/>")) {
             setUserMessage("miscMessage", "<fmt:message key="systemSettings.purgeDataInProgress"/>");
-            SystemSettingsDwr.purgeAllData(function(msg) {
+            SystemSettingsDwr.purgeNow(function(msg) {
                 setUserMessage("miscMessage", msg);
                 dbSizeUpdate();
             });
         }
     }
-    
+
     function saveConfigDB() {
 		verifyTypeDB();    	
     }
