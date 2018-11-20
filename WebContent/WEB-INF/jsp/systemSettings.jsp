@@ -303,7 +303,10 @@
     }
 
     function purgeEvents() {
-        if (confirm("This will purge all events according to settings.")) {
+        count = document.getElementById("eventPurgePeriods").value;
+        dateTypes = document.getElementById("eventPurgePeriodType");
+        type = dateTypes.options[dateTypes.selectedIndex].text;
+        if (confirm("This will purge all events before " + count + " " + type +".")) {
             SystemSettingsDwr.purgeEvents(function() {
                 stopImageFader("purgeNowImg");
                 dbSizeUpdate();
@@ -313,7 +316,10 @@
     }
 
     function purgeReports() {
-        if (confirm("This will purge all reports according to settings.")) {
+        count = document.getElementById("reportPurgePeriods").value;
+        dateTypes = document.getElementById("reportPurgePeriodType");
+        type = dateTypes.options[dateTypes.selectedIndex].text;
+        if (confirm("This will purge all reports before " + count + " " + type +".")) {
                 SystemSettingsDwr.purgeReports(function() {
                     stopImageFader("purgeNowImg");
                     dbSizeUpdate();
