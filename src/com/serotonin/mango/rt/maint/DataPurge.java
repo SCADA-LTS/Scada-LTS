@@ -124,7 +124,7 @@ public class DataPurge {
             log.info("Filedata purge ended, " + deleteCount + " files deleted");
     }
 
-    public void eventPurge() {
+    private void eventPurge() {
         DateTime cutoff = DateUtils.truncateDateTime(new DateTime(runtime), Common.TimePeriods.DAYS);
         cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE),
                 SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
@@ -144,7 +144,17 @@ public class DataPurge {
             log.info("Event purge ended, " + deleteCount + " events deleted");
     }
 
-    public void reportPurge() {
+    private void reportPurge() {
+        DateTime cutoff = DateUtils.truncateDateTime(new DateTime(runtime), Common.TimePeriods.DAYS);
+        cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE),
+                SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
+
+        int deleteCount = new ReportDao().purgeReportsBefore(cutoff.getMillis());
+        if (deleteCount > 0)
+            log.info("Report purge ended, " + deleteCount + " report instances deleted");
+    }
+
+    public void reportPurge(long runtime) {
         DateTime cutoff = DateUtils.truncateDateTime(new DateTime(runtime), Common.TimePeriods.DAYS);
         cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE),
                 SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
