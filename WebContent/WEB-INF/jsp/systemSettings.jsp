@@ -370,11 +370,21 @@
     }
     
     function purgeNow() {
-        SystemSettingsDwr.purgeNow(function() {
-            stopImageFader("purgeNowImg");
-            dbSizeUpdate();
-        });
-        startImageFader("purgeNowImg");
+        reportsCount = document.getElementById("reportPurgePeriods").value;
+        reportsType = document.getElementById("reportPurgePeriodType").options[document.getElementById("reportPurgePeriodType").selectedIndex].text;
+        eventsCount = document.getElementById("eventPurgePeriods").value;
+        eventsType = document.getElementById("eventPurgePeriodType").options[document.getElementById("eventPurgePeriodType").selectedIndex].text;
+        confirmMsg = "This will purge: " +
+        "\n-all events before " + eventsCount + " " + eventsType +
+        "\n-all reports before " + reportsCount + " " + reportsType +
+        "\n-all data points values according to point properties";
+        if (confirm(confirmMsg)) {
+            SystemSettingsDwr.purgeNow(function() {
+                stopImageFader("purgeNowImg");
+                dbSizeUpdate();
+            });
+            startImageFader("purgeNowImg");
+        }
     }
 
     function purgeEvents() {
