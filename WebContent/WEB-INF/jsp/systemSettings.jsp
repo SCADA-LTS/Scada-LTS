@@ -303,20 +303,24 @@
     }
 
     function purgeEvents() {
+        if (confirm("This will purge all events according to settings.")) {
             SystemSettingsDwr.purgeEvents(function() {
                 stopImageFader("purgeNowImg");
                 dbSizeUpdate();
             });
             startImageFader("purgeNowImg");
         }
+    }
 
     function purgeReports() {
+        if (confirm("This will purge all reports according to settings.")) {
                 SystemSettingsDwr.purgeReports(function() {
                     stopImageFader("purgeNowImg");
                     dbSizeUpdate();
                 });
                 startImageFader("purgeNowImg");
-            }
+        }
+    }
     
     function saveLangSettings() {
         SystemSettingsDwr.saveLanguageSettings($get("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"), function() {
