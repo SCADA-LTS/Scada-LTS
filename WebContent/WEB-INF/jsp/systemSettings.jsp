@@ -376,6 +376,14 @@
         });
         startImageFader("purgeNowImg");
     }
+
+    function purgeEvents() {
+            SystemSettingsDwr.purgeEvents(function() {
+                stopImageFader("purgeNowImg");
+                dbSizeUpdate();
+            });
+            startImageFader("purgeNowImg");
+        }
     
     function saveLangSettings() {
         SystemSettingsDwr.saveLanguageSettings($get("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"), function() {
@@ -828,6 +836,9 @@
           <select id="<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>">
             <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
           </select>
+        </td>
+        <td>
+            <input type="button" value="Purge now" onclick="purgeEvents()"/>
         </td>
       </tr>
       <tr>
