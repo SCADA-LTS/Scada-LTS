@@ -377,7 +377,8 @@
         confirmMsg = "This will purge: " +
         "\n-all events before " + eventsCount + " " + eventsType +
         "\n-all reports before " + reportsCount + " " + reportsType +
-        "\n-all data points values according to point properties";
+        "\n-all data points values according to point properties" +
+        "\n Are you sure?";
         if (confirm(confirmMsg)) {
             SystemSettingsDwr.purgeNow(function() {
                 stopImageFader("purgeNowImg");
@@ -391,7 +392,7 @@
         count = document.getElementById("eventPurgePeriods").value;
         dateTypes = document.getElementById("eventPurgePeriodType");
         type = dateTypes.options[dateTypes.selectedIndex].text;
-        if (confirm("This will purge all events before " + count + " " + type +".")) {
+        if (confirm("This will purge all events before " + count + " " + type +". Are you sure?")) {
             SystemSettingsDwr.purgeEvents(function() {
                 stopImageFader("purgeNowImg");
                 dbSizeUpdate();
@@ -404,7 +405,7 @@
         count = document.getElementById("reportPurgePeriods").value;
         dateTypes = document.getElementById("reportPurgePeriodType");
         type = dateTypes.options[dateTypes.selectedIndex].text;
-        if (confirm("This will purge all reports before " + count + " " + type +".")) {
+        if (confirm("This will purge all reports before " + count + " " + type +". Are you sure?")) {
                 SystemSettingsDwr.purgeReports(function() {
                     stopImageFader("purgeNowImg");
                     dbSizeUpdate();
