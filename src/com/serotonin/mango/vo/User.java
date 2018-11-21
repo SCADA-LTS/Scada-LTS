@@ -106,40 +106,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient EventExportDefinition eventExportDefinition;
 	private transient Map<String, Object> attributes = new HashMap<String, Object>();
 
-	public User() {
-	}
-
-	public User(User other) {
-		this.id = other.id;
-		this.username = other.username;
-		this.password = other.password;
-		this.email = other.email;
-		this.phone = other.phone;
-		this.admin = other.admin;
-		this.disabled = other.disabled;
-		this.dataSourcePermissions = other.dataSourcePermissions;
-		this.dataPointPermissions = other.dataPointPermissions;
-		this.selectedWatchList = other.selectedWatchList;
-		this.homeUrl = other.homeUrl;
-		this.lastLogin = other.lastLogin;
-		this.receiveAlarmEmails = other.receiveAlarmEmails;
-		this.receiveOwnAuditEvents = other.receiveOwnAuditEvents;
-		this.userProfile = other.userProfile;
-		this.view =  other.view==null ? null : new View(other.view);
-		this.watchList = other.watchList;
-		this.editPoint = other.editPoint;
-		this.editDataSource = other.editDataSource;
-		this.testingUtility = other.testingUtility;
-		this.reportImageData = other.reportImageData;
-		this.editPublisher = other.editPublisher;
-		this.importTask = other.importTask;
-		this.muted = other.muted;
-		this.dataExportDefinition = other.dataExportDefinition;
-		this.eventExportDefinition = other.eventExportDefinition;
-		this.attributes = other.attributes;
-		this.uploadedProject = other.uploadedProject;
-	}
-
 	/**
 	 * Used for various display purposes.
 	 */

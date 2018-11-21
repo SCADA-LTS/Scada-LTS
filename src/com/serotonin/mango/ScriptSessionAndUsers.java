@@ -1,5 +1,6 @@
 package com.serotonin.mango;
 
+import com.rits.cloning.Cloner;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,7 +10,8 @@ import org.directwebremoting.extend.ScriptSessionManager;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * ScriptSessionAndUsers responsible for cooperate User under correct key {@value #SCRIPTSESSION_USER}
+ * ScriptSessionAndUsers responsible for managing  User copies specific given browser "tab" (DWR Script Session)
+ * User copies are stored in {@value #SCRIPTSESSION_USER} attribute of DWR script session
  *
  * @author Mateusz Hyski mateusz.hyski@softq.pl
  */
@@ -63,8 +65,8 @@ public class ScriptSessionAndUsers {
             return  null;
         }else{
             if (scriptSession.getAttribute(SCRIPTSESSION_USER) == null){
-                User scriptSessionUser = new User(user);
-                scriptSession.setAttribute(SCRIPTSESSION_USER,scriptSessionUser);
+                User scriptSessionUser = new Cloner().deepClone(user);
+                scriptSession.setAttribute(SCRIPTSESSION_USER, scriptSessionUser);
                 return scriptSessionUser;
             }else{
                 return (User) scriptSession.getAttribute(SCRIPTSESSION_USER);

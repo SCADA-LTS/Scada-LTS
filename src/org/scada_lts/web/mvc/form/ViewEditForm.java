@@ -24,7 +24,7 @@ import com.serotonin.mango.view.View;
 
 public class ViewEditForm {
     private View view;
-    private String dwrscriptsessionid;
+    private String dwrScriptSessionid;
     private MultipartFile backgroundImageMP;
 
     public MultipartFile getBackgroundImageMP() {
@@ -43,11 +43,11 @@ public class ViewEditForm {
         this.view = view;
     }
 
-    public String getDwrscriptsessionid() {
-        return dwrscriptsessionid;
+    public String getDwrScriptSessionid() {
+        return dwrScriptSessionid;
     }
 
-    public void setDwrscriptsessionid(String dwrscriptsessionid) {
-        this.dwrscriptsessionid = dwrscriptsessionid;
+    public void setDwrScriptSessionid(String dwrScriptSessionid) {
+        this.dwrScriptSessionid = dwrScriptSessionid;
     }
 }
