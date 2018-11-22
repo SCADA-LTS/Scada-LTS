@@ -154,7 +154,25 @@
     }
 
     function deletePoint() {
-        if (confirm("<fmt:message key="dsEdit.deleteConfirm"/>")) {
+        var pathArray = location.href.split( '/' );
+        var protocol = pathArray[0];
+        var host = pathArray[2];
+        var appScada = pathArray[3];
+        var myLocation;
+        if (!myLocation) {
+           myLocation = protocol + "//" + host + "/" + appScada + "/";
+        }
+        var viewsWithPoint = jQuery.ajax({
+            type: "GET",
+            dataType: "json",
+            url:myLocation+"/api/view/getIfContainsPoint/"+currentPoint.id,
+            async: false
+            }).responseText;
+        var views = "";
+        JSON.parse(viewsWithPoint).forEach(function(view) {
+            views += ("\n - " + view['name']);
+        });
+        if (confirm("Point is used on views:" + views)) {
             DataSourceEditDwr.deletePoint(currentPoint.id, deletePointCB);
             startImageFader("pointDeleteImg", true);
         }
