@@ -99,7 +99,6 @@ public class ViewEditContorller {
             view.setXid(new ViewDao().generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
-
         user.setView(view);
         view.validateViewComponents(false);
 
@@ -148,6 +147,12 @@ public class ViewEditContorller {
 
         copyViewProperties(view, form.getView());
         form.setView(view);
+
+        form.getView().getViewComponents().stream().forEach(viewComponent -> {
+            if(viewComponent.getY()<0) {
+                form.getView().removeViewComponent(viewComponent);
+            }
+        });
 
         validator.validate(form, result);
         if(result.hasErrors())
