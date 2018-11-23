@@ -31,6 +31,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.springframework.http.HttpStatus;
@@ -192,10 +193,18 @@ public class DataPointAPI {
 
             if (user != null) {
                 List<DataPointVO> metaDataPoints = new ArrayList<>();
-                dataSourceService.getDataSources()
-                        .stream()
-                        .filter(ds -> ds.getType().getId() == DataSourceVO.Type.META.getId())
-                        .forEach(ds -> metaDataPoints.addAll(dataPointService.getDataPoints(ds.getId(), null)));
+
+                if (DataSourcePointsCache.getInstance().isCacheEnabled()) {
+                    dataSourceService.getDataSources()
+                            .stream()
+                            .filter(ds -> ds.getType().getId() == DataSourceVO.Type.META.getId())
+                            .forEach(ds -> metaDataPoints.addAll(DataSourcePointsCache.getInstance().getDataPoints((long)ds.getId())));
+                } else {
+                    dataSourceService.getDataSources()
+                            .stream()
+                            .filter(ds -> ds.getType().getId() == DataSourceVO.Type.META.getId())
+                            .forEach(ds -> metaDataPoints.addAll(dataPointService.getDataPoints(ds.getId(), null)));
+                }
 
                 List<DataPointVO> dataPoints = new ArrayList<>();
 

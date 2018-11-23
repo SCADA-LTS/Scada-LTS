@@ -182,8 +182,18 @@
         JSON.parse(scriptsWithPoint).forEach(function(script) {
              scripts += ("\n - " + script['name']);
         });
+        var metadataPointsWithPoint = jQuery.ajax({
+                     type: "GET",
+                     dataType: "json",
+                     url:myLocation+"/api/dataPoint/getMetadataPointsContainsPoint/"+currentPoint.id,
+                     async: false
+                }).responseText;
+                var metadataPoints = "";
+                JSON.parse(metadataPointsWithPoint).forEach(function(metadataPoint) {
+                     metadataPoints += ("\n - " + metadataPoint['name']);
+                });
 
-        if (confirm("Point is used on views:" + views + "\n Point is used on scripts:" + scripts)) {
+        if (confirm("Point is used on views:" + views + "\n Point is used on scripts:" + scripts + "\n Point is used in context of metadata points:" + metadataPoints)) {
             DataSourceEditDwr.deletePoint(currentPoint.id, deletePointCB);
             startImageFader("pointDeleteImg", true);
         }
