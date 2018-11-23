@@ -329,7 +329,7 @@
 			       break;
 			   case "4":
 			   	$("viewBackground").width = 1920;
-			   	$("viewBackground").height = 1080;deleteConfirm1
+			   	$("viewBackground").height = 1080;
 			       break;
 			   default:
 			   	$("viewBackground").width = 1600;
