@@ -17,10 +17,8 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
@@ -29,13 +27,10 @@ import org.scada_lts.dao.model.view.ViewDTO;
 import org.scada_lts.dao.model.view.ViewDTOValidator;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.AbstractErrors;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +40,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -178,33 +172,6 @@ public class ViewAPI {
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @RequestMapping(value = "/api/view/getIfContainsPoint/{dataPointId}", method = RequestMethod.GET)
-    public ResponseEntity<List<View>>  getIfContainsPoint(@PathVariable("dataPointId") int dataPointId, HttpServletRequest request) {
-        LOG.info("/api/view/getIfContainsPoint/{dataPointId} dataPointId:"+dataPointId);
-
-        try {
-            User user = Common.getUser(request);
-
-            if (user != null) {
-                // Get the views for this user that contain this point.
-                List<View> allViews = new ViewDao().getViews();
-                List<View> views = new LinkedList<View>();
-                for (View view : allViews) {
-                    view.validateViewComponents(false);
-                    if (view.containsValidVisibleDataPoint(dataPointId))
-                        views.add(view);
-                }
-
-                return new ResponseEntity<List<View>>(views, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<List<View>>(HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<List<View>>(HttpStatus.BAD_REQUEST);
         }
     }
 

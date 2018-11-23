@@ -165,14 +165,25 @@
         var viewsWithPoint = jQuery.ajax({
             type: "GET",
             dataType: "json",
-            url:myLocation+"/api/view/getIfContainsPoint/"+currentPoint.id,
+            url:myLocation+"/api/dataPoint/getViewsContainsPoint/"+currentPoint.id,
             async: false
-            }).responseText;
+        }).responseText;
         var views = "";
         JSON.parse(viewsWithPoint).forEach(function(view) {
             views += ("\n - " + view['name']);
         });
-        if (confirm("Point is used on views:" + views)) {
+        var scriptsWithPoint = jQuery.ajax({
+             type: "GET",
+             dataType: "json",
+             url:myLocation+"/api/dataPoint/getScriptsContainsPoint/"+currentPoint.id,
+             async: false
+        }).responseText;
+        var scripts = "";
+        JSON.parse(scriptsWithPoint).forEach(function(script) {
+             scripts += ("\n - " + script['name']);
+        });
+
+        if (confirm("Point is used on views:" + views + "\n Point is used on scripts:" + scripts)) {
             DataSourceEditDwr.deletePoint(currentPoint.id, deletePointCB);
             startImageFader("pointDeleteImg", true);
         }
