@@ -277,7 +277,6 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		// Note: data source permissions are explicitly deserialized by the
 		// import/export because the data sources and
 		// points need to be certain to exist before we can resolve the xids.
-
 	}
 
 	public void jsonSerialize(Map<String, Object> map) {

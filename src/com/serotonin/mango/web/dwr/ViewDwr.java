@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.directwebremoting.ScriptSession;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -150,7 +149,8 @@ public class ViewDwr extends BaseDwr {
 	/**
 	 * Retrieves point state for all points on a given view. This is the
 	 * monitoring version of the method. See below for the view editing version.
-	 *
+	 * 
+	 * @param edit
 	 * @return
 	 */
 	@MethodFilter
@@ -452,7 +452,8 @@ public class ViewDwr extends BaseDwr {
 	/**
 	 * Allows the setting of a given data point. Overrides BaseDwr to resolve
 	 * the point view id.
-	 *
+	 * 
+	 * @param viewComponentId
 	 * @param valueStr
 	 * @return
 	 */

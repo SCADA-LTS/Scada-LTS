@@ -329,7 +329,7 @@
 			       break;
 			   case "4":
 			   	$("viewBackground").width = 1920;
-			   	$("viewBackground").height = 1080;
+			   	$("viewBackground").height = 1080;deleteConfirm1
 			       break;
 			   default:
 			   	$("viewBackground").width = 1600;
@@ -353,12 +353,6 @@
 			document.getElementById("deleteButton").style.visibility = 'hidden';
 		}
 	}
-    function appendScriptSessionParameter(){
-
-        if(document.getElementById("dwrscriptsessionid").value == '' )
-            document.getElementById("dwrscriptsessionid").value = dwr.engine._getScriptSessionId();
-
-    }
 
     window.onbeforeunload = confirmExit;
     function confirmExit(){
@@ -401,7 +395,7 @@
 
                 <tr>
                   <td class="formField" width="250">
-                    <input type="hidden" id="dwrscriptsessionid" name="dwrscriptsessionid" value="">
+                    <input type="hidden" id="dwrScriptSessionid" name="dwrScriptSessionid" value="">
                   </td>
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
@@ -524,7 +518,7 @@
 
             <tr>
               <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="appendScriptSessionParameter();window.onbeforeunload = null;"/>
+                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="document.getElementById('dwrScriptSessionid').value = dwr.engine._getScriptSessionId();window.onbeforeunload = null;"/>
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
                 <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
                 <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>

@@ -398,10 +398,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.eventExportDefinition = eventExportDefinition;
 	}
 
-	private void setAttributes(Map<String, Object> attributes) {
-		this.attributes = attributes;
-	}
-
 	public void setAttribute(String key, Object value) {
 		attributes.put(key, value);
 	}

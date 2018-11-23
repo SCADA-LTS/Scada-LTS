@@ -84,10 +84,6 @@ public class View implements Serializable, JsonSerializable {
 		viewComponents.add(viewComponent);
 	}
 
-	private void setViewComponents(List<ViewComponent> viewComponents) {
-		this.viewComponents = viewComponents;
-	}
-
 	public ViewComponent getViewComponent(int index) {
 		for (ViewComponent vc : viewComponents) {
 			if (vc.getIndex() == index)
