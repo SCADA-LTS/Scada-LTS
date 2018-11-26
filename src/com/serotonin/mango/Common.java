@@ -85,7 +85,7 @@ public class Common {
 	 * the correct version.
 	 */
 	public static final String getVersion() {
-		return "1.0.0";
+		return "RELEASE_OR_BUILD_VER";
 	}
 
 	public interface ContextKeys {

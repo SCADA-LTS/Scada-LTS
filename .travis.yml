@@ -16,7 +16,9 @@ before_script:
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 # correct version base on Milestones
-- sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
+#- sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
+#more elastic statement than above
+- sed -i 's/RELEASE_OR_BUILD_VER/$SCADA_LTS_MILESTONE/' ./src/com/serotonin/mango/Common.java
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
 #- cd ./ScadaLTS-UI
