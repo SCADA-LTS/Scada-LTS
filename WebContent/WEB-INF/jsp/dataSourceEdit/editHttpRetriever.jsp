@@ -18,8 +18,31 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="com.serotonin.mango.DataTypes"%>
+<link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
+<style>
+  table {
+     border-collapse: separate !important;
+     border-spacing: 2px !important;
+  }
+</style>
 
 <script type="text/javascript">
+
+  // when end of load get data from model and set in editHttpRetriver
+
+  // share data old ui and new ui in vuejs
+
+      var editDSNewUI = {
+        id: ${dataSource.id},
+        stop: ${dataSource.stop},
+        reactivation: {
+          sleep: ${dataSource.reactivation.sleep},
+          type: ${dataSource.reactivation.type}, // 0-"Minute" 1-"Hour", 2-"Day"
+          value: ${dataSource.reactivation.value}
+        }
+      }
+
+
   function testValueParams() {
       startImageFader("valueTestImg", true);
       hide("valueTestRow");
@@ -46,11 +69,28 @@
       $set("timeTestResult", result);
   }
 
+  function saveDataSourceImplOld(){
+  DataSourceEditDwr.saveHttpRetrieverDataSource($get("dataSourceName"), $get("dataSourceXid"),
+                $get("updatePeriods"), $get("updatePeriodType"), $get("url"), $get("timeoutSeconds"), $get("retries"),
+                $get("stop"),
+                saveDataSourceCB);
+  }
+
   function saveDataSourceImpl() {
-      DataSourceEditDwr.saveHttpRetrieverDataSource($get("dataSourceName"), $get("dataSourceXid"),
-              $get("updatePeriods"), $get("updatePeriodType"), $get("url"), $get("timeoutSeconds"), $get("retries"),
-              $get("stop"),
-              saveDataSourceCB);
+      DataSourceEditDwr.saveHttpRetrieverDataSourceWithReactivationOptions(
+                  $get("dataSourceName"),
+                  $get("dataSourceXid"),
+                  $get("updatePeriods"),
+                  $get("updatePeriodType"),
+                  $get("url"),
+                  $get("timeoutSeconds"),
+                  $get("retries"),
+                  editDSNewUI.stop,
+                  editDSNewUI.reactivation.sleep,
+                  editDSNewUI.reactivation.type,
+                  editDSNewUI.reactivation.value,
+                  saveDataSourceCB
+      );
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
@@ -107,12 +147,6 @@
       display("timeFormatRow", timeRegexLen > 0);
   }
 
-  jQuery( document ).ready(function() {
-        console.log( "ready!" );
-        if (${dataSource.stop}) {
-                jQuery("#stop").prop("checked","true");
-          }
-   });
 </script>
 
 <c:set var="dsDesc"><fmt:message key="dsEdit.httpRetriever.desc"/></c:set>
@@ -146,12 +180,12 @@
           <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
         </tr>
         <tr>
-          <td class="formLabelStop"><b>Stop</b> </br>
-          (It will disable the datasource </br>
-           &nbsp;when the attempted connections fail)
 
+          <td COLSPAN=2>
+            <div id="app">
+                <sleep-reactivation-ds></sleep-reactivation-ds>
+            </div>
           </td>
-          <td class="formField"><input type="checkbox" id="stop" value="${dataSource.stop}"/></td>
         </tr>
 
 
@@ -228,3 +262,4 @@
     </tr>
   </tbody>
 </tag:pointList>
+<%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>
