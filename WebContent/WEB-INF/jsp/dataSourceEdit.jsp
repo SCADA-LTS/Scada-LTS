@@ -154,6 +154,10 @@
     }
 
     function deletePoint() {
+        document.getElementById("loader").style.display = "block";
+        var scroll = document.documentElement.scrollTop - 105 + "px";
+        document.getElementById("loader").style.marginTop = scroll;
+        document.body.style.overflow="hidden";
         var pathArray = location.href.split( '/' );
         var protocol = pathArray[0];
         var host = pathArray[2];
@@ -172,6 +176,8 @@
         JSON.parse(viewsWithPoint).forEach(function(view) {
             views += ("\n - " + view['name']);
         });
+        if (views == "") views = "\n The point is not used in any view.";
+
         var scriptsWithPoint = jQuery.ajax({
              type: "GET",
              dataType: "json",
@@ -182,18 +188,28 @@
         JSON.parse(scriptsWithPoint).forEach(function(script) {
              scripts += ("\n - " + script['name']);
         });
-        var metadataPointsWithPoint = jQuery.ajax({
-                     type: "GET",
-                     dataType: "json",
-                     url:myLocation+"/api/dataPoint/getMetadataPointsContainsPoint/"+currentPoint.id,
-                     async: false
-                }).responseText;
-                var metadataPoints = "";
-                JSON.parse(metadataPointsWithPoint).forEach(function(metadataPoint) {
-                     metadataPoints += ("\n - " + metadataPoint['name']);
-                });
+        if (scripts == "") scripts = "\n The point is not used in any script.";
 
-        if (confirm("Point is used on views:" + views + "\n Point is used on scripts:" + scripts + "\n Point is used in context of metadata points:" + metadataPoints)) {
+        var metadataPointsWithPoint = jQuery.ajax({
+             type: "GET",
+             dataType: "json",
+             url:myLocation+"/api/dataPoint/getMetadataPointsContainsPoint/"+currentPoint.id,
+             async: false
+        }).responseText;
+        var metadataPoints = "";
+        JSON.parse(metadataPointsWithPoint).forEach(function(metadataPoint) {
+             metadataPoints += ("\n - " + metadataPoint['name']);
+        });
+        if (metadataPoints == "") metadataPoints = "\n The point is not used in any metadata point.";
+
+        document.getElementById("loader").style.display = "none";
+        document.body.style.overflow="visible";
+
+        var confirmMsg;
+
+        confirmMsg = "Point is used in the cotext of:\n\nViews:" + views + "\n\nScripts:" + scripts + "\n\nMetadata points:" + metadataPoints;
+
+        if (confirm(confirmMsg)) {
             DataSourceEditDwr.deletePoint(currentPoint.id, deletePointCB);
             startImageFader("pointDeleteImg", true);
         }
@@ -368,6 +384,10 @@
     	writePointList(points);
     }
   </script>
+
+   <div id="loader" style="background-color:rgba(0, 0, 0, 0.7); height: 100%; position:absolute; width:100%; display: none;">
+  	<div style="color:#ffffff; font-size:30px; text-align:center; margin-top:40vh;"><img src="images/ajax-loader.gif" style="height:20px;"/> LOADING... </div>
+   </div>
 
 	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; max-height: 300px; overflow-y: auto; width: 59%;">
 		<tr>
