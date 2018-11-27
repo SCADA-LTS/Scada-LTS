@@ -194,17 +194,16 @@ public class DataPointAPI {
             if (user != null) {
                 List<DataPointVO> metaDataPoints = new ArrayList<>();
 
-                if (DataSourcePointsCache.getInstance().isCacheEnabled()) {
-                    dataSourceService.getDataSources()
-                            .stream()
-                            .filter(ds -> ds.getType().getId() == DataSourceVO.Type.META.getId())
-                            .forEach(ds -> metaDataPoints.addAll(DataSourcePointsCache.getInstance().getDataPoints((long)ds.getId())));
-                } else {
-                    dataSourceService.getDataSources()
-                            .stream()
-                            .filter(ds -> ds.getType().getId() == DataSourceVO.Type.META.getId())
-                            .forEach(ds -> metaDataPoints.addAll(dataPointService.getDataPoints(ds.getId(), null)));
-                }
+                dataSourceService.getDataSources()
+                        .stream()
+                        .filter(ds -> ds.getType().getId() == DataSourceVO.Type.META.getId())
+                        .forEach(ds -> {
+                            if (DataSourcePointsCache.getInstance().isCacheEnabled()) {
+                                metaDataPoints.addAll(DataSourcePointsCache.getInstance().getDataPoints((long) ds.getId()));
+                            } else {
+                                metaDataPoints.addAll(dataPointService.getDataPoints(ds.getId(), null));
+                            }
+                        });
 
                 List<DataPointVO> dataPoints = new ArrayList<>();
 
