@@ -143,6 +143,7 @@ public class DataPointAPI {
                 List<View> allViews = new ViewDao().getViews();
                 List<View> views = new LinkedList<>();
                 for (View view : allViews) {
+                    view.validateViewComponents(false);
                     if (view.containsValidVisibleDataPoint(dataPointId))
                         views.add(view);
                 }
