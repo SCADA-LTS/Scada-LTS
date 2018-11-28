@@ -158,6 +158,7 @@
         var scroll = document.documentElement.scrollTop - 105 + "px";
         document.getElementById("loader").style.marginTop = scroll;
         document.body.style.overflow="hidden";
+        move(0);
         var pathArray = location.href.split( '/' );
         var protocol = pathArray[0];
         var host = pathArray[2];
@@ -166,6 +167,7 @@
         if (!myLocation) {
            myLocation = protocol + "//" + host + "/" + appScada + "/";
         }
+        move(10)
         var viewsWithPoint = jQuery.ajax({
             type: "GET",
             dataType: "json",
@@ -177,7 +179,7 @@
             views += ("\n - " + view['name']);
         });
         if (views == "") views = "\n The point is not used in any view.";
-
+        move(40);
         var scriptsWithPoint = jQuery.ajax({
              type: "GET",
              dataType: "json",
@@ -189,7 +191,7 @@
              scripts += ("\n - " + script['name']);
         });
         if (scripts == "") scripts = "\n The point is not used in any script.";
-
+        move(60);
         var metadataPointsWithPoint = jQuery.ajax({
              type: "GET",
              dataType: "json",
@@ -201,7 +203,7 @@
              metadataPoints += ("\n - " + metadataPoint['name']);
         });
         if (metadataPoints == "") metadataPoints = "\n The point is not used in any metadata point.";
-
+        move(100);
         document.getElementById("loader").style.display = "none";
         document.body.style.overflow="visible";
 
@@ -213,6 +215,11 @@
             DataSourceEditDwr.deletePoint(currentPoint.id, deletePointCB);
             startImageFader("pointDeleteImg", true);
         }
+    }
+
+    function move(width) {
+      var elem = document.getElementById("myBar");
+      elem.style.width = width + '%';
     }
 
     function deletePointCB(points) {
@@ -386,7 +393,9 @@
   </script>
 
    <div id="loader" style="background-color:rgba(0, 0, 0, 0.7); height: 100%; position:absolute; width:100%; display: none;">
-  	<div style="color:#ffffff; font-size:30px; text-align:center; margin-top:40vh;"><img src="images/ajax-loader.gif" style="height:20px;"/> LOADING... </div>
+      <div id="myProgress" style="background-color: #ddd; margin: 40vh auto auto auto; width:50%;">
+        <div id="myBar" style="width: 1%; height: 30px; background-color: #4CAF50;"></div>
+      </div>
    </div>
 
 	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; max-height: 300px; overflow-y: auto; width: 59%;">
