@@ -167,30 +167,33 @@
         if (!myLocation) {
            myLocation = protocol + "//" + host + "/" + appScada + "/";
         }
-        move(10)
-        var viewsWithPoint = jQuery.ajax({
-            type: "GET",
-            dataType: "json",
-            url:myLocation+"/api/dataPoint/getViewsContainsPoint/"+currentPoint.id,
-            async: false
-        }).responseText;
-        var views = "";
-        JSON.parse(viewsWithPoint).forEach(function(view) {
-            views += ("\n - " + view['name']);
-        });
-        if (views == "") views = "\n The point is not used in any view.";
+        move(10);
+                var scriptsWithPoint = jQuery.ajax({
+                     type: "GET",
+                     dataType: "json",
+                     url:myLocation+"/api/dataPoint/getScriptsContainsPoint/"+currentPoint.id,
+                     async: false
+                }).responseText;
+                var scripts = "";
+                JSON.parse(scriptsWithPoint).forEach(function(script) {
+                     scripts += ("\n - " + script['name']);
+                });
+                if (scripts == "") scripts = "\n The point is not used in any script.";
+
         move(40);
-        var scriptsWithPoint = jQuery.ajax({
-             type: "GET",
-             dataType: "json",
-             url:myLocation+"/api/dataPoint/getScriptsContainsPoint/"+currentPoint.id,
-             async: false
-        }).responseText;
-        var scripts = "";
-        JSON.parse(scriptsWithPoint).forEach(function(script) {
-             scripts += ("\n - " + script['name']);
-        });
-        if (scripts == "") scripts = "\n The point is not used in any script.";
+
+                var viewsWithPoint = jQuery.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url:myLocation+"/api/dataPoint/getViewsContainsPoint/"+currentPoint.id,
+                    async: false
+                }).responseText;
+                var views = "";
+                JSON.parse(viewsWithPoint).forEach(function(view) {
+                    views += ("\n - " + view['name']);
+                });
+                if (views == "") views = "\n The point is not used in any view.";
+
         move(60);
         var metadataPointsWithPoint = jQuery.ajax({
              type: "GET",
