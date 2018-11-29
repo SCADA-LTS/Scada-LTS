@@ -220,7 +220,7 @@
     }
 
     function progress(width, msg) {
-      var elem = document.getElementById("myBar");
+      var elem = document.getElementById("progressBar");
       elem.style.width = width + '%';
       document.getElementById("progressMsg").innerHTML = msg;
     }
@@ -396,8 +396,8 @@
   </script>
 
    <div id="loader" style="background-color:rgba(0, 0, 0, 0.7); height: 100%; position:absolute; width:100%; display: none;">
-      <div id="myProgress" style="background-color: #ddd; margin: 40vh auto auto auto; width:50%;">
-        <div id="myBar" style="width: 1%; height: 30px; background-color: #4CAF50;"></div>
+      <div id="progress" style="background-color: #ddd; margin: 40vh auto auto auto; width:50%;">
+        <div id="progressBar" style="width: 1%; height: 30px; background-color: #4CAF50;"></div>
       </div>
       <div id="progressMsg" style="font-size: 20px; color: white; text-align: center;"></div>
    </div>
