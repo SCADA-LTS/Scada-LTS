@@ -158,7 +158,7 @@
         var scroll = document.documentElement.scrollTop - 105 + "px";
         document.getElementById("loader").style.marginTop = scroll;
         document.body.style.overflow="hidden";
-        move(0);
+        progress(3, "Loading...");
         var pathArray = location.href.split( '/' );
         var protocol = pathArray[0];
         var host = pathArray[2];
@@ -167,34 +167,33 @@
         if (!myLocation) {
            myLocation = protocol + "//" + host + "/" + appScada + "/";
         }
-        move(10);
-                var scriptsWithPoint = jQuery.ajax({
-                     type: "GET",
-                     dataType: "json",
-                     url:myLocation+"/api/dataPoint/getScriptsContainsPoint/"+currentPoint.id,
-                     async: false
-                }).responseText;
-                var scripts = "";
-                JSON.parse(scriptsWithPoint).forEach(function(script) {
-                     scripts += ("\n - " + script['name']);
-                });
-                if (scripts == "") scripts = "\n The point is not used in any script.";
+        progress(10, "Checking scripts...");
+        var scriptsWithPoint = jQuery.ajax({
+             type: "GET",
+             dataType: "json",
+             url:myLocation+"/api/dataPoint/getScriptsContainsPoint/"+currentPoint.id,
+             async: false
+        }).responseText;
+        var scripts = "";
+        JSON.parse(scriptsWithPoint).forEach(function(script) {
+             scripts += ("\n - " + script['name']);
+        });
+        if (scripts == "") scripts = "\n The point is not used in any script.";
 
-        move(40);
+        progress(40, "Checking graphical views...");
+        var viewsWithPoint = jQuery.ajax({
+             type: "GET",
+             dataType: "json",
+             url:myLocation+"/api/dataPoint/getViewsContainsPoint/"+currentPoint.id,
+             async: false
+        }).responseText;
+        var views = "";
+        JSON.parse(viewsWithPoint).forEach(function(view) {
+              views += ("\n - " + view['name']);
+        });
+        if (views == "") views = "\n The point is not used in any view.";
 
-                var viewsWithPoint = jQuery.ajax({
-                    type: "GET",
-                    dataType: "json",
-                    url:myLocation+"/api/dataPoint/getViewsContainsPoint/"+currentPoint.id,
-                    async: false
-                }).responseText;
-                var views = "";
-                JSON.parse(viewsWithPoint).forEach(function(view) {
-                    views += ("\n - " + view['name']);
-                });
-                if (views == "") views = "\n The point is not used in any view.";
-
-        move(60);
+        progress(60, "Checking metadata points...");
         var metadataPointsWithPoint = jQuery.ajax({
              type: "GET",
              dataType: "json",
@@ -206,12 +205,12 @@
              metadataPoints += ("\n - " + metadataPoint['name']);
         });
         if (metadataPoints == "") metadataPoints = "\n The point is not used in any metadata point.";
-        move(100);
+
+        progress(100, "Finishing...");
         document.getElementById("loader").style.display = "none";
         document.body.style.overflow="visible";
 
         var confirmMsg;
-
         confirmMsg = "Point is used in the cotext of:\n\nViews:" + views + "\n\nScripts:" + scripts + "\n\nMetadata points:" + metadataPoints;
 
         if (confirm(confirmMsg)) {
@@ -220,9 +219,10 @@
         }
     }
 
-    function move(width) {
+    function progress(width, msg) {
       var elem = document.getElementById("myBar");
       elem.style.width = width + '%';
+      document.getElementById("progressMsg").innerHTML = msg;
     }
 
     function deletePointCB(points) {
@@ -399,6 +399,7 @@
       <div id="myProgress" style="background-color: #ddd; margin: 40vh auto auto auto; width:50%;">
         <div id="myBar" style="width: 1%; height: 30px; background-color: #4CAF50;"></div>
       </div>
+      <div id="progressMsg" style="font-size: 20px; color: white; text-align: center;"></div>
    </div>
 
 	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; max-height: 300px; overflow-y: auto; width: 59%;">
