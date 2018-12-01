@@ -17,6 +17,8 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/userComment.jsp" %>
+<%@page import="com.serotonin.mango.vo.UserComment"%>
 <tag:page dwr="ViewDwr"
 	js="view,dygraphs/dygraph-dev,dygraph-extra,dygraphsSplineUtils,dygraphsCharts"
 	css="jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min,jQuery/plugins/datetimepicker/jquery-ui-timepicker-addon,jQuery/plugins/jpicker/css/jPicker-1.1.6.min" 
