@@ -36,8 +36,17 @@
     <c:otherwise><span class="infoData">${mango:htmlText(point, pointValue)}</span><br/></c:otherwise>
   </c:choose>
   <c:if test="${!empty pointValue}">&nbsp;&nbsp;&nbsp;<fmt:message key="common.time"/>: <span class="infoData">${mango:pointValueTime(pointValue)}</span><br/>
-  <tag:img png="comment_add" title="notes.addNote"
-                          onclick="openCommentDialog(${applicationScope['constants.UserComment.TYPE_POINT']}, ${point.id})"/>
-  <table id="pointComments${point.id}"><tag:lastComment comments="${point.comments}"/></table>
+  <table width="100%">
+    <tr>
+        <td>
+          <table id="pointComments${point.id}"><tag:lastComment comments="${point.comments}"/></table>
+        </td>
+        <td align="right">
+          <tag:img png="comment_add" title="notes.addNote"
+            onclick="openCommentDialog(${applicationScope['constants.UserComment.TYPE_POINT']}, ${point.id})"/>
+        </td>
+    </tr>
+  </table>
+
   </c:if>
 </c:if>
