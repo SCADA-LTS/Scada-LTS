@@ -15,7 +15,7 @@
           <table>
             <tr>
               <td>
-                <input v-model="reactivationValue" type="number" min="1" max="31" class="form-control number-width" style="display: inline"/>
+                <input v-model="reactivationTimeValue" type="number" min="1" max="31" class="form-control number-width" style="display: inline"/>
               </td>
               <td>
                 <btn-group style="display: inline">                                                             
@@ -23,7 +23,15 @@
                   <btn input-type="radio" :input-value="STR_REACTIVATION_TYPE_TIME_HOUR" v-model="reactivationTimeType">Hour</btn>
                   <btn input-type="radio" :input-value="STR_REACTIVATION_TYPE_TIME_DAY" v-model="reactivationTimeType">Day</btn>
                 </btn-group>
-                
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                <div>
+                  <btn v-if="!runingReactivation" size="xs" type="success" v-on:click="startReactivation()">Start reactivation</btn>
+                  <btn v-if="runingReactivation" size="xs" type="danger"  v-on:click="stopReactivation()">Stop reactivation</btn>
+                </div>
               </td>
             </tr>
           </table>
@@ -55,19 +63,25 @@ export default {
       INT_REACTIVATION_TYPE_TIME_MIN: 0,
       INT_REACTIVATION_TYPE_TIME_HOUR: 1,
       INT_REACTIVATION_TYPE_TIME_DAY: 2,
+      INT_REACTIVATION_NO_TIME: -1,
 
       STR_REACTIVATION_TYPE_NONE: "none",
       STR_REACTIVATION_TYPE_SLEEP: "sleep",
       STR_REACTIVATION_TYPE_STOP: "stop",
       TIME_REFRESH: 1000,
+      STR_REACTIVATION_RESPONSE_STARTED: "started",
+      STR_REACTIVATION_RESPONSE_STOPED: "stoped",
+      STR_REACTIVATION_RESPONSE_NO_CHANGE: "nothing_changed",
+
       //
       reactivation: this.defaultReactivation(), 
       reactivationTimeType: this.defaultTimeType(), 
-      reactivationTimeValue: this.defaultValue(),
-
+      reactivationTimeValue: this.defaultTimeValue(),
       idDs:0,
+      sleep:false,
+      runingReactivation: false,
+      timeToNextTryEnableDs:0
 
-      timeToNextTryEnableDs: 0
     };
   },
   methods: {
@@ -77,16 +91,48 @@ export default {
     defaultTimeType() {
       return this.STR_REACTIVATION_TYPE_TIME_MIN
     },
-    defaultValue() {
+    defaultTimeValue() {
       return 1
     },
     checkWhenNextTryEnableDs() {
-      const apiCheckReactivation = `./api/check-reactivation/${this.idDs}`;
+      const apiCheckReactivation = `./api/check-time-reactivation/${this.idDs}`;
       axios.get(apiCheckReactivation).then(response => {
-          this.timeToNextTryEnableDs = response.data;
+          if ( response.data == this.INT_REACTIVATION_NO_TIME) {
+            this.runingReactivation= false;
+            this.timeToNextTryEnableDs = 0;
+          } else {
+            this.timeToNextTryEnableDs = response.data;
+            this.runingReactivation= true;
+          }
         }).catch(error => {
+          this.runingReactivation = false;
           console.log(error);
         });
+    },
+    startReactivation() {
+      const apiStartReactivation= `./api/enable-reactivation/${this.idDs}`;
+      axios.post(apiStartReactivation).then(response => {
+        if (
+          (response.data == this.STR_REACTIVATION_RESPONSE_STARTED) ||
+          (response.data == this.STR_REACTIVATION_RESPONSE_NO_CHANGE) ) {
+          this.runingReactivation = true;
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+    stopReactivation() {
+      const apiStopReactivation = `./api/disable-reactivation/${this.idDs}`;
+      axios.post(apiStopReactivation).then(response => {
+        if (
+          (response.data == this.STR_REACTIVATION_RESPONSE_STOPED) ||
+          (response.data == this.STR_REACTIVATION_RESPONSE_NO_CHANGE) ) {
+          this.runingReactivation = false;
+          this.timeToNextTryEnableDs = 0;
+        }
+      }).catch(error => {
+        console.log(error);
+      });
     }
   },
   created() {
@@ -108,28 +154,19 @@ export default {
       this.reactivationTimeType = this.STR_REACTIVATION_TYPE_TIME_DAY
     } 
 
-    this.reactivationValue = editDSNewUI.reactivation.value;
+    this.reactivationTimeValue = editDSNewUI.reactivation.value;
 
     this.idDs = editDSNewUI.id;
 
     setInterval(
         function() {
-          this.checkWhenNextTryEnableDs();
+            this.checkWhenNextTryEnableDs();
         }.bind(this),
         this.TIME_REFRESH
       );
 
   },
   watch: {
-    reactivationType() {
-      if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_MIN) {
-        editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_MIN
-      } else if (this.reactivationType == this.STR_REACTIVATION_TYPE_TIME_HOUR) {
-        editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_HOUR;
-      } else if (this.reactivationType == this.STR_REACTIVATION_TYPE_TIME_DAY) {
-        editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_DAY;
-      }
-    },
     reactivation() {
       if (this.reactivation == this.STR_REACTIVATION_TYPE_SLEEP) {
         editDSNewUI.stop = false;
@@ -142,14 +179,22 @@ export default {
         editDSNewUI.reactivation.sleep = false;
       }
     },
-    reactivationValue() {
-      editDSNewUI.reactivation.value = this.reactivationValue;
+    reactivationTimeType() {
+      if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_MIN) {
+        editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_MIN
+      } else if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_HOUR) {
+        editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_HOUR;
+      } else if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_DAY) {
+        editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_DAY;
+      }
+    },
+    reactivationTimeValue() {
+      editDSNewUI.reactivation.value = this.reactivationTimeValue;
     }
   },
   filters: {
       infoTime: function (date) {
         var seconds = parseInt(date/1000);
-
         var days = Math.floor(seconds / (3600*24));
         seconds  -= days*3600*24;
         var hrs   = Math.floor(seconds / 3600);
@@ -157,7 +202,6 @@ export default {
         var mnts = Math.floor(seconds / 60);
         seconds  -= mnts*60;
         return days+" days, "+hrs+" Hrs, "+mnts+" Minutes, "+seconds+" Seconds";
-
       }
   },
 };

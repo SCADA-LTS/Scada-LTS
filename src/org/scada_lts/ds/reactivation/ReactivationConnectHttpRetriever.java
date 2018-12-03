@@ -28,7 +28,7 @@ public class ReactivationConnectHttpRetriever implements StatefulJob {
 
         Key keyJob = jobExecutionContext.getJobDetail().getKey();
 
-        Map.Entry entry = MenagerReactivation.getInstance().getId(keyJob.getName());
+        Map.Entry entry = ReactivationManager.getInstance().getId(keyJob.getName());
         int id = (int) entry.getValue();
         String name = (String) entry.getKey();
 
@@ -46,7 +46,7 @@ public class ReactivationConnectHttpRetriever implements StatefulJob {
             } finally {
                 StartStopDsRT stopDsRT = new StartStopDsRT(id,true, new StartSleepStateDs());
                 new Thread(stopDsRT).start();
-                MenagerReactivation.getInstance().removeInfoAboutJob(keyJob.getName());
+                ReactivationManager.getInstance().removeInfoAboutJob(keyJob.getName());
             }
         } else {
             // nothing to do
