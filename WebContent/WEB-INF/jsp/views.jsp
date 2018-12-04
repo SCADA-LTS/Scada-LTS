@@ -32,6 +32,13 @@
     	 table {
              border-collapse: separate !important;
              border-spacing: 2px !important;
+             padding: 3px;
+         }
+         .rowTable {
+             background-color: #F0F0F0;
+         }
+         .rowTableAlt {
+             background-color: #DCDCDC;
          }
     </style>
     <script type="text/javascript" src="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.js"></script>

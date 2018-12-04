@@ -121,6 +121,7 @@ public class ReactivationManager {
                 sleepDsIndexIdDs.remove(idDs);
             }
         } catch (Exception e) {
+            LOG.error(e);
             result = false;
         }
         return result;
