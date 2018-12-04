@@ -37,7 +37,7 @@ import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.StartStopDsRT;
 import org.scada_lts.ds.model.ReactivationDs;
-import org.scada_lts.ds.reactivation.MenagerReactivation;
+import org.scada_lts.ds.reactivation.ReactivationManager;
 import org.scada_lts.ds.reactivation.ReactivationConnectHttpRetriever;
 import org.scada_lts.ds.state.SleepStateDs;
 import org.scada_lts.ds.state.StopChangeEnableStateDs;
@@ -172,7 +172,7 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
                 new Thread(stopDsRT).start();
             } else if (retries == i && r.isSleep()) {
                 ReactivationConnectHttpRetriever rhr = new ReactivationConnectHttpRetriever();
-                MenagerReactivation.getInstance().addProcess(rhr, r, vo);
+                ReactivationManager.getInstance().addProcess(rhr, r, vo);
                 StartStopDsRT stopDsRT = new StartStopDsRT(vo.getId(),false, new SleepStateDs());
                 new Thread(stopDsRT).start();
             }

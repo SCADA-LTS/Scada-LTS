@@ -28,7 +28,7 @@
     </tr>
     <c:if test="${empty events}"><tr><td colspan="6"><b><fmt:message key="events.emptyList"/></b></td></tr></c:if>
     <c:forEach items="${events}" var="event" varStatus="status">
-      <tr class="row<c:if test="${status.index % 2 == 1}">Alt</c:if>">
+      <tr class="rowTable<c:if test="${status.index % 2 == 1}">Alt</c:if>">
       	<c:if test="${!hideIdColumn}"><td align="center">${event.id}</td></c:if>
       	<c:if test="${!hideAlarmLevelColumn}"><td align="center"><tag:eventIcon event="${event}"/></td></c:if>
         <c:if test="${!hideTimestampColumn}"><td align="center">${sst:time(event.activeTimestamp)}</td></c:if>

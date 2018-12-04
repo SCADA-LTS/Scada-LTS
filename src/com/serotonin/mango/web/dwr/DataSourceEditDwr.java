@@ -89,6 +89,7 @@ import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.model.ReactivationDs;
+import org.scada_lts.ds.reactivation.ReactivationManager;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -139,7 +140,6 @@ import com.serotonin.mango.vo.dataSource.jmx.JmxDataSourceVO;
 import com.serotonin.mango.vo.dataSource.jmx.JmxPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusDataSourceVO;
 import com.serotonin.mango.vo.dataSource.mbus.MBusPointLocatorVO;
-import com.serotonin.mango.vo.dataSource.mbus.MBusSearchByAddressing;
 import com.serotonin.mango.vo.dataSource.mbus.PrimaryAddressingSearch;
 import com.serotonin.mango.vo.dataSource.mbus.SecondaryAddressingSearch;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
@@ -201,7 +201,6 @@ import com.serotonin.modbus4j.ip.IpParameters;
 import com.serotonin.modbus4j.locator.BaseLocator;
 import com.serotonin.modbus4j.msg.ModbusRequest;
 import com.serotonin.modbus4j.msg.ReadResponse;
-import com.serotonin.modbus4j.serial.SerialPortWrapper;
 import com.serotonin.util.IpAddressUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.viconics.RequestFailureException;
@@ -235,6 +234,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	}
 
 	private DwrResponseI18n tryDataSourceSave(DataSourceVO<?> ds) {
+
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		ds.validate(response);
@@ -1299,7 +1299,18 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		ReactivationDs rDs = new ReactivationDs(sleep, typeReactivation, valueReactivation);
 		ds.setReactivation(rDs);
 
-		return tryDataSourceSave(ds);
+		DwrResponseI18n result;
+
+		if (ds.getId() > 0) {
+			ReactivationManager.getInstance().stopReactivation(ds.getId());
+		}
+		result = tryDataSourceSave(ds);
+
+		if (sleep) {
+			ReactivationManager.getInstance().startReactivation(ds.getId());
+		}
+
+		return result;
 	}
 
 

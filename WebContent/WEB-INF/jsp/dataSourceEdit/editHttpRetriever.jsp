@@ -92,7 +92,7 @@
                   saveDataSourceCB
       );
   }
-  
+
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
       pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.httpRetriever.regex"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
@@ -146,7 +146,6 @@
       var timeRegexLen = $get("timeRegex").trim().length;
       display("timeFormatRow", timeRegexLen > 0);
   }
-
 </script>
 
 <c:set var="dsDesc"><fmt:message key="dsEdit.httpRetriever.desc"/></c:set>

@@ -254,7 +254,6 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
         serializeUpdatePeriodType(map, updatePeriodType);
     }
 
-    @Override
     public boolean checkToTrayEnable() {
         return isEnabled() || isStop() || reactivation.isSleep();
     }
