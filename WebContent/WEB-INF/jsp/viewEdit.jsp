@@ -397,7 +397,6 @@
                   <td class="formField" width="250">
                     <input type="hidden" id="dwrScriptSessionid" name="dwrScriptSessionid" value="">
                   </td>
-                  <td class="formError">${status.errorMessage}</td>
                 </tr>
 
 
