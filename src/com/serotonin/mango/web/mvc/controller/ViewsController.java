@@ -25,6 +25,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.web.AvailableUnavailableViews;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
@@ -105,7 +106,16 @@ public class ViewsController extends ParameterizableViewController {
 					currentView.getUserAccess(user) == ShareUser.ACCESS_OWNER);
 			user.setView(currentView);
 		}
-
+		String HYPERLINK_STYLE_PROPERTY_RESPONSIBLE_FOR_AVAILABILITY_TO_SEE_IMAGE_BY_USER_TO_EDIT_VIEW ="availableToEdit";
+		String BUTTON_FOR_EDIT_VIEW_IS_UNAVAILABLE="hidden";
+		String BUTTON_FOR_EDIT_VIEW_IS_AVAILABLE="visible";
+		model.put(HYPERLINK_STYLE_PROPERTY_RESPONSIBLE_FOR_AVAILABILITY_TO_SEE_IMAGE_BY_USER_TO_EDIT_VIEW,
+				AvailableUnavailableViews.isThisViewIsAvailableToEdit(String.valueOf(currentView.getXid()))
+						?BUTTON_FOR_EDIT_VIEW_IS_AVAILABLE
+						:BUTTON_FOR_EDIT_VIEW_IS_UNAVAILABLE);
+		if(!AvailableUnavailableViews.isThisViewIsAvailableToEdit(String.valueOf(currentView.getXid()))){
+			model.put("xidName",currentView.getXid());
+		}
 		return new ModelAndView(getViewName(), model);
 	}
 }

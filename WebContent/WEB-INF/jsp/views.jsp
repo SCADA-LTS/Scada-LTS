@@ -22,7 +22,7 @@
 	css="jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min,jQuery/plugins/datetimepicker/jquery-ui-timepicker-addon,jQuery/plugins/jpicker/css/jPicker-1.1.6.min" 
 	jqplugins="jquery-ui/js/jquery-ui-1.10.3.custom.min,jpicker/jpicker-1.1.6.min,datetimepicker/jquery-ui-timepicker-addon" >
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
-  <script type="text/javascript" src="resources/shortcut.js"></script>
+  <script type="text/javascript" src="resources/shortcut.js"></script><script type="text/javascript" src="resources/commonFunctions.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
   <link
 	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.css"
@@ -214,6 +214,30 @@
    		keyListen(evnt);
 	}
 
+    function getCorrectTitle(){
+
+        // getMyLocation, byAjaxRestMethod_GET  are in additional javascript file -> commonFunctions.js file under resources directory
+        var xid_name = document.getElementById('btntakecontrol').value;
+        var myLocation = getMyLocation();
+
+        var valueFromAjax = byAjaxRestMethod_GET(false, myLocation+"/api/lockviews/availableunavailableview/"+xid_name);
+
+        if(valueFromAjax=='1'){
+
+            valueFromAjax = byAjaxRestMethod_GET(false,myLocation+"/api/lockviews/lockedby/"+xid_name);
+
+            obj = JSON.parse(valueFromAjax);
+
+            if(confirm("This view is locked by "+ obj.userName+" since "+obj.timestamp+" . "
+                +"Do you want to take control on this view and inform user about take control by you?")){
+
+                valueFromAjax = byAjaxRestMethod_GET(false,,myLocation+"/api/lockviews/breakeditactionforuser/"+xid_name);
+
+            }
+        }
+
+    }
+
 
 </script>
 
@@ -236,8 +260,18 @@
 				</sst:select> <c:if test="${!empty currentView}">
 					<c:choose>
 						<c:when test="${owner}">
-							<a href="view_edit.shtm?viewId=${currentView.id}"><tag:img
-									png="icon_view_edit" title="viewEdit.editView" /> </a>
+							<c:choose>
+								<c:when test="${availableToEdit=='hidden'}">
+									<input type="hidden" id="btntakecontrol" name="btntakecontrol" value="${xidName}" />
+									<tag:img png="icon_view_edit" title="viewEdit.viewUnavailable" />
+									<input type="button" id="btntakecontrol" name="btntakecontrol" value="Take control" onClick="getCorrectTitle();" />
+								</c:when>
+								<c:otherwise>
+									<a style="visibility:${availableToEdit}" href="view_edit.shtm?viewId=${currentView.id}"><tag:img
+											png="icon_view_edit"
+											title="viewEdit.editView" /> </a>
+								</c:otherwise>
+							</c:choose>
 						</c:when>
 						<c:otherwise>
 							<!-- Apenas Admin pode remover compartilhamento

@@ -21,6 +21,7 @@ package org.scada_lts.session;
 import java.util.HashMap;
 
 import javax.servlet.annotation.WebListener;
+import com.serotonin.mango.web.AvailableUnavailableViews;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -62,6 +63,8 @@ public class HttpSessionListenerImpl implements HttpSessionListener {
 		@SuppressWarnings("unchecked")
 		HashMap<String, Object> map = (HashMap<String, Object>) sessionEvent.getSession()
 				.getServletContext().getAttribute(SERVLET_CONTEXT_MAP);
-		map.remove(sessionEvent.getSession().getId());
+		String sessionId = sessionEvent.getSession().getId();
+		map.remove(sessionId);
+		AvailableUnavailableViews.removeAllLockedViewsWhenUserLoggedOut(sessionId);
 	}
 }

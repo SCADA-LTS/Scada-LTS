@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.ViewDAO;
 
 import com.serotonin.json.JsonArray;
@@ -51,8 +53,9 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 @JsonRemoteEntity
 public class View implements Serializable, JsonSerializable {
+	private static final Log LOG = LogFactory.getLog(View.class);
 	public static final String XID_PREFIX = "GV_";
-
+	private transient States state;
 	private int id = Common.NEW_ID;
 	@JsonRemoteProperty
 	private String xid;
@@ -72,6 +75,15 @@ public class View implements Serializable, JsonSerializable {
 	private int anonymousAccess = ShareUser.ACCESS_NONE;
 	private List<ShareUser> viewUsers = new CopyOnWriteArrayList<ShareUser>();
 
+	public void changeState(States state) {
+		this.state = state;
+		LOG.info(" State has been changed to "+this.state.toString());
+	}
+	public States getState( ) {
+		if(state==null)
+			state = ViewUnlock.instance();
+		return state;
+	}
 	public void addViewComponent(ViewComponent viewComponent) {
 		// Determine an index for the component.
 		int min = 0;

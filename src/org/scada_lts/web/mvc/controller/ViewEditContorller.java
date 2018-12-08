@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.ScriptSessionAndUsers;
+import com.serotonin.mango.web.AvailableUnavailableViews;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.ViewEditForm;
@@ -99,6 +100,7 @@ public class ViewEditContorller {
             view.setXid(new ViewDao().generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
+        AvailableUnavailableViews.addViewToBlockList(view.getXid(),user.getUsername(),request.getSession().getId());
         user.setView(view);
         view.validateViewComponents(false);
 
@@ -108,7 +110,7 @@ public class ViewEditContorller {
         model.put(FORM_OBJECT_NAME, form);
         model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
         model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-        return new ModelAndView(FORM_VIEW, model);
+        return new ModelAndView(FORM_VIEW, fillmodel(form));
     }
 
     
@@ -142,6 +144,7 @@ public class ViewEditContorller {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
+        AvailableUnavailableViews.removeViewFromBlockList(form.getView().getXid());
         User user = ScriptSessionAndUsers.getUserForScriptSessionId(form.getDwrScriptSessionid(),request);
         View view = user.getView();
 
@@ -158,11 +161,7 @@ public class ViewEditContorller {
         if(result.hasErrors())
         {
             LOG.debug("ViewEditController:save: HAS ERRORS.");
-            Map<String, Object> model = new HashMap<String, Object>();
-            model.put(FORM_OBJECT_NAME, form);
-            model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
-            model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-            return new ModelAndView(FORM_VIEW, model);
+            return new ModelAndView(FORM_VIEW, fillmodel(form));
         }
 
         view.setUserId(user.getId());
@@ -175,6 +174,7 @@ public class ViewEditContorller {
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
+        AvailableUnavailableViews.removeViewFromBlockList(form.getView().getXid());
         View view = user.getView();
         form.setView(view);
 
@@ -272,5 +272,13 @@ public class ViewEditContorller {
         targetView.setResolution(sourceView.getResolution());
         targetView.setAnonymousAccess(sourceView.getAnonymousAccess());
         targetView.setUserId(sourceView.getUserId());
+    }
+}
+    private Map<String,Object> fillmodel(ViewEditForm form){
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put(FORM_OBJECT_NAME, form);
+        model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
+        model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
+        return model;
     }
 }
