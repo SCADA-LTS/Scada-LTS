@@ -5,8 +5,9 @@
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.8"/>
 	<property name="source" value="1.8"/>
-	<property name="env.CATALINA_HOME" value="${env.CATALINA_HOME}"/>
-
+	<!--property name="env.CATALINA_HOME" value="${env.CATALINA_HOME}"/-->
+	<property name="CATALINA_HOME" value="./home/mateusz/apache-tomcat"/>
+	<property name="env.CATALINA_HOME" value="./home/mateusz/apache-tomcat"/>
    <path id="tomcat.ant.classpath">
 	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
    </path>

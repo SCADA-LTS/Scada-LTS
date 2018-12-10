@@ -219,11 +219,11 @@
 
         // getMyLocationis  in additional javascript file -> commonFunctions.js file under resources directory
         var xidName = document.getElementById('btntakecontrolhidden').value;
-        var myLocation = getMyLocation();
+        var myLocation = getMyLocation()+"api/lockviews/";
         var valueFromAjax =jQuery.ajax({
                type: "GET",
                dataType: "json",
-               url:myLocation+'api/lockviews/availableunavailableview/'+xidName,
+               url:myLocation+"availableunavailableview/"+xidName,
                async: false
                }).responseText;
 
@@ -232,25 +232,27 @@
             valueFromAjax =jQuery.ajax({
                 type: "GET",
                 dataType: "json",
-                url:myLocation+"api/lockviews/lockedby/"+xidName,
+                url:myLocation+"lockedby/"+xidName,
                 async: false
             }).responseText;
 
             obj = JSON.parse(valueFromAjax);
 
-            if(confirm("This view is locked by "+ obj.username+" since "+obj.timestamp+" . "
-                        +"Do you want to take control on this view and inform user about take control by you?")){
+            if(confirm("<fmt:message key="viewEdit.viewTakeControl.informationAboutLockedView" />"+" "+obj.username+" "+
+                        "<fmt:message key="viewEdit.viewTakeControl.informationAboutLockedViewsince" />"+" "+obj.timestamp+" "+
+                        "<fmt:message key="viewEdit.viewTakeControl.informationAboutLockedViewdot" />"+" "+
+                        "<fmt:message key="viewEdit.viewTakeControl.questionAboutTakeControl" />")){
                     valueFromAjax =jQuery.ajax({
                                         type: "GET",
                                         dataType: "json",
-                                        url:myLocation+"api/lockviews/breakeditactionforuser/"+xidName,
+                                        url:myLocation+"breakeditactionforuser/"+xidName,
                                         async: false
                                         }).responseText;
-                    if(valueFromAjax=='ok'){
+                    if(valueFromAjax=="ok"){
                             window.location.reload();
                     }
                     else{
-                            swal("Something went wrong during operation unlock view.");
+                            swal("<fmt:message key="viewEdit.viewTakeControl.errorDuringTakeControl" />");
                     }
             }
         }
@@ -267,7 +269,6 @@
 			<c:if test="${fn:length(views) != 0}">
 				<td>
 					<tag:img png="arrow_out" title="viewEdit.fullScreen" onclick="fullScreen()" />
-					<!-- <input type="button" name="buttonFull" value="Full Screen" onClick="fullScreen();" /> -->
 				</td>
 			</c:if>
 			<td align="right"><sst:select value="${currentView.id}"
@@ -283,7 +284,7 @@
 								<c:when test="${availableToEdit=='hidden'}">
 									<input type="hidden" id="btntakecontrolhidden" name="btntakecontrolhidden" value="${xidName}" />
 									<tag:img png="icon_view_edit_disabled" title="viewEdit.viewUnavailable" />
-									<input type="button" id="btntakecontrol" name="btntakecontrol" value="Take control" onClick="takeControl();" />
+									<input type="button" id="btntakecontrol" name="btntakecontrol" value="<fmt:message key="viewEdit.viewTakeControl.buttonTitle" />" onClick="takeControl();" />
 								</c:when>
 								<c:otherwise>
 									<a  href="view_edit.shtm?viewId=${currentView.id}"><tag:img
