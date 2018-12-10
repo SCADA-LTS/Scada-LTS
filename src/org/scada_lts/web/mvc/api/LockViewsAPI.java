@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * REST API controller and responsibility :
+ * -check view state
+ * -get details of user who locked view(etc. who work with view at the time when somebody else tries edit view)
+ * -break edit action - in other words take control on view with show information for other user about this action
+ *
  * @author Mateusz Hyski hyski.mateusz@gmail.com
  */
 @Controller
@@ -21,9 +26,20 @@ public class LockViewsAPI {
 
     private static final Log LOG = LogFactory.getLog(LockViewsAPI.class);
 
+
+    /**
+     * Facade here is used to separate logic level from REST API
+     */
     @Autowired
     private Facade facade;
 
+    /**
+     * with only xidName we check view availability
+     *
+     * @param xidName
+     * @param request
+     * @return ResponseEntity<String> 1-unavailable,0 available
+     */
     @RequestMapping(value = "/api/lockviews/availableunavailableview/{xidName}", method = RequestMethod.GET)
     public ResponseEntity<String> availableunavailableview(@PathVariable("xidName") String xidName, HttpServletRequest request) {
         LOG.info("/api/lockviews/availableunavailableview/"+xidName);
@@ -38,6 +54,14 @@ public class LockViewsAPI {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**
+     * user information downloaded like: {"username","viewXid","sessionId","timestamp"}
+     *
+     * @param xidName
+     * @param request
+     * @return ResponseEntity<String>
+     */
     @RequestMapping(value = "/api/lockviews/lockedby/{xidName}", method = RequestMethod.GET)
     public ResponseEntity<String> lockedby(@PathVariable("xidName") String xidName, HttpServletRequest request) {
         LOG.info("/api/lockviews/lockedby/"+xidName);
@@ -51,6 +75,13 @@ public class LockViewsAPI {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**
+     * just break edit operation on view means in other meaning remove control on view
+     *
+     * @param xidName
+     * @param request
+     */
     @RequestMapping(value = "/api/lockviews/breakeditactionforuser/{xidName}", method = RequestMethod.GET)
     public void  breakEditActionForUser(@PathVariable("xidName") String xidName, HttpServletRequest request) {
         LOG.info("/api/lockviews/breakeditactionforuser/"+xidName);

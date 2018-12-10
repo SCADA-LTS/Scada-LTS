@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.ScriptSessionAndUsers;
+import com.serotonin.mango.view.ViewLock;
+import com.serotonin.mango.view.ViewUnlock;
 import com.serotonin.mango.web.AvailableUnavailableViews;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,6 +103,7 @@ public class ViewEditContorller {
             //TODO view.setHeight(?) and view.setWidth(?)
         }
         AvailableUnavailableViews.addViewToBlockList(view.getXid(),user.getUsername(),request.getSession().getId());
+        view.changeState(ViewLock.instance());
         user.setView(view);
         view.validateViewComponents(false);
 
@@ -139,7 +142,7 @@ public class ViewEditContorller {
         AvailableUnavailableViews.removeViewFromBlockList(form.getView().getXid());
         User user = ScriptSessionAndUsers.getUserForScriptSessionId(form.getDwrScriptSessionid(),request);
         View view = user.getView();
-
+        view.changeState(ViewUnlock.instance());
         copyViewProperties(view, form.getView());
         form.setView(view);
 
@@ -168,6 +171,7 @@ public class ViewEditContorller {
         User user = Common.getUser(request);
         AvailableUnavailableViews.removeViewFromBlockList(form.getView().getXid());
         View view = user.getView();
+        view.changeState(ViewUnlock.instance());
         form.setView(view);
 
         return getSuccessRedirectView("viewId=" + form.getView().getId());

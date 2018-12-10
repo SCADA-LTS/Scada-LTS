@@ -45,12 +45,7 @@ public class LockedViews {
 
     @Override
     public String toString() {
-        return toJSON().toString();/*"LockedViews{" +
-                "userName='" + userName + '\'' +
-                ", viewXid='" + viewXid + '\'' +
-                ", sessionId='" + sessionId + '\'' +
-                ", timestamp=" + timestamp +
-                '}';*/
+        return toJSON().toString();
     }
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();

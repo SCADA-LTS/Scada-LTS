@@ -2,8 +2,6 @@ package com.serotonin.mango.web;
 
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.User;
-import org.json.JSONObject;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +14,7 @@ import java.util.Set;
  */
 public class AvailableUnavailableViews {
 
-    private  static Set<LockedViews> lockedViews = new HashSet<LockedViews>();
+    private  static Set<LockedViews> lockedViewsRegistry = new HashSet<LockedViews>();
 
     /**
      * check that view is available or not to edit state
@@ -39,7 +37,7 @@ public class AvailableUnavailableViews {
 
         LockedViews viewLockedBy = new LockedViews(userName,viewXid,sessionId);
 
-        lockedViews.add(viewLockedBy);
+        lockedViewsRegistry.add(viewLockedBy);
         Common.ctx.getCtx().setAttribute(viewXid,viewLockedBy);
     }
 
@@ -59,35 +57,60 @@ public class AvailableUnavailableViews {
      * @param sessionId
      */
     public static void removeAllLockedViewsWhenUserLoggedOut(String sessionId){
-        for (LockedViews view: lockedViews) {
+        for (LockedViews view: lockedViewsRegistry) {
             if(view.getSessionId().equals(sessionId))
                 removeViewFromBlockList(view.getViewXid());
         }
-        lockedViews.removeIf(item -> item.getSessionId().equals(sessionId));
+        lockedViewsRegistry.removeIf(item -> item.getSessionId().equals(sessionId));
     }
-
-    public static boolean checkAvailabibityView(String xid){
-        for (LockedViews view: lockedViews) {
-            if(view.getViewXid().equals(xid)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    /**
+     *
+     * get delails about user who edit the view
+     *
+     * @param xid
+     * @return LockedViews
+     */
     public static LockedViews getOwnerOfEditView(String xid){
-        for (LockedViews view: lockedViews) {
+        for (LockedViews view: lockedViewsRegistry) {
             if(view.getViewXid().equals(xid)) {
                 return view;
             }
         }
         return null;
     }
+    /**
+     * check that view with given xid exists in Set.
+     *
+     * @param xid
+     * @return boolean
+     */
+    public static boolean checkAvailabibityView(String xid){
+        return isViewIsInLockedRegistry(xid)?true:false;
+    }
+
+    /**
+     * remove view with given xid from applicationscope
+     * @param xid
+     */
     public static void breakEditActionForUser(String xid){
-        for (LockedViews view: lockedViews) {
-            if(view.getViewXid().equals(xid)) {
-                removeViewFromBlockList(view.getViewXid());
+        if(isViewIsInLockedRegistry(xid)) {
+            removeViewFromBlockList(xid);
+        }
+    }
+
+    /**
+     * check view by xidName in 'locked resistry'
+     *
+     * @param xidName
+     * @return boolean
+     */
+    private static boolean isViewIsInLockedRegistry(String xidName){
+        for (LockedViews view: lockedViewsRegistry) {
+            if(view.getViewXid().equals(xidName)) {
+                return true;
             }
         }
+        return false;
     }
 
 

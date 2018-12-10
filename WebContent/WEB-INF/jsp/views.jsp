@@ -217,21 +217,22 @@
     function takeControl(){
 
         // getMyLocation, byAjaxRestMethod_GET  are in additional javascript file -> commonFunctions.js file under resources directory
-        var xid_name = document.getElementById('btntakecontrol').value;
+        var xidName = document.getElementById('btntakecontrol').value;
         var myLocation = getMyLocation();
 
-        var valueFromAjax = byAjaxRestMethod_GET(false, myLocation+"/api/lockviews/availableunavailableview/"+xid_name);
+        var valueFromAjax = byAjaxRestMethod_GET(false, myLocation+"/api/lockviews/availableunavailableview/"+xidName);
 
+        //1 -> means view is unavailable, so we check who is blocking view....
         if(valueFromAjax=='1'){
 
-            valueFromAjax = byAjaxRestMethod_GET(false,myLocation+"/api/lockviews/lockedby/"+xid_name);
+            valueFromAjax = byAjaxRestMethod_GET(false,myLocation+"/api/lockviews/lockedby/"+xidName);
 
             obj = JSON.parse(valueFromAjax);
 
             if(confirm("This view is locked by "+ obj.userName+" since "+obj.timestamp+" . "
                 +"Do you want to take control on this view and inform user about take control by you?")){
 
-                valueFromAjax = byAjaxRestMethod_GET(false,,myLocation+"/api/lockviews/breakeditactionforuser/"+xid_name);
+                valueFromAjax = byAjaxRestMethod_GET(false,,myLocation+"/api/lockviews/breakeditactionforuser/"+xidName);
 
             }
         }
@@ -261,13 +262,14 @@
 					<c:choose>
 						<c:when test="${owner}">
 							<c:choose>
+
 								<c:when test="${availableToEdit=='hidden'}">
 									<input type="hidden" id="btntakecontrol" name="btntakecontrol" value="${xidName}" />
 									<tag:img png="icon_view_edit_disabled" title="viewEdit.viewUnavailable" />
 									<input type="button" id="btntakecontrol" name="btntakecontrol" value="Take control" onClick="takeControl();" />
 								</c:when>
 								<c:otherwise>
-									<a style="visibility:${availableToEdit}" href="view_edit.shtm?viewId=${currentView.id}"><tag:img
+									<a  href="view_edit.shtm?viewId=${currentView.id}"><tag:img
 											png="icon_view_edit"
 											title="viewEdit.editView" /> </a>
 								</c:otherwise>
