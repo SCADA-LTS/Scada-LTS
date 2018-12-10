@@ -263,7 +263,7 @@
 							<c:choose>
 								<c:when test="${availableToEdit=='hidden'}">
 									<input type="hidden" id="btntakecontrol" name="btntakecontrol" value="${xidName}" />
-									<tag:img png="icon_view_edit" title="viewEdit.viewUnavailable" />
+									<tag:img png="icon_view_edit_disabled" title="viewEdit.viewUnavailable" />
 									<input type="button" id="btntakecontrol" name="btntakecontrol" value="Take control" onClick="getCorrectTitle();" />
 								</c:when>
 								<c:otherwise>
