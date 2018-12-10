@@ -214,7 +214,7 @@
    		keyListen(evnt);
 	}
 
-    function getCorrectTitle(){
+    function takeControl(){
 
         // getMyLocation, byAjaxRestMethod_GET  are in additional javascript file -> commonFunctions.js file under resources directory
         var xid_name = document.getElementById('btntakecontrol').value;
@@ -264,7 +264,7 @@
 								<c:when test="${availableToEdit=='hidden'}">
 									<input type="hidden" id="btntakecontrol" name="btntakecontrol" value="${xidName}" />
 									<tag:img png="icon_view_edit_disabled" title="viewEdit.viewUnavailable" />
-									<input type="button" id="btntakecontrol" name="btntakecontrol" value="Take control" onClick="getCorrectTitle();" />
+									<input type="button" id="btntakecontrol" name="btntakecontrol" value="Take control" onClick="takeControl();" />
 								</c:when>
 								<c:otherwise>
 									<a style="visibility:${availableToEdit}" href="view_edit.shtm?viewId=${currentView.id}"><tag:img

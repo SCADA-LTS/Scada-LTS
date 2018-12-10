@@ -106,10 +106,6 @@ public class ViewEditContorller {
 
         ViewEditForm form = new ViewEditForm();
         form.setView(view);
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put(FORM_OBJECT_NAME, form);
-        model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
-        model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
         return new ModelAndView(FORM_VIEW, fillmodel(form));
     }
 
@@ -133,12 +129,8 @@ public class ViewEditContorller {
             form.setView(view);
             uploadFile(request, form);
         }
-        
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put(FORM_OBJECT_NAME, form);
-        model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
-        model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-        return new ModelAndView(FORM_VIEW, model);
+
+        return new ModelAndView(FORM_VIEW, fillmodel(form));
     }
     
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
@@ -273,7 +265,6 @@ public class ViewEditContorller {
         targetView.setAnonymousAccess(sourceView.getAnonymousAccess());
         targetView.setUserId(sourceView.getUserId());
     }
-}
     private Map<String,Object> fillmodel(ViewEditForm form){
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(FORM_OBJECT_NAME, form);
