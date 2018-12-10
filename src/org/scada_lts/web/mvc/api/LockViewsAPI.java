@@ -83,11 +83,12 @@ public class LockViewsAPI {
      * @param request
      */
     @RequestMapping(value = "/api/lockviews/breakeditactionforuser/{xidName}", method = RequestMethod.GET)
-    public void  breakEditActionForUser(@PathVariable("xidName") String xidName, HttpServletRequest request) {
+    public ResponseEntity<String>  breakEditActionForUser(@PathVariable("xidName") String xidName, HttpServletRequest request) {
         LOG.info("/api/lockviews/breakeditactionforuser/"+xidName);
         LOG.info("View with xid="+xidName+" will be removed from map and will available to edit");
         facade.breakEditActionForUser(xidName);
         LOG.info("View with xid="+xidName+" is available to edit");
+        return new ResponseEntity<String>("ok",HttpStatus.OK);
     }
 
 }
