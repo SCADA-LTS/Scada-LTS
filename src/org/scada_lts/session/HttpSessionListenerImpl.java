@@ -21,7 +21,7 @@ package org.scada_lts.session;
 import java.util.HashMap;
 
 import javax.servlet.annotation.WebListener;
-import com.serotonin.mango.web.AvailableUnavailableViews;
+import com.serotonin.mango.view.AvailableUnavailableViews;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 

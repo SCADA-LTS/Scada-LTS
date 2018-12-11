@@ -1,7 +1,7 @@
 package org.scada_lts.web.facade;
 
-import com.serotonin.mango.web.AvailableUnavailableViews;
-import com.serotonin.mango.web.LockedViews;
+import com.serotonin.mango.view.AvailableUnavailableViews;
+import com.serotonin.mango.view.LockedViews;
 import org.springframework.stereotype.Component;
 
 /**

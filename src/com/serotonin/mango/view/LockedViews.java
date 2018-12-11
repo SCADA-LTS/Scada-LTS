@@ -1,4 +1,4 @@
-package com.serotonin.mango.web;
+package com.serotonin.mango.view;
 
 
 import org.json.JSONException;

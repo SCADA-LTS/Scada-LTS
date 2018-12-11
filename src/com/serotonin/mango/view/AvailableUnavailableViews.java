@@ -1,4 +1,4 @@
-package com.serotonin.mango.web;
+package com.serotonin.mango.view;
 
 
 import com.serotonin.mango.Common;
@@ -6,7 +6,7 @@ import com.serotonin.mango.Common;
 import java.util.HashSet;
 import java.util.Set;
 
-//jsession <<1.login user 2. czas 3.jsession>>
+
 /**
  * Puts and remove in application scope data like viewXid and instance of  ViewLockedBy class
  *

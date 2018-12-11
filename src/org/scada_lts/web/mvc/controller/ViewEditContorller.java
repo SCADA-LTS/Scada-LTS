@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.serotonin.mango.ScriptSessionAndUsers;
 import com.serotonin.mango.view.ViewLock;
 import com.serotonin.mango.view.ViewUnlock;
-import com.serotonin.mango.web.AvailableUnavailableViews;
+import com.serotonin.mango.view.AvailableUnavailableViews;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.ViewEditForm;
