@@ -23,7 +23,13 @@ public class AvailableUnavailableViews {
      * @return boolean
      */
     public static boolean isThisViewIsAvailableToEdit(String viewXid) {
-        LockedViews viewLockedBy=(LockedViews) Common.ctx.getCtx().getAttribute(viewXid);
+        LockedViews viewLockedBy = null;
+        try {
+            viewLockedBy = (LockedViews) Common.ctx.getCtx().getAttribute(viewXid);
+        }
+        catch(Exception exception){
+            return false;
+        }
         return viewLockedBy==null;
     }
 
@@ -85,7 +91,8 @@ public class AvailableUnavailableViews {
      * @return boolean
      */
     public static boolean checkAvailabibityView(String xid){
-        return isViewIsInLockedRegistry(xid)?true:false;
+
+        return isViewIsInLockedRegistry(xid);
     }
 
     /**
