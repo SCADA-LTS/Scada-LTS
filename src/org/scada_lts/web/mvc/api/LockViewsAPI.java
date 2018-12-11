@@ -68,7 +68,7 @@ public class LockViewsAPI {
 
 
         try {
-            return new ResponseEntity<>(facade.getOwnerOfEditView(xidName).toString(),HttpStatus.OK);
+            return new ResponseEntity<>(facade.getOwnerOfEditView(xidName),HttpStatus.OK);
 
         } catch (Exception e) {
             LOG.error(e);
@@ -84,11 +84,20 @@ public class LockViewsAPI {
      */
     @RequestMapping(value = "/api/lockviews/breakeditactionforuser/{xidName}", method = RequestMethod.GET)
     public ResponseEntity<String>  breakEditActionForUser(@PathVariable("xidName") String xidName, HttpServletRequest request) {
+
         LOG.info("/api/lockviews/breakeditactionforuser/"+xidName);
         LOG.info("View with xid="+xidName+" will be removed from map and will available to edit");
-        facade.breakEditActionForUser(xidName);
-        LOG.info("View with xid="+xidName+" is available to edit");
-        return new ResponseEntity<String>("ok",HttpStatus.OK);
+
+        try {
+            facade.breakEditActionForUser(xidName);
+            LOG.info("View with xid="+xidName+" is available to edit");
+            return new ResponseEntity<String>("ok",HttpStatus.OK);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
     }
 
 }
