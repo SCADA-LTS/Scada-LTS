@@ -27,8 +27,8 @@
 				$get("updatePeriodType"), $get("host"), $get("port"),
 				$get("timeout"), $get("retries"), $get("commandFormat"),
 				$get("stopMode"), $get("nChar"), $get("charStopMode"),
-				$get("charX"), $get("hexValue"), $get("stopTimeout"),
-				$get("initString"), $get("bufferSize"), $get("quantize"),
+				$get("charX"), $get("hexValue"), $get("initString"), 
+				$get("bufferSize"), $get("oneByOne"),
 				$get("sameFormat"), saveDataSourceCB);
 	}
 
@@ -128,19 +128,11 @@
 			setDisabled("charStopMode", true);
 			setDisabled("charX", true);
 			setDisabled("hexValue", true);
-			setDisabled("stopTimeout", true);
 		} else if (sm == 1) {
 			setDisabled("nChar", true);
 			setDisabled("charStopMode", false);
 			changeCharStopMode();
-			setDisabled("stopTimeout", true);
-		} else {
-			setDisabled("nChar", true);
-			setDisabled("charStopMode", true);
-			setDisabled("charX", true);
-			setDisabled("hexValue", true);
-			setDisabled("stopTimeout", false);
-		}
+		} 
 	}
 
 	function changeCharStopMode() {
@@ -171,7 +163,6 @@
 			setDisabled("charStopMode", true);
 			setDisabled("charX", true);
 			setDisabled("hexValue", true);
-			setDisabled("stopTimeout", true);
 		} else {
 			setDisabled("stopMode", false);
 			setDisabled("charStopMode", false);
@@ -278,9 +269,9 @@
 </tr>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message key="dsEdit.quantize" /></td>
-	<td class="formField"><sst:checkbox id="quantize"
-			selectedValue="${dataSource.quantize}" /></td>
+	<td class="formLabelRequired"><fmt:message key="dsEdit.socketComm.oneByOne" /></td>
+	<td class="formField"><sst:checkbox id="oneByOne"
+			selectedValue="${dataSource.oneByOne}" /></td>
 </tr>
 
 <tr>
@@ -329,16 +320,14 @@
 <tr>
 	<td class="formLabelRequired"><fmt:message
 			key="dsEdit.socketComm.stopMode" /></td>
-	<td class="formField"><sst:select id="stopMode"
+	<td class="formField">
+		<sst:select id="stopMode"
 			onchange="changeStopMode()" value="${dataSource.stopMode}">
 			<sst:option value="0">
 				<fmt:message key="dsEdit.socketComm.stopMode.nChar" />
 			</sst:option>
 			<sst:option value="1">
 				<fmt:message key="dsEdit.socketComm.stopMode.charX" />
-			</sst:option>
-			<sst:option value="2">
-				<fmt:message key="dsEdit.socketComm.stopMode.stopTimeout" />
 			</sst:option>
 		</sst:select></td>
 </tr>
@@ -373,12 +362,6 @@
 			key="dsEdit.socketComm.charStopMode.hexValue" /></td>
 	<td class="formField"><input id="hexValue" type="text"
 		value="${dataSource.hexValue}" disabled="disabled" /></td>
-</tr>
-<tr>
-	<td class="formLabelRequired"><fmt:message
-			key="dsEdit.socketComm.stopTimeout" /></td>
-	<td class="formField"><input id="stopTimeout" type="text"
-		value="${dataSource.stopTimeout}" disabled="disabled" /></td>
 </tr>
 <tr>
 	<td class="formLabelRequired"><fmt:message

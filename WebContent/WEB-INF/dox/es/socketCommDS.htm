@@ -74,6 +74,10 @@ antes de indicar un fallo de comunicaciÃ³n.
 La configuraci&oacute;n de la comunicaci&oacute;n con el servidor se realiza mediante los par&aacute;metros habituales de una conexi&oacute;n socket, entre los que se encuentran: el nombre del <b>Servidor</b> y el <b>Puerto</b>
 por el que el servidor escucha las peticiones. 
 </p>
+El parámetro <b>Lectura de puntos de datos uno a uno</b> s&oacute;olo debe seleccionarse si el servidor precisa que se abra y cierre la conexi&oacute;n Socket por cada punto de dato configurado. Por defecto, esta opci&oacute; se ecnuentra deshabilitada,
+indicando que se abre <i>una única conexi&oacute;n al servidor</i> por cada sondeo de datos (polling) peri&oacute;dico, obteniendo los valores ofrecidos por el servidor Socket para los puntos de datos (datapoints) configurados, y cerrando la conexi&oacute;n
+al finalizar la consulta de todos los puntos de datos configurados.
+</p>
 <p>
 La mayoria de las comunicaciones basadas en sockets suelen utilizar los caracteres de retorno de carro (\r) y fin de linea (\n) para delimitar el comando recibido o la respuesta enviada. Para facilitar
 su inclusi&oacute;n al definir una nueva fuente de datos socket, se dispone del par&aacute;metro <b>Formato de trama para comando</b>, donde es posible seleccionar los caracteres que delimitan el comando a enviar al servidor. Estos mismos caracteres

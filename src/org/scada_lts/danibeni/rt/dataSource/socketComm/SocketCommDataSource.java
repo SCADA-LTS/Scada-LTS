@@ -10,10 +10,6 @@ import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,13 +34,13 @@ import org.scada_lts.danibeni.vo.dataSource.socketComm.SocketCommPointLocatorVO;
  * @author danibeni (DBH)
  * 
  */
+
 public class SocketCommDataSource extends PollingDataSource {
 
 	private final Log LOG = LogFactory.getLog(SocketCommDataSource.class);
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 2;
 	private final SocketCommDataSourceVO<?> vo;
-	private Enumeration portList;
 	private PrintWriter out_stream;
 	private BufferedReader in_stream;
 	private Socket socket;
@@ -62,7 +58,7 @@ public class SocketCommDataSource extends PollingDataSource {
 		this.vo = vo;
 		attempts_reconnect = 0;
 		setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(),
-				vo.isQuantize());
+				vo.isOneByOne());
 	}
 
 	/**
@@ -89,14 +85,12 @@ public class SocketCommDataSource extends PollingDataSource {
 	 * based on the configured frame format and directly parsed to the data
 	 * points configured depending on the corresponding regular expression.
 	 * 
-	 * @param time
-	 *            Clock time when the polling is done.
+	 * @param time Clock time when the polling is done.
 	 */
 	@Override
 	synchronized protected void doPoll(long time) {
 		SocketCommPointLocatorVO dataPointVO;
 		String response = "";
-		int response_char;
 		String command_str = null;
 		String point_name = null;
 		boolean is_expected_resp = true;
@@ -145,14 +139,12 @@ public class SocketCommDataSource extends PollingDataSource {
 					// DBH: Build first command and process request to the
 					// server.
 
-					try {
+					
 						command_str = buildCommand(
 								dataPointVO.getFirstCommand(),
 								dataPointVO.getFirstCommandHexASCII(),
 								vo.getCommandFormat());
 						response = processRequest(command_str, point_name);
-						returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
-								System.currentTimeMillis());
 						is_data_available = true;
 						comm_errors = 0;
 						/*
@@ -269,35 +261,23 @@ public class SocketCommDataSource extends PollingDataSource {
 									new LocalizableMessage(
 											"event.socketComm.noDataAvailable"));
 						}
-					} catch (LocalizableException le) {
-						closeConnection();
-						LOG.warn("Problem while a request to the data source was processed. Details: "
-								+ le.getLocalizableMessage()
-										.getLocalizedMessage(Common.getBundle()));
-						raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
-								le.getLocalizableMessage());
-					} catch (IOException ioe) {
-						closeConnection();
-						LOG.error("Could not get response from server "
-								+ vo.getHost() + " listening at port "
-								+ vo.getPort());
-						raiseEvent(
-								DATA_SOURCE_EXCEPTION_EVENT,
-								System.currentTimeMillis(),
-								true,
-								new LocalizableMessage(
-										"event.socketComm.connectionError", vo
-												.getHost(), vo.getPort(), ioe
-												.getMessage()));
-					}
-
 				}
 			}
 			/*
-			 * DBH: After getting all the data from the server, the socket is
+			 * DBH: After getting all the data from the server, no alarms are expected,
+			 * so any previous datasource event or alarm is cleared and the socket is
 			 * closed until the next polling process
 			 */
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
+					System.currentTimeMillis());
 			closeConnection();
+		} catch (LocalizableException le) {
+			closeConnection();
+			LOG.warn("Problem while a request to the data source was processed. Details: "
+					+ le.getLocalizableMessage()
+							.getLocalizedMessage(Common.getBundle()));
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
+					le.getLocalizableMessage());
 		} catch (IOException ioe) {
 			closeConnection();
 			LOG.error("Could not get response from server " + vo.getHost()
@@ -439,11 +419,11 @@ public class SocketCommDataSource extends PollingDataSource {
 
 		if (!command_str.equals(null)) {
 			/*
-			 * Quantize is used in this datasource to indicate that the server
+			 * One by One is used in this datasource to indicate that the server
 			 * requires that the client opens and closes the socket connection
 			 * for each query to the server.
 			 */
-			if (vo.isQuantize() && isConnectionClosed()) {
+			if (vo.isOneByOne() && isConnectionClosed()) {
 				openConnection();
 
 			}
@@ -453,10 +433,10 @@ public class SocketCommDataSource extends PollingDataSource {
 
 			/*
 			 * Once the server response has been received, the socket connection
-			 * is closed if the quantize parameter is checked indicating that
+			 * is closed if the One By One parameter is checked indicating that
 			 * the connection must be reopen for each configured datapoint.
 			 */
-			if (vo.isQuantize() && !isConnectionClosed()) {
+			if (vo.isOneByOne() && !isConnectionClosed()) {
 				closeConnection();
 			}
 
@@ -467,7 +447,7 @@ public class SocketCommDataSource extends PollingDataSource {
 			 */
 			LOG.warn("Command is null or empty at data point: " + point_name);
 			throw new LocalizableException(new LocalizableMessage(
-					"event.customSerial.noCommand", point_name));
+					"event.socketComm.noCommand", point_name));
 
 		}
 
@@ -512,10 +492,9 @@ public class SocketCommDataSource extends PollingDataSource {
 		int response_char = 0;
 		int response_char_size = 0;
 		int response_len = 0;
+		int stop_chars_len = 0;
 		boolean is_stop_receiving = false;
 
-		final ScheduledExecutorService scheduler = Executors
-				.newScheduledThreadPool(1);
 
 		/*
 		 * DBH: The awaited response from the server is delimited depends on the
@@ -528,6 +507,7 @@ public class SocketCommDataSource extends PollingDataSource {
 			if (vo.isSameFormat()) {
 				is_stop_receiving = false;
 				stop_chars.append(getCommandEndFormat(vo.getCommandFormat()));
+				stop_chars_len = stop_chars.length();
 				/*
 				 * DBH: Read response until the stop characters are reached. If
 				 * the stop characters are not reached before the socket timeout
@@ -538,23 +518,25 @@ public class SocketCommDataSource extends PollingDataSource {
 					response_char = in_stream.read();
 					if (response_char != -1) {
 						response.append((char) response_char);
-						if (response_char == stop_chars.charAt(stop_chars
-								.length() - 1)) {
-							is_stop_receiving = true;
+						if (response_char == stop_chars.charAt(stop_chars_len - 1)) {
 							response_len = response.length();
-							for (int j = response_len - 1; j > response_len - 1
-									- stop_chars.length(); j--) {
-								if (response.charAt(j) != stop_chars
-										.charAt(response_len - 1 - j)) {
+							int stop_chars_found = 1; 
+							while (stop_chars_found < stop_chars_len) {
+								if (response.charAt(response_len - 1 - stop_chars_found) != stop_chars.charAt(stop_chars_len - 1 - stop_chars_found)) {
 									is_stop_receiving = false;
 									break;
+								} else {
+									stop_chars_found++;
 								}
-								response.deleteCharAt(j);
+							}
+							if (stop_chars_found == stop_chars_len) {
+								response.delete(response_len - stop_chars_len, response_len -1);
+								is_stop_receiving = true;
 							}
 						}
 					} else {
 						is_stop_receiving = true;
-						// LOG.warn("End of stream reached before reach the limit character defined in the data source");
+						LOG.warn("End of stream reached before reach the limit character defined in the data source");
 					}
 				}
 			} else {
@@ -563,7 +545,6 @@ public class SocketCommDataSource extends PollingDataSource {
 				 * determined condition is reached, if the command and response
 				 * do not share the same frame format.
 				 */
-				is_stop_receiving = false;
 				switch (vo.getStopMode()) {
 				case 0:
 
@@ -571,8 +552,7 @@ public class SocketCommDataSource extends PollingDataSource {
 					// characters
 					if (vo.getnChar() > 0) {
 						response_char_size = vo.getnChar();
-					}
-					if (response_char_size > 0) {
+					
 						// DBH: Read a number of characters from the response
 						for (int i = 0; i < response_char_size; i++) {
 							response_char = in_stream.read();
@@ -580,8 +560,8 @@ public class SocketCommDataSource extends PollingDataSource {
 								response.append((char) response_char);
 							} else {
 								LOG.warn("End of stream reached before reading the number of characters limit defined in the data source");
-								is_stop_receiving = true;
-								break;
+								throw new LocalizableException(new LocalizableMessage(
+										"event.socketComm.uncompleteResponse"));
 							}
 						}
 					}
@@ -614,8 +594,10 @@ public class SocketCommDataSource extends PollingDataSource {
 					}
 
 					if (stop_chars.toString().isEmpty()) {
-						LOG.warn("Response stop characters parameter configured at the datasource is empty. It will be captured all chars until receive -1 char or timeout elapses.");
-
+						throw new LocalizableException(new LocalizableMessage(
+								"event.socketComm.noStopChars"));
+					} else {
+						stop_chars_len = stop_chars.length();
 					}
 					/*
 					 * DBH: Read response until the stop characters are reached.
@@ -627,18 +609,20 @@ public class SocketCommDataSource extends PollingDataSource {
 						response_char = in_stream.read();
 						if (response_char != -1) {
 							response.append((char) response_char);
-							if (response_char == stop_chars.charAt(stop_chars
-									.length() - 1)) {
-								is_stop_receiving = true;
+							if (response_char == stop_chars.charAt(stop_chars_len - 1)) {
 								response_len = response.length();
-								for (int j = response_len - 1; j > response_len
-										- 1 - stop_chars.length(); j--) {
-									if (response.charAt(j) != stop_chars
-											.charAt(response_len - 1 - j)) {
+								int stop_chars_found = 1; 
+								while (stop_chars_found < stop_chars_len) {
+									if (response.charAt(response_len - 1 - stop_chars_found) != stop_chars.charAt(stop_chars_len - 1 - stop_chars_found)) {
 										is_stop_receiving = false;
 										break;
+									} else {
+										stop_chars_found++;
 									}
-									response.deleteCharAt(j);
+								}
+								if (stop_chars_found == stop_chars_len) {
+									response.delete(response_len - stop_chars_len, response_len -1);
+									is_stop_receiving = true;
 								}
 							}
 						} else {
@@ -647,35 +631,14 @@ public class SocketCommDataSource extends PollingDataSource {
 						}
 					}
 					break;
-				case 2:
-					ScheduledFuture<?> countdown = scheduler.schedule(
-							new Runnable() {
-								@Override
-								public void run() {
-									// is_stop_receiving = true;
-								}
-							}, vo.getStopTimeout(), TimeUnit.MILLISECONDS);
-					while (!countdown.isDone() && (!is_stop_receiving)) {
-						response_char = in_stream.read();
-						if (response_char != -1) {
-							response.append((char) response_char);
-						} else {
-							// LOG.warn("End of stream reached before the stop timeout established in the data source has elapsed");
-							is_stop_receiving = true;
-						}
-					}
-					scheduler.shutdown();
-					break;
 				default:
 					break;
 				}
 			}
-
 		} catch (SocketTimeoutException ste) {
 			throw new LocalizableException(new LocalizableMessage(
-					"event.socketComm.uncompleteResponse"));
+				"event.socketComm.uncompleteResponse"));
 		}
-
 		return response.toString();
 	}
 

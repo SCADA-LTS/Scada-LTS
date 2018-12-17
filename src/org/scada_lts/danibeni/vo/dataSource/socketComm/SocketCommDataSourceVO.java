@@ -127,8 +127,7 @@ public class SocketCommDataSourceVO<T extends SocketCommDataSourceVO<?>>
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", host + ":" + port);
 	}
 
 	@Override
@@ -168,13 +167,11 @@ public class SocketCommDataSourceVO<T extends SocketCommDataSourceVO<?>>
 	@JsonRemoteProperty
 	private String hexValue = "";
 	@JsonRemoteProperty
-	private int stopTimeout = 100;
-	@JsonRemoteProperty
 	private String initString = "";
 	@JsonRemoteProperty
 	private int bufferSize = 2;
 	@JsonRemoteProperty
-	private boolean quantize;
+	private boolean oneByOne;
 
 	@Override
 	public void validate(DwrResponseI18n response) {
@@ -449,25 +446,6 @@ public class SocketCommDataSourceVO<T extends SocketCommDataSourceVO<?>>
 		return hexValue;
 	}
 
-	/**
-	 * @brief Get the time limit to stop receiving characters from server .
-	 * 
-	 * @return Time to stop receiving characters value.
-	 */
-	public int getStopTimeout() {
-		return stopTimeout;
-	}
-
-	/**
-	 * @brief Set the time limit to stop receiving characters from server.
-	 * 
-	 * @param timeout
-	 *            New Time to stop receiving characters value..
-	 */
-	public void setStopTimeout(int timeout) {
-		this.stopTimeout = stopTimeout;
-	}
-
 	public String getInitString() {
 		return initString;
 	}
@@ -497,12 +475,24 @@ public class SocketCommDataSourceVO<T extends SocketCommDataSourceVO<?>>
 		this.bufferSize = bufferSize;
 	}
 
-	public boolean isQuantize() {
-		return quantize;
+	/**
+	 * @brief Check if the datapoints from the raw TCP socket are read one by one, opening and
+	 * close the connection to the datasource TCP server for each datapoint.
+	 * 
+	 * @return True if datasource is set to open and close the connection to the TCP server
+	 * 		   for each datapoint 
+	 */
+	public boolean isOneByOne() {
+		return oneByOne;
 	}
 
-	public void setQuantize(boolean quantize) {
-		this.quantize = quantize;
+	/**
+	 * @brief Change the state of datapoint read one by one
+	 * 
+	 * @param oneByOne New state for datapoint read one by one
+	 */
+	public void setOneByOne(boolean oneByOne) {
+		this.oneByOne = oneByOne;
 	}
 
 	@Override
@@ -530,14 +520,12 @@ public class SocketCommDataSourceVO<T extends SocketCommDataSourceVO<?>>
 				charX);
 		AuditEventType.addPropertyMessage(list, "dsEdit.socketComm.hexValue",
 				hexValue);
-		AuditEventType.addPropertyMessage(list,
-				"dsEdit.socketComm.stopTimeout", hexValue);
 		AuditEventType.addPropertyMessage(list, "dsEdit.socketComm.initString",
 				initString);
 		AuditEventType.addPropertyMessage(list, "dsEdit.socketComm.bufferSize",
 				bufferSize);
 
-		AuditEventType.addPropertyMessage(list, "dsEdit.quantize", quantize);
+		AuditEventType.addPropertyMessage(list, "dsEdit.socketComm.oneByOne", oneByOne);
 		// DBH: Added property sameFormat to check if the response and command
 		// have the same format
 		AuditEventType.addPropertyMessage(list, "dsEdit.socketComm.sameFormat",
@@ -575,16 +563,13 @@ public class SocketCommDataSourceVO<T extends SocketCommDataSourceVO<?>>
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.socketComm.hexValue", from.getHexValue(), hexValue);
 		AuditEventType.maybeAddPropertyChangeMessage(list,
-				"dsEdit.socketComm.stopTimeout", from.getStopTimeout(),
-				stopTimeout);
-		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.socketComm.initString", from.getInitString(),
 				initString);
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.socketComm.bufferSize", from.getBufferSize(),
 				bufferSize);
-		AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.quantize",
-				from.isQuantize(), quantize);
+		AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.socketComm.oneByOne",
+				from.isOneByOne(), oneByOne);
 		// DBH: Change property sameFormat
 		AuditEventType
 				.maybeAddPropertyChangeMessage(list,
@@ -611,9 +596,8 @@ public class SocketCommDataSourceVO<T extends SocketCommDataSourceVO<?>>
 		out.writeInt(charStopMode);
 		SerializationHelper.writeSafeUTF(out, charX);
 		SerializationHelper.writeSafeUTF(out, hexValue);
-		out.writeInt(stopTimeout);
 		out.writeInt(bufferSize);
-		out.writeBoolean(quantize);
+		out.writeBoolean(oneByOne);
 		// DBH: Write same command and response format check to BLOB field into
 		// database
 		out.writeBoolean(sameFormat);
@@ -637,9 +621,8 @@ public class SocketCommDataSourceVO<T extends SocketCommDataSourceVO<?>>
 			charStopMode = in.readInt();
 			charX = SerializationHelper.readSafeUTF(in);
 			hexValue = SerializationHelper.readSafeUTF(in);
-			stopTimeout = in.readInt();
 			bufferSize = in.readInt();
-			quantize = in.readBoolean();
+			oneByOne = in.readBoolean();
 			// DBH: Read the field containing if the command and response format
 			// are the same
 			sameFormat = in.readBoolean();

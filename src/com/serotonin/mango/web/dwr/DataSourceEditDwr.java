@@ -2789,8 +2789,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 			int updatePeriods, int updatePeriodType, String host, int port,
 			int timeout, int retries, int commandFormat, int stopMode,
 			int nChar, int charStopMode, String charX, String hexValue,
-			int stopTimeout, String initString, int bufferSize,
-			boolean quantize, boolean sameFormat) {
+			String initString, int bufferSize,
+			boolean oneByOne, boolean sameFormat) {
 
 		SocketCommDataSourceVO ds = (SocketCommDataSourceVO) Common.getUser()
 				.getEditDataSource();
@@ -2812,10 +2812,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		ds.setCharStopMode(charStopMode);
 		ds.setCharX(charX);
 		ds.setHexValue(hexValue);
-		ds.setStopTimeout(stopTimeout);
 		ds.setInitString(initString);
 		ds.setBufferSize(bufferSize);
-		ds.setQuantize(quantize);
+		ds.setOneByOne(oneByOne);
 
 		return tryDataSourceSave(ds);
 	}

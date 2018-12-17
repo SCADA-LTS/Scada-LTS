@@ -21,7 +21,7 @@
 <p>
 This data source is ready to connect and get all the data from a service listening to sockect connections at a concrete <b>Port</b> of a server <b>Host</b>.
 
-Two operations modes available for this data source: 
+Two operations modes are available for this data source: 
 </p>
 <ol>
 <li>Command sending and response receiving</li>
@@ -30,21 +30,34 @@ Two operations modes available for this data source:
 
 <h3>Command sending and response receiving</h3>
 <p>
-This operation mode is based on the commands sending which are configured on each data source point. Each command is sent to the server,
+This operation mode is based on sending commands which are configured on each data source point. Each command is sent to the server,
 followed by one or more delimiter characters according to the server data format(<b>Frame format for command</b>). Once the command has
-been sent, the server response is analyzed to get the data that fulfill the condition established by the <b>Stop Mode</b> parameter. This stop condition could be the same used for the command sending or a
-customized one. There are two ways to customize the stop mode: by using ASCCI characters or an hexadecimal value.
+been sent, the server response is analyzed to get the data that fulfill the condition established by the <b>Stop Mode</b> parameter. 
+This stop condition could be the same used for command sending or a customized one. 
 </p>
+<p>
+If the response stop condition is different from the defined in <b>Frame format for command</b> parameter, the user can select between three different
+options for response stop conditions, including:
+</p>
+<ul>
+<li>
+<b>Until Characters</b> option if the response stop condition is a concrete character of set of characters, that can be ASCII Character(s) or
+Hexadecimal Value, depending on the value of the parameter <b>Character Mode</b>.
+</li>
+<li>
+<
+</li>
+</ul>
 <p>
 In this operation mode, it is possible to configure each data point to send up to three consecutive commands to get the desired response. if the <b>Number of commands</b> configured in the data point is greater than one,
 the response received from the server is compared to the <b>Expected response for first command</b>. If both match, a <b>Second Command</b> is sent, repeating this process in case the number of commands is greater than two. Conversely,
-if the captured response does not match the expected one, an error arises indicating this circumstance. The option of having more than one command into a data point has been included to give some kind of flexibility to this data source. 
-requires of more than one command to provide the sought response. 
+if the captured response does not match the expected one, an error arises indicating this circumstance. The option of having more than one command into a data point has been included to give some kind of flexibility to those data sources
+that require more than one command to provide the sought response. 
 </p>
 <h3>Periodically data receiving</h3>
 <p>
 The periodically data receiving operation mode is based on the periodic receiving of data from the server. This mode is active when the <b>Number of commands</b> field in the data source points have a zero value, indicating that no command has been configured. 
-In this case no command fields are shown. The data received from the server are captured periodically, and the values to store into the data points are selected by regular expressions.
+In this case no command fields are shown. This operation mode is indicated for the case that some of the desired data are directly provided by the server without receiving any command. The obtained values are stored into the data points by regular expressions.
 </p>
 
 <h3>Configuration</h3>
@@ -56,9 +69,16 @@ the maximum number of connection <b>Retries</b> to the server in case of previou
 The communication with the server is configured based on the usual parameters used to establish a socket connection: <b>Host</b> name where the service is running, and <b>Port</b> number where that service is listening to new connections.
 </p>
 <p>
+The <b>Datapoint read one by one</b> parameter must be checked if the Socket server needs the socket connection to be opened and close for every datapoint. By default, this option is unchecked, indicating that a unique connection is open for each poll, 
+retrieving the data for the configured datapoints from the server, and closing the connection when all datapoints have been processed. 
+</p>
+<p>
 Most of the socket communication systems use carriage return (\r) and line feed (\n) characters to indicate the command and response end. To make it simple, this data source has a <b>Frame format for command</b> parameter that give the option to
-end the command to send to the server with some combination of carriage return and line feed characters. These same characters can be used to indicate the end of the expected response from the server by checking the <b>Same format for commands
-and responses</b> box. In case this box is not checked, the <b>Stop Mode</b> parameter is used to determine the final characters to include in the expected response. There are two possibilities:
+end the command with some combination of carriage return and line feed characters. These same characters can be used to indicate the end of the expected response from the server by checking the <b>Same format for commands
+and responses</b> box. 
+</p>
+<p>
+In case this box is not checked, the <b>Stop Mode</b> parameter is used to determine the final characters to include in the expected response. In that case, there are two possibilities:
 </p>
 <ul>
 <li>

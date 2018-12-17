@@ -390,5 +390,13 @@
   <item id="amqpDS">
     <relation id="amqpPP"/>
   </item>
+  
+  <item id="socketCommDS">
+  	<relation id="socketCommPP" />
+  </item>
+  
+  <item id="socketCommPP">
+  	<relation id="socketCommDS" />
+  </item>
 
 </doxManifest>
