@@ -21,6 +21,7 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.workdomain.event.EventExporter;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -326,7 +327,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_GRIDLINE_COLOUR, "silver");
 
-		DEFAULT_VALUES.put(ALARM_EXPORT_TYPE, 1);
+		DEFAULT_VALUES.put(ALARM_EXPORT_TYPE, EventExporter.DEFAULT);
 		DEFAULT_VALUES.put(ALARM_EXPORT_HOST, "localhost");
 		DEFAULT_VALUES.put(ALARM_EXPORT_PORT, 5672);
 		DEFAULT_VALUES.put(ALARM_EXPORT_VIRTUAL, "/ScadaLTSEvents");

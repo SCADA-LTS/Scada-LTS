@@ -201,10 +201,11 @@ public class AlarmListComponent extends CustomComponent {
     }
 
     private static final long serialVersionUID = -1;
-	private static final int version = 2;
+	private static final int version_1 = 1;
+	private static final int version_2 = 2;
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.writeInt(version);
+		out.writeInt(version_2);
 		out.writeInt(minAlarmLevel);
 		SerializationHelper.writeSafeUTF(out, messageContent);
 		out.writeInt(maxListSize);
@@ -222,7 +223,7 @@ public class AlarmListComponent extends CustomComponent {
 		int ver = in.readInt();
 		// Switch on the version of the class so that version changes can be
 		// elegantly handled.
-		if (ver == version) {
+		if (ver == version_1) {
 			minAlarmLevel = in.readInt();
 			maxListSize = in.readInt();
 			width = in.readInt();
@@ -231,7 +232,7 @@ public class AlarmListComponent extends CustomComponent {
 			hideTimestampColumn = in.readBoolean();
 			hideInactivityColumn = in.readBoolean();
 			hideAckColumn = in.readBoolean();
-		} else if (ver == version) {
+		} else if (ver == version_2) {
 			minAlarmLevel = in.readInt();
 			messageContent = SerializationHelper.readSafeUTF(in);
 			maxListSize = in.readInt();
