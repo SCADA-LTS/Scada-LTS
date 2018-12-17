@@ -71,7 +71,7 @@ public class View implements Serializable, JsonSerializable {
 	private List<ViewComponent> viewComponents = new CopyOnWriteArrayList<ViewComponent>();
 	private int anonymousAccess = ShareUser.ACCESS_NONE;
 	private List<ShareUser> viewUsers = new CopyOnWriteArrayList<ShareUser>();
-	
+
 	public void addViewComponent(ViewComponent viewComponent) {
 		// Determine an index for the component.
 		int min = 0;
@@ -153,6 +153,7 @@ public class View implements Serializable, JsonSerializable {
 		for (ViewComponent viewComponent : viewComponents)
 			viewComponent.validateDataPoint(owner, makeReadOnly);
 	}
+
 
 	public String getBackgroundFilename() {
 		return backgroundFilename;
