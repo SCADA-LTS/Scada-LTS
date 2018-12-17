@@ -10,7 +10,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.scada_lts.dao.DAO;
 
 /**
  * Class responsible for selenium test with two cases
@@ -47,8 +46,6 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
 
         openLoginPageAndLogInAction();
 
-        //logOut();
-
         closeBrowser();
 
     }
@@ -62,22 +59,10 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
 
         openLoginPageAndLogInAction();
 
-        //logOut();
-
         closeBrowser();
 
     }
-    private void openWebBrowser(){
 
-        driver = new FirefoxDriver();
-
-    }
-
-    private void closeBrowser(){
-
-        driver.quit();
-
-    }
 
     private boolean openLoginPageAndLogInAction(){
 
@@ -120,5 +105,17 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
         }
 
         return true;
+    }
+
+    protected void openWebBrowser(){
+
+        driver = new FirefoxDriver();
+
+    }
+
+    protected void closeBrowser(){
+
+        driver.quit();
+
     }
 }

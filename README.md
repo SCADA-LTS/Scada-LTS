@@ -78,6 +78,59 @@ For deploy war file to tomcat we use `ant clean_and_tomcat_deploy` task on Windo
 
 After deploying you can run tomcat by supplying either `ant run-debug` on windows or `ant run-debug-linux` on Linux
 
+### Selenium Tests - GUI Automation tests
+
+1. Needed libraries.
+
+After checkout sources, as mentioned in 'Building from sources' section above using point 1, we have selenium directory.
+Here we have one file:
+- selenium-java-3.141.59.zip <- inside we have jar files which we have add to our project.
+We have additional geckodriver file ,responsible for open web browser.
+
+2. Needed imports.
+
+Here we can have situation when we don't have needed jar files or libraries.
+Please unzip selenium-java-3.141.59.zip in the same one directory.
+We need, to working this test, only 'client-combined-3.141.59.jar' file, from unziped file.
+Please add mentioned jar file 'client...' as additional library to the project.
+Right now we should have all of imported classes.
+
+3. Simple example.
+
+Under package 'selenium', we have 'AntSeleniumTest_LogIn_And_LogInWithFailUser.java'.
+This java class had two cases of test.
+
+First use case - user exist in database:
+a) open webbrowser and in webbrowser put url address to open ScadaBR login side,
+b) put data like username and password into responsible fields,
+c) run login action,
+d) after succesfully point c) we should see our default side of ScadaLTS application.
+e) the end step is close webbrowser.
+
+Second use case - user not exist in database:
+a) open webbrowser and in webbrowser put url address to open ScadaBR login side,
+b) put data like username and password into responsible fields,
+c) run login action,
+d) after unsuccesfully point c) we have information that this username not exist in database,
+e) the end step is close webbrowser.
+
+4. Additional Ant Task to run test.
+
+In build.xml, we have task named 'AntSelenium_UserLogIn'. Before run , we need run some other ant tasks :
+- `ant clean`,
+- `ant build`,
+- `ant war`,
+- 'ant clean_and_tomcat_deploy'.
+
+Without ant we can run our apache-tomcat server. Right now we can run mentioned task 'ant AntSelenium_UserLogIn' from terminal.
+
+5.Problems and issues
+
+First of all , I had problem on Ubuntu when I tried run 'ant AntSelenium_UserLogIn' task. I saw messages in console which told me,
+that I don't have GTK+ package on my machine, so I solved this one by install GTK+ package.
+
+I didn't have any issues more, but If you have someone else, please contact with us.
+
 ## Bugs and feature requests
 
 Have a bug or a feature request? Please first read the [issue guidelines](https://github.com/twbs/bootstrap/blob/master/CONTRIBUTING.md#using-the-issue-tracker) and search for existing and closed issues. If your problem or idea is not addressed yet, [please open a new issue](https://github.com/sdtabilit/Scada-LTS/issues/new).

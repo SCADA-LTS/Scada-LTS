@@ -6,9 +6,6 @@
 	<property name="target" value="1.8"/>
 	<property name="source" value="1.8"/>
 	<property name="env.CATALINA_HOME" value="${env.CATALINA_HOME}"/>
-	<!--
-	<property name="selenium.jars" value="your path to selenium directory ./selenium"/>
-	-->
    <path id="tomcat.ant.classpath">
 	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
    </path>
@@ -380,18 +377,13 @@
               	        needxmlfile="false">
 		</war>
 	</target>
-	<path id="classpath_jars">
-		<fileset dir="/home/mateusz/Downloads/selenium" includes="*.jar"/>
-	</path>
-<!--
-	<target name="AntSelenium_UserLogIn" depends="clean,build,war">
+
+	<target name="AntSelenium_UserLogIn" >
+
 		<junit printsummary="yes" haltonfailure="no">
-			<classpath location="WebContent/WEB-INF/lib/testng-7.0.0-beta1.jar" />
 			<formatter type="plain" usefile="false" />
 
-			<classpath refid="scadabr-1.1.0-RC.classpath"></classpath>
 			<classpath refid="Web App Libraries.libraryclasspath"/>
-			<classpath refid="classpath_jars"/>
 
 			<test name="selenium.AntSeleniumTest_LogIn_And_LogInWithFailUser"
 				  haltonfailure="yes">
@@ -399,19 +391,6 @@
 		</junit>
 
 	</target>
-	<target name="AntSelenium_UserLogIn2" depends="clean,build,war">
-		<junit printsummary="yes" haltonfailure="no">
-			<formatter type="plain" usefile="false" />
-
-			<classpath refid="scadabr-1.1.0-RC.classpath"></classpath>
-			<classpath refid="classpath_jars"/>
-			<test name="selenium.AntSeleniumTest_LogIn_And_LogInWithFailUser"
-				  haltonfailure="yes">
-			</test>
-		</junit>
-
-	</target>
-	-->
 	<target name="junit">
 		
 		    <junit printsummary="yes" haltonfailure="no">
