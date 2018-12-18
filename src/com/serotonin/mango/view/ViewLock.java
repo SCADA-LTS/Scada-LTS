@@ -40,8 +40,10 @@ public class ViewLock implements States {
      *
      */
     @Override
-    public void nextState(View view) {
-        view.changeState(ViewUnlock.instance());
+    public void nextState(View view,String userName,String sessionId) {
+        view.changeState(ViewUnlock.instance(),
+                ((userName==null || userName=="")?null:userName),
+                ((sessionId==null || sessionId=="")?null:sessionId));
         LOG.info(" Change state for "+ViewUnlock.instance().toString()+" to Lock");
     }
     public String toString(){

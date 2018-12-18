@@ -20,7 +20,6 @@ public interface States {
      *
      * @param view
      */
-    void nextState(View view
-    );
+    void nextState(View view,String userName,String sessionId);
 
 }

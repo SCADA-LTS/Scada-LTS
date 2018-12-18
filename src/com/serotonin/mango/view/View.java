@@ -55,7 +55,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class View implements Serializable, JsonSerializable {
 	private static final Log LOG = LogFactory.getLog(View.class);
 	public static final String XID_PREFIX = "GV_";
-	private transient States state;
+
 	private int id = Common.NEW_ID;
 	@JsonRemoteProperty
 	private String xid;
@@ -70,14 +70,29 @@ public class View implements Serializable, JsonSerializable {
 	
 	transient private int resolution = ResolutionView.R1600x1200;
 
+	private transient States state;
+
 	private int userId;
 	private List<ViewComponent> viewComponents = new CopyOnWriteArrayList<ViewComponent>();
 	private int anonymousAccess = ShareUser.ACCESS_NONE;
 	private List<ShareUser> viewUsers = new CopyOnWriteArrayList<ShareUser>();
 
-	public void changeState(States state) {
-		this.state = state;
+	public void changeState(States viewState, String userName, String sessionId) {
+
+		updateBlockListView(viewState,userName,sessionId);
+
+		this.state = viewState;
+
 		LOG.info(" State has been changed to "+this.state.toString());
+	}
+	private void updateBlockListView(States viewState,String userName,String sessionId){
+
+		if( viewState instanceof ViewUnlock) {
+			AvailableUnavailableViews.removeViewFromBlockList(getXid());
+		}
+		else {
+			AvailableUnavailableViews.addViewToBlockList(getXid(),userName,sessionId);
+		}
 	}
 	public States getState( ) {
 		if(state==null)

@@ -53,6 +53,7 @@ public class AvailableUnavailableViews {
      * @param viewXid
      */
     public static void removeViewFromBlockList(String viewXid){
+
         Common.ctx.getCtx().removeAttribute(viewXid);
     }
 

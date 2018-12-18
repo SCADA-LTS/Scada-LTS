@@ -102,8 +102,7 @@ public class ViewEditContorller {
             view.setXid(new ViewDao().generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
-        AvailableUnavailableViews.addViewToBlockList(view.getXid(),user.getUsername(),request.getSession().getId());
-        view.changeState(ViewLock.instance());
+        view.changeState(ViewLock.instance(),user.getUsername(),request.getSession().getId());
         user.setView(view);
         view.validateViewComponents(false);
 
@@ -139,10 +138,9 @@ public class ViewEditContorller {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
-        AvailableUnavailableViews.removeViewFromBlockList(form.getView().getXid());
         User user = ScriptSessionAndUsers.getUserForScriptSessionId(form.getDwrScriptSessionid(),request);
         View view = user.getView();
-        view.changeState(ViewUnlock.instance());
+        view.changeState(ViewUnlock.instance(),null,null);
         copyViewProperties(view, form.getView());
         form.setView(view);
 
@@ -169,9 +167,8 @@ public class ViewEditContorller {
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
-        AvailableUnavailableViews.removeViewFromBlockList(form.getView().getXid());
         View view = user.getView();
-        view.changeState(ViewUnlock.instance());
+        view.changeState(ViewUnlock.instance(),null,null);
         form.setView(view);
 
         return getSuccessRedirectView("viewId=" + form.getView().getId());
