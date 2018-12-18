@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
  * -get details of user who locked view(etc. who work with view at the time when somebody else tries edit view)
  * -break edit action - in other words take control on view with show information for other user about this action
  *
- * @author Mateusz Hyski hyski.mateusz@gmail.com
+ * @author Mateusz Hyski {@link "mailto:mateusz.hyski@softq.pl;hyski.mateusz@gmail.com","ScadaLTS"}
  */
 @Controller
 public class LockViewsAPI {

@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Puts and remove in application scope data like viewXid and instance of  ViewLockedBy class
  *
- * @author Mateusz Hyski mateusz.hyski@softq.pl
+ * @author Mateusz Hyski {@link "mailto:mateusz.hyski@softq.pl;hyski.mateusz@gmail.com","ScadaLTS"}
  */
 public class AvailableUnavailableViews {
 
@@ -91,7 +91,7 @@ public class AvailableUnavailableViews {
      * @param xid
      * @return boolean
      */
-    public static boolean checkAvailabibityView(String xid){
+    public static boolean checkAvailabityView(String xid){
 
         return isViewIsInLockedRegistry(xid);
     }
@@ -107,7 +107,7 @@ public class AvailableUnavailableViews {
     }
 
     /**
-     * check view by xidName in 'locked resistry'
+     * check view by xidName in 'locked registry'
      *
      * @param xidName
      * @return boolean

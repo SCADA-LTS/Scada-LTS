@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * ScriptSessionAndUsers responsible for managing  User copies specific given browser "tab" (DWR Script Session)
  * User copies are stored in {@value #SCRIPTSESSION_USER} attribute of DWR script session
  *
- * @author Mateusz Hyski mateusz.hyski@softq.pl
+ * @author Mateusz Hyski {@link "mailto:mateusz.hyski@softq.pl;hyski.mateusz@gmail.com","ScadaLTS"}
  */
 public class ScriptSessionAndUsers {
 

@@ -1,10 +1,12 @@
-package com.serotonin.mango.view;
+package com.serotonin.mango.viewInterfaces;
 
 
 /**
  * Responsibility
  * - change state
  * - get status about state
+ *
+ * @author Mateusz Hyski {@link "mailto:mateusz.hyski@softq.pl;hyski.mateusz@gmail.com","ScadaLTS"}
  */
 public interface States {
 
@@ -18,8 +20,10 @@ public interface States {
     /**
      * change state of view
      *
-     * @param view
+     * @param viewState
+     * @param userName
+     * @param sessionId
      */
-    void nextState(View view,String userName,String sessionId);
+    void changeState(ViewState viewState, String userName, String sessionId);
 
 }

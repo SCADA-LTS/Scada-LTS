@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * -get details of user who locked view(etc. who work with view at the time when somebody else tries edit view)
  * -break edit action - in other words take control on view with show information for other user about this action
  *
- * @author Mateusz Hyski hyski.mateusz@gmail.com
+ * @author Mateusz Hyski {@link "mailto:mateusz.hyski@softq.pl;hyski.mateusz@gmail.com","ScadaLTS"}
  */
 @Component
 public class Facade {
@@ -29,7 +29,7 @@ public class Facade {
         String NOT_AVAILABLE = "1";
         String AVAILABLE = "0";
 
-        return AvailableUnavailableViews.checkAvailabibityView(xidName)?NOT_AVAILABLE:AVAILABLE;
+        return AvailableUnavailableViews.checkAvailabityView(xidName)?NOT_AVAILABLE:AVAILABLE;
     }
 
     /**

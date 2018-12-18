@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 /**
  * Here we have data like username and viewId and time since view is locked
  *
- * @author Mateusz Hyski mateusz.hyski@softq.pl
+ * @author Mateusz Hyski {@link "mailto:mateusz.hyski@softq.pl;hyski.mateusz@gmail.com","ScadaLTS"}
  */
 public class LockedViews {
 

@@ -1,26 +1,36 @@
 package com.serotonin.mango.view;
 
+import com.serotonin.mango.viewInterfaces.ViewState;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * ViewLock depends on State interface and is responsible only to set view to
- * available/unavailable state to edit. To change state of view we change nextState method
+ * ViewLock depends on State interface and is responsible only to give information about
+ * available/unavailable state to edit. To change state of view we use ViewUnlock interface in viewInterfaces package
+ *
+ * @author Mateusz Hyski {@link "mailto:mateusz.hyski@softq.pl;hyski.mateusz@gmail.com","ScadaLTS"}
  */
-public class ViewLock implements States {
+public class ViewLock  implements ViewState {
 
     private static final Log LOG = LogFactory.getLog(ViewLock.class);
 
     /**
-     * default state of this is unlock state, this state gives blocks view possibility to edit by user
+     * default state of this is unlock state, this state gives blocks view possibility to edit by user.
+     * This VIEW_IS_LOCKED variable can be initialized also in (point 1) block
      */
-    private final boolean VIEW_IS_LOCKED =true;
+    private final boolean VIEW_IS_LOCKED =Boolean.TRUE;
+
+    //point 1
+    {
+        //that is example
+        //VIEW_IS_LOCKED = connection to other business logic
+    }
 
     private static ViewLock instance = new ViewLock();
 
     private ViewLock() { }
 
-    public static States instance() {
+    public static ViewState instance() {
         return instance;
     }
 
@@ -31,21 +41,10 @@ public class ViewLock implements States {
      */
     @Override
     public boolean isBlocked() {
-        return VIEW_IS_LOCKED;
+        return instance.VIEW_IS_LOCKED;
     }
 
 
-    /**
-     * change state of view
-     *
-     */
-    @Override
-    public void nextState(View view,String userName,String sessionId) {
-        view.changeState(ViewUnlock.instance(),
-                ((userName==null || userName=="")?null:userName),
-                ((sessionId==null || sessionId=="")?null:sessionId));
-        LOG.info(" Change state for "+ViewUnlock.instance().toString()+" to Lock");
-    }
     public String toString(){
         return new StringBuilder()
                 .append("View is locked").toString();
