@@ -19,10 +19,11 @@
 package com.serotonin.mango.vo;
 
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.common.ElementType;
 
 public class UserComment {
-    public static final int TYPE_EVENT = 1;
-    public static final int TYPE_POINT = 2;
+    public static final int TYPE_EVENT = ElementType.EVENT;
+    public static final int TYPE_POINT = ElementType.DATA_POINT;
 
     // Configuration fields
     private int userId;
