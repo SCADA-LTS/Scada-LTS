@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.mango.service.UserLockService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -45,6 +46,9 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 
 public class DataPointDetailsController extends ParameterizableViewController {
+
+	UserLockService userLockService = new UserLockService();
+
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -156,6 +160,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 				model.put("flipbookLimit", 10);
 
 			model.put("currentXid", point.getXid());
+			model.put("pointLock", userLockService.checkIfDataPointIsLocked(point.getId()));
 		}
 
 		// Set the point in the session for the dwr.

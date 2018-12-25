@@ -41,6 +41,16 @@
 			search_contains: true,
 			width: "400px"
        	});
+
+        checkIfPointIsLocked();
+    }
+
+    function checkIfPointIsLocked() {
+        if(${pointLock}) {
+            document.getElementById("lockPoint").checked = true;
+        } else {
+            document.getElementById("lockPoint").checked = false;
+        }
     }
     
     //
@@ -201,6 +211,10 @@
               </td>
             </tr>
             <tr>
+              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+              <td class="formField">${point.xid}</td>
+            </tr>
+            <tr>
               <td class="formLabelRequired"><fmt:message key="common.value"/></td>
               <td id="pointValue" class="formField"></td>
             </tr>
@@ -216,8 +230,10 @@
               <td id="pointChange" class="formField"></td>
             </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
-              <td class="formField">${point.xid}</td>
+                <td class="formLabelRequired">Point lock:</td>
+                <td>
+                    <input type="checkbox" id="lockPoint" class="formField"/>
+                </td>
             </tr>
             <tr><td colspan="2" id="pointMessages"></td></tr>
           </table>

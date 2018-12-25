@@ -27,9 +27,9 @@ public class UserLockService {
         userLock.setTimestamp(System.currentTimeMillis());
 
         //todo fix construktor
-        EventInstance eventInstance = new EventInstance(EventType.EventSources.DATA_POINT, System.currentTimeMillis(), false, AlarmLevels.INFORMATION, null, null);
+        //EventInstance eventInstance = new EventInstance(EventType.EventSources.DATA_POINT, System.currentTimeMillis(), false, AlarmLevels.INFORMATION, null, null);
 
-        eventService.saveEvent(eventInstance);
+        //eventService.saveEvent(eventInstance);
 
         userLockDAO.insertUserLock(userLock);
     }
@@ -42,9 +42,9 @@ public class UserLockService {
         userLock.setTimestamp(System.currentTimeMillis());
 
         //todo fix construktor
-        EventInstance eventInstance = new EventInstance(EventType.EventSources.DATA_POINT, System.currentTimeMillis(), false, AlarmLevels.INFORMATION, null, null);
+        //EventInstance eventInstance = new EventInstance(EventType.EventSources.DATA_POINT, System.currentTimeMillis(), false, AlarmLevels.INFORMATION, null, null);
 
-        eventService.saveEvent(eventInstance);
+        //eventService.saveEvent(eventInstance);
 
         userLockDAO.deleteUserLock(userLock);
     }
@@ -54,7 +54,7 @@ public class UserLockService {
         if (!(userLockDAO.selectUserLock(ElementType.DATA_POINT, dataPointId)==null)){
             result = true;
         } else {
-         result = false;
+            result = false;
         }
         return result;
     }
