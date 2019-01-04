@@ -1,15 +1,10 @@
 package selenium;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
 
 /**
  * Class responsible for selenium test with two cases
@@ -25,97 +20,130 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
     private static final Log LOG = LogFactory.getLog(AntSeleniumTest_LogIn_And_LogInWithFailUser.class);
 
     private static String PORT = "8080";
-    private static String URL = "localhost:"+PORT;
+    private static String URL = "localhost:" + PORT;
     private static String SCADA_PAGE = "login.htm";
     private static String SCADA_APPLICATION = "ScadaBR";
-    private static String PROTOCOL= "http";
-    private static String SCADALTS = PROTOCOL+"://"+URL+"/"+SCADA_APPLICATION+"/"+SCADA_PAGE;
+    private static String PROTOCOL = "http";
+    private static String SCADALTS = PROTOCOL + "://" + URL + "/" + SCADA_APPLICATION + "/" + SCADA_PAGE;
 
-    private static String USERNAME=null;
-    private static String SECRET=null;
+    private static String USERNAME = null;
+    private static String SECRET = null;
 
-    WebDriver driver;
+    private OpenCloseWebBrowser openCloseWebBrowser;
+    private Base baseMethods;
 
-    @Test
-    public void loginAsUserNameWhichExist() {
+    //*******************
+    //settters -- getters
 
-        USERNAME = "admin";
-        SECRET = "admin";
+    public Base getBaseMethods() {
+        return baseMethods;
+    }
 
-        openWebBrowser();
+    protected void setUserName(String userName){
+
+        this.USERNAME = userName;
+    }
+    protected void setSecret(String secret){
+
+        this.SECRET = secret;
+    }
+    protected String getUserName(){
+        return this.USERNAME;
+    }
+    protected String getSecret(){
+
+        return this.SECRET;
+    }
+
+    //end settters -- getters
+    //*******************
+
+
+    public AntSeleniumTest_LogIn_And_LogInWithFailUser(Base baseMethods) {
+        this.baseMethods = baseMethods;
+    }
+
+    private void setUpEnvironment() {
+        openCloseWebBrowser = new OpenCloseWebBrowser(new Base());
+        openCloseWebBrowser.openWebBrowser();
+        getBaseMethods().setDriver(openCloseWebBrowser.getDriver());
+
+    }
+    private void turnOffEnvironment(){
+        getBaseMethods().setDriver(null);
+        openCloseWebBrowser.closeBrowser();
+    }
+
+    public void loginAsUserNameWhichExistWithoutWebBrowserOpenClose(){
+        if(USERNAME == null) {
+            setUserName("admin");
+            setSecret("admin");
+        }
 
         openLoginPageAndLogInAction();
 
-        closeBrowser();
+        getBaseMethods().waitBy2Second();
+    }
+    @Test
+    public void loginAsUserNameWhichExist() {
+
+        setUpEnvironment();
+
+        loginAsUserNameWhichExistWithoutWebBrowserOpenClose();
+
+
+        turnOffEnvironment();
 
     }
     @Test
     public void loginAsUserNameWhichNotExist() {
 
-        USERNAME = "admin2";
-        SECRET = "admin";
+        setUpEnvironment();
 
-        openWebBrowser();
-
+        if(USERNAME == null) {
+            setUserName("admin2");
+            setSecret("admin");
+        }
         openLoginPageAndLogInAction();
 
-        closeBrowser();
+        turnOffEnvironment();
 
     }
 
 
     private boolean openLoginPageAndLogInAction(){
 
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-        driver.get(SCADALTS);
+        getBaseMethods().getDriver().manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        getBaseMethods().getDriver().get(SCADALTS);
 
-        logIn(USERNAME,SECRET);
-
+        getBaseMethods().waitBy2Second();
+        logIn(getUserName(),getSecret());
+        getBaseMethods().waitBy2Second();
         boolean userLoggedIn =checkThatUserExist();
 
         return userLoggedIn;
 
     }
     private void logIn(String userName,String password){
-
+        LOG.info("login action");
         String USERNAME_FIELD = "username";
         String PASSWORD_FIELD = "password";
         String LOGIN_BUTTON = "login";
 
-        driver.manage().timeouts().implicitlyWait(500, TimeUnit.SECONDS);
-        driver.findElement(By.id(USERNAME_FIELD)).sendKeys(userName);
+        getBaseMethods().findElementByIdAndPutData(USERNAME_FIELD,userName);
+        getBaseMethods().waitBy1Second();
 
-        driver.manage().timeouts().implicitlyWait(500, TimeUnit.SECONDS);
-        driver.findElement(By.id(PASSWORD_FIELD)).sendKeys(password);
+        getBaseMethods().findElementByIdAndPutData(PASSWORD_FIELD,password);
+        getBaseMethods().waitBy1Second();
 
-        driver.manage().timeouts().implicitlyWait(500, TimeUnit.SECONDS);
-        driver.findElement(By.id(LOGIN_BUTTON)).click();
+        getBaseMethods().findElementByIdAndClickAction(LOGIN_BUTTON);
+        LOG.info("login action done");
     }
     private boolean checkThatUserExist(){
 
-        driver.manage().timeouts().implicitlyWait(500, TimeUnit.SECONDS);
-        List<WebElement> list = driver.findElements(By.tagName("div"));
-
-        for(WebElement elements:list){
-            String className = elements.getAttribute("class");
-            String text = elements.getText();
-            if(className.equals("formError"))
-                if(text.equals("Cannot find user Id"))
-                    return false;
-        }
-
-        return true;
-    }
-
-    protected void openWebBrowser(){
-
-        driver = new FirefoxDriver();
+        boolean finalResult = getBaseMethods().checkfinalMessageAfterAction("div","formError",FinalVariables.FINAL_MESSAGE_CANNOTFINDUSER);
 
     }
 
-    protected void closeBrowser(){
 
-        driver.quit();
-
-    }
 }

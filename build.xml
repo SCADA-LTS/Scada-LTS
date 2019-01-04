@@ -377,7 +377,9 @@
               	        needxmlfile="false">
 		</war>
 	</target>
-
+<!--
+*********************AUTOMATION TESTS*********************
+-->
 	<target name="AntSelenium_UserLogIn" >
 
 		<junit printsummary="yes" haltonfailure="no">
@@ -388,9 +390,43 @@
 			<test name="selenium.AntSeleniumTest_LogIn_And_LogInWithFailUser"
 				  haltonfailure="yes">
 			</test>
+
+
 		</junit>
 
 	</target>
+	<target name="AntSelenium_ImportDataAsJSON" >
+
+		<junit printsummary="yes" haltonfailure="no">
+			<formatter type="plain" usefile="false" />
+
+			<classpath refid="Web App Libraries.libraryclasspath"/>
+
+			<test name="selenium.Test_ImportDataAsJSON"
+				  haltonfailure="yes">
+			</test>
+
+		</junit>
+
+	</target>
+	<target name="AntSelenium_CreateProfile" >
+
+		<junit printsummary="yes" haltonfailure="no">
+			<formatter type="plain" usefile="false" />
+
+			<classpath refid="Web App Libraries.libraryclasspath"/>
+
+			<test name="selenium.Test_CreateProfile"
+				  haltonfailure="yes">
+			</test>
+
+		</junit>
+
+	</target>
+<!--
+*********************END OF AUTOMATION TESTS*********************
+-->
+
 	<target name="junit">
 		
 		    <junit printsummary="yes" haltonfailure="no">
