@@ -105,7 +105,7 @@
   <appender name="async" class="org.apache.log4j.AsyncAppender">
     <param name="LocationInfo" value="true"/>
     <appender-ref ref="logfile"/>
-`    <appender-ref ref="grove"/>
+    <appender-ref ref="grove"/>
   </appender>
 
   <appender name="modbusasync" class="org.apache.log4j.AsyncAppender">
