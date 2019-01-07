@@ -130,7 +130,7 @@
      fullVersion  = ''+parseFloat(navigator.appVersion); 
      majorVersion = parseInt(navigator.appVersion,10);
     }
-    
+
     function unshare() {
         ViewDwr.deleteViewShare(function() { window.location = 'views.shtm'; });
     }
@@ -171,7 +171,7 @@
 	}
 	
 	function fullScreen(){
-  	  	
+
 		document.getElementById('fsOut').style.display = "block";
 		document.getElementById('mainHeader').style.display = "none";
   	  	document.getElementById('subHeader').style.display = "none";
@@ -214,7 +214,7 @@
    		keyListen(evnt);
 	}
 
-	
+
 </script>
 
 	<table class="subPageHeader" id="graphical">

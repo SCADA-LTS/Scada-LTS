@@ -150,12 +150,13 @@ public class ViewDwr extends BaseDwr {
 	 * Retrieves point state for all points on a given view. This is the
 	 * monitoring version of the method. See below for the view editing version.
 	 * 
-	 * @param viewId
+	 * @param edit
 	 * @return
 	 */
 	@MethodFilter
 	public List<ViewComponentState> getViewPointData(boolean edit) {
 		User user = Common.getUser();
+
 		return getViewPointData(user, user.getView(), edit);
 	}
 
@@ -452,7 +453,7 @@ public class ViewDwr extends BaseDwr {
 	 * Allows the setting of a given data point. Overrides BaseDwr to resolve
 	 * the point view id.
 	 * 
-	 * @param pointId
+	 * @param viewComponentId
 	 * @param valueStr
 	 * @return
 	 */
