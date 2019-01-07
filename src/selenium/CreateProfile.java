@@ -15,17 +15,25 @@ public class CreateProfile {
     }
 
     @Test
-    public void createProfile(){
+    public void createProfile(String profileName){
 
         openProfileTab();
 
         openFormForNewProfile();
 
-        putProfileName();
+        putProfileName(profileName);
+
+        setDataSource();
+
+        setWatchList();
+
+        setGraphicsView();
 
         runSaveActionForNewProfile();
 
         checkFinalMessage();
+
+
 
     }
     private void openProfileTab(){
@@ -36,19 +44,34 @@ public class CreateProfile {
 
         getBaseMethods().waitBy1Second();
         getBaseMethods().findImgElementByTitleAndClickAction(FinalVariables.ADD_NEW_PROFILE);
-        getBaseMethods().waitBy10Second();
+        getBaseMethods().waitBy1Second();
     }
-    private void putProfileName(){
+    private void putProfileName(String profileName){
 
-        getBaseMethods().findElementByIdAndPutData(FinalVariables.TEXTFIELD_USER_PROFILE_NAME,"new_mateusz_profile");
+        getBaseMethods().findElementByIdAndPutData(FinalVariables.TEXTFIELD_USER_PROFILE_NAME,profileName);
     }
     private void runSaveActionForNewProfile(){
         getBaseMethods().waitBy1Second();
         getBaseMethods().findImgElementByTitleAndClickAction(FinalVariables.SAVE_NEW_PROFILE);
-        getBaseMethods().waitBy10Second();
+        getBaseMethods().waitBy2Second();
     }
     private void checkFinalMessage(){
 
         boolean result = getBaseMethods().checkfinalMessageAfterAction("td","formError",FinalVariables.FINAL_MESSAGE_PROFILEHASBEENADDED);
+    }
+    private void setDataSource(){
+        getBaseMethods().findElementByIdAndClickAction("dp5/2");
+
+        getBaseMethods().waitBy2Second();
+    }
+    private void setWatchList(){
+        getBaseMethods().findElementByIdAndClickAction("wl1/2");
+
+        getBaseMethods().waitBy2Second();
+    }
+    private void setGraphicsView(){
+        getBaseMethods().findElementByIdAndClickAction("vw3/2");
+
+        getBaseMethods().waitBy2Second();
     }
 }

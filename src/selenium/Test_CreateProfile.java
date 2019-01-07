@@ -23,7 +23,7 @@ public class Test_CreateProfile {
         logIn.loginAsUserNameWhichExistWithoutWebBrowserOpenClose();
 
         createProfile = new CreateProfile(logIn.getBaseMethods());
-        createProfile.createProfile();
+        createProfile.createProfile("new2_mateusz_profile");
 
         logOut = new Test_LogOut(logIn.getBaseMethods());
         logOut.LogOut();

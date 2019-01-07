@@ -3,6 +3,7 @@ package selenium;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
 import java.util.List;
 
@@ -57,9 +58,11 @@ class Base {
         return getDriver().findElements(By.tagName(tagName));
     }
     private WebElement findElementById(String id) {
+
         return getDriver().findElement(By.id(id));
     }
     private WebElement findElementByXPath(String xPath) {
+
         return getDriver().findElement(By.xpath(xPath));
     }
     protected void findElementByIdAndPutData(String id,String data){
@@ -72,6 +75,7 @@ class Base {
         findElementById(id).click();
     }
     protected void findElementByXPathAndClickAction(String xPath){
+
         findElementByXPath(xPath).click();
     }
     protected void findImgElementByTitleAndClickAction(String title) {
@@ -88,8 +92,14 @@ class Base {
                 if(text.equals(messageForUser))
                     return false;
         }
+        return true;
     }
+    protected void selectValueFromList(String selectName,String selectValue) {
 
+        Select profile = new Select(getDriver().findElement(By.id(selectName)));
+
+        profile.selectByVisibleText(selectValue);
+    }
 
 
 }

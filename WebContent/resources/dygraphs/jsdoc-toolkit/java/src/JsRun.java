@@ -16,6 +16,6 @@ public class JsRun {
 		System.arraycopy(args, 0, allArgs, 0, args.length);
 		System.arraycopy(jsargs, 0, allArgs, args.length ,jsargs.length);
 
-		org.mozilla.javascript.tools.shell.Main.main(allArgs);
+		//org.mozilla.javascript.tools.shell.Main.main(allArgs);
     }
 }

@@ -143,6 +143,8 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
 
         boolean finalResult = getBaseMethods().checkfinalMessageAfterAction("div","formError",FinalVariables.FINAL_MESSAGE_CANNOTFINDUSER);
 
+        return finalResult;
+
     }
 
 

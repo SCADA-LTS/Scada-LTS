@@ -423,6 +423,20 @@
 		</junit>
 
 	</target>
+	<target name="AntSelenium_CreateUser" >
+
+		<junit printsummary="yes" haltonfailure="no">
+			<formatter type="plain" usefile="false" />
+
+			<classpath refid="Web App Libraries.libraryclasspath"/>
+
+			<test name="selenium.Test_CreateUser"
+				  haltonfailure="yes">
+			</test>
+
+		</junit>
+
+	</target>
 <!--
 *********************END OF AUTOMATION TESTS*********************
 -->
