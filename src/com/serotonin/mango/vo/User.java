@@ -555,4 +555,5 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		// TODO Auto-generated method stub
 
 	}
+
 }
