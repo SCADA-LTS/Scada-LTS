@@ -32,8 +32,6 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
     private OpenCloseWebBrowser openCloseWebBrowser;
     private Base baseMethods;
 
-    //*******************
-    //settters -- getters
 
     public Base getBaseMethods() {
         return baseMethods;
@@ -54,10 +52,6 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
 
         return this.SECRET;
     }
-
-    //end settters -- getters
-    //*******************
-
 
     public AntSeleniumTest_LogIn_And_LogInWithFailUser(Base baseMethods) {
         this.baseMethods = baseMethods;
@@ -90,7 +84,6 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
         setUpEnvironment();
 
         loginAsUserNameWhichExistWithoutWebBrowserOpenClose();
-
 
         turnOffEnvironment();
 
