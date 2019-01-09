@@ -17,12 +17,28 @@
  */
 package org.scada_lts.dao;
 
+import com.serotonin.mango.vo.User;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.scada_lts.cache.DataSourcePointsCache;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static junit.framework.TestCase.assertTrue;
+
 /**
  * UserDAO test
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class UserDaoTest extends TestDAO {
+
+@RunWith(JUnit4.class)
+public class UserDaoTest/* extends TestDAO */{
 
 	private static final String USERNAME = "fUsername";
 	private static final String PASSWORD = "fPassword";
@@ -57,7 +73,16 @@ public class UserDaoTest extends TestDAO {
 	private static final int LIST_SIZE = 3;
 	private static final int ACTIVE_USERS = 2;
 
-	/*@Test
+
+	@Before
+	public void init() {
+		System.out.println("Before");
+	}
+	@After
+	public void finalized() {
+		//DataSourcePointsCache.getInstance().cacheFinalized();
+	}
+	@Test
 	public void test() {
 		UserDAO userDAO = new UserDAO();
 
@@ -168,5 +193,5 @@ public class UserDaoTest extends TestDAO {
 		//Delete
 		userDAO.delete(firstId);
 		assertTrue(userDAO.getUser(firstId) == null);
-	}*/
+	}
 }
