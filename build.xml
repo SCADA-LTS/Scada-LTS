@@ -190,6 +190,7 @@
 		<path refid="Selenium"/>
     </path>
 	<path id="Selenium">
+		<pathelement location="WebContent/WEB-INF/lib/client-combined-3.141.59.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/selenium-server-standalone-3.141.59.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/testng-7.0.0-beta1.jar"/>
 	</path>
