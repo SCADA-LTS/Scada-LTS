@@ -6,9 +6,12 @@
 	<property name="target" value="1.8"/>
 	<property name="source" value="1.8"/>
 	<property name="env.CATALINA_HOME" value="${env.CATALINA_HOME}"/>
+
    <path id="tomcat.ant.classpath">
 	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
    </path>
+
+
 	<target name="clean_and_tomcat_deploy" description="Deploy prepared WAR file from project dir to Tomcat webapps folder">
 		<delete file="${env.CATALINA_HOME}/webapps/ScadaBR.war"></delete>
 		<delete dir="${env.CATALINA_HOME}/webapps/ScadaBR"></delete>
@@ -464,7 +467,7 @@
 		        haltonfailure="no">
 		    </test>
 		    -->
-		    <!--<test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
+		    <test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
 		    	haltonfailure="yes">
 		    </test>
 		    <test name="org.scada_lts.dao.ViewHierarchyDaoTest"
@@ -488,17 +491,17 @@
 		        haltonfailure="yes">
 		    </test>
 		    -->
-<test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
-    haltonfailure="yes">
-</test>
+			<test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
+    			haltonfailure="yes">
+			</test>
 
-<test name="org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
-    haltonfailure="yes">
-</test>
-<!--
-<test name=""
-    haltonfailure="yes">
-</test> -->
+			<test name="org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
+    			haltonfailure="yes">
+			</test>
+			<!--
+			<test name=""
+    			haltonfailure="yes">
+			</test> -->
 		    	
 		    	
 		  </junit>
