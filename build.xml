@@ -467,7 +467,7 @@
 		        haltonfailure="no">
 		    </test>
 		    -->
-		    <test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
+		    <!--<test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
 		    	haltonfailure="yes">
 		    </test>
 		    <test name="org.scada_lts.dao.ViewHierarchyDaoTest"
