@@ -11,7 +11,19 @@
     </div>
     <br/>
     <collapse v-model="show">
-      <div class="well cmp_well_details_change">Hi there.</div>
+      <div class="well cmp_well_details_change">
+        <section>
+          <btn-group>
+
+            <div v-for="(item, index) in controls">
+              <btn block v-on:click="setAction(item.name)">{{item.name}}</btn>
+            </div>
+
+          </btn-group>
+          <hr/>
+          <alert>Selected: {{selectAction}}</alert>
+        </section>
+      </div>
     </collapse>
   </section>
 
@@ -36,7 +48,10 @@
         insideState: 'NOT-CHECKED',
         label: this.pLabel,
         timeRefresh: this.pTimeRefresh,
-        control: []
+        controls: [],
+        selectActionLevel1: 0,
+        selectActionLevel2: 0,
+        fruits: [{name:'apple'}, {name:'banana'}, {name:'orange'}]
       }
     },
     methods: {
@@ -44,34 +59,35 @@
         this.config.state.analiseInOrder.forEach(function(entry){
           //const apiCMPChek = `./api/cmp/check`;
           //axios.get(apiCMPChek).then(response => {
-            let response = {};
-            response.data = 0;
-            entry.toChecked.forEach(function(entryChecked){
-              const toRun = ""+response.data + entryChecked.equals;
+          let response = {};
+          response.data = 0;
+          entry.toChecked.forEach(function(entryChecked){
+            const toRun = ""+response.data + entryChecked.equals;
 
-              if (eval(toRun)) {
-                console.log('test');
-                this.insideState = entry.name;
-              };
-            });
+            if (eval(toRun)) {
+              console.log('test');
+              //this.insideState = entry.name;
+            };
+          });
           //}).catch(error => {
           //  console.log(error);
           //});
 
           //console.log(entry);
         })
+      },
+      setAction(action) {
+        alert(action);
       }
     },
     created() {
-      console.log(this.label);
-      console.log(this.timeRefresh);
-      console.log(this.strConfig);
+
       try {
         this.config = JSON.parse(this.strConfig);
+        this.controls = this.config.control.toChange;
       } catch (e) {
         console.log(e);
       }
-      console.log(this.config.state);
 
       if (this.timeRefresh) {
         setInterval(
