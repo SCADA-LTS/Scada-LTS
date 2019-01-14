@@ -1,6 +1,6 @@
 package selenium;
 
-import org.junit.Test;
+//
 
 public class CreateUser {
 
@@ -14,8 +14,8 @@ public class CreateUser {
         return baseMethods;
     }
 
-    @Test
-    public void createuser(String userName,String password,String email,String profile){
+ //   @Test
+    public void createuser(String userName, String password, String email, String profile){
 
         openUserTab();
 

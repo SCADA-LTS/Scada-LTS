@@ -65,7 +65,7 @@ class Base {
 
         return getDriver().findElement(By.xpath(xPath));
     }
-    protected void findElementByIdAndPutData(String id,String data){
+    protected void findElementByIdAndPutData(String id, String data){
 
         findElementById(id).sendKeys(data);
     }
@@ -79,27 +79,36 @@ class Base {
         findElementByXPath(xPath).click();
     }
     protected void findImgElementByTitleAndClickAction(String title) {
+
         findElementByXPath(FinalVariables.LINK_BY_TITLE.replace(FinalVariables.TITLE_TO_REPLACE,title)).click();
     }
-    protected boolean checkfinalMessageAfterAction(String tagName,String classNameText,String messageForUser){
+    protected void findImgElementByOnClickValue(String onclickValue){
 
-        List<WebElement> list = findElementsByTagName(tagName);
+        findElementByXPath(FinalVariables.LINK_BY_ONCLICKVALUE.replace(FinalVariables.ONCLICK_VALUE,onclickValue)).click();
+
+    }
+    protected void findInputElementWithTypeSubmit(String valueEegSave){
+
+        getDriver().findElement(By.cssSelector(FinalVariables.LINK_BY_INPUTVALUE+valueEegSave)).click();
+    }
+    protected boolean checkfinalMessageAfterAction(String tagNameEegtd, String classNameTextEegformError, String messageForUser){
+
+        List<WebElement> list = findElementsByTagName(tagNameEegtd);
 
         for(WebElement elements:list){
             String className = elements.getAttribute("class");
             String text = elements.getText();
-            if(className.equals(classNameText))
+            if(className.equals(classNameTextEegformError))
                 if(text.equals(messageForUser))
                     return false;
         }
         return true;
     }
-    protected void selectValueFromList(String selectName,String selectValue) {
+    protected void selectValueFromList(String definedElementIdInHTML, String selectedValueAsVisibleText) {
 
-        Select profile = new Select(getDriver().findElement(By.id(selectName)));
+        Select profile = new Select(getDriver().findElement(By.id(definedElementIdInHTML)));
 
-        profile.selectByVisibleText(selectValue);
+        profile.selectByVisibleText(selectedValueAsVisibleText);
     }
-
 
 }

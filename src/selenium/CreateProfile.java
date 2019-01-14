@@ -1,6 +1,6 @@
 package selenium;
 
-import org.junit.Test;
+//
 
 public class CreateProfile {
 
@@ -14,7 +14,7 @@ public class CreateProfile {
         return baseMethods;
     }
 
-    @Test
+  //  @Test
     public void createProfile(String profileName){
 
         openProfileTab();
@@ -60,6 +60,16 @@ public class CreateProfile {
         boolean result = getBaseMethods().checkfinalMessageAfterAction("td","formError",FinalVariables.FINAL_MESSAGE_PROFILEHASBEENADDED);
     }
     private void setDataSource(){
+        /*List<WebElement> list = getBaseMethods().findElementsByTagName("tbody");
+
+        for(WebElement elements:list){
+            String className = elements.getAttribute("id");
+            String text = elements.getText();
+            if(className.equals("dataSources"))
+                System.out.println(">"+text);
+        }*/
+
+
         getBaseMethods().findElementByIdAndClickAction("dp5/2");
 
         getBaseMethods().waitBy2Second();

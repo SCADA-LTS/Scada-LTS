@@ -1,10 +1,7 @@
 package selenium;
 
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
+//
 
 /**
  * Class responsible for selenium test with two cases
@@ -17,7 +14,7 @@ import org.junit.Test;
  */
 public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
 
-    private static final Log LOG = LogFactory.getLog(AntSeleniumTest_LogIn_And_LogInWithFailUser.class);
+    //private static final Log LOG = LogFactory.getLog(AntSeleniumTest_LogIn_And_LogInWithFailUser.class);
 
     private static String PORT = "8080";
     private static String URL = "localhost:" + PORT;
@@ -53,6 +50,7 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
         return this.SECRET;
     }
 
+
     public AntSeleniumTest_LogIn_And_LogInWithFailUser(Base baseMethods) {
         this.baseMethods = baseMethods;
     }
@@ -78,17 +76,16 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
 
         getBaseMethods().waitBy2Second();
     }
-    @Test
     public void loginAsUserNameWhichExist() {
 
         setUpEnvironment();
 
         loginAsUserNameWhichExistWithoutWebBrowserOpenClose();
 
+
         turnOffEnvironment();
 
     }
-    @Test
     public void loginAsUserNameWhichNotExist() {
 
         setUpEnvironment();
@@ -117,8 +114,8 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
         return userLoggedIn;
 
     }
-    private void logIn(String userName,String password){
-        LOG.info("login action");
+    private void logIn(String userName, String password){
+      //  LOG.info("login action");
         String USERNAME_FIELD = "username";
         String PASSWORD_FIELD = "password";
         String LOGIN_BUTTON = "login";
@@ -130,7 +127,7 @@ public class AntSeleniumTest_LogIn_And_LogInWithFailUser {
         getBaseMethods().waitBy1Second();
 
         getBaseMethods().findElementByIdAndClickAction(LOGIN_BUTTON);
-        LOG.info("login action done");
+       // LOG.info("login action done");
     }
     private boolean checkThatUserExist(){
 
