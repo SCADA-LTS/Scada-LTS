@@ -43,4 +43,14 @@ public class UserLock {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "UserLock{" +
+                "userId=" + userId +
+                ", lockType=" + lockType +
+                ", TypeKey=" + TypeKey +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }

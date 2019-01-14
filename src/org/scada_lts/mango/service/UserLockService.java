@@ -35,18 +35,13 @@ public class UserLockService {
     }
 
     public void unlockDataPoint(int userId, long dataPointId) {
-        UserLock userLock = new UserLock();
-        userLock.setUserId(userId);
-        userLock.setLockType(ElementType.DATA_POINT);
-        userLock.setTypeKey(dataPointId);
-        userLock.setTimestamp(System.currentTimeMillis());
 
         //todo fix construktor
         //EventInstance eventInstance = new EventInstance(EventType.EventSources.DATA_POINT, System.currentTimeMillis(), false, AlarmLevels.INFORMATION, null, null);
 
         //eventService.saveEvent(eventInstance);
 
-        userLockDAO.deleteUserLock(userLock);
+        userLockDAO.deleteUserLock(ElementType.DATA_POINT, dataPointId);
     }
 
     public boolean checkIfDataPointIsLocked(long dataPointId) {

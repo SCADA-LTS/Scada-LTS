@@ -17,8 +17,7 @@ public class V1_4__UserLocks implements SpringJdbcMigration {
                         "  `userId` INT NOT NULL,\n" +
                         "  `lockType` SMALLINT NOT NULL,\n" +
                         "  `typeKey` BIGINT NOT NULL,\n" +
-                        "  `ts` BIGINT NOT NULL,\n" +
-                        "  `id` BIGINT NOT NULL);";
+                        "  `ts` BIGINT NOT NULL);";
 
         jdbcTmp.execute(createUserLocksTable);
     }
