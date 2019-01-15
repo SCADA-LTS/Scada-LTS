@@ -1,6 +1,6 @@
 package selenium;
 
-//import org.junit.Test;
+import org.junit.Test;
 
 public class Test_CreateUser {
 
@@ -10,7 +10,7 @@ public class Test_CreateUser {
     private OpenCloseWebBrowser openCloseWebBrowser;
     private CreateUser createProfile;
 
-  //  @Test
+    @Test
     public void createProfile(){
 
         logIn = new AntSeleniumTest_LogIn_And_LogInWithFailUser(new Base());

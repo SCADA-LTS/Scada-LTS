@@ -1,6 +1,6 @@
 package selenium;
 
-//import org.junit.Test;
+import org.junit.Test;
 
 public class Test_ImportDataAsJSON {
 
@@ -9,7 +9,7 @@ public class Test_ImportDataAsJSON {
     ImportData importExportData;
     OpenCloseWebBrowser openCloseWebBrowser;
 
-  //  @Test
+    @Test
     public void loginAsUserNameWhichExist(){
 
         logIn = new AntSeleniumTest_LogIn_And_LogInWithFailUser(new Base());

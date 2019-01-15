@@ -1,6 +1,6 @@
 package selenium;
 
-//import org.junit.Test;
+import org.junit.Test;
 
 public class Test_LogOut {
 
@@ -15,7 +15,7 @@ public class Test_LogOut {
         return baseMethods;
     }
 
-   // @Test
+    @Test
     public void LogOut(){
 
         getBaseMethods().findElementByXPathAndClickAction(FinalVariables.LINK_BY_HREF_LOGOUT);
