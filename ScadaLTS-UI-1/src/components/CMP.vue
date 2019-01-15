@@ -11,7 +11,25 @@
     </div>
     <br/>
     <collapse v-model="show">
-      <div class="well cmp_well_details_change">Hi there.</div>
+      <div class="well cmp_well_details_change">
+        <section>
+          <btn-group>
+            <div v-for="(item, index) in controlsLevel0">
+              <btn block v-bind:class="{ selected: (selectActionLevel0==item.name)}" v-on:click="setActionLever0(item.name)">{{item.name}}</btn>
+            </div>
+          </btn-group>
+          <btn-group>
+            <div v-if="controlsLevel1.length>0" v-for="(item, index) in controlsLevel1">
+              <btn block v-bind:class="{ selected: (selectActionLevel1==item.name)}" v-on:click="setActionLevel1(item.name)">{{item.name}}</btn>
+            </div>
+          </btn-group>
+          <btn-group>
+            <btn type="primary" v-on:click="tryChangeModePLC">Confirm changes</btn>
+          </btn-group>
+          <hr/>
+          <alert>Selected: {{selectActionLevel0}} | {{selectActionLevel1}}</alert>
+        </section>
+      </div>
     </collapse>
   </section>
 
@@ -22,11 +40,14 @@
 <script>
   import moment from "moment";
   import axios from 'axios';
+  import {_} from 'vue-underscore';
+  import BtnGroup from "uiv/src/components/button/BtnGroup";
 
   /**
    * @author grzegorz.bylica@gmail.com
    */
   export default {
+    components: {BtnGroup},
     props: ['pConfig', 'pLabel', 'pTimeRefresh'],
     data() {
       return {
@@ -36,42 +57,69 @@
         insideState: 'NOT-CHECKED',
         label: this.pLabel,
         timeRefresh: this.pTimeRefresh,
-        control: []
+        controlsLevel0: [],
+        controlsLevel1: [],
+        selectActionLevel0: '',
+        selectActionLevel1: '',
+        fruits: [{name:'apple'}, {name:'banana'}, {name:'orange'}]
       }
     },
     methods: {
       checkStatus(){
-        this.config.state.analiseInOrder.forEach(function(entry){
+        Out:
+        for (let j=0; j<this.config.state.analiseInOrder.length;j++) {
+          let entry = this.config.state.analiseInOrder[j];
+
           //const apiCMPChek = `./api/cmp/check`;
           //axios.get(apiCMPChek).then(response => {
-            let response = {};
-            response.data = 0;
-            entry.toChecked.forEach(function(entryChecked){
-              const toRun = ""+response.data + entryChecked.equals;
 
-              if (eval(toRun)) {
-                console.log('test');
+          let response = {};
+          response.data = 1;
+          for (let i=0; i<entry.toChecked.length; i++) {
+            let entryChecked = entry.toChecked[i];
+            try {
+              if (entryChecked.last == "true") {
                 this.insideState = entry.name;
-              };
-            });
+              } else {
+                let toRun = "" + response.data + entryChecked.equals;
+
+                if (eval(toRun)) {
+                  this.insideState = entry.name;
+                  break Out;
+                };
+                toRun = "";
+              }
+            } catch (e) {
+              console.log(e);
+            }
+          }
+
           //}).catch(error => {
           //  console.log(error);
           //});
 
-          //console.log(entry);
-        })
+        }
+      },
+      setActionLever0(action) {
+        this.selectActionLevel0 = action;
+        let found = _.findWhere(this.controlsLevel0, {name:action});
+        this.controlsLevel1 = found.toChange;
+      },
+      setActionLevel1(action) {
+        this.selectActionLevel1 = action;
+      },
+      tryChangeModePLC() {
+        alert('try')
       }
     },
     created() {
-      console.log(this.label);
-      console.log(this.timeRefresh);
-      console.log(this.strConfig);
+
       try {
         this.config = JSON.parse(this.strConfig);
+        this.controlsLevel0 = this.config.control.toChange;
       } catch (e) {
         console.log(e);
       }
-      console.log(this.config.state);
 
       if (this.timeRefresh) {
         setInterval(
@@ -119,6 +167,10 @@
   .cmp_well_details_change {
     margin-top: -3.2em;
     margin-bottom: 0;
+  }
+
+  .selected {
+    color: red;
   }
 
 </style>

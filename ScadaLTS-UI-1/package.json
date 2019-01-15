@@ -23,6 +23,7 @@
     "vue": "2.5.2",
     "vue-jsoneditor": "^1.0.13",
     "vue-router": "^3.0.1",
+    "vue-underscore": "^0.1.4",
     "vuetify": "^1.0.19"
   },
   "devDependencies": {
