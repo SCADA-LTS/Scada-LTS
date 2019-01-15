@@ -1,8 +1,5 @@
 package org.scada_lts.mango.service;
 
-import com.serotonin.mango.rt.event.AlarmLevels;
-import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.type.EventType;
 import org.scada_lts.common.ElementType;
 import org.scada_lts.dao.UserLockDAO;
 import org.scada_lts.dao.model.userLock.UserLock;
