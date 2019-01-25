@@ -7,7 +7,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import java.io.Serializable;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 17.01.19
+ * @author grzegorz.bylica@gmail.com on 17.01.19
  */
 public class ReadValuePointDTO implements Serializable {
 
@@ -18,8 +18,11 @@ public class ReadValuePointDTO implements Serializable {
     private String name;
     private String xid;
     private String type;
-    //TODO private int address;
+    private String error;
 
+    public ReadValuePointDTO(String xid) {
+        this.xid = xid;
+    }
 
     public void set(PointValueTime pvt, DataPointVO dpvo) {
         setValue(pvt.getValue());
@@ -84,4 +87,11 @@ public class ReadValuePointDTO implements Serializable {
         this.type = type;
     }
 
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
 }

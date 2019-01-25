@@ -1,6 +1,5 @@
 package org.scada_lts.web.mvc.api.components.cmp;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
@@ -25,7 +24,7 @@ import java.util.List;
 
 
 /**
- * @autor grzegorz.bylica@gmail.com on 17.01.19
+ * @author grzegorz.bylica@gmail.com on 17.01.19
  */
 @Controller
 public class ReadDataBaseXIdAPI {
@@ -37,38 +36,37 @@ public class ReadDataBaseXIdAPI {
     private PointValueService pointValueService;
 
     @RequestMapping(value = "/api/cmp/get/{xIDs}", method = RequestMethod.GET)
-    public ResponseEntity<List<String>> get(@PathVariable(name = "xIDs") String[] xIDs,  HttpServletRequest request) {
+    public ResponseEntity<List<ReadValuePointDTO>> get(@PathVariable(name = "xIDs") String[] xIDs,  HttpServletRequest request) {
         LOG.info("/api/cmp/get xIDs:" + xIDs);
 
         try {
             User user = Common.getUser(request);
 
             if (user != null) {
-                List<String> results = new ArrayList<>();
+                List<ReadValuePointDTO> results = new ArrayList<>();
                 for (int i=0; i<xIDs.length; i++) {
-                    DataPointVO dpvo = dataPointService.getDataPoint(xIDs[i]);
-                    PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
-
-                    ObjectMapper mapper = new ObjectMapper();
-
-                    ReadValuePointDTO v = new ReadValuePointDTO();
-                    v.set(pvt, dpvo);
-
-                    String json = null;
-                    json = mapper.writeValueAsString(v);
-                    results.add(json);
+                    ReadValuePointDTO v = new ReadValuePointDTO(xIDs[i]);
+                    try {
+                        DataPointVO dpvo = dataPointService.getDataPoint(xIDs[i]);
+                        PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
+                        v.set(pvt, dpvo);
+                        results.add(v);
+                    } catch (Exception e) {
+                        v.setError(e.getMessage());
+                        results.add(v);
+                    }
                 }
 
-                return new ResponseEntity<List<String>>(results, HttpStatus.OK);
+                return new ResponseEntity<List<ReadValuePointDTO>>(results, HttpStatus.OK);
             }
 
-            return new ResponseEntity<List<String>>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<List<ReadValuePointDTO>>(HttpStatus.UNAUTHORIZED);
 
         } catch (Exception e) {
             if (LOG.isTraceEnabled()) {
                 LOG.trace(e);
             }
-            return new ResponseEntity<List<String>>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<List<ReadValuePointDTO>>(HttpStatus.BAD_REQUEST);
         }
     }
 
