@@ -20,9 +20,9 @@ package org.scada_lts.dao.pointvalues;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.serotonin.mango.rt.dataImage.types.BinaryValue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.model.point.PointValueTypeOfREST;
 import org.springframework.stereotype.Repository;
@@ -52,18 +52,11 @@ public class PointValueDAO4REST {
 		
 		PointValueTime pvt = null;
 		
-		String interpretationBinaryValueFalseOfREST = "0";
-		String interpretationBinaryValueTrueOfREST = "1";
-		
 		if (typePointValueOfREST==PointValueTypeOfREST.TYPE_BINARY) {
-			if (value.equals(interpretationBinaryValueTrueOfREST)) {
-				pvt = new PointValueTime(true, new Date().getTime() );
 
-			} else if (value.equals(interpretationBinaryValueFalseOfREST)) {
-				pvt = new PointValueTime(false, new Date().getTime() );
-			} else {
-			   new RuntimeException("Value not compatible with type (binary)");
-			}
+			BinaryValue bv = BinaryValue.parseBinary(value);
+			pvt = new PointValueTime(true, new Date().getTime() );
+
 		} else if (typePointValueOfREST==PointValueTypeOfREST.TYPE_MULTISTATE) {
 			try {
 				pvt = new PointValueTime(Integer.parseInt(value), new Date().getTime() );
