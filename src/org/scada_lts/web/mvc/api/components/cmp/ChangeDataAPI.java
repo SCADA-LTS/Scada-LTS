@@ -11,7 +11,7 @@ import org.scada_lts.web.mvc.api.components.cmp.model.SetValuePointDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -22,7 +22,7 @@ import java.util.List;
 
 
 /**
- * @autor grzegorz.bylica@gmail.com on 17.01.19
+ * @author grzegorz.bylica@gmail.com on 17.01.19
  */
 @Controller
 public class ChangeDataAPI {
@@ -35,9 +35,9 @@ public class ChangeDataAPI {
     private PointValueService pointValueService;
 
 
-    @RequestMapping(value = "/api/cmp/set/{xIDsValues}/", method = RequestMethod.POST)
-    public ResponseEntity<SetValuePointDTO[]> get(@PathVariable(name = "xIDsValues") SetValuePointDTO[] xIDsValues, HttpServletRequest request) {
-        LOG.info("/api/cmp/set xIDSsValues:" + xIDsValues);
+    @RequestMapping(value = "/api/cmp/set", method = RequestMethod.POST)
+    public ResponseEntity<SetValuePointDTO[]> set(@RequestBody SetValuePointDTO[] xIDsValues, HttpServletRequest request) {
+        LOG.info("/api/cmp/set xIDSsValues:" + xIDsValues.toString());
 
         try {
             User user = Common.getUser(request);
@@ -46,22 +46,22 @@ public class ChangeDataAPI {
 
                 for (SetValuePointDTO sv : xIDsValues) {
                     try {
-                        dataPointService.save(sv.getXid(), String.valueOf(sv.isValue()), PointValueTypeOfREST.TYPE_BINARY);
+                        dataPointService.save(sv.getXid(), sv.getValue(), PointValueTypeOfREST.TYPE_BINARY);
                     } catch (Exception e) {
                         sv.setError(e.getMessage());
                     }
                 }
 
-                return new ResponseEntity<SetValuePointDTO[]>(xIDsValues, HttpStatus.OK);
+                return new ResponseEntity<>(xIDsValues, HttpStatus.OK);
             }
 
-            return new ResponseEntity<SetValuePointDTO[]>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         } catch (Exception e) {
             if (LOG.isTraceEnabled()) {
                 LOG.trace(e);
             }
-            return new ResponseEntity<SetValuePointDTO[]>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
