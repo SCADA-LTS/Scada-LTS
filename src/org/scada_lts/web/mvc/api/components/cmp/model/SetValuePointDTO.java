@@ -4,15 +4,15 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 17.01.19
+ * @author grzegorz.bylica@gmail.com on 17.01.19
  */
 public class SetValuePointDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private String xid;
-    private boolean value;
-    private boolean resultOperationSave;
+    private String value;
+    private String resultOperationSave;
     private String error;
 
     public SetValuePointDTO() {
@@ -26,19 +26,19 @@ public class SetValuePointDTO implements Serializable {
         this.xid = xid;
     }
 
-    public boolean isValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(boolean value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
-    public boolean isResultOperationSave() {
+    public String getResultOperationSave() {
         return resultOperationSave;
     }
 
-    public void setResultOperationSave(boolean resultOperationSave) {
+    public void setResultOperationSave(String resultOperationSave) {
         this.resultOperationSave = resultOperationSave;
     }
 
