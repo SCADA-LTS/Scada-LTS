@@ -7,6 +7,7 @@ import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.rt.event.type.UserLockEventType;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.scada_lts.common.ElementType;
@@ -34,8 +35,10 @@ public class UserLockService {
         userLock.setTypeKey(dataPointId);
         userLock.setTimestamp(System.currentTimeMillis());
 
+        LocalizableMessage message = new LocalizableMessage("event.dp.locked");
+
         eventManager.raiseEvent(
-                new SystemEventType(),
+                new UserLockEventType(),
                 System.currentTimeMillis(),
                 false,
                 AlarmLevels.INFORMATION,
@@ -48,7 +51,7 @@ public class UserLockService {
     public void unlockDataPoint(int userId, long dataPointId) {
 
         eventManager.raiseEvent(
-                new DataPointEventType(),
+                new UserLockEventType(),
                 System.currentTimeMillis(),
                 false,
                 AlarmLevels.INFORMATION,

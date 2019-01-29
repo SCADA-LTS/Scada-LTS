@@ -102,6 +102,8 @@ abstract public class EventType implements JsonSerializable {
          * Maintenance events are created when maintenance mode becomes active. See MaintenanceVO for more information.
          */
         int MAINTENANCE = 9;
+
+        int USER_LOCK = 10;
     }
 
     public static final ExportCodes SOURCE_CODES = new ExportCodes();
@@ -114,6 +116,7 @@ abstract public class EventType implements JsonSerializable {
         SOURCE_CODES.addElement(EventSources.PUBLISHER, "PUBLISHER");
         SOURCE_CODES.addElement(EventSources.AUDIT, "AUDIT");
         SOURCE_CODES.addElement(EventSources.MAINTENANCE, "MAINTENANCE");
+        SOURCE_CODES.addElement(EventSources.USER_LOCK, "USER_LOCK");
     }
 
     /**
