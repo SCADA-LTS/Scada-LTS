@@ -160,6 +160,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 				model.put("flipbookLimit", 10);
 
 			model.put("currentXid", point.getXid());
+			model.put("pointId", point.getId());
 			model.put("pointLock", userLockService.checkIfDataPointIsLocked(point.getId()));
 		}
 

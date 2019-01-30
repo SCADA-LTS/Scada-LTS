@@ -1,7 +1,6 @@
 package org.scada_lts.dao;
 
 import com.mysql.jdbc.Statement;
-import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.userLock.UserLock;
@@ -70,19 +69,21 @@ public class UserLockDAO {
             LOG.trace("insert('..')");
         }
 
-        DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(INSERT_USER_LOCK, Statement.RETURN_GENERATED_KEYS);
-                new ArgumentPreparedStatementSetter(new Object[] {
-                        userLock.getUserId(),
-                        userLock.getLockType(),
-                        userLock.getTypeKey(),
-                        userLock.getTimestamp()
-                }).setValues(ps);
-                return ps;
-            }
-        });
+        if(selectUserLock(userLock.getLockType(), userLock.getTypeKey())==null) {
+            DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+                @Override
+                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                    PreparedStatement ps = connection.prepareStatement(INSERT_USER_LOCK, Statement.RETURN_GENERATED_KEYS);
+                    new ArgumentPreparedStatementSetter(new Object[] {
+                            userLock.getUserId(),
+                            userLock.getLockType(),
+                            userLock.getTypeKey(),
+                            userLock.getTimestamp()
+                    }).setValues(ps);
+                    return ps;
+                }
+            });
+        }
     }
 
     public UserLock selectUserLock(short lockType, long lockKey) throws EmptyResultDataAccessException {
