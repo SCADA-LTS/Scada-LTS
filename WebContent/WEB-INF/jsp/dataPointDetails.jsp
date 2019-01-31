@@ -23,6 +23,18 @@
   <script type="text/javascript">
 
     mango.view.initPointDetails();
+
+    var pathArray = location.href.split( '/' );
+          	var protocol = pathArray[0];
+          	var host = pathArray[2];
+          	var port = location.port;
+           	var appScada = pathArray[3];
+          	var url = protocol + '//' + host;
+          	var myLocation;
+          	if (!myLocation) {
+           		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
+          	}
+
     
     function init() {
         getHistoryTableData();
@@ -169,6 +181,36 @@
 			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
 		})(jQuery);
     });
+
+    function lockPoint(cb) {
+        if(cb.checked) {
+            jQuery.ajax({
+                       type: 'POST',
+                       dataType: 'text',
+                       url:myLocation+"/api/userlock/datapoint/lock/"+${point.id},
+                       success: function(msg){
+                             alert("Point locked.");
+                             location.reload();
+                       },
+                       error: function(XMLHttpRequest, textStatus, errorThrown) {
+                             alert("Problem with locking point.");
+                       }
+            });
+        } else {
+            jQuery.ajax({
+                        type: 'POST',
+                        dataType: 'text',
+                        url:myLocation+"/api/userlock/datapoint/unlock/"+${point.id},
+                        success: function(msg){
+                            alert("Point unlocked.");
+                            location.reload();
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert("Problem with unlocking point.");
+                        }
+            });
+        }
+    }
   </script>
   
   <table width="100%">
@@ -232,7 +274,7 @@
             <tr>
                 <td class="formLabelRequired">Point lock:</td>
                 <td>
-                    <input type="checkbox" id="lockPoint" class="formField"/>
+                    <input type="checkbox" id="lockPoint" class="formField" onclick='lockPoint(this);'/>
                 </td>
             </tr>
             <tr><td colspan="2" id="pointMessages"></td></tr>

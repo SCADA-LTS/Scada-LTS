@@ -19,9 +19,10 @@
 <%@ include file="/WEB-INF/snippet/common.jsp" %>
 <fmt:message key="common.enterSetPoint"/>:<br/>
 <c:choose>
-    <c:when test = "${pointLock}">
+    <c:when test="${pointLock}">
         <input id="txtChange${componentId}" type="text" value="${mango:rawText(point, pointValue)}"
                     onkeypress="if (event.keyCode==13) $('txtSet${componentId}').onclick();" disabled/>
+                    <div style="color: red;">Point locked by user. Unlock the point to set value.</div>
     </c:when>
     <c:otherwise>
             <input id="txtChange${componentId}" type="text" value="${mango:rawText(point, pointValue)}"

@@ -62,6 +62,7 @@ import com.serotonin.web.content.ContentGenerator;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UserLockService;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";
@@ -76,6 +77,8 @@ abstract public class BaseDwr {
 
     protected ResourceBundle changeSnippetMap = ResourceBundle.getBundle("changeSnippetMap");
     protected ResourceBundle chartSnippetMap = ResourceBundle.getBundle("chartSnippetMap");
+
+    UserLockService userLockService = new UserLockService();
 
     /**
      * Base method for preparing information in a state object and returning a point value.
@@ -95,6 +98,7 @@ abstract public class BaseDwr {
         model.put("point", pointVO);
         model.put("pointRT", point);
         model.put(MODEL_ATTR_RESOURCE_BUNDLE, getResourceBundle());
+        model.put("pointLock", userLockService.checkIfDataPointIsLocked(point.getId()));
 
         PointValueTime pointValue = null;
         if (point == null)
