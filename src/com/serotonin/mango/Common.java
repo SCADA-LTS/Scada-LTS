@@ -71,6 +71,7 @@ public class Common {
 	private static final String CUSTOM_VIEW_KEY = "customView";
 
 	public static final String SESSION_USER = "sessionUser";
+	private static final String DWR_SCRIPT_SESSION = "dwrScriptSessionid";
 	public static final String UTF8 = "UTF-8";
 	public static final Charset UTF8_CS = Charset.forName(UTF8);
 
@@ -220,16 +221,35 @@ public class Common {
 				return null;
 			return backgroundContext.getUser();
 		}
-
+		if(webContext.getHttpServletRequest().getParameter("eventDetector")!=null ||
+				webContext.getHttpServletRequest().getParameter("dwrScriptSessionid")!=null){
+			return /*User v =*/ (User)webContext.getHttpServletRequest().getAttribute(webContext.getHttpServletRequest().getAttribute("eventDetector").toString());
+			//int y=0;
+		}
 		user = getUser(webContext.getHttpServletRequest());
 
-		User scriptSessionAwareUser = ScriptSessionAndUsers.findScriptSessionUser(user,webContext);
+		User scriptSessionAwareUser=ScriptSessionAndUsers.findOrAddScriptSessionUser(user,webContext);
+
 		return scriptSessionAwareUser == null ? user : scriptSessionAwareUser;
 	}
 
 	public static User getUser(HttpServletRequest request) {
+
+
+		User user =null;
+		//ScriptSessionAndUsers.getUserForScriptSessionId(request.getParameter("dwrScriptSessionid"),request);
+
+		if(request.getParameter("dwrScriptSessionid")!=null )
+		{
+
+			User a = ScriptSessionAndUsers.getUserForScriptSessionId(request.getParameter("dwrScriptSessionid"),request);
+			request.setAttribute("eventDetector",request.getParameter("dwrScriptSessionid"));
+			request.setAttribute(request.getAttribute("eventDetector").toString(),a);
+			return a;
+			//return ScriptSessionAndUsers.getUserForScriptSessionId(request.getParameter("dwrScriptSessionid"),request);
+		}
 		// Check first to see if the user object is in the request.
-		User user = (User) request.getAttribute(SESSION_USER);
+		/*User*/ user = (User) request.getAttribute(SESSION_USER);
 		if (user != null)
 			return user;
 

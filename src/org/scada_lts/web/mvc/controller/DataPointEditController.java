@@ -25,8 +25,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.ScriptSessionAndUsers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.directwebremoting.WebContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -70,6 +72,7 @@ public class DataPointEditController {
     public static final String SUBMIT_DISABLE = "disable";
     public static final String SUBMIT_ENABLE = "enable";
     public static final String SUBMIT_RESTART = "restart";
+    public static String DPID ;
     
 	@InitBinder("dataPointVO")
 	protected void initBinder(WebDataBinder binder) {
@@ -80,14 +83,33 @@ public class DataPointEditController {
         binder.registerCustomEditor(Double.TYPE, "discardHighLimit", new DecimalFormatEditor(new DecimalFormat("#.##"),
                 false));
 	}
-	
 	@RequestMapping(method = RequestMethod.GET)
-	public String showForm(HttpServletRequest request, Model model){
-		LOG.trace("/data_point_edit.shtm");
-		
-        User user = Common.getUser(request);
+	public String showForm(HttpServletRequest request, Model model) {
+        LOG.trace("/data_point_edit.shtm");
+
+
+        User user =Common.getUser(request);
+
         dataPointDao = new DataPointDao();
-        int id;
+        int id=returnId(request);
+
+
+        DataPointVO dataPoint = dataPointDao.getDataPoint(id);
+        user.setEditPoint(dataPoint);
+        DPID=String.valueOf(id);
+        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
+        ControllerUtils.addPointListDataToModel(user, id, model);
+        model.addAttribute("form", dataPoint);
+        model.addAttribute("dpid",request.getParameter("dpid"));
+        model.addAttribute("dwrScriptSessionid",(request.getParameter("dwrScriptSessionid")!=null)?request.getParameter("dwrScriptSessionid"):"");
+		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
+		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		return "dataPointEdit";
+	}
+	private int returnId(HttpServletRequest request){
+        int id=0;
         String idStr = request.getParameter("dpid");
         if (idStr == null) {
             String pedStr = request.getParameter("pedid");
@@ -99,42 +121,30 @@ public class DataPointEditController {
         }
         else
             id = Integer.parseInt(idStr);
-
-        DataPointVO dataPoint = dataPointDao.getDataPoint(id);
-        user.setEditPoint(dataPoint);
-        
-        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
-        ControllerUtils.addPointListDataToModel(user, id, model);
-        model.addAttribute("form", dataPoint);
-		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
-		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
-		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-		return "dataPointEdit";
-	}
-	
+	    return id;
+    }
 	@RequestMapping(method = RequestMethod.POST)
 	public String saveDataPoint(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-		
-        User user = Common.getUser(request);
+        User user =ScriptSessionAndUsers.getUserForScriptSessionId(request.getParameter("dwrScriptSessionid"),request);
+        DPID=String.valueOf(request.getParameter("dpid"));
         DataPointVO dataPoint = user.getEditPoint();
         dataPoint.setDiscardExtremeValues(false); // Checkbox
-        
-        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
-        
+
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);
         binder.bind(request);
         Map<String, String> errors = new HashMap<String, String>();
         validate(dataPoint, errors);
-        
         if (errors.isEmpty()) {
         	executeUpdate(request, dataPoint, errors);
         }
-        
+
+        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         ControllerUtils.addPointListDataToModel(user, dataPoint.getId(), model);
         model.addAttribute("form", dataPoint);
         model.addAttribute("error", errors);
+        model.addAttribute("dpid",request.getParameter("dpid"));
+        model.addAttribute("dwrScriptSessionid",request.getParameter("dwrScriptSessionid"));
 		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));

@@ -4,10 +4,7 @@ import com.rits.cloning.Cloner;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.Container;
-import org.directwebremoting.ScriptSession;
-import org.directwebremoting.ServerContextFactory;
-import org.directwebremoting.WebContext;
+import org.directwebremoting.*;
 import org.directwebremoting.extend.ScriptSessionManager;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +23,17 @@ public class ScriptSessionAndUsers {
      * {@value #SCRIPTSESSION_USER} is the attribute name under session
      */
     public static final String SCRIPTSESSION_USER = "dwrscriptsessionuser";
+    public static User addDwrScriptUser(String scriptSessionId,HttpServletRequest request,User user){
+        try {
+            Container container = ServerContextFactory.get(request.getServletContext()).getContainer();
+            ScriptSessionManager manager = (ScriptSessionManager) container.getBean(ScriptSessionManager.class.getName());
 
+            manager.getScriptSession(scriptSessionId).setAttribute(SCRIPTSESSION_USER,user);
+        }catch (Exception e){
+            LOG.warn("Could not retrieve user for dwr script session");
+        }
+        return user;
+    }
     /**
      * Returns correct User from Script Session
      *
@@ -54,7 +61,7 @@ public class ScriptSessionAndUsers {
      * @param webContext
      * @return User
      */
-    static User findScriptSessionUser(User user, WebContext webContext){
+    public static User findOrAddScriptSessionUser(User user, WebContext webContext){
 
         ScriptSession scriptSession=null;
 

@@ -18,12 +18,9 @@
 package org.scada_lts.mango.service;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import net.sf.openv4j.DataPoint;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -353,22 +350,46 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
+	private void deleteEventDetecor(DataPointVO dataPoint,List<PointEventDetectorVO> detectors){
+        for (PointEventDetectorVO pointEventDetector : detectors) {
+            if (!dataPoint.getEventDetectors().contains(pointEventDetector)) {
+                pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
+            }
+        }
+    }
+    private void addNewEventDetector(DataPointVO dataPoint,List<PointEventDetectorVO> detectors){
+		dataPoint.getEventDetectors().remove(detectors);
+
+		for (PointEventDetectorVO pointEventDetector : dataPoint.getEventDetectors()) {
+			try {
+				pointEventDetectorDAO.insert(pointEventDetector);
+			} catch (DuplicateKeyException e) {
+			}
+		}
+    }
+    private void updateEventDetector(DataPointVO dataPoint,List<PointEventDetectorVO> detectors){
+		for (PointEventDetectorVO pointEventDetector : dataPoint.getEventDetectors()) {
+			try {
+				pointEventDetectorDAO.update(pointEventDetector);
+			} catch (DuplicateKeyException e) {
+			}
+		}
+	}
 	private void saveEventDetectors(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 
-		for (PointEventDetectorVO pointEventDetector: detectors) {
-			if(!dataPoint.getEventDetectors().contains(pointEventDetector)) {
-				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
-			}
+		if(dataPoint.getEventDetectors().size()<detectors.size()){
+
+		    deleteEventDetecor(dataPoint,detectors);
+        }
+        else if(dataPoint.getEventDetectors().size()>detectors.size()){
+
+        	addNewEventDetector(dataPoint,detectors);
 		}
-		
-		for (PointEventDetectorVO pointEventDetector: dataPoint.getEventDetectors()) {
-			try {
-			    pointEventDetectorDAO.insert(pointEventDetector);
-			} catch (DuplicateKeyException e) {
-				pointEventDetectorDAO.update(pointEventDetector);
-			}
-		}
+		else{
+
+			updateEventDetector(dataPoint,detectors);
+        }
 	}
 
 	private PointEventDetectorVO removeFromList(List<PointEventDetectorVO> list, int id) {
