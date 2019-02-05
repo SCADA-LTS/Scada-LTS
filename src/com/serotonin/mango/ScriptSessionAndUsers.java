@@ -23,17 +23,7 @@ public class ScriptSessionAndUsers {
      * {@value #SCRIPTSESSION_USER} is the attribute name under session
      */
     public static final String SCRIPTSESSION_USER = "dwrscriptsessionuser";
-    public static User addDwrScriptUser(String scriptSessionId,HttpServletRequest request,User user){
-        try {
-            Container container = ServerContextFactory.get(request.getServletContext()).getContainer();
-            ScriptSessionManager manager = (ScriptSessionManager) container.getBean(ScriptSessionManager.class.getName());
 
-            manager.getScriptSession(scriptSessionId).setAttribute(SCRIPTSESSION_USER,user);
-        }catch (Exception e){
-            LOG.warn("Could not retrieve user for dwr script session");
-        }
-        return user;
-    }
     /**
      * Returns correct User from Script Session
      *
@@ -61,7 +51,7 @@ public class ScriptSessionAndUsers {
      * @param webContext
      * @return User
      */
-    public static User findOrAddScriptSessionUser(User user, WebContext webContext){
+    static User findOrAddScriptSessionUser(User user, WebContext webContext){
 
         ScriptSession scriptSession=null;
 
@@ -74,9 +64,23 @@ public class ScriptSessionAndUsers {
         if  (scriptSession == null) {
             return  null;
         }else{
-            if (scriptSession.getAttribute(SCRIPTSESSION_USER) == null){
+             if (scriptSession.getAttribute(SCRIPTSESSION_USER) == null){
+
+                if(Common.ctx.getCtx().getAttribute("dwrscriptsessionuser") !=null){
+
+                    //String scriptSessionId = (String) Common.ctx.getCtx().getAttribute(SCRIPTSESSION_USER);
+                    //return  (User) Common.ctx.getCtx().getAttribute(scriptSessionId);
+                    return (User) Common.ctx.getCtx().getAttribute("dwrscriptsessionuser");
+
+                }
+
                 User scriptSessionUser = new Cloner().deepClone(user);
                 scriptSession.setAttribute(SCRIPTSESSION_USER, scriptSessionUser);
+
+                Common.ctx.getCtx().setAttribute("dwrscriptsessionuser",scriptSessionUser);
+
+                //Common.ctx.getCtx().setAttribute("dwrscriptsessionuser",scriptSession.getId());
+                //Common.ctx.getCtx().setAttribute(Common.ctx.getCtx().getAttribute("dwrscriptsessionuser").toString(),scriptSessionUser);
                 return scriptSessionUser;
             }else{
                 return (User) scriptSession.getAttribute(SCRIPTSESSION_USER);

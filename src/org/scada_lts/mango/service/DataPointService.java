@@ -20,7 +20,6 @@ package org.scada_lts.mango.service;
 import java.io.IOException;
 import java.util.*;
 
-import net.sf.openv4j.DataPoint;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -184,7 +183,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		dp.setId(dataPointDAO.insert(dp));
-		saveEventDetectors(dp);
+		deleteAddUpdate_EventDetectors(dp);
 	}
 
 	@Override
@@ -195,7 +194,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		updateDataPointShallow(dp);
-		saveEventDetectors(dp);
+		deleteAddUpdate_EventDetectors(dp);
 	}
 
 	@Override
@@ -353,8 +352,13 @@ public class DataPointService implements MangoDataPoint {
 	private void deleteEventDetecor(DataPointVO dataPoint,List<PointEventDetectorVO> detectors){
         for (PointEventDetectorVO pointEventDetector : detectors) {
             if (!dataPoint.getEventDetectors().contains(pointEventDetector)) {
-                pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
-            }
+				try {
+					pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
+					EventDetectorsCache.LOG.trace("DataPointService -> deleteEventDetecor " + pointEventDetector.toString() + " has been deleted succesfully");
+				} catch (Exception e) {
+					EventDetectorsCache.LOG.trace("DataPointService -> deleteEventDetecor " + e.getMessage());
+				}
+			}
         }
     }
     private void addNewEventDetector(DataPointVO dataPoint,List<PointEventDetectorVO> detectors){
@@ -363,7 +367,11 @@ public class DataPointService implements MangoDataPoint {
 		for (PointEventDetectorVO pointEventDetector : dataPoint.getEventDetectors()) {
 			try {
 				pointEventDetectorDAO.insert(pointEventDetector);
-			} catch (DuplicateKeyException e) {
+				EventDetectorsCache.LOG.trace("DataPointService -> addNewEventDetector "+	pointEventDetector.toString()+" has been added succesfully");
+			}
+			catch (DuplicateKeyException e) {}
+			catch (Exception e) {
+				EventDetectorsCache.LOG.trace("DataPointService -> addNewEventDetector "+	e.getMessage());
 			}
 		}
     }
@@ -371,11 +379,15 @@ public class DataPointService implements MangoDataPoint {
 		for (PointEventDetectorVO pointEventDetector : dataPoint.getEventDetectors()) {
 			try {
 				pointEventDetectorDAO.update(pointEventDetector);
-			} catch (DuplicateKeyException e) {
+				EventDetectorsCache.LOG.trace("DataPointService -> updateEventDetector "+	pointEventDetector.toString()+" has been updated succesfully");
+			}
+			catch (DuplicateKeyException e) {}
+			catch (Exception e) {
+				EventDetectorsCache.LOG.trace("DataPointService -> updateEventDetector "+	e.getMessage());
 			}
 		}
 	}
-	private void saveEventDetectors(DataPointVO dataPoint) {
+	private void deleteAddUpdate_EventDetectors(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 
 		if(dataPoint.getEventDetectors().size()<detectors.size()){
