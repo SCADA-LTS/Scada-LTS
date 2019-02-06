@@ -179,6 +179,7 @@ public class DataPointEditDwr extends BaseDwr {
             ped.setId(id);
             ped.njbSetDataPoint(dp);
             dp.getEventDetectors().add(ped);
+            //updatePointChangeDetector(ped.getId(),ped.getXid(),ped.getAlias(),1);
         }
         return ped;
     }

@@ -123,7 +123,6 @@ public class DataPointEditController {
 	public String saveDataPoint(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
         User user=Common.getUser(request);
-
         DPID = request.getParameter("dpid");
         DataPointVO dataPoint = user.getEditPoint();
         dataPoint.setDiscardExtremeValues(false); // Checkbox

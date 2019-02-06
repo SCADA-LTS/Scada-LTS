@@ -229,15 +229,34 @@ public class Common {
 
 		return scriptSessionAwareUser == null ? user : scriptSessionAwareUser;
 	}
+	private static boolean urlAddressContains(HttpServletRequest request, String[] statements){
 
+		boolean contains = false;
+
+		if(request.getQueryString()!=null) {
+			for (String partOfUrl : statements) {
+				contains = request.getQueryString().contains(partOfUrl);
+				if(contains==Boolean.FALSE) break;
+			}
+		}
+
+		return contains;
+	}
 	public static User getUser(HttpServletRequest request) {
 
 
 		User user =null;
 
+		//this code will be modify in next commit - block A
+		//A
 		// Check first to see if the user object is in the request.
+		/*if(
+		        urlAddressContains(request,new String[]{"dpid","dwrScriptSessionid"})
+        ) {
 
-
+			String[] parameters = request.getQueryString().split("&");
+			parameters  = parameters[0].split("=");
+			if(parameters[0].equals("dwrScriptSessionid")){*/
 		//Here shold be chain responsibility - design pattern
 		if(request.getSession().getAttribute(request.getSession().getId())!=null){
 			String scriptSession = (String) request.getSession().getAttribute(request.getSession().getId());
@@ -245,6 +264,13 @@ public class Common {
 			if(user!=null)
 				return user;
 		}
+		/*if(request.getSession().getAttribute(parameters[1])!=null){
+				user = (User) request.getSession().getAttribute(parameters[1]);
+				if(user!=null)
+					return user;
+		}*/
+	    /*}}*/
+		//A
 
 
 		// if we have in request value "dwrScriptSessionid", we should have "DWR USER" in global context
