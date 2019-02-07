@@ -8,6 +8,7 @@ import org.directwebremoting.*;
 import org.directwebremoting.extend.RealScriptSession;
 import org.directwebremoting.extend.ScriptSessionManager;
 import org.directwebremoting.impl.DefaultScriptSession;
+import org.scada_lts.web.mvc.controller.FinalVariablesForControllers;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -84,14 +85,17 @@ public class ScriptSessionAndUsers {
         if  (scriptSession == null) {
             return  null;
         }else{
-             if (scriptSession.getAttribute(SCRIPTSESSION_USER) == null){
+            if( Common.getCtx().getAttribute(SCRIPTSESSION_USER)!=null) {
+                return getUserFromCommonUnderGivensessionId();
+            }
+             else if (scriptSession.getAttribute(SCRIPTSESSION_USER) == null){
 
                 User scriptSessionUser = new Cloner().deepClone(user);
                 scriptSession.setAttribute(SCRIPTSESSION_USER, scriptSessionUser);
                 scriptSession.setAttribute(scriptSession.getId(), scriptSessionUser);
                 scriptSession.setAttribute(webContext.getSession().getId(), scriptSession.getId());
 
-                //addAllScriptSessionToSetUnderWebSession(webContext,scriptSession);
+                ScriptSessionAndUsers.addScriptSessionIdToSetUnderWebSession(webContext,scriptSession);
                 return scriptSessionUser;
             }else{
                 return (User) scriptSession.getAttribute(SCRIPTSESSION_USER);
@@ -99,23 +103,39 @@ public class ScriptSessionAndUsers {
 
         }
     }
+    private static User getUserFromCommonUnderGivensessionId(){
+        Set<String> scriptSessionsForWebSession = new HashSet<String>();
+        User user = null;
+        if(Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER)!=null) {
+            try {
+                scriptSessionsForWebSession = (Set<String>) Common.getCtx().getAttribute((String) Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER));
+                for (String id : scriptSessionsForWebSession) {
+                    String h = id;
+
+                }
+            } catch (Exception e) {
+                int a = 0;
+            }
+        }
+        return user;
+    }
     private static void addScriptSessionIdToSetUnderWebSession(WebContext webContext,ScriptSession scriptSession){
-        if( webContext.getSession().getAttribute(SCRIPTSESSION_USER)==null) {
-            webContext.getSession().setAttribute(SCRIPTSESSION_USER, webContext.getSession().getId());
-            webContext.getSession().setAttribute(webContext.getSession().getId(), new HashSet<String>());
+        if( Common.getCtx().getAttribute(SCRIPTSESSION_USER)==null) {
+            Common.getCtx().setAttribute(SCRIPTSESSION_USER, webContext.getSession().getId());
+            Common.getCtx().setAttribute(webContext.getSession().getId(), new HashSet<String>());
         }
 
-        if( webContext.getSession().getAttribute(SCRIPTSESSION_USER)!=null){
+        else {
             Set<String> scriptSessionsForWebSession = new HashSet<String>();
             try {
-                scriptSessionsForWebSession = (Set<String>) webContext.getSession().getAttribute((String)webContext.getSession().getAttribute(SCRIPTSESSION_USER));
+                scriptSessionsForWebSession = (Set<String>) Common.getCtx().getAttribute((String)Common.getCtx().getAttribute(SCRIPTSESSION_USER));
             }
             catch (Exception e){
                 int a=0;
             }
             scriptSessionsForWebSession.add(scriptSession.getId());
-            webContext.getSession().removeAttribute(webContext.getSession().getId());
-            webContext.getSession().setAttribute(webContext.getSession().getId(), scriptSessionsForWebSession);
+            Common.getCtx().removeAttribute(webContext.getSession().getId());
+            Common.getCtx().setAttribute(webContext.getSession().getId(), scriptSessionsForWebSession);
         }
     }
     public static User findScriptSessionUserInScriptSessionManagerCollection(HttpServletRequest request){

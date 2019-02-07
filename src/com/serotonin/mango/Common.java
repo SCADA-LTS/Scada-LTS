@@ -28,6 +28,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
@@ -74,6 +75,9 @@ public class Common {
 	public static final int NEW_ID = -1;
 	public static ContextWrapper ctx;
 
+	public static ServletContext getCtx(){
+		return ctx.getCtx();
+	}
 	// This is initialized
 	public static final RealTimeTimer timer = new RealTimeTimer();
 
@@ -243,9 +247,9 @@ public class Common {
 			String[] parameters = request.getQueryString().split("&");
 			parameters  = parameters[0].split("=");
 			if(parameters[0].equals(DWR_SCRIPT_SESSION_ID)){
-				if(request.getSession().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER)!=null){
+				if(Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER)!=null){
 					try {
-				 		scriptSessionsForWebSession = (Set<String>) request.getSession().getAttribute((String)request.getSession().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER));
+				 		scriptSessionsForWebSession = (Set<String>) Common.getCtx().getAttribute((String)Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER));
 						for(String id:scriptSessionsForWebSession){
 							if(id.equals(parameters[1])){
 								user = ScriptSessionAndUsers.getUserFromScriptSessionManagerByScriptSessionId( request,id);break;
