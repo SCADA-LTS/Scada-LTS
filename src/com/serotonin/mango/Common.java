@@ -41,7 +41,6 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.directwebremoting.ScriptSession;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.Period;
@@ -65,6 +64,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
+import org.scada_lts.web.mvc.controller.FinalVariablesForControllers;
 
 public class Common {
 
@@ -72,7 +72,7 @@ public class Common {
 	private static final String CUSTOM_VIEW_KEY = "customView";
 
 	public static final String SESSION_USER = "sessionUser";
-	private static final String DWR_SCRIPT_SESSION_ID = "dwrScriptSessionid";
+	private static final String DWR_SCRIPT_SESSION_ID = FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID;//"dwrScriptSessionid";
 	public static final String UTF8 = "UTF-8";
 	public static final Charset UTF8_CS = Charset.forName(UTF8);
 
@@ -225,7 +225,7 @@ public class Common {
 
 		user = getUser(webContext.getHttpServletRequest());
 
-		User scriptSessionAwareUser=ScriptSessionAndUsers.findOrAddScriptSessionUser(user,webContext);
+		User scriptSessionAwareUser=ScriptSessionAndUsers.findOrAddScriptSessionUserIntoScriptSessionUnderDWRSCRIPTSESSIONUSER(user,webContext);
 
 		return scriptSessionAwareUser == null ? user : scriptSessionAwareUser;
 	}
@@ -237,20 +237,22 @@ public class Common {
 
 		// Check first to see if the user object is in the request.
 
-		//when we have user called "DWR USER" in global context, return it
-		if(Common.ctx.getCtx().getAttribute("dwrscriptsessionuser")!=null){
 
-			return (User) Common.ctx.getCtx().getAttribute("dwrscriptsessionuser");
+		//Here shold be chain responsibility - design pattern
+		if(request.getSession().getAttribute(request.getSession().getId())!=null){
+			String scriptSession = (String) request.getSession().getAttribute(request.getSession().getId());
+			user = (User) request.getSession().getAttribute(scriptSession);
+			if(user!=null)
+				return user;
 		}
 
 
 		// if we have in request value "dwrScriptSessionid", we should have "DWR USER" in global context
 		if(request.getParameter(DWR_SCRIPT_SESSION_ID)!=null ) {
-
-			user = (User) Common.ctx.getCtx().getAttribute("dwrscriptsessionuser");
-			if (user != null)
+			user = ScriptSessionAndUsers.findScriptSessionUserInScriptSessionManagerCollection(request);
+			if(user!=null)
 				return user;
-		}
+        }
 
 		user = (User) request.getAttribute(SESSION_USER);
 

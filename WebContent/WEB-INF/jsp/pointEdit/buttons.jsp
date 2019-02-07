@@ -21,12 +21,11 @@
 <table>
   <tr>
     <td colspan="2" align="center">
-
-
-
-
+<%--
+document.getElementById('dwrScriptSessionid').value =dwr.engine._getScriptSessionId();
+--%>
       <input type="button" value="<fmt:message key="common.save"/>"
-              onclick="document.getElementById('dpid').value =<%= DataPointEditController.DPID %>;document.getElementById('dwrScriptSessionid').value = dwr.engine._getScriptSessionId();return doSave('<%= DataPointEditController.SUBMIT_SAVE %>');"/>
+              onclick="document.getElementById('dpid').value =<%= DataPointEditController.DPID %>;document.getElementById('dwrScriptSessionid').value =dwr.engine._getScriptSessionId();return doSave('<%= DataPointEditController.SUBMIT_SAVE %>');"/>
       <c:choose>
         <c:when test="${form.enabled}">
           <input type="submit" value="<fmt:message key="pointEdit.buttons.disable"/>"
