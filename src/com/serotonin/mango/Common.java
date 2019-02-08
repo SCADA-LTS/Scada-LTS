@@ -26,12 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -72,7 +67,7 @@ public class Common {
 	private static final String CUSTOM_VIEW_KEY = "customView";
 
 	public static final String SESSION_USER = "sessionUser";
-	private static final String DWR_SCRIPT_SESSION_ID = FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID;//"dwrScriptSessionid";
+	private static final String DWR_SCRIPT_SESSION_ID = FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID;
 	public static final String UTF8 = "UTF-8";
 	public static final Charset UTF8_CS = Charset.forName(UTF8);
 
@@ -225,13 +220,13 @@ public class Common {
 
 		user = getUser(webContext.getHttpServletRequest());
 
-		User scriptSessionAwareUser=ScriptSessionAndUsers.findOrAddScriptSessionUserIntoScriptSessionUnderDWRSCRIPTSESSIONUSER(user,webContext);
+		User scriptSessionAwareUser=ScriptSessionAndUsers.findOrAddScriptSessionUserIntoScriptSessionUnderDwrScriptSessionUser(user,webContext);
 
 		return scriptSessionAwareUser == null ? user : scriptSessionAwareUser;
 	}
 	private static boolean urlAddressContains(HttpServletRequest request, String[] statements){
 
-		boolean contains = false;
+		boolean contains = Boolean.FALSE;
 
 		if(request.getQueryString()!=null) {
 			for (String partOfUrl : statements) {
@@ -242,43 +237,48 @@ public class Common {
 
 		return contains;
 	}
-	public static User getUser(HttpServletRequest request) {
-
-
-		User user =null;
-
-		//this code will be modify in next commit - block A
-		//A
-		// Check first to see if the user object is in the request.
-		/*if(
-		        urlAddressContains(request,new String[]{"dpid","dwrScriptSessionid"})
-        ) {
-
+	static User whenUrlAddressContainsdwrScriptSessionid(User user, HttpServletRequest request){
+		Set<String> scriptSessionsForWebSession = null;
+		if(urlAddressContains(request,new String[]{"dpid",DWR_SCRIPT_SESSION_ID})) {
 			String[] parameters = request.getQueryString().split("&");
 			parameters  = parameters[0].split("=");
-			if(parameters[0].equals("dwrScriptSessionid")){*/
-		//Here shold be chain responsibility - design pattern
-		if(request.getSession().getAttribute(request.getSession().getId())!=null){
-			String scriptSession = (String) request.getSession().getAttribute(request.getSession().getId());
-			user = (User) request.getSession().getAttribute(scriptSession);
+			if(parameters[0].equals(DWR_SCRIPT_SESSION_ID)){
+				if(request.getSession().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER)!=null){
+					try {
+				 		scriptSessionsForWebSession = (Set<String>) request.getSession().getAttribute((String)request.getSession().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER));
+						for(String id:scriptSessionsForWebSession){
+							if(id.equals(parameters[1])){
+								user = ScriptSessionAndUsers.getUserFromScriptSessionManagerByScriptSessionId( request,id);break;
+							}
+						}
+					}catch (Exception e){
+							int a=0;
+					}
+					if(user!=null)
+						return user;
+				}
+			}
+		}
+		return user;
+	}
+	static User whenInRequestExistParameterDwrScriptSessionId(User user, HttpServletRequest request){
+		if(request.getParameter(DWR_SCRIPT_SESSION_ID)!=null ) {
+			user = ScriptSessionAndUsers.getUserFromScriptSessionManagerByScriptSessionId(request,request.getParameter(DWR_SCRIPT_SESSION_ID));
 			if(user!=null)
 				return user;
 		}
-		/*if(request.getSession().getAttribute(parameters[1])!=null){
-				user = (User) request.getSession().getAttribute(parameters[1]);
-				if(user!=null)
-					return user;
-		}*/
-	    /*}}*/
-		//A
+		return user;
+	}
+	public static User getUser(HttpServletRequest request) {
 
+		User user =null;
 
 		// if we have in request value "dwrScriptSessionid", we should have "DWR USER" in global context
-		if(request.getParameter(DWR_SCRIPT_SESSION_ID)!=null ) {
-			user = ScriptSessionAndUsers.findScriptSessionUserInScriptSessionManagerCollection(request);
+		if(request.getParameter(DWR_SCRIPT_SESSION_ID)!=null || urlAddressContains(request,new String[]{"dpid",DWR_SCRIPT_SESSION_ID})) {
+			user = whenUrlAddressContainsdwrScriptSessionid(user,request);
 			if(user!=null)
 				return user;
-        }
+		}
 
 		user = (User) request.getAttribute(SESSION_USER);
 

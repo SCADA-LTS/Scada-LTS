@@ -122,7 +122,7 @@ public class DataPointEditController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String saveDataPoint(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-        User user=Common.getUser(request);
+        User user = ScriptSessionAndUsers.getUserFromScriptSessionManagerSavedUnderDWRSCRIPTSESSIONUSER(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID),request);;
         DPID = request.getParameter("dpid");
         DataPointVO dataPoint = user.getEditPoint();
         dataPoint.setDiscardExtremeValues(false); // Checkbox

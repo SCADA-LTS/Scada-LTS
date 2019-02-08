@@ -8,11 +8,9 @@ import org.directwebremoting.*;
 import org.directwebremoting.extend.RealScriptSession;
 import org.directwebremoting.extend.ScriptSessionManager;
 import org.directwebremoting.impl.DefaultScriptSession;
-import org.scada_lts.web.mvc.controller.FinalVariablesForControllers;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * ScriptSessionAndUsers responsible for managing  User copies specific given browser "tab" (DWR Script Session)
@@ -57,12 +55,10 @@ public class ScriptSessionAndUsers {
                             : Common.getUser(request);
     }
     public static User getUserFromScriptSessionManagerByScriptSessionId(HttpServletRequest request, String scriptsessionid) {
-        ScriptSessionManager manager = null;
         User user = null;
         try {
             RealScriptSession rss = getScriptSessionManager(request).getScriptSession(scriptsessionid);
             user = (User) rss.getAttribute(scriptsessionid);
-            int a = 0;
         } catch (Exception e) {
             LOG.warn("Could not retrieve user for dwr script session");
         }
@@ -75,7 +71,7 @@ public class ScriptSessionAndUsers {
      * @param webContext
      * @return User
      */
-    public static User findOrAddScriptSessionUserIntoScriptSessionUnderDWRSCRIPTSESSIONUSER(User user, WebContext webContext){
+    public static User findOrAddScriptSessionUserIntoScriptSessionUnderDwrScriptSessionUser(User user, WebContext webContext){
 
         ScriptSession scriptSession=null;
 
@@ -94,8 +90,8 @@ public class ScriptSessionAndUsers {
                 scriptSession.setAttribute(SCRIPTSESSION_USER, scriptSessionUser);
                 scriptSession.setAttribute(scriptSession.getId(), scriptSessionUser);
                 scriptSession.setAttribute(webContext.getSession().getId(), scriptSession.getId());
-                webContext.getSession().setAttribute(webContext.getSession().getId(), scriptSession.getId());
-                webContext.getSession().setAttribute(scriptSession.getId(),scriptSessionUser);
+
+                //addAllScriptSessionToSetUnderWebSession(webContext,scriptSession);
                 return scriptSessionUser;
             }else{
                 return (User) scriptSession.getAttribute(SCRIPTSESSION_USER);
@@ -103,21 +99,38 @@ public class ScriptSessionAndUsers {
 
         }
     }
-    public static User findScriptSessionUserInScriptSessionManagerCollection(HttpServletRequest request){
-            User userDwr = null;
-
-            Collection<DefaultScriptSession> col  = (Collection<DefaultScriptSession>) getScriptSessionManager(request).getAllScriptSessions();//getScriptSessionsByPage("/ScadaBR/data_point_edit.shtm");
-            Iterator dss = col.iterator();
-            while(dss.hasNext()){
-                DefaultScriptSession dss2 = (DefaultScriptSession) dss.next();
-                userDwr=(User) dss2.getAttribute((String)request.getSession().getId());//getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
-
-                if(userDwr!=null)
-                    return userDwr;
-            }
-
-            return userDwr;
+    private static void addScriptSessionIdToSetUnderWebSession(WebContext webContext,ScriptSession scriptSession){
+        if( webContext.getSession().getAttribute(SCRIPTSESSION_USER)==null) {
+            webContext.getSession().setAttribute(SCRIPTSESSION_USER, webContext.getSession().getId());
+            webContext.getSession().setAttribute(webContext.getSession().getId(), new HashSet<String>());
         }
+
+        if( webContext.getSession().getAttribute(SCRIPTSESSION_USER)!=null){
+            Set<String> scriptSessionsForWebSession = new HashSet<String>();
+            try {
+                scriptSessionsForWebSession = (Set<String>) webContext.getSession().getAttribute((String)webContext.getSession().getAttribute(SCRIPTSESSION_USER));
+            }
+            catch (Exception e){
+                int a=0;
+            }
+            scriptSessionsForWebSession.add(scriptSession.getId());
+            webContext.getSession().removeAttribute(webContext.getSession().getId());
+            webContext.getSession().setAttribute(webContext.getSession().getId(), scriptSessionsForWebSession);
+        }
+    }
+    public static User findScriptSessionUserInScriptSessionManagerCollection(HttpServletRequest request){
+        User userDwr = null;
+        Collection<DefaultScriptSession> col  = (Collection<DefaultScriptSession>) getScriptSessionManager(request).getScriptSessionsByPage("/ScadaBR/data_point_edit.shtm");
+        Iterator dss = col.iterator();
+        while(dss.hasNext()){
+            DefaultScriptSession dss2 = (DefaultScriptSession) dss.next();
+            userDwr=(User) dss2.getAttribute((String)request.getSession().getId());
+
+            if(userDwr!=null)
+                return userDwr;
+        }
+        return userDwr;
+    }
 
 
 }
