@@ -5,9 +5,8 @@
         <div class="cmp_label">{{label}}</div>
         <div class="cmp_state">{{insideState}}</div>
       </div>
-      <btn class="cmp_button cmp_one_line" @click="show=!show">
-        >
-      </btn>
+      <btn v-if="disabledChange" class="cmp_button cmp_one_line cmp_button_disable"> > </btn>
+      <btn v-else class="cmp_button cmp_one_line" @click="show=!show"> > </btn>
     </div>
     <br/>
     <collapse v-model="show">
@@ -122,7 +121,7 @@
         controlsLevel1: [],
         selectActionLevel0: '',
         selectActionLevel1: '',
-        fruits: [{name: 'apple'}, {name: 'banana'}, {name: 'orange'}]
+        disabledChange: false
       }
     },
     methods: {
@@ -133,7 +132,6 @@
           let entry = this.config.state.analiseInOrder[j];
           for (let i = 0; i < entry.toChecked.length; i++) {
             let entryChecked = entry.toChecked[i];
-
             if (entryChecked.last == "true") {
               this.insideState = entry.name;
             } else {
@@ -141,7 +139,6 @@
             }
           }
         }
-
         // interpreted data from server state
         new ApiCMP().get(xIds).then(response => {
           for (let j = 0; j < this.config.state.analiseInOrder.length; j++) {
@@ -158,6 +155,7 @@
                       let toRun = "" + response.data[k].value + entryChecked.equals;
                       if (eval(toRun)) {
                         this.insideState = entry.name;
+                        this.disabledChange = !!entry.disable;
                         toBreak = true;
                         break;
                       }
@@ -176,7 +174,6 @@
         }).catch(er => {
           console.log(er.message);
         });
-
       },
       setActionLeve0(action) {
         if (this.selectActionLevel0 == action) {
