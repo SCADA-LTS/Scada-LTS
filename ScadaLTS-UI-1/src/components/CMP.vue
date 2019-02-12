@@ -34,6 +34,15 @@
         </section>
       </div>
     </collapse>
+    <collapse v-model="errorsNotification">
+      <div class="well cmp_well_error_notyfication">
+        <section>
+          <div v-for="(er, index) in errors">
+            <alert type="danger"><b>{{er}}</b></alert>
+          </div>
+        </section>
+      </div>
+    </collapse>
   </section>
 
 </template>
@@ -112,6 +121,8 @@
     data() {
       return {
         show: false,
+        errors: [],
+        errorsNotification: false,
         strConfig: this.pConfig,
         config: {},
         insideState: 'NOT-CHECKED',
@@ -141,6 +152,7 @@
         }
         // interpreted data from server state
         new ApiCMP().get(xIds).then(response => {
+          let errors = [];
           for (let j = 0; j < this.config.state.analiseInOrder.length; j++) {
             let entry = this.config.state.analiseInOrder[j];
             let toBreak = false;
@@ -156,18 +168,30 @@
                       if (eval(toRun)) {
                         this.insideState = entry.name;
                         this.disabledChange = !!entry.disable;
-                        toBreak = true;
+                        if (!!entryChecked.toNoteError) {
+                          errors.push(entryChecked.describe);
+                        }
+                        // if toBreak = true out of any checking next
+                        toBreak = !(!!entryChecked.toNext);
+                        // out of currently check because we finded in response equals xid
                         break;
                       }
                       toRun = "";
                     }
                   }
+
                 }
               } catch (e) {
                 console.log(e);
               }
+              // if not checking next (entryChecked.toNext==false)
+              if (toBreak) {
+                break
+              }
             }
-            if (toBreak) {
+            // because we want to not checking next (toBreak==true) or we have errors and we don't need check next analiseInOrder
+            this.setErrors(errors);
+            if ( (errors.length > 0) || toBreak) {
               break;
             }
           }
@@ -195,6 +219,10 @@
           this.selectActionLevel0 = '';
         }
       },
+      setErrors(errors) {
+        this.errorsNotification = errors.length>0;
+        this.errors = errors;
+      },
       tryChangeModePLC() {
         let newData = [];
         let action = null;
@@ -218,7 +246,7 @@
           }
           if (newData.length > 0) {
             new ApiCMP().set(newData).then(response => {
-              console.log(response);
+              //console.log(response);
             }).catch(er => {
               console.log(er);
             });
@@ -279,6 +307,12 @@
   .cmp_well_details_change {
     margin-top: -3.2em;
     margin-bottom: 0;
+  }
+
+  .cmp_well_error_notyfication {
+    margin-top: -3.2em;
+    margin-bottom: 0;
+    background-color: #f4f7f2;
   }
 
   .selected {
