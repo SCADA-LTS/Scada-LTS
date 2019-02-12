@@ -82,13 +82,13 @@
     }
     set(newData) {
       return new Promise((resolve, reject) => {
-        if (newData.length>0) {
+        if (newData.length > 0) {
           axios({
               method: 'post',
               url: './api/cmp/set',
               headers: {},
-              data: newData}
-          ).then(response => {
+              data: newData
+          }).then(response => {
             resolve(response)
           }).catch(error => {
             reject(error);
@@ -177,57 +177,65 @@
           console.log(er.message);
         });
 
-
       },
       setActionLeve0(action) {
-        this.selectActionLevel0 = action;
-        let found = _.findWhere(this.controlsLevel0, {name: action});
-        this.controlsLevel1 = found.toChange;
+        if (this.selectActionLevel0 == action) {
+          // unselect
+          this.selectActionLevel0 = '';
+        } else {
+          this.selectActionLevel0 = action;
+          let found = _.findWhere(this.controlsLevel0, {name: action});
+          this.controlsLevel1 = found.toChange;
+          this.selectActionLevel1 = '';
+        }
       },
       setActionLevel1(action) {
-        this.selectActionLevel1 = action;
+        if (this.selectActionLevel1 == action) {
+          //unselect
+          this.selectActionLevel1 = '';
+        } else {
+          this.selectActionLevel1 = action;
+          this.selectActionLevel0 = '';
+        }
       },
       tryChangeModePLC() {
         let newData = [];
-
-        // get to change base on select level0
-        // get action for select
-        let foundLevel0 = _.findWhere(this.controlsLevel0, {name: this.selectActionLevel0});
-        let toSave = foundLevel0.save;
-        for (let i=0;i<toSave.length;i++) {
-          let xid = _.findWhere( this.config.control.definitionPointToSaveValue, {def: toSave[i].refDefPoint});
-          let change = new ChangeDataDTO(
-            xid.xid,
-            toSave[i].value,
-            "",
-            ""
-          );
-          newData.push(change)
+        let action = null;
+        let control = null;
+        if (this.selectActionLevel1 != '') {
+          action = this.selectActionLevel1;
+          control = this.controlsLevel1;
+        } else if (this.selectActionLevel0 != '') {
+          action = this.selectActionLevel0;
+          control = this.controlsLevel0;
+        } else {
+          // Nothing to do;
         }
-        console.log(JSON.stringify(newData));
-
-        new ApiCMP().set(newData).then(response => {
-          console.log(response);
-        }).catch(er => {
-          console.log(er);
-        });
-
-        // get to change base on select level1
-
-        /*newData.push()
-        new ApiCMP().set()
-        alert('try')*/
+        if (action != null) {
+          let foundLevel = _.findWhere(control, {name: action});
+          let toSave = foundLevel.save;
+          for (let i = 0; i < toSave.length; i++) {
+            let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {def: toSave[i].refDefPoint});
+            let change = new ChangeDataDTO( xid.xid, toSave[i].value, "", "");
+            newData.push(change)
+          }
+          if (newData.length > 0) {
+            new ApiCMP().set(newData).then(response => {
+              console.log(response);
+            }).catch(er => {
+              console.log(er);
+            });
+          }
+        }
       }
     },
     created() {
-
       try {
         this.config = JSON.parse(this.strConfig);
         this.controlsLevel0 = this.config.control.toChange;
       } catch (e) {
         console.log(e);
       }
-
       if (this.timeRefresh) {
         setInterval(
           function () {
