@@ -1,49 +1,53 @@
 <template>
-  <section>
-    <div>
-      <div class="well cmp_one_line">
-        <div class="cmp_label">{{label}}</div>
-        <div class="cmp_state">{{insideState}}</div>
+  <div>
+    <div class="cmp-flex-container">
+      <div id="cmp">
+        <div class="cmp-flex-container">
+          <div class="cmp-flex-label">{{label}}</div>
+          <div class="cmp-flex-state">{{insideState}}</div>
+          <btn v-if="disabledChange" class="cmp-flex-button"> ></btn>
+          <btn v-else class="cmp-flex-button cmp-disable" @click="show=!show"> ></btn>
+        </div>
+
       </div>
-      <btn v-if="disabledChange" class="cmp_button cmp_one_line cmp_button_disable"> > </btn>
-      <btn v-else class="cmp_button cmp_one_line" @click="show=!show"> > </btn>
     </div>
-    <br/>
-    <collapse v-model="show">
-      <div class="well cmp_well_details_change">
-        <section>
-          <btn-group>
-            <div v-for="(item, index) in controlsLevel0">
-              <btn block v-bind:class="{ selected: (selectActionLevel0==item.name)}"
-                   v-on:click="setActionLeve0(item.name)">{{item.name}}
-              </btn>
+    <div class="cmp-flex-container-columns">
+      <collapse v-model="show">
+        <div class="well">
+          <section>
+            <btn-group>
+              <div v-for="(item, index) in controlsLevel0">
+                <btn block v-bind:class="{ selected: (selectActionLevel0==item.name)}"
+                     v-on:click="setActionLeve0(item.name)">{{item.name}}
+                </btn>
+              </div>
+            </btn-group>
+            <btn-group>
+              <div v-if="controlsLevel1.length>0" v-for="(item, index) in controlsLevel1">
+                <btn block v-bind:class="{ selected: (selectActionLevel1==item.name)}"
+                     v-on:click="setActionLevel1(item.name)">{{item.name}}
+                </btn>
+              </div>
+            </btn-group>
+            <btn-group>
+              <btn type="primary" v-on:click="tryChangeModePLC">Confirm changes</btn>
+            </btn-group>
+            <hr/>
+            <alert>Selected: {{selectActionLevel0}} | {{selectActionLevel1}}</alert>
+          </section>
+        </div>
+      </collapse>
+      <collapse v-model="errorsNotification">
+        <div class="well">
+          <section>
+            <div v-for="(er, index) in errors">
+              <alert type="danger"><b>{{er}}</b></alert>
             </div>
-          </btn-group>
-          <btn-group>
-            <div v-if="controlsLevel1.length>0" v-for="(item, index) in controlsLevel1">
-              <btn block v-bind:class="{ selected: (selectActionLevel1==item.name)}"
-                   v-on:click="setActionLevel1(item.name)">{{item.name}}
-              </btn>
-            </div>
-          </btn-group>
-          <btn-group>
-            <btn type="primary" v-on:click="tryChangeModePLC">Confirm changes</btn>
-          </btn-group>
-          <hr/>
-          <alert>Selected: {{selectActionLevel0}} | {{selectActionLevel1}}</alert>
-        </section>
-      </div>
-    </collapse>
-    <collapse v-model="errorsNotification">
-      <div class="well cmp_well_error_notyfication">
-        <section>
-          <div v-for="(er, index) in errors">
-            <alert type="danger"><b>{{er}}</b></alert>
-          </div>
-        </section>
-      </div>
-    </collapse>
-  </section>
+          </section>
+        </div>
+      </collapse>
+    </div>
+  </div>
 
 </template>
 
@@ -88,14 +92,15 @@
         }
       })
     }
+
     set(newData) {
       return new Promise((resolve, reject) => {
         if (newData.length > 0) {
           axios({
-              method: 'post',
-              url: './api/cmp/set',
-              headers: {},
-              data: newData
+            method: 'post',
+            url: './api/cmp/set',
+            headers: {},
+            data: newData
           }).then(response => {
             resolve(response)
           }).catch(error => {
@@ -191,7 +196,7 @@
             }
             // because we want to not checking next (toBreak==true) or we have errors and we don't need check next analiseInOrder
             this.setErrors(errors);
-            if ( (errors.length > 0) || toBreak) {
+            if ((errors.length > 0) || toBreak) {
               break;
             }
           }
@@ -220,7 +225,7 @@
         }
       },
       setErrors(errors) {
-        this.errorsNotification = errors.length>0;
+        this.errorsNotification = errors.length > 0;
         this.errors = errors;
       },
       tryChangeModePLC() {
@@ -241,7 +246,7 @@
           let toSave = foundLevel.save;
           for (let i = 0; i < toSave.length; i++) {
             let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {def: toSave[i].refDefPoint});
-            let change = new ChangeDataDTO( xid.xid, toSave[i].value, "", "");
+            let change = new ChangeDataDTO(xid.xid, toSave[i].value, "", "");
             newData.push(change)
           }
           if (newData.length > 0) {
@@ -278,6 +283,7 @@
   }
 </script>
 
+
 <style scoped lang="scss">
 
   $grey: rgba(0, 0, 0, .1);
@@ -286,12 +292,35 @@
   $next_grey: hsla(0, 0%, 100%, .2);
 
 
-  .cmp_one_line {
-    display: inline-block;
+  #cmp {
+    border-radius: 10px;
+    border: 3px solid $grey;
   }
 
-  .cmp_button {
-    padding: .3em .8em;
+  .cmp-disable {
+    background-color: $grey;
+  }
+
+  .cmp-flex-container {
+    display: flex;
+  }
+
+  .cmp-flex-container-columns {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cmp-flex-label {
+    margin: 3px;
+    padding: 5px;
+  }
+
+  .cmp-flex-state {
+    margin: 7px;
+    padding: 10px;
+  }
+
+  .cmp-flex-button {
     border: 1px solid $grey;
     background: $green linear-gradient($next_grey, transparent);
     border-radius: .2em;
@@ -300,23 +329,5 @@
     line-height: 1.5;
   }
 
-  .cmp_button_disable {
-    background-color: $grey;
-  }
-
-  .cmp_well_details_change {
-    margin-top: -3.2em;
-    margin-bottom: 0;
-  }
-
-  .cmp_well_error_notyfication {
-    margin-top: -3.2em;
-    margin-bottom: 0;
-    background-color: #f4f7f2;
-  }
-
-  .selected {
-    color: red;
-  }
 
 </style>
