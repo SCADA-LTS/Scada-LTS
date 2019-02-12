@@ -46,7 +46,7 @@ public class ChangeDataAPI {
 
                 for (SetValuePointDTO sv : xIDsValues) {
                     try {
-                        dataPointService.save(sv.getXid(), sv.getValue(), PointValueTypeOfREST.TYPE_BINARY);
+                        dataPointService.saveAPI(user, sv.getValue(), sv.getXid());
                     } catch (Exception e) {
                         sv.setError(e.getMessage());
                     }
