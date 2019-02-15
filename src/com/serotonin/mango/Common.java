@@ -265,24 +265,9 @@ public class Common {
 		}
 		return user;
 	}
-	static User whenInRequestExistParameterDwrScriptSessionId(User user, HttpServletRequest request){
-		if(request.getParameter(DWR_SCRIPT_SESSION_ID)!=null ) {
-			user = ScriptSessionAndUsers.getUserFromScriptSessionManagerByScriptSessionId(request,request.getParameter(DWR_SCRIPT_SESSION_ID));
-			if(user!=null)
-				return user;
-		}
-		return user;
-	}
 	public static User getUser(HttpServletRequest request) {
 
 		User user =null;
-
-		// if we have in request value "dwrScriptSessionid", we should have "DWR USER" in global context
-		if(request.getParameter(DWR_SCRIPT_SESSION_ID)!=null || urlAddressContains(request,new String[]{"dpid",DWR_SCRIPT_SESSION_ID})) {
-			user = whenUrlAddressContainsdwrScriptSessionid(user,request);
-			if(user!=null)
-				return user;
-		}
 
 		user = (User) request.getAttribute(SESSION_USER);
 

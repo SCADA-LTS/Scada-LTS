@@ -503,7 +503,7 @@
       var detectorCount = 0;
   
       this.init = function() {
-          DataPointEditDwr.getEventDetectors(this.initCB);
+          DataPointEditDwr.getEventDetectors(document.getElementById('dwrScriptSessionid').value,this.initCB);
       }
       
       this.initCB = function(detectorList) {
@@ -512,7 +512,7 @@
       }
       
       this.addEventDetector = function() {
-          DataPointEditDwr.addEventDetector($get("eventDetectorSelect"), this.addEventDetectorCB);
+          DataPointEditDwr.addEventDetector(document.getElementById('dwrScriptSessionid').value,$get("eventDetectorSelect"), this.addEventDetectorCB);
       }
   
       this.addEventDetectorCB = function(detector) {
@@ -591,7 +591,7 @@
       }
       
       this.deleteDetector = function(pedId) {
-          DataPointEditDwr.deleteEventDetector(pedId);
+          DataPointEditDwr.deleteEventDetector(document.getElementById('dwrScriptSessionid').value,pedId);
           
           detectorCount--;
           if (detectorCount == 0)

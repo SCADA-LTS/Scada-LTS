@@ -387,7 +387,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 	}
 	private void deleteAddUpdate_EventDetectors(DataPointVO dataPoint) {
-		/*List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
+		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 
 		if(dataPoint.getEventDetectors().size()<detectors.size()){
 
@@ -400,23 +400,7 @@ public class DataPointService implements MangoDataPoint {
 		else{
 
 			updateEventDetector(dataPoint,detectors);
-        }*/
-
-		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
-
-		for (PointEventDetectorVO pointEventDetector: detectors) {
-			if(!dataPoint.getEventDetectors().contains(pointEventDetector)) {
-				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
-			}
-		}
-
-		for (PointEventDetectorVO pointEventDetector: dataPoint.getEventDetectors()) {
-			try {
-				pointEventDetectorDAO.insert(pointEventDetector);
-			} catch (DuplicateKeyException e) {
-				pointEventDetectorDAO.update(pointEventDetector);
-			}
-		}
+        }
 	}
 
 	private PointEventDetectorVO removeFromList(List<PointEventDetectorVO> list, int id) {

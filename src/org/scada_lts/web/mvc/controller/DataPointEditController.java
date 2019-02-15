@@ -107,6 +107,7 @@ public class DataPointEditController {
             id = Integer.parseInt(idStr);
 
         DataPointVO dataPoint = dataPointDao.getDataPoint(id);
+        Common.ctx.getCtx().setAttribute(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID),dataPoint);
         user.setEditPoint(dataPoint);
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         ControllerUtils.addPointListDataToModel(user, id, model);
@@ -122,9 +123,9 @@ public class DataPointEditController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String saveDataPoint(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-        User user = ScriptSessionAndUsers.getUserFromScriptSessionManagerSavedUnderDWRSCRIPTSESSIONUSER(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID),request);;
+        User user = Common.getUser(request);
         DPID = request.getParameter("dpid");
-        DataPointVO dataPoint = user.getEditPoint();
+        DataPointVO dataPoint = (DataPointVO)Common.ctx.getCtx().getAttribute(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
         dataPoint.setDiscardExtremeValues(false); // Checkbox
 
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);

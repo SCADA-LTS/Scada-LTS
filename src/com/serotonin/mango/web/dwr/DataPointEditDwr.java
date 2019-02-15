@@ -53,6 +53,15 @@ public class DataPointEditDwr extends BaseDwr {
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         return dataPoint;
     }
+    private DataPointVO getDataPointByDwrScriptSessionId(String dwrScriptSessionId) {
+        // The user can also end up with this point in their session in the point details page, which only requires
+        // read access. So, ensure that any access here is allowed with edit permission.
+        User user = Common.getUser();
+        user.setEditPoint((DataPointVO) Common.ctx.getCtx().getAttribute(dwrScriptSessionId));
+        DataPointVO dataPoint = user.getEditPoint();
+        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
+        return dataPoint;
+    }
 
     //
     // Set text renderer
@@ -149,12 +158,13 @@ public class DataPointEditDwr extends BaseDwr {
     //
     // Event detectors TODO: This section can be cleaned up since PointEventDetectorVO is now a single class.
     //
-    public List<PointEventDetectorVO> getEventDetectors() {
-        return getDataPoint().getEventDetectors();
+    public List<PointEventDetectorVO> getEventDetectors(String dwrScriptSessionid) {
+        return getDataPointByDwrScriptSessionId(dwrScriptSessionid)/*getDataPoint()*/.getEventDetectors();
     }
 
-    public PointEventDetectorVO addEventDetector(int typeId) {
-        DataPointVO dp = getDataPoint();
+    public PointEventDetectorVO addEventDetector(String dwrScriptSessionid, int typeId) {
+        DataPointVO dp = /*getDataPoint();*/
+        getDataPointByDwrScriptSessionId(dwrScriptSessionid);
         PointEventDetectorVO ped = new PointEventDetectorVO();
         ped.setXid(new DataPointDao().generateEventDetectorUniqueXid(dp.getId()));
         ped.setAlias("");
@@ -179,13 +189,12 @@ public class DataPointEditDwr extends BaseDwr {
             ped.setId(id);
             ped.njbSetDataPoint(dp);
             dp.getEventDetectors().add(ped);
-            //updatePointChangeDetector(ped.getId(),ped.getXid(),ped.getAlias(),1);
         }
         return ped;
     }
 
-    public void deleteEventDetector(int pedId) {
-        DataPointVO dp = getDataPoint();
+    public void deleteEventDetector(String dwrScriptSessionid, int pedId) {
+        DataPointVO dp = getDataPointByDwrScriptSessionId(dwrScriptSessionid);//getDataPoint();
         synchronized (dp) {
             dp.getEventDetectors().remove(getEventDetector(pedId));
         }
@@ -310,6 +319,16 @@ public class DataPointEditDwr extends BaseDwr {
 
     private PointEventDetectorVO getEventDetector(int pedId) {
         DataPointVO dp = getDataPoint();
+        for (PointEventDetectorVO ped : dp.getEventDetectors()) {
+            if (ped.getId() == pedId) {
+                return ped;
+            }
+        }
+        return null;
+    }
+    private PointEventDetectorVO getEventDetectorByDwrScriptSessionId(String dwrScriptSessionid,int pedId) {
+        //DataPointVO dp = getDataPoint();
+        DataPointVO dp = getDataPointByDwrScriptSessionId(dwrScriptSessionid);
         for (PointEventDetectorVO ped : dp.getEventDetectors()) {
             if (ped.getId() == pedId) {
                 return ped;
