@@ -55,7 +55,7 @@
         pointListColumnHeaders.push("");
 
         pointListColumnFunctions.push(function(p) {
-        		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
+        		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dwrScriptSessionId="+dwr.engine._getScriptSessionId()+"&dpid="+ p.id +"'");
         });
 
         var headers = $("pointListHeaders");

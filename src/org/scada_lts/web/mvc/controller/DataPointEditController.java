@@ -70,6 +70,7 @@ public class DataPointEditController {
     public static final String SUBMIT_DISABLE = "disable";
     public static final String SUBMIT_ENABLE = "enable";
     public static final String SUBMIT_RESTART = "restart";
+    private final String DWR_SCRIPT_SESSION_ID = "dwrScriptSessionId";
     
 	@InitBinder("dataPointVO")
 	protected void initBinder(WebDataBinder binder) {
@@ -84,7 +85,7 @@ public class DataPointEditController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String showForm(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-		
+        String dwrScriptSessionId = request.getParameter(DWR_SCRIPT_SESSION_ID);
         User user = Common.getUser(request);
         dataPointDao = new DataPointDao();
         int id;
@@ -101,8 +102,9 @@ public class DataPointEditController {
             id = Integer.parseInt(idStr);
 
         DataPointVO dataPoint = dataPointDao.getDataPoint(id);
-        user.setEditPoint(dataPoint);
-        
+        Common.ctx.getCtx().setAttribute(dwrScriptSessionId,dataPoint);
+        user.setEditPoint( (DataPointVO) Common.ctx.getCtx().getAttribute(dwrScriptSessionId));
+
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         ControllerUtils.addPointListDataToModel(user, id, model);
         model.addAttribute("form", dataPoint);
@@ -110,15 +112,16 @@ public class DataPointEditController {
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+        model.addAttribute("dwrScriptSessionId", dwrScriptSessionId);
 		return "dataPointEdit";
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public String saveDataPoint(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-		
         User user = Common.getUser(request);
-        DataPointVO dataPoint = user.getEditPoint();
+        DataPointVO dataPoint = (DataPointVO) Common.ctx.getCtx().getAttribute((String) request.getParameter("dwrScriptSessionId"));
+        user.setEditPoint(dataPoint);
         dataPoint.setDiscardExtremeValues(false); // Checkbox
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
@@ -139,6 +142,7 @@ public class DataPointEditController {
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+        model.addAttribute(DWR_SCRIPT_SESSION_ID, request.getAttribute(DWR_SCRIPT_SESSION_ID));
 		return "dataPointEdit";
 	}
 	

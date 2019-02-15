@@ -67,6 +67,8 @@
   
   <form action="" method="post">
     <input type="hidden" id="taskName" name="asdf" value=""/>
+    <input type="hidden" id="dpId" name="dpId" value="">
+    <input type="hidden" id="dwrScriptSessionId" name="dwrScriptSessionId" value="">
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td valign="top">

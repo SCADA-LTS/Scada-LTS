@@ -66,7 +66,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
 
 public class Common {
-	
+
 	private static final String ANON_VIEW_KEY = "anonymousViews";
 	private static final String CUSTOM_VIEW_KEY = "customView";
 
@@ -91,7 +91,7 @@ public class Common {
 	 * the correct version.
 	 */
 	public static final String getVersion() {
-		return "1.0.0";
+		return "RELEASE_OR_BUILD_VER";
 	}
 
 	public interface ContextKeys {
@@ -220,7 +220,6 @@ public class Common {
 		}
 		return getUser(webContext.getHttpServletRequest());
 	}
-
 	public static User getUser(HttpServletRequest request) {
 		// Check first to see if the user object is in the request.
 		User user = (User) request.getAttribute(SESSION_USER);
