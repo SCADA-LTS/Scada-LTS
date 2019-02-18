@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.ScriptSessionAndUsers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -53,8 +52,6 @@ import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import com.serotonin.propertyEditor.DecimalFormatEditor;
 import com.serotonin.propertyEditor.IntegerFormatEditor;
 import com.serotonin.util.StringUtils;
-
-import static com.serotonin.mango.Common.SESSION_USER;
 
 /**
  * Controller for data point edition
@@ -106,17 +103,18 @@ public class DataPointEditController {
         else
             id = Integer.parseInt(idStr);
 
+        StringBuilder DWR_SCRIPT_SESSION_ID = new StringBuilder(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
         DataPointVO dataPoint = dataPointDao.getDataPoint(id);
-        Common.ctx.getCtx().setAttribute(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID),dataPoint);
+        Common.ctx.getCtx().setAttribute(DWR_SCRIPT_SESSION_ID.toString(),dataPoint);
         user.setEditPoint(dataPoint);
-        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
-        ControllerUtils.addPointListDataToModel(user, id, model);
-        String DWR_SCRIPT_SESSION_ID = request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID);
-        model.addAttribute("form", dataPoint);
-        model.addAttribute("dpid",request.getParameter("dpid"));
-        model.addAttribute(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID,(DWR_SCRIPT_SESSION_ID!=null)?DWR_SCRIPT_SESSION_ID:"");
 
-        addAllConstantsVariablesIntoModel(model,dataPoint);
+        model.addAttribute("dpid",request.getParameter("dpid"));
+        model.addAttribute(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID,
+                (DWR_SCRIPT_SESSION_ID.toString()!=null)
+                        ?DWR_SCRIPT_SESSION_ID.toString()
+                        :FinalVariablesForControllers.EMPTY_STRING);
+
+        addAllConstantsVariablesIntoModelAndCheckPermission(user,model,dataPoint);
 
 		return FinalVariablesForControllers.URL_DATA_POINT_EDIT;
 	}
@@ -125,7 +123,10 @@ public class DataPointEditController {
 		LOG.trace("/data_point_edit.shtm");
         User user = Common.getUser(request);
         DPID = request.getParameter("dpid");
-        DataPointVO dataPoint = (DataPointVO)Common.ctx.getCtx().getAttribute(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
+
+        StringBuilder DWR_SCRIPT_SESSION_ID = new StringBuilder(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
+
+        DataPointVO dataPoint = (DataPointVO) Common.ctx.getCtx().getAttribute(DWR_SCRIPT_SESSION_ID.toString());
         dataPoint.setDiscardExtremeValues(false); // Checkbox
 
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);
@@ -136,17 +137,19 @@ public class DataPointEditController {
         	executeUpdate(request, dataPoint, errors);
         }
 
-        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
-        ControllerUtils.addPointListDataToModel(user, dataPoint.getId(), model);
-        model.addAttribute("form", dataPoint);
         model.addAttribute("error", errors);
-        model.addAttribute(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID,request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
+        model.addAttribute(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID,DWR_SCRIPT_SESSION_ID.toString());
 
-		addAllConstantsVariablesIntoModel(model,dataPoint);
+		addAllConstantsVariablesIntoModelAndCheckPermission(user,model,dataPoint);
 
         return FinalVariablesForControllers.URL_DATA_POINT_EDIT;
 	}
-	private void addAllConstantsVariablesIntoModel(Model model,DataPointVO dataPoint){
+	private void addAllConstantsVariablesIntoModelAndCheckPermission(User user, Model model, DataPointVO dataPoint){
+
+        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
+        ControllerUtils.addPointListDataToModel(user, dataPoint.getId(), model);
+
+        model.addAttribute("form", dataPoint);
         model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
         model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
         model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));

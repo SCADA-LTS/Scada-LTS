@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.controller;
 public class FinalVariablesForControllers {
 
 
+    public static final String EMPTY_STRING = "";
     public static final String DWR_SCRIPT_SESSION_ID = "dwrScriptSessionid";
     public static final String DWRSCRIPTSESSIONUSER = "dwrscriptsessionuser";
     static final String URL_DATA_POINT_EDIT = "dataPointEdit";
