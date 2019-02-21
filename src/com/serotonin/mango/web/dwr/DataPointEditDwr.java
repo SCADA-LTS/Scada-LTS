@@ -21,6 +21,7 @@ package com.serotonin.mango.web.dwr;
 import java.util.List;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.ScriptSessionAndUsers;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -43,6 +44,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.directwebremoting.WebContextFactory;
 
 public class DataPointEditDwr extends BaseDwr {
 
@@ -71,7 +73,10 @@ public class DataPointEditDwr extends BaseDwr {
         // The user can also end up with this point in their session in the point details page, which only requires
         // read access. So, ensure that any access here is allowed with edit permission.
         User user = Common.getUser();
-        user.setEditPoint((DataPointVO) Common.ctx.getCtx().getAttribute(dwrScriptSessionId));
+        user.setEditPoint((DataPointVO) ScriptSessionAndUsers.getObjectVsScriptSession(
+                WebContextFactory.get().getSession().getId(),
+                dwrScriptSessionId)
+        );
         DataPointVO dataPoint = user.getEditPoint();
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         return dataPoint;

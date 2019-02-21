@@ -224,11 +224,10 @@ public class Common {
 
 		user = getUser(webContext.getHttpServletRequest());
 
-		User scriptSessionAwareUser=ScriptSessionAndUsers.findOrAddScriptSessionUserIntoScriptSessionUnderDwrScriptSessionUser(user,webContext);
+		return user;
 
-		return scriptSessionAwareUser == null ? user : scriptSessionAwareUser;
 	}
-	private static boolean urlAddressContains(HttpServletRequest request, String[] statements){
+	public static boolean urlAddressContainsAllGivesStatements(HttpServletRequest request, String[] statements){
 
 		boolean contains = Boolean.FALSE;
 
@@ -243,7 +242,7 @@ public class Common {
 	}
 	static User whenUrlAddressContainsdwrScriptSessionid(User user, HttpServletRequest request){
 		Set<String> scriptSessionsForWebSession = null;
-		if(urlAddressContains(request,new String[]{"dpid",DWR_SCRIPT_SESSION_ID})) {
+		if(urlAddressContainsAllGivesStatements(request,new String[]{"dpid",DWR_SCRIPT_SESSION_ID})) {
 			String[] parameters = request.getQueryString().split("&");
 			parameters  = parameters[0].split("=");
 			if(parameters[0].equals(DWR_SCRIPT_SESSION_ID)){

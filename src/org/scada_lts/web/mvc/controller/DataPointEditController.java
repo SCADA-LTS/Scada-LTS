@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.ScriptSessionAndUsers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -105,7 +106,9 @@ public class DataPointEditController {
 
         StringBuilder DWR_SCRIPT_SESSION_ID = new StringBuilder(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
         DataPointVO dataPoint = dataPointDao.getDataPoint(id);
-        Common.ctx.getCtx().setAttribute(DWR_SCRIPT_SESSION_ID.toString(),dataPoint);
+
+        ScriptSessionAndUsers.addNewScriptSessionVsObject(request.getSession().getId(),dataPoint,DWR_SCRIPT_SESSION_ID.toString());
+
         user.setEditPoint(dataPoint);
 
         model.addAttribute("dpid",request.getParameter("dpid"));
@@ -126,7 +129,7 @@ public class DataPointEditController {
 
         StringBuilder DWR_SCRIPT_SESSION_ID = new StringBuilder(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
 
-        DataPointVO dataPoint = (DataPointVO) Common.ctx.getCtx().getAttribute(DWR_SCRIPT_SESSION_ID.toString());
+        DataPointVO dataPoint = (DataPointVO) ScriptSessionAndUsers.getObjectVsScriptSession(request.getSession().getId(),DWR_SCRIPT_SESSION_ID.toString());
         dataPoint.setDiscardExtremeValues(false); // Checkbox
 
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);
