@@ -29,6 +29,25 @@ public class ScriptSessionAndUsers {
      */
     public static final String SCRIPTSESSION_USER = FinalVariablesForControllers.DWRSCRIPTSESSIONUSER;
 
+
+    public static boolean removeScriptSessionVsObjectBySessionIdAndScriptSessionId(String sessionId, String scriptSessionId){
+
+        boolean result = Boolean.FALSE;
+
+        Object object = new Object();
+
+        synchronized (object) {
+            if (Common.getCtx().getAttribute(sessionId) != null) {
+                if (((Map<String, Object>) Common.getCtx().getAttribute(sessionId)).containsKey(scriptSessionId)) {
+                    ((Map<String, Object>) Common.getCtx().getAttribute(sessionId)).remove(scriptSessionId);
+                    result=Boolean.TRUE;
+                }
+            }
+        }
+
+        return result;
+
+    }
     private static ScriptSessionManager getScriptSessionManager(HttpServletRequest request){
         ScriptSessionManager manager = null;
         try {

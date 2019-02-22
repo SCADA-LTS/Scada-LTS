@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.ScriptSessionAndUsers;
 import com.serotonin.mango.view.ImplDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +45,24 @@ public class PointPropertiesAPI {
     private DataPointService dataPointService = new DataPointService();
 
 
+    @RequestMapping(value = "/api/point_properties/removeDwrScriptSessionIdWithBusinessObject/{dwrScriptSessionId}", method = RequestMethod.GET)
+    public ResponseEntity<String> removeDwrScriptSessionIdWithBusinessObject(@PathVariable("dwrScriptSessionId") String dwrScriptSessionId, HttpServletRequest request) {
+        LOG.info("/api/point_properties/removeDwrScriptSessionIdWithBusinessObject/{dwrScriptSessionId} dwrScriptSessionId:" + dwrScriptSessionId);
+
+        boolean result = Boolean.FALSE;
+        try {
+            result = ScriptSessionAndUsers.removeScriptSessionVsObjectBySessionIdAndScriptSessionId(
+                    request.getSession().getId(),
+                    dwrScriptSessionId
+            );
+
+            return new ResponseEntity<String>(String.valueOf(result),result?HttpStatus.OK:HttpStatus.BAD_REQUEST);
+
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
     @RequestMapping(value = "/api/point_properties/getPropertiesBaseOnId/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> getPropertiesBaseOnId(@PathVariable("id") int id, HttpServletRequest request) {
         LOG.info("/api/point_properties/getPropertiesBaseOnId/{id} id:" + id);

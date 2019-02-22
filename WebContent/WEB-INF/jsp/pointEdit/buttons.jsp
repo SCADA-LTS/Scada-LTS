@@ -18,6 +18,19 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="org.scada_lts.web.mvc.controller.DataPointEditController"%>
+    <script>
+        function removeDwrScriptSessionIdVSBusinessObject() {
+
+        var resultOfRemoveDwrScriptSessionIdVSBusinessObject = jQuery.ajax({
+                                    type: "GET",
+                                    dataType: "json",
+                                    url:myLocation+"/api/point_properties/removeDwrScriptSessionIdWithBusinessObject/"+document.getElementById('dwrScriptSessionid').value,
+                                    async: false
+                                    }).responseText;
+
+        return resultOfRemoveDwrScriptSessionIdVSBusinessObject;
+        }
+    </script>
 <table>
   <tr>
     <td colspan="2" align="center">
@@ -37,7 +50,7 @@
       </c:choose>
       
       <input type="button" value="<fmt:message key="common.cancel"/>"
-              onclick="window.location='data_point_details.shtm?dpid=${form.id}';"/>
+              onclick="if(document.getElementById('dwrScriptSessionid').value !='') {removeDwrScriptSessionIdVSBusinessObject();};window.location='data_point_details.shtm?dpid=${form.id}';"/>
     </td>
     <td></td>
   </tr>
