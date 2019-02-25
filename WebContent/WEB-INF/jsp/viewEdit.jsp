@@ -395,7 +395,7 @@
 
                 <tr>
                   <td class="formField" width="250">
-                    <input type="hidden" id="dwrScriptSessionid" name="dwrScriptSessionid" value="">
+                    <input type="hidden" id="dwrScriptSessionid" name="dwrScriptSessionid" value="${dwrScriptSessionid}">
                   </td>
                 </tr>
 

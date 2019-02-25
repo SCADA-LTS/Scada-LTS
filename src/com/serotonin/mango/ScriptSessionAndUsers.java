@@ -45,34 +45,7 @@ public class ScriptSessionAndUsers {
         return result;
 
     }
-    private static ScriptSessionManager getScriptSessionManager(HttpServletRequest request){
-        ScriptSessionManager manager = null;
-        try {
-            Container container = ServerContextFactory.get(request.getServletContext()).getContainer();
-            manager = (ScriptSessionManager) container.getBean(ScriptSessionManager.class.getName());
-        }catch (Exception e){
-            LOG.warn("Could not retrieve user for dwr script session");
-        }
-        return manager;
-    }
-    /**
-     * Returns correct User from Script Session
-     *
-     * @param scriptSessionId
-     * @param request
-     * @return User
-     */
-    public static User getUserFromScriptSessionManagerSavedUnderDWRSCRIPTSESSIONUSER(String scriptSessionId, HttpServletRequest request){
-        User user = null;
-        try {
-            user = (User) getScriptSessionManager(request).getScriptSession(scriptSessionId).getAttribute(SCRIPTSESSION_USER);
-        }catch (Exception e){
-            LOG.warn("Could not retrieve user for dwr script session");
-        }
-        return (user!=null) ? user
-                            : Common.getUser(request);
-    }
-    public static void addNewScriptSessionVsObjectUnderGivenSessionId(String sessionId, Object objectEegPointWatchListAndSoOn, String scriptSessionId){
+    public synchronized static void addNewScriptSessionVsObjectUnderGivenSessionId(String sessionId, Object objectEegPointWatchListAndSoOn, String scriptSessionId){
         if(sessionId !=null && !sessionId.isEmpty() &&
             objectEegPointWatchListAndSoOn !=null &&
             scriptSessionId !=null && !scriptSessionId.isEmpty()
@@ -90,12 +63,12 @@ public class ScriptSessionAndUsers {
             try {
                 throw new Exception("Any of parameters (sessionId,objectEegPointWatchListAndSoOn,scriptSessionId) cannot be empty");
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.warn(e.getMessage());
             }
         }
 
     }
-    public static Object getObjectVsScriptSession(String sessionId, String scriptSessionId){
+    public synchronized static Object getObjectVsScriptSession(String sessionId, String scriptSessionId){
 
         if(sessionId !=null && !sessionId.isEmpty() &&
             scriptSessionId !=null && !scriptSessionId.isEmpty()
@@ -112,14 +85,15 @@ public class ScriptSessionAndUsers {
         }
         else
             try {
-                throw new Exception("Any of parameters (sessionId,objectEegPointWatchListAndSoOn,scriptSessionId) cannot be empty");
+                throw new Exception("Any of parameters (sessionId,scriptSessionId) cannot be empty");
             } catch (Exception e) {
-                LOG.error(e);
+                LOG.warn(e.getMessage());
             }
             return null;
 
     }
-    public static void removeAllUnderSessionIdAttributeFromCommonContext(String sessionId){
+
+    public synchronized static void removeAllUnderSessionIdAttributeFromCommonContext(String sessionId){
         if(sessionId!=null && !sessionId.isEmpty()) {
             if (Common.getCtx().getAttribute(sessionId) != null) {
                 Common.getCtx().removeAttribute(sessionId);
@@ -131,30 +105,6 @@ public class ScriptSessionAndUsers {
             } catch (Exception e) {
                 LOG.warn(e.getMessage());
             }
-
     }
-    public static void aa(HttpServletRequest request,String scriptSessionId){
-        Set<String> scriptSessionsForWebSession;
-
-        if( Common.getCtx().getAttribute(SCRIPTSESSION_USER)==null) {
-            (scriptSessionsForWebSession = new HashSet<String>()).add(scriptSessionId);
-            Common.getCtx().setAttribute(SCRIPTSESSION_USER, scriptSessionsForWebSession);
-        }
-        else {
-            scriptSessionsForWebSession = (Set<String>) Common.getCtx().getAttribute(SCRIPTSESSION_USER);
-        }
-
-        scriptSessionsForWebSession.add(scriptSessionId);
-
-        addAttributeAndValueIntoCommonContextWithSyncProtection(SCRIPTSESSION_USER,scriptSessionsForWebSession);
-
-    }
-    private synchronized static void addAttributeAndValueIntoCommonContextWithSyncProtection(String attribute,Object value){
-
-            Common.getCtx().removeAttribute(attribute);
-            Common.getCtx().setAttribute(attribute, value);
-
-    }
-
 
 }
