@@ -517,7 +517,7 @@
 
             <tr>
               <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="document.getElementById('dwrScriptSessionid').value = dwr.engine._getScriptSessionId();window.onbeforeunload = null;"/>
+                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
                 <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
                 <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>

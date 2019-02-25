@@ -18,7 +18,7 @@
 
 package org.scada_lts.session;
 
-import com.serotonin.mango.ScriptSessionAndUsers;
+import com.serotonin.mango.ScriptSessions;
 import java.util.HashMap;
 
 import javax.servlet.annotation.WebListener;
@@ -65,7 +65,7 @@ public class HttpSessionListenerImpl implements HttpSessionListener {
 				.getServletContext().getAttribute(SERVLET_CONTEXT_MAP);
 		map.remove(sessionEvent.getSession().getId());
 
-		ScriptSessionAndUsers.removeAllUnderSessionIdAttributeFromCommonContext(sessionEvent.getSession().getId());
+		ScriptSessions.removeAllUnderSessionIdAttributeFromCommonContext(sessionEvent.getSession().getId());
 
 	}
 }

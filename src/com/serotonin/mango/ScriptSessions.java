@@ -1,34 +1,21 @@
 package com.serotonin.mango;
 
-import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.Container;
-import org.directwebremoting.ServerContextFactory;
-import org.directwebremoting.extend.ScriptSessionManager;
-import org.scada_lts.web.mvc.controller.FinalVariablesForControllers;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
- * ScriptSessionAndUsers responsible for managing  User copies specific given browser "tab" (DWR Script Session)
- * User copies are stored in {@value #SCRIPTSESSION_USER} attribute of DWR script session
+ * ScriptSessions is responsible for cooperate on map collection. This collection have pair like :
+ * key  - dwrScriptSessionid,
+ * value- business object like Point,View etc.
  *
  * @author Mateusz Hyski mateusz.hyski@softq.pl
  */
-public class ScriptSessionAndUsers {
+public class ScriptSessions {
 
-    private static final Log LOG = LogFactory.getLog(ScriptSessionAndUsers.class);
-
-    /**
-     * {@value #SCRIPTSESSION_USER} is the attribute name under session
-     */
-    public static final String SCRIPTSESSION_USER = FinalVariablesForControllers.DWRSCRIPTSESSIONUSER;
+    private static final Log LOG = LogFactory.getLog(ScriptSessions.class);
 
 
     public synchronized static boolean removeScriptSessionVsObjectBySessionIdAndScriptSessionId(String sessionId, String scriptSessionId){

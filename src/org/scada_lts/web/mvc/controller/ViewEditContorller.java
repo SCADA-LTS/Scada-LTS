@@ -25,7 +25,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.serotonin.mango.ScriptSessionAndUsers;
+import com.serotonin.mango.ScriptSessions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.ViewEditForm;
@@ -99,7 +99,7 @@ public class ViewEditContorller {
             view.setXid(new ViewDao().generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
-        ScriptSessionAndUsers.addNewScriptSessionVsObjectUnderGivenSessionId(request.getSession().getId(),view,dwrScriptSessionid);
+        ScriptSessions.addNewScriptSessionVsObjectUnderGivenSessionId(request.getSession().getId(),view,dwrScriptSessionid);
         user.setView(view);
         view.validateViewComponents(false);
 
@@ -145,13 +145,10 @@ public class ViewEditContorller {
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
         User user = Common.getUser(request);
-        View view =(View) ScriptSessionAndUsers.getObjectVsScriptSession(
-                request.getSession().getId(),
-                request.getAttribute(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID).toString()
-        );
-        ScriptSessionAndUsers.removeScriptSessionVsObjectBySessionIdAndScriptSessionId(
-                request.getSession().getId(),
-                request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
+        String DWRSCRIPTSESSIONID = request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID);
+        String sessionId= request.getSession().getId();
+        View view =(View) ScriptSessions.getObjectVsScriptSession(sessionId,DWRSCRIPTSESSIONID);
+        ScriptSessions.removeScriptSessionVsObjectBySessionIdAndScriptSessionId(sessionId,DWRSCRIPTSESSIONID);
 
         copyViewProperties(view, form.getView());
         form.setView(view);
@@ -183,14 +180,10 @@ public class ViewEditContorller {
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
-
-        View view = (View) ScriptSessionAndUsers.getObjectVsScriptSession(
-                request.getSession().getId(),
-                request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
-        //user.getView();
-        ScriptSessionAndUsers.removeScriptSessionVsObjectBySessionIdAndScriptSessionId(
-                request.getSession().getId(),
-                request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
+        String DWRSCRIPTSESSIONID = request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID);
+        String sessionId= request.getSession().getId();
+        View view = (View) ScriptSessions.getObjectVsScriptSession(sessionId,DWRSCRIPTSESSIONID);
+        ScriptSessions.removeScriptSessionVsObjectBySessionIdAndScriptSessionId(sessionId,DWRSCRIPTSESSIONID);
         form.setView(view);
 
         return getSuccessRedirectView("viewId=" + form.getView().getId());

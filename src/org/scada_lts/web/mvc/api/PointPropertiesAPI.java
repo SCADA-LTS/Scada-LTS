@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.ScriptSessionAndUsers;
+import com.serotonin.mango.ScriptSessions;
 import com.serotonin.mango.view.ImplDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,7 +53,7 @@ public class PointPropertiesAPI {
 
         if( !dwrScriptSessionId.isEmpty() && dwrScriptSessionId !=null) {
             try {
-                result = ScriptSessionAndUsers.removeScriptSessionVsObjectBySessionIdAndScriptSessionId(
+                result = ScriptSessions.removeScriptSessionVsObjectBySessionIdAndScriptSessionId(
                         request.getSession().getId(),
                         dwrScriptSessionId
                 );
