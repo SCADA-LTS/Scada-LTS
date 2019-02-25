@@ -1,18 +1,19 @@
 package com.serotonin.mango;
 
-import com.rits.cloning.Cloner;
 import com.serotonin.mango.vo.User;
-import com.sun.jna.platform.win32.OaIdl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.*;
-import org.directwebremoting.extend.RealScriptSession;
+import org.directwebremoting.Container;
+import org.directwebremoting.ServerContextFactory;
 import org.directwebremoting.extend.ScriptSessionManager;
-import org.directwebremoting.impl.DefaultScriptSession;
 import org.scada_lts.web.mvc.controller.FinalVariablesForControllers;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * ScriptSessionAndUsers responsible for managing  User copies specific given browser "tab" (DWR Script Session)
@@ -30,20 +31,16 @@ public class ScriptSessionAndUsers {
     public static final String SCRIPTSESSION_USER = FinalVariablesForControllers.DWRSCRIPTSESSIONUSER;
 
 
-    public static boolean removeScriptSessionVsObjectBySessionIdAndScriptSessionId(String sessionId, String scriptSessionId){
+    public synchronized static boolean removeScriptSessionVsObjectBySessionIdAndScriptSessionId(String sessionId, String scriptSessionId){
 
         boolean result = Boolean.FALSE;
 
-        Object object = new Object();
-
-        synchronized (object) {
             if (Common.getCtx().getAttribute(sessionId) != null) {
                 if (((Map<String, Object>) Common.getCtx().getAttribute(sessionId)).containsKey(scriptSessionId)) {
                     ((Map<String, Object>) Common.getCtx().getAttribute(sessionId)).remove(scriptSessionId);
-                    result=Boolean.TRUE;
+                    result = Boolean.TRUE;
                 }
             }
-        }
 
         return result;
 
@@ -75,58 +72,10 @@ public class ScriptSessionAndUsers {
         return (user!=null) ? user
                             : Common.getUser(request);
     }
-    public static User getUserFromScriptSessionManagerByScriptSessionId(HttpServletRequest request, String scriptsessionid) {
-        User user = null;
-        try {
-            RealScriptSession rss = getScriptSessionManager(request).getScriptSession(scriptsessionid);
-            user = (User) rss.getAttribute(scriptsessionid);
-        } catch (Exception e) {
-            LOG.warn("Could not retrieve user for dwr script session");
-        }
-        return user;
-    }
-    /**
-     * Gets user from map what is attribute of Script Session
-     *
-     * @param user
-     * @param webContext
-     * @return User
-     */
-    public static User findOrAddScriptSessionUserIntoScriptSessionUnderDwrScriptSessionUser(User user, WebContext webContext){
-
-        ScriptSession scriptSession=null;
-
-        try {
-            scriptSession = webContext == null ? null : webContext.getScriptSession();
-        }catch (Exception e){
-            LOG.warn("We have exception when trying to get scriptSession.");
-        }
-
-        if  (scriptSession == null) {
-            return  null;
-        }else{
-            if( Common.getCtx().getAttribute(SCRIPTSESSION_USER)!=null) {
-                return getUserFromCommonUnderGivensessionId();
-            }
-             else if (scriptSession.getAttribute(SCRIPTSESSION_USER) == null){
-
-                User scriptSessionUser = new Cloner().deepClone(user);
-                scriptSession.setAttribute(SCRIPTSESSION_USER, scriptSessionUser);
-                scriptSession.setAttribute(scriptSession.getId(), scriptSessionUser);
-                scriptSession.setAttribute(webContext.getSession().getId(), scriptSession.getId());
-
-                ScriptSessionAndUsers.addScriptSessionIdToSetUnderWebSession(webContext,scriptSession);
-                return scriptSessionUser;
-            }else{
-                return (User) scriptSession.getAttribute(SCRIPTSESSION_USER);
-            }
-
-        }
-    }
-    public static void addNewScriptSessionVsObject(String sessionId,Object objectEegPointWatchListAndSoOn,String scriptSessionId){
-        if(sessionId !=null && sessionId != "" &&
+    public static void addNewScriptSessionVsObjectUnderGivenSessionId(String sessionId, Object objectEegPointWatchListAndSoOn, String scriptSessionId){
+        if(sessionId !=null && !sessionId.isEmpty() &&
             objectEegPointWatchListAndSoOn !=null &&
-            scriptSessionId !=null && scriptSessionId != ""
+            scriptSessionId !=null && !scriptSessionId.isEmpty()
         ) {
             if (Common.getCtx().getAttribute(sessionId) != null) {
                 ((Map<String, Object>) Common.getCtx().getAttribute(sessionId)).put(scriptSessionId, objectEegPointWatchListAndSoOn);
@@ -148,8 +97,8 @@ public class ScriptSessionAndUsers {
     }
     public static Object getObjectVsScriptSession(String sessionId, String scriptSessionId){
 
-        if(sessionId !=null && sessionId != "" &&
-            scriptSessionId !=null && scriptSessionId != ""
+        if(sessionId !=null && !sessionId.isEmpty() &&
+            scriptSessionId !=null && !scriptSessionId.isEmpty()
         ) {
             if (Common.getCtx().getAttribute(sessionId)!=null) {
                 if(((Map<String, Object>) Common.getCtx().getAttribute(sessionId)).get(scriptSessionId)!=null){
@@ -157,7 +106,6 @@ public class ScriptSessionAndUsers {
                 }
                 else
                     return null;
-
             }
             else
                 return null;
@@ -171,7 +119,7 @@ public class ScriptSessionAndUsers {
             return null;
 
     }
-    public static void removeScriptSessionVsObject(String sessionId){
+    public static void removeAllUnderSessionIdAttributeFromCommonContext(String sessionId){
         if(sessionId!=null && !sessionId.isEmpty()) {
             if (Common.getCtx().getAttribute(sessionId) != null) {
                 Common.getCtx().removeAttribute(sessionId);
@@ -181,30 +129,9 @@ public class ScriptSessionAndUsers {
             try {
                 throw new Exception("Parameter sessionId cannot be null or empty");
             } catch (Exception e) {
-                LOG.error(e);
+                LOG.warn(e.getMessage());
             }
 
-    }
-    public static void removeScriptSessionVsObject(String sessionId, String scriptSessionId){
-
-        ((Map<String,Object>)Common.getCtx().getAttribute(sessionId)).remove(scriptSessionId);
-
-    }
-    private static User getUserFromCommonUnderGivensessionId(){
-        Set<String> scriptSessionsForWebSession = new HashSet<String>();
-        User user = null;
-        if(Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER)!=null) {
-            try {
-                scriptSessionsForWebSession = (Set<String>) Common.getCtx().getAttribute((String) Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER));
-                for (String id : scriptSessionsForWebSession) {
-                    String h = id;
-
-                }
-            } catch (Exception e) {
-                int a = 0;
-            }
-        }
-        return user;
     }
     public static void aa(HttpServletRequest request,String scriptSessionId){
         Set<String> scriptSessionsForWebSession;
@@ -219,45 +146,14 @@ public class ScriptSessionAndUsers {
 
         scriptSessionsForWebSession.add(scriptSessionId);
 
-        Object object = new Object();
-
-        synchronized(object) {
-            Common.getCtx().removeAttribute(SCRIPTSESSION_USER);
-            Common.getCtx().setAttribute(SCRIPTSESSION_USER, scriptSessionsForWebSession);
-        }
+        addAttributeAndValueIntoCommonContextWithSyncProtection(SCRIPTSESSION_USER,scriptSessionsForWebSession);
 
     }
-    public static void addScriptSessionIdToSetUnderWebSession( WebContext webContext,ScriptSession scriptSession){
-        if( Common.getCtx().getAttribute(SCRIPTSESSION_USER)==null) {
-            Common.getCtx().setAttribute(SCRIPTSESSION_USER, webContext.getSession().getId());
-            Common.getCtx().setAttribute(webContext.getSession().getId(), new HashSet<String>());
-        }
+    private synchronized static void addAttributeAndValueIntoCommonContextWithSyncProtection(String attribute,Object value){
 
-        else {
-            Set<String> scriptSessionsForWebSession = new HashSet<String>();
-            try {
-                scriptSessionsForWebSession = (Set<String>) Common.getCtx().getAttribute((String)Common.getCtx().getAttribute(SCRIPTSESSION_USER));
-            }
-            catch (Exception e){
-                int a=0;
-            }
-            scriptSessionsForWebSession.add(scriptSession.getId());
-            Common.getCtx().removeAttribute(webContext.getSession().getId());
-            Common.getCtx().setAttribute(webContext.getSession().getId(), scriptSessionsForWebSession);
-        }
-    }
-    public static User findScriptSessionUserInScriptSessionManagerCollection(HttpServletRequest request){
-        User userDwr = null;
-        Collection<DefaultScriptSession> col  = (Collection<DefaultScriptSession>) getScriptSessionManager(request).getScriptSessionsByPage("/ScadaBR/data_point_edit.shtm");
-        Iterator dss = col.iterator();
-        while(dss.hasNext()){
-            DefaultScriptSession dss2 = (DefaultScriptSession) dss.next();
-            userDwr=(User) dss2.getAttribute((String)request.getSession().getId());
+            Common.getCtx().removeAttribute(attribute);
+            Common.getCtx().setAttribute(attribute, value);
 
-            if(userDwr!=null)
-                return userDwr;
-        }
-        return userDwr;
     }
 
 

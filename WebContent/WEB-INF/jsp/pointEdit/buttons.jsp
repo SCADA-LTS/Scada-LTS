@@ -18,19 +18,7 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="org.scada_lts.web.mvc.controller.DataPointEditController"%>
-    <script>
-        function removeDwrScriptSessionIdVSBusinessObject() {
-
-        var resultOfRemoveDwrScriptSessionIdVSBusinessObject = jQuery.ajax({
-                                    type: "GET",
-                                    dataType: "json",
-                                    url:myLocation+"/api/point_properties/removeDwrScriptSessionIdWithBusinessObject/"+document.getElementById('dwrScriptSessionid').value,
-                                    async: false
-                                    }).responseText;
-
-        return resultOfRemoveDwrScriptSessionIdVSBusinessObject;
-        }
-    </script>
+<script src=./resources/rest_business_object_vs_dwrscriptsessionid.js></script>
 <table>
   <tr>
     <td colspan="2" align="center">

@@ -107,7 +107,7 @@ public class DataPointEditController {
         StringBuilder DWR_SCRIPT_SESSION_ID = new StringBuilder(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
         DataPointVO dataPoint = dataPointDao.getDataPoint(id);
 
-        ScriptSessionAndUsers.addNewScriptSessionVsObject(request.getSession().getId(),dataPoint,DWR_SCRIPT_SESSION_ID.toString());
+        ScriptSessionAndUsers.addNewScriptSessionVsObjectUnderGivenSessionId(request.getSession().getId(),dataPoint,DWR_SCRIPT_SESSION_ID.toString());
 
         user.setEditPoint(dataPoint);
 

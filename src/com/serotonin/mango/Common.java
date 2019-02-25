@@ -206,7 +206,19 @@ public class Common {
 		return new LocalizableMessage("common.tp.description", periods,
 				new LocalizableMessage(periodKey));
 	}
+	public static boolean urlAddressContainsAllGivesStatements(HttpServletRequest request, String[] statements){
 
+		boolean contains = Boolean.FALSE;
+
+		if(request.getQueryString()!=null) {
+			for (String partOfUrl : statements) {
+				contains = request.getQueryString().contains(partOfUrl);
+				if(contains==Boolean.FALSE) break;
+			}
+		}
+
+		return contains;
+	}
 	//
 	// Session user
 	public static User getUser() {
@@ -226,43 +238,6 @@ public class Common {
 
 		return user;
 
-	}
-	public static boolean urlAddressContainsAllGivesStatements(HttpServletRequest request, String[] statements){
-
-		boolean contains = Boolean.FALSE;
-
-		if(request.getQueryString()!=null) {
-			for (String partOfUrl : statements) {
-				contains = request.getQueryString().contains(partOfUrl);
-				if(contains==Boolean.FALSE) break;
-			}
-		}
-
-		return contains;
-	}
-	static User whenUrlAddressContainsdwrScriptSessionid(User user, HttpServletRequest request){
-		Set<String> scriptSessionsForWebSession = null;
-		if(urlAddressContainsAllGivesStatements(request,new String[]{"dpid",DWR_SCRIPT_SESSION_ID})) {
-			String[] parameters = request.getQueryString().split("&");
-			parameters  = parameters[0].split("=");
-			if(parameters[0].equals(DWR_SCRIPT_SESSION_ID)){
-				if(Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER)!=null){
-					try {
-				 		scriptSessionsForWebSession = (Set<String>) Common.getCtx().getAttribute((String)Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER));
-						for(String id:scriptSessionsForWebSession){
-							if(id.equals(parameters[1])){
-								user = ScriptSessionAndUsers.getUserFromScriptSessionManagerByScriptSessionId( request,id);break;
-							}
-						}
-					}catch (Exception e){
-							int a=0;
-					}
-					if(user!=null)
-						return user;
-				}
-			}
-		}
-		return user;
 	}
 	public static User getUser(HttpServletRequest request) {
 

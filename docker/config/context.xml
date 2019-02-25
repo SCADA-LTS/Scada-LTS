@@ -47,7 +47,7 @@
           password="root"
           driverClassName="com.mysql.jdbc.Driver"
           defaultTransactionIsolation="READ_COMMITTED"
-          url="jdbc:mysql://localhost:3306/scadalts2"
+          url="jdbc:mysql://localhost:3306/scadalts"
           
          />
     

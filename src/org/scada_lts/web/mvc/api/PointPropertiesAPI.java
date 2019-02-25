@@ -50,18 +50,29 @@ public class PointPropertiesAPI {
         LOG.info("/api/point_properties/removeDwrScriptSessionIdWithBusinessObject/{dwrScriptSessionId} dwrScriptSessionId:" + dwrScriptSessionId);
 
         boolean result = Boolean.FALSE;
-        try {
-            result = ScriptSessionAndUsers.removeScriptSessionVsObjectBySessionIdAndScriptSessionId(
-                    request.getSession().getId(),
-                    dwrScriptSessionId
-            );
 
-            return new ResponseEntity<String>(String.valueOf(result),result?HttpStatus.OK:HttpStatus.BAD_REQUEST);
+        if( !dwrScriptSessionId.isEmpty() && dwrScriptSessionId !=null) {
+            try {
+                result = ScriptSessionAndUsers.removeScriptSessionVsObjectBySessionIdAndScriptSessionId(
+                        request.getSession().getId(),
+                        dwrScriptSessionId
+                );
 
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<String>(String.valueOf(result), result ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            }
         }
+        else
+            try {
+                throw new Exception("Parameter dwrScriptSessionId cannot be null or empty");
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            }
+
     }
     @RequestMapping(value = "/api/point_properties/getPropertiesBaseOnId/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> getPropertiesBaseOnId(@PathVariable("id") int id, HttpServletRequest request) {
