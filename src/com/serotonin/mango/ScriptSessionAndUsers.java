@@ -10,14 +10,14 @@ import org.scada_lts.web.mvc.controller.FinalVariablesForControllers;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.Map;
-import java.util.Set;
 
 
 /**
- * ScriptSessionAndUsers responsible for managing  User copies specific given browser "tab" (DWR Script Session)
- * User copies are stored in {@value #SCRIPTSESSION_USER} attribute of DWR script session
+ * ScriptSessions is responsible for cooperate on map collection. This collection have pair like :
+ * key  - dwrScriptSessionid,
+ * value- business object like Point,View etc.
  *
  * @author Mateusz Hyski mateusz.hyski@softq.pl
  */
@@ -90,7 +90,7 @@ public class ScriptSessionAndUsers {
             try {
                 throw new Exception("Any of parameters (sessionId,objectEegPointWatchListAndSoOn,scriptSessionId) cannot be empty");
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.warn(e.getMessage());
             }
         }
 
@@ -112,9 +112,9 @@ public class ScriptSessionAndUsers {
         }
         else
             try {
-                throw new Exception("Any of parameters (sessionId,objectEegPointWatchListAndSoOn,scriptSessionId) cannot be empty");
+                throw new Exception("Any of parameters (sessionId,scriptSessionId) cannot be empty");
             } catch (Exception e) {
-                LOG.error(e);
+                LOG.warn(e.getMessage());
             }
             return null;
 
@@ -133,28 +133,4 @@ public class ScriptSessionAndUsers {
             }
 
     }
-    public static void aa(HttpServletRequest request,String scriptSessionId){
-        Set<String> scriptSessionsForWebSession;
-
-        if( Common.getCtx().getAttribute(SCRIPTSESSION_USER)==null) {
-            (scriptSessionsForWebSession = new HashSet<String>()).add(scriptSessionId);
-            Common.getCtx().setAttribute(SCRIPTSESSION_USER, scriptSessionsForWebSession);
-        }
-        else {
-            scriptSessionsForWebSession = (Set<String>) Common.getCtx().getAttribute(SCRIPTSESSION_USER);
-        }
-
-        scriptSessionsForWebSession.add(scriptSessionId);
-
-        addAttributeAndValueIntoCommonContextWithSyncProtection(SCRIPTSESSION_USER,scriptSessionsForWebSession);
-
-    }
-    private synchronized static void addAttributeAndValueIntoCommonContextWithSyncProtection(String attribute,Object value){
-
-            Common.getCtx().removeAttribute(attribute);
-            Common.getCtx().setAttribute(attribute, value);
-
-    }
-
-
 }
