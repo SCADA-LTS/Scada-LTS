@@ -72,7 +72,8 @@ public class ScriptSessionAndUsers {
         return (user!=null) ? user
                             : Common.getUser(request);
     }
-    public static void addNewScriptSessionVsObjectUnderGivenSessionId(String sessionId, Object objectEegPointWatchListAndSoOn, String scriptSessionId){
+    public static boolean addNewScriptSessionVsObjectUnderGivenSessionId(String sessionId, Object objectEegPointWatchListAndSoOn, String scriptSessionId){
+        boolean result = false;
         if(sessionId !=null && !sessionId.isEmpty() &&
             objectEegPointWatchListAndSoOn !=null &&
             scriptSessionId !=null && !scriptSessionId.isEmpty()
@@ -84,16 +85,13 @@ public class ScriptSessionAndUsers {
                 scriptSessionVSBusinessObject.put(scriptSessionId, objectEegPointWatchListAndSoOn);
                 Common.getCtx().setAttribute(sessionId, scriptSessionVSBusinessObject);
             }
+            result= true;
         }
         else
         {
-            try {
-                throw new Exception("Any of parameters (sessionId,objectEegPointWatchListAndSoOn,scriptSessionId) cannot be empty");
-            } catch (Exception e) {
-                LOG.warn(e.getMessage());
-            }
+            LOG.warn("Any of parameters (sessionId,objectEegPointWatchListAndSoOn,scriptSessionId) cannot be empty");
         }
-
+        return result;
     }
     public static Object getObjectVsScriptSession(String sessionId, String scriptSessionId){
 
@@ -111,26 +109,23 @@ public class ScriptSessionAndUsers {
                 return null;
         }
         else
-            try {
-                throw new Exception("Any of parameters (sessionId,scriptSessionId) cannot be empty");
-            } catch (Exception e) {
-                LOG.warn(e.getMessage());
+            {
+            LOG.warn("Any of parameters (sessionId,scriptSessionId) cannot be empty");
             }
             return null;
-
     }
-    public static void removeAllUnderSessionIdAttributeFromCommonContext(String sessionId){
+    public synchronized static boolean removeAllUnderSessionIdAttributeFromCommonContext(String sessionId){
+        boolean result = false;
         if(sessionId!=null && !sessionId.isEmpty()) {
             if (Common.getCtx().getAttribute(sessionId) != null) {
                 Common.getCtx().removeAttribute(sessionId);
+                result = true;
             }
         }
         else
-            try {
-                throw new Exception("Parameter sessionId cannot be null or empty");
-            } catch (Exception e) {
-                LOG.warn(e.getMessage());
+            {
+                LOG.warn("Parameter sessionId cannot be null or empty");
             }
-
+        return result;
     }
 }
