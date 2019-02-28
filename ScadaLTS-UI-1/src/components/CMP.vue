@@ -37,15 +37,20 @@
         <div class="cmp-well">
           <section>
             <btn-group>
-              <div v-for="(item, index) in controlsLevel0">
-                <btn block v-bind:class="{ cmp_selected: (selectActionLevel0==item.name)}"
-                     v-on:click="setActionLeve0(item.name)">{{item.name}}
+              <div v-for="item in controlsLevel0">
+                <btn block
+                     class="cmp-flex-container-columns"
+                     v-bind:class="[{cmp_selected: ((selectActionLevel0==item.name) && (!!item.runDirectlyBeforeShowSubMenu)) },
+                     { cmp_selected_to_confirm: ((selectActionLevel0==item.name) && (!!!item.runDirectlyBeforeShowSubMenu))}]"
+                     v-on:click="setActionLeve0(item.name)">
+                  {{item.name}}
+                  <span v-if="item.runDirectlyBeforeShowSubMenu" class="cmp-small-info">Don't need confirmation</span>
                 </btn>
               </div>
             </btn-group>
-            <btn-group>
-              <div v-if="controlsLevel1.length>0" v-for="(item, index) in controlsLevel1">
-                <btn block v-bind:class="{ cmp_selected: (selectActionLevel1==item.name)}"
+            <btn-group v-if="controlsLevel1.length>0">
+              <div v-for="item in controlsLevel1">
+                <btn block v-bind:class="{ cmp_selected_to_confirm: (selectActionLevel1==item.name)}"
                      v-on:click="setActionLevel1(item.name)">{{item.name}}
                 </btn>
               </div>
@@ -164,6 +169,7 @@
     },
     methods: {
       checkStatus() {
+
         this.processOfCheckingTheStatus = true;
         // create buffor data to query
         let xIds = [];
@@ -205,6 +211,7 @@
                         if (!!entryChecked.toNoteError) {
                           errors.push(entryChecked.describe);
                         }
+
                         // if toBreak = true out of any checking next
                         toBreak = !(!!entryChecked.toNext);
                         // out of currently check because we finded in response equals xid
@@ -213,10 +220,9 @@
                       toRun = "";
                     }
                   }
-
                 }
               } catch (e) {
-                console.log(e);
+                //Todo show error
               }
               // if not checking next (entryChecked.toNext==false)
               if (toBreak) {
@@ -231,28 +237,61 @@
           }
           this.processOfCheckingTheStatus = false;
         }).catch(er => {
-          console.log(er.message);
+          //Todo show error
           this.processOfCheckingTheStatus = false;
         })
       },
       setActionLeve0(action) {
-        if (this.selectActionLevel0 == action) {
-          // unselect
-          this.selectActionLevel0 = '';
+        // get action by name action
+        let foundLevel = _.findWhere(this.controlsLevel0, {name: action});
+        let runDirectlyBeforeShowSubMenu = !!foundLevel.runDirectlyBeforeShowSubMenu;
+
+        // check the action have runDirectlyBeforeShowSubMenu (and currently status is different then action)
+        if (runDirectlyBeforeShowSubMenu == true) {
+          let newData = [];
+          // if action have runDirectlyBeforeShowSubMenu true then first run command then ok check next level
+          let toSave = foundLevel.save;
+          for (let i = 0; i < toSave.length; i++) {
+            let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {def: toSave[i].refDefPoint});
+            let change = new ChangeDataDTO(xid.xid, toSave[i].value, "", "");
+            newData.push(change)
+          }
+          if (newData.length > 0) {
+            new ApiCMP().set(newData).then(response => {
+              setInterval(() => {
+                let found = _.findWhere(this.controlsLevel0, {name: action});
+                if (found.toChange != undefined) {
+                  if (this.controlsLevel1 != found.toChange) this.controlsLevel1 = found.toChange;
+                } else {
+                  this.controlsLevel1 = [];
+                }
+                this.selectActionLevel1 = '';
+
+              }, this.timeRefresh + 1000);
+            }).catch(er => {
+              //Todo show error
+            });
+          }
         } else {
-          this.selectActionLevel0 = action;
-          let found = _.findWhere(this.controlsLevel0, {name: action});
-          this.controlsLevel1 = found.toChange;
-          this.selectActionLevel1 = '';
+          if (this.selectActionLevel0 == action) {
+            this.selectActionLevel0 = '';
+          } else {
+            this.selectActionLevel0 = action;
+            let found = _.findWhere(this.controlsLevel0, {name: action});
+            if (found.toChange != undefined) {
+              this.controlsLevel1 = found.toChange;
+            } else {
+              this.controlsLevel1 = []
+            }
+            this.selectActionLevel1 = '';
+          }
         }
       },
       setActionLevel1(action) {
         if (this.selectActionLevel1 == action) {
-          //unselect
           this.selectActionLevel1 = '';
         } else {
           this.selectActionLevel1 = action;
-          this.selectActionLevel0 = '';
         }
       },
       setErrors(errors) {
@@ -282,9 +321,9 @@
           }
           if (newData.length > 0) {
             new ApiCMP().set(newData).then(response => {
-              //console.log(response);
+              this.show = false;
             }).catch(er => {
-              console.log(er);
+              //show error
             });
           }
         }
@@ -295,7 +334,7 @@
         this.config = JSON.parse(this.strConfig);
         this.controlsLevel0 = this.config.control.toChange;
       } catch (e) {
-        console.log(e);
+        //show error
       }
       if (this.timeRefresh) {
         setInterval(
@@ -309,6 +348,37 @@
     filters: {
       moment: function (date) {
         return moment(date).format(" hh:mm:ss");
+      }
+    },
+    watch: {
+      'show': function (val, oldVal) {
+        if (val == true) {
+          let found = _.findWhere(this.controlsLevel0, {name: this.insideState});
+          if (found != undefined) {
+            if (found.toChange != undefined) {
+              this.controlsLevel1 = found.toChange;
+            } else {
+              this.controlsLevel1 = []
+            }
+            this.selectActionLevel0 = found.name;
+            this.selectActionLevel1 = '';
+
+          }
+        }
+      },
+      'insideState': function (val, oldVal) {
+        if (val != oldVal) {
+          let found = _.findWhere(this.controlsLevel0, {name: this.insideState});
+          if (found != undefined) {
+            if (found.toChange != undefined) {
+              this.controlsLevel1 = found.toChange;
+            } else {
+              this.controlsLevel1 = []
+            }
+            this.selectActionLevel0 = found.name;
+            this.selectActionLevel1 = '';
+          }
+        }
       }
     }
   }
@@ -365,6 +435,15 @@
   .cmp_selected {
     background-color: orangered;
     color: #d4d4d4;
+  }
+
+  .cmp_selected_to_confirm {
+    background-color: #2e6da4;
+    color: #d4d4d4;
+  }
+
+  .cmp-small-info {
+    font-size: 8px;
   }
 
 
