@@ -274,7 +274,7 @@
             graphicRendererEditor.componentId = compId;
             
             // Set the renderers for the data type of this point view.
-            ViewDwr.getViewComponent(compId, graphicRendererEditor.setViewComponent);
+            ViewDwr.getViewComponent(document.getElementById('dwrScriptSessionid').value,compId, graphicRendererEditor.setViewComponent);
         };
 
         this.setViewComponent = function(comp) {

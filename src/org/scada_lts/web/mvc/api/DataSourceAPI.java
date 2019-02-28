@@ -38,6 +38,24 @@ import java.util.List;
 /**
  * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
  */
+class DatasourceJSON implements Serializable {
+    private long id;
+    private String xid;
+
+    DatasourceJSON(long id,String xid) {
+        this.setId(id);
+        this.setXid(xid);
+    }
+
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
+    public String getXid() {
+        return xid;
+    }
+    public void setXid(String xid) {
+        this.xid = xid;
+    }
+}
 @Controller
 public class DataSourceAPI {
 
@@ -54,24 +72,6 @@ public class DataSourceAPI {
             User user = Common.getUser(request);
 
             if (user != null) {
-                class DatasourceJSON implements Serializable {
-                    private long id;
-                    private String xid;
-
-                    DatasourceJSON(long id,String xid) {
-                        this.setId(id);
-                        this.setXid(xid);
-                    }
-
-                    public long getId() { return id; }
-                    public void setId(long id) { this.id = id; }
-                    public String getXid() {
-                        return xid;
-                    }
-                    public void setXid(String xid) {
-                        this.xid = xid;
-                    }
-                }
 
                 List<DataSourceVO<?>> lstDS;
                 if (user.isAdmin()) {
@@ -86,11 +86,11 @@ public class DataSourceAPI {
                     lst.add(dsJ);
                 }
 
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(lst);
+                //String json = null;
+                //ObjectMapper mapper = new ObjectMapper();
+                //json = mapper.writeValueAsString(lst);
 
-                return new ResponseEntity<String>(json,HttpStatus.OK);
+                return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(lst),HttpStatus.OK);
             }
 
             return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);

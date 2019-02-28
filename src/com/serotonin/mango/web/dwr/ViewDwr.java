@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.ScriptSessions;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -98,6 +99,10 @@ import com.serotonin.web.dwr.MethodFilter;
  * @author mlohbihler
  */
 public class ViewDwr extends BaseDwr {
+	public static String dwrScriptSessionId="";
+	public void sett(String h){
+		dwrScriptSessionId = h;
+	}
 	//
 	//
 	// /
@@ -157,6 +162,12 @@ public class ViewDwr extends BaseDwr {
 	public List<ViewComponentState> getViewPointData(boolean edit) {
 		User user = Common.getUser();
 
+		return getViewPointData(user, user.getView(), edit);
+	}
+	@MethodFilter
+	public List<ViewComponentState> getViewPointDataByDwrScriptSessionId(String dwrScriptSessionid,boolean edit) {
+		User user = Common.getUser();
+		user.setView((View) ScriptSessions.getObjectVsScriptSession(WebContextFactory.get().getSession().getId(),dwrScriptSessionid));
 		return getViewPointData(user, user.getView(), edit);
 	}
 
@@ -395,12 +406,11 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public ViewComponent addComponent(String componentName) {
+	public ViewComponent addComponent(String dwrScriptSessionId,String componentName) {
 		ViewComponent viewComponent = ViewComponent.newInstance(componentName);
-		// System.out.println(componentName);
-		// System.out.println(viewComponent);
 
 		User user = Common.getUser();
+		user.setView((View)ScriptSessions.getObjectVsScriptSession(WebContextFactory.get().getSession().getId(),dwrScriptSessionId));
 		View view = user.getView();
 		view.addViewComponent(viewComponent);
 		viewComponent.validateDataPoint(user, false);
@@ -408,13 +418,16 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void setViewComponentLocation(String viewComponentId, int x, int y) {
-		getViewComponent(viewComponentId).setLocation(x, y);
+	public void setViewComponentLocation(String dwrScriptSessionId,String viewComponentId, int x, int y) {
+		//getViewComponent(dwrScriptSessionId,viewComponentId).setLocation(x, y);
+		//getViewComponent(viewComponentId).setLocation(x, y);
+		getViewComponentByDwrScriptSessionId(dwrScriptSessionId,viewComponentId).setLocation(x, y);
 	}
 
 	@MethodFilter
-	public void deleteViewComponent(String viewComponentId) {
-		View view = Common.getUser().getView();
+	public void deleteViewComponent(String dwrScriptSessionId,String viewComponentId) {
+		//View view = Common.getUser().getView();
+		View view = (View)ScriptSessions.getObjectVsScriptSession(WebContextFactory.get().getSession().getId(),dwrScriptSessionId);
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
@@ -441,9 +454,11 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public List<String> getViewComponentIds() {
+	public List<String> getViewComponentIds(String dwrScriptSessionId) {
 		User user = Common.getUser();
 		List<String> result = new ArrayList<String>();
+		View view = (View) ScriptSessions.getObjectVsScriptSession(WebContextFactory.get().getSession().getId(),dwrScriptSessionId);
+		user.setView(view);
 		for (ViewComponent vc : user.getView().getViewComponents())
 			result.add(vc.getId());
 		return result;
@@ -768,39 +783,6 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	// @MethodFilter
-	// public DwrResponseI18n saveFlexBuilderComponent(String viewComponentId,
-	// int width, int height, boolean projectDefined,
-	// String projectsSource, int projectId, boolean runtimeMode) {
-	//
-	// DwrResponseI18n response = new DwrResponseI18n();
-	// // Validate
-	//
-	// if (width < FlexComponent.MIN_WIDTH)
-	// response.addContextualMessage("flexWidth", "validate.invalidValue");
-	//
-	// if (width > FlexComponent.MAX_WIDTH)
-	// response.addContextualMessage("flexWidth", "validate.invalidValue");
-	//
-	// if (height < FlexComponent.MIN_HEIGHT)
-	// response.addContextualMessage("flexHeight", "validate.invalidValue");
-	//
-	// if (height > FlexComponent.MAX_HEIGHT)
-	// response.addContextualMessage("flexHeight", "validate.invalidValue");
-	//
-	// if (!response.getHasMessages()) {
-	// FlexBuilderComponent c = (FlexBuilderComponent)
-	// getViewComponent(viewComponentId);
-	// c.setWidth(width);
-	// c.setHeight(height);
-	// c.setProjectDefined(projectDefined);
-	// c.setProjectSource(projectsSource);
-	// c.setProjectId(projectId);
-	// c.setRuntimeMode(runtimeMode);
-	// }
-	//
-	// return response;
-	// }
 
 	@MethodFilter
 	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height) {
@@ -919,10 +901,22 @@ public class ViewDwr extends BaseDwr {
 	private DynamicImage getDynamicImage(String id) {
 		return Common.ctx.getDynamicImage(id);
 	}
-
 	@MethodFilter
 	public ViewComponent getViewComponent(String viewComponentId) {
 		return getViewComponent(Common.getUser().getView(), viewComponentId);
+	}
+	@MethodFilter
+	public ViewComponent getViewComponent(String dwrScriptSessionid, String viewComponentId) {
+		//View view= (View) ScriptSessions.getObjectVsScriptSession(WebContextFactory.get().getSession().getId(),dwrScriptSessionId);
+		//return getViewComponent((View) ScriptSessions.getObjectVsScriptSession(WebContextFactory.get().getSession().getId(),dwrScriptSessionId), viewComponentId);
+		return getViewComponentByDwrScriptSessionId(dwrScriptSessionid, viewComponentId);
+		//return getViewComponent(Common.getUser().getView(), viewComponentId);
+	}
+	@MethodFilter
+	public ViewComponent getViewComponentByDwrScriptSessionId(String dwrScriptSessionId,String viewComponentId) {
+		return getViewComponent(
+				(View) ScriptSessions.getObjectVsScriptSession(WebContextFactory.get().getSession().getId(),dwrScriptSessionId),
+				viewComponentId);
 	}
 
 	private ViewComponent getViewComponent(View view, String viewComponentId) {

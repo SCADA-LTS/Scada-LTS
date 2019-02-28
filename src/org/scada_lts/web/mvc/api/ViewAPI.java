@@ -45,6 +45,137 @@ import java.util.List;
 /**
  * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
  */
+class ViewJSON implements Serializable {
+    private long id;
+    private String xid;
+
+    ViewJSON(long id, String xid) {
+        this.setId(id);
+        this.setXid(xid);
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getXid() {
+        return xid;
+    }
+
+    public void setXid(String xid) {
+        this.xid = xid;
+    }
+}
+class ViewJSONByXid implements Serializable {
+    private long id;
+    private String xid;
+
+    ViewJSONByXid(long id, String xid) {
+        this.setId(id);
+        this.setXid(xid);
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getXid() {
+        return xid;
+    }
+
+    public void setXid(String xid) {
+        this.xid = xid;
+    }
+}
+class ViewJSONCreateView implements Serializable {
+    private static final long serialVersionUID = 8076556272526329317L;
+    private String name;
+    private String xid;
+    private int userId;
+    private int resolution;
+    private String filename;
+
+    public ViewJSONCreateView(String name, String xid, int userId, int resolution, String filename) {
+        this.name = name;
+        this.xid = xid;
+        this.userId = userId;
+        this.resolution = resolution;
+        this.filename = filename;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getXid() {
+        return xid;
+    }
+
+    public void setXid(String xid) {
+        this.xid = xid;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(int resolution) {
+        this.resolution = resolution;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+}
+class ViewPermissionsJSON implements Serializable {
+    private long viewId;
+    private int permission;
+
+    public ViewPermissionsJSON(long viewId, int permission) {
+        this.viewId = viewId;
+        this.permission = (permission>=2) ? 2 : permission;
+    }
+
+    public long getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(long viewId) {
+        this.viewId = viewId;
+    }
+
+    public int getPermission() {
+        return permission;
+    }
+
+    public void setPermission(int permission) {
+        this.permission = permission;
+    }
+}
 @Controller
 public class ViewAPI {
 
@@ -64,31 +195,6 @@ public class ViewAPI {
             User user = Common.getUser(request);
 
             if (user != null) {
-                class ViewJSON implements Serializable {
-                    private long id;
-                    private String xid;
-
-                    ViewJSON(long id, String xid) {
-                        this.setId(id);
-                        this.setXid(xid);
-                    }
-
-                    public long getId() {
-                        return id;
-                    }
-
-                    public void setId(long id) {
-                        this.id = id;
-                    }
-
-                    public String getXid() {
-                        return xid;
-                    }
-
-                    public void setXid(String xid) {
-                        this.xid = xid;
-                    }
-                }
 
                 List<View> lstV;
                 if (user.isAdmin()) {
@@ -125,31 +231,6 @@ public class ViewAPI {
             User user = Common.getUser(request);
 
             if (user != null) {
-                class ViewJSON implements Serializable {
-                    private long id;
-                    private String xid;
-
-                    ViewJSON(long id, String xid) {
-                        this.setId(id);
-                        this.setXid(xid);
-                    }
-
-                    public long getId() {
-                        return id;
-                    }
-
-                    public void setId(long id) {
-                        this.id = id;
-                    }
-
-                    public String getXid() {
-                        return xid;
-                    }
-
-                    public void setXid(String xid) {
-                        this.xid = xid;
-                    }
-                }
 
                 View view = new View();
                 if (user.isAdmin()) {
@@ -158,8 +239,7 @@ public class ViewAPI {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
                 }
 
-
-                ViewJSON viewJSON = new ViewJSON(view.getId(), view.getXid());
+                ViewJSONByXid viewJSON = new ViewJSONByXid(view.getId(), view.getXid());
 
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
@@ -187,62 +267,6 @@ public class ViewAPI {
 
 
         try {
-            class ViewJSON implements Serializable {
-                private static final long serialVersionUID = 8076556272526329317L;
-                private String name;
-                private String xid;
-                private int userId;
-                private int resolution;
-                private String filename;
-
-                public ViewJSON(String name, String xid, int userId, int resolution, String filename) {
-                    this.name = name;
-                    this.xid = xid;
-                    this.userId = userId;
-                    this.resolution = resolution;
-                    this.filename = filename;
-                }
-
-                public String getName() {
-                    return name;
-                }
-
-                public void setName(String name) {
-                    this.name = name;
-                }
-
-                public String getXid() {
-                    return xid;
-                }
-
-                public void setXid(String xid) {
-                    this.xid = xid;
-                }
-
-                public int getUserId() {
-                    return userId;
-                }
-
-                public void setUserId(int userId) {
-                    this.userId = userId;
-                }
-
-                public int getResolution() {
-                    return resolution;
-                }
-
-                public void setResolution(int resolution) {
-                    this.resolution = resolution;
-                }
-
-                public String getFilename() {
-                    return filename;
-                }
-
-                public void setFilename(String filename) {
-                    this.filename = filename;
-                }
-            }
 
             User user = Common.getUser(request);
 
@@ -262,9 +286,9 @@ public class ViewAPI {
 
                     viewService.saveView(view);
 
-                    ObjectMapper mapper = new ObjectMapper();
-                    String json = null;
-                    ViewJSON viewJSON = new ViewJSON(
+                    //ObjectMapper mapper = new ObjectMapper();
+                    //String json = null;
+                    ViewJSONCreateView viewJSON = new ViewJSONCreateView(
                             view.getName(),
                             view.getXid(),
                             view.getUserId(),
@@ -272,9 +296,9 @@ public class ViewAPI {
                             view.getBackgroundFilename()
                     );
 
-                    json = mapper.writeValueAsString(viewJSON);
+                    //json = mapper.writeValueAsString(viewJSON);
 
-                    result = new ResponseEntity<String>(json, HttpStatus.OK);
+                    result = new ResponseEntity<String>(new ObjectMapper().writeValueAsString(viewJSON), HttpStatus.OK);
                 } else {
                     result = new ResponseEntity<String>("Acces unauthorized, logged user has no admin permissions ",HttpStatus.UNAUTHORIZED);
                 }
@@ -298,42 +322,17 @@ public class ViewAPI {
             User user = Common.getUser(request);
 
             if (user != null) {
-                class ViewPermissionsJSON implements Serializable {
-                    private long viewId;
-                    private int permission;
-
-                    public ViewPermissionsJSON(long viewId, int permission) {
-                        this.viewId = viewId;
-                        this.permission = (permission>=2) ? 2 : permission;
-                    }
-
-                    public long getViewId() {
-                        return viewId;
-                    }
-
-                    public void setViewId(long viewId) {
-                        this.viewId = viewId;
-                    }
-
-                    public int getPermission() {
-                        return permission;
-                    }
-
-                    public void setPermission(int permission) {
-                        this.permission = permission;
-                    }
-                }
 
                 List<ViewPermissionsJSON> viewPermissionsJSONS = new ArrayList<>();
                 viewService.getViews().stream().forEach(v -> {
                     viewPermissionsJSONS.add(new ViewPermissionsJSON(v.getId(), v.getUserAccess(userService.getUser(userId))));
                 });
 
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(viewPermissionsJSONS);
+                //String json = null;
+                //ObjectMapper mapper = new ObjectMapper();
+                //json = mapper.writeValueAsString(viewPermissionsJSONS);
 
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+                return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(viewPermissionsJSONS), HttpStatus.OK);
             }
 
             return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);

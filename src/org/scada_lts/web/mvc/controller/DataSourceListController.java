@@ -54,14 +54,10 @@ public class DataSourceListController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView showList(HttpServletRequest request){
 		LOG.trace("/data_sources.shtm");
-		
-		//PagingDataForm paging = new PagingDataForm();
+
 		List<ListParent<DataSourceVO<?>, DataPointVO>> data = getData(request, "Name", true);
-        //paging.setData(data.getData());
-        //paging.setNumberOfItems(data.getRowCount());
         
 		Map<String, Object> model = new HashMap<String, Object>();
-		//model.put("paging", paging);
 		model.put("data", data);
 		return new ModelAndView("dataSourceList", model);
 	}
@@ -96,8 +92,7 @@ public class DataSourceListController {
         }
 
         List<ListParent<DataSourceVO<?>, DataPointVO>> ds1= sortData(ControllerUtils.getResourceBundle(request), dataSources, sortFieldName, desc);
-        
-        //PaginatedData pd = new PaginatedData<ListParent<DataSourceVO<?>, DataPointVO>>(dataSources, data.size());
+
         return ds1;
     }
     

@@ -61,10 +61,7 @@ public class ViewComponentAPI {
                     viewComponentDTOList.add(viewComponentDTO);
                 }
 
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(viewComponentDTOList);
-                result = new ResponseEntity<String>(json, HttpStatus.OK);
+                result = new ResponseEntity<String>(new ObjectMapper().writeValueAsString(viewComponentDTOList), HttpStatus.OK);
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }

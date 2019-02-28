@@ -45,7 +45,7 @@
             dwr.util.addOptions($("componentList"), result.componentTypes, "key", "value");
             settingsEditor.setPointList(result.pointList);
             compoundEditor.setPointList(result.pointList);
-            MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
+            MiscDwr.notifyLongPollByDwrScriptSessionId(document.getElementById('dwrScriptSessionid').value,mango.longPoll.pollSessionId);
         });
         
         if(document.getElementById("viewBackground").src.includes("spacer.gif")){
@@ -58,13 +58,14 @@
     }
     
     function addViewComponent() {
-        ViewDwr.addComponent($get("componentList"), function(viewComponent) {
-            createViewComponent(viewComponent, true);
-            MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
+    ViewDwr.sett(document.getElementById('dwrScriptSessionid').value);
+        ViewDwr.addComponent(document.getElementById('dwrScriptSessionid').value,$get("componentList"), function(viewComponent) {
+            createViewComponent(document.getElementById('dwrScriptSessionid').value,viewComponent, true);
+            MiscDwr.notifyLongPollByDwrScriptSessionId(document.getElementById('dwrScriptSessionid').value,mango.longPoll.pollSessionId);
         });
     }
     
-    function createViewComponent(viewComponent, center) {
+    function createViewComponent(dwrScriptSessionid,viewComponent, center) {
         var content;
         
         if (viewComponent.pointComponent)
@@ -229,7 +230,7 @@
         tp = tp.substring(0, tp.length-2);
 
         // Save the new location.
-        ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp);
+        ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,div.viewComponentId, lt, tp);
     }
 
     function addDnD(divId) {
@@ -248,7 +249,7 @@
     function deleteViewComponent(viewComponentId) {
         closeEditors();
         if(confirm('<fmt:message key="common.confirmDelete"/>')) {
-            ViewDwr.deleteViewComponent(viewComponentId);
+            ViewDwr.deleteViewComponent(document.getElementById('dwrScriptSessionid').value,viewComponentId);
 
             var div = $("c"+ viewComponentId);
 
@@ -266,7 +267,7 @@
     }
 
     function iconizeClicked() {
-        ViewDwr.getViewComponentIds(function(ids) {
+        ViewDwr.getViewComponentIds(document.getElementById('dwrScriptSessionid').value,function(ids) {
             var i, comp, content;
             if ($get("iconifyCB")) {
                 mango.view.edit.iconize = true;

@@ -22,13 +22,6 @@ public class TranslateAPI {
 	public ResponseEntity<String> createFolder(@PathVariable("name") String name, HttpServletRequest request) {
 		
 		LOG.info("translate:"+name);
-		/*String json = null;
-		ObjectMapper mapper = new ObjectMapper();
-		TranslateJSON er = new ViewError();
-		er.setMessage(error.getLocalizedMessage());
-		json = mapper.writeValueAsString(er);
-		return new ResponseEntity<String>(json,HttpStatus.BAD_REQUEST);
-		*/
 		return null;
 		
 	}

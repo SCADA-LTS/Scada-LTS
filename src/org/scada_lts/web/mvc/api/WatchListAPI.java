@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.UserService;
@@ -33,9 +32,128 @@ import com.serotonin.mango.vo.WatchList;
  * 
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
+class PointJSON implements Serializable{
+	private String xid;
+	private String name;
+	PointJSON(String xid,String name) {
+		this.setXid(xid);
+		this.setName(name);
+	}
+	public String getXid() {
+		return xid;
+	}
+	public void setXid(String xid) {
+		this.xid = xid;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+}
+class WatchListJSON implements Serializable{
+	private long id;
+	private String xid;
+	private String name;
+	WatchListJSON(long id,String xid,String name) {
+		this.setId(id);
+		this.setXid(xid);
+		this.setName(name);
+	}
+
+	public long getId() { return id; }
+	public void setId(long id) { this.id = id; }
+	public String getXid() {
+		return xid;
+	}
+	public void setXid(String xid) {
+		this.xid = xid;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+}
+class WatchListJSONByNames implements Serializable{
+	private String xid;
+	private String name;
+	WatchListJSONByNames(String xid, String name) {
+		this.setXid(xid);
+		this.setName(name);
+	}
+	public String getXid() {
+		return xid;
+	}
+	public void setXid(String xid) {
+		this.xid = xid;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+}
+class DataChartJSON implements Serializable{
+	private String xid;
+	private String name;
+	private List<ValueToJSON> values;
+	DataChartJSON(String xid, String name, List<ValueToJSON> values) {
+		this.setXid(xid);
+		this.setName(name);
+		this.setValues(values);
+	}
+	public String getXid() {
+		return xid;
+	}
+	public void setXid(String xid) {
+		this.xid = xid;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public List<ValueToJSON> getValues() {
+		return values;
+	}
+	public void setValues(List<ValueToJSON> values) {
+		this.values=values;
+	}
+}
+class WatchListPermissionsJSON implements Serializable {
+	private long watchListId;
+	private int permission;
+
+	public WatchListPermissionsJSON(long watchListId, int permission) {
+		this.watchListId = watchListId;
+		this.permission = permission;
+	}
+
+	public long getWatchListId() {
+		return watchListId;
+	}
+
+	public void setWatchListId(long watchListId) {
+		this.watchListId = watchListId;
+	}
+
+	public int getPermission() {
+		return permission;
+	}
+
+	public void setPermission(int permission) {
+		this.permission = permission;
+	}
+}
+
 @Controller 
 public class WatchListAPI {
-	
+
 	private static final Log LOG = LogFactory.getLog(WatchListAPI.class);
 	
 	@Resource
@@ -57,39 +175,9 @@ public class WatchListAPI {
 
 			if (user != null) {
 
-				class WatchListJSON implements Serializable{
-					private long id;
-					private String xid;
-					private String name;
-					WatchListJSON(long id,String xid,String name) {
-						this.setId(id);
-						this.setXid(xid);
-						this.setName(name);
-					}
-
-					public long getId() { return id; }
-					public void setId(long id) { this.id = id; }
-					public String getXid() {
-						return xid;
-					}
-					public void setXid(String xid) {
-						this.xid = xid;
-					}
-					public String getName() {
-						return name;
-					}
-					public void setName(String name) {
-						this.name = name;
-					}
-				}
-
-				List<WatchList> lstWL;
-				if (user.isAdmin()) {
-					lstWL = watchListService.getWatchLists();
-				} else {
-					int profileId = user.getUserProfile();
-					lstWL = watchListService.getWatchLists(user.getId(), profileId);
-				}
+				List<WatchList> lstWL=(user.isAdmin())
+					? watchListService.getWatchLists()
+					: watchListService.getWatchLists(user.getId(), user.getUserProfile());
 
 				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();
 				for (WatchList wl:lstWL) {
@@ -97,11 +185,7 @@ public class WatchListAPI {
 					lst.add(wlJ);
 				}
 
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				json = mapper.writeValueAsString(lst);
-
-				return new ResponseEntity<String>(json,HttpStatus.OK);
+				return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(lst),HttpStatus.OK);
 			}
 
 			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
@@ -120,48 +204,17 @@ public class WatchListAPI {
 			User user = Common.getUser(request);
 		
 			if (user != null) {
+				List<WatchList> lstWL=(user.isAdmin())
+					? watchListService.getWatchLists()
+					: watchListService.getWatchLists(user.getId(), user.getUserProfile());
 				
-				class WatchListJSON implements Serializable{
-					private String xid;
-					private String name;
-					WatchListJSON(String xid,String name) {
-						this.setXid(xid);
-						this.setName(name);
-					}
-					public String getXid() {
-						return xid;
-					}
-					public void setXid(String xid) {
-						this.xid = xid;
-					}
-					public String getName() {
-						return name;
-					}
-					public void setName(String name) {
-						this.name = name;
-					}
-				}
-				
-				int userId = user.getId();
-				List<WatchList> lstWL;
-				if (user.isAdmin()) {
-					lstWL = watchListService.getWatchLists();
-				} else {
-					int profileId = user.getUserProfile();
-					lstWL = watchListService.getWatchLists(user.getId(), profileId);
-				}				
-				
-				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();
+				List<WatchListJSONByNames> lst = new ArrayList<WatchListJSONByNames>();
 				for (WatchList wl:lstWL) {
-					WatchListJSON wlJ = new WatchListJSON(wl.getXid(), wl.getName());
+					WatchListJSONByNames wlJ = new WatchListJSONByNames(wl.getXid(), wl.getName());
 					lst.add(wlJ);
 				}
 				
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				json = mapper.writeValueAsString(lst);
-				
-				return new ResponseEntity<String>(json,HttpStatus.OK);				
+				return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(lst),HttpStatus.OK);
 			} 
 			
 			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
@@ -169,28 +222,6 @@ public class WatchListAPI {
 		} catch (Exception e) {
 			LOG.error(e);
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
-	
-	class PointJSON implements Serializable{
-		private String xid;
-		private String name;
-		PointJSON(String xid,String name) {
-			this.setXid(xid);
-			this.setName(name);
-		}
-		public String getXid() {
-			return xid;
-		}
-		public void setXid(String xid) {
-			this.xid = xid;
-		}
-		public String getName() {
-			return name;
-		}
-		public void setName(String name) {
-			this.name = name;
 		}
 	}
 
@@ -217,14 +248,8 @@ public class WatchListAPI {
 					PointJSON p = new PointJSON(dpvo.getXid(), dpvo.getName());
 					lst.add(p);
 				}
-				
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
 			
-				json = mapper.writeValueAsString(lst);
-				
-			
-				return new ResponseEntity<String>(json,HttpStatus.OK);
+				return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(lst),HttpStatus.OK);
 			}
 			
 			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
@@ -243,34 +268,6 @@ public class WatchListAPI {
 		try {
 			User user = Common.getUser(request);
 			if (user != null) {
-				class DataChartJSON implements Serializable{
-					private String xid;
-					private String name;
-					private List<ValueToJSON> values;
-					DataChartJSON(String xid, String name, List<ValueToJSON> values) {
-						this.setXid(xid);
-						this.setName(name);
-						this.setValues(values);
-					}
-					public String getXid() {
-						return xid;
-					}
-					public void setXid(String xid) {
-						this.xid = xid;
-					}
-					public String getName() {
-						return name;
-					}
-					public void setName(String name) {
-						this.name = name;
-					}
-					public List<ValueToJSON> getValues() {
-						return values;
-					}
-					public void setValues(List<ValueToJSON> values) {
-						this.values=values;
-					}
-				}
 			
 				DataPointVO dp = dataPointService.getDataPoint(xid);
 				
@@ -286,12 +283,7 @@ public class WatchListAPI {
 			
 				DataChartJSON dataChartJSON = new DataChartJSON(xid, dp.getName(), values);
 				
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				
-				json = mapper.writeValueAsString(dataChartJSON);
-				
-				return new ResponseEntity<String>(json,HttpStatus.OK);
+				return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(dataChartJSON),HttpStatus.OK);
 			}
 			
 			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
@@ -310,31 +302,7 @@ public class WatchListAPI {
 			User user = Common.getUser(request);
 
 			if (user != null) {
-				class WatchListPermissionsJSON implements Serializable {
-					private long watchListId;
-					private int permission;
 
-					public WatchListPermissionsJSON(long watchListId, int permission) {
-						this.watchListId = watchListId;
-						this.permission = permission;
-					}
-
-					public long getWatchListId() {
-						return watchListId;
-					}
-
-					public void setWatchListId(long watchListId) {
-						this.watchListId = watchListId;
-					}
-
-					public int getPermission() {
-						return permission;
-					}
-
-					public void setPermission(int permission) {
-						this.permission = permission;
-					}
-				}
 
 				List<WatchListPermissionsJSON> watchlistPermissionsJSONS = new ArrayList<>();
 
@@ -344,11 +312,7 @@ public class WatchListAPI {
 					watchlistPermissionsJSONS.add(new WatchListPermissionsJSON(w.getId(), w.getUserAccess(userService.getUser(userId))));
 				});
 
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				json = mapper.writeValueAsString(watchlistPermissionsJSONS);
-
-				return new ResponseEntity<String>(json, HttpStatus.OK);
+				return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(watchlistPermissionsJSONS), HttpStatus.OK);
 			}
 
 			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);

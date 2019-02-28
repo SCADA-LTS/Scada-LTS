@@ -37,6 +37,48 @@ import java.util.List;
 /**
  * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
  */
+class UserJSON implements Serializable {
+    private long id;
+    private String name;
+    private String password;
+    private String email;
+    private Boolean admin;
+
+    UserJSON(long id, String name, String password, String email, Boolean admin) {
+        this.setId(id);
+        this.setName(name);
+        this.setPassword(password);
+        this.setEmail(email);
+        this.setAdmin(admin);
+    }
+
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
+
+    public String getName() {
+        return name;
+    }
+    public void setName(String xid) {
+        this.name = xid;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Boolean isAdmin() { return admin; }
+    public void setAdmin(Boolean admin) { this.admin = admin; }
+}
 @Controller
 public class UserAPI {
 
@@ -53,48 +95,6 @@ public class UserAPI {
             User user = Common.getUser(request);
 
             if (user != null) {
-                class UserJSON implements Serializable {
-                    private long id;
-                    private String name;
-                    private String password;
-                    private String email;
-                    private Boolean admin;
-
-                    UserJSON(long id, String name, String password, String email, Boolean admin) {
-                        this.setId(id);
-                        this.setName(name);
-                        this.setPassword(password);
-                        this.setEmail(email);
-                        this.setAdmin(admin);
-                    }
-
-                    public long getId() { return id; }
-                    public void setId(long id) { this.id = id; }
-
-                    public String getName() {
-                        return name;
-                    }
-                    public void setName(String xid) {
-                        this.name = xid;
-                    }
-
-                    public String getPassword() {
-                        return password;
-                    }
-                    public void setPassword(String password) {
-                        this.password = password;
-                    }
-
-                    public String getEmail() {
-                        return email;
-                    }
-                    public void setEmail(String email) {
-                        this.email = email;
-                    }
-
-                    public Boolean isAdmin() { return admin; }
-                    public void setAdmin(Boolean admin) { this.admin = admin; }
-                }
 
                 int userId = user.getId();
                 List<User> lstUsers;

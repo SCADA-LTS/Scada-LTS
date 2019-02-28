@@ -69,12 +69,8 @@ public class ViewHierarchyAPI {
 		
 			if (user != null) {
 				List<ViewHierarchyJSON> data = ViewHierarchyCache.getInstance().getAll();
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
 				
-				json = mapper.writeValueAsString(data);
-				
-				return new ResponseEntity<String>(json,HttpStatus.OK);				
+				return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(data),HttpStatus.OK);
 			} 
 			
 			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
@@ -99,26 +95,18 @@ public class ViewHierarchyAPI {
 					ViewHierarchyNode node = new ViewHierarchyNode(parentId, name);
 					viewHierarchyService.add(node);
 					ViewHierarchyCache.getInstance().refresh();
-					String json = null;
-					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString(node);
-					return new ResponseEntity<String>(json,HttpStatus.OK);
+					return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(node),HttpStatus.OK);
 				} catch ( Exception error) {
 					LOG.error(error);
-					String json = null;
 					ObjectMapper mapper = new ObjectMapper();
 					ViewError er = new ViewError();
 					
 					ParseErrorResult per = ParseError.getError(error.getLocalizedMessage());
-					String errStr="";
-					if (per.getNotErr()) {
-						errStr = msgSource.getMessage(per.getMessage(),null, Locale.getDefault());
-					} else {
-						errStr = per.getMessage();
-					}
+					String errStr=(per.getNotErr())
+							? msgSource.getMessage(per.getMessage(),null, Locale.getDefault())
+							: per.getMessage();
 					er.setMessage(errStr);
-					json = mapper.writeValueAsString(er);
-					return new ResponseEntity<String>(json,HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<String>(mapper.writeValueAsString(er),HttpStatus.BAD_REQUEST);
 				} 
 			}
 			
@@ -144,10 +132,7 @@ public class ViewHierarchyAPI {
 				
 				if (viewHierarchyService.edt(node)) {
 					ViewHierarchyCache.getInstance().refresh();
-					String json = null;
-					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString(node);
-					return new ResponseEntity<String>(json,HttpStatus.OK);
+					return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(node),HttpStatus.OK);
 				}
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 			}
@@ -171,10 +156,7 @@ public class ViewHierarchyAPI {
 				
 				if (viewHierarchyService.delFolder(id)) {
 					ViewHierarchyCache.getInstance().refresh();
-					String json = null;
-					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString("success");
-					return new ResponseEntity<String>(json,HttpStatus.OK);
+					return new ResponseEntity<String>(new ObjectMapper().writeValueAsString("success"),HttpStatus.OK);
 				}
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 			}
@@ -199,10 +181,7 @@ public class ViewHierarchyAPI {
 				
 				if (viewHierarchyService.delView(id)) {
 					ViewHierarchyCache.getInstance().refresh();
-					String json = null;
-					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString("success");
-					return new ResponseEntity<String>(json,HttpStatus.OK);
+					return new ResponseEntity<String>(new ObjectMapper().writeValueAsString("success"),HttpStatus.OK);
 				}
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 			}
@@ -227,10 +206,7 @@ public class ViewHierarchyAPI {
 				
 				if (viewHierarchyService.moveFolder(id, newParentId)) {
 					ViewHierarchyCache.getInstance().refresh();
-					String json = null;
-					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString("moved");
-					return new ResponseEntity<String>(json,HttpStatus.OK);
+					return new ResponseEntity<String>(new ObjectMapper().writeValueAsString("moved"),HttpStatus.OK);
 				}
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 			}
@@ -255,10 +231,7 @@ public class ViewHierarchyAPI {
 				
 				if (viewHierarchyService.moveView(id, newParentId)) {
 					ViewHierarchyCache.getInstance().refresh();
-					String json = null;
-					ObjectMapper mapper = new ObjectMapper();
-					json = mapper.writeValueAsString("moved");
-					return new ResponseEntity<String>(json,HttpStatus.OK);
+					return new ResponseEntity<String>(new ObjectMapper().writeValueAsString("moved"),HttpStatus.OK);
 				}
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 			}
@@ -280,10 +253,7 @@ public class ViewHierarchyAPI {
 		try {
 			User user = Common.getUser(request);
 			if (user != null) {
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				json = mapper.writeValueAsString(viewHierarchyService.getFirstViewId());
-				return new ResponseEntity<String>(json,HttpStatus.OK);
+				return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(viewHierarchyService.getFirstViewId()),HttpStatus.OK);
 			}
 			
 			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
