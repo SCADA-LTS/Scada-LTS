@@ -18,7 +18,11 @@
 package org.scada_lts.mango.service;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
@@ -183,7 +187,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		dp.setId(dataPointDAO.insert(dp));
-		deleteAddUpdate_EventDetectors(dp);
+		deleteAddUpdateEventDetectors(dp);
 	}
 
 	@Override
@@ -194,7 +198,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		updateDataPointShallow(dp);
-		deleteAddUpdate_EventDetectors(dp);
+		deleteAddUpdateEventDetectors(dp);
 	}
 
 	@Override
@@ -301,16 +305,16 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public String generateEventDetectorUniqueXid(int dataPointId) {
-
-		return new EventDetectorXidUnique(pointEventDetectorDAO).generateEventDetectorUniqueXid(dataPointId);
-
+		String xid = DAO.getInstance().generateXid(PointEventDetectorVO.XID_PREFIX);
+		while (!isEventDetectorXidUnique(dataPointId, xid, -1)) {
+			xid = DAO.getInstance().generateXid(PointEventDetectorVO.XID_PREFIX);
+		}
+		return xid;
 	}
 
 	@Override
 	public boolean isEventDetectorXidUnique(int dataPointId, String xid, int excludeId) {
-
-		return new EventDetectorXidUnique(pointEventDetectorDAO).isEventDetectorXidUnique(dataPointId,xid,excludeId);
-
+		return pointEventDetectorDAO.isEventDetectorXidUnique(dataPointId, xid, excludeId);
 	}
 
 	private void setEventDetectors(DataPointVO dataPoint) {
@@ -325,10 +329,10 @@ public class DataPointService implements MangoDataPoint {
 			startTime = System.currentTimeMillis();
 		}
 
-		List<PointEventDetectorVO> result = null;
+		List<PointEventDetectorVO> pointEventDetectors = null;
 		try {
 
-			result = ( ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false))
+			pointEventDetectors = ( ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false))
 					?EventDetectorsCache.getInstance().getEventDetectors(dataPoint)
 					:pointEventDetectorDAO.getPointEventDetectors(dataPoint);
 
@@ -341,7 +345,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 		EventDetectorsCache.LOG.trace("TimeExecute:"+(endTime-startTime)+ " getEventDetectors() dpId:"+dataPoint.getId());
 
-		return result;
+		return pointEventDetectors;
 	}
 
 	private void deleteEventDetecor(DataPointVO dataPoint,List<PointEventDetectorVO> detectors){
@@ -386,7 +390,7 @@ public class DataPointService implements MangoDataPoint {
 			}
 		}
 	}
-	private void deleteAddUpdate_EventDetectors(DataPointVO dataPoint) {
+	private void deleteAddUpdateEventDetectors(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 
 		if(dataPoint.getEventDetectors().size()<detectors.size()){

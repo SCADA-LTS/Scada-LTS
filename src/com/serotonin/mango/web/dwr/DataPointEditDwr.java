@@ -73,7 +73,7 @@ public class DataPointEditDwr extends BaseDwr {
         // The user can also end up with this point in their session in the point details page, which only requires
         // read access. So, ensure that any access here is allowed with edit permission.
         User user = Common.getUser();
-        user.setEditPoint((DataPointVO) ScriptSessionAndUsers.getObjectVsScriptSession(
+        user.setEditPoint((DataPointVO) ScriptSessionAndUsers.getObjectForScriptSession(
                 WebContextFactory.get().getSession().getId(),
                 dwrScriptSessionId)
         );

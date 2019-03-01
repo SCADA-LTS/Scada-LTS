@@ -65,10 +65,10 @@ import com.serotonin.util.StringUtils;
 public class DataPointEditController {
 	private static final Log LOG = LogFactory.getLog(LoginController.class);
 
-    public static final String SUBMIT_DISABLE = FinalVariablesForControllers.SUBMIT_DISABLE;
-    public static final String SUBMIT_RESTART = FinalVariablesForControllers.SUBMIT_RESTART;
-    public static final String SUBMIT_ENABLE = FinalVariablesForControllers.SUBMIT_ENABLE;
-    public static final String SUBMIT_SAVE = FinalVariablesForControllers.SUBMIT_SAVE;
+    public static final String SUBMIT_DISABLE = FinalValuesForControllers.SUBMIT_DISABLE;
+    public static final String SUBMIT_RESTART = FinalValuesForControllers.SUBMIT_RESTART;
+    public static final String SUBMIT_ENABLE = FinalValuesForControllers.SUBMIT_ENABLE;
+    public static final String SUBMIT_SAVE = FinalValuesForControllers.SUBMIT_SAVE;
 
 	DataPointDao dataPointDao;
 
@@ -90,7 +90,7 @@ public class DataPointEditController {
         User user =Common.getUser(request);
 
         dataPointDao = new DataPointDao();
-        int id=0;
+        int id;
         DPID=request.getParameter("dpid");
         String idStr = request.getParameter("dpid");
         if (idStr == null) {
@@ -104,22 +104,22 @@ public class DataPointEditController {
         else
             id = Integer.parseInt(idStr);
 
-        StringBuilder DWR_SCRIPT_SESSION_ID = new StringBuilder(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
+        String DWR_SCRIPT_SESSION_ID = request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID);
         DataPointVO dataPoint = dataPointDao.getDataPoint(id);
 
-        ScriptSessionAndUsers.addNewScriptSessionVsObject(request.getSession().getId(),dataPoint,DWR_SCRIPT_SESSION_ID.toString());
+        ScriptSessionAndUsers.addNewEditedObjectForScriptSession(dataPoint,request.getSession().getId(),DWR_SCRIPT_SESSION_ID);
 
         user.setEditPoint(dataPoint);
 
         model.addAttribute("dpid",request.getParameter("dpid"));
-        model.addAttribute(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID,
-                (DWR_SCRIPT_SESSION_ID.toString()!=null)
-                        ?DWR_SCRIPT_SESSION_ID.toString()
-                        :FinalVariablesForControllers.EMPTY_STRING);
+        model.addAttribute(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID,
+                (DWR_SCRIPT_SESSION_ID!=null)
+                        ?DWR_SCRIPT_SESSION_ID
+                        : FinalValuesForControllers.EMPTY_STRING);
 
         addAllConstantsVariablesIntoModelAndCheckPermission(user,model,dataPoint);
 
-		return FinalVariablesForControllers.URL_DATA_POINT_EDIT;
+		return FinalValuesForControllers.URL_DATA_POINT_EDIT;
 	}
 	@RequestMapping(method = RequestMethod.POST)
 	public String saveDataPoint(HttpServletRequest request, Model model){
@@ -127,9 +127,9 @@ public class DataPointEditController {
         User user = Common.getUser(request);
         DPID = request.getParameter("dpid");
 
-        StringBuilder DWR_SCRIPT_SESSION_ID = new StringBuilder(request.getParameter(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID));
+        String DWR_SCRIPT_SESSION_ID = request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID);
 
-        DataPointVO dataPoint = (DataPointVO) ScriptSessionAndUsers.getObjectVsScriptSession(request.getSession().getId(),DWR_SCRIPT_SESSION_ID.toString());
+        DataPointVO dataPoint = (DataPointVO) ScriptSessionAndUsers.getObjectForScriptSession(request.getSession().getId(),DWR_SCRIPT_SESSION_ID);
         dataPoint.setDiscardExtremeValues(false); // Checkbox
 
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);
@@ -141,11 +141,11 @@ public class DataPointEditController {
         }
 
         model.addAttribute("error", errors);
-        model.addAttribute(FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID,DWR_SCRIPT_SESSION_ID.toString());
+        model.addAttribute(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID,DWR_SCRIPT_SESSION_ID);
 
 		addAllConstantsVariablesIntoModelAndCheckPermission(user,model,dataPoint);
 
-        return FinalVariablesForControllers.URL_DATA_POINT_EDIT;
+        return FinalValuesForControllers.URL_DATA_POINT_EDIT;
 	}
 	private void addAllConstantsVariablesIntoModelAndCheckPermission(User user, Model model, DataPointVO dataPoint){
 
@@ -162,21 +162,21 @@ public class DataPointEditController {
     	synchronized(point){
             RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
-            if (WebUtils.hasSubmitParameter(request, FinalVariablesForControllers.SUBMIT_DISABLE)) {
+            if (WebUtils.hasSubmitParameter(request, FinalValuesForControllers.SUBMIT_DISABLE)) {
                 point.setEnabled(false);
                 errors.put("status", "confirmation.pointDisabled");
             }
-            else if (WebUtils.hasSubmitParameter(request, FinalVariablesForControllers.SUBMIT_ENABLE)) {
+            else if (WebUtils.hasSubmitParameter(request, FinalValuesForControllers.SUBMIT_ENABLE)) {
                 point.setEnabled(true);
                 errors.put("status", "confirmation.pointEnabled");
             }
-            else if (WebUtils.hasSubmitParameter(request, FinalVariablesForControllers.SUBMIT_RESTART)) {
+            else if (WebUtils.hasSubmitParameter(request, FinalValuesForControllers.SUBMIT_RESTART)) {
                 point.setEnabled(false);
                 rtm.saveDataPoint(point);
                 point.setEnabled(true);
                 errors.put("status", "confirmation.pointRestarted");
             }
-            else if (WebUtils.hasSubmitParameter(request, FinalVariablesForControllers.SUBMIT_SAVE)) {
+            else if (WebUtils.hasSubmitParameter(request, FinalValuesForControllers.SUBMIT_SAVE)) {
                 DataPointSaveHandler saveHandler = point.getPointLocator().getDataPointSaveHandler();
                 if (saveHandler != null)
                     saveHandler.handleSave(point);

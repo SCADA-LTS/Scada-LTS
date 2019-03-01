@@ -60,7 +60,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
-import org.scada_lts.web.mvc.controller.FinalVariablesForControllers;
+import org.scada_lts.web.mvc.controller.FinalValuesForControllers;
 
 public class Common {
 
@@ -68,14 +68,14 @@ public class Common {
 	private static final String CUSTOM_VIEW_KEY = "customView";
 
 	public static final String SESSION_USER = "sessionUser";
-	private static final String DWR_SCRIPT_SESSION_ID = FinalVariablesForControllers.DWR_SCRIPT_SESSION_ID;
+	private static final String DWR_SCRIPT_SESSION_ID = FinalValuesForControllers.DWR_SCRIPT_SESSION_ID;
 	public static final String UTF8 = "UTF-8";
 	public static final Charset UTF8_CS = Charset.forName(UTF8);
 
 	public static final int NEW_ID = -1;
 	public static ContextWrapper ctx;
 
-	public static ServletContext getCtx(){
+	public static ServletContext getServletContext(){
 		return ctx.getCtx();
 	}
 	// This is initialized
@@ -239,30 +239,6 @@ public class Common {
 		}
 
 		return contains;
-	}
-	static User whenUrlAddressContainsdwrScriptSessionid(User user, HttpServletRequest request){
-		Set<String> scriptSessionsForWebSession = null;
-		if(urlAddressContainsAllGivesStatements(request,new String[]{"dpid",DWR_SCRIPT_SESSION_ID})) {
-			String[] parameters = request.getQueryString().split("&");
-			parameters  = parameters[0].split("=");
-			if(parameters[0].equals(DWR_SCRIPT_SESSION_ID)){
-				if(Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER)!=null){
-					try {
-				 		scriptSessionsForWebSession = (Set<String>) Common.getCtx().getAttribute((String)Common.getCtx().getAttribute(FinalVariablesForControllers.DWRSCRIPTSESSIONUSER));
-						for(String id:scriptSessionsForWebSession){
-							if(id.equals(parameters[1])){
-								user = ScriptSessionAndUsers.getUserFromScriptSessionManagerByScriptSessionId( request,id);break;
-							}
-						}
-					}catch (Exception e){
-							int a=0;
-					}
-					if(user!=null)
-						return user;
-				}
-			}
-		}
-		return user;
 	}
 	public static User getUser(HttpServletRequest request) {
 

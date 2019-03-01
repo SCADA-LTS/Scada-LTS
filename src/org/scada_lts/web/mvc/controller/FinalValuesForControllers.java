@@ -1,6 +1,6 @@
 package org.scada_lts.web.mvc.controller;
 
-public class FinalVariablesForControllers {
+public class FinalValuesForControllers {
 
 
     public static final String EMPTY_STRING = "";

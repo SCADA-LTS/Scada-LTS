@@ -137,7 +137,7 @@ public class ViewEditContorller {
         return new ModelAndView(FORM_VIEW, model);
     }
     
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalVariablesForControllers.SUBMIT_SAVE })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_SAVE })
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
         User user = ScriptSessionAndUsers.getUserFromScriptSessionManagerSavedUnderDWRSCRIPTSESSIONUSER(form.getDwrScriptSessionid(),request);
@@ -169,7 +169,7 @@ public class ViewEditContorller {
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalVariablesForControllers.SUBMIT_CANCEL })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_CANCEL })
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
@@ -179,7 +179,7 @@ public class ViewEditContorller {
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalVariablesForControllers.SUBMIT_DELETE })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_DELETE })
     protected ModelAndView delete(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:delete");
         User user = Common.getUser(request);
