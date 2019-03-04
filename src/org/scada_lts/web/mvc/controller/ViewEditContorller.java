@@ -55,8 +55,10 @@ public class ViewEditContorller {
     
     private static final String SUBMIT_UPLOAD = "upload";
     private static final String SUBMIT_CLEAR_IMAGE = "clearImage";
+    private static final String SUBMIT_SAVE = "save";
+    private static final String SUBMIT_DELETE = "delete";
+    private static final String SUBMIT_CANCEL = "cancel";
 
-    
     private static final String FORM_VIEW = "viewEdit";
     private static final String FORM_OBJECT_NAME = "form";
     private static final String IMAGE_SETS_ATTRIBUTE = "imageSets";
@@ -137,7 +139,7 @@ public class ViewEditContorller {
         return new ModelAndView(FORM_VIEW, model);
     }
     
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_SAVE })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
         User user = ScriptSessionAndUsers.getUserFromScriptSessionManagerSavedUnderDWRSCRIPTSESSIONUSER(form.getDwrScriptSessionid(),request);
@@ -169,7 +171,7 @@ public class ViewEditContorller {
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_CANCEL })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_CANCEL })
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
@@ -179,7 +181,7 @@ public class ViewEditContorller {
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_DELETE })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_DELETE })
     protected ModelAndView delete(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:delete");
         User user = Common.getUser(request);
