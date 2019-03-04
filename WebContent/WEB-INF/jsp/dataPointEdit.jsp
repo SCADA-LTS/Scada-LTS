@@ -66,8 +66,6 @@
   <%@ include file="/WEB-INF/jsp/pointEdit/pointName.jsp" %>
   
   <form action="" method="post">
-  <input type="hidden" id="dpid" name="dpid" value="${dpid}">
-    <input type="hidden" id="dwrScriptSessionid" name="dwrScriptSessionid" value="${dwrScriptSessionid}">
     <input type="hidden" id="taskName" name="asdf" value=""/>
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>

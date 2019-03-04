@@ -187,7 +187,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		dp.setId(dataPointDAO.insert(dp));
-		deleteAddUpdateEventDetectors(dp);
+		saveEventDetectors(dp);
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		updateDataPointShallow(dp);
-		deleteAddUpdateEventDetectors(dp);
+		saveEventDetectors(dp);
 	}
 
 	@Override
@@ -209,6 +209,7 @@ public class DataPointService implements MangoDataPoint {
 	@Override
 	public void deleteDataPoint(int dataPointId) {
 		try {
+			DataPointVO dp = getDataPoint(dataPointId);
 			beforePointDelete(dataPointId);
 			deletePointHistory(dataPointId);
 			deleteDataPointImpl(Integer.toString(dataPointId));
@@ -250,6 +251,8 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public void deletePointHistory(int dpId) {
+		//long min = pointValueDAO.getMinTs(dpId);
+		//long max = pointValueDAO.getMaxTs(dpId);
 		deletePointHistory(dpId, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
@@ -329,82 +332,43 @@ public class DataPointService implements MangoDataPoint {
 			startTime = System.currentTimeMillis();
 		}
 
-		List<PointEventDetectorVO> pointEventDetectors = null;
+		List<PointEventDetectorVO> result = null;
 		try {
-
-			pointEventDetectors = ( ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false))
-					?EventDetectorsCache.getInstance().getEventDetectors(dataPoint)
-					:pointEventDetectorDAO.getPointEventDetectors(dataPoint);
-
+			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
+			if (cacheEnable) {
+				result = EventDetectorsCache.getInstance().getEventDetectors(dataPoint);
+			} else {
+				result = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
+			}
 		} catch (SchedulerException | IOException e) {
 			EventDetectorsCache.LOG.error(e);
 		}
+
 		long endTime = 0;
 		if (EventDetectorsCache.LOG.isTraceEnabled()) {
 			endTime = System.currentTimeMillis();
 		}
 		EventDetectorsCache.LOG.trace("TimeExecute:"+(endTime-startTime)+ " getEventDetectors() dpId:"+dataPoint.getId());
 
-		return pointEventDetectors;
+		return result;
 	}
 
-	private void deleteEventDetecor(DataPointVO dataPoint,List<PointEventDetectorVO> detectors){
-        for (PointEventDetectorVO pointEventDetector : detectors) {
-            if (!dataPoint.getEventDetectors().contains(pointEventDetector)) {
-				try {
-					pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
-					EventDetectorsCache.LOG.trace("DataPointService -> deleteEventDetecor " + pointEventDetector.toString() + " has been deleted succesfully");
-				} catch (Exception e) {
-					EventDetectorsCache.LOG.trace("DataPointService -> deleteEventDetecor " + e.getMessage());
-				}
-			}
-        }
-    }
-    private void addNewEventDetector(DataPointVO dataPoint,List<PointEventDetectorVO> detectors){
-		dataPoint.getEventDetectors().remove(detectors);
-
-		for (PointEventDetectorVO pointEventDetector : dataPoint.getEventDetectors()) {
-			try {
-				pointEventDetectorDAO.insert(pointEventDetector);
-				EventDetectorsCache.LOG.trace("DataPointService -> addNewEventDetector "+	pointEventDetector.toString()+" has been added succesfully");
-			}
-			catch (DuplicateKeyException e) {
-				EventDetectorsCache.LOG.trace("DataPointService -> addNewEventDetector "+	e.getMessage());
-			}
-			catch (Exception e) {
-				EventDetectorsCache.LOG.trace("DataPointService -> addNewEventDetector "+	e.getMessage());
-			}
-		}
-    }
-    private void updateEventDetector(DataPointVO dataPoint,List<PointEventDetectorVO> detectors){
-		for (PointEventDetectorVO pointEventDetector : dataPoint.getEventDetectors()) {
-			try {
-				pointEventDetectorDAO.update(pointEventDetector);
-				EventDetectorsCache.LOG.trace("DataPointService -> updateEventDetector "+	pointEventDetector.toString()+" has been updated succesfully");
-			}
-			catch (DuplicateKeyException e) {
-				EventDetectorsCache.LOG.trace("DataPointService -> updateEventDetector "+	e.getMessage());
-			}
-			catch (Exception e) {
-				EventDetectorsCache.LOG.trace("DataPointService -> updateEventDetector "+	e.getMessage());
-			}
-		}
-	}
-	private void deleteAddUpdateEventDetectors(DataPointVO dataPoint) {
+	private void saveEventDetectors(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 
-		if(dataPoint.getEventDetectors().size()<detectors.size()){
-
-		    deleteEventDetecor(dataPoint,detectors);
-        }
-        else if(dataPoint.getEventDetectors().size()>detectors.size()){
-
-        	addNewEventDetector(dataPoint,detectors);
+		for (PointEventDetectorVO pointEventDetector: detectors) {
+			if(!dataPoint.getEventDetectors().contains(pointEventDetector)) {
+				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
+			}
 		}
-		else{
-
-			updateEventDetector(dataPoint,detectors);
-        }
+		
+		for (PointEventDetectorVO pointEventDetector: dataPoint.getEventDetectors()) {
+			try {
+			    pointEventDetectorDAO.insert(pointEventDetector);
+			} catch (DuplicateKeyException e) {
+				pointEventDetectorDAO.update(pointEventDetector);
+			}
+		}
 	}
 
 	private PointEventDetectorVO removeFromList(List<PointEventDetectorVO> list, int id) {
