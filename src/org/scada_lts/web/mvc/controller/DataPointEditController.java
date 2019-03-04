@@ -1,19 +1,19 @@
 /*
  * (c) 2016 Abil'I.T. http://abilit.eu/
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.scada_lts.web.mvc.controller;
 
@@ -25,7 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.ScriptSessionAndUsers;
+import com.serotonin.mango.ScriptSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -57,11 +57,11 @@ import com.serotonin.util.StringUtils;
 /**
  * Controller for data point edition
  * Based on DataPointEditController from Mango by Matthew Lohbihler
- * 
+ *
  * @author Marcin Gołda
  */
 @Controller
-@RequestMapping("/data_point_edit.shtm") 
+@RequestMapping("/data_point_edit.shtm")
 public class DataPointEditController {
 	private static final Log LOG = LogFactory.getLog(LoginController.class);
 
@@ -73,7 +73,7 @@ public class DataPointEditController {
 	DataPointDao dataPointDao;
 
     public static String DPID ;
-    
+
 	@InitBinder("dataPointVO")
 	protected void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Double.TYPE, "tolerance", new DecimalFormatEditor(new DecimalFormat("#.##"), false));
@@ -107,7 +107,7 @@ public class DataPointEditController {
         String DWR_SCRIPT_SESSION_ID = request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID);
         DataPointVO dataPoint = dataPointDao.getDataPoint(id);
 
-        ScriptSessionAndUsers.addNewEditedObjectForScriptSession(dataPoint,request.getSession().getId(),DWR_SCRIPT_SESSION_ID);
+        ScriptSession.addNewEditedObjectForScriptSession(dataPoint,request.getSession().getId(),DWR_SCRIPT_SESSION_ID);
 
         user.setEditPoint(dataPoint);
 
@@ -129,7 +129,7 @@ public class DataPointEditController {
 
         String DWR_SCRIPT_SESSION_ID = request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID);
 
-        DataPointVO dataPoint = (DataPointVO) ScriptSessionAndUsers.getObjectForScriptSession(request.getSession().getId(),DWR_SCRIPT_SESSION_ID);
+        DataPointVO dataPoint = (DataPointVO) ScriptSession.getObjectForScriptSession(request.getSession().getId(),DWR_SCRIPT_SESSION_ID);
         dataPoint.setDiscardExtremeValues(false); // Checkbox
 
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);
@@ -189,7 +189,7 @@ public class DataPointEditController {
             rtm.saveDataPoint(point);
     	}
     }
-    
+
     private void validate(DataPointVO point, Map<String, String> errors){
         if (StringUtils.isEmpty(point.getName()))
             errors.put("name", "validate.required");
@@ -243,6 +243,6 @@ public class DataPointEditController {
                 break;
             }
             xids.add(ped.getXid());
-        }		
+        }
     }
 }

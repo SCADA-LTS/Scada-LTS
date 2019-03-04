@@ -1,88 +1,39 @@
 package com.serotonin.mango;
 
-import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.Container;
-import org.directwebremoting.ServerContextFactory;
-import org.directwebremoting.extend.ScriptSessionManager;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+
 /**
- *
  * This class is responsible for collect collection eeg.:
  * <b>key</b>(scriptSessionId)-<b>value</b>(BusinessObject) under <b>key</b>sessionId in context.
  *
- * <s>ScriptSessionAndUsers responsible for managing  User copies specific given browser "tab" (DWR Script Session)
- * User copies are stored in {@value #SCRIPTSESSION_USER} attribute of DWR script session</s>
- *
  * @author Mateusz Hyski mateusz.hyski@softq.pl hyski.mateusz@gmail.com
  *
- * In next commit it will called ScriptSessions not ScriptSessionAndUsers
+ * In next commit it will called ScriptSessions not ScriptSession
  */
-public class ScriptSessionAndUsers {
+public class ScriptSession {
 
-    private static final Log LOG = LogFactory.getLog(ScriptSessionAndUsers.class);
-
-    /**
-     * !!! in next commit it won't be used
-     *
-     * {@value #SCRIPTSESSION_USER} is the attribute name under session
-     */
-    private static final String SCRIPTSESSION_USER = "dwrscriptsessionuser";
-
-    /**
-     * !!! in next commit it won't be used
-     *
-     * @param request HttpServletRequest
-     * @return ScriptSessionManager
-     */
-    private static ScriptSessionManager getScriptSessionManager(HttpServletRequest request){
-        ScriptSessionManager manager = null;
-        try {
-            Container container = ServerContextFactory.get(request.getServletContext()).getContainer();
-            manager = (ScriptSessionManager) container.getBean(ScriptSessionManager.class.getName());
-        }catch (Exception e){
-            LOG.warn("Could not retrieve user for dwr script session");
-        }
-        return manager;
-    }
-    /**
-     * Returns correct User from Script Session
-     *
-     * @param scriptSessionId String
-     * @param request HttpServletRequest
-     * @return User
-     */
-    public static User getUserFromScriptSessionManagerSavedUnderDWRSCRIPTSESSIONUSER(String scriptSessionId, HttpServletRequest request){
-        User user = null;
-        try {
-            user = (User) getScriptSessionManager(request).getScriptSession(scriptSessionId).getAttribute(SCRIPTSESSION_USER);
-        }catch (Exception e){
-            LOG.warn("Could not retrieve user for dwr script session");
-        }
-        return (user!=null) ? user
-                            : Common.getUser(request);
-    }
+    private static final Log LOG = LogFactory.getLog(ScriptSession.class);
 
     /**
      * put new dependency eeg: <b>key</b>scriptSessionId and <b>value</b>businessObject like Point,View
      * under sessionId in context
      *
-     * @param objectEegPointWatchListAndSoOn
-     * @param sessionId
-     * @param scriptSessionId
+     * @param objectEegPointWatchListAndSoOn Object
+     * @param sessionId String
+     * @param scriptSessionId String
      * @return boolean
      */
     public synchronized static boolean addNewEditedObjectForScriptSession(Object objectEegPointWatchListAndSoOn,String sessionId,  String scriptSessionId){
         boolean result = Boolean.FALSE;
-        if(sessionId !=null && !sessionId.isEmpty() &&
-            objectEegPointWatchListAndSoOn !=null &&
-            scriptSessionId !=null && !scriptSessionId.isEmpty()
-        ) {
+        if(validate(Arrays.asList(sessionId,scriptSessionId)) &&
+            objectEegPointWatchListAndSoOn !=null ) {
             if (Common.getServletContext().getAttribute(sessionId) != null) {
                 ((Map<String, Object>) Common.getServletContext().getAttribute(sessionId)).put(scriptSessionId, objectEegPointWatchListAndSoOn);
             } else {
@@ -98,7 +49,6 @@ public class ScriptSessionAndUsers {
         }
         return result;
     }
-
     /**
      * Returns business object like eventdetector which is collect under concrete scriptsessionid
      * in map. Mentioned map is saved under sessionid in context.
@@ -109,9 +59,7 @@ public class ScriptSessionAndUsers {
      */
     public synchronized static Object getObjectForScriptSession(String sessionId, String scriptSessionId){
 
-        if(sessionId !=null && !sessionId.isEmpty() &&
-            scriptSessionId !=null && !scriptSessionId.isEmpty()
-        ) {
+        if(validate(Arrays.asList(sessionId,scriptSessionId))) {
             if (Common.getServletContext().getAttribute(sessionId)!=null) {
                 if(((Map<String, Object>) Common.getServletContext().getAttribute(sessionId)).get(scriptSessionId)!=null){
                     return ((Map<String, Object>) Common.getServletContext().getAttribute(sessionId)).get(scriptSessionId);
@@ -138,7 +86,7 @@ public class ScriptSessionAndUsers {
      */
     public synchronized static boolean clearSessionIdFromContext(String sessionId){
         boolean result = Boolean.FALSE;
-        if(sessionId!=null && !sessionId.isEmpty()) {
+        if(validate(Arrays.asList(sessionId))) {
             if (Common.getServletContext().getAttribute(sessionId) != null) {
                 Common.getServletContext().removeAttribute(sessionId);
                 result = Boolean.TRUE;
@@ -161,10 +109,8 @@ public class ScriptSessionAndUsers {
     public synchronized static boolean removeScriptSessionForObjectBySessionIdAndScriptSessionId(String sessionId, String scriptSessionId){
 
         boolean result = Boolean.FALSE;
-        if(sessionId!=null
-            && !sessionId.isEmpty()
-            && scriptSessionId!=null
-            && !scriptSessionId.isEmpty()) {
+
+        if(validate(Arrays.asList(sessionId,scriptSessionId))) {
             if (Common.getServletContext().getAttribute(sessionId) != null) {
                 if (((Map<String, Object>) Common.getServletContext().getAttribute(sessionId)).containsKey(scriptSessionId)) {
                     ((Map<String, Object>) Common.getServletContext().getAttribute(sessionId)).remove(scriptSessionId);
@@ -179,5 +125,14 @@ public class ScriptSessionAndUsers {
 
         return result;
 
+    }
+    private static boolean validate(List<String> values){
+        boolean result = Boolean.TRUE;
+        for(String valueFromList:values){
+            if (valueFromList ==null || valueFromList.isEmpty()) {
+                result = Boolean.FALSE;break;
+            }
+        }
+        return result;
     }
 }

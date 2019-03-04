@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +21,7 @@ package com.serotonin.mango.web.dwr;
 import java.util.List;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.ScriptSessionAndUsers;
+import com.serotonin.mango.ScriptSession;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -337,7 +337,7 @@ public class DataPointEditDwr extends BaseDwr {
         // The user can also end up with this point in their session in the point details page, which only requires
         // read access. So, ensure that any access here is allowed with edit permission.
         User user = Common.getUser();
-        user.setEditPoint((DataPointVO) ScriptSessionAndUsers.getObjectForScriptSession(
+        user.setEditPoint((DataPointVO) ScriptSession.getObjectForScriptSession(
                 WebContextFactory.get().getSession().getId(),
                 dwrScriptSessionId)
         );

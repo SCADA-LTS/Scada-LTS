@@ -1,6 +1,6 @@
 package org.scada_lts.web.mvc.api;
 
-import com.serotonin.mango.ScriptSessionAndUsers;
+import com.serotonin.mango.ScriptSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,7 +28,7 @@ public class BusinessObjectForScriptSessionIdAPI {
 
         boolean result = Boolean.FALSE;
         try {
-            result = ScriptSessionAndUsers.removeScriptSessionForObjectBySessionIdAndScriptSessionId(
+            result = ScriptSession.removeScriptSessionForObjectBySessionIdAndScriptSessionId(
                     request.getSession().getId(),
                     dwrScriptSessionId
             );
