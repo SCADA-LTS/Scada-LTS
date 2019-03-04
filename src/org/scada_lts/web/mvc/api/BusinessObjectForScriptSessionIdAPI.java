@@ -32,7 +32,7 @@ public class BusinessObjectForScriptSessionIdAPI {
                     request.getSession().getId(),
                     dwrScriptSessionId
             );
-            LOG.info("Business object under dwrScriptSessionId: "+dwrScriptSessionId+" has"+(result?" not":" ")+" been unlocked.");
+            LOG.info("Business object under dwrScriptSessionId: "+dwrScriptSessionId+" has "+(result?" ":" not ")+"been unlocked.");
             return new ResponseEntity<String>(String.valueOf(result),result?HttpStatus.OK:HttpStatus.BAD_REQUEST);
 
         } catch (Exception e) {
