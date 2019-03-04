@@ -33,7 +33,19 @@ public class ScriptSessionAndUsers {
      * {@value #SCRIPTSESSION_USER} is the attribute name under session
      */
     private static final String SCRIPTSESSION_USER = "dwrscriptsessionuser";
+    public static User getUserForScriptSessionId(String scriptSessionId, HttpServletRequest request){
+        User user = null;
+        try {
+            Container container = ServerContextFactory.get(request.getServletContext()).getContainer();
+            ScriptSessionManager manager = (ScriptSessionManager) container.getBean(ScriptSessionManager.class.getName());
 
+            user = (User) manager.getScriptSession(scriptSessionId).getAttribute(SCRIPTSESSION_USER);
+        }catch (Exception e){
+            LOG.warn("Could not retrieve user for dwr script session");
+        }
+        return (user!=null) ? user
+                : Common.getUser(request);
+    }
     /**
      * !!! in next commit it won't be used
      *

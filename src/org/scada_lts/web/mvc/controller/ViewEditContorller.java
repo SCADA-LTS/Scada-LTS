@@ -142,7 +142,7 @@ public class ViewEditContorller {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
-        User user = ScriptSessionAndUsers.getUserFromScriptSessionManagerSavedUnderDWRSCRIPTSESSIONUSER(form.getDwrScriptSessionid(),request);
+        User user = ScriptSessionAndUsers.getUserForScriptSessionId(form.getDwrScriptSessionid(),request);
         View view = user.getView();
 
         copyViewProperties(view, form.getView());
