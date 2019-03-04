@@ -58,6 +58,7 @@ public class ViewEditContorller {
     private static final String SUBMIT_SAVE = "save";
     private static final String SUBMIT_DELETE = "delete";
     private static final String SUBMIT_CANCEL = "cancel";
+    
     private static final String FORM_VIEW = "viewEdit";
     private static final String FORM_OBJECT_NAME = "form";
     private static final String IMAGE_SETS_ATTRIBUTE = "imageSets";
