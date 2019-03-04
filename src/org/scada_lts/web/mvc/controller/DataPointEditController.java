@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.ScriptSessionAndUsers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -64,15 +63,13 @@ import com.serotonin.util.StringUtils;
 @RequestMapping("/data_point_edit.shtm") 
 public class DataPointEditController {
 	private static final Log LOG = LogFactory.getLog(LoginController.class);
-
-    public static final String SUBMIT_DISABLE = FinalValuesForControllers.SUBMIT_DISABLE;
-    public static final String SUBMIT_RESTART = FinalValuesForControllers.SUBMIT_RESTART;
-    public static final String SUBMIT_ENABLE = FinalValuesForControllers.SUBMIT_ENABLE;
-    public static final String SUBMIT_SAVE = FinalValuesForControllers.SUBMIT_SAVE;
-
+	
 	DataPointDao dataPointDao;
-
-    public static String DPID ;
+	
+    public static final String SUBMIT_SAVE = "save";
+    public static final String SUBMIT_DISABLE = "disable";
+    public static final String SUBMIT_ENABLE = "enable";
+    public static final String SUBMIT_RESTART = "restart";
     
 	@InitBinder("dataPointVO")
 	protected void initBinder(WebDataBinder binder) {
@@ -83,15 +80,14 @@ public class DataPointEditController {
         binder.registerCustomEditor(Double.TYPE, "discardHighLimit", new DecimalFormatEditor(new DecimalFormat("#.##"),
                 false));
 	}
+	
 	@RequestMapping(method = RequestMethod.GET)
-	public String showForm(HttpServletRequest request, Model model) {
-        LOG.trace("/data_point_edit.shtm");
-
-        User user =Common.getUser(request);
-
+	public String showForm(HttpServletRequest request, Model model){
+		LOG.trace("/data_point_edit.shtm");
+		
+        User user = Common.getUser(request);
         dataPointDao = new DataPointDao();
         int id;
-        DPID=request.getParameter("dpid");
         String idStr = request.getParameter("dpid");
         if (idStr == null) {
             String pedStr = request.getParameter("pedid");
@@ -104,79 +100,67 @@ public class DataPointEditController {
         else
             id = Integer.parseInt(idStr);
 
-        String DWR_SCRIPT_SESSION_ID = request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID);
         DataPointVO dataPoint = dataPointDao.getDataPoint(id);
-
-        ScriptSessionAndUsers.addNewEditedObjectForScriptSession(dataPoint,request.getSession().getId(),DWR_SCRIPT_SESSION_ID);
-
         user.setEditPoint(dataPoint);
-
-        model.addAttribute("dpid",request.getParameter("dpid"));
-        model.addAttribute(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID,
-                (DWR_SCRIPT_SESSION_ID!=null)
-                        ?DWR_SCRIPT_SESSION_ID
-                        : FinalValuesForControllers.EMPTY_STRING);
-
-        addAllConstantsVariablesIntoModelAndCheckPermission(user,model,dataPoint);
-
-		return FinalValuesForControllers.URL_DATA_POINT_EDIT;
+        
+        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
+        ControllerUtils.addPointListDataToModel(user, id, model);
+        model.addAttribute("form", dataPoint);
+		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
+		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		return "dataPointEdit";
 	}
+	
 	@RequestMapping(method = RequestMethod.POST)
 	public String saveDataPoint(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
+		
         User user = Common.getUser(request);
-        DPID = request.getParameter("dpid");
-
-        String DWR_SCRIPT_SESSION_ID = request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID);
-
-        DataPointVO dataPoint = (DataPointVO) ScriptSessionAndUsers.getObjectForScriptSession(request.getSession().getId(),DWR_SCRIPT_SESSION_ID);
+        DataPointVO dataPoint = user.getEditPoint();
         dataPoint.setDiscardExtremeValues(false); // Checkbox
-
+        
+        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
+        
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);
         binder.bind(request);
         Map<String, String> errors = new HashMap<String, String>();
         validate(dataPoint, errors);
+        
         if (errors.isEmpty()) {
         	executeUpdate(request, dataPoint, errors);
         }
-
-        model.addAttribute("error", errors);
-        model.addAttribute(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID,DWR_SCRIPT_SESSION_ID);
-
-		addAllConstantsVariablesIntoModelAndCheckPermission(user,model,dataPoint);
-
-        return FinalValuesForControllers.URL_DATA_POINT_EDIT;
-	}
-	private void addAllConstantsVariablesIntoModelAndCheckPermission(User user, Model model, DataPointVO dataPoint){
-
-        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
+        
         ControllerUtils.addPointListDataToModel(user, dataPoint.getId(), model);
-
         model.addAttribute("form", dataPoint);
-        model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
-        model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
-        model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-        model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-    }
+        model.addAttribute("error", errors);
+		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
+		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		return "dataPointEdit";
+	}
+	
     private void executeUpdate(HttpServletRequest request, DataPointVO point, Map<String, String> errors) {
     	synchronized(point){
             RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
-            if (WebUtils.hasSubmitParameter(request, FinalValuesForControllers.SUBMIT_DISABLE)) {
+            if (WebUtils.hasSubmitParameter(request, SUBMIT_DISABLE)) {
                 point.setEnabled(false);
                 errors.put("status", "confirmation.pointDisabled");
             }
-            else if (WebUtils.hasSubmitParameter(request, FinalValuesForControllers.SUBMIT_ENABLE)) {
+            else if (WebUtils.hasSubmitParameter(request, SUBMIT_ENABLE)) {
                 point.setEnabled(true);
                 errors.put("status", "confirmation.pointEnabled");
             }
-            else if (WebUtils.hasSubmitParameter(request, FinalValuesForControllers.SUBMIT_RESTART)) {
+            else if (WebUtils.hasSubmitParameter(request, SUBMIT_RESTART)) {
                 point.setEnabled(false);
                 rtm.saveDataPoint(point);
                 point.setEnabled(true);
                 errors.put("status", "confirmation.pointRestarted");
             }
-            else if (WebUtils.hasSubmitParameter(request, FinalValuesForControllers.SUBMIT_SAVE)) {
+            else if (WebUtils.hasSubmitParameter(request, SUBMIT_SAVE)) {
                 DataPointSaveHandler saveHandler = point.getPointLocator().getDataPointSaveHandler();
                 if (saveHandler != null)
                     saveHandler.handleSave(point);
