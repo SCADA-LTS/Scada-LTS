@@ -65,7 +65,8 @@ public class HttpSessionListenerImpl implements HttpSessionListener {
 				.getServletContext().getAttribute(SERVLET_CONTEXT_MAP);
 		map.remove(sessionEvent.getSession().getId());
 
-		ScriptSessionAndUsers.removeScriptSessionVsObject(sessionEvent.getSession().getId());
+		//delete entire collection, map(scriptsession - business object) which exist under sessionId in context
+		ScriptSessionAndUsers.clearSessionIdFromContext(sessionEvent.getSession().getId());
 
 	}
 }

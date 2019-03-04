@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
+<script src=./resources/restApiBusinessObjectForDwrScriptSessionId.js></script>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="org.scada_lts.web.mvc.controller.DataPointEditController"%>
 <table>
@@ -37,7 +38,7 @@
       </c:choose>
       
       <input type="button" value="<fmt:message key="common.cancel"/>"
-              onclick="window.location='data_point_details.shtm?dpid=${form.id}';"/>
+              onclick="if(document.getElementById('dwrScriptSessionid').value !='') {removeDwrScriptSessionIdForBusinessObject(document.getElementById('dwrScriptSessionid').value);};window.location='data_point_details.shtm?dpid=${form.id}';"/>
     </td>
     <td></td>
   </tr>
