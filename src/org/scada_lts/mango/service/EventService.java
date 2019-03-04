@@ -89,7 +89,6 @@ public class EventService implements MangoEvent {
 		
 		if (event.getId() == Common.NEW_ID ) {
 			eventDAO.create(event);
-			updateCache(event);
 			//TODO whay not have add to cache?
 		} else {
 			eventDAO.updateEvent(event);
