@@ -117,7 +117,7 @@ public class DataPointEditController {
                         ?DWR_SCRIPT_SESSION_ID
                         : FinalValuesForControllers.EMPTY_STRING);
 
-        addAllConstantsVariablesIntoModelAndCheckPermission(user,model,dataPoint);
+        addAllConstantVariablesIntoModelAndCheckPermission(user,model,dataPoint);
 
 		return FinalValuesForControllers.URL_DATA_POINT_EDIT;
 	}
@@ -143,11 +143,11 @@ public class DataPointEditController {
         model.addAttribute("error", errors);
         model.addAttribute(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID,DWR_SCRIPT_SESSION_ID);
 
-		addAllConstantsVariablesIntoModelAndCheckPermission(user,model,dataPoint);
+		addAllConstantVariablesIntoModelAndCheckPermission(user,model,dataPoint);
 
         return FinalValuesForControllers.URL_DATA_POINT_EDIT;
 	}
-	private void addAllConstantsVariablesIntoModelAndCheckPermission(User user, Model model, DataPointVO dataPoint){
+	private void addAllConstantVariablesIntoModelAndCheckPermission(User user, Model model, DataPointVO dataPoint){
 
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         ControllerUtils.addPointListDataToModel(user, dataPoint.getId(), model);

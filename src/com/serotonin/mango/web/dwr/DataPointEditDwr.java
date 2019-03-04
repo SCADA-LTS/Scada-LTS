@@ -63,24 +63,7 @@ public class DataPointEditDwr extends BaseDwr {
         return dataPoint;
     }
 
-    /**
-     * @since we have possibility to operate on many tabs on Points,EventDetectors
-     *
-     * @param dwrScriptSessionId
-     * @return DataPointVO
-     */
-    private DataPointVO getDataPointByDwrScriptSessionId(String dwrScriptSessionId) {
-        // The user can also end up with this point in their session in the point details page, which only requires
-        // read access. So, ensure that any access here is allowed with edit permission.
-        User user = Common.getUser();
-        user.setEditPoint((DataPointVO) ScriptSessionAndUsers.getObjectForScriptSession(
-                WebContextFactory.get().getSession().getId(),
-                dwrScriptSessionId)
-        );
-        DataPointVO dataPoint = user.getEditPoint();
-        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
-        return dataPoint;
-    }
+
 
     //
     // Set text renderer
@@ -178,7 +161,7 @@ public class DataPointEditDwr extends BaseDwr {
     // Event detectors TODO: This section can be cleaned up since PointEventDetectorVO is now a single class.
     //
     public List<PointEventDetectorVO> getEventDetectors(String dwrScriptSessionid) {
-        return getDataPointByDwrScriptSessionId(dwrScriptSessionid)/*getDataPoint()*/.getEventDetectors();
+        return getDataPointByDwrScriptSessionId(dwrScriptSessionid).getEventDetectors();
     }
 
     public PointEventDetectorVO addEventDetector(String dwrScriptSessionid, int typeId) {
@@ -344,6 +327,24 @@ public class DataPointEditDwr extends BaseDwr {
         }
         return null;
     }
+    /**
+     * @since we have possibility to operate on many tabs on Points,EventDetectors
+     *
+     * @param dwrScriptSessionId
+     * @return DataPointVO
+     */
+    private DataPointVO getDataPointByDwrScriptSessionId(String dwrScriptSessionId) {
+        // The user can also end up with this point in their session in the point details page, which only requires
+        // read access. So, ensure that any access here is allowed with edit permission.
+        User user = Common.getUser();
+        user.setEditPoint((DataPointVO) ScriptSessionAndUsers.getObjectForScriptSession(
+                WebContextFactory.get().getSession().getId(),
+                dwrScriptSessionId)
+        );
+        DataPointVO dataPoint = user.getEditPoint();
+        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
+        return dataPoint;
+    }
     private PointEventDetectorVO getEventDetectorByDwrScriptSessionId(String dwrScriptSessionid,int pedId) {
         DataPointVO dp = getDataPointByDwrScriptSessionId(dwrScriptSessionid);
         for (PointEventDetectorVO ped : dp.getEventDetectors()) {
@@ -353,4 +354,5 @@ public class DataPointEditDwr extends BaseDwr {
         }
         return null;
     }
+
 }

@@ -26,7 +26,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Locale;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -226,19 +231,6 @@ public class Common {
 
 		return user;
 
-	}
-	public static boolean urlAddressContainsAllGivesStatements(HttpServletRequest request, String[] statements){
-
-		boolean contains = Boolean.FALSE;
-
-		if(request.getQueryString()!=null) {
-			for (String partOfUrl : statements) {
-				contains = request.getQueryString().contains(partOfUrl);
-				if(contains==Boolean.FALSE) break;
-			}
-		}
-
-		return contains;
 	}
 	public static User getUser(HttpServletRequest request) {
 

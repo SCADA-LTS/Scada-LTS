@@ -81,7 +81,9 @@ public class ViewEditContorller {
     }
     
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.GET)
-    protected ModelAndView showForm(HttpServletRequest request, @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
+    protected ModelAndView showForm(HttpServletRequest request,
+                                    @RequestParam(value="dwrScriptSessionid", required=false) String dwrScriptSessionid,
+                                    @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
         View view;
         User user = Common.getUser(request);
 
