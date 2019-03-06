@@ -74,6 +74,9 @@
       mango.view.initNormalView();
     </c:if>
 
+        mango.view.initEditView();
+        mango.share.dwr = ViewDwr;
+
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
     var browserName  = navigator.appName;
@@ -214,6 +217,12 @@
 	function callkeydownhandler(evnt) {
    		keyListen(evnt);
 	}
+    function getAddressWithDwrScriptSessionId(currentView_id){
+
+        var partsOfUrl = ["view_edit.shtm?","dwrScriptSessionid=", dwr.engine._getScriptSessionId(), "&viewId=", currentView_id];
+        var url = partsOfUrl.join();
+        location.href = url.replace(/,/g, '');
+    }
 
 
 </script>
@@ -237,7 +246,7 @@
 				</sst:select> <c:if test="${!empty currentView}">
 					<c:choose>
 						<c:when test="${owner}">
-							<a href="view_edit.shtm?dwrScriptSessionid="+dwr.engine._getScriptSessionId()+"&viewId=${currentView.id}"><tag:img
+							<a href="#" onclick="getAddressWithDwrScriptSessionId(${currentView.id});"><tag:img
 									png="icon_view_edit" title="viewEdit.editView" /> </a>
 						</c:when>
 						<c:otherwise>
