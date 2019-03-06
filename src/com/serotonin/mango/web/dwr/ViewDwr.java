@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.ScriptSession;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -397,8 +398,6 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public ViewComponent addComponent(String componentName) {
 		ViewComponent viewComponent = ViewComponent.newInstance(componentName);
-		// System.out.println(componentName);
-		// System.out.println(viewComponent);
 
 		User user = Common.getUser();
 		View view = user.getView();
@@ -408,8 +407,8 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void setViewComponentLocation(String viewComponentId, int x, int y) {
-		getViewComponent(viewComponentId).setLocation(x, y);
+	public void setViewComponentLocation(String dwrScriptSessionId,String viewComponentId, int x, int y) {
+		getViewComponentByDwrScriptSessionId(dwrScriptSessionId,viewComponentId).setLocation(x, y);
 	}
 
 	@MethodFilter
@@ -441,9 +440,11 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public List<String> getViewComponentIds() {
+	public List<String> getViewComponentIds(String dwrScriptSessionId) {
 		User user = Common.getUser();
 		List<String> result = new ArrayList<String>();
+		View view = (View) ScriptSession.getObjectForScriptSession(WebContextFactory.get().getSession().getId(),dwrScriptSessionId);
+		user.setView(view);
 		for (ViewComponent vc : user.getView().getViewComponents())
 			result.add(vc.getId());
 		return result;
@@ -768,40 +769,6 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	// @MethodFilter
-	// public DwrResponseI18n saveFlexBuilderComponent(String viewComponentId,
-	// int width, int height, boolean projectDefined,
-	// String projectsSource, int projectId, boolean runtimeMode) {
-	//
-	// DwrResponseI18n response = new DwrResponseI18n();
-	// // Validate
-	//
-	// if (width < FlexComponent.MIN_WIDTH)
-	// response.addContextualMessage("flexWidth", "validate.invalidValue");
-	//
-	// if (width > FlexComponent.MAX_WIDTH)
-	// response.addContextualMessage("flexWidth", "validate.invalidValue");
-	//
-	// if (height < FlexComponent.MIN_HEIGHT)
-	// response.addContextualMessage("flexHeight", "validate.invalidValue");
-	//
-	// if (height > FlexComponent.MAX_HEIGHT)
-	// response.addContextualMessage("flexHeight", "validate.invalidValue");
-	//
-	// if (!response.getHasMessages()) {
-	// FlexBuilderComponent c = (FlexBuilderComponent)
-	// getViewComponent(viewComponentId);
-	// c.setWidth(width);
-	// c.setHeight(height);
-	// c.setProjectDefined(projectDefined);
-	// c.setProjectSource(projectsSource);
-	// c.setProjectId(projectId);
-	// c.setRuntimeMode(runtimeMode);
-	// }
-	//
-	// return response;
-	// }
-
 	@MethodFilter
 	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height) {
 		DwrResponseI18n response = new DwrResponseI18n();
@@ -875,7 +842,6 @@ public class ViewDwr extends BaseDwr {
 			c.setHideInactivityColumn(hideInactivityColumn);
 			c.setHideAckColumn(hideAckColumn);
 			c.setHideCriteriaHeader(hideCriteriaHeader);
-			// resetPointComponent(c);
 		}
 
 		return response;
@@ -924,6 +890,10 @@ public class ViewDwr extends BaseDwr {
 	public ViewComponent getViewComponent(String viewComponentId) {
 		return getViewComponent(Common.getUser().getView(), viewComponentId);
 	}
+	@MethodFilter
+	public ViewComponent getViewComponent(String dwrScriptSessionid, String viewComponentId) {
+		return getViewComponentByDwrScriptSessionId(dwrScriptSessionid, viewComponentId);
+	}
 
 	private ViewComponent getViewComponent(View view, String viewComponentId) {
 		for (ViewComponent viewComponent : view.getViewComponents()) {
@@ -931,6 +901,12 @@ public class ViewDwr extends BaseDwr {
 				return viewComponent;
 		}
 		return null;
+	}
+	@MethodFilter
+	public ViewComponent getViewComponentByDwrScriptSessionId(String dwrScriptSessionId,String viewComponentId) {
+		return getViewComponent(
+				(View) ScriptSession.getObjectForScriptSession(WebContextFactory.get().getSession().getId(),dwrScriptSessionId),
+				viewComponentId);
 	}
 
 	public boolean executeScript(String xid) {

@@ -102,7 +102,7 @@
         this.pointList = [];
         
         this.open = function(compId) {
-            ViewDwr.getViewComponent(compId, function(comp) {
+            ViewDwr.getViewComponent(document.getElementById('dwrScriptSessionid').value,compId, function(comp) {
                 compoundEditor.component = comp;
                 $set("compoundComponentName", comp.displayName);
                 

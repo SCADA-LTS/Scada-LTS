@@ -230,7 +230,7 @@
         tp = tp.substring(0, tp.length-2);
 
         // Save the new location.
-        ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp);
+        ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,div.viewComponentId, lt, tp);
     }
 
     function addDnD(divId) {
@@ -396,7 +396,7 @@
 
                 <tr>
                   <td class="formField" width="250">
-                    <input type="hidden" id="dwrScriptSessionid" name="dwrScriptSessionid" value="{dwrScriptSessionid}">
+                    <input type="hidden" id="dwrScriptSessionid" name="dwrScriptSessionid" value="${dwrScriptSessionid}">
                   </td>
                 </tr>
 

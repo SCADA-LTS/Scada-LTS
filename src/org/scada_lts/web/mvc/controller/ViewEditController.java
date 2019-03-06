@@ -50,8 +50,8 @@ import com.serotonin.mango.vo.permission.Permissions;
 
 
 @Controller
-public class ViewEditContorller {
-    private static final Log LOG = LogFactory.getLog(ViewEditContorller.class);
+public class ViewEditController {
+    private static final Log LOG = LogFactory.getLog(ViewEditController.class);
 
     private static final String SUBMIT_UPLOAD = "upload";
     private static final String SUBMIT_CLEAR_IMAGE = "clearImage";
@@ -112,14 +112,6 @@ public class ViewEditContorller {
         map.put(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID,dwrScriptSessionid);
         return new ModelAndView(FORM_VIEW, map);
     }
-    private Map<String, Object> fillMap(ViewEditForm form){
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put(FORM_OBJECT_NAME, form);
-        model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
-        model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-        return model;
-    }
-
 
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST)
     protected ModelAndView handleImage(HttpServletRequest request, HttpServletResponse response, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form)
@@ -152,10 +144,15 @@ public class ViewEditContorller {
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
         User user = Common.getUser(request);
-        user.setView((View) ScriptSession.getObjectForScriptSession(request.getSession().getId(),
-                request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID)));
-        View view = user.getView();
 
+        String
+                SESSION_ID = request.getSession().getId(),
+                DWRSCRIPT_SESSION_ID = request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID);
+
+        user.setView((View) ScriptSession.getObjectForScriptSession(SESSION_ID,DWRSCRIPT_SESSION_ID));
+        ScriptSession.removeScriptSessionForObjectBySessionIdAndScriptSessionId(SESSION_ID,DWRSCRIPT_SESSION_ID);
+
+        View view = user.getView();
         copyViewProperties(view, form.getView());
         form.setView(view);
 
@@ -192,7 +189,8 @@ public class ViewEditContorller {
     protected ModelAndView delete(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:delete");
         User user = Common.getUser(request);
-        user.setView((View) ScriptSession.getObjectForScriptSession(request.getSession().getId(),
+        user.setView((View) ScriptSession.getObjectForScriptSession(
+                request.getSession().getId(),
                 request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID)));
         View view = user.getView();
         form.setView(view);
@@ -200,7 +198,13 @@ public class ViewEditContorller {
         new ViewDao().removeView(form.getView().getId());
         return getSuccessRedirectView(null);
     }
-
+    private Map<String, Object> fillMap(ViewEditForm form){
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put(FORM_OBJECT_NAME, form);
+        model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
+        model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
+        return model;
+    }
     private void uploadFile(HttpServletRequest request, ViewEditForm form)  throws Exception  {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             if (form.getBackgroundImageMP() != null) {
