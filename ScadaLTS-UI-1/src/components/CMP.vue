@@ -60,6 +60,8 @@
             </btn-group>
             <hr/>
             <alert>Selected: {{selectActionLevel0}} | {{selectActionLevel1}}</alert>
+            <btn size="xs" type="primary" v-on:click="showFault">fault display test</btn>
+            {{this.showFaultV}}
           </section>
         </div>
       </collapse>
@@ -82,7 +84,7 @@
 
 
   import moment from "moment";
-  import axios from 'axios';
+  import httpClient from 'axios';
   import {_} from 'vue-underscore';
   import BtnGroup from "uiv/src/components/button/BtnGroup";
 
@@ -105,15 +107,15 @@
   class ApiCMP {
     get(xIds) {
       return new Promise((resolve, reject) => {
-        const apiCMPChek = `./api/cmp/get/${xIds}`;
+        const apiCMPCheck = `./api/cmp/get/${xIds}`;
         if (xIds.length > 0) {
-          axios.get(apiCMPChek,{timeout:500}).then(response => {
+          httpClient.get(apiCMPCheck, {timeout: 500}).then(response => {
             resolve(response)
           }).catch(error => {
             reject(error);
           });
         } else {
-          const reason = new Error('Nothing to do');
+          const reason = new Error('Probably not have data');
           reject(reason);
         }
       })
@@ -122,7 +124,7 @@
     set(newData) {
       return new Promise((resolve, reject) => {
         if (newData.length > 0) {
-          axios({
+          httpClient({
             method: 'post',
             url: './api/cmp/set',
             timeout: 500,
@@ -134,7 +136,7 @@
             reject(error);
           });
         } else {
-          const reason = new Error('Nothing to do');
+          const reason = new Error('Probably not have data');
           reject(reason);
         }
       })
@@ -154,6 +156,8 @@
       return {
         show: false,
         errors: [],
+        newErrors: [],
+        errorResultingFromOperationControl: "",
         errorsNotification: false,
         strConfig: this.pConfig,
         config: {},
@@ -166,12 +170,57 @@
         selectActionLevel1: '',
         disabledChange: false,
         processOfCheckingTheStatus: false,
-        counterForAnaliseInOrder: -1
+        counterForAnaliseInOrder: -1,
+        showFaultV: false
       }
     },
     methods: {
+      endChecking() {
+        this.insideState = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name;
+        this.disabledChange = !!this.config.state.analiseInOrder[this.counterForAnaliseInOrder].disable;
+        if (this.disabledChange) {
+          this.show = false;
+          if (this.showFaultV == true) {
+            this.showFaultV = false;
+            this.newErrors = [];
+          }
+        }
+        this.processOfCheckingTheStatus = false;
+        this.counterForAnaliseInOrder = -1;
+        this.checkToNotificationError();
+      },
+      checkToNotificationError() {
+        if (
+          (this.errorsNotification != (this.newErrors.length > 0)) ||
+          (this.errorsNotification != (this.errorResultingFromOperationControl.length > 0))
+        ) {
+          this.errorsNotification = (this.newErrors.length > 0) || (this.errorResultingFromOperationControl.length > 0);
+        }
+        this.errors = this.newErrors;
+        if (this.errorResultingFromOperationControl.length > 0) {
+          this.errors.push(this.errorResultingFromOperationControl);
+        }
+        this.newErrors = [];
+        this.errorResultingFromOperationControl = "";
+      },
+      setErrorAndStopAnaliseInOrder(msg) {
+        this.newErrors.push(msg);
+        this.insideState = 'Error';
+        this.processOfCheckingTheStatus = false;
+        this.counterForAnaliseInOrder = -1;
+      },
+      setErrorAndNotification(msg) {
+        this.errorResultingFromOperationControl = msg;
+        this.insideState = 'Error';
+        this.checkToNotificationError();
+      },
+      showFault() {
+        this.showFaultV = !this.showFaultV;
+        this.checkStatus();
+      },
       checkStatus() {
-          this.counterForAnaliseInOrder = 0;
+        this.newErros = [];
+        this.counterForAnaliseInOrder = 0;
       },
       setActionLeve0(action) {
         // get action by name action
@@ -201,9 +250,7 @@
 
               }, this.timeRefresh + 1000);
             }).catch(er => {
-              let errors = [];
-              errors.push(er.message);
-              this.setErrors(errors);
+              this.setErrorAndNotification(er.message);
             });
           }
         } else {
@@ -227,12 +274,6 @@
         } else {
           this.selectActionLevel1 = action;
         }
-      },
-      setErrors(errors) {
-        if (this.errorsNotification != (errors.length > 0)) {
-          this.errorsNotification = errors.length > 0;
-        }
-        this.errors = errors;
       },
       tryChangeModePLC() {
         let newData = [];
@@ -259,9 +300,7 @@
             new ApiCMP().set(newData).then(response => {
               this.show = false;
             }).catch(er => {
-              let errors = [];
-              errors.push(er.message);
-              this.setErrors(errors);
+              this.setErrorAndNotification(er.message)
             });
           }
         }
@@ -272,9 +311,7 @@
         this.config = JSON.parse(this.strConfig);
         this.controlsLevel0 = this.config.control.toChange;
       } catch (e) {
-        let errors = [];
-        errors.push(e.message);
-        this.setErrors(errors);
+        this.setErrorAndNotification(e.message)
       }
       if (this.timeRefresh) {
         setInterval(
@@ -284,6 +321,9 @@
           this.timeRefresh
         );
       }
+    },
+    mounted() {
+      this.checkStatus();
     },
     filters: {
       moment: function (date) {
@@ -325,91 +365,80 @@
         if (this.counterForAnaliseInOrder >= 0) {
           this.processOfCheckingTheStatus = true;
 
+
           let points = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].toChecked;
-
-          let xIDs = [];
-          for (let j = 0; j < points.length; j++) {
-            if (points[j].last == "true") {
-              // nothing to do
-            } else {
-              xIDs.push(points[j].xid);
+          let name = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name;
+          if (points != undefined && points.length > 0) {
+            let xIDs = [];
+            for (let j = 0; j < points.length; j++) {
+              if (points[j].last == "true") {
+                if (this.insideState != name) {
+                  this.insideState = name;
+                }
+                this.endChecking();
+                break;
+              } else {
+                xIDs.push(points[j].xid);
+              }
             }
-          }
 
-          new ApiCMP().get(xIDs).then(response => {
-            if (response.data.length > 0) {
-              let toCheck = [];
-              for (let k = 0; k < points.length; k++) {
-                let entry = points[k];
-                try {
-                  if (entry.last == "true") {
-                    if (this.insideState != entry.name) {
-                      this.insideState = entry.name;
-                    }
-                  } else {
-                    for (let z = 0; z < response.data.length; z++) {
-                      if (response.data[z].xid.toUpperCase().trim() == entry.xid.toUpperCase().trim()) {
-                        entry.value = response.data[z].value;
-                        toCheck.push(entry);
-                        break;
+            if (xIDs.length>0) {
+              new ApiCMP().get(xIDs).then(response => {
+                if (response.data.length > 0) {
+                  let toCheck = [];
+                  for (let k = 0; k < points.length; k++) {
+                    let entry = points[k];
+                    try {
+                      for (let z = 0; z < response.data.length; z++) {
+                        if (response.data[z].xid.toUpperCase().trim() == entry.xid.toUpperCase().trim()) {
+                          entry.value = response.data[z].value;
+                          toCheck.push(entry);
+                          break;
+                        }
                       }
-                    }
-                    if (entry.value == undefined) {
-                      let errors = [];
-                      errors.push("Not get data");
-                      this.insideState = "Error";
-                      this.setErrors(errors);
+                      if (entry.value == undefined) {
+                        this.setErrorAndStopAnaliseInOrder("Not get data");
+                        return;
+                      }
+                    } catch (e) {
+                      this.setErrorAndStopAnaliseInOrder(e.message);
                       return;
                     }
                   }
-                } catch (e) {
-                  let errors = [];
-                  errors.push(e.message);
-                  this.setErrors(errors);
-                  this.insideState = 'Error';
-                  return;
-                }
-              }
 
-              let condition = "";
-              let errors = [];
-              for (let e = 0; e < toCheck.length; e++) {
-                if ((!!toCheck[e].toNoteError) == true) {
-                  let check = eval("(" + toCheck[e].value + toCheck[e].equals + ")");
-                  if ((!!check) == true) {
-                    errors.push(toCheck[e].describe);
-                    this.setErrors(errors);
+                  let condition = "";
+                  for (let e = 0; e < toCheck.length; e++) {
+                    if ((!!toCheck[e].toNoteError) == true) {
+                      if (this.showFaultV) {
+                        this.newErrors.push(toCheck[e].describe);
+                      } else {
+                        let check = eval("(" + toCheck[e].value + toCheck[e].equals + ")");
+                        if ((!!check) == true) {
+                          this.newErrors.push(toCheck[e].describe);
+                        }
+                      }
+                    }
+
+                    let bitOperator = (toCheck[e].bitOperatorToThePreviousCondition != undefined) ? toCheck[e].bitOperatorToThePreviousCondition : '';
+                    condition += bitOperator + "(" + toCheck[e].value + toCheck[e].equals + ")";
+                  }
+
+                  let resultCondition = eval(condition);
+
+                  if ((!!resultCondition) == true) {
+                    this.endChecking();
+                  } else {
+                    if (this.config.state.analiseInOrder.length > this.counterForAnaliseInOrder - 1) {
+                      this.counterForAnaliseInOrder++;
+                    }
                   }
                 }
+              }).catch(er => {
+                this.setErrorAndNotification(er.message);
 
-                let bitOperator = (toCheck[e].bitOperatorToThePreviousCondition != undefined) ? toCheck[e].bitOperatorToThePreviousCondition : '';
-                condition += bitOperator + "(" + toCheck[e].value + toCheck[e].equals + ")";
-              }
-
-              let resultCondition = eval(condition);
-
-              if ((!!resultCondition) == true) {
-                this.setErrors(errors);
-                this.insideState = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name;
-                this.processOfCheckingTheStatus = false;
-
-              } else {
-                if (this.config.state.analiseInOrder.length > this.counterForAnaliseInOrder - 1) {
-                  this.counterForAnaliseInOrder++;
-                } else {
-                  this.processOfCheckingTheStatus = false;
-                  this.counterForAnaliseInOrder = -1;
-                }
-              }
+              });
             }
-          }).catch(er => {
-            let errors = [];
-            errors.push(er.message);
-            this.setErrors(errors);
-            this.insideState = 'Error';
-            this.processOfCheckingTheStatus = false;
-          });
-
+          }
         }
       }
     }
