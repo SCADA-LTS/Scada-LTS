@@ -106,6 +106,16 @@ public class ViewDwr extends BaseDwr {
 	// /
 	//
 	//
+	private  String dwr;
+
+	public  String getDwr() {
+		return dwr;
+	}
+
+	public  void setDwr(String dwr) {
+		this.dwr = dwr;
+	}
+
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
@@ -157,7 +167,8 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public List<ViewComponentState> getViewPointData(boolean edit) {
 		User user = Common.getUser();
-
+		if(getDwr()!=null)
+		user.setView((View)ScriptSession.getObjectForScriptSession(WebContextFactory.get().getSession().getId(), getDwr()));
 		return getViewPointData(user, user.getView(), edit);
 	}
 
@@ -238,28 +249,29 @@ public class ViewDwr extends BaseDwr {
 			PointComponent pointComponent = (PointComponent) viewComponent;
 
 			DataPointRT dataPointRT = null;
-			if (pointComponent.tgetDataPoint() != null)
+			if (pointComponent.tgetDataPoint() != null){
 				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint().getId());
 
 			// Check permissions.
-			if (Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
-				ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
+				if (Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
+					ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
-				if (!edit) {
-					if (pointComponent.isSettable() && Permissions.hasDataPointSetPermission(user, dataPointRT.getVO())) {
-						int access = view.getUserAccess(user);
-						if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
-							setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
+					if (!edit) {
+						if (pointComponent.isSettable() && Permissions.hasDataPointSetPermission(user, dataPointRT.getVO())) {
+							int access = view.getUserAccess(user);
+							if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+								setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
+						}
+
+						if (pointComponent.tgetDataPoint() != null)
+							setChart(pointComponent.tgetDataPoint(), state, request, model);
 					}
 
-					if (pointComponent.tgetDataPoint() != null)
-						setChart(pointComponent.tgetDataPoint(), state, request, model);
+					if (add)
+						states.add(state);
+
+					model.clear();
 				}
-
-				if (add)
-					states.add(state);
-
-				model.clear();
 			}
 
 		}
@@ -400,6 +412,7 @@ public class ViewDwr extends BaseDwr {
 		ViewComponent viewComponent = ViewComponent.newInstance(componentName);
 
 		User user = Common.getUser();
+		user.setView((View)ScriptSession.getObjectForScriptSession(WebContextFactory.get().getSession().getId(), getDwr()));
 		View view = user.getView();
 		view.addViewComponent(viewComponent);
 		viewComponent.validateDataPoint(user, false);
@@ -407,13 +420,14 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void setViewComponentLocation(String dwrScriptSessionId,String viewComponentId, int x, int y) {
-		getViewComponentByDwrScriptSessionId(dwrScriptSessionId,viewComponentId).setLocation(x, y);
+	public void setViewComponentLocation(String viewComponentId, int x, int y) {
+		getViewComponentByDwrScriptSessionId(getDwr(),viewComponentId).setLocation(x, y);
 	}
 
 	@MethodFilter
 	public void deleteViewComponent(String viewComponentId) {
-		View view = Common.getUser().getView();
+		User user = Common.getUser();
+		View view = (View)ScriptSession.getObjectForScriptSession(WebContextFactory.get().getSession().getId(), getDwr());
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 

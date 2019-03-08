@@ -15,7 +15,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 function removeDwrScriptSessionIdForBusinessObject(dwrScriptSessionid) {
-
+        var pathArray = location.href.split( '/' );
+        var protocol = pathArray[0];
+        var host = pathArray[2];
+        var appScada = pathArray[3];
+        var myLocation;
+        if (!myLocation) {
+           myLocation = protocol + "//" + host + "/" + appScada + "/";
+        }
         var resultOfRemoveDwrScriptSessionIdForBusinessObject = jQuery.ajax({
                                     type: "GET",
                                     dataType: "json",

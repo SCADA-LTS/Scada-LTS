@@ -179,6 +179,7 @@ public class ViewEditController {
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
+        user.setView(new ViewDao().getView(form.getView().getId()));
         View view = user.getView();
         form.setView(view);
 

@@ -32,8 +32,9 @@
     mango.share.dwr = ViewDwr;
 
     var newComponentPositionOffset = 0;
-
+    //ViewDwr.setDwr(document.getElementById('dwrScriptSessionid').value);
     function doOnload() {
+    //ViewDwr.setDwr(document.getElementById('dwrScriptSessionid').value);
         hide("sharedUsersDiv");
         <c:forEach items="${form.view.viewComponents}" var="vc">
           <c:set var="compContent"><sst:convert obj="${vc}"/></c:set>
@@ -46,7 +47,8 @@
             dwr.util.addOptions($("componentList"), result.componentTypes, "key", "value");
             settingsEditor.setPointList(result.pointList);
             compoundEditor.setPointList(result.pointList);
-            MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
+            //MiscDwr.notifyLongPoll(document.getElementById('dwrScriptSessionid').value,mango.longPoll.pollSessionId);
+            MiscDwr.notifyLongPollByDwr(document.getElementById('dwrScriptSessionid').value,mango.longPoll.pollSessionId);
         });
 
         if(document.getElementById("viewBackground").src.includes("spacer.gif")){
@@ -230,7 +232,8 @@
         tp = tp.substring(0, tp.length-2);
 
         // Save the new location.
-        ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,div.viewComponentId, lt, tp);
+        ViewDwr.setDwr(document.getElementById('dwrScriptSessionid').value);
+        ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp);
     }
 
     function addDnD(divId) {
