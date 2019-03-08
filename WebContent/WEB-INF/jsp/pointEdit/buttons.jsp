@@ -16,13 +16,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
+<script src=./resources/restApiBusinessObjectForDwrScriptSessionId.js></script>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="org.scada_lts.web.mvc.controller.DataPointEditController"%>
 <table>
   <tr>
     <td colspan="2" align="center">
-      <input type="submit" value="<fmt:message key="common.save"/>"
-              onclick="return doSave('<%= DataPointEditController.SUBMIT_SAVE %>');"/>
+      <input type="button" value="<fmt:message key="common.save"/>"
+              onclick="document.getElementById('dpid').value =<%= DataPointEditController.DPID %>;return doSave('<%= DataPointEditController.SUBMIT_SAVE %>');"/>
       <c:choose>
         <c:when test="${form.enabled}">
           <input type="submit" value="<fmt:message key="pointEdit.buttons.disable"/>"
@@ -37,7 +38,7 @@
       </c:choose>
       
       <input type="button" value="<fmt:message key="common.cancel"/>"
-              onclick="window.location='data_point_details.shtm?dpid=${form.id}';"/>
+              onclick="if(document.getElementById('dwrScriptSessionid').value !='') {removeDwrScriptSessionIdForBusinessObject(document.getElementById('dwrScriptSessionid').value);};window.location='data_point_details.shtm?dpid=${form.id}';"/>
     </td>
     <td></td>
   </tr>

@@ -28,7 +28,7 @@ import com.serotonin.mango.vo.WatchList;
 public interface MangoWatchList {
 
 	String generateUniqueXid();
-	
+
 	boolean isXidUnique(String xid, int excludeId);
 
 	List<WatchList> getWatchLists(int userId, int userProfile);
