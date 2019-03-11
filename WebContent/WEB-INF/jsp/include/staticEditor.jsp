@@ -119,7 +119,7 @@
             hide('flexEditor');
             
             staticEditor.componentId = compId;
-            ViewDwr.getViewComponent(document.getElementById('dwrScriptSessionid').value,compId, function(comp) {
+            ViewDwr.getViewComponent(compId, function(comp) {
                 // Update the data in the form.
                 staticEditor.component = comp;
 

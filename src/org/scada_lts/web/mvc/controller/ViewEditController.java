@@ -56,35 +56,19 @@ public class ViewEditController {
     private static final String SUBMIT_UPLOAD = "upload";
     private static final String SUBMIT_CLEAR_IMAGE = "clearImage";
 
-
     private static final String FORM_VIEW = "viewEdit";
     private static final String FORM_OBJECT_NAME = "form";
     private static final String IMAGE_SETS_ATTRIBUTE = "imageSets";
     private static final String DYNAMIC_IMAGES_ATTRIBUTE = "dynamicImages";
-
-
-    // TODO: these two shall be injected by Spring
-    private String uploadDirectory= "uploads/";
-    private String successUrl = "views.shtm";
 
     private int nextImageId = -1;
 
     @Autowired
     ViewEditValidator validator;
 
-    public void setSuccessUrl(String successUrl) {
-        this.successUrl = successUrl;
-    }
-
-    public void setUploadDirectory(String uploadDirectory) {
-        this.uploadDirectory = uploadDirectory;
-    }
-
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.GET)
-    protected ModelAndView showForm(HttpServletRequest request,
-                                    @RequestParam(value="dwrScriptSessionid", required=false) String dwrScriptSessionid,
-                                    @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
-        View view;
+    protected ModelAndView showForm(HttpServletRequest request,@RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
+        View view=null;
         User user = Common.getUser(request);
 
         if (viewIdStr != null) {
@@ -111,7 +95,7 @@ public class ViewEditController {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST)
     protected ModelAndView handleImage(HttpServletRequest request, HttpServletResponse response, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form)
     throws Exception{
-        LOG.debug("ViewEditController:showForm");
+        LOG.debug("ViewEdocument.getElementById('dwrScriptSessionid').value,ditController:showForm");
         if (WebUtils.hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE)) {
             User user = Common.getUser(request);
             View view = user.getView();
@@ -189,6 +173,7 @@ public class ViewEditController {
                 request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID));
         ScriptSession.removeScriptSessionForObjectBySessionIdAndScriptSessionId(request.getSession().getId(),
                 request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID));
+        LOG.debug("ViewEditController:getViewFromContextAndRemoveViewFromContext: View has been removed from Context.");
         return view;
 
     }
@@ -204,6 +189,7 @@ public class ViewEditController {
             if (form.getBackgroundImageMP() != null) {
                 byte[] bytes = form.getBackgroundImageMP().getBytes();
                 if (bytes != null && bytes.length > 0) {
+                    String uploadDirectory= "uploads/";
                     // Create the path to the upload directory.
                     String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
                     LOG.info("ViewEditController:uploadFile: realpath="+path);
@@ -261,7 +247,7 @@ public class ViewEditController {
     }
 
     protected  ModelAndView getSuccessRedirectView(String queryString) {
-        String url = successUrl;
+        String url = "views.shtm";
         if (queryString != null && queryString.trim().length() > 0) {
             if (queryString.charAt(0) != '?')
                 url += '?' + queryString;

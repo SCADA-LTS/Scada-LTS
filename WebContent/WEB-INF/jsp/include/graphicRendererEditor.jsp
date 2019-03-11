@@ -274,7 +274,7 @@
             graphicRendererEditor.componentId = compId;
             
             // Set the renderers for the data type of this point view.
-            ViewDwr.getViewComponent(document.getElementById('dwrScriptSessionid').value,compId, graphicRendererEditor.setViewComponent);
+            ViewDwr.getViewComponent(compId, graphicRendererEditor.setViewComponent);
         };
 
         this.setViewComponent = function(comp) {
@@ -378,14 +378,14 @@
                 ViewDwr.saveAnalogGraphicComponent(graphicRendererEditor.componentId, $get("graphicRendererAnalogMin"),
                         $get("graphicRendererAnalogMax"), $get("graphicRendererAnalogDisplayText"),
                         $get("graphicRendererAnalogImageSet"), graphicRendererEditor.saveCB);
-                        ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,graphicRendererEditor.componentId, $get("graphicRendererAnalogXPosition"), $get("graphicRendererAnalogYPosition"));
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererAnalogXPosition"), $get("graphicRendererAnalogYPosition"));
                         document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererAnalogXPosition") +"px";
                         document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererAnalogYPosition") +"px";
             } else if (graphicRendererEditor.typeName == "binaryGraphic") {
                 ViewDwr.saveBinaryGraphicComponent(graphicRendererEditor.componentId, graphicRendererEditor.zeroImage,
                         graphicRendererEditor.oneImage, $get("graphicRendererBinaryDisplayText"),
                         $get("graphicRendererBinaryImageSet"), graphicRendererEditor.saveCB);
-                        ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,graphicRendererEditor.componentId, $get("graphicRendererBinaryXPosition"), $get("graphicRendererBinaryYPosition"));
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererBinaryXPosition"), $get("graphicRendererBinaryYPosition"));
                         document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererBinaryXPosition") +"px";
                         document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererBinaryYPosition") +"px";
             } else if (graphicRendererEditor.typeName == "dynamicGraphic") {
@@ -393,7 +393,7 @@
                         $get("graphicRendererDynamicMin"), $get("graphicRendererDynamicMax"),
                         $get("graphicRendererDynamicDisplayText"), $get("graphicRendererDynamicImage"),
                         graphicRendererEditor.saveCB);
-                        ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,graphicRendererEditor.componentId, $get("graphicRendererDynamicXPosition"), $get("graphicRendererDynamicYPosition"));
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererDynamicXPosition"), $get("graphicRendererDynamicYPosition"));
                         document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererDynamicXPosition") +"px";
                         document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererDynamicYPosition") +"px";
             } else if (graphicRendererEditor.typeName == "multistateGraphic") {
@@ -412,33 +412,33 @@
                 ViewDwr.saveMultistateGraphicComponent(graphicRendererEditor.componentId, imageStates,
                         $get("graphicRendererMultistateDefault"), $get("graphicRendererMultistateDisplayText"),
                         imageSet, graphicRendererEditor.saveCB);
-                ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,graphicRendererEditor.componentId, $get("graphicRendererMultistateXPosition"), $get("graphicRendererMultistateYPosition"));
+                ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererMultistateXPosition"), $get("graphicRendererMultistateYPosition"));
                 document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererMultistateXPosition") +"px";
                 document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererMultistateYPosition") +"px";
             } else if (graphicRendererEditor.typeName == "script") {
                 ViewDwr.saveScriptComponent(graphicRendererEditor.componentId, $get("graphicRendererScriptScript"),
                         graphicRendererEditor.saveCB);
-                        ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,graphicRendererEditor.componentId, $get("graphicRendererScriptXPosition"), $get("graphicRendererScriptYPosition"));
+                        ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererScriptXPosition"), $get("graphicRendererScriptYPosition"));
                         document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererScriptXPosition") +"px";
                         document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererScriptYPosition") +"px";
             } else if (graphicRendererEditor.typeName == "simple") {
                 ViewDwr.saveSimplePointComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererSimpleDisplayPointName"), 
                         $get("graphicRendererSimpleStyleAttribute"), graphicRendererEditor.saveCB);
-                ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,graphicRendererEditor.componentId, $get("graphicRendererSimpleXPosition"), $get("graphicRendererSimpleYPosition"));
+                ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererSimpleXPosition"), $get("graphicRendererSimpleYPosition"));
                 document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererSimpleXPosition") +"px";
                 document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererSimpleYPosition") +"px";
             } else if (graphicRendererEditor.typeName == "thumbnailImage") {
                 ViewDwr.saveThumbnailComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererThumbnailScalePercent"), graphicRendererEditor.saveCB);
-                ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,graphicRendererEditor.componentId, $get("graphicRendererThumbnailXPosition"), $get("graphicRendererThumbnailYPosition"));
+                ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererThumbnailXPosition"), $get("graphicRendererThumbnailYPosition"));
                 document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererThumbnailXPosition") +"px";
                 document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererThumbnailYPosition") +"px";
             } else if (graphicRendererEditor.typeName == "button") {
             	ViewDwr.saveButtonComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererButtonWhenOnLabel"), $get("graphicRendererButtonWhenOffLabel"),$get("graphicRendererButtonWidth"),
                         $get("graphicRendererButtonHeight"), graphicRendererEditor.saveCB);
-                ViewDwr.setViewComponentLocation(document.getElementById('dwrScriptSessionid').value,graphicRendererEditor.componentId, $get("graphicRendererButtonXPosition"), $get("graphicRendererButtonYPosition"));
+                ViewDwr.setViewComponentLocation(graphicRendererEditor.componentId, $get("graphicRendererButtonXPosition"), $get("graphicRendererButtonYPosition"));
                 document.getElementById("c" + graphicRendererEditor.componentId).style.left = $get("graphicRendererButtonXPosition") +"px";
                 document.getElementById("c" + graphicRendererEditor.componentId).style.top = $get("graphicRendererButtonYPosition") +"px";
             } else
