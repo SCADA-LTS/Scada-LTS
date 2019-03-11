@@ -35,7 +35,13 @@ public class ScriptSession {
         if(validate(Arrays.asList(sessionId,scriptSessionId)) &&
             objectEegPointWatchListAndSoOn !=null ) {
             if (Common.getServletContext().getAttribute(sessionId) != null) {
-                ((Map<String, Object>) Common.getServletContext().getAttribute(sessionId)).put(scriptSessionId, objectEegPointWatchListAndSoOn);
+                Map<String, Object> scriptSessionForBusinessObject=(Map<String, Object>)Common.getServletContext().getAttribute(sessionId);
+                scriptSessionForBusinessObject.put(scriptSessionId, objectEegPointWatchListAndSoOn);
+                Object object = new Object();
+                synchronized (object) {
+                    Common.getServletContext().removeAttribute(sessionId);
+                    Common.getServletContext().setAttribute(sessionId, scriptSessionForBusinessObject);
+                }
             } else {
                 Map<String, Object> scriptSessionVSBusinessObject = new HashMap<String, Object>();
                 scriptSessionVSBusinessObject.put(scriptSessionId, objectEegPointWatchListAndSoOn);

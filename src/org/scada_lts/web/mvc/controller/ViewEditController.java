@@ -99,17 +99,12 @@ public class ViewEditController {
             view.setXid(new ViewDao().generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
-        ScriptSession.addNewEditedObjectForScriptSession(
-                view,
-                request.getSession().getId(),
-                dwrScriptSessionid);
         user.setView(view);
         view.validateViewComponents(false);
 
         ViewEditForm form = new ViewEditForm();
         form.setView(view);
         Map<String, Object> map =fillMap(form);
-        map.put(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID,dwrScriptSessionid);
         return new ModelAndView(FORM_VIEW, map);
     }
 
@@ -133,11 +128,7 @@ public class ViewEditController {
             uploadFile(request, form);
         }
 
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put(FORM_OBJECT_NAME, form);
-        model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
-        model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-        return new ModelAndView(FORM_VIEW, model);
+        return new ModelAndView(FORM_VIEW, fillMap(form));
     }
 
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_SAVE })
@@ -145,12 +136,7 @@ public class ViewEditController {
         LOG.debug("ViewEditController:save");
         User user = Common.getUser(request);
 
-        String
-                SESSION_ID = request.getSession().getId(),
-                DWRSCRIPT_SESSION_ID = request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID);
-
-        user.setView((View) ScriptSession.getObjectForScriptSession(SESSION_ID,DWRSCRIPT_SESSION_ID));
-        ScriptSession.removeScriptSessionForObjectBySessionIdAndScriptSessionId(SESSION_ID,DWRSCRIPT_SESSION_ID);
+        user.setView(getViewFromContextAndRemoveViewFromContext(request));
 
         View view = user.getView();
         copyViewProperties(view, form.getView());
@@ -179,7 +165,7 @@ public class ViewEditController {
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
-        user.setView(new ViewDao().getView(form.getView().getId()));
+        user.setView(getViewFromContextAndRemoveViewFromContext(request));
         View view = user.getView();
         form.setView(view);
 
@@ -190,14 +176,21 @@ public class ViewEditController {
     protected ModelAndView delete(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:delete");
         User user = Common.getUser(request);
-        user.setView((View) ScriptSession.getObjectForScriptSession(
-                request.getSession().getId(),
-                request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID)));
+        user.setView(getViewFromContextAndRemoveViewFromContext(request));
         View view = user.getView();
         form.setView(view);
 
         new ViewDao().removeView(form.getView().getId());
         return getSuccessRedirectView(null);
+    }
+    private View getViewFromContextAndRemoveViewFromContext(HttpServletRequest request){
+        View view = (View) ScriptSession.getObjectForScriptSession(
+                request.getSession().getId(),
+                request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID));
+        ScriptSession.removeScriptSessionForObjectBySessionIdAndScriptSessionId(request.getSession().getId(),
+                request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID));
+        return view;
+
     }
     private Map<String, Object> fillMap(ViewEditForm form){
         Map<String, Object> model = new HashMap<String, Object>();

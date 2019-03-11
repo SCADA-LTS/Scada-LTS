@@ -25,7 +25,6 @@
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/shortcut.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
-  <script type="text/javascript" src="resources/splitPartsAndReturnUrl.js"></script>
   <link
 	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.css"
 	rel="stylesheet" type="text/css">
@@ -241,7 +240,7 @@
 				</sst:select> <c:if test="${!empty currentView}">
 					<c:choose>
 						<c:when test="${owner}">
-							<a href="#" onclick="getUrlFromParts(new Array('view_edit.shtm?','dwrScriptSessionid=', dwr.engine._getScriptSessionId(), '&viewId=', ${currentView.id}));"><tag:img
+							<a href="view_edit.shtm?viewId=${currentView.id}"><tag:img
 									png="icon_view_edit" title="viewEdit.editView" /> </a>
 						</c:when>
 						<c:otherwise>

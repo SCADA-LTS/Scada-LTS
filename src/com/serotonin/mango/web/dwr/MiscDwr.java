@@ -79,15 +79,6 @@ public class MiscDwr extends BaseDwr {
 	private final DataPointDetailsDwr dataPointDetailsDwr = new DataPointDetailsDwr();
 	private final ViewDwr viewDwr = new ViewDwr();
 	private final CustomViewDwr customViewDwr = new CustomViewDwr();
-	private String dwr;
-
-	public String getDwr() {
-		return dwr;
-	}
-
-	public void setDwr(String dwr) {
-		this.dwr = dwr;
-	}
 
 	public DwrResponseI18n toggleSilence(int eventId) {
 		DwrResponseI18n response = new DwrResponseI18n();
@@ -481,72 +472,6 @@ public class MiscDwr extends BaseDwr {
 
 		return response;
 	}
-	/*private void pollRequestForViewAndViewEdit(pollRequest){
-		List<ViewComponentState> newStates;
-		if (pollRequest.getAnonViewId() > 0)
-			newStates = viewDwr.getViewPointDataAnon(pollRequest
-					.getAnonViewId());
-		else
-			newStates = viewDwr.getViewPointData(pollRequest
-					.isViewEdit());
-		List<ViewComponentState> differentStates = new ArrayList<ViewComponentState>();
-
-		for (ViewComponentState newState : newStates) {
-			ViewComponentState oldState = state
-					.getViewComponentState(newState.getId());
-			if (oldState == null)
-				differentStates.add(newState);
-			else {
-				ViewComponentState copy = newState.clone();
-				copy.removeEqualValue(oldState);
-				if (!copy.isEmpty())
-					differentStates.add(copy);
-			}
-		}
-
-		if (!differentStates.isEmpty()) {
-			response.put("viewStates", differentStates);
-			state.setViewComponentStates(newStates);
-		}
-	}*/
-	/*private void pollRequestForCustomView(LongPollState state,Map<String, Object> response){
-		List<CustomComponentState> newStates = customViewDwr
-				.getViewPointData();
-		List<CustomComponentState> differentStates = new ArrayList<CustomComponentState>();
-
-		for (CustomComponentState newState : newStates) {
-			CustomComponentState oldState = state
-					.getCustomViewState(newState.getId());
-			if (oldState == null)
-				differentStates.add(newState);
-			else {
-				CustomComponentState copy = newState.clone();
-				copy.removeEqualValue(oldState);
-				if (!copy.isEmpty())
-					differentStates.add(copy);
-			}
-		}
-
-		if (!differentStates.isEmpty()) {
-			response.put("customViewStates", differentStates);
-			state.setCustomViewStates(newStates);
-		}
-	}*/
-	/*private void pollRequestForPendingAlarms(EventDao eventDao,User user,HttpServletRequest httpRequest,LongPollState state,Map<String,Object> response){
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("events", eventDao.getPendingEvents(user.getId()));
-		model.put("pendingEvents", true);
-		model.put("noContentWhenEmpty", true);
-		String currentContent = generateContent(httpRequest,
-				"eventList.jsp", model);
-		currentContent = StringUtils.trimWhitespace(currentContent);
-
-		if (!StringUtils.isEqual(currentContent,
-				state.getPendingAlarmsContent())) {
-			response.put("pendingAlarmsContent", currentContent);
-			state.setPendingAlarmsContent(currentContent);
-		}
-	}*/
 	public void terminateLongPoll(int pollSessionId) {
 		terminateLongPollImpl(getLongPollData(pollSessionId, false));
 	}
@@ -573,9 +498,6 @@ public class MiscDwr extends BaseDwr {
 		}
 		notifyLongPollImpl(data.getRequest());
 	}
-	public void notifyLongPollByDwr(String dwr,int pollSessionId) {
-		notifyLongPollImplByDwr(getLongPollDataByDwr(dwr,pollSessionId, false).getRequest());
-	}
 	public void notifyLongPoll(int pollSessionId) {
 		notifyLongPollImpl(getLongPollData(pollSessionId, false).getRequest());
 	}
@@ -584,31 +506,6 @@ public class MiscDwr extends BaseDwr {
 		synchronized (request) {
 			request.notifyAll();
 		}
-	}
-	private static void notifyLongPollImplByDwr(LongPollRequest request) {
-		synchronized (request) {
-			request.notifyAll();
-		}
-	}
-	private LongPollData getLongPollDataByDwr(String dwr,int pollSessionId, boolean refreshState) {
-		List<LongPollData> dataList = getLongPollData();
-
-		LongPollData data = getDataFromList(dataList, pollSessionId);
-		if (data == null) {
-			synchronized (dataList) {
-				data = getDataFromList(dataList, pollSessionId);
-				if (data == null) {
-					data = new LongPollData(pollSessionId);
-					refreshState = true;
-					dataList.add(data);
-				}
-			}
-		}
-
-		if (refreshState)
-			data.setState(new LongPollState());
-
-		return data;
 	}
 	private LongPollData getLongPollData(int pollSessionId, boolean refreshState) {
 		List<LongPollData> dataList = getLongPollData();
