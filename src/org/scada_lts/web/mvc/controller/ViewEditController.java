@@ -95,7 +95,7 @@ public class ViewEditController {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST)
     protected ModelAndView handleImage(HttpServletRequest request, HttpServletResponse response, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form)
     throws Exception{
-        LOG.debug("ViewEdocument.getElementById('dwrScriptSessionid').value,ditController:showForm");
+        LOG.debug("ViewEditController:showForm");
         if (WebUtils.hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE)) {
             User user = Common.getUser(request);
             View view = user.getView();
