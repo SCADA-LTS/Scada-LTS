@@ -63,8 +63,6 @@ public class DataPointEditDwr extends BaseDwr {
         return dataPoint;
     }
 
-
-
     //
     // Set text renderer
     //

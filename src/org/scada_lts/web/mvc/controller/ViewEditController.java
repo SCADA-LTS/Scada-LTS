@@ -145,7 +145,7 @@ public class ViewEditController {
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_CANCEL })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_CANCEL })
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
@@ -156,7 +156,7 @@ public class ViewEditController {
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_DELETE })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_DELETE })
     protected ModelAndView delete(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:delete");
         User user = Common.getUser(request);
