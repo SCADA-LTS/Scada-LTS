@@ -55,7 +55,11 @@ public class ViewEditController {
 
     private static final String SUBMIT_UPLOAD = "upload";
     private static final String SUBMIT_CLEAR_IMAGE = "clearImage";
-
+    
+    private static final String SUBMIT_SAVE = "save";
+    private static final String SUBMIT_DELETE = "delete";
+    private static final String SUBMIT_CANCEL = "cancel";
+    
     private static final String FORM_VIEW = "viewEdit";
     private static final String FORM_OBJECT_NAME = "form";
     private static final String IMAGE_SETS_ATTRIBUTE = "imageSets";
@@ -115,7 +119,7 @@ public class ViewEditController {
         return new ModelAndView(FORM_VIEW, fillMap(form));
     }
 
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { FinalValuesForControllers.SUBMIT_SAVE })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
         User user = Common.getUser(request);
