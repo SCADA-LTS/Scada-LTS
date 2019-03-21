@@ -19,11 +19,16 @@
 package com.serotonin.mango.rt.dataImage.types;
 
 import com.serotonin.mango.DataTypes;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Matthew Lohbihler
  */
 public class BinaryValue extends MangoValue implements Comparable<BinaryValue> {
+
+    static final Log log = LogFactory.getLog(BinaryValue.class);
+
     public static final BinaryValue ZERO = new BinaryValue(false);
     public static final BinaryValue ONE = new BinaryValue(true);
 
@@ -33,6 +38,10 @@ public class BinaryValue extends MangoValue implements Comparable<BinaryValue> {
         } else if(s.equals("1") || s.trim().toLowerCase().equals("true")) {
             return ONE;
         }
+        // Since there is a production problem with the interpretation of modbus data, I go back to the earlier version in which the value 0 is returned in the case of an unknowlage value.
+        //return ZERO;
+
+        log.error("BinaryValue - parseBinary \"Value is not a binary:" + s + "\"");
         throw new NumberFormatException("Value is not a binary.");
     }
 

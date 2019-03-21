@@ -42,6 +42,8 @@ import com.serotonin.timer.CronExpression;
 import com.serotonin.timer.OneTimeTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Matthew Lohbihler
@@ -51,6 +53,8 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     private static final int MAX_RECURSION = 10;
 
     final Boolean LOCK = new Boolean(false);
+
+    private final Log LOG = LogFactory.getLog(MetaPointLocatorRT.class);
 
     final MetaPointLocatorVO vo;
     AbstractTimer timer;
@@ -266,6 +270,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             }
             catch (ResultTypeException e) {
                 handleError(runtime, e.getLocalizableMessage());
+            }
+        } catch (Exception e) {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace(e);
             }
         }
         finally {
