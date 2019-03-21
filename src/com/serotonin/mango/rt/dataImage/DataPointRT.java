@@ -442,11 +442,17 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	//
 	private void fireEvents(PointValueTime oldValue, PointValueTime newValue,
 			boolean set, boolean backdate) {
-		DataPointListener l = rm.getDataPointListeners(vo.getId());
-		if (l != null)
-			Common.ctx.getBackgroundProcessing().addWorkItem(
-					new EventNotifyWorkItem(l, oldValue, newValue, set,
-							backdate));
+		try {
+			DataPointListener l = rm.getDataPointListeners(vo.getId());
+			if (l != null)
+				Common.ctx.getBackgroundProcessing().addWorkItem(
+						new EventNotifyWorkItem(l, oldValue, newValue, set,
+								backdate));
+		} catch (Exception e) {
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(e);
+			}
+		}
 	}
 
 	class EventNotifyWorkItem implements WorkItem {
