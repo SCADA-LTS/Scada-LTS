@@ -65,7 +65,6 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
-import org.scada_lts.web.mvc.controller.FinalValuesForControllers;
 
 public class Common {
 
