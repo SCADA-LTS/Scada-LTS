@@ -5,7 +5,7 @@ public class FinalValuesForControllers {
 
     public static final String EMPTY_STRING = "";
     public static final String DWR_SCRIPT_SESSION_ID = "dwrScriptSessionid";
-    public static final String DWRSCRIPTSESSIONUSER = "dwrscriptsessionuser";
+
     static final String URL_DATA_POINT_EDIT = "dataPointEdit";
     static final String SUBMIT_SAVE = "save";
 

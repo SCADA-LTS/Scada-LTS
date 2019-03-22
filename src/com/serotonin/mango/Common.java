@@ -30,9 +30,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
-
+import java.util.Locale;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -74,7 +73,6 @@ public class Common {
 	private static final String CUSTOM_VIEW_KEY = "customView";
 
 	public static final String SESSION_USER = "sessionUser";
-	private static final String DWR_SCRIPT_SESSION_ID = FinalValuesForControllers.DWR_SCRIPT_SESSION_ID;
 	public static final String UTF8 = "UTF-8";
 	public static final Charset UTF8_CS = Charset.forName(UTF8);
 
