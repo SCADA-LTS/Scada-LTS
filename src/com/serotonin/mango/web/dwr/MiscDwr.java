@@ -472,6 +472,7 @@ public class MiscDwr extends BaseDwr {
 
 		return response;
 	}
+
 	public void terminateLongPoll(int pollSessionId) {
 		terminateLongPollImpl(getLongPollData(pollSessionId, false));
 	}
@@ -498,6 +499,7 @@ public class MiscDwr extends BaseDwr {
 		}
 		notifyLongPollImpl(data.getRequest());
 	}
+
 	public void notifyLongPoll(int pollSessionId) {
 		notifyLongPollImpl(getLongPollData(pollSessionId, false).getRequest());
 	}
@@ -507,6 +509,7 @@ public class MiscDwr extends BaseDwr {
 			request.notifyAll();
 		}
 	}
+
 	private LongPollData getLongPollData(int pollSessionId, boolean refreshState) {
 		List<LongPollData> dataList = getLongPollData();
 

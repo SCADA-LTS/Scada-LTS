@@ -42,6 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 /** 
  * Controller for points hierarchy.

@@ -97,7 +97,7 @@ import com.serotonin.web.dwr.MethodFilter;
 /**
  * This class is so not threadsafe. Do not use class fields except for the
  * resource bundle stuff.
- * 
+ *
  * @author mlohbihler
  */
 public class ViewDwr extends BaseDwr {
@@ -161,7 +161,7 @@ public class ViewDwr extends BaseDwr {
 	/**
 	 * Retrieves point state for all points on a given view. This is the
 	 * monitoring version of the method. See below for the view editing version.
-	 * 
+	 *
 	 * @param edit
 	 * @return
 	 */

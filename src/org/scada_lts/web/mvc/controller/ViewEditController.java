@@ -65,6 +65,11 @@ public class ViewEditController {
     private static final String IMAGE_SETS_ATTRIBUTE = "imageSets";
     private static final String DYNAMIC_IMAGES_ATTRIBUTE = "dynamicImages";
 
+
+    // TODO: these two shall be injected by Spring
+    private static final String uploadDirectory = "uploads/";
+    private static final String successUrl = "views.shtm";
+
     private int nextImageId = -1;
 
     @Autowired
@@ -250,8 +255,8 @@ public class ViewEditController {
         return nextImageId++;
     }
 
-    protected  ModelAndView getSuccessRedirectView(String queryString) {
-        String url = "views.shtm";
+    protected ModelAndView getSuccessRedirectView(String queryString) {
+        String url = successUrl;
         if (queryString != null && queryString.trim().length() > 0) {
             if (queryString.charAt(0) != '?')
                 url += '?' + queryString;

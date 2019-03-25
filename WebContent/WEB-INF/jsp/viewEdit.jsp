@@ -32,6 +32,7 @@
     mango.share.dwr = ViewDwr;
 
     var newComponentPositionOffset = 0;
+
     function doOnload() {
         hide("sharedUsersDiv");
         <c:forEach items="${form.view.viewComponents}" var="vc">

@@ -269,6 +269,7 @@
 						}
 	            });
 			}
+
 			ViewDwr.setViewComponentLocation(staticEditor.componentId, $get("staticEditorXPosition"), $get("staticEditorYPosition"));
             document.getElementById("c" + staticEditor.componentId).style.left = $get("staticEditorXPosition") +"px";
             document.getElementById("c" + staticEditor.componentId).style.top = $get("staticEditorYPosition") +"px";

@@ -78,7 +78,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 	@Override
 	public List<ItemValue> getItemValueList(String[] itemList,
-											List<APIError> errors) throws ScadaBRAPIException {
+			List<APIError> errors) throws ScadaBRAPIException {
 		List<ItemValue> itemsList = new ArrayList<ItemValue>();
 		List<DataPointVO> ldpvo = null;
 
