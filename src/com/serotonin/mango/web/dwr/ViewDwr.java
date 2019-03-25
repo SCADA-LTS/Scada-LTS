@@ -30,6 +30,9 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.ScriptSession;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -98,6 +101,8 @@ import com.serotonin.web.dwr.MethodFilter;
  * @author mlohbihler
  */
 public class ViewDwr extends BaseDwr {
+
+	public static final Log LOG = LogFactory.getLog(ViewDwr.class);
 	//
 	//
 	// /
@@ -105,6 +110,13 @@ public class ViewDwr extends BaseDwr {
 	// /
 	//
 	//
+	public void addEditedViewToContext(String viewId){
+		ScriptSession.addNewEditedObjectForScriptSession(
+				new ViewDao().getView(Integer.parseInt(viewId)),
+				WebContextFactory.get().getSession().getId(),
+				WebContextFactory.get().getScriptSession().getId());
+	}
+
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
@@ -156,7 +168,9 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public List<ViewComponentState> getViewPointData(boolean edit) {
 		User user = Common.getUser();
-
+		View view = getViewFromContext();
+		if (view !=null)
+			user.setView(view);
 		return getViewPointData(user, user.getView(), edit);
 	}
 
@@ -237,28 +251,29 @@ public class ViewDwr extends BaseDwr {
 			PointComponent pointComponent = (PointComponent) viewComponent;
 
 			DataPointRT dataPointRT = null;
-			if (pointComponent.tgetDataPoint() != null)
+			if (pointComponent.tgetDataPoint() != null){
 				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint().getId());
 
 			// Check permissions.
-			if (Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
-				ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
+				if (Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
+					ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
-				if (!edit) {
-					if (pointComponent.isSettable() && Permissions.hasDataPointSetPermission(user, dataPointRT.getVO())) {
-						int access = view.getUserAccess(user);
-						if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
-							setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
+					if (!edit) {
+						if (pointComponent.isSettable() && Permissions.hasDataPointSetPermission(user, dataPointRT.getVO())) {
+							int access = view.getUserAccess(user);
+							if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+								setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
+						}
+
+						if (pointComponent.tgetDataPoint() != null)
+							setChart(pointComponent.tgetDataPoint(), state, request, model);
 					}
 
-					if (pointComponent.tgetDataPoint() != null)
-						setChart(pointComponent.tgetDataPoint(), state, request, model);
+					if (add)
+						states.add(state);
+
+					model.clear();
 				}
-
-				if (add)
-					states.add(state);
-
-				model.clear();
 			}
 
 		}
@@ -309,13 +324,13 @@ public class ViewDwr extends BaseDwr {
 
 		model.clear();
 	}
-
 	//
 	// View users
 	//
 	@MethodFilter
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType) {
-		View view = Common.getUser().getView();
+		View view = getViewFromContext();
+
 		boolean found = false;
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -337,7 +352,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<ShareUser> removeSharedUser(int userId) {
-		View view = Common.getUser().getView();
+		View view = getViewFromContext();
 
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -352,6 +367,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public void deleteViewShare() {
 		User user = Common.getUser();
+		user.setView(getViewFromContext());
 		new ViewDao().removeUserFromView(user.getView().getId(), user.getId());
 	}
 
@@ -397,10 +413,9 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public ViewComponent addComponent(String componentName) {
 		ViewComponent viewComponent = ViewComponent.newInstance(componentName);
-		// System.out.println(componentName);
-		// System.out.println(viewComponent);
 
 		User user = Common.getUser();
+		user.setView(getViewFromContext());
 		View view = user.getView();
 		view.addViewComponent(viewComponent);
 		viewComponent.validateDataPoint(user, false);
@@ -414,7 +429,9 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public void deleteViewComponent(String viewComponentId) {
-		View view = Common.getUser().getView();
+		User user = Common.getUser();
+		user.setView(getViewFromContext());
+		View view = user.getView();
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
@@ -444,6 +461,7 @@ public class ViewDwr extends BaseDwr {
 	public List<String> getViewComponentIds() {
 		User user = Common.getUser();
 		List<String> result = new ArrayList<String>();
+		user.setView(getViewFromContext());
 		for (ViewComponent vc : user.getView().getViewComponents())
 			result.add(vc.getId());
 		return result;
@@ -460,6 +478,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public String setViewPoint(String viewComponentId, String valueStr) {
 		User user = Common.getUser();
+		user.setView(getViewFromContext());
 		View view = user.getView();
 		DataPointVO point = view.findDataPoint(viewComponentId);
 
@@ -768,40 +787,6 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	// @MethodFilter
-	// public DwrResponseI18n saveFlexBuilderComponent(String viewComponentId,
-	// int width, int height, boolean projectDefined,
-	// String projectsSource, int projectId, boolean runtimeMode) {
-	//
-	// DwrResponseI18n response = new DwrResponseI18n();
-	// // Validate
-	//
-	// if (width < FlexComponent.MIN_WIDTH)
-	// response.addContextualMessage("flexWidth", "validate.invalidValue");
-	//
-	// if (width > FlexComponent.MAX_WIDTH)
-	// response.addContextualMessage("flexWidth", "validate.invalidValue");
-	//
-	// if (height < FlexComponent.MIN_HEIGHT)
-	// response.addContextualMessage("flexHeight", "validate.invalidValue");
-	//
-	// if (height > FlexComponent.MAX_HEIGHT)
-	// response.addContextualMessage("flexHeight", "validate.invalidValue");
-	//
-	// if (!response.getHasMessages()) {
-	// FlexBuilderComponent c = (FlexBuilderComponent)
-	// getViewComponent(viewComponentId);
-	// c.setWidth(width);
-	// c.setHeight(height);
-	// c.setProjectDefined(projectDefined);
-	// c.setProjectSource(projectsSource);
-	// c.setProjectId(projectId);
-	// c.setRuntimeMode(runtimeMode);
-	// }
-	//
-	// return response;
-	// }
-
 	@MethodFilter
 	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height) {
 		DwrResponseI18n response = new DwrResponseI18n();
@@ -875,12 +860,21 @@ public class ViewDwr extends BaseDwr {
 			c.setHideInactivityColumn(hideInactivityColumn);
 			c.setHideAckColumn(hideAckColumn);
 			c.setHideCriteriaHeader(hideCriteriaHeader);
-			// resetPointComponent(c);
 		}
 
 		return response;
 	}
-
+    private View getViewFromContext(){
+        try {
+            return (View) ScriptSession.getObjectForScriptSession(
+                    WebContextFactory.get().getSession().getId(),
+                    WebContextFactory.get().getScriptSession().getId());
+        }
+        catch (ClassCastException e){
+            LOG.warn(e);
+            return null;
+        }
+    }
 	private void validateCompoundComponent(DwrResponseI18n response, String name) {
 		if (StringUtils.isEmpty(name))
 			response.addContextualMessage("compoundName", "dsEdit.validate.required");
@@ -922,7 +916,8 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public ViewComponent getViewComponent(String viewComponentId) {
-		return getViewComponent(Common.getUser().getView(), viewComponentId);
+
+		return getViewComponent(getViewFromContext(), viewComponentId);
 	}
 
 	private ViewComponent getViewComponent(View view, String viewComponentId) {
