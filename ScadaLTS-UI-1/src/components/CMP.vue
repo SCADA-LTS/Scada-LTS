@@ -62,6 +62,7 @@
             <alert>Selected: {{selectActionLevel0}} | {{selectActionLevel1}}</alert>
             <btn size="xs" type="primary" v-on:click="showFault">fault display test</btn>
             {{this.showFaultV}}
+            <p>v0.0.5</p>
           </section>
         </div>
       </collapse>
@@ -81,7 +82,7 @@
 
 
 <script>
-
+/* eslint-disable */
 
   import moment from "moment";
   import httpClient from 'axios';
@@ -107,37 +108,45 @@
   class ApiCMP {
     get(xIds) {
       return new Promise((resolve, reject) => {
-        const apiCMPCheck = `./api/cmp/get/${xIds}`;
-        if (xIds.length > 0) {
-          httpClient.get(apiCMPCheck, {timeout: 500}).then(response => {
-            resolve(response)
-          }).catch(error => {
-            reject(error);
-          });
-        } else {
-          const reason = new Error('Probably not have data');
-          reject(reason);
+        try {
+          const apiCMPCheck = `./api/cmp/get/${xIds}`;
+          if (xIds.length > 0) {
+            httpClient.get(apiCMPCheck,{timeout: 5000}).then(response => {
+              resolve(response)
+            }).catch(error => {
+              reject(error);
+            });
+          } else {
+            const reason = new Error('Probably not have data');
+            reject(reason);
+          }
+        } catch (e) {
+          reject(e);
         }
       })
     }
 
     set(newData) {
       return new Promise((resolve, reject) => {
-        if (newData.length > 0) {
-          httpClient({
-            method: 'post',
-            url: './api/cmp/set',
-            timeout: 500,
-            headers: {},
-            data: newData
-          }).then(response => {
-            resolve(response)
-          }).catch(error => {
-            reject(error);
-          });
-        } else {
-          const reason = new Error('Probably not have data');
-          reject(reason);
+        try {
+          if (newData.length > 0) {
+            httpClient({
+              method: 'post',
+              url: './api/cmp/set',
+              headers: {},
+              timeout: 5000,
+              data: newData
+            }).then(response => {
+              resolve(response)
+            }).catch(error => {
+              reject(error);
+            });
+          } else {
+            const reason = new Error('Probably not have data');
+            reject(reason);
+          }
+        } catch (e) {
+          reject(e);
         }
       })
     }
@@ -221,6 +230,7 @@
       checkStatus() {
         this.newErros = [];
         this.counterForAnaliseInOrder = 0;
+        this.processOfCheckingTheStatus = false;
       },
       setActionLeve0(action) {
         // get action by name action
@@ -316,7 +326,11 @@
       if (this.timeRefresh) {
         setInterval(
           function () {
-            this.checkStatus();
+            try {
+              this.checkStatus();
+            } catch (e) {
+              console.log(e)
+            }
           }.bind(this),
           this.timeRefresh
         );
