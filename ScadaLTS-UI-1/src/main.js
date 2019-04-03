@@ -41,8 +41,8 @@ new Vue({
 
 new Vue({
   el: '#app-is-alive',
-  components: { 
-    "is-alive": IsAlive 
+  components: {
+    "is-alive": IsAlive
   },
 })
 
@@ -68,32 +68,12 @@ new Vue({
   },
 })
 
-new Vue({
-  el: '#app-cmp-1',
-  components: {
-    "cmp": CMP
-  },
-})
-
-new Vue({
-  el: '#app-cmp-2',
-  components: {
-    "cmp": CMP
-  },
-})
-
-new Vue({
-  el: '#app-cmp-3',
-  components: {
-    "cmp": CMP
-  },
-})
-
-new Vue({
-  el: '#app-cmp-4',
-  components: {
-    "cmp": CMP
-  },
-})
-
+for (let i=0; i<20; i++) {
+  new Vue({
+    el: `#app-cmp-${i}`,
+    components: {
+      "cmp": CMP
+    },
+  })
+}
 
