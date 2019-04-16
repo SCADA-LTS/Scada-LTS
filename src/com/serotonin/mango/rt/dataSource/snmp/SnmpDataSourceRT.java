@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.snmp4j.PDU;
@@ -58,6 +59,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	private String address;
 	private Target target;
 	private Snmp snmp;
+	private int counterEmptyResponsesOrResponsesWithError;
+	private boolean deviceDidNotRespondDespiteTheCounterOfRetries = Boolean.FALSE;
 
 	public SnmpDataSourceRT(SnmpDataSourceVO vo) {
 		super(vo);
@@ -90,6 +93,14 @@ public class SnmpDataSourceRT extends PollingDataSource {
 			raiseEvent(PDU_EXCEPTION_EVENT, valueTime.getTime(), false, message);
 		else
 			dataPoint.setPointValue(valueTime, source);
+	}
+
+	public boolean isDeviceDidNotRespondDespiteTheCounterOfRetries() {
+		return deviceDidNotRespondDespiteTheCounterOfRetries;
+	}
+
+	private void setDeviceDidNotRespondDespiteTheCounterOfRetries(boolean deviceDidNotRespondDespiteTheCounterOfRetries) {
+		this.deviceDidNotRespondDespiteTheCounterOfRetries = deviceDidNotRespondDespiteTheCounterOfRetries;
 	}
 
 	@Override
@@ -134,10 +145,15 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
 		// Take a look at the response.
 		LocalizableMessage message = validatePdu(response);
-		if (message != null)
-			raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
-		else {
-			boolean error = false;
+		if (target.getRetries() == counterEmptyResponsesOrResponsesWithError) {
+			setDeviceDidNotRespondDespiteTheCounterOfRetries(Boolean.TRUE);
+			Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
+		}
+		if (target.getRetries() > counterEmptyResponsesOrResponsesWithError) {
+			if (message != null)
+				raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+			else {
+				boolean error = false;
 
 			DataPointRT dp;
 			for (int i = 0; i < response.size(); i++) {
@@ -193,6 +209,9 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	}
 
 	private LocalizableMessage validatePdu(PDU pdu) {
+
+        increaseCounterIfErrorExistOrNoResponseAppear(pdu);
+
 		if (pdu == null)
 			return new LocalizableMessage("event.snmp.noResponse");
 
@@ -206,6 +225,12 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
 		return null;
 	}
+
+    private void increaseCounterIfErrorExistOrNoResponseAppear(PDU pdu) {
+        if ((pdu == null) || (pdu.getErrorIndex() != 0) || (pdu.getErrorStatus() != 0)) {
+            ++counterEmptyResponsesOrResponsesWithError;
+        }
+    }
 
 	private OID getOid(DataPointRT dp) {
 		return ((SnmpPointLocatorRT) dp.getPointLocator()).getOid();

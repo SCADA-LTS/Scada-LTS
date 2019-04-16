@@ -188,11 +188,17 @@
     	<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
 		<path refid="Selenium"/>
+		<path refid="Snmplibrary"/>
     </path>
 	<path id="Selenium">
 		<pathelement location="WebContent/WEB-INF/lib/client-combined-3.141.59.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/selenium-server-standalone-3.141.59.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/testng-7.0.0-beta1.jar"/>
+	</path>
+	<path id="Snmplibrary">
+		<pathelement location="WebContent/WEB-INF/lib/snmp4j-agent-2.5.0.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/junit-servers-core-0.11.1-SNAPSHOT.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/junit-servers-jetty-0.11.1-SNAPSHOT.jar"/>
 	</path>
 	<path id="EAR Libraries.libraryclasspath"/>
 	<path id="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath">
@@ -445,6 +451,23 @@
 *********************END OF AUTOMATION TESTS*********************
 -->
 
+	<target name="junitsnmp">
+		<junit fork="yes" printsummary="yes" showOutput="yes" haltonfailure="yes">
+			<!--<jvmarg value="-Xdebug" />
+            <jvmarg value="-Xnoagent" />
+            <jvmarg value="-Djava.compiler=NONE" />
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y" />-->
+			<formatter type="plain" usefile="false" />
+			<classpath refid="scadabr-1.1.0-RC.classpath">
+
+			</classpath>
+
+			<test name="com.serotonin.mango.rt.dataSource.snmp.SnmpDataSourceRTTest"
+				  haltonfailure="yes">
+			</test>
+
+		</junit>
+	</target>
 	<target name="junit">
 		
 		    <junit printsummary="yes" haltonfailure="no">
