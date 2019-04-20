@@ -19,7 +19,7 @@
 --%><%@tag body-content="empty" %><%--
 --%><%@attribute name="comments" type="java.util.List" required="true" %><%--
 --%><c:forEach items="${comments}" var="comment">
-  <tr>
+  <tr class="userNote">
     <td valign="top" width="16"><tag:img png="comment" title="notes.note"/></td>
     <td valign="top">
       <span class="copyTitle">

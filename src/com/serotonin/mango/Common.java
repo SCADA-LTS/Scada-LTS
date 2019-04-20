@@ -30,9 +30,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Locale;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
@@ -64,6 +65,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
+import org.scada_lts.web.mvc.controller.FinalValuesForControllers;
 
 public class Common {
 
@@ -77,6 +79,9 @@ public class Common {
 	public static final int NEW_ID = -1;
 	public static ContextWrapper ctx;
 
+	public static ServletContext getServletContext(){
+		return ctx.getCtx();
+	}
 	// This is initialized
 	public static final RealTimeTimer timer = new RealTimeTimer();
 
@@ -223,13 +228,15 @@ public class Common {
 
 		user = getUser(webContext.getHttpServletRequest());
 
-		User scriptSessionAwareUser = ScriptSessionAndUsers.findScriptSessionUser(user,webContext);
-		return scriptSessionAwareUser == null ? user : scriptSessionAwareUser;
-	}
+		return user;
 
+	}
 	public static User getUser(HttpServletRequest request) {
-		// Check first to see if the user object is in the request.
-		User user = (User) request.getAttribute(SESSION_USER);
+
+		User user =null;
+
+		user = (User) request.getAttribute(SESSION_USER);
+
 		if (user != null)
 			return user;
 

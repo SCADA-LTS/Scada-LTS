@@ -35,7 +35,7 @@
            		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
           	}
 
-    
+
     function init() {
         getHistoryTableData();
         <c:if test="${!empty periodType}">
@@ -53,6 +53,8 @@
 			search_contains: true,
 			width: "400px"
        	});
+
+       	hideOldUserNotes();
 
         checkIfPointIsLocked();
     }
@@ -211,6 +213,18 @@
             });
         }
     }
+
+    function hideOldUserNotes() {
+        var userNotes = document.getElementsByClassName("userNote");
+        var limit = document.getElementById("notesLimit").value;
+        for(let i=0; i<(userNotes.length); i++) {
+            if(i<userNotes.length-limit) {
+                userNotes[i].style.display = "none";
+            } else {
+                userNotes[i].style.display = "block";
+            }
+        }
+    }
   </script>
   
   <table width="100%">
@@ -336,6 +350,14 @@
                 <tag:img png="comment_add" title="notes.addNote"
                         onclick="openCommentDialog(${applicationScope['constants.UserComment.TYPE_POINT']}, ${point.id})"/>
               </td>
+            </tr>
+            <tr>
+                <td>
+                    <fmt:message key="pointDetails.show"/>
+                    <input id="notesLimit" type="text" style="text-align:right;" value="5" class="formVeryShort"/>
+                    <fmt:message key="pointDetails.mostRecentRecords"/>
+                    <tag:img png="control_play_blue" onclick="hideOldUserNotes()"/>
+                </td>
             </tr>
           </table>
           <table id="pointComments${point.id}"><tag:comments comments="${point.comments}"/></table>

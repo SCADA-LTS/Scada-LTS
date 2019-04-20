@@ -55,7 +55,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		User user = Common.getUser(request);
 
-		int id;
+		int id=0;
 		DataPointDao dataPointDao = new DataPointDao();
 		String idStr = request.getParameter("dpid");
 		DataPointVO point = null;
