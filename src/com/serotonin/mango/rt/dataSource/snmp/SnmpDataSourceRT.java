@@ -61,6 +61,35 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	private Snmp snmp;
 	private int counterEmptyResponsesOrResponsesWithError;
 	private boolean deviceDidNotRespondDespiteTheCounterOfRetries = Boolean.FALSE;
+	private SnmpRequests snmpRequests;
+
+	public Snmp getSnmp() {
+		return snmp;
+	}
+
+	class SnmpRequests{
+		PDU request = null;
+		PDU response = null;
+
+		SnmpRequests(){
+			request = version.createPDU();
+			response = null;
+		}
+		public PDU getRequest(){
+			return this.request;
+		}
+		public PDU getResponse() {
+			try {
+				long responseTime = System.currentTimeMillis();
+				response = snmp.get(request, target).getResponse();
+				responseTime = System.currentTimeMillis() - responseTime;
+				log.debug("Snmp request/response time: " + responseTime);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return response;
+		}
+	}
 
 	public SnmpDataSourceRT(SnmpDataSourceVO vo) {
 		super(vo);
@@ -71,6 +100,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				vo.getAuthPassphrase(), vo.getPrivProtocol(),
 				vo.getPrivPassphrase(), vo.getEngineId(),
 				vo.getContextEngineId(), vo.getContextName());
+		snmpRequests = new SnmpRequests();
 	}
 
 	@Override
@@ -101,6 +131,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
 	private void setDeviceDidNotRespondDespiteTheCounterOfRetries(boolean deviceDidNotRespondDespiteTheCounterOfRetries) {
 		this.deviceDidNotRespondDespiteTheCounterOfRetries = deviceDidNotRespondDespiteTheCounterOfRetries;
+		log.info("Device did not respond despite the counter of retries.");
 	}
 
 	@Override
@@ -112,17 +143,35 @@ public class SnmpDataSourceRT extends PollingDataSource {
 					DataSourceRT.getExceptionMessage(e));
 		}
 	}
+	public void createSnmpAndStartListening(){
+		try {
+			address = InetAddress.getByName(vo.getHost()).getHostAddress();
+			snmp = new Snmp(new DefaultUdpTransportMapping());
+			snmp.listen();
+			target = version.getTarget(vo.getHost(), vo.getPort(),
+				vo.getRetries(), vo.getTimeout());
 
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+	}
+
+	public boolean isSnmpConnectionIsAlive(){
+		if (target.getRetries() == counterEmptyResponsesOrResponsesWithError) {
+			setDeviceDidNotRespondDespiteTheCounterOfRetries(Boolean.TRUE);
+			return Boolean.FALSE;
+		}
+		else
+			return Boolean.TRUE;
+	}
 	private void doPollImpl(long time) throws IOException {
-		PDU request = version.createPDU();
+		PDU request = snmpRequests.getRequest();
 		PDU response = null;
 		VariableBinding vb;
-
 		// Make a copy of the oids so that we can check if we got everything we
 		// asked for, and
 		// only what we asked for.
 		List<DataPointRT> requestPoints = new ArrayList<DataPointRT>();
-
 		// Add OID to send in the PDU.
 		for (DataPointRT dp : dataPoints) {
 			if (!getLocatorVO(dp).isTrapOnly()) {
@@ -130,87 +179,117 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				requestPoints.add(dp);
 			}
 		}
-
-		if (request.getVariableBindings().size() == 0) {
-			// Nothing to send, so don't bother.
-			returnToNormal(PDU_EXCEPTION_EVENT, time);
-			return;
-		}
-
-		// Get the response.
-		long responseTime = System.currentTimeMillis();
-		response = snmp.get(request, target).getResponse();
-		responseTime = System.currentTimeMillis() - responseTime;
-		log.debug("Snmp request/response time: " + responseTime);
-
-		// Take a look at the response.
-		LocalizableMessage message = validatePdu(response);
-		if (target.getRetries() == counterEmptyResponsesOrResponsesWithError) {
-			setDeviceDidNotRespondDespiteTheCounterOfRetries(Boolean.TRUE);
-			Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
-		}
-		if (target.getRetries() > counterEmptyResponsesOrResponsesWithError) {
-			if (message != null)
-				raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
-			else {
-				boolean error = false;
-
-			DataPointRT dp;
-			for (int i = 0; i < response.size(); i++) {
-				vb = response.get(i);
-
-				// Find the command for this binding.
-				dp = null;
-				for (DataPointRT requestPoint : requestPoints) {
-					if (getOid(requestPoint).equals(vb.getOid())) {
-						dp = requestPoint;
-						break;
-					}
-				}
-
-				if (dp != null) {
-					requestPoints.remove(dp);
-
-					// Check if this is an error.
-					Variable variable = vb.getVariable();
-					if (vb.getVariable().isException()) {
-						error = true;
-						raiseEvent(
-								PDU_EXCEPTION_EVENT,
-								time,
-								true,
-								new LocalizableMessage("event.snmp.oidError",
-										address, getOid(dp), variable
-												.toString()));
-					} else
-						updatePoint(dp, variable, time);
-				} else {
-					error = true;
-					raiseEvent(
-							PDU_EXCEPTION_EVENT,
-							time,
-							true,
-							new LocalizableMessage("event.snmp.unknownOid", vb
-									.getOid(), address));
-				}
-			}
-
-			for (DataPointRT requestPoint : requestPoints) {
-				error = true;
-				raiseEvent(PDU_EXCEPTION_EVENT, time, true,
-						new LocalizableMessage("event.snmp.noBinding",
-								getOid(requestPoint), address));
-			}
-
-			if (!error)
-				// Deactivate any existing event.
+		if(time!=-1) {
+			if (request.getVariableBindings().size() == 0) {
+				// Nothing to send, so don't bother.
 				returnToNormal(PDU_EXCEPTION_EVENT, time);
+				return;
+			}
+		}
+            //snmpDataSourceRT.isDeviceDidNotRespondDespiteTheCounterOfRetries();
+		// Get the response.
+		response = snmpRequests.getResponse();
+		// Take a look at the response.
+		LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);//validatePdu(response);
+		if(time==-1){
+			if(!isSnmpConnectionIsAlive())
+				snmp.close();
+		}
+		else{
+			if (!isSnmpConnectionIsAlive()) {
+				Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
+			} else {
+				if (message != null)
+					raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+				else {
+					int messageType = -1;
+					boolean error = false;
+
+					DataPointRT dp;
+					for (int i = 0; i < response.size(); i++) {
+						vb = response.get(i);
+
+						// Find the command for this binding.
+						dp = null;
+						for (DataPointRT requestPoint : requestPoints) {
+							if (getOid(requestPoint).equals(vb.getOid())) {
+								dp = requestPoint;
+								break;
+							}
+						}
+
+						if (dp != null) {
+							requestPoints.remove(dp);
+
+							// Check if this is an error.
+							if (vb.getVariable().isException()) {
+								messageType = 0;
+							} else {
+								updatePoint(dp, vb.getVariable(), time);
+							}
+						} else {
+							messageType = 1;
+						}
+
+						if (messageType != -1) {
+							error = true;
+							logEventsDependsOnMessageType(messageType, vb, dp, time);
+							messageType = -1;
+						}
+					}
+					for (DataPointRT requestPoint : requestPoints) {
+						error = true;
+						raiseEvent(PDU_EXCEPTION_EVENT, time, true,
+								new LocalizableMessage("event.snmp.noBinding",
+										getOid(requestPoint), address));
+					}
+
+					if (!error)
+						// Deactivate any existing event.
+						returnToNormal(PDU_EXCEPTION_EVENT, time);
+				}
+			}
 		}
 	}
+	public LocalizableMessage validateResponseAndValidateStateOfConnection(PDU response){
+		LocalizableMessage message = validatePdu(response);
 
+		increaseCounterIfErrorExistOrNoResponseAppear(response);
+
+		return message;
+	}
+	/**
+	 * if messageType is different that value 0 or 1
+	 * then LocalizableMessage is created and is gived to raiseEvent method.
+	 * Then result of this is true,otherwise (messageType == -1) is false.
+	 *
+	 * @param messageType
+	 * @param vb
+	 * @param dp
+	 * @param time
+	 * @return boolean
+	 */
+	private boolean logEventsDependsOnMessageType(int messageType, VariableBinding vb, DataPointRT dp, long time){
+		LocalizableMessage message=null;
+		switch(messageType) {
+			case 0:
+				message=new LocalizableMessage(
+						"event.snmp.oidError",
+						address, getOid(dp), vb.getVariable());
+				break;
+			case 1:
+				message=new LocalizableMessage(
+						"event.snmp.unknownOid",
+						vb.getOid(), address);
+				break;
+		}
+
+		if(messageType!=-1)
+			raiseEvent(PDU_EXCEPTION_EVENT,time,true,message);
+
+		return messageType!=-1;
+	}
 	private LocalizableMessage validatePdu(PDU pdu) {
-
-        increaseCounterIfErrorExistOrNoResponseAppear(pdu);
 
 		if (pdu == null)
 			return new LocalizableMessage("event.snmp.noResponse");

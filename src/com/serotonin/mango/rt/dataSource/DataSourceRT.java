@@ -143,7 +143,7 @@ abstract public class DataSourceRT implements ILifecycle {
 
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
-
+        if(time!=-1) //that condition is for junit because we don't have ctx there.
         Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
     }
 
