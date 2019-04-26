@@ -93,7 +93,8 @@ public class ImageChartUtils {
         if (pointTimeSeriesCollection.hasNumericData()) {
             //            XYSplineRenderer numericRenderer = new XYSplineRenderer();
             //            numericRenderer.setBaseShapesVisible(false);
-            XYLineAndShapeRenderer numericRenderer = new XYLineAndShapeRenderer(true, false);
+//            XYLineAndShapeRenderer numericRenderer = new XYLineAndShapeRenderer(true, false);
+            XYStepRenderer numericRenderer = new XYStepRenderer();
 
             plot.setDataset(NUMERIC_DATA_INDEX, pointTimeSeriesCollection.getNumericTimeSeriesCollection());
             plot.setRenderer(NUMERIC_DATA_INDEX, numericRenderer);
