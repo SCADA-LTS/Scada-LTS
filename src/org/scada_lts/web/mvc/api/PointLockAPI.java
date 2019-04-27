@@ -32,7 +32,7 @@ public class PointLockAPI {
         LOG.info("/api/userlock/datapoint/lock/" + pointId);
         try {
             User user = Common.getUser(request);
-            userLockService.lockDataPoint(user.getId(), pointId);
+            userLockService.lockDataPoint(user, pointId);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -46,7 +46,7 @@ public class PointLockAPI {
         LOG.info("/api/userlock/datapoint/unlock/" + pointId);
         try {
             User user = Common.getUser(request);
-            userLockService.unlockDataPoint(user.getId(), pointId);
+            userLockService.unlockDataPoint(user, pointId);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

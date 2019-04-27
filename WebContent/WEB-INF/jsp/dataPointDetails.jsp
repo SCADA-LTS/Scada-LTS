@@ -25,15 +25,15 @@
     mango.view.initPointDetails();
 
     var pathArray = location.href.split( '/' );
-          	var protocol = pathArray[0];
-          	var host = pathArray[2];
-          	var port = location.port;
-           	var appScada = pathArray[3];
-          	var url = protocol + '//' + host;
-          	var myLocation;
-          	if (!myLocation) {
-           		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
-          	}
+    var protocol = pathArray[0];
+    var host = pathArray[2];
+    var port = location.port;
+    var appScada = pathArray[3];
+    var url = protocol + '//' + host;
+    var myLocation;
+    if (!myLocation) {
+        myLocation = location.protocol + "//" + location.host + "/" + appScada;
+    }
 
 
     function init() {

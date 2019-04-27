@@ -52,6 +52,7 @@ public class SystemEventType extends EventType {
 	public static final int TYPE_EMAIL_SEND_FAILURE = 8;
 	public static final int TYPE_POINT_LINK_FAILURE = 9;
 	public static final int TYPE_PROCESS_FAILURE = 10;
+	public static final int TYPE_USER_LOCK_POINT = 11;
 
 	public static final ExportCodes TYPE_CODES = new ExportCodes();
 	static {
@@ -68,6 +69,7 @@ public class SystemEventType extends EventType {
 		TYPE_CODES.addElement(TYPE_EMAIL_SEND_FAILURE, "EMAIL_SEND_FAILURE");
 		TYPE_CODES.addElement(TYPE_POINT_LINK_FAILURE, "POINT_LINK_FAILURE");
 		TYPE_CODES.addElement(TYPE_PROCESS_FAILURE, "PROCESS_FAILURE");
+		TYPE_CODES.addElement(TYPE_USER_LOCK_POINT, "TYPE_USER_LOCK_POINT");
 	}
 
 	private static List<EventTypeVO> systemEventTypes;
@@ -96,6 +98,8 @@ public class SystemEventType extends EventType {
 					AlarmLevels.URGENT);
 			addEventTypeVO(TYPE_PROCESS_FAILURE, "event.system.process",
 					AlarmLevels.URGENT);
+			addEventTypeVO(TYPE_USER_LOCK_POINT, "event.system.process",
+					AlarmLevels.INFORMATION);
 		}
 		return systemEventTypes;
 	}
