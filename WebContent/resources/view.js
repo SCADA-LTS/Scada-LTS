@@ -372,6 +372,7 @@ mango.view.pointDetails.setData = function(state) {
     
     if (state.change != null) {
         show($("pointChangeNode"));
+        show($("pointLockNode"));
         $set("pointChange", state.change);
     }
     

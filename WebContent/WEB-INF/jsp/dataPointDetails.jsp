@@ -285,7 +285,7 @@
               </td>
               <td id="pointChange" class="formField"></td>
             </tr>
-            <tr>
+            <tr id="pointLockNode" style="display:none">
                 <td class="formLabelRequired">Point lock:</td>
                 <td>
                     <input type="checkbox" id="lockPoint" class="formField" onclick='lockPoint(this);'/>
