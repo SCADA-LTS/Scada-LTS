@@ -191,8 +191,7 @@
                        dataType: 'text',
                        url:myLocation+"/api/userlock/datapoint/lock/"+${point.id},
                        success: function(msg){
-                             alert("Point locked.");
-                             location.reload();
+                             openPointLockMessageDialog(2,1,true);
                        },
                        error: function(XMLHttpRequest, textStatus, errorThrown) {
                              alert("Problem with locking point.");
@@ -204,8 +203,7 @@
                         dataType: 'text',
                         url:myLocation+"/api/userlock/datapoint/unlock/"+${point.id},
                         success: function(msg){
-                            alert("Point unlocked.");
-                            location.reload();
+                            openPointLockMessageDialog(2,1,false);
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown) {
                             alert("Problem with unlocking point.");

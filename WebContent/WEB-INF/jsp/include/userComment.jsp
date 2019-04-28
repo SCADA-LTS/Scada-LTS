@@ -37,10 +37,24 @@
       dojo.widget.byId("CommentDialog").show();
       $("commentText").focus();
   }
+
+  function openPointLockMessageDialog(typeId, referenceId, locked) {
+        commentTypeId = typeId;
+        commentReferenceId = referenceId;
+        if(locked) {
+            $set("commentText", "Point locked: ");
+        } else {
+            $set("commentText", "Point unlocked: ");
+        }
+
+        dojo.widget.byId("CommentDialog").show();
+        $("commentText").focus();
+    }
   
   function saveComment() {
       var comment = $get("commentText");
       MiscDwr.addUserComment(commentTypeId, commentReferenceId, comment, saveCommentCB);
+      location.reload();
   }
   
   function saveCommentCB(comment) {
