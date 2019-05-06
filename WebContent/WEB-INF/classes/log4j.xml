@@ -22,14 +22,12 @@
 
   <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
     <layout class="org.apache.log4j.PatternLayout">
-<!--      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c.%l] %m%n"/> -->
       <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
     </layout>
   </appender>
   
   <appender name="logfile" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="File" value="/home/mateusz/logs/mango.log"/>
-    <!--<param name="File" value="/home/mateusz/apache-tomcat/logs/mango.log"/>-->
+    <param name="File" value="mango.log"/>
     <param name="DatePattern" value="yyyy-MM-dd"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
@@ -37,8 +35,7 @@
   </appender>
   
   <appender name="modbuslogfile" class="org.apache.log4j.RollingFileAppender">
-    <!--<param name="File" value="${catalina.base}/logs/modbus.log"/>-->
-    <param name="File" value="/home/mateusz/apache-tomcat/logs/modbus.log"/>
+    <param name="File" value="modbus.log"/>
     <param name="MaxFileSize" value="10000KB"/>
     <param name="MaxBackupIndex" value="20"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -47,8 +44,7 @@
   </appender>
 
   <appender name="scriptslogfile" class="org.apache.log4j.RollingFileAppender">
-    <!--<param name="File" value="${catalina.base}/logs/scripts.log"/>-->
-    <param name="File" value="/home/mateusz/apache-tomcat/logs/scripts.log"/>
+    <param name="File" value="scripts.log"/>
     <param name="MaxFileSize" value="1000KB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -57,8 +53,8 @@
   </appender>
   
    <appender name="apilogfile" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${catalina.base}/logs/api.log"/>
-     <param name="File" value="/home/mateusz/apache-tomcat/logs/api.log"/>
+    <param name="File" value="api.log"/>
+     <param name="File" value="api.log"/>
     <param name="MaxFileSize" value="1000KB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -67,8 +63,7 @@
   </appender>
   
   <appender name="viehierarchyservicelogfile" class="org.apache.log4j.RollingFileAppender">
-    <!--<param name="File" value="${catalina.base}/logs/viehierarchyservicelogfile.log"/>-->
-    <param name="File" value="/home/mateusz/apache-tomcat/logs/viehierarchyservicelogfile.log"/>
+    <param name="File" value="viehierarchyservicelogfile.log"/>
     <param name="MaxFileSize" value="1000KB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -78,8 +73,7 @@
   
   
   <appender name="flywaylogfile" class="org.apache.log4j.RollingFileAppender">
-    <!--<param name="File" value="${catalina.base}/logs/flayway.log"/>-->
-    <param name="File" value="/home/mateusz/apache-tomcat/logs/flayway.log"/>
+    <param name="File" value="flayway.log"/>
     <param name="MaxFileSize" value="1000KB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -89,7 +83,7 @@
   
   
   <appender name="scadalstdaoLogfile" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="/home/mateusz/apache-tomcat/logs/scadaLTSDAO.log"/>
+    <param name="File" value="scadaLTSDAO.log"/>
     <param name="MaxFileSize" value="1000KB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -98,8 +92,7 @@
   </appender>
   
   <appender name="daologfile" class="org.apache.log4j.RollingFileAppender">
-    <!--<param name="File" value="${catalina.base}/logs/dao.log"/>-->
-    <param name="File" value="/home/mateusz/apache-tomcat/logs/dao.log"/>
+    <param name="File" value="dao.log"/>
     <param name="MaxFileSize" value="1000KB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">

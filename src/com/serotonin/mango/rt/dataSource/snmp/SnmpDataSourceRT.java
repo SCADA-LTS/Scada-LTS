@@ -61,20 +61,17 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	private Snmp snmp;
 	private int counterEmptyResponsesOrResponsesWithError;
 	private boolean deviceDidNotRespondDespiteTheCounterOfRetries = Boolean.FALSE;
-	private SnmpRequests snmpRequests;
+	private SnmpComponentsRequests snmpRequests;
 
-	public Snmp getSnmp() {
-		return snmp;
-	}
-
-	class SnmpRequests{
+	class SnmpComponentsRequests {
 		PDU request = null;
 		PDU response = null;
 
-		SnmpRequests(){
+		SnmpComponentsRequests(){
 			request = version.createPDU();
 			response = null;
 		}
+
 		public PDU getRequest(){
 			return this.request;
 		}
@@ -91,6 +88,10 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		}
 	}
 
+	public Snmp getSnmp() {
+		return snmp;
+	}
+
 	public SnmpDataSourceRT(SnmpDataSourceVO vo) {
 		super(vo);
 		setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
@@ -100,7 +101,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				vo.getAuthPassphrase(), vo.getPrivProtocol(),
 				vo.getPrivPassphrase(), vo.getEngineId(),
 				vo.getContextEngineId(), vo.getContextName());
-		snmpRequests = new SnmpRequests();
+		snmpRequests = new SnmpComponentsRequests();
 	}
 
 	@Override
@@ -186,11 +187,10 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				return;
 			}
 		}
-            //snmpDataSourceRT.isDeviceDidNotRespondDespiteTheCounterOfRetries();
 		// Get the response.
 		response = snmpRequests.getResponse();
 		// Take a look at the response.
-		LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);//validatePdu(response);
+		LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);
 		if(time==-1){
 			if(!isSnmpConnectionIsAlive())
 				snmp.close();
@@ -259,8 +259,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		return message;
 	}
 	/**
-	 * if messageType is different that value 0 or 1
-	 * then LocalizableMessage is created and is gived to raiseEvent method.
+	 * if messageType is different that value -1
+	 * then LocalizableMessage is created and is given to raiseEvent method.
 	 * Then result of this is true,otherwise (messageType == -1) is false.
 	 *
 	 * @param messageType
