@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.dataSource.snmp;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,30 +62,52 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	private Snmp snmp;
 	private int counterEmptyResponsesOrResponsesWithError;
 	private boolean deviceDidNotRespondDespiteTheCounterOfRetries = Boolean.FALSE;
-	private SnmpComponentsRequests snmpRequests;
+	private SnmpResponses snmpRequests;
 
-	class SnmpComponentsRequests {
+	class SnmpResponses {
 		PDU request = null;
 		PDU response = null;
+		long responseTime;
 
-		SnmpComponentsRequests(){
-			request = version.createPDU();
-			response = null;
-		}
-
+		SnmpResponses(){}
+        public void setRequest(PDU request){
+		    this.request = request;
+        }
 		public PDU getRequest(){
 			return this.request;
 		}
-		public PDU getResponse() {
+		public PDU getResponseByGet() {
 			try {
-				long responseTime = System.currentTimeMillis();
-				response = snmp.get(request, target).getResponse();
-				responseTime = System.currentTimeMillis() - responseTime;
-				log.debug("Snmp request/response time: " + responseTime);
+				startTime();
+				response = getResponse(true);
+				finishTime();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			return response;
+		}
+		public PDU getResponseBySet(){
+            PDU response = null;
+            try {
+				startTime();
+                response = getResponse(false);
+				finishTime();
+            } catch (Exception ex) {
+                // TODO add error handling
+                response = null;
+            }
+            return response;
+        }
+        private PDU getResponse(boolean setOrGet) throws IOException {
+
+			return setOrGet?snmp.get(request, target).getResponse():snmp.set(request, target).getResponse();
+		}
+        private void startTime(){
+			responseTime = System.currentTimeMillis();
+		}
+		private void finishTime(){
+			responseTime = System.currentTimeMillis() - responseTime;
+			log.debug("Snmp request/response time: " + responseTime);
 		}
 	}
 
@@ -101,7 +124,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				vo.getAuthPassphrase(), vo.getPrivProtocol(),
 				vo.getPrivPassphrase(), vo.getEngineId(),
 				vo.getContextEngineId(), vo.getContextName());
-		snmpRequests = new SnmpComponentsRequests();
+		snmpRequests = new SnmpResponses();
 	}
 
 	@Override
@@ -111,23 +134,15 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		SnmpPointLocatorRT locator = dataPoint.getPointLocator();
 		request.add(new VariableBinding(getOid(dataPoint), locator
 				.valueToVariable(valueTime.getValue())));
-		PDU response;
-		try {
-			response = snmp.set(request, target).getResponse();
-		} catch (Exception ex) {
-			// TODO add error handling
-			response = null;
-		}
+
+		snmpRequests.setRequest(request);
+		PDU response = snmpRequests.getResponseBySet();
 
 		LocalizableMessage message = validatePdu(response);
 		if (message != null)
 			raiseEvent(PDU_EXCEPTION_EVENT, valueTime.getTime(), false, message);
 		else
 			dataPoint.setPointValue(valueTime, source);
-	}
-
-	public boolean isDeviceDidNotRespondDespiteTheCounterOfRetries() {
-		return deviceDidNotRespondDespiteTheCounterOfRetries;
 	}
 
 	private void setDeviceDidNotRespondDespiteTheCounterOfRetries(boolean deviceDidNotRespondDespiteTheCounterOfRetries) {
@@ -146,13 +161,10 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	}
 	public void createSnmpAndStartListening(){
 		try {
-			address = InetAddress.getByName(vo.getHost()).getHostAddress();
-			snmp = new Snmp(new DefaultUdpTransportMapping());
-			snmp.listen();
-			target = version.getTarget(vo.getHost(), vo.getPort(),
-				vo.getRetries(), vo.getTimeout());
 
-		} catch (Exception e) {
+			initializeComponents();
+
+		} catch (IOException e) {
 			log.info(e.getMessage());
 		}
 	}
@@ -180,6 +192,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				requestPoints.add(dp);
 			}
 		}
+		//time is set to -1 only during junits
 		if(time!=-1) {
 			if (request.getVariableBindings().size() == 0) {
 				// Nothing to send, so don't bother.
@@ -188,7 +201,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 			}
 		}
 		// Get the response.
-		response = snmpRequests.getResponse();
+		snmpRequests.setRequest(version.createPDU());
+		response = snmpRequests.getResponseByGet();
 		// Take a look at the response.
 		LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);
 		if(time==-1){
@@ -251,7 +265,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 			}
 		}
 	}
-	public LocalizableMessage validateResponseAndValidateStateOfConnection(PDU response){
+	private LocalizableMessage validateResponseAndValidateStateOfConnection(PDU response){
 		LocalizableMessage message = validatePdu(response);
 
 		increaseCounterIfErrorExistOrNoResponseAppear(response);
@@ -332,13 +346,12 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	}
 
 	void receivedTrap(PDU trap) {
-		long time = System.currentTimeMillis();
 		VariableBinding vb;
 
 		// Take a look at the response.
 		LocalizableMessage message = validatePdu(trap);
 		if (message != null)
-			raiseEvent(PDU_EXCEPTION_EVENT, time, false, message);
+			raiseEvent(PDU_EXCEPTION_EVENT, System.currentTimeMillis(), false, message);
 		else {
 			synchronized (pointListChangeLock) {
 				updateChangedPoints();
@@ -350,7 +363,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 					// Find the command for this binding.
 					for (DataPointRT dp : dataPoints) {
 						if (getOid(dp).equals(vb.getOid())) {
-							updatePoint(dp, vb.getVariable(), time);
+							updatePoint(dp, vb.getVariable(), System.currentTimeMillis());
 							found = true;
 						}
 					}
@@ -376,26 +389,41 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	@Override
 	public void initialize() {
 		try {
-			address = InetAddress.getByName(vo.getHost()).getHostAddress();
-			target = version.getTarget(vo.getHost(), vo.getPort(),
-					vo.getRetries(), vo.getTimeout());
-			snmp = new Snmp(new DefaultUdpTransportMapping());
-			snmp.listen();
+			initializeComponents();
 
 			SnmpTrapRouter.addDataSource(this);
 
 			// Deactivate any existing event.
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
 					System.currentTimeMillis());
-		} catch (Exception e) {
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
-					true, DataSourceRT.getExceptionMessage(e));
-			log.debug("Error while initializing data source", e);
+
+		} catch (UnknownHostException unknownHostException) {
+			saveException(unknownHostException,"Error during invoke getByName or getTarget : ");
+		} catch (IOException ioException) {
+			saveException(ioException,"Error during create Snmp object ->DefaultUdpTransportMapping : ");
+		} catch (Exception exception) {
+			saveException(exception,"Error while initializing data source");
 			return;
 		}
 
 		super.initialize();
 	}
+	private void initializeComponents() throws IOException {
+
+		address = InetAddress.getByName(vo.getHost()).getHostAddress();
+		target = version.getTarget(vo.getHost(), vo.getPort(),
+				vo.getRetries(), vo.getTimeout());
+		snmp = new Snmp(new DefaultUdpTransportMapping());
+		snmp.listen();
+
+	}
+	private void saveException(Exception exc,String message) {
+
+		log.debug(message, exc);
+		raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
+				true, DataSourceRT.getExceptionMessage(exc));
+	}
+
 
 	@Override
 	public void terminate() {
