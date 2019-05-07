@@ -25,7 +25,6 @@
       <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
     </layout>
   </appender>
-
   <appender name="logfile" class="org.apache.log4j.DailyRollingFileAppender">
     <param name="File" value="${catalina.base}/logs/mango.log"/>
 <!--    <param name="MaxFileSize" value="100KB"/> -->

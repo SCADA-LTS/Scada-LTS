@@ -178,6 +178,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 			return Boolean.TRUE;
 	}
 	private void doPollImpl(long time) throws IOException {
+		snmpRequests.setRequest(version.createPDU());
 		PDU request = snmpRequests.getRequest();
 		PDU response = null;
 		VariableBinding vb;

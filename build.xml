@@ -447,7 +447,8 @@
 <!--
 *********************END OF AUTOMATION TESTS*********************
 -->
-	<target name="junit" >
+
+	<target name="junit">
 		
 		    <junit printsummary="yes" haltonfailure="no">
 		    
