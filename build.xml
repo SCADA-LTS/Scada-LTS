@@ -457,7 +457,7 @@
 
 		</junit>
 	</target>
-	<target name="junit">
+	<target name="junit" depends="junitsnmp">
 		
 		    <junit printsummary="yes" haltonfailure="no">
 		    
