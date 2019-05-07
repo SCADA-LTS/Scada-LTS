@@ -501,7 +501,7 @@
 		    </test>
 
 			<!-- junitsnmp -->
-			<test name="com.serotonin.mango.rt.dataSource.snmp.TestSNMP"
+			<test name="com.serotonin.mango.rt.dataSource.snmp.SnmpDataSourceRTTest"
 			  haltonfailure="yes">
 			</test>
 		    <!--
