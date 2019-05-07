@@ -447,17 +447,7 @@
 <!--
 *********************END OF AUTOMATION TESTS*********************
 -->
-
-	<target name="junitsnmp">
-		<junit fork="yes" printsummary="yes" showOutput="yes" haltonfailure="yes">
-
-			<formatter type="plain" usefile="false" />
-			<classpath refid="scadabr-1.1.0-RC.classpath"/>
-			<test name="com.serotonin.mango.rt.dataSource.snmp.TestSNMP"  haltonfailure="yes"/>
-
-		</junit>
-	</target>
-	<target name="junit" depends="junitsnmp">
+	<target name="junit" >
 		
 		    <junit printsummary="yes" haltonfailure="no">
 		    
@@ -510,6 +500,10 @@
 		    	haltonfailure="yes">
 		    </test>
 
+			<!-- junitsnmp -->
+			<test name="com.serotonin.mango.rt.dataSource.snmp.TestSNMP"
+			  haltonfailure="yes">
+			</test>
 		    <!--
 		    <test name=""
 		    	haltonfailure="yes">
