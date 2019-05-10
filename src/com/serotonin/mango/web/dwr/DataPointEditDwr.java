@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -21,6 +21,7 @@ package com.serotonin.mango.web.dwr;
 import java.util.List;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.ScriptSession;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -43,8 +44,16 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.directwebremoting.WebContextFactory;
 
 public class DataPointEditDwr extends BaseDwr {
+
+    /**
+     * if you have possibility,please use
+     * @see DataPointEditDwr#getDataPointByDwrScriptSessionId
+     *
+     * @return DataPointVO
+     */
     private DataPointVO getDataPoint() {
         // The user can also end up with this point in their session in the point details page, which only requires
         // read access. So, ensure that any access here is allowed with edit permission.
@@ -149,12 +158,12 @@ public class DataPointEditDwr extends BaseDwr {
     //
     // Event detectors TODO: This section can be cleaned up since PointEventDetectorVO is now a single class.
     //
-    public List<PointEventDetectorVO> getEventDetectors() {
-        return getDataPoint().getEventDetectors();
+    public List<PointEventDetectorVO> getEventDetectors(String dwrScriptSessionid) {
+        return getDataPointByDwrScriptSessionId(dwrScriptSessionid).getEventDetectors();
     }
 
-    public PointEventDetectorVO addEventDetector(int typeId) {
-        DataPointVO dp = getDataPoint();
+    public PointEventDetectorVO addEventDetector(String dwrScriptSessionid, int typeId) {
+        DataPointVO dp = getDataPointByDwrScriptSessionId(dwrScriptSessionid);
         PointEventDetectorVO ped = new PointEventDetectorVO();
         ped.setXid(new DataPointDao().generateEventDetectorUniqueXid(dp.getId()));
         ped.setAlias("");
@@ -183,16 +192,16 @@ public class DataPointEditDwr extends BaseDwr {
         return ped;
     }
 
-    public void deleteEventDetector(int pedId) {
-        DataPointVO dp = getDataPoint();
+    public void deleteEventDetector(String dwrScriptSessionid, int pedId) {
+        DataPointVO dp = getDataPointByDwrScriptSessionId(dwrScriptSessionid);//getDataPoint();
         synchronized (dp) {
             dp.getEventDetectors().remove(getEventDetector(pedId));
         }
     }
 
-    public void updateHighLimitDetector(int pedId, String xid, String alias, double limit, int duration,
+    public void updateHighLimitDetector(String dwrScriptSessionid,int pedId, String xid, String alias, double limit, int duration,
             int durationType, int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setLimit(limit);
@@ -201,9 +210,9 @@ public class DataPointEditDwr extends BaseDwr {
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updateLowLimitDetector(int pedId, String xid, String alias, double limit, int duration,
+    public void updateLowLimitDetector(String dwrScriptSessionid,int pedId, String xid, String alias, double limit, int duration,
             int durationType, int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setLimit(limit);
@@ -212,9 +221,9 @@ public class DataPointEditDwr extends BaseDwr {
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updateBinaryStateDetector(int pedId, String xid, String alias, boolean state, int duration,
+    public void updateBinaryStateDetector(String dwrScriptSessionid,int pedId, String xid, String alias, boolean state, int duration,
             int durationType, int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setBinaryState(state);
@@ -223,9 +232,9 @@ public class DataPointEditDwr extends BaseDwr {
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updateMultistateStateDetector(int pedId, String xid, String alias, int state, int duration,
+    public void updateMultistateStateDetector(String dwrScriptSessionid,int pedId, String xid, String alias, int state, int duration,
             int durationType, int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setMultistateState(state);
@@ -234,16 +243,16 @@ public class DataPointEditDwr extends BaseDwr {
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updatePointChangeDetector(int pedId, String xid, String alias, int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+    public void updatePointChangeDetector(String dwrScriptSessionid,int pedId, String xid, String alias, int alarmLevel) {
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updateStateChangeCountDetector(int pedId, String xid, String alias, int count, int duration,
+    public void updateStateChangeCountDetector(String dwrScriptSessionid,int pedId, String xid, String alias, int count, int duration,
             int durationType, int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setChangeCount(count);
@@ -252,9 +261,9 @@ public class DataPointEditDwr extends BaseDwr {
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updateNoChangeDetector(int pedId, String xid, String alias, int duration, int durationType,
+    public void updateNoChangeDetector(String dwrScriptSessionid,int pedId, String xid, String alias, int duration, int durationType,
             int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setDuration(duration);
@@ -262,9 +271,9 @@ public class DataPointEditDwr extends BaseDwr {
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updateNoUpdateDetector(int pedId, String xid, String alias, int duration, int durationType,
+    public void updateNoUpdateDetector(String dwrScriptSessionid,int pedId, String xid, String alias, int duration, int durationType,
             int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setDuration(duration);
@@ -272,9 +281,9 @@ public class DataPointEditDwr extends BaseDwr {
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updateAlphanumericStateDetector(int pedId, String xid, String alias, String state, int duration,
+    public void updateAlphanumericStateDetector(String dwrScriptSessionid,int pedId, String xid, String alias, String state, int duration,
             int durationType, int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setAlphanumericState(state);
@@ -283,9 +292,9 @@ public class DataPointEditDwr extends BaseDwr {
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updatePositiveCusumDetector(int pedId, String xid, String alias, double limit, double weight,
+    public void updatePositiveCusumDetector(String dwrScriptSessionid,int pedId, String xid, String alias, double limit, double weight,
             int duration, int durationType, int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setLimit(limit);
@@ -295,9 +304,9 @@ public class DataPointEditDwr extends BaseDwr {
         ped.setAlarmLevel(alarmLevel);
     }
 
-    public void updateNegativeCusumDetector(int pedId, String xid, String alias, double limit, double weight,
+    public void updateNegativeCusumDetector(String dwrScriptSessionid,int pedId, String xid, String alias, double limit, double weight,
             int duration, int durationType, int alarmLevel) {
-        PointEventDetectorVO ped = getEventDetector(pedId);
+        PointEventDetectorVO ped = getEventDetectorByDwrScriptSessionId(dwrScriptSessionid,pedId);
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setLimit(limit);
@@ -316,4 +325,32 @@ public class DataPointEditDwr extends BaseDwr {
         }
         return null;
     }
+    /**
+     * @since we have possibility to operate on many tabs on Points,EventDetectors
+     *
+     * @param dwrScriptSessionId
+     * @return DataPointVO
+     */
+    private DataPointVO getDataPointByDwrScriptSessionId(String dwrScriptSessionId) {
+        // The user can also end up with this point in their session in the point details page, which only requires
+        // read access. So, ensure that any access here is allowed with edit permission.
+        User user = Common.getUser();
+        user.setEditPoint((DataPointVO) ScriptSession.getObjectForScriptSession(
+                WebContextFactory.get().getSession().getId(),
+                dwrScriptSessionId)
+        );
+        DataPointVO dataPoint = user.getEditPoint();
+        Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
+        return dataPoint;
+    }
+    private PointEventDetectorVO getEventDetectorByDwrScriptSessionId(String dwrScriptSessionid,int pedId) {
+        DataPointVO dp = getDataPointByDwrScriptSessionId(dwrScriptSessionid);
+        for (PointEventDetectorVO ped : dp.getEventDetectors()) {
+            if (ped.getId() == pedId) {
+                return ped;
+            }
+        }
+        return null;
+    }
+
 }
