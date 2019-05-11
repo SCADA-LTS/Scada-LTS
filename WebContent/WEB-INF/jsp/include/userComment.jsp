@@ -30,6 +30,8 @@
   
   var commentTypeId;
   var commentReferenceId;
+  var lockingPoint = false;
+  var unlockingPoint = false;
   function openCommentDialog(typeId, referenceId) {
       commentTypeId = typeId;
       commentReferenceId = referenceId;
@@ -41,10 +43,11 @@
   function openPointLockMessageDialog(typeId, referenceId, locked) {
         commentTypeId = typeId;
         commentReferenceId = referenceId;
+        $set("commentText", "");
         if(locked) {
-            $set("commentText", "Point locked: ");
+            lockingPoint = true;
         } else {
-            $set("commentText", "Point unlocked: ");
+            unlockingPoint = true;
         }
 
         dojo.widget.byId("CommentDialog").show();
@@ -52,8 +55,16 @@
     }
   
   function saveComment() {
-      var comment = $get("commentText");
+      var comment;
+      if (lockingPoint) {
+            comment = "<div id='pointLockMessage' style='color: red;'>" + $get("commentText") + "</div>";
+      } else if (unlockingPoint) {
+            comment = "<div id='pointLockMessage' style='color: blue;'>" + $get("commentText") + "</div>";
+      } else {
+            comment = $get("commentText");
+      }
       MiscDwr.addUserComment(commentTypeId, commentReferenceId, comment, saveCommentCB);
+      lockingPoint = false; unlockingPoint = false;
       location.reload();
   }
   
