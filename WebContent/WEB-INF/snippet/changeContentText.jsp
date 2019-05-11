@@ -23,6 +23,7 @@
         <input id="txtChange${componentId}" type="text" value="${mango:rawText(point, pointValue)}"
                     onkeypress="if (event.keyCode==13) $('txtSet${componentId}').onclick();" disabled/>
                     <div style="color: red;">Point locked by user. Unlock the point to set value.</div>
+                    <table id="pointComments${point.id}"><tag:lastComment comments="${point.comments}"/></table>
     </c:when>
     <c:otherwise>
             <input id="txtChange${componentId}" type="text" value="${mango:rawText(point, pointValue)}"
