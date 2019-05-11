@@ -5,6 +5,7 @@
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.8"/>
 	<property name="source" value="1.8"/>
+	<property name="env.CATALINA_HOME" value="${env.CATALINA_HOME}"/>
 
    <path id="tomcat.ant.classpath">
 	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
@@ -28,13 +29,32 @@
 			<arg value="%CATALINA_HOME%\bin\startup.bat"/>
 		</exec>
 	</target>
-
-	<target name="run-debug" depends="tomcat_clean_static_content">
-		<exec executable="cmd">
-			<arg value="/c"/>
-			<arg value="%CATALINA_HOME%\bin\catalina.bat jpda start"/>
+	<target name="run-debug"  >
+		<exec executable="/bin/sh" spawn="false">
+			<arg value="-c" />
+			<arg value="${env.CATALINA_HOME}/bin/catalina.sh jpda run" />
 		</exec>
 	</target>
+	<target name="stop"  >
+		<exec executable="/bin/sh" spawn="false">
+			<arg value="-c" />
+			<arg value="${env.CATALINA_HOME}/stop.sh" />
+		</exec>
+	</target>
+	<target name="close-debug" >
+		<exec executable="/bin/sh" spawn="false">
+			<arg line="${env.CATALINA_HOME}/bin/shutdown.sh"/>
+		</exec>
+
+	</target>
+	<target name="clean-build-war-deploy-run-debug-restart" depends="stop,clean,build,war,clean_and_tomcat_deploy">
+		<exec executable="/bin/sh" spawn="false">
+			<arg value="-c" />
+			<arg value="${env.CATALINA_HOME}/bin/catalina.sh jpda run" />
+		</exec>
+
+	</target>
+
 
 	<target name="run-linux" depends="tomcat_clean_static_content">
 		<exec executable="/bin/sh" spawn="false">
@@ -167,7 +187,13 @@
   		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
     	<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
+		<path refid="Selenium"/>
     </path>
+	<path id="Selenium">
+		<pathelement location="WebContent/WEB-INF/lib/client-combined-3.141.59.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/selenium-server-standalone-3.141.59.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/testng-7.0.0-beta1.jar"/>
+	</path>
 	<path id="EAR Libraries.libraryclasspath"/>
 	<path id="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath">
 		<pathelement location="${env.CATALINA_HOME}/lib/annotations-api.jar"/>
@@ -225,6 +251,7 @@
 		<pathelement location="WebContent/WEB-INF/lib/bacnet4J.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/alpha24j.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/cloning-1.9.10.jar"/>
 		<pathelement location="lib/mockito-all-1.9.5.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/joda-time-2.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
@@ -354,7 +381,70 @@
               	        needxmlfile="false">
 		</war>
 	</target>
-	
+<!--
+*********************AUTOMATION TESTS*********************
+-->
+	<target name="AntSelenium_UserLogIn" >
+
+		<junit printsummary="yes" haltonfailure="no">
+			<formatter type="plain" usefile="false" />
+
+			<classpath refid="Web App Libraries.libraryclasspath"/>
+
+			<test name="selenium.AntSeleniumTest_LogIn_And_LogInWithFailUser"
+				  haltonfailure="yes">
+			</test>
+
+
+		</junit>
+
+	</target>
+	<target name="AntSelenium_ImportDataAsJSON" >
+
+		<junit printsummary="yes" haltonfailure="no">
+			<formatter type="plain" usefile="false" />
+
+			<classpath refid="Web App Libraries.libraryclasspath"/>
+
+			<test name="selenium.Test_ImportDataAsJSON"
+				  haltonfailure="yes">
+			</test>
+
+		</junit>
+
+	</target>
+	<target name="AntSelenium_CreateProfile" >
+
+		<junit printsummary="yes" haltonfailure="no">
+			<formatter type="plain" usefile="false" />
+
+			<classpath refid="Web App Libraries.libraryclasspath"/>
+
+			<test name="selenium.Test_CreateProfile"
+				  haltonfailure="yes">
+			</test>
+
+		</junit>
+
+	</target>
+	<target name="AntSelenium_CreateUser" >
+
+		<junit printsummary="yes" haltonfailure="no">
+			<formatter type="plain" usefile="false" />
+
+			<classpath refid="Web App Libraries.libraryclasspath"/>
+
+			<test name="selenium.Test_CreateUser"
+				  haltonfailure="yes">
+			</test>
+
+		</junit>
+
+	</target>
+<!--
+*********************END OF AUTOMATION TESTS*********************
+-->
+
 	<target name="junit">
 		
 		    <junit printsummary="yes" haltonfailure="no">
@@ -402,14 +492,14 @@
 		    -->
 		    <test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
 		    	haltonfailure="yes">
-		    </test>	
-		    	
+		    </test>
+
 		    <test name="org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
 		    	haltonfailure="yes">
 		    </test>
-		    	
+
 		    <!--
-		    <test name="" 
+		    <test name=""
 		    	haltonfailure="yes">
 		    </test> -->
 		    	

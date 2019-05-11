@@ -1,13 +1,34 @@
 package br.org.scadabr.api.dao;
 
-import br.org.scadabr.api.constants.*;
+import br.org.scadabr.api.constants.AlarmLevel;
+import br.org.scadabr.api.constants.ErrorCode;
+import br.org.scadabr.api.constants.QualityCode;
+import br.org.scadabr.api.constants.EventType;
+import br.org.scadabr.api.constants.DataSourceType;
+import br.org.scadabr.api.constants.ModbusDataType;
+import br.org.scadabr.api.constants.ModbusRegisterRange;
 import br.org.scadabr.api.exception.ScadaBRAPIException;
 import br.org.scadabr.api.utils.APIConstants;
 import br.org.scadabr.api.utils.APIUtils;
-import br.org.scadabr.api.vo.*;
+import br.org.scadabr.api.vo.APIError;
+import br.org.scadabr.api.vo.ItemValue;
+import br.org.scadabr.api.vo.ItemStringValue;
+import br.org.scadabr.api.vo.ItemInfo;
+import br.org.scadabr.api.vo.EventNotification;
+import br.org.scadabr.api.vo.EventMessage;
+import br.org.scadabr.api.vo.EventDefinition;
+import br.org.scadabr.api.vo.ModbusIPConfig;
+import br.org.scadabr.api.vo.ModbusSerialConfig;
+import br.org.scadabr.api.vo.ModbusPointConfig;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.Common.TimePeriods;
-import com.serotonin.mango.db.dao.*;
+import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.db.dao.PointValueDao;
+import com.serotonin.mango.db.dao.DataSourceDao;
+import com.serotonin.mango.db.dao.EventDao;
+import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
+import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -33,8 +54,11 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.ds.state.ApiChangeEnableStateDs;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MangoDaoImpl implements ScadaBRAPIDao {
 	private User user;
@@ -54,7 +78,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 	@Override
 	public List<ItemValue> getItemValueList(String[] itemList,
-			List<APIError> errors) throws ScadaBRAPIException {
+											List<APIError> errors) throws ScadaBRAPIException {
 		List<ItemValue> itemsList = new ArrayList<ItemValue>();
 		List<DataPointVO> ldpvo = null;
 
@@ -143,66 +167,6 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		return null;
 
 	}
-
-	// @Override
-	// public List<ItemValue> getItemValueList(String itemQName)
-	// throws ScadaBRAPIException {
-	// checkUser();
-	// ArrayList<ItemValue> itemValueList = new ArrayList<ItemValue>();
-	//
-	// if (itemQName == null)
-	// itemQName = "";
-	//
-	// List<DataPointVO> ldpvo = new DataPointDao().getDataPoints(null);
-	// for (DataPointVO dataPointVO : ldpvo) {
-	// String completeName = APIUtils.getCompletePath(dataPointVO
-	// .getPointFolderId())
-	// + dataPointVO.getName();
-	//
-	// if (APIUtils.isInPath(completeName, itemQName)
-	// || itemQName.equals(dataPointVO.getName())) {
-	// if (!((dataPointVO.isNew()) || (!dataPointVO.isEnabled() && !dataPointVO
-	// .isNew()))) {
-	//
-	// if (Permissions.hasDataPointReadPermission(user,
-	// dataPointVO)) {
-	//
-	// PointValueTime pvt = new PointValueDao()
-	// .getLatestPointValue(dataPointVO.getId());
-	// if (pvt != null) {
-	// ItemValue iv = new ItemValue();
-	// iv.setValue(pvt.getValue().getObjectValue());
-	// String completeItemName = APIUtils
-	// .getCompletePath(dataPointVO
-	// .getPointFolderId())
-	// + dataPointVO.getName();
-	// iv.setItemName(completeItemName);
-	//
-	// Calendar ts = Calendar.getInstance();
-	// ts.setTimeInMillis(pvt.getTime());
-	// iv.setTimestamp(ts);
-	//
-	// iv.setDataType(APIUtils.whatType(pvt.getValue()
-	// .getObjectValue()));
-	//
-	// iv.setQuality(QualityCode.GOOD);
-	// itemValueList.add(iv);
-	// }
-	// }
-	//
-	// }
-	// }
-	// }
-	//
-	// if (itemValueList.size() == 0) {
-	// APIError error = new APIError();
-	// error.setCode(ErrorCode.INVALID_PARAMETER);
-	// error.setDescription(APIConstants.UNKNOW_TAG_NAME);
-	// throw new ScadaBRAPIException(error);
-	// }
-	// return itemValueList;
-	//
-	// }
 
 	@Override
 	public ItemValue writeData(ItemValue itemValue) throws ScadaBRAPIException {
@@ -593,7 +557,6 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 	private List<EventInstance> getAcknowledgedEvents() {
 		// Adicionados parametros novos (?)
-		// return new EventDao().search(0, -1, null, -1, null, 20000, 1, null);
 		return new EventDao().search(0, -1, null, -1, null, 1, null, 0, 5000,
 				null);
 	}

@@ -81,7 +81,7 @@
 
 
               <div class="login-button" align="center">
-                <input type="submit" value="<fmt:message key="login.loginButton"/>"  style="padding: 5px 20px; margin-left:30%; margin-top:10px;"/>
+                <input type="submit" id="login" value="<fmt:message key="login.loginButton"/>"  style="padding: 5px 20px; margin-left:30%; margin-top:10px;"/>
                 <tag:help id="welcomeToMango"/>
               </div>
 

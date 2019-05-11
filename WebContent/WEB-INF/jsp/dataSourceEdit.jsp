@@ -55,7 +55,7 @@
         pointListColumnHeaders.push("");
 
         pointListColumnFunctions.push(function(p) {
-        		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
+        		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dwrScriptSessionid="+dwr.engine._getScriptSessionId()+"&dpid="+ p.id +"'");
         });
 
         var headers = $("pointListHeaders");
@@ -154,10 +154,75 @@
     }
 
     function deletePoint() {
-        if (confirm("<fmt:message key="dsEdit.deleteConfirm"/>")) {
+        document.getElementById("loader").style.display = "block";
+        var scroll = document.documentElement.scrollTop - 105 + "px";
+        document.getElementById("loader").style.marginTop = scroll;
+        document.body.style.overflow="hidden";
+        progress(3, "Loading...");
+        var pathArray = location.href.split( '/' );
+        var protocol = pathArray[0];
+        var host = pathArray[2];
+        var appScada = pathArray[3];
+        var myLocation;
+        if (!myLocation) {
+           myLocation = protocol + "//" + host + "/" + appScada + "/";
+        }
+        progress(10, "Checking scripts...");
+        var scriptsWithPoint = jQuery.ajax({
+             type: "GET",
+             dataType: "json",
+             url:myLocation+"/api/dataPoint/getScriptsContainsPoint/"+currentPoint.id,
+             async: false
+        }).responseText;
+        var scripts = "";
+        JSON.parse(scriptsWithPoint).forEach(function(script) {
+             scripts += ("\n - " + script['name']);
+        });
+        if (scripts == "") scripts = "\n The point is not used in any script.";
+
+        progress(40, "Checking graphical views...");
+        var viewsWithPoint = jQuery.ajax({
+             type: "GET",
+             dataType: "json",
+             url:myLocation+"/api/dataPoint/getViewsContainsPoint/"+currentPoint.id,
+             async: false
+        }).responseText;
+        var views = "";
+        JSON.parse(viewsWithPoint).forEach(function(view) {
+              views += ("\n - " + view['name']);
+        });
+        if (views == "") views = "\n The point is not used in any view.";
+
+        progress(60, "Checking metadata points...");
+        var metadataPointsWithPoint = jQuery.ajax({
+             type: "GET",
+             dataType: "json",
+             url:myLocation+"/api/dataPoint/getMetadataPointsContainsPoint/"+currentPoint.id,
+             async: false
+        }).responseText;
+        var metadataPoints = "";
+        JSON.parse(metadataPointsWithPoint).forEach(function(metadataPoint) {
+             metadataPoints += ("\n - " + metadataPoint['name']);
+        });
+        if (metadataPoints == "") metadataPoints = "\n The point is not used in any metadata point.";
+
+        progress(100, "Finishing...");
+        document.getElementById("loader").style.display = "none";
+        document.body.style.overflow="visible";
+
+        var confirmMsg;
+        confirmMsg = "Point is used in the cotext of:\n\nViews:" + views + "\n\nScripts:" + scripts + "\n\nMetadata points:" + metadataPoints;
+
+        if (confirm(confirmMsg)) {
             DataSourceEditDwr.deletePoint(currentPoint.id, deletePointCB);
             startImageFader("pointDeleteImg", true);
         }
+    }
+
+    function progress(width, msg) {
+      var elem = document.getElementById("progressBar");
+      elem.style.width = width + '%';
+      document.getElementById("progressMsg").innerHTML = msg;
     }
 
     function deletePointCB(points) {
@@ -329,6 +394,13 @@
     	writePointList(points);
     }
   </script>
+
+   <div id="loader" style="background-color:rgba(0, 0, 0, 0.7); height: 100%; position:absolute; width:100%; display: none;">
+      <div id="progress" style="background-color: #ddd; margin: 40vh auto auto auto; width:50%;">
+        <div id="progressBar" style="width: 1%; height: 30px; background-color: #4CAF50;"></div>
+      </div>
+      <div id="progressMsg" style="font-size: 20px; color: white; text-align: center;"></div>
+   </div>
 
 	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; max-height: 300px; overflow-y: auto; width: 59%;">
 		<tr>
