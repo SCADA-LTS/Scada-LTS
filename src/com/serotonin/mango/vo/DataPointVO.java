@@ -519,11 +519,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     }
 
     public String getParseErrorValue() {
-        if (parseErrorValue==null) {
-            return "0";
-        } else {
-            return parseErrorValue;
-        }
+        return (parseErrorValue==null)?"0":parseErrorValue;
     }
 
     public void setParseErrorValue(String parseErrorValue) {

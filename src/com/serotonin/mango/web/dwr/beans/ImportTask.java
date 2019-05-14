@@ -1060,8 +1060,7 @@ public class ImportTask extends ProgressiveTask {
 			} catch (NumberFormatException e) {
 				mangoValue = MangoValue.stringToValue(dp.getParseErrorValue(), dp.getPointLocator().getDataTypeId());
 			}
-			PointValueTime pointValue = new PointValueTime(mangoValue, time);
-			dao.savePointValue(dp.getId(), pointValue);
+			dao.savePointValue(dp.getId(), new PointValueTime(mangoValue, time));
 		}
 
 	}
