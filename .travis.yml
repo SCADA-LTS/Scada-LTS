@@ -45,6 +45,7 @@ services:
 script: ant war && ant junit
 branches:
   only:
+  - "/^new[/]develop.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
 notifications:
