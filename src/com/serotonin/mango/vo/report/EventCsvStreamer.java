@@ -37,13 +37,13 @@ public class EventCsvStreamer {
         String[] data = new String[7];
 
         // Write the headers.
-        data[0] = I18NUtils.getMessage(bundle, "reports.eventList.id");
-        data[1] = I18NUtils.getMessage(bundle, "common.alarmLevel");
-        data[2] = I18NUtils.getMessage(bundle, "common.activeTime");
-        data[3] = I18NUtils.getMessage(bundle, "reports.eventList.message");
-        data[4] = I18NUtils.getMessage(bundle, "reports.eventList.status");
-        data[5] = I18NUtils.getMessage(bundle, "reports.eventList.ackTime");
-        data[6] = I18NUtils.getMessage(bundle, "reports.eventList.ackUser");
+        data[0] = LocalizableMessage.getMessage(bundle, "reports.eventList.id");
+        data[1] = LocalizableMessage.getMessage(bundle, "common.alarmLevel");
+        data[2] = LocalizableMessage.getMessage(bundle, "common.activeTime");
+        data[3] = LocalizableMessage.getMessage(bundle, "reports.eventList.message");
+        data[4] = LocalizableMessage.getMessage(bundle, "reports.eventList.status");
+        data[5] = LocalizableMessage.getMessage(bundle, "reports.eventList.ackTime");
+        data[6] = LocalizableMessage.getMessage(bundle, "reports.eventList.ackUser");
 
         out.write(csvWriter.encodeRow(data));
 
