@@ -18,34 +18,19 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import javax.servlet.http.HttpServletRequest;
-
+import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.*;
-import com.serotonin.mango.util.ExportCodes;
+import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.vo.WatchList;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.WebContextFactory;
-
-import br.org.scadabr.db.dao.UsersProfileDao;
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-
-import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.PermissionException;
@@ -55,8 +40,12 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.directwebremoting.WebContextFactory;
 
-import static com.serotonin.mango.view.ShareUser.ACCESS_CODES;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 public class UsersDwr extends BaseDwr {
 	public Log LOG = LogFactory.getLog(UsersDwr.class);

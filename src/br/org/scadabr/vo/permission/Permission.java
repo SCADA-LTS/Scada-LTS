@@ -1,9 +1,9 @@
 package br.org.scadabr.vo.permission;
 
-import java.io.Serializable;
-
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.view.ShareUser;
+
+import java.io.Serializable;
 
 public class Permission implements Serializable {
 
