@@ -45,6 +45,9 @@ abstract public class ReportExportBase extends HttpServlet {
 
     protected void execute(HttpServletRequest request, HttpServletResponse response, int content) throws IOException {
         // Get the report instance id
+        if (request.getParameter("instanceId") == null) {
+            return;
+        }
         int instanceId = Integer.parseInt(request.getParameter("instanceId"));
 
         // Get the report instance
