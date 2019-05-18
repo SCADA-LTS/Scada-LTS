@@ -25,6 +25,18 @@
     var editingUserId;
     var dataSources;
     var adminUser;
+
+    var pathArray = location.href.split( '/' );
+      	var protocol = pathArray[0];
+      	var host = pathArray[2];
+      	var port = location.port;
+       	var appScada = pathArray[3];
+      	var url = protocol + '//' + host;
+      	var myLocation;
+      	if (!myLocation) {
+       		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
+      	}
+
     
     function init() {
     	
@@ -98,25 +110,76 @@
                 showUserCB(data.user);
                 hide("usersProfilesListTable");
             }
+
+                       var vwhtml = "";
+                       views = data.views;
+                       if (views != null){
+            	           for (i=0; i<views.length; i++) {
+            	        	   id = views[i].id;
+            	               vwhtml += '<label for="vvwist'+ id +'"> '+ views[i].name +'</label><br/>';
+            	               vwhtml += '<div style="margin-left:25px;" id="vwdiv'+ id +'">';
+            	                   vwhtml +=   '<table cellspacing="0" cellpadding="1">';
+            	                       vwhtml += '<tr>';
+            	                       vwhtml +=   '<td>';
+            	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/0" value="0" checked>';
+            	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.none"/></label> ';
+            	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/1" value="1">';
+            	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.read"/></label> ';
+            	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/2" value="2">';
+            	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.set"/></label>';
+            	                       vwhtml +=   '</td>';
+            	                       vwhtml += '</tr>';
+            	                   vwhtml +=   '</table>';
+            	               vwhtml += '</div>';
+            	           }
+                       }
+                       $("viewsList").innerHTML = vwhtml;
+
+                       var wlhtml = "";
+                                  watchlists = data.watchlists;
+                                  if (watchlists != null){
+                       	           for (i=0; i<watchlists.length; i++) {
+                       	        	   if(watchlists[i].name == '<fmt:message key="common.newName"/>') // skip unnamed lists
+                       	        		   continue;
+
+                       	        	   id = watchlists[i].id;
+                       	               wlhtml += '<label for="wllist'+ id +'"> '+ watchlists[i].name +'</label><br/>';
+                       	               wlhtml += '<div style="margin-left:25px;" id="wldiv'+ id +'">';
+                       	                   wlhtml +=   '<table cellspacing="0" cellpadding="1">';
+                       	                       wlhtml += '<tr>';
+                       	                       wlhtml +=   '<td>';
+                       	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/0" value="0" checked>';
+                       	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.none"/></label> ';
+                       	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/1" value="1">';
+                       	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.read"/></label> ';
+                       	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/2" value="2">';
+                       	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.set"/></label>';
+                       	                       wlhtml +=   '</td>';
+                       	                       wlhtml += '</tr>';
+                       	                   wlhtml +=   '</table>';
+                       	               wlhtml += '</div>';
+                       	           }
+                                  }
+                                  $("watchlistsList").innerHTML = wlhtml;
         });
     }
-    
+
     function showUser(userId, hideMsg) {
-    	
+
     	if (hideMsg)
             setUserMessage();
-    	
-    	
+
+
         if (editingUserId)
             stopImageFader($("u"+ editingUserId +"Img"));
         editingUserId = userId;
         UsersDwr.getUser(userId, showUserCB);
         startImageFader($("u"+ editingUserId +"Img"));
-    	
+
     }
-    
+
     function showUserCB(user) {
-    	
+
         show($("userDetails"));
         $set("username", user.username);
         $set("password", user.password);
@@ -127,13 +190,12 @@
         $set("receiveAlarmEmails", user.receiveAlarmEmails);
         $set("receiveOwnAuditEvents", user.receiveOwnAuditEvents);
 
-    	
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
         	 $set("usersProfilesList", user.userProfile);
         	 //console.log("User profile: " + user.userProfile);
         }
 
-    	
+
         if (adminUser) {
             // Turn off all data sources and set all data points to 'none'.
             var i, j, dscb, dp;
@@ -144,23 +206,46 @@
                 for (j=0; j<dataSources[i].points.length; j++)
                     $set("dp"+ dataSources[i].points[j].id, "0");
             }
-            
+
             // Turn on the data sources to which the user has permission.
             for (i=0; i<user.dataSourcePermissions.length; i++) {
                 dscb = $("ds"+ user.dataSourcePermissions[i]);
                 dscb.checked = true;
                 dataSourceChange(dscb);
             }
-            
+
             // Update the data point permissions.
             for (i=0; i<user.dataPointPermissions.length; i++)
                 $set("dp"+ user.dataPointPermissions[i].dataPointId, user.dataPointPermissions[i].permission);
             stopImageFader($("u"+ user.id +"Img"));
-        	
+
+            jQuery.ajax({
+                  type: "GET",
+                  dataType: "text",
+                  url:myLocation+"/api/view/getAllPermissions/" + user.id,
+                  success: function(permissions){
+                    permissionsJson = JSON.parse(permissions);
+                    for(i = 0; i < permissionsJson.length; i++) {
+                        $set("vw"+ permissionsJson[i].viewId, permissionsJson[i].permission);
+                    }
+                  }
+            });
+
+            jQuery.ajax({
+                              type: "GET",
+                              dataType: "text",
+                              url:myLocation+"/api/watchlist/getAllPermissions/" + user.id,
+                              success: function(permissions){
+                                permissionsJson = JSON.parse(permissions);
+                                for(i = 0; i < permissionsJson.length; i++) {
+                                    $set("wl"+ permissionsJson[i].watchListId, permissionsJson[i].permission);
+                                }
+                              }
+                        });
         }
 
         //setUserMessage();
-    	
+
         updateUserImg();
     }
 
@@ -175,6 +260,17 @@
         }
     }
 
+    function setWatchListAndViewsNone() {
+        var i;
+        for (i=0; i<views.length; i++) {
+            $set("vw"+ views[i].id, "0");
+        }
+        i = 0;
+        for (i=0; i<watchlists.length; i++) {
+                    $set("wl"+ watchlists[i].id, "0");
+        }
+    }
+
     function hideDataSources() {
     	hide("dataSources");
     }
@@ -182,14 +278,18 @@
     function showDataSources() {
     	show("dataSources");
     }
-    
+
     function checkProfile(){
     	var profile = document.getElementById("usersProfilesList");
     	if(profile.options[profile.selectedIndex].value > 0){
-    		hideDataSources();  
+    		hideDataSources();
+    		hide("views");
+            hide("watchlists");
     	}else{
     		//setDataSourcesNone();
     		showDataSources();
+    		show("views");
+    		show("watchlists");
     	}
     }
     
@@ -205,11 +305,16 @@
             var dsPermis = new Array();
             var dpPermis = new Array();
             var dpval;
+            var vwPermis = new Array();
+            var vwval;
+            var wlPermis = new Array();
+            var wlval;
             
             // If a profile is select, reset other permissions on DSs.
             if($get("usersProfileList") == <c:out value="<%= Common.NEW_ID %>"/>)
             {
         		setDataSourcesNone();
+        		setWatchListAndViewsNone();
             }
             
             for (i=0; i<dataSources.length; i++) {
@@ -223,11 +328,29 @@
                     }
                 }
             }
-            
-            
+
+            if (views != null){
+                for (i=0; i<views.length; i++) {
+                    vwval = $get("vw"+ views[i].id);
+                    if (vwval == "0" || vwval == "1" || vwval == "2") {
+                        vwPermis.push({id: views[i].id, permission: vwval});
+                    }
+                }
+            }
+
+            //populate watchlist permissions paremeters
+                    if (watchlists != null){
+            	      	for (i=0; i<watchlists.length; i++) {
+            	 			wlval = $get("wl"+ watchlists[i].id);
+            		          if (vwval == "0" || wlval == "1" || wlval == "2") {
+            		        	  wlPermis.push({id: watchlists[i].id, permission: wlval});
+            		          }
+            	        }
+                    }
+
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
-                    dsPermis, dpPermis, $get("usersProfilesList"), saveUserCB);
+                    dsPermis, dpPermis, vwPermis, wlPermis, $get("usersProfilesList"), saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
@@ -428,6 +551,14 @@
                 <td class="formLabelRequired"><fmt:message key="users.dataSources"/></td>
                 <td class="formField" id="dataSourceList"></td>
               </tr>
+              <tr id="watchlists">
+                <td class="formLabelRequired"><fmt:message key="header.watchLists"/></td>
+                <td class="formField" id="watchlistsList"></td>
+              </tr>
+              <tr id="views">
+                <td class="formLabelRequired"><fmt:message key="views.title"/></td>
+                <td class="formField" id="viewsList"></td>
+               </tr>
             </tbody>
           </table>
         </div>

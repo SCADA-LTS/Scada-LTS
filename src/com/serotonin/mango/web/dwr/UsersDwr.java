@@ -18,30 +18,19 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.WebContextFactory;
-
 import br.org.scadabr.db.dao.UsersProfileDao;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.view.ShareUser;
+import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.PermissionException;
@@ -51,6 +40,12 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.directwebremoting.WebContextFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 public class UsersDwr extends BaseDwr {
 	public Log LOG = LogFactory.getLog(UsersDwr.class);
@@ -65,6 +60,7 @@ public class UsersDwr extends BaseDwr {
 			initData.put("users", new UserDao().getUsers());
 			initData.put("usersProfiles",
 					new UsersProfileDao().getUsersProfiles());
+
 
 			// Data sources
 			List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
@@ -92,6 +88,15 @@ public class UsersDwr extends BaseDwr {
 				dataSources.add(ds);
 			}
 			initData.put("dataSources", dataSources);
+
+			WatchListDao watchListDao = new WatchListDao();
+			List<WatchList> watchLists = watchListDao.getWatchLists();
+			initData.put("watchlists", watchLists);
+
+			ViewDao viewDao = new ViewDao();
+			List<View> views = viewDao.getViews();
+			initData.put("views", views);
+
 		} else
 			initData.put("user", user);
 
@@ -119,10 +124,10 @@ public class UsersDwr extends BaseDwr {
 	}
 
 	public DwrResponseI18n saveUserAdmin(int id, String username,
-			String password, String email, String phone, boolean admin,
-			boolean disabled, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
-			List<DataPointAccess> dataPointPermissions, int usersProfileId) {
+										 String password, String email, String phone, boolean admin,
+										 boolean disabled, int receiveAlarmEmails,
+										 boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
+										 List<DataPointAccess> dataPointPermissions, List<ViewAccess> viewsPermissions, List<WatchListAccess> watchListsPermissions, int usersProfileId) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
@@ -201,12 +206,70 @@ public class UsersDwr extends BaseDwr {
 			response.addData("userId", user.getId());
 		}
 
+		ViewDao viewDao = new ViewDao();
+		List<View> views = viewDao.getViews();
+		Map<String, Object> viewsPermissionsMap = new HashMap<>();
+		for(View v:views) {
+			List<ShareUser> shareUsers = v.getViewUsers();
+			boolean userPermissionExists = false;
+			for(ShareUser su:shareUsers) {
+				for(ViewAccess va:viewsPermissions) {
+					if((su.getUserId()==user.getId())&&(va.getId()==v.getId())) {
+						userPermissionExists = true;
+						su.setAccessType(va.getPermission());
+					}
+				}
+			}
+			if(!userPermissionExists) {
+				ShareUser shareUser = new ShareUser();
+				for(ViewAccess vp:viewsPermissions) {
+					vp.jsonSerialize(viewsPermissionsMap);
+					if(vp.getId()==v.getId()) {
+						shareUser.setAccessType(vp.getPermission());
+					}
+				}
+				shareUser.setUserId(user.getId());
+				shareUsers.add(shareUser);
+			}
+			v.setViewUsers(shareUsers);
+			viewDao.saveView(v);
+		}
+
+		WatchListDao watchListDao = new WatchListDao();
+		List<WatchList> watchLists = watchListDao.getWatchLists();
+		Map<String, Object> watchListsPermissionsMap = new HashMap<>();
+		for(WatchList w:watchLists) {
+			List<ShareUser> shareUsers = w.getWatchListUsers();
+			boolean userPermissionExists = false;
+			for(ShareUser su: shareUsers) {
+				for(WatchListAccess wla:watchListsPermissions) {
+					if((su.getUserId()==user.getId())&&(wla.getId()==w.getId())) {
+						userPermissionExists = true;
+						su.setAccessType(wla.getPermission());
+					}
+				}
+			}
+			if(!userPermissionExists) {
+				ShareUser shareUser = new ShareUser();
+				for(WatchListAccess wlp:watchListsPermissions) {
+					wlp.jsonSerialize(watchListsPermissionsMap);
+					if(wlp.getId()==w.getId()) {
+						shareUser.setAccessType(wlp.getPermission());
+					}
+				}
+				shareUser.setUserId(user.getId());
+				shareUsers.add(shareUser);
+			}
+			w.setWatchListUsers(shareUsers);
+			watchListDao.saveWatchList(w);
+		}
+
 		return response;
 	}
 
 	public DwrResponseI18n saveUser(int id, String password, String email,
-			String phone, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, int usersProfileId) {
+									String phone, int receiveAlarmEmails,
+									boolean receiveOwnAuditEvents, int usersProfileId) {
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
