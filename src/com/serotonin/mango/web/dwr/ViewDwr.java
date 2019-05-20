@@ -247,8 +247,12 @@ public class ViewDwr extends BaseDwr {
 
 				states.add(state);
 
-			} else if (viewComponent.isPointComponent())
-				addPointComponentState(viewComponent, rtm, model, request, view, user, states, edit, true);
+			} else if (viewComponent.isPointComponent()) {
+				PointComponent pointComponent = (PointComponent) viewComponent;
+				if(pointComponent.tgetDataPoint()!=null) {
+					addPointComponentState(viewComponent, rtm, model, request, view, user, states, edit, true);
+				}
+			}
 			else if (viewComponent.isCustomComponent())
 				addCustomComponentState(viewComponent, rtm, model, request, view, user, states, edit, true);
 		}
@@ -265,23 +269,27 @@ public class ViewDwr extends BaseDwr {
 			if (pointComponent.tgetDataPoint() != null)
 				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint().getId());
 
-			ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
+			// Check permissions.
+			if (Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
+				ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
-			if (!edit) {
-				if (pointComponent.isSettable()) {
-					int access = view.getUserAccess(user);
-					if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
-						setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
+				if (!edit) {
+					if (pointComponent.isSettable() && Permissions.hasDataPointSetPermission(user, dataPointRT.getVO())) {
+						int access = view.getUserAccess(user);
+						if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+							setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
+					}
+
+					if (pointComponent.tgetDataPoint() != null)
+						setChart(pointComponent.tgetDataPoint(), state, request, model);
 				}
 
-				if (pointComponent.tgetDataPoint() != null)
-					setChart(pointComponent.tgetDataPoint(), state, request, model);
+				if (add)
+					states.add(state);
+
+				model.clear();
 			}
 
-			if (add)
-				states.add(state);
-
-			model.clear();
 		}
 	}
 
@@ -889,7 +897,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, int maxListSize, int width, boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn, boolean hideInactivityColumn, boolean hideAckColumn) {
+	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, String messageContent, int maxListSize, int width, boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn, boolean hideInactivityColumn, boolean hideAckColumn, boolean hideCriteriaHeader) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -901,6 +909,7 @@ public class ViewDwr extends BaseDwr {
 		if (!response.getHasMessages()) {
 			AlarmListComponent c = (AlarmListComponent) getViewComponent(viewComponentId);
 			c.setMinAlarmLevel(minAlarmLevel);
+			c.setMessageContent(messageContent);
 			c.setMaxListSize(maxListSize);
 			c.setWidth(width);
 			c.setHideIdColumn(hideIdColumn);
@@ -908,6 +917,7 @@ public class ViewDwr extends BaseDwr {
 			c.setHideTimestampColumn(hideTimestampColumn);
 			c.setHideInactivityColumn(hideInactivityColumn);
 			c.setHideAckColumn(hideAckColumn);
+			c.setHideCriteriaHeader(hideCriteriaHeader);
 			// resetPointComponent(c);
 		}
 

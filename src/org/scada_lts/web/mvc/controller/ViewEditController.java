@@ -64,12 +64,22 @@ public class ViewEditController {
     private static final String IMAGE_SETS_ATTRIBUTE = "imageSets";
     private static final String DYNAMIC_IMAGES_ATTRIBUTE = "dynamicImages";
 
+    // TODO: these two shall be injected by Spring
+    private String uploadDirectory= "uploads/";
     private String successUrl = "views.shtm";
     
     private int nextImageId = -1;
     
     @Autowired
     ViewEditValidator validator;
+
+    public void setSuccessUrl(String successUrl) {
+        this.successUrl = successUrl;
+    }
+    
+    public void setUploadDirectory(String uploadDirectory) {
+        this.uploadDirectory = uploadDirectory;
+    }
     
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.GET)
     protected ModelAndView showForm(HttpServletRequest request,
@@ -137,7 +147,13 @@ public class ViewEditController {
         View view = unblockViewFromContext(request);
         copyViewProperties(view, form.getView());
         form.setView(view);
-        
+
+        form.getView().getViewComponents().stream().forEach(viewComponent -> {
+            if(viewComponent.getY()<0) {
+                form.getView().removeViewComponent(viewComponent);
+            }
+        });
+
         validator.validate(form, result);
         if(result.hasErrors())
         {
@@ -207,7 +223,6 @@ public class ViewEditController {
             if (form.getBackgroundImageMP() != null) {
                 byte[] bytes = form.getBackgroundImageMP().getBytes();
                 if (bytes != null && bytes.length > 0) {
-                    String uploadDirectory= "uploads/";
                     // Create the path to the upload directory.
                     String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
                     LOG.info("ViewEditController:uploadFile: realpath="+path);

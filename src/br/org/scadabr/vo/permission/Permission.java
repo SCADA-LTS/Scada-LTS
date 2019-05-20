@@ -1,20 +1,22 @@
 package br.org.scadabr.vo.permission;
 
-import java.io.Serializable;
-
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.view.ShareUser;
+
+import java.io.Serializable;
 
 public class Permission implements Serializable {
 
 	protected int permission = ShareUser.ACCESS_NONE;
 	protected int id;
 
+	public static final int NONE = 0;
 	public static final int READ = 1;
 	public static final int SET = 2;
 
 	protected static final ExportCodes ACCESS_CODES = new ExportCodes();
 	static {
+		ACCESS_CODES.addElement(NONE, "NONE", "common.access.none");
 		ACCESS_CODES.addElement(READ, "READ", "common.access.read");
 		ACCESS_CODES.addElement(SET, "SET", "common.access.set");
 	}
