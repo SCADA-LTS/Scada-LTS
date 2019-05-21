@@ -401,6 +401,20 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	@MethodFilter
+	public void purgeEvents() {
+		Permissions.ensureAdmin();
+		DataPurge dataPurge = new DataPurge();
+		dataPurge.eventPurge(System.currentTimeMillis());
+	}
+
+	@MethodFilter
+	public void purgeReports() {
+		Permissions.ensureAdmin();
+		DataPurge dataPurge = new DataPurge();
+		dataPurge.reportPurge(System.currentTimeMillis());
+	}
+
+	@MethodFilter
 	public LocalizableMessage purgeAllData() {
 		Permissions.ensureAdmin();
 		long cnt = Common.ctx.getRuntimeManager().purgeDataPointValues();

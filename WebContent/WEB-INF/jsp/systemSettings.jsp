@@ -295,11 +295,48 @@
     }
     
     function purgeNow() {
-        SystemSettingsDwr.purgeNow(function() {
-            stopImageFader("purgeNowImg");
-            dbSizeUpdate();
-        });
-        startImageFader("purgeNowImg");
+        reportsCount = document.getElementById("reportPurgePeriods").value;
+        reportsType = document.getElementById("reportPurgePeriodType").options[document.getElementById("reportPurgePeriodType").selectedIndex].text;
+        eventsCount = document.getElementById("eventPurgePeriods").value;
+        eventsType = document.getElementById("eventPurgePeriodType").options[document.getElementById("eventPurgePeriodType").selectedIndex].text;
+        confirmMsg = "This will purge: " +
+        "\n-all events before " + eventsCount + " " + eventsType +
+        "\n-all reports before " + reportsCount + " " + reportsType +
+        "\n-all data points values according to point properties" +
+        "\n Are you sure?";
+        if (confirm(confirmMsg)) {
+            SystemSettingsDwr.purgeNow(function() {
+                stopImageFader("purgeNowImg");
+                dbSizeUpdate();
+            });
+            startImageFader("purgeNowImg");
+        }
+    }
+
+    function purgeEvents() {
+        count = document.getElementById("eventPurgePeriods").value;
+        dateTypes = document.getElementById("eventPurgePeriodType");
+        type = dateTypes.options[dateTypes.selectedIndex].text;
+        if (confirm("This will purge all events before " + count + " " + type +". Are you sure?")) {
+            SystemSettingsDwr.purgeEvents(function() {
+                stopImageFader("purgeNowImg");
+                dbSizeUpdate();
+            });
+            startImageFader("purgeNowImg");
+        }
+    }
+
+    function purgeReports() {
+        count = document.getElementById("reportPurgePeriods").value;
+        dateTypes = document.getElementById("reportPurgePeriodType");
+        type = dateTypes.options[dateTypes.selectedIndex].text;
+        if (confirm("This will purge all reports before " + count + " " + type +". Are you sure?")) {
+                SystemSettingsDwr.purgeReports(function() {
+                    stopImageFader("purgeNowImg");
+                    dbSizeUpdate();
+                });
+                startImageFader("purgeNowImg");
+        }
     }
     
     function saveLangSettings() {
@@ -689,6 +726,9 @@
             <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
           </select>
         </td>
+        <td>
+            <input type="button" value="Purge now" onclick="purgeEvents()"/>
+        </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.purgeReports"/></td>
@@ -697,6 +737,9 @@
           <select id="<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>">
             <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
           </select>
+        </td>
+        <td>
+          <input type="button" value="Purge now" onclick="purgeReports()"/>
         </td>
       </tr>
       <tr>
