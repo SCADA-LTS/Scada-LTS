@@ -24,15 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.daoCache.DaoCache;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -117,7 +115,7 @@ public class DataSourceListDwr extends BaseDwr {
 	}
 
 	public DwrResponseI18n toggleDataPoint(int dataPointId) {
-		DataPointVO dataPoint = new DataPointDao().getDataPoint(dataPointId);
+		DataPointVO dataPoint = DaoCache.getDataPointDao().getDataPoint(dataPointId);
 		Permissions.ensureDataSourcePermission(Common.getUser(),
 				dataPoint.getDataSourceId());
 
@@ -133,9 +131,9 @@ public class DataSourceListDwr extends BaseDwr {
 
 	public int copyDataSource(int dataSourceId) {
 		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
-		int dsId = new DataSourceDao().copyDataSource(dataSourceId,
+		int dsId = DaoCache.getDataSourceDao().copyDataSource(dataSourceId,
 				getResourceBundle());
-		new UserDao().populateUserPermissions(Common.getUser());
+		DaoCache.getUserDao().populateUserPermissions(Common.getUser());
 		return dsId;
 	}
 }

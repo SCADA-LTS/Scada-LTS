@@ -42,6 +42,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
+import com.serotonin.mango.daoCache.DaoCache;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -93,8 +94,6 @@ import org.scada_lts.ds.reactivation.ReactivationManager;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -264,7 +263,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		if (ds.getId() == Common.NEW_ID)
 			return null;
 
-		List<DataPointVO> points = new DataPointDao().getDataPoints(ds.getId(),
+		List<DataPointVO> points = DaoCache.getDataPointDao().getDataPoints(ds.getId(),
 				DataPointNameComparator.instance);
 		for (DataPointVO dataPointVO : points) {
 			if (!dataPointVO.isEnabled()) {
@@ -289,7 +288,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		if (ds.getId() == Common.NEW_ID)
 			return null;
 
-		List<DataPointVO> points = new DataPointDao().getDataPoints(ds.getId(),
+		List<DataPointVO> points = DaoCache.getDataPointDao().getDataPoints(ds.getId(),
 				DataPointNameComparator.instance);
 		return points;
 	}
@@ -305,14 +304,14 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		DataPointVO dp;
 		if (pointId == Common.NEW_ID) {
 			dp = new DataPointVO();
-			dp.setXid(new DataPointDao().generateUniqueXid());
+			dp.setXid(DaoCache.getDataPointDao().generateUniqueXid());
 			dp.setDataSourceId(ds.getId());
 			dp.setPointLocator(ds.createPointLocator());
 			dp.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
 			if (defaulter != null)
 				defaulter.setDefaultValues(dp);
 		} else {
-			dp = new DataPointDao().getDataPoint(pointId);
+			dp = DaoCache.getDataPointDao().getDataPoint(pointId);
 			if (dp != null && dp.getDataSourceId() != ds.getId())
 				throw new RuntimeException("Data source id mismatch");
 		}
@@ -331,7 +330,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 		if (StringUtils.isEmpty(xid))
 			response.addContextualMessage("xid", "validate.required");
-		else if (!new DataPointDao().isXidUnique(xid, id))
+		else if (!DaoCache.getDataPointDao().isXidUnique(xid, id))
 			response.addContextualMessage("xid", "validate.xidUsed");
 		else if (StringUtils.isLengthGreaterThan(xid, 50))
 			response.addContextualMessage("xid", "validate.notLongerThan", 50);
@@ -375,7 +374,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	@MethodFilter
 	public List<EventInstanceBean> getAlarms() {
 		DataSourceVO<?> ds = Common.getUser().getEditDataSource();
-		List<EventInstance> events = new EventDao()
+		List<EventInstance> events = DaoCache.getEventDao()
 				.getPendingEventsForDataSource(ds.getId(), Common.getUser()
 						.getId());
 		Collections.sort(events, new Comparator<EventInstance>() {
@@ -2135,7 +2134,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 			if (StringUtils.isEmpty(dp.getXid()))
 				response.addContextualMessage("xid", "validate.required");
-			else if (!new DataPointDao()
+			else if (!DaoCache.getDataPointDao()
 					.isXidUnique(dp.getXid(), Common.NEW_ID))
 				response.addContextualMessage("xid", "validate.xidUsed");
 			else if (StringUtils.isLengthGreaterThan(dp.getXid(), 50))
@@ -2271,7 +2270,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 			if (StringUtils.isEmpty(dp.getXid()))
 				response.addContextualMessage("xid", "validate.required");
-			else if (!new DataPointDao()
+			else if (!DaoCache.getDataPointDao()
 					.isXidUnique(dp.getXid(), Common.NEW_ID))
 				response.addContextualMessage("xid", "validate.xidUsed");
 			else if (StringUtils.isLengthGreaterThan(dp.getXid(), 50))

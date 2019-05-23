@@ -21,6 +21,7 @@ package com.serotonin.mango.web.dwr;
 import br.org.scadabr.db.configuration.ConfigurationDB;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.daoCache.DaoCache;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -122,11 +123,6 @@ public class SystemSettingsDwr extends BaseDwr {
 				SystemSettingsDAO
 						.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
 
-		// System
-		// settings.put(
-		// SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL,
-		// SystemSettingsDAO
-		// .getValue(SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL));
 		settings.put(SystemSettingsDAO.INSTANCE_DESCRIPTION, SystemSettingsDAO
 				.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
 
@@ -180,20 +176,18 @@ public class SystemSettingsDwr extends BaseDwr {
 			data.put("filedataCount", 0);
 			data.put("filedataSize", 0);
 			data.put("totalSize", size + " MB");
-			data.put("filedataCount", 0);
-			data.put("filedataCount", 0);
 		}
 
 		// Point history counts.
-		List<PointHistoryCount> counts = new DataPointDao()
-				.getTopPointHistoryCounts();
+
 		int sum = 0;
-		for (PointHistoryCount c : counts)
+		for (PointHistoryCount c : DaoCache.getDataPointDao()
+				.getTopPointHistoryCounts())
 			sum += c.getCount();
 
 		data.put("historyCount", sum);
-		data.put("topPoints", counts);
-		data.put("eventCount", new EventDao().getEventCount());
+		data.put("topPoints", DaoCache.getDataPointDao().getTopPointHistoryCounts());
+		data.put("eventCount", DaoCache.getEventDao().getEventCount());
 
 		return data;
 	}

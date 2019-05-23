@@ -20,6 +20,7 @@ package com.serotonin.mango.web.dwr;
 
 import java.util.List;
 
+import com.serotonin.mango.daoCache.DaoCache;
 import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
@@ -41,7 +42,7 @@ public class ScheduledEventsDwr extends BaseDwr {
     //
     public List<ScheduledEventVO> getScheduledEvents() {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        return new ScheduledEventDao().getScheduledEvents();
+        return DaoCache.getScheduledEventDao().getScheduledEvents();
     }
 
     public ScheduledEventVO getScheduledEvent(int id) {
@@ -57,7 +58,7 @@ public class ScheduledEventsDwr extends BaseDwr {
             se.setInactiveMonth(dt.getMonthOfYear());
             return se;
         }
-        return new ScheduledEventDao().getScheduledEvent(id);
+        return DaoCache.getScheduledEventDao().getScheduledEvent(id);
     }
 
     public DwrResponseI18n saveScheduledEvent(int id, String xid, String alias, int alarmLevel, int scheduleType,
@@ -91,11 +92,10 @@ public class ScheduledEventsDwr extends BaseDwr {
         se.setInactiveCron(inactiveCron);
 
         DwrResponseI18n response = new DwrResponseI18n();
-        ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!scheduledEventDao.isXidUnique(xid, id))
+        else if (!DaoCache.getScheduledEventDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         se.validate(response);

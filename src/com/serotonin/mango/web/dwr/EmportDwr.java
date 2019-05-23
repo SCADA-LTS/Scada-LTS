@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import br.org.scadabr.db.dao.ScriptDao;
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
 import br.org.scadabr.vo.exporter.util.PointValueJSONWrapper;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
@@ -38,20 +36,8 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonValue;
 import com.serotonin.json.JsonWriter;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
-import com.serotonin.mango.db.dao.PointLinkDao;
-import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
+import com.serotonin.mango.daoCache.DaoCache;
 import org.scada_lts.dao.SystemSettingsDAO;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
@@ -111,53 +97,51 @@ public class EmportDwr extends BaseDwr {
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 
 		if (graphicalViews)
-			data.put(GRAPHICAL_VIEWS, new ViewDao().getViews());
+			data.put(GRAPHICAL_VIEWS, DaoCache.getViewDao().getViews());
 		if (dataSources)
-			data.put(DATA_SOURCES, new DataSourceDao().getDataSources());
+			data.put(DATA_SOURCES, DaoCache.getDataSourceDao().getDataSources());
 
-		List<DataPointVO> allDataPoints = new DataPointDao().getDataPoints(
+		List<DataPointVO> allDataPoints = DaoCache.getDataPointDao().getDataPoints(
 				null, true);
 
 		if (dataPoints)
 			data.put(DATA_POINTS, allDataPoints);
 		if (scheduledEvents)
 			data.put(SCHEDULED_EVENTS,
-					new ScheduledEventDao().getScheduledEvents());
+					DaoCache.getScheduledEventDao().getScheduledEvents());
 		if (compoundEventDetectors)
 			data.put(COMPOUND_EVENT_DETECTORS,
-					new CompoundEventDetectorDao().getCompoundEventDetectors());
+					DaoCache.getCompoundEventDetectorDao().getCompoundEventDetectors());
 		if (pointLinks)
-			data.put(POINT_LINKS, new PointLinkDao().getPointLinks());
+			data.put(POINT_LINKS, DaoCache.getPointLinkDao().getPointLinks());
 		if (users)
-			data.put(USERS, new UserDao().getUsers());
+			data.put(USERS, DaoCache.getUserDao().getUsers());
 		if (mailingLists)
-			data.put(MAILING_LISTS, new MailingListDao().getMailingLists());
+			data.put(MAILING_LISTS, DaoCache.getMailingListDao().getMailingLists());
 		if (publishers)
-			data.put(PUBLISHERS, new PublisherDao().getPublishers());
+			data.put(PUBLISHERS, DaoCache.getPublisherDao().getPublishers());
 		if (pointHierarchy)
-			data.put(POINT_HIERARCHY, new DataPointDao().getPointHierarchy()
+			data.put(POINT_HIERARCHY, DaoCache.getDataPointDao().getPointHierarchy()
 					.getRoot().getSubfolders());
 		if (eventHandlers)
-			data.put(EVENT_HANDLERS, new EventDao().getEventHandlers());
+			data.put(EVENT_HANDLERS, DaoCache.getEventDao().getEventHandlers());
 		if (watchLists) {
-			WatchListDao watchListDao = new WatchListDao();
-			List<WatchList> wls = watchListDao.getWatchLists();
+			List<WatchList> wls = DaoCache.getWatchListDao().getWatchLists();
 			data.put(WATCH_LISTS, wls);
 		}
 		if (maintenanceEvents)
 			data.put(MAINTENANCE_EVENTS,
-					new MaintenanceEventDao().getMaintenanceEvents());
+					DaoCache.getMaintenanceEventDao().getMaintenanceEvents());
 
 		if (scripts)
-			data.put(SCRIPTS, new ScriptDao().getScripts());
+			data.put(SCRIPTS, DaoCache.getScriptDao().getScripts());
 		if (pointValues) {
 			List<PointValueJSONWrapper> allWrappedValues = new ArrayList<PointValueJSONWrapper>();
 
 			long antes = System.currentTimeMillis();
-			PointValueDao dao = new PointValueDao();
 			for (DataPointVO dataPointVO : allDataPoints) {
 				allWrappedValues.addAll(PointValueJSONWrapper.wrapPointValues(
-						dataPointVO.getXid(), dao.getLatestPointValues(
+						dataPointVO.getXid(), DaoCache.getPointValueDao().getLatestPointValues(
 								dataPointVO.getId(), maxPointValues)));
 			}
 			data.put(POINT_VALUES, allWrappedValues);
@@ -169,7 +153,7 @@ public class EmportDwr extends BaseDwr {
 			data.put(SYSTEM_SETTINGS, list);
 		}
 		if (usersProfiles) {
-			data.put(USERS_PROFILES, new UsersProfileDao().getUsersProfiles());
+			data.put(USERS_PROFILES, DaoCache.getUsersProfileDao().getUsersProfiles());
 		}
 
 		JsonWriter writer = new JsonWriter();
@@ -271,11 +255,10 @@ public class EmportDwr extends BaseDwr {
 	}
 
 	private void stopRunningDataSources() {
-		List<DataSourceVO<?>> dataSources = new DataSourceDao()
-				.getDataSources();
 
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
-		for (DataSourceVO<?> dataSourceVO : dataSources) {
+		for (DataSourceVO<?> dataSourceVO : DaoCache.getDataSourceDao()
+				.getDataSources()) {
 			if (dataSourceVO.isEnabled())
 				rtm.stopDataSource(dataSourceVO.getId());
 		}

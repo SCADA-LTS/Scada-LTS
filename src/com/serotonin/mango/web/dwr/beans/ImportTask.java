@@ -35,6 +35,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.daoCache.DaoCache;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
@@ -87,7 +88,7 @@ public class ImportTask extends ProgressiveTask {
 	private final DwrResponseI18n response;
 	private final UserDao userDao = new UserDao();
 	private final DataSourceDao dataSourceDao = new DataSourceDao();
-	private final DataPointDao dataPointDao = new DataPointDao();
+	private final DataPointDao dataPointDao = DaoCache.getDataPointDao();
 	private final ViewDao viewDao = new ViewDao();
 	private final PointLinkDao pointLinkDao = new PointLinkDao();
 	private final ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
@@ -1045,7 +1046,7 @@ public class ImportTask extends ProgressiveTask {
 
 	private void importPointValues(JsonObject json) {
 		String pointXid = json.getString("pointXid");
-		DataPointVO dp = new DataPointDao().getDataPoint(pointXid);
+		DataPointVO dp = DaoCache.getDataPointDao().getDataPoint(pointXid);
 		if (dp == null) {
 			// response.addGenericMessage("emport.script.xid");
 			response.addGenericMessage("emport.pointValue.missingPoint",

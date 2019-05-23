@@ -24,12 +24,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.serotonin.mango.daoCache.DaoCache;
 import org.joda.time.DateTime;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.rt.event.maintenance.MaintenanceEventRT;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
@@ -48,7 +47,7 @@ public class MaintenanceEventsDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         final ResourceBundle bundle = getResourceBundle();
 
-        List<MaintenanceEventVO> events = new MaintenanceEventDao().getMaintenanceEvents();
+        List<MaintenanceEventVO> events = DaoCache.getMaintenanceEventDao().getMaintenanceEvents();
         Collections.sort(events, new Comparator<MaintenanceEventVO>() {
             @Override
             public int compare(MaintenanceEventVO m1, MaintenanceEventVO m2) {
@@ -59,7 +58,7 @@ public class MaintenanceEventsDwr extends BaseDwr {
         response.addData("events", events);
 
         List<IntValuePair> dataSources = new ArrayList<IntValuePair>();
-        for (DataSourceVO<?> ds : new DataSourceDao().getDataSources())
+        for (DataSourceVO<?> ds : DaoCache.getDataSourceDao().getDataSources())
             dataSources.add(new IntValuePair(ds.getId(), ds.getName()));
         response.addData("dataSources", dataSources);
 
@@ -76,14 +75,14 @@ public class MaintenanceEventsDwr extends BaseDwr {
         if (id == Common.NEW_ID) {
             DateTime dt = new DateTime();
             me = new MaintenanceEventVO();
-            me.setXid(new MaintenanceEventDao().generateUniqueXid());
+            me.setXid(DaoCache.getMaintenanceEventDao().generateUniqueXid());
             me.setActiveYear(dt.getYear());
             me.setInactiveYear(dt.getYear());
             me.setActiveMonth(dt.getMonthOfYear());
             me.setInactiveMonth(dt.getMonthOfYear());
         }
         else {
-            me = new MaintenanceEventDao().getMaintenanceEvent(id);
+            me = DaoCache.getMaintenanceEventDao().getMaintenanceEvent(id);
 
             MaintenanceEventRT rt = Common.ctx.getRuntimeManager().getRunningMaintenanceEvent(me.getId());
             if (rt != null)
@@ -126,11 +125,10 @@ public class MaintenanceEventsDwr extends BaseDwr {
         e.setInactiveCron(inactiveCron);
 
         DwrResponseI18n response = new DwrResponseI18n();
-        MaintenanceEventDao maintenanceEventDao = new MaintenanceEventDao();
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!maintenanceEventDao.isXidUnique(xid, id))
+        else if (!DaoCache.getMaintenanceEventDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         e.validate(response);

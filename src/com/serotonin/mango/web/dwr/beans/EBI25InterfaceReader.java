@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.serotonin.mango.daoCache.DaoCache;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataSource.ebro.EBI25Constants;
 import com.serotonin.mango.rt.dataSource.ebro.ExceptionResultException;
@@ -62,7 +62,6 @@ public class EBI25InterfaceReader {
     private String systemTime;
     private final List<EBI25LoggerInfo> loggerInfo = new ArrayList<EBI25LoggerInfo>();
     private List<DataPointVO> points;
-    private DataPointDao dataPointDao;
 
     public EBI25InterfaceReader(ResourceBundle bundle, EBI25DataSourceVO dataSource, String host, int port,
             boolean keepAlive, int timeout, int retries) {
@@ -81,12 +80,11 @@ public class EBI25InterfaceReader {
             dataSource.setHardwareVersion(hardwareVersion);
             dataSource.setFirmwareVersion(firmwareVersion);
 
-            dataPointDao = new DataPointDao();
             RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
             // Get the list of existing data points for the data source. We remove points from this list as they are
             // needed so that when we are done all that is left in the list is points that can be disabled.
-            List<DataPointVO> existingPoints = dataPointDao.getDataPoints(dataSource.getId(), null);
+            List<DataPointVO> existingPoints = DaoCache.getDataPointDao().getDataPoints(dataSource.getId(), null);
 
             for (EBI25LoggerInfo info : loggerInfo) {
                 EBI25PointLocatorVO locator = null;
@@ -173,7 +171,7 @@ public class EBI25InterfaceReader {
             suffix = "-Signal";
 
         DataPointVO dp = new DataPointVO();
-        dp.setXid(dataPointDao.generateUniqueXid());
+        dp.setXid(DaoCache.getDataPointDao().generateUniqueXid());
         dp.setName("EBI 25-" + (info.getIndex() + 1) + suffix);
         dp.setDataSourceId(dsid);
         dp.setEnabled(true);

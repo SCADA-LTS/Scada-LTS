@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.daoCache.DaoCache;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
@@ -55,7 +56,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {
-		DataPointDao dataPointDao = new DataPointDao();
+		DataPointDao dataPointDao = DaoCache.getDataPointDao();
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		PointHierarchy ph = dataPointDao.getPointHierarchy().copyFoldersOnly();
@@ -70,7 +71,7 @@ public class WatchListDwr extends BaseDwr {
 
 		ph.parseEmptyFolders();
 
-		WatchList watchList = new WatchListDao().getWatchList(user
+		WatchList watchList = DaoCache.getWatchListDao().getWatchList(user
 				.getSelectedWatchList());
 		prepareWatchList(watchList, user);
 		user.setWatchList(watchList);
@@ -128,7 +129,7 @@ public class WatchListDwr extends BaseDwr {
 	public IntValuePair addNewWatchList(int copyId) {
 		User user = Common.getUser();
 
-		WatchListDao watchListDao = new WatchListDao();
+		WatchListDao watchListDao = DaoCache.getWatchListDao();
 		WatchList watchList;
 
 		if (copyId == Common.NEW_ID) {
@@ -157,7 +158,7 @@ public class WatchListDwr extends BaseDwr {
 	public void deleteWatchList(int watchListId) {
 		User user = Common.getUser();
 
-		WatchListDao watchListDao = new WatchListDao();
+		WatchListDao watchListDao = DaoCache.getWatchListDao();
 		WatchList watchList = user.getWatchList();
 		if (watchList == null || watchListId != watchList.getId())
 			watchList = watchListDao.getWatchList(watchListId);
@@ -179,7 +180,7 @@ public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> setSelectedWatchList(int watchListId) {
 		User user = Common.getUser();
 
-		WatchListDao watchListDao = new WatchListDao();
+		WatchListDao watchListDao = DaoCache.getWatchListDao();
 		WatchList watchList = watchListDao.getWatchList(watchListId);
 
 //		if (!user.isAdmin())
@@ -202,7 +203,7 @@ public class WatchListDwr extends BaseDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 		User user = Common.getUser();
-		DataPointVO point = new DataPointDao().getDataPoint(pointId);
+		DataPointVO point = DaoCache.getDataPointDao().getDataPoint(pointId);
 		if (point == null)
 			return null;
 		WatchList watchList = user.getWatchList();

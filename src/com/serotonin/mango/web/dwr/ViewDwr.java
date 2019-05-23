@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.ScriptSession;
+import com.serotonin.mango.daoCache.DaoCache;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -142,7 +143,7 @@ public class ViewDwr extends BaseDwr {
 		View view = null;
 
 		try {
-			view = new ViewDao().getView(Integer.parseInt(viewId));
+			view = DaoCache.getViewDao().getView(Integer.parseInt(viewId));
 		}
 		catch (Exception e){
 			//we don't have view in db , so get from user from session
@@ -155,7 +156,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<IntValuePair> getViews() {
-		ViewDao viewDao = new ViewDao();
+		ViewDao viewDao = DaoCache.getViewDao();
 		User user = Common.getUser();
 
 		List<IntValuePair> views = viewDao.getViewNames(user.getId(), user.getUserProfile());
@@ -165,7 +166,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<ScriptVO<?>> getScripts() {
-		return new ScriptDao().getScripts();
+		return DaoCache.getScriptDao().getScripts();
 	}
 
 	@MethodFilter
@@ -382,7 +383,7 @@ public class ViewDwr extends BaseDwr {
 	public void deleteViewShare() {
 		User user = Common.getUser();
 		user.setView(getViewFromContext());
-		new ViewDao().removeUserFromView(user.getView().getId(), user.getId());
+		DaoCache.getViewDao().removeUserFromView(user.getView().getId(), user.getId());
 	}
 
 	@MethodFilter
@@ -413,7 +414,7 @@ public class ViewDwr extends BaseDwr {
 		result.put("componentTypes", components);
 
 		// Available points
-		List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+		List<DataPointVO> allPoints = DaoCache.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
 		List<DataPointBean> availablePoints = new ArrayList<DataPointBean>();
 		for (DataPointVO dataPoint : allPoints) {
 			if (Permissions.hasDataPointReadPermission(user, dataPoint))
@@ -453,7 +454,7 @@ public class ViewDwr extends BaseDwr {
 		PointComponent pc = (PointComponent) getViewComponent(pointComponentId);
 		User user = Common.getUser();
 
-		DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
+		DataPointVO dp = DaoCache.getDataPointDao().getDataPoint(dataPointId);
 		if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
 			response.addContextualMessage("settingsPointList", "validate.required");
 		else {
@@ -940,7 +941,7 @@ public class ViewDwr extends BaseDwr {
 				// no op
 			}
 
-			DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
+			DataPointVO dp = DaoCache.getDataPointDao().getDataPoint(dataPointId);
 
 			if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
 				c.setDataPoint(kvp.getKey(), null);
@@ -977,7 +978,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	public boolean executeScript(String xid) {
-		ScriptVO<?> script = new ScriptDao().getScript(xid);
+		ScriptVO<?> script = DaoCache.getScriptDao().getScript(xid);
 
 		try {
 			if (script != null) {
@@ -1007,7 +1008,7 @@ public class ViewDwr extends BaseDwr {
 
 			List<DataPointVO> dps = new ArrayList<DataPointVO>();
 			for (Integer dpId : dataPoints) {
-				DataPointVO dp = new DataPointDao().getDataPoint(dpId);
+				DataPointVO dp = DaoCache.getDataPointDao().getDataPoint(dpId);
 				dps.add(dp);
 			}
 

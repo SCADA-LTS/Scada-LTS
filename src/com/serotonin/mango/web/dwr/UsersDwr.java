@@ -23,6 +23,7 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.daoCache.DaoCache;
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.view.ShareUser;
@@ -57,20 +58,19 @@ public class UsersDwr extends BaseDwr {
 		if (Permissions.hasAdmin(user)) {
 			// Users
 			initData.put("admin", true);
-			initData.put("users", new UserDao().getUsers());
-			initData.put("usersProfiles",
-					new UsersProfileDao().getUsersProfiles());
+			initData.put("users", DaoCache.getUserDao().getUsers());
+			initData.put("usersProfiles",DaoCache.getUsersProfileDao().getUsersProfiles());
 
 
 			// Data sources
-			List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
+			List<DataSourceVO<?>> dataSourceVOs = DaoCache.getDataSourceDao()
 					.getDataSources();
 
 			List<Map<String, Object>> dataSources = new ArrayList<Map<String, Object>>(
 					dataSourceVOs.size());
 			Map<String, Object> ds, dp;
 			List<Map<String, Object>> points;
-			DataPointDao dataPointDao = new DataPointDao();
+			DataPointDao dataPointDao = DaoCache.getDataPointDao();
 			for (DataSourceVO<?> dsvo : dataSourceVOs) {
 				ds = new HashMap<String, Object>();
 				ds.put("id", dsvo.getId());
@@ -89,13 +89,9 @@ public class UsersDwr extends BaseDwr {
 			}
 			initData.put("dataSources", dataSources);
 
-			WatchListDao watchListDao = new WatchListDao();
-			List<WatchList> watchLists = watchListDao.getWatchLists();
-			initData.put("watchlists", watchLists);
+			initData.put("watchlists", DaoCache.getWatchListDao().getWatchLists());
 
-			ViewDao viewDao = new ViewDao();
-			List<View> views = viewDao.getViews();
-			initData.put("views", views);
+			initData.put("views", DaoCache.getViewDao().getViews());
 
 		} else
 			initData.put("user", user);
@@ -113,9 +109,8 @@ public class UsersDwr extends BaseDwr {
 		} else {
 			user = new UserDao().getUser(id);
 
-			UsersProfileDao usersProfileDao = new UsersProfileDao();
-			if (usersProfileDao.getUserProfileByUserId(user.getId()) != null) {
-				user.setUserProfile(usersProfileDao.getUserProfileByUserId(user
+			if (DaoCache.getUsersProfileDao().getUserProfileByUserId(user.getId()) != null) {
+				user.setUserProfile(DaoCache.getUsersProfileDao().getUserProfileByUserId(user
 						.getId()));
 			}
 		}
@@ -135,7 +130,7 @@ public class UsersDwr extends BaseDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 		User currentUser = Common.getUser(request);
-		UserDao userDao = new UserDao();
+		UserDao userDao = DaoCache.getUserDao();
 
 		User user;
 		if (id == Common.NEW_ID)
@@ -179,7 +174,7 @@ public class UsersDwr extends BaseDwr {
 		if (!response.getHasMessages()) {
 			userDao.saveUser(user);
 
-			UsersProfileDao profilesDao = new UsersProfileDao();
+			UsersProfileDao profilesDao = DaoCache.getUsersProfileDao();
 			if (usersProfileId != Common.NEW_ID) {
 				// apply profile
 				UsersProfileVO profile = profilesDao
@@ -206,7 +201,7 @@ public class UsersDwr extends BaseDwr {
 			response.addData("userId", user.getId());
 		}
 
-		ViewDao viewDao = new ViewDao();
+		ViewDao viewDao = DaoCache.getViewDao();
 		List<View> views = viewDao.getViews();
 		Map<String, Object> viewsPermissionsMap = new HashMap<>();
 		for(View v:views) {
@@ -235,7 +230,7 @@ public class UsersDwr extends BaseDwr {
 			viewDao.saveView(v);
 		}
 
-		WatchListDao watchListDao = new WatchListDao();
+		WatchListDao watchListDao = DaoCache.getWatchListDao();
 		List<WatchList> watchLists = watchListDao.getWatchLists();
 		Map<String, Object> watchListsPermissionsMap = new HashMap<>();
 		for(WatchList w:watchLists) {
@@ -278,7 +273,7 @@ public class UsersDwr extends BaseDwr {
 			throw new PermissionException("Cannot update a different user",
 					user);
 
-		UserDao userDao = new UserDao();
+		UserDao userDao = DaoCache.getUserDao();
 		User updateUser = userDao.getUser(id);
 		if (!StringUtils.isEmpty(password))
 			updateUser.setPassword(Common.encrypt(password));

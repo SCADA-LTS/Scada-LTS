@@ -34,6 +34,7 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.serotonin.mango.daoCache.DaoCache;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
@@ -45,9 +46,6 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
@@ -86,10 +84,8 @@ public class MiscDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		if (user != null) {
-			boolean result = new EventDao()
-					.toggleSilence(eventId, user.getId());
 			resetLastAlarmLevelChange();
-			response.addData("silenced", result);
+			response.addData("silenced", DaoCache.getEventDao().toggleSilence(eventId, user.getId()));
 		} else
 			response.addData("silenced", false);
 
@@ -100,10 +96,9 @@ public class MiscDwr extends BaseDwr {
 	public DwrResponseI18n silenceAll() {
 		List<Integer> silenced = new ArrayList<Integer>();
 		User user = Common.getUser();
-		EventDao eventDao = new EventDao();
-		for (EventInstance evt : eventDao.getPendingEvents(user.getId())) {
+		for (EventInstance evt : DaoCache.getEventDao().getPendingEvents(user.getId())) {
 			if (!evt.isSilenced()) {
-				eventDao.toggleSilence(evt.getId(), user.getId());
+				DaoCache.getEventDao().toggleSilence(evt.getId(), user.getId());
 				silenced.add(evt.getId());
 			}
 		}
@@ -118,7 +113,7 @@ public class MiscDwr extends BaseDwr {
 	public int acknowledgeEvent(int eventId) {
 		User user = Common.getUser();
 		if (user != null) {
-			new EventDao().ackEvent(eventId, System.currentTimeMillis(),
+			DaoCache.getEventDao().ackEvent(eventId, System.currentTimeMillis(),
 					user.getId(), 0);
 			resetLastAlarmLevelChange();
 		}
@@ -128,10 +123,9 @@ public class MiscDwr extends BaseDwr {
 	public void acknowledgeAllPendingEvents() {
 		User user = Common.getUser();
 		if (user != null) {
-			EventDao eventDao = new EventDao();
 			long now = System.currentTimeMillis();
-			for (EventInstance evt : eventDao.getPendingEvents(user.getId()))
-				eventDao.ackEvent(evt.getId(), now, user.getId(), 0);
+			for (EventInstance evt : DaoCache.getEventDao().getPendingEvents(user.getId()))
+				DaoCache.getEventDao().ackEvent(evt.getId(), now, user.getId(), 0);
 			resetLastAlarmLevelChange();
 		}
 	}
@@ -206,7 +200,7 @@ public class MiscDwr extends BaseDwr {
 			String message) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
-		String[] toAddrs = new MailingListDao().getRecipientAddresses(
+		String[] toAddrs = DaoCache.getMailingListDao().getRecipientAddresses(
 				recipientList, null).toArray(new String[0]);
 		if (toAddrs.length == 0)
 			response.addGenericMessage("js.email.noRecipForEmail");
@@ -269,7 +263,7 @@ public class MiscDwr extends BaseDwr {
 			url = url.substring(1);
 
 		// Save the result
-		new UserDao().saveHomeUrl(Common.getUser().getId(), url);
+		DaoCache.getUserDao().saveHomeUrl(Common.getUser().getId(), url);
 	}
 
 	@MethodFilter
@@ -298,7 +292,6 @@ public class MiscDwr extends BaseDwr {
 				.getHttpServletRequest();
 		User user = Common.getUser(httpRequest);
 		EventManager eventManager = Common.ctx.getEventManager();
-		EventDao eventDao = new EventDao();
 
 		LongPollData data = getLongPollData(pollSessionId, false);
 		data.updateTimestamp();
@@ -329,7 +322,7 @@ public class MiscDwr extends BaseDwr {
 
 					// The events have changed. See if the user's particular max
 					// alarm level has changed.
-					int maxAlarmLevel = eventDao
+					int maxAlarmLevel = DaoCache.getEventDao()
 							.getHighestUnsilencedAlarmLevel(user.getId());
 					LOG.trace(toString() + " maxAlarmLevel: " + maxAlarmLevel);
 					if (maxAlarmLevel != state.getMaxAlarmLevel()) {
@@ -442,7 +435,7 @@ public class MiscDwr extends BaseDwr {
 			if (pollRequest.isPendingAlarms() && user != null) {
 				// Create the list of most current pending alarm content.
 				Map<String, Object> model = new HashMap<String, Object>();
-				model.put("events", eventDao.getPendingEvents(user.getId()));
+				model.put("events", DaoCache.getEventDao().getPendingEvents(user.getId()));
 				model.put("pendingEvents", true);
 				model.put("noContentWhenEmpty", true);
 				String currentContent = generateContent(httpRequest,

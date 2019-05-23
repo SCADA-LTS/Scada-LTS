@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
+import com.serotonin.mango.daoCache.DaoCache;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
@@ -37,9 +38,7 @@ import org.joda.time.IllegalFieldValueException;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
@@ -71,7 +70,7 @@ abstract public class BaseDwr {
     protected static EventDao EVENT_DAO;
 
     public static void initialize() {
-        EVENT_DAO = new EventDao();
+        EVENT_DAO = DaoCache.getEventDao();
     }
 
     protected ResourceBundle changeSnippetMap = ResourceBundle.getBundle("changeSnippetMap");
@@ -178,7 +177,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public int setPoint(int pointId, int componentId, String valueStr) {
         User user = Common.getUser();
-        DataPointVO point = new DataPointDao().getDataPoint(pointId);
+        DataPointVO point = DaoCache.getDataPointDao().getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointSetPermission(user, point);
@@ -203,7 +202,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public void forcePointRead(int pointId) {
         User user = Common.getUser();
-        DataPointVO point = new DataPointDao().getDataPoint(pointId);
+        DataPointVO point = DaoCache.getDataPointDao().getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointReadPermission(user, point);
@@ -232,7 +231,7 @@ abstract public class BaseDwr {
         if (typeId == UserComment.TYPE_EVENT)
             EVENT_DAO.insertEventComment(referenceId, c);
         else if (typeId == UserComment.TYPE_POINT)
-            new UserDao().insertUserComment(UserComment.TYPE_POINT, referenceId, c);
+            DaoCache.getUserDao().insertUserComment(UserComment.TYPE_POINT, referenceId, c);
         else
             throw new ShouldNeverHappenException("Invalid comment type: " + typeId);
 
@@ -242,7 +241,7 @@ abstract public class BaseDwr {
     protected List<DataPointBean> getReadablePoints() {
         User user = Common.getUser();
 
-        List<DataPointVO> points = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> points = DaoCache.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
         if (!Permissions.hasAdmin(user)) {
             List<DataPointVO> userPoints = new ArrayList<DataPointVO>();
             for (DataPointVO dp : points) {
@@ -326,7 +325,7 @@ abstract public class BaseDwr {
 
     protected List<User> getShareUsers(User excludeUser) {
         List<User> users = new ArrayList<User>();
-        for (User u : new UserDao().getUsers()) {
+        for (User u : DaoCache.getUserDao().getUsers()) {
             if (u.getId() != excludeUser.getId())
                 users.add(u);
         }

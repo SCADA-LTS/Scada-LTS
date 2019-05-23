@@ -27,12 +27,11 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.serotonin.mango.daoCache.DaoCache;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
@@ -48,8 +47,8 @@ public class MailingListsDwr extends BaseDwr {
 
 	public DwrResponseI18n init() {
 		DwrResponseI18n response = new DwrResponseI18n();
-		response.addData("lists", new MailingListDao().getMailingLists());
-		response.addData("users", new UserDao().getUsers());
+		response.addData("lists", DaoCache.getMailingListDao().getMailingLists());
+		response.addData("users", DaoCache.getUserDao().getUsers());
 		return response;
 	}
 
@@ -57,18 +56,17 @@ public class MailingListsDwr extends BaseDwr {
 		if (id == Common.NEW_ID) {
 			MailingList ml = new MailingList();
 			ml.setId(Common.NEW_ID);
-			ml.setXid(new MailingListDao().generateUniqueXid());
+			ml.setXid(DaoCache.getMailingListDao().generateUniqueXid());
 			ml.setEntries(new LinkedList<EmailRecipient>());
 			return ml;
 		}
-		return new MailingListDao().getMailingList(id);
+		return DaoCache.getMailingListDao().getMailingList(id);
 	}
 
 	public DwrResponseI18n saveMailingList(int id, String xid, String name,
 			List<RecipientListEntryBean> entryBeans,
 			List<Integer> inactiveIntervals) {
 		DwrResponseI18n response = new DwrResponseI18n();
-		MailingListDao mailingListDao = new MailingListDao();
 
 		// Validate the given information. If there is a problem, return an
 		// appropriate error message.
@@ -77,14 +75,14 @@ public class MailingListsDwr extends BaseDwr {
 
 		if (StringUtils.isEmpty(xid))
 			response.addContextualMessage("xid", "validate.required");
-		else if (!mailingListDao.isXidUnique(xid, id))
+		else if (!DaoCache.getMailingListDao().isXidUnique(xid, id))
 			response.addContextualMessage("xid", "validate.xidUsed");
 
 		ml.validate(response);
 
 		if (!response.getHasMessages()) {
 			// Save the mailing list
-			mailingListDao.saveMailingList(ml);
+			DaoCache.getMailingListDao().saveMailingList(ml);
 			response.addData("mlId", ml.getId());
 		}
 
@@ -92,7 +90,7 @@ public class MailingListsDwr extends BaseDwr {
 	}
 
 	public void deleteMailingList(int mlId) {
-		new MailingListDao().deleteMailingList(mlId);
+		DaoCache.getMailingListDao().deleteMailingList(mlId);
 	}
 
 	public DwrResponseI18n sendTestEmail(int id, String name,
@@ -100,7 +98,7 @@ public class MailingListsDwr extends BaseDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		MailingList ml = createMailingList(id, null, name, entryBeans);
-		new MailingListDao().populateEntrySubclasses(ml.getEntries());
+		DaoCache.getMailingListDao().populateEntrySubclasses(ml.getEntries());
 
 		Set<String> addresses = new HashSet<String>();
 		ml.appendAddresses(addresses, null);

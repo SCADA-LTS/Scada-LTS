@@ -20,6 +20,7 @@ package com.serotonin.mango.web.dwr;
 
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.daoCache.DaoCache;
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.maint.work.ReportWorkItem;
 import com.serotonin.mango.vo.DataPointVO;
@@ -46,13 +47,12 @@ import java.util.ResourceBundle;
 public class ReportsDwr extends BaseDwr {
     public DwrResponseI18n init() {
         DwrResponseI18n response = new DwrResponseI18n();
-        ReportDao reportDao = new ReportDao();
         User user = Common.getUser();
 
         response.addData("points", getReadablePoints());
         response.addData("mailingLists", new MailingListDao().getMailingLists());
-        response.addData("users", new UserDao().getUsers());
-        response.addData("reports", reportDao.getReports(user.getId()));
+        response.addData("users", DaoCache.getUserDao().getUsers());
+        response.addData("reports", DaoCache.getReportDao().getReports(user.getId()));
         response.addData("instances", getReportInstances(user));
 
         return response;
@@ -115,14 +115,13 @@ public class ReportsDwr extends BaseDwr {
             return response;
 
         User user = Common.getUser();
-        ReportDao reportDao = new ReportDao();
         ReportVO report;
         if (id == Common.NEW_ID) {
             report = new ReportVO();
             report.setUserId(user.getId());
         }
         else
-            report = reportDao.getReport(id);
+            report = DaoCache.getReportDao().getReport(id);
 
         Permissions.ensureReportPermission(user, report);
 
@@ -159,7 +158,7 @@ public class ReportsDwr extends BaseDwr {
         report.setRecipients(recipients);
 
         // Save the report
-        reportDao.saveReport(report);
+        DaoCache.getReportDao().saveReport(report);
 
         // Conditionally schedule the report.
         ReportJob.scheduleReportJob(report);
@@ -217,13 +216,12 @@ public class ReportsDwr extends BaseDwr {
     }
 
     public void deleteReport(int id) {
-        ReportDao reportDao = new ReportDao();
 
-        ReportVO report = reportDao.getReport(id);
+        ReportVO report = DaoCache.getReportDao().getReport(id);
         if (report != null) {
             Permissions.ensureReportPermission(Common.getUser(), report);
             ReportJob.unscheduleReportJob(report);
-            reportDao.deleteReport(id);
+            DaoCache.getReportDao().deleteReport(id);
         }
     }
 
@@ -246,7 +244,7 @@ public class ReportsDwr extends BaseDwr {
             response.addContextualMessage("pastPeriodCount", "reports.validate.periodCountLessThan1");
 
         User user = Common.getUser();
-        DataPointDao dataPointDao = new DataPointDao();
+        DataPointDao dataPointDao = DaoCache.getDataPointDao();
         for (ReportPointVO point : points) {
             Permissions.ensureDataPointReadPermission(user, dataPointDao.getDataPoint(point.getPointId()));
 
@@ -262,8 +260,7 @@ public class ReportsDwr extends BaseDwr {
 
     public List<ReportInstance> deleteReportInstance(int instanceId) {
         User user = Common.getUser();
-        ReportDao reportDao = new ReportDao();
-        reportDao.deleteReportInstance(instanceId, user.getId());
+        DaoCache.getReportDao().deleteReportInstance(instanceId, user.getId());
         return getReportInstances(user);
     }
 
@@ -280,7 +277,7 @@ public class ReportsDwr extends BaseDwr {
     }
 
     public void setPreventPurge(int instanceId, boolean value) {
-        new ReportDao().setReportInstancePreventPurge(instanceId, value, Common.getUser().getId());
+        DaoCache.getReportDao().setReportInstancePreventPurge(instanceId, value, Common.getUser().getId());
     }
 
     public ReportVO createReportFromWatchlist(int watchListId) {
