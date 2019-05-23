@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.snmp4j.PDU;
@@ -48,6 +49,69 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * 
  */
 public class SnmpDataSourceRT extends PollingDataSource {
+
+	enum MessageType{
+		oidError,
+		unknownOid,
+		undefined
+
+	}
+	class SnmpResponses {
+		PDU request = null;
+		PDU response = null;
+		long responseTime;
+
+		SnmpResponses(){}
+
+		public void setRequest(PDU request){
+
+			this.request = request;
+		}
+		public PDU getRequest(){
+
+			return this.request;
+		}
+		public PDU getResponseByGet() {
+
+			try {
+				startTime();
+				response = getResponse(true);
+				finishTime();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return response;
+		}
+		public PDU getResponseBySet(){
+			PDU response = null;
+			try {
+				startTime();
+				response = getResponse(false);
+				finishTime();
+			} catch (Exception ex) {
+				// TODO add error handling
+				response = null;
+			}
+			return response;
+		}
+		private PDU getResponse(boolean setOrGet) throws IOException {
+
+			return setOrGet?snmp.get(request, target).getResponse():snmp.set(request, target).getResponse();
+
+		}
+		private void startTime(){
+
+			responseTime = System.currentTimeMillis();
+
+		}
+		private void finishTime(){
+
+			responseTime = System.currentTimeMillis() - responseTime;
+			log.debug("Snmp request/response time: " + responseTime);
+
+		}
+	}
+
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
 	public static final int PDU_EXCEPTION_EVENT = 2;
 
@@ -58,7 +122,13 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	private String address;
 	private Target target;
 	private Snmp snmp;
+	private int counterEmptyResponsesOrResponsesWithError;
+	private boolean deviceDidNotRespondDespiteTheCounterOfRetries = Boolean.FALSE;
+	private SnmpResponses snmpRequests;
 
+	public Snmp getSnmp() {
+		return snmp;
+	}
 	public SnmpDataSourceRT(SnmpDataSourceVO vo) {
 		super(vo);
 		setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
@@ -68,6 +138,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				vo.getAuthPassphrase(), vo.getPrivProtocol(),
 				vo.getPrivPassphrase(), vo.getEngineId(),
 				vo.getContextEngineId(), vo.getContextName());
+		snmpRequests = new SnmpResponses();
 	}
 
 	@Override
@@ -77,13 +148,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		SnmpPointLocatorRT locator = dataPoint.getPointLocator();
 		request.add(new VariableBinding(getOid(dataPoint), locator
 				.valueToVariable(valueTime.getValue())));
-		PDU response;
-		try {
-			response = snmp.set(request, target).getResponse();
-		} catch (Exception ex) {
-			// TODO add error handling
-			response = null;
-		}
+		snmpRequests.setRequest(request);
+		PDU response = snmpRequests.getResponseBySet();
 
 		LocalizableMessage message = validatePdu(response);
 		if (message != null)
@@ -102,8 +168,29 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		}
 	}
 
+	public void setDeviceDidNotRespondDespiteTheCounterOfRetries(boolean deviceDidNotRespondDespiteTheCounterOfRetries) {
+		this.deviceDidNotRespondDespiteTheCounterOfRetries = deviceDidNotRespondDespiteTheCounterOfRetries;
+		log.info("Device did not respond despite the counter of retries.");
+	}
+	public void createSnmpAndStartListening(){
+		try {
+			initializeComponents();
+
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+	}
+	public boolean isSnmpConnectionIsAlive(){
+		if (target.getRetries() == counterEmptyResponsesOrResponsesWithError) {
+			setDeviceDidNotRespondDespiteTheCounterOfRetries(Boolean.TRUE);
+			return Boolean.FALSE;
+		}
+		else
+			return Boolean.TRUE;
+	}
 	private void doPollImpl(long time) throws IOException {
-		PDU request = version.createPDU();
+		snmpRequests.setRequest(version.createPDU());
+		PDU request = snmpRequests.getRequest();
 		PDU response = null;
 		VariableBinding vb;
 
@@ -111,7 +198,6 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		// asked for, and
 		// only what we asked for.
 		List<DataPointRT> requestPoints = new ArrayList<DataPointRT>();
-
 		// Add OID to send in the PDU.
 		for (DataPointRT dp : dataPoints) {
 			if (!getLocatorVO(dp).isTrapOnly()) {
@@ -119,77 +205,116 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				requestPoints.add(dp);
 			}
 		}
-
-		if (request.getVariableBindings().size() == 0) {
-			// Nothing to send, so don't bother.
-			returnToNormal(PDU_EXCEPTION_EVENT, time);
-			return;
-		}
-
-		// Get the response.
-		long responseTime = System.currentTimeMillis();
-		response = snmp.get(request, target).getResponse();
-		responseTime = System.currentTimeMillis() - responseTime;
-		log.debug("Snmp request/response time: " + responseTime);
-
-		// Take a look at the response.
-		LocalizableMessage message = validatePdu(response);
-		if (message != null)
-			raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
-		else {
-			boolean error = false;
-
-			DataPointRT dp;
-			for (int i = 0; i < response.size(); i++) {
-				vb = response.get(i);
-
-				// Find the command for this binding.
-				dp = null;
-				for (DataPointRT requestPoint : requestPoints) {
-					if (getOid(requestPoint).equals(vb.getOid())) {
-						dp = requestPoint;
-						break;
-					}
-				}
-
-				if (dp != null) {
-					requestPoints.remove(dp);
-
-					// Check if this is an error.
-					Variable variable = vb.getVariable();
-					if (vb.getVariable().isException()) {
-						error = true;
-						raiseEvent(
-								PDU_EXCEPTION_EVENT,
-								time,
-								true,
-								new LocalizableMessage("event.snmp.oidError",
-										address, getOid(dp), variable
-												.toString()));
-					} else
-						updatePoint(dp, variable, time);
-				} else {
-					error = true;
-					raiseEvent(
-							PDU_EXCEPTION_EVENT,
-							time,
-							true,
-							new LocalizableMessage("event.snmp.unknownOid", vb
-									.getOid(), address));
-				}
-			}
-
-			for (DataPointRT requestPoint : requestPoints) {
-				error = true;
-				raiseEvent(PDU_EXCEPTION_EVENT, time, true,
-						new LocalizableMessage("event.snmp.noBinding",
-								getOid(requestPoint), address));
-			}
-
-			if (!error)
-				// Deactivate any existing event.
+		if(time!=-1) {
+			if (request.getVariableBindings().size() == 0) {
+				// Nothing to send, so don't bother.
 				returnToNormal(PDU_EXCEPTION_EVENT, time);
+				return;
+			}
 		}
+		// Get the response.
+		snmpRequests.setRequest(version.createPDU());
+		response = snmpRequests.getResponseByGet();
+		// Take a look at the response.
+		LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);
+		if(time==-1){
+			if(!isSnmpConnectionIsAlive())
+				snmp.close();
+		}
+		else {
+			if(!isSnmpConnectionIsAlive()) {
+				Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
+			}
+			else
+				if(message != null)
+					raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+				else {
+					MessageType messageType = MessageType.undefined;
+					boolean error = false;
+
+					DataPointRT dp;
+					for (int i = 0; i < response.size(); i++) {
+						vb = response.get(i);
+						// Find the command for this binding.
+						dp = setDataPoint(vb,requestPoints);
+						if (dp != null) {
+							requestPoints.remove(dp);
+
+							// Check if this is an error.
+							if (vb.getVariable().isException()) {
+								messageType = MessageType.oidError;
+							} else {
+								updatePoint(dp, vb.getVariable(), time);
+							}
+						} else {
+							messageType = MessageType.unknownOid;
+						}
+						if (messageType != MessageType.undefined) {
+							error = true;
+							logEventsDependsOnMessageType(messageType, vb, dp, time);
+							messageType = MessageType.undefined;
+						}
+					}
+					for (DataPointRT requestPoint : requestPoints) {
+						error = true;
+						raiseEvent(PDU_EXCEPTION_EVENT, time, true,
+								new LocalizableMessage("event.snmp.noBinding",
+										getOid(requestPoint), address));
+					}
+					if (!error)
+						// Deactivate any existing event.
+						returnToNormal(PDU_EXCEPTION_EVENT, time);
+
+				}
+		}
+	}
+	private DataPointRT setDataPoint(VariableBinding vb, List<DataPointRT> requestPoints){
+		for (DataPointRT requestPoint : requestPoints) {
+			if (getOid(requestPoint).equals(vb.getOid())) {
+				return  requestPoint;
+			}
+		}
+		return null;
+	}
+	public LocalizableMessage validateResponseAndValidateStateOfConnection(PDU response){
+
+		LocalizableMessage message = validatePdu(response);
+
+		increaseCounterIfErrorExistOrNoResponseAppear(response);
+
+		return message;
+	}
+
+	/**
+	 * if messageType is different that value 0 or 1
+	 * then LocalizableMessage is created and is gived to raiseEvent method.
+	 * Then result of this is true,otherwise (messageType == -1) is false.
+	 *
+	 * @param messageType
+	 * @param vb
+	 * @param dp
+	 * @param time
+	 * @return boolean
+	 */
+	private boolean logEventsDependsOnMessageType(MessageType messageType, VariableBinding vb, DataPointRT dp, long time){
+		LocalizableMessage message=null;
+		switch(messageType) {
+			case oidError:
+				message=new LocalizableMessage(
+						"event.snmp.oidError",
+						address, getOid(dp), vb.getVariable());
+				break;
+			case unknownOid:
+				message=new LocalizableMessage(
+						"event.snmp.unknownOid",
+						vb.getOid(), address);
+				break;
+		}
+
+		if(messageType!=MessageType.undefined)
+			raiseEvent(PDU_EXCEPTION_EVENT,time,true,message);
+
+		return messageType!=MessageType.undefined;
 	}
 
 	private LocalizableMessage validatePdu(PDU pdu) {
@@ -205,6 +330,13 @@ public class SnmpDataSourceRT extends PollingDataSource {
 					pdu.getErrorStatus(), pdu.getErrorStatusText());
 
 		return null;
+	}
+
+	private void increaseCounterIfErrorExistOrNoResponseAppear(PDU pdu) {
+		if ((pdu == null) || (pdu.getErrorIndex() != 0) || (pdu.getErrorStatus() != 0)) {
+			++counterEmptyResponsesOrResponsesWithError;
+		}
+		log.info("Counter Empty Responses Or Responses With Error: "+counterEmptyResponsesOrResponsesWithError);
 	}
 
 	private OID getOid(DataPointRT dp) {
@@ -272,12 +404,9 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	@Override
 	public void initialize() {
 		try {
-			address = InetAddress.getByName(vo.getHost()).getHostAddress();
-			target = version.getTarget(vo.getHost(), vo.getPort(),
-					vo.getRetries(), vo.getTimeout());
-			snmp = new Snmp(new DefaultUdpTransportMapping());
-			snmp.listen();
-
+			initializeComponents();
+			counterEmptyResponsesOrResponsesWithError=0;
+			log.info("Counter Empty Responses Or Responses With Error is set 0.");
 			SnmpTrapRouter.addDataSource(this);
 
 			// Deactivate any existing event.
@@ -291,6 +420,15 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		}
 
 		super.initialize();
+	}
+	private void initializeComponents() throws IOException {
+
+		address = InetAddress.getByName(vo.getHost()).getHostAddress();
+		target = version.getTarget(vo.getHost(), vo.getPort(),
+				vo.getRetries(), vo.getTimeout());
+		snmp = new Snmp(new DefaultUdpTransportMapping());
+		snmp.listen();
+
 	}
 
 	@Override
