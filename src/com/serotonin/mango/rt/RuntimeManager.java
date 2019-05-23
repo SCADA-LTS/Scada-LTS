@@ -310,6 +310,36 @@ public class RuntimeManager {
 			}
 		}
 	}
+	/**
+	 * stop data source but dont join to terminate datasource
+	 *
+	 * @param id
+	 */
+	public void stopDataSourceAndDontJoinTermination(int id) {
+		synchronized (runningDataSources) {
+			DataSourceRT dataSource = getRunningDataSource(id);
+			if (dataSource == null)
+				return;
+
+			stopDataPoints(id);
+
+			runningDataSources.remove(dataSource);
+			dataSource.terminate();
+			LOG.info("Data source '" + dataSource.getName() + "' stopped");
+		}
+	}
+	/**
+	 * Stops data points under data source.
+	 *
+	 * @param id
+	 */
+	private void stopDataPoints(int id){
+		// Stop the data points.
+		for (DataPointRT p : dataPoints.values()) {
+			if (p.getDataSourceId() == id)
+				stopDataPoint(p.getId());
+		}
+	}
 
 	private boolean initializeDataSource(DataSourceVO<?> vo) {
 		synchronized (runningDataSources) {
