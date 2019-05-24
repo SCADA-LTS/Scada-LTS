@@ -215,8 +215,12 @@ public class EventHandlersDwr extends BaseDwr {
 		Permissions.ensureDataSourcePermission(Common.getUser(),
 				pointVO.getDataSourceId());
 
-		MangoValue value = MangoValue.stringToValue(valueStr, pointVO
-				.getPointLocator().getDataTypeId());
+		MangoValue value;
+		try {
+			value = MangoValue.stringToValue(valueStr, pointVO.getPointLocator().getDataTypeId());
+		} catch (NumberFormatException e) {
+			value = MangoValue.stringToValue(pointVO.getParseErrorValue(), pointVO.getPointLocator().getDataTypeId());
+		}
 
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("point", pointVO);

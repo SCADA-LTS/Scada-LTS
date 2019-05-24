@@ -195,7 +195,12 @@ abstract public class BaseDwr {
             Common.ctx.getRuntimeManager().relinquish(point.getId());
         else {
             // Convert the string value into an object.
-            MangoValue value = MangoValue.stringToValue(valueStr, point.getPointLocator().getDataTypeId());
+            MangoValue value;
+            try {
+                value = MangoValue.stringToValue(valueStr, point.getPointLocator().getDataTypeId());
+            } catch (NumberFormatException e) {
+                value = MangoValue.stringToValue(point.getParseErrorValue(), point.getPointLocator().getDataTypeId());
+            }
             Common.ctx.getRuntimeManager().setDataPointValue(point.getId(), value, source);
         }
     }
