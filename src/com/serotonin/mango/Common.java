@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
@@ -78,9 +77,6 @@ public class Common {
 	public static final int NEW_ID = -1;
 	public static ContextWrapper ctx;
 
-	public static ServletContext getServletContext(){
-		return ctx.getCtx();
-	}
 	// This is initialized
 	public static final RealTimeTimer timer = new RealTimeTimer();
 

@@ -85,9 +85,7 @@
 	<c:if test="${!empty currentView}">
       mango.view.initNormalView();
     </c:if>
-
-    mango.share.dwr = ViewDwr;
-
+    
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
     var browserName  = navigator.appName;
