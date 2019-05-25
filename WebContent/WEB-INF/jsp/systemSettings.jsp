@@ -802,7 +802,7 @@
           <input type="button" value="<fmt:message key="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
         </td>
       </tr>
-   --%>   
+   --%>
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
       </tr>
@@ -822,6 +822,26 @@
           </tr>
        </table>
   </div>
+  <div class="borderDiv marB marR" style="clear:left;float:left">
+         <table width="100%">
+            <tr>
+               <td>
+                 <span class="smallTitle">Chart shape</span>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                 Numeric: <select id="<c:out value="<%= SystemSettingsDAO.CHART_SHAPE %>"/>"></select>
+               </td>
+               <td>
+                 Multistate: <select id="<c:out value="<%= SystemSettingsDAO.CHART_SHAPE %>"/>"></select>
+               </td>
+               <td>
+                 Binary: <select id="<c:out value="<%= SystemSettingsDAO.CHART_SHAPE %>"/>"></select>
+               </td>
+            </tr>
+         </table>
+    </div>
 
   <div class="borderDiv marB marR" style="clear:left;float:left">
     <table>
