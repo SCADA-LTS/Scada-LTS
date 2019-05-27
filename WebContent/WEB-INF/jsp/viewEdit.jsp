@@ -46,6 +46,8 @@
             dwr.util.addOptions($("componentList"), result.componentTypes, "key", "value");
             settingsEditor.setPointList(result.pointList);
             compoundEditor.setPointList(result.pointList);
+            ViewDwr.addEditedViewToContext(document.getElementById('id').value);
+            document.getElementById('dwrScriptSessionid').value = dwr.engine._getScriptSessionId();
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
 
@@ -386,6 +388,13 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
+                <spring:bind path="form.view.id">
+                    <tr>
+                          <td class="formField" width="250">
+                                <input type="hidden" id="id" name="view.id" value="${status.value}"/>
+                          </td>
+                    </tr>
+                </spring:bind>
                 <tr>
                   <td class="formField" width="250">
                     <input type="hidden" id="dwrScriptSessionid" name="dwrScriptSessionid" value="${dwrScriptSessionid}">
