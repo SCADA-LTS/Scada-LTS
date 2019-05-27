@@ -25,11 +25,12 @@
 	jqplugins="chosen/chosen.jquery.min,jpicker/jpicker-1.1.6.min,jquery-ui/js/jquery-ui-1.10.3.custom.min" >
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
-  <script type="text/javascript" src="resources/restApiBusinessObjectForDwrScriptSessionId.js"></script>
   <script type="text/javascript">
 
     mango.view.initEditView();
     mango.share.dwr = ViewDwr;
+
+    var newComponentPositionOffset = 0;
 
     function doOnload() {
         hide("sharedUsersDiv");
@@ -39,8 +40,6 @@
         </c:forEach>
 
         ViewDwr.editInit(function(result) {
-            ViewDwr.addEditedViewToContext(document.getElementById('id').value);
-            document.getElementById('dwrScriptSessionid').value = dwr.engine._getScriptSessionId();
             mango.share.users = result.shareUsers;
             mango.share.writeSharedUsers(result.viewUsers);
             dwr.util.addOptions($("componentList"), result.componentTypes, "key", "value");
@@ -127,12 +126,13 @@
         show(content);
 
         if (center) {
-            // Calculate the location for the new point. For now just put it in the center.
+            // Calculate the location for the new point. For now just put it above edit box.
             var bkgd = $("viewBackground");
             var bkgdBox = dojo.html.getMarginBox(bkgd);
             var compContentBox = dojo.html.getMarginBox(content);
-            content.style.left = parseInt((bkgdBox.width - compContentBox.width) / 2) +"px";
-            content.style.top = parseInt((bkgdBox.height - compContentBox.height) / 2) +"px";
+            content.style.left = document.getElementById("propertiesBox").offsetWidth + 20 + newComponentPositionOffset +"px";
+            content.style.top = "-135px";
+            newComponentPositionOffset += 16;
         }
         else {
             content.style.left = viewComponent.x +"px";
@@ -366,7 +366,7 @@
     <table>
       <tr>
         <td valign="top">
-          <div class="borderDiv marR">
+          <div id="propertiesBox" class="borderDiv marR">
             <table>
               <tr>
                 <td colspan="3">
@@ -386,11 +386,7 @@
                 </tr>
               </spring:bind>
 
-                <tr>
-                  <td class="formField" width="250">
-                    <input type="hidden" id="dwrScriptSessionid" name="dwrScriptSessionid" value="${dwrScriptSessionid}">
-                  </td>
-                </tr>
+
 
               <spring:bind path="form.view.xid">
                 <tr>
@@ -510,7 +506,7 @@
             <tr>
               <td colspan="2" align="center">
                 <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
-                <input type="submit" name="cancel" onclick="removeDwrScriptSessionIdForBusinessObject(document.getElementById('dwrScriptSessionid').value);" value="<fmt:message key="common.cancel"/>"/>
+                <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
                 <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
                 <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
 				<input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
