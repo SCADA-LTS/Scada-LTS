@@ -24,7 +24,6 @@
 	jqplugins="jquery-ui/js/jquery-ui-1.10.3.custom.min,jpicker/jpicker-1.1.6.min,datetimepicker/jquery-ui-timepicker-addon" >
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/shortcut.js"></script>
-  <script type="text/javascript" src="resources/splitPartsAndReturnUrl.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
   <link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
   <link
@@ -253,7 +252,7 @@
 				</sst:select> <c:if test="${!empty currentView}">
 					<c:choose>
 						<c:when test="${owner}">
-							<a href="#" onclick="getUrlFromParts(new Array('view_edit.shtm?','dwrScriptSessionid=', dwr.engine._getScriptSessionId(), '&viewId=', ${currentView.id}));"><tag:img
+							<a href="view_edit.shtm?viewId=${currentView.id}"><tag:img
 									png="icon_view_edit" title="viewEdit.editView" /> </a>
 						</c:when>
 						<c:otherwise>
@@ -262,7 +261,7 @@
 								onclick="unshare()" />-->
 						</c:otherwise>
 					</c:choose>
-				</c:if> <a href="#" onclick="getUrlFromParts(new Array('view_edit.shtm?','dwrScriptSessionid=', dwr.engine._getScriptSessionId(), '&viewId=', ${currentView.id}));"><tag:img png="icon_view_new"
+				</c:if> <a href="view_edit.shtm"><tag:img png="icon_view_new"
 						title="views.newView" /> </a></td>
 		</tr>
 		
