@@ -501,6 +501,8 @@
     background-color: #f5f5f5;
     border: 1px solid #e3e3e3;
     border-radius: 4px;
+    z-index: 999999;
+    position: relative;
   }
 
   #cmp {
