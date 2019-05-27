@@ -620,6 +620,7 @@ public class PointValueService implements MangoPointValues {
 
             MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
 
+            //TODO !!!
             metaPointLocatorVO.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE);
 
             MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
