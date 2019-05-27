@@ -281,15 +281,8 @@
 		checkFullScreen();
 	
 	</script>
-    <c:if test="${empty currentView}">
-        <fmt:message key="views.noViewsBegin"/>
-        <a href="#" onclick="getUrlFromParts(new Array('view_edit.shtm?','dwrScriptSessionid=', dwr.engine._getScriptSessionId(), '&viewId=', 	${currentView.id}));">
-            <fmt:message key="views.noViewsEnd"/>
-        </a>
-    </c:if>
-    <c:if test="${!empty currentView}">
-	    <tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />
-    </c:if>
+
+	<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />
 </tag:page>
 <%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>
 <%@ include file="/WEB-INF/jsp/include/userComment.jsp" %>
