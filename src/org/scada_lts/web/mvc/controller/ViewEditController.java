@@ -50,8 +50,8 @@ import com.serotonin.mango.vo.permission.Permissions;
 
 
 @Controller
-public class ViewEditContorller {
-    private static final Log LOG = LogFactory.getLog(ViewEditContorller.class);
+public class ViewEditController {
+    private static final Log LOG = LogFactory.getLog(ViewEditController.class);
     
     private static final String SUBMIT_UPLOAD = "upload";
     private static final String SUBMIT_CLEAR_IMAGE = "clearImage";
@@ -82,11 +82,12 @@ public class ViewEditContorller {
     }
     
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.GET)
-    protected ModelAndView showForm(HttpServletRequest request, @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
+    protected ModelAndView showForm(HttpServletRequest request,
+                                    @RequestParam(value="dwrScriptSessionid", required=false) String dwrScriptSessionid,
+                                    @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
         View view;
         User user = Common.getUser(request);
-
-        if (viewIdStr != null) {
+        if (viewIdStr != null && !viewIdStr.equals(FinalValuesForControllers.EMPTY_STRING)) {
             // An existing view.
             view = new ViewDao().getView(Integer.parseInt(viewIdStr));
             Permissions.ensureViewEditPermission(user, view);
@@ -98,16 +99,18 @@ public class ViewEditContorller {
             view.setXid(new ViewDao().generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
+        ScriptSession.addNewEditedObjectForScriptSession(
+                view,
+                request.getSession().getId(),
+                dwrScriptSessionid);
         user.setView(view);
         view.validateViewComponents(false);
 
         ViewEditForm form = new ViewEditForm();
         form.setView(view);
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put(FORM_OBJECT_NAME, form);
-        model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
-        model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-        return new ModelAndView(FORM_VIEW, model);
+        Map<String, Object> map =fillMap(form);
+        map.put(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID,dwrScriptSessionid);
+        return new ModelAndView(FORM_VIEW, map);
     }
 
     
@@ -141,9 +144,7 @@ public class ViewEditContorller {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
-        User user = Common.getUser(request);
-        user.setView(getViewFromContextAndRemoveViewFromContext(request));
-        View view = user.getView();
+        View view = unblockViewFromContext(request);
         copyViewProperties(view, form.getView());
         form.setView(view);
 
@@ -169,7 +170,6 @@ public class ViewEditContorller {
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
-        user.setView(getViewFromContextAndRemoveViewFromContext(request));
         View view = user.getView();
         form.setView(view);
 
@@ -179,9 +179,7 @@ public class ViewEditContorller {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_DELETE })
     protected ModelAndView delete(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:delete");
-        User user = Common.getUser(request);
-        user.setView(getViewFromContextAndRemoveViewFromContext(request));
-        View view = user.getView();
+        View view = unblockViewFromContext(request);
         form.setView(view);
 
         new ViewDao().removeView(form.getView().getId());
@@ -206,7 +204,20 @@ public class ViewEditContorller {
         model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
         return model;
     }
-    
+
+    /**
+     * Get user from Common and set given from Context, view to this user with paralel remove business
+     * object ( view here) from Context
+     *
+     * @param request
+     * @return View
+     */
+    private View unblockViewFromContext(HttpServletRequest request){
+        User user = Common.getUser(request);
+        user.setView(getViewFromContextAndRemoveViewFromContext(request));
+        return user.getView();
+    }
+
     private void uploadFile(HttpServletRequest request, ViewEditForm form)  throws Exception  {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             if (form.getBackgroundImageMP() != null) {
@@ -271,11 +282,10 @@ public class ViewEditContorller {
     protected  ModelAndView getSuccessRedirectView(String queryString) {
         String url = successUrl;
         if (queryString != null && queryString.trim().length() > 0) {
-            url += (queryString.charAt(0) != '?') ? '?' + queryString : queryString;
-            /*if (queryString.charAt(0) != '?')
+            if (queryString.charAt(0) != '?')
                 url += '?' + queryString;
             else
-                url += queryString;*/
+                url += queryString;
         }
         RedirectView redirectView = new RedirectView(url, true);
         return new ModelAndView(redirectView);
