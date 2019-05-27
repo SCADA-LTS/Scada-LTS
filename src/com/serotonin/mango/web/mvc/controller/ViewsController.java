@@ -38,8 +38,7 @@ import java.util.*;
 
 public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);
-	private final String MINUS_ONE = "-1";
-	private final String VIEW_ID = "viewId";
+
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -83,15 +82,11 @@ public class ViewsController extends ParameterizableViewController {
 
 		// Set the current view.
 		View currentView = null;
-		if( request.getParameter(VIEW_ID) != null) {
-			String vid = request.getParameter(VIEW_ID);
-			try {
-				if (!vid.equals(MINUS_ONE)) {
-					currentView = viewDao.getView(Integer.parseInt(vid));
-				}
-			} catch (NumberFormatException e) {
-				LOG.info("Appeared NumberFormatException in ViewsController during getView from viewDao"+e.getMessage());
-			}
+		String vid = request.getParameter("viewId");
+		try {
+			currentView = viewDao.getView(Integer.parseInt(vid));
+		} catch (NumberFormatException e) {
+			// no op
 		}
 
 		if (currentView == null && views.size() > 0)
