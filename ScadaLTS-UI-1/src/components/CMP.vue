@@ -35,6 +35,11 @@
     <div class="cmp-flex-container-columns">
       <collapse v-model="show">
         <div class="cmp-well">
+          <btn-group>
+            <btn v-on:click="close" class="close cmp_close" arial-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </btn>
+          </btn-group>
           <section>
             <btn-group>
               <div v-for="item in controlsLevel0">
@@ -56,13 +61,14 @@
               </div>
             </btn-group>
             <btn-group>
-              <btn type="primary" v-on:click="tryChangeModePLC">Confirm changes</btn>
+              <btn v-if="checkIfThereAreSharesToConfirmValue" type="primary" v-on:click="tryChangeModePLC">Confirm
+                changes
+              </btn>
             </btn-group>
+
             <hr/>
-            <alert>Selected: {{selectActionLevel0}} | {{selectActionLevel1}}</alert>
-            <btn size="xs" type="primary" v-on:click="showFault">fault display test</btn>
-            {{this.showFaultV}}
-            <p>v0.0.5</p>
+            <btn size="xs" type="primary" v-on:click="showFault" class="cmp-small-info" v-bind:class="{cmp_fault: showFaultV }">fault test</btn>
+            <p class="cmp-small-info">v0.0.5 </p>
           </section>
         </div>
       </collapse>
@@ -80,53 +86,51 @@
 
 </template>
 
-
 <script>
 /* eslint-disable */
 
-  import moment from "moment";
-  import httpClient from 'axios';
-  import {_} from 'vue-underscore';
-  import BtnGroup from "uiv/src/components/button/BtnGroup";
+  import moment from 'moment'
+  import httpClient from 'axios'
+  import {_} from 'vue-underscore'
+  import BtnGroup from 'uiv/src/components/button/BtnGroup'
 
   /**
    *
    */
   class ChangeDataDTO {
-    constructor(xid, value, resultOperationSave, error) {
-      this.xid = xid;
-      this.value = value;
-      this.resultOperationSave = resultOperationSave;
-      this.error = error;
+    constructor (xid, value, resultOperationSave, error) {
+      this.xid = xid
+      this.value = value
+      this.resultOperationSave = resultOperationSave
+      this.error = error
     }
   }
-
 
   /**
    * @author grzegorz.bylica@gmail.com
    */
   class ApiCMP {
-    get(xIds) {
+    get (xIds) {
       return new Promise((resolve, reject) => {
         try {
-          const apiCMPCheck = `./api/cmp/get/${xIds}`;
+          const apiCMPCheck = `./api/cmp/get/${xIds}`
           if (xIds.length > 0) {
-            httpClient.get(apiCMPCheck,{timeout: 5000}).then(response => {
+            httpClient.get(apiCMPCheck, {timeout: 5000}).then(response => {
               resolve(response)
             }).catch(error => {
-              reject(error);
-            });
+              reject(error)
+            })
           } else {
-            const reason = new Error('Probably not have data');
-            reject(reason);
+            const reason = new Error('Probably not have data')
+            reject(reason)
           }
         } catch (e) {
-          reject(e);
+          reject(e)
         }
       })
     }
 
-    set(newData) {
+    set (newData) {
       return new Promise((resolve, reject) => {
         try {
           if (newData.length > 0) {
@@ -139,19 +143,18 @@
             }).then(response => {
               resolve(response)
             }).catch(error => {
-              reject(error);
-            });
+              reject(error)
+            })
           } else {
-            const reason = new Error('Probably not have data');
-            reject(reason);
+            const reason = new Error('Probably not have data')
+            reject(reason)
           }
         } catch (e) {
-          reject(e);
+          reject(e)
         }
       })
     }
-  };
-
+  }
 
   /**
    * @author grzegorz.bylica@gmail.com
@@ -161,12 +164,12 @@
       BtnGroup
     },
     props: ['pConfig', 'pLabel', 'pTimeRefresh'],
-    data() {
+    data () {
       return {
         show: false,
         errors: [],
         newErrors: [],
-        errorResultingFromOperationControl: "",
+        errorResultingFromOperationControl: '',
         errorsNotification: false,
         strConfig: this.pConfig,
         config: {},
@@ -180,146 +183,165 @@
         disabledChange: false,
         processOfCheckingTheStatus: false,
         counterForAnaliseInOrder: -1,
-        showFaultV: false
+        showFaultV: false,
+        checkIfThereAreSharesToConfirmValue: true
       }
     },
     methods: {
-      endChecking() {
-        this.insideState = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name;
-        this.disabledChange = !!this.config.state.analiseInOrder[this.counterForAnaliseInOrder].disable;
+      endChecking () {
+        this.insideState = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name
+        this.disabledChange = !!this.config.state.analiseInOrder[this.counterForAnaliseInOrder].disable
         if (this.disabledChange) {
-          this.show = false;
+          this.show = false
           if (this.showFaultV == true) {
-            this.showFaultV = false;
-            this.newErrors = [];
+            this.showFaultV = false
+            this.newErrors = []
           }
         }
-        this.processOfCheckingTheStatus = false;
-        this.counterForAnaliseInOrder = -1;
-        this.checkToNotificationError();
+        this.processOfCheckingTheStatus = false
+        this.counterForAnaliseInOrder = -1
+        this.checkToNotificationError()
       },
-      checkToNotificationError() {
+      checkToNotificationError () {
         if (
           (this.errorsNotification != (this.newErrors.length > 0)) ||
           (this.errorsNotification != (this.errorResultingFromOperationControl.length > 0))
         ) {
-          this.errorsNotification = (this.newErrors.length > 0) || (this.errorResultingFromOperationControl.length > 0);
+          this.errorsNotification = (this.newErrors.length > 0) || (this.errorResultingFromOperationControl.length > 0)
         }
-        this.errors = this.newErrors;
+        this.errors = this.newErrors
         if (this.errorResultingFromOperationControl.length > 0) {
-          this.errors.push(this.errorResultingFromOperationControl);
+          this.errors.push(this.errorResultingFromOperationControl)
         }
-        this.newErrors = [];
-        this.errorResultingFromOperationControl = "";
+        this.newErrors = []
+        this.errorResultingFromOperationControl = ''
       },
-      setErrorAndStopAnaliseInOrder(msg) {
-        this.newErrors.push(msg);
-        this.insideState = 'Error';
-        this.processOfCheckingTheStatus = false;
-        this.counterForAnaliseInOrder = -1;
+      setErrorAndStopAnaliseInOrder (msg) {
+        this.newErrors.push(msg)
+        this.insideState = 'Error'
+        this.processOfCheckingTheStatus = false
+        this.counterForAnaliseInOrder = -1
       },
-      setErrorAndNotification(msg) {
-        this.errorResultingFromOperationControl = msg;
-        this.insideState = 'Error';
-        this.checkToNotificationError();
+      setErrorAndNotification (msg) {
+        this.errorResultingFromOperationControl = msg
+        this.insideState = 'Error'
+        this.checkToNotificationError()
       },
-      showFault() {
-        this.showFaultV = !this.showFaultV;
-        this.checkStatus();
+      showFault () {
+        this.showFaultV = !this.showFaultV
+        this.checkStatus()
       },
-      checkStatus() {
-        this.newErros = [];
-        this.counterForAnaliseInOrder = 0;
-        this.processOfCheckingTheStatus = false;
+      checkStatus () {
+        this.newErros = []
+        this.counterForAnaliseInOrder = 0
+        this.processOfCheckingTheStatus = false
       },
-      setActionLeve0(action) {
+      setActionLeve0 (action) {
         // get action by name action
-        let foundLevel = _.findWhere(this.controlsLevel0, {name: action});
-        let runDirectlyBeforeShowSubMenu = !!foundLevel.runDirectlyBeforeShowSubMenu;
+        let foundLevel = _.findWhere(this.controlsLevel0, {name: action})
+        let runDirectlyBeforeShowSubMenu = !!foundLevel.runDirectlyBeforeShowSubMenu
 
         // check the action have runDirectlyBeforeShowSubMenu (and currently status is different then action)
         if (runDirectlyBeforeShowSubMenu == true) {
-          let newData = [];
+          let newData = []
           // if action have runDirectlyBeforeShowSubMenu true then first run command then ok check next level
-          let toSave = foundLevel.save;
+          let toSave = foundLevel.save
           for (let i = 0; i < toSave.length; i++) {
-            let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {def: toSave[i].refDefPoint});
-            let change = new ChangeDataDTO(xid.xid, toSave[i].value, "", "");
+            let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {def: toSave[i].refDefPoint})
+            let change = new ChangeDataDTO(xid.xid, toSave[i].value, '', '')
             newData.push(change)
           }
           if (newData.length > 0) {
             new ApiCMP().set(newData).then(response => {
-              setInterval(() => {
-                let found = _.findWhere(this.controlsLevel0, {name: action});
-                if (found.toChange != undefined) {
-                  if (this.controlsLevel1 != found.toChange) this.controlsLevel1 = found.toChange;
-                } else {
-                  this.controlsLevel1 = [];
-                }
-                this.selectActionLevel1 = '';
-
-              }, this.timeRefresh + 1000);
+              // rxjs
+              let found = _.findWhere(this.controlsLevel0, {name: action})
+              if (found.toChange != undefined) {
+                if (this.controlsLevel1 != found.toChange) this.controlsLevel1 = found.toChange
+              } else {
+                this.controlsLevel1 = []
+              }
+              this.selectActionLevel1 = ''
+              //
             }).catch(er => {
-              this.setErrorAndNotification(er.message);
-            });
+              this.setErrorAndNotification(er.message)
+            })
           }
         } else {
           if (this.selectActionLevel0 == action) {
-            this.selectActionLevel0 = '';
+            this.selectActionLevel0 = ''
           } else {
-            this.selectActionLevel0 = action;
-            let found = _.findWhere(this.controlsLevel0, {name: action});
+            this.selectActionLevel0 = action
+            let found = _.findWhere(this.controlsLevel0, {name: action})
             if (found.toChange != undefined) {
-              this.controlsLevel1 = found.toChange;
+              this.controlsLevel1 = found.toChange
             } else {
               this.controlsLevel1 = []
             }
-            this.selectActionLevel1 = '';
+            this.selectActionLevel1 = ''
           }
         }
       },
-      setActionLevel1(action) {
+      setActionLevel1 (action) {
         if (this.selectActionLevel1 == action) {
-          this.selectActionLevel1 = '';
+          this.selectActionLevel1 = ''
         } else {
-          this.selectActionLevel1 = action;
+          this.selectActionLevel1 = action
         }
       },
-      tryChangeModePLC() {
-        let newData = [];
-        let action = null;
-        let control = null;
+      tryChangeModePLC () {
+        let newData = []
+        let action = null
+        let control = null
         if (this.selectActionLevel1 != '') {
-          action = this.selectActionLevel1;
-          control = this.controlsLevel1;
+          action = this.selectActionLevel1
+          control = this.controlsLevel1
         } else if (this.selectActionLevel0 != '') {
-          action = this.selectActionLevel0;
-          control = this.controlsLevel0;
+          action = this.selectActionLevel0
+          control = this.controlsLevel0
         } else {
           // Nothing to do;
         }
         if (action != null) {
-          let foundLevel = _.findWhere(control, {name: action});
-          let toSave = foundLevel.save;
+          let foundLevel = _.findWhere(control, {name: action})
+          let toSave = foundLevel.save
           for (let i = 0; i < toSave.length; i++) {
-            let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {def: toSave[i].refDefPoint});
-            let change = new ChangeDataDTO(xid.xid, toSave[i].value, "", "");
+            let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {def: toSave[i].refDefPoint})
+            let change = new ChangeDataDTO(xid.xid, toSave[i].value, '', '')
             newData.push(change)
           }
           if (newData.length > 0) {
             new ApiCMP().set(newData).then(response => {
-              this.show = false;
+              this.show = false
             }).catch(er => {
               this.setErrorAndNotification(er.message)
-            });
+            })
           }
         }
+      },
+      checkIfThereAreSharesToConfirm () {
+        let result = false
+
+        if (typeof this.controlsLevel1 === 'object' && (this.controlsLevel1.length >0)) {
+          result = true;
+        } else {
+          for (let i = 0; i < this.controlsLevel0.length; i++) {
+            let runDirectlyBeforeShowSubMenu = !!this.controlsLevel0[i].runDirectlyBeforeShowSubMenu
+            if (runDirectlyBeforeShowSubMenu == false) {
+              result = true
+              break
+            }
+          }
+        }
+        return result
+      },
+      close() {
+        this.show = false;
       }
     },
-    created() {
+    created () {
       try {
-        this.config = JSON.parse(this.strConfig);
-        this.controlsLevel0 = this.config.control.toChange;
+        this.config = JSON.parse(this.strConfig)
+        this.controlsLevel0 = this.config.control.toChange
       } catch (e) {
         this.setErrorAndNotification(e.message)
       }
@@ -327,133 +349,138 @@
         setInterval(
           function () {
             try {
-              this.checkStatus();
+              this.checkStatus()
             } catch (e) {
               console.log(e)
             }
           }.bind(this),
           this.timeRefresh
-        );
+        )
       }
     },
-    mounted() {
-      this.checkStatus();
+    mounted () {
+      this.checkStatus()
     },
     filters: {
       moment: function (date) {
-        return moment(date).format(" hh:mm:ss");
+        return moment(date).format(' hh:mm:ss')
       }
     },
     watch: {
       'show': function (val, oldVal) {
         if (val == true) {
-          let found = _.findWhere(this.controlsLevel0, {name: this.insideState});
+          let found = _.findWhere(this.controlsLevel0, {name: this.insideState})
           if (found != undefined) {
             if (found.toChange != undefined) {
-              this.controlsLevel1 = found.toChange;
+              this.controlsLevel1 = found.toChange
             } else {
               this.controlsLevel1 = []
             }
-            this.selectActionLevel0 = found.name;
-            this.selectActionLevel1 = '';
+            this.selectActionLevel0 = found.name
+            this.selectActionLevel1 = ''
 
           }
         }
       },
       'insideState': function (val, oldVal) {
         if (val != oldVal) {
-          let found = _.findWhere(this.controlsLevel0, {name: this.insideState});
+          let found = _.findWhere(this.controlsLevel0, {name: this.insideState})
           if (found != undefined) {
             if (found.toChange != undefined) {
-              this.controlsLevel1 = found.toChange;
+              this.controlsLevel1 = found.toChange
             } else {
               this.controlsLevel1 = []
             }
-            this.selectActionLevel0 = found.name;
-            this.selectActionLevel1 = '';
+            this.selectActionLevel0 = found.name
+            this.selectActionLevel1 = ''
           }
         }
       },
       'counterForAnaliseInOrder': function (val, oldVal) {
 
         if (this.counterForAnaliseInOrder >= 0) {
-          this.processOfCheckingTheStatus = true;
+          this.processOfCheckingTheStatus = true
 
-
-          let points = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].toChecked;
-          let name = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name;
+          let points = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].toChecked
+          let name = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name
           if (points != undefined && points.length > 0) {
-            let xIDs = [];
+            let xIDs = []
             for (let j = 0; j < points.length; j++) {
-              if (points[j].last == "true") {
+              if (points[j].last == 'true') {
                 if (this.insideState != name) {
-                  this.insideState = name;
+                  this.insideState = name
                 }
-                this.endChecking();
-                break;
+                this.endChecking()
+                break
               } else {
-                xIDs.push(points[j].xid);
+                xIDs.push(points[j].xid)
               }
             }
 
-            if (xIDs.length>0) {
+            if (xIDs.length > 0) {
               new ApiCMP().get(xIDs).then(response => {
                 if (response.data.length > 0) {
-                  let toCheck = [];
+                  let toCheck = []
                   for (let k = 0; k < points.length; k++) {
-                    let entry = points[k];
+                    let entry = points[k]
                     try {
                       for (let z = 0; z < response.data.length; z++) {
                         if (response.data[z].xid.toUpperCase().trim() == entry.xid.toUpperCase().trim()) {
-                          entry.value = response.data[z].value;
-                          toCheck.push(entry);
-                          break;
+                          entry.value = response.data[z].value
+                          toCheck.push(entry)
+                          break
                         }
                       }
                       if (entry.value == undefined) {
-                        this.setErrorAndStopAnaliseInOrder("Not get data");
-                        return;
+                        this.setErrorAndStopAnaliseInOrder('Not get data')
+                        return
                       }
                     } catch (e) {
-                      this.setErrorAndStopAnaliseInOrder(e.message);
-                      return;
+                      this.setErrorAndStopAnaliseInOrder(e.message)
+                      return
                     }
                   }
 
-                  let condition = "";
+                  let condition = ''
                   for (let e = 0; e < toCheck.length; e++) {
                     if ((!!toCheck[e].toNoteError) == true) {
                       if (this.showFaultV) {
-                        this.newErrors.push(toCheck[e].describe);
+                        this.newErrors.push(toCheck[e].describe)
                       } else {
-                        let check = eval("(" + toCheck[e].value + toCheck[e].equals + ")");
+                        let check = eval('(' + toCheck[e].value + toCheck[e].equals + ')')
                         if ((!!check) == true) {
-                          this.newErrors.push(toCheck[e].describe);
+                          this.newErrors.push(toCheck[e].describe)
                         }
                       }
                     }
 
-                    let bitOperator = (toCheck[e].bitOperatorToThePreviousCondition != undefined) ? toCheck[e].bitOperatorToThePreviousCondition : '';
-                    condition += bitOperator + "(" + toCheck[e].value + toCheck[e].equals + ")";
+                    let bitOperator = (toCheck[e].bitOperatorToThePreviousCondition != undefined) ? toCheck[e].bitOperatorToThePreviousCondition : ''
+                    condition += bitOperator + '(' + toCheck[e].value + toCheck[e].equals + ')'
                   }
 
-                  let resultCondition = eval(condition);
+                  let resultCondition = eval(condition)
 
                   if ((!!resultCondition) == true) {
-                    this.endChecking();
+                    this.endChecking()
                   } else {
                     if (this.config.state.analiseInOrder.length > this.counterForAnaliseInOrder - 1) {
-                      this.counterForAnaliseInOrder++;
+                      this.counterForAnaliseInOrder++
                     }
                   }
                 }
               }).catch(er => {
-                this.setErrorAndNotification(er.message);
+                this.setErrorAndNotification(er.message)
 
-              });
+              })
             }
           }
         }
+      },
+      'controlsLevel0': function (val, oldVal) {
+        this.checkIfThereAreSharesToConfirmValue = this.checkIfThereAreSharesToConfirm();
+      },
+      'controlsLevel1': function (val, oldV) {
+        this.checkIfThereAreSharesToConfirmValue = this.checkIfThereAreSharesToConfirm();
       }
     }
   }
@@ -469,6 +496,7 @@
   $radius: 10px;
 
   .cmp-well {
+    display: flex;
     padding: 10px;
     background-color: #f5f5f5;
     border: 1px solid #e3e3e3;
@@ -519,6 +547,16 @@
 
   .cmp-small-info {
     font-size: 8px;
+  }
+
+  .cmp_fault {
+    color: red;
+  }
+
+  .cmp_close {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
   }
 
 
