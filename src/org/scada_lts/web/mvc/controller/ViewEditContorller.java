@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.ScriptSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.ViewEditForm;
@@ -62,7 +63,6 @@ public class ViewEditContorller {
     private static final String FORM_OBJECT_NAME = "form";
     private static final String IMAGE_SETS_ATTRIBUTE = "imageSets";
     private static final String DYNAMIC_IMAGES_ATTRIBUTE = "dynamicImages";
-    
 
     // TODO: these two shall be injected by Spring
     private String uploadDirectory= "uploads/";
@@ -142,6 +142,7 @@ public class ViewEditContorller {
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
         User user = Common.getUser(request);
+        user.setView(getViewFromContextAndRemoveViewFromContext(request));
         View view = user.getView();
         copyViewProperties(view, form.getView());
         form.setView(view);
@@ -156,11 +157,7 @@ public class ViewEditContorller {
         if(result.hasErrors())
         {
             LOG.debug("ViewEditController:save: HAS ERRORS.");
-            Map<String, Object> model = new HashMap<String, Object>();
-            model.put(FORM_OBJECT_NAME, form);
-            model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
-            model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-            return new ModelAndView(FORM_VIEW, model);    
+            return new ModelAndView(FORM_VIEW, fillMap(form));
         }
         
         view.setUserId(Common.getUser(request).getId());
@@ -172,6 +169,7 @@ public class ViewEditContorller {
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
+        user.setView(getViewFromContextAndRemoveViewFromContext(request));
         View view = user.getView();
         form.setView(view);
 
@@ -182,11 +180,31 @@ public class ViewEditContorller {
     protected ModelAndView delete(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:delete");
         User user = Common.getUser(request);
+        user.setView(getViewFromContextAndRemoveViewFromContext(request));
         View view = user.getView();
         form.setView(view);
 
         new ViewDao().removeView(form.getView().getId());
         return getSuccessRedirectView(null);
+    }
+
+    private View getViewFromContextAndRemoveViewFromContext(HttpServletRequest request){
+        View view = (View) ScriptSession.getObjectForScriptSession(
+                request.getSession().getId(),
+                request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID));
+        ScriptSession.removeScriptSessionForObjectBySessionIdAndScriptSessionId(request.getSession().getId(),
+                request.getParameter(FinalValuesForControllers.DWR_SCRIPT_SESSION_ID));
+        LOG.debug("ViewEditController:getViewFromContextAndRemoveViewFromContext: View has been removed from Context.");
+        return view;
+
+    }
+
+    private Map<String, Object> fillMap(ViewEditForm form){
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put(FORM_OBJECT_NAME, form);
+        model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
+        model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
+        return model;
     }
     
     private void uploadFile(HttpServletRequest request, ViewEditForm form)  throws Exception  {
@@ -253,10 +271,11 @@ public class ViewEditContorller {
     protected  ModelAndView getSuccessRedirectView(String queryString) {
         String url = successUrl;
         if (queryString != null && queryString.trim().length() > 0) {
-            if (queryString.charAt(0) != '?')
+            url += (queryString.charAt(0) != '?') ? '?' + queryString : queryString;
+            /*if (queryString.charAt(0) != '?')
                 url += '?' + queryString;
             else
-                url += queryString;
+                url += queryString;*/
         }
         RedirectView redirectView = new RedirectView(url, true);
         return new ModelAndView(redirectView);
