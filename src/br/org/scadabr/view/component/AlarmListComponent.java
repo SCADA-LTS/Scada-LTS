@@ -10,6 +10,7 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
 import com.serotonin.util.SerializationHelper;
+import com.serotonin.util.StringUtils;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -27,6 +28,10 @@ public class AlarmListComponent extends CustomComponent {
 
 	public static ImplDefinition DEFINITION = new ImplDefinition("alarmlist",
 			"ALARMLIST", "graphic.alarmlist", new int[] {});
+
+	private static final long serialVersionUID = -1;
+	private static final int VERSION_1 = 1;
+	private static final int VERSION_2 = 2;
 
 	@JsonRemoteProperty
 	private int minAlarmLevel = 1;
@@ -102,7 +107,9 @@ public class AlarmListComponent extends CustomComponent {
 	private void filterByMessageContent(List<EventInstance> list, String keywords) {
         List<EventInstance> copy = new ArrayList<EventInstance>();
 
-        list.stream().forEach(eventInstance -> {
+        if(StringUtils.isEmpty(keywords)) return;
+
+        list.forEach(eventInstance -> {
             if(!eventInstance.getMessage().getLocalizedMessage(getResourceBundle()).contains(keywords)) {
                 copy.add(eventInstance);
             }
@@ -200,11 +207,8 @@ public class AlarmListComponent extends CustomComponent {
         this.hideCriteriaHeader = hideCriteriaHeader;
     }
 
-    private static final long serialVersionUID = -1;
-	private static final int version = 2;
-
 	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.writeInt(version);
+		out.writeInt(VERSION_2);
 		out.writeInt(minAlarmLevel);
 		SerializationHelper.writeSafeUTF(out, messageContent);
 		out.writeInt(maxListSize);
@@ -222,7 +226,7 @@ public class AlarmListComponent extends CustomComponent {
 		int ver = in.readInt();
 		// Switch on the version of the class so that version changes can be
 		// elegantly handled.
-		if (ver == version) {
+		if (ver == VERSION_1) {
 			minAlarmLevel = in.readInt();
 			maxListSize = in.readInt();
 			width = in.readInt();
@@ -231,7 +235,7 @@ public class AlarmListComponent extends CustomComponent {
 			hideTimestampColumn = in.readBoolean();
 			hideInactivityColumn = in.readBoolean();
 			hideAckColumn = in.readBoolean();
-		} else if (ver == version) {
+		} else if (ver == VERSION_2) {
 			minAlarmLevel = in.readInt();
 			messageContent = SerializationHelper.readSafeUTF(in);
 			maxListSize = in.readInt();
