@@ -324,24 +324,16 @@ public class View implements Serializable, JsonSerializable {
 	// /
 	//
 	private static final long serialVersionUID = -1;
-	private static final int version = 1;
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.writeInt(version);
 		out.writeObject(viewComponents);
 	}
 
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException,
 			ClassNotFoundException {
-		int ver = in.readInt();
-
-		// Switch on the version of the class so that version changes can be
-		// elegantly handled.
-		if (ver == 1) {
-			viewComponents = new CopyOnWriteArrayList<ViewComponent>(
-					(List<ViewComponent>) in.readObject());
-		}
+		viewComponents = new CopyOnWriteArrayList<ViewComponent>(
+				(List<ViewComponent>) in.readObject());
 	}
 
 	@Override
