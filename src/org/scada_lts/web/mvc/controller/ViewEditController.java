@@ -49,8 +49,8 @@ import com.serotonin.mango.vo.permission.Permissions;
 
 
 @Controller
-public class ViewEditContorller {
-    private static final Log LOG = LogFactory.getLog(ViewEditContorller.class);
+public class ViewEditController {
+    private static final Log LOG = LogFactory.getLog(ViewEditController.class);
     
     private static final String SUBMIT_UPLOAD = "upload";
     private static final String SUBMIT_CLEAR_IMAGE = "clearImage";
@@ -145,7 +145,13 @@ public class ViewEditContorller {
         View view = user.getView();
         copyViewProperties(view, form.getView());
         form.setView(view);
-        
+
+        form.getView().getViewComponents().stream().forEach(viewComponent -> {
+            if(viewComponent.getY()<0) {
+                form.getView().removeViewComponent(viewComponent);
+            }
+        });
+
         validator.validate(form, result);
         if(result.hasErrors())
         {

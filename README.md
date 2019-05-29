@@ -52,7 +52,7 @@ Here is two of the several start options:
 
 ### What's included
 
-App ScadaBR.war 
+App ScadaBR.war
 App ScadaLTS.war
 
 ## Bugs and feature requests
@@ -75,6 +75,10 @@ In the process of making.
 ## Tests
 
 [scada-lts.testquality.com](https://scada-lts.testquality.com)
+
+## Project Encoding
+
+Default project encoding is set to UTF-8.
 
 
 ## Versioning

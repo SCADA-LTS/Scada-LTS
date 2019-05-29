@@ -23,6 +23,8 @@
   dojo.addOnLoad(function() {
       if (dataTypeId == <%= DataTypes.NUMERIC %>)
           show("engineeringUnitsSection");
+      if (dataTypeId == <%= DataTypes.BINARY %>)
+                show("parseErrorValueField");
   });
 </script>
 
@@ -52,6 +54,13 @@
         <td class="formField"><input type="text" name="name" value="${status.value}"/></td>
         <c:if test="${error.name != null}"><td class="formError"><fmt:message key="${error.name}"/></td></c:if>
       </tr>
+    </spring:bind>
+
+    <spring:bind path="form.parseErrorValue">
+          <tr id="parseErrorValueField" style="display:none;">
+            <td class="formLabelRequired">Parse error value:</td>
+            <td class="formField"><input type="text" name="parseErrorValue" value="${status.value}"/></td>
+          </tr>
     </spring:bind>
     
     <tbody id="engineeringUnitsSection" style="display:none;">
