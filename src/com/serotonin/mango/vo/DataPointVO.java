@@ -161,6 +161,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int engineeringUnits = ENGINEERING_UNITS_DEFAULT;
     @JsonRemoteProperty
     private String chartColour;
+    @JsonRemoteProperty
+    private String parseErrorValue = "0";
 
     private PointLocatorVO pointLocator;
 
@@ -516,6 +518,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         this.chartColour = chartColour;
     }
 
+    public String getParseErrorValue() {
+        return parseErrorValue==null ? "0" : parseErrorValue;
+    }
+
+    public void setParseErrorValue(String parseErrorValue) {
+        this.parseErrorValue = parseErrorValue;
+    }
+
     public DataPointVO copy() {
         try {
             return (DataPointVO) super.clone();
@@ -538,7 +548,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 + ", discardHighLimit=" + discardHighLimit + ", engineeringUnits=" + engineeringUnits
                 + ", chartColour=" + chartColour + ", pointLocator=" + pointLocator + ", dataSourceTypeId="
                 + dataSourceTypeId + ", dataSourceName=" + dataSourceName + ", dataSourceXid=" + dataSourceXid
-                + ", lastValue=" + lastValue + ", settable=" + settable + "]";
+                + ", lastValue=" + lastValue + ", settable=" + settable + ", parseErrorValue=" + parseErrorValue + "]";
     }
 
     public void validate(DwrResponseI18n response) {
@@ -604,7 +614,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     //
     // Serialization
     //
-    private static final int version = 8;
+    private static final int version = 9;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -628,6 +638,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         out.writeDouble(discardHighLimit);
         out.writeInt(engineeringUnits);
         SerializationHelper.writeSafeUTF(out, chartColour);
+        SerializationHelper.writeSafeUTF(out, parseErrorValue);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -821,6 +832,28 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             discardHighLimit = in.readDouble();
             engineeringUnits = in.readInt();
             chartColour = SerializationHelper.readSafeUTF(in);
+        } else if (ver == 9) {
+            name = SerializationHelper.readSafeUTF(in);
+            deviceName = SerializationHelper.readSafeUTF(in);
+            enabled = in.readBoolean();
+            pointFolderId = in.readInt();
+            loggingType = in.readInt();
+            intervalLoggingPeriodType = in.readInt();
+            intervalLoggingPeriod = in.readInt();
+            intervalLoggingType = in.readInt();
+            tolerance = in.readDouble();
+            purgeType = in.readInt();
+            purgePeriod = in.readInt();
+            textRenderer = (TextRenderer) in.readObject();
+            chartRenderer = (ChartRenderer) in.readObject();
+            pointLocator = (PointLocatorVO) in.readObject();
+            defaultCacheSize = in.readInt();
+            discardExtremeValues = in.readBoolean();
+            discardLowLimit = in.readDouble();
+            discardHighLimit = in.readDouble();
+            engineeringUnits = in.readInt();
+            chartColour = SerializationHelper.readSafeUTF(in);
+            parseErrorValue = SerializationHelper.readSafeUTF(in);
         }
 
         // Check the purge type. Weird how this could have been set to 0.

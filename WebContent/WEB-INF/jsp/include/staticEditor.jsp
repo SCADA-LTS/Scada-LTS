@@ -29,6 +29,13 @@
           <tag:img png="cross" onclick="staticEditor.close()" title="common.close" style="display:inline;"/>
         </td>
       </tr>
+      <tr>
+         <td class="formLabelRequired">Position:</td>
+         <td class="formField">
+             x: <input id="staticEditorXPosition"/>
+             y: <input id="staticEditorYPosition"/>
+         </td>
+      </tr>
     </table>
     <table id="htmlEditor">
       <tr>
@@ -115,6 +122,9 @@
             ViewDwr.getViewComponent(compId, function(comp) {
                 // Update the data in the form.
                 staticEditor.component = comp;
+
+                $set("staticEditorXPosition", comp.x);
+                $set("staticEditorYPosition", comp.y);
                 
 				if(comp.defName == 'html') {
 					$set("staticPointContent", comp.content);
@@ -259,6 +269,10 @@
 						}
 	            });
 			}
+
+			ViewDwr.setViewComponentLocation(staticEditor.componentId, $get("staticEditorXPosition"), $get("staticEditorYPosition"));
+            document.getElementById("c" + staticEditor.componentId).style.left = $get("staticEditorXPosition") +"px";
+            document.getElementById("c" + staticEditor.componentId).style.top = $get("staticEditorYPosition") +"px";
 			
             
         };

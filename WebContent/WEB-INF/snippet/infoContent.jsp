@@ -20,6 +20,7 @@
   This snippet supports all data types.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
+
 <c:if test="${!empty sessionUser && !empty point}">
   <tag:img png="icon_comp" title="watchlist.pointDetails" style="display:inline"
           onclick="window.location='data_point_details.shtm?dpid=${point.id}'"/>
@@ -34,5 +35,18 @@
     </c:when>
     <c:otherwise><span class="infoData">${mango:htmlText(point, pointValue)}</span><br/></c:otherwise>
   </c:choose>
-  <c:if test="${!empty pointValue}">&nbsp;&nbsp;&nbsp;<fmt:message key="common.time"/>: <span class="infoData">${mango:pointValueTime(pointValue)}</span><br/></c:if>
+  <c:if test="${!empty pointValue}">&nbsp;&nbsp;&nbsp;<fmt:message key="common.time"/>: <span class="infoData">${mango:pointValueTime(pointValue)}</span><br/>
+  <table width="100%">
+    <tr>
+        <td>
+          <table id="pointComments${point.id}"><tag:lastComment comments="${point.comments}"/></table>
+        </td>
+        <td align="right">
+          <tag:img png="comment_add" title="notes.addNote"
+            onclick="openCommentDialog(${applicationScope['constants.UserComment.TYPE_POINT']}, ${point.id})"/>
+        </td>
+    </tr>
+  </table>
+
+  </c:if>
 </c:if>

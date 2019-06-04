@@ -1,14 +1,10 @@
 package br.org.scadabr.vo.permission;
 
-import java.util.Map;
-
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonSerializable;
+import com.serotonin.json.*;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.vo.WatchList;
+
+import java.util.Map;
 
 @JsonRemoteEntity
 public class WatchListAccess extends Permission implements JsonSerializable {

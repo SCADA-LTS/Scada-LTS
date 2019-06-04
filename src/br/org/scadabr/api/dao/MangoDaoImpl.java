@@ -226,8 +226,14 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		if (dp != null) {
 			checkValidWriteCommand(dp, itemValue);
 			checkValidWritableDataPoint(dp);
-			MangoValue value = MangoValue.stringToValue(itemValue.getValue()
-					.toString(), dp.getPointLocator().getDataTypeId());
+
+			MangoValue value;
+			try {
+				value =  MangoValue.stringToValue(itemValue.getValue().toString(), dp.getPointLocator().getDataTypeId());
+			}  catch (NumberFormatException e) {
+				value = MangoValue.stringToValue(dp.getParseErrorValue(), dp.getPointLocator().getDataTypeId());
+			}
+
 			Common.ctx.getRuntimeManager().setDataPointValue(dp.getId(), value,
 					null);
 			flag = true;

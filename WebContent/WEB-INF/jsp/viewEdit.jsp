@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +21,7 @@
 
 <tag:page dwr="ViewDwr" onload="doOnload"
 	js="view,dygraph-combined,dygraph-extra,dygraphsSplineUtils,dygraphsCharts"
-	css="jQuery/plugins/chosen/chosen,jQuery/plugins/jpicker/css/jPicker-1.1.6.min,jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min" 
+	css="jQuery/plugins/chosen/chosen,jQuery/plugins/jpicker/css/jPicker-1.1.6.min,jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min"
 	jqplugins="chosen/chosen.jquery.min,jpicker/jpicker-1.1.6.min,jquery-ui/js/jquery-ui-1.10.3.custom.min" >
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
@@ -29,14 +29,16 @@
 
     mango.view.initEditView();
     mango.share.dwr = ViewDwr;
-    
+
+    var newComponentPositionOffset = 0;
+
     function doOnload() {
         hide("sharedUsersDiv");
         <c:forEach items="${form.view.viewComponents}" var="vc">
           <c:set var="compContent"><sst:convert obj="${vc}"/></c:set>
           createViewComponent(${mango:escapeScripts(compContent)}, false);
         </c:forEach>
-        
+
         ViewDwr.editInit(function(result) {
             mango.share.users = result.shareUsers;
             mango.share.writeSharedUsers(result.viewUsers);
@@ -45,26 +47,26 @@
             compoundEditor.setPointList(result.pointList);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
-        
+
         if(document.getElementById("viewBackground").src.includes("spacer.gif")){
         	var viewSize = document.getElementById("view.resolution").value;
         	resizeViewBackgroundToResolution(viewSize);
         } else {
         	document.getElementById("view.resolution").style.visibility = 'hidden';
         	document.getElementById("sizeLabel").style.visibility = 'hidden';
-        }    
+        }
     }
-    
+
     function addViewComponent() {
         ViewDwr.addComponent($get("componentList"), function(viewComponent) {
             createViewComponent(viewComponent, true);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
     }
-    
+
     function createViewComponent(viewComponent, center) {
         var content;
-        
+
         if (viewComponent.pointComponent)
             content = $("pointTemplate").cloneNode(true);
         else if (viewComponent.defName == 'imageChart')
@@ -77,9 +79,9 @@
         	content = $("customTemplate").cloneNode(true);
         else
             content = $("htmlTemplate").cloneNode(true);
-        
+
         configureComponentContent(content, viewComponent, $("viewContent"), center);
-        
+
         if (viewComponent.defName == 'simpleCompound') {
             childContent = $("compoundChildTemplate").cloneNode(true);
             configureComponentContent(childContent, viewComponent.leadComponent, $("c"+ viewComponent.id +"Content"),
@@ -93,7 +95,7 @@
         else if (viewComponent.compoundComponent) {
             // Compound components only have their static content set at page load.
             $set(content.id +"Content", viewComponent.staticContent);
-            
+
             // Add the child components.
             var childContent;
             for (var i=0; i<viewComponent.childComponents.length; i++) {
@@ -102,34 +104,35 @@
                         $("c"+ viewComponent.id +"ChildComponents"), false);
             }
         }
-        
+
         addDnD(content.id);
-        
+
         if (center)
             updateViewComponentLocation(content.id);
     }
-    
+
     function configureComponentContent(content, viewComponent, parent, center) {
         content.id = "c"+ viewComponent.id;
         content.viewComponentId = viewComponent.id;
         updateNodeIds(content, viewComponent.id);
         parent.appendChild(content);
-        
-        if (viewComponent.defName == "html" || viewComponent.defName == "link" 
+
+        if (viewComponent.defName == "html" || viewComponent.defName == "link"
             || viewComponent.defName == "scriptButton" || viewComponent.defName == "flex"
             	|| viewComponent.defName == "chartComparator")
             // HTML components only get updated at page load and editing.
             updateHtmlComponentContent(content.id, viewComponent.content);
-        
+
         show(content);
-        
+
         if (center) {
-            // Calculate the location for the new point. For now just put it in the center.
+            // Calculate the location for the new point. For now just put it above edit box.
             var bkgd = $("viewBackground");
             var bkgdBox = dojo.html.getMarginBox(bkgd);
             var compContentBox = dojo.html.getMarginBox(content);
-            content.style.left = parseInt((bkgdBox.width - compContentBox.width) / 2) +"px";
-            content.style.top = parseInt((bkgdBox.height - compContentBox.height) / 2) +"px";
+            content.style.left = document.getElementById("propertiesBox").offsetWidth + 20 + newComponentPositionOffset +"px";
+            content.style.top = "-135px";
+            newComponentPositionOffset += 16;
         }
         else {
             content.style.left = viewComponent.x +"px";
@@ -137,7 +140,7 @@
         }
 
     }
-    
+
     function updateNodeIds(elem, id) {
         var i;
         for (i=0; i<elem.attributes.length; i++) {
@@ -149,29 +152,29 @@
                 updateNodeIds(elem.childNodes[i], id);
         }
     }
-    
+
     function updateHtmlComponentContent(id, content) {
         if (!content || content == "")
             $set(id +"Content", '<img src="images/html.png" alt=""/>');
         else
             $set(id +"Content", content);
     }
-    
+
     function openStaticEditor(viewComponentId) {
         closeEditors();
         staticEditor.open(viewComponentId);
     }
-    
+
     function openSettingsEditor(cid) {
         closeEditors();
         settingsEditor.open(cid);
     }
-    
+
     function openGraphicRendererEditor(cid) {
-        closeEditors(); 
+        closeEditors();
         graphicRendererEditor.open(cid);
     }
-    
+
     function openCompoundEditor(cid) {
         closeEditors();
         compoundEditor.open(cid);
@@ -181,7 +184,7 @@
         closeEditors();
         customEditor.open(cid);
     }
-    
+
     function positionEditor(compId, editorId) {
         // Position and display the renderer editor.
         var pDim = getNodeBounds($("c"+ compId));
@@ -358,12 +361,12 @@
 
 
   </script>
-  
+
   <form name="view" class="view-edit-form" style="margin-bottom: 40px;" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
       <tr>
         <td valign="top">
-          <div class="borderDiv marR">
+          <div id="propertiesBox" class="borderDiv marR">
             <table>
               <tr>
                 <td colspan="3">
@@ -511,7 +514,7 @@
               <td></td>
             </tr>
           </table>
-        
+
           <div id="pointTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -544,7 +547,7 @@
               </div>
             </div>
           </div>
-          
+
           <div id="htmlTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -558,8 +561,8 @@
               </table>
             </div>
           </div>
-          
-          
+
+
           <div id="imageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -573,7 +576,7 @@
               </table>
             </div>
           </div>
-            
+
           <div id="enhancedImageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -592,7 +595,7 @@
               </table>
             </div>
           </div>
-          
+
           <div id="compoundTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -614,14 +617,14 @@
                         title="viewEdit.deletePointView"/></td></tr>
               </table>
             </div>
-            
+
             <div id="c_TEMPLATE_ChildComponents"></div>
           </div>
-          
+
           <div id="compoundChildTemplate" style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"><img src="images/icon_comp.png" alt=""/></div>
           </div>
-          
+
           <div id="customTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">

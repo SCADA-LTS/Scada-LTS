@@ -3,13 +3,14 @@ package br.org.scadabr.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.jstl.core.Config;
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
+import com.serotonin.util.SerializationHelper;
+import com.serotonin.util.StringUtils;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -28,8 +29,14 @@ public class AlarmListComponent extends CustomComponent {
 	public static ImplDefinition DEFINITION = new ImplDefinition("alarmlist",
 			"ALARMLIST", "graphic.alarmlist", new int[] {});
 
+	private static final long serialVersionUID = -1;
+	private static final int VERSION_1 = 1;
+	private static final int VERSION_2 = 2;
+
 	@JsonRemoteProperty
 	private int minAlarmLevel = 1;
+	@JsonRemoteProperty
+	private String messageContent = "";
 	@JsonRemoteProperty
 	private int maxListSize = 5;
 	@JsonRemoteProperty
@@ -40,6 +47,7 @@ public class AlarmListComponent extends CustomComponent {
 	private boolean hideTimestampColumn = false;
 	private boolean hideInactivityColumn = true;
 	private boolean hideAckColumn = false;
+	private boolean hideCriteriaHeader = false;
 
 	@Override
 	public String generateContent() {
@@ -49,7 +57,8 @@ public class AlarmListComponent extends CustomComponent {
 		List<EventInstance> events = new EventDao().getPendingEvents(Common
 				.getUser().getId());
 
-		filter(events, minAlarmLevel);
+		filterByAlarmLevel(events, minAlarmLevel);
+		filterByMessageContent(events, messageContent);
 
 		int max = events.size() > maxListSize ? maxListSize : events.size();
 
@@ -61,13 +70,18 @@ public class AlarmListComponent extends CustomComponent {
 		model.put("hideTimestampColumn", hideTimestampColumn);
 		model.put("hideInactivityColumn", hideInactivityColumn);
 		model.put("hideAckColumn", hideAckColumn);
+		model.put("hideCriteriaHeader", hideCriteriaHeader);
+
+		model.put("maxListSize", maxListSize);
+		model.put("minAlarmLevel", AlarmLevels.getAlarmLevelMessage(minAlarmLevel).getLocalizedMessage(getResourceBundle()));
+		model.put("messageContent", messageContent);
 
 		String content = BaseDwr.generateContent(request, "alarmList.jsp",
 				model);
 		return content;
 	}
 
-	private void filter(List<EventInstance> list, int alarmLevel) {
+	private void filterByAlarmLevel(List<EventInstance> list, int alarmLevel) {
 
 		if (AlarmLevels.INFORMATION == alarmLevel) {
 			removeAlarmLevel(list, AlarmLevels.NONE);
@@ -87,7 +101,22 @@ public class AlarmListComponent extends CustomComponent {
 			removeAlarmLevel(list, AlarmLevels.URGENT);
 			removeAlarmLevel(list, AlarmLevels.CRITICAL);
 		}
+
 	}
+
+	private void filterByMessageContent(List<EventInstance> list, String keywords) {
+        List<EventInstance> copy = new ArrayList<EventInstance>();
+
+        if(StringUtils.isEmpty(keywords)) return;
+
+        list.forEach(eventInstance -> {
+            if(!eventInstance.getMessage().getLocalizedMessage(getResourceBundle()).contains(keywords)) {
+                copy.add(eventInstance);
+            }
+        });
+
+        list.removeAll(copy);
+    }
 
 	private void removeAlarmLevel(List<EventInstance> source, int alarmLevel) {
 		List<EventInstance> copy = new ArrayList<EventInstance>();
@@ -98,7 +127,13 @@ public class AlarmListComponent extends CustomComponent {
 		}
 
 		source.removeAll(copy);
+	}
 
+	private ResourceBundle getResourceBundle() {
+		WebContext webContext = WebContextFactory.get();
+		LocalizationContext localizationContext = (LocalizationContext) Config.get(webContext.getHttpServletRequest(),
+				Config.FMT_LOCALIZATION_CONTEXT);
+		return localizationContext.getResourceBundle();
 	}
 
 	@Override
@@ -164,12 +199,18 @@ public class AlarmListComponent extends CustomComponent {
 		this.hideInactivityColumn = hideInactivityColumn;
 	}
 
-	private static final long serialVersionUID = -1;
-	private static final int version = 1;
+    public boolean isHideCriteriaHeader() {
+        return hideCriteriaHeader;
+    }
+
+    public void setHideCriteriaHeader(boolean hideCriteriaHeader) {
+        this.hideCriteriaHeader = hideCriteriaHeader;
+    }
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.writeInt(version);
+		out.writeInt(VERSION_2);
 		out.writeInt(minAlarmLevel);
+		SerializationHelper.writeSafeUTF(out, messageContent);
 		out.writeInt(maxListSize);
 		out.writeInt(width);
 		out.writeBoolean(hideIdColumn);
@@ -177,6 +218,7 @@ public class AlarmListComponent extends CustomComponent {
 		out.writeBoolean(hideTimestampColumn);
 		out.writeBoolean(hideInactivityColumn);
 		out.writeBoolean(hideAckColumn);
+		out.writeBoolean(hideCriteriaHeader);
 
 	}
 
@@ -184,7 +226,7 @@ public class AlarmListComponent extends CustomComponent {
 		int ver = in.readInt();
 		// Switch on the version of the class so that version changes can be
 		// elegantly handled.
-		if (ver == 1) {
+		if (ver == VERSION_1) {
 			minAlarmLevel = in.readInt();
 			maxListSize = in.readInt();
 			width = in.readInt();
@@ -193,6 +235,17 @@ public class AlarmListComponent extends CustomComponent {
 			hideTimestampColumn = in.readBoolean();
 			hideInactivityColumn = in.readBoolean();
 			hideAckColumn = in.readBoolean();
+		} else if (ver == VERSION_2) {
+			minAlarmLevel = in.readInt();
+			messageContent = SerializationHelper.readSafeUTF(in);
+			maxListSize = in.readInt();
+			width = in.readInt();
+			hideIdColumn = in.readBoolean();
+			hideAlarmLevelColumn = in.readBoolean();
+			hideTimestampColumn = in.readBoolean();
+			hideInactivityColumn = in.readBoolean();
+			hideAckColumn = in.readBoolean();
+			hideCriteriaHeader = in.readBoolean();
 		}
 
 	}
@@ -213,4 +266,11 @@ public class AlarmListComponent extends CustomComponent {
 		return minAlarmLevel;
 	}
 
+	public String getMessageContent() {
+		return messageContent;
+	}
+
+	public void setMessageContent(String messageContent) {
+		this.messageContent = messageContent;
+	}
 }

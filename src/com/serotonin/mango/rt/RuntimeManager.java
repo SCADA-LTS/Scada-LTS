@@ -138,6 +138,7 @@ public class RuntimeManager {
 				}
 			}
 			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation) && isHttpRetriverSleepEnableWhenStart;
+
 			boolean isToTrayEnable = false;
 			if (isCheckToTrayEnableRun) {
 				isToTrayEnable = ((ICheckReactivation) config).checkToTrayEnable();
@@ -496,14 +497,10 @@ public class RuntimeManager {
 	// Point values
 	public void setDataPointValue(int dataPointId, MangoValue value,
 			SetPointSource source) {
-		try {
-			setDataPointValue(dataPointId,
-					new PointValueTime(value, System.currentTimeMillis()), source);
-		} catch (Exception e) {
-			if (LOG.isTraceEnabled()) {
-				LOG.trace(e);
-			}
-		}
+
+		setDataPointValue(dataPointId,
+				new PointValueTime(value, System.currentTimeMillis()), source);
+
 	}
 
 	public void setDataPointValue(int dataPointId, PointValueTime valueTime,
@@ -518,15 +515,10 @@ public class RuntimeManager {
 		// Tell the data source to set the value of the point.
 		DataSourceRT ds = getRunningDataSource(dataPoint.getDataSourceId());
 		// The data source may have been disabled. Just make sure.
-		if (ds != null) {
-			try {
-				ds.setPointValue(dataPoint, valueTime, source);
-			} catch (Exception e) {
-				if (LOG.isTraceEnabled()) {
-					LOG.trace(e);
-				}
-			}
-		}
+
+		if (ds != null)
+			ds.setPointValue(dataPoint, valueTime, source);
+
 	}
 
 	public void relinquish(int dataPointId) {

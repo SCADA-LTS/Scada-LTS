@@ -12,8 +12,8 @@ before_script:
 #- npm install -g @angular/cli@latest
 - npm install -g bower
 #- npm install @angular/core@latest
-- chmod +x ./get_seroUtils.sh
-- "./get_seroUtils.sh"
+#- chmod +x ./get_seroUtils.sh
+#- "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 # correct version base on Milestones
 - sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
@@ -42,6 +42,8 @@ services:
 script: ant war && ant junit
 branches:
   only:
+  - "/^new[/]develop.*$/"
+  - "/^new[/]master.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
 notifications:
@@ -79,7 +81,8 @@ after_script:
 - ls
 - docker version
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- export PRE_TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- export TAG=`sed "s/\//_/g" <<< $PRE_TAG`
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
