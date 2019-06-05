@@ -131,11 +131,9 @@ public class RuntimeManager {
 		for (DataSourceVO<?> config : configs) {
 			boolean isHttpRetriverSleepEnableWhenStart = false;
 			try {
-			  isHttpRetriverSleepEnableWhenStart = ScadaConfig.getInstance().getBoolean(ScadaConfig.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START, false);
+			    isHttpRetriverSleepEnableWhenStart = ScadaConfig.getInstance().getBoolean(ScadaConfig.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START, false);
 			} catch (Exception e) {
-				if (LOG.isTraceEnabled()) {
-					LOG.trace(e);
-				}
+				LOG.trace(e);
 			}
 			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation) && isHttpRetriverSleepEnableWhenStart;
 
