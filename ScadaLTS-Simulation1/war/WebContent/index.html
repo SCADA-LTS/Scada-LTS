@@ -1,137 +1,156 @@
 <html>
 
 <head>
-    <title>Simulation Example</title>
-    <meta charset="UTF-8">
-    <meta name="description" content="ScadaLTS garbage dump - recycle center">
-    <meta name="keywords" content="ScadaLTS, Scada, SIVEC">
-    <meta name="author" content="Radek Jajko">
-    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
-    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous"></script>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <link rel="stylesheet" href="resources/style.css">
+<title>Simulation Example</title>
+<meta charset="UTF-8">
+<meta name="description"
+	content="ScadaLTS garbage dump - recycle center">
+<meta name="keywords" content="ScadaLTS, Scada, SIVEC">
+<meta name="author" content="Radek Jajko">
+<link rel="stylesheet"
+	href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
+<script
+	src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<script src="http://code.jquery.com/jquery-3.2.1.min.js"
+	integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	crossorigin="anonymous"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<link rel="stylesheet" href="resources/style.css">
 </head>
 
 <body onload="init()">
-    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-        <header class="mdl-layout__header mdl-layout_header--scroll">
-            <div class="mdl-layout_header-row">
+	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+		<header class="mdl-layout__header mdl-layout_header--scroll">
+			<div class="mdl-layout_header-row">
 
-                <span id="mainTitle" class="mdl-layout-title"></span>
-                <span id="clock"></span>
-                <span class="logo">
-                    <img id="logoSrc" src="" alt="Logo">
-                </span>
-            </div>
+				<span id="mainTitle" class="mdl-layout-title"></span> <span
+					id="clock"></span> <span class="logo"> <img id="logoSrc"
+					src="" alt="Logo">
+				</span>
+			</div>
 
-        </header>
-        <div class="mdl-layout__drawer">
-            <div>
-                <span id="navTitle" class="mdl-layout-title"></span>
-            </div>
-            <nav class="mdl-navigation">
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color" onclick="editView()">Edit<i class="material-icons">create</i></button>
-                <a class="mdl-navigation__link" href="">OPTION</a>
-            </nav>
-        </div>
-        <main class="mdl-layout__content">
-            <!-- Location section -->
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--12-col">
-                    <div class="mdl-card mdl-shadow--2dp card-short">
-                        <header>
-                            <div class="mdl-card__title">
-                                <div class="mdl-cell mdl-cell--6-col">
-                                    <h2 class="mdl-card__title-text"><i class="material-icons">people</i><span id="current-day-all-label"></span><span id="allEntires"> 0</span></h2>
-                                </div>
-                                <div class="mdl-cell mdl-cell--6-col">
-                                    <h2 class="mdl-card__title-text"><span id="enable-switch-label"></span></h2>
-                                    <div class="mdl-card--border">
-                                        <label id="labelCheckbox" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
-                            <input type="checkbox" id="switch-1" class="mdl-switch__input" checked="true" onclick="postCheckBox(this)">
-                            <span class="mdl-switch__label"></span>
-                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </header>
-                    </div>
-                </div>
-                <div class="mdl-cell mdl-cell--12-col edit-btn">
-                    <div class="mdl-card wide-card mdl-shadow--2dp">
-                        <header>
-                            <div class="mdl-card__title">
-                                <h2 class="mdl-card__title-text">Add a new location</h2>
+		</header>
+		<div class="mdl-layout__drawer">
+			<div>
+				<span id="navTitle" class="mdl-layout-title"></span>
+			</div>
+			<nav class="mdl-navigation">
+				<button
+					class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect button-color"
+					onclick="editView()">
+					Edit<i class="material-icons">create</i>
+				</button>
+				<a class="mdl-navigation__link" href="">OPTION</a>
+			</nav>
+		</div>
+		<main class="mdl-layout__content"> <!-- Location section -->
+		<div class="mdl-grid">
+			<div class="mdl-cell mdl-cell--12-col">
+				<div class="mdl-card mdl-shadow--2dp card-short">
+					<header>
+						<div class="mdl-card__title">
+							<div class="mdl-cell mdl-cell--6-col">
+								<h2 class="mdl-card__title-text">
+									<i class="material-icons">people</i><span
+										id="current-day-all-label"></span><span id="allEntires">
+										0</span>
+								</h2>
+							</div>
+							<div class="mdl-cell mdl-cell--6-col">
+								<h2 class="mdl-card__title-text">
+									<span id="enable-switch-label"></span>
+								</h2>
+								<div class="mdl-card--border">
+									<label id="labelCheckbox"
+										class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+										for="switch-1"> <input type="checkbox" id="switch-1"
+										class="mdl-switch__input" checked="true"
+										onclick="postCheckBox(this)"> <span
+										class="mdl-switch__label"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+					</header>
+				</div>
+			</div>
+			<div class="mdl-cell mdl-cell--12-col edit-btn">
+				<div class="mdl-card wide-card mdl-shadow--2dp">
+					<header>
+						<div class="mdl-card__title">
+							<h2 class="mdl-card__title-text">Add a new location</h2>
 
-                            </div>
-                            <div class="mdl-card__actions mdl-card--border"><button class="mdl-button mdl-js-button mdl-button--fad button-color" onclick="addCard()"><i class="material-icons">add</i></button>
-                            </div>
-                        </header>
-                        <section>
+						</div>
+						<div class="mdl-card__actions mdl-card--border">
+							<button
+								class="mdl-button mdl-js-button mdl-button--fad button-color"
+								onclick="addCard()">
+								<i class="material-icons">add</i>
+							</button>
+						</div>
+					</header>
+					<section></section>
+				</div>
+			</div>
+			<div id=locationsection></div>
+		</div>
+		<div id=camerasection class="mdl-grid">
+			<!-- Camera section -->
+			<div class="mdl-grid">
+				<div class="mdl-cell mdl-cell--6-col">
+					<div class="mdl-card image-card mdl-shadow--2dp">
+						<div class="mdl-card__title mdl-card--expand"></div>
+						<div class="mdl-card__actions">
+							<img id="liveStream1" src="" alt="Camera1">
+						</div>
+					</div>
+				</div>
+				<div class="mdl-cell mdl-cell--6-col">
+					<div class="mdl-card image-card mdl-shadow--2dp">
+						<div class="mdl-card__title mdl-card--expand"></div>
+						<div class="mdl-card__actions">
+							<img id="liveStream2" src="" alt="Camera2">
+						</div>
+					</div>
+				</div>
 
-                        </section>
-                    </div>
-                </div>
-                <div id=locationsection>
+			</div>
+		</div>
+		<div>
+			<footer class="mdl-mini-footer">
+				<div class="mdl-mini-footer__left-section">
+					<div class="mdl-logo">Copyright &copy; 2017 ScadaLTS ver.
+						0.0.8-dev All Rights Reserved</div>
+				</div>
+			</footer>
+		</div>
+		</main>
 
-                </div>
-            </div>
-            <div id=camerasection class="mdl-grid">
-                <!-- Camera section -->
-                <div class="mdl-grid">
-                    <div class="mdl-cell mdl-cell--6-col">
-                        <div class="mdl-card image-card mdl-shadow--2dp">
-                            <div class="mdl-card__title mdl-card--expand"></div>
-                            <div class="mdl-card__actions">
-                                <img id="liveStream1" src="" alt="Camera1">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mdl-cell mdl-cell--6-col">
-                        <div class="mdl-card image-card mdl-shadow--2dp">
-                            <div class="mdl-card__title mdl-card--expand"></div>
-                            <div class="mdl-card__actions">
-                                <img id="liveStream2" src="" alt="Camera2">
-                            </div>
-                        </div>
-                    </div>
+		<dialog id="dialog" class="mdl-dialog">
+		<h3 class="mdl-dialog__title">Edit element</h3>
+		<div class="mdl-dialog__content">
+			<div
+				class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+				<input id="nameField" class="mdl-textfield__input" type="text"
+					id="fname"> <label class="mdl-textfield__label" for="fname">Name...</label>
+			</div>
+			<div
+				class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+				<input id="xidField" class="mdl-textfield__input" type="text"
+					id="fxid"> <label class="mdl-textfield__label" for="fxid">Data
+					Point XID...</label>
+			</div>
+		</div>
+		<div class="mdl-dialog__actions">
+			<button type="button" class="mdl-button">Close</button>
+			<button type="button" class="mdl-button" onclick="saveData()">Save</button>
+			<!-- <button type="button" class="mdl-button" disabled>Disabled action</button> -->
+		</div>
+		</dialog>
 
-                </div>
-            </div>
-            <div>
-                <footer class="mdl-mini-footer">
-                    <div class="mdl-mini-footer__left-section">
-                        <div class="mdl-logo">
-                            Copyright &copy; 2017 ScadaLTS ver. 0.0.8-dev All Rights Reserved
-                        </div>
-                    </div>
-                </footer>
-            </div>
-        </main>
-
-        <dialog id="dialog" class="mdl-dialog">
-            <h3 class="mdl-dialog__title">Edit element</h3>
-            <div class="mdl-dialog__content">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input id="nameField" class="mdl-textfield__input" type="text" id="fname">
-                    <label class="mdl-textfield__label" for="fname">Name...</label>
-                </div>
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input id="xidField" class="mdl-textfield__input" type="text" id="fxid">
-                    <label class="mdl-textfield__label" for="fxid">Data Point XID...</label>
-                </div>
-            </div>
-            <div class="mdl-dialog__actions">
-                <button type="button" class="mdl-button">Close</button>
-                <button type="button" class="mdl-button" onclick="saveData()">Save</button>
-                <!-- <button type="button" class="mdl-button" disabled>Disabled action</button> -->
-            </div>
-        </dialog>
-
-    </div>
+	</div>
 </body>
 
 <!-- Requred files with data -->

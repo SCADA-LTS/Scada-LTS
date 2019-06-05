@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//WebContent/WEB-INF/classes/messages_ru.properties=UTF-8
 encoding//src/br/org/scadabr/api/API.java=UTF-8
 encoding//src/br/org/scadabr/api/APILocator.java=UTF-8
 encoding//src/br/org/scadabr/api/ScadaBRAPI.java=UTF-8
