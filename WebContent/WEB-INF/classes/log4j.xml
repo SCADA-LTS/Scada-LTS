@@ -93,16 +93,6 @@
         </layout>
     </appender>
 
-   <!-- <appender name="parseBinaryValue" class="org.apache.log4j.RollingFileAppender">
-        <param name="File" value="${catalina.base}/logs/parseBinaryValue.log"/>
-        <param name="MaxFileSize" value="1000KB"/>
-        <param name="MaxBackupIndex" value="10"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
-        </layout>
-    </appender>-->
-
-
     <appender name="daologfile" class="org.apache.log4j.RollingFileAppender">
         <param name="File" value="${catalina.base}/logs/dao.log"/>
         <param name="MaxFileSize" value="1000KB"/>
@@ -155,11 +145,6 @@
         <param name="LocationInfo" value="true"/>
         <appender-ref ref="scadalstdaoLogfile"/>
     </appender>
-
-    <!--<appender name="parseBinaryAsync" class="org.apache.log4j.AsyncAppender">
-        <param name="LocationInfo" value="true"/>
-        <appender-ref ref="parseBinaryValue"/>
-    </appender>-->
 
 
     <appender name="apiasync" class="org.apache.log4j.AsyncAppender">
@@ -248,11 +233,6 @@
         <level value="off"/>
         <appender-ref ref="scadadaoasync"/>
     </category>
-
-    <!--<category name="com.serotonin.mango.rt.dataImage.types" additivity="false">
-        <level value="info"/>
-        <appender-ref ref="parseBinaryAsync"/>
-    </category>-->
 
     <!-- Root Log -->
     <root>
