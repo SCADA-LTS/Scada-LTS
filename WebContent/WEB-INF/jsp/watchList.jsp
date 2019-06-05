@@ -47,6 +47,57 @@
         width:16px;
         height:16px;
     }
+    #snackbar {
+		visibility: hidden;
+		border: 1px solid #39b54a;
+		color: black;
+		background-color: white;
+		width: 50%;
+		text-align: center;
+		font-size: 15px;
+		padding: 8px;
+		position: absolute;
+		left: 25%;
+		bottom: 30px;
+		z-index: 1;
+	}
+		
+	#snackbar.show {
+	  visibility: visible;
+	  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	}
+
+	@-webkit-keyframes fadein {
+	  from {bottom: 0; opacity: 0;} 
+	  to {bottom: 30px; opacity: 1;}
+	}
+
+	@keyframes fadein {
+	  from {bottom: 0; opacity: 0;}
+	  to {bottom: 30px; opacity: 1;}
+	}
+	#updateTimezone, #close, #remindTimezoneUpdate, #no{
+		font-size: 16px;
+		margin: 2px 5px 2px 5px;
+		cursor: pointer;
+	}
+	#updateTimezone, #remindTimezoneUpdate, #no{
+		text-align: center;
+	    text-decoration: none;
+	    background-color: white;
+	    border: 2px solid #4CAF50;
+    }
+	#close{
+	    text-decoration: none;
+	    position: inherit;
+	    top: -4px;
+	    color: green;
+	    right: 1px;
+	    font-size: 24px;
+	    margin: auto;
+    }
+    
     </style>
   </jsp:attribute>
 
@@ -595,6 +646,78 @@
     		  chartContainerHeight = jQuery("#chartContainer").height();
   		  }
       }
+	  // create pop up to Timezone update
+      function createTimeZoneAlert(db,browser) {
+    	  elem = document.createElement('div');
+    	  elem.id = "snackbar";
+    	  elem.className = "show";
+    	  elem.innerHTML =  "Timezone you logged in is different than Timezone set in your profile "
+    	  					+ db
+    	  					+ "<br> Would you like to update Timezone to "
+    	  					+ browser 
+    	  					+ " ?";
+    	  
+    	  updatebtn = document.createElement('button');
+    	  updatebtn.appendChild(document.createTextNode("Yes"));
+    	  updatebtn.id = "updateTimezone";
+    	  
+    	  updatebtn.addEventListener('click', function() {
+    		  WatchListDwr.updateTimezone(browser,void(0));
+    		  elem.className = elem.className.replace("show", "");
+  	  	  }, false);
+    	  
+
+    	  remindbtn = document.createElement('button');
+    	  remindbtn.appendChild(document.createTextNode("Remind me later"));
+    	  remindbtn.id = "remindTimezoneUpdate"
+    		  remindbtn.addEventListener('click', function() {
+    		  elem.className = elem.className.replace("show", "");
+    	  }, false);
+    	  
+    	  nobtn = document.createElement('button');
+    	  nobtn.appendChild(document.createTextNode("No"));
+    	  nobtn.id = "no"
+    		  nobtn.addEventListener('click', function() {
+    		  elem.className = elem.className.replace("show", "");
+    		  sessionStorage.setItem("timezoneReminder", "true");
+    	  }, false);
+    	  
+    	  cancelbtn = document.createElement('a');
+    	  cancelbtn.appendChild(document.createTextNode('×'));
+    	  cancelbtn.id = "close"
+    	  cancelbtn.addEventListener('click', function() {
+    		  elem.className = elem.className.replace("show", "");
+    	  }, false);
+    	  
+    	  btns = document.createElement('div');
+    	  
+    	  btns.appendChild(updatebtn);
+    	  btns.appendChild(nobtn);
+    	  btns.appendChild(remindbtn);
+    	  
+    	  elem.appendChild(cancelbtn);
+    	  elem.appendChild(btns);
+    	  document.body.appendChild(elem);
+          
+      }
+
+      // get browser Timezone
+      function browserTimeZone() {
+    	    var offset = new Date().getTimezoneOffset(), o = Math.abs(offset);
+    	    var utc = "UTC"+(offset < 0 ? "+" : "-") + ("00" + Math.floor(o / 60)).slice(-2) + ":" + ("00" + (o % 60)).slice(-2);
+    	     return utc+" "+ Intl.DateTimeFormat().resolvedOptions().timeZone
+  	  }
+      
+   	  // Timezone popup start
+      function updateTimeZone(){
+    	  WatchListDwr.getTimezone(function(data){
+    		  var timezone = browserTimeZone();
+    		  if(data != browserTimeZone()){
+    			  createTimeZoneAlert(data,timezone);
+    		  }
+    	  });
+      }
+
 
       var splitContainerHeight;
       var chartContainerHeight;
@@ -612,6 +735,10 @@
     		if(chartContainerHeight != null){
     			jQuery("#chartContainer").height(chartContainerHeight);
     		}
+    		if (sessionStorage.getItem("timezoneReminder") != "true"){
+    			updateTimeZone();
+  		  	}
+
 
     		window.setInterval(saveDivHeightsToCookieOnChange, 2000);
    	  	})(jQuery);
