@@ -24,7 +24,7 @@
     function setFocus() {
         $("username").focus();
         BrowserDetect.init();
-        
+        sessionStorage.setItem("timezoneReminder", "false");
         $set("browser", BrowserDetect.browser +" "+ BrowserDetect.version +" <fmt:message key="login.browserOnPlatform"/> "+ BrowserDetect.OS);
         
         if (checkCombo(BrowserDetect.browser, BrowserDetect.version, BrowserDetect.OS)) {
