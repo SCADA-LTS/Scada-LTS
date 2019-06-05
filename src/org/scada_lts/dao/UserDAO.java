@@ -1,5 +1,6 @@
 package org.scada_lts.dao;
 
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +40,11 @@ public class UserDAO {
 	private final static String COLUMN_NAME_LAST_LOGIN = "lastLogin";
 	private final static String COLUMN_NAME_RECEIVE_ALARM_EMAILS = "receiveAlarmEmails";
 	private final static String COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS = "receiveOwnAuditEvents";
+	
+	// Smart e-Tech
+	// Timezone
+	private final static String COLUMN_NAME_TIMEZONE="timezone";                                            //time_zone
+	private final static String COLUMN_NAME_ZONE="zone"; 
 
 	// @formatter:off
 	private static final String USER_SELECT_ID = ""
@@ -59,8 +65,11 @@ public class UserDAO {
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_LAST_LOGIN + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + " "
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
+				+ COLUMN_NAME_TIMEZONE +", " // Offset
+				+ COLUMN_NAME_ZONE +" "// ZONE
 			+ "from users ";
+
 
 	private static final String USER_SELECT_ORDER = ""
 				+ USER_SELECT
@@ -91,8 +100,11 @@ public class UserDAO {
 				+ COLUMN_NAME_DISABLED + ", "
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") "
-			+ "values (?,?,?,?,?,?,?,?,?) ";
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
+				+ COLUMN_NAME_TIMEZONE +","		// Smart e-Tech 
+				+ COLUMN_NAME_ZONE + " )" 		// Timezone  
+			+ "values (?,?,?,?,?,?,?,?,?,?,?) ";
+
 
 	private static final String USER_UPDATE = ""
 			+ "update users set "
@@ -104,9 +116,12 @@ public class UserDAO {
 				+ COLUMN_NAME_DISABLED + "=?, "
 				+ COLUMN_NAME_HOME_URL + "=?, "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + "=?, "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=? "
-			+ "where "
-				+ COLUMN_NAME_ID + "=? ";
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=?, "
+				+ COLUMN_NAME_TIMEZONE + "=?, "		// Smart e-Tech 
+				+ COLUMN_NAME_ZONE+ "=? "			// Timezone
+			+ " where "
+				+ COLUMN_NAME_ID + "= ? ";
+
 
 	private static final String USER_UPDATE_LOGIN = ""
 			+ "update users set "
@@ -119,6 +134,32 @@ public class UserDAO {
 				+ COLUMN_NAME_HOME_URL + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
+	private static final String USER_SELECT_TIMEZONE = ""		//Smart e-Tech 
+			+ "select "											// Timezone
+				+ COLUMN_NAME_TIMEZONE + " "
+			+ "from users "
+			 + "where "
+				+ COLUMN_NAME_ID + "=? ";
+	
+	private static final String USER_UPDATE_TIMEZONE = ""		//Smart e-Tech
+			+ "update users set "								// Timezone
+			+ COLUMN_NAME_TIMEZONE + "=? "
+		    + "where "
+			+ COLUMN_NAME_ID + "=? ";
+
+	
+	private static final String USER_SELECT_ZONE = ""			//Smart e-Tech
+			+ "select "											// Zone
+				+ COLUMN_NAME_ZONE + " "						
+			+ "from users "
+			 + "where "
+				+ COLUMN_NAME_ID + "=? ";
+	
+	private static final String USER_UPDATE_ZONE=""				//Smart e-Tech
+			+ "update users set "								// Zone
+			+ COLUMN_NAME_ZONE + "=? "
+		    + "where "
+			+ COLUMN_NAME_ID + "=? ";
 
 	private static final String USER_DELETE = ""
 			+ "delete from users where "
@@ -142,7 +183,10 @@ public class UserDAO {
 			user.setLastLogin(rs.getLong(COLUMN_NAME_LAST_LOGIN));
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
+			user.setTimezone(Timezone.createTimezone(rs.getString(COLUMN_NAME_TIMEZONE))); //TIMEZONE                        //time_zone
+			user.setZone(rs.getString(COLUMN_NAME_ZONE));	
 			return user;
+
 		}
 	}
 
@@ -220,6 +264,55 @@ public class UserDAO {
 
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_LOGIN, new Object[]{System.currentTimeMillis(), userId});
 	}
+	
+	public String getUserTimezone(int id) {
+
+		String timeZone;
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getUser_timezone(int id) id:" + id);
+		}
+		try {
+			timeZone = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_TIMEZONE, new Object[]{id}, String.class);
+		
+		} catch (EmptyResultDataAccessException e) {
+			timeZone = null;
+		}
+		return timeZone;
+		
+	}
+	
+	public String getUserZone(int id)                                                                                    ///smart e-tech //time_zone
+	{
+		if (LOG.isTraceEnabled()) 
+			LOG.trace("getUser_timezone(int id) id:" + id);
+		
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_ZONE, new Object[]{id}, String.class);
+			
+		}catch (EmptyResultDataAccessException e) {
+			return "";
+		}
+		
+	}
+	public void updateUserTimezone(int userId, String timezone) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateUser_timezone(TimeZone timezone) userId:" + userId + ", timezone:" + timezone);
+		}
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_TIMEZONE, new Object[]{timezone, userId});
+		
+	}
+	
+	public void updateUserZone(int userId, String zone) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateUser_zone(TimeZone timezone) userId:" + userId + ", zone:" + zone);
+		}
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_ZONE, new Object[]{zone, userId});
+		
+	}
+
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public int insert(final User user) {
@@ -243,7 +336,9 @@ public class UserDAO {
 						DAO.boolToChar(user.isDisabled()),
 						user.getHomeUrl(),
 						user.getReceiveAlarmEmails(),
-						DAO.boolToChar(user.isReceiveOwnAuditEvents())
+						DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+						user.getTimezoneId(),
+						user.getZone()
 				}).setValues(preparedStatement);
 				return preparedStatement;
 			}
@@ -268,6 +363,8 @@ public class UserDAO {
 				user.getHomeUrl(),
 				user.getReceiveAlarmEmails(),
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+				user.getTimezoneId(),
+				user.getZone(),
 				user.getId()
 		});
 	}
