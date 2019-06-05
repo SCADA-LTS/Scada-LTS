@@ -110,57 +110,66 @@
                 showUserCB(data.user);
                 hide("usersProfilesListTable");
             }
+            
+            var Timezone ,timezoneHtml= "" ; //Smart e-Tech Timezone
+            timezoneHtml  += "<option value='None'> none </option>";
+			for (r=0; r<data.TimezoneList.length; r++){
+				Timezone = data.TimezoneList[r];
+				timezoneHtml += "<option value='" + Timezone + "'>"+  Timezone  + "</option>";
+			}
+			$("TimezoneList").innerHTML = timezoneHtml;
 
-                       var vwhtml = "";
-                       views = data.views;
-                       if (views != null){
-            	           for (i=0; i<views.length; i++) {
-            	        	   id = views[i].id;
-            	               vwhtml += '<label for="vvwist'+ id +'"> '+ views[i].name +'</label><br/>';
-            	               vwhtml += '<div style="margin-left:25px;" id="vwdiv'+ id +'">';
-            	                   vwhtml +=   '<table cellspacing="0" cellpadding="1">';
-            	                       vwhtml += '<tr>';
-            	                       vwhtml +=   '<td>';
-            	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/0" value="0" checked>';
-            	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.none"/></label> ';
-            	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/1" value="1">';
-            	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.read"/></label> ';
-            	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/2" value="2">';
-            	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.set"/></label>';
-            	                       vwhtml +=   '</td>';
-            	                       vwhtml += '</tr>';
-            	                   vwhtml +=   '</table>';
-            	               vwhtml += '</div>';
-            	           }
-                       }
-                       $("viewsList").innerHTML = vwhtml;
 
-                       var wlhtml = "";
-                                  watchlists = data.watchlists;
-                                  if (watchlists != null){
-                       	           for (i=0; i<watchlists.length; i++) {
-                       	        	   if(watchlists[i].name == '<fmt:message key="common.newName"/>') // skip unnamed lists
-                       	        		   continue;
+                    var vwhtml = "";
+                    views = data.views;
+                    if (views != null){
+         	           for (i=0; i<views.length; i++) {
+         	        	   id = views[i].id;
+         	               vwhtml += '<label for="vvwist'+ id +'"> '+ views[i].name +'</label><br/>';
+         	               vwhtml += '<div style="margin-left:25px;" id="vwdiv'+ id +'">';
+         	                   vwhtml +=   '<table cellspacing="0" cellpadding="1">';
+         	                       vwhtml += '<tr>';
+         	                       vwhtml +=   '<td>';
+         	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/0" value="0" checked>';
+         	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.none"/></label> ';
+         	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/1" value="1">';
+         	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.read"/></label> ';
+         	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/2" value="2">';
+         	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.set"/></label>';
+         	                       vwhtml +=   '</td>';
+         	                       vwhtml += '</tr>';
+         	                   vwhtml +=   '</table>';
+         	               vwhtml += '</div>';
+         	           }
+                    }
+                    $("viewsList").innerHTML = vwhtml;
 
-                       	        	   id = watchlists[i].id;
-                       	               wlhtml += '<label for="wllist'+ id +'"> '+ watchlists[i].name +'</label><br/>';
-                       	               wlhtml += '<div style="margin-left:25px;" id="wldiv'+ id +'">';
-                       	                   wlhtml +=   '<table cellspacing="0" cellpadding="1">';
-                       	                       wlhtml += '<tr>';
-                       	                       wlhtml +=   '<td>';
-                       	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/0" value="0" checked>';
-                       	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.none"/></label> ';
-                       	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/1" value="1">';
-                       	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.read"/></label> ';
-                       	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/2" value="2">';
-                       	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.set"/></label>';
-                       	                       wlhtml +=   '</td>';
-                       	                       wlhtml += '</tr>';
-                       	                   wlhtml +=   '</table>';
-                       	               wlhtml += '</div>';
-                       	           }
-                                  }
-                                  $("watchlistsList").innerHTML = wlhtml;
+                    var wlhtml = "";
+                               watchlists = data.watchlists;
+                               if (watchlists != null){
+                    	           for (i=0; i<watchlists.length; i++) {
+                    	        	   if(watchlists[i].name == '<fmt:message key="common.newName"/>') // skip unnamed lists
+                    	        		   continue;
+
+                    	        	   id = watchlists[i].id;
+                    	               wlhtml += '<label for="wllist'+ id +'"> '+ watchlists[i].name +'</label><br/>';
+                    	               wlhtml += '<div style="margin-left:25px;" id="wldiv'+ id +'">';
+                    	                   wlhtml +=   '<table cellspacing="0" cellpadding="1">';
+                    	                       wlhtml += '<tr>';
+                    	                       wlhtml +=   '<td>';
+                    	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/0" value="0" checked>';
+                    	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.none"/></label> ';
+                    	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/1" value="1">';
+                    	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.read"/></label> ';
+                    	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/2" value="2">';
+                    	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.set"/></label>';
+                    	                       wlhtml +=   '</td>';
+                    	                       wlhtml += '</tr>';
+                    	                   wlhtml +=   '</table>';
+                    	               wlhtml += '</div>';
+                    	           }
+                               }
+                               $("watchlistsList").innerHTML = wlhtml;
         });
     }
 
@@ -189,6 +198,10 @@
         $set("disabled", user.disabled);
         $set("receiveAlarmEmails", user.receiveAlarmEmails);
         $set("receiveOwnAuditEvents", user.receiveOwnAuditEvents);
+        
+        UsersDwr.getTimezone(user.id, function(data){ //Timezone
+ 			$("TimezoneList").value=data;
+ 		});
 
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
         	 $set("usersProfilesList", user.userProfile);
@@ -350,11 +363,11 @@
 
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
-                    dsPermis, dpPermis, vwPermis, wlPermis, $get("usersProfilesList"), saveUserCB);
+                    dsPermis, dpPermis, vwPermis, wlPermis, $get("usersProfilesList"), $get("TimezoneList"), saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
-                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"), saveUserCB);
+                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"), $get("TimezoneList"), saveUserCB);
      
     }
     
@@ -537,6 +550,16 @@
               <td class="formLabelRequired"><fmt:message key="users.receiveOwnAuditEvents"/></td>
               <td class="formField"><input id="receiveOwnAuditEvents" type="checkbox"/></td>
             </tr>
+            
+			<tr>
+				<td class="formLabel" ><fmt:message key="users.timezone"/></td>
+				<td class="formField">
+					<label id="timezone"></label>
+					<select id="TimezoneList" onchange="">
+					</select>
+				</td>
+			</tr>
+ 
             <tbody id="usersProfilesListTable" style="display:none;">
             <tr>
               <td class="formLabel"><fmt:message key="userProfiles.selectName"/></td>
