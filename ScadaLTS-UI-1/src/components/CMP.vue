@@ -432,7 +432,7 @@
                         }
                       }
                       if (entry.value == undefined) {
-                        this.setErrorAndStopAnaliseInOrder('Not get data')
+                        this.setErrorAndStopAnaliseInOrder('The device did not retain data')
                         return
                       }
                     } catch (e) {
