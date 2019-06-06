@@ -28,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.config.ScadaConfig;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -128,8 +129,16 @@ public class RuntimeManager {
 		List<DataSourceVO<?>> configs = dataSourceDao.getDataSources();
 		List<DataSourceVO<?>> pollingRound = new ArrayList<DataSourceVO<?>>();
 		for (DataSourceVO<?> config : configs) {
+			boolean isHttpRetriverSleepEnableWhenStart = false;
+			try {
+			    isHttpRetriverSleepEnableWhenStart = ScadaConfig.getInstance().getBoolean(ScadaConfig.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START, false);
+			} catch (Exception e) {
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace(e);
+                }
+			}
+			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation) && isHttpRetriverSleepEnableWhenStart;
 
-			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation);
 			boolean isToTrayEnable = false;
 			if (isCheckToTrayEnableRun) {
 				isToTrayEnable = ((ICheckReactivation) config).checkToTrayEnable();
@@ -488,8 +497,10 @@ public class RuntimeManager {
 	// Point values
 	public void setDataPointValue(int dataPointId, MangoValue value,
 			SetPointSource source) {
+
 		setDataPointValue(dataPointId,
 				new PointValueTime(value, System.currentTimeMillis()), source);
+
 	}
 
 	public void setDataPointValue(int dataPointId, PointValueTime valueTime,
@@ -504,8 +515,10 @@ public class RuntimeManager {
 		// Tell the data source to set the value of the point.
 		DataSourceRT ds = getRunningDataSource(dataPoint.getDataSourceId());
 		// The data source may have been disabled. Just make sure.
+
 		if (ds != null)
 			ds.setPointValue(dataPoint, valueTime, source);
+
 	}
 
 	public void relinquish(int dataPointId) {

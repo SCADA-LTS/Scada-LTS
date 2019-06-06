@@ -20,9 +20,9 @@ package org.scada_lts.dao.pointvalues;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.serotonin.mango.rt.dataImage.types.BinaryValue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.model.point.PointValueTypeOfREST;
 import org.springframework.stereotype.Repository;
@@ -51,10 +51,10 @@ public class PointValueDAO4REST {
 		}
 		
 		PointValueTime pvt = null;
-		
+
 		String interpretationBinaryValueFalseOfREST = "0";
 		String interpretationBinaryValueTrueOfREST = "1";
-		
+
 		if (typePointValueOfREST==PointValueTypeOfREST.TYPE_BINARY) {
 			if (value.equals(interpretationBinaryValueTrueOfREST)) {
 				pvt = new PointValueTime(true, new Date().getTime() );
@@ -62,7 +62,7 @@ public class PointValueDAO4REST {
 			} else if (value.equals(interpretationBinaryValueFalseOfREST)) {
 				pvt = new PointValueTime(false, new Date().getTime() );
 			} else {
-			   new RuntimeException("Value not compatible with type (binary)");
+				new RuntimeException("Value not compatible with type (binary)");
 			}
 		} else if (typePointValueOfREST==PointValueTypeOfREST.TYPE_MULTISTATE) {
 			try {
@@ -77,31 +77,31 @@ public class PointValueDAO4REST {
 				new RuntimeException("Value not compatible with type (double)");
 			}
 		} else if (typePointValueOfREST==PointValueTypeOfREST.TYPE_STRING) {
-			
+
 			pvt = new PointValueTime(value, new Date().getTime() );
 			Object[] resultPointValue = new PointValueDAO().createNoTransaction(dpid, DataTypes.ALPHANUMERIC, 0, new Date().getTime());
 			PointValueAdnnotation pva = new PointValueAdnnotation();
 			Long pointValueId = (Long) resultPointValue[0];
 			pva.setPointValueId(pointValueId);
 			pva.setSourceType(DataTypes.ALPHANUMERIC);
-			
-			int lengthShortValue = 128; 
+
+			int lengthShortValue = 128;
 			if (value.length()<=lengthShortValue) {
-			    pva.setTextPointValueShort(value);
+				pva.setTextPointValueShort(value);
 			} else {
 				pva.setTextPointValueLong(value);
 			}
-			
+
 			new PointValueAdnnotationsDAO().create(pva);
-			
+
 			if (LOG.isTraceEnabled()) {
 				LOG.trace("save data string:" + dpid);
 			}
-						
+
 		} else {
 			new RuntimeException("Unknown value type");
-		}	
-		
+		}
+
 		return pvt;
 	}
 

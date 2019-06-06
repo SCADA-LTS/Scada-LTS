@@ -90,8 +90,8 @@ public class Common {
 	 * is still required to update the system settings so that the database has
 	 * the correct version.
 	 */
-	public static final String getVersion() {
-		return "1.0.0";
+	public final static String getVersion() {
+		return "RELEASE_OR_BUILD_VER";
 	}
 
 	public interface ContextKeys {
