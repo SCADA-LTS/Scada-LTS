@@ -62,8 +62,6 @@
         </layout>
     </appender>
 
-
-
     <appender name="viehierarchyservicelogfile" class="org.apache.log4j.RollingFileAppender">
         <param name="File" value="${catalina.base}/logs/viehierarchyservicelogfile.log"/>
         <param name="MaxFileSize" value="1000KB"/>
@@ -146,7 +144,6 @@
         <appender-ref ref="scadalstdaoLogfile"/>
     </appender>
 
-
     <appender name="apiasync" class="org.apache.log4j.AsyncAppender">
         <param name="LocationInfo" value="true"/>
         <appender-ref ref="apilogfile"/>
@@ -154,28 +151,27 @@
 
 
     <!-- Normal Logging -->
-    <category name="org.directwebremoting"><level value="off"/></category>
-    <category name="org"><level value="off"/></category>
-    <category name="org.springframework.web.servlet.FrameworkServlet"><level value="off"/></category>
-    <category name="com.serotonin.db.spring.ExtendedJdbcTemplate"><level value="off"/></category>
-    <category name="com.serotonin.mango"><level value="off"/></category>
-
+    <category name="org.directwebremoting"><level value="warn"/></category>
+    <category name="org"><level value="warn"/></category>
+    <category name="org.springframework.web.servlet.FrameworkServlet"><level value="error"/></category>
+    <category name="com.serotonin.db.spring.ExtendedJdbcTemplate"><level value="error"/></category>
+    <category name="com.serotonin.mango"><level value="info"/></category>
 
 
     <!-- Modbus Logging -->
     <category name="com.serotonin.modbus4j.ip.listener" additivity="false">
-        <level value="off"/>
+        <level value="debug"/>
         <appender-ref ref="modbusasync"/>
     </category>
 
     <category name="br.org.scadabr.modbus4j.messaging" additivity="false">
-        <level value="off"/>
+        <level value="debug"/>
         <appender-ref ref="modbusasync"/>
     </category>
 
     <!-- Flyway logging -->
     <category name="com.serotonin.mango.db" additivity="false">
-        <level value="off"/>
+        <level value="info"/>
         <appender-ref ref="flywayasync"/>
     </category>
 
@@ -205,38 +201,38 @@
 
     <!-- Dao Logging -->
     <category name="com.serotonin.mango.db.dao.DataSourceDao" additivity="false">
-        <level value="off"/>
+        <level value="debug"/>
         <appender-ref ref="daoasync"/>
     </category>
 
     <category name="com.serotonin.mango.rt.RuntimeManager" additivity="false">
-        <level value="off"/>
+        <level value="debug"/>
         <appender-ref ref="daoasync"/>
     </category>
 
     <category name="com.serotonin.mango.web.dwr.DataSourceEditDwr" additivity="false">
-        <level value="off"/>
+        <level value="debug"/>
         <appender-ref ref="daoasync"/>
     </category>
 
     <category name="org.scada_lts.web.mvc.api" additivity="false">
-        <level value="off"/>
+        <level value="info"/>
         <appender-ref ref="apiasync"/>
     </category>
 
     <category name="org.scada_lts.service" additivity="false">
-        <level value="off"/>
+        <level value="info"/>
         <appender-ref ref="viehierarchyservicelogfileasync"/>
     </category>
 
     <category name="org.scada_lts.dao" additivity="false">
-        <level value="off"/>
+        <level value="trace"/>
         <appender-ref ref="scadadaoasync"/>
     </category>
 
     <!-- Root Log -->
     <root>
-        <level value="off"/>
+        <level value="info"/>
         <appender-ref ref="async"/>
         <appender-ref ref="stdout"/>
     </root>

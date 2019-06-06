@@ -272,9 +272,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                 handleError(runtime, e.getLocalizableMessage());
             }
         } catch (Exception e) {
-            if (LOG.isTraceEnabled()) {
-                LOG.trace(e);
-            }
+            LOG.trace(e);
         }
         finally {
             threadLocal.remove();

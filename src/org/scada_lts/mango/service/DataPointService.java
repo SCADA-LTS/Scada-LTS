@@ -238,9 +238,7 @@ public class DataPointService implements MangoDataPoint {
 			deletePointHistory(dataPointId);
 			deleteDataPointImpl(Integer.toString(dataPointId));
 		} catch (EmptyResultDataAccessException e) {
-			if (LOG.isTraceEnabled()) {
 				LOG.trace(e);
-			}
 			return;
 		}
 	}
@@ -367,16 +365,14 @@ public class DataPointService implements MangoDataPoint {
 				result = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
 			}
 		} catch (SchedulerException | IOException e) {
-			if (EventDetectorsCache.LOG.isTraceEnabled()) {
-				EventDetectorsCache.LOG.trace(e);
-			}
+			EventDetectorsCache.LOG.trace(e);
 		}
 
 		long endTime = 0;
 		if (EventDetectorsCache.LOG.isTraceEnabled()) {
 			endTime = System.currentTimeMillis();
+			EventDetectorsCache.LOG.trace("TimeExecute:"+(endTime-startTime)+ " getEventDetectors() dpId:"+dataPoint.getId());
 		}
-		EventDetectorsCache.LOG.trace("TimeExecute:"+(endTime-startTime)+ " getEventDetectors() dpId:"+dataPoint.getId());
 
 		return result;
 	}

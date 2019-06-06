@@ -133,7 +133,9 @@ public class RuntimeManager {
 			try {
 			    isHttpRetriverSleepEnableWhenStart = ScadaConfig.getInstance().getBoolean(ScadaConfig.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START, false);
 			} catch (Exception e) {
-				LOG.trace(e);
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace(e);
+                }
 			}
 			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation) && isHttpRetriverSleepEnableWhenStart;
 

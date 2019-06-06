@@ -449,9 +449,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 						new EventNotifyWorkItem(l, oldValue, newValue, set,
 								backdate));
 		} catch (Exception e) {
-			if (LOG.isTraceEnabled()) {
-				LOG.trace(e);
-			}
+			LOG.trace(e);
 		}
 	}
 
