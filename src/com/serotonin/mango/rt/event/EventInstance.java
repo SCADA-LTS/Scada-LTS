@@ -52,7 +52,7 @@ public class EventInstance {
     /**
      * State field. The time that the event became active (i.e. was raised).
      */
-    private long activeTimestamp;
+    private final long activeTimestamp;
 
     /**
      * Configuration field. Is this type of event capable of returning to normal (true), or is it stateless (false).
@@ -64,15 +64,7 @@ public class EventInstance {
      */
     private long rtnTimestamp;
 
-    public void setActiveTimestamp(long activeTimestamp) {
-		this.activeTimestamp = activeTimestamp;
-	}
-
-	public void setRtnTimestamp(long rtnTimestamp) {
-		this.rtnTimestamp = rtnTimestamp;
-	}
-
-	/**
+    /**
      * State field. The action that caused the event to RTN. One of {@link RtnCauses}
      */
     private int rtnCause;
