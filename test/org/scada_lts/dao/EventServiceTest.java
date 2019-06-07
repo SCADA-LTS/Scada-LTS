@@ -145,6 +145,8 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = true;
 		int alarmLevel = 3;
+		
+		// TODO Timezone
 		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		List<Integer> userIds = new ArrayList<Integer>();
@@ -183,6 +185,7 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = false;
 		int alarmLevel = 3;
+		// TODO Timezone
 		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
@@ -239,7 +242,7 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = false;
 		int alarmLevel = 3;
-		
+		// TODO Timezone
 		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);		
 		eventService.saveEvent(e);
 		UserEvent userEvent = new UserEvent();
@@ -403,7 +406,7 @@ public class EventServiceTest extends TestDAO {
 		boolean applicable = true;
 		//AlarmLevel.CRITICAL 
 		int alarmLevel = 3;
-		
+		// TODO Timezone
 		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
