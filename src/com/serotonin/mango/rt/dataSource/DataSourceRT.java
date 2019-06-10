@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataSource;
 
+import com.serotonin.mango.rt.dataSource.snmp.TIME_JUNIT;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 
@@ -149,8 +150,8 @@ abstract public class DataSourceRT implements ILifecycle {
 
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
-
-        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
+        if(time!= TIME_JUNIT.TIME_EXISTS_ONLY_DURING_JUNIT.getTime())
+            Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
     }
 
     protected void returnToNormal(int eventId, long time) {
