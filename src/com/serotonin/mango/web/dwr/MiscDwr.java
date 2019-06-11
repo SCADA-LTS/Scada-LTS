@@ -256,6 +256,7 @@ public class MiscDwr extends BaseDwr {
 				model.put("user", Common.getUser());
 				model.put("message", new LocalizableMessage("common.default",
 						message));
+				System.out.println("TEST MSG !");
 				MangoEmailContent cnt = new MangoEmailContent("testEmail",
 						model, bundle, I18NUtils.getMessage(bundle,
 								"ftl.testEmail"), Common.UTF8);
@@ -327,11 +328,13 @@ public class MiscDwr extends BaseDwr {
 	public Map<String, Object> initializeLongPoll(int pollSessionId,
 			LongPollRequest request) {
 		LongPollData data = getLongPollData(pollSessionId, true);
-
+		
+		/*
+		
 		events = new EventDao().getPendingEvents(Common.getUser().getId());
-		ids.clear();
 		eventsAux = convertTime(events);
 		
+		*/
 		data.setRequest(request);
 		
 		return doLongPoll(pollSessionId);
