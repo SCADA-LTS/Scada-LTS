@@ -52,7 +52,7 @@ public class EventInstance {
     /**
      * State field. The time that the event became active (i.e. was raised).
      */
-    private final long activeTimestamp;
+    private long activeTimestamp;
 
     /**
      * Configuration field. Is this type of event capable of returning to normal (true), or is it stateless (false).
@@ -219,6 +219,9 @@ public class EventInstance {
     public long getActiveTimestamp() {
         return activeTimestamp;
     }
+    public void setActiveTimestamp(long activeTimestamp) {
+        this.activeTimestamp = activeTimestamp;
+    }
 
     public int getAlarmLevel() {
         return alarmLevel;
@@ -234,6 +237,10 @@ public class EventInstance {
 
     public long getRtnTimestamp() {
         return rtnTimestamp;
+    }
+    
+    public void setRtnTimestamp(long rtnTimestamp) {
+        this.rtnTimestamp = rtnTimestamp;
     }
 
     public LocalizableMessage getMessage() {
