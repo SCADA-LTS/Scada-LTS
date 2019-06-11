@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -84,7 +85,13 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private int receiveAlarmEmails;
 	@JsonRemoteProperty
 	private boolean receiveOwnAuditEvents;
-
+	
+	// Smart e-Tech
+	@JsonRemoteProperty
+	private TimeZone timezone;
+	@JsonRemoteProperty
+	private String zone;
+	
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -554,5 +561,24 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	public void pointSetComplete() {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public TimeZone getTimezone() {
+		return timezone;
+	}
+	
+	public String getTimezoneId() {
+		return timezone.getID();
+	}
+	
+	public void setTimezone(TimeZone timezone) {
+		this.timezone = timezone;
+	}
+	public String getZone() {
+		return zone;
+	}
+	
+	public void setZone(String zone) {
+		this.zone = zone;
 	}
 }

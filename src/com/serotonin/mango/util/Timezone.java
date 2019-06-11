@@ -17,9 +17,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import com.serotonin.mango.vo.User;
 
@@ -36,8 +33,6 @@ import com.serotonin.mango.vo.User;
 public class Timezone{
 
 	Set<String> availableZoneIds = ZoneId.getAvailableZoneIds();
-	static HttpServletRequest request;
-	static HttpSession session;
 
 	public enum OffsetBase {
 	    GMT, UTC
@@ -189,9 +184,7 @@ public class Timezone{
 	}
 
 	public static long getTimezoneUserLong(User user,long millis) { 
-	
-		System.out.println("Session = " + session.getId());
-		
+
 		String idzone = user.getTimezoneId();
 		
 		if ((idzone.length()!=0)&&(millis>0))
