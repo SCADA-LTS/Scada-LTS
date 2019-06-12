@@ -236,59 +236,22 @@ public static Date getTimezoneSystemDate(Date date,User user) throws ParseExcept
 		
 	}
 
+	@SuppressWarnings("deprecation")
 	public static Date convertDateToZoneIdSyteme(String zoneFrom,String zoneto,Date date) throws ParseException {
 	
   	  	String DATE_FORMAT = "dd-MM-yyyy hh:mm:ss a";
   	
   	    SimpleDateFormat sdfdate = new SimpleDateFormat(DATE_FORMAT);
     	String dateInString = sdfdate.format(date);
-  	  
-  	    //System.out.println("System Date : "+  dateInString );
-  	    
         LocalDateTime ldt = LocalDateTime.parse(dateInString, DateTimeFormatter.ofPattern(DATE_FORMAT));
 
         ZoneId FormZoneId = ZoneId.of(zoneFrom);
-        //System.out.println("TimeZone : " + FormZoneId);
-
-        //LocalDateTime + ZoneId = ZonedDateTime
-        ZonedDateTime FromDateTime = ldt.atZone(FormZoneId);
-        //System.out.println("Date from : " + FromDateTime);
-      
         ZoneId toZoneId = ZoneId.of(zoneto);
-        //System.out.println("TimeZone : " +toZoneId);
-        
 
+        ZonedDateTime FromDateTime = ldt.atZone(FormZoneId);
         ZonedDateTime toDateTime = FromDateTime.withZoneSameInstant(toZoneId);
-        //System.out.println("Date to  : " + toDateTime);
 
-        /*
-        
-        DateTimeFormatter format = DateTimeFormatter.ofPattern(DATE_FORMAT);
-        
-        System.out.println("\n---DateTimeFormatter---");
-        System.out.println("Date ("+zoneFrom+") : " + format.format(FromDateTime));
-       
-        
-        System.out.println("Date ("+zoneto+") : " + format.format(toDateTime));
-
-        System.out.println("date to parce "+format.format(toDateTime));
-        
-       
-		// Date Time=new Date( format.format(nyDateTime));
-        
-        String stringdatefinal=format.format(toDateTime);
-       
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a");
-        
-        Date Time = formatter.parse(stringdatefinal);
-      
-		//  LocalDateTime dateTime = LocalDateTime.parse(formatter.format(nyDateTime));
-		// System.out.println("LocalTime"+dateTime);
-		*/
-        
-		Date time = new Date(toDateTime.getYear(),toDateTime.getMonthValue(),toDateTime.getDayOfMonth(),toDateTime.getHour(),toDateTime.getMinute(),toDateTime.getSecond());
-		//System.out.println("******************");
-		return time;
+        return new Date(toDateTime.getYear(),toDateTime.getMonthValue(),toDateTime.getDayOfMonth(),toDateTime.getHour(),toDateTime.getMinute(),toDateTime.getSecond());
 	}
 
     public static long getTimezoneUserLong(User user,Date date) {
