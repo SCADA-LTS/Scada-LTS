@@ -238,8 +238,7 @@ public static Date getTimezoneSystemDate(Date date,User user) throws ParseExcept
 
 	@SuppressWarnings("deprecation")
 	public static Date convertDateToZoneIdSyteme(String zoneFrom,String zoneto,Date date) throws ParseException {
-
-	     
+	
   	  	String DATE_FORMAT = "dd-MM-yyyy hh:mm:ss a";
   	
   	    SimpleDateFormat sdfdate = new SimpleDateFormat(DATE_FORMAT);
@@ -248,14 +247,10 @@ public static Date getTimezoneSystemDate(Date date,User user) throws ParseExcept
 
         ZoneId FormZoneId = ZoneId.of(zoneFrom);
         ZoneId toZoneId = ZoneId.of(zoneto);
-    
-   
+
         ZonedDateTime FromDateTime = ldt.atZone(FormZoneId);
-        System.out.println("FromDateTime : "+FromDateTime);
         ZonedDateTime toDateTime = FromDateTime.withZoneSameInstant(toZoneId);
-        System.out.println("toDateTime : "+toDateTime);
-        
-        System.out.println("*************");
+
         return new Date(toDateTime.getYear(),toDateTime.getMonthValue(),toDateTime.getDayOfMonth(),toDateTime.getHour(),toDateTime.getMinute(),toDateTime.getSecond());
 	}
 
@@ -278,16 +273,5 @@ public static Date getTimezoneSystemDate(Date date,User user) throws ParseExcept
     	else
   			return time;
   	}
-    public static Date getDate(int year, int month, int day ,int hour ,int min,int sec) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month-1); // in the API calendar  the first month of year is  Jan =0 / Dec = 11   
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        cal.set(Calendar.HOUR_OF_DAY, hour);
-        cal.set(Calendar.MINUTE, min);
-        cal.set(Calendar.SECOND, sec);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
-    }
 
 }

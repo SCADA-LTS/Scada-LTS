@@ -18,11 +18,7 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.text.ParseException;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -344,33 +340,16 @@ public class WatchListDwr extends BaseDwr {
 
 	/**
 	 * Method for creating image charts of the points on the watch list.
-	 * @throws ParseException 
 	 */
 	public String getImageChartData(int[] pointIds, int fromYear,
 			int fromMonth, int fromDay, int fromHour, int fromMinute,
 			int fromSecond, boolean fromNone, int toYear, int toMonth,
 			int toDay, int toHour, int toMinute, int toSecond, boolean toNone,
-			int width, int height) throws ParseException {
-		
-	     //timezone
-		// from
-		System.out.println("fromYear,fromMonth,fromDay,fromHour,fromMinute,fromSecond" +fromYear+" "+fromMonth+" "+fromDay+" "+fromHour+" "+fromMinute+" "+fromSecond);
-		
-		Date from_time = Timezone.getDate(fromYear,fromMonth,fromDay,fromHour,fromMinute,fromSecond);
-	    System.out.println("from_time watchlist : "+from_time);
-		from_time = Timezone.getTimezoneSystemDate(from_time,Common.getUser());
-
-		// to
-		Date to_time = Timezone.getDate(toYear, toMonth,toDay,toHour,toMinute, toSecond);
-	    System.out.println(" to_time watchlist : "+ to_time);
-	    to_time = Timezone.getTimezoneSystemDate(to_time,Common.getUser());
-		
-		
-		DateTime from = createDateTime(from_time.getYear(), from_time.getMonth(), from_time.getMonth(),from_time.getHours(),from_time.getMinutes(), from_time.getSeconds(), fromNone);
-		  System.out.println("from_final : "+from);
-		DateTime to = createDateTime(to_time.getYear(), to_time.getMonth(), to_time.getDay(), to_time.getHours(), to_time.getMinutes(),to_time.getSeconds(), toNone);
-		
-	    System.out.println(" to_time_final : "+ to);
+			int width, int height) {
+		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour,
+				fromMinute, fromSecond, fromNone);
+		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute,
+				toSecond, toNone);
 
 		StringBuilder htmlData = new StringBuilder();
 		long now = System.currentTimeMillis();
@@ -399,7 +378,8 @@ public class WatchListDwr extends BaseDwr {
 
 		boolean pointsFound = false;
 		// Add the list of points that are numeric.
-		List<DataPointVO> watchList = Common.getUser().getWatchList().getPointList();
+		List<DataPointVO> watchList = Common.getUser().getWatchList()
+				.getPointList();
 		for (DataPointVO dp : watchList) {
 			int dtid = dp.getPointLocator().getDataTypeId();
 			if ((dtid == DataTypes.NUMERIC || dtid == DataTypes.BINARY || dtid == DataTypes.MULTISTATE)
