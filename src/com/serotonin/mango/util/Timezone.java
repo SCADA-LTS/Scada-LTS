@@ -71,7 +71,7 @@ public class Timezone{
 		}
 	};
 
-	private String getOffset(LocalDateTime dateTime, ZoneId id) {
+	private static String getOffset(LocalDateTime dateTime, ZoneId id) {
 
 		return dateTime.atZone(id)
 				.getOffset()
@@ -85,6 +85,11 @@ public class Timezone{
 		timezone.setID(id);
 		return timezone;
 
+	}
+	
+	public static  String getTimezoneSystem() {
+        LocalDateTime now = LocalDateTime.now();
+        return "UTC "+getOffset(now,ZoneId.systemDefault());
 	}
 
 	public static LocalDateTime getCurrentDateTimeWithOffset(String id){

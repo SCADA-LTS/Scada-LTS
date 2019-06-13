@@ -44,6 +44,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.View;
@@ -113,6 +114,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient EventExportDefinition eventExportDefinition;
 	private transient Map<String, Object> attributes = new HashMap<String, Object>();
 
+	
 	/**
 	 * Used for various display purposes.
 	 */
@@ -581,4 +583,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	public void setZone(String zone) {
 		this.zone = zone;
 	}
+	
+	
+	/**
+	 * Used to multi instance the list of events
+	 * for each user with his current timezone
+	 */	
+	public List<Integer> ids = new ArrayList<Integer>();
+	public List<EventInstance> events = new ArrayList<>(); 
+	public List<EventInstance> eventsAux = new ArrayList<>();
+
 }

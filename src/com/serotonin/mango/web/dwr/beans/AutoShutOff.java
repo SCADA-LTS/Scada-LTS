@@ -24,7 +24,7 @@ package com.serotonin.mango.web.dwr.beans;
  * @author Matthew Lohbihler
  */
 abstract public class AutoShutOff extends Thread {
-    public static final long DEFAULT_TIMEOUT = 60000;
+    public static final long DEFAULT_TIMEOUT = 5000; // Minimize the default time to refresh a way more faster
 
     private long lastQuery;
     private volatile boolean running;
