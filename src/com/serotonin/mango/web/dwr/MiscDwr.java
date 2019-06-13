@@ -84,9 +84,9 @@ public class MiscDwr extends BaseDwr {
 
 	
 	// Alarms Lists
-	private List<Integer> ids = new ArrayList<Integer>();
-	private List<EventInstance> events = new ArrayList<>();
-	private List<EventInstance> eventsAux = new ArrayList<>();
+	public static List<Integer> ids = new ArrayList<Integer>();
+	public static List<EventInstance> events = new ArrayList<>();
+	public static List<EventInstance> eventsAux = new ArrayList<>();
 
 		
 	public DwrResponseI18n toggleSilence(int eventId) {
@@ -329,12 +329,6 @@ public class MiscDwr extends BaseDwr {
 			LongPollRequest request) {
 		LongPollData data = getLongPollData(pollSessionId, true);
 		
-		/*
-		
-		events = new EventDao().getPendingEvents(Common.getUser().getId());
-		eventsAux = convertTime(events);
-		
-		*/
 		data.setRequest(request);
 		
 		return doLongPoll(pollSessionId);
@@ -347,7 +341,7 @@ public class MiscDwr extends BaseDwr {
 		User user = Common.getUser(httpRequest);
 		EventManager eventManager = Common.ctx.getEventManager();
 		EventDao eventDao = new EventDao();
-
+		Common.setUser(user);
 		LongPollData data = getLongPollData(pollSessionId, false);
 		data.updateTimestamp();
 
@@ -490,7 +484,6 @@ public class MiscDwr extends BaseDwr {
 			if (pollRequest.isPendingAlarms() && user != null) {
 				// Create the list of most current pending alarm content.
 				Map<String, Object> model = new HashMap<String, Object>();
-				
 				// Retrieving all events
 				                    
 				// Convert time to user timezone and init stateContent to refresh

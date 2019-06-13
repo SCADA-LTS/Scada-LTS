@@ -18,9 +18,9 @@
  */
 package com.serotonin.mango.vo.event;
 
+
 import java.util.List;
 import java.util.Map;
-
 import org.joda.time.DateTime;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -159,8 +159,8 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
                 message = new LocalizableMessage("event.schedule.hoursAt", activeTime);
         }
         else if (scheduleType == TYPE_DAILY) {
-            if (returnToNormal)
-                message = new LocalizableMessage("event.schedule.dailyUntil", activeTime(), inactiveTime());
+            if (returnToNormal) 
+            	message = new LocalizableMessage("event.schedule.dailyUntil", activeTime(), inactiveTime());
             else
                 message = new LocalizableMessage("event.schedule.dailyAt", activeTime());
         }
@@ -218,17 +218,20 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
     }
 
     private String activeTime() {
+
         return StringUtils.pad(Integer.toString(activeHour), '0', 2) + ":"
                 + StringUtils.pad(Integer.toString(activeMinute), '0', 2) + ":"
                 + StringUtils.pad(Integer.toString(activeSecond), '0', 2);
     }
 
     private String inactiveTime() {
+
         return StringUtils.pad(Integer.toString(inactiveHour), '0', 2) + ":"
                 + StringUtils.pad(Integer.toString(inactiveMinute), '0', 2) + ":"
                 + StringUtils.pad(Integer.toString(inactiveSecond), '0', 2);
     }
 
+    
     private static final String[] weekdays = { "", "common.day.mon", "common.day.tue", "common.day.wed",
             "common.day.thu", "common.day.fri", "common.day.sat", "common.day.sun" };
 
