@@ -492,7 +492,14 @@ html>body .dojoSplitContainerSizerH {
           if (isMouseLeaveOrEnter(event, source))
         	  hideLayer('p'+ mangoId +'ChartLayer');
       }
+      //System timezone
+      function SytemeTimeZone() {
 
+    	  WatchListDwr.getTimezoneSystem(function(data){ 
+                $("timezone").innerHTML="&nbsp; Chart Date is based on Timezone "+data;
+    	  });
+    	  return timezone;
+      }
       //
       // Image chart
       //
@@ -514,6 +521,7 @@ html>body .dojoSplitContainerSizerH {
               // Make sure the length of the chart doesn't mess up the watch list display. Do async to
               // make sure the rendering gets done.
               setTimeout('dojo.widget.manager.getWidgetById("splitContainer").onResized()', 2000);
+              SytemeTimeZone();
           });
       }
 
@@ -570,6 +578,7 @@ html>body .dojoSplitContainerSizerH {
     		  isChartLive=false;
     		  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
           document.getElementById("imageChartDiv").style.display = "none";
+          
     	   } else {
     		  isChartLive=true;
     		  jQuery("#imageChartLiveImg").attr('src', 'images/control_stop_blue.png');
@@ -704,6 +713,9 @@ html>body .dojoSplitContainerSizerH {
     	  document.body.appendChild(elem);
           
       }
+   
+      
+      
       // get browser Timezone
       function browserTimeZone() {
     	    var offset = new Date().getTimezoneOffset(), o = Math.abs(offset);
@@ -755,8 +767,7 @@ html>body .dojoSplitContainerSizerH {
 						style="width: 100%; height: 500px; resize: vertical;">
         <div dojoType="ContentPane" sizeMin="20" sizeShare="20"
 							style="overflow: auto; padding: 2px;">
-          <span class="smallTitle"><fmt:message
-									key="watchlist.points" /></span> <tag:help id="watchListPoints" />
+          <span class="smallTitle"><fmt:message key="watchlist.points" /> </span>  <tag:help id="watchListPoints" />
 							<br />
         <!-- <div style="margin:5px 0 10px 5px;">
           <select id="dpSelector" data-placeholder="Choose data point ..." class="chosen-select" style="width:80%;margin-bottom:10px;">
@@ -908,7 +919,7 @@ html>body .dojoSplitContainerSizerH {
         <table width="100%">
           <tr>
             <td class="smallTitle"><fmt:message
-										key="watchlist.chart" /> <tag:help id="watchListCharts" /></td>
+										key="watchlist.chart" /> <tag:help id="watchListCharts" /> <span id="timezone"  align="right"> </span></td>
             <td align="right"><input type="text"
 									id="prevPeriodCount" class="formVeryShort" />
             	<select id="prevPeriodType">
@@ -929,11 +940,16 @@ html>body .dojoSplitContainerSizerH {
             </td>
           </tr>
           <tr>
-								<td colspan="6" id="imageChartDiv"></td>
+								<td colspan="6" id="imageChartDiv">
+								
+							
+								</td>
+								
 							</tr>
           <tr>
 								<td colspan="6" id="temp" style="display: none"></td>
 							</tr>
+					
         </table>
       </div>
     </td>
