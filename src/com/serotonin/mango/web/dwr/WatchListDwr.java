@@ -24,12 +24,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 import org.scada_lts.dao.UserDAO;
+import org.springframework.beans.propertyeditors.TimeZoneEditor;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
@@ -131,6 +133,11 @@ public class WatchListDwr extends BaseDwr {
 			String offset = userDao.getUserTimezone(Common.getUser().getId());
 			return offset +" "+zone;
 
+		}
+		// Timezone
+		public String getTimezoneSystem()
+		{
+			return Timezone.getTimezoneSystem();
 		}
 
 		// Timezone
