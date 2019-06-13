@@ -33,6 +33,7 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.event.EventHandlerVO;
@@ -87,6 +88,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
 
     @Override
     public void eventRaised(EventInstance evt) {
+    	System.out.println("eventRaised(EventInstance evt)");
         // Get the email addresses to send to
         activeRecipients = new MailingListDao().getRecipientAddresses(vo.getActiveRecipients(),
                 new DateTime(evt.getActiveTimestamp()));
@@ -115,6 +117,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     //
     synchronized public void scheduleTimeout(EventInstance evt, long fireTime) {
         // Get the email addresses to send to
+    	System.out.println("scheduleTimeout(EventInstance evt, long fireTime)");
         Set<String> addresses = new MailingListDao().getRecipientAddresses(vo.getEscalationRecipients(), new DateTime(
                 fireTime));
 
@@ -140,16 +143,20 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
 
     public static void sendActiveEmail(EventInstance evt, Set<String> addresses) {
         sendEmail(evt, NotificationType.ACTIVE, addresses, null);
+        System.out.println("sendActiveEmail(EventInstance evt, Set<String> addresses)");
     }
 
     private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
         sendEmail(evt, notificationType, addresses, vo.getAlias());
+        System.out.println("sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses)");
     }
 
     private static void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses,
             String alias) {
+    	System.out.println("sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses, String alias)");
         if (evt.getEventType().isSystemMessage()) {
-            if (((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
+        	
+        	if (((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
                 // Don't send email notifications about email send failures.
                 LOG.info("Not sending email for event raised due to email failure");
                 return;
@@ -192,8 +199,9 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
 
             for (String s : inlineImages.getImageList())
                 content.addInline(new EmailInline.FileInline(s, Common.ctx.getServletContext().getRealPath(s)));
-
+            
             EmailWorkItem.queueEmail(toAddrs, content);
+            
         }
         catch (Exception e) {
             LOG.error("", e);
