@@ -83,7 +83,8 @@ public class Common {
 	public static final MonitoredValues MONITORED_VALUES = new MonitoredValues();
 
 	private static String environmentProfileName = "env";
-
+	private static User user;
+	
 	/*
 	 * Updating the Mango version: - Create a DBUpdate subclass for the old
 	 * version number. This may not do anything in particular to the schema, but
@@ -548,6 +549,13 @@ public class Common {
 
 	public static String generateXid(String prefix) {
 		return prefix + StringUtils.generateRandomString(6, "0123456789");
+	}
+
+	public static User getStaticUser() {
+		return user;
+	}
+	public static void setStaticUser(User user) {
+		Common.user = user;
 	}
 
 }

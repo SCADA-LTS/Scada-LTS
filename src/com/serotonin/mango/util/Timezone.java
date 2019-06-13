@@ -14,13 +14,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 
 /**
@@ -273,5 +271,15 @@ public static Date getTimezoneSystemDate(Date date,User user) throws ParseExcept
     	else
   			return time;
   	}
-
+    public static Date getDate(int year, int month, int day,int hour,int min,int sec) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month-1); //in the api Calendar the first month is Jan=0 /Dec =11
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, min);
+        cal.set(Calendar.SECOND, sec);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
 }

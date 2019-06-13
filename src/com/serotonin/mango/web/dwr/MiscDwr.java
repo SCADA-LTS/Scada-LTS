@@ -341,7 +341,7 @@ public class MiscDwr extends BaseDwr {
 		User user = Common.getUser(httpRequest);
 		EventManager eventManager = Common.ctx.getEventManager();
 		EventDao eventDao = new EventDao();
-		Common.setUser(user);
+		Common.setStaticUser(user);
 		LongPollData data = getLongPollData(pollSessionId, false);
 		data.updateTimestamp();
 
