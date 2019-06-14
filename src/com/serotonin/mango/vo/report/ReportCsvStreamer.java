@@ -65,10 +65,8 @@ public class ReportCsvStreamer implements ReportDataStreamHandler {
 
 public void pointData(ReportDataValue rdv) {
     	
-	
-	// User user = new UserDAO().getUser("admin");
-    User user = Common.getStaticUser();    
-	data[1] = dtf.print(new DateTime(Timezone.getTimezoneUserLong(user, rdv.getTime())));
+  
+	data[1] = dtf.print(new DateTime(Timezone.getTimezoneUserLong(Common.getStaticUser(), rdv.getTime())));
 
         if (rdv.getValue() == null)
             data[2] = data[3] = null;

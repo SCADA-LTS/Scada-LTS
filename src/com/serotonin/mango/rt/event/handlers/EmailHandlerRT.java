@@ -88,7 +88,6 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
 
     @Override
     public void eventRaised(EventInstance evt) {
-    	System.out.println("eventRaised(EventInstance evt)");
         // Get the email addresses to send to
         activeRecipients = new MailingListDao().getRecipientAddresses(vo.getActiveRecipients(),
                 new DateTime(evt.getActiveTimestamp()));
@@ -117,7 +116,6 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     //
     synchronized public void scheduleTimeout(EventInstance evt, long fireTime) {
         // Get the email addresses to send to
-    	System.out.println("scheduleTimeout(EventInstance evt, long fireTime)");
         Set<String> addresses = new MailingListDao().getRecipientAddresses(vo.getEscalationRecipients(), new DateTime(
                 fireTime));
 
@@ -143,18 +141,17 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
 
     public static void sendActiveEmail(EventInstance evt, Set<String> addresses) {
         sendEmail(evt, NotificationType.ACTIVE, addresses, null);
-        System.out.println("sendActiveEmail(EventInstance evt, Set<String> addresses)");
     }
 
     private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
+    	evt.setActiveTimestamp(Timezone.getTimezoneUserLong(Common.getStaticUser(), evt.getActiveTimestamp()));
         sendEmail(evt, notificationType, addresses, vo.getAlias());
-        System.out.println("sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses)");
     }
 
     private static void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses,
             String alias) {
-    	System.out.println("sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses, String alias)");
-        if (evt.getEventType().isSystemMessage()) {
+    	evt.setActiveTimestamp(Timezone.getTimezoneUserLong(Common.getStaticUser(), evt.getActiveTimestamp()));
+    	if (evt.getEventType().isSystemMessage()) {
         	
         	if (((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
                 // Don't send email notifications about email send failures.

@@ -492,14 +492,7 @@ html>body .dojoSplitContainerSizerH {
           if (isMouseLeaveOrEnter(event, source))
         	  hideLayer('p'+ mangoId +'ChartLayer');
       }
-      //System timezone
-      function SytemeTimeZone() {
-
-    	  WatchListDwr.getTimezoneSystem(function(data){ 
-                $("timezone").innerHTML="&nbsp; Chart Date is based on Timezone "+data;
-    	  });
-    	  return timezone;
-      }
+    
       //
       // Image chart
       //
@@ -521,7 +514,7 @@ html>body .dojoSplitContainerSizerH {
               // Make sure the length of the chart doesn't mess up the watch list display. Do async to
               // make sure the rendering gets done.
               setTimeout('dojo.widget.manager.getWidgetById("splitContainer").onResized()', 2000);
-              SytemeTimeZone();
+           
           });
       }
 
@@ -919,7 +912,7 @@ html>body .dojoSplitContainerSizerH {
         <table width="100%">
           <tr>
             <td class="smallTitle"><fmt:message
-										key="watchlist.chart" /> <tag:help id="watchListCharts" /> <span id="timezone"  align="right"> </span></td>
+										key="watchlist.chart" /> <tag:help id="watchListCharts" /></td>
             <td align="right"><input type="text"
 									id="prevPeriodCount" class="formVeryShort" />
             	<select id="prevPeriodType">

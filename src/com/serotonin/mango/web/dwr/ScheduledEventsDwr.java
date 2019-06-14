@@ -63,43 +63,8 @@ public class ScheduledEventsDwr extends BaseDwr {
             se.setInactiveMonth(dt.getMonthOfYear());
             return se;
         }
-        
-        ScheduledEventVO  se = new ScheduledEventDao().getScheduledEvent(id);
-        
-        //timezone
-		// Active
-		Calendar calendarActive = Calendar.getInstance();
-		calendarActive.clear();
-		calendarActive.set(se.getActiveYear(), se.getActiveMonth(), se.getActiveDay(), 
-						se.getActiveHour(), se.getActiveMinute(), se.getActiveSecond());
-		Date Active = calendarActive.getTime();
-		Active = Timezone.getTimezoneUserDate(Common.getUser(),Active);
-		
-		// InActive
-		Calendar calendarInactive = Calendar.getInstance();
-		calendarInactive.clear();
-		calendarInactive.set(se.getInactiveYear(), se.getInactiveMonth(), se.getInactiveDay(), 
-							se.getInactiveHour(), se.getInactiveMinute(), se.getInactiveSecond());
-		Date InActive = calendarInactive.getTime();
-		InActive = Timezone.getTimezoneUserDate(Common.getUser(),InActive);
-		
-		//Active
-		se.setActiveYear( Active.getYear());
-		se.setActiveMonth( Active.getMonth());
-		se.setActiveDay( Active.getDay());
-		se.setActiveHour( Active.getHours());
-		se.setActiveMinute( Active.getMinutes());
-		se.setActiveSecond( Active.getSeconds());
-		
-		// InActive
-		se.setInactiveYear(InActive.getYear());
-		se.setInactiveMonth(InActive.getMonth());
-		se.setInactiveDay(InActive.getDay());
-		se.setInactiveHour(InActive.getHours());
-		se.setInactiveMinute(InActive.getMinutes());
-		se.setInactiveSecond(InActive.getSeconds());           
-		
-		return se;
+               
+		return new ScheduledEventDao().getScheduledEvent(id);
     }
 
     public DwrResponseI18n saveScheduledEvent(int id, String xid, String alias, int alarmLevel, int scheduleType,

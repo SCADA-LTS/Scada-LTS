@@ -24,14 +24,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 import org.scada_lts.dao.UserDAO;
-import org.springframework.beans.propertyeditors.TimeZoneEditor;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
@@ -365,17 +363,12 @@ public class WatchListDwr extends BaseDwr {
 		// to
 		Date to_time =Timezone.getDate(toYear, toMonth,toDay,toHour,toMinute, toSecond);
 		to_time = Timezone.getTimezoneSystemDate(to_time,Common.getUser());
-		System.out.println("from_time: "+from_time);
-		System.out.println("to_time: "+to_time);
-		
 		
 		@SuppressWarnings("deprecation")
 		DateTime from = createDateTime(from_time.getYear(), from_time.getMonth(), from_time.getDate(),from_time.getHours(),from_time.getMinutes(), from_time.getSeconds(), fromNone);
 		@SuppressWarnings("deprecation")
 		DateTime to = createDateTime(to_time.getYear(), to_time.getMonth(), to_time.getDay(), to_time.getHours(), to_time.getMinutes(),to_time.getSeconds(), toNone);
-		System.out.println("From: "+from);
-		System.out.println("To: "+to);
-		
+	
 		StringBuilder htmlData = new StringBuilder();
 		long now = System.currentTimeMillis();
 		htmlData.append("<img src=\"chart/");
