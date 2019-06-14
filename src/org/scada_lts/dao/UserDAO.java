@@ -80,6 +80,11 @@ public class UserDAO {
 			+ USER_SELECT
 			+ "where lower("
 			+ COLUMN_NAME_USERNAME + ")=?";
+	
+	private static final String USER_SELECT_WHERE_EMAIL = ""
+			+ USER_SELECT
+			+ "where lower("
+			+ COLUMN_NAME_EMAIL + ")=?";
 
 	private static final String USER_SELECT_ACTIVE = ""
 				+ USER_SELECT
@@ -217,6 +222,21 @@ public class UserDAO {
 		User user;
 		try {
 			user = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_WHERE_USERNAME, new Object[]{username}, new UserRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			user = null;
+		}
+		return user;
+	}
+	
+	public User getUserByMail(String email) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getUserMail(String email) email:" + email);
+		}
+
+		User user;
+		try {
+			user = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_WHERE_EMAIL, new Object[]{email}, new UserRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 			user = null;
 		}

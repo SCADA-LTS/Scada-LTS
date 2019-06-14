@@ -37,7 +37,6 @@
        		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
       	}
 
-    
     function init() {
     	
     	UsersDwr.getInitData(function(data) {
@@ -113,13 +112,12 @@
             
             //Timezone
             var Timezone ,timezoneHtml= "" ;
-            timezoneHtml  += "<option value='None'> none </option>";
 			for (r=0; r<data.TimezoneList.length; r++){
 				Timezone = data.TimezoneList[r];
 				timezoneHtml += "<option value='" + Timezone + "'>"+  Timezone  + "</option>";
 			}
-			$("TimezoneList").innerHTML = timezoneHtml;
 			
+			$("TimezoneList").innerHTML = timezoneHtml;
                        var vwhtml = "";
                        views = data.views;
                        if (views != null){
@@ -172,7 +170,14 @@
                                   $("watchlistsList").innerHTML = wlhtml;
         });
     }
-
+    
+    // get browser Timezone
+    function browserTimeZone() {
+  	    var offset = new Date().getTimezoneOffset(), o = Math.abs(offset);
+  	    var utc = "UTC"+(offset < 0 ? "+" : "-") + ("00" + Math.floor(o / 60)).slice(-2) + ":" + ("00" + (o % 60)).slice(-2);
+		return "("+utc+") "+ Intl.DateTimeFormat().resolvedOptions().timeZone
+	}
+	
     function showUser(userId, hideMsg) {
 
     	if (hideMsg)
@@ -312,6 +317,15 @@
 		startImageFader($("saveImg"));
     	
 		setUserMessage();
+        
+		
+		/* If Timezone is not selected
+		 * set it with the current local
+		 * machine else leave it be
+		*/
+		if ($get("TimezoneList").length == 0)
+            $set("TimezoneList",browserTimeZone());        	
+        
         if (adminUser) {
     		startImageFader($("u"+ editingUserId +"Img"));
            // Create the list of allowed data sources and data point permissions.
@@ -362,6 +376,7 @@
             	        }
                     }
 
+            
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
                     dsPermis, dpPermis, vwPermis, wlPermis, $get("usersProfilesList"), $get("TimezoneList"), saveUserCB);
