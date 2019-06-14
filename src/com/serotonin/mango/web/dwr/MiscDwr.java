@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +54,7 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.util.DocumentationItem;
 import com.serotonin.mango.util.DocumentationManifest;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
@@ -80,6 +82,10 @@ public class MiscDwr extends BaseDwr {
 	private final ViewDwr viewDwr = new ViewDwr();
 	private final CustomViewDwr customViewDwr = new CustomViewDwr();
 
+	
+	
+
+		
 	public DwrResponseI18n toggleSilence(int eventId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		response.addData("eventId", eventId);
@@ -88,6 +94,16 @@ public class MiscDwr extends BaseDwr {
 		if (user != null) {
 			boolean result = new EventDao()
 					.toggleSilence(eventId, user.getId());
+			
+			for (EventInstance item : user.events) {
+				if(item.getId() == eventId) {
+					user.eventsAux.remove(item);
+					user.ids.remove(user.ids.indexOf(eventId));
+					item.setSilenced(result);
+					break;
+				}
+			}
+
 			resetLastAlarmLevelChange();
 			response.addData("silenced", result);
 		} else
@@ -103,6 +119,12 @@ public class MiscDwr extends BaseDwr {
 		EventDao eventDao = new EventDao();
 		for (EventInstance evt : eventDao.getPendingEvents(user.getId())) {
 			if (!evt.isSilenced()) {
+				for (EventInstance item : user.events) {
+					if(item.getId() == evt.getId()) {
+						item.setSilenced(true);
+						break;
+					}
+				}
 				eventDao.toggleSilence(evt.getId(), user.getId());
 				silenced.add(evt.getId());
 			}
@@ -120,6 +142,14 @@ public class MiscDwr extends BaseDwr {
 		if (user != null) {
 			new EventDao().ackEvent(eventId, System.currentTimeMillis(),
 					user.getId(), 0);
+			for (EventInstance item : user.events) {
+				if(item.getId() == eventId) {
+					user.eventsAux.remove(item);
+					user.events.remove(item);
+					user.ids.remove(user.ids.indexOf(eventId));
+	    			break;
+	    		}
+			}
 			resetLastAlarmLevelChange();
 		}
 		return eventId;
@@ -130,6 +160,12 @@ public class MiscDwr extends BaseDwr {
 		if (user != null) {
 			EventDao eventDao = new EventDao();
 			long now = System.currentTimeMillis();
+			
+			//clear data to update view
+			user.eventsAux.clear();
+			user.events.clear();
+			user.ids.clear();
+
 			for (EventInstance evt : eventDao.getPendingEvents(user.getId()))
 				eventDao.ackEvent(evt.getId(), now, user.getId(), 0);
 			resetLastAlarmLevelChange();
@@ -217,6 +253,7 @@ public class MiscDwr extends BaseDwr {
 				model.put("user", Common.getUser());
 				model.put("message", new LocalizableMessage("common.default",
 						message));
+				System.out.println("TEST MSG !");
 				MangoEmailContent cnt = new MangoEmailContent("testEmail",
 						model, bundle, I18NUtils.getMessage(bundle,
 								"ftl.testEmail"), Common.UTF8);
@@ -288,7 +325,9 @@ public class MiscDwr extends BaseDwr {
 	public Map<String, Object> initializeLongPoll(int pollSessionId,
 			LongPollRequest request) {
 		LongPollData data = getLongPollData(pollSessionId, true);
+		
 		data.setRequest(request);
+		
 		return doLongPoll(pollSessionId);
 	}
 
@@ -299,7 +338,7 @@ public class MiscDwr extends BaseDwr {
 		User user = Common.getUser(httpRequest);
 		EventManager eventManager = Common.ctx.getEventManager();
 		EventDao eventDao = new EventDao();
-
+		Common.setStaticUser(user);
 		LongPollData data = getLongPollData(pollSessionId, false);
 		data.updateTimestamp();
 
@@ -442,7 +481,12 @@ public class MiscDwr extends BaseDwr {
 			if (pollRequest.isPendingAlarms() && user != null) {
 				// Create the list of most current pending alarm content.
 				Map<String, Object> model = new HashMap<String, Object>();
-				model.put("events", eventDao.getPendingEvents(user.getId()));
+				// Retrieving all events
+				                    
+				// Convert time to user timezone and init stateContent to refresh
+				user.eventsAux = convertTime(user.events, user);
+				
+				model.put("events", user.eventsAux);
 				model.put("pendingEvents", true);
 				model.put("noContentWhenEmpty", true);
 				String currentContent = generateContent(httpRequest,
@@ -451,6 +495,9 @@ public class MiscDwr extends BaseDwr {
 
 				if (!StringUtils.isEqual(currentContent,
 						state.getPendingAlarmsContent())) {
+					
+					user.eventsAux = convertTime(eventDao.getPendingEvents(user.getId()), user);
+					
 					response.put("pendingAlarmsContent", currentContent);
 					state.setPendingAlarmsContent(currentContent);
 				}
@@ -596,4 +643,37 @@ public class MiscDwr extends BaseDwr {
 			}
 		}
 	}
+	Comparator<EventInstance> compareById = new Comparator<EventInstance>() {
+		@Override
+		public int compare(EventInstance o1, EventInstance o2) {
+			if (o1.getId()>o2.getId()) {
+				return -1;
+			} else if (o1.getId()<o2.getId()) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	};
+	
+	// returns events with the correct user time
+	public List<EventInstance> convertTime(List<EventInstance> events, User user) {
+		events.forEach(item-> {
+    		if(!user.ids.contains(item.getId())) {
+    			
+    			long active= item.getActiveTimestamp();
+    			long rtn = item.getRtnTimestamp();
+
+    			item.setActiveTimestamp(Timezone.getTimezoneUserLong(Common.getUser(),active));
+    			item.setRtnTimestamp(Timezone.getTimezoneUserLong(Common.getUser(),rtn));
+    		
+    			user.ids.add(item.getId());
+    			user.eventsAux.add(item);
+    		}
+		 });
+
+		user.eventsAux.sort(compareById);
+		return user.eventsAux;
+	}
+
 }

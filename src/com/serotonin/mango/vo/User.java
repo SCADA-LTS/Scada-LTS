@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -43,6 +44,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.View;
@@ -84,7 +86,13 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private int receiveAlarmEmails;
 	@JsonRemoteProperty
 	private boolean receiveOwnAuditEvents;
-
+	
+	// Smart e-Tech
+	@JsonRemoteProperty
+	private TimeZone timezone;
+	@JsonRemoteProperty
+	private String zone;
+	
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -106,6 +114,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient EventExportDefinition eventExportDefinition;
 	private transient Map<String, Object> attributes = new HashMap<String, Object>();
 
+	
 	/**
 	 * Used for various display purposes.
 	 */
@@ -555,4 +564,33 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		// TODO Auto-generated method stub
 
 	}
+	
+	public TimeZone getTimezone() {
+		return timezone;
+	}
+	
+	public String getTimezoneId() {
+		return timezone.getID();
+	}
+	
+	public void setTimezone(TimeZone timezone) {
+		this.timezone = timezone;
+	}
+	public String getZone() {
+		return zone;
+	}
+	
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
+	
+	
+	/**
+	 * Used to multi instance the list of events
+	 * for each user with his current timezone
+	 */	
+	public List<Integer> ids = new ArrayList<Integer>();
+	public List<EventInstance> events = new ArrayList<>(); 
+	public List<EventInstance> eventsAux = new ArrayList<>();
+
 }

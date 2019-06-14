@@ -22,8 +22,12 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.joda.time.DateTime;
+
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.view.export.CsvWriter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -46,11 +50,11 @@ public class EventCsvStreamer {
         data[6] = I18NUtils.getMessage(bundle, "reports.eventList.ackUser");
 
         out.write(csvWriter.encodeRow(data));
-
         for (EventInstance event : events) {
+        	
             data[0] = Integer.toString(event.getId());
             data[1] = AlarmLevels.getAlarmLevelMessage(event.getAlarmLevel()).getLocalizedMessage(bundle);
-            data[2] = event.getFullPrettyActiveTimestamp();
+            data[2] = Timezone.getTimezoneUserString(Common.getStaticUser(), event.getFullPrettyActiveTimestamp());
             data[3] = event.getMessage().getLocalizedMessage(bundle);
 
             if (event.isActive())
@@ -58,10 +62,10 @@ public class EventCsvStreamer {
             else if (!event.isRtnApplicable())
                 data[4] = "";
             else
-                data[4] = event.getFullPrettyRtnTimestamp() + " - " + event.getRtnMessage().getLocalizedMessage(bundle);
+                data[4] = Timezone.getTimezoneUserString(Common.getStaticUser(),event.getFullPrettyRtnTimestamp())+ " - " + event.getRtnMessage().getLocalizedMessage(bundle);
 
             if (event.isAcknowledged()) {
-                data[5] = event.getFullPrettyAcknowledgedTimestamp();
+                data[5] =Timezone.getTimezoneUserString(Common.getStaticUser(), event.getFullPrettyAcknowledgedTimestamp());
 
                 LocalizableMessage ack = event.getExportAckMessage();
                 if (ack == null)

@@ -18,7 +18,9 @@
  */
 package com.serotonin.mango.web.dwr;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
+import org.scada_lts.dao.UserDAO;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
@@ -38,6 +41,7 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
@@ -111,11 +115,34 @@ public class WatchListDwr extends BaseDwr {
 		for (DataPointVO point : watchList.getPointList()) {
 			// Create the watch list state.
 			state = createWatchListState(request, point, rtm, model, user);
+			
+			state.setTime(Timezone.getTimezoneUserString(user, state.getTime()));
+			
 			states.add(state);
 		}
 
 		return states;
 	}
+	
+	// Timezone
+		public String getTimezone() { 
+			UserDAO userDao = new UserDAO();
+			String zone = userDao.getUserZone(Common.getUser().getId());
+			String offset = userDao.getUserTimezone(Common.getUser().getId());
+			return offset +" "+zone;
+
+		}
+		// Timezone
+		public String getTimezoneSystem()
+		{
+			return Timezone.getTimezoneSystem();
+		}
+
+		// Timezone
+		public void updateTimezone(String timezone) {
+			new UserDAO().updateUserTimezone(Common.getUser().getId(), timezone.substring(0, 9));
+			new UserDAO().updateUserZone(Common.getUser().getId(), timezone.substring(10, timezone.length()));
+		}
 
 	public void updateWatchListName(String name) {
 		User user = Common.getUser();
@@ -320,17 +347,28 @@ public class WatchListDwr extends BaseDwr {
 
 	/**
 	 * Method for creating image charts of the points on the watch list.
+	 * @throws ParseException 
 	 */
 	public String getImageChartData(int[] pointIds, int fromYear,
 			int fromMonth, int fromDay, int fromHour, int fromMinute,
 			int fromSecond, boolean fromNone, int toYear, int toMonth,
 			int toDay, int toHour, int toMinute, int toSecond, boolean toNone,
-			int width, int height) {
-		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour,
-				fromMinute, fromSecond, fromNone);
-		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute,
-				toSecond, toNone);
+			int width, int height) throws ParseException {
+		
+	    //timezone
+		// from
+	     Date from_time = Timezone.getDate(fromYear,fromMonth, fromDay, fromHour, fromMinute, fromSecond);
+		 from_time = Timezone.getTimezoneSystemDate(from_time,Common.getUser());
 
+		// to
+		Date to_time =Timezone.getDate(toYear, toMonth,toDay,toHour,toMinute, toSecond);
+		to_time = Timezone.getTimezoneSystemDate(to_time,Common.getUser());
+		
+		@SuppressWarnings("deprecation")
+		DateTime from = createDateTime(from_time.getYear(), from_time.getMonth(), from_time.getDate(),from_time.getHours(),from_time.getMinutes(), from_time.getSeconds(), fromNone);
+		@SuppressWarnings("deprecation")
+		DateTime to = createDateTime(to_time.getYear(), to_time.getMonth(), to_time.getDay(), to_time.getHours(), to_time.getMinutes(),to_time.getSeconds(), toNone);
+	
 		StringBuilder htmlData = new StringBuilder();
 		long now = System.currentTimeMillis();
 		htmlData.append("<img src=\"chart/");

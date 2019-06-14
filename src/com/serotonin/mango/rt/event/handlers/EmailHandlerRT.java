@@ -19,6 +19,7 @@
 package com.serotonin.mango.rt.event.handlers;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -30,11 +31,15 @@ import org.joda.time.DateTime;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.dao.UserDAO;
+
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.mango.web.email.UsedImagesDirective;
@@ -143,13 +148,14 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
-        sendEmail(evt, notificationType, addresses, vo.getAlias());
+    	sendEmail(evt, notificationType, addresses, vo.getAlias());
     }
 
     private static void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses,
-            String alias) {
-        if (evt.getEventType().isSystemMessage()) {
-            if (((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
+            String alias) {	
+    	if (evt.getEventType().isSystemMessage()) {
+        	
+        	if (((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
                 // Don't send email notifications about email send failures.
                 LOG.info("Not sending email for event raised due to email failure");
                 return;
@@ -179,12 +185,14 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         try {
             String[] toAddrs = addresses.toArray(new String[0]);
             UsedImagesDirective inlineImages = new UsedImagesDirective();
-
+    		evt.setActiveTimestamp(Timezone.getTimezoneUserLong(Common.getStaticUser(), evt.getActiveTimestamp()));
             // Send the email.
             Map<String, Object> model = new HashMap<String, Object>();
             model.put("evt", evt);
+            
             if (evt.getContext() != null)
-                model.putAll(evt.getContext());
+            	model.putAll(evt.getContext());
+            
             model.put("img", inlineImages);
             model.put("instanceDescription", SystemSettingsDAO.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
             MangoEmailContent content = new MangoEmailContent(notificationType.getFile(), model, bundle, subject,
@@ -192,8 +200,9 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
 
             for (String s : inlineImages.getImageList())
                 content.addInline(new EmailInline.FileInline(s, Common.ctx.getServletContext().getRealPath(s)));
-
+            
             EmailWorkItem.queueEmail(toAddrs, content);
+            
         }
         catch (Exception e) {
             LOG.error("", e);
