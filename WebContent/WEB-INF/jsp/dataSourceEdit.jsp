@@ -574,5 +574,9 @@
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.SOCKET_COMM']}">
 			<jsp:include page="dataSourceEdit/editSocketComm.jsp" />
 		</c:when>
+		<c:when
+			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.CUSTOM_SERIAL']}">
+			<jsp:include page="dataSourceEdit/editCustomSerial.jsp" />
+		</c:when>
 	</c:choose>
 </tag:page>

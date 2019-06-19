@@ -312,6 +312,9 @@ public class MangoContextListener implements ServletContextListener {
 		// DBH: Socket Communication added to the servlet context constants
 		ctx.setAttribute("constants.DataSourceVO.Types.SOCKET_COMM",
 				DataSourceVO.Type.SOCKET_COMM.getId());
+		// DBH: Custom Serial added to the servlet context constants
+				ctx.setAttribute("constants.DataSourceVO.Types.CUSTOM_SERIAL",
+						DataSourceVO.Type.CUSTOM_SERIAL.getId());
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE",
 				Permissions.DataPointAccessTypes.NONE);
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.READ",

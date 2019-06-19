@@ -89,6 +89,8 @@ import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 
+import org.scada_lts.danibeni.vo.dataSource.customSerial.CustomSerialDataSourceVO;
+import org.scada_lts.danibeni.vo.dataSource.customSerial.CustomSerialPointLocatorVO;
 import org.scada_lts.danibeni.vo.dataSource.socketComm.SocketCommDataSourceVO;
 import org.scada_lts.danibeni.vo.dataSource.socketComm.SocketCommPointLocatorVO;
 import org.scada_lts.workdomain.datasource.amqp.AmqpDataSourceVO;
@@ -2822,6 +2824,55 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	@MethodFilter
 	public DwrResponseI18n saveSocketCommPointLocator(int id, String xid,
 			String name, SocketCommPointLocatorVO locator) {
+		locator.setSettable(false);
+		return validatePoint(id, xid, name, locator, null);
+	}
+	
+	//
+	// Custom Serial Communication
+	//
+
+	public DwrResponseI18n saveCustomSerialDataSource(String name, String xid,
+			int updatePeriods, int updatePeriodType, String commPortId,
+			int baudRate, int dataBits, int stopBits, int parity, int timeout,
+			int retries, int commandFormat, int stopMode, int nChar,
+			int charStopMode, String charX, String hexValue, int stopTimeout,
+			String initString, int bufferSize, boolean quantize,
+			boolean sameFormat) {
+
+		CustomSerialDataSourceVO ds = (CustomSerialDataSourceVO) Common
+				.getUser().getEditDataSource();
+
+		ds.setXid(xid);
+		ds.setName(name);
+		ds.setCommPortId(commPortId);
+		ds.setBaudRate(baudRate);
+		ds.setDataBits(dataBits);
+		ds.setStopBits(stopBits);
+		ds.setParity(parity);
+		ds.setTimeout(timeout);
+		ds.setRetries(retries);
+		ds.setUpdatePeriods(updatePeriods);
+		ds.setUpdatePeriodType(updatePeriodType);
+		// DBH: Added command and response format to data stored for Custom
+		// Serial datasources
+		ds.setCommandFormat(commandFormat);
+		ds.isSameFormat(sameFormat);
+		ds.setStopMode(stopMode);
+		ds.setnChar(nChar);
+		ds.setCharStopMode(charStopMode);
+		ds.setCharX(charX);
+		ds.setHexValue(hexValue);
+		ds.setStopTimeout(stopTimeout);
+		ds.setInitString(initString);
+		ds.setBufferSize(bufferSize);
+		ds.setQuantize(quantize);
+		return tryDataSourceSave(ds);
+	}
+
+	@MethodFilter
+	public DwrResponseI18n saveCustomSerialPointLocator(int id, String xid,
+			String name, CustomSerialPointLocatorVO locator) {
 		locator.setSettable(false);
 		return validatePoint(id, xid, name, locator, null);
 	}
