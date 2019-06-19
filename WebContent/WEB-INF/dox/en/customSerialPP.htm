@@ -1,0 +1,46 @@
+<!--
+    ScadaLTS - Open Source M2M – http://www.scada-lts.org
+    Copyright (C) 20018-2019 Daniel Benitez de Haro.
+    @author danibeni (DBH)
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Configuration</h1>
+<p>
+Each datapoint configured into the Custom Serial datasource corresponds to a value received from the device connected through 
+a serial port.  
+</p>
+<p>
+Every new point added to this datasource is identified by a <b>Name</b> and an internal identifier automatically generated, <b>Export ID</b>.
+There are two communication possibilities depending on how the serial device provides the data:
+</p>
+<ol>
+<li>Command sending and response receiving</li>
+<li>Periodically data receiving</li>
+</ol>
+<h3>Command sending and response receiving</h3>
+<p>
+If the serial device needs to be queried to provide a data value, the first thing to do is establish the <b>Number of commands</b> needed to get the desired response from the serial device. 
+If only one command is needed to get the sought response from the serial device, a <b>First Command</b> is sent. If two or three commands are needed to get the sought response from the serial device, 
+the response to the first command is compared to the <b>Expected response for first command</b>. If both match, a <b>Second command</b> is sent and the same process is done with the <b>Expected response for second command</b>,
+if a <b>Third Command</b> is needed. If the serial device responses match the expected ones configured into the data point, a value from the final response (the sought one) is stored as as a binary, numeric, multistate or 
+alphanumeric data (<b>Data Type</b>), based on the regular expression "mask" at <b>Value regex</b>.   
+</p>
+<h3>Periodically data receiving</h3>
+<p>
+If the serial device sends data periodically without receiving any command from the datasource, the <b>Number of commands</b> field from each datapoint should be kept with a zero value, indicating that the datasource
+is configured to only receive data from the serial device (No command is sent to the serial device).The final value to be stored as datapoint is selected based on a regular expression (<b>Value regex</b>).      
+Depending on the <b>Data type</b>, the value obtained from the serial device is stored as a binary, numeric, multistate or alphanumeric data.
+</p>

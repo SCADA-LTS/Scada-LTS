@@ -1,0 +1,50 @@
+<!--
+    ScadaLTS - Open Source M2M – http://www.scada-lts.org
+    Copyright (C) 20018-2019 Daniel Benitez de Haro.
+    @author danibeni (DBH)
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Configuraci&oacute;n</h1>
+<p>
+Cada punto de dato configurado en la fuente de datos <b>Serie Personalizado</b> se corresponde con un valor recibido desde el dispositivo serie, que
+se encuentra conectado a un puerto serie del ordenador que aloja este SCADA.  
+</p>
+<p>
+Cada nuevo punto aÃ±adido a esta fuente de datos es identificado mediante un <b>Nombre</b> y un identificador interno del SCADA generado de forma autom&aacute;tica,
+<b>ID de Exportaci&oacute;n</b>. Existen dos posibles formas de comunicac&oacute;n dependiendo de como un dispositivo serie proporciona los datos:
+</p>
+<ol>
+<li>Env&iacute;o de comandos y recepc&oacute;n de respuesta</li>
+<li>Recepci&oacute;n peri&oacute;dica de datos</li>
+</ol>
+<h3>Env&iacute;o de comandos y recepci&oacute;n de respuesta</h3>
+Si el dispositivo serie precisa ser consultado para proporcionar un dato, es necesario establecer el <b>N&uacute;mero de comandos</b> a enviar al dispositivo serie antes de obtener la respuesta solicitada al dispositivo serie.
+En el caso de que s&oacute;lo fuera necesario el env&iacute;o de un <b>Primer Comando</b>, la respuesta solicitada es proporcionada directamente por el dispositivo serie. En caso de ser necesarios dos o tres comandos para obtener la
+respuesta deseada desde el dispositivo serie, la respuesta al primer comando es comparada con la <b>Respuesta esperada para primer comando</b>. Si ambas coinciden, un <b>Segundo Comando</b> es enviado y, si un <b>Tercer Comando</b> es necesario, el mismo
+proceso de comparaciÃ³n es realizado entre la respuesta al segundo comando y la <b>Respuesta esperada para segundo comando</b>. En el caso de que las respuestas del dispositivo serie a los diferentes comandos intermedios coincidan con las esperadas, se almacena
+en le punto de datos la parte de la respuesta final que coincida con la expresiÃ³n regular configurada (<b>Valor de ExpresiÃ³n Regular (RegEx)</b>), en forma de un valor binario, num&eacute;rico, multiestado o alfanum&eacute;rico (<b>Tipo de Dato</b>) 
+<p>
+Esta es la forma habitual de comunicaci&oacute;n con un dispositivo serie. En cada per&iacute;odo de actualizaci&oacute;n de la fuente de datos se env&iacute;a al dispositivo serie el <b>Comando</b>
+configurado en cada punto de datos seg&uacute;n el <b>Formato de trama para comando</b> definido en la fuente de datos <b>Serie Personalizado</b>, y se obtiene la respuesta
+proporcionada por el dispositivo serie a dicho comando.   
+</p>
+<h3>Recepci&oacute;n peri&oacute;dica de datos</h3>
+<p>
+Si el dispositivo serie env&iacute;a datos de forma peri&oacute;dica sin recibir ning&uacute;n comando desde la fuente de datos <b>Serie Personalizado</b>, el campo <b>N&uacute;mero de comandos</b> de cada punto de datos deber&iacute;a
+dejarse con valor cero, indicando de esta forma que la fuente de datos se encuentra configurada para &uacute;nicamente recibir datos desde el dispositivo (NINGUN COMANDO ES ENVIADO AL DISPOSITIVO SERIE). El
+valor final a almacenar como punto de dato se selecciona a partir de un <b>Valor de Expresi&oacute;n Regular</b>. Dependiendo
+del <b>Tipo de dato</b>, este valor se guarda como un dato binario, num&eacute;rico, multiestado o alfanum&eacute;rico.
+</p>

@@ -1,0 +1,94 @@
+<!--
+    ScadaLTS - Open Source M2M – http://www.scada-lts.org
+    Copyright (C) 20018-2019 Daniel Benitez de Haro.
+    @author danibeni (DBH)
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Descripci&oacute;n</h1>
+<p>
+Esta fuente de datos est&aacute; diseÃ±ada para conectarse y obtener datos procedentes de distintos dispositivos serie, que basan
+su comunicaci&oacute;n en el conjunto de caracteres ASCII.
+
+Existen b&aacute;sicamente dos formas de funcionamiento de esta fuente de datos: 
+</p>
+<ol>
+<li>Envio de comandos y recepci&oacute;n de respuestas</li>
+<li>Recepci&oacute;n de datos peri&oacute;dicos</li>
+</ol>
+
+<h3>Env&iacute;o de comandos y recepci&oacute;n de respuestas</h3>
+<p>
+Este modo de funcionamiento consiste en el env&iacute;o de los comandos configurados en diferentes puntos de la fuente de datos. Cada comando es
+enviado al dispositivo serie, junto con uno o varios caracteres que delimitan el comando, siguiendo el formato que entienda el dispositivo serie 
+(<b>Formato de trama para comando</b>). Tras el env&iacute;o del comando se produce un retardo (<b>Tiempo de espera respuesta (ms)</b>),
+antes de proceder a capturar la respuesta del dispositivo serie. Una vez obtenida, dicha respuesta es procesada para extraer datos de ella 
+hasta que se cumpla la condici&oacute;n de parada establecida en las propiedades de la fuente de datos. Esta condici&oacute;n de parada puede seguir el
+mismo formato del comando enviado, o puede ser una condiciÃ³n personalizada para el dispositivo serie, ya sea un car&aacute;cter ASCII o un car&aacute;cter hexadecimal
+concreto. Dentro de esta &uacute;ltima selecci&oacute;n de datos se encuentra el valor que se desea almacenar como punto de la fuente de datos, el cual se determina
+mediante expresiones regulares en el propio punto de la fuente de datos.  
+</p>
+
+<p>
+En este modo de operaciÃ³n es posible configurar cada punto de datos para envÃ­ar hasta tres comandos de forma consecutiva hasta obtener la respuesta deseada. Si el <b>N&uacute;mero de comandos</b> configurados en el punto de datos
+es mayor que uno, la correspondiente respuesta desde el dispositivo serie al <b>Primer Comando</b> es capturada y comparada con la <b>Respuesta esperada para primer comando</b>. Si ambas coinciden, un <b>Segundo Comando</b> es enviado, repitiendo el proceso
+que se acaba de comentar en el caso de que el nÃºmero de comandos configurados sea mayor que dos. Por el contrario, si la respuesta capturada no coincide con la respuesta esperada, se lanza un error indicando esta circunstancia. Esta opciÃ³n de 
+poder incluir mÃ¡s de un comando dentro de un punto de datos se ha incluido debido a que algunos dispositivos serie comerciales implementan un protocolo que requiere del envÃ­o de mÃ¡s de un comando para facilitar la respuesta buscada. 
+</p>
+
+<h3>Recepci&oacute;n de datos peri&oacute;dicos</h3>
+<p>
+Este otro modo de funcionamiento se basa en la recepci&oacute;n peri&oacute;dica de datos desde el dispositivo serie. La activaciÃ³n de este modo
+solo requiere dejar  con valor cero el campo donde se inserta el <b>N&uacute;mero de comandos</b>, indicando que no se va a enviar ningÃºn comando para obtener una respuesta desde el dispositivo serie, lo cual queda de manifiesto al no mostrarse
+ningÃºn campo donde introducir los comandos a enviar. De esta forma, se captura periÃ³dicamente los datos procedentes del dispositivo serie mediante expresiones regulares, almacenando como punto de la fuente de datos la parte de los datos que interesen.
+</p>
+
+<h3>Configuraci&oacute;n</h3>
+<p>
+Toda fuente de datos requiere un <b>Nombre</b> que describa al dispositivo o la funciÃ³n de la fuente de datos, asÃ­ como un <b>Per&iacute;odo de actualizaci&oacute;</b>, donde se
+indica cada cuanto tiempo se realizan las operaciones y consulta de datos del dispositivo serie, y un n&uacute;mero m&aacute;ximo de <b>Reintentos</b> de conexi&oacute;n con el dispositivo
+antes de indicar un fallo de comunicaciÃ³n con el dispositivo serie.  
+</p>
+<p>
+La configuraci&oacute;n de la comunicaci&oacute;n con el dispositivo serie se realiza mediante los par&aacute;metros habituales de una conexi&oacute;n serie, entre los que se encuentran: el <b>Puerto</b>
+al que encuentra conectado el dispositivo serie, la <b>Tasa de transferencia</b> de datos entre el dispositivo serie y la fuente de datos, el n&uacute;mero de <b>Bits de datos</b>, el 
+n&uacute;mero de <b>Bits de parada</b> y el tipo de <b>Paridad</b> . 
+</p>
+<p>
+Para el caso de dispositivos serie con funcionamiento mediante <b>Envio de comandos y recepci&oacute;n de respuestas</b>, puede darse el caso de que dicho dispositivo presente una reducida velocidad de respuesta
+a los comandos enviados. Esta situaci&oacute;n obliga a incluir un <b>Tiempo de espera a respuesta</b> del dispositivo serie. Este tiempo permite evitar una posible p&eacute;rdida de informaciÃ³n que podr&iacutea producirse si se permite 
+que la fuente de datos pueda llegar a solicitar nueva informaci&oacuten al dispositivo serie antes de que &eacute;ste haya sido capaz de generar una respuesta a la anterior consulta.
+</p>
+<p>
+La mayoria de los dispositivos serie basados en comunicaci&oacute;n mediante caracteres ASCII suelen utilizar los caracteres de retorno de carro (\r) y fin de linea (\n) para delimitar el comando recibido o la respuesta enviada. Para facilitar
+su inclusi&oacute;n al definir una nueva fuente de datos serie, se dispone del par&aacute;metro <b>Formato de trama para comando</b>, donde es posible seleccionar los caracteres que delimitan el comando a enviar al dispositivo serie. Estos mismos caracteres
+se pueden utilizar para delimitar la respuesta proporcionada por el dispositivo, utilizando el <b>Mismo formato de trama para respuesta</b>. Si no se selecciona el mismo formato para comando y respuesta, se proporciona la opciÃ³n de definir
+un <b>M&eacute;todo de parada</b> alternativo para las respuestas, donde se ir&aacute;n a&ntilde;adiendo datos a la respuesta almacenada hasta que se cumpla la condici&oacute;n configurada en la fuente de datos, basada en una de las siguientes opciones:
+</p>
+<ul>
+<li>
+<b>N&uacute;mero de caracteres</b>: Al seleccionar esta opci&oacute;n se est&aacute; indicando que solo se va a almacenar el <b>N&uacute;mero de caracteres</b> indicado de la respuesta obtenida desde el dispositivo serie.
+</li>
+<li>
+<b>Hasta car&aacute;cter C</b>: Esta otra opci&oacute;n permite seleccionar mediante el <b>Modo car&aacute;cter</b>, un valor concreto como forma de delimitar la respuesta obtenida desde el dispositivo serie. Este valor se puede expresar como un <b>car&aacute;cter ASCII</b>
+o como un <b>Valor hexadecimal</b>,   
+</li>
+</ul>
+<p>
+Un aspecto importante, a tener muy en cuenta si se trabaja en el modo de funcionamiento de <b>Recepci&oacute;n de datos peri&oacute;dicos</b>, es la relaci&oacute;n entre el <b>Tama&ntilde;o del buffer</b> de recepci&oacute;n y el <b>Per&iacute;odo de actualizaci&oacute;n</b>
+con el per&iacute;odo de tiempo establecido en el dispositivo para el env&iacute;o regular de datos por el puerto serie. Si el tiempo entre env&iacute;os de datos desde el dispositivo serie es peque&ntilde;o, y el perÃ­odo de actualizaci&oacute;n de la fuente de datos grande, es posible que el
+buffer de recepci&oacute;n no tenga el tama&ntilde;o suficiente para almacenar todos los datos enviados desde el dispositivo serie, con la consecuente p&eacute;rdida de datos. Es por ello que cuando se utilice el modo de funcionamiento de recepci&oacute;n de datos peri&oacute;dicos, resulta
+altamente recomendable calcular el tama&ntilde;o de buffer necesario para capturar los datos deseados durante el plazo de tiempo entre actualizaciones de la fuente de datos.
+</p>

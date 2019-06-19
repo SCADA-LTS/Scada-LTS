@@ -1,0 +1,80 @@
+<!--
+    ScadaLTS - Open Source M2M – http://www.scada-lts.org
+    Copyright (C) 20018-2019 Daniel Benitez de Haro.
+    @author danibeni (DBH)
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Description</h1>
+<p>
+This data source is ready to connect and get all the data from different serial devices, based on ASCII characters communication.
+
+Two operations modes available for this data source: 
+</p>
+<ol>
+<li>Command sending and response receiving</li>
+<li>Periodically data receiving</li>
+</ol>
+
+<h3>Command sending and response receiving</h3>
+<p>
+This operation mode is based on the commands sending which are configured on each data source point. Each command is sent to the serial device,
+followed by one or more delimiter characters according to the serial device data format(<b>Frame format for command</b>). Once the command has
+been sent, a delay (<b>Waiting time for response</b>) is performed in order to give to the serial device enough time to send a response. Then, the serial device response
+is analyzed to get the data that fulfill the condition established by the <b>Stop Mode</b> parameter. This stop condition could be the same used for the command sending or a
+customized one for a concrete serial device. There are two ways to customize the stop mode: by using a single ASCCI character or a single hexadecimal value.
+</p>
+<p>
+In this operation mode, it is possible to configure each data point to send up to three consecutive commands to get the desired response. if the <b>Number of commands</b> configured in the data point is greater than one, a 
+the response captured from the serial device is compared with the <b>Expected response for first command</b>. If both match, a <b>Second Command</b> is sent, repeating this process in case the number of commands is greater than two. Conversely,
+if the captured response does not match the expected one, an error arises indicating this circumstance. This option to have more than one command into a data point has been included because the communication protocol used by some serial devices 
+requires of more than one command to provide the sought response. 
+</p>
+<h3>Periodically data receiving</h3>
+<p>
+The periodically data receiving operation mode is based on the periodic receiving of data from the serial device. This mode is active when the <b>Number of commands</b> field in the data source points have a zero value, indicating that no command has been configured. Besides, no command fields
+are shown. The data received from the serial device are captured  periodically, and the values to store into the data points are selected by regular expressions.
+</p>
+
+<h3>Configuration</h3>
+<p>
+All data source requires a <b>Name</b>, which describes the connected device or the data source purpose. It also requires an <b>Update Period</b>, that determines how often the serial device is polled for data, and 
+the number of <b>Retries</b> to try to connect to the serial device in case of a connection could not be established.
+</p>
+<p>
+The communication with the serial device is configured based on the usual serial parameters, including the <b>Baud rate</b>, the <b>Data bits</b>, the <b>Stop bits</b> and the <b>Parity</b>.
+</p>
+<p>
+When the serial device connected to this data source is providing data based on the <i>Command sending and response receiving</i> operation mode, it is possible that the serial device needs some time to provide a response to a sending command. In this case, a
+<b>Waiting time for response</b> is available to delay the response capture and allow the serial device to provide a correct response for the commands sent from the data points.
+</p>
+<p>
+Most of the serial devices based on ASCII use carriage return (\r) and line feed (\n) characters to indicate the command and response end. To make it simple, this data source has a <b>Frame format for command</b> parameter that give the option to
+end the command to the serial device with some combination of carriage return and line feed characters. These same characters can be used to indicate the end of the expected response from the serial device by checking the <b>Same format for commands
+and responses</b> box. In case this box is not checked, the <b>Stop Mode</b> parameter is used to determine the characters to include in the expected response. There are two possibilities:
+</p>
+<ul>
+<li>
+<b>Number of characters</b>:  The expected response only stores the first <b>Number of characters</b> from the serial device raw response.
+</li>
+<li>
+<b>Until character C</b>: The expected response only store characters until a custom character is found. This custom character can be an <b>ASCCI character</b> or an <b>Hexadecimal value</b>. The rest of the serial device raw response is discarded.    
+</li>
+</ul>
+<p>
+The <b>Buffer size</b> indicates the maximum number of characters to store from a serial device response. When the data source has any data point configured to work in <b>Periodically data receiving</b> mode (Zero commands in data point), is highly advisable to take into account the relation between the <b>Buffer size</b>,
+the data source <b>Update period</b> and the time between consecutive server responses. If this time is small, and the data source update period is high, it is possible that the receive buffer does not have enough size to hold all the data received from the serial device, so
+some data could be lost. For this reason it is advisable to set update period and buffer size data source parameters that fit well with the time between the serial device responses update.
+</p>
