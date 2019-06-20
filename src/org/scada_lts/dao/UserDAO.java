@@ -137,13 +137,18 @@ public class UserDAO {
 			+ "from users "
 			 + "where "
 				+ COLUMN_NAME_ID + "=? ";
-
+	
 	private static final String USER_UPDATE_ZONE=""				
 			+ "update users set "								// Zone
 			+ COLUMN_NAME_ZONE + "=? "
 		    + "where "
 			+ COLUMN_NAME_ID + "=? ";
-	
+
+	private static final String USER_SELECT_WHERE_EMAIL = ""
+			+ USER_SELECT
+			+ "where lower("
+			+ COLUMN_NAME_EMAIL + ")=?";
+
 	private static final String USER_UPDATE_LOGIN = ""
 			+ "update users set "
 				+ COLUMN_NAME_LAST_LOGIN + "=? "
@@ -288,6 +293,21 @@ public class UserDAO {
 			return "";
 		}
 
+	}
+
+	public User getUserByMail(String email) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getUserMail(String email) email:" + email);
+		}
+
+		User user;
+		try {
+			user = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_WHERE_EMAIL, new Object[]{email}, new UserRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			user = null;
+		}
+		return user;
 	}
 	public void updateUserTimezone(int userId, String timezone) {
 

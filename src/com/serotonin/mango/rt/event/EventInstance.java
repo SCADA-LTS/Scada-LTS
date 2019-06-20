@@ -90,7 +90,7 @@ public class EventInstance {
 
     private long acknowledgedTimestamp;
     private int acknowledgedByUserId;
-    private String acknowledgedByUsername;
+    public String acknowledgedByUsername;
     private int alternateAckSource;
 
     //

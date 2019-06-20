@@ -135,6 +135,7 @@ public class WatchListDwr extends BaseDwr {
 
 		}
 
+		
 		// Timezone
 		public void updateTimezone(String timezone) {
 			new UserDAO().updateUserTimezone(Common.getUser().getId(), timezone.substring(0, 9));

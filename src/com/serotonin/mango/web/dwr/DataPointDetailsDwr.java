@@ -99,6 +99,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		for (PointValueTime pvt : rawData) {
 			RenderedPointValueTime rpvt = new RenderedPointValueTime();
 			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
+			pvt.setTime(Timezone.getTimezoneUserLong(Common.getStaticUser(),pvt.getTime()));
 			rpvt.setTime(Functions.getTime(pvt));
 
 			if (pvt.isAnnotated()) {
@@ -133,16 +134,13 @@ public class DataPointDetailsDwr extends BaseDwr {
 		// to
 		Date to_time =Timezone.getDate(toYear, toMonth,toDay,toHour,toMinute, toSecond);
 		to_time = Timezone.getTimezoneSystemDate(to_time,Common.getUser());
-		System.out.println("from_time: "+from_time);
-		System.out.println("to_time: "+to_time);
-		
+	
 		
 		@SuppressWarnings("deprecation")
 		DateTime from = createDateTime(from_time.getYear(), from_time.getMonth(), from_time.getDate(),from_time.getHours(),from_time.getMinutes(), from_time.getSeconds(), fromNone);
 		@SuppressWarnings("deprecation")
 		DateTime to = createDateTime(to_time.getYear(), to_time.getMonth(), to_time.getDay(), to_time.getHours(), to_time.getMinutes(),to_time.getSeconds(), toNone);
-		System.out.println("From: "+from);
-		System.out.println("To: "+to);
+	
 		
 		
 		
@@ -170,9 +168,23 @@ public class DataPointDetailsDwr extends BaseDwr {
 	@MethodFilter
 	public void getChartData(int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute, int fromSecond,
 			boolean fromNone, int toYear, int toMonth, int toDay, int toHour, int toMinute, int toSecond,
-			boolean toNone) {
-		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour, fromMinute, fromSecond, fromNone);
-		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute, toSecond, toNone);
+			boolean toNone)  throws ParseException {
+			
+		 //timezone
+		// from
+		 Date from_time = Timezone.getDate(fromYear,fromMonth, fromDay, fromHour, fromMinute, fromSecond);
+		 from_time = Timezone.getTimezoneSystemDate(from_time,Common.getUser());
+		
+		// to
+		Date to_time =Timezone.getDate(toYear, toMonth,toDay,toHour,toMinute, toSecond);
+		to_time = Timezone.getTimezoneSystemDate(to_time,Common.getUser());
+		
+		@SuppressWarnings("deprecation")
+		DateTime from = createDateTime(from_time.getYear(), from_time.getMonth(), from_time.getDate(),from_time.getHours(),from_time.getMinutes(), from_time.getSeconds(), fromNone);
+		@SuppressWarnings("deprecation")
+		DateTime to = createDateTime(to_time.getYear(), to_time.getMonth(), to_time.getDay(), to_time.getHours(), to_time.getMinutes(),to_time.getSeconds(), toNone);
+		
+
 		DataExportDefinition def = new DataExportDefinition(new int[] { getDataPointVO().getId() }, from, to);
 		Common.getUser().setDataExportDefinition(def);
 	}
@@ -208,6 +220,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		Collections.reverse(values);
 		List<ImageValueBean> result = new ArrayList<ImageValueBean>();
 		for (PointValueTime pvt : values) {
+			pvt.setTime(Timezone.getTimezoneUserLong(Common.getStaticUser(),pvt.getTime()));
 			ImageValue imageValue = (ImageValue) pvt.getValue();
 			String uri = ImageValueServlet.servletPath + ImageValueServlet.historyPrefix + pvt.getTime() + "_"
 					+ vo.getId() + "." + imageValue.getTypeExtension();
@@ -215,7 +228,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		}
 
 		DwrResponseI18n response = new DwrResponseI18n();
-		System.out.println(result);
+
 		response.addData("images", result);
 		addAsof(response);
 		return response;
@@ -223,6 +236,6 @@ public class DataPointDetailsDwr extends BaseDwr {
 
 	private void addAsof(DwrResponseI18n response) {
 		response.addData("asof",
-				new LocalizableMessage("dsDetils.asof", DateFunctions.getFullSecondTime(System.currentTimeMillis())));
+				new LocalizableMessage("dsDetils.asof", DateFunctions.getFullSecondTime(Timezone.getTimezoneUserLong(Common.getStaticUser()))));
 	}
 }
