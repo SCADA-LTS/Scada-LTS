@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -54,7 +53,6 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.util.DocumentationItem;
 import com.serotonin.mango.util.DocumentationManifest;
-import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
@@ -250,7 +248,6 @@ public class MiscDwr extends BaseDwr {
 				model.put("user", Common.getUser());
 				model.put("message", new LocalizableMessage("common.default",
 						message));
-				System.out.println("TEST MSG !");
 				MangoEmailContent cnt = new MangoEmailContent("testEmail",
 						model, bundle, I18NUtils.getMessage(bundle,
 								"ftl.testEmail"), Common.UTF8);
@@ -322,15 +319,7 @@ public class MiscDwr extends BaseDwr {
 	public Map<String, Object> initializeLongPoll(int pollSessionId,
 			LongPollRequest request) {
 		LongPollData data = getLongPollData(pollSessionId, true);
-		
-		/*
-		
-		events = new EventDao().getPendingEvents(Common.getUser().getId());
-		eventsAux = convertTime(events);
-		
-		*/
 		data.setRequest(request);
-		
 		return doLongPoll(pollSessionId);
 	}
 

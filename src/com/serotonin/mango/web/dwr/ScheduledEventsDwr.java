@@ -18,16 +18,12 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
@@ -45,12 +41,10 @@ public class ScheduledEventsDwr extends BaseDwr {
     //
     public List<ScheduledEventVO> getScheduledEvents() {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        //TODO convert Timezone to user's
         return new ScheduledEventDao().getScheduledEvents();
     }
 
-    @SuppressWarnings("deprecation")
-	public ScheduledEventVO getScheduledEvent(int id) throws ParseException{
+    public ScheduledEventVO getScheduledEvent(int id) {
         Permissions.ensureDataSourcePermission(Common.getUser());
 
         if (id == Common.NEW_ID) {
@@ -70,7 +64,7 @@ public class ScheduledEventsDwr extends BaseDwr {
     public DwrResponseI18n saveScheduledEvent(int id, String xid, String alias, int alarmLevel, int scheduleType,
             boolean returnToNormal, boolean disabled, int activeYear, int activeMonth, int activeDay, int activeHour,
             int activeMinute, int activeSecond, String activeCron, int inactiveYear, int inactiveMonth,
-            int inactiveDay, int inactiveHour, int inactiveMinute, int inactiveSecond, String inactiveCron) throws ParseException {
+            int inactiveDay, int inactiveHour, int inactiveMinute, int inactiveSecond, String inactiveCron) {
         Permissions.ensureDataSourcePermission(Common.getUser());
 
         // Validate the given information. If there is a problem, return an appropriate error message.
@@ -82,42 +76,20 @@ public class ScheduledEventsDwr extends BaseDwr {
         se.setScheduleType(scheduleType);
         se.setReturnToNormal(returnToNormal);
         se.setDisabled(disabled);
-        
-        //timezone
-		// Active
-		
-        Calendar calendarActive = Calendar.getInstance();
-		calendarActive.clear();
-		calendarActive.set(activeYear, activeMonth, activeDay, activeHour, activeMinute, activeSecond);
-		Date Active = calendarActive.getTime();
-		
-		Active = Timezone.getTimezoneSystemDate(Active,Common.getUser());
-		
-		// InActive
-		Calendar calendarInActive = Calendar.getInstance();
-		calendarInActive.clear();
-		calendarInActive.set(inactiveYear, inactiveMonth, inactiveDay, inactiveHour, inactiveMinute, inactiveSecond);
-		Date InActive = calendarInActive.getTime();
-		//Common.getUser()
-		InActive = Timezone.getTimezoneSystemDate(InActive,Common.getUser());
-		
-		//Active
-		se.setActiveYear(Active.getYear());
-		se.setActiveMonth(Active.getMonth());
-		se.setActiveDay(Active.getDay());
-		se.setActiveHour(Active.getHours());
-		se.setActiveMinute(Active.getMinutes());
-		se.setActiveSecond(Active.getSeconds());
-		se.setActiveCron(activeCron);
-		
-		// InActive
-		se.setInactiveYear(InActive.getYear());
-		se.setInactiveMonth(InActive.getMonth());
-		se.setInactiveDay(InActive.getDay());
-		se.setInactiveHour(InActive.getHours());
-		se.setInactiveMinute(InActive.getMinutes());
-		se.setInactiveSecond(InActive.getSeconds()); 
-		se.setInactiveCron(inactiveCron);
+        se.setActiveYear(activeYear);
+        se.setActiveMonth(activeMonth);
+        se.setActiveDay(activeDay);
+        se.setActiveHour(activeHour);
+        se.setActiveMinute(activeMinute);
+        se.setActiveSecond(activeSecond);
+        se.setActiveCron(activeCron);
+        se.setInactiveYear(inactiveYear);
+        se.setInactiveMonth(inactiveMonth);
+        se.setInactiveDay(inactiveDay);
+        se.setInactiveHour(inactiveHour);
+        se.setInactiveMinute(inactiveMinute);
+        se.setInactiveSecond(inactiveSecond);
+        se.setInactiveCron(inactiveCron);
 
         DwrResponseI18n response = new DwrResponseI18n();
         ScheduledEventDao scheduledEventDao = new ScheduledEventDao();

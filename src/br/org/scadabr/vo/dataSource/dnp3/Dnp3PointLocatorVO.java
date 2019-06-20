@@ -53,7 +53,7 @@ public class Dnp3PointLocatorVO extends AbstractPointLocatorVO implements
 		if (dnp3DataType == BINARY_INPUT)
 			return DataTypes.BINARY;
 		else if (dnp3DataType == BINARY_OUTPUT)
-			return DataTypes.BINARY;
+			return DataTypes.ALPHANUMERIC;
 		return DataTypes.NUMERIC;
 	}
 

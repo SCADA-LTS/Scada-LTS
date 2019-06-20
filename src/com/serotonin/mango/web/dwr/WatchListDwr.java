@@ -18,11 +18,7 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.text.ParseException;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
-import org.scada_lts.dao.UserDAO;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
@@ -43,7 +38,6 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
-import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
@@ -117,21 +111,11 @@ public class WatchListDwr extends BaseDwr {
 		for (DataPointVO point : watchList.getPointList()) {
 			// Create the watch list state.
 			state = createWatchListState(request, point, rtm, model, user);
-			
-			state.setTime(Timezone.getTimezoneUserString(user, state.getTime()));
-			
 			states.add(state);
 		}
 
 		return states;
 	}
-	
-	// Timezone
-		public String getTimezone() { 
-			UserDAO userDao = new UserDAO();
-			String zone = userDao.getUserZone(Common.getUser().getId());
-			String offset = userDao.getUserTimezone(Common.getUser().getId());
-			return offset +" "+zone;
 
 		}
 
@@ -345,7 +329,6 @@ public class WatchListDwr extends BaseDwr {
 
 	/**
 	 * Method for creating image charts of the points on the watch list.
-	 * @throws ParseException 
 	 */
 	public String getImageChartData(int[] pointIds, int fromYear,
 			int fromMonth, int fromDay, int fromHour, int fromMinute,
@@ -397,7 +380,8 @@ public class WatchListDwr extends BaseDwr {
 
 		boolean pointsFound = false;
 		// Add the list of points that are numeric.
-		List<DataPointVO> watchList = Common.getUser().getWatchList().getPointList();
+		List<DataPointVO> watchList = Common.getUser().getWatchList()
+				.getPointList();
 		for (DataPointVO dp : watchList) {
 			int dtid = dp.getPointLocator().getDataTypeId();
 			if ((dtid == DataTypes.NUMERIC || dtid == DataTypes.BINARY || dtid == DataTypes.MULTISTATE)

@@ -59,15 +59,13 @@ public class UserAPI {
                     private String password;
                     private String email;
                     private Boolean admin;
-                    private String timezone;
-                    
-                    UserJSON(long id, String name, String password, String email, Boolean admin, String timezone) {
+
+                    UserJSON(long id, String name, String password, String email, Boolean admin) {
                         this.setId(id);
                         this.setName(name);
                         this.setPassword(password);
                         this.setEmail(email);
                         this.setAdmin(admin);
-                        this.setTimeZone(timezone);
                     }
 
                     public long getId() { return id; }
@@ -93,15 +91,9 @@ public class UserAPI {
                     public void setEmail(String email) {
                         this.email = email;
                     }
-                    public String getTimezone() {
-						return timezone;
-					}
-					public void setTimeZone(String timezone) {
-						this.timezone = timezone;
-					}
+
                     public Boolean isAdmin() { return admin; }
                     public void setAdmin(Boolean admin) { this.admin = admin; }
-					
                 }
 
                 int userId = user.getId();
@@ -114,10 +106,7 @@ public class UserAPI {
 
                 List<UserJSON> lst = new ArrayList<UserJSON>();
                 for (User u:lstUsers) {
-                    UserJSON dsU = new UserJSON(u.getId(), 
-					                    		u.getUsername(), u.getPassword(), 
-					                    		u.getEmail(), u.isAdmin(),
-					                    		u.getTimezoneId() + u.getZone());
+                    UserJSON dsU = new UserJSON(u.getId(), u.getUsername(), u.getPassword(), u.getEmail(), u.isAdmin());
                     lst.add(dsU);
                 }
 
