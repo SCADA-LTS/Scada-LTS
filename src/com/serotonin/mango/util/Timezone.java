@@ -73,7 +73,7 @@ public class Timezone{
 		}
 	};
 
-	private String getOffset(LocalDateTime dateTime, ZoneId id) {
+	private static String getOffset(LocalDateTime dateTime, ZoneId id) {
 
 		return dateTime.atZone(id)
 				.getOffset()
@@ -88,6 +88,12 @@ public class Timezone{
 		return timezone;
 
 	}
+	
+	public static  String getTimezoneSystem() {
+        LocalDateTime now = LocalDateTime.now();
+        return "UTC "+getOffset(now,ZoneId.systemDefault());
+	}
+
 
 	public static LocalDateTime getCurrentDateTimeWithOffset(String id){
 
@@ -251,11 +257,7 @@ public static Date getTimezoneSystemDate(Date date,User user) throws ParseExcept
     
    
         ZonedDateTime FromDateTime = ldt.atZone(FormZoneId);
-        System.out.println("FromDateTime : "+FromDateTime);
         ZonedDateTime toDateTime = FromDateTime.withZoneSameInstant(toZoneId);
-        System.out.println("toDateTime : "+toDateTime);
-        
-        System.out.println("*************");
         return new Date(toDateTime.getYear(),toDateTime.getMonthValue(),toDateTime.getDayOfMonth(),toDateTime.getHour(),toDateTime.getMinute(),toDateTime.getSecond());
 	}
 

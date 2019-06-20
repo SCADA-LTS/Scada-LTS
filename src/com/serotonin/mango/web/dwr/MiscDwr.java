@@ -82,12 +82,6 @@ public class MiscDwr extends BaseDwr {
 	private final ViewDwr viewDwr = new ViewDwr();
 	private final CustomViewDwr customViewDwr = new CustomViewDwr();
 
-	
-	// Alarms Lists
-	private List<Integer> ids = new ArrayList<Integer>();
-	private List<EventInstance> events = new ArrayList<>();
-	private List<EventInstance> eventsAux = new ArrayList<>();
-
 		
 	public DwrResponseI18n toggleSilence(int eventId) {
 		DwrResponseI18n response = new DwrResponseI18n();
@@ -98,10 +92,10 @@ public class MiscDwr extends BaseDwr {
 			boolean result = new EventDao()
 					.toggleSilence(eventId, user.getId());
 			
-			for (EventInstance item : events) {
+			for (EventInstance item : user.events) {
 				if(item.getId() == eventId) {
-					eventsAux.remove(item);
-					ids.remove(ids.indexOf(eventId));
+					user.eventsAux.remove(item);
+					user.ids.remove(user.ids.indexOf(eventId));
 					item.setSilenced(result);
 					break;
 				}
@@ -122,7 +116,7 @@ public class MiscDwr extends BaseDwr {
 		EventDao eventDao = new EventDao();
 		for (EventInstance evt : eventDao.getPendingEvents(user.getId())) {
 			if (!evt.isSilenced()) {
-				for (EventInstance item : events) {
+				for (EventInstance item :  user.events) {
 					if(item.getId() == evt.getId()) {
 						item.setSilenced(true);
 						break;
@@ -145,11 +139,11 @@ public class MiscDwr extends BaseDwr {
 		if (user != null) {
 			new EventDao().ackEvent(eventId, System.currentTimeMillis(),
 					user.getId(), 0);
-			for (EventInstance item : events) {
+			for (EventInstance item :  user.events) {
 				if(item.getId() == eventId) {
-	    			eventsAux.remove(item);
-	    			events.remove(item);
-	    			ids.remove(ids.indexOf(eventId));
+					user.eventsAux.remove(item);
+					user.events.remove(item);
+					user.ids.remove(user.ids.indexOf(eventId));
 	    			break;
 	    		}
 			}
@@ -165,9 +159,9 @@ public class MiscDwr extends BaseDwr {
 			long now = System.currentTimeMillis();
 			
 			//clear data to update view
-			eventsAux.clear();
-			events.clear();
-			ids.clear();
+			user.eventsAux.clear();
+			user.events.clear();
+			user.ids.clear();
 
 			for (EventInstance evt : eventDao.getPendingEvents(user.getId()))
 				eventDao.ackEvent(evt.getId(), now, user.getId(), 0);
@@ -276,7 +270,7 @@ public class MiscDwr extends BaseDwr {
 
 		LocaleResolver localeResolver = new SessionLocaleResolver();
 
-		LocaleEditor localeEditor = new LocaleEditor();
+		LocaleEditor localeEditor = new httpRequestLocaleEditor();
 		localeEditor.setAsText(locale);
 
 		localeResolver.setLocale(webContext.getHttpServletRequest(),
@@ -344,7 +338,7 @@ public class MiscDwr extends BaseDwr {
 		Map<String, Object> response = new HashMap<String, Object>();
 		HttpServletRequest httpRequest = WebContextFactory.get()
 				.getHttpServletRequest();
-		User user = Common.getUser(httpRequest);
+		User user = Common.getStaticUser();
 		EventManager eventManager = Common.ctx.getEventManager();
 		EventDao eventDao = new EventDao();
 
@@ -494,9 +488,9 @@ public class MiscDwr extends BaseDwr {
 				// Retrieving all events
 				                    
 				// Convert time to user timezone and init stateContent to refresh
-				eventsAux = convertTime(events);
+				user.eventsAux = convertTime(user.events, user);
 				
-				model.put("events", eventsAux);
+				model.put("events",  user.eventsAux);
 				model.put("pendingEvents", true);
 				model.put("noContentWhenEmpty", true);
 				String currentContent = generateContent(httpRequest,
@@ -506,7 +500,7 @@ public class MiscDwr extends BaseDwr {
 				if (!StringUtils.isEqual(currentContent,
 						state.getPendingAlarmsContent())) {
 					
-					eventsAux = convertTime(eventDao.getPendingEvents(user.getId()));
+					 user.eventsAux = convertTime(eventDao.getPendingEvents(user.getId()));
 					
 					response.put("pendingAlarmsContent", currentContent);
 					state.setPendingAlarmsContent(currentContent);
@@ -667,23 +661,22 @@ public class MiscDwr extends BaseDwr {
 	};
 	
 	// returns events with the correct user time
-	public List<EventInstance> convertTime(List<EventInstance> events) {
+	public List<EventInstance> convertTime(List<EventInstance> events, User user) {
 		events.forEach(item-> {
-    		if(!ids.contains(item.getId())) {
+			if(!user.ids.contains(item.getId())) {
     			
     			long active= item.getActiveTimestamp();
     			long rtn = item.getRtnTimestamp();
 
     			item.setActiveTimestamp(Timezone.getTimezoneUserLong(Common.getUser(),active));
     			item.setRtnTimestamp(Timezone.getTimezoneUserLong(Common.getUser(),rtn));
-    		
-    			ids.add(item.getId());
-    			eventsAux.add(item);
+    			user.ids.add(item.getId());
+    			user.eventsAux.add(item);
     		}
 		 });
 
-		eventsAux.sort(compareById);
-		return eventsAux;
+		user.eventsAux.sort(compareById);
+		return user.eventsAux;
 	}
 
 }

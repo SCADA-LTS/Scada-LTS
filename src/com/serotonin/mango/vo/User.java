@@ -59,7 +59,7 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-
+import com.serotonin.mango.rt.event.EventInstance;
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
 		JsonSerializable {
@@ -581,4 +581,13 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	public void setZone(String zone) {
 		this.zone = zone;
 	}
+	
+	/**
+	 * Used to multi instance the list of events
+	 * for each user with his current timezone
+	 */	
+	public List<Integer> ids = new ArrayList<Integer>();
+	public List<EventInstance> events = new ArrayList<>(); 
+	public List<EventInstance> eventsAux = new ArrayList<>();
+
 }

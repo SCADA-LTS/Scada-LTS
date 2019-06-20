@@ -352,25 +352,22 @@ public class WatchListDwr extends BaseDwr {
 			int toDay, int toHour, int toMinute, int toSecond, boolean toNone,
 			int width, int height) throws ParseException {
 		
-	     //timezone
-		// from
-		System.out.println("fromYear,fromMonth,fromDay,fromHour,fromMinute,fromSecond" +fromYear+" "+fromMonth+" "+fromDay+" "+fromHour+" "+fromMinute+" "+fromSecond);
+	    //timezone
 		
+		// from
 		Date from_time = Timezone.getDate(fromYear,fromMonth,fromDay,fromHour,fromMinute,fromSecond);
-	    System.out.println("from_time watchlist : "+from_time);
 		from_time = Timezone.getTimezoneSystemDate(from_time,Common.getUser());
 
 		// to
 		Date to_time = Timezone.getDate(toYear, toMonth,toDay,toHour,toMinute, toSecond);
-	    System.out.println(" to_time watchlist : "+ to_time);
 	    to_time = Timezone.getTimezoneSystemDate(to_time,Common.getUser());
 		
 		
+		@SuppressWarnings("deprecation")
 		DateTime from = createDateTime(from_time.getYear(), from_time.getMonth(), from_time.getMonth(),from_time.getHours(),from_time.getMinutes(), from_time.getSeconds(), fromNone);
-		  System.out.println("from_final : "+from);
+		@SuppressWarnings("deprecation")
 		DateTime to = createDateTime(to_time.getYear(), to_time.getMonth(), to_time.getDay(), to_time.getHours(), to_time.getMinutes(),to_time.getSeconds(), toNone);
 		
-	    System.out.println(" to_time_final : "+ to);
 
 		StringBuilder htmlData = new StringBuilder();
 		long now = System.currentTimeMillis();

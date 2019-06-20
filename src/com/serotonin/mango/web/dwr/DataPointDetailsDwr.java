@@ -18,8 +18,10 @@
  */
 package com.serotonin.mango.web.dwr;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ import com.serotonin.mango.rt.dataImage.PointValueFacade;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.view.chart.StatisticsChartRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -119,10 +122,30 @@ public class DataPointDetailsDwr extends BaseDwr {
 	@MethodFilter
 	public DwrResponseI18n getImageChartData(int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute,
 			int fromSecond, boolean fromNone, int toYear, int toMonth, int toDay, int toHour, int toMinute,
-			int toSecond, boolean toNone, int width, int height) {
-		DateTime from = createDateTime(fromYear, fromMonth, fromDay, fromHour, fromMinute, fromSecond, fromNone);
-		DateTime to = createDateTime(toYear, toMonth, toDay, toHour, toMinute, toSecond, toNone);
+			int toSecond, boolean toNone, int width, int height) throws ParseException  {
+		
+		
+		 //timezone
+		// from
+	     Date from_time = Timezone.getDate(fromYear,fromMonth, fromDay, fromHour, fromMinute, fromSecond);
+		 from_time = Timezone.getTimezoneSystemDate(from_time,Common.getUser());
 
+		// to
+		Date to_time =Timezone.getDate(toYear, toMonth,toDay,toHour,toMinute, toSecond);
+		to_time = Timezone.getTimezoneSystemDate(to_time,Common.getUser());
+		System.out.println("from_time: "+from_time);
+		System.out.println("to_time: "+to_time);
+		
+		
+		@SuppressWarnings("deprecation")
+		DateTime from = createDateTime(from_time.getYear(), from_time.getMonth(), from_time.getDate(),from_time.getHours(),from_time.getMinutes(), from_time.getSeconds(), fromNone);
+		@SuppressWarnings("deprecation")
+		DateTime to = createDateTime(to_time.getYear(), to_time.getMonth(), to_time.getDay(), to_time.getHours(), to_time.getMinutes(),to_time.getSeconds(), toNone);
+		System.out.println("From: "+from);
+		System.out.println("To: "+to);
+		
+		
+		
 		StringBuilder htmlData = new StringBuilder();
 		htmlData.append("<img src=\"chart/ft_");
 		htmlData.append(System.currentTimeMillis());

@@ -84,7 +84,6 @@ public class Common {
 
 	private static String environmentProfileName = "env";
 	
-	public static User user;
 	/*
 	 * Updating the Mango version: - Create a DBUpdate subclass for the old
 	 * version number. This may not do anything in particular to the schema, but
@@ -222,14 +221,6 @@ public class Common {
 		return getUser(webContext.getHttpServletRequest());
 	}
 
-	public static User getStaticUser() {
-		return user;
-	}
-	
-	public static void setUser(User user) {
-		Common.user = user;
-	}
-	
 	public static User getUser(HttpServletRequest request) {
 		// Check first to see if the user object is in the request.
 		User user = (User) request.getAttribute(SESSION_USER);
@@ -557,6 +548,15 @@ public class Common {
 
 	public static String generateXid(String prefix) {
 		return prefix + StringUtils.generateRandomString(6, "0123456789");
+	}
+	
+	// To bypass some ambiguity
+	private static User user;
+	public static User getStaticUser() {
+		return user;
+	}
+	public static void setUser(User user) {
+		Common.user = user;
 	}
 
 }
