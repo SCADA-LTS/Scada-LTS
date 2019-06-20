@@ -44,6 +44,8 @@ create table users (
   homeUrl varchar(255),
   receiveAlarmEmails int not null,
   receiveOwnAuditEvents char(1) not null,
+  timezone varchar(100),
+  zone varchar(60)
   primary key (id)
 ) ENGINE=InnoDB;
 

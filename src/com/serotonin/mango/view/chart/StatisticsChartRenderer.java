@@ -26,9 +26,11 @@ import java.util.Map;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.PointValueFacade;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.stats.AnalogStatistics;
 import com.serotonin.mango.view.stats.StartsAndRuntimeList;
@@ -74,7 +76,7 @@ public class StatisticsChartRenderer extends TimePeriodChartRenderer {
     }
 
     public void addDataToModel(Map<String, Object> model, DataPointVO point) {
-        long startTime = getStartTime();
+    	long startTime = Timezone.getTimezoneUserLong(Common.getStaticUser(),getStartTime()) ;
         PointValueFacade pointValueFacade = new PointValueFacade(point.getId());
         List<PointValueTime> values = pointValueFacade.getPointValues(startTime);
 

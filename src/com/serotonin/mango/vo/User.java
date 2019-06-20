@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -58,7 +59,7 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-
+import com.serotonin.mango.rt.event.EventInstance;
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
 		JsonSerializable {
@@ -84,7 +85,13 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private int receiveAlarmEmails;
 	@JsonRemoteProperty
 	private boolean receiveOwnAuditEvents;
-
+	
+	// Smart e-Tech
+	@JsonRemoteProperty
+	private TimeZone timezone;
+	@JsonRemoteProperty
+	private String zone;
+	
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -555,4 +562,32 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		// TODO Auto-generated method stub
 
 	}
+	
+	public TimeZone getTimezone() {
+		return timezone;
+	}
+	
+	public String getTimezoneId() {
+		return timezone.getID();
+	}
+	
+	public void setTimezone(TimeZone timezone) {
+		this.timezone = timezone;
+	}
+	public String getZone() {
+		return zone;
+	}
+	
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
+	
+	/**
+	 * Used to multi instance the list of events
+	 * for each user with his current timezone
+	 */	
+	public List<Integer> ids = new ArrayList<Integer>();
+	public List<EventInstance> events = new ArrayList<>(); 
+	public List<EventInstance> eventsAux = new ArrayList<>();
+
 }
