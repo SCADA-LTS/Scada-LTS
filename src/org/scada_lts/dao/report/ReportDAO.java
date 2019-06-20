@@ -142,6 +142,7 @@ public class ReportDAO {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int insert(final ReportVO report) {
+
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insert(final ReportVO report) report:" + report.toString());
 		}

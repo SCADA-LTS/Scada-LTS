@@ -103,8 +103,8 @@ public class PointTimeSeriesCollection {
             TimeSeries ts = new TimeSeries(dts.getName(), null, null, Second.class);
 
             for (PointValueTime pvt : dts.getValueTimes())
-                ImageChartUtils.addSecond(ts, pvt.getTime(), numericMin+ 
-                		(spacingInterval * (dts.getValueIndex(pvt.getValue()) + intervalIndex)));
+                ImageChartUtils.addSecond(ts, pvt.getTime(), numericMin
+                        + (spacingInterval * (dts.getValueIndex(pvt.getValue()) + intervalIndex)));
 
             timeSeriesCollection.addSeries(ts);
 

@@ -42,7 +42,6 @@ import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.ReportDao;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -107,7 +106,7 @@ public class ReportWorkItem implements WorkItem {
 		LOG.info("Running report with id " + reportConfig.getId()
 				+ ", instance id " + reportInstance.getId());
 
-		reportInstance.setRunStartTime(Timezone.getTimezoneSystemLong(Common.getStaticUser()));
+		reportInstance.setRunStartTime(System.currentTimeMillis());
 		reportDao.saveReportInstance(reportInstance);
 		ResourceBundle bundle = Common.getBundle();
 
@@ -148,13 +147,13 @@ public class ReportWorkItem implements WorkItem {
 			recordCount = -1;
 			throw new RuntimeException("Report instance failed", e);
 		} finally {
-			reportInstance.setRunEndTime(Timezone.getTimezoneSystemLong(Common.getStaticUser()));
+			reportInstance.setRunEndTime(System.currentTimeMillis());
 			reportInstance.setRecordCount(recordCount);
 			reportDao.saveReportInstance(reportInstance);
 		}
 
 		if (reportConfig.isEmail()) {
-			String inlinePrefix = "R" + Timezone.getTimezoneSystemLong(Common.getStaticUser()) + "-"
+			String inlinePrefix = "R" + System.currentTimeMillis() + "-"
 					+ reportInstance.getId() + "-";
 
 			// We are creating an email from the result. Create the content.

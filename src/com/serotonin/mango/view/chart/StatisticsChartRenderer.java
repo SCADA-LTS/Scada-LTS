@@ -23,15 +23,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.PointValueFacade;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.stats.AnalogStatistics;
 import com.serotonin.mango.view.stats.StartsAndRuntimeList;
@@ -77,8 +74,7 @@ public class StatisticsChartRenderer extends TimePeriodChartRenderer {
     }
 
     public void addDataToModel(Map<String, Object> model, DataPointVO point) {
-        long startTime = Timezone.getTimezoneUserLong(Common.getStaticUser(),getStartTime()) ;
-        
+        long startTime = getStartTime();
         PointValueFacade pointValueFacade = new PointValueFacade(point.getId());
         List<PointValueTime> values = pointValueFacade.getPointValues(startTime);
 
@@ -97,8 +93,8 @@ public class StatisticsChartRenderer extends TimePeriodChartRenderer {
         if (startValue != null || values.size() > 0) {
             if (dataTypeId == DataTypes.BINARY || dataTypeId == DataTypes.MULTISTATE) {
                 // Runtime stats
-                StartsAndRuntimeList stats = new StartsAndRuntimeList(startValue, values, startTime, startTime+ getDuration());
-                
+                StartsAndRuntimeList stats = new StartsAndRuntimeList(startValue, values, startTime, startTime
+                        + getDuration());
                 model.put("start", stats.getRealStart());
                 model.put("end", stats.getEnd());
                 model.put("startsAndRuntimes", stats.getData());

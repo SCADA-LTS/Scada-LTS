@@ -44,10 +44,7 @@ import org.jfree.ui.TextAnchor;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
-
-import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.util.mindprod.StripEntities;
 import com.serotonin.util.StringUtils;
 
@@ -140,7 +137,7 @@ public class ImageChartUtils {
                 TimeSeries ts = new TimeSeries(dts.getName(), null, null, Second.class);
 
                 for (PointValueTime pvt : dts.getValueTimes())
-                    ImageChartUtils.addSecond(ts, Timezone.getTimezoneUserLong(Common.getStaticUser(), pvt.getTime()),
+                    ImageChartUtils.addSecond(ts, pvt.getTime(),
                             numericMin + (interval * (dts.getValueIndex(pvt.getValue()) + intervalIndex)));
 
                 timeSeriesCollection.addSeries(ts);

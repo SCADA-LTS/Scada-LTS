@@ -18,10 +18,8 @@
  */
 package com.serotonin.mango.vo.event;
 
-
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.joda.time.DateTime;
 
@@ -40,7 +38,6 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
-import com.serotonin.mango.util.Timezone;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -162,31 +159,31 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
                 message = new LocalizableMessage("event.schedule.hoursAt", activeTime);
         }
         else if (scheduleType == TYPE_DAILY) {
-            if (returnToNormal) 
-            	message = new LocalizableMessage("event.schedule.dailyUntil", activeTime(), inactiveTime()+" ("+ Timezone.getTimezoneSystem() +")");
+            if (returnToNormal)
+                message = new LocalizableMessage("event.schedule.dailyUntil", activeTime(), inactiveTime());
             else
-                message = new LocalizableMessage("event.schedule.dailyAt", activeTime()+" ("+ Timezone.getTimezoneSystem() +")");
+                message = new LocalizableMessage("event.schedule.dailyAt", activeTime());
         }
         else if (scheduleType == TYPE_WEEKLY) {
             if (returnToNormal)
                 message = new LocalizableMessage("event.schedule.weeklyUntil", weekday(true), activeTime(),
-                        weekday(false), inactiveTime() +" ("+ Timezone.getTimezoneSystem() +")");
+                        weekday(false), inactiveTime());
             else
-                message = new LocalizableMessage("event.schedule.weeklyAt", weekday(true), activeTime() +" ("+ Timezone.getTimezoneSystem() +")");
+                message = new LocalizableMessage("event.schedule.weeklyAt", weekday(true), activeTime());
         }
         else if (scheduleType == TYPE_MONTHLY) {
             if (returnToNormal)
                 message = new LocalizableMessage("event.schedule.monthlyUntil", monthday(true), activeTime(),
-                        monthday(false), inactiveTime() +" ("+ Timezone.getTimezoneSystem() +")");
+                        monthday(false), inactiveTime());
             else
-                message = new LocalizableMessage("event.schedule.monthlyAt", monthday(true), activeTime() +" ("+ Timezone.getTimezoneSystem() +")");
+                message = new LocalizableMessage("event.schedule.monthlyAt", monthday(true), activeTime());
         }
         else if (scheduleType == TYPE_YEARLY) {
             if (returnToNormal)
                 message = new LocalizableMessage("event.schedule.yearlyUntil", monthday(true), month(true),
-                        activeTime(), monthday(false), month(false), inactiveTime() +" ("+ Timezone.getTimezoneSystem() +")");
+                        activeTime(), monthday(false), month(false), inactiveTime());
             else
-                message = new LocalizableMessage("event.schedule.yearlyAt", monthday(true), month(true), activeTime() +" ("+ Timezone.getTimezoneSystem() +")");
+                message = new LocalizableMessage("event.schedule.yearlyAt", monthday(true), month(true), activeTime());
         }
         else if (scheduleType == TYPE_CRON) {
             if (returnToNormal)
@@ -221,20 +218,17 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
     }
 
     private String activeTime() {
-
         return StringUtils.pad(Integer.toString(activeHour), '0', 2) + ":"
                 + StringUtils.pad(Integer.toString(activeMinute), '0', 2) + ":"
                 + StringUtils.pad(Integer.toString(activeSecond), '0', 2);
     }
 
     private String inactiveTime() {
-
         return StringUtils.pad(Integer.toString(inactiveHour), '0', 2) + ":"
                 + StringUtils.pad(Integer.toString(inactiveMinute), '0', 2) + ":"
                 + StringUtils.pad(Integer.toString(inactiveSecond), '0', 2);
     }
 
-    
     private static final String[] weekdays = { "", "common.day.mon", "common.day.tue", "common.day.wed",
             "common.day.thu", "common.day.fri", "common.day.sat", "common.day.sun" };
 

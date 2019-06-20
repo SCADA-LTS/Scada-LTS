@@ -24,14 +24,9 @@ import java.util.ResourceBundle;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.scada_lts.dao.UserDAO;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.view.export.CsvWriter;
 import com.serotonin.mango.view.text.TextRenderer;
-import com.serotonin.mango.vo.User;
 import com.serotonin.web.i18n.I18NUtils;
 
 /**
@@ -63,10 +58,8 @@ public class ReportCsvStreamer implements ReportDataStreamHandler {
         textRenderer = pointInfo.getTextRenderer();
     }
 
-public void pointData(ReportDataValue rdv) {
-    	
-  
-	data[1] = dtf.print(new DateTime(Timezone.getTimezoneUserLong(Common.getStaticUser(), rdv.getTime())));
+    public void pointData(ReportDataValue rdv) {
+        data[1] = dtf.print(new DateTime(rdv.getTime()));
 
         if (rdv.getValue() == null)
             data[2] = data[3] = null;
