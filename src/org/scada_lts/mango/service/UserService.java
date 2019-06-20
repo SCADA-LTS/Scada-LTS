@@ -74,26 +74,6 @@ public class UserService implements MangoUser {
 		populateUserPermissions(users);
 		return users;
 	}
-	
-	// Timezone service
-	public String getUserTimezone(int id) {
-		return userDAO.getUserTimezone(id);
-	}
-
-	// Timezone service
-	public void updateUserTimezone(int userId, String timezone) {
-		userDAO.updateUserTimezone(userId, timezone);
-	}
-
-	// Timezone service
-	public String getUserZone(int id) {
-		return userDAO.getUserZone(id);
-	}
-
-	// Timezone service
-	public void updateUserZone(int userId, String zone) {
-		userDAO.updateUserZone(userId, zone);
-	}
 
 	private void populateUserPermissions(List<User> users) {
 		for (User user : users) {

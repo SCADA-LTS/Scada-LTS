@@ -16,11 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
-<%@ include file="/WEB-INF/jsp/include/tech.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="com.serotonin.mango.Common"%>
 
 <tag:page dwr="UsersDwr" onload="init">
-	<script type="text/javascript">
+  <script type="text/javascript">
     var userId = ${sessionUser.id};
     var editingUserId;
     var dataSources;
@@ -37,6 +37,7 @@
        		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
       	}
 
+    
     function init() {
     	
     	UsersDwr.getInitData(function(data) {
@@ -109,15 +110,7 @@
                 showUserCB(data.user);
                 hide("usersProfilesListTable");
             }
-            
-            //Timezone
-            var Timezone ,timezoneHtml= "" ;
-			for (r=0; r<data.TimezoneList.length; r++){
-				Timezone = data.TimezoneList[r];
-				timezoneHtml += "<option value='" + Timezone + "'>"+  Timezone  + "</option>";
-			}
-			
-			$("TimezoneList").innerHTML = timezoneHtml;
+
                        var vwhtml = "";
                        views = data.views;
                        if (views != null){
@@ -170,14 +163,7 @@
                                   $("watchlistsList").innerHTML = wlhtml;
         });
     }
-    
-    // get browser Timezone
-    function browserTimeZone() {
-  	    var offset = new Date().getTimezoneOffset(), o = Math.abs(offset);
-  	    var utc = "UTC"+(offset < 0 ? "+" : "-") + ("00" + Math.floor(o / 60)).slice(-2) + ":" + ("00" + (o % 60)).slice(-2);
-		return "("+utc+") "+ Intl.DateTimeFormat().resolvedOptions().timeZone
-	}
-	
+
     function showUser(userId, hideMsg) {
 
     	if (hideMsg)
@@ -203,12 +189,7 @@
         $set("disabled", user.disabled);
         $set("receiveAlarmEmails", user.receiveAlarmEmails);
         $set("receiveOwnAuditEvents", user.receiveOwnAuditEvents);
-        
-      	//Timezone
-        UsersDwr.getTimezone(user.id, function(data){ 
- 			$("TimezoneList").value=data;
- 		});
-        
+
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
         	 $set("usersProfilesList", user.userProfile);
         	 //console.log("User profile: " + user.userProfile);
@@ -317,15 +298,6 @@
 		startImageFader($("saveImg"));
     	
 		setUserMessage();
-        
-		
-		/* If Timezone is not selected
-		 * set it with the current local
-		 * machine else leave it be
-		*/
-		if ($get("TimezoneList").length == 0)
-            $set("TimezoneList",browserTimeZone());        	
-        
         if (adminUser) {
     		startImageFader($("u"+ editingUserId +"Img"));
            // Create the list of allowed data sources and data point permissions.
@@ -376,14 +348,13 @@
             	        }
                     }
 
-            
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
-                    dsPermis, dpPermis, vwPermis, wlPermis, $get("usersProfilesList"), $get("TimezoneList"), saveUserCB);
+                    dsPermis, dpPermis, vwPermis, wlPermis, $get("usersProfilesList"), saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
-                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"), $get("TimezoneList"), saveUserCB);
+                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"), saveUserCB);
      
     }
     
@@ -487,139 +458,111 @@
         }
     }
   </script>
-
-	<table class="subPageHeader">
-		<tr>
-			<td valign="top" id="userList" style="display: none;">
-				<div class="borderDiv">
-					<table width="100%">
-						<tr>
-							<td><span class="smallTitle"><fmt:message
-										key="users.title" /></span> <tag:help id="userAdministration" /></td>
-							<td align="right"><tag:img png="user_add"
-									onclick="showUser(${applicationScope['constants.Common.NEW_ID']}, false)"
-									title="users.add"
-									id="u${applicationScope['constants.Common.NEW_ID']}Img" /></td>
-						</tr>
-					</table>
-					<table id="usersTable">
-						<tbody id="u_TEMPLATE_" onclick="showUser(getMangoId(this), true)"
-							class="ptr" style="display: none;">
-							<tr>
-								<td><tag:img id="u_TEMPLATE_Img" png="user_green"
-										title="users.user" /></td>
-								<td class="link" id="u_TEMPLATE_Username"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</td>
-
-			<td valign="top" style="display: none;" id="userDetails">
-				<div class="borderDiv">
-					<table width="100%">
-						<tr>
-							<td><span class="smallTitle"><tag:img id="userImg"
-										png="user_green" title="users.user" /> <fmt:message
-										key="users.details" /></span></td>
-							<td align="right"><tag:img id="saveImg" png="save"
-									onclick="saveUser();" title="common.save" /> <tag:img
-									id="deleteImg" png="delete" onclick="deleteUser();"
-									title="common.delete" style="display:none;" /> <tag:img
-									id="sendTestEmailImg" png="email_go" onclick="sendTestEmail();"
-									title="common.sendTestEmail" style="display:none;" /></td>
-						</tr>
-					</table>
-
-					<table>
-						<tbody id="genericMessages"></tbody>
-					</table>
-
-					<table>
-						<tr>
-							<td colspan="2" id="userMessage" class="formError"></td>
-						</tr>
-						<tr id="usernameRow" style="display: none;">
-							<td class="formLabelRequired"><fmt:message
-									key="users.username" /></td>
-							<td class="formField"><input id="username" type="text" /></td>
-						</tr>
-						<tr>
-							<td class="formLabelRequired"><fmt:message
-									key="users.newPassword" /></td>
-							<td class="formField"><input id="password" type="text" /></td>
-						</tr>
-						<tr>
-							<td class="formLabelRequired"><fmt:message key="users.email" /></td>
-							<td class="formField"><input id="email" type="text"
-								class="formLong" /></td>
-						</tr>
-						<tr>
-							<td class="formLabel"><fmt:message key="users.phone" /></td>
-							<td class="formField"><input id="phone" type="text" /></td>
-						</tr>
-						<tr id="administrationRow" style="display: none;">
-							<td class="formLabelRequired"><fmt:message
-									key="common.administrator" /></td>
-							<td class="formField"><input id="administrator"
-								type="checkbox" onclick="updateUserImg();" /></td>
-						</tr>
-						<tr id="disabledRow" style="display: none;">
-							<td class="formLabelRequired"><fmt:message
-									key="common.disabled" /></td>
-							<td class="formField"><input id="disabled" type="checkbox"
-								onclick="updateUserImg();" /></td>
-						</tr>
-						<tr>
-							<td class="formLabelRequired"><fmt:message
-									key="users.receiveAlarmEmails" /></td>
-							<td class="formField"><select id="receiveAlarmEmails"><tag:alarmLevelOptions /></select></td>
-						</tr>
-						<tr>
-							<td class="formLabelRequired"><fmt:message
-									key="users.receiveOwnAuditEvents" /></td>
-							<td class="formField"><input id="receiveOwnAuditEvents"
-								type="checkbox" /></td>
-						</tr>
-						<tr>
-							<td class="formLabel" ><fmt:message key="users.timezone"/></td>
-							<td class="formField">
-								<label id="timezone"></label>
-								<select id="TimezoneList" onchange=""></select>
-							</td>
-						</tr>
-						<tbody id="usersProfilesListTable" style="display: none;">
-							<tr>
-								<td class="formLabel"><fmt:message
-										key="userProfiles.selectName" /></td>
-								<td class="formField"><select id="usersProfilesList"
-									onchange="checkProfile()">
-								</select></td>
-							</tr>
-							</div>
-						<tbody id="dataSources" style="display: none;">
-							<tr>
-								<td class="horzSeparator" colspan="2"></td>
-							</tr>
-							<tr id="dataSources">
-								<td class="formLabelRequired"><fmt:message
-										key="users.dataSources" /></td>
-								<td class="formField" id="dataSourceList"></td>
-							</tr>
-							<tr id="watchlists">
-								<td class="formLabelRequired"><fmt:message
-										key="header.watchLists" /></td>
-								<td class="formField" id="watchlistsList"></td>
-							</tr>
-							<tr id="views">
-								<td class="formLabelRequired"><fmt:message
-										key="views.title" /></td>
-								<td class="formField" id="viewsList"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</td>
-		</tr>
-	</table>
+  
+  <table class="subPageHeader">
+    <tr>
+      <td valign="top" id="userList" style="display:none;">
+        <div class="borderDiv">
+          <table width="100%">
+            <tr>
+              <td>
+                <span class="smallTitle"><fmt:message key="users.title"/></span>
+                <tag:help id="userAdministration"/>
+              </td>
+              <td align="right"><tag:img png="user_add" onclick="showUser(${applicationScope['constants.Common.NEW_ID']}, false)"
+                      title="users.add" id="u${applicationScope['constants.Common.NEW_ID']}Img"/></td>
+            </tr>
+          </table>
+          <table id="usersTable">
+            <tbody id="u_TEMPLATE_" onclick="showUser(getMangoId(this), true)" class="ptr" style="display:none;"><tr>
+              <td><tag:img id="u_TEMPLATE_Img" png="user_green" title="users.user"/></td>
+              <td class="link" id="u_TEMPLATE_Username"></td>
+            </tr></tbody>
+          </table>
+        </div>
+      </td>
+      
+      <td valign="top" style="display:none;" id="userDetails">
+        <div class="borderDiv">
+          <table width="100%">
+            <tr>
+              <td>
+                <span class="smallTitle"><tag:img id="userImg" png="user_green" title="users.user"/>
+                <fmt:message key="users.details"/></span>
+              </td>
+              <td align="right">
+                <tag:img id="saveImg" png="save" onclick="saveUser();" title="common.save"/>
+                <tag:img id="deleteImg" png="delete" onclick="deleteUser();" title="common.delete" style="display:none;"/>
+                <tag:img id="sendTestEmailImg" png="email_go" onclick="sendTestEmail();" title="common.sendTestEmail"
+                        style="display:none;"/>
+              </td>
+            </tr>
+          </table>
+          
+          <table><tbody id="genericMessages"></tbody></table>
+          
+          <table>
+            <tr>
+              <td colspan="2" id="userMessage" class="formError"></td>
+            </tr>
+            <tr id="usernameRow" style="display:none;">
+              <td class="formLabelRequired"><fmt:message key="users.username"/></td>
+              <td class="formField"><input id="username" type="text"/></td>
+            </tr>
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="users.newPassword"/></td>
+              <td class="formField"><input id="password" type="text"/></td>
+            </tr>
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="users.email"/></td>
+              <td class="formField"><input id="email" type="text" class="formLong"/></td>
+            </tr>
+            <tr>
+              <td class="formLabel"><fmt:message key="users.phone"/></td>
+              <td class="formField"><input id="phone" type="text"/></td>
+            </tr>
+            <tr id="administrationRow" style="display:none;">
+              <td class="formLabelRequired"><fmt:message key="common.administrator"/></td>
+              <td class="formField"><input id="administrator" type="checkbox" onclick="updateUserImg();"/></td>
+            </tr>
+            <tr id="disabledRow" style="display:none;">
+              <td class="formLabelRequired"><fmt:message key="common.disabled"/></td>
+              <td class="formField"><input id="disabled" type="checkbox" onclick="updateUserImg();"/></td>
+            </tr>
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="users.receiveAlarmEmails"/></td>
+              <td class="formField"><select id="receiveAlarmEmails"><tag:alarmLevelOptions/></select></td>
+            </tr>
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="users.receiveOwnAuditEvents"/></td>
+              <td class="formField"><input id="receiveOwnAuditEvents" type="checkbox"/></td>
+            </tr>
+            <tbody id="usersProfilesListTable" style="display:none;">
+            <tr>
+              <td class="formLabel"><fmt:message key="userProfiles.selectName"/></td>
+              <td class="formField"><select id="usersProfilesList" onchange="checkProfile()">
+              </select></td>
+            </tr>
+            </div>
+            
+            <tbody id="dataSources" style="display:none;">
+              <tr><td class="horzSeparator" colspan="2"></td></tr>
+              <tr id="dataSources">
+                <td class="formLabelRequired"><fmt:message key="users.dataSources"/></td>
+                <td class="formField" id="dataSourceList"></td>
+              </tr>
+              <tr id="watchlists">
+                <td class="formLabelRequired"><fmt:message key="header.watchLists"/></td>
+                <td class="formField" id="watchlistsList"></td>
+              </tr>
+              <tr id="views">
+                <td class="formLabelRequired"><fmt:message key="views.title"/></td>
+                <td class="formField" id="viewsList"></td>
+               </tr>
+            </tbody>
+          </table>
+        </div>
+      </td>
+    </tr>
+  </table>
 </tag:page>

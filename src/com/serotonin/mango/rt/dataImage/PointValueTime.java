@@ -42,9 +42,6 @@ import com.serotonin.web.taglib.DateFunctions;
  */
 public class PointValueTime implements Serializable, IValueTime,
 		JsonSerializable {
-	
-	
-
 	private static final long serialVersionUID = -1;
 
 	public static boolean equalValues(PointValueTime pvt1, PointValueTime pvt2) {
@@ -62,12 +59,8 @@ public class PointValueTime implements Serializable, IValueTime,
 	}
 
 	private final MangoValue value;
-	private long time;
-	
-	public void setTime(long time) {
-		this.time = time;
-	}
-	
+	private final long time;
+
 	public PointValueTime(MangoValue value, long time) {
 		this.value = value;
 		this.time = time;
