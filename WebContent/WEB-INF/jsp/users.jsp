@@ -111,12 +111,13 @@
                 hide("usersProfilesListTable");
             }
             
-          	//Timezone
+          //Timezone
             var Timezone ,timezoneHtml= "" ;
 			for (r=0; r<data.TimezoneList.length; r++){
 				Timezone = data.TimezoneList[r];
 				timezoneHtml += "<option value='" + Timezone + "'>"+  Timezone  + "</option>";
 			}
+			$("TimezoneList").innerHTML = timezoneHtml;
 
                        var vwhtml = "";
                        views = data.views;
@@ -566,7 +567,7 @@
             </tr>
 			<tr>
 				<td class="formLabel" ><fmt:message key="users.timezone"/></td>
-				<td class="formField"><select id="TimezoneList" onchange=""></select></td>
+				<td class="formField"><label id="Timezone"></label><select id="TimezoneList" onchange=""></select></td>
 			</tr>
             <tbody id="usersProfilesListTable" style="display:none;">
             <tr>

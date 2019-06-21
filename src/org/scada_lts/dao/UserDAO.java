@@ -113,7 +113,7 @@ public class UserDAO {
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + "=?, "
 				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS +"=?, "
 				+ COLUMN_NAME_TIMEZONE + "=?, "		// Timezone
-				+ COLUMN_NAME_ZONE+ "=? "
+				+ COLUMN_NAME_ZONE + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
 	private static final String USER_SELECT_TIMEZONE = ""		
@@ -182,7 +182,7 @@ public class UserDAO {
 			user.setLastLogin(rs.getLong(COLUMN_NAME_LAST_LOGIN));
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
-			user.setTimezone(Timezone.createTimezone(rs.getString(COLUMN_NAME_TIMEZONE))); //TIMEZONE                        //time_zone
+			user.setTimezone(Timezone.createTimezone(rs.getString(COLUMN_NAME_TIMEZONE))); //Timezone
 			user.setZone(rs.getString(COLUMN_NAME_ZONE));	
 			return user;
 		}
@@ -348,7 +348,9 @@ public class UserDAO {
 						DAO.boolToChar(user.isDisabled()),
 						user.getHomeUrl(),
 						user.getReceiveAlarmEmails(),
-						DAO.boolToChar(user.isReceiveOwnAuditEvents())
+						DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+						user.getTimezoneId(),
+						user.getZone()
 				}).setValues(preparedStatement);
 				return preparedStatement;
 			}
@@ -373,6 +375,8 @@ public class UserDAO {
 				user.getHomeUrl(),
 				user.getReceiveAlarmEmails(),
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+				user.getTimezoneId(),
+				user.getZone(),
 				user.getId()
 		});
 	}
