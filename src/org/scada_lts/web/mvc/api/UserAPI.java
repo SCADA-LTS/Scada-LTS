@@ -59,13 +59,17 @@ public class UserAPI {
                     private String password;
                     private String email;
                     private Boolean admin;
+                    private String timezone;
+                    private String zone;
 
-                    UserJSON(long id, String name, String password, String email, Boolean admin) {
+                    UserJSON(long id, String name, String password, String email, Boolean admin, String timezone, String zone) {
                         this.setId(id);
                         this.setName(name);
                         this.setPassword(password);
                         this.setEmail(email);
                         this.setAdmin(admin);
+                        this.setTimeZone(timezone);
+                        this.setZone(zone);
                     }
 
                     public long getId() { return id; }
@@ -93,7 +97,21 @@ public class UserAPI {
                     }
 
                     public Boolean isAdmin() { return admin; }
+                    
                     public void setAdmin(Boolean admin) { this.admin = admin; }
+                    
+                    public String getTimezone() {
+						return timezone;
+					}
+					public void setTimeZone(String timezone) {
+						this.timezone = timezone;
+					}
+					public String getZone() {
+						return timezone;
+					}
+					public void setZone(String timezone) {
+						this.timezone = timezone;
+					}
                 }
 
                 int userId = user.getId();
@@ -106,7 +124,10 @@ public class UserAPI {
 
                 List<UserJSON> lst = new ArrayList<UserJSON>();
                 for (User u:lstUsers) {
-                    UserJSON dsU = new UserJSON(u.getId(), u.getUsername(), u.getPassword(), u.getEmail(), u.isAdmin());
+                    UserJSON dsU = new UserJSON(u.getId(), 
+			                    		u.getUsername(), u.getPassword(), 
+			                    		u.getEmail(), u.isAdmin(),
+			                    		u.getTimezoneId() + u.getZone());
                     lst.add(dsU);
                 }
 
