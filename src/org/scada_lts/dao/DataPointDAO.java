@@ -54,59 +54,24 @@ public class DataPointDAO {
 	private static final String COLUMN_NAME_XID = "xid";
 	private static final String COLUMN_NAME_DATA_SOURCE_ID = "dataSourceId";
 	private static final String COLUMN_NAME_DATA = "data";
-
 	private static final String COLUMN_NAME_DS_NAME = "name";
-	private static final String COLUMN_NAME_DS_ID = "id";
-	private static final String COLUMN_NAME_DS_XID = "xid";
 	private static final String COLUMN_NAME_DS_DATA_SOURCE_TYPE = "dataSourceType";
 
-	private static final String COLUMN_NAME_EVENT_TYPE_ID = "eventTypeId";
-	private static final String COLUMN_NAME_EVENT_TYPE_REF1 = "eventTypeRef1";
-
 	// @formatter:off
-	private static final String DATA_POINT_SELECT = ""
-			+ "select "
-				+ "dp." + COLUMN_NAME_ID + ", "
-				+ "dp." + COLUMN_NAME_XID + ", "
-				+ "dp." + COLUMN_NAME_DATA_SOURCE_ID + ", "
-				+ "dp." + COLUMN_NAME_DATA + ", "
-				+ "ds." + COLUMN_NAME_DS_NAME + ", "
-				+ "ds." + COLUMN_NAME_DS_XID + " as dsxid, "
-				+ "ds." + COLUMN_NAME_DS_DATA_SOURCE_TYPE + " "
-			+ "from dataPoints dp join dataSources ds on "
-				+ "ds." + COLUMN_NAME_DS_ID + "="
-				+ "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
-
-	private static final String DATA_POINT_SELECT_ID = ""
-			+ "select DISTINCT "
-				+ COLUMN_NAME_ID + " "
-			+ "from dataPoints where "
-				+ COLUMN_NAME_DATA_SOURCE_ID + "=? ";
-
-	private static final String DATA_POINT_INSERT = ""
-			+ "insert into dataPoints ("
-				+ COLUMN_NAME_XID + ", "
-				+ COLUMN_NAME_DATA_SOURCE_ID + ", "
-				+ COLUMN_NAME_DATA + ") "
-			+ "values (?,?,?) ";
-
-	private static final String DATA_POINT_UPDATE = ""
-			+ "update dataPoints set "
-				+ COLUMN_NAME_XID + "=?, "
-				+ COLUMN_NAME_DATA + "=? "
-			+ "where "
-				+ COLUMN_NAME_ID + "=? ";
-
-	private static final String DATA_POINT_DELETE = ""
-			+ "delete from dataPoints where "
-				+ COLUMN_NAME_ID;
-
-	private static final String DELETE_EVENT_HANDLER_WHERE = ""
-			+ "delete from eventHandlers where "
-				+ COLUMN_NAME_EVENT_TYPE_ID + "="
-				+ EventType.EventSources.DATA_POINT + " "
-			+ "and "
-				+ COLUMN_NAME_EVENT_TYPE_REF1;
+	private static final String DATA_POINT_SELECT_WHERE_DPID = "select dp.id, dp.xid, dp.dataSourceId, dp.data, ds.name, ds.xid as dsxid, ds.dataSourceType "
+			+ "from dataPoints dp join dataSources ds on ds.id=dp.dataSourceId where dp.id=?";
+	private static final String DATA_POINT_SELECT_ =
+			"select dp.id, dp.xid, dp.dataSourceId, dp.data, ds.name, ds.xid as dsxid, ds.dataSourceType "
+			+ "from dataPoints dp join dataSources ds on ds.id=dp.dataSourceId";
+	private static final String GET_DATA_POINTS_BY_DATASOURCEID_ = "select " +
+			"dp.id, dp.xid, dp.dataSourceId, dp.data, ds.name, ds.xid as dsxid, ds.dataSourceType "
+			+ "from dataPoints dp join dataSources ds on ds.id=dp.dataSourceId where dp.dataSourceId=?";
+	private static final String DATA_POINT_SELECT_ID_ = "select DISTINCT id from dataPoints where dataSourceId=? ";
+	private static final String DATA_POINT_INSERT_="insert into dataPoints (xid,dataSourceId,data) values (?,?,?) ";
+	private static final String DATA_POINT_UPDATE_= "update dataPoints set xid=?,data=? where id=? ";
+	private static final String DATA_POINT_DELETE_ = "delete from dataPoints where id";
+	private static final String DELETE_EVENT_HANDLER_WHERE_ = "delete from eventHandlers where eventTypeId="
+			+ EventType.EventSources.DATA_POINT + "and eventTypeRef1";
 
 	// @formatter:on
 
@@ -135,9 +100,7 @@ public class DataPointDAO {
 			LOG.trace("getDataPoint(int id) id:" + id);
 		}
 
-		String templateSelectWhereId = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_ID + "=? ";
-
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new DataPointRowMapper());
+		return DAO.getInstance().getJdbcTemp().queryForObject(DATA_POINT_SELECT_WHERE_DPID, new Object[] {id}, new DataPointRowMapper());
 		
 	}
 
@@ -147,10 +110,12 @@ public class DataPointDAO {
 			LOG.trace("getDataPoint(String xid) xid:" + xid);
 		}
 
-		String templateSelectWhereXid = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_XID + "=? ";
 
 		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
+			return DAO.getInstance().getJdbcTemp().queryForObject(
+					"select dp.id, dp.xid, dp.dataSourceId, dp.data, ds.name, ds.xid as dsxid, ds.dataSourceType "
+							+ "from dataPoints dp join dataSources ds on ds.id=dp.dataSourceId where dp.xid=? "
+					, new Object[] {xid}, new DataPointRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -164,7 +129,7 @@ public class DataPointDAO {
 		}
 
 		try {
-			return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT, new DataPointRowMapper());
+			return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT_, new DataPointRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -180,7 +145,7 @@ public class DataPointDAO {
 			args=argsFilter;
 		}
 	
-		return (List<DataPointVO>) DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT+" where "+ filter + myLimit, args, new DataPointRowMapper());
+		return (List<DataPointVO>) DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT_+" where "+ filter + myLimit, args, new DataPointRowMapper());
 	
 	}
 
@@ -190,10 +155,8 @@ public class DataPointDAO {
 			LOG.trace("getDataPoints(int dataSourceId) dataSourceId:" + dataSourceId);
 		}
 
-		String templateSelectWhereId = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_DATA_SOURCE_ID + "=?";
-
-		List<DataPointVO> dataPointList = DAO.getInstance().getJdbcTemp().query(templateSelectWhereId, new Object[] {dataSourceId}, new DataPointRowMapper());
-		return dataPointList;
+		//datapoints
+		return DAO.getInstance().getJdbcTemp().query(GET_DATA_POINTS_BY_DATASOURCEID_, new Object[] {dataSourceId}, new DataPointRowMapper());
 	}
 
 	public List<Integer> getDataPointsIds(int dataSourceId) {
@@ -202,7 +165,7 @@ public class DataPointDAO {
 			LOG.trace("getDataPointIds(int dataSourceId) dataSourceId:" + dataSourceId);
 		}
 
-		return DAO.getInstance().getJdbcTemp().queryForList(DATA_POINT_SELECT_ID, new Object[] {dataSourceId}, Integer.class);
+		return DAO.getInstance().getJdbcTemp().queryForList(DATA_POINT_SELECT_ID_, new Object[] {dataSourceId}, Integer.class);
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -217,7 +180,7 @@ public class DataPointDAO {
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement ps = connection.prepareStatement(DATA_POINT_INSERT, Statement.RETURN_GENERATED_KEYS);
+				PreparedStatement ps = connection.prepareStatement(DATA_POINT_INSERT_, Statement.RETURN_GENERATED_KEYS);
 				new ArgumentPreparedStatementSetter(new Object[] {
 						dataPoint.getXid(),
 						dataPoint.getDataSourceId(),
@@ -237,7 +200,7 @@ public class DataPointDAO {
 			LOG.trace("update(DataPointVO dataPoint) dataPoint:" + dataPoint);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
+		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE_, new Object[] {
 				dataPoint.getXid(),
 				new SerializationData().writeObject(dataPoint),
 				dataPoint.getId()
@@ -251,9 +214,7 @@ public class DataPointDAO {
 			LOG.trace("delete(int id) id:" + id);
 		}
 
-		String templateDeleteIn = DATA_POINT_DELETE + "=?";
-
-		DAO.getInstance().getJdbcTemp().update(templateDeleteIn, new Object[] {id});
+		DAO.getInstance().getJdbcTemp().update("delete from dataPoints where id=?", new Object[] {id});
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -265,7 +226,7 @@ public class DataPointDAO {
 
 		String[] parameters = dataPointIdList.split(",");
 
-		StringBuilder queryBuilder = new StringBuilder(DATA_POINT_DELETE + " in (?");
+		StringBuilder queryBuilder = new StringBuilder(DATA_POINT_DELETE_ + " in (?");
 		for (int i = 1; i<parameters.length; i++) {
 			queryBuilder.append(",?");
 		}
@@ -283,7 +244,7 @@ public class DataPointDAO {
 
 		String[] parameters = dataPointIdList.split(",");
 
-		StringBuilder queryBuilder = new StringBuilder(DELETE_EVENT_HANDLER_WHERE + " in (?");
+		StringBuilder queryBuilder = new StringBuilder(DELETE_EVENT_HANDLER_WHERE_ + " in (?");
 		for (int i = 1; i<parameters.length; i++) {
 			queryBuilder.append(",?");
 		}

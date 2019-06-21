@@ -219,11 +219,9 @@ public class ReportService implements MangoReport {
 						+ "   rtnCause, alarmLevel, message, ackTs, ackUsername, alternateAckSource)" //
 						+ "  select e.id, " + instance.getId() + ", e.typeId, e.typeRef1, e.typeRef2, e.activeTs, " //
 						+ "    e.rtnApplicable, e.rtnTs, e.rtnCause, e.alarmLevel, e.message, e.ackTs, u.username, " //
-						+ "    e.alternateAckSource " //
-						+ "  from events e join userEvents ue on ue.eventId=e.id " //
+						+ "    e.alternateAckSource from events e join userEvents ue on ue.eventId=e.id " //
 						+ "    left join users u on e.ackUserId=u.id " //
-						+ "  where ue.userId=? " //
-						+ "    and e.typeId=" //
+						+ "  where ue.userId=? and e.typeId=" //
 						+ EventType.EventSources.DATA_POINT //
 						+ "    and e.typeRef1=? ";
 
@@ -241,10 +239,8 @@ public class ReportService implements MangoReport {
 						+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
 						+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_POINT + ", " //
 						+ reportPointId + ", uc.ts, uc.commentText " //
-						+ "  from userComments uc " //
-						+ "    left join users u on uc.userId=u.id " //
-						+ "  where uc.commentType=" + UserComment.TYPE_POINT //
-						+ "    and uc.typeKey=? ";
+						+ "  from userComments uc left join users u on uc.userId=u.id where uc.commentType="
+						+ UserComment.TYPE_POINT +" and uc.typeKey=? ";
 
 				// Only include comments made in the duration of the report.
 				commentSQL += StringUtils.replaceMacro(timestampSql, "field", "uc.ts");
@@ -257,12 +253,9 @@ public class ReportService implements MangoReport {
 			String commentSQL = "insert into reportInstanceUserComments " //
 					+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
 					+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_EVENT + ", uc.typeKey, " //
-					+ "    uc.ts, uc.commentText " //
-					+ "  from userComments uc " //
-					+ "    left join users u on uc.userId=u.id " //
+					+ "    uc.ts, uc.commentText from userComments uc left join users u on uc.userId=u.id " //
 					+ "    join reportInstanceEvents re on re.eventId=uc.typeKey " //
-					+ "  where uc.commentType=" + UserComment.TYPE_EVENT //
-					+ "    and re.reportInstanceId=? ";
+					+ "  where uc.commentType=" + UserComment.TYPE_EVENT + " and re.reportInstanceId=? ";
 			DAO.getInstance().getJdbcTemp().update(commentSQL, new Object[] { instance.getId() });
 		}
 

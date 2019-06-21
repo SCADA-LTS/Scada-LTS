@@ -19,6 +19,7 @@
 package org.scada_lts.dao;
 
 import static org.junit.Assert.assertTrue;
+import static org.scada_lts.dao.SharedSQLs.INSERT_INTO_DATAPOINTS;
 
 import java.util.List;
 
@@ -55,19 +56,19 @@ public class PointValuesDaoTest extends TestDAO {
 		//populate data
 		// @formatter:off
 		    // Adding datasource
-			DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (`xid`,`name`,`dataSourceType`,`data`) VALUES ('DS_01','DS_TEST', 1,'');");
+			DAO.getInstance().getJdbcTemp().update(SharedSQLs.INSERT_INTO_DATASOURCES+" VALUES ('DS_01','DS_TEST', 1,'');");
 		
 		// create point
 			// NUMERIC 			dataPointId 1
-			DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_01',1,'')");
+			DAO.getInstance().getJdbcTemp().update(INSERT_INTO_DATAPOINTS+" VALUES ('T_01',1,'')");
 			// BINARY  			dataPointId 2
-			DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_02',1,'')");
+			DAO.getInstance().getJdbcTemp().update(INSERT_INTO_DATAPOINTS+" VALUES ('T_02',1,'')");
 			// MULTISTATE 		dataPointId 3
-			DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_03',1,'')");
+			DAO.getInstance().getJdbcTemp().update(INSERT_INTO_DATAPOINTS+" VALUES ('T_03',1,'')");
 			// ALPHANUMERIC		dataPointId 4
-			DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_04',1,'')");
+			DAO.getInstance().getJdbcTemp().update(INSERT_INTO_DATAPOINTS+" VALUES ('T_04',1,'')");
 			// IMAGE			dataPointId 5
-			DAO.getInstance().getJdbcTemp().update("INSERT INTO datapoints (`xid`,`dataSourceId`,`data`) VALUES ('T_05',1,'')");
+			DAO.getInstance().getJdbcTemp().update(INSERT_INTO_DATAPOINTS+" VALUES ('T_05',1,'')");
 		
 			
 		// create values for point Numeric
