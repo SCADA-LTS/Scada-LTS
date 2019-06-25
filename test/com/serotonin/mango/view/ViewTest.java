@@ -28,6 +28,8 @@ public class ViewTest {
     private FileOutputStream out;
     private ObjectOutputStream oout;
     private ObjectInputStream ois;
+    private int VERSION_ONE = 1;
+    private int WITHOUT_VERSION = -1;
 
     @Before
     public void init() {
@@ -61,14 +63,14 @@ public class ViewTest {
         LOG.info("Here should be invoked WayWithoutVersion and WayForFirstVersion");
 
         try {
-            oout.writeInt(1);
+            oout.writeInt(VERSION_ONE);
             oout.flush();
 
             int firstIntValue = view.getFirstIntValueFromObjectInputStream((ObjectInputStream) ois);
 
-            LOG.info("First Integer Value written is 1 and result should be 1. Result is :" + firstIntValue);
+            LOG.info("First Integer Value written is "+VERSION_ONE+" and result should be "+VERSION_ONE+". Result is :" + firstIntValue);
 
-            Assert.assertEquals(firstIntValue,1);
+            Assert.assertEquals(firstIntValue,VERSION_ONE);
 
         } catch (Exception ex) {
             LOG.info("Exception"+ex.getMessage());
@@ -88,9 +90,9 @@ public class ViewTest {
 
             int firstIntValueReadFromStream = view.getFirstIntValueFromObjectInputStream((ObjectInputStream) ois);
 
-            LOG.info("First Integer Value not exist and result should be -1.Result is :" + firstIntValueReadFromStream);
+            LOG.info("First Integer Value not exist and result should be "+WITHOUT_VERSION+".Result is :" + firstIntValueReadFromStream);
 
-            Assert.assertEquals(firstIntValueReadFromStream,-1);
+            Assert.assertEquals(firstIntValueReadFromStream,WITHOUT_VERSION);
 
         } catch (Exception ex) {
             LOG.info("Exception"+ex.getMessage());
