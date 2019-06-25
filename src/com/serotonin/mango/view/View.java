@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.view;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,7 +27,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.scada_lts.dao.ViewDAO;
 
 import com.serotonin.json.JsonArray;
@@ -51,6 +52,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 @JsonRemoteEntity
 public class View implements Serializable, JsonSerializable {
+
+	private static final Log LOG = LogFactory.getLog(View.class);
 	public static final String XID_PREFIX = "GV_";
 
 	private int id = Common.NEW_ID;
@@ -331,17 +334,26 @@ public class View implements Serializable, JsonSerializable {
 		out.writeObject(viewComponents);
 	}
 
+	/**
+	 * that one method is used only for junit, because of private readObject
+	 * @param in
+	 * @return int
+	 */
+	public int getFirstIntValueFromObjectInputStream(ObjectInputStream in){
+		try {
+			readObject(in);
+		} catch (IOException e) {
+			LOG.info("IOException :"+e.getMessage());
+		} catch (ClassNotFoundException e) {
+			LOG.info("ClassNotFoundException :"+e.getMessage());
+		}
+		return firstIntValueFromObjectInputStream;
+	}
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException,
 			ClassNotFoundException {
-		int ver = in.readInt();
 
-		// Switch on the version of the class so that version changes can be
-		// elegantly handled.
-		if (ver == 1) {
-			viewComponents = new CopyOnWriteArrayList<ViewComponent>(
-					(List<ViewComponent>) in.readObject());
-		}
+		new ViewComponentsReaderDependsOnVersion().readViewComponentsByRightWay(in);
 	}
 
 	@Override
@@ -409,5 +421,95 @@ public class View implements Serializable, JsonSerializable {
 				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
 		map.put("viewComponents", viewComponents);
 		map.put("sharingUsers", viewUsers);
+	}
+
+	private final int VIEW_WITHOUT_VERSION = -1;
+	private final int VIEW_VERSION_ONE = 1;
+	private int firstIntValueFromObjectInputStream  = VIEW_WITHOUT_VERSION;
+
+	interface WaysOfReadingViewComponents {
+
+		void setNextWay(WaysOfReadingViewComponents nextChain);
+
+		void readStream(ObjectInputStream in) throws IOException;
+	}
+	class Base implements WaysOfReadingViewComponents {
+
+		protected StringBuilder BASE_CONSTANT_CONTEXT = new StringBuilder("of reading viewComponents from BLOB object");
+		protected WaysOfReadingViewComponents waysOfReadingViewComponents;
+
+		@Override
+		public void setNextWay(WaysOfReadingViewComponents nextChain) {
+			this.waysOfReadingViewComponents =nextChain;
+		}
+
+		@Override
+		public void readStream(ObjectInputStream in) throws  IOException{
+			try {
+				viewComponents = new CopyOnWriteArrayList<ViewComponent>(
+						(List<ViewComponent>) in.readObject());
+			} catch (ClassNotFoundException e) {
+				LOG.info("ViewComponentVersionBase ClassNotFoundException "+e.getMessage());
+			}
+		}
+	}
+	class WayWithoutVersion extends Base implements WaysOfReadingViewComponents {
+
+		private StringBuilder START = new StringBuilder("Start "+BASE_CONSTANT_CONTEXT);
+		private StringBuilder END = new StringBuilder("End "+BASE_CONSTANT_CONTEXT);
+
+		@Override
+		public void readStream(ObjectInputStream in) {
+			try {
+				LOG.info(START);
+				super.readStream(in);
+				LOG.info(END);
+			} catch (Exception e) {
+				LOG.info("Reading viewComponents is ending with exception.We go to read data by version one. The exception:" + e.getMessage());
+				try {
+					firstIntValueFromObjectInputStream = in.readInt();
+					if(firstIntValueFromObjectInputStream!= VIEW_WITHOUT_VERSION)
+						this.waysOfReadingViewComponents.readStream(in);
+				} catch (IOException ex) {
+					LOG.info("ViewComponentVersion IOException "+e.getMessage());
+				}
+			}
+		}
+	}
+	class WayForFirstVersion extends Base implements WaysOfReadingViewComponents {
+		private StringBuilder CONSTANT_CONTEXT = new StringBuilder(BASE_CONSTANT_CONTEXT+" by Version One.");
+		private StringBuilder START = new StringBuilder("Start "+CONSTANT_CONTEXT);
+		private StringBuilder END = new StringBuilder("End "+CONSTANT_CONTEXT);
+
+		@Override
+		public void readStream(ObjectInputStream in) {
+			if (firstIntValueFromObjectInputStream == VIEW_VERSION_ONE)
+			try {
+				LOG.info(START);
+				super.readStream(in);
+				LOG.info(END);
+			} catch (Exception e) {
+				LOG.info("Reading viewComponents is ending with exception. The exception:" + e.getMessage());
+			}
+		}
+	}
+	class ViewComponentsReaderDependsOnVersion {
+
+		private WaysOfReadingViewComponents viewComponentsReader;
+
+		public ViewComponentsReaderDependsOnVersion() {
+
+			this.viewComponentsReader = new WayWithoutVersion();
+			WaysOfReadingViewComponents ViewComponentsReaderVersionOne = new WayForFirstVersion();
+			viewComponentsReader.setNextWay(ViewComponentsReaderVersionOne);
+
+		}
+		public void readViewComponentsByRightWay(ObjectInputStream in){
+			try {
+				this.viewComponentsReader.readStream(in);
+			} catch (IOException e) {
+				LOG.info("viewComponentsReader - Reading viewComponents is ending with exception. The exception:" + e.getMessage());
+			}
+		}
 	}
 }

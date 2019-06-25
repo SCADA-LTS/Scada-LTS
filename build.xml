@@ -378,6 +378,9 @@
 			<test name="com.serotonin.mango.rt.dataSource.snmp.SnmpDataSourceRTTest"
 				  haltonfailure="yes">
 			</test>
+			<test name="com.serotonin.mango.view.ViewTest"
+				  haltonfailure="yes">
+			</test>
 		    <!--
 		    <test name="" 
 		    	haltonfailure="yes">
