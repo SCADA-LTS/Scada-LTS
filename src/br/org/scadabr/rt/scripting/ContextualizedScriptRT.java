@@ -10,6 +10,7 @@ import javax.script.ScriptException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
 
 import br.org.scadabr.rt.scripting.context.ScriptContextObject;
@@ -49,7 +50,8 @@ public class ContextualizedScriptRT extends ScriptRT {
 	@Override
 	public void execute() throws ScriptException {
 		// ScriptEngineManager manager;
-		Context cx = Context.enter();
+		final ContextFactory factory = new ContextFactory();
+		final Context cx = factory.enterContext();
 		//cx.setLanguageVersion(Context.VERSION_DEFAULT);
 		cx.setOptimizationLevel(Common.getEnvironmentProfile().getInt("js.optimizationlevel", 0));
 
