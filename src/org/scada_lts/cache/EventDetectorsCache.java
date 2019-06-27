@@ -47,25 +47,17 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 public class EventDetectorsCache extends EventDetectorsCacheDAO{
 	
 	public static final Log LOG = LogFactory.getLog(EventDetectorsCache.class);
-	private static EventDetectorsCache instance = null;
-	private int countBuffer;
+	private static final EventDetectorsCache instance = new EventDetectorsCache();
 	
-	public static EventDetectorsCache getInstance() throws SchedulerException, IOException {
+	public static EventDetectorsCache getInstance() {
 		if (LOG.isTraceEnabled()) {
 		  LOG.trace("Get EventDetectorsCache instance ");
 		}
-		if (instance == null) {
-			instance = new EventDetectorsCache();
-		}
+
 		return instance;
 	}
 	
 	public List<PointEventDetectorVO> getEventDetectors(DataPointVO dp) {
-		countBuffer++;
-	
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("getEventDetectors count from buffer:" + countBuffer);
-		}
 		
 		if (mapEventDetectors == null) {
 			LOG.error(new Exception("Cache was null"));
@@ -90,14 +82,6 @@ public class EventDetectorsCache extends EventDetectorsCacheDAO{
 	}
 	
 	/**
-	 * Method reset counter.
-	 * @see UpdateEventDetectors
-	 */
-	public void resetCountBuffer() {
-		countBuffer = 0;
-	}
-	
-	/**
 	 * Method set ListPointEventDetector
 	 * @see UpdateEventDetectors
 	 * @param mapEventDetectors
@@ -106,14 +90,20 @@ public class EventDetectorsCache extends EventDetectorsCacheDAO{
 		this.mapEventDetectors = mapEventDetectors;
 	}
 
-	private EventDetectorsCache() throws SchedulerException, IOException {
+	private EventDetectorsCache()  {
 		if (LOG.isTraceEnabled()) {
 		  LOG.trace("Create EventDetectorsCache");
 		}
 		List<PointEventDetectorCache> listEventDetector = getAll();
 		TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetector = getMapEventDetectors(listEventDetector);
 		setMapEventDetectorForDataPoint(mapEventDetector);
-		cacheInitialize();
+		try {
+			cacheInitialize();
+		} catch (SchedulerException e) {
+			LOG.trace("SchedulerException in constructor EventDetectorsCache with message"+e.getMessage());
+		} catch (IOException e) {
+			LOG.trace("IOException in constructor EventDetectorsCache with message"+e.getMessage());
+		}
 	}
 	
 	private TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetectors;

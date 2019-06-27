@@ -364,7 +364,7 @@ public class DataPointService implements MangoDataPoint {
 			} else {
 				result = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
 			}
-		} catch (SchedulerException | IOException e) {
+		} catch (IOException e) {
 			EventDetectorsCache.LOG.trace(e);
 		}
 

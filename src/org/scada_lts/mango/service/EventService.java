@@ -203,7 +203,7 @@ public class EventService implements MangoEvent {
 				results = eventDAO.getPendingEventsLimit(userId, MAX_PENDING_EVENTS);				
 				attachRelationalInfo(results);
 			}
-		} catch (SchedulerException | IOException e) {
+		} catch (IOException e) {
 			LOG.error(e);	
 		}
 		return results;
@@ -345,7 +345,7 @@ public class EventService implements MangoEvent {
 			} else {
 				result = new EventDAO().getHighestUnsilencedAlarmLevel(userId);
 			}
-		} catch (SchedulerException | IOException e) {
+		} catch (IOException e) {
 			LOG.error(e);	
 		}		
 		return result;

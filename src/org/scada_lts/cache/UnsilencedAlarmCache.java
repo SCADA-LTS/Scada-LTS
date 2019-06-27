@@ -44,16 +44,15 @@ import org.scada_lts.service.UserHighestAlarmLevelService;
 public class UnsilencedAlarmCache extends UnsilencedAlarmDAO {
 
 	private static final Log LOG = LogFactory.getLog(UnsilencedAlarmCache.class);
-	private static UnsilencedAlarmCache instance = null;
-	private int countBuffer;
+	private static final UnsilencedAlarmCache instance = new UnsilencedAlarmCache();
 	
 	private TreeMap<Integer, Integer> mapUnsilencedAlarmLevelForUser;
 
-	public static UnsilencedAlarmCache getInstance() throws SchedulerException, IOException {
-		LOG.trace("Get UnsilencedAlarmCached instance ");
-		if (instance == null) {
-			instance = new UnsilencedAlarmCache();
+	public static UnsilencedAlarmCache getInstance()  {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("Get UnsilencedAlarmCached instance ");
 		}
+
 		return instance;
 	}
 
@@ -63,8 +62,7 @@ public class UnsilencedAlarmCache extends UnsilencedAlarmDAO {
 	 * @return
 	 */
 	public int getHighestUnsilencedAlarmLevel(int userId) {
-		countBuffer++;
-		LOG.trace("HighestUnsilencedAlarmLevel count from buffer:" + countBuffer);
+
 		if (mapUnsilencedAlarmLevelForUser.isEmpty()) {
 			return -1;
 		}
@@ -84,20 +82,19 @@ public class UnsilencedAlarmCache extends UnsilencedAlarmDAO {
 		this.mapUnsilencedAlarmLevelForUser = mapUnsilencedAlarmLevelForUser;
 		UserHighestAlarmLevelService.getInstance().updateUserAlarmLevels(mapUnsilencedAlarmLevelForUser);
 	}
-
-	/**
-	 * Reset counter
-	 */
-	public void resetCountBuffer() {
-		countBuffer = 0;
-	}
 	
-	private UnsilencedAlarmCache() throws SchedulerException, IOException {
+	private UnsilencedAlarmCache()  {
 		LOG.trace("Create UnsilencedAlarmCached");
 		List<UnsilencedAlarmLevelCache> listUnsilencedAlarmLevel = getAll();
 		TreeMap<Integer, Integer> mapUnsilencedAlarmLevel = getMapUnsilencedAlarmLevelForUser(listUnsilencedAlarmLevel);
 		setMapUnsilencedAlarmLevelForUser(mapUnsilencedAlarmLevel);
-		cacheInitialize();
+		try {
+			cacheInitialize();
+		} catch (SchedulerException e) {
+			LOG.trace("SchedulerException in constructor UnsilencedAlarmCache with message"+e.getMessage());
+		} catch (IOException e) {
+			LOG.trace("IOException in constructor UnsilencedAlarmCache with message"+e.getMessage());
+		}
 	}
 
 	private void cacheInitialize() throws SchedulerException, IOException {
