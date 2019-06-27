@@ -240,7 +240,7 @@ public class ViewDwr extends BaseDwr {
 				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint().getId());
 
 			// Check permissions.
-			if (Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
+			if (dataPointRT == null || Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
 				ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
 				if (!edit) {
