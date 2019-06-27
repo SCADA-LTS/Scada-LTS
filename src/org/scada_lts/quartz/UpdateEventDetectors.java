@@ -18,7 +18,6 @@
 
 package org.scada_lts.quartz;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -26,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.dao.EventDetectorsCacheDAO;
@@ -49,11 +47,6 @@ public class UpdateEventDetectors extends EventDetectorsCacheDAO implements Stat
 		LOG.trace("UpdateEventDetectors");
 		List<PointEventDetectorCache> listEventDetector = getAll();
 		TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetector = getMapEventDetectors(listEventDetector);
-		try {
-			EventDetectorsCache.getInstance().setMapEventDetectorForDataPoint(mapEventDetector);
-			EventDetectorsCache.getInstance().resetCountBuffer();
-		} catch (SchedulerException | IOException e) {
-			LOG.error(e);	
-		}
+		EventDetectorsCache.getInstance().setMapEventDetectorForDataPoint(mapEventDetector);
 	}
 }

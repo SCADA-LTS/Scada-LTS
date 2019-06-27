@@ -41,13 +41,8 @@ public class UpdatePendingEvents extends PendingEventsDAO implements StatefulJob
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
-		LOG.trace("UpdatePendingEvents");		
-		try {
-			PendingEventsCache.getInstance().setMapPendingEvents(getPendingEvents());
-			PendingEventsCache.getInstance().resetCountBuffer();
-		} catch (SchedulerException | IOException e) {
-			LOG.error(e);	
-		}
+		LOG.trace("UpdatePendingEvents");
+		PendingEventsCache.getInstance().setMapPendingEvents(getPendingEvents());
 	}
 
 }

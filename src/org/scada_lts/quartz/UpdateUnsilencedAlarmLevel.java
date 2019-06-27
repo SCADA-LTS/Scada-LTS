@@ -49,12 +49,7 @@ public class UpdateUnsilencedAlarmLevel extends UnsilencedAlarmDAO implements St
 		LOG.trace("UpdateUnsilencedAlarmLevel");
 		List<UnsilencedAlarmLevelCache> listUnsilencedAlarmLevel = getAll();
 		TreeMap<Integer, Integer> mapUnsilencedAlarmLevel = getMapUnsilencedAlarmLevelForUser(listUnsilencedAlarmLevel);
-		try {
-			UnsilencedAlarmCache.getInstance().setMapUnsilencedAlarmLevelForUser(mapUnsilencedAlarmLevel);
-			UnsilencedAlarmCache.getInstance().resetCountBuffer();
-		} catch (SchedulerException | IOException e) {
-			LOG.error(e);
-		}
+		UnsilencedAlarmCache.getInstance().setMapUnsilencedAlarmLevelForUser(mapUnsilencedAlarmLevel);
 	}
 
 }
