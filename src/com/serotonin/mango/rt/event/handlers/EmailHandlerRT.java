@@ -180,7 +180,9 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         try {
             String[] toAddrs = addresses.toArray(new String[0]);
             UsedImagesDirective inlineImages = new UsedImagesDirective();
-    		evt.setActiveTimestamp(Timezone.getTimezoneUserLong(Common.getStaticUser(), evt.getActiveTimestamp()));
+    		
+            if(Common.getStaticUser() != null)
+            	evt.setActiveTimestamp(Timezone.getTimezoneUserLong(Common.getStaticUser(), evt.getActiveTimestamp()));
 
             // Send the email.
             Map<String, Object> model = new HashMap<String, Object>();

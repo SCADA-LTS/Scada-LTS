@@ -27,11 +27,13 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -553,7 +555,7 @@ public class Common {
 	// To bypass some ambiguity
 	private static User user;
 	public static User getStaticUser() {
-		return user;
+			return user;
 	}
 	public static void setUser(User user) {
 		Common.user = user;
