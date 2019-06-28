@@ -562,11 +562,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 	
 	public TimeZone getTimezone() {
-		return timezone;
+		return timezone != null ? timezone : TimeZone.getDefault();
 	}
 	
 	public String getTimezoneId() {
-		return timezone.getID();
+		return timezone != null ? timezone.getID() : TimeZone.getDefault().getID();
 	}
 	
 	public void setTimezone(TimeZone timezone) {
