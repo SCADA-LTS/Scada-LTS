@@ -925,7 +925,9 @@ CREATE TABLE users (
   selectedWatchList NUMBER(10,0),
   homeUrl VARCHAR2(255 CHAR),
   receiveAlarmEmails NUMBER(10,0) NOT NULL,
-  receiveOwnAuditEvents CHAR(1 CHAR) NOT NULL
+  receiveOwnAuditEvents CHAR(1 CHAR) NOT NULL,
+  timezone VARCHAR2(255 CHAR) NOT NULL,
+  zone VARCHAR2(255 CHAR) NOT NULL
 );
 
 -- Creating Primary Key Constraint PRIMARY_10 on table users ... 
