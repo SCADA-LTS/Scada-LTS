@@ -38,18 +38,35 @@
   function snmpTest() {
       $set("snmpTestMessage", "<fmt:message key="dsEdit.snmp.gettingValue"/>");
       snmpTestButton(true);
-      DataSourceEditDwr.snmpGetOid($get("snmpTestOid"), $get("host"), $get("port"), $get("snmpVersion"), 
-              $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"), 
-              $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"), 
+      DataSourceEditDwr.snmpGetOid($get("snmpTestOid"), $get("host"), $get("port"), $get("snmpVersion"),
+              $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
+              $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"),
               $get("contextName"), $get("retries"), $get("timeout"), snmpTestCB);
+  }
+
+  function snmpWalk() {
+      $set("snmpTestMessage", "<fmt:message key="dsEdit.snmp.gettingValue"/>");
+      snmpWalkButton(true);
+      DataSourceEditDwr.snmpWalkOid($get("snmpWalkOid"), $get("host"), $get("port"), $get("snmpVersion"),
+              $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
+              $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"),
+              $get("contextName"), $get("retries"), $get("timeout"), snmpWalkCB);
   }
   
   function snmpTestCB() {
       setTimeout(snmpTestUpdate, 1000);
   }
+
+  function snmpWalkCB() {
+      setTimeout(snmpWalkUpdate, 1000);
+  }
   
   function snmpTestUpdate() {
       DataSourceEditDwr.snmpGetOidUpdate(snmpTestUpdateCB);
+  }
+
+  function snmpWalkUpdate() {
+      DataSourceEditDwr.snmpGetWalkUpdate(snmpWalkUpdateCB);
   }
   
   function snmpTestUpdateCB(result) {
@@ -60,9 +77,22 @@
       else
           snmpTestCB();
   }
+
+  function snmpWalkUpdateCB(result) {
+      if (result) {
+          $set("snmpWalkMessage", result);
+          snmpWalkButton(false);
+      }
+      else
+          snmpWalkCB();
+  }
   
   function snmpTestButton(testing) {
       setDisabled($("snmpTestBtn"), testing);
+  }
+
+  function snmpWalkButton(testing) {
+      setDisabled($("snmpWalkBtn"), testing);
   }
 
   function initImpl() {
@@ -255,6 +285,20 @@
         </tr>
         
         <tr><td colspan="2" id="snmpTestMessage" class="formError"></td></tr>
+
+        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.snmp.walking"/></td></tr>
+
+          <tr>
+            <td class="formLabel"><fmt:message key="dsEdit.snmp.oidWalk"/></td>
+            <td class="formField"><input type="text" id="snmpWalkOid"/></td>
+          </tr>
+
+          <tr>
+            <td colspan="2" align="center">
+              <input id="snmpWalkBtn" type="button" value="<fmt:message key="dsEdit.snmp.walk"/>" onclick="snmpWalk();"/>
+            </td>
+          </tr>
+          <tr><td colspan="2" id="snmpWalkMessage" class="formError"></td></tr>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsFoot.jspf" %>
 
 <tag:pointList pointHelpId="snmpPP">

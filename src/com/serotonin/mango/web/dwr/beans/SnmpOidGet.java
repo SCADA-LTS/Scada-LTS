@@ -69,8 +69,16 @@ public class SnmpOidGet extends Thread implements TestingUtility {
             version.addUser(snmp);
             snmp.listen();
 
-//          result = testOid(oid, snmp);
-            result = walkOid(oid, snmp);
+            String responseString;
+            PDU pdu = version.createPDU();
+            pdu.setType(PDU.GET);
+            pdu.add(new VariableBinding(new OID(oid)));
+
+            PDU response = snmp.send(pdu, version.getTarget(host, port, retries, timeout)).getResponse();
+            if (response == null)
+                result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
+            else
+                result = response.get(0).getVariable().toString();
 
         }
         catch (IOException e) {
@@ -95,54 +103,4 @@ public class SnmpOidGet extends Thread implements TestingUtility {
         // no op
     }
 
-    private String testOid(String oid, Snmp snmp) throws IOException {
-        String responseString;
-        PDU pdu = version.createPDU();
-        pdu.setType(PDU.GET);
-        pdu.add(new VariableBinding(new OID(oid)));
-
-        PDU response = snmp.send(pdu, version.getTarget(host, port, retries, timeout)).getResponse();
-        if (response == null)
-            responseString = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
-        else
-            responseString = response.get(0).getVariable().toString();
-
-        return responseString;
-    }
-
-    private String walkOid(String tableOid, Snmp snmp) throws IOException {
-        Map<String, String> resultMap = new TreeMap<>();
-
-        TreeUtils treeUtils = new TreeUtils(snmp, new DefaultPDUFactory());
-        List<TreeEvent> events = treeUtils.getSubtree(version.getTarget(host,port,retries,timeout), new OID(tableOid));
-
-        if (events == null || events.size() == 0) {
-            return I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
-        }
-
-        for (TreeEvent event : events) {
-            if (event == null) {
-                continue;
-            }
-            if (event.isError()) {
-                continue;
-            }
-            VariableBinding[] varBindings = event.getVariableBindings();
-            if (varBindings == null || varBindings.length == 0) {
-                continue;
-            }
-            for (VariableBinding varBinding: varBindings) {
-                if (varBinding == null) {
-                    continue;
-                }
-                resultMap.put("." + varBinding.getOid().toString(), varBinding.getVariable().toString());
-            }
-        }
-        snmp.close();
-        StringBuilder resultString = new StringBuilder();
-        for (Map.Entry<String, String> entry : resultMap.entrySet()) {
-            resultString.append(entry.getKey()).append(" - ").append(entry.getValue()).append("\n");
-        }
-        return resultString.toString();
-    }
 }
