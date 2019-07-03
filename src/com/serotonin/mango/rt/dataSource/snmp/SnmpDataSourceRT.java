@@ -224,74 +224,12 @@ public class SnmpDataSourceRT extends PollingDataSource {
 						updatePoint(dp, vb.getVariable(), time);
 					}
 				}
+			} else {
+				raiseEvent(PDU_EXCEPTION_EVENT, time, true, validatePdu(response));
+
 			}
 		}
 
-//
-//		if(time!=TIME_JUNIT.TIME_EXISTS_ONLY_DURING_JUNIT.getTime()) {
-//			if (request.getVariableBindings().size() == 0) {
-//				// Nothing to send, so don't bother.
-//				returnToNormal(PDU_EXCEPTION_EVENT, time);
-//				return;
-//			}
-//		}
-//
-//		// Get the response.
-//		snmpRequests.setRequest(version.createPDU());
-//		response = snmpRequests.getResponseByGet();
-//
-//		// Take a look at the response.
-//		LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);
-//		if(time==-1){
-//			if(!isSnmpConnectionIsAlive())
-//				snmp.close();
-//		}
-//		else {
-//			if(!isSnmpConnectionIsAlive()) {
-//				Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
-//			}
-//			else
-//			if(message != null)
-//				raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
-//			else {
-//				MessageType messageType = MessageType.undefined;
-//				boolean error = false;
-//
-//				DataPointRT dp;
-//				for (int i = 0; i < response.size(); i++) {
-//					vb = response.get(i);
-//					// Find the command for this binding.
-//					dp = setDataPoint(vb,requestPoints);
-//					if (dp != null) {
-//						requestPoints.remove(dp);
-//
-//						// Check if this is an error.
-//						if (vb.getVariable().isException()) {
-//							messageType = MessageType.oidError;
-//						} else {
-//							updatePoint(dp, vb.getVariable(), time);
-//						}
-//					} else {
-//						messageType = MessageType.unknownOid;
-//					}
-//					if (messageType != MessageType.undefined) {
-//						error = true;
-//						logEventsDependsOnMessageType(messageType, vb, dp, time);
-//						messageType = MessageType.undefined;
-//					}
-//				}
-//				for (DataPointRT requestPoint : requestPoints) {
-//					error = true;
-//					raiseEvent(PDU_EXCEPTION_EVENT, time, true,
-//							new LocalizableMessage("event.snmp.noBinding",
-//									getOid(requestPoint), address));
-//				}
-//				if (!error)
-//					// Deactivate any existing event.
-//					returnToNormal(PDU_EXCEPTION_EVENT, time);
-//
-//			}
-//		}
 	}
 	private DataPointRT setDataPoint(VariableBinding vb, List<DataPointRT> requestPoints){
 		for (DataPointRT requestPoint : requestPoints) {
@@ -433,7 +371,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 			counterEmptyResponsesOrResponsesWithError=0;
 			log.info("Counter Empty Responses Or Responses With Error is set 0.");
 
-			SnmpTrapRouter.addDataSource(this);
+			SnmpTrapRouter.addDataSource(this, this.version);
 
 			// Deactivate any existing event.
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,

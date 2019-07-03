@@ -136,4 +136,16 @@ public class Version3 extends Version {
             scopedPDU.setContextName(contextName);
         return scopedPDU;
     }
+
+    public OctetString getEngineId() {
+        return engineId;
+    }
+
+    public OctetString getContextEngineId() {
+        return contextEngineId;
+    }
+
+    public OctetString getContextName() {
+        return contextName;
+    }
 }

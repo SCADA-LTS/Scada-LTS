@@ -18,22 +18,18 @@
  */
 package com.serotonin.mango.rt.dataSource.snmp;
 
+import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.util.StringUtils;
+import org.snmp4j.*;
+import org.snmp4j.mp.*;
+import org.snmp4j.smi.UdpAddress;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.util.MultiThreadedMessageDispatcher;
+import org.snmp4j.util.ThreadPool;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.snmp4j.CommandResponder;
-import org.snmp4j.CommandResponderEvent;
-import org.snmp4j.PDU;
-import org.snmp4j.PDUv1;
-import org.snmp4j.Snmp;
-import org.snmp4j.mp.CounterSupport;
-import org.snmp4j.mp.DefaultCounterListener;
-import org.snmp4j.smi.UdpAddress;
-import org.snmp4j.transport.DefaultUdpTransportMapping;
-
-import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.util.StringUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -41,12 +37,12 @@ import com.serotonin.util.StringUtils;
 public class SnmpTrapRouter {
     private static SnmpTrapRouter instance;
 
-    public synchronized static void addDataSource(SnmpDataSourceRT ds) throws IOException {
+    public synchronized static void addDataSource(SnmpDataSourceRT ds, Version version) throws IOException {
         if (instance == null) {
             CounterSupport.getInstance().addCounterListener(new DefaultCounterListener());
             instance = new SnmpTrapRouter();
         }
-        instance.addDataSourceImpl(ds);
+        instance.addDataSourceImpl(ds, version);
     }
 
     public synchronized static void removeDataSource(SnmpDataSourceRT ds) {
@@ -56,10 +52,10 @@ public class SnmpTrapRouter {
 
     private final List<PortListener> portListeners = new LinkedList<PortListener>();
 
-    private void addDataSourceImpl(SnmpDataSourceRT ds) throws IOException {
+    private void addDataSourceImpl(SnmpDataSourceRT ds, Version version) throws IOException {
         PortListener l = getPortListener(ds.getTrapPort());
         if (l == null) {
-            l = new PortListener(ds.getTrapPort());
+            l = new PortListener(ds.getTrapPort(), version);
             portListeners.add(l);
         }
         l.addDataSource(ds);
@@ -85,17 +81,49 @@ public class SnmpTrapRouter {
     }
 
     private class PortListener implements CommandResponder {
-        private final Snmp snmp;
-        final int port;
+
         final List<SnmpDataSourceRT> dataSources = new LinkedList<SnmpDataSourceRT>();
+        final Version version;
+        final int port;
+        private Snmp snmp;
 
-        PortListener(int port) throws IOException {
+        PortListener(int port, Version version) throws IOException {
             this.port = port;
+            this.version = version;
 
-            snmp = new Snmp(new DefaultUdpTransportMapping(new UdpAddress("0.0.0.0/" + port)));
-            snmp.addCommandResponder(this);
-            snmp.listen();
+            run();
+
         }
+
+
+        private void init() throws IOException {
+            ThreadPool threadPool = ThreadPool.create("Trap", dataSources.size() + 1);
+            MultiThreadedMessageDispatcher dispatcher = new MultiThreadedMessageDispatcher(threadPool, new MessageDispatcherImpl());
+            UdpAddress trapListenAddress = new UdpAddress("0.0.0.0/" + this.port);
+
+            snmp = new Snmp(dispatcher, new DefaultUdpTransportMapping(trapListenAddress));
+
+            snmp.getMessageDispatcher().addMessageProcessingModel(new MPv1());
+            snmp.getMessageDispatcher().addMessageProcessingModel(new MPv2c());
+            snmp.getMessageDispatcher().addMessageProcessingModel(new MPv3());
+
+            version.addUser(snmp);
+
+            snmp.listen();
+
+        }
+
+        public void run() {
+            try {
+                init();
+                snmp.addCommandResponder(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
 
         public synchronized void processPdu(CommandResponderEvent evt) {
             PDU command = evt.getPDU();
