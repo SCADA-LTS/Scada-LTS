@@ -1,6 +1,6 @@
 package org.scada_lts.dao;
 
-import com.serotonin.mango.util.Timezone;
+
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,7 +14,12 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import com.mysql.jdbc.Statement;
+
 import java.util.List;
 
 /**
@@ -28,28 +33,26 @@ public class UserDAO {
 
 	private static final Log LOG = LogFactory.getLog(UserDAO.class);
 
-	private final static String COLUMN_NAME_ID = "id";
-	private final static String COLUMN_NAME_USERNAME = "username";
-	private final static String COLUMN_NAME_PASSWORD = "password";
-	private final static String COLUMN_NAME_EMAIL = "email";
-	private final static String COLUMN_NAME_PHONE = "phone";
-	private final static String COLUMN_NAME_ADMIN = "admin";
-	private final static String COLUMN_NAME_DISABLED = "disabled";
-	private final static String COLUMN_NAME_SELECTED_WATCH_LIST = "selectedWatchList";
-	private final static String COLUMN_NAME_HOME_URL = "homeUrl";
-	private final static String COLUMN_NAME_LAST_LOGIN = "lastLogin";
-	private final static String COLUMN_NAME_RECEIVE_ALARM_EMAILS = "receiveAlarmEmails";
-	private final static String COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS = "receiveOwnAuditEvents";
-	private final static String COLUMN_NAME_TIMEZONE="timezone";                                            //time_zone
-	private final static String COLUMN_NAME_ZONE="zone";
-	
+	protected final static String COLUMN_NAME_ID = "id";
+	protected final static String COLUMN_NAME_USERNAME = "username";
+	protected final static String COLUMN_NAME_PASSWORD = "password";
+	protected final static String COLUMN_NAME_EMAIL = "email";
+	protected final static String COLUMN_NAME_PHONE = "phone";
+	protected final static String COLUMN_NAME_ADMIN = "admin";
+	protected final static String COLUMN_NAME_DISABLED = "disabled";
+	protected final static String COLUMN_NAME_SELECTED_WATCH_LIST = "selectedWatchList";
+	protected final static String COLUMN_NAME_HOME_URL = "homeUrl";
+	protected final static String COLUMN_NAME_LAST_LOGIN = "lastLogin";
+	protected final static String COLUMN_NAME_RECEIVE_ALARM_EMAILS = "receiveAlarmEmails";
+	protected final static String COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS = "receiveOwnAuditEvents";
+
 	// @formatter:off
-	private static final String USER_SELECT_ID = ""
+	protected static final String USER_SELECT_ID = ""
 			+ "select "
-				+ COLUMN_NAME_ID + " "
+			+ COLUMN_NAME_ID + " "
 			+ "from users ";
 
-	private static final String USER_SELECT = ""
+	protected static final String USER_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
 				+ COLUMN_NAME_USERNAME + ", "
@@ -62,31 +65,29 @@ public class UserDAO {
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_LAST_LOGIN + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS +", "
-				+ COLUMN_NAME_TIMEZONE +", " // Offset
-				+ COLUMN_NAME_ZONE +" "// ZONE
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + " "
 			+ "from users ";
 
-	private static final String USER_SELECT_ORDER = ""
-				+ USER_SELECT
+	protected static final String USER_SELECT_ORDER = ""
+			+ USER_SELECT
 			+ "order by username ";
 
-	private static final String USER_SELECT_WHERE_ID = ""
-				+ USER_SELECT
+	protected static final String USER_SELECT_WHERE_ID = ""
+			+ USER_SELECT
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
 
-	private static final String USER_SELECT_WHERE_USERNAME = ""
+	protected static final String USER_SELECT_WHERE_USERNAME = ""
 			+ USER_SELECT
 			+ "where lower("
-			+ COLUMN_NAME_USERNAME + ")=?";
+				+ COLUMN_NAME_USERNAME + ")=?";
 
-	private static final String USER_SELECT_ACTIVE = ""
-				+ USER_SELECT
+	protected static final String USER_SELECT_ACTIVE = ""
+			+ USER_SELECT
 			+ "where "
 				+ COLUMN_NAME_DISABLED + "=? ";
 
-	private static final String USER_INSERT = ""
+	protected static final String USER_INSERT = ""
 			+ "insert into users ("
 				+ COLUMN_NAME_USERNAME + ", "
 				+ COLUMN_NAME_PASSWORD + ", "
@@ -96,12 +97,10 @@ public class UserDAO {
 				+ COLUMN_NAME_DISABLED + ", "
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
-				+ COLUMN_NAME_TIMEZONE +", "		// Timezone
-				+ COLUMN_NAME_ZONE + " )" 		
-			+ "values (?,?,?,?,?,?,?,?,?,?,?) ";
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") "
+			+ "values (?,?,?,?,?,?,?,?,?) ";
 
-	private static final String USER_UPDATE = ""
+	protected static final String USER_UPDATE = ""
 			+ "update users set "
 				+ COLUMN_NAME_USERNAME + "=?, "
 				+ COLUMN_NAME_PASSWORD + "=?, "
@@ -111,61 +110,28 @@ public class UserDAO {
 				+ COLUMN_NAME_DISABLED + "=?, "
 				+ COLUMN_NAME_HOME_URL + "=?, "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + "=?, "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS +"=?, "
-				+ COLUMN_NAME_TIMEZONE + "=?, "		// Timezone
-				+ COLUMN_NAME_ZONE + "=? "
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
-	private static final String USER_SELECT_TIMEZONE = ""		
-			+ "select "											// Timezone
-				+ COLUMN_NAME_TIMEZONE + " "
-			+ "from users "
-			 + "where "
-				+ COLUMN_NAME_ID + "=? ";
 
-	private static final String USER_UPDATE_TIMEZONE = ""		
-			+ "update users set "								// Timezone
-			+ COLUMN_NAME_TIMEZONE + "=? "
-		    + "where "
-			+ COLUMN_NAME_ID + "=? ";
-
-
-	private static final String USER_SELECT_ZONE = ""			
-			+ "select "											// Zone
-				+ COLUMN_NAME_ZONE + " "						
-			+ "from users "
-			 + "where "
-				+ COLUMN_NAME_ID + "=? ";
-	
-	private static final String USER_UPDATE_ZONE=""				
-			+ "update users set "								// Zone
-			+ COLUMN_NAME_ZONE + "=? "
-		    + "where "
-			+ COLUMN_NAME_ID + "=? ";
-	
-	private static final String USER_SELECT_WHERE_EMAIL = ""
-			+ USER_SELECT
-			+ "where lower("
-			+ COLUMN_NAME_EMAIL + ")=?";
-	
-	private static final String USER_UPDATE_LOGIN = ""
+	protected static final String USER_UPDATE_LOGIN = ""
 			+ "update users set "
 				+ COLUMN_NAME_LAST_LOGIN + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
 
-	private static final String USER_UPDATE_HOME_URL = ""
+	protected static final String USER_UPDATE_HOME_URL = ""
 			+ "update users set "
 				+ COLUMN_NAME_HOME_URL + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
 
-	private static final String USER_DELETE = ""
+	protected static final String USER_DELETE = ""
 			+ "delete from users where "
-				+ COLUMN_NAME_ID + "=? ";
+			+ COLUMN_NAME_ID + "=? ";
 	// @formatter:on
 
-	private class UserRowMapper implements RowMapper<User> {
+	protected class UserRowMapper implements RowMapper<User> {
 
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -182,8 +148,6 @@ public class UserDAO {
 			user.setLastLogin(rs.getLong(COLUMN_NAME_LAST_LOGIN));
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
-			user.setTimezone(Timezone.createTimezone(rs.getString(COLUMN_NAME_TIMEZONE))); //Timezone
-			user.setZone(rs.getString(COLUMN_NAME_ZONE));	
 			return user;
 		}
 	}
@@ -262,69 +226,6 @@ public class UserDAO {
 
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_LOGIN, new Object[]{System.currentTimeMillis(), userId});
 	}
-	
-	public String getUserTimezone(int id) {
-
-		String timeZone;
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("getUser_timezone(int id) id:" + id);
-		}
-		try {
-			timeZone = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_TIMEZONE, new Object[]{id}, String.class);
-
-		} catch (EmptyResultDataAccessException e) {
-			timeZone = null;
-		}
-		return timeZone;
-
-	}
-
-	public String getUserZone(int id)                                                                                    ///smart e-tech //time_zone
-	{
-		if (LOG.isTraceEnabled()) 
-			LOG.trace("getUser_timezone(int id) id:" + id);
-
-		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_ZONE, new Object[]{id}, String.class);
-
-		}catch (EmptyResultDataAccessException e) {
-			return "";
-		}
-
-	}
-
-	public User getUserByMail(String email) {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("getUserMail(String email) email:" + email);
-		}
-
-		User user;
-		try {
-			user = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_WHERE_EMAIL, new Object[]{email}, new UserRowMapper());
-		} catch (EmptyResultDataAccessException e) {
-			user = null;
-		}
-		return user;
-	}
-	public void updateUserTimezone(int userId, String timezone) {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("updateUser_timezone(TimeZone timezone) userId:" + userId + ", timezone:" + timezone);
-		}
-		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_TIMEZONE, new Object[]{timezone, userId});
-
-	}
-
-	public void updateUserZone(int userId, String zone) {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("updateUser_zone(TimeZone timezone) userId:" + userId + ", zone:" + zone);
-		}
-		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_ZONE, new Object[]{zone, userId});
-
-	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public int insert(final User user) {
@@ -348,9 +249,7 @@ public class UserDAO {
 						DAO.boolToChar(user.isDisabled()),
 						user.getHomeUrl(),
 						user.getReceiveAlarmEmails(),
-						DAO.boolToChar(user.isReceiveOwnAuditEvents()),
-						user.getTimezoneId(),
-						user.getZone()
+						DAO.boolToChar(user.isReceiveOwnAuditEvents())
 				}).setValues(preparedStatement);
 				return preparedStatement;
 			}
@@ -375,8 +274,6 @@ public class UserDAO {
 				user.getHomeUrl(),
 				user.getReceiveAlarmEmails(),
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
-				user.getTimezoneId(),
-				user.getZone(),
 				user.getId()
 		});
 	}
