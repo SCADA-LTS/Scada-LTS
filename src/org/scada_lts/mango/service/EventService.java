@@ -36,7 +36,6 @@ import org.scada_lts.cache.UnsilencedAlarmCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
