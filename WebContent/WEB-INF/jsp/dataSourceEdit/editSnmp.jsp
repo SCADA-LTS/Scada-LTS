@@ -163,6 +163,10 @@
                 <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.NONE %>"><fmt:message key="dsEdit.snmp.none"/></sst:option>
                 <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.MD5 %>">MD5</sst:option>
                 <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.SHA %>">SHA</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.HMAC128SHA224 %>">HMAC128 SHA224</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.HMAC192SHA256 %>">HMAC192 SHA256</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.HMAC256SHA384 %>">HMAC256 SHA384</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.HMAC384SHA512 %>">HMAC384 SHA512</sst:option>
               </sst:select>
             </td>
           </tr>
@@ -181,6 +185,10 @@
                 <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES128 %>">AES128</sst:option>
                 <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES192 %>">AES192</sst:option>
                 <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES256 %>">AES256</sst:option>
+
+                <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.DES3 %>">3DES</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES192With3DES %>">AES192With3DES</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES256With3DES %>">AES256With3DES</sst:option>
               </sst:select>
             </td>
           </tr>

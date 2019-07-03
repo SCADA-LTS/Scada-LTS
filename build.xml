@@ -142,7 +142,7 @@
 		<path refid="Snmplibrary"/>
     </path>
 	<path id="Snmplibrary">
-		<pathelement location="WebContent/WEB-INF/lib/snmp4j-2.5.0.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/snmp4j-2.7.0.jar"/>
 	</path>
 	<path id="EAR Libraries.libraryclasspath"/>
 	<path id="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath">
@@ -237,15 +237,15 @@
 	</target>
 
 	<target name="new-ui-dependency">
-		<exec dir="./ScadaLTS-UI-1" executable="npm">
-			<arg value="install"/>
+		<exec dir="./ScadaLTS-UI-1" executable="cmd">
+			<arg value="npm install"/>
 		</exec>
 	</target>
 
 	<target name="new-ui" depends="new-ui-dependency">
-		<exec dir="./ScadaLTS-UI-1" executable="npm">
-			<arg value="run"/>
-			<arg value="build"/>
+		<exec dir="./ScadaLTS-UI-1" executable="cmd">
+			<arg value="npm run"/>
+			<arg value="npm build"/>
 		</exec>
 	</target>
 

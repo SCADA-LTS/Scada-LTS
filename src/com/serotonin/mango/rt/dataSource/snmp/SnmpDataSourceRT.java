@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
+import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
@@ -193,6 +194,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		snmpRequests.setRequest(version.createPDU());
 		PDU request = snmpRequests.getRequest();
 		PDU response = null;
+		request.setType(PDU.GET);
+
 		VariableBinding vb;
 
 		// Make a copy of the oids so that we can check if we got everything we
@@ -207,70 +210,88 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				requestPoints.add(dp);
 			}
 		}
-		if(time!=TIME_JUNIT.TIME_EXISTS_ONLY_DURING_JUNIT.getTime()) {
-			if (request.getVariableBindings().size() == 0) {
-				// Nothing to send, so don't bother.
-				returnToNormal(PDU_EXCEPTION_EVENT, time);
-				return;
-			}
-		}
 
-		// Get the response.
-		snmpRequests.setRequest(version.createPDU());
-		response = snmpRequests.getResponseByGet();
-
-		// Take a look at the response.
-		LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);
-		if(time==-1){
-			if(!isSnmpConnectionIsAlive())
-				snmp.close();
-		}
-		else {
-			if(!isSnmpConnectionIsAlive()) {
-				Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
-			}
-			else
-			if(message != null)
-				raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
-			else {
-				MessageType messageType = MessageType.undefined;
-				boolean error = false;
-
+		ResponseEvent event = snmp.send(request, target);
+		if(event != null) {
+			response = event.getResponse();
+			if (response.getErrorStatus() == PDU.noError) {
 				DataPointRT dp;
 				for (int i = 0; i < response.size(); i++) {
 					vb = response.get(i);
-					// Find the command for this binding.
 					dp = setDataPoint(vb,requestPoints);
 					if (dp != null) {
 						requestPoints.remove(dp);
-
-						// Check if this is an error.
-						if (vb.getVariable().isException()) {
-							messageType = MessageType.oidError;
-						} else {
-							updatePoint(dp, vb.getVariable(), time);
-						}
-					} else {
-						messageType = MessageType.unknownOid;
-					}
-					if (messageType != MessageType.undefined) {
-						error = true;
-						logEventsDependsOnMessageType(messageType, vb, dp, time);
-						messageType = MessageType.undefined;
+						updatePoint(dp, vb.getVariable(), time);
 					}
 				}
-				for (DataPointRT requestPoint : requestPoints) {
-					error = true;
-					raiseEvent(PDU_EXCEPTION_EVENT, time, true,
-							new LocalizableMessage("event.snmp.noBinding",
-									getOid(requestPoint), address));
-				}
-				if (!error)
-					// Deactivate any existing event.
-					returnToNormal(PDU_EXCEPTION_EVENT, time);
-
 			}
 		}
+
+//
+//		if(time!=TIME_JUNIT.TIME_EXISTS_ONLY_DURING_JUNIT.getTime()) {
+//			if (request.getVariableBindings().size() == 0) {
+//				// Nothing to send, so don't bother.
+//				returnToNormal(PDU_EXCEPTION_EVENT, time);
+//				return;
+//			}
+//		}
+//
+//		// Get the response.
+//		snmpRequests.setRequest(version.createPDU());
+//		response = snmpRequests.getResponseByGet();
+//
+//		// Take a look at the response.
+//		LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);
+//		if(time==-1){
+//			if(!isSnmpConnectionIsAlive())
+//				snmp.close();
+//		}
+//		else {
+//			if(!isSnmpConnectionIsAlive()) {
+//				Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
+//			}
+//			else
+//			if(message != null)
+//				raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+//			else {
+//				MessageType messageType = MessageType.undefined;
+//				boolean error = false;
+//
+//				DataPointRT dp;
+//				for (int i = 0; i < response.size(); i++) {
+//					vb = response.get(i);
+//					// Find the command for this binding.
+//					dp = setDataPoint(vb,requestPoints);
+//					if (dp != null) {
+//						requestPoints.remove(dp);
+//
+//						// Check if this is an error.
+//						if (vb.getVariable().isException()) {
+//							messageType = MessageType.oidError;
+//						} else {
+//							updatePoint(dp, vb.getVariable(), time);
+//						}
+//					} else {
+//						messageType = MessageType.unknownOid;
+//					}
+//					if (messageType != MessageType.undefined) {
+//						error = true;
+//						logEventsDependsOnMessageType(messageType, vb, dp, time);
+//						messageType = MessageType.undefined;
+//					}
+//				}
+//				for (DataPointRT requestPoint : requestPoints) {
+//					error = true;
+//					raiseEvent(PDU_EXCEPTION_EVENT, time, true,
+//							new LocalizableMessage("event.snmp.noBinding",
+//									getOid(requestPoint), address));
+//				}
+//				if (!error)
+//					// Deactivate any existing event.
+//					returnToNormal(PDU_EXCEPTION_EVENT, time);
+//
+//			}
+//		}
 	}
 	private DataPointRT setDataPoint(VariableBinding vb, List<DataPointRT> requestPoints){
 		for (DataPointRT requestPoint : requestPoints) {
