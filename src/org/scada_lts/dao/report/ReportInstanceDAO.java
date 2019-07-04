@@ -304,6 +304,6 @@ public class ReportInstanceDAO {
 
 
 	public List<EventInstance> getReportInstanceEvents(int instanceId) {
-		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new EventDAO.EventRowMapper());
+		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new EventDAO.ReportInstanceEventRowMapper());
 	}
 }
