@@ -56,7 +56,7 @@ import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.UserTSDAO;
+import org.scada_lts.dao.UserTzDAO;
 
 public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {
@@ -124,7 +124,7 @@ public class WatchListDwr extends BaseDwr {
 	}
 	// Timezone
 	public String getTimezone() { 
-		IUserDAO userDao = new UserTSDAO();
+		IUserDAO userDao = new UserTzDAO();
 		String zone = userDao.getUserZone(Common.getUser().getId());
 		String offset = userDao.getUserTimezone(Common.getUser().getId());
 		return offset +" "+zone;
@@ -134,8 +134,8 @@ public class WatchListDwr extends BaseDwr {
 	
 	// Timezone
 	public void updateTimezone(String timezone) {
-		new UserTSDAO().updateUserTimezone(Common.getUser().getId(), timezone.substring(0, 9));
-		new UserTSDAO().updateUserZone(Common.getUser().getId(), timezone.substring(10, timezone.length()));
+		new UserTzDAO().updateUserTimezone(Common.getUser().getId(), timezone.substring(0, 9));
+		new UserTzDAO().updateUserZone(Common.getUser().getId(), timezone.substring(10, timezone.length()));
 	}
 
 	public void updateWatchListName(String name) {
