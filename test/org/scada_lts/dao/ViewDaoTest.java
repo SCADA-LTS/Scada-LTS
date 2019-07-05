@@ -15,7 +15,7 @@ public class ViewDaoTest extends TestDAO {
 
 //    @Test
 //    public void createAndInsertView() {
-//        ViewDao viewDao = new ViewDao();
+//        getViewDao viewDao = new getViewDao();
 //
 //        View view = new View();
 //        view.setId(10);

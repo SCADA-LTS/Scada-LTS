@@ -24,7 +24,7 @@ import com.serotonin.bacnet4j.type.enumerated.EngineeringUnits;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -546,7 +546,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             response.addContextualMessage("xid", "validate.required");
         else if (StringUtils.isLengthGreaterThan(xid, 50))
             response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!new DataPointDao().isXidUnique(xid, id))
+        else if (!DaoInstances.getDataPointDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         if (StringUtils.isEmpty(name))

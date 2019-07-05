@@ -66,7 +66,7 @@ public class StateChangeCountDetectorRT extends TimeoutDetectorRT {
         // when logging is set to no data. Best to just not even try.
 
         // // Get historical data for the point out of the database.
-        // List<PointValueTime> data = new PointValueDao().getPointValues(dataPoint, then);
+        // List<PointValueTime> data = new getPointValueDao().getPointValues(dataPoint, then);
         //
         // List<PointValueTime> history = Common.ctx.getRuntimeManager().getDataPoint(
         // vo.njbGetDataPoint().getId()).getLatestPointValues(vo.getChangeCount());

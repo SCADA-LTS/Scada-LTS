@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import com.serotonin.mango.daoCache.DaoCache;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
@@ -55,7 +55,6 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.PublisherDAO;
 import org.scada_lts.mango.service.PublisherService;
 
 public class EventHandlersDwr extends BaseDwr {
@@ -73,7 +72,7 @@ public class EventHandlersDwr extends BaseDwr {
 		// Get the data points
 		List<DataPointBean> allPoints = new ArrayList<DataPointBean>();
 		List<EventSourceBean> dataPoints = new ArrayList<EventSourceBean>();
-		List<DataPointVO> dps = DaoCache.getDataPointDao().getDataPoints(
+		List<DataPointVO> dps = DaoInstances.getDataPointDao().getDataPoints(
 				DataPointExtendedNameComparator.instance, true);
 		for (DataPointVO dp : dps) {
 			if (!Permissions
@@ -89,7 +88,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 				for (PointEventDetectorVO ped : dp.getEventDetectors()) {
 					EventTypeVO dpet = ped.getEventType();
-					dpet.setHandlers(DaoCache.getEventDao().getEventHandlers(dpet));
+					dpet.setHandlers(DaoInstances.getEventDao().getEventHandlers(dpet));
 					source.getEventTypes().add(dpet);
 				}
 
@@ -99,25 +98,25 @@ public class EventHandlersDwr extends BaseDwr {
 
 		// Get the scheduled events
 		List<EventTypeVO> scheduledEvents = new ArrayList<EventTypeVO>();
-		for (ScheduledEventVO se : DaoCache.getScheduledEventDao().getScheduledEvents()) {
+		for (ScheduledEventVO se : DaoInstances.getScheduledEventDao().getScheduledEvents()) {
 			EventTypeVO et = se.getEventType();
-			et.setHandlers(DaoCache.getEventDao().getEventHandlers(et));
+			et.setHandlers(DaoInstances.getEventDao().getEventHandlers(et));
 			scheduledEvents.add(et);
 		}
 		model.put("scheduledEvents", scheduledEvents);
 
 		// Get the compound event detectors
 		List<EventTypeVO> compoundEvents = new ArrayList<EventTypeVO>();
-		for (CompoundEventDetectorVO ced : DaoCache.getCompoundEventDetectorDao().getCompoundEventDetectors()) {
+		for (CompoundEventDetectorVO ced : DaoInstances.getCompoundEventDetectorDao().getCompoundEventDetectors()) {
 			EventTypeVO et = ced.getEventType();
-			et.setHandlers(DaoCache.getEventDao().getEventHandlers(et));
+			et.setHandlers(DaoInstances.getEventDao().getEventHandlers(et));
 			compoundEvents.add(et);
 		}
 		model.put("compoundEvents", compoundEvents);
 
 		// Get the data sources
 		List<EventSourceBean> dataSources = new ArrayList<EventSourceBean>();
-		for (DataSourceVO<?> ds : DaoCache.getDataSourceDao().getDataSources()) {
+		for (DataSourceVO<?> ds : DaoInstances.getDataSourceDao().getDataSources()) {
 			if (!Permissions.hasDataSourcePermission(user, ds.getId()))
 				continue;
 
@@ -127,7 +126,7 @@ public class EventHandlersDwr extends BaseDwr {
 				source.setName(ds.getName());
 
 				for (EventTypeVO dset : ds.getEventTypes()) {
-					dset.setHandlers(DaoCache.getEventDao().getEventHandlers(dset));
+					dset.setHandlers(DaoInstances.getEventDao().getEventHandlers(dset));
 					source.getEventTypes().add(dset);
 				}
 
@@ -138,7 +137,7 @@ public class EventHandlersDwr extends BaseDwr {
 		if (Permissions.hasAdmin(user)) {
 			// Get the publishers
 			List<EventSourceBean> publishers = new ArrayList<EventSourceBean>();
-			for (PublisherVO<? extends PublishedPointVO> p : DaoCache.getPublisherDao()
+			for (PublisherVO<? extends PublishedPointVO> p : DaoInstances.getPublisherDao()
 					.getPublishers(new PublisherService.PublisherNameComparator())) {
 				if (p.getEventTypes().size() > 0) {
 					EventSourceBean source = new EventSourceBean();
@@ -146,7 +145,7 @@ public class EventHandlersDwr extends BaseDwr {
 					source.setName(p.getName());
 
 					for (EventTypeVO pet : p.getEventTypes()) {
-						pet.setHandlers(DaoCache.getEventDao().getEventHandlers(pet));
+						pet.setHandlers(DaoInstances.getEventDao().getEventHandlers(pet));
 						source.getEventTypes().add(pet);
 					}
 
@@ -157,9 +156,9 @@ public class EventHandlersDwr extends BaseDwr {
 
 			// Get the maintenance events
 			List<EventTypeVO> maintenanceEvents = new ArrayList<EventTypeVO>();
-			for (MaintenanceEventVO me : DaoCache.getMaintenanceEventDao().getMaintenanceEvents()) {
+			for (MaintenanceEventVO me : DaoInstances.getMaintenanceEventDao().getMaintenanceEvents()) {
 				EventTypeVO et = me.getEventType();
-				et.setHandlers(DaoCache.getEventDao().getEventHandlers(et));
+				et.setHandlers(DaoInstances.getEventDao().getEventHandlers(et));
 				maintenanceEvents.add(et);
 			}
 			model.put("maintenanceEvents", maintenanceEvents);
@@ -167,7 +166,7 @@ public class EventHandlersDwr extends BaseDwr {
 			// Get the system events
 			List<EventTypeVO> systemEvents = new ArrayList<EventTypeVO>();
 			for (EventTypeVO sets : SystemEventType.getSystemEventTypes()) {
-				sets.setHandlers(DaoCache.getEventDao().getEventHandlers(sets));
+				sets.setHandlers(DaoInstances.getEventDao().getEventHandlers(sets));
 				systemEvents.add(sets);
 			}
 			model.put("systemEvents", systemEvents);
@@ -175,17 +174,17 @@ public class EventHandlersDwr extends BaseDwr {
 			// Get the audit events
 			List<EventTypeVO> auditEvents = new ArrayList<EventTypeVO>();
 			for (EventTypeVO aets : AuditEventType.getAuditEventTypes()) {
-				aets.setHandlers(DaoCache.getEventDao().getEventHandlers(aets));
+				aets.setHandlers(DaoInstances.getEventDao().getEventHandlers(aets));
 				auditEvents.add(aets);
 			}
 			model.put("auditEvents", auditEvents);
 		}
 
 		// Get the mailing lists.
-		model.put("mailingLists", DaoCache.getMailingListDao().getMailingLists());
+		model.put("mailingLists", DaoInstances.getMailingListDao().getMailingLists());
 
 		// Get the users.
-		model.put("users", DaoCache.getUserDao().getUsers());
+		model.put("users", DaoInstances.getUserDao().getUsers());
 
 		model.put("allPoints", allPoints);
 		model.put("dataPoints", dataPoints);
@@ -196,7 +195,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 	public String createSetValueContent(int pointId, String valueStr,
 			String idSuffix) {
-		DataPointVO pointVO = DaoCache.getDataPointDao().getDataPoint(pointId);
+		DataPointVO pointVO = DaoInstances.getDataPointDao().getDataPoint(pointId);
 		Permissions.ensureDataSourcePermission(Common.getUser(),
 				pointVO.getDataSourceId());
 
@@ -291,7 +290,7 @@ public class EventHandlersDwr extends BaseDwr {
 		Permissions.ensureEventTypePermission(Common.getUser(), type);
 
 		vo.setId(handlerId);
-		vo.setXid(StringUtils.isEmpty(xid) ? DaoCache.getEventDao().generateUniqueXid() : xid);
+		vo.setXid(StringUtils.isEmpty(xid) ? DaoInstances.getEventDao().generateUniqueXid() : xid);
 		vo.setAlias(alias);
 		vo.setDisabled(disabled);
 
@@ -299,7 +298,7 @@ public class EventHandlersDwr extends BaseDwr {
 		vo.validate(response);
 
 		if (!response.getHasMessages()) {
-			DaoCache.getEventDao().saveEventHandler(type, vo);
+			DaoInstances.getEventDao().saveEventHandler(type, vo);
 			response.addData("handler", vo);
 		}
 
@@ -308,8 +307,8 @@ public class EventHandlersDwr extends BaseDwr {
 
 	public void deleteEventHandler(int handlerId) {
 		Permissions.ensureEventTypePermission(Common.getUser(),
-				DaoCache.getEventDao().getEventHandlerType(handlerId));
-		DaoCache.getEventDao().deleteEventHandler(handlerId);
+				DaoInstances.getEventDao().getEventHandlerType(handlerId));
+		DaoInstances.getEventDao().deleteEventHandler(handlerId);
 	}
 
 	public LocalizableMessage testProcessCommand(String command) {

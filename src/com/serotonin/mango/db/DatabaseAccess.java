@@ -24,6 +24,7 @@ import java.util.MissingResourceException;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -34,7 +35,6 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.spring.ConnectionCallbackVoid;
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.upgrade.DBUpgrade;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -159,7 +159,7 @@ abstract public class DatabaseAccess {
 					user.setDisabled(false);
 					user.setDataSourcePermissions(new LinkedList<Integer>());
 					user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-					new UserDao().saveUser(user);
+					DaoInstances.getUserDao().saveUser(user);
 
 					// Record the current version.
 					new SystemSettingsDAO().setValue(

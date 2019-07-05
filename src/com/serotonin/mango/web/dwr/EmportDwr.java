@@ -36,7 +36,7 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonValue;
 import com.serotonin.json.JsonWriter;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.daoCache.DaoCache;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.util.LocalizableJsonException;
@@ -97,51 +97,51 @@ public class EmportDwr extends BaseDwr {
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 
 		if (graphicalViews)
-			data.put(GRAPHICAL_VIEWS, DaoCache.getViewDao().getViews());
+			data.put(GRAPHICAL_VIEWS, DaoInstances.getViewDao().getViews());
 		if (dataSources)
-			data.put(DATA_SOURCES, DaoCache.getDataSourceDao().getDataSources());
+			data.put(DATA_SOURCES, DaoInstances.getDataSourceDao().getDataSources());
 
-		List<DataPointVO> allDataPoints = DaoCache.getDataPointDao().getDataPoints(
+		List<DataPointVO> allDataPoints = DaoInstances.getDataPointDao().getDataPoints(
 				null, true);
 
 		if (dataPoints)
 			data.put(DATA_POINTS, allDataPoints);
 		if (scheduledEvents)
 			data.put(SCHEDULED_EVENTS,
-					DaoCache.getScheduledEventDao().getScheduledEvents());
+					DaoInstances.getScheduledEventDao().getScheduledEvents());
 		if (compoundEventDetectors)
 			data.put(COMPOUND_EVENT_DETECTORS,
-					DaoCache.getCompoundEventDetectorDao().getCompoundEventDetectors());
+					DaoInstances.getCompoundEventDetectorDao().getCompoundEventDetectors());
 		if (pointLinks)
-			data.put(POINT_LINKS, DaoCache.getPointLinkDao().getPointLinks());
+			data.put(POINT_LINKS, DaoInstances.getPointLinkDao().getPointLinks());
 		if (users)
-			data.put(USERS, DaoCache.getUserDao().getUsers());
+			data.put(USERS, DaoInstances.getUserDao().getUsers());
 		if (mailingLists)
-			data.put(MAILING_LISTS, DaoCache.getMailingListDao().getMailingLists());
+			data.put(MAILING_LISTS, DaoInstances.getMailingListDao().getMailingLists());
 		if (publishers)
-			data.put(PUBLISHERS, DaoCache.getPublisherDao().getPublishers());
+			data.put(PUBLISHERS, DaoInstances.getPublisherDao().getPublishers());
 		if (pointHierarchy)
-			data.put(POINT_HIERARCHY, DaoCache.getDataPointDao().getPointHierarchy()
+			data.put(POINT_HIERARCHY, DaoInstances.getDataPointDao().getPointHierarchy()
 					.getRoot().getSubfolders());
 		if (eventHandlers)
-			data.put(EVENT_HANDLERS, DaoCache.getEventDao().getEventHandlers());
+			data.put(EVENT_HANDLERS, DaoInstances.getEventDao().getEventHandlers());
 		if (watchLists) {
-			List<WatchList> wls = DaoCache.getWatchListDao().getWatchLists();
+			List<WatchList> wls = DaoInstances.getWatchListDao().getWatchLists();
 			data.put(WATCH_LISTS, wls);
 		}
 		if (maintenanceEvents)
 			data.put(MAINTENANCE_EVENTS,
-					DaoCache.getMaintenanceEventDao().getMaintenanceEvents());
+					DaoInstances.getMaintenanceEventDao().getMaintenanceEvents());
 
 		if (scripts)
-			data.put(SCRIPTS, DaoCache.getScriptDao().getScripts());
+			data.put(SCRIPTS, DaoInstances.getScriptDao().getScripts());
 		if (pointValues) {
 			List<PointValueJSONWrapper> allWrappedValues = new ArrayList<PointValueJSONWrapper>();
 
 			long antes = System.currentTimeMillis();
 			for (DataPointVO dataPointVO : allDataPoints) {
 				allWrappedValues.addAll(PointValueJSONWrapper.wrapPointValues(
-						dataPointVO.getXid(), DaoCache.getPointValueDao().getLatestPointValues(
+						dataPointVO.getXid(), DaoInstances.getPointValueDao().getLatestPointValues(
 								dataPointVO.getId(), maxPointValues)));
 			}
 			data.put(POINT_VALUES, allWrappedValues);
@@ -153,7 +153,7 @@ public class EmportDwr extends BaseDwr {
 			data.put(SYSTEM_SETTINGS, list);
 		}
 		if (usersProfiles) {
-			data.put(USERS_PROFILES, DaoCache.getUsersProfileDao().getUsersProfiles());
+			data.put(USERS_PROFILES, DaoInstances.getUsersProfileDao().getUsersProfiles());
 		}
 
 		JsonWriter writer = new JsonWriter();
@@ -257,7 +257,7 @@ public class EmportDwr extends BaseDwr {
 	private void stopRunningDataSources() {
 
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
-		for (DataSourceVO<?> dataSourceVO : DaoCache.getDataSourceDao()
+		for (DataSourceVO<?> dataSourceVO : DaoInstances.getDataSourceDao()
 				.getDataSources()) {
 			if (dataSourceVO.isEnabled())
 				rtm.stopDataSource(dataSourceVO.getId());

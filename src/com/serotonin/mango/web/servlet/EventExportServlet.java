@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.report.EventCsvStreamer;
@@ -29,7 +29,7 @@ public class EventExportServlet extends HttpServlet {
             return;
 
         final ResourceBundle bundle = Common.getBundle();
-        List<EventInstance> events = new EventDao().search(def.getEventId(), def.getEventSourceType(), def.getStatus(),
+        List<EventInstance> events = DaoInstances.getEventDao().search(def.getEventId(), def.getEventSourceType(), def.getStatus(),
                 def.getAlarmLevel(), def.getKeywords(), def.getDateFrom(), def.getDateTo(), user.getId(), bundle, 0,
                 Integer.MAX_VALUE, null);
 

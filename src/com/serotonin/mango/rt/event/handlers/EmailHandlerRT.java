@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.MailingListDao;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -88,7 +88,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     @Override
     public void eventRaised(EventInstance evt) {
         // Get the email addresses to send to
-        activeRecipients = new MailingListDao().getRecipientAddresses(vo.getActiveRecipients(),
+        activeRecipients = DaoInstances.getMailingListDao().getRecipientAddresses(vo.getActiveRecipients(),
                 new DateTime(evt.getActiveTimestamp()));
 
         // Send an email to the active recipients.
@@ -97,7 +97,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         // If an inactive notification is to be sent, save the active recipients.
         if (vo.isSendInactive()) {
             if (vo.isInactiveOverride())
-                inactiveRecipients = new MailingListDao().getRecipientAddresses(vo.getInactiveRecipients(),
+                inactiveRecipients = DaoInstances.getMailingListDao().getRecipientAddresses(vo.getInactiveRecipients(),
                         new DateTime(evt.getActiveTimestamp()));
             else
                 inactiveRecipients = activeRecipients;
@@ -115,7 +115,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     //
     synchronized public void scheduleTimeout(EventInstance evt, long fireTime) {
         // Get the email addresses to send to
-        Set<String> addresses = new MailingListDao().getRecipientAddresses(vo.getEscalationRecipients(), new DateTime(
+        Set<String> addresses = DaoInstances.getMailingListDao().getRecipientAddresses(vo.getEscalationRecipients(), new DateTime(
                 fireTime));
 
         // Send the escalation.

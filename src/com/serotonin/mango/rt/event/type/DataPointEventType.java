@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.event.type;
 
 import java.util.Map;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,7 +28,6 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.mango.db.dao.DataPointDao;
 
 @JsonRemoteEntity
 public class DataPointEventType extends EventType {
@@ -55,7 +55,7 @@ public class DataPointEventType extends EventType {
 	@Override
 	public int getDataSourceId() {
 		if (dataSourceId == -1)
-			dataSourceId = new DataPointDao().getDataPoint(dataPointId)
+			dataSourceId = DaoInstances.getDataPointDao().getDataPoint(dataPointId)
 					.getDataSourceId();
 		LOG.debug(toString() + " - getDataSourceId() - "
 				+ Integer.toString(dataSourceId));
@@ -126,10 +126,9 @@ public class DataPointEventType extends EventType {
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		super.jsonSerialize(map);
-		DataPointDao dataPointDao = new DataPointDao();
-		map.put("dataPointXID", dataPointDao.getDataPoint(dataPointId).getXid());
+		map.put("dataPointXID", DaoInstances.getDataPointDao().getDataPoint(dataPointId).getXid());
 		map.put("detectorXID",
-				dataPointDao.getDetectorXid(pointEventDetectorId));
+				DaoInstances.getDataPointDao().getDetectorXid(pointEventDetectorId));
 	}
 
 	@Override

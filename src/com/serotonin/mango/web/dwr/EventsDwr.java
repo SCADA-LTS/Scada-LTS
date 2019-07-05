@@ -26,7 +26,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.daoCache.DaoCache;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
@@ -79,7 +79,7 @@ public class EventsDwr extends BaseDwr {
 			keywords.toArray(keywordArr);
 		}
 
-		List<EventInstance> results = DaoCache.getEventDao().searchOld(eventId,
+		List<EventInstance> results = DaoInstances.getEventDao().searchOld(eventId,
 				eventSourceType, status, alarmLevel, keywordArr, maxResults,
 				user.getId(), getResourceBundle());
 
@@ -133,21 +133,21 @@ public class EventsDwr extends BaseDwr {
 				fromHour, fromMinute, fromSecond, toNone, toYear, toMonth,
 				toDay, toHour, toMinute, toSecond);
 
-		List<EventInstance> results = DaoCache.getEventDao().search(eventId, eventSourceType,
+		List<EventInstance> results = DaoInstances.getEventDao().search(eventId, eventSourceType,
 				status, alarmLevel, getKeywords(keywordStr), dateRange.getL1(),
 				dateRange.getL2(), user.getId(), getResourceBundle(), from, to,
 				date);
 
 		Map<String, Object> model = new HashMap<String, Object>();
-		int searchRowCount = DaoCache.getEventDao().getSearchRowCount();
+		int searchRowCount = DaoInstances.getEventDao().getSearchRowCount();
 		int pages = (int) Math.ceil(((double) searchRowCount) / PAGE_SIZE);
 
 		if (date != null) {
-			int startRow = DaoCache.getEventDao().getStartRow();
+			int startRow = DaoInstances.getEventDao().getStartRow();
 			if (startRow == -1)
 				page = pages - 1;
 			else
-				page = DaoCache.getEventDao().getStartRow() / PAGE_SIZE;
+				page = DaoInstances.getEventDao().getStartRow() / PAGE_SIZE;
 		}
 
 		if (pages > 1) {

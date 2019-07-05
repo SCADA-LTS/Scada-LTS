@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.scada_lts.dao.ViewDAO;
 
 import com.serotonin.json.JsonArray;
@@ -37,8 +38,6 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.component.CompoundComponent;
 import com.serotonin.mango.view.component.PointComponent;
@@ -149,7 +148,7 @@ public class View implements Serializable, JsonSerializable {
 	 * the components that render them
 	 */
 	public void validateViewComponents(boolean makeReadOnly) {
-		User owner = new UserDao().getUser(userId);
+		User owner = DaoInstances.getUserDao().getUser(userId);
 		for (ViewComponent viewComponent : viewComponents)
 			viewComponent.validateDataPoint(owner, makeReadOnly);
 	}
@@ -310,7 +309,7 @@ public class View implements Serializable, JsonSerializable {
 		else if (StringUtils.isLengthGreaterThan(xid, 50))
 			response.addMessage("xid", new LocalizableMessage(
 					"validate.notLongerThan", 50));
-		else if (!new ViewDao().isXidUnique(xid, id))
+		else if (!DaoInstances.getViewDao().isXidUnique(xid, id))
 			response.addMessage("xid", new LocalizableMessage(
 					"validate.xidUsed"));
 
@@ -357,7 +356,7 @@ public class View implements Serializable, JsonSerializable {
 			if (StringUtils.isEmpty(username))
 				throw new LocalizableJsonException("emport.error.missingValue",
 						"user");
-			User user = new UserDao().getUser(username);
+			User user = DaoInstances.getUserDao().getUser(username);
 			if (user == null)
 				throw new LocalizableJsonException("emport.error.missingUser",
 						username);
@@ -404,7 +403,7 @@ public class View implements Serializable, JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("user", new UserDao().getUser(userId).getUsername());
+		map.put("user", DaoInstances.getUserDao().getUser(userId).getUsername());
 		map.put("anonymousAccess",
 				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
 		map.put("viewComponents", viewComponents);

@@ -8,8 +8,7 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.db.MappedRowCallback;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.PointValueDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.stats.*;
@@ -33,9 +32,6 @@ import java.util.List;
 
 public class AsyncImageChartServlet extends BaseInfoServlet {
     private static final long serialVersionUID = -1;
-
-    final DataPointDao dataPointDao = new DataPointDao();
-    final PointValueDao pointValueDao = new PointValueDao();
 
     /**
      * @TODO(security): Validate the point access against the user. If anonymous, make sure the view allows public
@@ -125,14 +121,14 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
                 return null;
 
             if (from == -1 && to == -1) {
-                LongPair sae = pointValueDao.getStartAndEndTime(dataPointIds);
+                LongPair sae = DaoInstances.getPointValueDao().getStartAndEndTime(dataPointIds);
                 from = sae.getL1();
                 to = sae.getL2();
             }
             else if (from == -1)
-                from = pointValueDao.getStartTime(dataPointIds);
+                from = DaoInstances.getPointValueDao().getStartTime(dataPointIds);
             else if (to == -1)
-                to = pointValueDao.getEndTime(dataPointIds);
+                to = DaoInstances.getPointValueDao().getEndTime(dataPointIds);
 
             for (PointDataRetriever pdr : tasks.getTasks())
                 pdr.setRange(from, to);
@@ -181,7 +177,7 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
 
         @Override
         public void run() {
-            DataPointVO dp = dataPointDao.getDataPoint(dataPointId);
+            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
             try {
                 if (colour == null && !StringUtils.isEmpty(dp.getChartColour()))
                     colour = ColorUtils.toColor(dp.getChartColour());
@@ -207,8 +203,8 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
 
          // Get the data.
             //TODO rewrite seroUtils
-            //pointValueDao.getPointValuesBetween(dataPointId, from, to, this);
-            pointValueDao.getPointValuesBetween(dataPointId, from, to);
+            //DaoInstances.getPointValueDao().getPointValuesBetween(dataPointId, from, to, this);
+            DaoInstances.getPointValueDao().getPointValuesBetween(dataPointId, from, to);
         }
 
         @Override

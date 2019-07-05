@@ -20,7 +20,7 @@ package org.scada_lts.mango.service;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.serotonin.mango.view.View;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
@@ -30,13 +30,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.WatchList;
 
 /** 
- * Base on the WatchListDao
+ * Base on the getWatchListDao
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 @Service
@@ -88,13 +87,10 @@ public class WatchListService implements MangoWatchList {
 		if (watchList == null)
 			return;
 
-		// Get the points for each of the watch lists.
-		List<Integer> pointIds = watchListDAO.getPointsWatchList(watchList.getId());
-		
 		List<DataPointVO> points = watchList.getPointList();
-		DataPointDao dataPointDao = new DataPointDao();
-		for (Integer pointId : pointIds)
-			points.add(dataPointDao.getDataPoint(pointId));
+		// Get the points for each of the watch lists.
+		for (Integer pointId : watchListDAO.getPointsWatchList(watchList.getId()))
+			points.add(DaoInstances.getDataPointDao().getDataPoint(pointId));
 
 		setWatchListUsers(watchList);
 	}

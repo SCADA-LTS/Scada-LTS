@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,9 +34,6 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.bacnet4j.type.enumerated.EngineeringUnits;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
@@ -201,10 +199,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 					+ sdf.format(new Date());
 
 			// Get a list of all existing points.
-			DataPointDao dataPointDao = new DataPointDao();
-			UserDao userDao = new UserDao();
-			WatchListDao watchListDao = new WatchListDao();
-			List<DataPointVO> points = dataPointDao.getDataPoints(vo.getId(),
+			List<DataPointVO> points = DaoInstances.getDataPointDao().getDataPoints(vo.getId(),
 					null);
 
 			// Add a point for each address if it doesn't already exist.
@@ -230,7 +225,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 				//
 				// Point hierarchy folder
 				if (folderId == -1) {
-					PointHierarchy pointHierarchy = dataPointDao
+					PointHierarchy pointHierarchy = DaoInstances.getDataPointDao()
 							.getPointHierarchy();
 
 					PointFolder root = pointHierarchy.getRoot();
@@ -251,7 +246,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 
 						pointHierarchy.addPointFolder(folder, pointHierarchy
 								.getRoot().getId());
-						dataPointDao.savePointHierarchy(pointHierarchy
+						DaoInstances.getDataPointDao().savePointHierarchy(pointHierarchy
 								.getRoot());
 					}
 
@@ -339,7 +334,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 						// Initialize the list of watchlists
 						watchlists = new ArrayList<WatchList>();
 
-						for (User user : userDao.getActiveUsers()) {
+						for (User user : DaoInstances.getUserDao().getActiveUsers()) {
 							if (!Permissions.hasDataSourcePermission(user,
 									vo.getId()))
 								continue;
@@ -347,7 +342,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 							// Look for an existing watchlist with the same name
 							// as the folder
 							WatchList watchList = null;
-							for (WatchList wl : watchListDao.getWatchLists(
+							for (WatchList wl : DaoInstances.getWatchListDao().getWatchLists(
 									user.getId(), user.getUserProfile())) {
 								if (watchListName.equals(wl.getName())) {
 									watchList = wl;
@@ -360,7 +355,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 								// one
 								watchList = new WatchList();
 								watchList.setName(watchListName);
-								watchListDao.createNewWatchList(watchList,
+								DaoInstances.getWatchListDao().createNewWatchList(watchList,
 										user.getId());
 							}
 
@@ -377,7 +372,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 			// Save the watchlists
 			if (watchlists != null) {
 				for (WatchList watchList : watchlists)
-					watchListDao.saveWatchList(watchList);
+					DaoInstances.getWatchListDao().saveWatchList(watchList);
 			}
 		}
 	}

@@ -43,7 +43,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
 /**
- * Event DAO base on before version EventDao 
+ * Event DAO base on before version getEventDao
  *
  * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
  */

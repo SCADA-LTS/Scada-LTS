@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.exception.DAOException;
@@ -17,10 +18,6 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.ViewDao;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
@@ -43,19 +40,18 @@ public class UsersProfilesDwr {
 		initData.put("profiles", profiles);
 
 		// Data sources
-		List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
+		List<DataSourceVO<?>> dataSourceVOs = DaoInstances.getDataSourceDao()
 				.getDataSources();
 		List<Map<String, Object>> dataSources = new ArrayList<Map<String, Object>>(
 				dataSourceVOs.size());
 		Map<String, Object> ds, dp;
 		List<Map<String, Object>> points;
-		DataPointDao dataPointDao = new DataPointDao();
 		for (DataSourceVO<?> dsvo : dataSourceVOs) {
 			ds = new HashMap<String, Object>();
 			ds.put("id", dsvo.getId());
 			ds.put("name", dsvo.getName());
 			points = new LinkedList<Map<String, Object>>();
-			for (DataPointVO dpvo : dataPointDao.getDataPoints(dsvo.getId(),
+			for (DataPointVO dpvo : DaoInstances.getDataPointDao().getDataPoints(dsvo.getId(),
 					DataPointNameComparator.instance)) {
 				dp = new HashMap<String, Object>();
 				dp.put("id", dpvo.getId());
@@ -69,12 +65,10 @@ public class UsersProfilesDwr {
 
 		initData.put("dataSources", dataSources);
 
-		WatchListDao watchlistDao = new WatchListDao();
-		List<WatchList> watchlists = watchlistDao.getWatchLists();
+		List<WatchList> watchlists = DaoInstances.getWatchListDao().getWatchLists();
 		initData.put("watchlists", watchlists);
 
-		ViewDao viewDao = new ViewDao();
-		List<View> views = viewDao.getViews();
+		List<View> views = DaoInstances.getViewDao().getViews();
 		initData.put("views", views);
 
 		return initData;
@@ -98,13 +92,11 @@ public class UsersProfilesDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 
-		UsersProfileDao userDao = new UsersProfileDao();
-
 		UsersProfileVO profile;
 		if (id == Common.NEW_ID)
 			profile = new UsersProfileVO();
 		else
-			profile = userDao.getUserProfileById(id);
+			profile = DaoInstances.getUsersProfileDao().getUserProfileById(id);
 
 		profile.setName(name);
 		profile.setDataSourcePermissions(dataSourcePermissions);
@@ -115,7 +107,7 @@ public class UsersProfilesDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		try {
-			userDao.saveUsersProfile(profile);
+			DaoInstances.getUsersProfileDao().saveUsersProfile(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
 					"usersProfiles.validate.nameUnique"));
@@ -131,9 +123,8 @@ public class UsersProfilesDwr {
 	public DwrResponseI18n deleteUsersProfile(int profileId) {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
-		UsersProfileDao profileDao = new UsersProfileDao();
 		try {
-			profileDao.deleteUserProfile(profileId);
+			DaoInstances.getUsersProfileDao().deleteUserProfile(profileId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

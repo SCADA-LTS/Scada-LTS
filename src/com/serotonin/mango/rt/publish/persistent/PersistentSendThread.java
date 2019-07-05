@@ -8,13 +8,13 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.publish.PublishQueueEntry;
@@ -416,7 +416,7 @@ class PersistentSendThread extends SendThread {
         Common.timer.execute(new Runnable() {
             @Override
             public void run() {
-                writePointHierarchy(new DataPointDao().getPointHierarchy());
+                writePointHierarchy(DaoInstances.getDataPointDao().getPointHierarchy());
             }
         });
     }

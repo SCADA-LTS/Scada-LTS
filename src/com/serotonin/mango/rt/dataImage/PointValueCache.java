@@ -21,7 +21,7 @@ package com.serotonin.mango.rt.dataImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.serotonin.mango.db.dao.PointValueDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 
 /**
  * This class maintains an ordered list of the most recent values for a data point. It will mirror values in the
@@ -35,7 +35,6 @@ import com.serotonin.mango.db.dao.PointValueDao;
 public class PointValueCache {
     private final int dataPointId;
     private final int defaultSize;
-    private final PointValueDao dao;
 
     /**
      * IMPORTANT: The list object should never be written to! The implementation here is for performance. Never call
@@ -47,7 +46,6 @@ public class PointValueCache {
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
-        dao = new PointValueDao();
 
         if (defaultSize > 0)
             refreshCache(defaultSize);
@@ -58,9 +56,9 @@ public class PointValueCache {
     public void savePointValue(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
         if (logValue) {
             if (async)
-                dao.savePointValueAsync(dataPointId, pvt, source);
+                DaoInstances.getPointValueDao().savePointValueAsync(dataPointId, pvt, source);
             else
-                pvt = dao.savePointValueSync(dataPointId, pvt, source);
+                pvt = DaoInstances.getPointValueDao().savePointValueSync(dataPointId, pvt, source);
         }
 
         List<PointValueTime> c = cache;
@@ -92,7 +90,7 @@ public class PointValueCache {
      */
     void logPointValueAsync(PointValueTime pointValue, SetPointSource source) {
         // Save the new value and get a point value time back that has the id and annotations set, as appropriate.
-        dao.savePointValueAsync(dataPointId, pointValue, source);
+        DaoInstances.getPointValueDao().savePointValueAsync(dataPointId, pointValue, source);
     }
 
     public PointValueTime getLatestPointValue() {
@@ -124,7 +122,7 @@ public class PointValueCache {
             maxSize = size;
             if (size == 1) {
                 // Performance thingy
-                PointValueTime pvt = dao.getLatestPointValue(dataPointId);
+                PointValueTime pvt = DaoInstances.getPointValueDao().getLatestPointValue(dataPointId);
                 if (pvt != null) {
                     List<PointValueTime> c = new ArrayList<PointValueTime>();
                     c.add(pvt);
@@ -132,7 +130,7 @@ public class PointValueCache {
                 }
             }
             else
-                cache = dao.getLatestPointValues(dataPointId, size);
+                cache = DaoInstances.getPointValueDao().getLatestPointValues(dataPointId, size);
         }
     }
 

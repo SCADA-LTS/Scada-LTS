@@ -24,11 +24,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 
@@ -38,14 +38,13 @@ import com.serotonin.mango.view.View;
 public class PublicViewController extends ParameterizableViewController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
-        ViewDao viewDao = new ViewDao();
 
         // Get the view by id.
         String vid = request.getParameter("viewId");
         View view = null;
         if (vid != null) {
             try {
-                view = viewDao.getView(Integer.parseInt(vid));
+                view = DaoInstances.getViewDao().getView(Integer.parseInt(vid));
             }
             catch (NumberFormatException e) { /* no op */
             }
@@ -53,11 +52,11 @@ public class PublicViewController extends ParameterizableViewController {
         else {
             String name = request.getParameter("viewName");
             if (name != null)
-                view = viewDao.getView(name);
+                view = DaoInstances.getViewDao().getView(name);
             else {
                 String xid = request.getParameter("viewXid");
                 if (xid != null)
-                    view = viewDao.getViewByXid(xid);
+                    view = DaoInstances.getViewDao().getViewByXid(xid);
             }
         }
 

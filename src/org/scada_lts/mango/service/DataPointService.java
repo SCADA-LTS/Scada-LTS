@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -47,7 +48,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.dao.DuplicateKeyException;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
@@ -194,7 +194,7 @@ public class DataPointService implements MangoDataPoint {
 	public void updateDataPoint(final DataPointVO dp) {
 		DataPointVO oldDp = dataPointDAO.getDataPoint(dp.getId());
 		if (oldDp.getPointLocator().getDataTypeId() != dp.getPointLocator().getDataTypeId()) {
-			new PointValueDao().deletePointValuesWithMismatchedType(dp.getId(), dp.getPointLocator().getDataTypeId());
+			DaoInstances.getPointValueDao().deletePointValuesWithMismatchedType(dp.getId(), dp.getPointLocator().getDataTypeId());
 		}
 
 		updateDataPointShallow(dp);

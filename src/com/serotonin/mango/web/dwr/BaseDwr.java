@@ -18,19 +18,17 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
-import com.serotonin.mango.daoCache.DaoCache;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
@@ -70,7 +68,7 @@ abstract public class BaseDwr {
     protected static EventDao EVENT_DAO;
 
     public static void initialize() {
-        EVENT_DAO = DaoCache.getEventDao();
+        EVENT_DAO = DaoInstances.getEventDao();
     }
 
     protected ResourceBundle changeSnippetMap = ResourceBundle.getBundle("changeSnippetMap");
@@ -177,7 +175,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public int setPoint(int pointId, int componentId, String valueStr) {
         User user = Common.getUser();
-        DataPointVO point = DaoCache.getDataPointDao().getDataPoint(pointId);
+        DataPointVO point = DaoInstances.getDataPointDao().getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointSetPermission(user, point);
@@ -202,7 +200,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public void forcePointRead(int pointId) {
         User user = Common.getUser();
-        DataPointVO point = DaoCache.getDataPointDao().getDataPoint(pointId);
+        DataPointVO point = DaoInstances.getDataPointDao().getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointReadPermission(user, point);
@@ -231,7 +229,7 @@ abstract public class BaseDwr {
         if (typeId == UserComment.TYPE_EVENT)
             EVENT_DAO.insertEventComment(referenceId, c);
         else if (typeId == UserComment.TYPE_POINT)
-            DaoCache.getUserDao().insertUserComment(UserComment.TYPE_POINT, referenceId, c);
+            DaoInstances.getUserDao().insertUserComment(UserComment.TYPE_POINT, referenceId, c);
         else
             throw new ShouldNeverHappenException("Invalid comment type: " + typeId);
 
@@ -241,7 +239,7 @@ abstract public class BaseDwr {
     protected List<DataPointBean> getReadablePoints() {
         User user = Common.getUser();
 
-        List<DataPointVO> points = DaoCache.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> points = DaoInstances.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
         if (!Permissions.hasAdmin(user)) {
             List<DataPointVO> userPoints = new ArrayList<DataPointVO>();
             for (DataPointVO dp : points) {
@@ -298,34 +296,17 @@ abstract public class BaseDwr {
 
     public static String generateContent(HttpServletRequest request, String snippet, Map<String, Object> model) {
         try {
-//            System.out.println("request >>> " + request);
-//            System.out.println("snippet >>> " + snippet);
-//            System.out.println("model >>> " + model);
-            String str = ContentGenerator.generateContent(request, "/WEB-INF/snippet/" + snippet, model);
-            
-//            System.out.println("Content:\n"+str);
-            
-//            if (str == null){
-//                str = "";
-//            }
-            
-            return str;
+            return ContentGenerator.generateContent(request, "/WEB-INF/snippet/" + snippet, model);
         }
         catch (Throwable e) {
-            //throw new ShouldNeverHappenException(e);
             e.printStackTrace();
             return null;
         }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//            //throw new ShouldNeverHappenException(e);
-//        }
     }
 
     protected List<User> getShareUsers(User excludeUser) {
         List<User> users = new ArrayList<User>();
-        for (User u : DaoCache.getUserDao().getUsers()) {
+        for (User u : DaoInstances.getUserDao().getUsers()) {
             if (u.getId() != excludeUser.getId())
                 users.add(u);
         }

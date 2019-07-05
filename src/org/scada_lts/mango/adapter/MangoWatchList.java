@@ -22,7 +22,7 @@ import java.util.List;
 import com.serotonin.mango.vo.WatchList;
 
 /** 
- * Base on the WatchListDao
+ * Base on the getWatchListDao
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 public interface MangoWatchList {

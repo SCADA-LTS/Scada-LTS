@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ReportDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.report.EventCsvStreamer;
 import com.serotonin.mango.vo.report.ReportCsvStreamer;
@@ -48,8 +48,7 @@ abstract public class ReportExportBase extends HttpServlet {
         int instanceId = Integer.parseInt(request.getParameter("instanceId"));
 
         // Get the report instance
-        ReportDao reportDao = new ReportDao();
-        ReportInstance instance = reportDao.getReportInstance(instanceId);
+        ReportInstance instance = DaoInstances.getReportDao().getReportInstance(instanceId);
 
         // Ensure the user is allowed access.
         Permissions.ensureReportInstancePermission(Common.getUser(request), instance);
@@ -60,12 +59,12 @@ abstract public class ReportExportBase extends HttpServlet {
         ResourceBundle bundle = Common.getBundle();
         if (content == CONTENT_REPORT) {
             ReportCsvStreamer creator = new ReportCsvStreamer(response.getWriter(), bundle);
-            reportDao.reportInstanceData(instanceId, creator);
+            DaoInstances.getReportDao().reportInstanceData(instanceId, creator);
         }
         else if (content == CONTENT_EVENTS)
-            new EventCsvStreamer(response.getWriter(), reportDao.getReportInstanceEvents(instanceId), bundle);
+            new EventCsvStreamer(response.getWriter(), DaoInstances.getReportDao().getReportInstanceEvents(instanceId), bundle);
         else if (content == CONTENT_COMMENTS)
-            new UserCommentCsvStreamer(response.getWriter(), reportDao.getReportInstanceUserComments(instanceId),
+            new UserCommentCsvStreamer(response.getWriter(), DaoInstances.getReportDao().getReportInstanceUserComments(instanceId),
                     bundle);
     }
 }

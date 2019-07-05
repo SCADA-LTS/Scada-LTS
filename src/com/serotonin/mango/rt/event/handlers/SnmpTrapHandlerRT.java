@@ -64,7 +64,7 @@ public class SnmpTrapHandlerRT /* extends EventHandlerRT */{
     // @Override
     // public void eventRaised(EventInstance evt) {
     // // Get the email addresses to send to
-    // activeRecipients = new MailingListDao().getRecipientAddresses(vo.getActiveRecipients(),
+    // activeRecipients = new getMailingListDao().getRecipientAddresses(vo.getActiveRecipients(),
     // new DateTime(evt.getActiveTimestamp()));
     //        
     // // Send an email to the active recipients.
@@ -89,7 +89,7 @@ public class SnmpTrapHandlerRT /* extends EventHandlerRT */{
     // EventInstance evt = (EventInstance)model;
     //        
     // // Get the email addresses to send to
-    // Set<String> addresses = new MailingListDao().getRecipientAddresses(vo.getEscalationRecipients(),
+    // Set<String> addresses = new getMailingListDao().getRecipientAddresses(vo.getEscalationRecipients(),
     // new DateTime(fireTime));
     //        
     // // Send the escalation.

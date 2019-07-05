@@ -27,13 +27,12 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -62,7 +61,7 @@ public class PublisherEditController extends ParameterizableViewController {
 
             // A new publisher
             publisherVO = PublisherVO.createPublisherVO(typeId);
-            publisherVO.setXid(new PublisherDao().generateUniqueXid());
+            publisherVO.setXid(DaoInstances.getPublisherDao().generateUniqueXid());
         }
         else {
             // An existing configuration.
@@ -80,7 +79,7 @@ public class PublisherEditController extends ParameterizableViewController {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("publisher", publisherVO);
         if (publisherVO.getId() != Common.NEW_ID) {
-            List<EventInstance> events = new EventDao().getPendingEventsForPublisher(publisherVO.getId(), user.getId());
+            List<EventInstance> events = DaoInstances.getEventDao().getPendingEventsForPublisher(publisherVO.getId(), user.getId());
             List<EventInstanceBean> beans = new ArrayList<EventInstanceBean>();
             if (events != null) {
                 ResourceBundle bundle = ControllerUtils.getResourceBundle(request);

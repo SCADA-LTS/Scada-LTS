@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.ScriptSession;
-import com.serotonin.mango.daoCache.DaoCache;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,8 +39,6 @@ import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.vo.FlexProject;
-import br.org.scadabr.db.dao.FlexProjectDao;
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.rt.scripting.ScriptRT;
 import br.org.scadabr.view.component.AlarmListComponent;
 import br.org.scadabr.view.component.ButtonComponent;
@@ -55,8 +53,6 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -143,7 +139,7 @@ public class ViewDwr extends BaseDwr {
 		View view = null;
 
 		try {
-			view = DaoCache.getViewDao().getView(Integer.parseInt(viewId));
+			view = DaoInstances.getViewDao().getView(Integer.parseInt(viewId));
 		}
 		catch (Exception e){
 			//we don't have view in db , so get from user from session
@@ -156,22 +152,21 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<IntValuePair> getViews() {
-		ViewDao viewDao = DaoCache.getViewDao();
 		User user = Common.getUser();
 
-		List<IntValuePair> views = viewDao.getViewNames(user.getId(), user.getUserProfile());
+		List<IntValuePair> views = DaoInstances.getViewDao().getViewNames(user.getId(), user.getUserProfile());
 
 		return views;
 	}
 
 	@MethodFilter
 	public List<ScriptVO<?>> getScripts() {
-		return DaoCache.getScriptDao().getScripts();
+		return DaoInstances.getScriptDao().getScripts();
 	}
 
 	@MethodFilter
 	public List<FlexProject> getFlexProjects() {
-		return new FlexProjectDao().getFlexProjects();
+		return DaoInstances.getFlexProjectDao().getFlexProjects();
 	}
 
 	/**
@@ -383,7 +378,7 @@ public class ViewDwr extends BaseDwr {
 	public void deleteViewShare() {
 		User user = Common.getUser();
 		user.setView(getViewFromContext());
-		DaoCache.getViewDao().removeUserFromView(user.getView().getId(), user.getId());
+		DaoInstances.getViewDao().removeUserFromView(user.getView().getId(), user.getId());
 	}
 
 	@MethodFilter
@@ -414,7 +409,7 @@ public class ViewDwr extends BaseDwr {
 		result.put("componentTypes", components);
 
 		// Available points
-		List<DataPointVO> allPoints = DaoCache.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+		List<DataPointVO> allPoints = DaoInstances.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
 		List<DataPointBean> availablePoints = new ArrayList<DataPointBean>();
 		for (DataPointVO dataPoint : allPoints) {
 			if (Permissions.hasDataPointReadPermission(user, dataPoint))
@@ -454,7 +449,7 @@ public class ViewDwr extends BaseDwr {
 		PointComponent pc = (PointComponent) getViewComponent(pointComponentId);
 		User user = Common.getUser();
 
-		DataPointVO dp = DaoCache.getDataPointDao().getDataPoint(dataPointId);
+		DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
 		if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
 			response.addContextualMessage("settingsPointList", "validate.required");
 		else {
@@ -941,7 +936,7 @@ public class ViewDwr extends BaseDwr {
 				// no op
 			}
 
-			DataPointVO dp = DaoCache.getDataPointDao().getDataPoint(dataPointId);
+			DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
 
 			if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
 				c.setDataPoint(kvp.getKey(), null);
@@ -978,7 +973,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	public boolean executeScript(String xid) {
-		ScriptVO<?> script = DaoCache.getScriptDao().getScript(xid);
+		ScriptVO<?> script = DaoInstances.getScriptDao().getScript(xid);
 
 		try {
 			if (script != null) {
@@ -1008,7 +1003,7 @@ public class ViewDwr extends BaseDwr {
 
 			List<DataPointVO> dps = new ArrayList<DataPointVO>();
 			for (Integer dpId : dataPoints) {
-				DataPointVO dp = DaoCache.getDataPointDao().getDataPoint(dpId);
+				DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dpId);
 				dps.add(dp);
 			}
 

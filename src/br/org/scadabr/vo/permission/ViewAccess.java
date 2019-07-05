@@ -1,7 +1,7 @@
 package br.org.scadabr.vo.permission;
 
 import com.serotonin.json.*;
-import com.serotonin.mango.db.dao.ViewDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.view.View;
 
 import java.util.Map;
@@ -19,7 +19,7 @@ public class ViewAccess extends Permission implements JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("viewXid", new ViewDao().getView(id).getXid());
+		map.put("viewXid", DaoInstances.getViewDao().getView(id).getXid());
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}
 
@@ -29,7 +29,7 @@ public class ViewAccess extends Permission implements JsonSerializable {
 		String xid = json.getString("viewXid");
 		int ImportedPermission = ACCESS_CODES.getId(json
 				.getString("permission"));
-		View view = new ViewDao().getViewByXid(xid);
+		View view = DaoInstances.getViewDao().getViewByXid(xid);
 		int importedId = view.getId();
 		setId(importedId);
 		setPermission(ImportedPermission);

@@ -21,13 +21,13 @@ package com.serotonin.mango.vo.mailingList;
 import java.util.Map;
 import java.util.Set;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.joda.time.DateTime;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
 
@@ -91,7 +91,7 @@ public class UserEntry extends EmailRecipient {
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
         if (user == null)
-            user = new UserDao().getUser(userId);
+            user = DaoInstances.getUserDao().getUser(userId);
         map.put("username", user.getUsername());
     }
 
@@ -103,7 +103,7 @@ public class UserEntry extends EmailRecipient {
         if (username == null)
             throw new LocalizableJsonException("emport.error.recipient.missing.reference", "username");
 
-        user = new UserDao().getUser(username);
+        user = DaoInstances.getUserDao().getUser(username);
         if (user == null)
             throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "username", username);
 

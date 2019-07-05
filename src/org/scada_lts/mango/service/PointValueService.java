@@ -68,7 +68,7 @@ import com.serotonin.monitor.IntegerMonitor;
 import com.serotonin.util.queue.ObjectQueue;
 
 /**
- * Base on the PointValueDao
+ * Base on the getPointValueDao
  *
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */

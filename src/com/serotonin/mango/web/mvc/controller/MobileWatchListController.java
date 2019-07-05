@@ -26,10 +26,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -37,7 +37,6 @@ import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
-import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.BaseDwr;
 import com.serotonin.mango.web.taglib.Functions;
 
@@ -50,16 +49,15 @@ public class MobileWatchListController extends WatchListController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
         User user = Common.getUser(request);
-        WatchListDao watchListDao = new WatchListDao();
 
         // Check for a watchlist id parameter. If given, update the user.
         try {
             int watchListId = Integer.parseInt(request.getParameter("watchListId"));
 
-            WatchList watchList = watchListDao.getWatchList(watchListId);
+            WatchList watchList = DaoInstances.getWatchListDao().getWatchList(watchListId);
 //            Permissions.ensureWatchListPermission(user, watchList);
             user.setSelectedWatchList(watchListId);
-            watchListDao.saveSelectedWatchList(user.getId(), watchList.getId());
+            DaoInstances.getWatchListDao().saveSelectedWatchList(user.getId(), watchList.getId());
         }
         catch (NumberFormatException e) {
             // no op
@@ -73,7 +71,7 @@ public class MobileWatchListController extends WatchListController {
         // Get the point data.
         List<MobileWatchListState> states = new ArrayList<MobileWatchListState>();
         RuntimeManager rtm = Common.ctx.getRuntimeManager();
-        for (DataPointVO pointVO : new WatchListDao().getWatchList(watchListId).getPointList()) {
+        for (DataPointVO pointVO : DaoInstances.getWatchListDao().getWatchList(watchListId).getPointList()) {
             MobileWatchListState state = createState(request, rtm, pointVO);
             states.add(state);
         }

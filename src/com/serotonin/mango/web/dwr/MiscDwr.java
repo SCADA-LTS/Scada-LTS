@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.serotonin.mango.daoCache.DaoCache;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
@@ -85,7 +85,7 @@ public class MiscDwr extends BaseDwr {
 		User user = Common.getUser();
 		if (user != null) {
 			resetLastAlarmLevelChange();
-			response.addData("silenced", DaoCache.getEventDao().toggleSilence(eventId, user.getId()));
+			response.addData("silenced", DaoInstances.getEventDao().toggleSilence(eventId, user.getId()));
 		} else
 			response.addData("silenced", false);
 
@@ -96,9 +96,9 @@ public class MiscDwr extends BaseDwr {
 	public DwrResponseI18n silenceAll() {
 		List<Integer> silenced = new ArrayList<Integer>();
 		User user = Common.getUser();
-		for (EventInstance evt : DaoCache.getEventDao().getPendingEvents(user.getId())) {
+		for (EventInstance evt : DaoInstances.getEventDao().getPendingEvents(user.getId())) {
 			if (!evt.isSilenced()) {
-				DaoCache.getEventDao().toggleSilence(evt.getId(), user.getId());
+				DaoInstances.getEventDao().toggleSilence(evt.getId(), user.getId());
 				silenced.add(evt.getId());
 			}
 		}
@@ -113,7 +113,7 @@ public class MiscDwr extends BaseDwr {
 	public int acknowledgeEvent(int eventId) {
 		User user = Common.getUser();
 		if (user != null) {
-			DaoCache.getEventDao().ackEvent(eventId, System.currentTimeMillis(),
+			DaoInstances.getEventDao().ackEvent(eventId, System.currentTimeMillis(),
 					user.getId(), 0);
 			resetLastAlarmLevelChange();
 		}
@@ -124,8 +124,8 @@ public class MiscDwr extends BaseDwr {
 		User user = Common.getUser();
 		if (user != null) {
 			long now = System.currentTimeMillis();
-			for (EventInstance evt : DaoCache.getEventDao().getPendingEvents(user.getId()))
-				DaoCache.getEventDao().ackEvent(evt.getId(), now, user.getId(), 0);
+			for (EventInstance evt : DaoInstances.getEventDao().getPendingEvents(user.getId()))
+				DaoInstances.getEventDao().ackEvent(evt.getId(), now, user.getId(), 0);
 			resetLastAlarmLevelChange();
 		}
 	}
@@ -200,7 +200,7 @@ public class MiscDwr extends BaseDwr {
 			String message) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
-		String[] toAddrs = DaoCache.getMailingListDao().getRecipientAddresses(
+		String[] toAddrs = DaoInstances.getMailingListDao().getRecipientAddresses(
 				recipientList, null).toArray(new String[0]);
 		if (toAddrs.length == 0)
 			response.addGenericMessage("js.email.noRecipForEmail");
@@ -263,7 +263,7 @@ public class MiscDwr extends BaseDwr {
 			url = url.substring(1);
 
 		// Save the result
-		DaoCache.getUserDao().saveHomeUrl(Common.getUser().getId(), url);
+		DaoInstances.getUserDao().saveHomeUrl(Common.getUser().getId(), url);
 	}
 
 	@MethodFilter
@@ -322,7 +322,7 @@ public class MiscDwr extends BaseDwr {
 
 					// The events have changed. See if the user's particular max
 					// alarm level has changed.
-					int maxAlarmLevel = DaoCache.getEventDao()
+					int maxAlarmLevel = DaoInstances.getEventDao()
 							.getHighestUnsilencedAlarmLevel(user.getId());
 					LOG.trace(toString() + " maxAlarmLevel: " + maxAlarmLevel);
 					if (maxAlarmLevel != state.getMaxAlarmLevel()) {
@@ -435,7 +435,7 @@ public class MiscDwr extends BaseDwr {
 			if (pollRequest.isPendingAlarms() && user != null) {
 				// Create the list of most current pending alarm content.
 				Map<String, Object> model = new HashMap<String, Object>();
-				model.put("events", DaoCache.getEventDao().getPendingEvents(user.getId()));
+				model.put("events", DaoInstances.getEventDao().getPendingEvents(user.getId()));
 				model.put("pendingEvents", true);
 				model.put("noContentWhenEmpty", true);
 				String currentContent = generateContent(httpRequest,

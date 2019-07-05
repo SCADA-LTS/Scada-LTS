@@ -21,9 +21,8 @@ package com.serotonin.mango;
 
 import br.org.scadabr.api.utils.APIUtils;
 import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.db.DatabaseAccess;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.ReportDao;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverMulticaster;
@@ -206,8 +205,8 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void dataPointsNameToIdMapping(ServletContext ctx) {
-		PointHierarchy pH = new DataPointDao().getPointHierarchy();
-		List<DataPointVO> datapoints = new DataPointDao().getDataPoints(null,
+		PointHierarchy pH = DaoInstances.getDataPointDao().getPointHierarchy();
+		List<DataPointVO> datapoints = DaoInstances.getDataPointDao().getDataPoints(null,
 				false);
 
 		Map<String, Integer> mapping = new HashMap<String, Integer>();
@@ -584,7 +583,7 @@ public class MangoContextListener implements ServletContextListener {
 	// Reports
 	//
 	private void reportsInitialize() {
-		List<ReportVO> reports = new ReportDao().getReports();
+		List<ReportVO> reports = DaoInstances.getReportDao().getReports();
 		for (ReportVO report : reports) {
 			try {
 				ReportJob.scheduleReportJob(report);

@@ -25,13 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
@@ -98,10 +98,9 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				slaveMonitors.put(slaveId, null);
 
 				// Check if a monitor point already exists.
-				DataPointDao dataPointDao = new DataPointDao();
 				boolean found = false;
 
-				List<DataPointVO> points = dataPointDao.getDataPoints(
+				List<DataPointVO> points = DaoInstances.getDataPointDao().getDataPoints(
 						vo.getId(), null);
 				for (DataPointVO dp : points) {
 					ModbusPointLocatorVO loc = dp.getPointLocator();
@@ -114,7 +113,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				if (!found) {
 					// A monitor was not found, so create one
 					DataPointVO dp = new DataPointVO();
-					dp.setXid(dataPointDao.generateUniqueXid());
+					dp.setXid(DaoInstances.getDataPointDao().generateUniqueXid());
 					dp.setName(Common.getMessage(
 							"dsEdit.modbus.monitorPointName", slaveId));
 					dp.setDataSourceId(vo.getId());

@@ -23,6 +23,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.LoginForm;
@@ -34,7 +35,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.integration.CrowdUtils;
 import com.serotonin.util.StringUtils;
@@ -73,7 +73,7 @@ public class LoginController {
         	errors.add("login.validation.noPassword");
         
         if (errors.isEmpty()){
-	        User user = new UserDao().getUser(login.getUsername());
+	        User user = DaoInstances.getUserDao().getUser(login.getUsername());
 	        if (user == null)
 	            errors.add("login.validation.noSuchUser");
 	        else if (user.isDisabled())
@@ -114,11 +114,10 @@ public class LoginController {
                 LOG.debug("User is already logged in, not relogging in");
         }
         else {
-            UserDao userDao = new UserDao();
-            user = userDao.getUser(username);
+            user = DaoInstances.getUserDao().getUser(username);
 
             // Update the last login time.
-            userDao.recordLogin(user.getId());
+            DaoInstances.getUserDao().recordLogin(user.getId());
 
             // Add the user object to the session. This indicates to the rest
             // of the application whether the user is logged in or not.

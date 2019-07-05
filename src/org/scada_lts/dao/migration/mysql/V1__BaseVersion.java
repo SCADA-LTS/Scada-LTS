@@ -19,13 +19,13 @@ package org.scada_lts.dao.migration.mysql;
 
 import java.util.LinkedList;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 
@@ -735,7 +735,7 @@ public class V1__BaseVersion implements SpringJdbcMigration {
 	   	   user.setDisabled(false);
 	   	   user.setDataSourcePermissions(new LinkedList<Integer>());
 	   	   user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-	   	   new UserDao().saveUser(user);
+	   	   DaoInstances.getUserDao().saveUser(user);
 	             	   
 	   	   // Record the current version.
 	   	   new SystemSettingsDAO().setValue(

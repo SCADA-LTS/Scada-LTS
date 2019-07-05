@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.event.EventDetectorListener;
 import com.serotonin.mango.rt.event.SimpleEventDetector;
 import com.serotonin.mango.rt.event.type.CompoundDetectorEventType;
@@ -209,7 +209,7 @@ public class CompoundEventDetectorRT implements EventDetectorListener, ILifecycl
         SystemEventType eventType = new SystemEventType(SystemEventType.TYPE_COMPOUND_DETECTOR_FAILURE, vo.getId());
         SystemEventType.raiseEvent(eventType, System.currentTimeMillis(), false, message);
         vo.setDisabled(true);
-        new CompoundEventDetectorDao().saveCompoundEventDetector(vo);
+        DaoInstances.getCompoundEventDetectorDao().saveCompoundEventDetector(vo);
     }
 
     //
