@@ -322,6 +322,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		return address;
 	}
 
+	Version getVersion() { return this.version; }
+
 	void receivedTrap(PDU trap) {
 		long time = System.currentTimeMillis();
 		VariableBinding vb;
@@ -371,7 +373,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 			counterEmptyResponsesOrResponsesWithError=0;
 			log.info("Counter Empty Responses Or Responses With Error is set 0.");
 
-			SnmpTrapRouter.addDataSource(this, this.version);
+			SnmpTrapRouter.addDataSource(this);
 
 			// Deactivate any existing event.
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
