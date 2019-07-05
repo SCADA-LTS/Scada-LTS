@@ -13,7 +13,6 @@ RUN curl -L http://www.strategylions.com.au/mirror/tomcat/tomcat-7/v7.0.94/bin/a
 WORKDIR /tmp
 ADD . ./Scada-LTS
 WORKDIR /tmp/Scada-LTS
-#RUN dir
 RUN chmod 777 get_seroUtils.sh && dos2unix get_seroUtils.sh && ./get_seroUtils.sh
 RUN export CATALINA_HOME=/tmp/apache-tomcat-7.0.94 && export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8 && ant war
 ######################################################################################################################
@@ -30,7 +29,10 @@ RUN /opt/installer/im.sh
 
 WORKDIR /opt/scadalts
 RUN wget http://www.strategylions.com.au/mirror/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz && tar -xvf apache-tomcat-7.0.94.tar.gz --strip 1 && rm apache-tomcat-7.0.94.tar.gz
+
+# Copy war file from build stage
 COPY --from=0 /tmp/Scada-LTS/ScadaBR.war /opt/scadalts/webapps/ScadaBR.war
+
 ADD docker/config/context.xml /opt/scadalts/conf
 
 ADD docker/start.sh /root/
