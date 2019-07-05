@@ -193,7 +193,7 @@ public class EventInstance {
     }
 
     /**
-     * This method should only be used by the EventDao for creating and updating.
+     * This method should only be used by the getEventDao for creating and updating.
      * 
      * @param id
      */

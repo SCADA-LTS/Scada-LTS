@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.util.SerializationHelper;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
@@ -16,7 +17,6 @@ import org.directwebremoting.WebContextFactory;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.view.ImplDefinition;
@@ -49,7 +49,7 @@ public class AlarmListComponent extends CustomComponent {
 		Map<String, Object> model = new HashMap<String, Object>();
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
-		List<EventInstance> events = new EventDao().getPendingEvents(Common
+		List<EventInstance> events = DaoInstances.getEventDao().getPendingEvents(Common
 				.getUser().getId());
 
 		filterByAlarmLevel(events, minAlarmLevel);

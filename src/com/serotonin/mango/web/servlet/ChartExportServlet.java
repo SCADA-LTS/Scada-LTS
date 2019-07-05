@@ -9,8 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.db.MappedRowCallback;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.PointValueDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
@@ -33,9 +32,6 @@ public class ChartExportServlet extends HttpServlet {
         DataExportDefinition def = user.getDataExportDefinition();
         if (def == null)
             return;
-
-        DataPointDao dataPointDao = new DataPointDao();
-        PointValueDao pointValueDao = new PointValueDao();
 
         long from = def.getFrom() == null ? -1 : def.getFrom().getMillis();
         long to = def.getTo() == null ? System.currentTimeMillis() : def.getTo().getMillis();
@@ -61,7 +57,7 @@ public class ChartExportServlet extends HttpServlet {
         };
 
         for (int pointId : def.getPointIds()) {
-            DataPointVO dp = dataPointDao.getDataPoint(pointId);
+            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(pointId);
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 ReportPointInfo pointInfo = new ReportPointInfo();
                 pointInfo.setPointName(dp.getName());
@@ -71,7 +67,7 @@ public class ChartExportServlet extends HttpServlet {
 
                 //TODO rewrite seroUtils
                 //pointValueDao.getPointValuesBetween(pointId, from, to, callback);
-                pointValueDao.getPointValuesBetween(pointId, from, to);
+                DaoInstances.getPointValueDao().getPointValuesBetween(pointId, from, to);
             }
         }
 

@@ -38,7 +38,7 @@ import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.Common.TimePeriods;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -233,11 +233,10 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     }
 
     private String contextToString() {
-        DataPointDao dataPointDao = new DataPointDao();
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (IntValuePair ivp : context) {
-            DataPointVO dp = dataPointDao.getDataPoint(ivp.getKey());
+            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(ivp.getKey());
             if (first)
                 first = false;
             else
@@ -334,7 +333,6 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         JsonArray jsonContext = json.getJsonArray("context");
         if (jsonContext != null) {
             context.clear();
-            DataPointDao dataPointDao = new DataPointDao();
 
             for (JsonValue jv : jsonContext.getElements()) {
                 JsonObject jo = jv.toJsonObject();
@@ -342,7 +340,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 if (xid == null)
                     throw new LocalizableJsonException("emport.error.meta.missing", "dataPointXid");
 
-                DataPointVO dp = dataPointDao.getDataPoint(xid);
+                DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(xid);
                 if (dp == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
 
@@ -361,10 +359,9 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
         map.put("updateEvent", UPDATE_EVENT_CODES.getCode(updateEvent));
 
-        DataPointDao dataPointDao = new DataPointDao();
         List<Map<String, Object>> pointList = new ArrayList<Map<String, Object>>();
         for (IntValuePair p : context) {
-            DataPointVO dp = dataPointDao.getDataPoint(p.getKey());
+            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(p.getKey());
             if (dp != null) {
                 Map<String, Object> point = new HashMap<String, Object>();
                 pointList.add(point);

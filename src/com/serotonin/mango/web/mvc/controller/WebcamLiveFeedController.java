@@ -24,10 +24,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.http.HttpImagePointLocatorVO;
 
@@ -39,8 +39,7 @@ public class WebcamLiveFeedController extends ParameterizableViewController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         int pointId = Integer.parseInt(request.getParameter("pointId"));
-        DataPointDao dataPointDao = new DataPointDao();
-        DataPointVO dp = dataPointDao.getDataPoint(pointId);
+        DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(pointId);
 
         if (!(dp.getPointLocator() instanceof HttpImagePointLocatorVO))
             throw new Exception("Point is not an HTTP Image point");

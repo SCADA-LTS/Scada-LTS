@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -37,9 +38,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.PublisherDao;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -159,11 +157,10 @@ public class VersionCheck extends TimerTask {
 		postMethod.addParameter("instanceVersion", Common.getVersion());
 
 		StringBuilder datasourceTypes = new StringBuilder();
-		DataPointDao dataPointDao = new DataPointDao();
-		for (DataSourceVO<?> config : new DataSourceDao().getDataSources()) {
+		for (DataSourceVO<?> config : DaoInstances.getDataSourceDao().getDataSources()) {
 			if (config.isEnabled()) {
 				int points = 0;
-				for (DataPointVO point : dataPointDao.getDataPoints(
+				for (DataPointVO point : DaoInstances.getDataPointDao().getDataPoints(
 						config.getId(), null)) {
 					if (point.isEnabled())
 						points++;
@@ -178,7 +175,7 @@ public class VersionCheck extends TimerTask {
 		postMethod.addParameter("datasourceTypes", datasourceTypes.toString());
 
 		StringBuilder publisherTypes = new StringBuilder();
-		for (PublisherVO<?> config : new PublisherDao().getPublishers()) {
+		for (PublisherVO<?> config : DaoInstances.getPublisherDao().getPublishers()) {
 			if (config.isEnabled()) {
 				if (publisherTypes.length() > 0)
 					publisherTypes.append(',');

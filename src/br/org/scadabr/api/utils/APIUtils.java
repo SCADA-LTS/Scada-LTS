@@ -32,9 +32,7 @@ import br.org.scadabr.api.vo.ModbusPointConfig;
 import br.org.scadabr.api.vo.ModbusSerialConfig;
 
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointVO;
@@ -638,7 +636,7 @@ public final class APIUtils {
 
 	public static String toCondition(PointEventDetectorVO pointEvent) {
 
-		DataPointVO dp = new DataPointDao().getDataPoint(new DataPointDao()
+		DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(DaoInstances.getDataPointDao()
 				.getDataPointIdFromDetectorId(pointEvent.getId()));
 
 		String config = "[" + dp.getName() + " - ";
@@ -787,10 +785,8 @@ public final class APIUtils {
 			int pointDetectorId = eventInstance.getEventType()
 					.getReferenceId2();
 
-			List<PointEventDetectorVO> peDetectors = new DataPointDao()
-					.getDataPoint(dataPointId).getEventDetectors();
-
-			for (PointEventDetectorVO pointEventDetectorVO : peDetectors) {
+			for (PointEventDetectorVO pointEventDetectorVO : DaoInstances.getDataPointDao()
+					.getDataPoint(dataPointId).getEventDetectors()) {
 				if (pointEventDetectorVO.getId() == pointDetectorId) {
 
 					event.setAlias(pointEventDetectorVO.getAlias());
@@ -805,13 +801,13 @@ public final class APIUtils {
 			event.setEventType(EventType.POINT_CONDITION_EVENT);
 			int compoundId = eventInstance.getEventType()
 					.getCompoundEventDetectorId();
-			event.setAlias(new CompoundEventDetectorDao()
+			event.setAlias(DaoInstances.getCompoundEventDetectorDao()
 					.getCompoundEventDetector(compoundId).getName());
 
 		} else if (eventInstance.getEventType().getScheduleId() != -1) {
 			event.setEventType(EventType.SCHEDULED_EVENT);
 			int scheduleId = eventInstance.getEventType().getScheduleId();
-			event.setAlias(new ScheduledEventDao()
+			event.setAlias(DaoInstances.getScheduledEventDao()
 					.getScheduledEvent(scheduleId).getAlias());
 		} else {
 			event.setEventType(EventType.SYSTEM_EVENT);

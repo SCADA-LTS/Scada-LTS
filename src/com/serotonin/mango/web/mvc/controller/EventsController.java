@@ -24,10 +24,10 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.springframework.validation.BindException;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.web.comparators.EventInstanceComparator;
 import com.serotonin.web.util.PaginatedData;
@@ -38,7 +38,7 @@ public class EventsController  {
     protected PaginatedData getData(HttpServletRequest request, PagingDataForm paging, BindException errors)
             throws Exception {
         ResourceBundle bundle = ControllerUtils.getResourceBundle(request);
-        List<EventInstance> data = new EventDao().getPendingEvents(Common.getUser(request).getId());
+        List<EventInstance> data = DaoInstances.getEventDao().getPendingEvents(Common.getUser(request).getId());
         sortData(bundle, data, paging);
         return new PaginatedData<EventInstance>(data, data.size());
     }

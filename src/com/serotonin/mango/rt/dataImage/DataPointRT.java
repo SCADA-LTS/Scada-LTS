@@ -24,13 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.PointValueDao;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
@@ -93,7 +93,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 				return pvt;
 		}
 
-		return new PointValueDao().getPointValueBefore(vo.getId(), time);
+		return DaoInstances.getPointValueDao().getPointValueBefore(vo.getId(), time);
 	}
 
 	public PointValueTime getPointValueAt(long time) {
@@ -102,11 +102,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 				return pvt;
 		}
 
-		return new PointValueDao().getPointValueAt(vo.getId(), time);
+		return DaoInstances.getPointValueDao().getPointValueAt(vo.getId(), time);
 	}
 
 	public List<PointValueTime> getPointValues(long since) {
-		List<PointValueTime> result = new PointValueDao().getPointValues(
+		List<PointValueTime> result = DaoInstances.getPointValueDao().getPointValues(
 				vo.getId(), since);
 
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
@@ -122,7 +122,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	}
 
 	public List<PointValueTime> getPointValuesBetween(long from, long to) {
-		List<PointValueTime> result = new PointValueDao()
+		List<PointValueTime> result = DaoInstances.getPointValueDao()
 				.getPointValuesBetween(vo.getId(), from, to);
 
 		for (PointValueTime pvt : valueCache.getCacheContents()) {

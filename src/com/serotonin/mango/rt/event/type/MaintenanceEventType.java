@@ -5,7 +5,7 @@ import java.util.Map;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 
 public class MaintenanceEventType extends EventType {
     private int maintenanceId;
@@ -76,7 +76,7 @@ public class MaintenanceEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        map.put("XID", new MaintenanceEventDao().getMaintenanceEvent(maintenanceId).getXid());
+        map.put("XID", DaoInstances.getMaintenanceEventDao().getMaintenanceEvent(maintenanceId).getXid());
     }
 
     @Override

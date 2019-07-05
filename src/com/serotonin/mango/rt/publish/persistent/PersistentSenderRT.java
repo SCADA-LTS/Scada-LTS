@@ -2,11 +2,11 @@ package com.serotonin.mango.rt.publish.persistent;
 
 import java.util.List;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -114,10 +114,9 @@ public class PersistentSenderRT extends PublisherRT<PersistentPointVO> {
     @Override
     public void initialize() {
         // Cache the data point VOs for use during runtime.
-        DataPointDao dataPointDao = new DataPointDao();
         int index = 0;
         for (PersistentPointVO p : vo.getPoints()) {
-            DataPointVO dpvo = dataPointDao.getDataPoint(p.getDataPointId());
+            DataPointVO dpvo = DaoInstances.getDataPointDao().getDataPoint(p.getDataPointId());
             p.setIndex(index++);
             updatePublishedPointVO(p, dpvo);
         }

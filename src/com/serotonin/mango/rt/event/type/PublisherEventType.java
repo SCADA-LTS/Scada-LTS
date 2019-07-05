@@ -24,7 +24,7 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.mango.db.dao.PublisherDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.vo.publish.PublisherVO;
 
 /**
@@ -111,7 +111,7 @@ public class PublisherEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        PublisherVO<?> pub = new PublisherDao().getPublisher(publisherId);
+        PublisherVO<?> pub = DaoInstances.getPublisherDao().getPublisher(publisherId);
         map.put("XID", pub.getXid());
         map.put("publisherEventTypeId", pub.getEventCodes().getCode(publisherEventTypeId));
     }

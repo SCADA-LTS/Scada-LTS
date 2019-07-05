@@ -32,7 +32,7 @@ import cc.radiuino.scadabr.vo.datasource.radiuino.RadiuinoDataSourceVO;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataSourceDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -469,7 +469,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 	public void validate(DwrResponseI18n response) {
 		if (StringUtils.isEmpty(xid))
 			response.addContextualMessage("xid", "validate.required");
-		else if (!new DataSourceDao().isXidUnique(xid, id))
+		else if (!DaoInstances.getDataSourceDao().isXidUnique(xid, id))
 			response.addContextualMessage("xid", "validate.xidUsed");
 		else if (StringUtils.isLengthGreaterThan(xid, 50))
 			response.addContextualMessage("xid", "validate.notLongerThan", 50);

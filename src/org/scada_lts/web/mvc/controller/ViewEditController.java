@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.ScriptSession;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.ViewEditForm;
@@ -42,7 +43,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.WebUtils;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -89,14 +89,14 @@ public class ViewEditController {
         User user = Common.getUser(request);
         if (viewIdStr != null && !viewIdStr.equals(FinalValuesForControllers.EMPTY_STRING)) {
             // An existing view.
-            view = new ViewDao().getView(Integer.parseInt(viewIdStr));
+            view = DaoInstances.getViewDao().getView(Integer.parseInt(viewIdStr));
             Permissions.ensureViewEditPermission(user, view);
         } else {
             // A new view.
             view = new View();
             view.setId(Common.NEW_ID);
             view.setUserId(user.getId());
-            view.setXid(new ViewDao().generateUniqueXid());
+            view.setXid(DaoInstances.getViewDao().generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
         ScriptSession.addNewEditedObjectForScriptSession(
@@ -162,7 +162,7 @@ public class ViewEditController {
         }
         
         view.setUserId(Common.getUser(request).getId());
-        new ViewDao().saveView(view);
+        DaoInstances.getViewDao().saveView(view);
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
@@ -182,7 +182,7 @@ public class ViewEditController {
         View view = unblockViewFromContext(request);
         form.setView(view);
 
-        new ViewDao().removeView(form.getView().getId());
+        DaoInstances.getViewDao().removeView(form.getView().getId());
         return getSuccessRedirectView(null);
     }
 

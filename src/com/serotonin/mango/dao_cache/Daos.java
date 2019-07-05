@@ -1,7 +1,10 @@
-package com.serotonin.mango.daoCache;
+package com.serotonin.mango.dao_cache;
 
+/**
+ *  * @autor hyski.mateusz@gmail.com (SoftQ) on 28.06.19
+ */
 
-public enum Daos {
+enum Daos {
     VIEW_DAO,
     SCRIPT_DAO,
     DATA_POINT_DAO,
@@ -16,6 +19,7 @@ public enum Daos {
     MAINTENANCE_EVENT_DAO,
     COMPOUND_EVENT_DETECTOR_DAO,
     PUBLISHER_DAO,
+    FLEX_PROJECT_DAO,
     POINT_VALUE_DAO,
     SCHEDULED_EVENT_DAO;
 }

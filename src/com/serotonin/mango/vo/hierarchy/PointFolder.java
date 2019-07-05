@@ -32,7 +32,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 
@@ -154,10 +154,9 @@ public class PointFolder implements JsonSerializable {
     //
     @Override
     public void jsonSerialize(Map<String, Object> map) {
-        DataPointDao dataPointDao = new DataPointDao();
         List<String> pointList = new ArrayList<String>();
         for (IntValuePair p : points) {
-            DataPointVO dp = dataPointDao.getDataPoint(p.getKey());
+            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(p.getKey());
             if (dp != null)
                 pointList.add(dp.getXid());
         }
@@ -169,12 +168,11 @@ public class PointFolder implements JsonSerializable {
         JsonArray jsonPoints = json.getJsonArray("points");
         if (jsonPoints != null) {
             points.clear();
-            DataPointDao dataPointDao = new DataPointDao();
 
             for (JsonValue jv : jsonPoints.getElements()) {
                 String xid = jv.toJsonString().getValue();
 
-                DataPointVO dp = dataPointDao.getDataPoint(xid);
+                DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(xid);
                 if (dp == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
 

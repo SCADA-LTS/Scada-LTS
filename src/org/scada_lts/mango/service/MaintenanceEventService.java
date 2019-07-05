@@ -27,7 +27,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import java.util.List;
 
 /**
- * MaintenanceEventDao service
+ * getMaintenanceEventDao service
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */

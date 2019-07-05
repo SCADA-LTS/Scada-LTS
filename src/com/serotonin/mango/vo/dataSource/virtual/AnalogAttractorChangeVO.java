@@ -29,7 +29,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.dataSource.virtual.AnalogAttractorChangeRT;
 import com.serotonin.mango.rt.dataSource.virtual.ChangeTypeRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -105,7 +105,7 @@ public class AnalogAttractorChangeVO extends ChangeTypeVO {
     }
 
     private String getAttractionPointName() {
-        DataPointVO dp = new DataPointDao().getDataPoint(attractionPointId);
+        DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(attractionPointId);
         if (dp == null)
             return "";
         return dp.getName();
@@ -142,7 +142,7 @@ public class AnalogAttractorChangeVO extends ChangeTypeVO {
         super.jsonDeserialize(reader, json);
         String text = json.getString("attractionPointId");
         if (text != null) {
-            DataPointVO dp = new DataPointDao().getDataPoint(text);
+            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(text);
             if (dp == null)
                 throw new LocalizableJsonException("emport.error.attractor.missingPoint", "attractionPointId", text);
             attractionPointId = dp.getId();
@@ -152,10 +152,7 @@ public class AnalogAttractorChangeVO extends ChangeTypeVO {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        DataPointVO dp = new DataPointDao().getDataPoint(attractionPointId);
-        if (dp == null)
-            map.put("attractionPointId", null);
-        else
-            map.put("attractionPointId", dp.getXid());
+        DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(attractionPointId);
+        map.put("attractionPointId", (dp == null)?null:dp.getXid());
     }
 }

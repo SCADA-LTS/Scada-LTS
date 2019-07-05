@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -37,7 +38,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
@@ -92,7 +92,7 @@ public class ViewService {
 		List<IdName> allPermissions;
 		allPermissions = viewDAO.getViewNames(userId, userProfileId);
 
-		User user = new UserDao().getUser(userId);
+		User user = DaoInstances.getUserDao().getUser(userId);
 
 		for (Iterator<IdName> iterator = allPermissions.iterator(); iterator.hasNext();) {
 

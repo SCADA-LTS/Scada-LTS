@@ -23,7 +23,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.view.custom.CustomView;
 import com.serotonin.mango.vo.User;
 
@@ -42,7 +42,7 @@ public class CustomViewInitTag extends TagSupport {
     @Override
     public int doStartTag() throws JspException {
         // Check the user id.
-        User user = new UserDao().getUser(username);
+        User user = DaoInstances.getUserDao().getUser(username);
         if (user == null)
             throw new JspException("Username '" + username + "' not found");
         if (user.isDisabled())

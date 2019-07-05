@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.daoCache.DaoCache;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -54,12 +54,12 @@ public class CompoundEventsDwr extends BaseDwr {
         Map<String, Object> model = new HashMap<String, Object>();
 
         // All existing compound events.
-        model.put("compoundEvents", DaoCache.getCompoundEventDetectorDao().getCompoundEventDetectors());
+        model.put("compoundEvents", DaoInstances.getCompoundEventDetectorDao().getCompoundEventDetectors());
 
         // Get the data points
         List<EventSourceBean> dataPoints = new LinkedList<EventSourceBean>();
         EventSourceBean source;
-        for (DataPointVO dp : DaoCache.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, true)) {
+        for (DataPointVO dp : DaoInstances.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, true)) {
             if (!Permissions.hasDataSourcePermission(user, dp.getDataSourceId()))
                 continue;
 
@@ -78,7 +78,7 @@ public class CompoundEventsDwr extends BaseDwr {
 
         // Get the scheduled events
         List<EventTypeVO> scheduledEvents = new LinkedList<EventTypeVO>();
-        for (ScheduledEventVO se : DaoCache.getScheduledEventDao().getScheduledEvents())
+        for (ScheduledEventVO se : DaoInstances.getScheduledEventDao().getScheduledEvents())
             scheduledEvents.add(se.getEventType());
         model.put("scheduledEvents", scheduledEvents);
 
@@ -90,10 +90,10 @@ public class CompoundEventsDwr extends BaseDwr {
 
         if (id == Common.NEW_ID) {
             CompoundEventDetectorVO vo = new CompoundEventDetectorVO();
-            vo.setXid(DaoCache.getCompoundEventDetectorDao().generateUniqueXid());
+            vo.setXid(DaoInstances.getCompoundEventDetectorDao().generateUniqueXid());
             return vo;
         }
-        return DaoCache.getCompoundEventDetectorDao().getCompoundEventDetector(id);
+        return DaoInstances.getCompoundEventDetectorDao().getCompoundEventDetector(id);
     }
 
     public DwrResponseI18n saveCompoundEvent(int id, String xid, String name, int alarmLevel, boolean returnToNormal,
@@ -115,7 +115,7 @@ public class CompoundEventsDwr extends BaseDwr {
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!DaoCache.getCompoundEventDetectorDao().isXidUnique(xid, id))
+        else if (!DaoInstances.getCompoundEventDetectorDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         ced.validate(response);
@@ -134,7 +134,7 @@ public class CompoundEventsDwr extends BaseDwr {
 
     public void deleteCompoundEvent(int cedId) {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        DaoCache.getCompoundEventDetectorDao().deleteCompoundEventDetector(cedId);
+        DaoInstances.getCompoundEventDetectorDao().deleteCompoundEventDetector(cedId);
         Common.ctx.getRuntimeManager().stopCompoundEventDetector(cedId);
     }
 

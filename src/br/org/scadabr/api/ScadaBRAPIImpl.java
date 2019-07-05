@@ -16,7 +16,6 @@ import br.org.scadabr.api.ae.AckEventsOptions;
 import br.org.scadabr.api.ae.AckEventsParams;
 import br.org.scadabr.api.ae.AckEventsResponse;
 import br.org.scadabr.api.ae.ActiveEventsOptions;
-import br.org.scadabr.api.ae.AnnotateEventParams;
 import br.org.scadabr.api.ae.AnnotateEventResponse;
 import br.org.scadabr.api.ae.BrowseEventsOptions;
 import br.org.scadabr.api.ae.BrowseEventsParams;
@@ -70,10 +69,10 @@ import br.org.scadabr.api.vo.ItemStringValue;
 import br.org.scadabr.api.vo.ItemValue;
 import br.org.scadabr.api.vo.ReplyBase;
 import br.org.scadabr.api.vo.ServerStatus;
-import br.org.scadabr.db.dao.FlexProjectDao;
 import br.org.scadabr.rt.dataSource.ServerStateChecker;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.dao_cache.DaoInstances;
 
 public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		APIConstants {
@@ -959,8 +958,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		ReplyBase rb = new ReplyBase();
 		rb.setRcvTime(Calendar.getInstance());
 
-		FlexProjectDao dao = new FlexProjectDao();
-		FlexProject project = dao.getFlexProject(projectId);
+		FlexProject project = DaoInstances.getFlexProjectDao().getFlexProject(projectId);
 
 		if (project == null) {
 			project = new FlexProject(Common.NEW_ID, "Novo Projeto",
@@ -981,8 +979,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		ReplyBase rb = new ReplyBase();
 		rb.setRcvTime(Calendar.getInstance());
 
-		FlexProjectDao dao = new FlexProjectDao();
-		List<FlexProject> list = dao.getFlexProjects();
+		List<FlexProject> list = DaoInstances.getFlexProjectDao().getFlexProjects();
 
 		FlexProject[] projects = new FlexProject[list.size()];
 		projects = list.toArray(projects);
@@ -1003,9 +1000,8 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 
 		int projectId = params.getProject().getId();
 
-		FlexProjectDao dao = new FlexProjectDao();
 		FlexProject project = params.getProject();
-		int id = dao.saveFlexProject(project.getId(), project.getName(),
+		int id = DaoInstances.getFlexProjectDao().saveFlexProject(project.getId(), project.getName(),
 				project.getDescription(), project.getXmlConfig());
 
 		response.setProjectId(id);
@@ -1021,8 +1017,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		ReplyBase rb = new ReplyBase();
 		rb.setRcvTime(Calendar.getInstance());
 
-		FlexProjectDao dao = new FlexProjectDao();
-		dao.deleteFlexProject(id);
+		DaoInstances.getFlexProjectDao().deleteFlexProject(id);
 
 		rb.setReplyTime(Calendar.getInstance());
 		response.setReplyBase(rb);

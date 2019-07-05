@@ -40,8 +40,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.util.LocalizableJsonException;
@@ -456,11 +455,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 					.getJsonArray("dataSourcePermissions");
 			if (jsonDataSources != null) {
 				dataSourcePermissions.clear();
-				DataSourceDao dataSourceDao = new DataSourceDao();
 
 				for (JsonValue jv : jsonDataSources.getElements()) {
 					String xid = jv.toJsonString().getValue();
-					DataSourceVO<?> ds = dataSourceDao.getDataSource(xid);
+					DataSourceVO<?> ds = DaoInstances.getDataSourceDao().getDataSource(xid);
 					if (ds == null)
 						throw new LocalizableJsonException(
 								"emport.error.missingSource", xid);
@@ -472,10 +470,9 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 			if (jsonPoints != null) {
 				// Get a list of points to which permission already exists due
 				// to data source access.
-				DataPointDao dataPointDao = new DataPointDao();
 				List<Integer> permittedPoints = new ArrayList<Integer>();
 				for (Integer dsId : dataSourcePermissions) {
-					for (DataPointVO dp : dataPointDao
+					for (DataPointVO dp : DaoInstances.getDataPointDao()
 							.getDataPoints(dsId, null))
 						permittedPoints.add(dp.getId());
 				}
@@ -497,9 +494,8 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	public void jsonSerialize(Map<String, Object> map) {
 		if (!admin) {
 			List<String> dsXids = new ArrayList<String>();
-			DataSourceDao dataSourceDao = new DataSourceDao();
 			for (Integer dsId : dataSourcePermissions)
-				dsXids.add(dataSourceDao.getDataSource(dsId).getXid());
+				dsXids.add(DaoInstances.getDataSourceDao().getDataSource(dsId).getXid());
 			map.put("dataSourcePermissions", dsXids);
 
 			map.put("dataPointPermissions", dataPointPermissions);

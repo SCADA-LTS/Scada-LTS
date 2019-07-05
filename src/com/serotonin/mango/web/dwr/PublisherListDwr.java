@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.util.IntMessagePair;
 import com.serotonin.mango.vo.publish.PublishedPointVO;

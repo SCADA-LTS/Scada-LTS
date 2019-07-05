@@ -25,13 +25,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.UserHighestAlarmLevelListener;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
@@ -54,8 +53,6 @@ public class EventManager implements ILifecycle {
 
 	private final List<UserHighestAlarmLevelListener> userHighestAlarmLevelListeners = new CopyOnWriteArrayList<UserHighestAlarmLevelListener>();
 	private final List<EventInstance> activeEvents = new CopyOnWriteArrayList<EventInstance>();
-	private EventDao eventDao;
-	private UserDao userDao;
 	private long lastAlarmTimestamp = 0;
 	private int highestActiveAlarmLevel = 0;
 
@@ -106,13 +103,13 @@ public class EventManager implements ILifecycle {
 			setHandlers(evt);
 
 		// Get id from database by inserting event immediately.
-		eventDao.saveEvent(evt);
+		DaoInstances.getEventDao().saveEvent(evt);
 
 		// Create user alarm records for all applicable users
 		List<Integer> eventUserIds = new ArrayList<Integer>();
 		Set<String> emailUsers = new HashSet<String>();
 
-		for (User user : userDao.getActiveUsers()) {
+		for (User user : DaoInstances.getUserDao().getActiveUsers()) {
 			// Do not create an event for this user if the event type says the
 			// user should be skipped.
 			if (type.excludeUser(user))
@@ -129,7 +126,7 @@ public class EventManager implements ILifecycle {
 		}
 
 		if (eventUserIds.size() > 0) {
-			eventDao.insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
+			DaoInstances.getEventDao().insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
 			if (!suppressed && evt.isAlarm())
 				setLastAlarmTimestamp(System.currentTimeMillis());
 		}
@@ -138,7 +135,7 @@ public class EventManager implements ILifecycle {
 			activeEvents.add(evt);
 
 		if (suppressed)
-			eventDao.ackEvent(
+			DaoInstances.getEventDao().ackEvent(
 					evt.getId(),
 					time,
 					0,
@@ -181,7 +178,7 @@ public class EventManager implements ILifecycle {
 			resetHighestAlarmLevel(time, false);
 
 			evt.returnToNormal(time, cause);
-			eventDao.saveEvent(evt);
+			DaoInstances.getEventDao().saveEvent(evt);
 
 			// Call inactiveEvent handlers.
 			handleInactiveEvent(evt);
@@ -198,7 +195,7 @@ public class EventManager implements ILifecycle {
 		activeEvents.remove(evt);
 		resetHighestAlarmLevel(time, false);
 		evt.returnToNormal(time, inactiveCause);
-		eventDao.saveEvent(evt);
+		DaoInstances.getEventDao().saveEvent(evt);
 
 		// Call inactiveEvent handlers.
 		handleInactiveEvent(evt);
@@ -285,11 +282,9 @@ public class EventManager implements ILifecycle {
 	// Lifecycle interface
 	//
 	public void initialize() {
-		eventDao = new EventDao();
-		userDao = new UserDao();
 
 		// Get all active events from the database.
-		activeEvents.addAll(eventDao.getActiveEvents());
+		activeEvents.addAll(DaoInstances.getEventDao().getActiveEvents());
 		setLastAlarmTimestamp(System.currentTimeMillis());
 		resetHighestAlarmLevel(lastAlarmTimestamp, true);
 	}
@@ -345,18 +340,13 @@ public class EventManager implements ILifecycle {
 	}
 
 	private void setHandlers(EventInstance evt) {
-		List<EventHandlerVO> vos = eventDao
-				.getEventHandlers(evt.getEventType());
-		List<EventHandlerRT> rts = null;
-		for (EventHandlerVO vo : vos) {
+		List<EventHandlerRT> rts = new ArrayList<EventHandlerRT>();
+		for (EventHandlerVO vo : DaoInstances.getEventDao().getEventHandlers(evt.getEventType())) {
 			if (!vo.isDisabled()) {
-				if (rts == null)
-					rts = new ArrayList<EventHandlerRT>();
 				rts.add(vo.createRuntime());
 			}
 		}
-		if (rts != null)
-			evt.setHandlers(rts);
+		evt.setHandlers(rts);
 	}
 
 	private void handleRaiseEvent(EventInstance evt,

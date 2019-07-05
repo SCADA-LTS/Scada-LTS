@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -19,7 +20,6 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataSource.meta.AlphanumericPointWrapper;
 import com.serotonin.mango.rt.dataSource.meta.BinaryPointWrapper;
@@ -111,7 +111,7 @@ public class ContextualizedScriptRT extends ScriptRT {
 
 			List<IntValuePair> objectsContext = ((ContextualizedScriptVO) vo).getObjectsOnContext();
 
-			User user = new UserDao().getUser(vo.getUserId());
+			User user = DaoInstances.getUserDao().getUser(vo.getUserId());
 			for (IntValuePair object : objectsContext) {
 				ScriptContextObject o = ScriptContextObject.Type.valueOf(object.getKey()).createScriptContextObject();
 				o.setUser(user);

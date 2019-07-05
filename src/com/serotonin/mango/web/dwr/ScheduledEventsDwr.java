@@ -20,11 +20,10 @@ package com.serotonin.mango.web.dwr;
 
 import java.util.List;
 
-import com.serotonin.mango.daoCache.DaoCache;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
@@ -42,7 +41,7 @@ public class ScheduledEventsDwr extends BaseDwr {
     //
     public List<ScheduledEventVO> getScheduledEvents() {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        return DaoCache.getScheduledEventDao().getScheduledEvents();
+        return DaoInstances.getScheduledEventDao().getScheduledEvents();
     }
 
     public ScheduledEventVO getScheduledEvent(int id) {
@@ -51,14 +50,14 @@ public class ScheduledEventsDwr extends BaseDwr {
         if (id == Common.NEW_ID) {
             DateTime dt = new DateTime();
             ScheduledEventVO se = new ScheduledEventVO();
-            se.setXid(new ScheduledEventDao().generateUniqueXid());
+            se.setXid(DaoInstances.getScheduledEventDao().generateUniqueXid());
             se.setActiveYear(dt.getYear());
             se.setInactiveYear(dt.getYear());
             se.setActiveMonth(dt.getMonthOfYear());
             se.setInactiveMonth(dt.getMonthOfYear());
             return se;
         }
-        return DaoCache.getScheduledEventDao().getScheduledEvent(id);
+        return DaoInstances.getScheduledEventDao().getScheduledEvent(id);
     }
 
     public DwrResponseI18n saveScheduledEvent(int id, String xid, String alias, int alarmLevel, int scheduleType,
@@ -95,7 +94,7 @@ public class ScheduledEventsDwr extends BaseDwr {
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!DaoCache.getScheduledEventDao().isXidUnique(xid, id))
+        else if (!DaoInstances.getScheduledEventDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         se.validate(response);
@@ -110,7 +109,7 @@ public class ScheduledEventsDwr extends BaseDwr {
 
     public void deleteScheduledEvent(int seId) {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        new ScheduledEventDao().deleteScheduledEvent(seId);
+        DaoInstances.getScheduledEventDao().deleteScheduledEvent(seId);
         Common.ctx.getRuntimeManager().stopSimpleEventDetector(ScheduledEventVO.getEventDetectorKey(seId));
     }
 }

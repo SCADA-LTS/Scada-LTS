@@ -19,7 +19,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonValue;
-import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
@@ -110,7 +110,6 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		JsonArray jsonContext = json.getJsonArray("pointsOnContext");
 		if (jsonContext != null) {
 			pointsOnContext.clear();
-			DataPointDao dataPointDao = new DataPointDao();
 
 			for (JsonValue jv : jsonContext.getElements()) {
 				JsonObject jo = jv.toJsonObject();
@@ -119,7 +118,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 					throw new LocalizableJsonException(
 							"emport.error.meta.missing", "dataPointXid");
 
-				DataPointVO dp = dataPointDao.getDataPoint(xid);
+				DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(xid);
 				if (dp == null)
 					throw new LocalizableJsonException(
 							"emport.error.missingPoint", xid);
@@ -164,7 +163,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		super.jsonSerialize(map);
 		List<Map<String, Object>> pointList = new ArrayList<Map<String, Object>>();
 		for (IntValuePair p : pointsOnContext) {
-			DataPointVO dp = new DataPointDao().getDataPoint(p.getKey());
+			DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(p.getKey());
 			if (dp != null) {
 				Map<String, Object> point = new HashMap<String, Object>();
 				pointList.add(point);

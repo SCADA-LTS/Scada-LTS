@@ -26,12 +26,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -55,14 +55,10 @@ public class WatchListController extends ParameterizableViewController {
 
 		// The user's permissions may have changed since the last session, so
 		// make sure the watch lists are correct.
-		WatchListDao watchListDao = new WatchListDao();
-		List<WatchList> watchLists;
-		if (!user.isAdmin()) {
-			watchLists = watchListDao.getWatchLists(user.getId(),
-					user.getUserProfile());
-		} else {
-			watchLists = watchListDao.getWatchLists();
-		}
+		List<WatchList> watchLists =
+		(!user.isAdmin())
+				? DaoInstances.getWatchListDao().getWatchLists(user.getId(),user.getUserProfile())
+				: DaoInstances.getWatchListDao().getWatchLists();
 
 		if (watchLists.size() == 0) {
 			// Add a default watch list if none exist.
@@ -70,7 +66,7 @@ public class WatchListController extends ParameterizableViewController {
 			watchList.setName(I18NUtils.getMessage(
 					ControllerUtils.getResourceBundle(request),
 					"common.newName"));
-			watchLists.add(watchListDao.createNewWatchList(watchList,
+			watchLists.add(DaoInstances.getWatchListDao().createNewWatchList(watchList,
 					user.getId()));
 		}
 
@@ -102,7 +98,7 @@ public class WatchListController extends ParameterizableViewController {
 				}
 
 				if (changed)
-					watchListDao.saveWatchList(watchList);
+					DaoInstances.getWatchListDao().saveWatchList(watchList);
 			}
 
 			watchListNames.add(new IntValuePair(watchList.getId(), watchList
@@ -116,7 +112,7 @@ public class WatchListController extends ParameterizableViewController {
 			// the first in the list.
 			selected = watchLists.get(0).getId();
 			user.setSelectedWatchList(selected);
-			new WatchListDao().saveSelectedWatchList(user.getId(), selected);
+			DaoInstances.getWatchListDao().saveSelectedWatchList(user.getId(), selected);
 		}
 
 		model.put(KEY_WATCHLISTS, watchListNames);

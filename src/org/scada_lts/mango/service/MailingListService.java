@@ -18,7 +18,6 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.mailingList.UserEntry;

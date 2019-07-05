@@ -24,12 +24,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ReportDao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.report.ReportChartCreator;
@@ -45,14 +45,13 @@ public class ReportChartController extends AbstractController {
             throws Exception {
 
         int instanceId = Integer.parseInt(request.getParameter("instanceId"));
-        ReportDao reportDao = new ReportDao();
-        ReportInstance instance = reportDao.getReportInstance(instanceId);
+        ReportInstance instance = DaoInstances.getReportDao().getReportInstance(instanceId);
 
         User user = Common.getUser(request);
         Permissions.ensureReportInstancePermission(user, instance);
 
         ReportChartCreator creator = new ReportChartCreator(ControllerUtils.getResourceBundle(request));
-        creator.createContent(instance, reportDao, null, false);
+        creator.createContent(instance, DaoInstances.getReportDao(), null, false);
 
         Map<String, byte[]> imageData = new HashMap<String, byte[]>();
         imageData.put(creator.getChartName(), creator.getImageData());

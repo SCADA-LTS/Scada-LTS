@@ -20,21 +20,23 @@ package com.serotonin.mango.web.mvc.controller;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ViewDao;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.permissions.PermissionViewACL;
-import org.scada_lts.permissions.model.EntryDto;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 
 public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);
@@ -43,12 +45,11 @@ public class ViewsController extends ParameterizableViewController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
-		ViewDao viewDao = new ViewDao();
 		User user = Common.getUser(request);
 		List<IntValuePair> views;
 
 		if (user.isAdmin()) { // Admin user has access to all views
-			views = viewDao.getAllViewNames();
+			views = DaoInstances.getViewDao().getAllViewNames();
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
 			};
@@ -56,21 +57,7 @@ public class ViewsController extends ParameterizableViewController {
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
-			views = viewDao.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
-
-			/* ** Disable ACL **
-			// ACL start
-			views = viewDao.getAllViewNames();
-			Map<Integer, EntryDto> mapToCheckId = PermissionViewACL.getInstance().filter(user.getId());
-			List<IntValuePair> vviews = new ArrayList<IntValuePair>();
-			for (IntValuePair vp: views) {
-				if (mapToCheckId.get(vp.getKey())!=null) {
-					vviews.add(vp);
-				}
-			}
-			//views.stream().filter(view -> mapToCheckId.get(view.getKey()) != null );
-			// ACL end;
-			*/
+			views = DaoInstances.getViewDao().getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
 
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
@@ -84,13 +71,13 @@ public class ViewsController extends ParameterizableViewController {
 		View currentView = null;
 		String vid = request.getParameter("viewId");
 		try {
-			currentView = viewDao.getView(Integer.parseInt(vid));
+			currentView = DaoInstances.getViewDao().getView(Integer.parseInt(vid));
 		} catch (NumberFormatException e) {
 			// no op
 		}
 
 		if (currentView == null && views.size() > 0)
-			currentView = viewDao.getView(views.get(0).getKey());
+			currentView = DaoInstances.getViewDao().getView(views.get(0).getKey());
 
 		if (currentView != null) {
 			if (!user.isAdmin())

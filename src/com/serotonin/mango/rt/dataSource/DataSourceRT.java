@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataSource;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 
@@ -25,7 +26,6 @@ import java.util.*;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
@@ -97,7 +97,7 @@ abstract public class DataSourceRT implements ILifecycle {
      * This method is usable by subclasses to retrieve serializable data stored using the setPersistentData method.
      */
     public Object getPersistentData() {
-        return new DataSourceDao().getPersistentData(vo.getId());
+        return DaoInstances.getDataSourceDao().getPersistentData(vo.getId());
     }
 
     /**
@@ -106,7 +106,7 @@ abstract public class DataSourceRT implements ILifecycle {
      * called in the terminate method, but may also be called regularly for failover purposes.
      */
     protected void setPersistentData(Object persistentData) {
-        new DataSourceDao().savePersistentData(vo.getId(), persistentData);
+        DaoInstances.getDataSourceDao().savePersistentData(vo.getId(), persistentData);
     }
 
     public void addDataPoint(DataPointRT dataPoint) {

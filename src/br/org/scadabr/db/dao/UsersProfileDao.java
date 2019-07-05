@@ -6,6 +6,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
+import com.serotonin.mango.db.dao.BaseDao;
+import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.db.dao.ViewDao;
+import com.serotonin.mango.db.dao.WatchListDao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -19,10 +24,6 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.db.spring.GenericRowMapper;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.BaseDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
@@ -60,13 +61,6 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public UsersProfileVO getUserProfileByName(String name) {
-		/*
-		 * UsersProfileVO profile = queryForObject(PROFILES_SELECT +
-		 * " where lower(u.name)=?", new Object[] { name.toLowerCase() }, new
-		 * UsersProfilesRowMapper(), null);
-		 * 
-		 * populateUserProfilePermissions(profile); return profile;
-		 */
 		ListIterator<UsersProfileVO> iterator = currentProfileList
 				.listIterator();
 		while (iterator.hasNext()) {
@@ -81,11 +75,6 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public UsersProfileVO getUserProfileById(int id) {
-		/*
-		 * UsersProfileVO profile = queryForObject(PROFILES_SELECT +
-		 * " where u.id=?", new Object[] { id }, new UsersProfilesRowMapper(),
-		 * null); populateUserProfilePermissions(profile); return profile;
-		 */
 		ListIterator<UsersProfileVO> iterator = currentProfileList
 				.listIterator();
 		while (iterator.hasNext()) {
@@ -100,11 +89,6 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public UsersProfileVO getUserProfileByXid(String xid) {
-		/*
-		 * UsersProfileVO profile = queryForObject(PROFILES_SELECT +
-		 * " where u.xid=?", new Object[] { xid }, new UsersProfilesRowMapper(),
-		 * null); populateUserProfilePermissions(profile); return profile;
-		 */
 		ListIterator<UsersProfileVO> iterator = currentProfileList
 				.listIterator();
 		while (iterator.hasNext()) {
@@ -167,12 +151,10 @@ public class UsersProfileDao extends BaseDao {
 				+ " where u.userProfileId=?", new Object[] { profile.getId() },
 				Integer.class);
 
-		UserDao userDao = new UserDao();
-
 		for (Integer userId : usersIds) {
-			User profileUser = userDao.getUser(userId);
+			User profileUser = DaoInstances.getUserDao().getUser(userId);
 			profile.apply(profileUser);
-			userDao.saveUser(profileUser);
+			DaoInstances.getUserDao().saveUser(profileUser);
 			this.updateUsersProfile(profile);
 		}
 
@@ -196,11 +178,11 @@ public class UsersProfileDao extends BaseDao {
 		}
 
 		for (WatchList watchlist : profile.retrieveWatchlists()) {
-			watchlistDao.saveWatchList(watchlist);
+			DaoInstances.getWatchListDao().saveWatchList(watchlist);
 		}
 
 		for (View view : profile.retrieveViews()) {
-			viewDao.saveView(view);
+			DaoInstances.getViewDao().saveView(view);
 		}
 
 		ListIterator<UsersProfileVO> iterator = currentProfileList
@@ -285,8 +267,7 @@ public class UsersProfileDao extends BaseDao {
 					}
 				}));
 
-		WatchListDao watchListDao = new WatchListDao();
-		List<WatchList> allwatchlists = watchListDao.getWatchLists();
+		List<WatchList> allwatchlists = DaoInstances.getWatchListDao().getWatchLists();
 		profile.defineWatchlists(allwatchlists);
 	}
 
@@ -321,9 +302,7 @@ public class UsersProfileDao extends BaseDao {
 						return a;
 					}
 				}));
-
-		List<View> allviews = new ViewDao().getViews();
-		profile.defineViews(allviews);
+		profile.defineViews(DaoInstances.getViewDao().getViews());
 	}
 
 	private void populateUserProfilePermissions(List<UsersProfileVO> profiles) {
@@ -435,15 +414,13 @@ public class UsersProfileDao extends BaseDao {
 				new Object[] { user.getId() });
 
 		// Add user to watchLists
-		List<WatchList> watchLists = watchlistDao.getWatchLists();
-		for (WatchList wl : watchLists) {
-			watchlistDao.removeUserFromWatchList(wl.getId(), user.getId());
+		for (WatchList wl : DaoInstances.getWatchListDao().getWatchLists()) {
+			DaoInstances.getWatchListDao().removeUserFromWatchList(wl.getId(), user.getId());
 		}
 
 		// Remove user from Views
-		List<View> views = viewDao.getViews();
-		for (View view : views) {
-			viewDao.removeUserFromView(view.getId(), user.getId());
+		for (View view : DaoInstances.getViewDao().getViews()) {
+			DaoInstances.getViewDao().removeUserFromView(view.getId(), user.getId());
 		}
 
 		user.resetUserProfile();
@@ -454,15 +431,13 @@ public class UsersProfileDao extends BaseDao {
 				new Object[] { user.getId() });
 
 		// Remove user from watchLists
-		List<WatchList> watchLists = watchlistDao.getWatchLists();
-		for (WatchList wl : watchLists) {
-			watchlistDao.removeUserFromWatchList(wl.getId(), user.getId());
+		for (WatchList wl : DaoInstances.getWatchListDao().getWatchLists()) {
+			DaoInstances.getWatchListDao().removeUserFromWatchList(wl.getId(), user.getId());
 		}
 
 		// Remove user from Views
-		List<View> views = viewDao.getViews();
-		for (View view : views) {
-			viewDao.removeUserFromView(view.getId(), user.getId());
+		for (View view : DaoInstances.getViewDao().getViews()) {
+			DaoInstances.getViewDao().removeUserFromView(view.getId(), user.getId());
 		}
 
 		user.resetUserProfile();
@@ -489,7 +464,7 @@ public class UsersProfileDao extends BaseDao {
 
 		// Reset user profile
 		for (Integer userId : usersIds) {
-			this.resetUserProfile(userDao.getUser(userId));
+			this.resetUserProfile(DaoInstances.getUserDao().getUser(userId));
 		}
 
 		getTransactionTemplate().execute(
@@ -499,20 +474,6 @@ public class UsersProfileDao extends BaseDao {
 					protected void doInTransactionWithoutResult(
 							TransactionStatus status) {
 						Object[] args = new Object[] { usersProfileId };
-						// Delete relational data
-						// ejt.update(
-						// "delete from dataSourceUsersProfiles where userProfileId=?",
-						// args);
-						// ejt.update(
-						// "delete from dataPointUsersProfiles where userProfileId=?",
-						// args);
-						// ejt.update(
-						// "delete from watchlistUsersProfiles where userProfileId=?",
-						// args);
-						// ejt.update(
-						// "delete from viewUsersProfiles where userProfileId=?",
-						// args);
-						// Delete the profile
 						ejt.update("delete from usersProfiles where id=?", args);
 					}
 				});

@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.serotonin.mango.daoCache.DaoCache;
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.joda.time.DateTime;
 
 import com.serotonin.db.IntValuePair;
@@ -47,7 +47,7 @@ public class MaintenanceEventsDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         final ResourceBundle bundle = getResourceBundle();
 
-        List<MaintenanceEventVO> events = DaoCache.getMaintenanceEventDao().getMaintenanceEvents();
+        List<MaintenanceEventVO> events = DaoInstances.getMaintenanceEventDao().getMaintenanceEvents();
         Collections.sort(events, new Comparator<MaintenanceEventVO>() {
             @Override
             public int compare(MaintenanceEventVO m1, MaintenanceEventVO m2) {
@@ -58,7 +58,7 @@ public class MaintenanceEventsDwr extends BaseDwr {
         response.addData("events", events);
 
         List<IntValuePair> dataSources = new ArrayList<IntValuePair>();
-        for (DataSourceVO<?> ds : DaoCache.getDataSourceDao().getDataSources())
+        for (DataSourceVO<?> ds : DaoInstances.getDataSourceDao().getDataSources())
             dataSources.add(new IntValuePair(ds.getId(), ds.getName()));
         response.addData("dataSources", dataSources);
 
@@ -75,14 +75,14 @@ public class MaintenanceEventsDwr extends BaseDwr {
         if (id == Common.NEW_ID) {
             DateTime dt = new DateTime();
             me = new MaintenanceEventVO();
-            me.setXid(DaoCache.getMaintenanceEventDao().generateUniqueXid());
+            me.setXid(DaoInstances.getMaintenanceEventDao().generateUniqueXid());
             me.setActiveYear(dt.getYear());
             me.setInactiveYear(dt.getYear());
             me.setActiveMonth(dt.getMonthOfYear());
             me.setInactiveMonth(dt.getMonthOfYear());
         }
         else {
-            me = DaoCache.getMaintenanceEventDao().getMaintenanceEvent(id);
+            me = DaoInstances.getMaintenanceEventDao().getMaintenanceEvent(id);
 
             MaintenanceEventRT rt = Common.ctx.getRuntimeManager().getRunningMaintenanceEvent(me.getId());
             if (rt != null)
@@ -128,7 +128,7 @@ public class MaintenanceEventsDwr extends BaseDwr {
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!DaoCache.getMaintenanceEventDao().isXidUnique(xid, id))
+        else if (!DaoInstances.getMaintenanceEventDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         e.validate(response);

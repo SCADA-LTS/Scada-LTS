@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -39,7 +40,6 @@ import org.springframework.web.util.WebUtils;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.view.chart.BaseChartRenderer;
 import com.serotonin.mango.view.text.BaseTextRenderer;
@@ -64,8 +64,6 @@ import com.serotonin.util.StringUtils;
 public class DataPointEditController {
 	private static final Log LOG = LogFactory.getLog(LoginController.class);
 	
-	DataPointDao dataPointDao;
-	
     public static final String SUBMIT_SAVE = "save";
     public static final String SUBMIT_DISABLE = "disable";
     public static final String SUBMIT_ENABLE = "enable";
@@ -86,7 +84,6 @@ public class DataPointEditController {
 		LOG.trace("/data_point_edit.shtm");
 		
         User user = Common.getUser(request);
-        dataPointDao = new DataPointDao();
         int id;
         String idStr = request.getParameter("dpid");
         if (idStr == null) {
@@ -95,12 +92,12 @@ public class DataPointEditController {
                 throw new ShouldNeverHappenException("dpid or pedid must be provided for this page");
 
             int pedid = Integer.parseInt(pedStr);
-            id = dataPointDao.getDataPointIdFromDetectorId(pedid);
+            id = DaoInstances.getDataPointDao().getDataPointIdFromDetectorId(pedid);
         }
         else
             id = Integer.parseInt(idStr);
 
-        DataPointVO dataPoint = dataPointDao.getDataPoint(id);
+        DataPointVO dataPoint = DaoInstances.getDataPointDao().getDataPoint(id);
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,7 +27,7 @@ class SyncHandler implements Runnable {
 
     final PersistentSendThread sendThread;
 
-    final PointValueDao pointValueDao = new PointValueDao();
+    final PointValueDao pointValueDao = DaoInstances.getPointValueDao();
     long cutoff;
 
     int recordsSynced;
