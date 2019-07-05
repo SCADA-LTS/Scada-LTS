@@ -253,14 +253,19 @@
           <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.timeout"/></td>
           <td class="formField"><input id="timeout" type="text" value="${dataSource.timeout}"/></td>
         </tr>
+
+        <tr>
+          <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPortDesc"/></td>
+          <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPortDescNotice"/></td>
+        </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.trapPort"/></td>
+          <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPort"/></td>
           <td class="formField"><input id="trapPort" type="text" value="${dataSource.trapPort}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.localAddress"/></td>
+          <td class="formLabel"><fmt:message key="dsEdit.snmp.localAddress"/></td>
           <td class="formField"><input id="localAddress" type="text" value="${dataSource.localAddress}"/></td>
         </tr>
       </table>

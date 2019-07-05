@@ -25,15 +25,9 @@ import org.snmp4j.Snmp;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
-import org.snmp4j.util.DefaultPDUFactory;
-import org.snmp4j.util.TreeEvent;
-import org.snmp4j.util.TreeUtils;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.TreeMap;
 
 /**
  * @author Matthew Lohbihler

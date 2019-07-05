@@ -23,7 +23,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.snmp4j.PDU;
@@ -115,6 +114,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
 	public static final int PDU_EXCEPTION_EVENT = 2;
+	public static final int TRAP_NOT_HANDLED_EVENT = 3;
 
 	private final Log log = LogFactory.getLog(SnmpDataSourceRT.class);
 
@@ -178,6 +178,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		}
 		else
 			return Boolean.TRUE;
+
 	}
 
 	@Override
@@ -349,6 +350,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 					}
 
 					if (!found)
+						raiseEvent(TRAP_NOT_HANDLED_EVENT, time, false, new LocalizableMessage("event.snmp.trapNotHandled", vb));
 						log.warn("Trap not handled: " + vb);
 				}
 			}
