@@ -13,6 +13,7 @@ cd /opt/scadalts
 sleep 60
 cd
 killall -9 java
+cp /opt/scadalts/webapps/ScadaBR/WEB-INF/lib/mysql* /opt/scadalts/lib 
 cd /opt/scadalts/webapps/ScadaBR/WEB-INF/classes
 sed -i 's/localhost:8090/'`echo $DOCKER_HOST_IP`:8090'/g' env.properties
 cd
