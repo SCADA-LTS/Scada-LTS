@@ -26,7 +26,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * @autor Khelifi Hassene, grzegorz.bylica@gmail.com (SoftQ) on 03.07.19
+ * @autor Khelifi Hassene,
+ * @autor grzegorz.bylica@gmail.com (SoftQ) on 03.07.19
  */
 public interface IUserDAO {
     List<Integer> getAll();
