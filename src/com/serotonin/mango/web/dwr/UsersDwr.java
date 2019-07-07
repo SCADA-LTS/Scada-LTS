@@ -278,7 +278,7 @@ public class UsersDwr extends BaseDwr {
 	
 	public String getTimezone(int id){
 		UserDAO user = new UserDAO();
-		return "("+user.getUserTimezone(id)+") "+user.getUserZone(id);
+		return "(" + user.getUserTimezone(id)+") " + user.getUserZone(id);
 	}
 	
 	public DwrResponseI18n saveUser(int id, String password, String email,
