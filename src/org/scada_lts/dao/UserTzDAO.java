@@ -38,7 +38,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * @autor Khelifi Hassene, grzegorz.bylica@gmail.com (SoftQ) on 03.07.19
+ * @autor Khelifi Hassene,
+ * @autor grzegorz.bylica@gmail.com (SoftQ) on 03.07.19
  */
 public class UserTzDAO extends UserDAO implements IUserDAO  {
 
