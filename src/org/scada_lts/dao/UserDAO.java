@@ -264,12 +264,10 @@ public class UserDAO {
 	}
 	
 	public String getUserTimezone(int id) {
-
 		String timeZone;
-
-		if (LOG.isTraceEnabled()) {
+		if (LOG.isTraceEnabled())
 			LOG.trace("getUser_timezone(int id) id:" + id);
-		}
+		
 		try {
 			timeZone = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_TIMEZONE, new Object[]{id}, String.class);
 
@@ -280,8 +278,7 @@ public class UserDAO {
 
 	}
 
-	public String getUserZone(int id)                                                                                    ///smart e-tech //time_zone
-	{
+	public String getUserZone(int id) {
 		if (LOG.isTraceEnabled()) 
 			LOG.trace("getUser_timezone(int id) id:" + id);
 
