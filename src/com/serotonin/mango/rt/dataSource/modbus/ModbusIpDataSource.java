@@ -70,7 +70,7 @@ public class ModbusIpDataSource extends ModbusDataSource {
 				if (DataSourcePointsCache.getInstance().isCacheEnabled()) {
 					points = DataSourcePointsCache.getInstance().getDataPoints((long) configuration.getId());
 				} else {
-					points = DaoInstances.getDataPointDao().getDataPoints(
+					points = DaoInstances.DataPointDao.getDataPoints(
 						configuration.getId(), null);
 				}
 				for (DataPointVO dp : points) {
@@ -88,7 +88,7 @@ public class ModbusIpDataSource extends ModbusDataSource {
 					LOG.trace("socketMonitor not found! Create one!");
 
 					DataPointVO dp = new DataPointVO();
-					dp.setXid(DaoInstances.getDataPointDao().generateUniqueXid());
+					dp.setXid(DaoInstances.DataPointDao.generateUniqueXid());
 					dp.setName(Common
 							.getMessage("dsEdit.modbusIp.socketPointName"));
 					dp.setDataSourceId(configuration.getId());

@@ -26,7 +26,7 @@ public class ScenarioWithAdministrador extends DatalessDatabaseScenario {
 		user.setDisabled(false);
 		user.setDataSourcePermissions(new LinkedList<Integer>());
 		user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-		DaoInstances.getUserDao().saveUser(user);
+		DaoInstances.UserDao.saveUser(user);
 
 		new SystemSettingsDAO().setValue(
 				SystemSettingsDAO.DATABASE_SCHEMA_VERSION, Common.getVersion());

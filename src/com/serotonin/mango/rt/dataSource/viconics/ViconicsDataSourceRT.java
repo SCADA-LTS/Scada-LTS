@@ -199,7 +199,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 					+ sdf.format(new Date());
 
 			// Get a list of all existing points.
-			List<DataPointVO> points = DaoInstances.getDataPointDao().getDataPoints(vo.getId(),
+			List<DataPointVO> points = DaoInstances.DataPointDao.getDataPoints(vo.getId(),
 					null);
 
 			// Add a point for each address if it doesn't already exist.
@@ -225,7 +225,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 				//
 				// Point hierarchy folder
 				if (folderId == -1) {
-					PointHierarchy pointHierarchy = DaoInstances.getDataPointDao()
+					PointHierarchy pointHierarchy = DaoInstances.DataPointDao
 							.getPointHierarchy();
 
 					PointFolder root = pointHierarchy.getRoot();
@@ -246,7 +246,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 
 						pointHierarchy.addPointFolder(folder, pointHierarchy
 								.getRoot().getId());
-						DaoInstances.getDataPointDao().savePointHierarchy(pointHierarchy
+						DaoInstances.DataPointDao.savePointHierarchy(pointHierarchy
 								.getRoot());
 					}
 
@@ -334,7 +334,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 						// Initialize the list of watchlists
 						watchlists = new ArrayList<WatchList>();
 
-						for (User user : DaoInstances.getUserDao().getActiveUsers()) {
+						for (User user : DaoInstances.UserDao.getActiveUsers()) {
 							if (!Permissions.hasDataSourcePermission(user,
 									vo.getId()))
 								continue;
@@ -342,7 +342,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 							// Look for an existing watchlist with the same name
 							// as the folder
 							WatchList watchList = null;
-							for (WatchList wl : DaoInstances.getWatchListDao().getWatchLists(
+							for (WatchList wl : DaoInstances.WatchListDao.getWatchLists(
 									user.getId(), user.getUserProfile())) {
 								if (watchListName.equals(wl.getName())) {
 									watchList = wl;
@@ -355,7 +355,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 								// one
 								watchList = new WatchList();
 								watchList.setName(watchListName);
-								DaoInstances.getWatchListDao().createNewWatchList(watchList,
+								DaoInstances.WatchListDao.createNewWatchList(watchList,
 										user.getId());
 							}
 
@@ -372,7 +372,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 			// Save the watchlists
 			if (watchlists != null) {
 				for (WatchList watchList : watchlists)
-					DaoInstances.getWatchListDao().saveWatchList(watchList);
+					DaoInstances.WatchListDao.saveWatchList(watchList);
 			}
 		}
 	}

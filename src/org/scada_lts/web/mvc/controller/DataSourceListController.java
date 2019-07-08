@@ -79,7 +79,7 @@ public class DataSourceListController {
                 if(mapToCheckId.get(ds.getId())!=null) {
                     listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
                     listParent.setParent(ds);
-                    listParent.setList(DaoInstances.getDataPointDao().getDataPoints(ds.getId(), DataPointNameComparator.instance));
+                    listParent.setList(DaoInstances.DataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
                     dataSources.add(listParent);
                 }
                 //ACL End
@@ -88,7 +88,7 @@ public class DataSourceListController {
                     //TODO why variable listParent don't in loop
                     listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
                     listParent.setParent(ds);
-                    listParent.setList(DaoInstances.getDataPointDao().getDataPoints(ds.getId(), DataPointNameComparator.instance));
+                    listParent.setList(DaoInstances.DataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
                     dataSources.add(listParent);
                 }
             }

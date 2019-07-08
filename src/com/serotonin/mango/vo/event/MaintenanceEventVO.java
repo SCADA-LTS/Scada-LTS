@@ -518,7 +518,7 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
     public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
         String text = json.getString("dataSourceXid");
         if (text != null) {
-            DataSourceVO<?> ds = DaoInstances.getDataSourceDao().getDataSource(text);
+            DataSourceVO<?> ds = DaoInstances.DataSourceDao.getDataSource(text);
             if (ds == null)
                 throw new LocalizableJsonException("emport.error.maintenanceEvent.invalid", "dataSourceXid", text);
             dataSourceId = ds.getId();

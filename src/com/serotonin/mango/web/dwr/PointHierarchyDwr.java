@@ -28,12 +28,12 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
  */
 public class PointHierarchyDwr {
     public PointFolder getPointHierarchy() {
-        PointHierarchy ph = DaoInstances.getDataPointDao().getPointHierarchy();
+        PointHierarchy ph = DaoInstances.DataPointDao.getPointHierarchy();
         return ph.getRoot();
     }
 
     public PointFolder savePointHierarchy(PointFolder rootFolder) {
-        DaoInstances.getDataPointDao().savePointHierarchy(rootFolder);
+        DaoInstances.DataPointDao.savePointHierarchy(rootFolder);
         return rootFolder;
     }
 }

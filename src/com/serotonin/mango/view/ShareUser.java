@@ -72,7 +72,7 @@ public class ShareUser implements JsonSerializable {
         String text = json.getString("user");
         if (StringUtils.isEmpty(text))
             throw new LocalizableJsonException("emport.error.viewShare.missing", "user");
-        User user = DaoInstances.getUserDao().getUser(text);
+        User user = DaoInstances.UserDao.getUser(text);
         if (user == null)
             throw new LocalizableJsonException("emport.error.missingUser", text);
         userId = user.getId();
@@ -89,7 +89,7 @@ public class ShareUser implements JsonSerializable {
 
     @Override
     public void jsonSerialize(Map<String, Object> map) {
-        map.put("user", DaoInstances.getUserDao().getUser(userId).getUsername());
+        map.put("user", DaoInstances.UserDao.getUser(userId).getUsername());
         map.put("accessType", ACCESS_CODES.getCode(accessType));
     }
 }

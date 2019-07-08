@@ -43,7 +43,7 @@ abstract public class ViewTagSupport extends TagSupport {
 
     protected DataPointVO getDataPointVO(CustomView view, String xid) throws JspException {
         // Find the point.
-        DataPointVO dataPointVO = DaoInstances.getDataPointDao().getDataPoint(xid);
+        DataPointVO dataPointVO = DaoInstances.DataPointDao.getDataPoint(xid);
         if (dataPointVO == null)
             throw new JspException("Point with XID '" + xid + "' not found");
 

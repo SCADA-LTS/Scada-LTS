@@ -118,7 +118,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 					throw new LocalizableJsonException(
 							"emport.error.meta.missing", "dataPointXid");
 
-				DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(xid);
+				DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(xid);
 				if (dp == null)
 					throw new LocalizableJsonException(
 							"emport.error.missingPoint", xid);
@@ -163,7 +163,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		super.jsonSerialize(map);
 		List<Map<String, Object>> pointList = new ArrayList<Map<String, Object>>();
 		for (IntValuePair p : pointsOnContext) {
-			DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(p.getKey());
+			DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(p.getKey());
 			if (dp != null) {
 				Map<String, Object> point = new HashMap<String, Object>();
 				pointList.add(point);

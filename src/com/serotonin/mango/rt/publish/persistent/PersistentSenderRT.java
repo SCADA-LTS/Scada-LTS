@@ -116,7 +116,7 @@ public class PersistentSenderRT extends PublisherRT<PersistentPointVO> {
         // Cache the data point VOs for use during runtime.
         int index = 0;
         for (PersistentPointVO p : vo.getPoints()) {
-            DataPointVO dpvo = DaoInstances.getDataPointDao().getDataPoint(p.getDataPointId());
+            DataPointVO dpvo = DaoInstances.DataPointDao.getDataPoint(p.getDataPointId());
             p.setIndex(index++);
             updatePublishedPointVO(p, dpvo);
         }

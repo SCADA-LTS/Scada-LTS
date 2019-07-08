@@ -121,7 +121,7 @@ public class DataSourceEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        DataSourceVO<?> ds = DaoInstances.getDataSourceDao().getDataSource(dataSourceId);
+        DataSourceVO<?> ds = DaoInstances.DataSourceDao.getDataSource(dataSourceId);
         map.put("XID", ds.getXid());
         map.put("dataSourceEventType", ds.getEventCodes().getCode(dataSourceEventTypeId));
     }

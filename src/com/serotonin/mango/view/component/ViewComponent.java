@@ -299,7 +299,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 
 	protected DataPointVO readDataPoint(ObjectInputStream in)
 			throws IOException {
-		return DaoInstances.getDataPointDao().getDataPoint(in.readInt());
+		return DaoInstances.DataPointDao.getDataPoint(in.readInt());
 	}
 
 	/**
@@ -332,7 +332,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 				comp.tsetDataPoint(null);
 			else {
 				String xid = jsonXid.toJsonString().getValue();
-				DataPointVO dataPoint = DaoInstances.getDataPointDao().getDataPoint(xid);
+				DataPointVO dataPoint = DaoInstances.DataPointDao.getDataPoint(xid);
 				if (dataPoint == null)
 					throw new LocalizableJsonException(
 							"emport.error.missingPoint", xid);

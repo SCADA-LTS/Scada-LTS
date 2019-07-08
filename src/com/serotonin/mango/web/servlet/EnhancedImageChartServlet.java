@@ -26,7 +26,7 @@ public class EnhancedImageChartServlet extends BaseInfoServlet {
         int viewId = getIntRequestParameter(request, "viewId", -1);
         int viewComponentId = getIntRequestParameter(request, "vcId", -1);
         User user = Common.getUser(request);
-        View view = DaoInstances.getViewDao().getView(viewId);
+        View view = DaoInstances.ViewDao.getView(viewId);
         if (view == null) {
             view = user.getView();
         }

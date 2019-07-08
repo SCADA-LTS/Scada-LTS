@@ -73,7 +73,7 @@ public class DataPointAccess implements JsonSerializable {
 			throw new LocalizableJsonException(
 					"emport.error.permission.missing", "dataPointXid");
 
-		DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(text);
+		DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(text);
 		if (dp == null)
 			throw new LocalizableJsonException("emport.error.missingPoint",
 					text);
@@ -91,7 +91,7 @@ public class DataPointAccess implements JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("dataPointXid", DaoInstances.getDataPointDao().getDataPoint(dataPointId)
+		map.put("dataPointXid", DaoInstances.DataPointDao.getDataPoint(dataPointId)
 				.getXid());
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}

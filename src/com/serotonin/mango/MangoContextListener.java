@@ -205,8 +205,8 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void dataPointsNameToIdMapping(ServletContext ctx) {
-		PointHierarchy pH = DaoInstances.getDataPointDao().getPointHierarchy();
-		List<DataPointVO> datapoints = DaoInstances.getDataPointDao().getDataPoints(null,
+		PointHierarchy pH = DaoInstances.DataPointDao.getPointHierarchy();
+		List<DataPointVO> datapoints = DaoInstances.DataPointDao.getDataPoints(null,
 				false);
 
 		Map<String, Integer> mapping = new HashMap<String, Integer>();
@@ -583,7 +583,7 @@ public class MangoContextListener implements ServletContextListener {
 	// Reports
 	//
 	private void reportsInitialize() {
-		List<ReportVO> reports = DaoInstances.getReportDao().getReports();
+		List<ReportVO> reports = DaoInstances.ReportDao.getReports();
 		for (ReportVO report : reports) {
 			try {
 				ReportJob.scheduleReportJob(report);

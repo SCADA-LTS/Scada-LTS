@@ -149,7 +149,7 @@ public class ImageChartServlet extends BaseInfoServlet {
                     else
                         data = pointValueFacade.getPointValuesBetween(from, to);
 
-                    DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
+                    DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(dataPointId);
                     if (dp == null || dp.getName() == null)
                         ; // no op
                     else if (dp.getPointLocator().getDataTypeId() == DataTypes.NUMERIC) {

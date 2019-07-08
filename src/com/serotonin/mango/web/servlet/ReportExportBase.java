@@ -48,7 +48,7 @@ abstract public class ReportExportBase extends HttpServlet {
         int instanceId = Integer.parseInt(request.getParameter("instanceId"));
 
         // Get the report instance
-        ReportInstance instance = DaoInstances.getReportDao().getReportInstance(instanceId);
+        ReportInstance instance = DaoInstances.ReportDao.getReportInstance(instanceId);
 
         // Ensure the user is allowed access.
         Permissions.ensureReportInstancePermission(Common.getUser(request), instance);
@@ -59,12 +59,12 @@ abstract public class ReportExportBase extends HttpServlet {
         ResourceBundle bundle = Common.getBundle();
         if (content == CONTENT_REPORT) {
             ReportCsvStreamer creator = new ReportCsvStreamer(response.getWriter(), bundle);
-            DaoInstances.getReportDao().reportInstanceData(instanceId, creator);
+            DaoInstances.ReportDao.reportInstanceData(instanceId, creator);
         }
         else if (content == CONTENT_EVENTS)
-            new EventCsvStreamer(response.getWriter(), DaoInstances.getReportDao().getReportInstanceEvents(instanceId), bundle);
+            new EventCsvStreamer(response.getWriter(), DaoInstances.ReportDao.getReportInstanceEvents(instanceId), bundle);
         else if (content == CONTENT_COMMENTS)
-            new UserCommentCsvStreamer(response.getWriter(), DaoInstances.getReportDao().getReportInstanceUserComments(instanceId),
+            new UserCommentCsvStreamer(response.getWriter(), DaoInstances.ReportDao.getReportInstanceUserComments(instanceId),
                     bundle);
     }
 }

@@ -47,8 +47,8 @@ public class MailingListsDwr extends BaseDwr {
 
 	public DwrResponseI18n init() {
 		DwrResponseI18n response = new DwrResponseI18n();
-		response.addData("lists", DaoInstances.getMailingListDao().getMailingLists());
-		response.addData("users", DaoInstances.getUserDao().getUsers());
+		response.addData("lists", DaoInstances.MailingListDao.getMailingLists());
+		response.addData("users", DaoInstances.UserDao.getUsers());
 		return response;
 	}
 
@@ -56,11 +56,11 @@ public class MailingListsDwr extends BaseDwr {
 		if (id == Common.NEW_ID) {
 			MailingList ml = new MailingList();
 			ml.setId(Common.NEW_ID);
-			ml.setXid(DaoInstances.getMailingListDao().generateUniqueXid());
+			ml.setXid(DaoInstances.MailingListDao.generateUniqueXid());
 			ml.setEntries(new LinkedList<EmailRecipient>());
 			return ml;
 		}
-		return DaoInstances.getMailingListDao().getMailingList(id);
+		return DaoInstances.MailingListDao.getMailingList(id);
 	}
 
 	public DwrResponseI18n saveMailingList(int id, String xid, String name,
@@ -75,14 +75,14 @@ public class MailingListsDwr extends BaseDwr {
 
 		if (StringUtils.isEmpty(xid))
 			response.addContextualMessage("xid", "validate.required");
-		else if (!DaoInstances.getMailingListDao().isXidUnique(xid, id))
+		else if (!DaoInstances.MailingListDao.isXidUnique(xid, id))
 			response.addContextualMessage("xid", "validate.xidUsed");
 
 		ml.validate(response);
 
 		if (!response.getHasMessages()) {
 			// Save the mailing list
-			DaoInstances.getMailingListDao().saveMailingList(ml);
+			DaoInstances.MailingListDao.saveMailingList(ml);
 			response.addData("mlId", ml.getId());
 		}
 
@@ -90,7 +90,7 @@ public class MailingListsDwr extends BaseDwr {
 	}
 
 	public void deleteMailingList(int mlId) {
-		DaoInstances.getMailingListDao().deleteMailingList(mlId);
+		DaoInstances.MailingListDao.deleteMailingList(mlId);
 	}
 
 	public DwrResponseI18n sendTestEmail(int id, String name,
@@ -98,7 +98,7 @@ public class MailingListsDwr extends BaseDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		MailingList ml = createMailingList(id, null, name, entryBeans);
-		DaoInstances.getMailingListDao().populateEntrySubclasses(ml.getEntries());
+		DaoInstances.MailingListDao.populateEntrySubclasses(ml.getEntries());
 
 		Set<String> addresses = new HashSet<String>();
 		ml.appendAddresses(addresses, null);

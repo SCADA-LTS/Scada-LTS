@@ -92,12 +92,12 @@ public class DataPointEditController {
                 throw new ShouldNeverHappenException("dpid or pedid must be provided for this page");
 
             int pedid = Integer.parseInt(pedStr);
-            id = DaoInstances.getDataPointDao().getDataPointIdFromDetectorId(pedid);
+            id = DaoInstances.DataPointDao.getDataPointIdFromDetectorId(pedid);
         }
         else
             id = Integer.parseInt(idStr);
 
-        DataPointVO dataPoint = DaoInstances.getDataPointDao().getDataPoint(id);
+        DataPointVO dataPoint = DaoInstances.DataPointDao.getDataPoint(id);
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());

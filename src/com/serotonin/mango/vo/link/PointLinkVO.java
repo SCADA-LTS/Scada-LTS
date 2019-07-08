@@ -140,8 +140,8 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
     @Override
     public void addProperties(List<LocalizableMessage> list) {
         AuditEventType.addPropertyMessage(list, "common.xid", xid);
-        AuditEventType.addPropertyMessage(list, "pointLinks.source", DaoInstances.getDataPointDao().getExtendedPointName(sourcePointId));
-        AuditEventType.addPropertyMessage(list, "pointLinks.target", DaoInstances.getDataPointDao().getExtendedPointName(targetPointId));
+        AuditEventType.addPropertyMessage(list, "pointLinks.source", DaoInstances.DataPointDao.getExtendedPointName(sourcePointId));
+        AuditEventType.addPropertyMessage(list, "pointLinks.target", DaoInstances.DataPointDao.getExtendedPointName(targetPointId));
         AuditEventType.addPropertyMessage(list, "pointLinks.script", script);
         AuditEventType.addExportCodeMessage(list, "pointLinks.event", EVENT_CODES, event);
         AuditEventType.addPropertyMessage(list, "common.disabled", disabled);
@@ -152,12 +152,12 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
         AuditEventType.maybeAddPropertyChangeMessage(list, "common.xid", from.xid, xid);
         AuditEventType
                 .maybeAddPropertyChangeMessage(list, "pointLinks.source",
-                        DaoInstances.getDataPointDao().getExtendedPointName(from.sourcePointId),
-                        DaoInstances.getDataPointDao().getExtendedPointName(sourcePointId));
+                        DaoInstances.DataPointDao.getExtendedPointName(from.sourcePointId),
+                        DaoInstances.DataPointDao.getExtendedPointName(sourcePointId));
         AuditEventType
                 .maybeAddPropertyChangeMessage(list, "pointLinks.target",
-                        DaoInstances.getDataPointDao().getExtendedPointName(from.targetPointId),
-                        DaoInstances.getDataPointDao().getExtendedPointName(targetPointId));
+                        DaoInstances.DataPointDao.getExtendedPointName(from.targetPointId),
+                        DaoInstances.DataPointDao.getExtendedPointName(targetPointId));
         AuditEventType.maybeAddPropertyChangeMessage(list, "pointLinks.script", from.script, script);
         AuditEventType.maybeAddExportCodeChangeMessage(list, "pointLinks.event", EVENT_CODES, from.event, event);
         AuditEventType.maybeAddPropertyChangeMessage(list, "common.disabled", from.disabled, disabled);
@@ -171,11 +171,11 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
 
         map.put("xid", xid);
 
-        DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(sourcePointId);
+        DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(sourcePointId);
         if (dp != null)
             map.put("sourcePointId", dp.getXid());
 
-        dp = DaoInstances.getDataPointDao().getDataPoint(targetPointId);
+        dp = DaoInstances.DataPointDao.getDataPoint(targetPointId);
         if (dp != null)
             map.put("targetPointId", dp.getXid());
 
@@ -186,7 +186,7 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
 
         String xid = json.getString("sourcePointId");
         if (xid != null) {
-            DataPointVO vo = DaoInstances.getDataPointDao().getDataPoint(xid);
+            DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
             if (vo == null)
                 throw new LocalizableJsonException("emport.error.missingPoint", xid);
             sourcePointId = vo.getId();
@@ -194,7 +194,7 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
 
         xid = json.getString("targetPointId");
         if (xid != null) {
-            DataPointVO vo = DaoInstances.getDataPointDao().getDataPoint(xid);
+            DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
             if (vo == null)
                 throw new LocalizableJsonException("emport.error.missingPoint", xid);
             targetPointId = vo.getId();

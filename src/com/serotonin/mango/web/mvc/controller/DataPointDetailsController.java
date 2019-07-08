@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.dao_cache.DaoInstances;
+import com.serotonin.mango.rt.dataSource.persistent.DoAbortException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -63,18 +64,18 @@ public class DataPointDetailsController extends ParameterizableViewController {
 							"One of dpid, dpxid, or pedid must be provided for this view");
 
 				model.put("currentXid", xid);
-				point = DaoInstances.getDataPointDao().getDataPoint(xid);
+				point = DaoInstances.DataPointDao.getDataPoint(xid);
 				id = point == null ? -1 : point.getId();
 			} else {
 				int pedid = Integer.parseInt(pedStr);
-				id = DaoInstances.getDataPointDao().getDataPointIdFromDetectorId(pedid);
+				id = DaoInstances.DataPointDao.getDataPointIdFromDetectorId(pedid);
 			}
 		} else
 			id = Integer.parseInt(idStr);
 
 		// Put the point in the model.
 		if (point == null)
-			point = DaoInstances.getDataPointDao().getDataPoint(id);
+			point = DaoInstances.DataPointDao.getDataPoint(id);
 
 		if (point != null) {
 			//Permissions.ensureDataPointReadPermission(user, point);
@@ -82,7 +83,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			model.put("point", point);
 
 			// Get the views for this user that contain this point.
-			List<View> userViews = DaoInstances.getViewDao().getViews(user.getId(),
+			List<View> userViews = DaoInstances.ViewDao.getViews(user.getId(),
 					user.getUserProfile());
 			List<View> views = new LinkedList<View>();
 			for (View view : userViews) {
@@ -96,7 +97,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			List<Map<String, Object>> users = new LinkedList<Map<String, Object>>();
 			Map<String, Object> userData;
 			int accessType;
-			for (User mangoUser : DaoInstances.getUserDao().getUsers()) {
+			for (User mangoUser : DaoInstances.UserDao.getUsers()) {
 				accessType = Permissions.getDataPointAccessType(mangoUser,
 						point);
 				if (accessType != Permissions.DataPointAccessTypes.NONE) {
@@ -116,7 +117,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 
 			// Put the events in the model.
 			model.put("events",
-					DaoInstances.getEventDao().getEventsForDataPoint(id, user.getId()));
+					DaoInstances.EventDao.getEventsForDataPoint(id, user.getId()));
 
 			// Put the default history table count into the model. Default to
 			// 10.

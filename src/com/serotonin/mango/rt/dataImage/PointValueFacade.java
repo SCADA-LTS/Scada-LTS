@@ -38,36 +38,36 @@ public class PointValueFacade {
     public List<PointValueTime> getPointValues(long since) {
         if (point != null)
             return point.getPointValues(since);
-        return DaoInstances.getPointValueDao().getPointValues(dataPointId, since);
+        return DaoInstances.PointValueDao.getPointValues(dataPointId, since);
     }
 
     public PointValueTime getPointValueBefore(long time) {
         if (point != null)
             return point.getPointValueBefore(time);
-        return DaoInstances.getPointValueDao().getPointValueBefore(dataPointId, time);
+        return DaoInstances.PointValueDao.getPointValueBefore(dataPointId, time);
     }
 
     public PointValueTime getPointValueAt(long time) {
         if (point != null)
             return point.getPointValueAt(time);
-        return DaoInstances.getPointValueDao().getPointValueAt(dataPointId, time);
+        return DaoInstances.PointValueDao.getPointValueAt(dataPointId, time);
     }
 
     public PointValueTime getPointValue() {
         if (point != null)
             return point.getPointValue();
-        return DaoInstances.getPointValueDao().getLatestPointValue(dataPointId);
+        return DaoInstances.PointValueDao.getLatestPointValue(dataPointId);
     }
 
     public List<PointValueTime> getPointValuesBetween(long from, long to) {
         if (point != null)
             return point.getPointValuesBetween(from, to);
-        return DaoInstances.getPointValueDao().getPointValuesBetween(dataPointId, from, to);
+        return DaoInstances.PointValueDao.getPointValuesBetween(dataPointId, from, to);
     }
 
     public List<PointValueTime> getLatestPointValues(int limit) {
         if (point != null)
             return point.getLatestPointValues(limit);
-        return DaoInstances.getPointValueDao().getLatestPointValues(dataPointId, limit);
+        return DaoInstances.PointValueDao.getLatestPointValues(dataPointId, limit);
     }
 }

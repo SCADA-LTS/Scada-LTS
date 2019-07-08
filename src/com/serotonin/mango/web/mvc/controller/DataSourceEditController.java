@@ -62,11 +62,11 @@ public class DataSourceEditController extends ParameterizableViewController {
                 // A new data source
                 dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
                 dataSourceVO.setId(Common.NEW_ID);
-                dataSourceVO.setXid(DaoInstances.getDataSourceDao().generateUniqueXid());
+                dataSourceVO.setXid(DaoInstances.DataSourceDao.generateUniqueXid());
             }
             else {
                 int pid = Integer.parseInt(pidStr);
-                DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(pid);
+                DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(pid);
                 if (dp == null)
                     throw new ShouldNeverHappenException("DataPoint not found with id " + pid);
                 id = dp.getDataSourceId();
@@ -102,7 +102,7 @@ public class DataSourceEditController extends ParameterizableViewController {
 
         List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
         List<DataPointVO> analogPoints = new LinkedList<DataPointVO>();
-        for (DataPointVO dp : DaoInstances.getDataPointDao().
+        for (DataPointVO dp : DaoInstances.DataPointDao.
                 getDataPoints(DataPointExtendedNameComparator.instance, false)) {
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 userPoints.add(dp);

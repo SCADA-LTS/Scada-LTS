@@ -81,7 +81,7 @@ public class ChartComparatorComponent extends HtmlComponent {
 	}
 
 	private String createDataPointsSelectComponent(String idPrefix) {
-		List<DataPointVO> dataPoints = DaoInstances.getDataPointDao().getDataPoints(null,
+		List<DataPointVO> dataPoints = DaoInstances.DataPointDao.getDataPoints(null,
 				false);
 
 		StringBuilder sb = new StringBuilder();

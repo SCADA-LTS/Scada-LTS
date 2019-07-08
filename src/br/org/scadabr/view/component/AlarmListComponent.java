@@ -49,7 +49,7 @@ public class AlarmListComponent extends CustomComponent {
 		Map<String, Object> model = new HashMap<String, Object>();
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
-		List<EventInstance> events = DaoInstances.getEventDao().getPendingEvents(Common
+		List<EventInstance> events = DaoInstances.EventDao.getPendingEvents(Common
 				.getUser().getId());
 
 		filterByAlarmLevel(events, minAlarmLevel);

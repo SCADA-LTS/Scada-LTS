@@ -958,7 +958,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		ReplyBase rb = new ReplyBase();
 		rb.setRcvTime(Calendar.getInstance());
 
-		FlexProject project = DaoInstances.getFlexProjectDao().getFlexProject(projectId);
+		FlexProject project = DaoInstances.FlexProjectDao.getFlexProject(projectId);
 
 		if (project == null) {
 			project = new FlexProject(Common.NEW_ID, "Novo Projeto",
@@ -979,7 +979,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		ReplyBase rb = new ReplyBase();
 		rb.setRcvTime(Calendar.getInstance());
 
-		List<FlexProject> list = DaoInstances.getFlexProjectDao().getFlexProjects();
+		List<FlexProject> list = DaoInstances.FlexProjectDao.getFlexProjects();
 
 		FlexProject[] projects = new FlexProject[list.size()];
 		projects = list.toArray(projects);
@@ -1001,7 +1001,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		int projectId = params.getProject().getId();
 
 		FlexProject project = params.getProject();
-		int id = DaoInstances.getFlexProjectDao().saveFlexProject(project.getId(), project.getName(),
+		int id = DaoInstances.FlexProjectDao.saveFlexProject(project.getId(), project.getName(),
 				project.getDescription(), project.getXmlConfig());
 
 		response.setProjectId(id);
@@ -1017,7 +1017,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		ReplyBase rb = new ReplyBase();
 		rb.setRcvTime(Calendar.getInstance());
 
-		DaoInstances.getFlexProjectDao().deleteFlexProject(id);
+		DaoInstances.FlexProjectDao.deleteFlexProject(id);
 
 		rb.setReplyTime(Calendar.getInstance());
 		response.setReplyBase(rb);

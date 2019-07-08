@@ -371,7 +371,7 @@ public class EventHandlerVO implements Serializable,
 
 	public void validate(DwrResponseI18n response) {
 		if (handlerType == TYPE_SET_POINT) {
-			DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(targetPointId);
+			DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(targetPointId);
 
 			if (dp == null)
 				response.addGenericMessage("eventHandlers.noTargetPoint");
@@ -405,7 +405,7 @@ public class EventHandlerVO implements Serializable,
 				}
 
 				if (activeAction == SET_ACTION_POINT_VALUE) {
-					DataPointVO dpActive = DaoInstances.getDataPointDao()
+					DataPointVO dpActive = DaoInstances.DataPointDao
 							.getDataPoint(activePointId);
 
 					if (dpActive == null)
@@ -439,7 +439,7 @@ public class EventHandlerVO implements Serializable,
 				}
 
 				if (inactiveAction == SET_ACTION_POINT_VALUE) {
-					DataPointVO dpInactive = DaoInstances.getDataPointDao()
+					DataPointVO dpInactive = DaoInstances.DataPointDao
 							.getDataPoint(inactivePointId);
 
 					if (dpInactive == null)
@@ -487,13 +487,13 @@ public class EventHandlerVO implements Serializable,
 		AuditEventType.addPropertyMessage(list, "common.disabled", disabled);
 		if (handlerType == TYPE_SET_POINT) {
 			AuditEventType.addPropertyMessage(list, "eventHandlers.target",
-					DaoInstances.getDataPointDao().getExtendedPointName(targetPointId));
+					DaoInstances.DataPointDao.getExtendedPointName(targetPointId));
 			AuditEventType.addPropertyMessage(list,
 					"eventHandlers.activeAction",
 					getSetActionMessage(activeAction));
 			if (activeAction == SET_ACTION_POINT_VALUE)
 				AuditEventType.addPropertyMessage(list,
-						"eventHandlers.action.point", DaoInstances.getDataPointDao()
+						"eventHandlers.action.point", DaoInstances.DataPointDao
 								.getExtendedPointName(activePointId));
 			else if (activeAction == SET_ACTION_STATIC_VALUE)
 				AuditEventType.addPropertyMessage(list,
@@ -504,7 +504,7 @@ public class EventHandlerVO implements Serializable,
 					getSetActionMessage(inactiveAction));
 			if (inactiveAction == SET_ACTION_POINT_VALUE)
 				AuditEventType.addPropertyMessage(list,
-						"eventHandlers.action.point", DaoInstances.getDataPointDao()
+						"eventHandlers.action.point", DaoInstances.DataPointDao
 								.getExtendedPointName(inactivePointId));
 			else if (inactiveAction == SET_ACTION_STATIC_VALUE)
 				AuditEventType.addPropertyMessage(list,
@@ -557,17 +557,17 @@ public class EventHandlerVO implements Serializable,
 				from.disabled, disabled);
 		if (handlerType == TYPE_SET_POINT) {
 			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.target", DaoInstances.getDataPointDao()
+					"eventHandlers.target", DaoInstances.DataPointDao
 							.getExtendedPointName(from.targetPointId),
-					DaoInstances.getDataPointDao().getExtendedPointName(targetPointId));
+					DaoInstances.DataPointDao.getExtendedPointName(targetPointId));
 			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"eventHandlers.activeAction",
 					getSetActionMessage(from.activeAction),
 					getSetActionMessage(activeAction));
 			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.action.point", DaoInstances.getDataPointDao()
+					"eventHandlers.action.point", DaoInstances.DataPointDao
 							.getExtendedPointName(from.activePointId),
-					DaoInstances.getDataPointDao().getExtendedPointName(activePointId));
+					DaoInstances.DataPointDao.getExtendedPointName(activePointId));
 			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"eventHandlers.action.static", from.activeValueToSet,
 					activeValueToSet);
@@ -577,9 +577,9 @@ public class EventHandlerVO implements Serializable,
 					getSetActionMessage(from.inactiveAction),
 					getSetActionMessage(inactiveAction));
 			AuditEventType.maybeAddPropertyChangeMessage(list,
-					"eventHandlers.action.point", DaoInstances.getDataPointDao()
+					"eventHandlers.action.point", DaoInstances.DataPointDao
 							.getExtendedPointName(from.inactivePointId),
-					DaoInstances.getDataPointDao().getExtendedPointName(inactivePointId));
+					DaoInstances.DataPointDao.getExtendedPointName(inactivePointId));
 			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"eventHandlers.action.static", from.inactiveValueToSet,
 					inactiveValueToSet);
@@ -631,10 +631,10 @@ public class EventHandlerVO implements Serializable,
 			LocalizableMessage msg;
 			if (recip.getRecipientType() == EmailRecipient.TYPE_MAILING_LIST)
 				msg = new LocalizableMessage("event.audit.recip.mailingList",
-						DaoInstances.getMailingListDao().getMailingList(recip.getReferenceId())
+						DaoInstances.MailingListDao.getMailingList(recip.getReferenceId())
 								.getName());
 			else if (recip.getRecipientType() == EmailRecipient.TYPE_USER)
-				msg = new LocalizableMessage("event.audit.recip.user", DaoInstances.getUserDao()
+				msg = new LocalizableMessage("event.audit.recip.user", DaoInstances.UserDao
 						.getUser(recip.getReferenceId()).getUsername());
 			else
 				msg = new LocalizableMessage("event.audit.recip.address", recip
@@ -778,20 +778,20 @@ public class EventHandlerVO implements Serializable,
 	}
 
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("eventType", DaoInstances.getEventDao().getEventHandlerType(id));
+		map.put("eventType", DaoInstances.EventDao.getEventHandlerType(id));
 
 		map.put("xid", xid);
 		map.put("handlerType", TYPE_CODES.getCode(handlerType));
 
 		if (handlerType == TYPE_SET_POINT) {
-			DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(targetPointId);
+			DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(targetPointId);
 			if (dp != null)
 				map.put("targetPointId", dp.getXid());
 
 			// Active
 			map.put("activeAction", SET_ACTION_CODES.getCode(activeAction));
 			if (activeAction == SET_ACTION_POINT_VALUE) {
-				dp = DaoInstances.getDataPointDao().getDataPoint(activePointId);
+				dp = DaoInstances.DataPointDao.getDataPoint(activePointId);
 				if (dp != null)
 					map.put("activePointId", dp.getXid());
 			} else if (activeAction == SET_ACTION_STATIC_VALUE)
@@ -800,7 +800,7 @@ public class EventHandlerVO implements Serializable,
 			// Inactive
 			map.put("inactiveAction", SET_ACTION_CODES.getCode(inactiveAction));
 			if (inactiveAction == SET_ACTION_POINT_VALUE) {
-				dp = DaoInstances.getDataPointDao().getDataPoint(inactivePointId);
+				dp = DaoInstances.DataPointDao.getDataPoint(inactivePointId);
 				if (dp != null)
 					map.put("inactivePointId", dp.getXid());
 			} else if (inactiveAction == SET_ACTION_STATIC_VALUE)
@@ -845,7 +845,7 @@ public class EventHandlerVO implements Serializable,
 		if (handlerType == TYPE_SET_POINT) {
 			String xid = json.getString("targetPointId");
 			if (xid != null) {
-				DataPointVO vo = DaoInstances.getDataPointDao().getDataPoint(xid);
+				DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
 				if (vo == null)
 					throw new LocalizableJsonException(
 							"emport.error.missingPoint", xid);
@@ -866,7 +866,7 @@ public class EventHandlerVO implements Serializable,
 			if (activeAction == SET_ACTION_POINT_VALUE) {
 				xid = json.getString("activePointId");
 				if (xid != null) {
-					DataPointVO vo = DaoInstances.getDataPointDao().getDataPoint(xid);
+					DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
 					if (vo == null)
 						throw new LocalizableJsonException(
 								"emport.error.missingPoint", xid);
@@ -892,7 +892,7 @@ public class EventHandlerVO implements Serializable,
 			if (inactiveAction == SET_ACTION_POINT_VALUE) {
 				xid = json.getString("inactivePointId");
 				if (xid != null) {
-					DataPointVO vo = DaoInstances.getDataPointDao().getDataPoint(xid);
+					DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
 					if (vo == null)
 						throw new LocalizableJsonException(
 								"emport.error.missingPoint", xid);

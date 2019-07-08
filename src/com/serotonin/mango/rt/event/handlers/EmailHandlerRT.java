@@ -88,7 +88,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     @Override
     public void eventRaised(EventInstance evt) {
         // Get the email addresses to send to
-        activeRecipients = DaoInstances.getMailingListDao().getRecipientAddresses(vo.getActiveRecipients(),
+        activeRecipients = DaoInstances.MailingListDao.getRecipientAddresses(vo.getActiveRecipients(),
                 new DateTime(evt.getActiveTimestamp()));
 
         // Send an email to the active recipients.
@@ -97,7 +97,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         // If an inactive notification is to be sent, save the active recipients.
         if (vo.isSendInactive()) {
             if (vo.isInactiveOverride())
-                inactiveRecipients = DaoInstances.getMailingListDao().getRecipientAddresses(vo.getInactiveRecipients(),
+                inactiveRecipients = DaoInstances.MailingListDao.getRecipientAddresses(vo.getInactiveRecipients(),
                         new DateTime(evt.getActiveTimestamp()));
             else
                 inactiveRecipients = activeRecipients;
@@ -115,7 +115,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     //
     synchronized public void scheduleTimeout(EventInstance evt, long fireTime) {
         // Get the email addresses to send to
-        Set<String> addresses = DaoInstances.getMailingListDao().getRecipientAddresses(vo.getEscalationRecipients(), new DateTime(
+        Set<String> addresses = DaoInstances.MailingListDao.getRecipientAddresses(vo.getEscalationRecipients(), new DateTime(
                 fireTime));
 
         // Send the escalation.

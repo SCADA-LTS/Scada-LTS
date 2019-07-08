@@ -88,9 +88,9 @@ public class RecipientListEntryBean implements Serializable, JsonSerializable {
     public void jsonSerialize(Map<String, Object> map) {
         map.put("recipientType", EmailRecipient.TYPE_CODES.getCode(recipientType));
         if (recipientType == EmailRecipient.TYPE_MAILING_LIST)
-            map.put("mailingList", DaoInstances.getMailingListDao().getMailingList(referenceId).getXid());
+            map.put("mailingList", DaoInstances.MailingListDao.getMailingList(referenceId).getXid());
         else if (recipientType == EmailRecipient.TYPE_USER)
-            map.put("username", DaoInstances.getUserDao().getUser(referenceId).getUsername());
+            map.put("username", DaoInstances.UserDao.getUser(referenceId).getUsername());
         else if (recipientType == EmailRecipient.TYPE_ADDRESS)
             map.put("address", referenceAddress);
     }
@@ -111,7 +111,7 @@ public class RecipientListEntryBean implements Serializable, JsonSerializable {
             if (text == null)
                 throw new LocalizableJsonException("emport.error.recipient.missing.reference", "mailingList");
 
-            MailingList ml = DaoInstances.getMailingListDao().getMailingList(text);
+            MailingList ml = DaoInstances.MailingListDao.getMailingList(text);
             if (ml == null)
                 throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "mailingList", text);
 
@@ -122,7 +122,7 @@ public class RecipientListEntryBean implements Serializable, JsonSerializable {
             if (text == null)
                 throw new LocalizableJsonException("emport.error.recipient.missing.reference", "username");
 
-            User user = DaoInstances.getUserDao().getUser(text);
+            User user = DaoInstances.UserDao.getUser(text);
             if (user == null)
                 throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "user", text);
 

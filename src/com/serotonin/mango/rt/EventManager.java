@@ -103,13 +103,13 @@ public class EventManager implements ILifecycle {
 			setHandlers(evt);
 
 		// Get id from database by inserting event immediately.
-		DaoInstances.getEventDao().saveEvent(evt);
+		DaoInstances.EventDao.saveEvent(evt);
 
 		// Create user alarm records for all applicable users
 		List<Integer> eventUserIds = new ArrayList<Integer>();
 		Set<String> emailUsers = new HashSet<String>();
 
-		for (User user : DaoInstances.getUserDao().getActiveUsers()) {
+		for (User user : DaoInstances.UserDao.getActiveUsers()) {
 			// Do not create an event for this user if the event type says the
 			// user should be skipped.
 			if (type.excludeUser(user))
@@ -126,7 +126,7 @@ public class EventManager implements ILifecycle {
 		}
 
 		if (eventUserIds.size() > 0) {
-			DaoInstances.getEventDao().insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
+			DaoInstances.EventDao.insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
 			if (!suppressed && evt.isAlarm())
 				setLastAlarmTimestamp(System.currentTimeMillis());
 		}
@@ -135,7 +135,7 @@ public class EventManager implements ILifecycle {
 			activeEvents.add(evt);
 
 		if (suppressed)
-			DaoInstances.getEventDao().ackEvent(
+			DaoInstances.EventDao.ackEvent(
 					evt.getId(),
 					time,
 					0,
@@ -178,7 +178,7 @@ public class EventManager implements ILifecycle {
 			resetHighestAlarmLevel(time, false);
 
 			evt.returnToNormal(time, cause);
-			DaoInstances.getEventDao().saveEvent(evt);
+			DaoInstances.EventDao.saveEvent(evt);
 
 			// Call inactiveEvent handlers.
 			handleInactiveEvent(evt);
@@ -195,7 +195,7 @@ public class EventManager implements ILifecycle {
 		activeEvents.remove(evt);
 		resetHighestAlarmLevel(time, false);
 		evt.returnToNormal(time, inactiveCause);
-		DaoInstances.getEventDao().saveEvent(evt);
+		DaoInstances.EventDao.saveEvent(evt);
 
 		// Call inactiveEvent handlers.
 		handleInactiveEvent(evt);
@@ -284,7 +284,7 @@ public class EventManager implements ILifecycle {
 	public void initialize() {
 
 		// Get all active events from the database.
-		activeEvents.addAll(DaoInstances.getEventDao().getActiveEvents());
+		activeEvents.addAll(DaoInstances.EventDao.getActiveEvents());
 		setLastAlarmTimestamp(System.currentTimeMillis());
 		resetHighestAlarmLevel(lastAlarmTimestamp, true);
 	}
@@ -341,7 +341,7 @@ public class EventManager implements ILifecycle {
 
 	private void setHandlers(EventInstance evt) {
 		List<EventHandlerRT> rts = new ArrayList<EventHandlerRT>();
-		for (EventHandlerVO vo : DaoInstances.getEventDao().getEventHandlers(evt.getEventType())) {
+		for (EventHandlerVO vo : DaoInstances.EventDao.getEventHandlers(evt.getEventType())) {
 			if (!vo.isDisabled()) {
 				rts.add(vo.createRuntime());
 			}

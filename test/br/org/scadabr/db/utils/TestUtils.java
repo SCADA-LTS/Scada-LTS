@@ -22,7 +22,7 @@ public class TestUtils {
 		user.setDataSourcePermissions(new ArrayList<Integer>());
 		user.setDataPointPermissions(new ArrayList<DataPointAccess>());
 
-		DaoInstances.getUserDao().saveUser(user);
+		DaoInstances.UserDao.saveUser(user);
 		return user;
 	}
 

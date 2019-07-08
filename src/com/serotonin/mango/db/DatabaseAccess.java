@@ -159,7 +159,7 @@ abstract public class DatabaseAccess {
 					user.setDisabled(false);
 					user.setDataSourcePermissions(new LinkedList<Integer>());
 					user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-					DaoInstances.getUserDao().saveUser(user);
+					DaoInstances.UserDao.saveUser(user);
 
 					// Record the current version.
 					new SystemSettingsDAO().setValue(

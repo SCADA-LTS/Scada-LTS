@@ -92,7 +92,7 @@ public class CompoundEventDetectorVO implements ChangeComparable<CompoundEventDe
             List<String> keys = l.getDetectorKeys();
 
             // Get all of the point event detectors.
-            List<DataPointVO> dataPoints = DaoInstances.getDataPointDao().getDataPoints(null, true);
+            List<DataPointVO> dataPoints = DaoInstances.DataPointDao.getDataPoints(null, true);
 
             for (String key : keys) {
                 if (!key.startsWith(SimpleEventDetectorVO.POINT_EVENT_DETECTOR_PREFIX))

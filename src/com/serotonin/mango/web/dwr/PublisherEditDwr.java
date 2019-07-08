@@ -61,7 +61,7 @@ public class PublisherEditDwr extends BaseDwr {
     }
 
     public DwrResponseI18n initSender() {
-        List<DataPointVO> allPoints = DaoInstances.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> allPoints = DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false);
 
         // Remove image points
         Iterator<DataPointVO> iter = allPoints.iterator();

@@ -124,7 +124,7 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 	public void validate(DwrResponseI18n response) {
 		if (StringUtils.isEmpty(xid))
 			response.addContextualMessage("xid", "validate.required");
-		else if (!DaoInstances.getDataSourceDao().isXidUnique(xid, id))
+		else if (!DaoInstances.DataSourceDao.isXidUnique(xid, id))
 			response.addContextualMessage("xid", "validate.xidUsed");
 		else if (StringUtils.isLengthGreaterThan(xid, 50))
 			response.addContextualMessage("xid", "validate.notLongerThan", 50);
@@ -163,14 +163,14 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 	public void jsonDeserialize(JsonReader reader, JsonObject object)
 			throws JsonException {
 		String username = object.getString("user");
-		User user = DaoInstances.getUserDao().getUser(username);
+		User user = DaoInstances.UserDao.getUser(username);
 		this.userId = user.getId();
 	}
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		map.put("type", getType().name());
-		map.put("user", DaoInstances.getUserDao().getUser(userId).getUsername());
+		map.put("user", DaoInstances.UserDao.getUser(userId).getUsername());
 	}
 
 	public static ScriptVO<?> createScriptVO(int typeId) {

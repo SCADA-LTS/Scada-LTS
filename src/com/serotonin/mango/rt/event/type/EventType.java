@@ -256,7 +256,7 @@ abstract public class EventType implements JsonSerializable {
         String xid = json.getString(name);
         if (xid == null)
             throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
-        CompoundEventDetectorVO ced = DaoInstances.getCompoundEventDetectorDao().getCompoundEventDetector(xid);
+        CompoundEventDetectorVO ced = DaoInstances.CompoundEventDetectorDao.getCompoundEventDetector(xid);
         if (ced == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return ced.getId();
@@ -266,7 +266,7 @@ abstract public class EventType implements JsonSerializable {
         String xid = json.getString(name);
         if (xid == null)
             throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
-        ScheduledEventVO se = DaoInstances.getScheduledEventDao().getScheduledEvent(xid);
+        ScheduledEventVO se = DaoInstances.ScheduledEventDao.getScheduledEvent(xid);
         if (se == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return se.getId();
@@ -276,7 +276,7 @@ abstract public class EventType implements JsonSerializable {
         String xid = json.getString(name);
         if (xid == null)
             throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
-        DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(xid);
+        DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(xid);
         if (dp == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return dp.getId();
@@ -290,7 +290,7 @@ abstract public class EventType implements JsonSerializable {
         String pedXid = json.getString(pedName);
         if (pedXid == null)
             throw new LocalizableJsonException("emport.error.eventType.missing.reference", pedName);
-        int id = DaoInstances.getDataPointDao().getDetectorId(pedXid, dpId);
+        int id = DaoInstances.DataPointDao.getDetectorId(pedXid, dpId);
         if (id == -1)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", pedName, pedXid);
 
@@ -301,7 +301,7 @@ abstract public class EventType implements JsonSerializable {
         String xid = json.getString(name);
         if (xid == null)
             throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
-        DataSourceVO<?> ds = DaoInstances.getDataSourceDao().getDataSource(xid);
+        DataSourceVO<?> ds = DaoInstances.DataSourceDao.getDataSource(xid);
         if (ds == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return ds;
@@ -311,7 +311,7 @@ abstract public class EventType implements JsonSerializable {
         String xid = json.getString(name);
         if (xid == null)
             throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
-        PublisherVO<?> pb = DaoInstances.getPublisherDao().getPublisher(xid);
+        PublisherVO<?> pb = DaoInstances.PublisherDao.getPublisher(xid);
         if (pb == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return pb;
@@ -321,7 +321,7 @@ abstract public class EventType implements JsonSerializable {
         String xid = json.getString(name);
         if (xid == null)
             throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
-        MaintenanceEventVO me = DaoInstances.getMaintenanceEventDao().getMaintenanceEvent(xid);
+        MaintenanceEventVO me = DaoInstances.MaintenanceEventDao.getMaintenanceEvent(xid);
         if (me == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return me.getId();

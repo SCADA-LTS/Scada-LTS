@@ -121,14 +121,14 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
                 return null;
 
             if (from == -1 && to == -1) {
-                LongPair sae = DaoInstances.getPointValueDao().getStartAndEndTime(dataPointIds);
+                LongPair sae = DaoInstances.PointValueDao.getStartAndEndTime(dataPointIds);
                 from = sae.getL1();
                 to = sae.getL2();
             }
             else if (from == -1)
-                from = DaoInstances.getPointValueDao().getStartTime(dataPointIds);
+                from = DaoInstances.PointValueDao.getStartTime(dataPointIds);
             else if (to == -1)
-                to = DaoInstances.getPointValueDao().getEndTime(dataPointIds);
+                to = DaoInstances.PointValueDao.getEndTime(dataPointIds);
 
             for (PointDataRetriever pdr : tasks.getTasks())
                 pdr.setRange(from, to);
@@ -177,7 +177,7 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
 
         @Override
         public void run() {
-            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
+            DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(dataPointId);
             try {
                 if (colour == null && !StringUtils.isEmpty(dp.getChartColour()))
                     colour = ColorUtils.toColor(dp.getChartColour());
@@ -203,8 +203,8 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
 
          // Get the data.
             //TODO rewrite seroUtils
-            //DaoInstances.getPointValueDao().getPointValuesBetween(dataPointId, from, to, this);
-            DaoInstances.getPointValueDao().getPointValuesBetween(dataPointId, from, to);
+            //DaoInstances.PointValueDao.getPointValuesBetween(dataPointId, from, to, this);
+            DaoInstances.PointValueDao.getPointValuesBetween(dataPointId, from, to);
         }
 
         @Override

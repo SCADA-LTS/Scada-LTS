@@ -38,7 +38,7 @@ public class EventsController  {
     protected PaginatedData getData(HttpServletRequest request, PagingDataForm paging, BindException errors)
             throws Exception {
         ResourceBundle bundle = ControllerUtils.getResourceBundle(request);
-        List<EventInstance> data = DaoInstances.getEventDao().getPendingEvents(Common.getUser(request).getId());
+        List<EventInstance> data = DaoInstances.EventDao.getPendingEvents(Common.getUser(request).getId());
         sortData(bundle, data, paging);
         return new PaginatedData<EventInstance>(data, data.size());
     }

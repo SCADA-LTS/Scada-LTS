@@ -157,10 +157,10 @@ public class VersionCheck extends TimerTask {
 		postMethod.addParameter("instanceVersion", Common.getVersion());
 
 		StringBuilder datasourceTypes = new StringBuilder();
-		for (DataSourceVO<?> config : DaoInstances.getDataSourceDao().getDataSources()) {
+		for (DataSourceVO<?> config : DaoInstances.DataSourceDao.getDataSources()) {
 			if (config.isEnabled()) {
 				int points = 0;
-				for (DataPointVO point : DaoInstances.getDataPointDao().getDataPoints(
+				for (DataPointVO point : DaoInstances.DataPointDao.getDataPoints(
 						config.getId(), null)) {
 					if (point.isEnabled())
 						points++;
@@ -175,7 +175,7 @@ public class VersionCheck extends TimerTask {
 		postMethod.addParameter("datasourceTypes", datasourceTypes.toString());
 
 		StringBuilder publisherTypes = new StringBuilder();
-		for (PublisherVO<?> config : DaoInstances.getPublisherDao().getPublishers()) {
+		for (PublisherVO<?> config : DaoInstances.PublisherDao.getPublishers()) {
 			if (config.isEnabled()) {
 				if (publisherTypes.length() > 0)
 					publisherTypes.append(',');

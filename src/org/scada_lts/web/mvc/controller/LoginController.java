@@ -73,7 +73,7 @@ public class LoginController {
         	errors.add("login.validation.noPassword");
         
         if (errors.isEmpty()){
-	        User user = DaoInstances.getUserDao().getUser(login.getUsername());
+	        User user = DaoInstances.UserDao.getUser(login.getUsername());
 	        if (user == null)
 	            errors.add("login.validation.noSuchUser");
 	        else if (user.isDisabled())
@@ -114,10 +114,10 @@ public class LoginController {
                 LOG.debug("User is already logged in, not relogging in");
         }
         else {
-            user = DaoInstances.getUserDao().getUser(username);
+            user = DaoInstances.UserDao.getUser(username);
 
             // Update the last login time.
-            DaoInstances.getUserDao().recordLogin(user.getId());
+            DaoInstances.UserDao.recordLogin(user.getId());
 
             // Add the user object to the session. This indicates to the rest
             // of the application whether the user is logged in or not.

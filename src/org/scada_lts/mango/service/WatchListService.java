@@ -90,7 +90,7 @@ public class WatchListService implements MangoWatchList {
 		List<DataPointVO> points = watchList.getPointList();
 		// Get the points for each of the watch lists.
 		for (Integer pointId : watchListDAO.getPointsWatchList(watchList.getId()))
-			points.add(DaoInstances.getDataPointDao().getDataPoint(pointId));
+			points.add(DaoInstances.DataPointDao.getDataPoint(pointId));
 
 		setWatchListUsers(watchList);
 	}

@@ -42,7 +42,7 @@ public class CustomViewInitTag extends TagSupport {
     @Override
     public int doStartTag() throws JspException {
         // Check the user id.
-        User user = DaoInstances.getUserDao().getUser(username);
+        User user = DaoInstances.UserDao.getUser(username);
         if (user == null)
             throw new JspException("Username '" + username + "' not found");
         if (user.isDisabled())

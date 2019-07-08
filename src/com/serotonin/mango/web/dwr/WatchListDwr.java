@@ -55,9 +55,9 @@ public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {
 		Map<String, Object> data = new HashMap<String, Object>();
 
-		PointHierarchy ph = DaoInstances.getDataPointDao().getPointHierarchy().copyFoldersOnly();
+		PointHierarchy ph = DaoInstances.DataPointDao.getPointHierarchy().copyFoldersOnly();
 		User user = Common.getUser();
-		List<DataPointVO> points = DaoInstances.getDataPointDao().getDataPoints(
+		List<DataPointVO> points = DaoInstances.DataPointDao.getDataPoints(
 				DataPointExtendedNameComparator.instance, false);
 		for (DataPointVO point : points) {
 			if (Permissions.hasDataPointReadPermission(user, point))
@@ -66,7 +66,7 @@ public class WatchListDwr extends BaseDwr {
 		}
 
 		ph.parseEmptyFolders();
-		WatchList watchList = DaoInstances.getWatchListDao().getWatchList(user
+		WatchList watchList = DaoInstances.WatchListDao.getWatchList(user
 				.getSelectedWatchList());
 		prepareWatchList(watchList, user);
 		user.setWatchList(watchList);
@@ -118,7 +118,7 @@ public class WatchListDwr extends BaseDwr {
 		WatchList watchList = user.getWatchList();
 		Permissions.ensureWatchListEditPermission(user, watchList);
 		watchList.setName(name);
-		DaoInstances.getWatchListDao().saveWatchList(watchList);
+		DaoInstances.WatchListDao.saveWatchList(watchList);
 	}
 
 	public IntValuePair addNewWatchList(int copyId) {
@@ -130,21 +130,21 @@ public class WatchListDwr extends BaseDwr {
 			watchList = new WatchList();
 			watchList.setName(getMessage("common.newName"));
 		} else {
-			watchList = DaoInstances.getWatchListDao().getWatchList(user
+			watchList = DaoInstances.WatchListDao.getWatchList(user
 					.getSelectedWatchList());
 			watchList.setId(Common.NEW_ID);
 			watchList.setName(getMessage(new LocalizableMessage(
 					"common.copyPrefix", watchList.getName())));
 		}
 		watchList.setUserId(user.getId());
-		watchList.setXid(DaoInstances.getWatchListDao().generateUniqueXid());
+		watchList.setXid(DaoInstances.WatchListDao.generateUniqueXid());
 
-		DaoInstances.getWatchListDao().saveWatchList(watchList);
+		DaoInstances.WatchListDao.saveWatchList(watchList);
 
 		user.setSelectedWatchList(watchList.getId());
 		user.setWatchList(watchList);
 
-		DaoInstances.getWatchListDao().saveSelectedWatchList(user.getId(), watchList.getId());
+		DaoInstances.WatchListDao.saveSelectedWatchList(user.getId(), watchList.getId());
 
 		return new IntValuePair(watchList.getId(), watchList.getName());
 	}
@@ -154,10 +154,10 @@ public class WatchListDwr extends BaseDwr {
 
 		WatchList watchList = user.getWatchList();
 		if (watchList == null || watchListId != watchList.getId())
-			watchList = DaoInstances.getWatchListDao().getWatchList(watchListId);
+			watchList = DaoInstances.WatchListDao.getWatchList(watchListId);
 
 		if (watchList == null
-				|| DaoInstances.getWatchListDao().getWatchLists(user.getId(),
+				|| DaoInstances.WatchListDao.getWatchLists(user.getId(),
 						user.getUserProfile()).size() == 1)
 			// Only one watch list left. Leave it.
 			return;
@@ -165,21 +165,21 @@ public class WatchListDwr extends BaseDwr {
 		// Allow the delete.
 		if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER
 				|| user.isAdmin())
-			DaoInstances.getWatchListDao().deleteWatchList(watchListId);
+			DaoInstances.WatchListDao.deleteWatchList(watchListId);
 		else
-			DaoInstances.getWatchListDao().removeUserFromWatchList(watchListId, user.getId());
+			DaoInstances.WatchListDao.removeUserFromWatchList(watchListId, user.getId());
 	}
 
 	public Map<String, Object> setSelectedWatchList(int watchListId) {
 		User user = Common.getUser();
 
-		WatchList watchList = DaoInstances.getWatchListDao().getWatchList(watchListId);
+		WatchList watchList = DaoInstances.WatchListDao.getWatchList(watchListId);
 
 //		if (!user.isAdmin())
 //			Permissions.ensureWatchListPermission(user, watchList);
 		prepareWatchList(watchList, user);
 
-		DaoInstances.getWatchListDao().saveSelectedWatchList(user.getId(), watchList.getId());
+		DaoInstances.WatchListDao.saveSelectedWatchList(user.getId(), watchList.getId());
 		user.setSelectedWatchList(watchListId);
 
 		Map<String, Object> data = getWatchListData(user, watchList);
@@ -195,7 +195,7 @@ public class WatchListDwr extends BaseDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 		User user = Common.getUser();
-		DataPointVO point = DaoInstances.getDataPointDao().getDataPoint(pointId);
+		DataPointVO point = DaoInstances.DataPointDao.getDataPoint(pointId);
 		if (point == null)
 			return null;
 		WatchList watchList = user.getWatchList();
@@ -206,9 +206,9 @@ public class WatchListDwr extends BaseDwr {
 
 		// Add it to the watch list.
 		watchList.getPointList().add(point);
-		DaoInstances.getWatchListDao().saveWatchList(watchList);
+		DaoInstances.WatchListDao.saveWatchList(watchList);
 		updateSetPermission(point, watchList.getUserAccess(user),
-				DaoInstances.getUserDao().getUser(watchList.getUserId()));
+				DaoInstances.UserDao.getUser(watchList.getUserId()));
 
 		// Return the watch list state for it.
 		return createWatchListState(request, point,
@@ -227,7 +227,7 @@ public class WatchListDwr extends BaseDwr {
 				break;
 			}
 		}
-		DaoInstances.getWatchListDao().saveWatchList(watchList);
+		DaoInstances.WatchListDao.saveWatchList(watchList);
 	}
 
 	public void moveUp(int pointId) {
@@ -246,7 +246,7 @@ public class WatchListDwr extends BaseDwr {
 			}
 		}
 
-		DaoInstances.getWatchListDao().saveWatchList(watchList);
+		DaoInstances.WatchListDao.saveWatchList(watchList);
 	}
 
 	public void moveDown(int pointId) {
@@ -265,7 +265,7 @@ public class WatchListDwr extends BaseDwr {
 			}
 		}
 
-		DaoInstances.getWatchListDao().saveWatchList(watchList);
+		DaoInstances.WatchListDao.saveWatchList(watchList);
 	}
 
 	/**
@@ -402,7 +402,7 @@ public class WatchListDwr extends BaseDwr {
 		}
 
 		access = watchList.getUserAccess(user);
-		User owner = DaoInstances.getUserDao().getUser(watchList.getUserId());
+		User owner = DaoInstances.UserDao.getUser(watchList.getUserId());
 		for (DataPointVO point : watchList.getPointList())
 			updateSetPermission(point, access, owner);
 	}
@@ -446,7 +446,7 @@ public class WatchListDwr extends BaseDwr {
 			watchList.getWatchListUsers().add(su);
 		}
 
-		DaoInstances.getWatchListDao().saveWatchList(watchList);
+		DaoInstances.WatchListDao.saveWatchList(watchList);
 
 		return watchList.getWatchListUsers();
 	}
@@ -462,7 +462,7 @@ public class WatchListDwr extends BaseDwr {
 			}
 		}
 
-		DaoInstances.getWatchListDao().saveWatchList(watchList);
+		DaoInstances.WatchListDao.saveWatchList(watchList);
 
 		return watchList.getWatchListUsers();
 	}

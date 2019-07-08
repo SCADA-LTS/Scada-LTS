@@ -64,7 +64,7 @@ public class CustomView {
                 return dp;
         }
 
-        DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(xid);
+        DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(xid);
         if (dp != null) {
             // Check permissions.
             Permissions.ensureDataPointSetPermission(authorityUser, dp);

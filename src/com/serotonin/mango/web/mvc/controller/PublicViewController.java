@@ -44,7 +44,7 @@ public class PublicViewController extends ParameterizableViewController {
         View view = null;
         if (vid != null) {
             try {
-                view = DaoInstances.getViewDao().getView(Integer.parseInt(vid));
+                view = DaoInstances.ViewDao.getView(Integer.parseInt(vid));
             }
             catch (NumberFormatException e) { /* no op */
             }
@@ -52,11 +52,11 @@ public class PublicViewController extends ParameterizableViewController {
         else {
             String name = request.getParameter("viewName");
             if (name != null)
-                view = DaoInstances.getViewDao().getView(name);
+                view = DaoInstances.ViewDao.getView(name);
             else {
                 String xid = request.getParameter("viewXid");
                 if (xid != null)
-                    view = DaoInstances.getViewDao().getViewByXid(xid);
+                    view = DaoInstances.ViewDao.getViewByXid(xid);
             }
         }
 

@@ -139,7 +139,7 @@ public class ViewDwr extends BaseDwr {
 		View view = null;
 
 		try {
-			view = DaoInstances.getViewDao().getView(Integer.parseInt(viewId));
+			view = DaoInstances.ViewDao.getView(Integer.parseInt(viewId));
 		}
 		catch (Exception e){
 			//we don't have view in db , so get from user from session
@@ -154,19 +154,19 @@ public class ViewDwr extends BaseDwr {
 	public List<IntValuePair> getViews() {
 		User user = Common.getUser();
 
-		List<IntValuePair> views = DaoInstances.getViewDao().getViewNames(user.getId(), user.getUserProfile());
+		List<IntValuePair> views = DaoInstances.ViewDao.getViewNames(user.getId(), user.getUserProfile());
 
 		return views;
 	}
 
 	@MethodFilter
 	public List<ScriptVO<?>> getScripts() {
-		return DaoInstances.getScriptDao().getScripts();
+		return DaoInstances.ScriptDao.getScripts();
 	}
 
 	@MethodFilter
 	public List<FlexProject> getFlexProjects() {
-		return DaoInstances.getFlexProjectDao().getFlexProjects();
+		return DaoInstances.FlexProjectDao.getFlexProjects();
 	}
 
 	/**
@@ -378,7 +378,7 @@ public class ViewDwr extends BaseDwr {
 	public void deleteViewShare() {
 		User user = Common.getUser();
 		user.setView(getViewFromContext());
-		DaoInstances.getViewDao().removeUserFromView(user.getView().getId(), user.getId());
+		DaoInstances.ViewDao.removeUserFromView(user.getView().getId(), user.getId());
 	}
 
 	@MethodFilter
@@ -409,7 +409,7 @@ public class ViewDwr extends BaseDwr {
 		result.put("componentTypes", components);
 
 		// Available points
-		List<DataPointVO> allPoints = DaoInstances.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+		List<DataPointVO> allPoints = DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false);
 		List<DataPointBean> availablePoints = new ArrayList<DataPointBean>();
 		for (DataPointVO dataPoint : allPoints) {
 			if (Permissions.hasDataPointReadPermission(user, dataPoint))
@@ -449,7 +449,7 @@ public class ViewDwr extends BaseDwr {
 		PointComponent pc = (PointComponent) getViewComponent(pointComponentId);
 		User user = Common.getUser();
 
-		DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
+		DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(dataPointId);
 		if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
 			response.addContextualMessage("settingsPointList", "validate.required");
 		else {
@@ -936,7 +936,7 @@ public class ViewDwr extends BaseDwr {
 				// no op
 			}
 
-			DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
+			DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(dataPointId);
 
 			if (dp == null || !Permissions.hasDataPointReadPermission(user, dp))
 				c.setDataPoint(kvp.getKey(), null);
@@ -973,7 +973,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	public boolean executeScript(String xid) {
-		ScriptVO<?> script = DaoInstances.getScriptDao().getScript(xid);
+		ScriptVO<?> script = DaoInstances.ScriptDao.getScript(xid);
 
 		try {
 			if (script != null) {
@@ -1003,7 +1003,7 @@ public class ViewDwr extends BaseDwr {
 
 			List<DataPointVO> dps = new ArrayList<DataPointVO>();
 			for (Integer dpId : dataPoints) {
-				DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dpId);
+				DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(dpId);
 				dps.add(dp);
 			}
 

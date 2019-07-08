@@ -68,7 +68,7 @@ abstract public class BaseDwr {
     protected static EventDao EVENT_DAO;
 
     public static void initialize() {
-        EVENT_DAO = DaoInstances.getEventDao();
+        EVENT_DAO = DaoInstances.EventDao;
     }
 
     protected ResourceBundle changeSnippetMap = ResourceBundle.getBundle("changeSnippetMap");
@@ -175,7 +175,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public int setPoint(int pointId, int componentId, String valueStr) {
         User user = Common.getUser();
-        DataPointVO point = DaoInstances.getDataPointDao().getDataPoint(pointId);
+        DataPointVO point = DaoInstances.DataPointDao.getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointSetPermission(user, point);
@@ -200,7 +200,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public void forcePointRead(int pointId) {
         User user = Common.getUser();
-        DataPointVO point = DaoInstances.getDataPointDao().getDataPoint(pointId);
+        DataPointVO point = DaoInstances.DataPointDao.getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointReadPermission(user, point);
@@ -229,7 +229,7 @@ abstract public class BaseDwr {
         if (typeId == UserComment.TYPE_EVENT)
             EVENT_DAO.insertEventComment(referenceId, c);
         else if (typeId == UserComment.TYPE_POINT)
-            DaoInstances.getUserDao().insertUserComment(UserComment.TYPE_POINT, referenceId, c);
+            DaoInstances.UserDao.insertUserComment(UserComment.TYPE_POINT, referenceId, c);
         else
             throw new ShouldNeverHappenException("Invalid comment type: " + typeId);
 
@@ -239,7 +239,7 @@ abstract public class BaseDwr {
     protected List<DataPointBean> getReadablePoints() {
         User user = Common.getUser();
 
-        List<DataPointVO> points = DaoInstances.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> points = DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false);
         if (!Permissions.hasAdmin(user)) {
             List<DataPointVO> userPoints = new ArrayList<DataPointVO>();
             for (DataPointVO dp : points) {
@@ -306,7 +306,7 @@ abstract public class BaseDwr {
 
     protected List<User> getShareUsers(User excludeUser) {
         List<User> users = new ArrayList<User>();
-        for (User u : DaoInstances.getUserDao().getUsers()) {
+        for (User u : DaoInstances.UserDao.getUsers()) {
             if (u.getId() != excludeUser.getId())
                 users.add(u);
         }

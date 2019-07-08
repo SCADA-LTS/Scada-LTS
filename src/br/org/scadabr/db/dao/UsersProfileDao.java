@@ -152,9 +152,9 @@ public class UsersProfileDao extends BaseDao {
 				Integer.class);
 
 		for (Integer userId : usersIds) {
-			User profileUser = DaoInstances.getUserDao().getUser(userId);
+			User profileUser = DaoInstances.UserDao.getUser(userId);
 			profile.apply(profileUser);
-			DaoInstances.getUserDao().saveUser(profileUser);
+			DaoInstances.UserDao.saveUser(profileUser);
 			this.updateUsersProfile(profile);
 		}
 
@@ -178,11 +178,11 @@ public class UsersProfileDao extends BaseDao {
 		}
 
 		for (WatchList watchlist : profile.retrieveWatchlists()) {
-			DaoInstances.getWatchListDao().saveWatchList(watchlist);
+			DaoInstances.WatchListDao.saveWatchList(watchlist);
 		}
 
 		for (View view : profile.retrieveViews()) {
-			DaoInstances.getViewDao().saveView(view);
+			DaoInstances.ViewDao.saveView(view);
 		}
 
 		ListIterator<UsersProfileVO> iterator = currentProfileList
@@ -267,7 +267,7 @@ public class UsersProfileDao extends BaseDao {
 					}
 				}));
 
-		List<WatchList> allwatchlists = DaoInstances.getWatchListDao().getWatchLists();
+		List<WatchList> allwatchlists = DaoInstances.WatchListDao.getWatchLists();
 		profile.defineWatchlists(allwatchlists);
 	}
 
@@ -302,7 +302,7 @@ public class UsersProfileDao extends BaseDao {
 						return a;
 					}
 				}));
-		profile.defineViews(DaoInstances.getViewDao().getViews());
+		profile.defineViews(DaoInstances.ViewDao.getViews());
 	}
 
 	private void populateUserProfilePermissions(List<UsersProfileVO> profiles) {
@@ -414,13 +414,13 @@ public class UsersProfileDao extends BaseDao {
 				new Object[] { user.getId() });
 
 		// Add user to watchLists
-		for (WatchList wl : DaoInstances.getWatchListDao().getWatchLists()) {
-			DaoInstances.getWatchListDao().removeUserFromWatchList(wl.getId(), user.getId());
+		for (WatchList wl : DaoInstances.WatchListDao.getWatchLists()) {
+			DaoInstances.WatchListDao.removeUserFromWatchList(wl.getId(), user.getId());
 		}
 
 		// Remove user from Views
-		for (View view : DaoInstances.getViewDao().getViews()) {
-			DaoInstances.getViewDao().removeUserFromView(view.getId(), user.getId());
+		for (View view : DaoInstances.ViewDao.getViews()) {
+			DaoInstances.ViewDao.removeUserFromView(view.getId(), user.getId());
 		}
 
 		user.resetUserProfile();
@@ -431,13 +431,13 @@ public class UsersProfileDao extends BaseDao {
 				new Object[] { user.getId() });
 
 		// Remove user from watchLists
-		for (WatchList wl : DaoInstances.getWatchListDao().getWatchLists()) {
-			DaoInstances.getWatchListDao().removeUserFromWatchList(wl.getId(), user.getId());
+		for (WatchList wl : DaoInstances.WatchListDao.getWatchLists()) {
+			DaoInstances.WatchListDao.removeUserFromWatchList(wl.getId(), user.getId());
 		}
 
 		// Remove user from Views
-		for (View view : DaoInstances.getViewDao().getViews()) {
-			DaoInstances.getViewDao().removeUserFromView(view.getId(), user.getId());
+		for (View view : DaoInstances.ViewDao.getViews()) {
+			DaoInstances.ViewDao.removeUserFromView(view.getId(), user.getId());
 		}
 
 		user.resetUserProfile();
@@ -464,7 +464,7 @@ public class UsersProfileDao extends BaseDao {
 
 		// Reset user profile
 		for (Integer userId : usersIds) {
-			this.resetUserProfile(DaoInstances.getUserDao().getUser(userId));
+			this.resetUserProfile(DaoInstances.UserDao.getUser(userId));
 		}
 
 		getTransactionTemplate().execute(

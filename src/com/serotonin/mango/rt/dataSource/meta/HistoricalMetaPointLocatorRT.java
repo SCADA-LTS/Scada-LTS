@@ -28,9 +28,9 @@ public class HistoricalMetaPointLocatorRT extends MetaPointLocatorRT {
 
         context = new HashMap<String, IDataPoint>();
         for (IntValuePair contextEntry : vo.getContext()) {
-            DataPointVO cvo = DaoInstances.getDataPointDao().getDataPoint(contextEntry.getKey());
+            DataPointVO cvo = DaoInstances.DataPointDao.getDataPoint(contextEntry.getKey());
             HistoricalDataPoint point = new HistoricalDataPoint(cvo.getId(), cvo.getPointLocator().getDataTypeId(),
-                    timer, DaoInstances.getPointValueDao());
+                    timer, DaoInstances.PointValueDao);
             context.put(contextEntry.getValue(), point);
         }
     }

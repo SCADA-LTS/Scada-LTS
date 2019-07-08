@@ -92,7 +92,7 @@ public class ViewService {
 		List<IdName> allPermissions;
 		allPermissions = viewDAO.getViewNames(userId, userProfileId);
 
-		User user = DaoInstances.getUserDao().getUser(userId);
+		User user = DaoInstances.UserDao.getUser(userId);
 
 		for (Iterator<IdName> iterator = allPermissions.iterator(); iterator.hasNext();) {
 

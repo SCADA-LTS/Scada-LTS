@@ -49,7 +49,7 @@ public class ViewsController extends ParameterizableViewController {
 		List<IntValuePair> views;
 
 		if (user.isAdmin()) { // Admin user has access to all views
-			views = DaoInstances.getViewDao().getAllViewNames();
+			views = DaoInstances.ViewDao.getAllViewNames();
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
 			};
@@ -57,7 +57,7 @@ public class ViewsController extends ParameterizableViewController {
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
-			views = DaoInstances.getViewDao().getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
+			views = DaoInstances.ViewDao.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
 
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
@@ -71,13 +71,13 @@ public class ViewsController extends ParameterizableViewController {
 		View currentView = null;
 		String vid = request.getParameter("viewId");
 		try {
-			currentView = DaoInstances.getViewDao().getView(Integer.parseInt(vid));
+			currentView = DaoInstances.ViewDao.getView(Integer.parseInt(vid));
 		} catch (NumberFormatException e) {
 			// no op
 		}
 
 		if (currentView == null && views.size() > 0)
-			currentView = DaoInstances.getViewDao().getView(views.get(0).getKey());
+			currentView = DaoInstances.ViewDao.getView(views.get(0).getKey());
 
 		if (currentView != null) {
 			if (!user.isAdmin())

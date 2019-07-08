@@ -19,7 +19,7 @@ public class ViewAccess extends Permission implements JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("viewXid", DaoInstances.getViewDao().getView(id).getXid());
+		map.put("viewXid", DaoInstances.ViewDao.getView(id).getXid());
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}
 
@@ -29,7 +29,7 @@ public class ViewAccess extends Permission implements JsonSerializable {
 		String xid = json.getString("viewXid");
 		int ImportedPermission = ACCESS_CODES.getId(json
 				.getString("permission"));
-		View view = DaoInstances.getViewDao().getViewByXid(xid);
+		View view = DaoInstances.ViewDao.getViewByXid(xid);
 		int importedId = view.getId();
 		setId(importedId);
 		setPermission(ImportedPermission);

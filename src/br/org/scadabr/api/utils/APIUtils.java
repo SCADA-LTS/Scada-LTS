@@ -636,7 +636,7 @@ public final class APIUtils {
 
 	public static String toCondition(PointEventDetectorVO pointEvent) {
 
-		DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(DaoInstances.getDataPointDao()
+		DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(DaoInstances.DataPointDao
 				.getDataPointIdFromDetectorId(pointEvent.getId()));
 
 		String config = "[" + dp.getName() + " - ";
@@ -785,7 +785,7 @@ public final class APIUtils {
 			int pointDetectorId = eventInstance.getEventType()
 					.getReferenceId2();
 
-			for (PointEventDetectorVO pointEventDetectorVO : DaoInstances.getDataPointDao()
+			for (PointEventDetectorVO pointEventDetectorVO : DaoInstances.DataPointDao
 					.getDataPoint(dataPointId).getEventDetectors()) {
 				if (pointEventDetectorVO.getId() == pointDetectorId) {
 
@@ -801,13 +801,13 @@ public final class APIUtils {
 			event.setEventType(EventType.POINT_CONDITION_EVENT);
 			int compoundId = eventInstance.getEventType()
 					.getCompoundEventDetectorId();
-			event.setAlias(DaoInstances.getCompoundEventDetectorDao()
+			event.setAlias(DaoInstances.CompoundEventDetectorDao
 					.getCompoundEventDetector(compoundId).getName());
 
 		} else if (eventInstance.getEventType().getScheduleId() != -1) {
 			event.setEventType(EventType.SCHEDULED_EVENT);
 			int scheduleId = eventInstance.getEventType().getScheduleId();
-			event.setAlias(DaoInstances.getScheduledEventDao()
+			event.setAlias(DaoInstances.ScheduledEventDao
 					.getScheduledEvent(scheduleId).getAlias());
 		} else {
 			event.setEventType(EventType.SYSTEM_EVENT);

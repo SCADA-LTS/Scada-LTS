@@ -89,14 +89,14 @@ public class ViewEditController {
         User user = Common.getUser(request);
         if (viewIdStr != null && !viewIdStr.equals(FinalValuesForControllers.EMPTY_STRING)) {
             // An existing view.
-            view = DaoInstances.getViewDao().getView(Integer.parseInt(viewIdStr));
+            view = DaoInstances.ViewDao.getView(Integer.parseInt(viewIdStr));
             Permissions.ensureViewEditPermission(user, view);
         } else {
             // A new view.
             view = new View();
             view.setId(Common.NEW_ID);
             view.setUserId(user.getId());
-            view.setXid(DaoInstances.getViewDao().generateUniqueXid());
+            view.setXid(DaoInstances.ViewDao.generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
         ScriptSession.addNewEditedObjectForScriptSession(
@@ -162,7 +162,7 @@ public class ViewEditController {
         }
         
         view.setUserId(Common.getUser(request).getId());
-        DaoInstances.getViewDao().saveView(view);
+        DaoInstances.ViewDao.saveView(view);
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
@@ -182,7 +182,7 @@ public class ViewEditController {
         View view = unblockViewFromContext(request);
         form.setView(view);
 
-        DaoInstances.getViewDao().removeView(form.getView().getId());
+        DaoInstances.ViewDao.removeView(form.getView().getId());
         return getSuccessRedirectView(null);
     }
 

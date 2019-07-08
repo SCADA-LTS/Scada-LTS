@@ -54,10 +54,10 @@ public class MobileWatchListController extends WatchListController {
         try {
             int watchListId = Integer.parseInt(request.getParameter("watchListId"));
 
-            WatchList watchList = DaoInstances.getWatchListDao().getWatchList(watchListId);
+            WatchList watchList = DaoInstances.WatchListDao.getWatchList(watchListId);
 //            Permissions.ensureWatchListPermission(user, watchList);
             user.setSelectedWatchList(watchListId);
-            DaoInstances.getWatchListDao().saveSelectedWatchList(user.getId(), watchList.getId());
+            DaoInstances.WatchListDao.saveSelectedWatchList(user.getId(), watchList.getId());
         }
         catch (NumberFormatException e) {
             // no op
@@ -71,7 +71,7 @@ public class MobileWatchListController extends WatchListController {
         // Get the point data.
         List<MobileWatchListState> states = new ArrayList<MobileWatchListState>();
         RuntimeManager rtm = Common.ctx.getRuntimeManager();
-        for (DataPointVO pointVO : DaoInstances.getWatchListDao().getWatchList(watchListId).getPointList()) {
+        for (DataPointVO pointVO : DaoInstances.WatchListDao.getWatchList(watchListId).getPointList()) {
             MobileWatchListState state = createState(request, rtm, pointVO);
             states.add(state);
         }

@@ -16,22 +16,22 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 public class ScriptsDwr extends BaseDwr {
 
 	public List<DataPointVO> getPoints() {
-		return DaoInstances.getDataPointDao().getDataPoints(
+		return DaoInstances.DataPointDao.getDataPoints(
 				DataPointExtendedNameComparator.instance, false);
 	}
 
 	public List<ScriptVO<?>> getScripts() {
-		return DaoInstances.getScriptDao().getScripts();
+		return DaoInstances.ScriptDao.getScripts();
 	}
 
 	public ScriptVO<?> getScript(int id) {
 		if (id == Common.NEW_ID) {
 			ContextualizedScriptVO vo = new ContextualizedScriptVO();
-			vo.setXid(DaoInstances.getScriptDao().generateUniqueXid());
+			vo.setXid(DaoInstances.ScriptDao.generateUniqueXid());
 			return vo;
 		}
 
-		return DaoInstances.getScriptDao().getScript(id);
+		return DaoInstances.ScriptDao.getScript(id);
 	}
 
 	public DwrResponseI18n saveScript(int id, String xid, String name,
@@ -52,18 +52,18 @@ public class ScriptsDwr extends BaseDwr {
 		vo.validate(response);
 
 		if (!response.getHasMessages())
-			DaoInstances.getScriptDao().saveScript(vo);
+			DaoInstances.ScriptDao.saveScript(vo);
 
 		response.addData("seId", vo.getId());
 		return response;
 	}
 
 	public void deleteScript(int scriptId) {
-		DaoInstances.getScriptDao().deleteScript(scriptId);
+		DaoInstances.ScriptDao.deleteScript(scriptId);
 	}
 
 	public boolean executeScript(int scriptId) {
-		ScriptVO<?> script = DaoInstances.getScriptDao().getScript(scriptId);
+		ScriptVO<?> script = DaoInstances.ScriptDao.getScript(scriptId);
 
 		try {
 			if (script != null) {

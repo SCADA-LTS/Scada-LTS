@@ -100,7 +100,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				// Check if a monitor point already exists.
 				boolean found = false;
 
-				List<DataPointVO> points = DaoInstances.getDataPointDao().getDataPoints(
+				List<DataPointVO> points = DaoInstances.DataPointDao.getDataPoints(
 						vo.getId(), null);
 				for (DataPointVO dp : points) {
 					ModbusPointLocatorVO loc = dp.getPointLocator();
@@ -113,7 +113,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				if (!found) {
 					// A monitor was not found, so create one
 					DataPointVO dp = new DataPointVO();
-					dp.setXid(DaoInstances.getDataPointDao().generateUniqueXid());
+					dp.setXid(DaoInstances.DataPointDao.generateUniqueXid());
 					dp.setName(Common.getMessage(
 							"dsEdit.modbus.monitorPointName", slaveId));
 					dp.setDataSourceId(vo.getId());

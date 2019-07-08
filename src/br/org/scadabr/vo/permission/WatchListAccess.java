@@ -19,7 +19,7 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("watchlistXid", DaoInstances.getWatchListDao().getWatchList(id).getXid());
+		map.put("watchlistXid", DaoInstances.WatchListDao.getWatchList(id).getXid());
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}
 
@@ -29,7 +29,7 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 		String xid = json.getString("watchlistXid");
 		int ImportedPermission = ACCESS_CODES.getId(json
 				.getString("permission"));
-		WatchList watchlist = DaoInstances.getWatchListDao().getWatchList(xid);
+		WatchList watchlist = DaoInstances.WatchListDao.getWatchList(xid);
 		int importedId = watchlist.getId();
 		setId(importedId);
 		setPermission(ImportedPermission);

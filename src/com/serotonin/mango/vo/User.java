@@ -458,7 +458,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 				for (JsonValue jv : jsonDataSources.getElements()) {
 					String xid = jv.toJsonString().getValue();
-					DataSourceVO<?> ds = DaoInstances.getDataSourceDao().getDataSource(xid);
+					DataSourceVO<?> ds = DaoInstances.DataSourceDao.getDataSource(xid);
 					if (ds == null)
 						throw new LocalizableJsonException(
 								"emport.error.missingSource", xid);
@@ -472,7 +472,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 				// to data source access.
 				List<Integer> permittedPoints = new ArrayList<Integer>();
 				for (Integer dsId : dataSourcePermissions) {
-					for (DataPointVO dp : DaoInstances.getDataPointDao()
+					for (DataPointVO dp : DaoInstances.DataPointDao
 							.getDataPoints(dsId, null))
 						permittedPoints.add(dp.getId());
 				}
@@ -495,7 +495,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		if (!admin) {
 			List<String> dsXids = new ArrayList<String>();
 			for (Integer dsId : dataSourcePermissions)
-				dsXids.add(DaoInstances.getDataSourceDao().getDataSource(dsId).getXid());
+				dsXids.add(DaoInstances.DataSourceDao.getDataSource(dsId).getXid());
 			map.put("dataSourcePermissions", dsXids);
 
 			map.put("dataPointPermissions", dataPointPermissions);

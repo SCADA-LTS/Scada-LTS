@@ -55,7 +55,7 @@ public class DataPointEventType extends EventType {
 	@Override
 	public int getDataSourceId() {
 		if (dataSourceId == -1)
-			dataSourceId = DaoInstances.getDataPointDao().getDataPoint(dataPointId)
+			dataSourceId = DaoInstances.DataPointDao.getDataPoint(dataPointId)
 					.getDataSourceId();
 		LOG.debug(toString() + " - getDataSourceId() - "
 				+ Integer.toString(dataSourceId));
@@ -126,9 +126,9 @@ public class DataPointEventType extends EventType {
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		super.jsonSerialize(map);
-		map.put("dataPointXID", DaoInstances.getDataPointDao().getDataPoint(dataPointId).getXid());
+		map.put("dataPointXID", DaoInstances.DataPointDao.getDataPoint(dataPointId).getXid());
 		map.put("detectorXID",
-				DaoInstances.getDataPointDao().getDetectorXid(pointEventDetectorId));
+				DaoInstances.DataPointDao.getDetectorXid(pointEventDetectorId));
 	}
 
 	@Override

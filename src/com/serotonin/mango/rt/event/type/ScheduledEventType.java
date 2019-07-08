@@ -107,7 +107,7 @@ public class ScheduledEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        map.put("XID", DaoInstances.getScheduledEventDao().getScheduledEvent(scheduleId).getXid());
+        map.put("XID", DaoInstances.ScheduledEventDao.getScheduledEvent(scheduleId).getXid());
     }
 
     @Override

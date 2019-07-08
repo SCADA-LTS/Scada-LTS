@@ -62,7 +62,7 @@ public class DataPurge {
         log.info("Data purge started");
 
         // Get the data point information.
-        List<DataPointVO> dataPoints = DaoInstances.getDataPointDao().getDataPoints(null, false);
+        List<DataPointVO> dataPoints = DaoInstances.DataPointDao.getDataPoints(null, false);
         int deleteCount = 0;
         for (DataPointVO dataPoint : dataPoints)
             deleteCount += purgePoint(dataPoint);
@@ -97,7 +97,7 @@ public class DataPurge {
         int deleteCount = 0;
 
         // Find all ids for which there should be a corresponding file
-        List<Long> validIds = DaoInstances.getPointValueDao().getFiledataIds();
+        List<Long> validIds = DaoInstances.PointValueDao.getFiledataIds();
 
         // Get all of the existing filenames.
         File dir = new File(Common.getFiledataPath());
@@ -122,7 +122,7 @@ public class DataPurge {
         cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE),
                 SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
 
-        int deleteCount = DaoInstances.getEventDao().purgeEventsBefore(cutoff.getMillis());
+        int deleteCount = DaoInstances.EventDao.purgeEventsBefore(cutoff.getMillis());
         if (deleteCount > 0)
             log.info("Event purge ended, " + deleteCount + " events deleted");
     }
@@ -132,7 +132,7 @@ public class DataPurge {
         cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE),
                 SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
 
-        int deleteCount = DaoInstances.getEventDao().purgeEventsBefore(cutoff.getMillis());
+        int deleteCount = DaoInstances.EventDao.purgeEventsBefore(cutoff.getMillis());
         if (deleteCount > 0)
             log.info("Event purge ended, " + deleteCount + " events deleted");
     }
@@ -142,7 +142,7 @@ public class DataPurge {
         cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE),
                 SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
 
-        int deleteCount = DaoInstances.getReportDao().purgeReportsBefore(cutoff.getMillis());
+        int deleteCount = DaoInstances.ReportDao.purgeReportsBefore(cutoff.getMillis());
         if (deleteCount > 0)
             log.info("Report purge ended, " + deleteCount + " report instances deleted");
     }
@@ -152,7 +152,7 @@ public class DataPurge {
         cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE),
                 SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
 
-        int deleteCount = DaoInstances.getReportDao().purgeReportsBefore(cutoff.getMillis());
+        int deleteCount = DaoInstances.ReportDao.purgeReportsBefore(cutoff.getMillis());
         if (deleteCount > 0)
             log.info("Report purge ended, " + deleteCount + " report instances deleted");
     }

@@ -111,7 +111,7 @@ public class PublisherEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        PublisherVO<?> pub = DaoInstances.getPublisherDao().getPublisher(publisherId);
+        PublisherVO<?> pub = DaoInstances.PublisherDao.getPublisher(publisherId);
         map.put("XID", pub.getXid());
         map.put("publisherEventTypeId", pub.getEventCodes().getCode(publisherEventTypeId));
     }

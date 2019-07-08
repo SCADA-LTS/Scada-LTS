@@ -115,7 +115,7 @@ public class DataSourceListDwr extends BaseDwr {
 	}
 
 	public DwrResponseI18n toggleDataPoint(int dataPointId) {
-		DataPointVO dataPoint = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
+		DataPointVO dataPoint = DaoInstances.DataPointDao.getDataPoint(dataPointId);
 		Permissions.ensureDataSourcePermission(Common.getUser(),
 				dataPoint.getDataSourceId());
 
@@ -131,9 +131,9 @@ public class DataSourceListDwr extends BaseDwr {
 
 	public int copyDataSource(int dataSourceId) {
 		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
-		int dsId = DaoInstances.getDataSourceDao().copyDataSource(dataSourceId,
+		int dsId = DaoInstances.DataSourceDao.copyDataSource(dataSourceId,
 				getResourceBundle());
-		DaoInstances.getUserDao().populateUserPermissions(Common.getUser());
+		DaoInstances.UserDao.populateUserPermissions(Common.getUser());
 		return dsId;
 	}
 }

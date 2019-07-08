@@ -76,7 +76,7 @@ public class AuthenticationHandler extends BasicHandler {
 			String password = Common.getEnvironmentProfile().getString(
 					"api.password", "admin");
 
-			User user = DaoInstances.getUserDao().getUser(username);
+			User user = DaoInstances.UserDao.getUser(username);
 			if (user == null)
 				throw new AxisFault("Invalid Default Username!");
 
@@ -92,7 +92,7 @@ public class AuthenticationHandler extends BasicHandler {
 		String username = getUsername(hel);
 		String password = getPassword(hel);
 
-		User user = DaoInstances.getUserDao().getUser(username);
+		User user = DaoInstances.UserDao.getUser(username);
 
 		if (user == null)
 			throw new AxisFault("Invalid Username!");

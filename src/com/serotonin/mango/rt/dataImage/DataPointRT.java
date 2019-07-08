@@ -93,7 +93,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 				return pvt;
 		}
 
-		return DaoInstances.getPointValueDao().getPointValueBefore(vo.getId(), time);
+		return DaoInstances.PointValueDao.getPointValueBefore(vo.getId(), time);
 	}
 
 	public PointValueTime getPointValueAt(long time) {
@@ -102,11 +102,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 				return pvt;
 		}
 
-		return DaoInstances.getPointValueDao().getPointValueAt(vo.getId(), time);
+		return DaoInstances.PointValueDao.getPointValueAt(vo.getId(), time);
 	}
 
 	public List<PointValueTime> getPointValues(long since) {
-		List<PointValueTime> result = DaoInstances.getPointValueDao().getPointValues(
+		List<PointValueTime> result = DaoInstances.PointValueDao.getPointValues(
 				vo.getId(), since);
 
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
@@ -122,7 +122,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	}
 
 	public List<PointValueTime> getPointValuesBetween(long from, long to) {
-		List<PointValueTime> result = DaoInstances.getPointValueDao()
+		List<PointValueTime> result = DaoInstances.PointValueDao
 				.getPointValuesBetween(vo.getId(), from, to);
 
 		for (PointValueTime pvt : valueCache.getCacheContents()) {

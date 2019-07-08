@@ -158,11 +158,11 @@ public class ImportTask extends ProgressiveTask {
 							name == null ? "(undefined)" : name);
 				else {
 					DataSourceVO<?> dsvo;
-					DataPointVO vo = DaoInstances.getDataPointDao().getDataPoint(xid);
+					DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
 					if (vo == null) {
 						// Locate the data source for the point.
 						String dsxid = dataPoint.getString("dataSourceXid");
-						dsvo = DaoInstances.getDataSourceDao().getDataSource(dsxid);
+						dsvo = DaoInstances.DataSourceDao.getDataSource(dsxid);
 						if (dsvo == null)
 							response.addGenericMessage(
 									"emport.dataPoint.badReference", xid);
@@ -334,7 +334,7 @@ public class ImportTask extends ProgressiveTask {
 
 			// Restart any data sources that were disabled.
 			for (Integer id : disabledDataSources) {
-				DataSourceVO<?> ds = DaoInstances.getDataSourceDao().getDataSource(id);
+				DataSourceVO<?> ds = DaoInstances.DataSourceDao.getDataSource(id);
 				ds.setEnabled(true);
 				ds.setState(new ImportChangeEnableStateDs());
 				Common.ctx.getRuntimeManager().saveDataSource(ds);
@@ -356,7 +356,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(username))
 			response.addGenericMessage("emport.user.username");
 		else {
-			User user = DaoInstances.getUserDao().getUser(username);
+			User user = DaoInstances.UserDao.getUser(username);
 			if (user == null) {
 				user = new User();
 				user.setUsername(username);
@@ -380,7 +380,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = user.getId() == Common.NEW_ID;
-					DaoInstances.getUserDao().saveUser(user);
+					DaoInstances.UserDao.saveUser(user);
 					addSuccessMessage(isnew, "emport.user.prefix", username);
 
 					// Add the user to the second pass list.
@@ -403,7 +403,7 @@ public class ImportTask extends ProgressiveTask {
 			response.addGenericMessage("emport.dataSource.xid",
 					name == null ? "(undefined)" : name);
 		else {
-			DataSourceVO<?> vo = DaoInstances.getDataSourceDao().getDataSource(xid);
+			DataSourceVO<?> vo = DaoInstances.DataSourceDao.getDataSource(xid);
 			if (vo != null) {
 			    //Check the enable/disable is changed. And to test when don't have enable property when import data
                 boolean importedDsEnabled = dataSource.getBoolean("enabled");
@@ -472,11 +472,11 @@ public class ImportTask extends ProgressiveTask {
 					name == null ? "(undefined)" : name);
 		else {
 			DataSourceVO<?> dsvo;
-			DataPointVO vo = DaoInstances.getDataPointDao().getDataPoint(xid);
+			DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
 			if (vo == null) {
 				// Locate the data source for the point.
 				String dsxid = dataPoint.getString("dataSourceXid");
-				dsvo = DaoInstances.getDataSourceDao().getDataSource(dsxid);
+				dsvo = DaoInstances.DataSourceDao.getDataSource(dsxid);
 				if (dsvo == null)
 					response.addGenericMessage("emport.dataPoint.badReference",
 							xid);
@@ -491,7 +491,7 @@ public class ImportTask extends ProgressiveTask {
 
 				}
 			} else
-				dsvo = DaoInstances.getDataSourceDao().getDataSource(vo.getDataSourceId());
+				dsvo = DaoInstances.DataSourceDao.getDataSource(vo.getDataSourceId());
 
 			if (vo != null) {
 				try {
@@ -542,7 +542,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.view.xid");
 		else {
-			View view = DaoInstances.getViewDao().getViewByXid(xid);
+			View view = DaoInstances.ViewDao.getViewByXid(xid);
 			if (view == null) {
 				view = new View();
 				view.setXid(xid);
@@ -563,7 +563,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = view.isNew();
-					DaoInstances.getViewDao().saveView(view);
+					DaoInstances.ViewDao.saveView(view);
 					addSuccessMessage(isnew, "emport.view.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {
@@ -580,11 +580,11 @@ public class ImportTask extends ProgressiveTask {
 		// This method uses user objects from the second pass list, which have
 		// already been validated.
 		String username = userJson.getString("username");
-		User user = DaoInstances.getUserDao().getUser(username);
+		User user = DaoInstances.UserDao.getUser(username);
 
 		try {
 			user.jsonDeserializePermissions(reader, userJson);
-			DaoInstances.getUserDao().saveUser(user);
+			DaoInstances.UserDao.saveUser(user);
 			addSuccessMessage(false, "emport.userPermission.prefix", username);
 		} catch (LocalizableJsonException e) {
 			response.addGenericMessage("emport.userPermission.prefix",
@@ -603,13 +603,13 @@ public class ImportTask extends ProgressiveTask {
 					pointHierarchyJson, List.class, PointFolder.class);
 			root.setSubfolders(subfolders);
 
-			for (DataPointVO dp : DaoInstances.getDataPointDao().getDataPoints(null, false)) {
+			for (DataPointVO dp : DaoInstances.DataPointDao.getDataPoints(null, false)) {
 				dp.setPointFolderId(0);
-				DaoInstances.getDataPointDao().updateDataPointShallow(dp);
+				DaoInstances.DataPointDao.updateDataPointShallow(dp);
 			}
 
 			// Save the new values.
-			DaoInstances.getDataPointDao().savePointHierarchy(root);
+			DaoInstances.DataPointDao.savePointHierarchy(root);
 			response.addGenericMessage("emport.pointHierarchy.prefix",
 					I18NUtils.getMessage(bundle, "emport.saved"));
 		} catch (LocalizableJsonException e) {
@@ -626,7 +626,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.pointLink.xid");
 		else {
-			PointLinkVO vo = DaoInstances.getPointLinkDao().getPointLink(xid);
+			PointLinkVO vo = DaoInstances.PointLinkDao.getPointLink(xid);
 			if (vo == null) {
 				vo = new PointLinkVO();
 				vo.setXid(xid);
@@ -664,7 +664,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.scheduledEvent.xid");
 		else {
-			ScheduledEventVO vo = DaoInstances.getScheduledEventDao().getScheduledEvent(xid);
+			ScheduledEventVO vo = DaoInstances.ScheduledEventDao.getScheduledEvent(xid);
 			if (vo == null) {
 				vo = new ScheduledEventVO();
 				vo.setXid(xid);
@@ -703,7 +703,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.compoundEvent.xid");
 		else {
-			CompoundEventDetectorVO vo = DaoInstances.getCompoundEventDetectorDao()
+			CompoundEventDetectorVO vo = DaoInstances.CompoundEventDetectorDao
 					.getCompoundEventDetector(xid);
 			if (vo == null) {
 				vo = new CompoundEventDetectorVO();
@@ -743,7 +743,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.mailingList.xid");
 		else {
-			MailingList vo = DaoInstances.getMailingListDao().getMailingList(xid);
+			MailingList vo = DaoInstances.MailingListDao.getMailingList(xid);
 			if (vo == null) {
 				vo = new MailingList();
 				vo.setXid(xid);
@@ -763,7 +763,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = vo.getId() == Common.NEW_ID;
-					DaoInstances.getMailingListDao().saveMailingList(vo);
+					DaoInstances.MailingListDao.saveMailingList(vo);
 					addSuccessMessage(isnew, "emport.mailingList.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {
@@ -783,7 +783,7 @@ public class ImportTask extends ProgressiveTask {
 			response.addGenericMessage("emport.publisher.xid",
 					name == null ? "(undefined)" : name);
 		else {
-			PublisherVO<?> vo = DaoInstances.getPublisherDao().getPublisher(xid);
+			PublisherVO<?> vo = DaoInstances.PublisherDao.getPublisher(xid);
 			if (vo == null) {
 				String typeStr = publisher.getString("type");
 				if (StringUtils.isEmpty(typeStr))
@@ -840,7 +840,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.eventHandler.xid");
 		else {
-			EventHandlerVO handler = DaoInstances.getEventDao().getEventHandler(xid);
+			EventHandlerVO handler = DaoInstances.EventDao.getEventHandler(xid);
 			if (handler == null) {
 				handler = new EventHandlerVO();
 				handler.setXid(xid);
@@ -868,11 +868,11 @@ public class ImportTask extends ProgressiveTask {
 
 					if (!isnew) {
 						// Check if the event type has changed.
-						EventType oldEventType = DaoInstances.getEventDao()
+						EventType oldEventType = DaoInstances.EventDao
 								.getEventHandlerType(handler.getId());
 						if (!oldEventType.equals(eventType)) {
 							// Event type has changed. Delete the old one.
-							DaoInstances.getEventDao().deleteEventHandler(handler.getId());
+							DaoInstances.EventDao.deleteEventHandler(handler.getId());
 
 							// Call it new
 							handler.setId(Common.NEW_ID);
@@ -881,7 +881,7 @@ public class ImportTask extends ProgressiveTask {
 					}
 
 					// Save it.
-					DaoInstances.getEventDao().saveEventHandler(eventType, handler);
+					DaoInstances.EventDao.saveEventHandler(eventType, handler);
 					addSuccessMessage(isnew, "emport.eventHandler.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {
@@ -899,7 +899,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.watchList.xid");
 		else {
-			WatchList watchList = DaoInstances.getWatchListDao().getWatchList(xid);
+			WatchList watchList = DaoInstances.WatchListDao.getWatchList(xid);
 			if (watchList == null) {
 				watchList = new WatchList();
 				watchList.setXid(xid);
@@ -920,7 +920,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = watchList.getId() == Common.NEW_ID;
-					DaoInstances.getWatchListDao().saveWatchList(watchList);
+					DaoInstances.WatchListDao.saveWatchList(watchList);
 					addSuccessMessage(isnew, "emport.watchList.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {
@@ -938,7 +938,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.maintenanceEvent.xid");
 		else {
-			MaintenanceEventVO vo = DaoInstances.getMaintenanceEventDao()
+			MaintenanceEventVO vo = DaoInstances.MaintenanceEventDao
 					.getMaintenanceEvent(xid);
 			if (vo == null) {
 				vo = new MaintenanceEventVO();
@@ -979,7 +979,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.script.xid");
 		else {
-			ScriptVO vo = DaoInstances.getScriptDao().getScript(xid);
+			ScriptVO vo = DaoInstances.ScriptDao.getScript(xid);
 			if (vo == null) {
 
 				String typeStr = script.getString("type");
@@ -1002,7 +1002,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = vo.isNew();
-					DaoInstances.getScriptDao().saveScript(vo);
+					DaoInstances.ScriptDao.saveScript(vo);
 					addSuccessMessage(isnew, "emport.script.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {
@@ -1019,7 +1019,7 @@ public class ImportTask extends ProgressiveTask {
 
 	private void importPointValues(JsonObject json) {
 		String pointXid = json.getString("pointXid");
-		DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(pointXid);
+		DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(pointXid);
 		if (dp == null) {
 			// response.addGenericMessage("emport.script.xid");
 			response.addGenericMessage("emport.pointValue.missingPoint",
@@ -1030,7 +1030,7 @@ public class ImportTask extends ProgressiveTask {
 			PointValueTime pointValue = new PointValueTime(
 					MangoValue.stringToValue(value, dp.getPointLocator()
 							.getDataTypeId()), time);
-			DaoInstances.getPointValueDao().savePointValue(dp.getId(), pointValue);
+			DaoInstances.PointValueDao.savePointValue(dp.getId(), pointValue);
 		}
 
 	}

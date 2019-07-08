@@ -54,12 +54,12 @@ public class CompoundEventsDwr extends BaseDwr {
         Map<String, Object> model = new HashMap<String, Object>();
 
         // All existing compound events.
-        model.put("compoundEvents", DaoInstances.getCompoundEventDetectorDao().getCompoundEventDetectors());
+        model.put("compoundEvents", DaoInstances.CompoundEventDetectorDao.getCompoundEventDetectors());
 
         // Get the data points
         List<EventSourceBean> dataPoints = new LinkedList<EventSourceBean>();
         EventSourceBean source;
-        for (DataPointVO dp : DaoInstances.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, true)) {
+        for (DataPointVO dp : DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, true)) {
             if (!Permissions.hasDataSourcePermission(user, dp.getDataSourceId()))
                 continue;
 
@@ -78,7 +78,7 @@ public class CompoundEventsDwr extends BaseDwr {
 
         // Get the scheduled events
         List<EventTypeVO> scheduledEvents = new LinkedList<EventTypeVO>();
-        for (ScheduledEventVO se : DaoInstances.getScheduledEventDao().getScheduledEvents())
+        for (ScheduledEventVO se : DaoInstances.ScheduledEventDao.getScheduledEvents())
             scheduledEvents.add(se.getEventType());
         model.put("scheduledEvents", scheduledEvents);
 
@@ -90,10 +90,10 @@ public class CompoundEventsDwr extends BaseDwr {
 
         if (id == Common.NEW_ID) {
             CompoundEventDetectorVO vo = new CompoundEventDetectorVO();
-            vo.setXid(DaoInstances.getCompoundEventDetectorDao().generateUniqueXid());
+            vo.setXid(DaoInstances.CompoundEventDetectorDao.generateUniqueXid());
             return vo;
         }
-        return DaoInstances.getCompoundEventDetectorDao().getCompoundEventDetector(id);
+        return DaoInstances.CompoundEventDetectorDao.getCompoundEventDetector(id);
     }
 
     public DwrResponseI18n saveCompoundEvent(int id, String xid, String name, int alarmLevel, boolean returnToNormal,
@@ -115,7 +115,7 @@ public class CompoundEventsDwr extends BaseDwr {
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!DaoInstances.getCompoundEventDetectorDao().isXidUnique(xid, id))
+        else if (!DaoInstances.CompoundEventDetectorDao.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         ced.validate(response);
@@ -134,7 +134,7 @@ public class CompoundEventsDwr extends BaseDwr {
 
     public void deleteCompoundEvent(int cedId) {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        DaoInstances.getCompoundEventDetectorDao().deleteCompoundEventDetector(cedId);
+        DaoInstances.CompoundEventDetectorDao.deleteCompoundEventDetector(cedId);
         Common.ctx.getRuntimeManager().stopCompoundEventDetector(cedId);
     }
 

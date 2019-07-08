@@ -86,7 +86,7 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
     public Object getPersistentData(String key) {
         synchronized (persistentDataLock) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) DaoInstances.getPublisherDao().getPersistentData(vo.getId());
+            Map<String, Object> map = (Map<String, Object>) DaoInstances.PublisherDao.getPersistentData(vo.getId());
             if (map != null)
                 return map.get(key);
             return null;
@@ -101,13 +101,13 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
     public void setPersistentData(String key, Object persistentData) {
         synchronized (persistentDataLock) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) DaoInstances.getPublisherDao().getPersistentData(vo.getId());
+            Map<String, Object> map = (Map<String, Object>) DaoInstances.PublisherDao.getPersistentData(vo.getId());
             if (map == null)
                 map = new HashMap<String, Object>();
 
             map.put(key, persistentData);
 
-            DaoInstances.getPublisherDao().savePersistentData(vo.getId(), map);
+            DaoInstances.PublisherDao.savePersistentData(vo.getId(), map);
         }
     }
 

@@ -61,12 +61,12 @@ public class UsersDwr extends BaseDwr {
 		if (Permissions.hasAdmin(user)) {
 			// Users
 			initData.put("admin", true);
-			initData.put("users", DaoInstances.getUserDao().getUsers());
-			initData.put("usersProfiles", DaoInstances.getUsersProfileDao().getUsersProfiles());
+			initData.put("users", DaoInstances.UserDao.getUsers());
+			initData.put("usersProfiles", DaoInstances.UsersProfileDao.getUsersProfiles());
 
 
 			// Data sources
-			List<DataSourceVO<?>> dataSourceVOs = DaoInstances.getDataSourceDao()
+			List<DataSourceVO<?>> dataSourceVOs = DaoInstances.DataSourceDao
 					.getDataSources();
 
 			List<Map<String, Object>> dataSources = new ArrayList<Map<String, Object>>(
@@ -78,7 +78,7 @@ public class UsersDwr extends BaseDwr {
 				ds.put("id", dsvo.getId());
 				ds.put("name", dsvo.getName());
 				points = new LinkedList<Map<String, Object>>();
-				for (DataPointVO dpvo : DaoInstances.getDataPointDao().getDataPoints(
+				for (DataPointVO dpvo : DaoInstances.DataPointDao.getDataPoints(
 						dsvo.getId(), DataPointNameComparator.instance)) {
 					dp = new HashMap<String, Object>();
 					dp.put("id", dpvo.getId());
@@ -91,9 +91,9 @@ public class UsersDwr extends BaseDwr {
 			}
 			initData.put("dataSources", dataSources);
 
-			initData.put("watchlists", DaoInstances.getWatchListDao().getWatchLists());
+			initData.put("watchlists", DaoInstances.WatchListDao.getWatchLists());
 
-			initData.put("views", DaoInstances.getViewDao().getViews());
+			initData.put("views", DaoInstances.ViewDao.getViews());
 
 		} else
 			initData.put("user", user);
@@ -109,10 +109,10 @@ public class UsersDwr extends BaseDwr {
 			user.setDataSourcePermissions(new ArrayList<Integer>(0));
 			user.setDataPointPermissions(new ArrayList<DataPointAccess>(0));
 		} else {
-			user = DaoInstances.getUserDao().getUser(id);
+			user = DaoInstances.UserDao.getUser(id);
 
-			if (DaoInstances.getUsersProfileDao().getUserProfileByUserId(user.getId()) != null) {
-				user.setUserProfile(DaoInstances.getUsersProfileDao().getUserProfileByUserId(user
+			if (DaoInstances.UsersProfileDao.getUserProfileByUserId(user.getId()) != null) {
+				user.setUserProfile(DaoInstances.UsersProfileDao.getUserProfileByUserId(user
 						.getId()));
 			}
 		}
@@ -137,7 +137,7 @@ public class UsersDwr extends BaseDwr {
 		if (id == Common.NEW_ID)
 			user = new User();
 		else
-			user = DaoInstances.getUserDao().getUser(id);
+			user = DaoInstances.UserDao.getUser(id);
 		user.setUsername(username);
 		if (!StringUtils.isEmpty(password))
 			user.setPassword(Common.encrypt(password));
@@ -154,7 +154,7 @@ public class UsersDwr extends BaseDwr {
 		user.validate(response);
 
 		// Check if the username is unique.
-		User dupUser = DaoInstances.getUserDao().getUser(username);
+		User dupUser = DaoInstances.UserDao.getUser(username);
 		if (id == Common.NEW_ID && dupUser != null)
 			response.addMessage(new LocalizableMessage(
 					"users.validate.usernameUnique"));
@@ -173,18 +173,18 @@ public class UsersDwr extends BaseDwr {
 		}
 
 		if (!response.getHasMessages()) {
-			DaoInstances.getUserDao().saveUser(user);
+			DaoInstances.UserDao.saveUser(user);
 
 			if (usersProfileId != Common.NEW_ID) {
 				// apply profile
-				UsersProfileVO profile = DaoInstances.getUsersProfileDao()
+				UsersProfileVO profile = DaoInstances.UsersProfileDao
 						.getUserProfileById(usersProfileId);
 				profile.apply(user);
-				DaoInstances.getUserDao().saveUser(user);
-				DaoInstances.getUsersProfileDao().resetUserProfile(user);
-				DaoInstances.getUsersProfileDao().updateUsersProfile(profile);
+				DaoInstances.UserDao.saveUser(user);
+				DaoInstances.UsersProfileDao.resetUserProfile(user);
+				DaoInstances.UsersProfileDao.updateUsersProfile(profile);
 			} else {
-				DaoInstances.getUsersProfileDao().resetUserProfile(user);
+				DaoInstances.UsersProfileDao.resetUserProfile(user);
 			}
 
 			// If admin grant permissions to all WL and GViews
@@ -201,7 +201,7 @@ public class UsersDwr extends BaseDwr {
 			response.addData("userId", user.getId());
 		}
 
-		List<View> views = DaoInstances.getViewDao().getViews();
+		List<View> views = DaoInstances.ViewDao.getViews();
 		Map<String, Object> viewsPermissionsMap = new HashMap<>();
 		for(View v:views) {
 			List<ShareUser> shareUsers = v.getViewUsers();
@@ -226,10 +226,10 @@ public class UsersDwr extends BaseDwr {
 				shareUsers.add(shareUser);
 			}
 			v.setViewUsers(shareUsers);
-			DaoInstances.getViewDao().saveView(v);
+			DaoInstances.ViewDao.saveView(v);
 		}
 
-		List<WatchList> watchLists = DaoInstances.getWatchListDao().getWatchLists();
+		List<WatchList> watchLists = DaoInstances.WatchListDao.getWatchLists();
 		Map<String, Object> watchListsPermissionsMap = new HashMap<>();
 		for(WatchList w:watchLists) {
 			List<ShareUser> shareUsers = w.getWatchListUsers();
@@ -254,7 +254,7 @@ public class UsersDwr extends BaseDwr {
 				shareUsers.add(shareUser);
 			}
 			w.setWatchListUsers(shareUsers);
-			DaoInstances.getWatchListDao().saveWatchList(w);
+			DaoInstances.WatchListDao.saveWatchList(w);
 		}
 
 		return response;
@@ -271,7 +271,7 @@ public class UsersDwr extends BaseDwr {
 			throw new PermissionException("Cannot update a different user",
 					user);
 
-		User updateUser = DaoInstances.getUserDao().getUser(id);
+		User updateUser = DaoInstances.UserDao.getUser(id);
 		if (!StringUtils.isEmpty(password))
 			updateUser.setPassword(Common.encrypt(password));
 		updateUser.setEmail(email);
@@ -283,7 +283,7 @@ public class UsersDwr extends BaseDwr {
 		updateUser.validate(response);
 
 		if (!response.getHasMessages()) {
-			DaoInstances.getUserDao().saveUser(updateUser);
+			DaoInstances.UserDao.saveUser(updateUser);
 			Common.setUser(request, updateUser);
 		}
 
@@ -320,7 +320,7 @@ public class UsersDwr extends BaseDwr {
 			response.addMessage(new LocalizableMessage(
 					"users.validate.badDelete"));
 		else
-			DaoInstances.getUserDao().deleteUser(id);
+			DaoInstances.UserDao.deleteUser(id);
 
 		return response;
 	}

@@ -97,7 +97,7 @@ abstract public class DataSourceRT implements ILifecycle {
      * This method is usable by subclasses to retrieve serializable data stored using the setPersistentData method.
      */
     public Object getPersistentData() {
-        return DaoInstances.getDataSourceDao().getPersistentData(vo.getId());
+        return DaoInstances.DataSourceDao.getPersistentData(vo.getId());
     }
 
     /**
@@ -106,7 +106,7 @@ abstract public class DataSourceRT implements ILifecycle {
      * called in the terminate method, but may also be called regularly for failover purposes.
      */
     protected void setPersistentData(Object persistentData) {
-        DaoInstances.getDataSourceDao().savePersistentData(vo.getId(), persistentData);
+        DaoInstances.DataSourceDao.savePersistentData(vo.getId(), persistentData);
     }
 
     public void addDataPoint(DataPointRT dataPoint) {

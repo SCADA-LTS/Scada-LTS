@@ -236,7 +236,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (IntValuePair ivp : context) {
-            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(ivp.getKey());
+            DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(ivp.getKey());
             if (first)
                 first = false;
             else
@@ -340,7 +340,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 if (xid == null)
                     throw new LocalizableJsonException("emport.error.meta.missing", "dataPointXid");
 
-                DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(xid);
+                DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(xid);
                 if (dp == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
 
@@ -361,7 +361,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
         List<Map<String, Object>> pointList = new ArrayList<Map<String, Object>>();
         for (IntValuePair p : context) {
-            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(p.getKey());
+            DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(p.getKey());
             if (dp != null) {
                 Map<String, Object> point = new HashMap<String, Object>();
                 pointList.add(point);

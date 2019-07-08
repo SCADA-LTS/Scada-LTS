@@ -55,7 +55,7 @@ public class ControllerUtils {
     public static void addPointListDataToModel(User user, int pointId, Map<String, Object> model) {
         List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
         int pointIndex = -1;
-        for (DataPointVO dp : DaoInstances.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false)) {
+        for (DataPointVO dp : DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false)) {
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 userPoints.add(dp);
                 if (dp.getId() == pointId)
@@ -74,7 +74,7 @@ public class ControllerUtils {
     public static void addPointListDataToModel(User user, int pointId, Model model){
         List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
         int pointIndex = -1;
-        for (DataPointVO dp : DaoInstances.getDataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false)) {
+        for (DataPointVO dp : DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false)) {
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 userPoints.add(dp);
                 if (dp.getId() == pointId)

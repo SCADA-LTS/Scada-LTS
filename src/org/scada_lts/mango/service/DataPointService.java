@@ -194,7 +194,7 @@ public class DataPointService implements MangoDataPoint {
 	public void updateDataPoint(final DataPointVO dp) {
 		DataPointVO oldDp = dataPointDAO.getDataPoint(dp.getId());
 		if (oldDp.getPointLocator().getDataTypeId() != dp.getPointLocator().getDataTypeId()) {
-			DaoInstances.getPointValueDao().deletePointValuesWithMismatchedType(dp.getId(), dp.getPointLocator().getDataTypeId());
+			DaoInstances.PointValueDao.deletePointValuesWithMismatchedType(dp.getId(), dp.getPointLocator().getDataTypeId());
 		}
 
 		updateDataPointShallow(dp);

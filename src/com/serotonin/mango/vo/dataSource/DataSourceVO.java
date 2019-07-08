@@ -469,7 +469,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 	public void validate(DwrResponseI18n response) {
 		if (StringUtils.isEmpty(xid))
 			response.addContextualMessage("xid", "validate.required");
-		else if (!DaoInstances.getDataSourceDao().isXidUnique(xid, id))
+		else if (!DaoInstances.DataSourceDao.isXidUnique(xid, id))
 			response.addContextualMessage("xid", "validate.xidUsed");
 		else if (StringUtils.isLengthGreaterThan(xid, 50))
 			response.addContextualMessage("xid", "validate.notLongerThan", 50);

@@ -57,7 +57,7 @@ public class ChartExportServlet extends HttpServlet {
         };
 
         for (int pointId : def.getPointIds()) {
-            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(pointId);
+            DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(pointId);
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 ReportPointInfo pointInfo = new ReportPointInfo();
                 pointInfo.setPointName(dp.getName());
@@ -67,7 +67,7 @@ public class ChartExportServlet extends HttpServlet {
 
                 //TODO rewrite seroUtils
                 //pointValueDao.getPointValuesBetween(pointId, from, to, callback);
-                DaoInstances.getPointValueDao().getPointValuesBetween(pointId, from, to);
+                DaoInstances.PointValueDao.getPointValuesBetween(pointId, from, to);
             }
         }
 

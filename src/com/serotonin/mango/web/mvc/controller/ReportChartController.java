@@ -45,13 +45,13 @@ public class ReportChartController extends AbstractController {
             throws Exception {
 
         int instanceId = Integer.parseInt(request.getParameter("instanceId"));
-        ReportInstance instance = DaoInstances.getReportDao().getReportInstance(instanceId);
+        ReportInstance instance = DaoInstances.ReportDao.getReportInstance(instanceId);
 
         User user = Common.getUser(request);
         Permissions.ensureReportInstancePermission(user, instance);
 
         ReportChartCreator creator = new ReportChartCreator(ControllerUtils.getResourceBundle(request));
-        creator.createContent(instance, DaoInstances.getReportDao(), null, false);
+        creator.createContent(instance, DaoInstances.ReportDao, null, false);
 
         Map<String, byte[]> imageData = new HashMap<String, byte[]>();
         imageData.put(creator.getChartName(), creator.getImageData());

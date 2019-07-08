@@ -44,7 +44,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	private User user;
 
 	public MangoDaoImpl(String username) {
-		User us = DaoInstances.getUserDao().getUser(username);
+		User us = DaoInstances.UserDao.getUser(username);
 		this.user = us;
 	}
 
@@ -62,7 +62,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		List<ItemValue> itemsList = new ArrayList<ItemValue>();
 		List<DataPointVO> ldpvo = null;
 
-		pH = DaoInstances.getDataPointDao().getPointHierarchy();
+		pH = DaoInstances.DataPointDao.getPointHierarchy();
 		for (String itemQName : itemList) {
 			ArrayList<ItemValue> itemValueList = new ArrayList<ItemValue>();
 			try {
@@ -70,7 +70,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 				if (itemQName == null)
 					itemQName = "";
 				int dataPointId = Common.ctx.getDataPointByName(itemQName);
-				DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
+				DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(dataPointId);
 				if (dp != null) {
 					if (isValidDataPoint(dp)) {
 						ItemValue iv = toItemValue(dp);
@@ -79,7 +79,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 					}
 				} else {
 					if (ldpvo == null)
-						ldpvo = DaoInstances.getDataPointDao().getDataPoints(null, false);
+						ldpvo = DaoInstances.DataPointDao.getDataPoints(null, false);
 					for (DataPointVO dataPointVO : ldpvo) {
 						String completeName = APIUtils.getCompletePath(
 								dataPointVO.getPointFolderId(), pH)
@@ -162,11 +162,11 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			error.setDescription(APIConstants.INSUFFICIENT_PARAMETER);
 			throw new ScadaBRAPIException(error);
 		}
-		PointHierarchy pH = DaoInstances.getDataPointDao().getPointHierarchy();
+		PointHierarchy pH = DaoInstances.DataPointDao.getPointHierarchy();
 
 		int dataPointId = Common.ctx
 				.getDataPointByName(itemValue.getItemName());
-		DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(dataPointId);
+		DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(dataPointId);
 
 		if (dp != null) {
 			checkValidWriteCommand(dp, itemValue);
@@ -180,7 +180,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			newItemValue.setItemName(dp.getName());
 
 		} else {
-			List<DataPointVO> listDPVO = DaoInstances.getDataPointDao().getDataPoints(null,
+			List<DataPointVO> listDPVO = DaoInstances.DataPointDao.getDataPoints(null,
 					false);
 			for (DataPointVO dataPointVO : listDPVO) {
 				String completeName = APIUtils.getCompletePath(
@@ -217,7 +217,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 	private void checkValidWriteCommand(DataPointVO dataPointVO,
 			ItemValue itemValue) throws ScadaBRAPIException {
-		PointValueTime pvt = DaoInstances.getPointValueDao()
+		PointValueTime pvt = DaoInstances.PointValueDao
 				.getLatestPointValue(dataPointVO.getId());
 
 		if (!APIUtils.checkCompatibleDataTypes(itemValue.getDataType(), pvt
@@ -256,7 +256,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		}
 
 		if (!dataPointVO.isEnabled()
-				|| !DaoInstances.getDataSourceDao().getDataSource(
+				|| !DaoInstances.DataSourceDao.getDataSource(
 						dataPointVO.getDataSourceId()).isEnabled()) {
 			APIError error = new APIError();
 			error.setCode(ErrorCode.INVALID_PARAMETER);
@@ -316,9 +316,9 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			newItemValue.setItemName(dp.getName());
 
 		} else {
-			List<DataPointVO> listDPVO = DaoInstances.getDataPointDao().getDataPoints(null,
+			List<DataPointVO> listDPVO = DaoInstances.DataPointDao.getDataPoints(null,
 					false);
-			PointHierarchy pH = DaoInstances.getDataPointDao().getPointHierarchy();
+			PointHierarchy pH = DaoInstances.DataPointDao.getPointHierarchy();
 			for (DataPointVO dataPointVO : listDPVO) {
 				String completeName = APIUtils.getCompletePath(
 						dataPointVO.getPointFolderId(), pH)
@@ -357,8 +357,8 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		checkUser();
 		ArrayList<ItemInfo> itemInfoList = new ArrayList<ItemInfo>();
 
-		List<DataPointVO> ldpvo = DaoInstances.getDataPointDao().getDataPoints(null, false);
-		PointHierarchy pH = DaoInstances.getDataPointDao().getPointHierarchy();
+		List<DataPointVO> ldpvo = DaoInstances.DataPointDao.getDataPoints(null, false);
+		PointHierarchy pH = DaoInstances.DataPointDao.getPointHierarchy();
 
 		Map<String, Integer> mapping = new HashMap<String, Integer>();
 
@@ -413,10 +413,10 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			Calendar initialDate, Calendar finalDate, int maxReturn)
 			throws ScadaBRAPIException {
 		checkUser();
-		List<DataPointVO> listDPVO = DaoInstances.getDataPointDao().getDataPoints(null,
+		List<DataPointVO> listDPVO = DaoInstances.DataPointDao.getDataPoints(null,
 				false);
 		List<ItemValue> itemHistory = null;
-		PointHierarchy pH = DaoInstances.getDataPointDao().getPointHierarchy();
+		PointHierarchy pH = DaoInstances.DataPointDao.getPointHierarchy();
 		for (DataPointVO dataPointVO : listDPVO) {
 			String completeName = APIUtils.getCompletePath(
 					dataPointVO.getPointFolderId(), pH)
@@ -431,7 +431,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 					throw new ScadaBRAPIException(error);
 				}
 
-				List<PointValueTime> lpvt = DaoInstances.getPointValueDao()
+				List<PointValueTime> lpvt = DaoInstances.PointValueDao
 						.getPointValuesBetween(dataPointVO.getId(),
 								initialDate.getTimeInMillis(),
 								finalDate.getTimeInMillis());
@@ -482,7 +482,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	public List<EventNotification> getEventNotifications(
 			AlarmLevel minimumAlarmLevel) throws ScadaBRAPIException {
 		List<EventNotification> alarms = new ArrayList<EventNotification>();
-		List<EventInstance> events = DaoInstances.getEventDao().getPendingEvents(1);
+		List<EventInstance> events = DaoInstances.EventDao.getPendingEvents(1);
 		checkUser();
 		if (events == null || events.size() == 0) {
 			APIError error = new APIError();
@@ -510,7 +510,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 		if (eventInstance != null) {
 			// alternateAckSource? - REM
-			DaoInstances.getEventDao().ackEvent(eventId, 1, 0, 0);
+			DaoInstances.EventDao.ackEvent(eventId, 1, 0, 0);
 			// new getEventDao().ackEvent(eventId, 1);
 			return APIUtils.toEventNotification(eventInstance);
 		} else {
@@ -522,7 +522,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	}
 
 	private EventInstance getEvent(int eventId) {
-		List<EventInstance> events = DaoInstances.getEventDao().getPendingEvents(1);
+		List<EventInstance> events = DaoInstances.EventDao.getPendingEvents(1);
 		for (EventInstance eventInstance : events) {
 			if (eventInstance.getId() == eventId)
 				return eventInstance;
@@ -533,7 +533,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	private List<EventInstance> getAcknowledgedEvents() {
 		// Adicionados parametros novos (?)
 		// return new getEventDao().search(0, -1, null, -1, null, 20000, 1, null);
-		return DaoInstances.getEventDao().search(0, -1, null, -1, null, 1, null, 0, 5000,
+		return DaoInstances.EventDao.search(0, -1, null, -1, null, 1, null, 0, 5000,
 				null);
 	}
 
@@ -577,7 +577,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		checkUser();
 		EventInstance event = getEvent(eventId);
 		if (event != null) {
-			DaoInstances.getEventDao().insertEventComment(eventId,
+			DaoInstances.EventDao.insertEventComment(eventId,
 					APIUtils.toUserComment(message));
 
 			event = getEvent(eventId);
@@ -598,12 +598,12 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		List<EventDefinition> events = new ArrayList<EventDefinition>();
 
 		if ((eventType == null) || eventType == EventType.POINT_CONDITION_EVENT) {
-			List<DataSourceVO<?>> dataSources = DaoInstances.getDataSourceDao()
+			List<DataSourceVO<?>> dataSources = DaoInstances.DataSourceDao
 					.getDataSources();
 			List<PointEventDetectorVO> pointEventDetectors = new ArrayList<PointEventDetectorVO>();
 
 			for (DataSourceVO<?> dataSourceVO : dataSources) {
-				List<DataPointVO> dataPoints = DaoInstances.getDataPointDao()
+				List<DataPointVO> dataPoints = DaoInstances.DataPointDao
 						.getDataPoints(dataSourceVO.getId(), null);
 				for (DataPointVO dataPointVO : dataPoints) {
 					pointEventDetectors.addAll(dataPointVO.getEventDetectors());
@@ -620,7 +620,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 				events.add(event);
 			}
 
-			List<CompoundEventDetectorVO> compoundEvents = DaoInstances.getCompoundEventDetectorDao()
+			List<CompoundEventDetectorVO> compoundEvents = DaoInstances.CompoundEventDetectorDao
 					.getCompoundEventDetectors();
 
 			for (CompoundEventDetectorVO pointEvent : compoundEvents) {
@@ -636,7 +636,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		}
 
 		if ((eventType == null) || eventType == EventType.SCHEDULED_EVENT) {
-			List<ScheduledEventVO> scheduledEvents = DaoInstances.getScheduledEventDao()
+			List<ScheduledEventVO> scheduledEvents = DaoInstances.ScheduledEventDao
 					.getScheduledEvents();
 			for (ScheduledEventVO pointEvent : scheduledEvents) {
 				EventDefinition event = APIUtils.toEventDefinition(
@@ -682,7 +682,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		checkUser();
 		Type dsType = getDataSourceType(dataSourceType);
 
-		List<DataSourceVO<?>> allDataSources = DaoInstances.getDataSourceDao()
+		List<DataSourceVO<?>> allDataSources = DaoInstances.DataSourceDao
 				.getDataSources();
 
 		List<Object> dataSources = new ArrayList<Object>();
@@ -793,10 +793,10 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 			if (config.getId() == Common.NEW_ID) {
 				ds = new ModbusIpDataSourceVO();
-				ds.setXid(DaoInstances.getDataSourceDao().generateUniqueXid());
+				ds.setXid(DaoInstances.DataSourceDao.generateUniqueXid());
 			} else {
 				checkValidDataSourceId(config.getId(), dataSourceType);
-				ds = (ModbusIpDataSourceVO) DaoInstances.getDataSourceDao()
+				ds = (ModbusIpDataSourceVO) DaoInstances.DataSourceDao
 						.getDataSource(config.getId());
 			}
 			if (!Permissions.hasDataSourcePermission(user, config.getId())) {
@@ -827,7 +827,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 						ErrorCode.INVALID_PARAMETER,
 						"Check the configuration parameters."));
 
-			DaoInstances.getDataSourceDao().saveDataSource(ds);
+			DaoInstances.DataSourceDao.saveDataSource(ds);
 			return ds.getId();
 		} else if (dataSourceType == DataSourceType.MODBUS_SERIAL) {
 			ModbusSerialConfig config = (ModbusSerialConfig) dataSource;
@@ -835,11 +835,11 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 			if (config.getId() == Common.NEW_ID) {
 				ds = new ModbusSerialDataSourceVO();
-				ds.setXid(DaoInstances.getDataSourceDao().generateUniqueXid());
+				ds.setXid(DaoInstances.DataSourceDao.generateUniqueXid());
 
 			} else {
 				checkValidDataSourceId(config.getId(), dataSourceType);
-				ds = (ModbusSerialDataSourceVO) DaoInstances.getDataSourceDao()
+				ds = (ModbusSerialDataSourceVO) DaoInstances.DataSourceDao
 						.getDataSource(config.getId());
 			}
 
@@ -870,7 +870,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 						ErrorCode.INVALID_PARAMETER,
 						"Check the configuration parameters."));
 
-			DaoInstances.getDataSourceDao().saveDataSource(ds);
+			DaoInstances.DataSourceDao.saveDataSource(ds);
 			return ds.getId();
 		}
 		throw new ScadaBRAPIException(new APIError(ErrorCode.UNSPECIFIED_ERROR,
@@ -882,10 +882,10 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			throws ScadaBRAPIException {
 		try {
 			if (dataSourceType == DataSourceType.MODBUS_IP) {
-				ModbusIpDataSourceVO ds = (ModbusIpDataSourceVO) DaoInstances.getDataSourceDao()
+				ModbusIpDataSourceVO ds = (ModbusIpDataSourceVO) DaoInstances.DataSourceDao
 						.getDataSource(id);
 			} else if (dataSourceType == DataSourceType.MODBUS_SERIAL) {
-				ModbusSerialDataSourceVO ds = (ModbusSerialDataSourceVO) DaoInstances.getDataSourceDao()
+				ModbusSerialDataSourceVO ds = (ModbusSerialDataSourceVO) DaoInstances.DataSourceDao
 						.getDataSource(id);
 			}
 		} catch (Exception e) {
@@ -897,7 +897,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 	@Override
 	public void removeDataSource(int id) throws ScadaBRAPIException {
-		DataSourceVO ds = DaoInstances.getDataSourceDao().getDataSource(id);
+		DataSourceVO ds = DaoInstances.DataSourceDao.getDataSource(id);
 		checkUser();
 		if (ds == null)
 			throw new ScadaBRAPIException(new APIError(ErrorCode.INVALID_ID,
@@ -928,7 +928,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			throw new ScadaBRAPIException(error);
 		}
 
-		List<DataPointVO> mangoPoints = DaoInstances.getDataPointDao().getDataPoints(
+		List<DataPointVO> mangoPoints = DaoInstances.DataPointDao.getDataPoints(
 				dataSourceId, null);
 		List<Object> dataPoints = new ArrayList<Object>();
 
@@ -1125,7 +1125,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 	private void checkSupportedDataPoints(int dataSourceId)
 			throws ScadaBRAPIException {
-		DataSourceVO ds = DaoInstances.getDataSourceDao().getDataSource(dataSourceId);
+		DataSourceVO ds = DaoInstances.DataSourceDao.getDataSource(dataSourceId);
 		if (ds == null)
 			throw new ScadaBRAPIException(new APIError(ErrorCode.INVALID_ID,
 					"Data Source inexistent"));
@@ -1153,14 +1153,14 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		ModbusPointLocatorVO mangoLocator = null;
 		if (point.getId() == Common.NEW_ID) {
 			mangoPoint = new DataPointVO();
-			mangoPoint.setXid(DaoInstances.getDataPointDao().generateUniqueXid());
+			mangoPoint.setXid(DaoInstances.DataPointDao.generateUniqueXid());
 			mangoLocator = new ModbusPointLocatorVO();
 			mangoPoint
 					.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
 
 		} else {
 			checkValidDataPointId(point.getId());
-			mangoPoint = DaoInstances.getDataPointDao().getDataPoint(point.getId());
+			mangoPoint = DaoInstances.DataPointDao.getDataPoint(point.getId());
 			mangoLocator = mangoPoint.getPointLocator();
 		}
 
@@ -1193,7 +1193,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	private void validate(DataPointVO dataPoint, DwrResponseI18n response) {
 		if (StringUtils.isEmpty(dataPoint.getXid()))
 			response.addContextualMessage("xid", "validate.required");
-		else if (!DaoInstances.getDataPointDao().isXidUnique(dataPoint.getXid(),
+		else if (!DaoInstances.DataPointDao.isXidUnique(dataPoint.getXid(),
 				dataPoint.getId()))
 			response.addContextualMessage("xid", "validate.xidUsed");
 		if (StringUtils.isEmpty(dataPoint.getName()))
@@ -1201,7 +1201,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	}
 
 	private void checkValidDataPointId(int id) throws ScadaBRAPIException {
-		DataPointVO mangoVO = DaoInstances.getDataPointDao().getDataPoint(id);
+		DataPointVO mangoVO = DaoInstances.DataPointDao.getDataPoint(id);
 		if (mangoVO == null)
 			throw new ScadaBRAPIException(new APIError(ErrorCode.INVALID_ID,
 					"Data Point inexistent!"));
@@ -1212,7 +1212,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	public void removeDataPoint(int id) throws ScadaBRAPIException {
 		checkValidDataPointId(id);
 		checkUser();
-		DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(id);
+		DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(id);
 		if (!Permissions.hasDataSourcePermission(user, dp.getDataSourceId())) {
 			APIError error = new APIError();
 			error.setCode(ErrorCode.ACCESS_DENIED);

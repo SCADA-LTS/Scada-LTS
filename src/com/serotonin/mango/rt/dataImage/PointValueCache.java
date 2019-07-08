@@ -56,9 +56,9 @@ public class PointValueCache {
     public void savePointValue(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
         if (logValue) {
             if (async)
-                DaoInstances.getPointValueDao().savePointValueAsync(dataPointId, pvt, source);
+                DaoInstances.PointValueDao.savePointValueAsync(dataPointId, pvt, source);
             else
-                pvt = DaoInstances.getPointValueDao().savePointValueSync(dataPointId, pvt, source);
+                pvt = DaoInstances.PointValueDao.savePointValueSync(dataPointId, pvt, source);
         }
 
         List<PointValueTime> c = cache;
@@ -90,7 +90,7 @@ public class PointValueCache {
      */
     void logPointValueAsync(PointValueTime pointValue, SetPointSource source) {
         // Save the new value and get a point value time back that has the id and annotations set, as appropriate.
-        DaoInstances.getPointValueDao().savePointValueAsync(dataPointId, pointValue, source);
+        DaoInstances.PointValueDao.savePointValueAsync(dataPointId, pointValue, source);
     }
 
     public PointValueTime getLatestPointValue() {
@@ -122,7 +122,7 @@ public class PointValueCache {
             maxSize = size;
             if (size == 1) {
                 // Performance thingy
-                PointValueTime pvt = DaoInstances.getPointValueDao().getLatestPointValue(dataPointId);
+                PointValueTime pvt = DaoInstances.PointValueDao.getLatestPointValue(dataPointId);
                 if (pvt != null) {
                     List<PointValueTime> c = new ArrayList<PointValueTime>();
                     c.add(pvt);
@@ -130,7 +130,7 @@ public class PointValueCache {
                 }
             }
             else
-                cache = DaoInstances.getPointValueDao().getLatestPointValues(dataPointId, size);
+                cache = DaoInstances.PointValueDao.getLatestPointValues(dataPointId, size);
         }
     }
 

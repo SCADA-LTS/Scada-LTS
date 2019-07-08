@@ -57,8 +57,8 @@ public class WatchListController extends ParameterizableViewController {
 		// make sure the watch lists are correct.
 		List<WatchList> watchLists =
 		(!user.isAdmin())
-				? DaoInstances.getWatchListDao().getWatchLists(user.getId(),user.getUserProfile())
-				: DaoInstances.getWatchListDao().getWatchLists();
+				? DaoInstances.WatchListDao.getWatchLists(user.getId(),user.getUserProfile())
+				: DaoInstances.WatchListDao.getWatchLists();
 
 		if (watchLists.size() == 0) {
 			// Add a default watch list if none exist.
@@ -66,7 +66,7 @@ public class WatchListController extends ParameterizableViewController {
 			watchList.setName(I18NUtils.getMessage(
 					ControllerUtils.getResourceBundle(request),
 					"common.newName"));
-			watchLists.add(DaoInstances.getWatchListDao().createNewWatchList(watchList,
+			watchLists.add(DaoInstances.WatchListDao.createNewWatchList(watchList,
 					user.getId()));
 		}
 
@@ -98,7 +98,7 @@ public class WatchListController extends ParameterizableViewController {
 				}
 
 				if (changed)
-					DaoInstances.getWatchListDao().saveWatchList(watchList);
+					DaoInstances.WatchListDao.saveWatchList(watchList);
 			}
 
 			watchListNames.add(new IntValuePair(watchList.getId(), watchList
@@ -112,7 +112,7 @@ public class WatchListController extends ParameterizableViewController {
 			// the first in the list.
 			selected = watchLists.get(0).getId();
 			user.setSelectedWatchList(selected);
-			DaoInstances.getWatchListDao().saveSelectedWatchList(user.getId(), selected);
+			DaoInstances.WatchListDao.saveSelectedWatchList(user.getId(), selected);
 		}
 
 		model.put(KEY_WATCHLISTS, watchListNames);

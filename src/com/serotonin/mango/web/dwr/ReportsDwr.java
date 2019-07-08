@@ -50,9 +50,9 @@ public class ReportsDwr extends BaseDwr {
         User user = Common.getUser();
 
         response.addData("points", getReadablePoints());
-        response.addData("mailingLists", DaoInstances.getMailingListDao().getMailingLists());
-        response.addData("users", DaoInstances.getUserDao().getUsers());
-        response.addData("reports", DaoInstances.getReportDao().getReports(user.getId()));
+        response.addData("mailingLists", DaoInstances.MailingListDao.getMailingLists());
+        response.addData("users", DaoInstances.UserDao.getUsers());
+        response.addData("reports", DaoInstances.ReportDao.getReports(user.getId()));
         response.addData("instances", getReportInstances(user));
 
         return response;
@@ -65,7 +65,7 @@ public class ReportsDwr extends BaseDwr {
             report.setName(getMessage("common.newName"));
         }
         else {
-            report = DaoInstances.getReportDao().getReport(id);
+            report = DaoInstances.ReportDao.getReport(id);
 
             if (copy) {
                 report.setId(Common.NEW_ID);
@@ -121,7 +121,7 @@ public class ReportsDwr extends BaseDwr {
             report.setUserId(user.getId());
         }
         else
-            report = DaoInstances.getReportDao().getReport(id);
+            report = DaoInstances.ReportDao.getReport(id);
 
         Permissions.ensureReportPermission(user, report);
 
@@ -158,7 +158,7 @@ public class ReportsDwr extends BaseDwr {
         report.setRecipients(recipients);
 
         // Save the report
-        DaoInstances.getReportDao().saveReport(report);
+        DaoInstances.ReportDao.saveReport(report);
 
         // Conditionally schedule the report.
         ReportJob.scheduleReportJob(report);
@@ -217,11 +217,11 @@ public class ReportsDwr extends BaseDwr {
 
     public void deleteReport(int id) {
 
-        ReportVO report = DaoInstances.getReportDao().getReport(id);
+        ReportVO report = DaoInstances.ReportDao.getReport(id);
         if (report != null) {
             Permissions.ensureReportPermission(Common.getUser(), report);
             ReportJob.unscheduleReportJob(report);
-            DaoInstances.getReportDao().deleteReport(id);
+            DaoInstances.ReportDao.deleteReport(id);
         }
     }
 
@@ -245,7 +245,7 @@ public class ReportsDwr extends BaseDwr {
 
         User user = Common.getUser();
         for (ReportPointVO point : points) {
-            Permissions.ensureDataPointReadPermission(user, DaoInstances.getDataPointDao().getDataPoint(point.getPointId()));
+            Permissions.ensureDataPointReadPermission(user, DaoInstances.DataPointDao.getDataPoint(point.getPointId()));
 
             try {
                 if (!StringUtils.isEmpty(point.getColour()))
@@ -259,7 +259,7 @@ public class ReportsDwr extends BaseDwr {
 
     public List<ReportInstance> deleteReportInstance(int instanceId) {
         User user = Common.getUser();
-        DaoInstances.getReportDao().deleteReportInstance(instanceId, user.getId());
+        DaoInstances.ReportDao.deleteReportInstance(instanceId, user.getId());
         return getReportInstances(user);
     }
 
@@ -268,7 +268,7 @@ public class ReportsDwr extends BaseDwr {
     }
 
     private List<ReportInstance> getReportInstances(User user) {
-        List<ReportInstance> result = DaoInstances.getReportDao().getReportInstances(user.getId());
+        List<ReportInstance> result = DaoInstances.ReportDao.getReportInstances(user.getId());
         ResourceBundle bundle = getResourceBundle();
         for (ReportInstance i : result)
             i.setBundle(bundle);
@@ -276,11 +276,11 @@ public class ReportsDwr extends BaseDwr {
     }
 
     public void setPreventPurge(int instanceId, boolean value) {
-        DaoInstances.getReportDao().setReportInstancePreventPurge(instanceId, value, Common.getUser().getId());
+        DaoInstances.ReportDao.setReportInstancePreventPurge(instanceId, value, Common.getUser().getId());
     }
 
     public ReportVO createReportFromWatchlist(int watchListId) {
-        WatchList watchList = DaoInstances.getWatchListDao().getWatchList(watchListId);
+        WatchList watchList = DaoInstances.WatchListDao.getWatchList(watchListId);
         if (watchList == null)
             return null;
 

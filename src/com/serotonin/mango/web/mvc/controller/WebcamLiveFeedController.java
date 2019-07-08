@@ -39,7 +39,7 @@ public class WebcamLiveFeedController extends ParameterizableViewController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         int pointId = Integer.parseInt(request.getParameter("pointId"));
-        DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(pointId);
+        DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(pointId);
 
         if (!(dp.getPointLocator() instanceof HttpImagePointLocatorVO))
             throw new Exception("Point is not an HTTP Image point");

@@ -41,7 +41,7 @@ public class ScheduledEventsDwr extends BaseDwr {
     //
     public List<ScheduledEventVO> getScheduledEvents() {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        return DaoInstances.getScheduledEventDao().getScheduledEvents();
+        return DaoInstances.ScheduledEventDao.getScheduledEvents();
     }
 
     public ScheduledEventVO getScheduledEvent(int id) {
@@ -50,14 +50,14 @@ public class ScheduledEventsDwr extends BaseDwr {
         if (id == Common.NEW_ID) {
             DateTime dt = new DateTime();
             ScheduledEventVO se = new ScheduledEventVO();
-            se.setXid(DaoInstances.getScheduledEventDao().generateUniqueXid());
+            se.setXid(DaoInstances.ScheduledEventDao.generateUniqueXid());
             se.setActiveYear(dt.getYear());
             se.setInactiveYear(dt.getYear());
             se.setActiveMonth(dt.getMonthOfYear());
             se.setInactiveMonth(dt.getMonthOfYear());
             return se;
         }
-        return DaoInstances.getScheduledEventDao().getScheduledEvent(id);
+        return DaoInstances.ScheduledEventDao.getScheduledEvent(id);
     }
 
     public DwrResponseI18n saveScheduledEvent(int id, String xid, String alias, int alarmLevel, int scheduleType,
@@ -94,7 +94,7 @@ public class ScheduledEventsDwr extends BaseDwr {
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!DaoInstances.getScheduledEventDao().isXidUnique(xid, id))
+        else if (!DaoInstances.ScheduledEventDao.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         se.validate(response);
@@ -109,7 +109,7 @@ public class ScheduledEventsDwr extends BaseDwr {
 
     public void deleteScheduledEvent(int seId) {
         Permissions.ensureDataSourcePermission(Common.getUser());
-        DaoInstances.getScheduledEventDao().deleteScheduledEvent(seId);
+        DaoInstances.ScheduledEventDao.deleteScheduledEvent(seId);
         Common.ctx.getRuntimeManager().stopSimpleEventDetector(ScheduledEventVO.getEventDetectorKey(seId));
     }
 }

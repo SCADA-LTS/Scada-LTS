@@ -110,7 +110,7 @@ public class CompoundDetectorEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        map.put("XID", DaoInstances.getCompoundEventDetectorDao().getCompoundEventDetector(compoundDetectorId).getXid());
+        map.put("XID", DaoInstances.CompoundEventDetectorDao.getCompoundEventDetector(compoundDetectorId).getXid());
     }
 
     @Override

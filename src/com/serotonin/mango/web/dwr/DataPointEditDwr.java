@@ -156,7 +156,7 @@ public class DataPointEditDwr extends BaseDwr {
     public PointEventDetectorVO addEventDetector(int typeId) {
         DataPointVO dp = getDataPoint();
         PointEventDetectorVO ped = new PointEventDetectorVO();
-        ped.setXid(DaoInstances.getDataPointDao().generateEventDetectorUniqueXid(dp.getId()));
+        ped.setXid(DaoInstances.DataPointDao.generateEventDetectorUniqueXid(dp.getId()));
         ped.setAlias("");
         ped.setDetectorType(typeId);
 

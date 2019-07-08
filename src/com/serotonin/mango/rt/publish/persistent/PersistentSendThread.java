@@ -416,7 +416,7 @@ class PersistentSendThread extends SendThread {
         Common.timer.execute(new Runnable() {
             @Override
             public void run() {
-                writePointHierarchy(DaoInstances.getDataPointDao().getPointHierarchy());
+                writePointHierarchy(DaoInstances.DataPointDao.getPointHierarchy());
             }
         });
     }

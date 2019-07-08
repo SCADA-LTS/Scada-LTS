@@ -179,13 +179,13 @@ public class SystemSettingsDwr extends BaseDwr {
 		// Point history counts.
 
 		int sum = 0;
-		for (PointHistoryCount c : DaoInstances.getDataPointDao()
+		for (PointHistoryCount c : DaoInstances.DataPointDao
 				.getTopPointHistoryCounts())
 			sum += c.getCount();
 
 		data.put("historyCount", sum);
-		data.put("topPoints", DaoInstances.getDataPointDao().getTopPointHistoryCounts());
-		data.put("eventCount", DaoInstances.getEventDao().getEventCount());
+		data.put("topPoints", DaoInstances.DataPointDao.getTopPointHistoryCounts());
+		data.put("eventCount", DaoInstances.EventDao.getEventCount());
 
 		return data;
 	}

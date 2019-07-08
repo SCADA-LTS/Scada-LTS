@@ -148,7 +148,7 @@ public class View implements Serializable, JsonSerializable {
 	 * the components that render them
 	 */
 	public void validateViewComponents(boolean makeReadOnly) {
-		User owner = DaoInstances.getUserDao().getUser(userId);
+		User owner = DaoInstances.UserDao.getUser(userId);
 		for (ViewComponent viewComponent : viewComponents)
 			viewComponent.validateDataPoint(owner, makeReadOnly);
 	}
@@ -309,7 +309,7 @@ public class View implements Serializable, JsonSerializable {
 		else if (StringUtils.isLengthGreaterThan(xid, 50))
 			response.addMessage("xid", new LocalizableMessage(
 					"validate.notLongerThan", 50));
-		else if (!DaoInstances.getViewDao().isXidUnique(xid, id))
+		else if (!DaoInstances.ViewDao.isXidUnique(xid, id))
 			response.addMessage("xid", new LocalizableMessage(
 					"validate.xidUsed"));
 
@@ -356,7 +356,7 @@ public class View implements Serializable, JsonSerializable {
 			if (StringUtils.isEmpty(username))
 				throw new LocalizableJsonException("emport.error.missingValue",
 						"user");
-			User user = DaoInstances.getUserDao().getUser(username);
+			User user = DaoInstances.UserDao.getUser(username);
 			if (user == null)
 				throw new LocalizableJsonException("emport.error.missingUser",
 						username);
@@ -403,7 +403,7 @@ public class View implements Serializable, JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("user", DaoInstances.getUserDao().getUser(userId).getUsername());
+		map.put("user", DaoInstances.UserDao.getUser(userId).getUsername());
 		map.put("anonymousAccess",
 				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
 		map.put("viewComponents", viewComponents);

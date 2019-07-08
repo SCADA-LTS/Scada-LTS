@@ -111,7 +111,7 @@ public class ContextualizedScriptRT extends ScriptRT {
 
 			List<IntValuePair> objectsContext = ((ContextualizedScriptVO) vo).getObjectsOnContext();
 
-			User user = DaoInstances.getUserDao().getUser(vo.getUserId());
+			User user = DaoInstances.UserDao.getUser(vo.getUserId());
 			for (IntValuePair object : objectsContext) {
 				ScriptContextObject o = ScriptContextObject.Type.valueOf(object.getKey()).createScriptContextObject();
 				o.setUser(user);

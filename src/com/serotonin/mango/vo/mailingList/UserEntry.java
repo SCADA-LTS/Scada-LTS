@@ -91,7 +91,7 @@ public class UserEntry extends EmailRecipient {
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
         if (user == null)
-            user = DaoInstances.getUserDao().getUser(userId);
+            user = DaoInstances.UserDao.getUser(userId);
         map.put("username", user.getUsername());
     }
 
@@ -103,7 +103,7 @@ public class UserEntry extends EmailRecipient {
         if (username == null)
             throw new LocalizableJsonException("emport.error.recipient.missing.reference", "username");
 
-        user = DaoInstances.getUserDao().getUser(username);
+        user = DaoInstances.UserDao.getUser(username);
         if (user == null)
             throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "username", username);
 

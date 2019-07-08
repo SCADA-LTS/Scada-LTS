@@ -475,7 +475,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
             }
 
             // Doesn't exist in the RT list. Check if it exists at all.
-            DataPointVO oldDpvo = DaoInstances.getDataPointDao().getDataPoint(xid);
+            DataPointVO oldDpvo = DaoInstances.DataPointDao.getDataPoint(xid);
 
             if (oldDpvo != null) {
                 // The point exists. Make sure it belongs to this data source.
@@ -526,14 +526,14 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                 DataPointVO dpvo;
                 if (dprt == null)
                     // Not currently enabled.
-                    dpvo = DaoInstances.getDataPointDao().getDataPoint(xid);
+                    dpvo = DaoInstances.DataPointDao.getDataPoint(xid);
                 else
                     dpvo = dprt.getVO();
 
                 if (dpvo == null)
                     return;
 
-                PointHierarchy pointHierarchy = DaoInstances.getDataPointDao().getPointHierarchy();
+                PointHierarchy pointHierarchy = DaoInstances.DataPointDao.getPointHierarchy();
 
                 // Get the current path to the point.
                 List<PointFolder> folders = pointHierarchy.getFolderPath(dpvo.getId());
@@ -557,7 +557,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                     newFolder.addDataPoint(new IntValuePair(dpvo.getId(), dpvo.getName()));
 
                     // Save the hierarchy
-                    DaoInstances.getDataPointDao().savePointHierarchy(pointHierarchy.getRoot());
+                    DaoInstances.DataPointDao.savePointHierarchy(pointHierarchy.getRoot());
                 }
             }
         }

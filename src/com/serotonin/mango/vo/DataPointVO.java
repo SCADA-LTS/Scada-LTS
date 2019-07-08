@@ -546,7 +546,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             response.addContextualMessage("xid", "validate.required");
         else if (StringUtils.isLengthGreaterThan(xid, 50))
             response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!DaoInstances.getDataPointDao().isXidUnique(xid, id))
+        else if (!DaoInstances.DataPointDao.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         if (StringUtils.isEmpty(name))

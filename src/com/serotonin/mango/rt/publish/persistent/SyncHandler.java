@@ -27,7 +27,7 @@ class SyncHandler implements Runnable {
 
     final PersistentSendThread sendThread;
 
-    final PointValueDao pointValueDao = DaoInstances.getPointValueDao();
+    final PointValueDao pointValueDao = DaoInstances.PointValueDao;
     long cutoff;
 
     int recordsSynced;

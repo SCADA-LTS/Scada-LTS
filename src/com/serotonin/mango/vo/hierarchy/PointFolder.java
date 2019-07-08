@@ -156,7 +156,7 @@ public class PointFolder implements JsonSerializable {
     public void jsonSerialize(Map<String, Object> map) {
         List<String> pointList = new ArrayList<String>();
         for (IntValuePair p : points) {
-            DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(p.getKey());
+            DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(p.getKey());
             if (dp != null)
                 pointList.add(dp.getXid());
         }
@@ -172,7 +172,7 @@ public class PointFolder implements JsonSerializable {
             for (JsonValue jv : jsonPoints.getElements()) {
                 String xid = jv.toJsonString().getValue();
 
-                DataPointVO dp = DaoInstances.getDataPointDao().getDataPoint(xid);
+                DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(xid);
                 if (dp == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
 

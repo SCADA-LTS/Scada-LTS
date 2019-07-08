@@ -97,51 +97,51 @@ public class EmportDwr extends BaseDwr {
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 
 		if (graphicalViews)
-			data.put(GRAPHICAL_VIEWS, DaoInstances.getViewDao().getViews());
+			data.put(GRAPHICAL_VIEWS, DaoInstances.ViewDao.getViews());
 		if (dataSources)
-			data.put(DATA_SOURCES, DaoInstances.getDataSourceDao().getDataSources());
+			data.put(DATA_SOURCES, DaoInstances.DataSourceDao.getDataSources());
 
-		List<DataPointVO> allDataPoints = DaoInstances.getDataPointDao().getDataPoints(
+		List<DataPointVO> allDataPoints = DaoInstances.DataPointDao.getDataPoints(
 				null, true);
 
 		if (dataPoints)
 			data.put(DATA_POINTS, allDataPoints);
 		if (scheduledEvents)
 			data.put(SCHEDULED_EVENTS,
-					DaoInstances.getScheduledEventDao().getScheduledEvents());
+					DaoInstances.ScheduledEventDao.getScheduledEvents());
 		if (compoundEventDetectors)
 			data.put(COMPOUND_EVENT_DETECTORS,
-					DaoInstances.getCompoundEventDetectorDao().getCompoundEventDetectors());
+					DaoInstances.CompoundEventDetectorDao.getCompoundEventDetectors());
 		if (pointLinks)
-			data.put(POINT_LINKS, DaoInstances.getPointLinkDao().getPointLinks());
+			data.put(POINT_LINKS, DaoInstances.PointLinkDao.getPointLinks());
 		if (users)
-			data.put(USERS, DaoInstances.getUserDao().getUsers());
+			data.put(USERS, DaoInstances.UserDao.getUsers());
 		if (mailingLists)
-			data.put(MAILING_LISTS, DaoInstances.getMailingListDao().getMailingLists());
+			data.put(MAILING_LISTS, DaoInstances.MailingListDao.getMailingLists());
 		if (publishers)
-			data.put(PUBLISHERS, DaoInstances.getPublisherDao().getPublishers());
+			data.put(PUBLISHERS, DaoInstances.PublisherDao.getPublishers());
 		if (pointHierarchy)
-			data.put(POINT_HIERARCHY, DaoInstances.getDataPointDao().getPointHierarchy()
+			data.put(POINT_HIERARCHY, DaoInstances.DataPointDao.getPointHierarchy()
 					.getRoot().getSubfolders());
 		if (eventHandlers)
-			data.put(EVENT_HANDLERS, DaoInstances.getEventDao().getEventHandlers());
+			data.put(EVENT_HANDLERS, DaoInstances.EventDao.getEventHandlers());
 		if (watchLists) {
-			List<WatchList> wls = DaoInstances.getWatchListDao().getWatchLists();
+			List<WatchList> wls = DaoInstances.WatchListDao.getWatchLists();
 			data.put(WATCH_LISTS, wls);
 		}
 		if (maintenanceEvents)
 			data.put(MAINTENANCE_EVENTS,
-					DaoInstances.getMaintenanceEventDao().getMaintenanceEvents());
+					DaoInstances.MaintenanceEventDao.getMaintenanceEvents());
 
 		if (scripts)
-			data.put(SCRIPTS, DaoInstances.getScriptDao().getScripts());
+			data.put(SCRIPTS, DaoInstances.ScriptDao.getScripts());
 		if (pointValues) {
 			List<PointValueJSONWrapper> allWrappedValues = new ArrayList<PointValueJSONWrapper>();
 
 			long antes = System.currentTimeMillis();
 			for (DataPointVO dataPointVO : allDataPoints) {
 				allWrappedValues.addAll(PointValueJSONWrapper.wrapPointValues(
-						dataPointVO.getXid(), DaoInstances.getPointValueDao().getLatestPointValues(
+						dataPointVO.getXid(), DaoInstances.PointValueDao.getLatestPointValues(
 								dataPointVO.getId(), maxPointValues)));
 			}
 			data.put(POINT_VALUES, allWrappedValues);
@@ -153,7 +153,7 @@ public class EmportDwr extends BaseDwr {
 			data.put(SYSTEM_SETTINGS, list);
 		}
 		if (usersProfiles) {
-			data.put(USERS_PROFILES, DaoInstances.getUsersProfileDao().getUsersProfiles());
+			data.put(USERS_PROFILES, DaoInstances.UsersProfileDao.getUsersProfiles());
 		}
 
 		JsonWriter writer = new JsonWriter();
@@ -257,7 +257,7 @@ public class EmportDwr extends BaseDwr {
 	private void stopRunningDataSources() {
 
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
-		for (DataSourceVO<?> dataSourceVO : DaoInstances.getDataSourceDao()
+		for (DataSourceVO<?> dataSourceVO : DaoInstances.DataSourceDao
 				.getDataSources()) {
 			if (dataSourceVO.isEnabled())
 				rtm.stopDataSource(dataSourceVO.getId());
