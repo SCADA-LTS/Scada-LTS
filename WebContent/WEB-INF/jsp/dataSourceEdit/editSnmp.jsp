@@ -23,6 +23,14 @@
 <%@page import="com.serotonin.mango.DataTypes"%>
 
 <script type="text/javascript">
+
+  var trapEnabled;
+  if($get("trapPort") == "0") {
+      trapEnabled = false;
+  } else {
+      trapEnabled = true;
+  }
+
   function versionChange() {
       var version = $get("snmpVersion");
       if (version == <c:out value="<%= SnmpConstants.version3 %>"/>) {
@@ -136,6 +144,18 @@
   
   function dataTypeChanged() {
       display("binary0ValueRow", $get("dataTypeId") == <c:out value="<%= DataTypes.BINARY %>"/>);
+  }
+
+  function trapTriggered() {
+      setDisabled($("trapPort"), !trapEnabled);
+      setDisabled($("localAddress"), !trapEnabled);
+
+      if(!trapEnabled) {
+          document.getElementById("trapPort").value = "0";
+      } else {
+          document.getElementById("trapPort").value = "161";
+      }
+      trapEnabled = !trapEnabled;
   }
 </script>
 
@@ -256,7 +276,7 @@
 
         <tr>
           <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPortDesc"/></td>
-          <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPortDescNotice"/></td>
+          <td class="formLabel"><input id="trapTrigger" type="checkbox" checked onclick="trapTriggered();"></td>
         </tr>
         
         <tr>

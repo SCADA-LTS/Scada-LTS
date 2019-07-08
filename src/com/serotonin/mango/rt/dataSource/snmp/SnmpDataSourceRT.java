@@ -337,7 +337,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 			synchronized (pointListChangeLock) {
 				updateChangedPoints();
 
-				for (int i = 0; i < trap.size(); i++) {
+				for (int i = 0; i < trap.getVariableBindings().size(); i++) {
 					vb = trap.get(i);
 					boolean found = false;
 
@@ -350,7 +350,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 					}
 
 					if (!found)
-						raiseEvent(TRAP_NOT_HANDLED_EVENT, time, false, new LocalizableMessage("event.snmp.trapNotHandled", vb));
+//						raiseEvent(TRAP_NOT_HANDLED_EVENT, time, false, new LocalizableMessage("event.snmp.trapNotHandled", vb));
 						log.warn("Trap not handled: " + vb);
 				}
 			}
