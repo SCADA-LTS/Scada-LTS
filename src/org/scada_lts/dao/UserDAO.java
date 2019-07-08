@@ -45,7 +45,8 @@ public class UserDAO {
 	protected final static String COLUMN_NAME_LAST_LOGIN = "lastLogin";
 	protected final static String COLUMN_NAME_RECEIVE_ALARM_EMAILS = "receiveAlarmEmails";
 	protected final static String COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS = "receiveOwnAuditEvents";
-
+	private final static String COLUMN_NAME_TIMEZONE="timezone";
+	private final static String COLUMN_NAME_ZONE="zone";
 	// @formatter:off
 	protected static final String USER_SELECT_ID = ""
 			+ "select "
@@ -65,7 +66,9 @@ public class UserDAO {
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_LAST_LOGIN + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + " "
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS +", "
+				+ COLUMN_NAME_TIMEZONE +", " // Offset
+				+ COLUMN_NAME_ZONE +" "// ZONE
 			+ "from users ";
 
 	protected static final String USER_SELECT_ORDER = ""
@@ -97,8 +100,9 @@ public class UserDAO {
 				+ COLUMN_NAME_DISABLED + ", "
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") "
-			+ "values (?,?,?,?,?,?,?,?,?) ";
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
+				+ COLUMN_NAME_ZONE + " )" 		
+			+ "values (?,?,?,?,?,?,?,?,?,?,?) ";
 
 	protected static final String USER_UPDATE = ""
 			+ "update users set "
@@ -110,10 +114,38 @@ public class UserDAO {
 				+ COLUMN_NAME_DISABLED + "=?, "
 				+ COLUMN_NAME_HOME_URL + "=?, "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + "=?, "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=? "
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=?, "
+				+ COLUMN_NAME_TIMEZONE + "=?, "
+				+ COLUMN_NAME_ZONE + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
+	
+	private static final String USER_SELECT_TIMEZONE = ""		
+			+ "select "
+				+ COLUMN_NAME_TIMEZONE + " "
+			+ "from users "
+			 + "where "
+				+ COLUMN_NAME_ID + "=? ";
 
+	private static final String USER_UPDATE_TIMEZONE = ""		
+			+ "update users set "
+			+ COLUMN_NAME_TIMEZONE + "=? "
+		    + "where "
+			+ COLUMN_NAME_ID + "=? ";
+
+	private static final String USER_SELECT_ZONE = ""			
+			+ "select "
+				+ COLUMN_NAME_ZONE + " "						
+			+ "from users "
+			 + "where "
+				+ COLUMN_NAME_ID + "=? ";
+	
+	private static final String USER_UPDATE_ZONE=""				
+			+ "update users set "
+			+ COLUMN_NAME_ZONE + "=? "
+		    + "where "
+			+ COLUMN_NAME_ID + "=? ";
+	
 	protected static final String USER_UPDATE_LOGIN = ""
 			+ "update users set "
 				+ COLUMN_NAME_LAST_LOGIN + "=? "
@@ -148,6 +180,8 @@ public class UserDAO {
 			user.setLastLogin(rs.getLong(COLUMN_NAME_LAST_LOGIN));
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
+			user.setTimezone(Timezone.createTimezone(rs.getString(COLUMN_NAME_TIMEZONE)));
+			user.setZone(rs.getString(COLUMN_NAME_ZONE));	
 			return user;
 		}
 	}
@@ -228,7 +262,6 @@ public class UserDAO {
 	}
 	
 	public String getUserTimezone(int id) {
-		String timeZone;
 		if (LOG.isTraceEnabled())
 			LOG.trace("getUser_timezone(int id) id:" + id);
 		
@@ -236,7 +269,7 @@ public class UserDAO {
 			timeZone = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_TIMEZONE, new Object[]{id}, String.class);
 
 		} catch (EmptyResultDataAccessException e) {
-			timeZone = null;
+			timeZone = "";
 		}
 		return timeZone;
 
@@ -310,7 +343,9 @@ public class UserDAO {
 						DAO.boolToChar(user.isDisabled()),
 						user.getHomeUrl(),
 						user.getReceiveAlarmEmails(),
-						DAO.boolToChar(user.isReceiveOwnAuditEvents())
+						DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+						user.getTimezoneId(),
+						user.getZone()
 				}).setValues(preparedStatement);
 				return preparedStatement;
 			}
@@ -335,6 +370,8 @@ public class UserDAO {
 				user.getHomeUrl(),
 				user.getReceiveAlarmEmails(),
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+				user.getTimezoneId(),
+				user.getZone(),
 				user.getId()
 		});
 	}
