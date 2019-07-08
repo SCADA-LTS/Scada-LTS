@@ -146,6 +146,11 @@ public class UserDAO {
 		    + "where "
 			+ COLUMN_NAME_ID + "=? ";
 	
+	private static final String USER_SELECT_WHERE_EMAIL = ""
+			+ USER_SELECT
+			+ "where lower("
+			+ COLUMN_NAME_EMAIL + ")=?";
+	
 	protected static final String USER_UPDATE_LOGIN = ""
 			+ "update users set "
 				+ COLUMN_NAME_LAST_LOGIN + "=? "
@@ -262,6 +267,7 @@ public class UserDAO {
 	}
 	
 	public String getUserTimezone(int id) {
+		String timeZone;
 		if (LOG.isTraceEnabled())
 			LOG.trace("getUser_timezone(int id) id:" + id);
 		
