@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
-import org.scada_lts.dao.UserDAO;
+import org.scada_lts.dao.IUserDAO;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
@@ -56,6 +56,7 @@ import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.UserTzDAO;
 
 public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {
@@ -89,7 +90,7 @@ public class WatchListDwr extends BaseDwr {
 	/**
 	 * Retrieves point state for all points on the current watch list.
 	 * 
-	 * @param pointIds
+	 * @param
 	 * @return
 	 */
 	public List<WatchListState> getPointData() {
@@ -123,7 +124,7 @@ public class WatchListDwr extends BaseDwr {
 	}
 	// Timezone
 	public String getTimezone() { 
-		UserDAO userDao = new UserDAO();
+		IUserDAO userDao = new UserTzDAO();
 		String zone = userDao.getUserZone(Common.getUser().getId());
 		String offset = userDao.getUserTimezone(Common.getUser().getId());
 		return offset +" "+zone;
@@ -133,8 +134,8 @@ public class WatchListDwr extends BaseDwr {
 	
 	// Timezone
 	public void updateTimezone(String timezone) {
-		new UserDAO().updateUserTimezone(Common.getUser().getId(), timezone.substring(0, 9));
-		new UserDAO().updateUserZone(Common.getUser().getId(), timezone.substring(10, timezone.length()));
+		new UserTzDAO().updateUserTimezone(Common.getUser().getId(), timezone.substring(0, 9));
+		new UserTzDAO().updateUserZone(Common.getUser().getId(), timezone.substring(10, timezone.length()));
 	}
 
 	public void updateWatchListName(String name) {

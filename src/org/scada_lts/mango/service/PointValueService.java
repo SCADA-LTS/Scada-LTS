@@ -296,13 +296,18 @@ public class PointValueService implements MangoPointValues {
             String shortString = null;
             String longString = null;
             if (svalue != null) {
-                if (svalue.length() > 128)
-                    longString = svalue;
-                else
+                if (dataType == DataTypes.IMAGE) {
+                    longString = Double.toString(dvalue);
                     shortString = svalue;
+                } else {
+                    if (svalue.length() > 128)
+                        longString = svalue;
+                    else
+                        shortString = svalue;
+                }
             }
 
-            PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id, shortString, longString, sourceType, sourceId);
+                PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id, shortString, longString, sourceType, sourceId);
             PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
 
         }
