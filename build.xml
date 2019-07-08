@@ -244,15 +244,15 @@
 	</target>
 
 	<target name="new-ui-dependency">
-		<exec dir="./ScadaLTS-UI-1" executable="cmd">
-			<arg value="npm install"/>
+		<exec dir="./ScadaLTS-UI-1" executable="npm">
+			<arg value="install"/>
 		</exec>
 	</target>
 
 	<target name="new-ui" depends="new-ui-dependency">
-		<exec dir="./ScadaLTS-UI-1" executable="cmd">
-			<arg value="npm run"/>
-			<arg value="npm build"/>
+		<exec dir="./ScadaLTS-UI-1" executable="npm">
+			<arg value="run"/>
+			<arg value="build"/>
 		</exec>
 	</target>
 
