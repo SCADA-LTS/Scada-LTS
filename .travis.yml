@@ -16,7 +16,7 @@ before_script:
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 # correct version base on Milestones
-- sed -i 'RELEASE_OR_BUILD_VERs/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
+- sed 's/return scadaProperties.getString("app.version");/return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
 #- cd ./ScadaLTS-UI
@@ -66,10 +66,10 @@ after_script:
 - ls -l
 - mv ./apache-tomcat-7.0.85/* ./
 - rm -rf ./apache-tomcat-7.0.85
-- cp ../../ScadaBR.war ./webapps
-#- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
-#- ls -l ./webapps/ScadaLTS.war
-- ls -l ./webapps/ScadaBR.war
+#- cp ../../ScadaBR.war ./webapps
+- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
+- ls -l ./webapps/ScadaLTS.war
+#- ls -l ./webapps/ScadaBR.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
 - ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
