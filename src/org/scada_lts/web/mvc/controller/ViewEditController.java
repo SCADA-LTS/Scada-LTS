@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.serotonin.mango.ScriptSession;
 import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
