@@ -30,10 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.ScriptSession;
 import com.serotonin.mango.dao_cache.DaoInstances;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -126,26 +123,6 @@ public class ViewDwr extends BaseDwr {
 		return viewComponentId;
 	}
 
-	public void addEditedViewToContext(String viewId) {
-		ScriptSession.addNewEditedObjectForScriptSession(
-				getPresentView(viewId),
-				WebContextFactory.get().getSession().getId(),
-				WebContextFactory.get().getScriptSession().getId());
-	}
-	private View getPresentView(String viewId){
-		View view = null;
-
-		try {
-			view = DaoInstances.ViewDao.getView(Integer.parseInt(viewId));
-		}
-		catch (Exception e){
-			//we don't have view in db , so get from user from session
-			if(view == null){
-				view = Common.getUser().getView();
-			}
-		}
-		return view;
-	}
 
 	@MethodFilter
 	public List<IntValuePair> getViews() {
@@ -368,7 +345,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public void deleteViewShare() {
 		User user = Common.getUser();
-		user.setView(getViewFromContext());
+		//user.setView(getViewFromContext());
 		DaoInstances.ViewDao.removeUserFromView(user.getView().getId(), user.getId());
 	}
 

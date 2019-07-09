@@ -1026,7 +1026,6 @@ public class ImportTask extends ProgressiveTask {
 		} else {
 			long time = json.getLong("timestamp");
 			String value = json.getString("value");
-			PointValueDao dao = new PointValueDao();
 			MangoValue mangoValue;
 			try {
 				mangoValue = MangoValue.stringToValue(value, dp.getPointLocator().getDataTypeId());

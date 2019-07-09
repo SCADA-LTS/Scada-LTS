@@ -30,6 +30,7 @@ import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.config.ScadaConfig;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -309,7 +310,7 @@ public class RuntimeManager {
 	 *
 	 * @param id
 	 */
-	public void stopDathttp://okrokwiecej.blogspot.com/2019/07/another-ultra-dimension-with-high.htmlaSourceAndDontJoinTermination(int id) {
+	public void stopDataSourceAndDontJoinTermination(int id) {
 		synchronized (runningDataSources) {
 			DataSourceRT dataSource = getRunningDataSource(id);
 			if (dataSource == null)
