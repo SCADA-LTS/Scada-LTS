@@ -23,7 +23,7 @@ public class SnmpDataSourceRTTest {
         snmpDataSourceVO.setSnmpVersion(1);
         snmpDataSourceVO.setRetries(retries);
         snmpDataSourceVO.setHost("127.0.0.1");
-        snmpDataSourceVO.setPort(1024);
+        snmpDataSourceVO.setPort(2048);
         snmpDataSourceVO.setTimeout(1000);
         snmpDataSourceVO.setLocalAddress("127.0.0.1");
         snmpDataSourceVO.setCommunity("public");

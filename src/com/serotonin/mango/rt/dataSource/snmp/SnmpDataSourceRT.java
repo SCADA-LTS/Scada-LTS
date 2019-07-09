@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.snmp4j.PDU;
@@ -215,6 +216,18 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		ResponseEvent event = snmp.send(request, target);
 		if(event != null) {
 			response = event.getResponse();
+			LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);
+			if (time == -1) {
+				if (!isSnmpConnectionIsAlive()) {
+					snmp.close();
+				}
+			} else {
+				if (!isSnmpConnectionIsAlive()) {
+					Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
+				} else if (message != null) {
+					raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+				}
+			}
 			if (response.getErrorStatus() == PDU.noError) {
 				DataPointRT dp;
 				for (int i = 0; i < response.size(); i++) {
