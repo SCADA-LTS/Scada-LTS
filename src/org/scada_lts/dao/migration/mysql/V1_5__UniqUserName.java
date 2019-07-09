@@ -22,15 +22,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 /**
  * @autor grzegorz.bylica@gmail.com (SoftQ) on 03.07.19 update task timezone
  */
-public class V1_4__SetTimeZone implements SpringJdbcMigration {
+public class V1_5__UniqUserName implements SpringJdbcMigration {
 
     @Override
     public void migrate(JdbcTemplate jdbcTemplate) throws Exception {
-        final String setTimeZoneProperties = ""
-                + "alter table users " +
-                "add column `timezone` varchar(100) after `receiveOwnAuditEvents`,"+
-                "add column `zone` varchar(60) after `timezone`;";
 
-        jdbcTemplate.execute(setTimeZoneProperties);
+        final String setUniqForUserName = ""
+                + "alter table users " +
+                "add constraint uc_username unique (`username`);";
+
+        jdbcTemplate.execute(setUniqForUserName);
     }
 }

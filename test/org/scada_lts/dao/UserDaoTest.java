@@ -18,7 +18,7 @@
 package org.scada_lts.dao;
 
 /**
- * UserDAO test
+ * UserDAOImp test
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
@@ -59,7 +59,7 @@ public class UserDaoTest extends TestDAO {
 
 	/*@Test
 	public void test() {
-		UserDAO userDAO = new UserDAO();
+		UserDAOImp userDAO = new UserDAOImp();
 
 		User user = new User();
 		user.setUsername(USERNAME);

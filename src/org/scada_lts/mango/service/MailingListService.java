@@ -24,7 +24,7 @@ import com.serotonin.mango.vo.mailingList.UserEntry;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import org.joda.time.DateTime;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.IUserDAO;
+import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.UserTzDAO;
 import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
@@ -112,7 +112,7 @@ public class MailingListService implements MangoMailingList {
 	@Override
 	public void populateEntrySubclasses(List<EmailRecipient> entries) {
 		// Update the user type entries with their respective user objects.
-		IUserDAO userDAO = new UserTzDAO();
+		UserDAO userDAO = new UserTzDAO();
 		for (EmailRecipient e : entries) {
 			if (e instanceof MailingList) {
 				setRelationalData((MailingList) e);

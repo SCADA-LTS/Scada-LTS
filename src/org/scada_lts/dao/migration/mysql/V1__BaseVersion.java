@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SystemSettingsDAO;
-import org.scada_lts.dao.UserDAO;
+import org.scada_lts.dao.UserDAOImp;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.serotonin.mango.Common;
@@ -735,7 +735,7 @@ public class V1__BaseVersion implements SpringJdbcMigration {
 	   	   user.setDisabled(false);
 	   	   user.setDataSourcePermissions(new LinkedList<Integer>());
 	   	   user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-	   	   new UserDAO().insert(user);
+	   	   new UserDAOImp().insert(user);
 
 	   	   // Record the current version.
 	   	   new SystemSettingsDAO().setValue(

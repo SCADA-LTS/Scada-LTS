@@ -29,13 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
-import org.scada_lts.dao.IUserDAO;
+import org.scada_lts.dao.UserDAO;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -124,7 +123,7 @@ public class WatchListDwr extends BaseDwr {
 	}
 	// Timezone
 	public String getTimezone() { 
-		IUserDAO userDao = new UserTzDAO();
+		UserDAO userDao = new UserTzDAO();
 		String zone = userDao.getUserZone(Common.getUser().getId());
 		String offset = userDao.getUserTimezone(Common.getUser().getId());
 		return offset +" "+zone;
@@ -236,7 +235,7 @@ public class WatchListDwr extends BaseDwr {
 		watchList.getPointList().add(point);
 		new WatchListDao().saveWatchList(watchList);
 		updateSetPermission(point, watchList.getUserAccess(user),
-				new UserDao().getUser(watchList.getUserId()));
+				new UserTzDAO().getUser(watchList.getUserId()));
 
 		// Return the watch list state for it.
 		return createWatchListState(request, point,
@@ -443,7 +442,7 @@ public class WatchListDwr extends BaseDwr {
 		}
 
 		access = watchList.getUserAccess(user);
-		User owner = new UserDao().getUser(watchList.getUserId());
+		User owner = new UserTzDAO().getUser(watchList.getUserId());
 		for (DataPointVO point : watchList.getPointList())
 			updateSetPermission(point, access, owner);
 	}

@@ -41,7 +41,7 @@ import java.sql.SQLException;
  * @autor Khelifi Hassene,
  * @autor grzegorz.bylica@gmail.com (SoftQ) on 03.07.19
  */
-public class UserTzDAO extends UserDAO implements IUserDAO  {
+public class UserTzDAO extends UserDAOImp implements UserDAO {
 
     private static final Log LOG = LogFactory.getLog(UserTzDAO.class);
 
@@ -281,5 +281,7 @@ public class UserTzDAO extends UserDAO implements IUserDAO  {
                 user.getId()
         });
     }
+
+
 
 }

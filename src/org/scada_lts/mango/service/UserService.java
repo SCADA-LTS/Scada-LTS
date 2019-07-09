@@ -21,7 +21,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.web.taglib.Functions;
-import org.scada_lts.dao.IUserDAO;
+import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UserTzDAO;
 import org.scada_lts.mango.adapter.MangoUser;
@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class UserService implements MangoUser {
 
-	private IUserDAO userDAO = new UserTzDAO();
+	private UserDAO userDAO = new UserTzDAO();
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
 
 	private DataPointService dataPointService = new DataPointService();

@@ -203,7 +203,7 @@ public class PendingEventsDAO {
 
 	protected TreeMap<Integer, List<EventInstance>> getPendingEvents() {
 		
-		List<Integer> users = new UserDAO().getAll();
+		List<Integer> users = new UserDAOImp().getAll();
 		
 		TreeMap<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
 		

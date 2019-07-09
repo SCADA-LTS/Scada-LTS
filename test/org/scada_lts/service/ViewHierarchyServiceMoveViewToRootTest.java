@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.scada_lts.dao.TestDAO;
-import org.scada_lts.dao.UserDAO;
+import org.scada_lts.dao.UserDAOImp;
 import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
@@ -37,7 +37,7 @@ public class ViewHierarchyServiceMoveViewToRootTest extends TestDAO{
 			
 		ViewHierarchyService vhs = new ViewHierarchyService(vhDAO, vDAO);
 	
-		UserDAO uDAO = new UserDAO();
+		UserDAOImp uDAO = new UserDAOImp();
 			
 		User user = new User();
 		user.setAdmin(true);

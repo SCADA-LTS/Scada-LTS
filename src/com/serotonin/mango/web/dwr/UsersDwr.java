@@ -23,8 +23,12 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.*;
+import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.db.dao.DataSourceDao;
+import com.serotonin.mango.db.dao.ViewDao;
+import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.DataPointNameComparator;
@@ -43,6 +47,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
+import org.scada_lts.dao.UserTzDAO;
+import org.scada_lts.mango.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -52,15 +58,15 @@ public class UsersDwr extends BaseDwr {
 
 	public Map<String, Object> getInitData() {
 		Map<String, Object> initData = new HashMap<String, Object>();
+		Timezone display = new Timezone();
 
 		User user = Common.getUser();
 		if (Permissions.hasAdmin(user)) {
 			// Users
 			initData.put("admin", true);
-			initData.put("users", new UserDao().getUsers());
+			initData.put("users", new UserService().getUsers());
 			initData.put("usersProfiles",
 					new UsersProfileDao().getUsersProfiles());
-
 
 			// Data sources
 			List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
@@ -99,7 +105,7 @@ public class UsersDwr extends BaseDwr {
 
 		} else
 			initData.put("user", user);
-
+		initData.put("TimezoneList", display.getTimeZoneList(Timezone.OffsetBase.UTC)); /// Timezone
 		return initData;
 	}
 
@@ -111,7 +117,7 @@ public class UsersDwr extends BaseDwr {
 			user.setDataSourcePermissions(new ArrayList<Integer>(0));
 			user.setDataPointPermissions(new ArrayList<DataPointAccess>(0));
 		} else {
-			user = new UserDao().getUser(id);
+			user = new UserService().getUser(id);
 
 			UsersProfileDao usersProfileDao = new UsersProfileDao();
 			if (usersProfileDao.getUserProfileByUserId(user.getId()) != null) {
@@ -127,7 +133,7 @@ public class UsersDwr extends BaseDwr {
 										 String password, String email, String phone, boolean admin,
 										 boolean disabled, int receiveAlarmEmails,
 										 boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
-										 List<DataPointAccess> dataPointPermissions, List<ViewAccess> viewsPermissions, List<WatchListAccess> watchListsPermissions, int usersProfileId) {
+										 List<DataPointAccess> dataPointPermissions, List<ViewAccess> viewsPermissions, List<WatchListAccess> watchListsPermissions, int usersProfileId, String timezone) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
@@ -135,13 +141,16 @@ public class UsersDwr extends BaseDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 		User currentUser = Common.getUser(request);
-		UserDao userDao = new UserDao();
+		UserService userService = new UserService();
+
+		TimeZone timezoneobj = TimeZone.getDefault(); // Timezone
+		timezoneobj.setID(timezone.substring(1, 10)); //
 
 		User user;
 		if (id == Common.NEW_ID)
 			user = new User();
 		else
-			user = userDao.getUser(id);
+			user = userService.getUser(id);
 		user.setUsername(username);
 		if (!StringUtils.isEmpty(password))
 			user.setPassword(Common.encrypt(password));
@@ -153,12 +162,15 @@ public class UsersDwr extends BaseDwr {
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		user.setDataSourcePermissions(dataSourcePermissions);
 		user.setDataPointPermissions(dataPointPermissions);
+		user.setTimezone(timezoneobj);
+		user.setZone(timezone.substring(12, timezone.length()));
+
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);
 
 		// Check if the username is unique.
-		User dupUser = userDao.getUser(username);
+		User dupUser = userService.getUser(username);
 		if (id == Common.NEW_ID && dupUser != null)
 			response.addMessage(new LocalizableMessage(
 					"users.validate.usernameUnique"));
@@ -177,7 +189,7 @@ public class UsersDwr extends BaseDwr {
 		}
 
 		if (!response.getHasMessages()) {
-			userDao.saveUser(user);
+			userService.saveUser(user);
 
 			UsersProfileDao profilesDao = new UsersProfileDao();
 			if (usersProfileId != Common.NEW_ID) {
@@ -185,7 +197,7 @@ public class UsersDwr extends BaseDwr {
 				UsersProfileVO profile = profilesDao
 						.getUserProfileById(usersProfileId);
 				profile.apply(user);
-				userDao.saveUser(user);
+				userService.saveUser(user);
 				profilesDao.resetUserProfile(user);
 				profilesDao.updateUsersProfile(profile);
 			} else {
@@ -235,7 +247,9 @@ public class UsersDwr extends BaseDwr {
 			viewDao.saveView(v);
 		}
 
-		WatchListDao watchListDao = new WatchListDao();
+		// (09.07.2019) gb it is not work properly for new database with one user (when create new user and update new user)
+		// disable because blocked test time zone
+		/*WatchListDao watchListDao = new WatchListDao();
 		List<WatchList> watchLists = watchListDao.getWatchLists();
 		Map<String, Object> watchListsPermissionsMap = new HashMap<>();
 		for(WatchList w:watchLists) {
@@ -262,14 +276,23 @@ public class UsersDwr extends BaseDwr {
 			}
 			w.setWatchListUsers(shareUsers);
 			watchListDao.saveWatchList(w);
-		}
+		}*/
 
 		return response;
 	}
 
+	public String getTimezone(int id){
+		UserService user = new UserService();
+		return "(" + user.getUserTimezone(id)+") " + user.getUserZone(id);
+	}
+
 	public DwrResponseI18n saveUser(int id, String password, String email,
 									String phone, int receiveAlarmEmails,
-									boolean receiveOwnAuditEvents, int usersProfileId) {
+									boolean receiveOwnAuditEvents, int usersProfileId, String timezone) {
+
+		TimeZone timezoneobj = TimeZone.getDefault();		// Timezone
+		timezoneobj.setID(timezone.substring(1,10));
+
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -278,20 +301,22 @@ public class UsersDwr extends BaseDwr {
 			throw new PermissionException("Cannot update a different user",
 					user);
 
-		UserDao userDao = new UserDao();
-		User updateUser = userDao.getUser(id);
+		UserService userService = new UserService();
+		User updateUser = userService.getUser(id);
 		if (!StringUtils.isEmpty(password))
 			updateUser.setPassword(Common.encrypt(password));
 		updateUser.setEmail(email);
 		updateUser.setPhone(phone);
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
+		updateUser.setTimezone(timezoneobj); // Timezone
+		updateUser.setZone(timezone.substring(12, timezone.length()));
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 
 		if (!response.getHasMessages()) {
-			userDao.saveUser(updateUser);
+			userService.saveUser(updateUser);
 			Common.setUser(request, updateUser);
 		}
 
@@ -328,7 +353,7 @@ public class UsersDwr extends BaseDwr {
 			response.addMessage(new LocalizableMessage(
 					"users.validate.badDelete"));
 		else
-			new UserDao().deleteUser(id);
+			new UserTzDAO().delete(id);
 
 		return response;
 	}
