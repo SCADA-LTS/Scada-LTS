@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.utils.Key;
+import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.mango.service.DataSourceService;
 
@@ -48,33 +49,49 @@ public class ReactivationManager {
     }
 
     public void addProcess(StatefulJob sj, ReactivationDs rd, DataSourceVO<?> vo)  {
-        LOG.info("addProcess");
 
-        JobDetail job = new JobDetail();
-        job.setName(vo.getXid());
-        job.setJobClass(sj.getClass());
-
-        AbstractMap.SimpleImmutableEntry dsInfo = new AbstractMap.SimpleImmutableEntry<>(vo.getName(), vo.getId());
-        sleepDsIndexJobName.put(job.getKey().getName(), dsInfo);
-        sleepDsIndexIdDs.put(vo.getId(), job.getKey());
-
-        SimpleTrigger trigger = new SimpleTrigger();
-
-        Long interval = getAdditionalMilliseconds(rd);
-        Date startTime = new Date(System.currentTimeMillis() + interval );
-        LOG.info("process will be start:" + startTime);
-        trigger.setStartTime(startTime);
-        trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
-
-        LOG.trace("Quartz - "+sj.getClass()+ " interval: " + interval);
-        trigger.setRepeatInterval(interval);
-
-        trigger.setName("Quartz - trigger-"+sj.getClass()+"");
-
+        boolean isAllowEnableReactivation = false;
         try {
-            scheduler.scheduleJob(job, trigger);
-        } catch (SchedulerException e) {
-            LOG.error(e);
+            isAllowEnableReactivation = ScadaConfig.getInstance().getBoolean(ScadaConfig.HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION, false);
+        } catch (Exception e) {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace(e);
+            }
+        }
+        if (isAllowEnableReactivation) {
+
+            JobDetail job = new JobDetail();
+            job.setName(vo.getXid());
+            job.setJobClass(sj.getClass());
+
+            AbstractMap.SimpleImmutableEntry dsInfo = new AbstractMap.SimpleImmutableEntry<>(vo.getName(), vo.getId());
+            sleepDsIndexJobName.put(job.getKey().getName(), dsInfo);
+            sleepDsIndexIdDs.put(vo.getId(), job.getKey());
+
+            SimpleTrigger trigger = new SimpleTrigger();
+
+            Long interval = getAdditionalMilliseconds(rd);
+            Date startTime = new Date(System.currentTimeMillis() + interval);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace(("process will be start:" + startTime));
+            }
+            trigger.setStartTime(startTime);
+            trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
+
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Quartz - " + sj.getClass() + " interval: " + interval);
+            }
+
+            trigger.setRepeatInterval(interval);
+            trigger.setName("Quartz - trigger-" + sj.getClass() + "");
+
+            try {
+                scheduler.scheduleJob(job, trigger);
+            } catch (SchedulerException e) {
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace(e);
+                }
+            }
         }
 
     }
@@ -97,7 +114,7 @@ public class ReactivationManager {
             Key key = sleepDsIndexIdDs.get(idDs);
 
             Trigger[] trigers = scheduler.getTriggersOfJob(key.getName(), key.getGroup());
-            if (trigers.length > 0) {
+            if ( (trigers != null) && (trigers.length > 0)) {
                 return scheduler.getTriggersOfJob(key.getName(), key.getGroup())[0].getNextFireTime().getTime() - new Date().getTime();
             } else {
                 return ERROR;

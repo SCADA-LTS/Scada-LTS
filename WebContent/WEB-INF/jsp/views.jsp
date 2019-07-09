@@ -17,13 +17,13 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp"%>
+<%@page import="com.serotonin.mango.vo.UserComment"%>
 <tag:page dwr="ViewDwr"
 	js="view,dygraphs/dygraph-dev,dygraph-extra,dygraphsSplineUtils,dygraphsCharts"
 	css="jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min,jQuery/plugins/datetimepicker/jquery-ui-timepicker-addon,jQuery/plugins/jpicker/css/jPicker-1.1.6.min" 
 	jqplugins="jquery-ui/js/jquery-ui-1.10.3.custom.min,jpicker/jpicker-1.1.6.min,datetimepicker/jquery-ui-timepicker-addon" >
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/shortcut.js"></script>
-  <script type="text/javascript" src="resources/splitPartsAndReturnUrl.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
   <link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
   <link
@@ -45,22 +45,22 @@
     <script type="text/javascript" src="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.js"></script>
 
 	<script type="text/javascript">
-
+	
 	jQuery.noConflict();
-
+	
 	shortcut.add("Ctrl+Shift+F",function() {
 
 		setCookie("fullScreen","no");
-
+		
 		document.getElementById('mainHeader').style.display = "compact";
   	  	document.getElementById('subHeader').style.display = "compact";
   	  	document.getElementById('graphical').style.display = "compact";
-
+  	  	
   		location.reload(true);
 
-
+		
 	});
-
+	
 	//check replace alert
 	jQuery.ajax({
         type: "GET",
@@ -82,17 +82,15 @@
               //no op
             }
     });
-
+	
 	<c:if test="${!empty currentView}">
       mango.view.initNormalView();
     </c:if>
-
-    mango.share.dwr = ViewDwr;
-
+    
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
     var browserName  = navigator.appName;
-    var fullVersion  = ''+parseFloat(navigator.appVersion);
+    var fullVersion  = ''+parseFloat(navigator.appVersion); 
     var majorVersion = parseInt(navigator.appVersion,10);
     var nameOffset,verOffset,ix;
 
@@ -100,7 +98,7 @@
     if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
      browserName = "Opera";
      fullVersion = nAgt.substring(verOffset+6);
-     if ((verOffset=nAgt.indexOf("Version"))!=-1)
+     if ((verOffset=nAgt.indexOf("Version"))!=-1) 
        fullVersion = nAgt.substring(verOffset+8);
     }
     // In MSIE, the true version is after "MSIE" in userAgent
@@ -108,26 +106,26 @@
      browserName = "Microsoft Internet Explorer";
      fullVersion = nAgt.substring(verOffset+5);
     }
-    // In Chrome, the true version is after "Chrome"
+    // In Chrome, the true version is after "Chrome" 
     else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
      browserName = "Chrome";
      fullVersion = nAgt.substring(verOffset+7);
     }
-    // In Safari, the true version is after "Safari" or after "Version"
+    // In Safari, the true version is after "Safari" or after "Version" 
     else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
      browserName = "Safari";
      fullVersion = nAgt.substring(verOffset+7);
-     if ((verOffset=nAgt.indexOf("Version"))!=-1)
+     if ((verOffset=nAgt.indexOf("Version"))!=-1) 
        fullVersion = nAgt.substring(verOffset+8);
     }
-    // In Firefox, the true version is after "Firefox"
+    // In Firefox, the true version is after "Firefox" 
     else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
      browserName = "Firefox";
      fullVersion = nAgt.substring(verOffset+8);
     }
-    // In most other browsers, "name/version" is at the end of userAgent
-    else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) <
-              (verOffset=nAgt.lastIndexOf('/')) )
+    // In most other browsers, "name/version" is at the end of userAgent 
+    else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) < 
+              (verOffset=nAgt.lastIndexOf('/')) ) 
     {
      browserName = nAgt.substring(nameOffset,verOffset);
      fullVersion = nAgt.substring(verOffset+1);
@@ -143,14 +141,14 @@
 
     majorVersion = parseInt(''+fullVersion,10);
     if (isNaN(majorVersion)) {
-     fullVersion  = ''+parseFloat(navigator.appVersion);
+     fullVersion  = ''+parseFloat(navigator.appVersion); 
      majorVersion = parseInt(navigator.appVersion,10);
     }
-
+    
     function unshare() {
         ViewDwr.deleteViewShare(function() { window.location = 'views.shtm'; });
     }
-
+    
     function setCookie(c_name,value)
     {
     	var exdate=new Date();
@@ -158,36 +156,36 @@
     	var c_value=escape(value) + ("; expires="+exdate.toUTCString());
     	document.cookie=c_name + "=" + c_value;
     }
-
+    
     function getCookie(c_name)
     {
     	var i,x,y,ARRcookies=document.cookie.split(";");
-
+    	
     	for (i=0;i<ARRcookies.length;i++)
     	{
       		x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
       		y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
       		x=x.replace(/^\s+|\s+$/g,"");
-
+      		
       		if (x==c_name)
         	{
         		return unescape(y);
         	}
       	}
-
+    	
     }
-
+    
 	function toggleDisplay(){
-
+  	  	
 		document.getElementById('mainHeader').style.display = "none";
   	  	document.getElementById('subHeader').style.display = "none";
   	  	document.getElementById('graphical').style.display = "none";
   	  	jQuery('#fsOut').fadeOut(10000, function(){});
-
+  	  	
 	}
-
+	
 	function fullScreen(){
-
+  	  	
 		document.getElementById('fsOut').style.display = "block";
 		document.getElementById('mainHeader').style.display = "none";
   	  	document.getElementById('subHeader').style.display = "none";
@@ -195,30 +193,30 @@
 		jQuery('#fsOut').fadeOut(10000, function(){});
 
   	  	setCookie("fullScreen","yes");
-
+  	  	
 	}
-
+	
 	function checkFullScreen(){
-
+  	  	
 		var check = getCookie("fullScreen");
-
+		
 		if(check!=null && check!=""){
-
+			
 			if(check=="yes"){
 				toggleDisplay();
 // 				document.getElementById('fsOut').style.display = "block";
 			}
-
+			
 			if(check=="no"){
 				document.getElementById('fsOut').style.display = "none";
 			}
 		}
-
+  	  	
 	}
-
+		
 	function keyListen(e) {
         var keycode = e.keyCode;
-
+        
         if(keycode == '116') {
         	e.returnValue=false;
         	e.keyCode=false;
@@ -230,7 +228,7 @@
    		keyListen(evnt);
 	}
 
-
+	
 </script>
 
 	<table class="subPageHeader" id="graphical">
@@ -252,7 +250,7 @@
 				</sst:select> <c:if test="${!empty currentView}">
 					<c:choose>
 						<c:when test="${owner}">
-							<a href="#" onclick="getUrlFromParts(new Array('view_edit.shtm?','dwrScriptSessionid=', dwr.engine._getScriptSessionId(), '&viewId=', ${currentView.id}));"><tag:img
+							<a href="view_edit.shtm?viewId=${currentView.id}"><tag:img
 									png="icon_view_edit" title="viewEdit.editView" /> </a>
 						</c:when>
 						<c:otherwise>
@@ -261,7 +259,7 @@
 								onclick="unshare()" />-->
 						</c:otherwise>
 					</c:choose>
-				</c:if> <a href="#" onclick="getUrlFromParts(new Array('view_edit.shtm?','dwrScriptSessionid=', dwr.engine._getScriptSessionId(), '&viewId=', ${currentView.id}));"><tag:img png="icon_view_new"
+				</c:if> <a href="view_edit.shtm"><tag:img png="icon_view_new"
 						title="views.newView" /> </a></td>
 		</tr>
 		
@@ -284,3 +282,4 @@
 	<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />
 </tag:page>
 <%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/userComment.jsp" %>

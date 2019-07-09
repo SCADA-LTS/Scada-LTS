@@ -8,6 +8,7 @@ import Test from './components/Test'
 import IsAlive from './components/IsAlive'
 import ExportImportPointHierarchy from './components/ExportImportPointHierarchy'
 import SimpleComponentSVG from './components/SimpleComponentSVG'
+import CMP from "./components/CMP";
 
 import SleepAndReactivationDS from './components/form/SleepAndReactivationDS'
 import router from './router'
@@ -16,6 +17,7 @@ import Vuetify from 'vuetify';
 import * as uiv from 'uiv'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
+
 
 
 Vue.config.productionTip = false
@@ -39,8 +41,8 @@ new Vue({
 
 new Vue({
   el: '#app-is-alive',
-  components: { 
-    "is-alive": IsAlive 
+  components: {
+    "is-alive": IsAlive
   },
 })
 
@@ -58,4 +60,20 @@ new Vue({
      "sleep-reactivation-ds": SleepAndReactivationDS,
    }
 })
+
+new Vue({
+  el: '#app-cmp',
+  components: {
+    "cmp": CMP
+  },
+})
+
+for (let i=0; i<20; i++) {
+  new Vue({
+    el: `#app-cmp-${i}`,
+    components: {
+      "cmp": CMP
+    },
+  })
+}
 

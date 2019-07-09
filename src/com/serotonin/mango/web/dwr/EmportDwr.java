@@ -78,6 +78,10 @@ public class EmportDwr extends BaseDwr {
 			boolean maintenanceEvents, boolean scripts, boolean pointValues,
 			int maxPointValues, boolean systemSettings, boolean usersProfiles) {
 
+		if (!Common.getUser().isAdmin()) {
+			return "Only admin user can export data.";
+		}
+
 		return EmportDwr.createExportJSON(prettyIndent, graphicalViews,
 				eventHandlers, dataSources, dataPoints, scheduledEvents,
 				compoundEventDetectors, pointLinks, users, pointHierarchy,

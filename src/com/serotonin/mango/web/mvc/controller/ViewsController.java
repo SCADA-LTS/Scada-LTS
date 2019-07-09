@@ -59,6 +59,20 @@ public class ViewsController extends ParameterizableViewController {
 		} else {
 			views = DaoInstances.ViewDao.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
 
+			/* ** Disable ACL **
+			// ACL start
+			views = viewDao.getAllViewNames();
+			Map<Integer, EntryDto> mapToCheckId = PermissionViewACL.getInstance().filter(user.getId());
+			List<IntValuePair> vviews = new ArrayList<IntValuePair>();
+			for (IntValuePair vp: views) {
+				if (mapToCheckId.get(vp.getKey())!=null) {
+					vviews.add(vp);
+				}
+			}
+			//views.stream().filter(view -> mapToCheckId.get(view.getKey()) != null );
+			// ACL end;
+			*/
+
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
 			};
@@ -76,8 +90,9 @@ public class ViewsController extends ParameterizableViewController {
 			// no op
 		}
 
-		if (currentView == null && views.size() > 0)
+		if (currentView == null && views.size() > 0) {
 			currentView = DaoInstances.ViewDao.getView(views.get(0).getKey());
+    }
 
 		if (currentView != null) {
 			if (!user.isAdmin())

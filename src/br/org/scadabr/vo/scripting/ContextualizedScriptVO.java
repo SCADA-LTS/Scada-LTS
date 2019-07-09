@@ -63,6 +63,14 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		}
 	}
 
+	public boolean containsDataPoint(int dataPointId) {
+		for (IntValuePair pair:
+			 pointsOnContext) {
+			if (pair.getKey()==dataPointId) return true;
+		}
+		return false;
+	}
+
 	@Override
 	public ScriptRT createScriptRT() {
 		return new ContextualizedScriptRT(this);

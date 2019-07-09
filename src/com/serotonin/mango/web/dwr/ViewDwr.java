@@ -34,7 +34,6 @@ import com.serotonin.mango.ScriptSession;
 import com.serotonin.mango.dao_cache.DaoInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -99,8 +98,6 @@ import com.serotonin.web.dwr.MethodFilter;
  * @author mlohbihler
  */
 public class ViewDwr extends BaseDwr {
-
-	public static final Log LOG = LogFactory.getLog(ViewDwr.class);
 	//
 	//
 	// /
@@ -179,9 +176,6 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public List<ViewComponentState> getViewPointData(boolean edit) {
 		User user = Common.getUser();
-		View view = getViewFromContext();
-		if (view !=null)
-			user.setView(view);
 		return getViewPointData(user, user.getView(), edit);
 	}
 
@@ -215,10 +209,7 @@ public class ViewDwr extends BaseDwr {
 						DataPointVO point = ((PointComponent) child.getViewComponent()).tgetDataPoint();
 						if (point != null) {
 							Map<String, Object> map = new HashMap<String, Object>();
-							if (imageChart)
-								map.put("name", point.getName());
-							else
-								map.put("name", getMessage(child.getDescription()));
+							map.put("name", imageChart?point.getName():getMessage(child.getDescription()));
 							map.put("point", point);
 							map.put("pointValue", point.lastValue());
 							childData.add(map);
@@ -266,7 +257,7 @@ public class ViewDwr extends BaseDwr {
 				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint().getId());
 
 			// Check permissions.
-			if (Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
+			if (dataPointRT == null || Permissions.hasDataPointReadPermission(user, dataPointRT.getVO())) {
 				ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
 				if (!edit) {
@@ -340,7 +331,7 @@ public class ViewDwr extends BaseDwr {
 	//
 	@MethodFilter
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType) {
-		View view = getViewFromContext();
+		View view = Common.getUser().getView();
 		boolean found = false;
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -423,9 +414,10 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public ViewComponent addComponent(String componentName) {
 		ViewComponent viewComponent = ViewComponent.newInstance(componentName);
+		// System.out.println(componentName);
+		// System.out.println(viewComponent);
 
 		User user = Common.getUser();
-		user.setView(getViewFromContext());
 		View view = user.getView();
 		view.addViewComponent(viewComponent);
 		viewComponent.validateDataPoint(user, false);
@@ -439,7 +431,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public void deleteViewComponent(String viewComponentId) {
-		View view = getViewFromContext();
+		View view = Common.getUser().getView();
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
@@ -469,7 +461,6 @@ public class ViewDwr extends BaseDwr {
 	public List<String> getViewComponentIds() {
 		User user = Common.getUser();
 		List<String> result = new ArrayList<String>();
-		user.setView(getViewFromContext());
 		for (ViewComponent vc : user.getView().getViewComponents())
 			result.add(vc.getId());
 		return result;
@@ -486,7 +477,6 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public String setViewPoint(String viewComponentId, String valueStr) {
 		User user = Common.getUser();
-		user.setView(getViewFromContext());
 		View view = user.getView();
 		DataPointVO point = view.findDataPoint(viewComponentId);
 
@@ -501,18 +491,6 @@ public class ViewDwr extends BaseDwr {
 		}
 
 		return viewComponentId;
-	}
-
-	private View getViewFromContext(){
-		try {
-			return (View) ScriptSession.getObjectForScriptSession(
-					WebContextFactory.get().getSession().getId(),
-					WebContextFactory.get().getScriptSession().getId());
-		}
-		catch (ClassCastException e){
-			LOG.warn(e);
-			return null;
-		}
 	}
 
 	//
@@ -961,7 +939,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public ViewComponent getViewComponent(String viewComponentId) {
-		return getViewComponent(getViewFromContext(), viewComponentId);
+		return getViewComponent(Common.getUser().getView(), viewComponentId);
 	}
 
 	private ViewComponent getViewComponent(View view, String viewComponentId) {

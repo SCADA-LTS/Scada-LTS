@@ -426,6 +426,46 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 					
 		}
 	}
+
+	// RowMapper
+	public static class ReportInstanceEventRowMapper implements RowMapper<EventInstance> {
+		public EventInstance mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			EventType type = createEventType(rs, 2);
+
+			LocalizableMessage message;
+			try {
+				//TODO to remove
+				message = LocalizableMessage.deserialize(rs.getString(10));
+			} catch (LocalizableMessageParseException e) {
+				message = new LocalizableMessage("common.default",
+						rs.getString(10));
+			}
+
+			EventInstance event = new EventInstance(
+					type,
+					rs.getLong(COLUMN_NAME_ACTIVE_TS),
+					DAO.charToBool(rs.getString(COLUMN_NAME_RTN_APPLICABLE)),
+					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
+					message,
+					null);
+
+			event.setId(rs.getInt("eventId"));
+			long rtnTs = rs.getLong(COLUMN_NAME_RTN_TS);
+			if (!rs.wasNull())
+				event.returnToNormal(rtnTs, rs.getInt(COLUMN_NAME_RTN_CAUSE));
+			long ackTs = rs.getLong(COLUMN_NAME_ACT_TS);
+			if (!rs.wasNull()) {
+				event.setAcknowledgedTimestamp(ackTs);
+				if (!rs.wasNull())
+					event.setAcknowledgedByUsername(rs.getString("ackUsername"));
+				event.setAlternateAckSource(rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE));
+			}
+
+			return event;
+
+		}
+	}
 	
 	
 	//TODO to rewrite - User have event not event have user silenced;

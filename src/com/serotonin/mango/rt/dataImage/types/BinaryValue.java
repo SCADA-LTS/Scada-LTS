@@ -19,20 +19,27 @@
 package com.serotonin.mango.rt.dataImage.types;
 
 import com.serotonin.mango.DataTypes;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Matthew Lohbihler
  */
 public class BinaryValue extends MangoValue implements Comparable<BinaryValue> {
+
     public static final BinaryValue ZERO = new BinaryValue(false);
     public static final BinaryValue ONE = new BinaryValue(true);
 
     public static BinaryValue parseBinary(String s) {
-        if(s == null || s.equals("0") || s.equals("") || s.trim().toLowerCase().equals("false") ) {
+
+        if(s == null) throw new NumberFormatException("Can not parse null");
+        s = s.trim().toLowerCase();
+        if("0".equals(s) || "false".equals(s)) {
             return ZERO;
-        } else if(s.equals("1") || s.trim().toLowerCase().equals("true")) {
+        } else if("1".equals(s) || "true".equals(s)) {
             return ONE;
         }
+
         throw new NumberFormatException("Value is not a binary.");
     }
 

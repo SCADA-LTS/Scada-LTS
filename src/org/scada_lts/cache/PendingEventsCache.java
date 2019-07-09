@@ -45,16 +45,13 @@ import com.serotonin.mango.rt.event.EventInstance;
 public class PendingEventsCache extends PendingEventsDAO{
 	
 	private static final Log LOG = LogFactory.getLog(PendingEventsCache.class);
-	private static PendingEventsCache instance = null;
-	private int countBuffer;
+	private static final PendingEventsCache instance = new PendingEventsCache();
 	
-	public static PendingEventsCache getInstance() throws SchedulerException, IOException {
+	public static PendingEventsCache getInstance() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Get PendingEventsCache instance ");
 		}
-		if (instance == null) {
-			instance = new PendingEventsCache();
-		}
+
 		return instance;
 	}
 	
@@ -65,11 +62,6 @@ public class PendingEventsCache extends PendingEventsDAO{
 	 * @return 
 	 */
 	public List<EventInstance> getPendingEvents(int userId) {
-		
-		countBuffer++;
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("getPendingEvents count from buffer:" + countBuffer);
-		}
 		
 		if (mapPendingEvents == null) {
 			LOG.error(new Exception("Error cache PendingEvents - null cache"));
@@ -88,14 +80,6 @@ public class PendingEventsCache extends PendingEventsDAO{
 	}
 	
 	/**
-	 * Reset counter
-	 * @see UpdatePendingEvents
-	 */
-	public void resetCountBuffer() {
-		countBuffer = 0;
-	}
-	
-	/**
 	 * Method set map of pending events
 	 * @see UpdatePendingEvents
 	 * @param mapPendingEvents
@@ -105,12 +89,18 @@ public class PendingEventsCache extends PendingEventsDAO{
 	}
 
 	
-	private PendingEventsCache() throws SchedulerException, IOException {
+	private PendingEventsCache() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Create PendingEventsCache");
 		}
 		mapPendingEvents = getPendingEvents();
-		cacheInitialize();
+		try {
+			cacheInitialize();
+		} catch (SchedulerException e) {
+			LOG.trace("SchedulerException in constructor PendingEventsCache with message"+e.getMessage());
+		} catch (IOException e) {
+			LOG.trace("IOException in constructor PendingEventsCache with message"+e.getMessage());
+		}
 	}
 	
 	private TreeMap<Integer, List<EventInstance>> mapPendingEvents;

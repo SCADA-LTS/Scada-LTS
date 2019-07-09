@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+
 import com.serotonin.mango.dao_cache.DaoInstances;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import org.apache.commons.logging.Log;
@@ -61,7 +62,6 @@ import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.util.LifecycleException;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
-
 public class RuntimeManager {
 	private static final Log LOG = LogFactory.getLog(RuntimeManager.class);
 
@@ -120,8 +120,16 @@ public class RuntimeManager {
 		List<DataSourceVO<?>> configs = DaoInstances.DataSourceDao.getDataSources();
 		List<DataSourceVO<?>> pollingRound = new ArrayList<DataSourceVO<?>>();
 		for (DataSourceVO<?> config : configs) {
+			boolean isHttpRetriverSleepEnableWhenStart = false;
+			try {
+			    isHttpRetriverSleepEnableWhenStart = ScadaConfig.getInstance().getBoolean(ScadaConfig.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START, false);
+			} catch (Exception e) {
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace(e);
+                }
+			}
+			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation) && isHttpRetriverSleepEnableWhenStart;
 
-			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation);
 			boolean isToTrayEnable = false;
 			if (isCheckToTrayEnableRun) {
 				isToTrayEnable = ((ICheckReactivation) config).checkToTrayEnable();
@@ -131,8 +139,9 @@ public class RuntimeManager {
 				if (safe) {
 					config.setEnabled(false);
 					DaoInstances.DataSourceDao.saveDataSource(config);
-				} else if (initializeDataSource(config))
+				} else if (initializeDataSource(config)) {
 					pollingRound.add(config);
+        }
 			}
 		}
 
@@ -300,7 +309,7 @@ public class RuntimeManager {
 	 *
 	 * @param id
 	 */
-	public void stopDataSourceAndDontJoinTermination(int id) {
+	public void stopDathttp://okrokwiecej.blogspot.com/2019/07/another-ultra-dimension-with-high.htmlaSourceAndDontJoinTermination(int id) {
 		synchronized (runningDataSources) {
 			DataSourceRT dataSource = getRunningDataSource(id);
 			if (dataSource == null)
@@ -422,8 +431,9 @@ public class RuntimeManager {
 	}
 
 	public void deleteDataPoint(DataPointVO point) {
-		if (point.isEnabled())
+		if (point.isEnabled()) {
 			stopDataPoint(point.getId());
+    }
 		DaoInstances.DataPointDao.deleteDataPoint(point.getId());
 		Common.ctx.getEventManager().cancelEventsForDataPoint(point.getId());
 	}
@@ -518,8 +528,9 @@ public class RuntimeManager {
 		// Tell the data source to set the value of the point.
 		DataSourceRT ds = getRunningDataSource(dataPoint.getDataSourceId());
 		// The data source may have been disabled. Just make sure.
-		if (ds != null)
+		if (ds != null) {
 			ds.setPointValue(dataPoint, valueTime, source);
+    }
 	}
 
 	public void relinquish(int dataPointId) {
@@ -558,8 +569,6 @@ public class RuntimeManager {
 		for (Integer id : dataPoints.keySet())
 			updateDataPointValuesRT(id);
 		return count;
-		//TODO not allow the deletion of data should be switched to a new database
-		//return 0;
 	}
 
 	public long purgeDataPointValues(int dataPointId, int periodType,
@@ -601,7 +610,6 @@ public class RuntimeManager {
 	public void saveScheduledEvent(ScheduledEventVO vo) {
 		// If the scheduled event is running, stop it.
 		stopSimpleEventDetector(vo.getEventDetectorKey());
-
 		DaoInstances.ScheduledEventDao.saveScheduledEvent(vo);
 
 		// If the scheduled event is enabled, start it.
@@ -657,7 +665,6 @@ public class RuntimeManager {
 	public boolean saveCompoundEventDetector(CompoundEventDetectorVO vo) {
 		// If the CED is running, stop it.
 		stopCompoundEventDetector(vo.getId());
-
 		DaoInstances.CompoundEventDetectorDao.saveCompoundEventDetector(vo);
 
 		// If the scheduled event is enabled, start it.
@@ -787,7 +794,6 @@ public class RuntimeManager {
 	public void savePointLink(PointLinkVO vo) {
 		// If the point link is running, stop it.
 		stopPointLink(vo.getId());
-
 		DaoInstances.PointLinkDao.savePointLink(vo);
 
 		// If the point link is enabled, start it.
@@ -852,6 +858,7 @@ public class RuntimeManager {
 	public void deleteMaintenanceEvent(int id) {
 		stopMaintenanceEvent(id);
 		DaoInstances.MaintenanceEventDao.deleteMaintenanceEvent(id);
+    
 	}
 
 	public void saveMaintenanceEvent(MaintenanceEventVO vo) {

@@ -146,7 +146,6 @@ public class ImportTask extends ProgressiveTask {
 	private void preloadDataPoints() {
 
 		for (JsonValue dp : dataPoints) {
-			System.out.println(">>>>>>>>>>>>>>>>>>>>> dp"+dp);
 			try {
 				JsonObject dataPoint = dp.toJsonObject();
 
@@ -1027,9 +1026,14 @@ public class ImportTask extends ProgressiveTask {
 		} else {
 			long time = json.getLong("timestamp");
 			String value = json.getString("value");
-			PointValueTime pointValue = new PointValueTime(
-					MangoValue.stringToValue(value, dp.getPointLocator()
-							.getDataTypeId()), time);
+			PointValueDao dao = new PointValueDao();
+			MangoValue mangoValue;
+			try {
+				mangoValue = MangoValue.stringToValue(value, dp.getPointLocator().getDataTypeId());
+			} catch (NumberFormatException e) {
+				mangoValue = MangoValue.stringToValue(dp.getParseErrorValue(), dp.getPointLocator().getDataTypeId());
+			}
+			PointValueTime pointValue = new PointValueTime(mangoValue, time);
 			DaoInstances.PointValueDao.savePointValue(dp.getId(), pointValue);
 		}
 
