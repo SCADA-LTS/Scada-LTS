@@ -822,10 +822,5 @@
           </tr>
        </table>
   </div>
-
-  <div class="" style="float:left; color:white">
-  #branchName
-  </div>
-  
   
 </tag:page>
