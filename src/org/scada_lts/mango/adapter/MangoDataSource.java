@@ -29,6 +29,10 @@ import java.util.ResourceBundle;
  */
 public interface MangoDataSource {
 
+	void savePersistentData(int id, Object data);
+
+	Object getPersistentData(int id);
+
 	List<DataSourceVO<?>> getDataSources();
 
 	DataSourceVO<?> getDataSource(int id);

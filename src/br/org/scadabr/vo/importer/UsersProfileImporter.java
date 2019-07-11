@@ -16,7 +16,7 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonValue;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
@@ -55,14 +55,14 @@ public class UsersProfileImporter {
 
 		createOrUpdateProfile(newProfile);
 
-		UsersProfileVO savedProfile = DaoInstances.UsersProfileDao
+		UsersProfileVO savedProfile = ServiceInstances.UsersProfileService
 				.getUserProfileByXid(newProfile.getXid());
 
 		for (User user : getUsers(profileJson)) {
 			copyUsersOldAdditionalPermissions(user, savedProfile);
 			savedProfile.apply(user);
-			DaoInstances.UserDao.saveUser(user);
-			DaoInstances.UsersProfileDao.updateUsersProfile(savedProfile);
+			ServiceInstances.UserService.saveUser(user);
+			ServiceInstances.UsersProfileService.updateUsersProfile(savedProfile);
 			restoreUsersOldAdditionalPermissions(user, savedProfile);
 		}
 
@@ -71,13 +71,13 @@ public class UsersProfileImporter {
 	private void createOrUpdateProfile(UsersProfileVO profile)
 			throws DAOException {
 
-		if (DaoInstances.UsersProfileDao.userProfileExists(profile.getXid())) {
-			UsersProfileVO savedProfile = DaoInstances.UsersProfileDao
+		if (ServiceInstances.UsersProfileService.userProfileExists(profile.getXid())) {
+			UsersProfileVO savedProfile = ServiceInstances.UsersProfileService
 					.getUserProfileByXid(profile.getXid());
 			profile.setId(savedProfile.getId());
-			DaoInstances.UsersProfileDao.updateProfile(profile);
+			ServiceInstances.UsersProfileService.updateProfile(profile);
 		} else {
-			DaoInstances.UsersProfileDao.saveUsersProfileWithoutNameConstraint(profile);
+			ServiceInstances.UsersProfileService.saveUsersProfileWithoutNameConstraint(profile);
 		}
 
 	}
@@ -165,7 +165,7 @@ public class UsersProfileImporter {
 
 					shouldUpdateView = true;
 
-					View viewToUpdate = DaoInstances.ViewDao.getView(viewId);
+					View viewToUpdate = ServiceInstances.ViewService.getView(viewId);
 
 					for (Iterator<ShareUser> iterator = viewToUpdate
 							.getViewUsers().iterator(); iterator.hasNext();) {
@@ -184,7 +184,7 @@ public class UsersProfileImporter {
 					}
 
 					if (shouldUpdateView) {
-						DaoInstances.ViewDao.saveView(viewToUpdate);
+						ServiceInstances.ViewService.saveView(viewToUpdate);
 					}
 
 				}
@@ -203,7 +203,7 @@ public class UsersProfileImporter {
 
 					shouldUpdateWatchlist = true;
 
-					WatchList watchlistToUpdate = DaoInstances.WatchListDao
+					WatchList watchlistToUpdate = ServiceInstances.WatchListService
 							.getWatchList(watchlistId);
 
 					for (Iterator<ShareUser> iterator = watchlistToUpdate
@@ -224,7 +224,7 @@ public class UsersProfileImporter {
 					}
 
 					if (shouldUpdateWatchlist) {
-						DaoInstances.WatchListDao.saveWatchList(watchlistToUpdate);
+						ServiceInstances.WatchListService.saveWatchList(watchlistToUpdate);
 					}
 
 				}
@@ -252,7 +252,7 @@ public class UsersProfileImporter {
 						.addAll(user.getDataSourcePermissions());
 				newDataSourcePermissions.add(dataSourceId);
 				user.setDataSourcePermissions(newDataSourcePermissions);
-				DaoInstances.UserDao.saveUser(user);
+				ServiceInstances.UserService.saveUser(user);
 			}
 
 		}
@@ -279,7 +279,7 @@ public class UsersProfileImporter {
 				newDataPointPermissions.addAll(user.getDataPointPermissions());
 				newDataPointPermissions.add(oldPermission);
 				user.setDataPointPermissions(newDataPointPermissions);
-				DaoInstances.UserDao.saveUser(user);
+				ServiceInstances.UserService.saveUser(user);
 			}
 
 		}
@@ -366,7 +366,7 @@ public class UsersProfileImporter {
 
 		for (JsonValue jv : jsonUsersIds.getElements()) {
 			int userid = jv.toJsonNumber().getIntValue();
-			User user = DaoInstances.UserDao.getUser(userid);
+			User user = ServiceInstances.UserService.getUser(userid);
 			users.add(user);
 		}
 

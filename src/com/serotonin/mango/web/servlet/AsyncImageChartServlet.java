@@ -8,7 +8,7 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.db.MappedRowCallback;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.stats.*;
@@ -121,14 +121,14 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
                 return null;
 
             if (from == -1 && to == -1) {
-                LongPair sae = DaoInstances.PointValueDao.getStartAndEndTime(dataPointIds);
+                LongPair sae = ServiceInstances.PointValueService.getStartAndEndTime(dataPointIds);
                 from = sae.getL1();
                 to = sae.getL2();
             }
             else if (from == -1)
-                from = DaoInstances.PointValueDao.getStartTime(dataPointIds);
+                from = ServiceInstances.PointValueService.getStartTime(dataPointIds);
             else if (to == -1)
-                to = DaoInstances.PointValueDao.getEndTime(dataPointIds);
+                to = ServiceInstances.PointValueService.getEndTime(dataPointIds);
 
             for (PointDataRetriever pdr : tasks.getTasks())
                 pdr.setRange(from, to);
@@ -177,7 +177,7 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
 
         @Override
         public void run() {
-            DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(dataPointId);
+            DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(dataPointId);
             try {
                 if (colour == null && !StringUtils.isEmpty(dp.getChartColour()))
                     colour = ColorUtils.toColor(dp.getChartColour());
@@ -203,8 +203,8 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
 
          // Get the data.
             //TODO rewrite seroUtils
-            //DaoInstances.PointValueDao.getPointValuesBetween(dataPointId, from, to, this);
-            DaoInstances.PointValueDao.getPointValuesBetween(dataPointId, from, to);
+            //DaoInstances.PointValueService.getPointValuesBetween(dataPointId, from, to, this);
+            ServiceInstances.PointValueService.getPointValuesBetween(dataPointId, from, to);
         }
 
         @Override

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ListIterator;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.db.dao.BaseDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.ViewDao;
@@ -152,9 +152,9 @@ public class UsersProfileDao extends BaseDao {
 				Integer.class);
 
 		for (Integer userId : usersIds) {
-			User profileUser = DaoInstances.UserDao.getUser(userId);
+			User profileUser = ServiceInstances.UserService.getUser(userId);
 			profile.apply(profileUser);
-			DaoInstances.UserDao.saveUser(profileUser);
+			ServiceInstances.UserService.saveUser(profileUser);
 			this.updateUsersProfile(profile);
 		}
 
@@ -178,11 +178,11 @@ public class UsersProfileDao extends BaseDao {
 		}
 
 		for (WatchList watchlist : profile.retrieveWatchlists()) {
-			DaoInstances.WatchListDao.saveWatchList(watchlist);
+			ServiceInstances.WatchListService.saveWatchList(watchlist);
 		}
 
 		for (View view : profile.retrieveViews()) {
-			DaoInstances.ViewDao.saveView(view);
+			ServiceInstances.ViewService.saveView(view);
 		}
 
 		ListIterator<UsersProfileVO> iterator = currentProfileList
@@ -267,7 +267,7 @@ public class UsersProfileDao extends BaseDao {
 					}
 				}));
 
-		List<WatchList> allwatchlists = DaoInstances.WatchListDao.getWatchLists();
+		List<WatchList> allwatchlists = ServiceInstances.WatchListService.getWatchLists();
 		profile.defineWatchlists(allwatchlists);
 	}
 
@@ -302,7 +302,7 @@ public class UsersProfileDao extends BaseDao {
 						return a;
 					}
 				}));
-		profile.defineViews(DaoInstances.ViewDao.getViews());
+		profile.defineViews(ServiceInstances.ViewService.getViews());
 	}
 
 	private void populateUserProfilePermissions(List<UsersProfileVO> profiles) {
@@ -414,13 +414,13 @@ public class UsersProfileDao extends BaseDao {
 				new Object[] { user.getId() });
 
 		// Add user to watchLists
-		for (WatchList wl : DaoInstances.WatchListDao.getWatchLists()) {
-			DaoInstances.WatchListDao.removeUserFromWatchList(wl.getId(), user.getId());
+		for (WatchList wl : ServiceInstances.WatchListService.getWatchLists()) {
+			ServiceInstances.WatchListService.removeUserFromWatchList(wl.getId(), user.getId());
 		}
 
 		// Remove user from Views
-		for (View view : DaoInstances.ViewDao.getViews()) {
-			DaoInstances.ViewDao.removeUserFromView(view.getId(), user.getId());
+		for (View view : ServiceInstances.ViewService.getViews()) {
+			org.scada_lts.mango.service.ServiceInstances.ViewService.removeUserFromView(view.getId(), user.getId());
 		}
 
 		user.resetUserProfile();
@@ -431,13 +431,13 @@ public class UsersProfileDao extends BaseDao {
 				new Object[] { user.getId() });
 
 		// Remove user from watchLists
-		for (WatchList wl : DaoInstances.WatchListDao.getWatchLists()) {
-			DaoInstances.WatchListDao.removeUserFromWatchList(wl.getId(), user.getId());
+		for (WatchList wl : ServiceInstances.WatchListService.getWatchLists()) {
+			ServiceInstances.WatchListService.removeUserFromWatchList(wl.getId(), user.getId());
 		}
 
 		// Remove user from Views
-		for (View view : DaoInstances.ViewDao.getViews()) {
-			DaoInstances.ViewDao.removeUserFromView(view.getId(), user.getId());
+		for (View view : ServiceInstances.ViewService.getViews()) {
+			org.scada_lts.mango.service.ServiceInstances.ViewService.removeUserFromView(view.getId(), user.getId());
 		}
 
 		user.resetUserProfile();
@@ -464,7 +464,7 @@ public class UsersProfileDao extends BaseDao {
 
 		// Reset user profile
 		for (Integer userId : usersIds) {
-			this.resetUserProfile(DaoInstances.UserDao.getUser(userId));
+			this.resetUserProfile(ServiceInstances.UserService.getUser(userId));
 		}
 
 		getTransactionTemplate().execute(

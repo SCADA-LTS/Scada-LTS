@@ -27,7 +27,7 @@ import java.util.Map;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonSerializable;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 
@@ -68,7 +68,7 @@ abstract public class PublishedPointVO implements Serializable, JsonSerializable
     }
 
     public void jsonSerialize(Map<String, Object> map) {
-        DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(dataPointId);
+        DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(dataPointId);
         String xid;
         if (dp == null)
             xid = null;
@@ -83,7 +83,7 @@ abstract public class PublishedPointVO implements Serializable, JsonSerializable
         if (xid == null)
             throw new LocalizableJsonException("emport.error.publishedPoint.missing", "dataPointId");
 
-        DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
+        DataPointVO vo = ServiceInstances.DataPointService.getDataPoint(xid);
         if (vo == null)
             throw new LocalizableJsonException("emport.error.missingPoint", xid);
         dataPointId = vo.getId();

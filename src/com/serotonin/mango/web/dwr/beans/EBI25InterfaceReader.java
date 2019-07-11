@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -84,7 +84,7 @@ public class EBI25InterfaceReader {
 
             // Get the list of existing data points for the data source. We remove points from this list as they are
             // needed so that when we are done all that is left in the list is points that can be disabled.
-            List<DataPointVO> existingPoints = DaoInstances.DataPointDao.getDataPoints(dataSource.getId(), null);
+            List<DataPointVO> existingPoints = ServiceInstances.DataPointService.getDataPoints(dataSource.getId(), null);
 
             for (EBI25LoggerInfo info : loggerInfo) {
                 EBI25PointLocatorVO locator = null;
@@ -171,7 +171,7 @@ public class EBI25InterfaceReader {
             suffix = "-Signal";
 
         DataPointVO dp = new DataPointVO();
-        dp.setXid(DaoInstances.DataPointDao.generateUniqueXid());
+        dp.setXid(ServiceInstances.DataPointService.generateUniqueXid());
         dp.setName("EBI 25-" + (info.getIndex() + 1) + suffix);
         dp.setDataSourceId(dsid);
         dp.setEnabled(true);

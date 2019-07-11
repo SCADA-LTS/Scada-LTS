@@ -22,7 +22,7 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
@@ -61,12 +61,12 @@ public class UsersDwr extends BaseDwr {
 		if (Permissions.hasAdmin(user)) {
 			// Users
 			initData.put("admin", true);
-			initData.put("users", DaoInstances.UserDao.getUsers());
-			initData.put("usersProfiles", DaoInstances.UsersProfileDao.getUsersProfiles());
+			initData.put("users", ServiceInstances.UserService.getUsers());
+			initData.put("usersProfiles", ServiceInstances.UsersProfileService.getUsersProfiles());
 
 
 			// Data sources
-			List<DataSourceVO<?>> dataSourceVOs = DaoInstances.DataSourceDao
+			List<DataSourceVO<?>> dataSourceVOs = ServiceInstances.DataSourceService
 					.getDataSources();
 
 			List<Map<String, Object>> dataSources = new ArrayList<Map<String, Object>>(
@@ -78,7 +78,7 @@ public class UsersDwr extends BaseDwr {
 				ds.put("id", dsvo.getId());
 				ds.put("name", dsvo.getName());
 				points = new LinkedList<Map<String, Object>>();
-				for (DataPointVO dpvo : DaoInstances.DataPointDao.getDataPoints(
+				for (DataPointVO dpvo : ServiceInstances.DataPointService.getDataPoints(
 						dsvo.getId(), DataPointNameComparator.instance)) {
 					dp = new HashMap<String, Object>();
 					dp.put("id", dpvo.getId());
@@ -91,9 +91,9 @@ public class UsersDwr extends BaseDwr {
 			}
 			initData.put("dataSources", dataSources);
 
-			initData.put("watchlists", DaoInstances.WatchListDao.getWatchLists());
+			initData.put("watchlists", ServiceInstances.WatchListService.getWatchLists());
 
-			initData.put("views", DaoInstances.ViewDao.getViews());
+			initData.put("views", ServiceInstances.ViewService.getViews());
 
 		} else
 			initData.put("user", user);
@@ -109,10 +109,10 @@ public class UsersDwr extends BaseDwr {
 			user.setDataSourcePermissions(new ArrayList<Integer>(0));
 			user.setDataPointPermissions(new ArrayList<DataPointAccess>(0));
 		} else {
-			user = DaoInstances.UserDao.getUser(id);
+			user = ServiceInstances.UserService.getUser(id);
 
-			if (DaoInstances.UsersProfileDao.getUserProfileByUserId(user.getId()) != null) {
-				user.setUserProfile(DaoInstances.UsersProfileDao.getUserProfileByUserId(user
+			if (ServiceInstances.UsersProfileService.getUserProfileByUserId(user.getId()) != null) {
+				user.setUserProfile(ServiceInstances.UsersProfileService.getUserProfileByUserId(user
 						.getId()));
 			}
 		}
@@ -137,7 +137,7 @@ public class UsersDwr extends BaseDwr {
 		if (id == Common.NEW_ID)
 			user = new User();
 		else
-			user = DaoInstances.UserDao.getUser(id);
+			user = ServiceInstances.UserService.getUser(id);
 		user.setUsername(username);
 		if (!StringUtils.isEmpty(password))
 			user.setPassword(Common.encrypt(password));
@@ -154,7 +154,7 @@ public class UsersDwr extends BaseDwr {
 		user.validate(response);
 
 		// Check if the username is unique.
-		User dupUser = DaoInstances.UserDao.getUser(username);
+		User dupUser = ServiceInstances.UserService.getUser(username);
 		if (id == Common.NEW_ID && dupUser != null)
 			response.addMessage(new LocalizableMessage(
 					"users.validate.usernameUnique"));
@@ -173,18 +173,18 @@ public class UsersDwr extends BaseDwr {
 		}
 
 		if (!response.getHasMessages()) {
-			DaoInstances.UserDao.saveUser(user);
+			ServiceInstances.UserService.saveUser(user);
 
 			if (usersProfileId != Common.NEW_ID) {
 				// apply profile
-				UsersProfileVO profile = DaoInstances.UsersProfileDao
+				UsersProfileVO profile = ServiceInstances.UsersProfileService
 						.getUserProfileById(usersProfileId);
 				profile.apply(user);
-				DaoInstances.UserDao.saveUser(user);
-				DaoInstances.UsersProfileDao.resetUserProfile(user);
-				DaoInstances.UsersProfileDao.updateUsersProfile(profile);
+				ServiceInstances.UserService.saveUser(user);
+				ServiceInstances.UsersProfileService.resetUserProfile(user);
+				ServiceInstances.UsersProfileService.updateUsersProfile(profile);
 			} else {
-				DaoInstances.UsersProfileDao.resetUserProfile(user);
+				ServiceInstances.UsersProfileService.resetUserProfile(user);
 			}
 
 			// If admin grant permissions to all WL and GViews
@@ -201,7 +201,7 @@ public class UsersDwr extends BaseDwr {
 			response.addData("userId", user.getId());
 		}
 
-		List<View> views = DaoInstances.ViewDao.getViews();
+		List<View> views = ServiceInstances.ViewService.getViews();
 		Map<String, Object> viewsPermissionsMap = new HashMap<>();
 		for(View v:views) {
 			List<ShareUser> shareUsers = v.getViewUsers();
@@ -226,10 +226,10 @@ public class UsersDwr extends BaseDwr {
 				shareUsers.add(shareUser);
 			}
 			v.setViewUsers(shareUsers);
-			DaoInstances.ViewDao.saveView(v);
+			ServiceInstances.ViewService.saveView(v);
 		}
 
-		List<WatchList> watchLists = DaoInstances.WatchListDao.getWatchLists();
+		List<WatchList> watchLists = ServiceInstances.WatchListService.getWatchLists();
 		Map<String, Object> watchListsPermissionsMap = new HashMap<>();
 		for(WatchList w:watchLists) {
 			List<ShareUser> shareUsers = w.getWatchListUsers();
@@ -254,7 +254,7 @@ public class UsersDwr extends BaseDwr {
 				shareUsers.add(shareUser);
 			}
 			w.setWatchListUsers(shareUsers);
-			DaoInstances.WatchListDao.saveWatchList(w);
+			ServiceInstances.WatchListService.saveWatchList(w);
 		}
 
 		return response;
@@ -271,7 +271,7 @@ public class UsersDwr extends BaseDwr {
 			throw new PermissionException("Cannot update a different user",
 					user);
 
-		User updateUser = DaoInstances.UserDao.getUser(id);
+		User updateUser = ServiceInstances.UserService.getUser(id);
 		if (!StringUtils.isEmpty(password))
 			updateUser.setPassword(Common.encrypt(password));
 		updateUser.setEmail(email);
@@ -283,7 +283,7 @@ public class UsersDwr extends BaseDwr {
 		updateUser.validate(response);
 
 		if (!response.getHasMessages()) {
-			DaoInstances.UserDao.saveUser(updateUser);
+			ServiceInstances.UserService.saveUser(updateUser);
 			Common.setUser(request, updateUser);
 		}
 
@@ -320,7 +320,7 @@ public class UsersDwr extends BaseDwr {
 			response.addMessage(new LocalizableMessage(
 					"users.validate.badDelete"));
 		else
-			DaoInstances.UserDao.deleteUser(id);
+			ServiceInstances.UserService.deleteUser(id);
 
 		return response;
 	}

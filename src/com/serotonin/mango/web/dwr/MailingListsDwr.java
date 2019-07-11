@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,8 +47,8 @@ public class MailingListsDwr extends BaseDwr {
 
 	public DwrResponseI18n init() {
 		DwrResponseI18n response = new DwrResponseI18n();
-		response.addData("lists", DaoInstances.MailingListDao.getMailingLists());
-		response.addData("users", DaoInstances.UserDao.getUsers());
+		response.addData("lists", ServiceInstances.MailingListService.getMailingLists());
+		response.addData("users", ServiceInstances.UserService.getUsers());
 		return response;
 	}
 
@@ -56,11 +56,11 @@ public class MailingListsDwr extends BaseDwr {
 		if (id == Common.NEW_ID) {
 			MailingList ml = new MailingList();
 			ml.setId(Common.NEW_ID);
-			ml.setXid(DaoInstances.MailingListDao.generateUniqueXid());
+			ml.setXid(ServiceInstances.MailingListService.generateUniqueXid());
 			ml.setEntries(new LinkedList<EmailRecipient>());
 			return ml;
 		}
-		return DaoInstances.MailingListDao.getMailingList(id);
+		return ServiceInstances.MailingListService.getMailingList(id);
 	}
 
 	public DwrResponseI18n saveMailingList(int id, String xid, String name,
@@ -75,14 +75,14 @@ public class MailingListsDwr extends BaseDwr {
 
 		if (StringUtils.isEmpty(xid))
 			response.addContextualMessage("xid", "validate.required");
-		else if (!DaoInstances.MailingListDao.isXidUnique(xid, id))
+		else if (!ServiceInstances.MailingListService.isXidUnique(xid, id))
 			response.addContextualMessage("xid", "validate.xidUsed");
 
 		ml.validate(response);
 
 		if (!response.getHasMessages()) {
 			// Save the mailing list
-			DaoInstances.MailingListDao.saveMailingList(ml);
+			ServiceInstances.MailingListService.saveMailingList(ml);
 			response.addData("mlId", ml.getId());
 		}
 
@@ -90,7 +90,7 @@ public class MailingListsDwr extends BaseDwr {
 	}
 
 	public void deleteMailingList(int mlId) {
-		DaoInstances.MailingListDao.deleteMailingList(mlId);
+		ServiceInstances.MailingListService.deleteMailingList(mlId);
 	}
 
 	public DwrResponseI18n sendTestEmail(int id, String name,
@@ -98,7 +98,7 @@ public class MailingListsDwr extends BaseDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		MailingList ml = createMailingList(id, null, name, entryBeans);
-		DaoInstances.MailingListDao.populateEntrySubclasses(ml.getEntries());
+		ServiceInstances.MailingListService.populateEntrySubclasses(ml.getEntries());
 
 		Set<String> addresses = new HashSet<String>();
 		ml.appendAddresses(addresses, null);

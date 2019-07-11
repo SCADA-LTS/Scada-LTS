@@ -26,7 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -57,8 +57,8 @@ public class WatchListController extends ParameterizableViewController {
 		// make sure the watch lists are correct.
 		List<WatchList> watchLists =
 		(!user.isAdmin())
-				? DaoInstances.WatchListDao.getWatchLists(user.getId(),user.getUserProfile())
-				: DaoInstances.WatchListDao.getWatchLists();
+				? ServiceInstances.WatchListService.getWatchLists(user.getId(),user.getUserProfile())
+				: ServiceInstances.WatchListService.getWatchLists();
 
 		if (watchLists.size() == 0) {
 			// Add a default watch list if none exist.
@@ -66,7 +66,7 @@ public class WatchListController extends ParameterizableViewController {
 			watchList.setName(I18NUtils.getMessage(
 					ControllerUtils.getResourceBundle(request),
 					"common.newName"));
-			watchLists.add(DaoInstances.WatchListDao.createNewWatchList(watchList,
+			watchLists.add(ServiceInstances.WatchListService.createNewWatchList(watchList,
 					user.getId()));
 		}
 
@@ -98,7 +98,7 @@ public class WatchListController extends ParameterizableViewController {
 				}
 
 				if (changed)
-					DaoInstances.WatchListDao.saveWatchList(watchList);
+					ServiceInstances.WatchListService.saveWatchList(watchList);
 			}
 
 			watchListNames.add(new IntValuePair(watchList.getId(), watchList
@@ -112,7 +112,7 @@ public class WatchListController extends ParameterizableViewController {
 			// the first in the list.
 			selected = watchLists.get(0).getId();
 			user.setSelectedWatchList(selected);
-			DaoInstances.WatchListDao.saveSelectedWatchList(user.getId(), selected);
+			ServiceInstances.WatchListService.saveSelectedWatchList(user.getId(), selected);
 		}
 
 		model.put(KEY_WATCHLISTS, watchListNames);

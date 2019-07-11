@@ -23,7 +23,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.LoginForm;
@@ -73,7 +73,7 @@ public class LoginController {
         	errors.add("login.validation.noPassword");
         
         if (errors.isEmpty()){
-	        User user = DaoInstances.UserDao.getUser(login.getUsername());
+	        User user = ServiceInstances.UserService.getUser(login.getUsername());
 	        if (user == null)
 	            errors.add("login.validation.noSuchUser");
 	        else if (user.isDisabled())
@@ -114,10 +114,10 @@ public class LoginController {
                 LOG.debug("User is already logged in, not relogging in");
         }
         else {
-            user = DaoInstances.UserDao.getUser(username);
+            user = ServiceInstances.UserService.getUser(username);
 
             // Update the last login time.
-            DaoInstances.UserDao.recordLogin(user.getId());
+            ServiceInstances.UserService.recordLogin(user.getId());
 
             // Add the user object to the session. This indicates to the rest
             // of the application whether the user is logged in or not.

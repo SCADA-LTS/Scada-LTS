@@ -2,7 +2,7 @@ package com.serotonin.mango.rt.publish.persistent;
 
 import java.util.List;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -116,7 +116,7 @@ public class PersistentSenderRT extends PublisherRT<PersistentPointVO> {
         // Cache the data point VOs for use during runtime.
         int index = 0;
         for (PersistentPointVO p : vo.getPoints()) {
-            DataPointVO dpvo = DaoInstances.DataPointDao.getDataPoint(p.getDataPointId());
+            DataPointVO dpvo = ServiceInstances.DataPointService.getDataPoint(p.getDataPointId());
             p.setIndex(index++);
             updatePublishedPointVO(p, dpvo);
         }

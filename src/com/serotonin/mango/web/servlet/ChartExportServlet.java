@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.db.MappedRowCallback;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
@@ -57,7 +57,7 @@ public class ChartExportServlet extends HttpServlet {
         };
 
         for (int pointId : def.getPointIds()) {
-            DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(pointId);
+            DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(pointId);
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 ReportPointInfo pointInfo = new ReportPointInfo();
                 pointInfo.setPointName(dp.getName());
@@ -67,7 +67,7 @@ public class ChartExportServlet extends HttpServlet {
 
                 //TODO rewrite seroUtils
                 //pointValueDao.getPointValuesBetween(pointId, from, to, callback);
-                DaoInstances.PointValueDao.getPointValuesBetween(pointId, from, to);
+                ServiceInstances.PointValueService.getPointValuesBetween(pointId, from, to);
             }
         }
 

@@ -25,7 +25,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.ViewEditForm;
@@ -88,14 +88,14 @@ public class ViewEditController {
 
         if (viewIdStr != null) {
             // An existing view.
-            view = DaoInstances.ViewDao.getView(Integer.parseInt(viewIdStr));
+            view = ServiceInstances.ViewService.getView(Integer.parseInt(viewIdStr));
             Permissions.ensureViewEditPermission(user, view);
         } else {
             // A new view.
             view = new View();
             view.setId(Common.NEW_ID);
             view.setUserId(user.getId());
-            view.setXid(DaoInstances.ViewDao.generateUniqueXid());
+            view.setXid(ServiceInstances.ViewService.generateUniqueXid());
             //TODO view.setHeight(?) and view.setWidth(?)
         }
         user.setView(view);
@@ -164,7 +164,7 @@ public class ViewEditController {
         }
         
         view.setUserId(Common.getUser(request).getId());
-        DaoInstances.ViewDao.saveView(view);
+        org.scada_lts.mango.service.ServiceInstances.ViewService.saveView(view);
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
@@ -185,7 +185,7 @@ public class ViewEditController {
         View view = user.getView();
         form.setView(view);
 
-        DaoInstances.ViewDao.removeView(form.getView().getId());
+        org.scada_lts.mango.service.ServiceInstances.ViewService.removeView(form.getView().getId());
         return getSuccessRedirectView(null);
     }
     

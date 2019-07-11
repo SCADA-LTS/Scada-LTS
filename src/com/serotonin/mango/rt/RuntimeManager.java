@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -118,7 +118,7 @@ public class RuntimeManager {
 		started = true;
 
 		// Initialize data sources that are enabled.
-		List<DataSourceVO<?>> configs = DaoInstances.DataSourceDao.getDataSources();
+		List<DataSourceVO<?>> configs = ServiceInstances.DataSourceService.getDataSources();
 		List<DataSourceVO<?>> pollingRound = new ArrayList<DataSourceVO<?>>();
 		for (DataSourceVO<?> config : configs) {
 			boolean isHttpRetriverSleepEnableWhenStart = false;
@@ -139,7 +139,7 @@ public class RuntimeManager {
 			if (config.isEnabled() || isToTrayEnable ) {
 				if (safe) {
 					config.setEnabled(false);
-					DaoInstances.DataSourceDao.saveDataSource(config);
+					ServiceInstances.DataSourceService.saveDataSource(config);
 				} else if (initializeDataSource(config)) {
 					pollingRound.add(config);
         }
@@ -147,11 +147,11 @@ public class RuntimeManager {
 		}
 
 		// Set up point links.
-		for (PointLinkVO vo : DaoInstances.PointLinkDao.getPointLinks()) {
+		for (PointLinkVO vo : ServiceInstances.PointLinkService.getPointLinks()) {
 			if (!vo.isDisabled()) {
 				if (safe) {
 					vo.setDisabled(true);
-					DaoInstances.PointLinkDao.savePointLink(vo);
+					ServiceInstances.PointLinkService.savePointLink(vo);
 				} else
 					startPointLink(vo);
 			}
@@ -165,47 +165,47 @@ public class RuntimeManager {
 			startDataSourcePolling(config);
 
 		// Initialize the scheduled events.
-		for (ScheduledEventVO se : DaoInstances.ScheduledEventDao
+		for (ScheduledEventVO se : ServiceInstances.ScheduledEventService
 				.getScheduledEvents()) {
 			if (!se.isDisabled()) {
 				if (safe) {
 					se.setDisabled(true);
-					DaoInstances.ScheduledEventDao.saveScheduledEvent(se);
+					ServiceInstances.ScheduledEventService.saveScheduledEvent(se);
 				} else
 					startScheduledEvent(se);
 			}
 		}
 
 		// Initialize the compound events.
-		for (CompoundEventDetectorVO ced : DaoInstances.CompoundEventDetectorDao
+		for (CompoundEventDetectorVO ced : ServiceInstances.CompoundEventDetectorService
 				.getCompoundEventDetectors()) {
 			if (!ced.isDisabled()) {
 				if (safe) {
 					ced.setDisabled(true);
-					DaoInstances.CompoundEventDetectorDao.saveCompoundEventDetector(ced);
+					ServiceInstances.CompoundEventDetectorService.saveCompoundEventDetector(ced);
 				} else
 					startCompoundEventDetector(ced);
 			}
 		}
 
 		// Start the publishers that are enabled
-		for (PublisherVO<? extends PublishedPointVO> vo : DaoInstances.PublisherDao
+		for (PublisherVO<? extends PublishedPointVO> vo : ServiceInstances.PublisherService
 				.getPublishers()) {
 			if (vo.isEnabled()) {
 				if (safe) {
 					vo.setEnabled(false);
-					DaoInstances.PublisherDao.savePublisher(vo);
+					ServiceInstances.PublisherService.savePublisher(vo);
 				} else
 					startPublisher(vo);
 			}
 		}
 
 		// Start the maintenance events that are enabled
-		for (MaintenanceEventVO vo : DaoInstances.MaintenanceEventDao.getMaintenanceEvents()) {
+		for (MaintenanceEventVO vo : ServiceInstances.MaintenanceEventService.getMaintenanceEvents()) {
 			if (!vo.isDisabled()) {
 				if (safe) {
 					vo.setDisabled(true);
-					DaoInstances.MaintenanceEventDao.saveMaintenanceEvent(vo);
+					ServiceInstances.MaintenanceEventService.saveMaintenanceEvent(vo);
 				} else
 					startMaintenanceEvent(vo);
 			}
@@ -270,16 +270,16 @@ public class RuntimeManager {
 	}
 
 	public List<DataSourceVO<?>> getDataSources() {
-		return DaoInstances.DataSourceDao.getDataSources();
+		return ServiceInstances.DataSourceService.getDataSources();
 	}
 
 	public DataSourceVO<?> getDataSource(int dataSourceId) {
-		return DaoInstances.DataSourceDao.getDataSource(dataSourceId);
+		return ServiceInstances.DataSourceService.getDataSource(dataSourceId);
 	}
 
 	public void deleteDataSource(int dataSourceId) {
 		stopDataSource(dataSourceId);
-		DaoInstances.DataSourceDao.deleteDataSource(dataSourceId);
+		ServiceInstances.DataSourceService.deleteDataSource(dataSourceId);
 		Common.ctx.getEventManager().cancelEventsForDataSource(dataSourceId);
 	}
 
@@ -292,7 +292,7 @@ public class RuntimeManager {
 		// In case this is a new data source, we need to save to the database
 		// first so that it has a proper id.
 		LOG.debug("Saving DS: " + vo.getName());
-		DaoInstances.DataSourceDao.saveDataSource(vo);
+		ServiceInstances.DataSourceService.saveDataSource(vo);
 		LOG.debug("DS saved!");
 		// If the data source is enabled, start it.
 		if (vo.isEnabled()) {
@@ -353,7 +353,7 @@ public class RuntimeManager {
 			runningDataSources.add(dataSource);
 
 			// Add the enabled points to the data source.
-			for (DataPointVO dataPoint : DaoInstances.DataPointDao
+			for (DataPointVO dataPoint : ServiceInstances.DataPointService
 					.getDataPoints(vo.getId(), null)) {
 				if (dataPoint.isEnabled())
 					startDataPoint(dataPoint);
@@ -425,7 +425,7 @@ public class RuntimeManager {
 				peds.remove();
 		}
 
-		DaoInstances.DataPointDao.saveDataPoint(point);
+		ServiceInstances.DataPointService.saveDataPoint(point);
 
 		if (point.isEnabled())
 			startDataPoint(point);
@@ -435,7 +435,7 @@ public class RuntimeManager {
 		if (point.isEnabled()) {
 			stopDataPoint(point.getId());
     }
-		DaoInstances.DataPointDao.deleteDataPoint(point.getId());
+		ServiceInstances.DataPointService.deleteDataPoint(point.getId());
 		Common.ctx.getEventManager().cancelEventsForDataPoint(point.getId());
 	}
 
@@ -565,8 +565,8 @@ public class RuntimeManager {
 
 	public long purgeDataPointValues() {
 
-		long count = DaoInstances.PointValueDao.deleteAllPointData();
-		DaoInstances.PointValueDao.compressTables();
+		long count = ServiceInstances.PointValueService.deleteAllPointData();
+		ServiceInstances.PointValueService.compressTables();
 		for (Integer id : dataPoints.keySet())
 			updateDataPointValuesRT(id);
 		return count;
@@ -581,7 +581,7 @@ public class RuntimeManager {
 	}
 
 	public long purgeDataPointValues(int dataPointId) {
-		long count = DaoInstances.PointValueDao.deletePointValues(dataPointId);
+		long count = ServiceInstances.PointValueService.deletePointValues(dataPointId);
 		updateDataPointValuesRT(dataPointId);
 		return count;
 		//TODO not allow the deletion of data should be switched to a new database
@@ -589,7 +589,7 @@ public class RuntimeManager {
 	}
 
 	public long purgeDataPointValues(int dataPointId, long before) {
-		long count = DaoInstances.PointValueDao.deletePointValuesBefore(dataPointId,
+		long count = ServiceInstances.PointValueService.deletePointValuesBefore(dataPointId,
 				before);
 		if (count > 0)
 			updateDataPointValuesRT(dataPointId);
@@ -611,7 +611,7 @@ public class RuntimeManager {
 	public void saveScheduledEvent(ScheduledEventVO vo) {
 		// If the scheduled event is running, stop it.
 		stopSimpleEventDetector(vo.getEventDetectorKey());
-		DaoInstances.ScheduledEventDao.saveScheduledEvent(vo);
+		ServiceInstances.ScheduledEventService.saveScheduledEvent(vo);
 
 		// If the scheduled event is enabled, start it.
 		if (!vo.isDisabled())
@@ -666,7 +666,7 @@ public class RuntimeManager {
 	public boolean saveCompoundEventDetector(CompoundEventDetectorVO vo) {
 		// If the CED is running, stop it.
 		stopCompoundEventDetector(vo.getId());
-		DaoInstances.CompoundEventDetectorDao.saveCompoundEventDetector(vo);
+		ServiceInstances.CompoundEventDetectorService.saveCompoundEventDetector(vo);
 
 		// If the scheduled event is enabled, start it.
 		if (!vo.isDisabled())
@@ -719,12 +719,12 @@ public class RuntimeManager {
 	}
 
 	public PublisherVO<? extends PublishedPointVO> getPublisher(int publisherId) {
-		return DaoInstances.PublisherDao.getPublisher(publisherId);
+		return ServiceInstances.PublisherService.getPublisher(publisherId);
 	}
 
 	public void deletePublisher(int publisherId) {
 		stopPublisher(publisherId);
-		DaoInstances.PublisherDao.deletePublisher(publisherId);
+		ServiceInstances.PublisherService.deletePublisher(publisherId);
 		Common.ctx.getEventManager().cancelEventsForPublisher(publisherId);
 	}
 
@@ -734,7 +734,7 @@ public class RuntimeManager {
 
 		// In case this is a new publisher, we need to save to the database
 		// first so that it has a proper id.
-		DaoInstances.PublisherDao.savePublisher(vo);
+		ServiceInstances.PublisherService.savePublisher(vo);
 
 		// If the publisher is enabled, start it.
 		if (vo.isEnabled())
@@ -789,13 +789,13 @@ public class RuntimeManager {
 
 	public void deletePointLink(int pointLinkId) {
 		stopPointLink(pointLinkId);
-		DaoInstances.PointLinkDao.deletePointLink(pointLinkId);
+		ServiceInstances.PointLinkService.deletePointLink(pointLinkId);
 	}
 
 	public void savePointLink(PointLinkVO vo) {
 		// If the point link is running, stop it.
 		stopPointLink(vo.getId());
-		DaoInstances.PointLinkDao.savePointLink(vo);
+		ServiceInstances.PointLinkService.savePointLink(vo);
 
 		// If the point link is enabled, start it.
 		if (!vo.isDisabled())
@@ -858,7 +858,7 @@ public class RuntimeManager {
 
 	public void deleteMaintenanceEvent(int id) {
 		stopMaintenanceEvent(id);
-		DaoInstances.MaintenanceEventDao.deleteMaintenanceEvent(id);
+		ServiceInstances.MaintenanceEventService.deleteMaintenanceEvent(id);
     
 	}
 
@@ -866,7 +866,7 @@ public class RuntimeManager {
 		// If the maintenance event is running, stop it.
 		stopMaintenanceEvent(vo.getId());
 
-		DaoInstances.MaintenanceEventDao.saveMaintenanceEvent(vo);
+		ServiceInstances.MaintenanceEventService.saveMaintenanceEvent(vo);
 
 		// If the maintenance event is enabled, start it.
 		if (!vo.isDisabled())

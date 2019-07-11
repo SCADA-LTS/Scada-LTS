@@ -1,7 +1,7 @@
 package br.org.scadabr.rt.scripting.context;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -17,7 +17,7 @@ public class DSCommandsScriptContextObject extends ScriptContextObject {
 
 	public void enableDataSource(String xid) {
 		RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
-		DataSourceVO<?> dataSource = DaoInstances.DataSourceDao.getDataSource(xid);
+		DataSourceVO<?> dataSource = ServiceInstances.DataSourceService.getDataSource(xid);
 		if (dataSource != null) {
 			Permissions.ensureDataSourcePermission(user, dataSource
 					.getId());
@@ -30,7 +30,7 @@ public class DSCommandsScriptContextObject extends ScriptContextObject {
 
 	public void disableDataSource(String xid) {
 		RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
-		DataSourceVO<?> dataSource = DaoInstances.DataSourceDao.getDataSource(xid);
+		DataSourceVO<?> dataSource = ServiceInstances.DataSourceService.getDataSource(xid);
 		if (dataSource != null) {
 			Permissions.ensureDataSourcePermission(user, dataSource
 					.getId());

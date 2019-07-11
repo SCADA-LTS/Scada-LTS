@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -416,7 +416,7 @@ class PersistentSendThread extends SendThread {
         Common.timer.execute(new Runnable() {
             @Override
             public void run() {
-                writePointHierarchy(DaoInstances.DataPointDao.getPointHierarchy());
+                writePointHierarchy(ServiceInstances.DataPointService.getPointHierarchy());
             }
         });
     }

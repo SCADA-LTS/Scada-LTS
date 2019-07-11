@@ -27,7 +27,7 @@ import javax.script.ScriptException;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -53,7 +53,7 @@ public class PointLinksDwr extends BaseDwr {
         Map<String, Object> data = new HashMap<String, Object>();
 
         // Get the points that this user can access.
-        List<DataPointVO> allPoints = DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> allPoints = ServiceInstances.DataPointService.getDataPoints(DataPointExtendedNameComparator.instance, false);
         List<IntValuePair> sourcePoints = new ArrayList<IntValuePair>();
         List<IntValuePair> targetPoints = new ArrayList<IntValuePair>();
         for (DataPointVO point : allPoints) {
@@ -68,7 +68,7 @@ public class PointLinksDwr extends BaseDwr {
 
         // Get the existing point links.
         List<PointLinkVO> pointLinks = new ArrayList<PointLinkVO>();
-        for (PointLinkVO pointLink : DaoInstances.PointLinkDao.getPointLinks()) {
+        for (PointLinkVO pointLink : ServiceInstances.PointLinkService.getPointLinks()) {
             if (containsPoint(sourcePoints, pointLink.getSourcePointId())
                     && containsPoint(targetPoints, pointLink.getTargetPointId()))
                 pointLinks.add(pointLink);
@@ -91,10 +91,10 @@ public class PointLinksDwr extends BaseDwr {
         PointLinkVO vo;
         if (id == Common.NEW_ID) {
             vo = new PointLinkVO();
-            vo.setXid(DaoInstances.PointLinkDao.generateUniqueXid());
+            vo.setXid(ServiceInstances.PointLinkService.generateUniqueXid());
         }
         else
-            vo = DaoInstances.PointLinkDao.getPointLink(id);
+            vo = ServiceInstances.PointLinkService.getPointLink(id);
         return vo;
     }
 
@@ -114,7 +114,7 @@ public class PointLinksDwr extends BaseDwr {
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!DaoInstances.PointLinkDao.isXidUnique(xid, id))
+        else if (!ServiceInstances.PointLinkService.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         vo.validate(response);
@@ -143,7 +143,7 @@ public class PointLinksDwr extends BaseDwr {
         else {
             Map<String, IDataPoint> context = new HashMap<String, IDataPoint>();
             context.put(PointLinkRT.CONTEXT_VAR_NAME, point);
-            int targetDataType = DaoInstances.DataPointDao.getDataPoint(targetPointId).getPointLocator().getDataTypeId();
+            int targetDataType = ServiceInstances.DataPointService.getDataPoint(targetPointId).getPointLocator().getDataTypeId();
 
             try {
                 PointValueTime pvt = scriptExecutor.execute(script, context, System.currentTimeMillis(),

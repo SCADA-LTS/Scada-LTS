@@ -14,6 +14,8 @@ import br.org.scadabr.db.utils.TestUtils;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.ServiceInstances;
+import org.scada_lts.mango.service.ViewService;
 
 public class ViewDaoTest extends AbstractMySQLDependentTest {
 
@@ -38,7 +40,7 @@ public class ViewDaoTest extends AbstractMySQLDependentTest {
 		view.getViewUsers().add(oldPermission);
 		viewDao.saveView(view);
 
-		assertTrue(new ViewDao().getViewNamesWithReadOrWritePermissions(
+		assertTrue(ServiceInstances.ViewService.getViewNamesWithReadOrWritePermissions(
 				user.getId(), user.getUserProfile()).isEmpty());
 	}
 
@@ -76,25 +78,22 @@ public class ViewDaoTest extends AbstractMySQLDependentTest {
 
 		assertEquals(
 				3,
-				new ViewDao().getViewNamesWithReadOrWritePermissions(
+				ServiceInstances.ViewService.getViewNamesWithReadOrWritePermissions(
 						user.getId(), user.getUserProfile()).size());
 
 		assertEquals(
 				view2.getId(),
-				new ViewDao()
-						.getViewNamesWithReadOrWritePermissions(user.getId(),
+				ServiceInstances.ViewService.getViewNamesWithReadOrWritePermissions(user.getId(),
 								user.getUserProfile()).get(FIRST).getKey());
 
 		assertEquals(
 				view3.getId(),
-				new ViewDao()
-						.getViewNamesWithReadOrWritePermissions(user.getId(),
+				ServiceInstances.ViewService.getViewNamesWithReadOrWritePermissions(user.getId(),
 								user.getUserProfile()).get(SECOND).getKey());
 
 		assertEquals(
 				view4.getId(),
-				new ViewDao()
-						.getViewNamesWithReadOrWritePermissions(user.getId(),
+				ServiceInstances.ViewService.getViewNamesWithReadOrWritePermissions(user.getId(),
 								user.getUserProfile()).get(THIRD).getKey());
 	}
 

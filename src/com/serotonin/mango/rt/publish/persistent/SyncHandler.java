@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.PointValueService;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.publish.PublishedPointRT;
 import com.serotonin.mango.util.DateUtils;
@@ -27,7 +27,7 @@ class SyncHandler implements Runnable {
 
     final PersistentSendThread sendThread;
 
-    final PointValueDao pointValueDao = DaoInstances.PointValueDao;
+    final PointValueService pointValueService = ServiceInstances.PointValueService;
     long cutoff;
 
     int recordsSynced;
@@ -172,7 +172,7 @@ class SyncHandler implements Runnable {
                 from = startTimes.get(point.getDataPointId());
             }
             if (from == null) {
-                from = pointValueDao.getInceptionDate(point.getDataPointId());
+                from = ServiceInstances.PointValueService.getInceptionDate(point.getDataPointId());
                 updatePointStartTime(point, from);
             }
 
@@ -212,7 +212,7 @@ class SyncHandler implements Runnable {
             requestsSent++;
 
             // Check how many records are in that range.
-            long count = pointValueDao.dateRangeCount(point.getDataPointId(), from, to);
+            long count = pointValueService.dateRangeCount(point.getDataPointId(), from, to);
 
             // Wait for the response ...
             synchronized (this) {
@@ -266,7 +266,7 @@ class SyncHandler implements Runnable {
             if (responseCount == 0) {
                 // None of the records in this range exist in the target. So, send them by adding them to the send
                 // queue.
-                List<PointValueTime> pvts = pointValueDao.getPointValuesBetween(point.getDataPointId(), from, to + 1);
+                List<PointValueTime> pvts = pointValueService.getPointValuesBetween(point.getDataPointId(), from, to + 1);
                 if (LOG.isInfoEnabled())
                     LOG.info("Syncing records: count=" + count + ", queried=" + pvts.size() + ", point="
                             + point.getXid() + ", from=" + from + ", to=" + to);

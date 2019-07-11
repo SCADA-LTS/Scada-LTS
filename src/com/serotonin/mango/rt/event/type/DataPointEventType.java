@@ -20,7 +20,7 @@ package com.serotonin.mango.rt.event.type;
 
 import java.util.Map;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -55,7 +55,7 @@ public class DataPointEventType extends EventType {
 	@Override
 	public int getDataSourceId() {
 		if (dataSourceId == -1)
-			dataSourceId = DaoInstances.DataPointDao.getDataPoint(dataPointId)
+			dataSourceId = ServiceInstances.DataPointService.getDataPoint(dataPointId)
 					.getDataSourceId();
 		LOG.debug(toString() + " - getDataSourceId() - "
 				+ Integer.toString(dataSourceId));
@@ -126,9 +126,9 @@ public class DataPointEventType extends EventType {
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		super.jsonSerialize(map);
-		map.put("dataPointXID", DaoInstances.DataPointDao.getDataPoint(dataPointId).getXid());
+		map.put("dataPointXID", ServiceInstances.DataPointService.getDataPoint(dataPointId).getXid());
 		map.put("detectorXID",
-				DaoInstances.DataPointDao.getDetectorXid(pointEventDetectorId));
+				ServiceInstances.DataPointService.getDetectorXid(pointEventDetectorId));
 	}
 
 	@Override

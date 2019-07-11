@@ -25,7 +25,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
@@ -73,7 +73,7 @@ public class DataPointAccess implements JsonSerializable {
 			throw new LocalizableJsonException(
 					"emport.error.permission.missing", "dataPointXid");
 
-		DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(text);
+		DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(text);
 		if (dp == null)
 			throw new LocalizableJsonException("emport.error.missingPoint",
 					text);
@@ -91,7 +91,7 @@ public class DataPointAccess implements JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("dataPointXid", DaoInstances.DataPointDao.getDataPoint(dataPointId)
+		map.put("dataPointXid", ServiceInstances.DataPointService.getDataPoint(dataPointId)
 				.getXid());
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}

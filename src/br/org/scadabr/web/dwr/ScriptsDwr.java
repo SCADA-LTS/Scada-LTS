@@ -7,7 +7,7 @@ import br.org.scadabr.vo.scripting.ScriptVO;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.web.dwr.BaseDwr;
@@ -16,22 +16,22 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 public class ScriptsDwr extends BaseDwr {
 
 	public List<DataPointVO> getPoints() {
-		return DaoInstances.DataPointDao.getDataPoints(
+		return ServiceInstances.DataPointService.getDataPoints(
 				DataPointExtendedNameComparator.instance, false);
 	}
 
 	public List<ScriptVO<?>> getScripts() {
-		return DaoInstances.ScriptDao.getScripts();
+		return ServiceInstances.ScriptService.getScripts();
 	}
 
 	public ScriptVO<?> getScript(int id) {
 		if (id == Common.NEW_ID) {
 			ContextualizedScriptVO vo = new ContextualizedScriptVO();
-			vo.setXid(DaoInstances.ScriptDao.generateUniqueXid());
+			vo.setXid(ServiceInstances.ScriptService.generateUniqueXid());
 			return vo;
 		}
 
-		return DaoInstances.ScriptDao.getScript(id);
+		return ServiceInstances.ScriptService.getScript(id);
 	}
 
 	public DwrResponseI18n saveScript(int id, String xid, String name,
@@ -52,18 +52,18 @@ public class ScriptsDwr extends BaseDwr {
 		vo.validate(response);
 
 		if (!response.getHasMessages())
-			DaoInstances.ScriptDao.saveScript(vo);
+			ServiceInstances.ScriptService.saveScript(vo);
 
 		response.addData("seId", vo.getId());
 		return response;
 	}
 
 	public void deleteScript(int scriptId) {
-		DaoInstances.ScriptDao.deleteScript(scriptId);
+		ServiceInstances.ScriptService.deleteScript(scriptId);
 	}
 
 	public boolean executeScript(int scriptId) {
-		ScriptVO<?> script = DaoInstances.ScriptDao.getScript(scriptId);
+		ScriptVO<?> script = ServiceInstances.ScriptService.getScript(scriptId);
 
 		try {
 			if (script != null) {

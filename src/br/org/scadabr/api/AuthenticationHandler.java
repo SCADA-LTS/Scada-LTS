@@ -6,7 +6,7 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPHeaderElement;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.axis.AxisFault;
 import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
@@ -76,7 +76,7 @@ public class AuthenticationHandler extends BasicHandler {
 			String password = Common.getEnvironmentProfile().getString(
 					"api.password", "admin");
 
-			User user = DaoInstances.UserDao.getUser(username);
+			User user = ServiceInstances.UserService.getUser(username);
 			if (user == null)
 				throw new AxisFault("Invalid Default Username!");
 
@@ -92,7 +92,7 @@ public class AuthenticationHandler extends BasicHandler {
 		String username = getUsername(hel);
 		String password = getPassword(hel);
 
-		User user = DaoInstances.UserDao.getUser(username);
+		User user = ServiceInstances.UserService.getUser(username);
 
 		if (user == null)
 			throw new AxisFault("Invalid Username!");

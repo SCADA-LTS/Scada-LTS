@@ -20,10 +20,12 @@ package org.scada_lts.mango.service;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
+import com.serotonin.util.SerializationHelper;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.PublisherDAO;
 import org.scada_lts.mango.adapter.MangoPublisher;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -76,6 +78,15 @@ public class PublisherService implements MangoPublisher {
 		} else {
 			publisherDAO.update(publisher);
 		}
+	}
+
+	public Object getPersistentData(int id) {
+		return null;
+	}
+
+	public void savePersistentData(int id, Object data) {
+	//	ejt.update("update publishers set rtdata=? where id=?", new Object[] { SerializationHelper.writeObject(data),
+	//			id }, new int[] { Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB, Types.INTEGER });
 	}
 
 	@Override

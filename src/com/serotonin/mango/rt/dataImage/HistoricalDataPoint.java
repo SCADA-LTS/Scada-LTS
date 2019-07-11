@@ -3,19 +3,19 @@ package com.serotonin.mango.rt.dataImage;
 import java.util.List;
 
 import com.serotonin.NotImplementedException;
-import com.serotonin.mango.db.dao.PointValueDao;
+import org.scada_lts.mango.service.PointValueService;
 import com.serotonin.timer.SimulationTimer;
 
 public class HistoricalDataPoint implements IDataPoint {
     private final int id;
     private final int dataTypeId;
-    private final PointValueDao pointValueDao;
+    private final PointValueService pointValueService;
     private final SimulationTimer timer;
 
-    public HistoricalDataPoint(int id, int dataTypeId, SimulationTimer timer, PointValueDao pointValueDao) {
+    public HistoricalDataPoint(int id, int dataTypeId, SimulationTimer timer, PointValueService pointValueService) {
         this.id = id;
         this.dataTypeId = dataTypeId;
-        this.pointValueDao = pointValueDao;
+        this.pointValueService = pointValueService;
         this.timer = timer;
     }
 
@@ -25,7 +25,7 @@ public class HistoricalDataPoint implements IDataPoint {
 
     @Override
     public List<PointValueTime> getLatestPointValues(int limit) {
-        return pointValueDao.getLatestPointValues(id, limit, timer.currentTimeMillis());
+        return pointValueService.getLatestPointValues(id, limit, timer.currentTimeMillis());
     }
 
     @Override
@@ -45,22 +45,22 @@ public class HistoricalDataPoint implements IDataPoint {
 
     @Override
     public PointValueTime getPointValue() {
-        return pointValueDao.getPointValueBefore(id, timer.currentTimeMillis() + 1);
+        return pointValueService.getPointValueBefore(id, timer.currentTimeMillis() + 1);
     }
 
     @Override
     public PointValueTime getPointValueBefore(long time) {
-        return pointValueDao.getPointValueBefore(id, time);
+        return pointValueService.getPointValueBefore(id, time);
     }
 
     @Override
     public List<PointValueTime> getPointValues(long since) {
-        return pointValueDao.getPointValuesBetween(id, since, timer.currentTimeMillis());
+        return pointValueService.getPointValuesBetween(id, since, timer.currentTimeMillis());
     }
 
     @Override
     public List<PointValueTime> getPointValuesBetween(long from, long to) {
-        return pointValueDao.getPointValuesBetween(id, from, to);
+        return pointValueService.getPointValuesBetween(id, from, to);
     }
 
     @Override

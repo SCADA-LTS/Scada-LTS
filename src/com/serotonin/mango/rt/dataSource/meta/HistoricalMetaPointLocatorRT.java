@@ -3,7 +3,7 @@ package com.serotonin.mango.rt.dataSource.meta;
 import java.util.HashMap;
 
 import com.serotonin.db.IntValuePair;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.HistoricalDataPoint;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
@@ -28,9 +28,9 @@ public class HistoricalMetaPointLocatorRT extends MetaPointLocatorRT {
 
         context = new HashMap<String, IDataPoint>();
         for (IntValuePair contextEntry : vo.getContext()) {
-            DataPointVO cvo = DaoInstances.DataPointDao.getDataPoint(contextEntry.getKey());
+            DataPointVO cvo = ServiceInstances.DataPointService.getDataPoint(contextEntry.getKey());
             HistoricalDataPoint point = new HistoricalDataPoint(cvo.getId(), cvo.getPointLocator().getDataTypeId(),
-                    timer, DaoInstances.PointValueDao);
+                    timer, ServiceInstances.PointValueService);
             context.put(contextEntry.getValue(), point);
         }
     }

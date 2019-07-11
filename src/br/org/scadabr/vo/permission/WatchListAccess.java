@@ -1,7 +1,7 @@
 package br.org.scadabr.vo.permission;
 
 import com.serotonin.json.*;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.vo.WatchList;
 
 import java.util.Map;
@@ -19,7 +19,7 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("watchlistXid", DaoInstances.WatchListDao.getWatchList(id).getXid());
+		map.put("watchlistXid", ServiceInstances.WatchListService.getWatchList(id).getXid());
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}
 
@@ -29,7 +29,7 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 		String xid = json.getString("watchlistXid");
 		int ImportedPermission = ACCESS_CODES.getId(json
 				.getString("permission"));
-		WatchList watchlist = DaoInstances.WatchListDao.getWatchList(xid);
+		WatchList watchlist = ServiceInstances.WatchListService.getWatchList(xid);
 		int importedId = watchlist.getId();
 		setId(importedId);
 		setPermission(ImportedPermission);

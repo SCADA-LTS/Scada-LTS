@@ -23,7 +23,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -216,7 +216,7 @@ public class DataPointService implements MangoDataPoint {
 	public void updateDataPoint(final DataPointVO dp) {
 		DataPointVO oldDp = dataPointDAO.getDataPoint(dp.getId());
 		if (oldDp.getPointLocator().getDataTypeId() != dp.getPointLocator().getDataTypeId()) {
-			DaoInstances.PointValueDao.deletePointValuesWithMismatchedType(dp.getId(), dp.getPointLocator().getDataTypeId());
+			ServiceInstances.PointValueService.deletePointValuesWithMismatchedType(dp.getId(), dp.getPointLocator().getDataTypeId());
 		}
 
 		updateDataPointShallow(dp);

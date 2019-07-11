@@ -32,7 +32,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.util.StringUtils;
@@ -122,7 +122,7 @@ public class WatchList implements JsonSerializable {
             response.addMessage("xid", new LocalizableMessage("validate.required"));
         else if (StringUtils.isLengthGreaterThan(xid, 50))
             response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!DaoInstances.WatchListDao.isXidUnique(xid, id))
+        else if (!ServiceInstances.WatchListService.isXidUnique(xid, id))
             response.addMessage("xid", new LocalizableMessage("validate.xidUsed"));
 
         for (DataPointVO dpVO : pointList)
@@ -137,7 +137,7 @@ public class WatchList implements JsonSerializable {
     public void jsonSerialize(Map<String, Object> map) {
         map.put("xid", xid);
 
-        map.put("user", DaoInstances.UserDao.getUser(userId).getUsername());
+        map.put("user", ServiceInstances.UserService.getUser(userId).getUsername());
 
         List<String> dpXids = new ArrayList<String>();
         for (DataPointVO dpVO : pointList)
@@ -152,7 +152,7 @@ public class WatchList implements JsonSerializable {
         String username = json.getString("user");
         if (StringUtils.isEmpty(username))
             throw new LocalizableJsonException("emport.error.missingValue", "user");
-        User user = DaoInstances.UserDao.getUser(username);
+        User user = ServiceInstances.UserService.getUser(username);
         if (user == null)
             throw new LocalizableJsonException("emport.error.missingUser", username);
         userId = user.getId();
@@ -162,7 +162,7 @@ public class WatchList implements JsonSerializable {
             pointList.clear();
             for (JsonValue jv : jsonDataPoints.getElements()) {
                 String xid = jv.toJsonString().getValue();
-                DataPointVO dpVO = DaoInstances.DataPointDao.getDataPoint(xid);
+                DataPointVO dpVO = ServiceInstances.DataPointService.getDataPoint(xid);
                 if (dpVO == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
                 pointList.add(dpVO);

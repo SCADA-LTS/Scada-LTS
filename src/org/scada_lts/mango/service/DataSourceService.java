@@ -17,11 +17,13 @@
  */
 package org.scada_lts.mango.service;
 
+import com.serotonin.db.spring.GenericResultSetExtractor;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
@@ -30,12 +32,18 @@ import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
+import java.io.Serializable;
+import java.sql.Blob;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -46,6 +54,50 @@ import java.util.ResourceBundle;
  */
 public class DataSourceService implements MangoDataSource {
 
+	@Override
+	public Object getPersistentData(int id) {
+
+		return DAO.getInstance().getJdbcTemp().	query("select rtdata from dataSources where id=?",
+				  new Object[] {
+		id
+	},
+			new GenericResultSetExtractor<Serializable>()
+
+	{
+		@Override
+		public Serializable extractData (ResultSet rs)
+							throws SQLException, DataAccessException {
+		if (!rs.next())
+			return null;
+
+		InputStream is;
+
+		if (Common.getEnvironmentProfile().getString("db.type")
+				.equals("postgres")) {
+			Blob blob = rs.getBlob(1);
+			is = blob.getBinaryStream();
+			if (blob == null)
+				return null;
+		} else {
+			is = rs.getBinaryStream(1);
+			if (is == null)
+				return null;
+		}
+
+		return (Serializable) SerializationHelper
+				.readObjectInContext(is);
+	}
+	});
+}
+	public void savePersistentData(int id, Object data) {
+		DAO.getInstance().getJdbcTemp().update(
+				"update dataSources set rtdata=? where id=?",
+				new Object[] { SerializationHelper.writeObject(data), id },
+				new int[] {
+						Common.getEnvironmentProfile().getString("db.type")
+								.equals("postgres") ? Types.BINARY : Types.BLOB,
+						Types.INTEGER });
+	}
 	//TODO spring
 	private static final DataSourceDAO dataSourceDAO = new DataSourceDAO();
 

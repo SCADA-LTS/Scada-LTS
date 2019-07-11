@@ -41,6 +41,7 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.web.dwr.EmportDwr;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.ServiceInstances;
 
 public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 
@@ -390,7 +391,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 				response, reader, task);
 
 		User retrievedUser = new UserDao().getUser(user.getId());
-		View retrievedView = new ViewDao().getViews().get(FIRST);
+		View retrievedView = ServiceInstances.ViewService.getViews().get(FIRST);
 
 		assertEquals(retrievedUser.getId(),
 				retrievedView.getViewUsers().get(FIRST).getUserId());
@@ -492,7 +493,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 				response, reader, task);
 
 		User retrievedUser = new UserDao().getUser(user.getId());
-		View retrievedView = new ViewDao().getViews().get(FIRST);
+		View retrievedView = ServiceInstances.ViewService.getViews().get(FIRST);
 
 		assertEquals(retrievedUser.getId(),
 				retrievedView.getViewUsers().get(FIRST).getUserId());

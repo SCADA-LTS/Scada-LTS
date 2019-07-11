@@ -58,16 +58,13 @@ public class DataSourceDao {
 	public boolean isXidUnique(String xid, int excludeId) {
 		return dataSourceService.isXidUnique(xid, excludeId);
 	}
-
 	public void saveDataSource(final DataSourceVO<?> vo) {
 		dataSourceService.saveDataSource(vo);
 	}
 
-
 	public void deleteDataSource(final int dataSourceId) {
 		dataSourceService.deleteDataSource(dataSourceId);
 	}
-
 
 	public int copyDataSource(final int dataSourceId, final ResourceBundle bundle) {
 		return dataSourceService.copyDataSource(dataSourceId, bundle);

@@ -214,30 +214,13 @@ public class ReportService implements MangoReport {
 			//TODO
 			// Insert the reportInstanceEvents records for the point.
 			if (instance.getIncludeEvents() != ReportVO.EVENTS_NONE) {
-				String eventSQL = "insert into reportInstanceEvents " //
-						+ "  (eventId, reportInstanceId, typeId, typeRef1, typeRef2, activeTs, rtnApplicable, rtnTs," //
-						+ "   rtnCause, alarmLevel, message, ackTs, ackUsername, alternateAckSource)" //
-						+ "  select e.id, " + instance.getId() + ", e.typeId, e.typeRef1, e.typeRef2, e.activeTs, " //
-						+ "    e.rtnApplicable, e.rtnTs, e.rtnCause, e.alarmLevel, e.message, e.ackTs, u.username, " //
-						+ "    e.alternateAckSource " //
-						+ "  from events e join userEvents ue on ue.eventId=e.id " //
-						+ "    left join users u on e.ackUserId=u.id " //
-						+ "  where ue.userId=? " //
-						+ "    and e.typeId=" //
-						+ EventType.EventSources.DATA_POINT //
-						+ "    and e.typeRef1=? ";
-
-				if (instance.getIncludeEvents() == ReportVO.EVENTS_ALARMS) {
-					eventSQL += "and e.alarmLevel > 0 ";
-				}
-
-				eventSQL += StringUtils.replaceMacro(timestampSql, "field", "e.activeTs");
-				DAO.getInstance().getJdbcTemp().update(eventSQL, appendParameters(timestampParams, instance.getUserId(), point.getId()));
+				insertIntoReportInstanceEvents(instance,timestampSql,point,timestampParams);
 			}
 
 			// Insert the reportInstanceUserComments records for the point.
 			if (instance.isIncludeUserComments()) {
-				String commentSQL = "insert into reportInstanceUserComments " //
+				insertIntoReportInstanceUserComments(instance,timestampSql,reportPointId,point,timestampParams);
+				/*String commentSQL = "insert into reportInstanceUserComments " //
 						+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
 						+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_POINT + ", " //
 						+ reportPointId + ", uc.ts, uc.commentText " //
@@ -246,9 +229,8 @@ public class ReportService implements MangoReport {
 						+ "  where uc.commentType=" + UserComment.TYPE_POINT //
 						+ "    and uc.typeKey=? ";
 
-				// Only include comments made in the duration of the report.
 				commentSQL += StringUtils.replaceMacro(timestampSql, "field", "uc.ts");
-				DAO.getInstance().getJdbcTemp().update(commentSQL, appendParameters(timestampParams, point.getId()));
+				DAO.getInstance().getJdbcTemp().update(commentSQL, appendParameters(timestampParams, point.getId()));*/
 			}
 		}
 
@@ -271,6 +253,48 @@ public class ReportService implements MangoReport {
 			setReportTime(instance);
 		}
 		return count;
+	}
+	private void insertIntoReportInstanceUserComments(
+			ReportInstance instance,
+			String timestampSql,
+			int reportPointId,
+			DataPointVO point,
+			Object[] timestampParams){
+
+		String commentSQL = "insert into reportInstanceUserComments " //
+				+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
+				+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_POINT + ", " //
+				+ reportPointId + ", uc.ts, uc.commentText " //
+				+ "  from userComments uc " //
+				+ "    left join users u on uc.userId=u.id " //
+				+ "  where uc.commentType=" + UserComment.TYPE_POINT //
+				+ "    and uc.typeKey=? ";
+
+		// Only include comments made in the duration of the report.
+		commentSQL += StringUtils.replaceMacro(timestampSql, "field", "uc.ts");
+		DAO.getInstance().getJdbcTemp().update(commentSQL, appendParameters(timestampParams, point.getId()));
+	}
+	private void insertIntoReportInstanceEvents(ReportInstance instance, String timestampSql,DataPointVO point,Object[] timestampParams){
+
+			String eventSQL = "insert into reportInstanceEvents " //
+					+ "  (eventId, reportInstanceId, typeId, typeRef1, typeRef2, activeTs, rtnApplicable, rtnTs," //
+					+ "   rtnCause, alarmLevel, message, ackTs, ackUsername, alternateAckSource)" //
+					+ "  select e.id, " + instance.getId() + ", e.typeId, e.typeRef1, e.typeRef2, e.activeTs, " //
+					+ "    e.rtnApplicable, e.rtnTs, e.rtnCause, e.alarmLevel, e.message, e.ackTs, u.username, " //
+					+ "    e.alternateAckSource " //
+					+ "  from events e join userEvents ue on ue.eventId=e.id " //
+					+ "    left join users u on e.ackUserId=u.id " //
+					+ "  where ue.userId=? " //
+					+ "    and e.typeId=" //
+					+ EventType.EventSources.DATA_POINT //
+					+ "    and e.typeRef1=? ";
+
+			if (instance.getIncludeEvents() == ReportVO.EVENTS_ALARMS) {
+				eventSQL += "and e.alarmLevel > 0 ";
+			}
+
+			eventSQL += StringUtils.replaceMacro(timestampSql, "field", "e.activeTs");
+			DAO.getInstance().getJdbcTemp().update(eventSQL, appendParameters(timestampParams, instance.getUserId(), point.getId()));
 	}
 
 	private void setReportTime(final ReportInstance reportInstance) {

@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -44,7 +44,7 @@ public class PublicViewController extends ParameterizableViewController {
         View view = null;
         if (vid != null) {
             try {
-                view = DaoInstances.ViewDao.getView(Integer.parseInt(vid));
+                view = ServiceInstances.ViewService.getView(Integer.parseInt(vid));
             }
             catch (NumberFormatException e) { /* no op */
             }
@@ -52,11 +52,11 @@ public class PublicViewController extends ParameterizableViewController {
         else {
             String name = request.getParameter("viewName");
             if (name != null)
-                view = DaoInstances.ViewDao.getView(name);
+                view = ServiceInstances.ViewService.getView(name);
             else {
                 String xid = request.getParameter("viewXid");
                 if (xid != null)
-                    view = DaoInstances.ViewDao.getViewByXid(xid);
+                    view = ServiceInstances.ViewService.getViewByXid(xid);
             }
         }
 

@@ -20,7 +20,7 @@ package com.serotonin.mango.web.mvc.controller;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
@@ -49,7 +49,7 @@ public class ViewsController extends ParameterizableViewController {
 		List<IntValuePair> views;
 
 		if (user.isAdmin()) { // Admin user has access to all views
-			views = DaoInstances.ViewDao.getAllViewNames();
+			views = ServiceInstances.ViewService.getAllViewNames();
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
 			};
@@ -57,7 +57,7 @@ public class ViewsController extends ParameterizableViewController {
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
-			views = DaoInstances.ViewDao.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
+			views = ServiceInstances.ViewService.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
 
 			/* ** Disable ACL **
 			// ACL start
@@ -85,13 +85,13 @@ public class ViewsController extends ParameterizableViewController {
 		View currentView = null;
 		String vid = request.getParameter("viewId");
 		try {
-			currentView = DaoInstances.ViewDao.getView(Integer.parseInt(vid));
+			currentView = ServiceInstances.ViewService.getView(Integer.parseInt(vid));
 		} catch (NumberFormatException e) {
 			// no op
 		}
 
 		if (currentView == null && views.size() > 0) {
-			currentView = DaoInstances.ViewDao.getView(views.get(0).getKey());
+			currentView = ServiceInstances.ViewService.getView(views.get(0).getKey());
     }
 
 		if (currentView != null) {

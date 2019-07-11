@@ -28,7 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
@@ -36,7 +37,6 @@ import org.joda.time.IllegalFieldValueException;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
@@ -65,10 +65,10 @@ abstract public class BaseDwr {
     public static final String MODEL_ATTR_HAS_UNACKED_EVENT = "hasUnacknowledgedEvent";
     public static final String MODEL_ATTR_RESOURCE_BUNDLE = "bundle";
 
-    protected static EventDao EVENT_DAO;
+    protected static EventService eventService;
 
     public static void initialize() {
-        EVENT_DAO = DaoInstances.EventDao;
+        eventService = ServiceInstances.EventService;
     }
 
     protected ResourceBundle changeSnippetMap = ResourceBundle.getBundle("changeSnippetMap");
@@ -109,7 +109,7 @@ abstract public class BaseDwr {
         int userId = 0;
         if (user != null)
             userId = user.getId();
-        List<EventInstance> events = EVENT_DAO.getPendingEventsForDataPoint(pointVO.getId(), userId);
+        List<EventInstance> events = eventService.getPendingEventsForDataPoint(pointVO.getId(), userId);
         if (events != null) {
             model.put(MODEL_ATTR_EVENTS, events);
             for (EventInstance event : events) {
@@ -175,7 +175,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public int setPoint(int pointId, int componentId, String valueStr) {
         User user = Common.getUser();
-        DataPointVO point = DaoInstances.DataPointDao.getDataPoint(pointId);
+        DataPointVO point = ServiceInstances.DataPointService.getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointSetPermission(user, point);
@@ -205,7 +205,7 @@ abstract public class BaseDwr {
     @MethodFilter
     public void forcePointRead(int pointId) {
         User user = Common.getUser();
-        DataPointVO point = DaoInstances.DataPointDao.getDataPoint(pointId);
+        DataPointVO point = ServiceInstances.DataPointService.getDataPoint(pointId);
 
         // Check permissions.
         Permissions.ensureDataPointReadPermission(user, point);
@@ -232,9 +232,9 @@ abstract public class BaseDwr {
         c.setUsername(user.getUsername());
 
         if (typeId == UserComment.TYPE_EVENT)
-            EVENT_DAO.insertEventComment(referenceId, c);
+            eventService.insertEventComment(referenceId, c);
         else if (typeId == UserComment.TYPE_POINT)
-            DaoInstances.UserDao.insertUserComment(UserComment.TYPE_POINT, referenceId, c);
+            ServiceInstances.UserService.insertUserComment(UserComment.TYPE_POINT, referenceId, c);
         else
             throw new ShouldNeverHappenException("Invalid comment type: " + typeId);
 
@@ -244,7 +244,7 @@ abstract public class BaseDwr {
     protected List<DataPointBean> getReadablePoints() {
         User user = Common.getUser();
 
-        List<DataPointVO> points = DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false);
+        List<DataPointVO> points = ServiceInstances.DataPointService.getDataPoints(DataPointExtendedNameComparator.instance, false);
         if (!Permissions.hasAdmin(user)) {
             List<DataPointVO> userPoints = new ArrayList<DataPointVO>();
             for (DataPointVO dp : points) {
@@ -311,7 +311,7 @@ abstract public class BaseDwr {
 
     protected List<User> getShareUsers(User excludeUser) {
         List<User> users = new ArrayList<User>();
-        for (User u : DaoInstances.UserDao.getUsers()) {
+        for (User u : ServiceInstances.UserService.getUsers()) {
             if (u.getId() != excludeUser.getId())
                 users.add(u);
         }

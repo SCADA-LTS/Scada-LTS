@@ -22,7 +22,6 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.ReportDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.EventInstance;
@@ -37,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
+import org.scada_lts.mango.service.ReportService;
 import org.scada_lts.utils.ColorUtils;
 
 import java.awt.*;
@@ -83,13 +83,13 @@ public class ReportChartCreator {
      * getters for the fields can be used to retrieve.
      * 
      * @param reportInstance
-     * @param reportDao
+     * @param reportService
      * @param inlinePrefix
      *            if this is non-null, it implies that the content should be inline.
      * @param createExportFile
      */
-    public void createContent(ReportInstance reportInstance, ReportDao reportDao, String inlinePrefix,
-            boolean createExportFile) {
+    public void createContent(ReportInstance reportInstance, ReportService reportService, String inlinePrefix,
+                              boolean createExportFile) {
         this.inlinePrefix = inlinePrefix;
 
         reportInstance.setBundle(bundle);
@@ -98,7 +98,7 @@ public class ReportChartCreator {
         StreamHandler handler = new StreamHandler(reportInstance.getReportStartTime(),
                 reportInstance.getReportEndTime(), IMAGE_WIDTH, createExportFile, bundle);
         // Process the report content with the handler.
-        reportDao.reportInstanceData(reportInstance.getId(), handler);
+        reportService.reportInstanceData(reportInstance.getId(), handler);
 
         pointStatistics = handler.getPointStatistics();
         UsedImagesDirective inlineImages = new UsedImagesDirective();
@@ -148,7 +148,7 @@ public class ReportChartCreator {
 
         List<EventInstance> events = null;
         if (reportInstance.getIncludeEvents() != ReportVO.EVENTS_NONE) {
-            events = reportDao.getReportInstanceEvents(reportInstance.getId());
+            events = reportService.getReportInstanceEvents(reportInstance.getId());
             model.put("includeEvents", true);
             model.put("events", events);
         }
@@ -157,7 +157,7 @@ public class ReportChartCreator {
 
         List<ReportUserComment> comments = null;
         if (reportInstance.isIncludeUserComments()) {
-            comments = reportDao.getReportInstanceUserComments(reportInstance.getId());
+            comments = reportService.getReportInstanceUserComments(reportInstance.getId());
 
             // Only provide the list of point comments to the report. The event comments have already be correlated
             // into the events list.

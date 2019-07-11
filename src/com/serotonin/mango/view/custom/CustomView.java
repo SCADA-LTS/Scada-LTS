@@ -21,7 +21,7 @@ package com.serotonin.mango.view.custom;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -64,7 +64,7 @@ public class CustomView {
                 return dp;
         }
 
-        DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(xid);
+        DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(xid);
         if (dp != null) {
             // Check permissions.
             Permissions.ensureDataPointSetPermission(authorityUser, dp);

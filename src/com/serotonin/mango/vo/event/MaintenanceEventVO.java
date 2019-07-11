@@ -3,7 +3,7 @@ package com.serotonin.mango.vo.event;
 import java.util.List;
 import java.util.Map;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.joda.time.DateTime;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -518,7 +518,7 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
     public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
         String text = json.getString("dataSourceXid");
         if (text != null) {
-            DataSourceVO<?> ds = DaoInstances.DataSourceDao.getDataSource(text);
+            DataSourceVO<?> ds = ServiceInstances.DataSourceService.getDataSource(text);
             if (ds == null)
                 throw new LocalizableJsonException("emport.error.maintenanceEvent.invalid", "dataSourceXid", text);
             dataSourceId = ds.getId();

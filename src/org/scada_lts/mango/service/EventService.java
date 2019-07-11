@@ -196,13 +196,11 @@ public class EventService implements MangoEvent {
 		List<EventInstance> results = null;
 		try {
 			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (cacheEnable) {
-			  results = PendingEventsCache.getInstance().getPendingEvents(userId);
-			} else {
-			
-				results = eventDAO.getPendingEventsLimit(userId, MAX_PENDING_EVENTS);				
+		  	results = cacheEnable
+						?PendingEventsCache.getInstance().getPendingEvents(userId)
+					  	:eventDAO.getPendingEventsLimit(userId, MAX_PENDING_EVENTS);
 				attachRelationalInfo(results);
-			}
+
 		} catch (IOException e) {
 			LOG.error(e);	
 		}
@@ -340,11 +338,11 @@ public class EventService implements MangoEvent {
 		int result = -1;
 		try {
 			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (cacheEnable) {
-				result = UnsilencedAlarmCache.getInstance().getHighestUnsilencedAlarmLevel(userId);
-			} else {
-				result = new EventDAO().getHighestUnsilencedAlarmLevel(userId);
-			}
+
+			result = cacheEnable
+					?UnsilencedAlarmCache.getInstance().getHighestUnsilencedAlarmLevel(userId)
+					:new EventDAO().getHighestUnsilencedAlarmLevel(userId);
+
 		} catch (IOException e) {
 			LOG.error(e);	
 		}		
@@ -447,4 +445,7 @@ public class EventService implements MangoEvent {
 		pendingEventCache.clear();
 	}
 
+	public String generateUniqueXid() {
+		return DAO.getInstance().generateUniqueXid(EventHandlerVO.XID_PREFIX, "eventHandlers");
+	}
 }

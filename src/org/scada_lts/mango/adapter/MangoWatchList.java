@@ -25,11 +25,7 @@ import com.serotonin.mango.vo.WatchList;
  * Base on the getWatchListDao
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
-public interface MangoWatchList {
-
-	String generateUniqueXid();
-	
-	boolean isXidUnique(String xid, int excludeId);
+public interface MangoWatchList extends XidInterface{
 
 	List<WatchList> getWatchLists(int userId, int userProfile);
 

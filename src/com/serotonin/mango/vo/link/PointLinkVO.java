@@ -28,7 +28,7 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
@@ -140,8 +140,8 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
     @Override
     public void addProperties(List<LocalizableMessage> list) {
         AuditEventType.addPropertyMessage(list, "common.xid", xid);
-        AuditEventType.addPropertyMessage(list, "pointLinks.source", DaoInstances.DataPointDao.getExtendedPointName(sourcePointId));
-        AuditEventType.addPropertyMessage(list, "pointLinks.target", DaoInstances.DataPointDao.getExtendedPointName(targetPointId));
+        AuditEventType.addPropertyMessage(list, "pointLinks.source", ServiceInstances.DataPointService.getExtendedPointName(sourcePointId));
+        AuditEventType.addPropertyMessage(list, "pointLinks.target", ServiceInstances.DataPointService.getExtendedPointName(targetPointId));
         AuditEventType.addPropertyMessage(list, "pointLinks.script", script);
         AuditEventType.addExportCodeMessage(list, "pointLinks.event", EVENT_CODES, event);
         AuditEventType.addPropertyMessage(list, "common.disabled", disabled);
@@ -152,12 +152,12 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
         AuditEventType.maybeAddPropertyChangeMessage(list, "common.xid", from.xid, xid);
         AuditEventType
                 .maybeAddPropertyChangeMessage(list, "pointLinks.source",
-                        DaoInstances.DataPointDao.getExtendedPointName(from.sourcePointId),
-                        DaoInstances.DataPointDao.getExtendedPointName(sourcePointId));
+                        ServiceInstances.DataPointService.getExtendedPointName(from.sourcePointId),
+                        ServiceInstances.DataPointService.getExtendedPointName(sourcePointId));
         AuditEventType
                 .maybeAddPropertyChangeMessage(list, "pointLinks.target",
-                        DaoInstances.DataPointDao.getExtendedPointName(from.targetPointId),
-                        DaoInstances.DataPointDao.getExtendedPointName(targetPointId));
+                        ServiceInstances.DataPointService.getExtendedPointName(from.targetPointId),
+                        ServiceInstances.DataPointService.getExtendedPointName(targetPointId));
         AuditEventType.maybeAddPropertyChangeMessage(list, "pointLinks.script", from.script, script);
         AuditEventType.maybeAddExportCodeChangeMessage(list, "pointLinks.event", EVENT_CODES, from.event, event);
         AuditEventType.maybeAddPropertyChangeMessage(list, "common.disabled", from.disabled, disabled);
@@ -171,11 +171,11 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
 
         map.put("xid", xid);
 
-        DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(sourcePointId);
+        DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(sourcePointId);
         if (dp != null)
             map.put("sourcePointId", dp.getXid());
 
-        dp = DaoInstances.DataPointDao.getDataPoint(targetPointId);
+        dp = ServiceInstances.DataPointService.getDataPoint(targetPointId);
         if (dp != null)
             map.put("targetPointId", dp.getXid());
 
@@ -186,7 +186,7 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
 
         String xid = json.getString("sourcePointId");
         if (xid != null) {
-            DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
+            DataPointVO vo = ServiceInstances.DataPointService.getDataPoint(xid);
             if (vo == null)
                 throw new LocalizableJsonException("emport.error.missingPoint", xid);
             sourcePointId = vo.getId();
@@ -194,7 +194,7 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
 
         xid = json.getString("targetPointId");
         if (xid != null) {
-            DataPointVO vo = DaoInstances.DataPointDao.getDataPoint(xid);
+            DataPointVO vo = ServiceInstances.DataPointService.getDataPoint(xid);
             if (vo == null)
                 throw new LocalizableJsonException("emport.error.missingPoint", xid);
             targetPointId = vo.getId();

@@ -25,7 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -92,12 +92,12 @@ public class DataPointEditController {
                 throw new ShouldNeverHappenException("dpid or pedid must be provided for this page");
 
             int pedid = Integer.parseInt(pedStr);
-            id = DaoInstances.DataPointDao.getDataPointIdFromDetectorId(pedid);
+            id = ServiceInstances.DataPointService.getDataPointIdFromDetectorId(pedid);
         }
         else
             id = Integer.parseInt(idStr);
 
-        DataPointVO dataPoint = DaoInstances.DataPointDao.getDataPoint(id);
+        DataPointVO dataPoint = ServiceInstances.DataPointService.getDataPoint(id);
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());

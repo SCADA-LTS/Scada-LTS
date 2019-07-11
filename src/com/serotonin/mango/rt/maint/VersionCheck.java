@@ -30,7 +30,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -157,10 +157,10 @@ public class VersionCheck extends TimerTask {
 		postMethod.addParameter("instanceVersion", Common.getVersion());
 
 		StringBuilder datasourceTypes = new StringBuilder();
-		for (DataSourceVO<?> config : DaoInstances.DataSourceDao.getDataSources()) {
+		for (DataSourceVO<?> config : ServiceInstances.DataSourceService.getDataSources()) {
 			if (config.isEnabled()) {
 				int points = 0;
-				for (DataPointVO point : DaoInstances.DataPointDao.getDataPoints(
+				for (DataPointVO point : ServiceInstances.DataPointService.getDataPoints(
 						config.getId(), null)) {
 					if (point.isEnabled())
 						points++;
@@ -175,7 +175,7 @@ public class VersionCheck extends TimerTask {
 		postMethod.addParameter("datasourceTypes", datasourceTypes.toString());
 
 		StringBuilder publisherTypes = new StringBuilder();
-		for (PublisherVO<?> config : DaoInstances.PublisherDao.getPublishers()) {
+		for (PublisherVO<?> config : ServiceInstances.PublisherService.getPublishers()) {
 			if (config.isEnabled()) {
 				if (publisherTypes.length() > 0)
 					publisherTypes.append(',');

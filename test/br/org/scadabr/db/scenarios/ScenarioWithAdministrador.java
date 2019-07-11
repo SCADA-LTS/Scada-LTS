@@ -3,7 +3,7 @@ package br.org.scadabr.db.scenarios;
 import java.util.LinkedList;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.db.DatabaseAccess;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.vo.User;
@@ -26,7 +26,7 @@ public class ScenarioWithAdministrador extends DatalessDatabaseScenario {
 		user.setDisabled(false);
 		user.setDataSourcePermissions(new LinkedList<Integer>());
 		user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-		DaoInstances.UserDao.saveUser(user);
+		ServiceInstances.UserService.saveUser(user);
 
 		new SystemSettingsDAO().setValue(
 				SystemSettingsDAO.DATABASE_SCHEMA_VERSION, Common.getVersion());

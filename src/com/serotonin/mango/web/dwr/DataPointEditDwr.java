@@ -21,7 +21,7 @@ package com.serotonin.mango.web.dwr;
 import java.util.List;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.view.chart.ChartRenderer;
@@ -156,7 +156,7 @@ public class DataPointEditDwr extends BaseDwr {
     public PointEventDetectorVO addEventDetector(int typeId) {
         DataPointVO dp = getDataPoint();
         PointEventDetectorVO ped = new PointEventDetectorVO();
-        ped.setXid(DaoInstances.DataPointDao.generateEventDetectorUniqueXid(dp.getId()));
+        ped.setXid(ServiceInstances.DataPointService.generateEventDetectorUniqueXid(dp.getId()));
         ped.setAlias("");
         ped.setDetectorType(typeId);
 

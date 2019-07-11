@@ -25,7 +25,7 @@ import java.util.Map;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -86,7 +86,7 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
     public Object getPersistentData(String key) {
         synchronized (persistentDataLock) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) DaoInstances.PublisherDao.getPersistentData(vo.getId());
+            Map<String, Object> map = (Map<String, Object>) ServiceInstances.PublisherService.getPersistentData(vo.getId());
             if (map != null)
                 return map.get(key);
             return null;
@@ -101,13 +101,13 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
     public void setPersistentData(String key, Object persistentData) {
         synchronized (persistentDataLock) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) DaoInstances.PublisherDao.getPersistentData(vo.getId());
+            Map<String, Object> map = (Map<String, Object>) ServiceInstances.PublisherService.getPersistentData(vo.getId());
             if (map == null)
                 map = new HashMap<String, Object>();
 
             map.put(key, persistentData);
 
-            DaoInstances.PublisherDao.savePersistentData(vo.getId(), map);
+            ServiceInstances.PublisherService.savePersistentData(vo.getId(), map);
         }
     }
 

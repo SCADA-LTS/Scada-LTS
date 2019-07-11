@@ -18,7 +18,7 @@
 package org.scada_lts.web.mvc.controller;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.ListParent;
@@ -79,7 +79,7 @@ public class DataSourceListController {
                 if(mapToCheckId.get(ds.getId())!=null) {
                     listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
                     listParent.setParent(ds);
-                    listParent.setList(DaoInstances.DataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
+                    listParent.setList(ServiceInstances.DataPointService.getDataPoints(ds.getId(), DataPointNameComparator.instance));
                     dataSources.add(listParent);
                 }
                 //ACL End
@@ -88,7 +88,7 @@ public class DataSourceListController {
                     //TODO why variable listParent don't in loop
                     listParent = new ListParent<DataSourceVO<?>, DataPointVO>();
                     listParent.setParent(ds);
-                    listParent.setList(DaoInstances.DataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance));
+                    listParent.setList(ServiceInstances.DataPointService.getDataPoints(ds.getId(), DataPointNameComparator.instance));
                     dataSources.add(listParent);
                 }
             }

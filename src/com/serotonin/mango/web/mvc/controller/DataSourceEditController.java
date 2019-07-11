@@ -26,7 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -62,11 +62,11 @@ public class DataSourceEditController extends ParameterizableViewController {
                 // A new data source
                 dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
                 dataSourceVO.setId(Common.NEW_ID);
-                dataSourceVO.setXid(DaoInstances.DataSourceDao.generateUniqueXid());
+                dataSourceVO.setXid(ServiceInstances.DataSourceService.generateUniqueXid());
             }
             else {
                 int pid = Integer.parseInt(pidStr);
-                DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(pid);
+                DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(pid);
                 if (dp == null)
                     throw new ShouldNeverHappenException("DataPoint not found with id " + pid);
                 id = dp.getDataSourceId();
@@ -102,7 +102,7 @@ public class DataSourceEditController extends ParameterizableViewController {
 
         List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
         List<DataPointVO> analogPoints = new LinkedList<DataPointVO>();
-        for (DataPointVO dp : DaoInstances.DataPointDao.
+        for (DataPointVO dp : ServiceInstances.DataPointService.
                 getDataPoints(DataPointExtendedNameComparator.instance, false)) {
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 userPoints.add(dp);

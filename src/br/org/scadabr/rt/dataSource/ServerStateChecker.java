@@ -2,7 +2,7 @@ package br.org.scadabr.rt.dataSource;
 
 import java.util.List;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -76,7 +76,7 @@ public class ServerStateChecker implements org.quartz.SchedulerListener, Job {
 	private static boolean isDatabaseRunning() {
 		boolean result = true;
 		try {
-			List<User> users = DaoInstances.UserDao.getUsers();
+			List<User> users = ServiceInstances.UserService.getUsers();
 			if (users.size() < 1)
 				result = false;
 		} catch (Exception e) {

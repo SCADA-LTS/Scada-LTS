@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -475,7 +475,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
             }
 
             // Doesn't exist in the RT list. Check if it exists at all.
-            DataPointVO oldDpvo = DaoInstances.DataPointDao.getDataPoint(xid);
+            DataPointVO oldDpvo = ServiceInstances.DataPointService.getDataPoint(xid);
 
             if (oldDpvo != null) {
                 // The point exists. Make sure it belongs to this data source.
@@ -526,14 +526,14 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                 DataPointVO dpvo;
                 if (dprt == null)
                     // Not currently enabled.
-                    dpvo = DaoInstances.DataPointDao.getDataPoint(xid);
+                    dpvo = ServiceInstances.DataPointService.getDataPoint(xid);
                 else
                     dpvo = dprt.getVO();
 
                 if (dpvo == null)
                     return;
 
-                PointHierarchy pointHierarchy = DaoInstances.DataPointDao.getPointHierarchy();
+                PointHierarchy pointHierarchy = ServiceInstances.DataPointService.getPointHierarchy();
 
                 // Get the current path to the point.
                 List<PointFolder> folders = pointHierarchy.getFolderPath(dpvo.getId());
@@ -557,7 +557,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                     newFolder.addDataPoint(new IntValuePair(dpvo.getId(), dpvo.getName()));
 
                     // Save the hierarchy
-                    DaoInstances.DataPointDao.savePointHierarchy(pointHierarchy.getRoot());
+                    ServiceInstances.DataPointService.savePointHierarchy(pointHierarchy.getRoot());
                 }
             }
         }

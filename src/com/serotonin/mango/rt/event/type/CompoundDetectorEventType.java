@@ -24,7 +24,7 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 
 /**
  * @author Matthew Lohbihler
@@ -110,7 +110,7 @@ public class CompoundDetectorEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        map.put("XID", DaoInstances.CompoundEventDetectorDao.getCompoundEventDetector(compoundDetectorId).getXid());
+        map.put("XID", ServiceInstances.CompoundEventDetectorService.getCompoundEventDetector(compoundDetectorId).getXid());
     }
 
     @Override

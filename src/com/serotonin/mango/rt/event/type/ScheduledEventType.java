@@ -24,7 +24,7 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 
 /**
  * @author Matthew Lohbihler
@@ -107,7 +107,7 @@ public class ScheduledEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        map.put("XID", DaoInstances.ScheduledEventDao.getScheduledEvent(scheduleId).getXid());
+        map.put("XID", ServiceInstances.ScheduledEventService.getScheduledEvent(scheduleId).getXid());
     }
 
     @Override

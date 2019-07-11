@@ -28,11 +28,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public interface MangoPublisher {
-
-	String generateUniqueXid();
-
-	boolean isXidUnique(String xid, int excludeId);
+public interface MangoPublisher extends XidInterface{
 
 	List<PublisherVO<? extends PublishedPointVO>> getPublishers();
 

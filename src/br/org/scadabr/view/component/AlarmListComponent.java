@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import org.directwebremoting.WebContext;
@@ -54,7 +54,7 @@ public class AlarmListComponent extends CustomComponent {
 		Map<String, Object> model = new HashMap<String, Object>();
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
-		List<EventInstance> events = DaoInstances.EventDao.getPendingEvents(Common
+		List<EventInstance> events = ServiceInstances.EventService.getPendingEvents(Common
 				.getUser().getId());
 
 		filterByAlarmLevel(events, minAlarmLevel);

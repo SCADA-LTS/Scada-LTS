@@ -25,7 +25,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
@@ -72,7 +72,7 @@ public class ShareUser implements JsonSerializable {
         String text = json.getString("user");
         if (StringUtils.isEmpty(text))
             throw new LocalizableJsonException("emport.error.viewShare.missing", "user");
-        User user = DaoInstances.UserDao.getUser(text);
+        User user = ServiceInstances.UserService.getUser(text);
         if (user == null)
             throw new LocalizableJsonException("emport.error.missingUser", text);
         userId = user.getId();
@@ -89,7 +89,7 @@ public class ShareUser implements JsonSerializable {
 
     @Override
     public void jsonSerialize(Map<String, Object> map) {
-        map.put("user", DaoInstances.UserDao.getUser(userId).getUsername());
+        map.put("user", ServiceInstances.UserService.getUser(userId).getUsername());
         map.put("accessType", ACCESS_CODES.getCode(accessType));
     }
 }

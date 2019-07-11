@@ -34,7 +34,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.rt.publish.PublisherRT;
@@ -263,7 +263,7 @@ abstract public class PublisherVO<T extends PublishedPointVO> implements Seriali
 
         if (StringUtils.isEmpty(xid))
             response.addContextualMessage("xid", "validate.required");
-        else if (!DaoInstances.PublisherDao.isXidUnique(xid, id))
+        else if (!ServiceInstances.PublisherService.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
         else if (StringUtils.isLengthGreaterThan(xid, 50))
             response.addContextualMessage("xid", "validate.notLongerThan", 50);

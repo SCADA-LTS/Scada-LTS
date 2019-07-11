@@ -32,7 +32,7 @@ import br.org.scadabr.api.vo.ModbusPointConfig;
 import br.org.scadabr.api.vo.ModbusSerialConfig;
 
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointVO;
@@ -636,7 +636,7 @@ public final class APIUtils {
 
 	public static String toCondition(PointEventDetectorVO pointEvent) {
 
-		DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(DaoInstances.DataPointDao
+		DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(ServiceInstances.DataPointService
 				.getDataPointIdFromDetectorId(pointEvent.getId()));
 
 		String config = "[" + dp.getName() + " - ";
@@ -785,7 +785,7 @@ public final class APIUtils {
 			int pointDetectorId = eventInstance.getEventType()
 					.getReferenceId2();
 
-			for (PointEventDetectorVO pointEventDetectorVO : DaoInstances.DataPointDao
+			for (PointEventDetectorVO pointEventDetectorVO : ServiceInstances.DataPointService
 					.getDataPoint(dataPointId).getEventDetectors()) {
 				if (pointEventDetectorVO.getId() == pointDetectorId) {
 
@@ -801,13 +801,13 @@ public final class APIUtils {
 			event.setEventType(EventType.POINT_CONDITION_EVENT);
 			int compoundId = eventInstance.getEventType()
 					.getCompoundEventDetectorId();
-			event.setAlias(DaoInstances.CompoundEventDetectorDao
+			event.setAlias(ServiceInstances.CompoundEventDetectorService
 					.getCompoundEventDetector(compoundId).getName());
 
 		} else if (eventInstance.getEventType().getScheduleId() != -1) {
 			event.setEventType(EventType.SCHEDULED_EVENT);
 			int scheduleId = eventInstance.getEventType().getScheduleId();
-			event.setAlias(DaoInstances.ScheduledEventDao
+			event.setAlias(ServiceInstances.ScheduledEventService
 					.getScheduledEvent(scheduleId).getAlias());
 		} else {
 			event.setEventType(EventType.SYSTEM_EVENT);

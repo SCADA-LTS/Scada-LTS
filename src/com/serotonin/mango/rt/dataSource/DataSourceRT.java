@@ -18,12 +18,11 @@
  */
 package com.serotonin.mango.rt.dataSource;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.dataSource.snmp.TIME_JUNIT;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 
-import java.util.*;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
@@ -35,6 +34,12 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Date;
 
 /**
  * Data sources are things that produce data for consumption of this system. Anything that houses, creates, manages, or
@@ -98,7 +103,7 @@ abstract public class DataSourceRT implements ILifecycle {
      * This method is usable by subclasses to retrieve serializable data stored using the setPersistentData method.
      */
     public Object getPersistentData() {
-        return DaoInstances.DataSourceDao.getPersistentData(vo.getId());
+        return ServiceInstances.DataSourceService.getPersistentData(vo.getId());
     }
 
     /**
@@ -107,7 +112,7 @@ abstract public class DataSourceRT implements ILifecycle {
      * called in the terminate method, but may also be called regularly for failover purposes.
      */
     protected void setPersistentData(Object persistentData) {
-        DaoInstances.DataSourceDao.savePersistentData(vo.getId(), persistentData);
+        ServiceInstances.DataSourceService.savePersistentData(vo.getId(), persistentData);
     }
 
     public void addDataPoint(DataPointRT dataPoint) {
@@ -155,8 +160,7 @@ abstract public class DataSourceRT implements ILifecycle {
     }
 
     protected void returnToNormal(int eventId, long time) {
-        DataSourceEventType type = getEventType(eventId);
-        Common.ctx.getEventManager().returnToNormal(type, time);
+        Common.ctx.getEventManager().returnToNormal(getEventType(eventId), time);
     }
 
     private DataSourceEventType getEventType(int eventId) {

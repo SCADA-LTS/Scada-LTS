@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -115,7 +115,7 @@ public class DataSourceListDwr extends BaseDwr {
 	}
 
 	public DwrResponseI18n toggleDataPoint(int dataPointId) {
-		DataPointVO dataPoint = DaoInstances.DataPointDao.getDataPoint(dataPointId);
+		DataPointVO dataPoint = ServiceInstances.DataPointService.getDataPoint(dataPointId);
 		Permissions.ensureDataSourcePermission(Common.getUser(),
 				dataPoint.getDataSourceId());
 
@@ -131,9 +131,9 @@ public class DataSourceListDwr extends BaseDwr {
 
 	public int copyDataSource(int dataSourceId) {
 		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
-		int dsId = DaoInstances.DataSourceDao.copyDataSource(dataSourceId,
+		int dsId = ServiceInstances.DataSourceService.copyDataSource(dataSourceId,
 				getResourceBundle());
-		DaoInstances.UserDao.populateUserPermissions(Common.getUser());
+		ServiceInstances.UserService.populateUserPermissions(Common.getUser());
 		return dsId;
 	}
 }

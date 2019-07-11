@@ -81,6 +81,7 @@ public class PointValueService implements MangoPointValues {
     private static PointValueAdnnotationsDAO pointValueAnnotationsDAO = new PointValueAdnnotationsDAO();
     private DataPointService dataPointService = new DataPointService();
     private DataSourceService dataSourceService = new DataSourceService();
+    //private PointValueService dataSourceService = new PointValueService();
 
     public PointValueService() {
 
@@ -699,6 +700,15 @@ public class PointValueService implements MangoPointValues {
                 .stream()
                 .forEach(dp -> updateMetaDataPointByScript(dp.getXid()));
 
+    }
+
+    public long deleteAllPointData() {
+        return deleteAllPointValue();
+    }
+
+    public void compressTables() {
+        //TODO rewrite because not have ejt
+        //Common.ctx.getDatabaseAccess().executeCompress(ejt);
     }
 
 }

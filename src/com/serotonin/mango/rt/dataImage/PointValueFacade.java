@@ -21,7 +21,7 @@ package com.serotonin.mango.rt.dataImage;
 import java.util.List;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 
 /**
  * @author Matthew Lohbihler
@@ -38,36 +38,36 @@ public class PointValueFacade {
     public List<PointValueTime> getPointValues(long since) {
         if (point != null)
             return point.getPointValues(since);
-        return DaoInstances.PointValueDao.getPointValues(dataPointId, since);
+        return ServiceInstances.PointValueService.getPointValues(dataPointId, since);
     }
 
     public PointValueTime getPointValueBefore(long time) {
         if (point != null)
             return point.getPointValueBefore(time);
-        return DaoInstances.PointValueDao.getPointValueBefore(dataPointId, time);
+        return ServiceInstances.PointValueService.getPointValueBefore(dataPointId, time);
     }
 
     public PointValueTime getPointValueAt(long time) {
         if (point != null)
             return point.getPointValueAt(time);
-        return DaoInstances.PointValueDao.getPointValueAt(dataPointId, time);
+        return ServiceInstances.PointValueService.getPointValueAt(dataPointId, time);
     }
 
     public PointValueTime getPointValue() {
         if (point != null)
             return point.getPointValue();
-        return DaoInstances.PointValueDao.getLatestPointValue(dataPointId);
+        return ServiceInstances.PointValueService.getLatestPointValue(dataPointId);
     }
 
     public List<PointValueTime> getPointValuesBetween(long from, long to) {
         if (point != null)
             return point.getPointValuesBetween(from, to);
-        return DaoInstances.PointValueDao.getPointValuesBetween(dataPointId, from, to);
+        return ServiceInstances.PointValueService.getPointValuesBetween(dataPointId, from, to);
     }
 
     public List<PointValueTime> getLatestPointValues(int limit) {
         if (point != null)
             return point.getLatestPointValues(limit);
-        return DaoInstances.PointValueDao.getLatestPointValues(dataPointId, limit);
+        return ServiceInstances.PointValueService.getLatestPointValues(dataPointId, limit);
     }
 }

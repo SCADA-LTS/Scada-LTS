@@ -23,7 +23,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.view.custom.CustomView;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -43,7 +43,7 @@ abstract public class ViewTagSupport extends TagSupport {
 
     protected DataPointVO getDataPointVO(CustomView view, String xid) throws JspException {
         // Find the point.
-        DataPointVO dataPointVO = DaoInstances.DataPointDao.getDataPoint(xid);
+        DataPointVO dataPointVO = ServiceInstances.DataPointService.getDataPoint(xid);
         if (dataPointVO == null)
             throw new JspException("Point with XID '" + xid + "' not found");
 

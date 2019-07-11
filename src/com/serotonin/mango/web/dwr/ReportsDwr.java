@@ -20,7 +20,7 @@ package com.serotonin.mango.web.dwr;
 
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 
 import com.serotonin.mango.rt.maint.work.ReportWorkItem;
 import com.serotonin.mango.vo.DataPointVO;
@@ -50,9 +50,9 @@ public class ReportsDwr extends BaseDwr {
         User user = Common.getUser();
 
         response.addData("points", getReadablePoints());
-        response.addData("mailingLists", DaoInstances.MailingListDao.getMailingLists());
-        response.addData("users", DaoInstances.UserDao.getUsers());
-        response.addData("reports", DaoInstances.ReportDao.getReports(user.getId()));
+        response.addData("mailingLists", ServiceInstances.MailingListService.getMailingLists());
+        response.addData("users", ServiceInstances.UserService.getUsers());
+        response.addData("reports", ServiceInstances.ReportService.getReports(user.getId()));
         response.addData("instances", getReportInstances(user));
 
         return response;
@@ -65,7 +65,7 @@ public class ReportsDwr extends BaseDwr {
             report.setName(getMessage("common.newName"));
         }
         else {
-            report = DaoInstances.ReportDao.getReport(id);
+            report = ServiceInstances.ReportService.getReport(id);
 
             if (copy) {
                 report.setId(Common.NEW_ID);
@@ -121,7 +121,7 @@ public class ReportsDwr extends BaseDwr {
             report.setUserId(user.getId());
         }
         else
-            report = DaoInstances.ReportDao.getReport(id);
+            report = ServiceInstances.ReportService.getReport(id);
 
         Permissions.ensureReportPermission(user, report);
 
@@ -158,7 +158,7 @@ public class ReportsDwr extends BaseDwr {
         report.setRecipients(recipients);
 
         // Save the report
-        DaoInstances.ReportDao.saveReport(report);
+        ServiceInstances.ReportService.saveReport(report);
 
         // Conditionally schedule the report.
         ReportJob.scheduleReportJob(report);
@@ -217,11 +217,11 @@ public class ReportsDwr extends BaseDwr {
 
     public void deleteReport(int id) {
 
-        ReportVO report = DaoInstances.ReportDao.getReport(id);
+        ReportVO report = ServiceInstances.ReportService.getReport(id);
         if (report != null) {
             Permissions.ensureReportPermission(Common.getUser(), report);
             ReportJob.unscheduleReportJob(report);
-            DaoInstances.ReportDao.deleteReport(id);
+            ServiceInstances.ReportService.deleteReport(id);
         }
     }
 
@@ -245,7 +245,7 @@ public class ReportsDwr extends BaseDwr {
 
         User user = Common.getUser();
         for (ReportPointVO point : points) {
-            Permissions.ensureDataPointReadPermission(user, DaoInstances.DataPointDao.getDataPoint(point.getPointId()));
+            Permissions.ensureDataPointReadPermission(user, ServiceInstances.DataPointService.getDataPoint(point.getPointId()));
 
             try {
                 if (!StringUtils.isEmpty(point.getColour()))
@@ -259,7 +259,7 @@ public class ReportsDwr extends BaseDwr {
 
     public List<ReportInstance> deleteReportInstance(int instanceId) {
         User user = Common.getUser();
-        DaoInstances.ReportDao.deleteReportInstance(instanceId, user.getId());
+        ServiceInstances.ReportService.deleteReportInstance(instanceId, user.getId());
         return getReportInstances(user);
     }
 
@@ -268,7 +268,7 @@ public class ReportsDwr extends BaseDwr {
     }
 
     private List<ReportInstance> getReportInstances(User user) {
-        List<ReportInstance> result = DaoInstances.ReportDao.getReportInstances(user.getId());
+        List<ReportInstance> result = ServiceInstances.ReportService.getReportInstances(user.getId());
         ResourceBundle bundle = getResourceBundle();
         for (ReportInstance i : result)
             i.setBundle(bundle);
@@ -276,11 +276,11 @@ public class ReportsDwr extends BaseDwr {
     }
 
     public void setPreventPurge(int instanceId, boolean value) {
-        DaoInstances.ReportDao.setReportInstancePreventPurge(instanceId, value, Common.getUser().getId());
+        ServiceInstances.ReportService.setReportInstancePreventPurge(instanceId, value, Common.getUser().getId());
     }
 
     public ReportVO createReportFromWatchlist(int watchListId) {
-        WatchList watchList = DaoInstances.WatchListDao.getWatchList(watchListId);
+        WatchList watchList = ServiceInstances.WatchListService.getWatchList(watchListId);
         if (watchList == null)
             return null;
 

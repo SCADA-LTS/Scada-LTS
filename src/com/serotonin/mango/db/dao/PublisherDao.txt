@@ -71,7 +71,7 @@ public class PublisherDao {
     }
 
     public void savePersistentData(int id, Object data) {
-//        ejt.update("update publishers set rtdata=? where id=?", new Object[] { SerializationHelper.writeObject(data),
-//                id }, new int[] { Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB, Types.INTEGER });
+     //   ejt.update("update publishers set rtdata=? where id=?", new Object[] { SerializationHelper.writeObject(data),
+    //            id }, new int[] { Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB, Types.INTEGER });
     }
 }

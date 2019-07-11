@@ -23,7 +23,6 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.scada_lts.mango.adapter.MangoPointValues;
-import org.scada_lts.mango.service.PointValueService;
 import org.springframework.dao.ConcurrencyFailureException;
 
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -36,11 +35,11 @@ public class PointValueDao extends BaseDao {
 	private MangoPointValues pointValueService;
 	
 	public PointValueDao() {
-		pointValueService = new PointValueService();
+		pointValueService = new org.scada_lts.mango.service.PointValueService();
 	}
 
 	public PointValueDao(DataSource dataSource) {
-		pointValueService = new PointValueService();
+		pointValueService = new org.scada_lts.mango.service.PointValueService();
 	}
 
 	/**

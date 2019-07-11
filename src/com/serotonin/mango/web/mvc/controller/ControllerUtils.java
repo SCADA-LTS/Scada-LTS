@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.springframework.ui.Model;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -55,7 +55,7 @@ public class ControllerUtils {
     public static void addPointListDataToModel(User user, int pointId, Map<String, Object> model) {
         List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
         int pointIndex = -1;
-        for (DataPointVO dp : DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false)) {
+        for (DataPointVO dp : ServiceInstances.DataPointService.getDataPoints(DataPointExtendedNameComparator.instance, false)) {
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 userPoints.add(dp);
                 if (dp.getId() == pointId)
@@ -74,7 +74,7 @@ public class ControllerUtils {
     public static void addPointListDataToModel(User user, int pointId, Model model){
         List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
         int pointIndex = -1;
-        for (DataPointVO dp : DaoInstances.DataPointDao.getDataPoints(DataPointExtendedNameComparator.instance, false)) {
+        for (DataPointVO dp : ServiceInstances.DataPointService.getDataPoints(DataPointExtendedNameComparator.instance, false)) {
             if (Permissions.hasDataPointReadPermission(user, dp)) {
                 userPoints.add(dp);
                 if (dp.getId() == pointId)

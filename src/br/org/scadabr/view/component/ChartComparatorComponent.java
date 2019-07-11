@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.vo.DataPointVO;
@@ -81,7 +81,7 @@ public class ChartComparatorComponent extends HtmlComponent {
 	}
 
 	private String createDataPointsSelectComponent(String idPrefix) {
-		List<DataPointVO> dataPoints = DaoInstances.DataPointDao.getDataPoints(null,
+		List<DataPointVO> dataPoints = ServiceInstances.DataPointService.getDataPoints(null,
 				false);
 
 		StringBuilder sb = new StringBuilder();

@@ -26,7 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.serotonin.mango.Common;
@@ -54,10 +54,10 @@ public class MobileWatchListController extends WatchListController {
         try {
             int watchListId = Integer.parseInt(request.getParameter("watchListId"));
 
-            WatchList watchList = DaoInstances.WatchListDao.getWatchList(watchListId);
+            WatchList watchList = ServiceInstances.WatchListService.getWatchList(watchListId);
 //            Permissions.ensureWatchListPermission(user, watchList);
             user.setSelectedWatchList(watchListId);
-            DaoInstances.WatchListDao.saveSelectedWatchList(user.getId(), watchList.getId());
+            ServiceInstances.WatchListService.saveSelectedWatchList(user.getId(), watchList.getId());
         }
         catch (NumberFormatException e) {
             // no op
@@ -71,7 +71,7 @@ public class MobileWatchListController extends WatchListController {
         // Get the point data.
         List<MobileWatchListState> states = new ArrayList<MobileWatchListState>();
         RuntimeManager rtm = Common.ctx.getRuntimeManager();
-        for (DataPointVO pointVO : DaoInstances.WatchListDao.getWatchList(watchListId).getPointList()) {
+        for (DataPointVO pointVO : ServiceInstances.WatchListService.getWatchList(watchListId).getPointList()) {
             MobileWatchListState state = createState(request, rtm, pointVO);
             states.add(state);
         }

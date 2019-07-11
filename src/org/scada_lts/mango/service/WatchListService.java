@@ -20,7 +20,7 @@ package org.scada_lts.mango.service;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
@@ -90,7 +90,7 @@ public class WatchListService implements MangoWatchList {
 		List<DataPointVO> points = watchList.getPointList();
 		// Get the points for each of the watch lists.
 		for (Integer pointId : watchListDAO.getPointsWatchList(watchList.getId()))
-			points.add(DaoInstances.DataPointDao.getDataPoint(pointId));
+			points.add(ServiceInstances.DataPointService.getDataPoint(pointId));
 
 		setWatchListUsers(watchList);
 	}

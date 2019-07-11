@@ -32,7 +32,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 
@@ -156,7 +156,7 @@ public class PointFolder implements JsonSerializable {
     public void jsonSerialize(Map<String, Object> map) {
         List<String> pointList = new ArrayList<String>();
         for (IntValuePair p : points) {
-            DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(p.getKey());
+            DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(p.getKey());
             if (dp != null)
                 pointList.add(dp.getXid());
         }
@@ -172,7 +172,7 @@ public class PointFolder implements JsonSerializable {
             for (JsonValue jv : jsonPoints.getElements()) {
                 String xid = jv.toJsonString().getValue();
 
-                DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(xid);
+                DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(xid);
                 if (dp == null)
                     throw new LocalizableJsonException("emport.error.missingPoint", xid);
 

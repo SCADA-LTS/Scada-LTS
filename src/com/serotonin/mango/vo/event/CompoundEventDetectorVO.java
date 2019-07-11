@@ -28,7 +28,7 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.compound.CompoundEventDetectorRT;
 import com.serotonin.mango.rt.event.compound.ConditionParseException;
@@ -92,7 +92,7 @@ public class CompoundEventDetectorVO implements ChangeComparable<CompoundEventDe
             List<String> keys = l.getDetectorKeys();
 
             // Get all of the point event detectors.
-            List<DataPointVO> dataPoints = DaoInstances.DataPointDao.getDataPoints(null, true);
+            List<DataPointVO> dataPoints = ServiceInstances.DataPointService.getDataPoints(null, true);
 
             for (String key : keys) {
                 if (!key.startsWith(SimpleEventDetectorVO.POINT_EVENT_DETECTOR_PREFIX))

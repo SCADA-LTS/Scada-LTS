@@ -40,7 +40,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.util.LocalizableJsonException;
@@ -458,7 +458,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 				for (JsonValue jv : jsonDataSources.getElements()) {
 					String xid = jv.toJsonString().getValue();
-					DataSourceVO<?> ds = DaoInstances.DataSourceDao.getDataSource(xid);
+					DataSourceVO<?> ds = ServiceInstances.DataSourceService.getDataSource(xid);
 					if (ds == null)
 						throw new LocalizableJsonException(
 								"emport.error.missingSource", xid);
@@ -472,7 +472,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 				// to data source access.
 				List<Integer> permittedPoints = new ArrayList<Integer>();
 				for (Integer dsId : dataSourcePermissions) {
-					for (DataPointVO dp : DaoInstances.DataPointDao
+					for (DataPointVO dp : ServiceInstances.DataPointService
 							.getDataPoints(dsId, null))
 						permittedPoints.add(dp.getId());
 				}
@@ -495,7 +495,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		if (!admin) {
 			List<String> dsXids = new ArrayList<String>();
 			for (Integer dsId : dataSourcePermissions)
-				dsXids.add(DaoInstances.DataSourceDao.getDataSource(dsId).getXid());
+				dsXids.add(ServiceInstances.DataSourceService.getDataSource(dsId).getXid());
 			map.put("dataSourcePermissions", dsXids);
 
 			map.put("dataPointPermissions", dataPointPermissions);

@@ -8,7 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.exception.DAOException;
@@ -40,7 +40,7 @@ public class UsersProfilesDwr {
 		initData.put("profiles", profiles);
 
 		// Data sources
-		List<DataSourceVO<?>> dataSourceVOs = DaoInstances.DataSourceDao
+		List<DataSourceVO<?>> dataSourceVOs = ServiceInstances.DataSourceService
 				.getDataSources();
 		List<Map<String, Object>> dataSources = new ArrayList<Map<String, Object>>(
 				dataSourceVOs.size());
@@ -51,7 +51,7 @@ public class UsersProfilesDwr {
 			ds.put("id", dsvo.getId());
 			ds.put("name", dsvo.getName());
 			points = new LinkedList<Map<String, Object>>();
-			for (DataPointVO dpvo : DaoInstances.DataPointDao.getDataPoints(dsvo.getId(),
+			for (DataPointVO dpvo : ServiceInstances.DataPointService.getDataPoints(dsvo.getId(),
 					DataPointNameComparator.instance)) {
 				dp = new HashMap<String, Object>();
 				dp.put("id", dpvo.getId());
@@ -65,10 +65,10 @@ public class UsersProfilesDwr {
 
 		initData.put("dataSources", dataSources);
 
-		List<WatchList> watchlists = DaoInstances.WatchListDao.getWatchLists();
+		List<WatchList> watchlists = ServiceInstances.WatchListService.getWatchLists();
 		initData.put("watchlists", watchlists);
 
-		List<View> views = DaoInstances.ViewDao.getViews();
+		List<View> views = ServiceInstances.ViewService.getViews();
 		initData.put("views", views);
 
 		return initData;
@@ -96,7 +96,7 @@ public class UsersProfilesDwr {
 		if (id == Common.NEW_ID)
 			profile = new UsersProfileVO();
 		else
-			profile = DaoInstances.UsersProfileDao.getUserProfileById(id);
+			profile = ServiceInstances.UsersProfileService.getUserProfileById(id);
 
 		profile.setName(name);
 		profile.setDataSourcePermissions(dataSourcePermissions);
@@ -107,7 +107,7 @@ public class UsersProfilesDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		try {
-			DaoInstances.UsersProfileDao.saveUsersProfile(profile);
+			ServiceInstances.UsersProfileService.saveUsersProfile(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
 					"usersProfiles.validate.nameUnique"));
@@ -124,7 +124,7 @@ public class UsersProfilesDwr {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 		try {
-			DaoInstances.UsersProfileDao.deleteUserProfile(profileId);
+			ServiceInstances.UsersProfileService.deleteUserProfile(profileId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

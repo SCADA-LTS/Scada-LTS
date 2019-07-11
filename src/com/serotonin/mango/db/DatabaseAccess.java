@@ -24,7 +24,7 @@ import java.util.MissingResourceException;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -159,7 +159,7 @@ abstract public class DatabaseAccess {
 					user.setDisabled(false);
 					user.setDataSourcePermissions(new LinkedList<Integer>());
 					user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-					DaoInstances.UserDao.saveUser(user);
+					ServiceInstances.UserService.saveUser(user);
 
 					// Record the current version.
 					new SystemSettingsDAO().setValue(

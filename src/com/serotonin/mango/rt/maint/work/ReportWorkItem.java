@@ -31,8 +31,8 @@ import java.util.zip.ZipOutputStream;
 
 import javax.mail.internet.AddressException;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
-import com.serotonin.mango.db.dao.ReportDao;
+import org.scada_lts.mango.service.ReportService;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -71,7 +71,7 @@ public class ReportWorkItem implements WorkItem {
 		LOG.info("Queuing report with id " + report.getId());
 
 		// Verify that the user is not disabled.
-		User user = DaoInstances.UserDao.getUser(report.getUserId());
+		User user = ServiceInstances.UserService.getUser(report.getUserId());
 		if (user.isDisabled())
 			return;
 
@@ -83,8 +83,8 @@ public class ReportWorkItem implements WorkItem {
 		ReportInstance reportInstance = new ReportInstance(report);
 
 		item.user = user;
-		item.reportDao = DaoInstances.ReportDao;
-		item.reportDao.saveReportInstance(reportInstance);
+		item.reportService = ServiceInstances.ReportService;
+		item.reportService.saveReportInstance(reportInstance);
 
 		// Start the report work item out of process.
 		item.reportInstance = reportInstance;
@@ -96,7 +96,7 @@ public class ReportWorkItem implements WorkItem {
 
 	ReportVO reportConfig;
 	private User user;
-	private ReportDao reportDao;
+	private ReportService reportService;
 	private ReportInstance reportInstance;
 	List<File> filesToDelete = new ArrayList<File>();
 
@@ -105,14 +105,14 @@ public class ReportWorkItem implements WorkItem {
 				+ ", instance id " + reportInstance.getId());
 
 		reportInstance.setRunStartTime(System.currentTimeMillis());
-		reportDao.saveReportInstance(reportInstance);
+		reportService.saveReportInstance(reportInstance);
 		ResourceBundle bundle = Common.getBundle();
 
 		// Create a list of DataPointVOs to which the user has permission.
 		List<ReportInstancePointDAO.PointInfo> points = new ArrayList<ReportInstancePointDAO.PointInfo>(
 				reportConfig.getPoints().size());
 		for (ReportPointVO reportPoint : reportConfig.getPoints()) {
-			DataPointVO point = DaoInstances.DataPointDao.getDataPoint(reportPoint
+			DataPointVO point = ServiceInstances.DataPointService.getDataPoint(reportPoint
 					.getPointId());
 			if (point != null
 					&& Permissions.hasDataPointReadPermission(user, point)) {
@@ -135,7 +135,7 @@ public class ReportWorkItem implements WorkItem {
 		int recordCount = 0;
 		try {
 			if (!points.isEmpty())
-				recordCount = reportDao.runReport(reportInstance, points,
+				recordCount = reportService.runReport(reportInstance, points,
 						bundle);
 		} catch (RuntimeException e) {
 			recordCount = -1;
@@ -146,7 +146,7 @@ public class ReportWorkItem implements WorkItem {
 		} finally {
 			reportInstance.setRunEndTime(System.currentTimeMillis());
 			reportInstance.setRecordCount(recordCount);
-			reportDao.saveReportInstance(reportInstance);
+			reportService.saveReportInstance(reportInstance);
 		}
 
 		if (reportConfig.isEmail()) {
@@ -155,11 +155,11 @@ public class ReportWorkItem implements WorkItem {
 
 			// We are creating an email from the result. Create the content.
 			final ReportChartCreator creator = new ReportChartCreator(bundle);
-			creator.createContent(reportInstance, reportDao, inlinePrefix,
+			creator.createContent(reportInstance, reportService, inlinePrefix,
 					reportConfig.isIncludeData());
 
 			// Create the to list
-			Set<String> addresses = DaoInstances.MailingListDao.getRecipientAddresses(
+			Set<String> addresses = ServiceInstances.MailingListService.getRecipientAddresses(
 					reportConfig.getRecipients(),
 					new DateTime(reportInstance.getReportStartTime()));
 			String[] toAddrs = addresses.toArray(new String[0]);
@@ -225,7 +225,7 @@ public class ReportWorkItem implements WorkItem {
 			}
 
 			// Delete the report instance.
-			// reportDao.deleteReportInstance(reportInstance.getId(),
+			// reportService.deleteReportInstance(reportInstance.getId(),
 			// user.getId());
 		}
 

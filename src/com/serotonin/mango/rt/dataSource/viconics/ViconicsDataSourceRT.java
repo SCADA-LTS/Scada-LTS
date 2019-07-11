@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -199,7 +199,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 					+ sdf.format(new Date());
 
 			// Get a list of all existing points.
-			List<DataPointVO> points = DaoInstances.DataPointDao.getDataPoints(vo.getId(),
+			List<DataPointVO> points = ServiceInstances.DataPointService.getDataPoints(vo.getId(),
 					null);
 
 			// Add a point for each address if it doesn't already exist.
@@ -225,7 +225,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 				//
 				// Point hierarchy folder
 				if (folderId == -1) {
-					PointHierarchy pointHierarchy = DaoInstances.DataPointDao
+					PointHierarchy pointHierarchy = ServiceInstances.DataPointService
 							.getPointHierarchy();
 
 					PointFolder root = pointHierarchy.getRoot();
@@ -246,7 +246,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 
 						pointHierarchy.addPointFolder(folder, pointHierarchy
 								.getRoot().getId());
-						DaoInstances.DataPointDao.savePointHierarchy(pointHierarchy
+						ServiceInstances.DataPointService.savePointHierarchy(pointHierarchy
 								.getRoot());
 					}
 
@@ -334,7 +334,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 						// Initialize the list of watchlists
 						watchlists = new ArrayList<WatchList>();
 
-						for (User user : DaoInstances.UserDao.getActiveUsers()) {
+						for (User user : ServiceInstances.UserService.getActiveUsers()) {
 							if (!Permissions.hasDataSourcePermission(user,
 									vo.getId()))
 								continue;
@@ -342,7 +342,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 							// Look for an existing watchlist with the same name
 							// as the folder
 							WatchList watchList = null;
-							for (WatchList wl : DaoInstances.WatchListDao.getWatchLists(
+							for (WatchList wl : ServiceInstances.WatchListService.getWatchLists(
 									user.getId(), user.getUserProfile())) {
 								if (watchListName.equals(wl.getName())) {
 									watchList = wl;
@@ -355,7 +355,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 								// one
 								watchList = new WatchList();
 								watchList.setName(watchListName);
-								DaoInstances.WatchListDao.createNewWatchList(watchList,
+								ServiceInstances.WatchListService.createNewWatchList(watchList,
 										user.getId());
 							}
 
@@ -372,7 +372,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 			// Save the watchlists
 			if (watchlists != null) {
 				for (WatchList watchList : watchlists)
-					DaoInstances.WatchListDao.saveWatchList(watchList);
+					ServiceInstances.WatchListService.saveWatchList(watchList);
 			}
 		}
 	}

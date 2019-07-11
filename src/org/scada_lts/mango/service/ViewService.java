@@ -26,7 +26,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import com.serotonin.db.IntValuePair;
+import org.scada_lts.mango.convert.IdNameToIntValuePair;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -68,16 +70,29 @@ public class ViewService {
 		}
 		return views;
 	}
-	
-	public List<IdName> getViewNames(int userId, int userProfileId) {
+	public List<IntValuePair> getViewNames(int userId, int userProfileId){
+
+		return IdNameToIntValuePair.convert(getViewNames_(userId,userProfileId));
+	}
+	public List<IdName> getViewNames_(int userId, int userProfileId) {
+
 		return viewDAO.getViewNames(userId, userProfileId);
 	}
-	
-	public List<IdName> getAllViewNames() {
+
+	public List<IntValuePair> getAllViewNames() {
+
+		return IdNameToIntValuePair.convert(getAllViewNames_());
+	}
+	private List<IdName> getAllViewNames_() {
+
 		return viewDAO.getAllViewNames();
 	}
-	
-	public List<IdName> getViewNamesWithReadOrWritePermissions(
+
+	public List<IntValuePair> getViewNamesWithReadOrWritePermissions(
+			int userId, int userProfileId) {
+		return IdNameToIntValuePair.convert(getViewNamesWithReadOrWritePermissions_(userId,userProfileId));
+	}
+	private List<IdName> getViewNamesWithReadOrWritePermissions_(
 			int userId, int userProfileId) {
 		List<IdName> allPermissions = usersPermissions.get(userId);
 		if (allPermissions == null) {
@@ -89,10 +104,9 @@ public class ViewService {
 	private List<IdName> updateViewUsersPermissions(int userId,
 			int userProfileId) {
 		
-		List<IdName> allPermissions;
-		allPermissions = viewDAO.getViewNames(userId, userProfileId);
+		List<IdName> allPermissions = viewDAO.getViewNames(userId, userProfileId);
 
-		User user = DaoInstances.UserDao.getUser(userId);
+		User user = ServiceInstances.UserService.getUser(userId);
 
 		for (Iterator<IdName> iterator = allPermissions.iterator(); iterator.hasNext();) {
 

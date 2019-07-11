@@ -1,6 +1,6 @@
 package br.org.scadabr.rt.scripting.context;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,7 +20,7 @@ public class DPCommandsScriptContextObject extends ScriptContextObject {
 	}
 
 	public void writeDataPoint(String xid, String stringValue) {
-		DataPointVO dataPoint = DaoInstances.DataPointDao.getDataPoint(xid);
+		DataPointVO dataPoint = ServiceInstances.DataPointService.getDataPoint(xid);
 		if (dataPoint != null) {
 			Permissions.ensureDataPointSetPermission(user, dataPoint);
 			RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
@@ -38,7 +38,7 @@ public class DPCommandsScriptContextObject extends ScriptContextObject {
 	}
 
 	public void enableDataPoint(String xid) {
-		DataPointVO dataPoint = DaoInstances.DataPointDao.getDataPoint(xid);
+		DataPointVO dataPoint = ServiceInstances.DataPointService.getDataPoint(xid);
 		if (dataPoint != null) {
 			Permissions.ensureDataPointReadPermission(user, dataPoint);
 			RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
@@ -49,7 +49,7 @@ public class DPCommandsScriptContextObject extends ScriptContextObject {
 	}
 
 	public void disableDataPoint(String xid) {
-		DataPointVO dataPoint = DaoInstances.DataPointDao.getDataPoint(xid);
+		DataPointVO dataPoint = ServiceInstances.DataPointService.getDataPoint(xid);
 		if (dataPoint != null) {
 			Permissions.ensureDataPointReadPermission(user, dataPoint);
 			RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();

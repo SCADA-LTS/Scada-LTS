@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -113,7 +113,7 @@ public class ContextualizedScriptRT extends ScriptRT {
 
 			List<IntValuePair> objectsContext = ((ContextualizedScriptVO) vo).getObjectsOnContext();
 
-			User user = DaoInstances.UserDao.getUser(vo.getUserId());
+			User user = ServiceInstances.UserService.getUser(vo.getUserId());
 			for (IntValuePair object : objectsContext) {
 				ScriptContextObject o = ScriptContextObject.Type.valueOf(object.getKey()).createScriptContextObject();
 				o.setUser(user);

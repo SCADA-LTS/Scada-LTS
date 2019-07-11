@@ -24,7 +24,7 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 
@@ -121,7 +121,7 @@ public class DataSourceEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        DataSourceVO<?> ds = DaoInstances.DataSourceDao.getDataSource(dataSourceId);
+        DataSourceVO<?> ds = ServiceInstances.DataSourceService.getDataSource(dataSourceId);
         map.put("XID", ds.getXid());
         map.put("dataSourceEventType", ds.getEventCodes().getCode(dataSourceEventTypeId));
     }

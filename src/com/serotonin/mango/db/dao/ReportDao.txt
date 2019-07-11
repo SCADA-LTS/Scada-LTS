@@ -35,7 +35,7 @@ import com.serotonin.mango.vo.report.ReportVO;
  */
 public class ReportDao {
 
-	MangoReport reportService = new ReportService();
+	MangoReport reportService = new org.scada_lts.mango.service.ReportService();
 
 
 	public List<ReportVO> getReports() {

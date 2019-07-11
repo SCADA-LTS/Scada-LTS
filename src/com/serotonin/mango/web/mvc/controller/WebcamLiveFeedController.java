@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -39,7 +39,7 @@ public class WebcamLiveFeedController extends ParameterizableViewController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         int pointId = Integer.parseInt(request.getParameter("pointId"));
-        DataPointVO dp = DaoInstances.DataPointDao.getDataPoint(pointId);
+        DataPointVO dp = ServiceInstances.DataPointService.getDataPoint(pointId);
 
         if (!(dp.getPointLocator() instanceof HttpImagePointLocatorVO))
             throw new Exception("Point is not an HTTP Image point");

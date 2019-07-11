@@ -72,7 +72,7 @@ import br.org.scadabr.api.vo.ServerStatus;
 import br.org.scadabr.rt.dataSource.ServerStateChecker;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 
 public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		APIConstants {
@@ -958,7 +958,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		ReplyBase rb = new ReplyBase();
 		rb.setRcvTime(Calendar.getInstance());
 
-		FlexProject project = DaoInstances.FlexProjectDao.getFlexProject(projectId);
+		FlexProject project = ServiceInstances.FlexProjectService.getFlexProject(projectId);
 
 		if (project == null) {
 			project = new FlexProject(Common.NEW_ID, "Novo Projeto",
@@ -979,7 +979,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		ReplyBase rb = new ReplyBase();
 		rb.setRcvTime(Calendar.getInstance());
 
-		List<FlexProject> list = DaoInstances.FlexProjectDao.getFlexProjects();
+		List<FlexProject> list = ServiceInstances.FlexProjectService.getFlexProjects();
 
 		FlexProject[] projects = new FlexProject[list.size()];
 		projects = list.toArray(projects);
@@ -1001,7 +1001,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		int projectId = params.getProject().getId();
 
 		FlexProject project = params.getProject();
-		int id = DaoInstances.FlexProjectDao.saveFlexProject(project.getId(), project.getName(),
+		int id = ServiceInstances.FlexProjectService.saveFlexProject(project.getId(), project.getName(),
 				project.getDescription(), project.getXmlConfig());
 
 		response.setProjectId(id);
@@ -1017,7 +1017,7 @@ public class ScadaBRAPIImpl implements br.org.scadabr.api.ScadaBRAPI,
 		ReplyBase rb = new ReplyBase();
 		rb.setRcvTime(Calendar.getInstance());
 
-		DaoInstances.FlexProjectDao.deleteFlexProject(id);
+		ServiceInstances.FlexProjectService.deleteFlexProject(id);
 
 		rb.setReplyTime(Calendar.getInstance());
 		response.setReplyBase(rb);

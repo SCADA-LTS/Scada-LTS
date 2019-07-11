@@ -26,11 +26,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public interface MangoScheduledEvent {
-
-	String generateUniqueXid();
-
-	boolean isXidUnique(String xid, int excludeId);
+public interface MangoScheduledEvent extends XidInterface{
 
 	List<ScheduledEventVO> getScheduledEvents();
 

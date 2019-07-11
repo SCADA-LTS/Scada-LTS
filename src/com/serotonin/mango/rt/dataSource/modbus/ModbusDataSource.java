@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -100,7 +100,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				// Check if a monitor point already exists.
 				boolean found = false;
 
-				List<DataPointVO> points = DaoInstances.DataPointDao.getDataPoints(
+				List<DataPointVO> points = ServiceInstances.DataPointService.getDataPoints(
 						vo.getId(), null);
 				for (DataPointVO dp : points) {
 					ModbusPointLocatorVO loc = dp.getPointLocator();
@@ -113,7 +113,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				if (!found) {
 					// A monitor was not found, so create one
 					DataPointVO dp = new DataPointVO();
-					dp.setXid(DaoInstances.DataPointDao.generateUniqueXid());
+					dp.setXid(ServiceInstances.DataPointService.generateUniqueXid());
 					dp.setName(Common.getMessage(
 							"dsEdit.modbus.monitorPointName", slaveId));
 					dp.setDataSourceId(vo.getId());

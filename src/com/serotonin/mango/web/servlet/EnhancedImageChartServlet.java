@@ -4,7 +4,7 @@
 package com.serotonin.mango.web.servlet;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.dao_cache.DaoInstances;
+import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 
@@ -26,7 +26,7 @@ public class EnhancedImageChartServlet extends BaseInfoServlet {
         int viewId = getIntRequestParameter(request, "viewId", -1);
         int viewComponentId = getIntRequestParameter(request, "vcId", -1);
         User user = Common.getUser(request);
-        View view = DaoInstances.ViewDao.getView(viewId);
+        View view = ServiceInstances.ViewService.getView(viewId);
         if (view == null) {
             view = user.getView();
         }
