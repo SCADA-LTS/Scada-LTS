@@ -204,6 +204,8 @@ public class UsersDwr extends BaseDwr {
 				Common.setUser(request, user);
 
 			response.addData("userId", user.getId());
+		} else {
+			return response;
 		}
 
 		ViewDao viewDao = new ViewDao();
