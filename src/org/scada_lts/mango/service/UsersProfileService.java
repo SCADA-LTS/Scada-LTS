@@ -1,4 +1,4 @@
-package br.org.scadabr.db.dao;
+package org.scada_lts.mango.service;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,13 +6,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.scada_lts.mango.service.ServiceInstances;
-import com.serotonin.mango.db.dao.BaseDao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.UserService;
-import org.scada_lts.mango.service.ViewService;
-import org.scada_lts.mango.service.WatchListService;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -29,8 +24,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 
-public class UsersProfileDao extends BaseDao {
-	public Log LOG = LogFactory.getLog(UsersProfileDao.class);
+public class UsersProfileService extends BaseService {
+	public Log LOG = LogFactory.getLog(UsersProfileService.class);
 
 	private static List<UsersProfileVO> currentProfileList = null;
 

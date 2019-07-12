@@ -29,9 +29,9 @@ import org.apache.commons.logging.LogFactory;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
-import com.serotonin.mango.db.dao.BaseDao;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.util.StringUtils;
+import org.scada_lts.mango.service.BaseService;
 
 /**
  * Base class for instances that perform database upgrades. The naming of
@@ -41,7 +41,7 @@ import com.serotonin.util.StringUtils;
  * 
  * @author Matthew Lohbihler
  */
-abstract public class DBUpgrade extends BaseDao {
+abstract public class DBUpgrade extends BaseService {
 	private static final Log LOG = LogFactory.getLog(DBUpgrade.class);
 	protected static final String DEFAULT_DATABASE_TYPE = "*";
 

@@ -13,6 +13,8 @@ import br.org.scadabr.db.scenarios.DatalessDatabaseScenario;
 import br.org.scadabr.db.scenarios.ScenarioWithAdministrador;
 
 import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.ServiceInstances;
+import org.scada_lts.mango.service.UserService;
 
 public class UserDaoTest extends AbstractMySQLDependentTest {
 
@@ -23,7 +25,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void saveUserShouldSaveUsernamePasswordEmailPhoneAdminDisabledHomeUrlReceiveAlarmEmailsAndReceiveOwnAuditEvents() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 
 		User user = new User();
 		user.setUsername("anUser");
@@ -54,7 +56,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void saveUserShouldUpdateId() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 
 		User user = new User();
 		user.setUsername("anUser");
@@ -78,7 +80,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getUserByIdShouldReturnAnUserWithThatId() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 
 		User expectedUser = userDao.getUser("admin");
 		User received = userDao.getUser(expectedUser.getId());
@@ -89,14 +91,14 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getUsersShouldReturnAnEmptyListIfThereIsNoUsers() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		assertTrue(userDao.getUsers().isEmpty());
 	}
 
 	@Test
 	public void getUsersShouldReturnTheAdminUserWhenHeIsTheOnlyUser() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		final List<User> users = userDao.getUsers();
 		assertEquals(1, users.size());
 		assertEquals("admin", users.get(FIRST).getUsername());
@@ -105,7 +107,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getUsersShouldReturnAllUsersOrderedByUsername() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		User joão = createUserWithUserName("joão");
 		User daniel = createUserWithUserName("daniel");
 		userDao.saveUser(joão);
@@ -121,7 +123,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getActiveUsersShouldReturnEmptyListWhenThereIsNoUser() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		final List<User> users = userDao.getActiveUsers();
 		assertTrue(users.isEmpty());
 	}
@@ -129,7 +131,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getActiveUsersShouldReturnEmptyListWhenThereIsOnlyInactiveUsers() {
 		useScenario(new DatalessDatabaseScenario());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		userDao.saveUser(createInactiveUserWithUserName("joão"));
 		final List<User> users = userDao.getActiveUsers();
 		assertTrue(users.isEmpty());
@@ -138,7 +140,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getActiveUsersShouldReturnTheAdminUserWhenHeIsTheOnlyActiveUser() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		final List<User> users = userDao.getActiveUsers();
 		assertEquals(1, users.size());
 		assertEquals("admin", users.get(FIRST).getUsername());
@@ -147,7 +149,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getActiveUsersShouldReturnAllActiveUsers() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		User joão = createUserWithUserName("joão");
 		User daniel = createUserWithUserName("daniel");
 		User pedro = createInactiveUserWithUserName("pedro");
@@ -172,7 +174,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void deleteUser() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		User joão = createUserWithUserName("joão");
 		userDao.saveUser(joão);
 
@@ -183,7 +185,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void saveHomeUrl() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		User joão = createUserWithUserName("joão");
 		userDao.saveUser(joão);
 
@@ -196,7 +198,7 @@ public class UserDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void recordLogin() {
 		useScenario(new ScenarioWithAdministrador());
-		UserDao userDao = new UserDao();
+		UserService userDao = ServiceInstances.UserService;
 		User admin = userDao.getUser("admin");
 
 		long before = System.currentTimeMillis();

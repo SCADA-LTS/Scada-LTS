@@ -12,7 +12,6 @@ import org.scada_lts.mango.service.ServiceInstances;
 import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.exception.DAOException;
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
@@ -35,7 +34,7 @@ public class UsersProfilesDwr {
 
 		initData.put("admin", true);
 
-		List<UsersProfileVO> profiles = new UsersProfileDao()
+		List<UsersProfileVO> profiles = ServiceInstances.UsersProfileService
 				.getUsersProfiles();
 		initData.put("profiles", profiles);
 
@@ -79,7 +78,7 @@ public class UsersProfilesDwr {
 			return new UsersProfileVO();
 		}
 
-		return new UsersProfileDao().getUserProfileById(id);
+		return ServiceInstances.UsersProfileService.getUserProfileById(id);
 	}
 
 	public DwrResponseI18n saveUserAdmin(int id, String name,
@@ -96,7 +95,7 @@ public class UsersProfilesDwr {
 		if (id == Common.NEW_ID)
 			profile = new UsersProfileVO();
 		else
-			profile = new UsersProfileDao().getUserProfileById(id);
+			profile = ServiceInstances.UsersProfileService.getUserProfileById(id);
 
 		profile.setName(name);
 		profile.setDataSourcePermissions(dataSourcePermissions);
@@ -107,7 +106,7 @@ public class UsersProfilesDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		try {
-			new UsersProfileDao().saveUsersProfile(profile);
+			ServiceInstances.UsersProfileService.saveUsersProfile(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
 					"usersProfiles.validate.nameUnique"));
@@ -124,7 +123,7 @@ public class UsersProfilesDwr {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 		try {
-			new UsersProfileDao().deleteUserProfile(profileId);
+			ServiceInstances.UsersProfileService.deleteUserProfile(profileId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

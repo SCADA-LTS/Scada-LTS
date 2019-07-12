@@ -1,11 +1,10 @@
-package br.org.scadabr.db.dao;
+package org.scada_lts.mango.service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import org.scada_lts.mango.service.FlexProjectService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -15,7 +14,6 @@ import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.db.spring.GenericRowMapper;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.BaseDao;
 import com.serotonin.util.SerializationHelper;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -23,7 +21,7 @@ import java.sql.PreparedStatement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ScriptDao extends BaseDao {
+public class ScriptService extends BaseService {
 	private static final String SCRIPT_SELECT = "select id, xid, name, script, userId, data from scripts ";
 
 	public void saveScript(final ScriptVO<?> vo) {
@@ -35,7 +33,7 @@ public class ScriptDao extends BaseDao {
 	}
 
 	private void insertScript(final ScriptVO<?> vo) {
-                if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")){                
+                if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")){
                     try {
                         Connection conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
                                                     Common.getEnvironmentProfile().getString("db.username"),
@@ -47,15 +45,15 @@ public class ScriptDao extends BaseDao {
                         preStmt.setInt(4, vo.getUserId());
                         preStmt.setBytes(5, SerializationHelper.writeObjectToArray(vo));
                         preStmt.executeUpdate();
-                        
+
                         ResultSet resSEQ = conn.createStatement().executeQuery("SELECT currval('scripts_id_seq')");
                         resSEQ.next();
                         int id = resSEQ.getInt(1);
 
-                        conn.close(); 
-                        
+                        conn.close();
+
                         vo.setId(id);
-                        
+
                     } catch (SQLException ex) {
                         Logger.getLogger(FlexProjectService.class.getName()).log(Level.SEVERE, null, ex);
                         vo.setId(0);
@@ -67,7 +65,7 @@ public class ScriptDao extends BaseDao {
                                                     new Object[] { vo.getXid(), vo.getName(),
                                                                     vo.getScript(), vo.getUserId(),
                                                                     SerializationHelper.writeObject(vo) },
-                                                    new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
+                                                    new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER,
                                                         Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB }));
                 }
 	}
@@ -120,7 +118,7 @@ public class ScriptDao extends BaseDao {
                         }
                         else{
                             script = (ScriptVO<?>) SerializationHelper.readObject(rs.getBlob(6).getBinaryStream());
-                        }                    
+                        }
 			script.setId(rs.getInt(1));
 			script.setXid(rs.getString(2));
 			script.setName(rs.getString(3));

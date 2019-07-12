@@ -18,7 +18,6 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
@@ -63,7 +62,7 @@ public class UsersDwr extends BaseDwr {
 			// Users
 			initData.put("admin", true);
 			initData.put("users", ServiceInstances.UserService.getUsers());
-			initData.put("usersProfiles", new UsersProfileDao().getUsersProfiles());
+			initData.put("usersProfiles", ServiceInstances.UsersProfileService.getUsersProfiles());
 
 
 			// Data sources
@@ -112,8 +111,8 @@ public class UsersDwr extends BaseDwr {
 		} else {
 			user = ServiceInstances.UserService.getUser(id);
 
-			if (new UsersProfileDao().getUserProfileByUserId(user.getId()) != null) {
-				user.setUserProfile(new UsersProfileDao().getUserProfileByUserId(user
+			if (ServiceInstances.UsersProfileService.getUserProfileByUserId(user.getId()) != null) {
+				user.setUserProfile(ServiceInstances.UsersProfileService.getUserProfileByUserId(user
 						.getId()));
 			}
 		}
@@ -178,14 +177,14 @@ public class UsersDwr extends BaseDwr {
 
 			if (usersProfileId != Common.NEW_ID) {
 				// apply profile
-				UsersProfileVO profile = new UsersProfileDao()
+				UsersProfileVO profile = ServiceInstances.UsersProfileService
 						.getUserProfileById(usersProfileId);
 				profile.apply(user);
 				ServiceInstances.UserService.saveUser(user);
-				new UsersProfileDao().resetUserProfile(user);
-				new UsersProfileDao().updateUsersProfile(profile);
+				ServiceInstances.UsersProfileService.resetUserProfile(user);
+				ServiceInstances.UsersProfileService.updateUsersProfile(profile);
 			} else {
-				new UsersProfileDao().resetUserProfile(user);
+				ServiceInstances.UsersProfileService.resetUserProfile(user);
 			}
 
 			// If admin grant permissions to all WL and GViews

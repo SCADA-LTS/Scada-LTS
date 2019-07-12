@@ -73,7 +73,9 @@ public class WatchListService implements MangoWatchList {
 
 	@Override
 	public WatchList getWatchList(int watchListId) {
-		return watchListDAO.findById(new Object[] {watchListId});
+	    WatchList watchList = watchListDAO.findById(new Object[] {watchListId});
+        populateWatchlistData(watchList);
+		return watchList;
 	}
 	
 	@Override

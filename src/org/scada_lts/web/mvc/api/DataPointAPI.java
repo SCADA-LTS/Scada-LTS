@@ -17,13 +17,11 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 import br.org.scadabr.vo.scripting.ScriptVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -34,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.mango.service.ServiceInstances;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -140,7 +139,7 @@ public class DataPointAPI {
             User user = Common.getUser(request);
 
             if (user != null) {
-                List<View> allViews = new ViewDao().getViews();
+                List<View> allViews = ServiceInstances.ViewService.getViews();
                 List<View> views = new LinkedList<>();
                 for (View view : allViews) {
                     view.validateViewComponents(false);
@@ -166,7 +165,7 @@ public class DataPointAPI {
             User user = Common.getUser(request);
 
             if (user != null) {
-                List<ScriptVO<?>> allScripts = new ScriptDao().getScripts();
+                List<ScriptVO<?>> allScripts = ServiceInstances.ScriptService.getScripts();
                 List<ScriptVO> scripts = new LinkedList<>();
                 for (ScriptVO script : allScripts) {
                     ContextualizedScriptVO contextualizedScript = (ContextualizedScriptVO) script;

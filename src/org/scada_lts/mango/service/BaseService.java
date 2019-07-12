@@ -14,7 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-class BaseService extends DaoUtils {
+public class BaseService extends DaoUtils {
 
     private static final String DEFAULT_GENERATED_KEY_COLUMN_NAME = "id";
 

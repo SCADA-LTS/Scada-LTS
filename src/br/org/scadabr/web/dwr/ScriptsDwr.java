@@ -2,7 +2,6 @@ package br.org.scadabr.web.dwr;
 
 import java.util.List;
 
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.rt.scripting.ScriptRT;
 import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 import br.org.scadabr.vo.scripting.ScriptVO;
@@ -23,17 +22,17 @@ public class ScriptsDwr extends BaseDwr {
 	}
 
 	public List<ScriptVO<?>> getScripts() {
-		return new ScriptDao().getScripts();
+		return ServiceInstances.ScriptService.getScripts();
 	}
 
 	public ScriptVO<?> getScript(int id) {
 		if (id == Common.NEW_ID) {
 			ContextualizedScriptVO vo = new ContextualizedScriptVO();
-			vo.setXid(new ScriptDao().generateUniqueXid());
+			vo.setXid(ServiceInstances.ScriptService.generateUniqueXid());
 			return vo;
 		}
 
-		return new ScriptDao().getScript(id);
+		return ServiceInstances.ScriptService.getScript(id);
 	}
 
 	public DwrResponseI18n saveScript(int id, String xid, String name,
@@ -54,18 +53,18 @@ public class ScriptsDwr extends BaseDwr {
 		vo.validate(response);
 
 		if (!response.getHasMessages())
-			new ScriptDao().saveScript(vo);
+			ServiceInstances.ScriptService.saveScript(vo);
 
 		response.addData("seId", vo.getId());
 		return response;
 	}
 
 	public void deleteScript(int scriptId) {
-		new ScriptDao().deleteScript(scriptId);
+		ServiceInstances.ScriptService.deleteScript(scriptId);
 	}
 
 	public boolean executeScript(int scriptId) {
-		ScriptVO<?> script = new ScriptDao().getScript(scriptId);
+		ScriptVO<?> script = ServiceInstances.ScriptService.getScript(scriptId);
 
 		try {
 			if (script != null) {

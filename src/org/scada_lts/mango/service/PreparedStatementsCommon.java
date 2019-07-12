@@ -1,11 +1,16 @@
 package org.scada_lts.mango.service;
 
-//import br.org.scadabr.db.dao.FlexProjectDao;
+
 import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
 import com.serotonin.util.SerializationHelper;
 
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
