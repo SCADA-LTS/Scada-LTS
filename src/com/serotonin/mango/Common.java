@@ -18,36 +18,8 @@
  */
 package com.serotonin.mango;
 
-import gnu.io.CommPortIdentifier;
-
-import java.io.File;
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.MessageFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.directwebremoting.WebContext;
-import org.directwebremoting.WebContextFactory;
-import org.joda.time.Period;
-
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.KeyValuePair;
-import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.util.CommPortConfigException;
 import com.serotonin.mango.util.ExportCodes;
@@ -64,6 +36,26 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
+import gnu.io.CommPortIdentifier;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.directwebremoting.WebContext;
+import org.directwebremoting.WebContextFactory;
+import org.joda.time.Period;
+import org.scada_lts.dao.SystemSettingsDAO;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.util.*;
 
 public class Common {
 	
@@ -79,6 +71,7 @@ public class Common {
 
 	// This is initialized
 	public static final RealTimeTimer timer = new RealTimeTimer();
+	public static final org.scada_lts.serorepl.utils.PropertiesUtils scadaProperties = new org.scada_lts.serorepl.utils.PropertiesUtils("build");
 
 	public static final MonitoredValues MONITORED_VALUES = new MonitoredValues();
 
@@ -91,7 +84,7 @@ public class Common {
 	 * the correct version.
 	 */
 	public final static String getVersion() {
-		return "RELEASE_OR_BUILD_VER";
+		return scadaProperties.getString("app.version");
 	}
 
 	public interface ContextKeys {
@@ -550,4 +543,12 @@ public class Common {
 		return prefix + StringUtils.generateRandomString(6, "0123456789");
 	}
 
+	// To bypass some ambiguity
+	private static User user;
+	public static User getStaticUser() {
+			return user;
+	}
+	public static void setUser(User user) {
+		Common.user = user;
+	}
 }

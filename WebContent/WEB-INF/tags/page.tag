@@ -236,8 +236,8 @@
 <div class="content" style="padding-top:10px;">
   <jsp:doBody/>
 </div>
-<div class="footer" style="text-align:center">
-    <span>&copy;2012-2018 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
+<div class="footer" style="text-align:center;position: fixed;bottom: 0;width: 100%;padding-bottom: 10px;">
+    <span>&copy; 2012-2019 Scada-LTS All rights reserved.</span>
 </div>
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>

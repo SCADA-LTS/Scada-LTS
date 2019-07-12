@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
+import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
@@ -114,6 +115,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
 	public static final int PDU_EXCEPTION_EVENT = 2;
+	public static final int TRAP_NOT_HANDLED_EVENT = 3;
 
 	private final Log log = LogFactory.getLog(SnmpDataSourceRT.class);
 
@@ -177,6 +179,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		}
 		else
 			return Boolean.TRUE;
+
 	}
 
 	@Override
@@ -193,6 +196,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		snmpRequests.setRequest(version.createPDU());
 		PDU request = snmpRequests.getRequest();
 		PDU response = null;
+		request.setType(PDU.GET);
+
 		VariableBinding vb;
 
 		// Make a copy of the oids so that we can check if we got everything we
@@ -207,70 +212,38 @@ public class SnmpDataSourceRT extends PollingDataSource {
 				requestPoints.add(dp);
 			}
 		}
-		if(time!=TIME_JUNIT.TIME_EXISTS_ONLY_DURING_JUNIT.getTime()) {
-			if (request.getVariableBindings().size() == 0) {
-				// Nothing to send, so don't bother.
-				returnToNormal(PDU_EXCEPTION_EVENT, time);
-				return;
+
+		ResponseEvent event = snmp.send(request, target);
+		if(event != null) {
+			response = event.getResponse();
+			LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);
+			if (time == -1) {
+				if (!isSnmpConnectionIsAlive()) {
+					snmp.close();
+				}
+			} else {
+				if (!isSnmpConnectionIsAlive()) {
+					Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
+				} else if (message != null) {
+					raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+				}
 			}
-		}
-
-		// Get the response.
-		snmpRequests.setRequest(version.createPDU());
-		response = snmpRequests.getResponseByGet();
-
-		// Take a look at the response.
-		LocalizableMessage message = validateResponseAndValidateStateOfConnection(response);
-		if(time==-1){
-			if(!isSnmpConnectionIsAlive())
-				snmp.close();
-		}
-		else {
-			if(!isSnmpConnectionIsAlive()) {
-				Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
-			}
-			else
-			if(message != null)
-				raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
-			else {
-				MessageType messageType = MessageType.undefined;
-				boolean error = false;
-
+			if (response.getErrorStatus() == PDU.noError) {
 				DataPointRT dp;
 				for (int i = 0; i < response.size(); i++) {
 					vb = response.get(i);
-					// Find the command for this binding.
 					dp = setDataPoint(vb,requestPoints);
 					if (dp != null) {
 						requestPoints.remove(dp);
-
-						// Check if this is an error.
-						if (vb.getVariable().isException()) {
-							messageType = MessageType.oidError;
-						} else {
-							updatePoint(dp, vb.getVariable(), time);
-						}
-					} else {
-						messageType = MessageType.unknownOid;
-					}
-					if (messageType != MessageType.undefined) {
-						error = true;
-						logEventsDependsOnMessageType(messageType, vb, dp, time);
-						messageType = MessageType.undefined;
+						updatePoint(dp, vb.getVariable(), time);
 					}
 				}
-				for (DataPointRT requestPoint : requestPoints) {
-					error = true;
-					raiseEvent(PDU_EXCEPTION_EVENT, time, true,
-							new LocalizableMessage("event.snmp.noBinding",
-									getOid(requestPoint), address));
-				}
-				if (!error)
-					// Deactivate any existing event.
-					returnToNormal(PDU_EXCEPTION_EVENT, time);
+			} else {
+				raiseEvent(PDU_EXCEPTION_EVENT, time, true, validatePdu(response));
 
 			}
 		}
+
 	}
 	private DataPointRT setDataPoint(VariableBinding vb, List<DataPointRT> requestPoints){
 		for (DataPointRT requestPoint : requestPoints) {
@@ -363,6 +336,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		return address;
 	}
 
+	Version getVersion() { return this.version; }
+
 	void receivedTrap(PDU trap) {
 		long time = System.currentTimeMillis();
 		VariableBinding vb;
@@ -375,7 +350,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 			synchronized (pointListChangeLock) {
 				updateChangedPoints();
 
-				for (int i = 0; i < trap.size(); i++) {
+				for (int i = 0; i < trap.getVariableBindings().size(); i++) {
 					vb = trap.get(i);
 					boolean found = false;
 
@@ -388,6 +363,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 					}
 
 					if (!found)
+//						raiseEvent(TRAP_NOT_HANDLED_EVENT, time, false, new LocalizableMessage("event.snmp.trapNotHandled", vb));
 						log.warn("Trap not handled: " + vb);
 				}
 			}

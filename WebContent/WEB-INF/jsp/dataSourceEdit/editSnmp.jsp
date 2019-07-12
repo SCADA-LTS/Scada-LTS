@@ -23,6 +23,14 @@
 <%@page import="com.serotonin.mango.DataTypes"%>
 
 <script type="text/javascript">
+
+  var trapEnabled;
+  if($get("trapPort") == "0") {
+      trapEnabled = false;
+  } else {
+      trapEnabled = true;
+  }
+
   function versionChange() {
       var version = $get("snmpVersion");
       if (version == <c:out value="<%= SnmpConstants.version3 %>"/>) {
@@ -38,18 +46,35 @@
   function snmpTest() {
       $set("snmpTestMessage", "<fmt:message key="dsEdit.snmp.gettingValue"/>");
       snmpTestButton(true);
-      DataSourceEditDwr.snmpGetOid($get("snmpTestOid"), $get("host"), $get("port"), $get("snmpVersion"), 
-              $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"), 
-              $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"), 
+      DataSourceEditDwr.snmpGetOid($get("snmpTestOid"), $get("host"), $get("port"), $get("snmpVersion"),
+              $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
+              $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"),
               $get("contextName"), $get("retries"), $get("timeout"), snmpTestCB);
+  }
+
+  function snmpWalk() {
+      $set("snmpTestMessage", "<fmt:message key="dsEdit.snmp.gettingValue"/>");
+      snmpWalkButton(true);
+      DataSourceEditDwr.snmpWalkOid($get("snmpWalkOid"), $get("host"), $get("port"), $get("snmpVersion"),
+              $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
+              $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"),
+              $get("contextName"), $get("retries"), $get("timeout"), snmpWalkCB);
   }
   
   function snmpTestCB() {
       setTimeout(snmpTestUpdate, 1000);
   }
+
+  function snmpWalkCB() {
+      setTimeout(snmpWalkUpdate, 1000);
+  }
   
   function snmpTestUpdate() {
       DataSourceEditDwr.snmpGetOidUpdate(snmpTestUpdateCB);
+  }
+
+  function snmpWalkUpdate() {
+      DataSourceEditDwr.snmpGetWalkUpdate(snmpWalkUpdateCB);
   }
   
   function snmpTestUpdateCB(result) {
@@ -60,9 +85,22 @@
       else
           snmpTestCB();
   }
+
+  function snmpWalkUpdateCB(result) {
+      if (result) {
+          $set("snmpWalkMessage", result);
+          snmpWalkButton(false);
+      }
+      else
+          snmpWalkCB();
+  }
   
   function snmpTestButton(testing) {
       setDisabled($("snmpTestBtn"), testing);
+  }
+
+  function snmpWalkButton(testing) {
+      setDisabled($("snmpWalkBtn"), testing);
   }
 
   function initImpl() {
@@ -106,6 +144,18 @@
   
   function dataTypeChanged() {
       display("binary0ValueRow", $get("dataTypeId") == <c:out value="<%= DataTypes.BINARY %>"/>);
+  }
+
+  function trapTriggered() {
+      setDisabled($("trapPort"), !trapEnabled);
+      setDisabled($("localAddress"), !trapEnabled);
+
+      if(!trapEnabled) {
+          document.getElementById("trapPort").value = "0";
+      } else {
+          document.getElementById("trapPort").value = "161";
+      }
+      trapEnabled = !trapEnabled;
   }
 </script>
 
@@ -163,6 +213,10 @@
                 <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.NONE %>"><fmt:message key="dsEdit.snmp.none"/></sst:option>
                 <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.MD5 %>">MD5</sst:option>
                 <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.SHA %>">SHA</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.HMAC128SHA224 %>">HMAC128 SHA224</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.HMAC192SHA256 %>">HMAC192 SHA256</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.HMAC256SHA384 %>">HMAC256 SHA384</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.AuthProtocols.HMAC384SHA512 %>">HMAC384 SHA512</sst:option>
               </sst:select>
             </td>
           </tr>
@@ -181,6 +235,10 @@
                 <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES128 %>">AES128</sst:option>
                 <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES192 %>">AES192</sst:option>
                 <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES256 %>">AES256</sst:option>
+
+                <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.DES3 %>">3DES</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES192With3DES %>">AES192With3DES</sst:option>
+                <sst:option value="<%= SnmpDataSourceVO.PrivProtocols.AES256With3DES %>">AES256With3DES</sst:option>
               </sst:select>
             </td>
           </tr>
@@ -215,14 +273,19 @@
           <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.timeout"/></td>
           <td class="formField"><input id="timeout" type="text" value="${dataSource.timeout}"/></td>
         </tr>
+
+        <tr>
+          <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPortDesc"/></td>
+          <td class="formLabel"><input id="trapTrigger" type="checkbox" checked onclick="trapTriggered();"></td>
+        </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.trapPort"/></td>
+          <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPort"/></td>
           <td class="formField"><input id="trapPort" type="text" value="${dataSource.trapPort}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.localAddress"/></td>
+          <td class="formLabel"><fmt:message key="dsEdit.snmp.localAddress"/></td>
           <td class="formField"><input id="localAddress" type="text" value="${dataSource.localAddress}"/></td>
         </tr>
       </table>
@@ -247,6 +310,20 @@
         </tr>
         
         <tr><td colspan="2" id="snmpTestMessage" class="formError"></td></tr>
+
+        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.snmp.walking"/></td></tr>
+
+          <tr>
+            <td class="formLabel"><fmt:message key="dsEdit.snmp.oidWalk"/></td>
+            <td class="formField"><input type="text" id="snmpWalkOid"/></td>
+          </tr>
+
+          <tr>
+            <td colspan="2" align="center">
+              <input id="snmpWalkBtn" type="button" value="<fmt:message key="dsEdit.snmp.walk"/>" onclick="snmpWalk();"/>
+            </td>
+          </tr>
+          <tr><td colspan="2" id="snmpWalkMessage" class="formError"></td></tr>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsFoot.jspf" %>
 
 <tag:pointList pointHelpId="snmpPP">

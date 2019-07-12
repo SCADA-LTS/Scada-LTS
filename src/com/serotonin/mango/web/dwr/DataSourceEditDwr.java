@@ -42,6 +42,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
+import com.serotonin.mango.web.dwr.beans.*;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -117,6 +118,7 @@ import com.serotonin.mango.rt.dataSource.snmp.Version;
 import com.serotonin.mango.rt.dataSource.viconics.ViconicsDataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.IntMessagePair;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -174,22 +176,6 @@ import com.serotonin.mango.vo.dataSource.vmstat.VMStatDataSourceVO;
 import com.serotonin.mango.vo.dataSource.vmstat.VMStatPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.dwr.beans.BACnetDiscovery;
-import com.serotonin.mango.web.dwr.beans.BACnetObjectBean;
-import com.serotonin.mango.web.dwr.beans.DataPointDefaulter;
-import com.serotonin.mango.web.dwr.beans.EBI25InterfaceReader;
-import com.serotonin.mango.web.dwr.beans.EBI25InterfaceUpdater;
-import com.serotonin.mango.web.dwr.beans.EventInstanceBean;
-import com.serotonin.mango.web.dwr.beans.GalilCommandTester;
-import com.serotonin.mango.web.dwr.beans.HttpReceiverDataListener;
-import com.serotonin.mango.web.dwr.beans.MBusDiscovery;
-import com.serotonin.mango.web.dwr.beans.ModbusNodeScanListener;
-import com.serotonin.mango.web.dwr.beans.NmeaUtilListener;
-import com.serotonin.mango.web.dwr.beans.OpenV4JDataPointBean;
-import com.serotonin.mango.web.dwr.beans.OpenV4JDiscovery;
-import com.serotonin.mango.web.dwr.beans.OpenV4JProtocolBean;
-import com.serotonin.mango.web.dwr.beans.SnmpOidGet;
-import com.serotonin.mango.web.dwr.beans.SqlStatementTester;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.code.RegisterRange;
@@ -387,10 +373,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		});
 		List<EventInstanceBean> beans = new ArrayList<EventInstanceBean>();
 		if (events != null) {
-			for (EventInstance event : events)
+			for (EventInstance event : events) {
+				//Timezone
+				long time = Timezone.getTimezoneUserLong(Common.getUser(),event.getActiveTimestamp());
 				beans.add(new EventInstanceBean(event.isActive(), event
 						.getAlarmLevel(), DateFunctions.getTime(event
 						.getActiveTimestamp()), getMessage(event.getMessage())));
+			}
 		}
 		return beans;
 	}
@@ -834,12 +823,37 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	}
 
 	@MethodFilter
+	public void snmpWalkOid(String oid, String host, int port, int snmpVersion,
+						   String community, String securityName, String authProtocol,
+						   String authPassphrase, String privProtocol, String privPassphrase,
+						   String engineId, String contextEngineId, String contextName,
+						   int retries, int timeout) {
+		User user = Common.getUser();
+		Permissions.ensureDataSourcePermission(user);
+
+		Version version = Version.getVersion(snmpVersion, community,
+				securityName, authProtocol, authPassphrase, privProtocol,
+				privPassphrase, engineId, contextEngineId, contextName);
+		user.setTestingUtility(new SnmpOidWalk(getResourceBundle(), host, port,
+				version, oid, retries, timeout));
+	}
+
+	@MethodFilter
 	public String snmpGetOidUpdate() {
 		SnmpOidGet snmpOidGet = Common.getUser().getTestingUtility(
 				SnmpOidGet.class);
 		if (snmpOidGet == null)
 			return null;
 		return snmpOidGet.getResult();
+	}
+
+	@MethodFilter
+	public String snmpGetWalkUpdate() {
+		SnmpOidWalk snmpOidWalk = Common.getUser().getTestingUtility(
+				SnmpOidWalk.class);
+		if (snmpOidWalk == null)
+			return null;
+		return snmpOidWalk.getResult();
 	}
 
 	//

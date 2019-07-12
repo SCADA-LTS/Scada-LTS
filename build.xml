@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<project basedir="." default="build" name="scadabr-1.1.0-RC">
+<project basedir="." default="build" name="ScadaLTS">
+
+	<property name="version-major" value="0"/>
+	<property name="version-minor" value="9"/>
+	<property name="version-release" value="9"/>
+
 	<property environment="env"/>
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.8"/>
 	<property name="source" value="1.8"/>
 
-   <path id="tomcat.ant.classpath">
-	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
-   </path>
+	<property name="db.name" value="scada_lts"/>
+	<propertyfile file="build.properties" comment="ScadaLTS properties">
+		<entry key="db.type" value="mysql"/>
+		<entry key="db.url" value="jdbc:mysql://localhost/${db.name}"/>
+		<entry key="db.username" value="root"/>
+		<entry key="db.password" value="root"/>
+		<entry key="db.pool.maxActive" value="10"/>
+		<entry key="db.pool.maxIdle" value="10"/>
+		<entry key="app.version" value="${version-major}.${version-minor}.${version-release}"/>
+	</propertyfile>
 
+	<path id="tomcat.ant.classpath">
+		<pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
+	</path>
 
-	<target name="clean_and_tomcat_deploy" description="Deploy prepared WAR file from project dir to Tomcat webapps folder">
-		<delete file="${env.CATALINA_HOME}/webapps/ScadaBR.war"></delete>
-		<delete dir="${env.CATALINA_HOME}/webapps/ScadaBR"></delete>
-		<copy file="ScadaBR.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
-		</copy>
-	</target>
+	<!-- Build, run and debug -->
 
-	<target name="tomcat_clean_static_content" description="Delete static content">
-		<delete dir="${env.CATALINA_HOME}/work/Catalina/localhost"></delete>
+	<target depends="init" name="build">
+		<echo message="${ant.project.name}: ${ant.file} " />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
+			<src path="src"/>
+			<src path="test"/>
+			<classpath refid="ScadaLTS.classpath"/>
+		</javac>
 	</target>
 
 	<target name="run" depends="tomcat_clean_static_content">
@@ -29,9 +44,180 @@
 		</exec>
 	</target>
 
+	<target name="debug" depends="tomcat_clean_static_content">
+		<exec executable="cmd">
+			<arg value="/c"/>
+			<arg value="%CATALINA_HOME%\bin\catalina.bat jpda start"/>
+		</exec>
+	</target>
+
+	<target name="clean">
+		<delete dir="build/classes"/>
+	</target>
+
+	<target name="war" description="Bundles the application as a WAR file" depends="clean, build, build-ui">
+
+		<delete dir="WebContent/resources/new-ui"></delete>
+		<mkdir dir="WebContent/resources/new-ui"></mkdir>
+		<mkdir dir="WebContent/resources/new-ui/css"></mkdir>
+		<mkdir dir="WebContent/resources/new-ui/js"></mkdir>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css">
+			<fileset dir="ScadaLTS-UI-1/dist/static/css">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="app.*.css" to="app.css"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="app.*.js" to="app.js"/>
+
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="vendor.*.js" to="vendor.js"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="manifest.*.js" to="manifest.js"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="vendor.*.js.map" to="vendor.js.map"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="manifest.*.js.map" to="manifest.js.map"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="app.*.js.map" to="app.js.map"/>
+
+		</copy>
+
+
+		<mkdir dir="WebContent/WEB-INF/classes"/>
+		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
+			<fileset dir="build/classes">
+				<include name="**/*.class"/>
+			</fileset>
+		</copy>
+
+		<copy file="build.properties" todir="WebContent/WEB-INF/classes"/>
+
+		<war destfile="${ant.project.name}.war"
+			 basedir="WebContent"
+			 needxmlfile="false">
+		</war>
+	</target>
+
+	<target name="build-ui" depends="new-ui_win, new-ui_unix">
+	</target>
+
+	<!-- New ScadaLTS-UI targets -->
+	<target name="update-static-web-dependecy" description="Update static web dependency">
+		<exec dir="WebContent/resources/app" executable="bower">
+			<arg  value="update"/>
+		</exec>
+	</target>
+
+	<target name="checkOS">
+		<condition property="isWindows">
+			<os family="windows"/>
+		</condition>
+		<condition property="isUnix">
+			<os family="unix"/>
+		</condition>
+	</target>
+
+	<target name="new-ui-dependency_win" depends="checkOS" if="isWindows">
+		<exec dir="./ScadaLTS-UI-1" executable="cmd">
+			<arg value="npm install"/>
+		</exec>
+	</target>
+	<target name="new-ui_win" depends="new-ui-dependency_win" if="isWindows">
+		<exec dir="./ScadaLTS-UI-1" executable="cmd">
+			<arg value="npm run"/>
+			<arg value="npm build"/>
+		</exec>
+	</target>
+
+	<target name="new-ui-dependency_unix" depends="checkOS" if="isUnix">
+		<exec dir="./ScadaLTS-UI-1" executable="npm">
+			<arg value="install"/>
+		</exec>
+	</target>
+	<target name="new-ui_unix" depends="new-ui-dependency_unix" if="isUnix">
+		<exec dir="./ScadaLTS-UI-1" executable="npm">
+			<arg value="run"/>
+			<arg value="build"/>
+		</exec>
+	</target>
+
+	<!-- Other targets -->
+	<target name="init">
+		<mkdir dir="build/classes"/>
+		<copy includeemptydirs="false" todir="build/classes">
+			<fileset dir="src">
+				<exclude name="**/*.launch"/>
+				<exclude name="**/*.xtend"/>
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="build/classes">
+			<fileset dir="test">
+				<exclude name="**/*.launch"/>
+				<exclude name="**/*.xtend"/>
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="clean_and_tomcat_deploy" description="Deploy prepared WAR file from project dir to Tomcat webapps folder">
+		<delete file="${env.CATALINA_HOME}/webapps/${ant.project.name}.war"></delete>
+		<delete dir="${env.CATALINA_HOME}/webapps/${ant.project.name}"></delete>
+		<copy file="${ant.project.name}.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
+		</copy>
+	</target>
+
+	<target name="tomcat_clean_static_content" description="Delete static content">
+		<delete dir="${env.CATALINA_HOME}/work/Catalina/localhost"></delete>
+	</target>
+
+	<target name="war_config_test" description="Bundles the application as a WAR file with config test" depends="clean, build, junit">
+		<mkdir dir="WebContent/WEB-INF/classes"/>
+		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
+			<fileset dir="build/classes">
+				<include name="**/*.class"/>
+				<include name="**/*.properties"/>
+			</fileset>
+		</copy>
+
+		<war destfile="${ant.project.name}.war"
+			 basedir="WebContent"
+			 needxmlfile="false">
+		</war>
+	</target>
+
 	<!-- to option copy file to webapps :) -->
-
-
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/RXTXcomm.jar"/>
@@ -142,7 +328,7 @@
 		<path refid="Snmplibrary"/>
     </path>
 	<path id="Snmplibrary">
-		<pathelement location="WebContent/WEB-INF/lib/snmp4j-2.5.0.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/snmp4j-2.7.0.jar"/>
 	</path>
 	<path id="EAR Libraries.libraryclasspath"/>
 	<path id="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath">
@@ -179,7 +365,7 @@
 		<pathelement location="WebContent/WEB-INF/lib/jna-4.1.0.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/jna-platform-4.1.0.jar"/>
 	</path>
-	<path id="scadabr-1.1.0-RC.classpath">
+	<path id="ScadaLTS.classpath">
 		<pathelement location="build/classes"/>
 		<path refid="Web App Libraries.libraryclasspath"/>
 		<path refid="EAR Libraries.libraryclasspath"/>
@@ -199,138 +385,15 @@
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
 	</path>
-	<target name="update-static-web-dependecy" description="Update static web dependency">
-	  <exec dir="WebContent/resources/app" executable="bower">
-	    <arg  value="update"/>
-	  </exec>
-	</target>
-	<target name="init">
-		<mkdir dir="build/classes"/>
-		<copy includeemptydirs="false" todir="build/classes">
-			<fileset dir="src">
-				<exclude name="**/*.launch"/>
-				<exclude name="**/*.xtend"/>
-				<exclude name="**/*.java"/>
-			</fileset>
-		</copy>
-		<copy includeemptydirs="false" todir="build/classes">
-			<fileset dir="test">
-				<exclude name="**/*.launch"/>
-				<exclude name="**/*.xtend"/>
-				<exclude name="**/*.java"/>
-			</fileset>
-		</copy>
-	</target>
-	<target name="clean">
-		<delete dir="build/classes"/>
-	</target>
-	<target depends="clean" name="cleanall"/>
-	<target depends="build-subprojects,build-project" name="build"/>
-	<target name="build-subprojects"/>
-	<target depends="init" name="build-project">
-		<echo message="${ant.project.name}: ${ant.file}"/>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
-			<src path="src"/>
-			<src path="test"/>
-			<classpath refid="scadabr-1.1.0-RC.classpath"/>
-		</javac>
-	</target>
 
-	<target name="new-ui-dependency">
-		<exec dir="./ScadaLTS-UI-1" executable="npm">
-			<arg value="install"/>
-		</exec>
-	</target>
-
-	<target name="new-ui" depends="new-ui-dependency">
-		<exec dir="./ScadaLTS-UI-1" executable="npm">
-			<arg value="run"/>
-			<arg value="build"/>
-		</exec>
-	</target>
-
-	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-	<target name="war" description="Bundles the application as a WAR file" depends="clean, build, new-ui">
-
-		<delete dir="WebContent/resources/new-ui"></delete>
-		<mkdir dir="WebContent/resources/new-ui"></mkdir>
-		<mkdir dir="WebContent/resources/new-ui/css"></mkdir>
-		<mkdir dir="WebContent/resources/new-ui/js"></mkdir>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css">
-			<fileset dir="ScadaLTS-UI-1/dist/static/css">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="app.*.css" to="app.css"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="app.*.js" to="app.js"/>
-
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="vendor.*.js" to="vendor.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="manifest.*.js" to="manifest.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="vendor.*.js.map" to="vendor.js.map"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="manifest.*.js.map" to="manifest.js.map"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="app.*.js.map" to="app.js.map"/>
-
-		</copy>
-
-
-		<mkdir dir="WebContent/WEB-INF/classes"/>
-		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
-			<fileset dir="build/classes">
-				<include name="**/*.class"/>
-			</fileset>
-		</copy>
-
-
-		<war destfile="ScadaBR.war"
-              	        basedir="WebContent"
-              	        needxmlfile="false">
-		</war>
-	</target>
-	
 	<target name="junit">
 		
 		    <junit printsummary="yes" haltonfailure="no">
 		    
 		    <formatter type="plain" usefile="false" />
- 
-		    <classpath refid="scadabr-1.1.0-RC.classpath">
-		        
+
+		    <classpath refid="ScadaLTS.classpath">
+
 		    </classpath>
 			
 		    <!--
@@ -386,20 +449,5 @@
 		    	
 		  </junit>
 	</target>
-	
-	<target name="war_config_test" description="Bundles the application as a WAR file with config test" depends="clean, build, junit">
-		<mkdir dir="WebContent/WEB-INF/classes"/>
-		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
-			<fileset dir="build/classes">
-				<include name="**/*.class"/>
-				<include name="**/*.properties"/>
-			</fileset>
-		</copy>
 
-		<war destfile="ScadaBR.war"
-	           	        basedir="WebContent"
-	           	        needxmlfile="false">
-		</war>
-	</target>
-	
 </project>
