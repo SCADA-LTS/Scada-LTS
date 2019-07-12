@@ -8,11 +8,11 @@ import java.util.ListIterator;
 
 import org.scada_lts.mango.service.ServiceInstances;
 import com.serotonin.mango.db.dao.BaseDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
-import com.serotonin.mango.db.dao.WatchListDao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.UserService;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.WatchListService;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -47,9 +47,9 @@ public class UsersProfileDao extends BaseDao {
 
 	private static final String PROFILES_DELETE = "delete from usersProfiles where id = (?)";
 
-	private WatchListDao watchlistDao = new WatchListDao();
-	private ViewDao viewDao = new ViewDao();
-	private UserDao userDao = new UserDao();
+	private WatchListService watchListService = new WatchListService();
+	private ViewService viewService = ServiceInstances.ViewService;
+	private UserService userService = ServiceInstances.UserService;
 
 	public List<UsersProfileVO> getUsersProfiles() {
 		if (currentProfileList == null) {
@@ -443,12 +443,12 @@ public class UsersProfileDao extends BaseDao {
 		user.resetUserProfile();
 	}
 
-	public void setWatchlistDao(WatchListDao dao) {
-		this.watchlistDao = dao;
+	public void setWatchListService(WatchListService service) {
+		this.watchListService = service;
 	}
 
-	public void setViewDao(ViewDao dao) {
-		this.viewDao = dao;
+	public void setViewService(ViewService service) {
+		this.viewService = service;
 	}
 
 	public boolean userProfileExists(String xid) {

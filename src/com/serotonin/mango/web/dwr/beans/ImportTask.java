@@ -24,6 +24,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import br.org.scadabr.api.exception.DAOException;
+import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
 import br.org.scadabr.vo.importer.UsersProfileImporter;
 import br.org.scadabr.vo.scripting.ScriptVO;
@@ -978,7 +979,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(XID))
 			response.addGenericMessage("emport.script.xid");
 		else {
-			ScriptVO vo = ServiceInstances.ScriptService.getScript(XID);
+			ScriptVO vo = new ScriptDao().getScript(XID);
 			if (vo == null) {
 
 				ScriptVO.Type type = ScriptVO.Type.valueOfIgnoreCase( script.getString("type") );
@@ -999,7 +1000,7 @@ public class ImportTask extends ProgressiveTask {
 
 				else {
 					// Sweet. Save it.
-					ServiceInstances.ScriptService.saveScript(vo);
+					new ScriptDao().saveScript(vo);
 					addSuccessMessage( vo.isNew() , "emport.script.prefix", XID);
 				}
 			} catch (LocalizableJsonException e) {

@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import br.org.scadabr.db.dao.ScriptDao;
 import org.scada_lts.mango.service.ServiceInstances;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
@@ -135,7 +136,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<ScriptVO<?>> getScripts() {
-		return ServiceInstances.ScriptService.getScripts();
+		return new ScriptDao().getScripts();
 	}
 
 	@MethodFilter
@@ -928,7 +929,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	public boolean executeScript(String xid) {
-		ScriptVO<?> script = ServiceInstances.ScriptService.getScript(xid);
+		ScriptVO<?> script = new ScriptDao().getScript(xid);
 
 		try {
 			if (script != null) {

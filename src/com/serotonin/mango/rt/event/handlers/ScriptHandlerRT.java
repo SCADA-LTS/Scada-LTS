@@ -2,6 +2,7 @@ package com.serotonin.mango.rt.event.handlers;
 
 import javax.script.ScriptException;
 
+import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
 import org.scada_lts.mango.service.ServiceInstances;
@@ -16,7 +17,7 @@ public class ScriptHandlerRT extends EventHandlerRT {
 
 	@Override
 	public void eventInactive(EventInstance evt) {
-		ScriptVO<?> script = ServiceInstances.ScriptService.getScript(vo
+		ScriptVO<?> script = new ScriptDao().getScript(vo
 				.getInactiveScriptCommand());
 		if (script != null) {
 			try {
@@ -29,7 +30,7 @@ public class ScriptHandlerRT extends EventHandlerRT {
 
 	@Override
 	public void eventRaised(EventInstance evt) {
-		ScriptVO<?> script = ServiceInstances.ScriptService.getScript(vo
+		ScriptVO<?> script = new ScriptDao().getScript(vo
 				.getActiveScriptCommand());
 		if (script != null) {
 			try {

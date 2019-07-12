@@ -1,6 +1,6 @@
 package org.scada_lts.mango.service;
 
-import br.org.scadabr.db.dao.FlexProjectDao;
+//import br.org.scadabr.db.dao.FlexProjectDao;
 import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
 import com.serotonin.util.SerializationHelper;
@@ -35,7 +35,7 @@ class PreparedStatementsCommon {
             vo.setId(id);
 
         } catch (SQLException ex) {
-            Logger.getLogger(FlexProjectDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FlexProjectService.class.getName()).log(Level.SEVERE, null, ex);
             vo.setId(0);
         }
     }

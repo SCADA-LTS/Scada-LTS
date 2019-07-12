@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import org.scada_lts.mango.service.FlexProjectService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -56,7 +57,7 @@ public class ScriptDao extends BaseDao {
                         vo.setId(id);
                         
                     } catch (SQLException ex) {
-                        Logger.getLogger(FlexProjectDao.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FlexProjectService.class.getName()).log(Level.SEVERE, null, ex);
                         vo.setId(0);
                     }
                 }

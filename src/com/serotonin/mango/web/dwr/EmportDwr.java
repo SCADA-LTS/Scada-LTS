@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import br.org.scadabr.db.dao.ScriptDao;
+import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
 import br.org.scadabr.vo.exporter.util.PointValueJSONWrapper;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
@@ -138,7 +140,7 @@ public class EmportDwr extends BaseDwr {
 					ServiceInstances.MaintenanceEventService.getMaintenanceEvents());
 
 		if (scripts)
-			data.put(SCRIPTS, ServiceInstances.ScriptService.getScripts());
+			data.put(SCRIPTS, new ScriptDao().getScripts());
 		if (pointValues) {
 			List<PointValueJSONWrapper> allWrappedValues = new ArrayList<PointValueJSONWrapper>();
 
@@ -157,7 +159,7 @@ public class EmportDwr extends BaseDwr {
 			data.put(SYSTEM_SETTINGS, list);
 		}
 		if (usersProfiles) {
-			data.put(USERS_PROFILES, ServiceInstances.UsersProfileService.getUsersProfiles());
+			data.put(USERS_PROFILES, new UsersProfileDao().getUsersProfiles());
 		}
 
 		JsonWriter writer = new JsonWriter();
