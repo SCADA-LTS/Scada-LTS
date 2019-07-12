@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import br.org.scadabr.api.exception.DAOException;
+import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
@@ -55,14 +56,14 @@ public class UsersProfileImporter {
 
 		createOrUpdateProfile(newProfile);
 
-		UsersProfileVO savedProfile = ServiceInstances.UsersProfileService
+		UsersProfileVO savedProfile = new UsersProfileDao()
 				.getUserProfileByXid(newProfile.getXid());
 
 		for (User user : getUsers(profileJson)) {
 			copyUsersOldAdditionalPermissions(user, savedProfile);
 			savedProfile.apply(user);
 			ServiceInstances.UserService.saveUser(user);
-			ServiceInstances.UsersProfileService.updateUsersProfile(savedProfile);
+			new UsersProfileDao().updateUsersProfile(savedProfile);
 			restoreUsersOldAdditionalPermissions(user, savedProfile);
 		}
 
@@ -71,13 +72,13 @@ public class UsersProfileImporter {
 	private void createOrUpdateProfile(UsersProfileVO profile)
 			throws DAOException {
 
-		if (ServiceInstances.UsersProfileService.userProfileExists(profile.getXid())) {
-			UsersProfileVO savedProfile = ServiceInstances.UsersProfileService
+		if (new UsersProfileDao().userProfileExists(profile.getXid())) {
+			UsersProfileVO savedProfile = new UsersProfileDao()
 					.getUserProfileByXid(profile.getXid());
 			profile.setId(savedProfile.getId());
-			ServiceInstances.UsersProfileService.updateProfile(profile);
+			new UsersProfileDao().updateProfile(profile);
 		} else {
-			ServiceInstances.UsersProfileService.saveUsersProfileWithoutNameConstraint(profile);
+			new UsersProfileDao().saveUsersProfileWithoutNameConstraint(profile);
 		}
 
 	}

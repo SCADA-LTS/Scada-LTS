@@ -96,7 +96,7 @@ public class UsersProfilesDwr {
 		if (id == Common.NEW_ID)
 			profile = new UsersProfileVO();
 		else
-			profile = ServiceInstances.UsersProfileService.getUserProfileById(id);
+			profile = new UsersProfileDao().getUserProfileById(id);
 
 		profile.setName(name);
 		profile.setDataSourcePermissions(dataSourcePermissions);
@@ -107,7 +107,7 @@ public class UsersProfilesDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		try {
-			ServiceInstances.UsersProfileService.saveUsersProfile(profile);
+			new UsersProfileDao().saveUsersProfile(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
 					"usersProfiles.validate.nameUnique"));
@@ -124,7 +124,7 @@ public class UsersProfilesDwr {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 		try {
-			ServiceInstances.UsersProfileService.deleteUserProfile(profileId);
+			new UsersProfileDao().deleteUserProfile(profileId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

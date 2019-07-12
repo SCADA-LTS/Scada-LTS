@@ -34,7 +34,7 @@ public class ServiceInstances {
     public static final ViewService ViewService = new ViewService();
     public static final FlexProjectService FlexProjectService = new FlexProjectService();
     public static final UserService UserService = new UserService();
-    public static final UsersProfileService UsersProfileService = new UsersProfileService();
+    //public static final UsersProfileService UsersProfileService = new UsersProfileService();
     public static final ScheduledEventService ScheduledEventService = new ScheduledEventService();
     public static final ReportService ReportService = new ReportService();
     public static final PublisherService PublisherService = new PublisherService();
@@ -45,6 +45,6 @@ public class ServiceInstances {
     public static final EventService EventService = new EventService();
     public static final DataSourceService DataSourceService = new DataSourceService();
     public static final DataPointService DataPointService = new DataPointService();
-    public static final ScriptService ScriptService = new ScriptService();
+    //public static final ScriptService ScriptService = new ScriptService();
 
 }
