@@ -18,22 +18,20 @@
  */
 package com.serotonin.mango.rt.dataSource.snmp;
 
+import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.util.StringUtils;
+import org.snmp4j.*;
+import org.snmp4j.mp.*;
+import org.snmp4j.smi.UdpAddress;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.util.MultiThreadedMessageDispatcher;
+import org.snmp4j.util.ThreadPool;
+import rpc.core.Port;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.snmp4j.CommandResponder;
-import org.snmp4j.CommandResponderEvent;
-import org.snmp4j.PDU;
-import org.snmp4j.PDUv1;
-import org.snmp4j.Snmp;
-import org.snmp4j.mp.CounterSupport;
-import org.snmp4j.mp.DefaultCounterListener;
-import org.snmp4j.smi.UdpAddress;
-import org.snmp4j.transport.DefaultUdpTransportMapping;
-
-import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.util.StringUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -46,7 +44,10 @@ public class SnmpTrapRouter {
             CounterSupport.getInstance().addCounterListener(new DefaultCounterListener());
             instance = new SnmpTrapRouter();
         }
-        instance.addDataSourceImpl(ds);
+
+        if (ds.getTrapPort() > 0) {
+            instance.addDataSourceImpl(ds);
+        }
     }
 
     public synchronized static void removeDataSource(SnmpDataSourceRT ds) {
@@ -54,47 +55,40 @@ public class SnmpTrapRouter {
             instance.removeDataSourceImpl(ds);
     }
 
-    private final List<PortListener> portListeners = new LinkedList<PortListener>();
+    private final List<SnmpDataSourceTrapListener> portListeners = new LinkedList<SnmpDataSourceTrapListener>();
 
     private void addDataSourceImpl(SnmpDataSourceRT ds) throws IOException {
-        PortListener l = getPortListener(ds.getTrapPort());
+        SnmpDataSourceTrapListener l = getPortListener(ds);
         if (l == null) {
-            l = new PortListener(ds.getTrapPort());
+            l = new SnmpDataSourceTrapListener(ds);
             portListeners.add(l);
         }
-        l.addDataSource(ds);
+        l.setupTrapMessageProcessing(ds);
     }
 
     private void removeDataSourceImpl(SnmpDataSourceRT ds) {
-        PortListener l = getPortListener(ds.getTrapPort());
+        SnmpDataSourceTrapListener l = getPortListener(ds);
         if (l != null) {
-            l.removeDataSource(ds);
-            if (l.dataSources.size() == 0) {
-                l.close();
-                portListeners.remove(l);
-            }
+            l.close();
+            portListeners.remove(l);
         }
     }
 
-    private PortListener getPortListener(int port) {
-        for (PortListener l : portListeners) {
-            if (l.port == port)
+    private SnmpDataSourceTrapListener getPortListener(SnmpDataSourceRT dataSource) {
+        for (SnmpDataSourceTrapListener l : portListeners) {
+            if (l.dataSource == dataSource)
                 return l;
         }
         return null;
     }
 
-    private class PortListener implements CommandResponder {
-        private final Snmp snmp;
-        final int port;
-        final List<SnmpDataSourceRT> dataSources = new LinkedList<SnmpDataSourceRT>();
+    private class SnmpDataSourceTrapListener implements CommandResponder {
 
-        PortListener(int port) throws IOException {
-            this.port = port;
+        final SnmpDataSourceRT dataSource;
+        Snmp snmp;
 
-            snmp = new Snmp(new DefaultUdpTransportMapping(new UdpAddress("0.0.0.0/" + port)));
-            snmp.addCommandResponder(this);
-            snmp.listen();
+        SnmpDataSourceTrapListener(SnmpDataSourceRT ds) {
+            this.dataSource = ds;
         }
 
         public synchronized void processPdu(CommandResponderEvent evt) {
@@ -110,22 +104,33 @@ public class SnmpTrapRouter {
                 if (command instanceof PDUv1)
                     localAddress = ((PDUv1) command).getAgentAddress().toString();
 
-                // Look for the peer in the data source list.
-                for (SnmpDataSourceRT ds : dataSources) {
-                    if (ds.getAddress().equals(peer)) {
-                        if (StringUtils.isEmpty(ds.getLocalAddress()) || localAddress.equals(ds.getLocalAddress()))
-                            ds.receivedTrap(command);
+                if (dataSource.getAddress().equals(peer)) {
+                    if (StringUtils.isEmpty(dataSource.getLocalAddress()) || localAddress.equals(dataSource.getLocalAddress())) {
+                        dataSource.receivedTrap(command);
                     }
                 }
+
             }
         }
 
-        synchronized void addDataSource(SnmpDataSourceRT ds) {
-            dataSources.add(ds);
-        }
+        private synchronized void setupTrapMessageProcessing(SnmpDataSourceRT ds) throws IOException {
 
-        synchronized void removeDataSource(SnmpDataSourceRT ds) {
-            dataSources.remove(ds);
+            ThreadPool tp = ThreadPool.create("TrapManager", 2);
+            MultiThreadedMessageDispatcher dispatcher = new MultiThreadedMessageDispatcher(tp, new MessageDispatcherImpl());
+            UdpAddress trapListenAddress = new UdpAddress("0.0.0.0/" + ds.getTrapPort());
+
+            snmp = new Snmp(dispatcher, new DefaultUdpTransportMapping(trapListenAddress));
+            if(ds.getVersion() instanceof Version3) {
+                snmp.getMessageDispatcher().addMessageProcessingModel(new MPv3());
+                ds.getVersion().addUser(snmp);
+            } else if (ds.getVersion() instanceof Version2c) {
+                snmp.getMessageDispatcher().addMessageProcessingModel(new MPv2c());
+            } else {
+                snmp.getMessageDispatcher().addMessageProcessingModel(new MPv1());
+            }
+            snmp.listen();
+            snmp.addCommandResponder(this);
+
         }
 
         void close() {

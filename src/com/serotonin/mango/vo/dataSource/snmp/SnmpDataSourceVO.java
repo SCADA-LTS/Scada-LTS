@@ -57,6 +57,10 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         String NONE = "";
         String MD5 = "MD5";
         String SHA = "SHA";
+        String HMAC128SHA224 = "HMAC128SHA224";
+        String HMAC192SHA256 = "HMAC192SHA256";
+        String HMAC256SHA384 = "HMAC256SHA384";
+        String HMAC384SHA512 = "HMAC384SHA512";
     }
 
     public interface PrivProtocols {
@@ -65,6 +69,9 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         String AES128 = "AES128";
         String AES192 = "AES192";
         String AES256 = "AES256";
+        String DES3 = "3DES";
+        String AES192With3DES = "AES192With3DES";
+        String AES256With3DES = "AES256With3DES";
     }
 
     @Override
@@ -296,7 +303,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         if (port <= 0 || port > 65535)
             response.addContextualMessage("port", "validate.invalidValue");
 
-        if (trapPort <= 0 || trapPort > 65535)
+        if (trapPort < 0 || trapPort > 65535)
             response.addContextualMessage("trapPort", "validate.invalidValue");
 
         if (StringUtils.isEmpty(host))

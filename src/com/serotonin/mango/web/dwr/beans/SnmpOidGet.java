@@ -18,17 +18,16 @@
  */
 package com.serotonin.mango.web.dwr.beans;
 
-import java.io.IOException;
-import java.util.ResourceBundle;
-
+import com.serotonin.mango.rt.dataSource.snmp.Version;
+import com.serotonin.web.i18n.I18NUtils;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
-import com.serotonin.mango.rt.dataSource.snmp.Version;
-import com.serotonin.web.i18n.I18NUtils;
+import java.io.IOException;
+import java.util.ResourceBundle;
 
 /**
  * @author Matthew Lohbihler
@@ -64,6 +63,7 @@ public class SnmpOidGet extends Thread implements TestingUtility {
             version.addUser(snmp);
             snmp.listen();
 
+            String responseString;
             PDU pdu = version.createPDU();
             pdu.setType(PDU.GET);
             pdu.add(new VariableBinding(new OID(oid)));
@@ -73,6 +73,7 @@ public class SnmpOidGet extends Thread implements TestingUtility {
                 result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
             else
                 result = response.get(0).getVariable().toString();
+
         }
         catch (IOException e) {
             result = e.getMessage();
@@ -95,4 +96,5 @@ public class SnmpOidGet extends Thread implements TestingUtility {
     public void cancel() {
         // no op
     }
+
 }
