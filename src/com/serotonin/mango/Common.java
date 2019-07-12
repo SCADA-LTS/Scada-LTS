@@ -543,4 +543,12 @@ public class Common {
 		return prefix + StringUtils.generateRandomString(6, "0123456789");
 	}
 
+	// To bypass some ambiguity
+	private static User user;
+	public static User getStaticUser() {
+			return user;
+	}
+	public static void setUser(User user) {
+		Common.user = user;
+	}
 }

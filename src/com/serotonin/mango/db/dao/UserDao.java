@@ -156,7 +156,7 @@ public class UserDao extends BaseDao {
 //			+ "  username, password, email, phone, admin, disabled, homeUrl, receiveAlarmEmails, receiveOwnAuditEvents) "
 //			+ "values (?,?,?,?,?,?,?,?,?)";
 
-	void insertUser(User user) {
+	public void insertUser(User user) {
 //		try {
 //			int id;
 //			if (Common.getEnvironmentProfile().getString("db.type")
@@ -219,7 +219,7 @@ public class UserDao extends BaseDao {
 //			+ "  username=?, password=?, email=?, phone=?, admin=?, disabled=?, homeUrl=?, receiveAlarmEmails=?, "
 //			+ "  receiveOwnAuditEvents=? " + "where id=?";
 
-	void updateUser(User user) {
+	public void updateUser(User user) {
 //		if (user.getPhone() == null)
 //			user.setPhone("");
 //		if (user.getHomeUrl() == null)

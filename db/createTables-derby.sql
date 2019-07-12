@@ -41,7 +41,9 @@ create table users (
   selectedWatchList int,
   homeUrl varchar(255),
   receiveAlarmEmails int not null,
-  receiveOwnAuditEvents char(1) not null
+  receiveOwnAuditEvents char(1) not null,
+  timezone varchar(60) not null,
+  zone varchar(40) not null
 );
 alter table users add constraint usersPk primary key (id);
 
