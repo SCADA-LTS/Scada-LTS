@@ -42,7 +42,7 @@ public class UsersProfileService extends BaseService {
 
 	private static final String PROFILES_DELETE = "delete from usersProfiles where id = (?)";
 
-	private WatchListService watchListService = new WatchListService();
+	private WatchListService watchListService = ServiceInstances.WatchListService;
 	private ViewService viewService = ServiceInstances.ViewService;
 	private UserService userService = ServiceInstances.UserService;
 
