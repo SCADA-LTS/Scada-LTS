@@ -219,33 +219,13 @@ public class ReportService implements MangoReport {
 
 			// Insert the reportInstanceUserComments records for the point.
 			if (instance.isIncludeUserComments()) {
-				insertIntoReportInstanceUserComments(instance,timestampSql,reportPointId,point,timestampParams);
-				/*String commentSQL = "insert into reportInstanceUserComments " //
-						+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
-						+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_POINT + ", " //
-						+ reportPointId + ", uc.ts, uc.commentText " //
-						+ "  from userComments uc " //
-						+ "    left join users u on uc.userId=u.id " //
-						+ "  where uc.commentType=" + UserComment.TYPE_POINT //
-						+ "    and uc.typeKey=? ";
-
-				commentSQL += StringUtils.replaceMacro(timestampSql, "field", "uc.ts");
-				DAO.getInstance().getJdbcTemp().update(commentSQL, appendParameters(timestampParams, point.getId()));*/
+				insertIntoReportInstanceUserCommentsForPoint(instance,timestampSql,reportPointId,point,timestampParams);
 			}
 		}
 
 		// Insert the reportInstanceUserComments records for the selected events
 		if (instance.isIncludeUserComments()) {
-			String commentSQL = "insert into reportInstanceUserComments " //
-					+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
-					+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_EVENT + ", uc.typeKey, " //
-					+ "    uc.ts, uc.commentText " //
-					+ "  from userComments uc " //
-					+ "    left join users u on uc.userId=u.id " //
-					+ "    join reportInstanceEvents re on re.eventId=uc.typeKey " //
-					+ "  where uc.commentType=" + UserComment.TYPE_EVENT //
-					+ "    and re.reportInstanceId=? ";
-			DAO.getInstance().getJdbcTemp().update(commentSQL, new Object[] { instance.getId() });
+			insertIntoReportInstanceUserCommentsForSelectedEvents(instance);
 		}
 
 		// If the report had undefined start or end times, update them with values from the data.
@@ -254,7 +234,20 @@ public class ReportService implements MangoReport {
 		}
 		return count;
 	}
-	private void insertIntoReportInstanceUserComments(
+	private void insertIntoReportInstanceUserCommentsForSelectedEvents(
+			ReportInstance instance) {
+		String commentSQL = "insert into reportInstanceUserComments " //
+				+ "  (reportInstanceId, username, commentType, typeKey, ts, commentText)" //
+				+ "  select " + instance.getId() + ", u.username, " + UserComment.TYPE_EVENT + ", uc.typeKey, " //
+				+ "    uc.ts, uc.commentText " //
+				+ "  from userComments uc " //
+				+ "    left join users u on uc.userId=u.id " //
+				+ "    join reportInstanceEvents re on re.eventId=uc.typeKey " //
+				+ "  where uc.commentType=" + UserComment.TYPE_EVENT //
+				+ "    and re.reportInstanceId=? ";
+		DAO.getInstance().getJdbcTemp().update(commentSQL, new Object[] { instance.getId() });
+	}
+	private void insertIntoReportInstanceUserCommentsForPoint(
 			ReportInstance instance,
 			String timestampSql,
 			int reportPointId,

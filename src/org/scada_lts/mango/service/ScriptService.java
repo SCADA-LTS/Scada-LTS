@@ -21,8 +21,9 @@ import java.sql.PreparedStatement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.scada_lts.mango.service.ScriptService_Sql_Commands.*;
+
 public class ScriptService extends BaseService {
-	private static final String SCRIPT_SELECT = "select id, xid, name, script, userId, data from scripts ";
 
 	public void saveScript(final ScriptVO<?> vo) {
 		// Decide whether to insert or update.
@@ -61,7 +62,7 @@ public class ScriptService extends BaseService {
                 }
                 else{
                     vo.setId(doInsert(
-                                                    "insert into scripts (xid, name,  script, userId, data) values (?,?,?,?,?)",
+							SCRIPT_INSERT,
                                                     new Object[] { vo.getXid(), vo.getName(),
                                                                     vo.getScript(), vo.getUserId(),
                                                                     SerializationHelper.writeObject(vo) },
@@ -75,7 +76,7 @@ public class ScriptService extends BaseService {
 		ScriptVO<?> old = getScript(vo.getId());
 		ejt
 				.update(
-						"update scripts set xid=?, name=?, script=?, userId=?, data=? where id=?",
+						SCRIPT_UPDATE,
 						new Object[] { vo.getXid(), vo.getName(),
 								vo.getScript(), vo.getUserId(),
 								SerializationHelper.writeObject(vo), vo.getId() },
@@ -93,7 +94,7 @@ public class ScriptService extends BaseService {
 						@Override
 						protected void doInTransactionWithoutResult(
 								TransactionStatus status) {
-							ejt2.update("delete from scripts where id=?",
+							ejt2.update(SCRIPT_DELETE,
 									new Object[] { scriptId });
 						}
 					});

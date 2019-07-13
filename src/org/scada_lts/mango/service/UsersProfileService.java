@@ -24,23 +24,12 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 
+import static org.scada_lts.mango.service.UsersProfileService_Sql_Commands.*;
+
 public class UsersProfileService extends BaseService {
 	public Log LOG = LogFactory.getLog(UsersProfileService.class);
 
 	private static List<UsersProfileVO> currentProfileList = null;
-
-	private static final String PROFILES_SELECT = "select u.id, u.name, u.xid "
-			+ "from usersProfiles u";
-
-	private static final String PROFILES_SELECT_ORDER_BY_NAME = "select u.id, u.name, u.xid "
-			+ "from usersProfiles u order by u.name";
-
-	private static final String PROFILES_INSERT = "insert into usersProfiles (xid, name) values (?, ?)";
-
-	private static final String PROFILES_UPDATE = "update usersProfiles set "
-			+ "  name=? " + "where id=?";
-
-	private static final String PROFILES_DELETE = "delete from usersProfiles where id = (?)";
 
 	private WatchListService watchListService = ServiceInstances.WatchListService;
 	private ViewService viewService = ServiceInstances.ViewService;
@@ -139,8 +128,7 @@ public class UsersProfileService extends BaseService {
 
 	public void updateProfile(UsersProfileVO profile) {
 
-		ejt.update(PROFILES_UPDATE,
-				new Object[] { profile.getName(), profile.getId() });
+		ejt.update(PROFILES_UPDATE,new Object[] { profile.getName(), profile.getId() });
 
 		List<Integer> usersIds = queryForList(USERS_PROFILES_USERS_SELECT
 				+ " where u.userProfileId=?", new Object[] { profile.getId() },
@@ -163,11 +151,11 @@ public class UsersProfileService extends BaseService {
 
 	public void updateUsersProfile(UsersProfileVO profile) {
 		if (profile.retrieveLastAppliedUser() != null) {
-			ejt.update("delete from usersUsersProfiles where userId=?",
+			ejt.update(USERSUSERSPROFILES_DELETE_WHERE_USERID,
 					new Object[] { profile.retrieveLastAppliedUser().getId() });
 
 			ejt.update(
-					"insert into usersUsersProfiles (userProfileId, userId) values (?,?)",
+                    USERSUSERSPROFILES_INSERT,
 					new Object[] { profile.getId(),
 							profile.retrieveLastAppliedUser().getId() });
 		}
@@ -217,13 +205,6 @@ public class UsersProfileService extends BaseService {
 			return edt;
 		}
 	}
-
-	private static final String SELECT_DATA_SOURCE_PERMISSIONS = "select dataSourceId from dataSourceUsersProfiles where userProfileId=?";
-	private static final String SELECT_DATA_POINT_PERMISSIONS = "select dataPointId, permission from dataPointUsersProfiles where userProfileId=?";
-	private static final String SELECT_WATCHLIST_PERMISSIONS = "select watchlistId, permission from watchListUsersProfiles where userProfileId=?";
-	private static final String SELECT_VIEW_PERMISSIONS = "select viewId, permission from viewUsersProfiles where userProfileId=?";
-	private static final String USERS_PROFILES_SELECT = "select userProfileId, userId from usersUsersProfiles u";
-	private static final String USERS_PROFILES_USERS_SELECT = "select userId from usersUsersProfiles u";
 
 	private void populateUserProfilePermissions(UsersProfileVO profile) {
 		if (profile == null) {
@@ -309,17 +290,17 @@ public class UsersProfileService extends BaseService {
 	}
 
 	private void saveRelationalData(final UsersProfileVO usersProfile) {
-		ejt.update("delete from dataSourceUsersProfiles where userProfileId=?",
+		ejt.update(DATASOURCEUSERSPROFILES_DELETE,
 				new Object[] { usersProfile.getId() });
-		ejt.update("delete from dataPointUsersProfiles where userProfileId=?",
+		ejt.update(DATAPOINTUSERSPROFILES_DELETE,
 				new Object[] { usersProfile.getId() });
-		ejt.update("delete from watchListUsersProfiles where userProfileId=?",
+		ejt.update(WATCHLISTUSERSPROFILES_DELETE,
 				new Object[] { usersProfile.getId() });
-		ejt.update("delete from viewUsersProfiles where userProfileId=?",
+		ejt.update(VIEWUSERSPROFILES_DELETE,
 				new Object[] { usersProfile.getId() });
 
 		ejt.batchUpdate(
-				"insert into dataSourceUsersProfiles (dataSourceId, userProfileId) values (?,?)",
+                DATASOURCEUSERSPROFILES_INSERT,
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
 						return usersProfile.getDataSourcePermissions().size();
@@ -333,7 +314,7 @@ public class UsersProfileService extends BaseService {
 					}
 				});
 		ejt.batchUpdate(
-				"insert into dataPointUsersProfiles (dataPointId, userProfileId, permission) values (?,?,?)",
+                DATAPOINTUSERSPROFILES_INSERT,
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
 						return usersProfile.getDataPointPermissions().size();
@@ -350,7 +331,7 @@ public class UsersProfileService extends BaseService {
 				});
 
 		ejt.batchUpdate(
-				"insert into watchListUsersProfiles (watchlistId, userProfileId, permission) values (?,?,?)",
+                WATCHLISTUSERSPROFILES_INSERT,
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
 						return usersProfile.getWatchlistPermissions().size();
@@ -367,7 +348,7 @@ public class UsersProfileService extends BaseService {
 				});
 
 		ejt.batchUpdate(
-				"insert into viewUsersProfiles (viewId, userProfileId, permission) values (?,?,?)",
+                VIEWUSERSPROFILES_INSERT,
 				new BatchPreparedStatementSetter() {
 					public int getBatchSize() {
 						return usersProfile.getViewPermissions().size();
@@ -405,7 +386,7 @@ public class UsersProfileService extends BaseService {
 	}
 
 	public void grantUserAdminProfile(User user) {
-		ejt.update("delete from usersUsersProfiles where userId=?",
+		ejt.update(USERSUSERSPROFILES_DELETE,
 				new Object[] { user.getId() });
 
 		// Add user to watchLists
@@ -422,7 +403,7 @@ public class UsersProfileService extends BaseService {
 	}
 
 	public void resetUserProfile(User user) {
-		ejt.update("delete from usersUsersProfiles where userId=?",
+		ejt.update(USERSUSERSPROFILES_DELETE,
 				new Object[] { user.getId() });
 
 		// Remove user from watchLists

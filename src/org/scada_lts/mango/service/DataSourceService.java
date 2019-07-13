@@ -47,6 +47,9 @@ import java.sql.Types;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static org.scada_lts.mango.service.DataSourceService_Sql_Commands.DATASOURCES_SELECT;
+import static org.scada_lts.mango.service.DataSourceService_Sql_Commands.DATASOURCES_UPDATE;
+
 /**
  * Service for DataSourceDAO
  *
@@ -57,7 +60,7 @@ public class DataSourceService implements MangoDataSource {
 	@Override
 	public Object getPersistentData(int id) {
 
-		return DAO.getInstance().getJdbcTemp().	query("select rtdata from dataSources where id=?",
+		return DAO.getInstance().getJdbcTemp().	query(DATASOURCES_SELECT,
 				  new Object[] {
 		id
 	},
@@ -91,7 +94,7 @@ public class DataSourceService implements MangoDataSource {
 }
 	public void savePersistentData(int id, Object data) {
 		DAO.getInstance().getJdbcTemp().update(
-				"update dataSources set rtdata=? where id=?",
+				DATASOURCES_UPDATE,
 				new Object[] { SerializationHelper.writeObject(data), id },
 				new int[] {
 						Common.getEnvironmentProfile().getString("db.type")
