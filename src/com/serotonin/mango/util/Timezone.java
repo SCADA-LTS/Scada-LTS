@@ -82,9 +82,12 @@ public class Timezone{
 	}
 
 	public static  TimeZone createTimezone(String id) {
-
+		String myIdTimeZone = id;
+		if (id == null || (id != null && id.equals(""))) {
+			myIdTimeZone = getTimezoneSystem();
+		}
 		TimeZone timezone = TimeZone.getDefault();
-		timezone.setID(id);
+		timezone.setID(myIdTimeZone);
 		return timezone;
 
 	}
