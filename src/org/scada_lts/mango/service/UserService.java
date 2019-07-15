@@ -80,7 +80,24 @@ public class UserService implements MangoUser {
 			populateUserPermissions(user);
 		}
 	}
+	
+	// Timezone service
+	public String getUserTimezone(int id) {
+		return userDAO.getUserTimezone(id);
+	}
 
+	public void updateUserTimezone(int userId, String timezone) {
+		userDAO.updateUserTimezone(userId, timezone);
+	}
+
+	public String getUserZone(int id) {
+		return userDAO.getUserZone(id);
+	}
+
+	public void updateUserZone(int userId, String zone) {
+		userDAO.updateUserZone(userId, zone);
+	}
+	
 	@Override
 	public void populateUserPermissions(User user) {
 		if (user != null) {

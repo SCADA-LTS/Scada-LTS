@@ -24,6 +24,7 @@ import javax.mail.internet.InternetAddress;
 import com.serotonin.mango.Common;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.web.email.EmailContent;
 import com.serotonin.web.email.EmailSender;
@@ -97,7 +98,7 @@ public class EmailWorkItem implements WorkItem {
                 to += addr.getAddress();
             }
             SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_EMAIL_SEND_FAILURE),
-                    System.currentTimeMillis(), false,
+            		Common.getUser()!=null?Timezone.getTimezoneSystemLong(Common.getUser()):System.currentTimeMillis(), false,
                     new LocalizableMessage("event.email.failure", subject, to, e.getMessage()));
         }
         finally {

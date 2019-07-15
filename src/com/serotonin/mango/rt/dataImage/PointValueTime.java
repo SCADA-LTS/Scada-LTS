@@ -59,7 +59,11 @@ public class PointValueTime implements Serializable, IValueTime,
 	}
 
 	private final MangoValue value;
-	private final long time;
+	private long time;
+
+	public void setTime(long time) {
+		this.time = time;
+	}
 
 	public PointValueTime(MangoValue value, long time) {
 		this.value = value;

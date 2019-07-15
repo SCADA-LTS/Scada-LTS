@@ -33,6 +33,7 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.event.EventHandlerVO;
@@ -179,7 +180,10 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         try {
             String[] toAddrs = addresses.toArray(new String[0]);
             UsedImagesDirective inlineImages = new UsedImagesDirective();
-
+            
+            if(Common.getStaticUser() != null)
+            	evt.setActiveTimestamp(Timezone.getTimezoneUserLong(Common.getStaticUser(), evt.getActiveTimestamp()));
+            
             // Send the email.
             Map<String, Object> model = new HashMap<String, Object>();
             model.put("evt", evt);
