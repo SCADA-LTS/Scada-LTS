@@ -67,7 +67,7 @@
     var pointNames = {};
     var watchlistChangeId = 0;
     
-    var isChartLive = false;
+    // var isChartLive = false;
 
     //amChartVariables
     var chart;
@@ -101,7 +101,7 @@
 
               hide("loadingImg");
               show("treeDiv");
-              document.getElementById("chartContainer").style.height = "auto";
+            //   document.getElementById("chartContainer").style.height = "auto";
 
               addPointNames(rootFolder);
 
@@ -444,113 +444,113 @@
           }
       }
 
-      function showChart(mangoId, event, source) {
-    	  if (isMouseLeaveOrEnter(event, source)) {
-              // Take the data in the chart textarea and put it into the chart layer div
-              $set('p'+ mangoId +'ChartLayer', $get('p'+ mangoId +'Chart'));
-              showMenu('p'+ mangoId +'ChartLayer', 4, 12);
-    	  }
-      }
+    //   function showChart(mangoId, event, source) {
+    // 	  if (isMouseLeaveOrEnter(event, source)) {
+    //           // Take the data in the chart textarea and put it into the chart layer div
+    //           $set('p'+ mangoId +'ChartLayer', $get('p'+ mangoId +'Chart'));
+    //           showMenu('p'+ mangoId +'ChartLayer', 4, 12);
+    // 	  }
+    //   }
 
-      function hideChart(mangoId, event, source) {
-          if (isMouseLeaveOrEnter(event, source))
-        	  hideLayer('p'+ mangoId +'ChartLayer');
-      }
+    //   function hideChart(mangoId, event, source) {
+    //       if (isMouseLeaveOrEnter(event, source))
+    //     	  hideLayer('p'+ mangoId +'ChartLayer');
+    //   }
 
       //
       // Image chart
       //
-      function getImageChart() {
-    	  isChartLive=false;
-        document.getElementById("chartContainer").style.height = "500px";
-    	  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
-          var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
-          var height = dojo.html.getContentBox($("chartContainer")).height - 80;
-    	  height = height < 100 ? 100 : height;
-          startImageFader($("imageChartImg"));
-          WatchListDwr.getImageChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
-        		  $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"),
-        		  $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"),
-        		  width, height, function(data) {
-              $("imageChartDiv").innerHTML = data;
-              stopImageFader($("imageChartImg"));
+    //   function getImageChart() {
+    // 	  isChartLive=false;
+    //     document.getElementById("chartContainer").style.height = "500px";
+    // 	  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
+    //       var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
+    //       var height = dojo.html.getContentBox($("chartContainer")).height - 80;
+    // 	  height = height < 100 ? 100 : height;
+    //       startImageFader($("imageChartImg"));
+    //       WatchListDwr.getImageChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
+    //     		  $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"),
+    //     		  $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"),
+    //     		  width, height, function(data) {
+    //           $("imageChartDiv").innerHTML = data;
+    //           stopImageFader($("imageChartImg"));
 
-              // Make sure the length of the chart doesn't mess up the watch list display. Do async to
-              // make sure the rendering gets done.
-              setTimeout('dojo.widget.manager.getWidgetById("splitContainer").onResized()', 2000);
-          });
-      }
+    //           // Make sure the length of the chart doesn't mess up the watch list display. Do async to
+    //           // make sure the rendering gets done.
+    //           setTimeout('dojo.widget.manager.getWidgetById("splitContainer").onResized()', 2000);
+    //       });
+    //   }
 
-      function getImageChartLive(period) {
-    	  var dataT;
-    	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
-    	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
-    	  height = height < 200 ? 200 : height;
-    	  $("imageChartDiv").height=height;
-    	  var sourcet = "\"chart/"+Date.now()+"_"+period;
-    	  var pointIds = $get("chartCB");
-    	  if(isChartLive){
-          	for (var i=0; i<pointIds.length; i++) {
-          	    if (pointIds[i] == "_TEMPLATE_") {
-          	    }else{
-          	    	sourcet +="_"+pointIds[i];
-          	    }
-          	}
-    	  	sourcet += ".png?w="+width+"&h="+height+"\"";
-    	  	dataT = "<img id=chartTemp src="+sourcet+" onload=\"switchChart()\"/>";
-    	  	$("temp").innerHTML = dataT;
-    	  }
-      }
+    //   function getImageChartLive(period) {
+    // 	  var dataT;
+    // 	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
+    // 	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
+    // 	  height = height < 200 ? 200 : height;
+    // 	  $("imageChartDiv").height=height;
+    // 	  var sourcet = "\"chart/"+Date.now()+"_"+period;
+    // 	  var pointIds = $get("chartCB");
+    // 	  if(isChartLive){
+    //       	for (var i=0; i<pointIds.length; i++) {
+    //       	    if (pointIds[i] == "_TEMPLATE_") {
+    //       	    }else{
+    //       	    	sourcet +="_"+pointIds[i];
+    //       	    }
+    //       	}
+    // 	  	sourcet += ".png?w="+width+"&h="+height+"\"";
+    // 	  	dataT = "<img id=chartTemp src="+sourcet+" onload=\"switchChart()\"/>";
+    // 	  	$("temp").innerHTML = dataT;
+    // 	  }
+    //   }
 
-      function getChartData() {
-    	  var pointIds = getChartPointList();
-    	  if (pointIds.length == 0)
-    		  alert("<fmt:message key="watchlist.noExportables"/>");
-    	  else {
-              startImageFader($("chartDataImg"));
-              WatchListDwr.getChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
-                      $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"),
-                      $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"),
-                      function(data) {
-                  stopImageFader($("chartDataImg"));
-                  window.location = "chartExport/watchListData.csv";
-              });
-    	  }
-      }
+    //   function getChartData() {
+    // 	  var pointIds = getChartPointList();
+    // 	  if (pointIds.length == 0)
+    // 		  alert("<fmt:message key="watchlist.noExportables"/>");
+    // 	  else {
+    //           startImageFader($("chartDataImg"));
+    //           WatchListDwr.getChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
+    //                   $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"),
+    //                   $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"),
+    //                   function(data) {
+    //               stopImageFader($("chartDataImg"));
+    //               window.location = "chartExport/watchListData.csv";
+    //           });
+    // 	  }
+    //   }
 
-      function getChartPointList() {
-          var pointIds = $get("chartCB");
-          for (var i=pointIds.length-1; i>=0; i--) {
-              if (pointIds[i] == "_TEMPLATE_") {
-                  pointIds.splice(i, 1);
-              }
-          }
-          return pointIds;
-      }
+    //   function getChartPointList() {
+    //       var pointIds = $get("chartCB");
+    //       for (var i=pointIds.length-1; i>=0; i--) {
+    //           if (pointIds[i] == "_TEMPLATE_") {
+    //               pointIds.splice(i, 1);
+    //           }
+    //       }
+    //       return pointIds;
+    //   }
 
       // change from static to live
-      function switchChartMode(){
-    	  if(isChartLive){
-    		  isChartLive=false;
-    		  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
-          document.getElementById("imageChartDiv").style.display = "none";
-    	   } else {
-    		  isChartLive=true;
-    		  jQuery("#imageChartLiveImg").attr('src', 'images/control_stop_blue.png');
-    		  getImageChartLive(calculatePeriod());
-          document.getElementById("imageChartDiv").style.display = "table-cell";
-          document.getElementById("chartContainer").style.height = getCookie("chart_container_height")
-    	  }
-      }
+    //   function switchChartMode(){
+    // 	  if(isChartLive){
+    // 		  isChartLive=false;
+    // 		  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
+    //       document.getElementById("imageChartDiv").style.display = "none";
+    // 	   } else {
+    // 		  isChartLive=true;
+    // 		  jQuery("#imageChartLiveImg").attr('src', 'images/control_stop_blue.png');
+    // 		  getImageChartLive(calculatePeriod());
+    //       document.getElementById("imageChartDiv").style.display = "table-cell";
+    //       document.getElementById("chartContainer").style.height = getCookie("chart_container_height")
+    // 	  }
+    //   }
 
-      // insert new (loaded) chart
-      function switchChart(){
-    	  if(isChartLive){
-    	  	var datan = "<img src="+jQuery("#chartTemp").attr('src')+"/>";
-	  	  	$("imageChartDiv").innerHTML = datan;
-	  	  	setTimeout(function(){getImageChartLive(calculatePeriod());}, 2500);
-	  	  }
-      }
+    //   // insert new (loaded) chart
+    //   function switchChart(){
+    // 	  if(isChartLive){
+    // 	  	var datan = "<img src="+jQuery("#chartTemp").attr('src')+"/>";
+	//   	  	$("imageChartDiv").innerHTML = datan;
+	//   	  	setTimeout(function(){getImageChartLive(calculatePeriod());}, 2500);
+	//   	  }
+    //   }
 
       // calculate period for live chart
       function calculatePeriod(){
@@ -1018,7 +1018,7 @@
     </div>
     
 
-    <table width="100%">
+    <!-- <table width="100%">
     
     <tr><td>
       <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden; height: 500px;">
@@ -1038,7 +1038,7 @@
               <tag:img id="imageChartImg" png="control_play_blue" title="watchlist.imageChartButton"
                       onclick="getImageChart()"/>
 <%--               <tag:img id="chartDataImg" png="bullet_down" title="watchlist.chartDataButton" --%>
-<!--                       onclick="getChartData()"/> -->
+<!-<!--                       onclick="getChartData()"/> ->
             </td>
           </tr>
           <tr><td colspan="6" id="imageChartDiv"></td></tr>
@@ -1047,6 +1047,6 @@
       </div>
     </td></tr>
 
-    </table>
+    </table> -->
   </jsp:body>
 </tag:page>
