@@ -80,10 +80,11 @@ after_script:
 - pwd
 - ls
 - docker version
-- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- export PRE_TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
-- export TAG=`sed "s/\//_/g" <<< $PRE_TAG`
-- export IMAGE_NAME=scadalts/scadalts
-- docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
-- docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
-- docker push $IMAGE_NAME:$TAG
+- echo "$TRAVIS_REPO_SLUG"
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (export PRE_TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (export TAG=`sed "s/\//_/g" <<< $PRE_TAG`)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (export IMAGE_NAME=scadalts/scadalts)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker push $IMAGE_NAME:$TAG)
