@@ -80,6 +80,7 @@ after_script:
 - pwd
 - ls
 - docker version
+- echo "$TRAVIS_REPO_SLUG"
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - export PRE_TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
 - export TAG=`sed "s/\//_/g" <<< $PRE_TAG`
