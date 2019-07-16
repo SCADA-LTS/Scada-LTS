@@ -47,65 +47,35 @@
         width:16px;
         height:16px;
     }
-    #snackbar {
-		visibility: hidden;
-		border: 1px solid #39b54a;
-		color: black;
-		background-color: white;
-		width: 50%;
-		text-align: center;
-		font-size: 15px;
-		padding: 8px;
-		position: absolute;
-		left: 25%;
-		bottom: 30px;
-		z-index: 1;
-	}
-	#snackbar.show {
-		visibility: visible;
-		-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-		animation: fadein 0.5s, fadeout 0.5s 2.5s;
-	}
-	@-webkit-keyframes fadein {
-		from {bottom: 0; opacity: 0;} 
-		to {bottom: 30px; opacity: 1;}
-	}
-	@keyframes fadein {
-		from {bottom: 0; opacity: 0;}
-		to {bottom: 30px; opacity: 1;}
-	}
-	#updateTimezone, #close, #remindTimezoneUpdate, #no{
-		font-size: 16px;
-		margin: 2px 5px 2px 5px;
-		cursor: pointer;
-	}
-	#updateTimezone, #remindTimezoneUpdate, #no{
-		text-align: center;
-		text-decoration: none;
-		background-color: white;
-		border: 2px solid #4CAF50;
-	}
-	#close{
-	    text-decoration: none;
-	    position: inherit;
-	    top: -4px;
-	    color: green;
-	    right: 1px;
-	    font-size: 24px;
-	    margin: auto;
     </style>
   </jsp:attribute>
 
   <jsp:body>
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+    
+        
     <script type="text/javascript">
-      dojo.require("dojo.widget.SplitContainer");
-      dojo.require("dojo.widget.ContentPane");
-      mango.view.initWatchlist();
-      mango.share.dwr = WatchListDwr;
-      var owner;
-      var pointNames = {};
-      var watchlistChangeId = 0;
-      var isChartLive = false;
+    const API_NAME = "/ScadaLTS";
+    dojo.require("dojo.widget.SplitContainer");
+    dojo.require("dojo.widget.ContentPane");
+    mango.view.initWatchlist();
+    mango.share.dwr = WatchListDwr;
+    
+    var owner;
+    var pointNames = {};
+    var watchlistChangeId = 0;
+    
+    var isChartLive = false;
+
+    //amChartVariables
+    var chart;
+    var pointStatus = [];
+    var pointPastValues = new Map();
+    var pointNames2 = new Map();
+
+    am4core.ready();
 
       function init() {
           WatchListDwr.init(function(data) {
@@ -584,13 +554,13 @@
       // calculate period for live chart
       function calculatePeriod(){
           let period
-          if(!isNaN($get("prevPeriodCount"))) {
-              period=$get("prevPeriodCount")*1000*60;
+          if(!isNaN($get("chartPeriodValue")) && $get("chartPeriodValue") > 0) {
+              period=$get("chartPeriodValue")*1000*60;
           } else {
               period=1*1000*60;
           }
 
-    	  let type=$get("prevPeriodType");
+    	  let type=$get("chartPeriodType");
 
     	  if(type>2)
 			  period*=60;
@@ -631,6 +601,26 @@
     	    return "";
       }
 
+      var interval;
+      var lastValue = 0;
+
+      function startInterval() {
+          interval = setInterval(function() {
+              jQuery.get("/ScadaLTS/api/point_value/getValue/DP_016767", function(data, status){
+                  data = JSON.parse(data);
+                  if(data.ts != lastValue) {
+                      chart.addData(
+                          {
+                              date: new Date(data.ts),
+                              value: Number(data.value)
+                          }
+                      )
+                      lastValue = data.ts;
+                  }
+              })
+          }, 10000);
+      }
+
       function saveDivHeightsToCookieOnChange(){
     	  if(splitContainerHeight != jQuery("#splitContainer").height()){
     		  setCookie("split_container_height", jQuery("#splitContainer").height());
@@ -641,80 +631,199 @@
     		  chartContainerHeight = jQuery("#chartContainer").height();
   		  }
       }
-      
-      function createTimeZoneAlert(db,browser) {
-    	  elem = document.createElement('div');
-    	  elem.id = "snackbar";
-    	  elem.className = "show";
-    	  elem.innerHTML =  "Timezone you logged in is different than Timezone set in your profile "
-    	  					+ db
-    	  					+ "<br> Would you like to update Timezone to "
-    	  					+ browser 
-    	  					+ " ?";
-    	  
-    	  updatebtn = document.createElement('button');
-    	  updatebtn.appendChild(document.createTextNode("Yes"));
-    	  updatebtn.id = "updateTimezone";
-    	  
-    	  updatebtn.addEventListener('click', function() {
-    		  WatchListDwr.updateTimezone(browser,void(0));
-    		  elem.className = elem.className.replace("show", "");
-  	  	  }, false);
-    	  
-    	  remindbtn = document.createElement('button');
-    	  remindbtn.appendChild(document.createTextNode("Remind me later"));
-    	  remindbtn.id = "remindTimezoneUpdate"
-    		  remindbtn.addEventListener('click', function() {
-    		  elem.className = elem.className.replace("show", "");
-    	  }, false);
-    	  
-    	  nobtn = document.createElement('button');
-    	  nobtn.appendChild(document.createTextNode("No"));
-    	  nobtn.id = "no"
-    		  nobtn.addEventListener('click', function() {
-    		  elem.className = elem.className.replace("show", "");
-    		  sessionStorage.setItem("timezoneReminder", "true");
-    	  }, false);
-    	  
-    	  cancelbtn = document.createElement('a');
-    	  cancelbtn.innerHTML = "&times;"
-    	  cancelbtn.id = "close"
-    	  cancelbtn.addEventListener('click', function() {
-    		  elem.className = elem.className.replace("show", "");
-    	  }, false);
-    	  
-    	  btns = document.createElement('div');
-    	  
-    	  btns.appendChild(updatebtn);
-    	  btns.appendChild(nobtn);
-    	  btns.appendChild(remindbtn);
-    	  
-    	  elem.appendChild(cancelbtn);
-    	  elem.appendChild(btns);
-    	  document.body.appendChild(elem);
-          
-      }
-      // get browser Timezone
-      function browserTimeZone() {
-    	    var offset = new Date().getTimezoneOffset(), o = Math.abs(offset);
-    	    var utc = "UTC"+(offset < 0 ? "+" : "-") + ("00" + Math.floor(o / 60)).slice(-2) + ":" + ("00" + (o % 60)).slice(-2);
-    	     return utc+" "+ Intl.DateTimeFormat().resolvedOptions().timeZone
-  	  }
-      
-   	  // Timezone popup start
-      function updateTimeZone(){
-    	  WatchListDwr.getTimezone(function(data){
-    		  var timezone = browserTimeZone();
-    		  if(data != browserTimeZone()){
-    			  createTimeZoneAlert(data,timezone);
-    		  }
-    	  });
-      }
 
       var splitContainerHeight;
       var chartContainerHeight;
 
-      jQuery(document).ready(function(){
+    
+    function initAmChart() {
+        am4core.useTheme(am4themes_animated);
+        chart = am4core.create("chartdiv", am4charts.XYChart);
+          
+        // Set input format for the dates
+        chart.dateFormatter.inputDateFormat = "yyyy-MM-dd-HH-mm-ss";
+        // Create axes
+        var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+        dateAxis.renderer.maxGridDistance = 60;
+        
+        // Create series
+        pointNames2.forEach(function(value,key) {
+            var series = chart.series.push(new am4charts.StepLineSeries());
+            series.dataFields.valueY = value;
+            series.dataFields.dateX = "date";
+            series.name = value;
+            series.tooltipText = value + ": {"+ value +"}"
+            series.strokeWidth = 2;
+            series.minBulletDistance = 15;
+
+            // Make bullets grow on hover
+            var bullet = series.bullets.push(new am4charts.CircleBullet());
+            bullet.circle.strokeWidth = 2;
+            bullet.circle.radius = 4;
+            bullet.circle.fill = am4core.color("#fff");
+        
+            var bullethover = bullet.states.create("hover");
+            bullethover.properties.scale = 1.3;
+
+            // Drop-shaped tooltips
+            series.tooltip.background.cornerRadius = 20;
+            series.tooltip.background.strokeOpacity = 0;
+            series.tooltip.pointerOrientation = "vertical";
+            series.tooltip.label.minWidth = 40;
+            series.tooltip.label.minHeight = 40;
+            series.tooltip.label.textAlign = "middle";
+            series.tooltip.label.textValign = "middle";
+        })
+
+        // Make a panning curso
+        chart.cursor = new am4charts.XYCursor();
+        chart.cursor.behavior = "panXY";
+        chart.cursor.xAxis = dateAxis;
+        
+        // Create vertical scrollbar and place it before the value axis
+        chart.scrollbarY = new am4core.Scrollbar();
+        chart.scrollbarY.parent = chart.leftAxesContainer;
+        chart.scrollbarY.toBack();
+        
+        // Create a horizontal scrollbar with previe and place it underneath the date axis
+        chart.scrollbarX = new am4charts.XYChartScrollbar();
+        // chart.scrollbarX.series.push(chart.series.get(0));
+        chart.scrollbarX.parent = chart.bottomAxesContainer;
+        chart.legend = new am4charts.Legend();
+        
+        chart.events.on("ready", function () {
+            dateAxis.zoom({start:1/15, end:1});
+        });
+
+        chart.data = prepareChartData(sortMapKeys(pointPastValues));
+    }
+
+    function initAmChartPoints() {
+        let pointStringIds = $get("chartCB");
+        let pointIds = [];
+
+        //TODO: Get from select drop down refresh rate time
+        //TODO: Get from when value ()
+        clearChart();
+        let period = new Date().getTime() - calculatePeriod();
+    
+
+        pointStringIds.forEach(id => {
+            let data = Number(id);
+            if(!isNaN(data)){
+                pointIds.push(data)
+            }
+        })
+        
+        pointIds.forEach(id => {
+            // getPointData(id);
+            getDataPointValuesFromTime(id,period);
+        })
+
+    
+
+        //TODO:: Disable chart after changing the watch list
+
+
+    }
+
+    function clearChart() {
+        pointNames2.clear();
+        pointPastValues.clear();
+    }
+
+
+    /**
+     * Get point values from time
+     *
+     * Load data from REST API and populate dataPoint variables.
+     *
+     * @param {number} pointId - DataPoint ID in database
+     * @param {number} timePeriod - Begining timestamp (default: 1 day)
+     */
+    function getDataPointValuesFromTime(pointId, timePeriod = new Date().getTime() - (24*60*60*1000)) {
+        jQuery.get(API_NAME + "/api/point_value/getValuesFromTime/id/" + timePeriod + "/" + pointId, function(data, status) {
+            if(status == "success") {
+                data = JSON.parse(data)
+                if(pointNames2.get(pointId) == undefined) {
+                    pointNames2.set(pointId, data.name);
+                }
+                data.values.forEach(e => {
+                    //Validate binary values and transform to numeric values
+                    if(isNaN(e.value)) {
+                        e.value == "true" ? e.value = 1 : e.value = 0;
+                    }
+                    let point = {"name": data.name, "value": e.value};
+                    // If point value in time do not exist - create new one
+                    if (pointPastValues.get(e.ts) == undefined) {
+                        pointPastValues.set(e.ts,[point])
+                    } else {
+                        pointPastValues.get(e.ts).push(point)
+                    }
+                })
+            } else {
+                alert(status)
+            }
+        })
+    }
+
+
+
+    function getPointData(poindId) {
+        jQuery.get(API_NAME + "/api/point_value/getValue/id/" + poindId, function(data, status){
+            if(status == "success") {
+                console.log(JSON.parse(data));
+                //TODO: Work further.
+            } else {
+                alert(status)
+            }
+        })
+    }
+
+    // --- UTILS --- //
+    function sortMapKeys(map) {
+        var sortByKeys = (a,b) => a[0] > b[0] ? 1 : -1
+        return new Map([...map].sort(sortByKeys))
+    }
+
+    /**
+     * Convert from Map structure to amChart data interface
+     *
+     * @param {Map} map - Values map to be converted. 
+     * @return {Array} amChart data structure.
+     */
+    function prepareChartData(map) {
+        let data = []; // [{date:<time>, <datapointName>:<datapointValue>}]
+        map.forEach(function(value, key) {
+            let jsonString = '{ "date":' + key
+            value.forEach(e => {
+                if (!isNaN(Number(e.value))) {
+                    jsonString = jsonString + ', "' + e.name + '":' + e.value
+                }
+            })
+            jsonString = jsonString + '}';
+            data.push(JSON.parse(jsonString));
+        });
+        return data;
+    }
+
+    jQuery(document).ready(function(){
+        jQuery("#chart-show-button").click(function(){
+            initAmChartPoints();
+            jQuery("#loadingChartContainer").show();
+            setTimeout(function() {
+                jQuery("#loadingChartContainer").hide();
+                jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
+                initAmChart();
+                // jQuery("#chart").toggle();
+            }, 500)
+        });
+
+
+
+
     	  (function($) {
     		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
     		loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
@@ -727,121 +836,182 @@
     		if(chartContainerHeight != null){
     			jQuery("#chartContainer").height(chartContainerHeight);
     		}
-    		if (sessionStorage.getItem("timezoneReminder") != "true")
-				updateTimeZone();
-			
+
     		window.setInterval(saveDivHeightsToCookieOnChange, 2000);
    	  	})(jQuery);
    	  });
     </script>
+    <style>
+        .watch-list-container {
+            display: flex;
+            margin: 0px 20px 10px 20px;
+            min-height: 30vh;
+        }
+        .watch-list-point-list {
+            display: flex;
+            width: 30%;
+            float: left;
+            flex-direction: column;
+        }
+        .watch-list {
+            width: 100%;
+        }
+        .watch-list-header {
+            display: flex;
+            justify-content: space-between;
+        }
+        .dojoTree {
+            position: relative !important;
+        }
+        .chart-container {
+            min-height: 30vh;
+            padding: 0 20px;
+        }
+        #chartdiv {
+            width: 100%;
+            height: 500px;
+        }
+        .flex {
+            display: flex;
+        }
+
+        .flex-spacer {
+            flex-grow: 1;
+        }
+        #loadingChartContainer {
+            justify-content: center;
+        }
+        #loadingChart {
+            animation: loading-animation 1s linear, infinite;
+
+        }
+        @keyframes loading-animation {
+            form {
+                transform: rotate(0deg);
+            } to {
+                transform: rotate(720deg);
+            }
+        }
+
+    </style>
+
+    <div class="watch-list-container" id="splitContainer" dojoType="SplitContainer" orientation="horizontal" sizerWidth="3" activeSizing="true">
+        <div class="watch-list-point-list">
+            <div class="watch-list-point-list-title">
+                <span class="smallTitle"><fmt:message key="watchlist.points"/></span>
+                <tag:help id="watchListPoints"/>
+            </div>
+            <div id="treeDiv" style="display:none;">
+                <div dojoType="Tree" widgetId="tree"></div>
+            </div>
+        </div>
+        <div class="watch-list" dojoType="ContentPane" sizeMin="50" sizeShare="50">
+            <div class="watch-list-header">
+                <div>
+                    <span class="smallTitle"><fmt:message key="watchlist.points"/></span>
+                    <tag:help id="watchListPoints"/>
+                </div>
+                
+                <div>
+                    <sst:select id="watchListSelect" value="${selectedWatchList}" onchange="watchListChanged()" onmouseover="closeLayers();">
+                        <c:forEach items="${watchLists}" var="wl">
+                            <sst:option value="${wl.key}">${sst:escapeLessThan(wl.value)}</sst:option>
+                        </c:forEach>
+                    </sst:select>
+                    <div id="wlEditDiv" style="display:inline;" onmouseover="showWatchListEdit()">
+                        <tag:img id="wlEditImg" png="pencil" title="watchlist.editListName"/>
+                        <div id="wlEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
+                            <fmt:message key="watchlist.newListName"/><br/>
+                            <input type="text" id="newWatchListName" onkeypress="if (event.keyCode==13) $('saveWatchListNameLink').onclick();"/>
+                            <a class="ptr" id="saveWatchListNameLink" onclick="saveWatchListName()"><fmt:message key="common.save"/></a>
+                        </div>
+                    </div>
+          
+                    <div id="usersEditDiv" style="display:inline;" onmouseover="showWatchListUsers()">
+                        <tag:img png="user" title="share.sharing" onmouseover="closeLayers();"/>
+                        <div id="usersEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv">
+                            <tag:sharedUsers doxId="watchListSharing" noUsersKey="share.noWatchlistUsers" closeFunction="hideLayer('usersEdit')"/>
+                        </div>
+                    </div>
+          
+                    <tag:img png="copy" onclick="addWatchList(true)" title="watchlist.copyList" onmouseover="closeLayers();"/>
+                    <tag:img png="add" onclick="addWatchList(false)" title="watchlist.addNewList" onmouseover="closeLayers();"/>
+                    <tag:img png="delete" id="watchListDeleteImg" onclick="deleteWatchList()" title="watchlist.deleteList" style="display:none;" onmouseover="closeLayers();"/>
+                    <tag:img png="report_add" onclick="createReport()" title="watchlist.createReport" onmouseover="closeLayers();"/>
+                </div>
+
+
+            </div>
+            <div class="watch-list-content" id="watchListDiv">
+                <img src="images/hourglass.png" id="loadingImg"/>
+                <table style="display:none;">
+                    <tbody id="p_TEMPLATE_">
+                        <tr id="p_TEMPLATE_BreakRow"><td class="horzSeparator" colspan="5"></td></tr>
+                        <tr>
+                            <td width="1">
+                                <table cellpadding="0" cellspacing="0" class="rowIcons">
+                                    <tr>
+                                        <td onclick="mango.view.showChange('p'+ getMangoId(this) +'Change', 4, 12);"
+                                              ondblclick="mango.view.hideChange('p'+ getMangoId(this) +'Change');"
+                                              id="p_TEMPLATE_ChangeMin" style="display:none;">
+                                            <img alt="" id="p_TEMPLATE_Changing" src="images/icon_edit.png"/>
+                                            <div id="p_TEMPLATE_Change" class="labelDiv" style="visibility:hidden;top:10px;left:1px;" ondblclick="hideLayer(this);">
+                                                <tag:img png="hourglass" title="common.gettingData"/>
+                                            </div>
+                                        </td>
+                                        <td id="p_TEMPLATE_ChartMin" style="display:none;" onmouseover="showChart(getMangoId(this), event, this);" onmouseout="hideChart(getMangoId(this), event, this);">
+                                            <img alt="" src="images/icon_chart.png"/><div id="p_TEMPLATE_ChartLayer" class="labelDiv" style="visibility:hidden;top:0;left:0;"></div>
+                                            <textarea style="display:none;" id="p_TEMPLATE_Chart"><tag:img png="hourglass" title="common.gettingData"/>
+                                            </textarea>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td id="p_TEMPLATE_Name"></td>
+                            <td id="p_TEMPLATE_Value" align="center"><img src="images/hourglass.png"/></td>
+                            <td id="p_TEMPLATE_Time" align="center"></td>
+                            <td style="width:1px; white-space:nowrap;">
+                                <input type="checkbox" name="chartCB" id="p_TEMPLATE_ChartCB" value="_TEMPLATE_" checked="checked" title="<fmt:message key="watchlist.consolidatedChart"/>"/>
+                                <tag:img png="icon_comp" title="watchlist.pointDetails" onclick="window.location='data_point_details.shtm?dpid='+ getMangoId(this)"/>
+                                <tag:img png="arrow_up_thin" id="p_TEMPLATE_MoveUp" title="watchlist.moveUp" style="display:none;" onclick="moveRowUp('p'+ getMangoId(this));"/><tag:img png="arrow_down_thin" id="p_TEMPLATE_MoveDown" title="watchlist.moveDown" style="display:none;" onclick="moveRowDown('p'+ getMangoId(this));"/>
+                                <tag:img id="p_TEMPLATE_Delete" png="bullet_delete" title="watchlist.delete" style="display:none;" onclick="removeFromWatchList(getMangoId(this))"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="padding-left:16px;" id="p_TEMPLATE_Messages"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table id="watchListTable" width="100%"></table>
+                <div id="emptyListMessage" style="color:#888888;padding:10px;text-align:center;">
+                    <fmt:message key="watchlist.emptyList"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="chart-container">
+        <div class="flex chart-toolbar">
+            <span class="smallTitle" id="chart-title"></span>
+            <span class="flex-spacer"></span>
+            <div>
+                <input type="number" id="chartPeriodValue" value="60"/>
+                <select id="chartPeriodType">
+                    <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
+                </select>
+            </div>
+            <button id="chart-show-button">Show chart</button>
+        </div>
+        <div class="flex" style="display:none;" id="loadingChartContainer">
+            <img src="images/hourglass.png" id="loadingChart"/>
+        </div>
+        <div id="chartdiv">
+        </div>
+
+    </div>
+    
 
     <table width="100%">
-    <tr><td>
-      <div id="splitContainer" dojoType="SplitContainer" orientation="horizontal" sizerWidth="3" activeSizing="true" class="borderDiv"
-              widgetId="splitContainer" style="width: 100%; height: 500px; resize:vertical;">
-        <div dojoType="ContentPane" sizeMin="20" sizeShare="20" style="overflow:auto;padding:2px;">
-          <span class="smallTitle"><fmt:message key="watchlist.points"/></span> <tag:help id="watchListPoints"/><br/>
-        <!-- <div style="margin:5px 0 10px 5px;">
-          <select id="dpSelector" data-placeholder="Choose data point ..." class="chosen-select" style="width:80%;margin-bottom:10px;">
-          	<option></option>
-          </select>
-          <img title="Add to watch list" src="images/bullet_go.png" onclick="addSelectedToWatchList()" style="cursor:pointer;">
-        </div>
-        <div class="horzSeparator" style="margin-bottom:10px;"></div> -->
-        <img src="images/hourglass.png" id="loadingImg"/>
-        <div id="treeDiv" style="display:none;"><div dojoType="Tree" widgetId="tree"></div></div>
-        </div>
-        <div dojoType="ContentPane" sizeMin="50" sizeShare="50" style="overflow:auto; padding:2px 10px 2px 2px;">
-          <table cellpadding="0" cellspacing="0" width="100%">
-            <tr>
-              <td class="smallTitle"><fmt:message key="watchlist.watchlist"/> <tag:help id="watchList"/></td>
-              <td align="right">
-                <sst:select id="watchListSelect" value="${selectedWatchList}" onchange="watchListChanged()"
-                        onmouseover="closeLayers();">
-                  <c:forEach items="${watchLists}" var="wl">
-                    <sst:option value="${wl.key}">${sst:escapeLessThan(wl.value)}</sst:option>
-                  </c:forEach>
-                </sst:select>
-
-                <div id="wlEditDiv" style="display:inline;" onmouseover="showWatchListEdit()">
-                  <tag:img id="wlEditImg" png="pencil" title="watchlist.editListName"/>
-                  <div id="wlEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv"
-                          onmouseout="hideLayer(this)">
-                    <fmt:message key="watchlist.newListName"/><br/>
-                    <input type="text" id="newWatchListName"
-                            onkeypress="if (event.keyCode==13) $('saveWatchListNameLink').onclick();"/>
-                    <a class="ptr" id="saveWatchListNameLink" onclick="saveWatchListName()"><fmt:message key="common.save"/></a>
-                  </div>
-                </div>
-
-                <div id="usersEditDiv" style="display:inline;" onmouseover="showWatchListUsers()">
-                  <tag:img png="user" title="share.sharing" onmouseover="closeLayers();"/>
-                  <div id="usersEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv">
-                    <tag:sharedUsers doxId="watchListSharing" noUsersKey="share.noWatchlistUsers"
-                            closeFunction="hideLayer('usersEdit')"/>
-                  </div>
-                </div>
-
-                <tag:img png="copy" onclick="addWatchList(true)" title="watchlist.copyList" onmouseover="closeLayers();"/>
-                <tag:img png="add" onclick="addWatchList(false)" title="watchlist.addNewList" onmouseover="closeLayers();"/>
-                <tag:img png="delete" id="watchListDeleteImg" onclick="deleteWatchList()" title="watchlist.deleteList"
-                        style="display:none;" onmouseover="closeLayers();"/>
-                <tag:img png="report_add" onclick="createReport()" title="watchlist.createReport" onmouseover="closeLayers();"/>
-              </td>
-            </tr>
-          </table>
-          <div id="watchListDiv" class="watchListAttr">
-            <table style="display:none;">
-              <tbody id="p_TEMPLATE_">
-                <tr id="p_TEMPLATE_BreakRow"><td class="horzSeparator" colspan="5"></td></tr>
-                <tr>
-                  <td width="1">
-                    <table cellpadding="0" cellspacing="0" class="rowIcons">
-                      <tr>
-                        <td onclick="mango.view.showChange('p'+ getMangoId(this) +'Change', 4, 12);"
-                                ondblclick="mango.view.hideChange('p'+ getMangoId(this) +'Change');"
-                                id="p_TEMPLATE_ChangeMin" style="display:none;"><img alt="" id="p_TEMPLATE_Changing"
-                                src="images/icon_edit.png"/><div id="p_TEMPLATE_Change" class="labelDiv"
-                                style="visibility:hidden;top:10px;left:1px;" ondblclick="hideLayer(this);">
-                          <tag:img png="hourglass" title="common.gettingData"/>
-                        </div></td>
-                        <td id="p_TEMPLATE_ChartMin" style="display:none;" onmouseover="showChart(getMangoId(this), event, this);"
-                                onmouseout="hideChart(getMangoId(this), event, this);"><img alt=""
-                                src="images/icon_chart.png"/><div id="p_TEMPLATE_ChartLayer" class="labelDiv"
-                                style="visibility:hidden;top:0;left:0;"></div><textarea
-                                style="display:none;" id="p_TEMPLATE_Chart"><tag:img png="hourglass"
-                                title="common.gettingData"/></textarea></td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td id="p_TEMPLATE_Name" style="font-weight:bold"></td>
-                  <td id="p_TEMPLATE_Value" align="center"><img src="images/hourglass.png"/></td>
-                  <td id="p_TEMPLATE_Time" align="center"></td>
-                  <td style="width:1px; white-space:nowrap;">
-                    <input type="checkbox" name="chartCB" id="p_TEMPLATE_ChartCB" value="_TEMPLATE_" checked="checked"
-                            title="<fmt:message key="watchlist.consolidatedChart"/>"/>
-                    <tag:img png="icon_comp" title="watchlist.pointDetails"
-                            onclick="window.location='data_point_details.shtm?dpid='+ getMangoId(this)"/>
-                    <tag:img png="arrow_up_thin" id="p_TEMPLATE_MoveUp" title="watchlist.moveUp" style="display:none;"
-                            onclick="moveRowUp('p'+ getMangoId(this));"/><tag:img png="arrow_down_thin"
-                            id="p_TEMPLATE_MoveDown" title="watchlist.moveDown" style="display:none;"
-                            onclick="moveRowDown('p'+ getMangoId(this));"/>
-                    <tag:img id="p_TEMPLATE_Delete" png="bullet_delete" title="watchlist.delete" style="display:none;"
-                            onclick="removeFromWatchList(getMangoId(this))"/>
-                  </td>
-                </tr>
-                <tr><td colspan="5" style="padding-left:16px;" id="p_TEMPLATE_Messages"></td></tr>
-              </tbody>
-            </table>
-            <table id="watchListTable" width="100%"></table>
-            <div id="emptyListMessage" style="color:#888888;padding:10px;text-align:center;">
-              <fmt:message key="watchlist.emptyList"/>
-            </div>
-          </div>
-        </div>
-      </div>
-    </td></tr>
-
+    
     <tr><td>
       <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden; height: 500px;">
         <table width="100%">
