@@ -71,9 +71,10 @@
 
     //amChartVariables
     var chart;
-    var pointStatus = [];
+    var interval;
     var pointPastValues = new Map();
-    var pointNames2 = new Map();
+    var pointCurrentState = new Map();
+    var lastUpdate = new Map();
 
     am4core.ready();
 
@@ -601,26 +602,6 @@
     	    return "";
       }
 
-      var interval;
-      var lastValue = 0;
-
-      function startInterval() {
-          interval = setInterval(function() {
-              jQuery.get("/ScadaLTS/api/point_value/getValue/DP_016767", function(data, status){
-                  data = JSON.parse(data);
-                  if(data.ts != lastValue) {
-                      chart.addData(
-                          {
-                              date: new Date(data.ts),
-                              value: Number(data.value)
-                          }
-                      )
-                      lastValue = data.ts;
-                  }
-              })
-          }, 10000);
-      }
-
       function saveDivHeightsToCookieOnChange(){
     	  if(splitContainerHeight != jQuery("#splitContainer").height()){
     		  setCookie("split_container_height", jQuery("#splitContainer").height());
@@ -635,21 +616,18 @@
       var splitContainerHeight;
       var chartContainerHeight;
 
-    
+    /* AMCHART SECTION */
     function initAmChart() {
         am4core.useTheme(am4themes_animated);
         chart = am4core.create("chartdiv", am4charts.XYChart);
           
-        // Set input format for the dates
         chart.dateFormatter.inputDateFormat = "yyyy-MM-dd-HH-mm-ss";
-        // Create axes
         var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
         var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-
         dateAxis.renderer.maxGridDistance = 60;
         
         // Create series
-        pointNames2.forEach(function(value,key) {
+        pointCurrentState.forEach(function(value,key) {
             var series = chart.series.push(new am4charts.StepLineSeries());
             series.dataFields.valueY = value;
             series.dataFields.dateX = "date";
@@ -677,7 +655,7 @@
             series.tooltip.label.textValign = "middle";
         })
 
-        // Make a panning curso
+        // Make a panning cursor
         chart.cursor = new am4charts.XYCursor();
         chart.cursor.behavior = "panXY";
         chart.cursor.xAxis = dateAxis;
@@ -701,15 +679,11 @@
     }
 
     function initAmChartPoints() {
-        let pointStringIds = $get("chartCB");
-        let pointIds = [];
-
-        //TODO: Get from select drop down refresh rate time
-        //TODO: Get from when value ()
         clearChart();
+        let pointIds = [];
+        let pointStringIds = $get("chartCB");
         let period = new Date().getTime() - calculatePeriod();
     
-
         pointStringIds.forEach(id => {
             let data = Number(id);
             if(!isNaN(data)){
@@ -718,22 +692,45 @@
         })
         
         pointIds.forEach(id => {
-            // getPointData(id);
             getDataPointValuesFromTime(id,period);
         })
-
-    
-
-        //TODO:: Disable chart after changing the watch list
-
-
     }
 
-    function clearChart() {
-        pointNames2.clear();
-        pointPastValues.clear();
-    }
+    /**
+     * Start live chart update
+     *
+     * Refresh chart data using REST API. Request for specific dataPoints every refresh rate.
+     */
+    function liveUpdatePoints() {
+        
+        let refreshInterval = Number($get("refreshPeriodValue")) * 1000
+        if ($get("refreshPeriodType") == "2") { refreshInterval = refreshInterval*60; }
 
+        interval = setInterval(function() {
+            pointCurrentState.forEach(function(value,key) {
+                jQuery.get(API_NAME + "/api/point_value/getValue/id/" + key, function(data, status) {
+                    if(status == "success") {
+                        data = JSON.parse(data);
+                        //Do the same as it was in getDataPointValuesFromTime()
+                        if(isNaN(data.value)) {
+                            data.value == "true" ? data.value = 1 : data.value = 0;
+                        }
+                        let point = {'name': data.name, "value": data.value};
+                        if(lastUpdate.get(data.ts) == undefined) {
+                            lastUpdate.set(data.ts, [point]);    
+                        } else {
+                            lastUpdate.get(data.ts).push(point);
+                        }
+                    }
+                })
+            })
+            setTimeout(function() {
+                chart.addData(prepareChartData(sortMapKeys(lastUpdate)))
+                lastUpdate.clear();
+            },500)
+
+        }, refreshInterval);
+    }
 
     /**
      * Get point values from time
@@ -747,8 +744,8 @@
         jQuery.get(API_NAME + "/api/point_value/getValuesFromTime/id/" + timePeriod + "/" + pointId, function(data, status) {
             if(status == "success") {
                 data = JSON.parse(data)
-                if(pointNames2.get(pointId) == undefined) {
-                    pointNames2.set(pointId, data.name);
+                if(pointCurrentState.get(pointId) == undefined) {
+                    pointCurrentState.set(pointId, data.name);
                 }
                 data.values.forEach(e => {
                     //Validate binary values and transform to numeric values
@@ -769,23 +766,20 @@
         })
     }
 
-
-
-    function getPointData(poindId) {
-        jQuery.get(API_NAME + "/api/point_value/getValue/id/" + poindId, function(data, status){
-            if(status == "success") {
-                console.log(JSON.parse(data));
-                //TODO: Work further.
-            } else {
-                alert(status)
-            }
-        })
-    }
-
     // --- UTILS --- //
     function sortMapKeys(map) {
         var sortByKeys = (a,b) => a[0] > b[0] ? 1 : -1
         return new Map([...map].sort(sortByKeys))
+    }
+
+    /**
+     * Clear chart data before starting another one
+     */
+    function clearChart() {
+        clearInterval(interval);
+        pointCurrentState.clear();
+        pointPastValues.clear();
+        lastUpdate.clear();
     }
 
     /**
@@ -817,12 +811,9 @@
                 jQuery("#loadingChartContainer").hide();
                 jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
                 initAmChart();
-                // jQuery("#chart").toggle();
+                liveUpdatePoints();
             }, 500)
         });
-
-
-
 
     	  (function($) {
     		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
@@ -867,6 +858,11 @@
             min-height: 30vh;
             padding: 0 20px;
         }
+        .chart-selects {
+            flex-direction: column;
+            width: 25vw;
+        }
+        
         #chartdiv {
             width: 100%;
             height: 500px;
@@ -874,9 +870,11 @@
         .flex {
             display: flex;
         }
-
         .flex-spacer {
             flex-grow: 1;
+        }
+        .justify-flex {
+            justify-content: space-between;   
         }
         #loadingChartContainer {
             justify-content: center;
@@ -993,11 +991,21 @@
         <div class="flex chart-toolbar">
             <span class="smallTitle" id="chart-title"></span>
             <span class="flex-spacer"></span>
-            <div>
-                <input type="number" id="chartPeriodValue" value="60"/>
-                <select id="chartPeriodType">
-                    <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
-                </select>
+            <div class="flex chart-selects">
+                <div class="flex justify-flex">
+                    <span>Display values from last: </span>
+                    <input type="number" id="chartPeriodValue" value="60"/>
+                    <select id="chartPeriodType">
+                        <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
+                    </select>
+                </div>
+                <div class="flex justify-flex">
+                    <span>Refresh chart every: </span>
+                    <input type="number" id="refreshPeriodValue" value="10"/>
+                        <select id="refreshPeriodType">
+                            <tag:timePeriodOptions s="true" min="true"/>
+                        </select>
+                </div>
             </div>
             <button id="chart-show-button">Show chart</button>
         </div>
