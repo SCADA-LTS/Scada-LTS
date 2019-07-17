@@ -51,9 +51,9 @@
   </jsp:attribute>
 
   <jsp:body>
-    <script src="https://www.amcharts.com/lib/4/core.js"></script>
-    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
-    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+    <script src="resources/libs/amcharts4/core.js"></script>
+    <script src="resources/libs/amcharts4/charts.js"></script>
+    <script src="resources/libs/amcharts4/themes/animated.js"></script>
     
         
     <script type="text/javascript">
