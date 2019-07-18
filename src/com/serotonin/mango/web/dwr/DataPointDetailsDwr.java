@@ -99,8 +99,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		for (PointValueTime pvt : rawData) {
 			RenderedPointValueTime rpvt = new RenderedPointValueTime();
 			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
-			pvt.setTime(Timezone.getTimezoneUserLong(Common.getStaticUser(),pvt.getTime()));
-			rpvt.setTime(Functions.getTime(pvt));
+			rpvt.setTime(Functions.getTimeWithTz(pvt,Timezone.getTimezoneUserLong(Common.getStaticUser(),pvt.getTime())));
 
 			if (pvt.isAnnotated()) {
 
@@ -209,9 +208,11 @@ public class DataPointDetailsDwr extends BaseDwr {
 		Collections.reverse(values);
 		List<ImageValueBean> result = new ArrayList<ImageValueBean>();
 		for (PointValueTime pvt : values) {
-			pvt.setTime(Timezone.getTimezoneUserLong(Common.getStaticUser(),pvt.getTime()));
 			ImageValue imageValue = (ImageValue) pvt.getValue();
-			String uri = ImageValueServlet.servletPath + ImageValueServlet.historyPrefix + pvt.getTime() + "_"
+			String uri = ImageValueServlet.servletPath + 
+					ImageValueServlet.historyPrefix + 
+					Timezone.getTimezoneUserLong(Common.getStaticUser(),pvt.getTime()) 
+					+ "_"
 					+ vo.getId() + "." + imageValue.getTypeExtension();
 			result.add(new ImageValueBean(Functions.getTime(pvt), uri));
 		}

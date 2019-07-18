@@ -100,6 +100,12 @@ public class Functions {
             return DateFunctions.getTime(pointValue.getTime());
         return null;
     }
+    
+    public static String getTimeWithTz(PointValueTime pointValue, long time) {
+        if (pointValue != null)
+            return DateFunctions.getTime(time);
+        return null;
+    }
 
     public static String padZeros(int i, int len) {
         return StringUtils.pad(Integer.toString(i), '0', len);

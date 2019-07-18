@@ -14,6 +14,10 @@ public class V1_4__SetTimeZone implements SpringJdbcMigration {
 				"add column `zone` varchar(40) after `timezone`;";
 				
 		jdbcTmp.execute(setTimeZone);
+
+		final String updateTimeZone = "update users set timezone=?, zone=?";
+
+		jdbcTmp.update(updateTimeZone, new Object[]{"UTC+00:00","UCT"});
 	}
 
 }
