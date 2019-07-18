@@ -539,6 +539,43 @@ public class PointValueAPI {
         }
     }
 
+    /**
+     * @param id, sts, ets - id of datapoint, start timestamp, end timestamp
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/point_value/getValuesFromTimePeriod/{id}/{sts}/{ets}", method = RequestMethod.GET)
+    public ResponseEntity<String> getValuesFromTimePeriod(@PathVariable("id") int id, @PathVariable("sts") long sts, @PathVariable("ets") long ets, HttpServletRequest request) {
+
+        LOG.info("/api/point_value/getValuesFromTimePeriod/{id}/{sts}/{ets} id: " + id + " sts: " + sts + " ets: " + ets);
+
+        try {
+            User user = Common.getUser(request);
+            DataPointVO dpvo = dataPointService.getDataPoint(id);
+            if (user != null) {
+                List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), sts, ets);
+                String json = null;
+                ObjectMapper mapper = new ObjectMapper();
+
+                List<ValueTime> values = new ArrayList<ValueTime>();
+                String type = null;
+                for (PointValueTime pvt : pvts) {
+                    values.add(new ValueTime(getValue(pvt.getValue(), type), pvt.getTime()));
+                }
+                ValuesToJSON v = new ValuesToJSON(values, dpvo, type, sts, ets);
+                json = mapper.writeValueAsString(v);
+
+                return new ResponseEntity<String>(json, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(value = "/api/point_value/updateMetaDataPointByScript/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> updateMetaDataPointByScript(@PathVariable("xid") String xid, HttpServletRequest request) {
 

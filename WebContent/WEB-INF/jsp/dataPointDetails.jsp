@@ -32,7 +32,7 @@
       <c:if test="${!empty periodType}">
         DataPointDetailsDwr.getDateRangeDefaults(${periodType}, ${periodCount}, function(data) {
           setDateRange(data);
-    });
+        });
         </c:if>
         <c:if test="${!empty flipbookLimit}">getFlipbookChart();</c:if>
           getStatsChart();
@@ -152,24 +152,24 @@
         liveUpdatePoints();
       }, 500);
 
-      jQuery("#chart-show-button").click(function(){
-            initAmChartPoint(pointId);
-            jQuery("#loadingChartContainer").show();
-            setTimeout(function() {
-                jQuery("#loadingChartContainer").hide();
-                jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
-                initAmChart();
-                liveUpdatePoints();
-            }, 500)
-        });
+      jQuery("#chart-show-button").click(function () {
+        initAmChartPoint(pointId);
+        jQuery("#loadingChartContainer").show();
+        setTimeout(function () {
+          jQuery("#loadingChartContainer").hide();
+          jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
+          initAmChart();
+          liveUpdatePoints();
+        }, 500)
+      });
 
 
 
 
-        (function ($) {
-          loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css", "css");
-          loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js", "js");
-        })(jQuery);
+      (function ($) {
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css", "css");
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js", "js");
+      })(jQuery);
     });
 
     function hideOldUserNotes() {
@@ -397,68 +397,9 @@
   </script>
 
   <style>
-    .dpd-header {
-      border-bottom: 1px solid #39B54A;
-      padding-bottom: 5px;
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-
-    .point-title {
-      flex-grow: 1;
-      font-family: Verdana, Arial, Helvetica, sans-serif;
-      color: #414042;
-      font-size: 16px;
-      font-weight: bold;
-      padding-left: 2%;
-    }
-
+    @import "resources/css/scada_ui.css";
     .line-title {
       display: inline;
-    }
-
-    .flex-spacer {
-      flex-grow: 1;
-    }
-
-    .flex-center-vertical {
-      display: flex;
-      align-items: center;
-    }
-
-    .justify-flex {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .dpd-content {
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: space-between;
-
-    }
-
-    .dpd-card {
-      width: 99%;
-      margin-top: 10px;
-      padding-left: 0.5%;
-      padding-right: 0.5%;
-
-    }
-
-    .dpd-card-2 {
-      width: 49%;
-      margin-top: 10px;
-      padding-left: 0.5%;
-      padding-right: 0.5%;
-
-    }
-
-    .dpd-card-4 {
-      width: 24%;
-      margin-top: 10px;
-      padding-left: 0.5%;
-      padding-right: 0.5%;
     }
 
     .dps-detail {
@@ -470,6 +411,7 @@
     .dps-detail .detail-key {
       width: 30%;
     }
+
     .chart-selects {
       flex-direction: column;
       width: 25vw;
@@ -487,27 +429,28 @@
       justify-content: center;
     }
 
-    #loadingChart {
-      animation: loading-animation 1s linear, infinite;
-
+    #historyTableContainer {
+      max-height: 45vh;
+      overflow: auto;
+    }
+    #historyTableDOM {
+      width: 100%;
     }
 
-    @keyframes loading-animation {
-      form {
-        transform: rotate(0deg);
-      }
 
-      to {
-        transform: rotate(720deg);
+
+    @media (max-width: 1200px) {
+      #dpd-details, #dpd-access {
+        order: -1;
       }
     }
   </style>
 
   <div>
-    <div class="dpd-header flex-center-vertical">
-      <span class="point-title">${point.name}</span>
+    <div class="scada-header flex-row flex-row-wrap flex-align-center">
+      <span class="title-standard">${point.name}</span>
       <span id="pointid">${point.id}</span>
-      <div class="point-navigation flex-center-vertical">
+      <div id="point-navigation-container" class="flex-align-center">
         <fmt:message key="pointDetails.goto" />:&nbsp;
         <sst:select id="datPointDetailsPointSelect" value="${point.id}"
           onchange="window.location='data_point_details.shtm?dpid='+ this.value;">
@@ -527,90 +470,81 @@
         </c:if>
       </div>
     </div>
-    <div class="dpd-content">
-      <div id="dpd-details" class="dpd-card-4">
-        <div class="dpd-header flex-center-vertical">
-          <h4 class="line-title">Point Details</h4>
-          <span class="flex-spacer"></span>
-          <c:if test="${pointEditor}">
-            <a href="data_point_edit.shtm?dpid=${point.id}">
-              <tag:img png="icon_comp_edit" title="pointDetails.editPoint" /></a>
-            <a href="data_source_edit.shtm?dsid=${point.dataSourceId}&pid=${point.id}">
-              <tag:img png="icon_ds_edit" title="pointDetails.editDataSource" /></a>
-          </c:if>
-        </div>
-
-        <div class="dps-detail">
-          <div class="detail-key">
-            <fmt:message key="common.xid" />
+    <div class="flex-row-wrap flex-space-between">
+      <div id="dpd-details" class="scada-card-4 flex-column">
+          <div id="dpd-point-details" class="scada-card">
+              <div class="scada-header flex-row-wrap flex-align-center">
+                <h4 class="title-small">Point Details</h4>
+                <span class="flex-spacer"></span>
+                <c:if test="${pointEditor}">
+                  <a href="data_point_edit.shtm?dpid=${point.id}">
+                    <tag:img png="icon_comp_edit" title="pointDetails.editPoint" /></a>
+                  <a href="data_source_edit.shtm?dsid=${point.dataSourceId}&pid=${point.id}">
+                    <tag:img png="icon_ds_edit" title="pointDetails.editDataSource" /></a>
+                </c:if>
+              </div>
+      
+              <div class="dps-detail">
+                <div class="detail-key">
+                  <fmt:message key="common.xid" />
+                </div>
+                <div class="detail-value">
+                  ${point.xid}
+                </div>
+              </div>
+              <div class="dps-detail">
+                <div class="detail-key">
+                  <fmt:message key="common.time" />
+                </div>
+                <div id="pointValueTime" class="detail-value">
+                </div>
+              </div>
+              <div class="dps-detail">
+                <div class="detail-key">
+                  <fmt:message key="common.value" />
+                </div>
+                <div id="pointValue" class="detail-value">
+                </div>
+              </div>
+              <div id="pointChangeNode" class="dps-detail">
+                <div class="detail-key">
+                  <tag:img id="pointChanging" png="icon_edit" title="common.set" />
+                  <fmt:message key="common.set" />
+                </div>
+                <div id="pointChange" class="detail-value">
+                </div>
+              </div>
+              <div id="pointMessages" class="dps-detail-long">
+              </div>
+      
           </div>
-          <div class="detail-value">
-            ${point.xid}
+          <div id="dpd-user-notes" class="scada-card">
+              <div class="scada-header flex-row-wrap flex-align-center">
+                <h4 class="title-small">
+                  <fmt:message key="notes.userNotes" />
+                </h4>
+                <span class="flex-spacer"></span>
+                <div>
+                  <tag:img png="comment_add" title="notes.addNote"
+                    onclick="openCommentDialog(${applicationScope['constants.UserComment.TYPE_POINT']}, ${point.id})" />
+                </div>
+              </div>
+              <div>
+                <fmt:message key="pointDetails.show" />
+                <input id="notesLimit" type="text" style="text-align:right;" value="5" class="formVeryShort" />
+                <fmt:message key="pointDetails.mostRecentRecords" />
+                <tag:img png="control_play_blue" onclick="hideOldUserNotes()" />
+              </div>
+              <div>
+                <table id="pointComments${point.id}">
+                  <tag:comments comments="${point.comments}" />
+                </table>
+              </div>
           </div>
-        </div>
-        <div class="dps-detail">
-          <div class="detail-key">
-            <fmt:message key="common.time" />
-          </div>
-          <div id="pointValueTime" class="detail-value">
-          </div>
-        </div>
-        <div class="dps-detail">
-          <div class="detail-key">
-            <fmt:message key="common.value" />
-          </div>
-          <div id="pointValue" class="detail-value">
-          </div>
-        </div>
-        <div id="pointChangeNode" class="dps-detail">
-          <div class="detail-key">
-            <tag:img id="pointChanging" png="icon_edit" title="common.set" />
-            <fmt:message key="common.set" />
-          </div>
-          <div id="pointChange" class="detail-value">
-          </div>
-        </div>
-        <div id="pointMessages" class="dps-detail-long">
-        </div>
-
       </div>
-      <div id="dpd-history" class="dpd-card-4">
-        <div class="dpd-header flex-center-vertical">
-          <h4>
-            <fmt:message key="pointDetails.history" />
-          </h4>
-          <span class="flex-spacer"></span>
-          <span id="historyTableAsof"></span>
-          <div>
-            <fmt:message key="pointDetails.show" />
-            <input id="historyLimit" type="text" style="text-align:right;" value="${historyLimit}"
-              class="formVeryShort" />
-            <fmt:message key="pointDetails.mostRecentRecords" />
-            <tag:img id="historyLimitImg" png="control_play_blue" title="pointDetails.getData"
-              onclick="getHistoryTableData()" />
-          </div>
-        </div>
-        <div>
-          <table cellspacing="1">
-            <tr class="rowHeader">
-              <td>
-                <fmt:message key="common.value" />
-              </td>
-              <td>
-                <fmt:message key="common.time" />
-              </td>
-              <td>
-                <fmt:message key="common.annotation" />
-              </td>
-            </tr>
-            <tbody id="historyTableData"></tbody>
-          </table>
-        </div>
-
-      </div>
-      <div id="dpd-statistics" class="dpd-card-4">
-        <div class="dpd-header flex-center-vertical">
-          <h4>
+      <div id="dpd-statistics" class="scada-card-4">
+        <div class="scada-header flex-row-wrap flex-align-center">
+          <h4 class="title-small">
             <fmt:message key="pointDetails.statistics" />
           </h4>
           <span class="flex-spacer"></span>
@@ -629,32 +563,128 @@
         <div id="statsChartData">
         </div>
       </div>
-      <div id="dpd-user-notes" class="dpd-card-4">
-        <div class="dpd-header flex-center-vertical">
-          <h4>
-            <fmt:message key="notes.userNotes" />
+      <div id="dpd-history" class="scada-card-4">
+        <div class="scada-header flex-row-wrap flex-align-center">
+          <h4 class="title-small">
+            <fmt:message key="pointDetails.history" />
           </h4>
           <span class="flex-spacer"></span>
+          <span id="historyTableAsof"></span>
           <div>
-            <tag:img png="comment_add" title="notes.addNote"
-              onclick="openCommentDialog(${applicationScope['constants.UserComment.TYPE_POINT']}, ${point.id})" />
+            <fmt:message key="pointDetails.show" />
+            <input id="historyLimit" type="text" style="text-align:right;" value="${historyLimit}"
+              class="formVeryShort" />
+            <fmt:message key="pointDetails.mostRecentRecords" />
+            <tag:img id="historyLimitImg" png="control_play_blue" title="pointDetails.getData"
+              onclick="getHistoryTableData()" />
           </div>
         </div>
-        <div>
-          <fmt:message key="pointDetails.show" />
-          <input id="notesLimit" type="text" style="text-align:right;" value="5" class="formVeryShort" />
-          <fmt:message key="pointDetails.mostRecentRecords" />
-          <tag:img png="control_play_blue" onclick="hideOldUserNotes()" />
-        </div>
-        <div>
-          <table id="pointComments${point.id}">
-            <tag:comments comments="${point.comments}" />
+        <div id="historyTableContainer">
+          <table id="historyTableDOM" cellspacing="1">
+            <tr class="rowHeader">
+              <td>
+                <fmt:message key="common.value" />
+              </td>
+              <td>
+                <fmt:message key="common.time" />
+              </td>
+              <td>
+                <fmt:message key="common.annotation" />
+              </td>
+            </tr>
+            <tbody id="historyTableData"></tbody>
           </table>
         </div>
+
       </div>
-      <div id="dpd-chart" class="dpd-card">
-        <div class="dpd-header flex-center-vertical">
-          <h4>
+      <div id="dpd-access" class="scada-card-4 flex-column">
+        <div id="dpd-user-access" class="scada-card">
+          <div class="scada-header flex-row-wrap flex-align-center">
+            <h4 class="title-small">
+              <fmt:message key="pointDetails.userAccess" />
+            </h4>
+            <span class="flex-spacer"></span>
+          </div>
+          <div>
+            <table width="100%" cellspacing="1">
+              <tr class="rowHeader">
+                <td width="16"></td>
+                <td>
+                  <fmt:message key="pointDetails.username" />
+                </td>
+                <td>
+                  <fmt:message key="pointDetails.accessType" />
+                </td>
+              </tr>
+              <c:forEach items="${users}" var="userData" varStatus="status">
+                <tr class="row<c:if test=" ${status.index % 2==1}">Alt</c:if>">
+                  <c:set var="user" value="${userData.user}" />
+                  <td><%@ include file="/WEB-INF/snippet/userIcon.jsp" %></td>
+                  <td>${user.username}</td>
+                  <td>
+                    <c:choose>
+                      <c:when
+                        test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.READ']}">
+                        <fmt:message key="common.access.read" />
+                      </c:when>
+                      <c:when
+                        test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.SET']}">
+                        <fmt:message key="common.access.set" />
+                      </c:when>
+                      <c:when
+                        test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.DATA_SOURCE']}">
+                        <fmt:message key="common.access.dataSource" />
+                      </c:when>
+                      <c:when
+                        test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.ADMIN']}">
+                        <fmt:message key="common.access.admin" />
+                      </c:when>
+                      <c:otherwise>
+                        <fmt:message key="common.unknown" /> (${userData.accessType})</c:otherwise>
+                    </c:choose>
+                  </td>
+                </tr>
+              </c:forEach>
+            </table>
+          </div>
+        </div>
+        <div id="dpd-views" class="scada-card">
+          <div class="scada-header flex-row-wrap flex-align-center">
+            <h4 class="title-small">
+              <fmt:message key="pointDetails.views" />
+            </h4>
+            <span class="flex-spacer"></span>
+          </div>
+          <div>
+            <table width="100%" cellspacing="1">
+              <tr class="rowHeader">
+                <td>
+                  <fmt:message key="pointDetails.name" />
+                </td>
+                <td></td>
+              </tr>
+              <c:forEach items="${views}" var="view" varStatus="status">
+                <tr class="row<c:if test=" ${status.index % 2==1}">Alt</c:if>">
+                  <td>${view.name}</td>
+                  <td align="center"><a href="views.shtm?viewId=${view.id}">
+                      <tag:img png="icon_view" title="pointDetails.gotoView" /></a></td>
+                </tr>
+              </c:forEach>
+              <c:if test="${empty views}">
+                <tr class="row">
+                  <td colspan="2">
+                    <fmt:message key="pointDetails.notInView" />
+                  </td>
+                </tr>
+              </c:if>
+            </table>
+
+          </div>
+        </div>
+      </div>
+      <div id="dpd-chart" class="scada-card">
+        <div class="scada-header flex flex-align-center">
+          <h4 class="title-small">
             <fmt:message key="pointDetails.chart" />
           </h4>
           <span class="flex-spacer"></span>
@@ -678,16 +708,16 @@
           </div>
         </div>
         <div class="flex" style="display:none;" id="loadingChartContainer">
-          <img src="images/hourglass.png" id="loadingChart" />
+          <img src="images/hourglass.png" class="loader" />
         </div>
         <div id="chartdiv"></div>
         <div>
 
         </div>
       </div>
-      <div id="dpd-events" class="dpd-card">
-        <div class="dpd-header flex-center-vertical">
-          <h4>
+      <div id="dpd-events" class="scada-card">
+        <div class="scada-header flex-row-wrap flex-align-center">
+          <h4 class="title-small">
             <fmt:message key="pointDetails.events" />
           </h4>
           <span class="flex-spacer"></span>
@@ -803,89 +833,7 @@
         </div>
 
       </div>
-      <div id="dpd-views" class="dpd-card-2">
-        <div class="dpd-header flex-center-vertical">
-          <h4>
-            <fmt:message key="pointDetails.views" />
-          </h4>
-          <span class="flex-spacer"></span>
-        </div>
-        <div>
-          <table width="100%" cellspacing="1">
-            <tr class="rowHeader">
-              <td>
-                <fmt:message key="pointDetails.name" />
-              </td>
-              <td></td>
-            </tr>
-            <c:forEach items="${views}" var="view" varStatus="status">
-              <tr class="row<c:if test=" ${status.index % 2==1}">Alt</c:if>">
-                <td>${view.name}</td>
-                <td align="center"><a href="views.shtm?viewId=${view.id}">
-                    <tag:img png="icon_view" title="pointDetails.gotoView" /></a></td>
-              </tr>
-            </c:forEach>
-            <c:if test="${empty views}">
-              <tr class="row">
-                <td colspan="2">
-                  <fmt:message key="pointDetails.notInView" />
-                </td>
-              </tr>
-            </c:if>
-          </table>
 
-        </div>
-      </div>
-      <div id="dpd-views" class="dpd-card-2">
-        <div class="dpd-header flex-center-vertical">
-          <h4>
-            <fmt:message key="pointDetails.userAccess" />
-          </h4>
-          <span class="flex-spacer"></span>
-        </div>
-        <div>
-          <table width="100%" cellspacing="1">
-            <tr class="rowHeader">
-              <td width="16"></td>
-              <td>
-                <fmt:message key="pointDetails.username" />
-              </td>
-              <td>
-                <fmt:message key="pointDetails.accessType" />
-              </td>
-            </tr>
-            <c:forEach items="${users}" var="userData" varStatus="status">
-              <tr class="row<c:if test=" ${status.index % 2==1}">Alt</c:if>">
-                <c:set var="user" value="${userData.user}" />
-                <td><%@ include file="/WEB-INF/snippet/userIcon.jsp" %></td>
-                <td>${user.username}</td>
-                <td>
-                  <c:choose>
-                    <c:when
-                      test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.READ']}">
-                      <fmt:message key="common.access.read" />
-                    </c:when>
-                    <c:when
-                      test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.SET']}">
-                      <fmt:message key="common.access.set" />
-                    </c:when>
-                    <c:when
-                      test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.DATA_SOURCE']}">
-                      <fmt:message key="common.access.dataSource" />
-                    </c:when>
-                    <c:when
-                      test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.ADMIN']}">
-                      <fmt:message key="common.access.admin" />
-                    </c:when>
-                    <c:otherwise>
-                      <fmt:message key="common.unknown" /> (${userData.accessType})</c:otherwise>
-                  </c:choose>
-                </td>
-              </tr>
-            </c:forEach>
-          </table>
-        </div>
-      </div>
 
 
 

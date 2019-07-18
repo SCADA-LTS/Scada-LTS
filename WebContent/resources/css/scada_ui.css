@@ -1,0 +1,102 @@
+/**
+ * CSS stylesheet for ScadaLTS
+ * @version: 0.0.1
+ * @author: Radek Jajko 
+ * @created: 2019
+ */
+
+ .flex {
+     display: flex;
+ }
+ .flex-row {
+     display: flex;
+     flex-direction: row;
+ }
+ .flex-row-wrap {
+     display: flex;
+     flex-direction: row;
+     flex-wrap: wrap;
+ }
+ .flex-column {
+     display: flex;
+     flex-direction: column;
+ }
+ .flex-align-center {
+     display: flex;
+     align-items: center;
+ }
+ .flex-spacer {
+     flex-grow: 1;
+ }
+ .flex-space-between {
+     justify-content: space-between;
+ }
+
+
+ .title-standard {
+     font-family: Verdana, Arial, Helvetica, sans-serif;
+     color: #414042;
+     font-size: 16px;
+     font-weight: bold;
+     padding-left: 2%;
+ }
+ .title-small {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    color: #414042;
+    font-size: 13px;
+    font-weight: bold;
+    padding-left: 1%;
+ }
+ .scada-header {
+     border-bottom: 1px solid #39B54A;
+     margin-bottom: 5px;
+     justify-content: space-between;
+ }
+ .scada-card {
+     width: 99%;
+     margin: 10px 0.5%;
+ }
+ .scada-card-2 {
+    width: 49%;
+    margin: 10px 0.5%;
+ }
+ .scada-card-3 {
+    width: 32%;
+    margin: 10px 0.5%;
+ }
+ .scada-card-4 {
+    width: 24%;
+    margin: 10px 0.5%;
+ }
+ .scada-card-5 {
+    width: 19%;
+    margin: 10px 0.5%;
+ }
+ .scada-chart-div-default {
+     min-height: 45vh;
+ }
+ .loader {
+     animation: loading-animation 1s linear infinite;
+ }
+ @keyframes loading-animation {
+    form {
+        transform: rotate(0deg);
+    } to {
+        transform: rotate(720deg);
+    }
+ } 
+
+ @media (max-width: 1200px) {
+    .scada-card-4, .scada-card-5 {
+      width: 49%;
+    }
+    .scada-card-2 {
+        width: 99%;
+    }
+
+}
+@media (max-width: 600px) {
+    .scada-card-4, .scada-card-5, .scada-card-2 {
+      width: 99%;
+    }
+}

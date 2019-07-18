@@ -54,6 +54,7 @@
     <script src="resources/libs/amcharts4/core.js"></script>
     <script src="resources/libs/amcharts4/charts.js"></script>
     <script src="resources/libs/amcharts4/themes/animated.js"></script>
+    <script src="resources/libs/jquery-ui/jquery-ui.min.js"></script>
     
         
     <script type="text/javascript">
@@ -71,6 +72,7 @@
 
     //amChartVariables
     var chart;
+    var liveChart = true;
     var interval;
     var pointPastValues = new Map();
     var pointCurrentState = new Map();
@@ -692,7 +694,13 @@
         })
         
         pointIds.forEach(id => {
-            getDataPointValuesFromTime(id,period);
+            if (liveChart) {
+                getDataPointValuesFromTime(id,period);
+            } else {
+                let startDate = new Date(jQuery("#start-date")[0].value).getTime();
+                let endDate = new Date(jQuery("#end-date")[0].value).getTime();
+                getDataPointValuesFromTime(id, startDate, endDate);
+            }
         })
     }
 
@@ -738,10 +746,11 @@
      * Load data from REST API and populate dataPoint variables.
      *
      * @param {number} pointId - DataPoint ID in database
-     * @param {number} timePeriod - Begining timestamp (default: 1 day)
+     * @param {number} startTimestamp - Begining timestamp (default: 1 day)
+     * @param {number} endTimestamp - Ending timestamp (default: now)
      */
-    function getDataPointValuesFromTime(pointId, timePeriod = new Date().getTime() - (24*60*60*1000)) {
-        jQuery.get(API_NAME + "/api/point_value/getValuesFromTime/id/" + timePeriod + "/" + pointId, function(data, status) {
+    function getDataPointValuesFromTime(pointId, startTimestamp = new Date().getTime() - (24*60*60*1000), endTimestamp = new Date().getTime()) {
+        jQuery.get(API_NAME + "/api/point_value/getValuesFromTimePeriod/" + pointId + "/" + startTimestamp + "/" + endTimestamp, function(data, status) {
             if(status == "success") {
                 data = JSON.parse(data)
                 if(pointCurrentState.get(pointId) == undefined) {
@@ -811,9 +820,28 @@
                 jQuery("#loadingChartContainer").hide();
                 jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
                 initAmChart();
-                liveUpdatePoints();
+                if(liveChart) {
+                    liveUpdatePoints();
+                }
             }, 500)
         });
+        jQuery( ".calendar" ).datepicker();
+        jQuery( ".radio-button" ).checkboxradio();
+        jQuery('#radio-btn-1').change(function() {
+            if(jQuery("#radio-btn-1").is(':checked')) {
+                jQuery("#config-live-chart").toggle();
+                jQuery("#config-chart").toggle();
+                liveChart = true;
+            } 
+        });
+        jQuery('#radio-btn-2').change(function() {
+            if(jQuery("#radio-btn-2").is(':checked')) {
+                jQuery("#config-live-chart").toggle();
+                jQuery("#config-chart").toggle();
+                liveChart = false;
+            } 
+        });
+        
 
     	  (function($) {
     		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
@@ -833,6 +861,8 @@
    	  });
     </script>
     <style>
+        @import "resources/css/scada_ui.css";
+        @import "resources/libs/jquery-ui/jquery-ui.min.css";
         .watch-list-container {
             display: flex;
             margin: 0px 20px 10px 20px;
@@ -873,15 +903,21 @@
         .flex-spacer {
             flex-grow: 1;
         }
+        .flex-end {
+            justify-content: flex-end
+        }
         .justify-flex {
             justify-content: space-between;   
         }
+        .watch-list-content{
+            overflow: auto;
+            height: 30vh;
+        }
+        .chart-button-container {
+            padding: 0 20px;
+        }
         #loadingChartContainer {
             justify-content: center;
-        }
-        #loadingChart {
-            animation: loading-animation 1s linear, infinite;
-
         }
         @keyframes loading-animation {
             form {
@@ -895,8 +931,8 @@
 
     <div class="watch-list-container" id="splitContainer" dojoType="SplitContainer" orientation="horizontal" sizerWidth="3" activeSizing="true">
         <div class="watch-list-point-list">
-            <div class="watch-list-point-list-title">
-                <span class="smallTitle"><fmt:message key="watchlist.points"/></span>
+            <div class="flex scada-header watch-list-point-list-title">
+                <span class="title-standard"><fmt:message key="watchlist.points"/></span>
                 <tag:help id="watchListPoints"/>
             </div>
             <div id="treeDiv" style="display:none;">
@@ -904,13 +940,9 @@
             </div>
         </div>
         <div class="watch-list" dojoType="ContentPane" sizeMin="50" sizeShare="50">
-            <div class="watch-list-header">
-                <div>
-                    <span class="smallTitle"><fmt:message key="watchlist.points"/></span>
-                    <tag:help id="watchListPoints"/>
-                </div>
-                
-                <div>
+            <div class="flex-align-center scada-header watch-list-header">
+                <span class="title-standard"><fmt:message key="watchlist.points"/></span>
+                <div class="scada-card-5 flex-align-center flex-space-between">
                     <sst:select id="watchListSelect" value="${selectedWatchList}" onchange="watchListChanged()" onmouseover="closeLayers();">
                         <c:forEach items="${watchLists}" var="wl">
                             <sst:option value="${wl.key}">${sst:escapeLessThan(wl.value)}</sst:option>
@@ -936,12 +968,13 @@
                     <tag:img png="add" onclick="addWatchList(false)" title="watchlist.addNewList" onmouseover="closeLayers();"/>
                     <tag:img png="delete" id="watchListDeleteImg" onclick="deleteWatchList()" title="watchlist.deleteList" style="display:none;" onmouseover="closeLayers();"/>
                     <tag:img png="report_add" onclick="createReport()" title="watchlist.createReport" onmouseover="closeLayers();"/>
+                    <tag:help id="watchListPoints"/>
                 </div>
 
 
             </div>
             <div class="watch-list-content" id="watchListDiv">
-                <img src="images/hourglass.png" id="loadingImg"/>
+                <img src="images/hourglass.png" id="loadingImg" class="loader"/>
                 <table style="display:none;">
                     <tbody id="p_TEMPLATE_">
                         <tr id="p_TEMPLATE_BreakRow"><td class="horzSeparator" colspan="5"></td></tr>
@@ -987,38 +1020,62 @@
             </div>
         </div>
     </div>
-    <div class="chart-container">
-        <div class="flex chart-toolbar">
-            <span class="smallTitle" id="chart-title"></span>
-            <span class="flex-spacer"></span>
-            <div class="flex chart-selects">
-                <div class="flex justify-flex">
-                    <span>Display values from last: </span>
-                    <input type="number" id="chartPeriodValue" value="60"/>
-                    <select id="chartPeriodType">
-                        <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
-                    </select>
+    <div class="scada-chart-div-default">
+        <div class="flex-column">
+            <div class="scada-card flex-row flex-end">
+                <div id="config-live-chart">
+                    <div>
+                        <span>Display values from last: </span>
+                        <div>
+                            <input type="number" id="chartPeriodValue" value="60"/>
+                            <select id="chartPeriodType">
+                                <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <span>Refresh chart every: </span>
+                        <div>
+                            <input type="number" id="refreshPeriodValue" value="10"/>
+                            <select id="refreshPeriodType">
+                                <tag:timePeriodOptions s="true" min="true"/>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex justify-flex">
-                    <span>Refresh chart every: </span>
-                    <input type="number" id="refreshPeriodValue" value="10"/>
-                        <select id="refreshPeriodType">
-                            <tag:timePeriodOptions s="true" min="true"/>
-                        </select>
+                <div id="config-chart" style="display: none;">
+                    <div>
+                        <span>Start Date: </span>
+                        <div>
+                            <input type="text" class="calendar" name="date" id="start-date">
+                        </div>
+                    </div>
+                    <div>
+                        <span>End Date: </span>
+                        <div>
+                            <input type="text" class="calendar" name="date" id="end-date">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-column chart-button-container">
+                    <label for="radio-btn-1">Live Chart</label>
+                    <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-1" checked>
+                    <label for="radio-btn-2">Values Chart</label>
+                    <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-2">
+                    <button id="chart-show-button" class="ui-button ui-widget ui-corner-all">Show chart</button>
                 </div>
             </div>
-            <button id="chart-show-button">Show chart</button>
+            <span class="title-standard scada-card-2" id="chart-title"></span>
         </div>
         <div class="flex" style="display:none;" id="loadingChartContainer">
-            <img src="images/hourglass.png" id="loadingChart"/>
+            <img src="images/hourglass.png" id="loadingChart" class="loader"/>
         </div>
         <div id="chartdiv">
         </div>
-
     </div>
     
 
-    <!-- <table width="100%">
+    <table width="100%" style="display: none;">
     
     <tr><td>
       <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden; height: 500px;">
@@ -1032,21 +1089,19 @@
             </td>
             <td  align="left"><tag:img id="imageChartLiveImg" png="control_play_blue" title="watchlist.imageChartLiveButton"
                       onclick="switchChartMode()"/><br/></td>
-            <td class="vertSeparator"></td>
+
             <td align="right"><tag:dateRange/></td>
             <td>
               <tag:img id="imageChartImg" png="control_play_blue" title="watchlist.imageChartButton"
                       onclick="getImageChart()"/>
 <%--               <tag:img id="chartDataImg" png="bullet_down" title="watchlist.chartDataButton" --%>
-<!-<!--                       onclick="getChartData()"/> ->
+<!--                       onclick="getChartData()"/> -->
             </td>
           </tr>
-          <tr><td colspan="6" id="imageChartDiv"></td></tr>
-          <tr><td colspan="6" id="temp" style="display:none"></td></tr>
         </table>
       </div>
     </td></tr>
 
-    </table> -->
+    </table>
   </jsp:body>
 </tag:page>
