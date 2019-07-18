@@ -23,9 +23,11 @@
   <script src="resources/libs/amcharts4/core.js"></script>
   <script src="resources/libs/amcharts4/charts.js"></script>
   <script src="resources/libs/amcharts4/themes/animated.js"></script>
+  <script src="resources/libs/jquery-ui/jquery-ui.min.js"></script>
   <script type="text/javascript">
 
     mango.view.initPointDetails();
+    var liveChart = true;
 
     function init() {
       getHistoryTableData();
@@ -145,6 +147,9 @@
     jQuery(document).ready(function () {
       var pointId = Number(jQuery("#pointid").text());
       initAmChartPoint(pointId);
+
+      jQuery( ".calendar" ).datepicker();
+      jQuery( ".radio-button" ).checkboxradio();
       jQuery("#loadingChartContainer").show();
       setTimeout(function () {
         jQuery("#loadingChartContainer").hide();
@@ -152,14 +157,29 @@
         liveUpdatePoints();
       }, 500);
 
+      jQuery('#radio-btn-1').change(function() {
+            if(jQuery("#radio-btn-1").is(':checked')) {
+                jQuery("#config-live-chart").toggle();
+                jQuery("#config-chart").toggle();
+                liveChart = true;
+            } 
+        });
+        jQuery('#radio-btn-2').change(function() {
+            if(jQuery("#radio-btn-2").is(':checked')) {
+                jQuery("#config-live-chart").toggle();
+                jQuery("#config-chart").toggle();
+                liveChart = false;
+            } 
+        });
       jQuery("#chart-show-button").click(function () {
         initAmChartPoint(pointId);
         jQuery("#loadingChartContainer").show();
         setTimeout(function () {
           jQuery("#loadingChartContainer").hide();
-          jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
           initAmChart();
-          liveUpdatePoints();
+          if(liveChart){
+            liveUpdatePoints();
+          }
         }, 500)
       });
 
@@ -284,7 +304,13 @@
     function initAmChartPoint(pointId) {
       clearChart();
       let period = new Date().getTime() - calculatePeriod();
-      getDataPointValuesFromTime(pointId, period);
+      if(liveChart) {
+        getDataPointValuesFromTime(pointId, period);
+      } else {
+        let startDate = new Date(jQuery("#start-date")[0].value).getTime();
+        let endDate = new Date(jQuery("#end-date")[0].value).getTime();
+        getDataPointValuesFromTime(pointId, startDate, endDate);
+      }
     }
 
     /**
@@ -329,10 +355,10 @@
      * Load data from REST API and populate dataPoint variables.
      *
      * @param {number} pointId - DataPoint ID in database
-     * @param {number} timePeriod - Begining timestamp (default: 1 day)
+     * @param {number} endTimestamp - Ending timestamp (default: now)
      */
-    function getDataPointValuesFromTime(pointId, timePeriod = new Date().getTime() - (24 * 60 * 60 * 1000)) {
-      jQuery.get(API_NAME + "/api/point_value/getValuesFromTime/id/" + timePeriod + "/" + pointId, function (data, status) {
+    function getDataPointValuesFromTime(pointId, startTimestamp = new Date().getTime() - (24*60*60*1000), endTimestamp = new Date().getTime()) {
+      jQuery.get(API_NAME + "/api/point_value/getValuesFromTimePeriod/" + pointId + "/" + startTimestamp + "/" + endTimestamp, function(data, status) {
         if (status == "success") {
           data = JSON.parse(data)
           if (pointCurrentState.get(pointId) == undefined) {
@@ -398,6 +424,7 @@
 
   <style>
     @import "resources/css/scada_ui.css";
+    @import "resources/libs/jquery-ui/jquery-ui.min.css";
     .line-title {
       display: inline;
     }
@@ -406,6 +433,9 @@
       display: flex;
       padding: 10px 0px 10px 0px;
       border-bottom: 1px solid #90df9ba9;
+    }
+    .flex-end {
+      justify-content: flex-end;
     }
 
     .dps-detail .detail-key {
@@ -474,7 +504,7 @@
       <div id="dpd-details" class="scada-card-4 flex-column">
           <div id="dpd-point-details" class="scada-card">
               <div class="scada-header flex-row-wrap flex-align-center">
-                <h4 class="title-small">Point Details</h4>
+                <h4 class="title-small"><fmt:message key="watchlist.pointDetails"/></h4>
                 <span class="flex-spacer"></span>
                 <c:if test="${pointEditor}">
                   <a href="data_point_edit.shtm?dpid=${point.id}">
@@ -683,29 +713,52 @@
         </div>
       </div>
       <div id="dpd-chart" class="scada-card">
-        <div class="scada-header flex flex-align-center">
-          <h4 class="title-small">
-            <fmt:message key="pointDetails.chart" />
-          </h4>
-          <span class="flex-spacer"></span>
-          <span id="imageChartAsof"></span>
-          <div class="chart-toolbar chart-selects">
-            <div class="justify-flex">
-              <span>Display values from last: </span>
-              <input type="number" id="chartPeriodValue" value="60" />
-              <select id="chartPeriodType">
-                <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true" />
-              </select>
+
+        <div class="flex-column">
+            <div class="scada-card flex-row flex-end">
+                <div id="config-live-chart">
+                    <div>
+                        <span><fmt:message key="watchlist.chart.liveLast"/></span>
+                        <div>
+                            <input type="number" id="chartPeriodValue" value="60"/>
+                            <select id="chartPeriodType">
+                                <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <span><fmt:message key="watchlist.chart.liveRefresh"/></span>
+                        <div>
+                            <input type="number" id="refreshPeriodValue" value="10"/>
+                            <select id="refreshPeriodType">
+                                <tag:timePeriodOptions s="true" min="true"/>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="config-chart" style="display: none;">
+                    <div>
+                        <span><fmt:message key="watchlist.chart.start"/></span>
+                        <div>
+                            <input type="text" class="calendar" name="date" id="start-date" autocomplete="off">
+                        </div>
+                    </div>
+                    <div>
+                        <span><fmt:message key="watchlist.chart.end"/></span>
+                        <div>
+                            <input type="text" class="calendar" name="date" id="end-date" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-column chart-button-container">
+                    <label for="radio-btn-1"><fmt:message key="watchlist.chart.liveChart"/></label>
+                    <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-1" checked>
+                    <label for="radio-btn-2"><fmt:message key="watchlist.chart.valueChart"/></label>
+                    <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-2">
+                    <button id="chart-show-button" class="ui-button ui-widget ui-corner-all"><fmt:message key="watchlist.chart.launch"/></button>
+                </div>
             </div>
-            <div class="flex justify-flex">
-              <span>Refresh chart every: </span>
-              <input type="number" id="refreshPeriodValue" value="10" />
-              <select id="refreshPeriodType">
-                <tag:timePeriodOptions s="true" min="true" />
-              </select>
-            </div>
-            <button id="chart-show-button">Show chart</button>
-          </div>
+            <span class="title-standard scada-card-2" id="chart-title">Chart</span>
         </div>
         <div class="flex" style="display:none;" id="loadingChartContainer">
           <img src="images/hourglass.png" class="loader" />
@@ -838,6 +891,29 @@
 
 
     </div>
+
+
+    <c:if test="${!empty periodType}">
+      <table style="display: none">
+      <tr >
+        <td colspan="3">
+          <!--  chart with editable properties and annotations -->
+          <div class="borderDiv marB">
+            <table width="100%">
+              <tr>
+                <td class="smallTitle"><fmt:message key="pointDetails.chart"/></td>
+                <td id="imageChartAsof"></td>
+                <td align="right"><tag:dateRange/></td>
+                <td><tag:img id="imageChartImg" png="control_play_blue" title="pointDetails.imageChartButton"
+                        onclick="getImageChart()"/></td>
+              </tr>
+              <tr><td colspan="3" id="imageChartDiv"></td></tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </table>
+    </c:if>
 
   </div>
 

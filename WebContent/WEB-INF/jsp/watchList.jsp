@@ -446,114 +446,6 @@
           }
       }
 
-    //   function showChart(mangoId, event, source) {
-    // 	  if (isMouseLeaveOrEnter(event, source)) {
-    //           // Take the data in the chart textarea and put it into the chart layer div
-    //           $set('p'+ mangoId +'ChartLayer', $get('p'+ mangoId +'Chart'));
-    //           showMenu('p'+ mangoId +'ChartLayer', 4, 12);
-    // 	  }
-    //   }
-
-    //   function hideChart(mangoId, event, source) {
-    //       if (isMouseLeaveOrEnter(event, source))
-    //     	  hideLayer('p'+ mangoId +'ChartLayer');
-    //   }
-
-      //
-      // Image chart
-      //
-    //   function getImageChart() {
-    // 	  isChartLive=false;
-    //     document.getElementById("chartContainer").style.height = "500px";
-    // 	  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
-    //       var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
-    //       var height = dojo.html.getContentBox($("chartContainer")).height - 80;
-    // 	  height = height < 100 ? 100 : height;
-    //       startImageFader($("imageChartImg"));
-    //       WatchListDwr.getImageChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
-    //     		  $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"),
-    //     		  $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"),
-    //     		  width, height, function(data) {
-    //           $("imageChartDiv").innerHTML = data;
-    //           stopImageFader($("imageChartImg"));
-
-    //           // Make sure the length of the chart doesn't mess up the watch list display. Do async to
-    //           // make sure the rendering gets done.
-    //           setTimeout('dojo.widget.manager.getWidgetById("splitContainer").onResized()', 2000);
-    //       });
-    //   }
-
-    //   function getImageChartLive(period) {
-    // 	  var dataT;
-    // 	  var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
-    // 	  var height = dojo.html.getContentBox($("chartContainer")).height - 80;
-    // 	  height = height < 200 ? 200 : height;
-    // 	  $("imageChartDiv").height=height;
-    // 	  var sourcet = "\"chart/"+Date.now()+"_"+period;
-    // 	  var pointIds = $get("chartCB");
-    // 	  if(isChartLive){
-    //       	for (var i=0; i<pointIds.length; i++) {
-    //       	    if (pointIds[i] == "_TEMPLATE_") {
-    //       	    }else{
-    //       	    	sourcet +="_"+pointIds[i];
-    //       	    }
-    //       	}
-    // 	  	sourcet += ".png?w="+width+"&h="+height+"\"";
-    // 	  	dataT = "<img id=chartTemp src="+sourcet+" onload=\"switchChart()\"/>";
-    // 	  	$("temp").innerHTML = dataT;
-    // 	  }
-    //   }
-
-    //   function getChartData() {
-    // 	  var pointIds = getChartPointList();
-    // 	  if (pointIds.length == 0)
-    // 		  alert("<fmt:message key="watchlist.noExportables"/>");
-    // 	  else {
-    //           startImageFader($("chartDataImg"));
-    //           WatchListDwr.getChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
-    //                   $get("fromHour"), $get("fromMinute"), $get("fromSecond"), $get("fromNone"), $get("toYear"),
-    //                   $get("toMonth"), $get("toDay"), $get("toHour"), $get("toMinute"), $get("toSecond"), $get("toNone"),
-    //                   function(data) {
-    //               stopImageFader($("chartDataImg"));
-    //               window.location = "chartExport/watchListData.csv";
-    //           });
-    // 	  }
-    //   }
-
-    //   function getChartPointList() {
-    //       var pointIds = $get("chartCB");
-    //       for (var i=pointIds.length-1; i>=0; i--) {
-    //           if (pointIds[i] == "_TEMPLATE_") {
-    //               pointIds.splice(i, 1);
-    //           }
-    //       }
-    //       return pointIds;
-    //   }
-
-      // change from static to live
-    //   function switchChartMode(){
-    // 	  if(isChartLive){
-    // 		  isChartLive=false;
-    // 		  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
-    //       document.getElementById("imageChartDiv").style.display = "none";
-    // 	   } else {
-    // 		  isChartLive=true;
-    // 		  jQuery("#imageChartLiveImg").attr('src', 'images/control_stop_blue.png');
-    // 		  getImageChartLive(calculatePeriod());
-    //       document.getElementById("imageChartDiv").style.display = "table-cell";
-    //       document.getElementById("chartContainer").style.height = getCookie("chart_container_height")
-    // 	  }
-    //   }
-
-    //   // insert new (loaded) chart
-    //   function switchChart(){
-    // 	  if(isChartLive){
-    // 	  	var datan = "<img src="+jQuery("#chartTemp").attr('src')+"/>";
-	//   	  	$("imageChartDiv").innerHTML = datan;
-	//   	  	setTimeout(function(){getImageChartLive(calculatePeriod());}, 2500);
-	//   	  }
-    //   }
-
       // calculate period for live chart
       function calculatePeriod(){
           let period
@@ -603,20 +495,6 @@
     	    }
     	    return "";
       }
-
-      function saveDivHeightsToCookieOnChange(){
-    	  if(splitContainerHeight != jQuery("#splitContainer").height()){
-    		  setCookie("split_container_height", jQuery("#splitContainer").height());
-    		  splitContainerHeight = jQuery("#splitContainer").height();
-  		  }
-    	  if(chartContainerHeight != jQuery("#chartContainer").height()){
-    		  setCookie("chart_container_height", jQuery("#chartContainer").height());
-    		  chartContainerHeight = jQuery("#chartContainer").height();
-  		  }
-      }
-
-      var splitContainerHeight;
-      var chartContainerHeight;
 
     /* AMCHART SECTION */
     function initAmChart() {
@@ -813,20 +691,22 @@
     }
 
     jQuery(document).ready(function(){
-        jQuery("#chart-show-button").click(function(){
-            initAmChartPoints();
-            jQuery("#loadingChartContainer").show();
-            setTimeout(function() {
-                jQuery("#loadingChartContainer").hide();
-                jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
-                initAmChart();
-                if(liveChart) {
-                    liveUpdatePoints();
-                }
-            }, 500)
+
+        /* load and save point-list-resizable-size */
+        jQuery("#watch-list-point-list").css('width',parseInt(getCookie("pointlist_width")));
+        jQuery("#watch-list-point-list").on("resizestop", function( event, ui ) {
+            setCookie("pointlist_width", jQuery("#watch-list-point-list").width());
         });
+
+        /* initiate components */
         jQuery( ".calendar" ).datepicker();
         jQuery( ".radio-button" ).checkboxradio();
+        jQuery('#watch-list-point-list').resizable({
+            maxWidth: 1200,
+            minWidth: 200
+        });
+
+        /* components behaviour */
         jQuery('#radio-btn-1').change(function() {
             if(jQuery("#radio-btn-1").is(':checked')) {
                 jQuery("#config-live-chart").toggle();
@@ -841,23 +721,19 @@
                 liveChart = false;
             } 
         });
+        jQuery("#chart-show-button").click(function(){
+            initAmChartPoints();
+            jQuery("#loadingChartContainer").show();
+            setTimeout(function() {
+                jQuery("#loadingChartContainer").hide();
+                jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
+                initAmChart();
+                if(liveChart) {
+                    liveUpdatePoints();
+                }
+            }, 500)
+        });
         
-
-    	  (function($) {
-    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-
-    		splitContainerHeight = parseInt(getCookie("split_container_height"));
-    		if(splitContainerHeight != null){
-    			jQuery("#splitContainer").height(splitContainerHeight);
-    		}
-    		chartContainerHeight = parseInt(getCookie("chart_container_height"));
-    		if(chartContainerHeight != null){
-    			jQuery("#chartContainer").height(chartContainerHeight);
-    		}
-
-    		window.setInterval(saveDivHeightsToCookieOnChange, 2000);
-   	  	})(jQuery);
    	  });
     </script>
     <style>
@@ -868,11 +744,13 @@
             margin: 0px 20px 10px 20px;
             min-height: 30vh;
         }
-        .watch-list-point-list {
+        #watch-list-point-list {
             display: flex;
-            width: 30%;
             float: left;
             flex-direction: column;
+            margin-right: 5px;
+            padding-right: 5px;
+            border-right: 1px dashed #39B54A;
         }
         .watch-list {
             width: 100%;
@@ -880,9 +758,6 @@
         .watch-list-header {
             display: flex;
             justify-content: space-between;
-        }
-        .dojoTree {
-            position: relative !important;
         }
         .chart-container {
             min-height: 30vh;
@@ -892,16 +767,9 @@
             flex-direction: column;
             width: 25vw;
         }
-        
         #chartdiv {
             width: 100%;
             height: 500px;
-        }
-        .flex {
-            display: flex;
-        }
-        .flex-spacer {
-            flex-grow: 1;
         }
         .flex-end {
             justify-content: flex-end
@@ -919,18 +787,10 @@
         #loadingChartContainer {
             justify-content: center;
         }
-        @keyframes loading-animation {
-            form {
-                transform: rotate(0deg);
-            } to {
-                transform: rotate(720deg);
-            }
-        }
-
     </style>
 
-    <div class="watch-list-container" id="splitContainer" dojoType="SplitContainer" orientation="horizontal" sizerWidth="3" activeSizing="true">
-        <div class="watch-list-point-list">
+    <div class="watch-list-container" id="splitContainer">
+        <div id="watch-list-point-list">
             <div class="flex scada-header watch-list-point-list-title">
                 <span class="title-standard"><fmt:message key="watchlist.points"/></span>
                 <tag:help id="watchListPoints"/>
@@ -941,7 +801,7 @@
         </div>
         <div class="watch-list" dojoType="ContentPane" sizeMin="50" sizeShare="50">
             <div class="flex-align-center scada-header watch-list-header">
-                <span class="title-standard"><fmt:message key="watchlist.points"/></span>
+                <span class="title-standard"><fmt:message key="watchlist.watchlist"/></span>
                 <div class="scada-card-5 flex-align-center flex-space-between">
                     <sst:select id="watchListSelect" value="${selectedWatchList}" onchange="watchListChanged()" onmouseover="closeLayers();">
                         <c:forEach items="${watchLists}" var="wl">
@@ -1025,7 +885,7 @@
             <div class="scada-card flex-row flex-end">
                 <div id="config-live-chart">
                     <div>
-                        <span>Display values from last: </span>
+                        <span><fmt:message key="watchlist.chart.liveLast"/></span>
                         <div>
                             <input type="number" id="chartPeriodValue" value="60"/>
                             <select id="chartPeriodType">
@@ -1034,7 +894,7 @@
                         </div>
                     </div>
                     <div>
-                        <span>Refresh chart every: </span>
+                        <span><fmt:message key="watchlist.chart.liveRefresh"/></span>
                         <div>
                             <input type="number" id="refreshPeriodValue" value="10"/>
                             <select id="refreshPeriodType">
@@ -1045,24 +905,24 @@
                 </div>
                 <div id="config-chart" style="display: none;">
                     <div>
-                        <span>Start Date: </span>
+                        <span><fmt:message key="watchlist.chart.start"/></span>
                         <div>
-                            <input type="text" class="calendar" name="date" id="start-date">
+                            <input type="text" class="calendar" name="date" id="start-date" autocomplete="off">
                         </div>
                     </div>
                     <div>
-                        <span>End Date: </span>
+                        <span><fmt:message key="watchlist.chart.end"/></span>
                         <div>
-                            <input type="text" class="calendar" name="date" id="end-date">
+                            <input type="text" class="calendar" name="date" id="end-date" autocomplete="off">
                         </div>
                     </div>
                 </div>
                 <div class="flex-column chart-button-container">
-                    <label for="radio-btn-1">Live Chart</label>
+                    <label for="radio-btn-1"><fmt:message key="watchlist.chart.liveChart"/></label>
                     <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-1" checked>
-                    <label for="radio-btn-2">Values Chart</label>
+                    <label for="radio-btn-2"><fmt:message key="watchlist.chart.valueChart"/></label>
                     <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-2">
-                    <button id="chart-show-button" class="ui-button ui-widget ui-corner-all">Show chart</button>
+                    <button id="chart-show-button" class="ui-button ui-widget ui-corner-all"><fmt:message key="watchlist.chart.launch"/></button>
                 </div>
             </div>
             <span class="title-standard scada-card-2" id="chart-title"></span>
