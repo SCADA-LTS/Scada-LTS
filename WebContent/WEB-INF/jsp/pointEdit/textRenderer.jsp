@@ -112,6 +112,49 @@
     <tbody id="textRendererPlain" style="display:none;">
       <tr>
         <td class="formLabel"><fmt:message key="pointEdit.text.suffix"/></td>
+        <td class="formField">
+          <select id="suffix-select">
+            <option value="val-suff-custom">Custom</option>
+            <optgroup label="Base units">
+              <option value="val-suff-0">ampere</option>
+              <option value="val-suff-1">degree</option>
+              <option value="val-suff-2">degree Celsius</option>
+              <option value="val-suff-3">degree Fahrenheit</option>
+              <option value="val-suff-4">hertz</option>
+              <option value="val-suff-5">metre</option>
+              <option value="val-suff-6">metre per second</option>
+              <option value="val-suff-7">metre per second squared</option>
+              <option value="val-suff-8">kilometre per hour</option>
+              <option value="val-suff-9">percent</option>
+              <option value="val-suff-10">second</option>
+              <option value="val-suff-11">volt</option>
+              <option value="val-suff-12">watt</option>
+            </optgroup>
+            <optgroup label="Other units">
+              <option value="val-suff-13">ampere per square metre</option>
+              <option value="val-suff-14">ampere per metre</option>
+              <option value="val-suff-15">coulomb</option>
+              <option value="val-suff-16">decibel</option>
+              <option value="val-suff-17">farad</option>
+              <option value="val-suff-18">joule</option>
+              <option value="val-suff-19">kilogram</option>
+              <option value="val-suff-20">kilogram per square metre</option>
+              <option value="val-suff-21">kilogram per cubic metre</option>
+              <option value="val-suff-22">square metre</option>
+              <option value="val-suff-23">cubic metre</option>
+              <option value="val-suff-25">newton</option>
+              <option value="val-suff-26">newton metre</option>
+              <option value="val-suff-27">ohm</option>            
+              <option value="val-suff-28">pascal</option>
+              <option value="val-suff-29">radian</option>
+              <option value="val-suff-30">radian per second</option>
+              <option value="val-suff-31">steradian</option>
+            </optgroup>
+          </select>
+        </td>
+      </tr>
+      <tr id="suff-custom">
+        <td class="formLabel">Custom suffix</td>
         <td class="formField"><input id="textRendererPlainSuffix" type="text"/></td>
       </tr>
     </tbody>
@@ -438,4 +481,52 @@
   }
   var textRendererEditor = new TextRendererEditor();
   dojo.addOnLoad(textRendererEditor, "init");
+
+  jQuery(document).ready(function() {
+    var select = $("suffix-select");
+    jQuery("#suffix-select").change(function() {
+      $("textRendererPlainSuffix").value = getSuffixEngUnit(select.options[select.selectedIndex].value);
+    })
+  })
+
+  function getSuffixEngUnit(selected) {
+    jQuery("#suff-custom").hide();
+    switch (selected) {
+      case "val-suff-0": return " [A]";
+      case "val-suff-1": return "\xB0";
+      case "val-suff-2": return " \xB0C";
+      case "val-suff-3": return " \xB0F";
+      case "val-suff-4": return " [Hz]";
+      case "val-suff-5": return " [m]";
+      case "val-suff-6": return " [m/s]";
+      case "val-suff-7": return " [m/s\xb2]";
+      case "val-suff-8": return " [km/h]";
+      case "val-suff-9": return "%";
+      case "val-suff-10": return " [s]";
+      case "val-suff-11": return " [V]";
+      case "val-suff-12": return " [W]";
+      case "val-suff-13": return " [A/m\xb2]";
+      case "val-suff-14": return " [A/m]";
+      case "val-suff-15": return " [C]";
+      case "val-suff-16": return " [dB]";
+      case "val-suff-17": return " [F]";
+      case "val-suff-18": return " [J]";
+      case "val-suff-19": return " [kg]";
+      case "val-suff-20": return " [kg/m\xb2]";
+      case "val-suff-21": return " [kg/m\xb3]";
+      case "val-suff-22": return " [m\xb2]";
+      case "val-suff-23": return " [m\xb3]";
+      case "val-suff-25": return " [N]";
+      case "val-suff-26": return " [Nm]";
+      case "val-suff-27": return " [\u2126]";
+      case "val-suff-28": return " [Pa]";
+      case "val-suff-29": return " [rad]";
+      case "val-suff-30": return " [rad/s]";
+      case "val-suff-301": return " [sr]";
+      case "val-suff-custom": 
+      jQuery("#suff-custom").show();
+      return "";
+    }
+
+  }
 </script>
