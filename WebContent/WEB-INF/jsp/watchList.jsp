@@ -182,7 +182,31 @@
                 var handler = new TreeClickHandler();
                 dojo.event.topic.subscribe("tree/titleClick", handler, 'titleClick');
                 dojo.event.topic.subscribe("tree/expand", handler, 'expand');
-                getChartType(){
+                getChartType();
+                loadChartCookie();
+                setTimeout(function () {
+                    showAmChart()
+                }, 500)
+            }
+
+            function loadChartCookie() {
+                let chartSettings = JSON.parse(getCookie("chart_cookie"));
+                $set("refreshPeriodValue", chartSettings.refreshPeriodValue);
+                $set("refreshPeriodType", chartSettings.refreshPeriodType);
+                $set("chartPeriodValue", chartSettings.chartPeriodValue);
+                $set("chartPeriodType", chartSettings.chartPeriodType);
+                $set("start-date", chartSettings.chartStartDate);
+                $set("end-date", chartSettings.chartEndDate);
+                if(chartSettings.liveChart) {
+                    jQuery("#config-live-chart").show();
+                    jQuery("#config-chart").hide();
+                    jQuery("#radio-btn-1").click();
+                    liveChart = true;
+                } else {
+                    jQuery("#radio-btn-2").click();
+                    liveChart = false;
+                }
+
             }
 
             function getChartType(){
@@ -706,16 +730,8 @@
                     }
                 });
                 jQuery("#chart-show-button").click(function () {
-                    initAmChartPoints();
-                    jQuery("#loadingChartContainer").show();
-                    setTimeout(function () {
-                        jQuery("#loadingChartContainer").hide();
-                        jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
-                        scadaAmChartInit();
-                        if (liveChart) {
-                            scadaAmChartLiveUpdatePoints();
-                        }
-                    }, 500)
+                    saveAmChartSettings();
+                    showAmChart();
                 });
                 jQuery("#wlEditDiv").click(function () {
                     jQuery("#watchlist-modal").css('display', 'block')
@@ -728,7 +744,35 @@
                     updateTimeZone();
                 }
 
+                
+
             });
+
+            function showAmChart() {
+                initAmChartPoints();
+                    jQuery("#loadingChartContainer").show();
+                    setTimeout(function () {
+                        jQuery("#loadingChartContainer").hide();
+                        jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
+                        scadaAmChartInit();
+                        if (liveChart) {
+                            scadaAmChartLiveUpdatePoints();
+                        }
+                    }, 500)
+            }
+
+            function saveAmChartSettings() {
+                let chartCookie = {
+                    "liveChart": jQuery("#radio-btn-1").is(':checked'),
+                    "refreshPeriodValue": $get("refreshPeriodValue"),
+                    "refreshPeriodType": $get("refreshPeriodType"),
+                    "chartPeriodValue": $get("chartPeriodValue"),
+                    "chartPeriodType":$get("chartPeriodType"),
+                    "chartStartDate":$get("start-date"),
+                    "chartEndDate":$get("end-date")
+                }
+                setCookie("chart_cookie", JSON.stringify(chartCookie));
+            }
         </script>
         <style>
             @import "resources/css/scada_ui.css";

@@ -149,18 +149,21 @@
 	</target>
 
 	<target name="new-ui-dependency_win" depends="checkOS" if="isWindows">
-		<exec dir="./ScadaLTS-UI-1" executable="cmd">
-			<arg value="npm install"/>
+		<exec dir="./ScadaLTS-UI-1" executable="npm.cmd">
+			<arg value="install"/>
 		</exec>
 	</target>
 	<target name="new-ui_win" depends="new-ui-dependency_win" if="isWindows">
-		<exec dir="./ScadaLTS-UI-1" executable="cmd">
-			<arg value="npm run"/>
-			<arg value="npm build"/>
+		<echo message="Builiding ScadaLTS-UI"/>
+		<exec dir="./ScadaLTS-UI-1" executable="npm.cmd"  failonerror="true">
+<!--			<arg line="/c npm run"/>-->
+			<arg value="run-script"/>
+			<arg value="build"/>
 		</exec>
 	</target>
 
 	<target name="new-ui-dependency_unix" depends="checkOS" if="isUnix">
+		<echo message="Installing npm"/>
 		<exec dir="./ScadaLTS-UI-1" executable="npm">
 			<arg value="install"/>
 		</exec>

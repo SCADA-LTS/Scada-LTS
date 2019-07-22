@@ -20,7 +20,38 @@ var pointCurrentState = new Map();
 var lastUpdate = new Map();
 var chartTypes = ["0","1","0"]; //Binary // Numeric //Multistate
 
+
 am4core.ready();
+
+//Create series
+function createAxisAndSeries(field, type, suffix) {
+
+    let series = getChartTypeSeries(type);
+
+    series.dataFields.valueY = field;
+    series.dataFields.dateX = "date";
+    series.name = field;
+    series.tooltipText = "{name}: [bold]{valueY}" + suffix + "[/]";
+    series.strokeWidth = 2;
+    series.minBulletDistance = 15;
+
+    let bullet = series.bullets.push(new am4charts.CircleBullet());
+    bullet.circle.strokeWidth = 2;
+    bullet.circle.radius = 4;
+    bullet.circle.fill = am4core.color("#fff");
+
+    var bullethover = bullet.states.create("hover");
+    bullethover.properties.scale = 1.3;
+
+    series.tooltip.background.cornerRadius = 20;
+    series.tooltip.background.strokeOpacity = 0;
+    series.tooltip.pointerOrientation = "vertical";
+    series.tooltip.label.minWidth = 40;
+    series.tooltip.label.minHeight = 40;
+    series.tooltip.label.textAlign = "middle";
+    series.tooltip.label.textValign = "middle";
+
+}
 
 /**
  * Run after scadaAmChartInitPoint() <- data loader.
@@ -31,41 +62,18 @@ function scadaAmChartInit() {
     chart = am4core.create("amChartDiv", am4charts.XYChart);
 
     chart.dateFormatter.inputDateFormat = "yyyy-MM-dd-HH-mm-ss";
-    var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    dateAxis.renderer.maxGridDistance = 60;
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.menu.align = "left";
+    chart.exporting.menu.vetricalAlign = "top";
+    chart.exporting.filePrefix = "ScadaLTS_" + new Date().getTime();
 
+    var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+    chart.yAxes.push(new am4charts.ValueAxis());
+    dateAxis.renderer.maxGridDistance = 60;
+    
     // Create series
     pointCurrentState.forEach(function (value, key) {
-        var series = getChartTypeSeries(value.type);
-        series.dataFields.valueY = value.name;
-        series.dataFields.dateX = "date";
-        series.name = value.name;
-        if (value.suffix !== "") {
-            series.tooltipText = value.name + ": {" + value.name + "} " + value.suffix;
-        } else {
-            series.tooltipText = value.name + ": {" + value.name + "}";
-        }
-        series.strokeWidth = 2;
-        series.minBulletDistance = 15;
-
-        // Make bullets grow on hover
-        var bullet = series.bullets.push(new am4charts.CircleBullet());
-        bullet.circle.strokeWidth = 2;
-        bullet.circle.radius = 4;
-        bullet.circle.fill = am4core.color("#fff");
-
-        var bullethover = bullet.states.create("hover");
-        bullethover.properties.scale = 1.3;
-
-        // Drop-shaped tooltips
-        series.tooltip.background.cornerRadius = 20;
-        series.tooltip.background.strokeOpacity = 0;
-        series.tooltip.pointerOrientation = "vertical";
-        series.tooltip.label.minWidth = 40;
-        series.tooltip.label.minHeight = 40;
-        series.tooltip.label.textAlign = "middle";
-        series.tooltip.label.textValign = "middle";
+        createAxisAndSeries(value.name, value.type, value.suffix);
     })
 
     // Make a panning cursor
