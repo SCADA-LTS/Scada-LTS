@@ -93,6 +93,13 @@
               sel.options[sel.options.length] = new Option("${lang.value}", "${lang.key}");
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
+
+            var numericChart = $("numeric-chart");
+            var multistateChart = $("multistate-chart");
+            var binaryChart = $("binary-chart");
+            $set(numericChart, settings.<c:out value="<%= SystemSettingsDAO.CHART_NUMERIC %>"/>);
+            $set(multistateChart, settings.<c:out value="<%= SystemSettingsDAO.CHART_MULTISTATE %>"/>);
+            $set(binaryChart, settings.<c:out value="<%= SystemSettingsDAO.CHART_BINARY %>"/>);
         });
     
     	SystemSettingsDwr.checkTypeDB(function(msg){
@@ -441,6 +448,12 @@
             }
         });
 
+    }
+
+    function saveChartConfig() {
+      SystemSettingsDwr.saveChartSettings($get("binary-chart"),$get("numeric-chart"),$get("multistate-chart"), function() {
+            stopImageFader("saveChartConfiguration");
+        })
     }
     
     
@@ -822,7 +835,7 @@
           </tr>
        </table>
   </div>
-  <div class="borderDiv marB marR" style="clear:left;float:left">
+  <div class="borderDiv marB marR" id="chart-settings" style="clear:left;float:left">
          <table width="100%">
             <tr>
                <td>
@@ -831,14 +844,41 @@
             </tr>
             <tr>
                <td>
-                 Numeric: <select id="<c:out value="<%= SystemSettingsDAO.CHART_SHAPE %>"/>"></select>
+                 Numeric:
                </td>
                <td>
-                 Multistate: <select id="<c:out value="<%= SystemSettingsDAO.CHART_SHAPE %>"/>"></select>
+                 <select id="numeric-chart">
+                   <option value="0">Step Line Chart</option>
+                   <option value="1">Line Chart</option>
+                 </select>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                 Multistate:
                </td>
                <td>
-                 Binary: <select id="<c:out value="<%= SystemSettingsDAO.CHART_SHAPE %>"/>"></select>
+                 <select id="multistate-chart">
+                   <option value="0">Step Line Chart</option>
+                   <option value="1">Line Chart</option>
+                 </select>
                </td>
+            </tr>
+            <tr>
+               <td>
+                 Binary:
+               </td>
+               <td>
+                 <select id="binary-chart">
+                   <option value="0">Step Line Chart</option>
+                   <option value="1">Line Chart</option>
+                 </select>
+               </td>
+            </tr>
+            <tr>
+              <td>
+                  <tag:img id="saveChartConfiguration" png="save" onclick="saveChartConfig();" title="common.save"/>
+              </td>
             </tr>
          </table>
     </div>

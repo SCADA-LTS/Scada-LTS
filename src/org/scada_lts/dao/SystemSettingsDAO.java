@@ -109,6 +109,11 @@ public class SystemSettingsDAO {
 	public static final String PLOT_BACKGROUND_COLOUR = "plotBackgroundColour";
 	public static final String PLOT_GRIDLINE_COLOUR = "plotGridlineColour";
 
+	// Charts
+	public static final String CHART_BINARY = "binaryChart";
+	public static final String CHART_NUMERIC = "numericChart";
+	public static final String CHART_MULTISTATE = "multistateChart";
+
 	private static final String COLUMN_NAME_SETTING_VALUE = "settingValue";
 	private static final String COLUMN_NAME_SETTINGS_NAME = "settingName";
 
@@ -320,6 +325,10 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_GRIDLINE_COLOUR, "silver");
+
+		DEFAULT_VALUES.put(CHART_MULTISTATE,"0"); // 0 - stepLineSeries
+		DEFAULT_VALUES.put(CHART_BINARY,"0");
+		DEFAULT_VALUES.put(CHART_NUMERIC,"0");
 
 		DEFAULT_VALUES.put(ALARM_EXPORT_TYPE, 1);
 		DEFAULT_VALUES.put(ALARM_EXPORT_HOST, "localhost");

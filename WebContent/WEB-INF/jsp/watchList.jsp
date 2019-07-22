@@ -182,6 +182,13 @@
                 var handler = new TreeClickHandler();
                 dojo.event.topic.subscribe("tree/titleClick", handler, 'titleClick');
                 dojo.event.topic.subscribe("tree/expand", handler, 'expand');
+                getChartType(){
+            }
+
+            function getChartType(){
+                WatchListDwr.getChartTypes(function(data) {
+                    chartTypes = data.split("|");
+                });
             }
 
             //
@@ -627,6 +634,20 @@
                         createTimeZoneAlert(data, timezone);
                     }
                 });
+            }
+
+            function showChart(mangoId, event, source) {	                
+    	        if (isMouseLeaveOrEnter(event, source)) {	               
+                    // Take the data in the chart textarea and put it into the chart layer div	                var i = 0;
+                    $set('p'+ mangoId +'ChartLayer', $get('p'+ mangoId +'Chart'));	               
+                    showMenu('p'+ mangoId +'ChartLayer', 4, 12);	                    
+                }
+            }
+            
+            function hideChart(mangoId, event, source) {	                    
+                if (isMouseLeaveOrEnter(event, source)) {
+                    hideLayer('p'+ mangoId +'ChartLayer');
+                }
             }
 
             function initAmChartPoints() {

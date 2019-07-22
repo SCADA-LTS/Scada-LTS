@@ -559,6 +559,13 @@ public class PointValueAPI {
 
                 List<ValueTime> values = new ArrayList<ValueTime>();
                 String type = null;
+                if(pvts.size() > 0) {
+                    MangoValue value = pvts.get(0).getValue();
+                    if(value instanceof AlphanumericValue) { type = "Alphanumeric"; }
+                    else if(value instanceof BinaryValue) { type = "Binary"; }
+                    else if(value instanceof MultistateValue) { type = "Multistate"; }
+                    else if(value instanceof NumericValue) { type = "Numeric"; }
+                }
                 for (PointValueTime pvt : pvts) {
                     values.add(new ValueTime(getValue(pvt.getValue(), type), pvt.getTime()));
                 }

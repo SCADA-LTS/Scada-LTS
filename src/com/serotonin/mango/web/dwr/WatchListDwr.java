@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.UserDAO;
 
 import com.serotonin.db.IntValuePair;
@@ -516,5 +517,18 @@ public class WatchListDwr extends BaseDwr {
 				toSecond, toNone);
 		DataExportDefinition def = new DataExportDefinition(pointIds, from, to);
 		Common.getUser().setDataExportDefinition(def);
+	}
+
+	/**
+	 * Read chart data from system settings
+	 * @return String "CHART_BINARY | CHART_NUMERIC | CHART_MULTISTATE" specific chart types
+	 * 0 - stepLineChart
+	 * 1 - lineChart
+	 */
+	public String getChartTypes() {
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		return systemSettingsDAO.getValue(SystemSettingsDAO.CHART_BINARY) + "|"
+				+ systemSettingsDAO.getValue(SystemSettingsDAO.CHART_NUMERIC) + "|"
+				+ systemSettingsDAO.getValue(SystemSettingsDAO.CHART_MULTISTATE);
 	}
 }

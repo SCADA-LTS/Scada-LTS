@@ -18,6 +18,7 @@ var interval;
 var pointPastValues = new Map();
 var pointCurrentState = new Map();
 var lastUpdate = new Map();
+var chartTypes = ["0","1","0"]; //Binary // Numeric //Multistate
 
 am4core.ready();
 
@@ -36,7 +37,7 @@ function scadaAmChartInit() {
 
     // Create series
     pointCurrentState.forEach(function (value, key) {
-        var series = chart.series.push(new am4charts.StepLineSeries());
+        var series = getChartTypeSeries(value.type);
         series.dataFields.valueY = value.name;
         series.dataFields.dateX = "date";
         series.name = value.name;
@@ -148,7 +149,7 @@ function scadaAmChartGetDataPointValuesFromTime(pointId, startTimestamp = new Da
         if (status == "success") {
             data = JSON.parse(data)
             if (pointCurrentState.get(pointId) == undefined) {
-                pointCurrentState.set(pointId, { "name": data.name, "suffix": data.textRenderer.suffix });
+                pointCurrentState.set(pointId, { "name": data.name, "suffix": data.textRenderer.suffix, "type": data.type });
             }
             data.values.forEach(e => {
                 //Validate binary values and transform to numeric values
@@ -228,5 +229,31 @@ function scadaAmChartCalculatePeriod() {
         period *= 365;
 
     return period;
+}
+
+function getChartTypeSeries(type) {
+    var series;
+    if(type == "Numeric") {
+        if(chartTypes[1] == "1") {
+            series = chart.series.push(new am4charts.LineSeries());
+        } else {
+            series = chart.series.push(new am4charts.StepLineSeries());
+        }
+    } else if (type == "Multistate") {
+        if(chartTypes[2] == "1") {
+            series = chart.series.push(new am4charts.LineSeries());
+        } else {
+            series = chart.series.push(new am4charts.StepLineSeries());
+        }
+    } else if (type == "Binary") {
+        if(chartTypes[0] == "1") {
+            series = chart.series.push(new am4charts.LineSeries());
+        } else {
+            series = chart.series.push(new am4charts.StepLineSeries());
+        }
+    } else {
+        console.error("DataPoint chart type unrecoginzed!")
+    }
+    return series;
 }
 

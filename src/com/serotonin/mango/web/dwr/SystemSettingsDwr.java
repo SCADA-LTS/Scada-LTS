@@ -144,6 +144,10 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR, SystemSettingsDAO
 				.getValue(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR));
 
+		settings.put(SystemSettingsDAO.CHART_BINARY, SystemSettingsDAO.getValue(SystemSettingsDAO.CHART_BINARY));
+		settings.put(SystemSettingsDAO.CHART_MULTISTATE, SystemSettingsDAO.getValue(SystemSettingsDAO.CHART_MULTISTATE));
+		settings.put(SystemSettingsDAO.CHART_NUMERIC, SystemSettingsDAO.getValue(SystemSettingsDAO.CHART_NUMERIC));
+
 		return settings;
 	}
 
@@ -447,5 +451,14 @@ public class SystemSettingsDwr extends BaseDwr {
 	@MethodFilter
 	public String getAppServer() {
 		return Common.ctx.getServletContext().getServerInfo();
+	}
+
+	@MethodFilter
+	public void saveChartSettings(String binaryChart, String numericChart, String multistateChart) {
+		Permissions.ensureAdmin();
+		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
+		SystemSettingsDAO.setValue(SystemSettingsDAO.CHART_BINARY, binaryChart);
+		SystemSettingsDAO.setValue(SystemSettingsDAO.CHART_NUMERIC, numericChart);
+		SystemSettingsDAO.setValue(SystemSettingsDAO.CHART_MULTISTATE, multistateChart);
 	}
 }
