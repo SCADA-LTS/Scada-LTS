@@ -182,7 +182,7 @@
                 var handler = new TreeClickHandler();
                 dojo.event.topic.subscribe("tree/titleClick", handler, 'titleClick');
                 dojo.event.topic.subscribe("tree/expand", handler, 'expand');
-                getChartType(){
+                getChartType()
             }
 
             function getChartType(){
