@@ -926,8 +926,8 @@ CREATE TABLE users (
   homeUrl VARCHAR2(255 CHAR),
   receiveAlarmEmails NUMBER(10,0) NOT NULL,
   receiveOwnAuditEvents CHAR(1 CHAR) NOT NULL,
-  timezone VARCHAR2(60 CHAR) NOT NULL,
-  zone VARCHAR2(40 CHAR) NOT NULL
+  timezone VARCHAR2(60 CHAR),
+  zone VARCHAR2(40 CHAR)
 );
 
 -- Creating Primary Key Constraint PRIMARY_10 on table users ... 
