@@ -18,6 +18,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.serotonin.mango.Common;
@@ -80,7 +81,19 @@ public class Timezone{
 				.getId()
 				.replace("Z", "+00:00");
 	}
+	
+	public static TimeZone displayTimeZone(String zone) {
+        
+        TimeZone tz = TimeZone.getTimeZone(zone);
+		long hours = TimeUnit.MILLISECONDS.toHours(tz.getRawOffset());
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(tz.getRawOffset()) 
+                                  - TimeUnit.HOURS.toMinutes(hours);
+		minutes = Math.abs(minutes);
+		tz.setID(String.format("UTC+%02d:%02d",hours,minutes));
+		return tz;
 
+	}
+	
 	public static  TimeZone createTimezone(String id) {
 		String myIdTimeZone = id;
 		if (id == null || (id != null && id.equals(""))) {

@@ -87,6 +87,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@JsonRemoteProperty
 	private boolean receiveOwnAuditEvents;
 	private TimeZone timezone;
+	@JsonRemoteProperty
 	private String zone;
 	//
 	// Session data. The user object is stored in session, and some other
