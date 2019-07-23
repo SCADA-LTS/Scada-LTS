@@ -67,7 +67,7 @@ am4core.ready();
  * Run after scadaAmChartInitPoint() <- data loader.
  * Initialize chart component after loading data from API
  */
-function scadaAmChartInit() {
+function scadaAmChartInit(adjustedStart = 0, adjustedEnd = 1) {
 
     am4core.useTheme(am4themes_animated);
 
@@ -89,6 +89,10 @@ function scadaAmChartInit() {
     })
 
     chart.data = prepareChartData(sortMapKeys(pointPastValues));
+
+    chart.events.on("ready", function() {
+        dateAxis.zoom({start:adjustedStart,end:adjustedEnd})
+    })
 }
 
 /**
@@ -347,5 +351,6 @@ function prepareScrollbarsAndLegned() {
 
     chart.scrollbarX = new am4charts.XYChartScrollbar();
     chart.scrollbarX.parent = chart.bottomAxesContainer;
+
     chart.legend = new am4charts.Legend();
 }

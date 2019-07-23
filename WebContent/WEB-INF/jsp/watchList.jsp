@@ -145,6 +145,10 @@
             var owner;
             var pointNames = {};
             var watchlistChangeId = 0;
+            var chartZoom = {
+                start:0,
+                end:1
+            }
 
 
             function init() {
@@ -206,6 +210,7 @@
                     jQuery("#radio-btn-2").click();
                     liveChart = false;
                 }
+                chartZoom = JSON.parse(getCookie("chart_zoom_cookie"));
 
             }
 
@@ -754,7 +759,14 @@
                     setTimeout(function () {
                         jQuery("#loadingChartContainer").hide();
                         jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
-                        scadaAmChartInit();
+                        scadaAmChartInit(chartZoom.start, chartZoom.end);
+                        chart.scrollbarX.events.on("up", function() {
+                            let chartZoomCookie = {
+                                "start":chart.xAxes.getIndex(0)._adjustedStart,
+                                "end":chart.xAxes.getIndex(0)._adjustedEnd,
+                            }
+                            setCookie("chart_zoom_cookie", JSON.stringify(chartZoomCookie));
+                        })
                         if (liveChart) {
                             scadaAmChartLiveUpdatePoints();
                         }
@@ -848,6 +860,8 @@
                 width: 100%;
                 height: 100%;
                 background-color: rgba(0,0,0,0.4);
+                animation-name: showModal;
+                animation-duration: 0.4s;
             }
             .modal-content {
                 background-color: rgb(255, 255, 255);
@@ -856,7 +870,10 @@
                 width: 26%;
                 min-height: 10vh;
                 padding: 2%;
-
+            }
+            @keyframes showModal {
+                from { opacity: 0; }
+                to { opacity: 1; }
             }
         </style>
 
