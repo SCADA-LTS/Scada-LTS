@@ -84,7 +84,6 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			// d.add(FlexBuilderComponent.DEFINITION);
 			d.add(ChartComparatorComponent.DEFINITION);
 			d.add(FlexBuilderComponent.DEFINITION);
-			d.add(IsAliveComponent.DEFINITION);
 			Collections.sort(d, new Comparator<ImplDefinition>() {
 			      @Override
 			      public int compare(final ImplDefinition prev, final ImplDefinition next) {
@@ -149,8 +148,6 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			return ChartComparatorComponent.class;
 		if (def == FlexBuilderComponent.DEFINITION)
 			return FlexBuilderComponent.class;
-		if (def == IsAliveComponent.DEFINITION)
-			return IsAliveComponent.class;
 		return null;
 	}
 

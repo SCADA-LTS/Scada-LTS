@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.view.component.*;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -61,6 +60,23 @@ import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.view.component.AnalogGraphicComponent;
+import com.serotonin.mango.view.component.BinaryGraphicComponent;
+import com.serotonin.mango.view.component.CompoundChild;
+import com.serotonin.mango.view.component.CompoundComponent;
+import com.serotonin.mango.view.component.DynamicGraphicComponent;
+import com.serotonin.mango.view.component.EnhancedImageChartComponent;
+import com.serotonin.mango.view.component.EnhancedImageChartType;
+import com.serotonin.mango.view.component.EnhancedPointComponent;
+import com.serotonin.mango.view.component.HtmlComponent;
+import com.serotonin.mango.view.component.ImageChartComponent;
+import com.serotonin.mango.view.component.MultistateGraphicComponent;
+import com.serotonin.mango.view.component.PointComponent;
+import com.serotonin.mango.view.component.ScriptComponent;
+import com.serotonin.mango.view.component.SimpleCompoundComponent;
+import com.serotonin.mango.view.component.SimplePointComponent;
+import com.serotonin.mango.view.component.ThumbnailComponent;
+import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
@@ -467,17 +483,6 @@ public class ViewDwr extends BaseDwr {
 		HtmlComponent c = (HtmlComponent) getViewComponent(viewComponentId);
 		c.setContent(content);
 	}
-
-	@MethodFilter
-	public void saveIsAlive(String viewComponentId, String title, String refresh, String warning, String error) {
-		IsAliveComponent c = (IsAliveComponent) getViewComponent(viewComponentId);
-		c.setComponentLabel(title);
-		c.setTimeCompRefresh(Integer.parseInt(refresh));
-		c.setTimeWarning(Integer.parseInt(warning));
-		c.setTimeEroor(Integer.parseInt(error));
-	}
-
-
 
 	@MethodFilter
 	public DwrResponseI18n saveLinkComponent(String viewComponentId, String text, String link) {

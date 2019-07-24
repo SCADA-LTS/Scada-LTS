@@ -42,24 +42,6 @@
         <td class="formField"><textarea id="staticPointContent" rows="10" cols="50"></textarea></td>
       </tr>
     </table>
-    <table id="isAliveEditor">
-      <tr>
-        <td class="formLabelRequired">Label</td>
-        <td class="formField"><input id="isAliveTitle" type="text"/></td>
-      </tr>
-      <tr>
-        <td class="formLabelRequired">Refresh rate [ms]</td>
-        <td class="formField"><input id="isAliveRefresh" type="number"/></td>
-      </tr>
-      <tr>
-        <td class="formLabelRequired">Warning after [ms]</td>
-        <td class="formField"><input id="isAliveWarning" type="number"/></td>
-      </tr>
-      <tr>
-        <td class="formLabelRequired">Error after [ms]</td>
-        <td class="formField"><input id="isAliveError" type="number"/></td>
-      </tr>
-    </table>
     <table id="linkEditor">
       <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.text"/></td>
@@ -84,7 +66,7 @@
         	<td class="formField"><select id="scriptsList"></select></td>
       	</tr>
     </table>
-
+    
     <table id="chartComparatorEditor">
       	<tr>
           <td class="formLabelRequired"><fmt:message key="graphic.chartWidth"/></td>
@@ -95,7 +77,7 @@
           <td class="formField"><input id="chartComparatorHeight" type="text"/></td>
         </tr>
     </table>
-
+  
      <table id="flexEditor">
       	<tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.width"/></td>
@@ -116,26 +98,26 @@
 		<tr>
         	<td class="formLabelRequired"><fmt:message key="viewEdit.graphic.project"/></td>
         	<td class="formField"><select id="flexProjectsList"></select></td>
-      	</tr>
+      	</tr>  
         <tr>
           <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.runtimeMode"/></td>
           <td class="formField"><input id="flexRuntimeMode" type="checkbox"/></td>
         </tr>
     </table>
   </td></tr></table>
-
+  
   <script type="text/javascript">
     function StaticEditor() {
         this.componentId = null;
         this.component = null;
-
+        
         this.open = function(compId) {
             hide('htmlEditor');
             hide('linkEditor');
             hide('scriptButtonEditor');
             hide('chartComparatorEditor');
             hide('flexEditor');
-
+            
             staticEditor.componentId = compId;
             ViewDwr.getViewComponent(compId, function(comp) {
                 // Update the data in the form.
@@ -143,16 +125,16 @@
 
                 $set("staticEditorXPosition", comp.x);
                 $set("staticEditorYPosition", comp.y);
-
+                
 				if(comp.defName == 'html') {
 					$set("staticPointContent", comp.content);
 					show('htmlEditor');
 		            hide('linkEditor');
 		            hide('scriptButtonEditor');
 		            hide('flexEditor');
-
+		            
 		            show("staticEditorPopup");
-
+		            
 				} else if(comp.defName == 'link'){
 					ViewDwr.getViews(function(views) {
 						staticEditor.updateViewsList(views);
@@ -163,10 +145,10 @@
 					hide('htmlEditor');
 					hide('scriptButtonEditor');
 					hide('flexEditor');
-
+					
 		            show('linkEditor');
 		            show("staticEditorPopup");
-
+		            
 				} else if(comp.defName == 'scriptButton'){
 					ViewDwr.getScripts(function(scripts) {
 						staticEditor.updateScriptsList(scripts);
@@ -177,67 +159,49 @@
 					hide('htmlEditor');
 					hide('linkEditor');
 					hide('flexEditor');
-
+					
 		            show('scriptButtonEditor');
 		            show("staticEditorPopup");
-
+		            
 				} else if(comp.defName == 'chartComparator'){
-
+					
 					$set("chartComparatorWidth", comp.width);
 					$set("chartComparatorHeight", comp.height);
-
+					
 		            show('chartComparatorEditor');
 		            show("staticEditorPopup");
-
-				} else if(comp.defName == 'flex'){
-
+		            
+				}else if(comp.defName == 'flex'){
+					
 					ViewDwr.getFlexProjects(function(flexProjects) {
 						staticEditor.updateFlexProjectsList(flexProjects);
 						$set("flexProjectsList", comp.projectId);
 		            });
-
+					
 					$set("staticPointContent", comp.content);
 					$set("flexWidth", comp.width);
 					$set("flexHeight", comp.height);
 					$set("flexProjectDefined", comp.projectDefined);
 					$set("flexProjectsSource", comp.projectSource);
 					$set("flexRuntimeMode", comp.runtimeMode);
-
+					
 					hide('htmlEditor');
 					hide('linkEditor');
 					hide('scriptButtonEditor');
-
+					
 		            show('flexEditor');
 		            show("staticEditorPopup");
 
-				} else if(comp.defName == 'isAlive'){
-
-					$set("staticPointContent", comp.content);
-					$set("isAliveTitle", comp.componentLabel);
-					$set("isAliveRefresh", comp.timeCompRefresh);
-					$set("isAliveWarning", comp.timeWarning);
-					$set("isAliveError", comp.timeEroor);
-
-					hide('htmlEditor');
-					hide('linkEditor');
-					hide('scriptButtonEditor');
-          hide('flexEditor');
-
-		      show('isAliveEditor');
-		      show("staticEditorPopup");
-
 				}
-
-
                     positionEditor(compId, "staticEditorPopup");
 
             });
         };
-
+        
         this.close = function() {
             hide("staticEditorPopup");
         };
-
+        
         this.save = function() {
 			if(staticEditor.component.defName == 'html') {
 				ViewDwr.saveHtmlComponent(staticEditor.componentId, $get("staticPointContent"), function() {
@@ -253,7 +217,7 @@
 		                tempContent = "<a> " +$get("linkText") +"</a>";
 		                updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
 					}
-
+	                
 	            });
 			} else if(staticEditor.component.defName == 'scriptButton') {
 				ViewDwr.saveScriptButtonComponent(staticEditor.componentId, $get("scriptButtonText"), $get("scriptsList"), function(response) {
@@ -264,7 +228,7 @@
 		                tempContent = "<button> " +$get("scriptButtonText") +"</button>";
 		                updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
 					}
-
+	                
 	            });
 			} else if(staticEditor.component.defName == 'chartComparator') {
 				ViewDwr.saveChartComparatorComponent(staticEditor.componentId, $get("chartComparatorWidth"), $get("chartComparatorHeight"),
@@ -273,7 +237,7 @@
 				        	showDwrMessages(response.messages);
 						else {
 							staticEditor.close();
-			                tempContent =
+			                tempContent = 
 				                "<div style='background-color: silver; border: 1px solid red; width: "+ ($get("chartComparatorWidth")*2) +"px; height: "+$get("chartComparatorHeight") +"px;'> <b> <fmt:message key='viewEdit.graphic.saveToLoad'/> </b> </div>";
 			                componentId = "c"+ staticEditor.componentId;
 			                updateHtmlComponentContent(componentId, tempContent);
@@ -293,7 +257,7 @@
 				        	showDwrMessages(response.messages);
 						else {
 							staticEditor.close();
-			                tempContent =
+			                tempContent = 
 				                "<div style='background-color: silver; border: 1px solid red; width: "+ $get("flexWidth") +"px; height: "+$get("flexHeight") +"px;'> <b> <fmt:message key='viewEdit.graphic.saveToLoad'/> </b> </div>";
 			                componentId = "c"+ staticEditor.componentId;
 			                updateHtmlComponentContent(componentId, tempContent);
@@ -304,13 +268,6 @@
 			                //resizeViewBackground($get("flexWidth"), $get("flexHeight"));
 						}
 	            });
-			}
-
-      else if(staticEditor.component.defName == 'isAlive') {
-        ViewDwr.saveIsAlive(staticEditor.componentId, $get("isAliveTitle"), $get("isAliveRefresh"), $get("isAliveWarning"), $get("isAliveError"), function() {
-          staticEditor.close();
-          updateHtmlComponentContent("c"+staticEditor.componentId, "");
-        });
 			}
 
 			ViewDwr.setViewComponentLocation(staticEditor.componentId, $get("staticEditorXPosition"), $get("staticEditorYPosition"));
