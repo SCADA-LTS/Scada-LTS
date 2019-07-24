@@ -42,7 +42,7 @@ public class Timezone{
 	    GMT, UTC
 	}
 
-	public List<String> getTimeZoneList(OffsetBase base) {	 
+	public static List<String> getTimeZoneList(OffsetBase base) {	 
 
 	    LocalDateTime now = LocalDateTime.now();
 	    return ZoneId.getAvailableZoneIds()
@@ -63,7 +63,7 @@ public class Timezone{
 				.collect(Collectors.toList());
 	}
 	
-	Comparator<ZoneId> ZoneComparator = new Comparator<ZoneId>() {
+	static Comparator<ZoneId> ZoneComparator = new Comparator<ZoneId>() {
 		@Override
 		public int compare(ZoneId zoneId1, ZoneId zoneId2) {
 			 LocalDateTime now = LocalDateTime.now();
@@ -83,15 +83,15 @@ public class Timezone{
 	}
 	
 	public static TimeZone displayTimeZone(String zone) {
-        
-        TimeZone tz = TimeZone.getTimeZone(zone);
-		long hours = TimeUnit.MILLISECONDS.toHours(tz.getRawOffset());
-		long minutes = TimeUnit.MILLISECONDS.toMinutes(tz.getRawOffset()) 
-                                  - TimeUnit.HOURS.toMinutes(hours);
-		minutes = Math.abs(minutes);
-		tz.setID(String.format("UTC+%02d:%02d",hours,minutes));
+      TimeZone tz = TimeZone.getDefault();
+      tz = createTimezone("UTC+00:00");
+      for(int i=0;i<getTimeZoneList(OffsetBase.UTC).size();i++){
+        if(getTimeZoneList(OffsetBase.UTC).get(i).contains(zone)){
+          tz = createTimezone(getTimeZoneList(OffsetBase.UTC).get(i).substring(1,10));
+          break;
+        }
+      }
 		return tz;
-
 	}
 	
 	public static  TimeZone createTimezone(String id) {
