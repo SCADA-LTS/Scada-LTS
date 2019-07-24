@@ -87,11 +87,14 @@ function scadaAmChartInit(adjustedStart = 0, adjustedEnd = 1) {
     pointCurrentState.forEach(function (value, key) {
         createAxisAndSeries(value.name, value.type, value.suffix);
     })
+    if(chart.series._values.length === 0) {
+        document.getElementById("dpd-chart").style.display="none";
+    }
 
     chart.data = prepareChartData(sortMapKeys(pointPastValues));
 
-    chart.events.on("ready", function() {
-        dateAxis.zoom({start:adjustedStart,end:adjustedEnd})
+    chart.events.on("ready", function () {
+        dateAxis.zoom({ start: adjustedStart, end: adjustedEnd })
     })
 }
 
@@ -191,7 +194,7 @@ function scadaAmChartClearChart() {
 /**
  * Convert from Map structure to amChart data interface
  *
- * @param {Map} map - Values map to be converted. 
+ * @param {Map} map - Values map to be converted.
  * @return {Array} amChart data structure.
  */
 function prepareChartData(map) {
@@ -282,35 +285,38 @@ function createAxisAndSeries(field, type, suffix) {
     //Generate ChartType series
     let series = getChartTypeSeries(type);
 
-    //Config chart series
-    series.dataFields.valueY = field;
-    series.dataFields.dateX = "date";
-    series.name = field;
-    series.tooltipText = "{name}: [bold]{valueY}" + suffix + "[/]";
-    series.strokeWidth = chartSettings.styles.series.strokeWidth;
-    series.minBulletDistance = chartSettings.styles.series.minBulletDistance;
-    series.fillOpacity = chartSettings.styles.series.fillOpacity;
-    series.tensionX = chartSettings.styles.series.tensionX;
-    series.connect = chartSettings.styles.series.connect;
-    series.yAxis = yAxis;
+    if (series !== undefined) {
+        //Config chart series
+        series.dataFields.valueY = field;
+        series.dataFields.dateX = "date";
+        series.name = field;
+        series.tooltipText = "{name}: [bold]{valueY}" + suffix + "[/]";
+        series.strokeWidth = chartSettings.styles.series.strokeWidth;
+        series.minBulletDistance = chartSettings.styles.series.minBulletDistance;
+        series.fillOpacity = chartSettings.styles.series.fillOpacity;
+        series.tensionX = chartSettings.styles.series.tensionX;
+        series.connect = chartSettings.styles.series.connect;
+        series.yAxis = yAxis;
 
-    let bullet = series.bullets.push(new am4charts.CircleBullet());
-    bullet.circle.strokeWidth = chartSettings.styles.bullets.strokeWidth;
-    bullet.circle.radius = chartSettings.styles.bullets.radius;
-    bullet.circle.fill = chartSettings.styles.bullets.fill;
+        let bullet = series.bullets.push(new am4charts.CircleBullet());
+        bullet.circle.strokeWidth = chartSettings.styles.bullets.strokeWidth;
+        bullet.circle.radius = chartSettings.styles.bullets.radius;
+        bullet.circle.fill = chartSettings.styles.bullets.fill;
 
-    var bullethover = bullet.states.create("hover");
-    bullethover.properties.scale = 1.3;
+        var bullethover = bullet.states.create("hover");
+        bullethover.properties.scale = 1.3;
 
-    series.tooltip.background.cornerRadius = 20;
-    series.tooltip.background.strokeOpacity = 0;
-    series.tooltip.pointerOrientation = "vertical";
-    series.tooltip.label.minWidth = 40;
-    series.tooltip.label.minHeight = 40;
-    series.tooltip.label.textAlign = "middle";
-    series.tooltip.label.textValign = "middle";
+        series.tooltip.background.cornerRadius = 20;
+        series.tooltip.background.strokeOpacity = 0;
+        series.tooltip.pointerOrientation = "vertical";
+        series.tooltip.label.minWidth = 40;
+        series.tooltip.label.minHeight = 40;
+        series.tooltip.label.textAlign = "middle";
+        series.tooltip.label.textValign = "middle";
 
-    chart.scrollbarX.series.push(series);
+        chart.scrollbarX.series.push(series);
+
+    }
 
 }
 
