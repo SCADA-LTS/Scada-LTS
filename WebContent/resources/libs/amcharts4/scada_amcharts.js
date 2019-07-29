@@ -52,6 +52,7 @@ var chartSettings = {
             "fillOpacity": 0.1,
             "tensionX": 0.9,
             "connect": true,
+            "stacked": false,
         },
         "bullets": {
             "strokeWidth": 2,
@@ -297,6 +298,7 @@ function createAxisAndSeries(field, type, suffix) {
         series.tensionX = chartSettings.styles.series.tensionX;
         series.connect = chartSettings.styles.series.connect;
         series.yAxis = yAxis;
+        series.stacked = chartSettings.styles.series.stacked;
 
         let bullet = series.bullets.push(new am4charts.CircleBullet());
         bullet.circle.strokeWidth = chartSettings.styles.bullets.strokeWidth;
