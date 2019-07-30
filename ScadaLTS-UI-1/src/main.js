@@ -10,7 +10,8 @@ import ExportImportPointHierarchy from './components/ExportImportPointHierarchy'
 import SimpleComponentSVG from './components/SimpleComponentSVG'
 import CMP from "./components/CMP";
 
-import StepLineChart from "./components/charts/StepLineChart";
+import StepLineChartComponent from "./components/charts/StepLineChartComponent";
+import LineChartComponent from './components/charts/LineChartComponent'
 import SleepAndReactivationDS from './components/form/SleepAndReactivationDS'
 import router from './router'
 import VJsoneditor from 'vue-jsoneditor';
@@ -72,7 +73,8 @@ new Vue({
 new Vue({
   el:'#chart',
   components: {
-    "step-line": StepLineChart,
+    "step-line": StepLineChartComponent,
+    "line-chart": LineChartComponent,
   },
 })
 

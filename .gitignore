@@ -54,6 +54,7 @@ local.properties
 # External tool builders
 .externalToolBuilders/
 /WebContent/resources/app/bower_components
+/WebContent/resources/npm
 /WebContent/assets/logo.png
 /WebContent/assets/evn.properties
 /WebContent/assets/commons.css
