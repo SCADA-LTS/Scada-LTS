@@ -39,6 +39,13 @@ export default class BaseChart {
         this.liveUpdatePointValues = new Map();
         this.liveUpdateInterval = 5000;
         this.domain = domain;
+        this.chart.colors.list = [
+            am4core.color("#39B54A"),
+            am4core.color("#69FF7D"),
+            am4core.color("#166921"),
+            am4core.color("#690C24"),
+            am4core.color("#B53859"),
+        ];
     }
 
     /**
@@ -124,6 +131,7 @@ export default class BaseChart {
         this.createAxisX("DateAxis", null);
         this.createAxisY();
         this.createScrollBarsAndLegend();
+        this.createExportMenu();
         for (let [k, v] of this.pointCurrentValue) {
             this.createSeries("StepLine", "date", v.name, v.name)
         }
@@ -164,10 +172,22 @@ export default class BaseChart {
         } else {
             series.dataFields.dateX = seriesValueX;
             series.dataFields.valueY = seriesValueY;
-            series.tooltipText = seriesName + " {valueY.value}";
+            series.tooltipText = "{name}: [bold]{valueY}[/]";
+            series.tooltip.background.cornerRadius = 20;
+            series.tooltip.background.strokeOpacity = 0;
+            series.tooltip.pointerOrientation = "vertical";
+            series.tooltip.label.minWidth = 40;
+            series.tooltip.label.minHeight = 40;
+            series.tooltip.label.textAlign = "middle";
+            series.tooltip.label.textValign = "middle";
             series.strokeWidth = 3;
             series.fillOpacity = 0.3;
             series.tensionX = 0.9;
+            series.minBulletDistance = 15;
+            let bullet = series.bullets.push(new am4charts.CircleBullet());
+            bullet.circle.strokeWidth = 2;
+            bullet.circle.radius = 5;
+            bullet.circle.fill = am4core.color("#fff");
         }
 
         series.name = seriesName;
@@ -223,8 +243,9 @@ export default class BaseChart {
      * @param {Boolean} [scrollbarX=true] Show scrollbar for xAxes
      * @param {Boolean} [scrollbarY=false] Show scrollbar for yAxes
      * @param {Boolean} [legend=true] Show chart legend
+     * @param {Boolean} [cursor=true] Show cursor over the chart
      */
-    createScrollBarsAndLegend(scrollbarX = true, scrollbarY = false, legend = true) {
+    createScrollBarsAndLegend(scrollbarX = true, scrollbarY = false, legend = true, cursor = true) {
         if (scrollbarX) {
             this.chart.scrollbarX = new am4charts.XYChartScrollbar();
             this.chart.scrollbarX.parent = this.chart.bottomAxesContainer;
@@ -236,8 +257,37 @@ export default class BaseChart {
         if (legend) {
             this.chart.legend = new am4charts.Legend();
         }
+        if(cursor) {
+            this.chart.cursor = new am4charts.XYCursor();
+            this.chart.cursor.behavior = "panXY";
+        }
     }
 
+    /**
+     * Add export possibility to chart. Save chart as an image or export chart data to *.csv or *.xlsx format. 
+     * 
+     * @param {Boolean} [enabled = true] is Export menu enabled in this chart.
+     * @param {String} [filePrefix = "Scada_Chart"] File name to which save exported chart data.
+     */
+    createExportMenu(enabled = true, filePrefix = "Scada_Chart") {
+        if(enabled) {
+            this.chart.exporting.menu = new am4core.ExportMenu();
+            this.chart.exporting.menu.align = "right"
+            this.chart.exporting.menu.vetricalAlign = "top"
+            this.chart.exporting.filePrefix = filePrefix + "_" + String(new Date().getTime());
+        }
+    }
+
+    /**
+     * Improving  perfromance of chart.  Display only a points every "step" pixels omitting this between. 
+     * It is useful for charts presenting huge amount of data. For example charts displaying values from one month period. 
+     * 
+     * @param {Number} step - Ommit all line point if they are closer than "step" pixels to the last point drawn 
+     */
+    static setPolylineStep(step) {
+        am4core.options.minPolylineStep = step;
+    }
+    
     /**
      * Order values stored inside Map by keys (key == timestamp)
      * 

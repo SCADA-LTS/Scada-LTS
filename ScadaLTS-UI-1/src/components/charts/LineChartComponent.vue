@@ -1,7 +1,11 @@
 <template>
   <div>
-    <p>Displaying line chart for DataPoint {{pointName}} with ID: {{propPointId}}</p>
-    <div class="hello" ref="chartdiv"></div>
+    <p>Displaying LineChart for DataPoint {{pointName}} with ID: {{propPointId}}</p>
+    <div
+      class="hello"
+      v-bind:style="{height: this.height + 'px', width: this.width + 'px'}"
+      ref="chartdiv"
+    ></div>
   </div>
 </template>
 <script>
@@ -10,7 +14,6 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import httpClient from "axios";
 import BaseChart from "./BaseChart";
-import { setInterval } from "timers";
 
 am4core.useTheme(am4themes_animated);
 
@@ -19,7 +22,11 @@ class LineChart extends BaseChart {
     super(chartReference, "XYChart", domain);
   }
 
-  loadData(pointId, startTimestamp = new Date().getTime() - 3600000, endTimestamp = new Date().getTime()) {
+  loadData(
+    pointId,
+    startTimestamp = new Date().getTime() - 3600000,
+    endTimestamp = new Date().getTime()
+  ) {
     return new Promise((resolve, reject) => {
       super.loadData(pointId, startTimestamp, endTimestamp).then(data => {
         if (this.pointCurrentValue.get(pointId) == undefined) {
@@ -47,10 +54,13 @@ class LineChart extends BaseChart {
   }
 
   setupChart() {
-    this.chart.data = BaseChart.prepareChartData(BaseChart.sortMapKeys(this.pointPastValues));
+    this.chart.data = BaseChart.prepareChartData(
+      BaseChart.sortMapKeys(this.pointPastValues)
+    );
     this.createAxisX("DateAxis", null);
     this.createAxisY();
     this.createScrollBarsAndLegend();
+    this.createExportMenu(true, "Scada_LineChart");
     for (let [k, v] of this.pointCurrentValue) {
       this.createSeries(v.name, v.name);
     }
@@ -63,7 +73,16 @@ class LineChart extends BaseChart {
 
 export default {
   name: "LineChartComponent",
-  props: ["propPointId", "startDate", "endDate", "seriesColor"],
+  props: [
+    "propPointId",
+    "startDate",
+    "endDate",
+    "live",
+    "refreshRate",
+    "width",
+    "height"
+  ],
+  //TODO: Enable multiple ChartInstances in one page
   data() {
     return {
       pointName: "Name",
@@ -75,13 +94,59 @@ export default {
   },
   methods: {
     generateChart() {
+      if (Number(this.polylineStep) > 1) {
+        LineChart.setPolylineStep(Number(this.polylineStep));
+      }
       this.chartClass = new LineChart(this.$refs.chartdiv);
-      this.chartClass.loadData(this.propPointId).then(response => {
-        if (response == "done") {
-          this.chartClass.showChart();
-          this.chartClass.startLiveUpdate(10000);
+      let points = this.propPointId.split(",");
+      let promises = [];
+      for (let i = 0; i < points.length; i++) {
+        if (this.startDate !== undefined && this.endDate !== undefined) {
+          let sDate = new Date(this.startDate);
+          let eDate = new Date(this.endDate);
+          if (!isNaN(sDate.getDate()) && !isNaN(eDate.getDate())) {
+            promises.push(
+              this.chartClass.loadData(
+                points[i],
+                sDate.getTime(),
+                eDate.getTime()
+              )
+            );
+          } else {
+            console.warn(
+              "Not valid date pattern. Try with: <... start-date='YYYY/MM/DD'>"
+            );
+            promises.push(this.chartClass.loadData(points[i]));
+          }
+        } else if (this.startDate !== undefined && this.endDate === undefined) {
+          let sDate = new Date(this.startDate);
+          if (!isNaN(sDate.getDate())) {
+            promises.push(this.chartClass.loadData(points[i], sDate.getTime()));
+          } else {
+            console.warn(
+              "Not valid date pattern. Try with: <... start-date='YYYY/MM/DD'>"
+            );
+          }
         } else {
-          console.error("Something went wrong");
+          promises.push(this.chartClass.loadData(points[i]));
+        }
+      }
+      Promise.all(promises).then(response => {
+        for (let i = 0; i < response.length; i++) {
+          if (response[i] !== "done") {
+            console.error(
+              "Point given with index [" + i + "] has not been loaded!"
+            );
+          }
+        }
+        this.chartClass.showChart();
+        if (this.live == "true" && this.refreshRate == undefined) {
+          console.log(
+            "Refresh rate for chart has not been set. Add for example: <... refresh-rate='10000'>"
+          );
+        }
+        if (this.live == "true" && this.refreshRate != undefined) {
+          this.chartClass.startLiveUpdate(Number(this.refreshRate));
         }
       });
     }
