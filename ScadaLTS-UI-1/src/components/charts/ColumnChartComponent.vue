@@ -24,6 +24,8 @@ class ColumnChart extends BaseChart {
 
   loadData(
     pointId,
+    sumType,
+    sumTimePeriod,
     startTimestamp = new Date().getTime() - 3600000,
     endTimestamp = new Date().getTime()
   ) {
@@ -49,11 +51,133 @@ class ColumnChart extends BaseChart {
           });
         }
 
-        //TODO: Add avg, count, max, min function to columnt chart for specific period
+        if (data.type === "Multistate") {
+          let nameMap = new Map();
+          //   console.debug(data.textRenderer.multistateValues);
+          if (data.textRenderer.multistateValues != undefined) {
+            data.textRenderer.multistateValues.forEach(e => {
+              nameMap.set(e.key, e.text);
+            });
+          }
+
+          data.values.forEach(e => {
+            if (data.textRenderer.multistateValues != undefined) {
+              e.value = Number(e.value);
+              if (this.pointPastValues.get(nameMap.get(e.value)) == undefined) {
+                this.pointPastValues.set(nameMap.get(e.value), 1);
+              } else {
+                this.pointPastValues.set(
+                  nameMap.get(e.value),
+                  this.pointPastValues.get(nameMap.get(e.value)) + 1
+                );
+              }
+            } else {
+              if (this.pointPastValues.get(e.value) == undefined) {
+                this.pointPastValues.set(e.value, 1);
+              } else {
+                this.pointPastValues.set(
+                  e.value,
+                  this.pointPastValues.get(e.value) + 1
+                );
+              }
+            }
+          });
+        }
+
+        if (data.type === "Numeric") {
+          if (sumType !== undefined && sumTimePeriod !== undefined) {
+            this.loadNumericData(data.values, sumType, sumTimePeriod);
+          }
+        }
 
         resolve("done");
       });
     });
+  }
+
+  loadNumericData(dataArray, sumType, period) {
+    let avg = new Map();
+    dataArray.forEach(data => {
+      data.value = Number(data.value);
+      let date = new Date(data.ts);
+      let key = String(date.getFullYear());
+      switch (period) {
+        case "yaer":
+          break;
+        case "month":
+          key = key + "-" + date.getMonth();
+          break;
+        case "day":
+          key = key + "-" + date.getMonth() + "-" + date.getDate();
+          break;
+        case "hour":
+          key =
+            key +
+            "-" +
+            date.getMonth() +
+            "-" +
+            date.getDate() +
+            "_" +
+            date.getHours() +
+            ":00";
+          break;
+        case "minutes":
+          key =
+            key +
+            "-" +
+            date.getMonth() +
+            "-" +
+            date.getDate() +
+            "_" +
+            date.getHours() +
+            ":" +
+            date.getMinutes();
+          break;
+      }
+      if (sumType === "count") {
+        if (this.pointPastValues.get(key) == undefined) {
+          this.pointPastValues.set(key, 1);
+        } else {
+          this.pointPastValues.set(key, this.pointPastValues.get(key) + 1);
+        }
+      } else if (sumType === "max") {
+        if (this.pointPastValues.get(key) == undefined) {
+          this.pointPastValues.set(key, data.value);
+        } else {
+          if (data.value > this.pointPastValues.get(key)) {
+            this.pointPastValues.set(key, data.value);
+          }
+        }
+      } else if (sumType === "min") {
+        if (this.pointPastValues.get(key) == undefined) {
+          this.pointPastValues.set(key, data.value);
+        } else {
+          if (data.value < this.pointPastValues.get(key)) {
+            this.pointPastValues.set(key, data.value);
+          }
+        }
+      } else if (sumType === "avg") {
+        if (this.pointPastValues.get(key) == undefined) {
+          this.pointPastValues.set(key, data.value);
+          avg.set(key, 1);
+        } else {
+          if (data.value < this.pointPastValues.get(key)) {
+            this.pointPastValues.set(
+              key,
+              this.pointPastValues.get(key) + data.value
+            );
+            avg.set(key, avg.get(key) + 1);
+          }
+        }
+      }
+    });
+    if (sumType === "avg") {
+      let newPointPastValues = new Map();
+      this.pointPastValues.forEach(function(value, key) {
+        newPointPastValues.set(key, value / avg.get(key));
+      });
+      this.pointPastValues = newPointPastValues;
+    }
   }
 
   static prepareChartData(map, categoryName, countName) {
@@ -97,6 +221,8 @@ export default {
     "startDate",
     "endDate",
     "live",
+    "sumType",
+    "sumTimePeriod",
     "refreshRate",
     "width",
     "height"
@@ -123,6 +249,8 @@ export default {
           promises.push(
             this.chartClass.loadData(
               this.propPointId,
+              this.sumType,
+              this.sumTimePeriod,
               sDate.getTime(),
               eDate.getTime()
             )
@@ -131,13 +259,24 @@ export default {
           console.warn(
             "Not valid date pattern. Try with: <... start-date='YYYY/MM/DD'>"
           );
-          promises.push(this.chartClass.loadData(this.propPointId));
+          promises.push(
+            this.chartClass.loadData(
+              this.propPointId,
+              this.sumType,
+              this.sumTimePeriod
+            )
+          );
         }
       } else if (this.startDate !== undefined && this.endDate === undefined) {
         let sDate = new Date(this.startDate);
         if (!isNaN(sDate.getDate())) {
           promises.push(
-            this.chartClass.loadData(this.propPointId, sDate.getTime())
+            this.chartClass.loadData(
+              this.propPointId,
+              this.sumType,
+              this.sumTimePeriod,
+              sDate.getTime()
+            )
           );
         } else {
           console.warn(
@@ -145,7 +284,13 @@ export default {
           );
         }
       } else {
-        promises.push(this.chartClass.loadData(this.propPointId));
+        promises.push(
+          this.chartClass.loadData(
+            this.propPointId,
+            this.sumType,
+            this.sumTimePeriod
+          )
+        );
       }
 
       Promise.all(promises).then(response => {
