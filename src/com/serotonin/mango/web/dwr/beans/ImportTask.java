@@ -390,11 +390,9 @@ public class ImportTask extends ProgressiveTask {
 				user.setUsername(username);
 				user.setPassword(Common.encrypt(username));
 				user.setDataSourcePermissions(new ArrayList<Integer>());
-				user.setDataPointPermissions(new ArrayList<DataPointAccess>());
-				user.setTimezone(Timezone.displayTimeZone(userJson.getString("zone")));
-				
+				user.setDataPointPermissions(new ArrayList<DataPointAccess>());				
 			}
-
+			user.setTimezone(Timezone.displayTimeZone(userJson.getString("zone")));
 			try {
 				reader.populateObject(user, userJson);
 
