@@ -49,9 +49,10 @@ var chartSettings = {
         "series": {
             "strokeWidth": 3,
             "minBulletDistance": 15,
-            "fillOpacity": 0.1,
-            "tensionX": 0.9,
+            "fillOpacity": 0.0,
+            "tensionX": 1,
             "connect": true,
+            "stacked": false,
         },
         "bullets": {
             "strokeWidth": 2,
@@ -87,8 +88,8 @@ function scadaAmChartInit(adjustedStart = 0, adjustedEnd = 1) {
     pointCurrentState.forEach(function (value, key) {
         createAxisAndSeries(value.name, value.type, value.suffix);
     })
-    if(chart.series._values.length === 0) {
-        document.getElementById("dpd-chart").style.display="none";
+    if (chart.series._values.length === 0) {
+        document.getElementById("dpd-chart").style.display = "none";
     }
 
     chart.data = prepareChartData(sortMapKeys(pointPastValues));
@@ -122,10 +123,24 @@ function scadaAmChartLiveUpdatePoints() {
                 if (status == "success") {
                     data = JSON.parse(data);
                     //Do the same as it was in getDataPointValuesFromTime()
-                    if (isNaN(data.value)) {
-                        data.value == "true" ? data.value = 1 : data.value = 0;
+                    let nameMap = new Map();
+                    if (data.type === "MultistateValue") {
+                        if (data.textRenderer.multistateValues != undefined) {
+                            data.textRenderer.multistateValues.forEach(e => {
+                                nameMap.set(e.key, e.text);
+                            });
+                        }
                     }
-                    let point = { 'name': data.name, "value": data.value };
+                    let point;
+
+                    if (data.type === "MultistateValue" && nameMap.size > 0) {
+                        point = { "name": data.name, "value": nameMap.get(Number(data.value)) };
+                    } else {
+                        if (isNaN(data.value)) {
+                            data.value == "true" ? data.value = 1 : data.value = 0;
+                        }
+                        point = { 'name': data.name, "value": data.value };
+                    }
                     if (lastUpdate.get(data.ts) == undefined) {
                         lastUpdate.set(data.ts, [point]);
                     } else {
@@ -158,12 +173,28 @@ function scadaAmChartGetDataPointValuesFromTime(pointId, startTimestamp = new Da
             if (pointCurrentState.get(pointId) == undefined) {
                 pointCurrentState.set(pointId, { "name": data.name, "suffix": data.textRenderer.suffix, "type": data.type });
             }
-            data.values.forEach(e => {
-                //Validate binary values and transform to numeric values
-                if (isNaN(e.value)) {
-                    e.value == "true" ? e.value = 1 : e.value = 0;
+
+            let nameMap = new Map();
+            if (data.type === "Multistate") {
+                if (data.textRenderer.multistateValues != undefined) {
+                    data.textRenderer.multistateValues.forEach(e => {
+                        nameMap.set(e.key, e.text);
+                    });
                 }
-                let point = { "name": data.name, "value": e.value };
+            }
+            data.values.forEach(e => {
+
+                let point;
+                if (data.type === "Binary") {
+                    if (isNaN(e.value)) {
+                        e.value == "true" ? e.value = 1 : e.value = 0;
+                    }
+                }
+                if (data.type === "Multistate" && nameMap.size > 0) {
+                    point = { "name": data.name, "value": nameMap.get(Number(e.value)) };
+                } else {
+                    point = { "name": data.name, "value": e.value };
+                }
                 // If point value in time do not exist - create new one
                 if (pointPastValues.get(e.ts) == undefined) {
                     pointPastValues.set(e.ts, [point])
@@ -171,6 +202,7 @@ function scadaAmChartGetDataPointValuesFromTime(pointId, startTimestamp = new Da
                     pointPastValues.get(e.ts).push(point)
                 }
             })
+
         } else { alert(status) }
     })
 }
@@ -204,6 +236,8 @@ function prepareChartData(map) {
         value.forEach(e => {
             if (!isNaN(Number(e.value))) {
                 jsonString = jsonString + ', "' + e.name + '":' + e.value;
+            } else {
+                jsonString = jsonString + ', "' + e.name + '":"' + e.value + '"';
             }
         })
         jsonString = jsonString + '}';
@@ -244,12 +278,14 @@ function getChartTypeSeries(type) {
         } else {
             series = chart.series.push(new am4charts.StepLineSeries());
         }
-    } else if (type == "Multistate") {
-        if (chartTypes[2] == "1") {
-            series = chart.series.push(new am4charts.LineSeries());
-        } else {
-            series = chart.series.push(new am4charts.StepLineSeries());
-        }
+    } else if (type == "Multistate" || type == "Alphanumeric") {
+        series = chart.series.push(new am4charts.LineSeries());
+        // if (chartTypes[2] == "1") {
+        //     series = chart.series.push(new am4charts.LineSeries());
+        // } else {
+        //     series = chart.series.push(new am4charts.StepLineSeries());
+        //     // series = chart.series.push(new am4charts.LineSeries());
+        // }
     } else if (type == "Binary") {
         if (chartTypes[0] == "1") {
             series = chart.series.push(new am4charts.LineSeries());
@@ -268,12 +304,28 @@ function createAxisAndSeries(field, type, suffix) {
     //Generate yAxes
     var yAxis;
     if (chart.yAxes.values.length > 0) {
-        yAxis = chart.yAxes.values.find(x => x.title.text === type);
+        if (type === "Multistate" || type === "Alphanumeric") {
+            yAxis = undefined
+        } else {
+            yAxis = chart.yAxes.values.find(x => x.title.text === type);
+        }
     } else {
         yAxis = undefined;
     }
+    console.log(type)
     if (yAxis === undefined) {
-        yAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        if (type === "Multistate" || type === "Alphanumeric") {
+            yAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+            console.log(yAxis)
+            yAxis.dataFields.category = field;
+            yAxis.renderer.grid.template.location = 1;
+            yAxis.renderer.labels.template.fontSize = 15;
+            yAxis.renderer.minGridDistance = 1;
+            yAxis.renderer.cellStartLocation = 0.5;
+            yAxis.renderer.cellEndLocation = 0.5;
+        } else {
+            yAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        }
         yAxis.title.text = type;
         yAxis.extraMin = chartSettings.ySeriesAxis.paddingTop;
         yAxis.extraMax = chartSettings.ySeriesAxis.paddingBottom;
@@ -287,16 +339,25 @@ function createAxisAndSeries(field, type, suffix) {
 
     if (series !== undefined) {
         //Config chart series
-        series.dataFields.valueY = field;
+        if (type === "Multistate" || type === "Alphanumeric") {
+            series.dataFields.categoryY = field;
+            series.tooltipText = "{name}: [bold]{categoryY}[/]";
+        } else {
+            series.dataFields.valueY = field;
+            series.tooltipText = "{name}: [bold]{valueY}" + suffix + "[/]";
+        }
         series.dataFields.dateX = "date";
         series.name = field;
-        series.tooltipText = "{name}: [bold]{valueY}" + suffix + "[/]";
+
         series.strokeWidth = chartSettings.styles.series.strokeWidth;
         series.minBulletDistance = chartSettings.styles.series.minBulletDistance;
         series.fillOpacity = chartSettings.styles.series.fillOpacity;
         series.tensionX = chartSettings.styles.series.tensionX;
         series.connect = chartSettings.styles.series.connect;
         series.yAxis = yAxis;
+        series.stacked = chartSettings.styles.series.stacked;
+
+        yAxis.renderer.labels.template.fill = series.stroke;
 
         let bullet = series.bullets.push(new am4charts.CircleBullet());
         bullet.circle.strokeWidth = chartSettings.styles.bullets.strokeWidth;
