@@ -66,53 +66,13 @@
 			<fileset dir="ScadaLTS-UI-1/dist/static/css">
 				<include name="*"/>
 			</fileset>
-			<mapper type="glob" from="app.*.css" to="app.css"/>
 		</copy>
 
 		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
 			<fileset dir="ScadaLTS-UI-1/dist/static/js">
 				<include name="*"/>
 			</fileset>
-			<mapper type="glob" from="app.*.js" to="app.js"/>
-
 		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="vendor.*.js" to="vendor.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="manifest.*.js" to="manifest.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="vendor.*.js.map" to="vendor.js.map"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="manifest.*.js.map" to="manifest.js.map"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="app.*.js.map" to="app.js.map"/>
-
-		</copy>
-
 
 		<mkdir dir="WebContent/WEB-INF/classes"/>
 		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
