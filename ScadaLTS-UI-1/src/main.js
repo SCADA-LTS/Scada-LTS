@@ -13,6 +13,8 @@ import CMP from "./components/CMP";
 import StepLineChartComponent from "./components/charts/StepLineChartComponent";
 import LineChartComponent from './components/charts/LineChartComponent'
 import ColumnChartComponent from './components/charts/ColumnChartComponent'
+import PieChartComponent from './components/charts/PieChartComponent'
+import GaugeChartComponent from './components/charts/GaugeChartComponent'
 import SleepAndReactivationDS from './components/form/SleepAndReactivationDS'
 import router from './router'
 import VJsoneditor from 'vue-jsoneditor';
@@ -77,6 +79,8 @@ new Vue({
     "step-line": StepLineChartComponent,
     "line-chart": LineChartComponent,
     "column-chart": ColumnChartComponent,
+    "pie-chart": PieChartComponent,
+    "gauge-chart": GaugeChartComponent
   },
 })
 

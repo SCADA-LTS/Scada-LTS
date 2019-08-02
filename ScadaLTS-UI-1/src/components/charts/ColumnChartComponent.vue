@@ -17,9 +17,9 @@ import BaseChart from "./BaseChart";
 
 am4core.useTheme(am4themes_animated);
 
-class ColumnChart extends BaseChart {
-  constructor(chartReference, domain = "http://localhost:8080/ScadaLTS") {
-    super(chartReference, "XYChart", domain);
+export class ColumnChart extends BaseChart {
+  constructor(chartReference, chartType="XYChart", domain = "http://localhost:8080/ScadaLTS") {
+    super(chartReference, chartType, domain);
   }
 
   loadData(
@@ -105,16 +105,16 @@ class ColumnChart extends BaseChart {
         case "yaer":
           break;
         case "month":
-          key = key + "-" + date.getMonth();
+          key = key + "-" + (date.getMonth() + 1);
           break;
         case "day":
-          key = key + "-" + date.getMonth() + "-" + date.getDate();
+          key = key + "-" + (date.getMonth() + 1) + "-" + date.getDate();
           break;
         case "hour":
           key =
             key +
             "-" +
-            date.getMonth() +
+            (date.getMonth() + 1) +
             "-" +
             date.getDate() +
             "_" +
@@ -125,7 +125,7 @@ class ColumnChart extends BaseChart {
           key =
             key +
             "-" +
-            date.getMonth() +
+            (date.getMonth() + 1) +
             "-" +
             date.getDate() +
             "_" +

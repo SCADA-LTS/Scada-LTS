@@ -154,7 +154,7 @@ export default class BaseChart {
             series = this.chart.series.push(new am4charts.LineSeries());
         } else if (seriesType === "StepLine") {
             series = this.chart.series.push(new am4charts.StepLineSeries());
-        } else if (seriesType === "PieSeries") {
+        } else if (seriesType === "Pie") {
             series = this.chart.series.push(new am4charts.PieSeries());
         }
 
@@ -224,6 +224,11 @@ export default class BaseChart {
             axis.dataFields.category = category;
             axis.renderer.grid.template.location = 0;
             axis.renderer.minGridDistance = 30;
+            axis.renderer.labels.template.horizontalCenter = "right";
+            axis.renderer.labels.template.verticalCenter = "middle";
+            axis.renderer.labels.template.rotation = 315;
+            axis.tooltip.disabled = true;
+            axis.renderer.minHeight = 110;
 
         }
     }
@@ -257,7 +262,7 @@ export default class BaseChart {
         if (legend) {
             this.chart.legend = new am4charts.Legend();
         }
-        if(cursor) {
+        if (cursor) {
             this.chart.cursor = new am4charts.XYCursor();
             this.chart.cursor.behavior = "panXY";
         }
@@ -270,7 +275,7 @@ export default class BaseChart {
      * @param {String} [filePrefix = "Scada_Chart"] File name to which save exported chart data.
      */
     createExportMenu(enabled = true, filePrefix = "Scada_Chart") {
-        if(enabled) {
+        if (enabled) {
             this.chart.exporting.menu = new am4core.ExportMenu();
             this.chart.exporting.menu.align = "right"
             this.chart.exporting.menu.vetricalAlign = "top"
@@ -287,7 +292,7 @@ export default class BaseChart {
     static setPolylineStep(step) {
         am4core.options.minPolylineStep = step;
     }
-    
+
     /**
      * Order values stored inside Map by keys (key == timestamp)
      * 
