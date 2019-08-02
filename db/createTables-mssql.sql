@@ -45,8 +45,8 @@ create table users (
   homeUrl nvarchar(255),
   receiveAlarmEmails int not null,
   receiveOwnAuditEvents char(1) not null,
-  timezone nvarchar(60) not null,
-  zone nvarchar(40) not null
+  timezone nvarchar(60),
+  zone nvarchar(40)
   primary key (id)
 );
 

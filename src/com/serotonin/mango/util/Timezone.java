@@ -18,6 +18,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.serotonin.mango.Common;
@@ -41,7 +42,7 @@ public class Timezone{
 	    GMT, UTC
 	}
 
-	public List<String> getTimeZoneList(OffsetBase base) {	 
+	public static List<String> getTimeZoneList(OffsetBase base) {	 
 
 	    LocalDateTime now = LocalDateTime.now();
 	    return ZoneId.getAvailableZoneIds()
@@ -62,7 +63,7 @@ public class Timezone{
 				.collect(Collectors.toList());
 	}
 	
-	Comparator<ZoneId> ZoneComparator = new Comparator<ZoneId>() {
+	static Comparator<ZoneId> ZoneComparator = new Comparator<ZoneId>() {
 		@Override
 		public int compare(ZoneId zoneId1, ZoneId zoneId2) {
 			 LocalDateTime now = LocalDateTime.now();
@@ -80,7 +81,19 @@ public class Timezone{
 				.getId()
 				.replace("Z", "+00:00");
 	}
-
+	
+	public static TimeZone displayTimeZone(String zone) {
+      TimeZone tz = TimeZone.getDefault();
+      tz = createTimezone("UTC+00:00");
+      for(int i=0;i<getTimeZoneList(OffsetBase.UTC).size();i++){
+        if(getTimeZoneList(OffsetBase.UTC).get(i).contains(zone)){
+          tz = createTimezone(getTimeZoneList(OffsetBase.UTC).get(i).substring(1,10));
+          break;
+        }
+      }
+		return tz;
+	}
+	
 	public static  TimeZone createTimezone(String id) {
 		String myIdTimeZone = id;
 		if (id == null || (id != null && id.equals(""))) {
