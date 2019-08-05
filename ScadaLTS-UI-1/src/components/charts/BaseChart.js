@@ -23,9 +23,10 @@ export default class BaseChart {
      * 
      * @param {any} chartReference Id of DOM element where this char will be initialized
      * @param {String} chartType [ XYChart | PieChart | GaugeChart] available chart types
+     * @param {String} color Hex value of base chart color. 
      * @param {String} [domain] Protocol, domain and the address of the API interface
      */
-    constructor(chartReference, chartType, domain = 'http://localhost:8080/ScadaLTS') {
+    constructor(chartReference, chartType, color, domain = 'http://localhost:8080/ScadaLTS') {
 
         if (chartType === "XYChart") {
             this.chart = am4core.create(chartReference, am4charts.XYChart)
@@ -39,13 +40,17 @@ export default class BaseChart {
         this.liveUpdatePointValues = new Map();
         this.liveUpdateInterval = 5000;
         this.domain = domain;
-        this.chart.colors.list = [
+        let colorPallete = [
             am4core.color("#39B54A"),
             am4core.color("#69FF7D"),
             am4core.color("#166921"),
             am4core.color("#690C24"),
             am4core.color("#B53859"),
         ];
+        if (color !== undefined && color.startsWith("#")) {
+            colorPallete.unshift(am4core.color(color));
+        }
+        this.chart.colors.list = colorPallete;
     }
 
     /**
@@ -86,12 +91,14 @@ export default class BaseChart {
      */
     startLiveUpdate(refreshRate) {
         this.liveUpdateInterval = setInterval(() => {
-            this.loadLiveData()
+            // this.loadLiveData()
+            this.refreshPointValues();
         }, refreshRate);
     }
 
     /**
      * Connect with API and parse new data for chart
+     * @deprecated
      */
     loadLiveData() {
 
@@ -111,6 +118,64 @@ export default class BaseChart {
         }
         this.chart.addData(BaseChart.prepareChartData(BaseChart.sortMapKeys(this.liveUpdatePointValues)))
         this.liveUpdatePointValues.clear();
+    }
+
+    /**
+     * Get data point data from REST API.
+     * 
+     * @param {Number} pointId ID of data point.
+     */
+    getPointValue(pointId) {
+        let api = '/api/point_value/getValue/id/';
+        return new Promise((resolve, reject) => {
+            try {
+                Axios.get(this.domain + api + pointId, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(resp => {
+                    resolve(resp.data);
+                }).catch(webError => {
+                    reject(webError)
+                });
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
+    /**
+     * Stategy how to parse data received from API server. 
+     * 
+     * @param {Object} pointValue Object of recived point data value.
+     * @param {String} pointName Name of datapoint.  
+     * @param {Map} referencedArray Map of values to which we want to save data. [pointPastValues or liveUpdatePoints]
+     */
+    addValue(pointValue, pointName, referencedArray) {
+        if (isNaN(pointValue.value)) {
+            pointValue.value == "true" ? pointValue.value = 1 : pointValue.value = 0;
+        }
+        let point = { "name": pointName, "value": pointValue.value };
+        if (referencedArray.get(pointValue.ts) == undefined) {
+            referencedArray.set(pointValue.ts, [point]);
+        } else {
+            referencedArray.get(pointValue.ts).push(point);
+        }
+    }
+
+    /**
+     * For each defined point get current value and update chart when all request has been recived.
+     */
+    refreshPointValues() {
+        let pointData = [];
+        for (let [k, v] of this.pointCurrentValue) {
+            pointData.push(this.getPointValue(k).then(data => {
+                this.addValue(data, data.name, this.liveUpdatePointValues)
+            }))
+        }
+        Promise.all(pointData).then(() => {
+            let lastData = BaseChart.prepareChartData(this.liveUpdatePointValues);
+            if(lastData.length === 2) {
+                this.chart.addData(lastData, 1);
+                this.liveUpdatePointValues.clear();
+            }
+        });
     }
 
     /**
@@ -229,7 +294,6 @@ export default class BaseChart {
             axis.renderer.labels.template.rotation = 315;
             axis.tooltip.disabled = true;
             axis.renderer.minHeight = 110;
-
         }
     }
 

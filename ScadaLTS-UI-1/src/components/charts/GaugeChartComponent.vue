@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Displaying Gauge for DataPoint {{pointName}} with ID: {{propPointId}}</p>
+    <p>{{label}}</p>
     <div
       class="hello"
       v-bind:style="{height: this.height + 'px', width: this.width + 'px'}"
@@ -64,7 +64,8 @@ class GaugeChart {
 export default {
   name: "GaugeChartComponent",
   props: [
-    "propPointId",
+    "pointId",
+    "label",
     "min",
     "max",
     "refreshRate",
@@ -83,7 +84,7 @@ export default {
   },
   methods: {
     generateChart() {
-      this.chartClass = new GaugeChart(this.$refs.chartdiv, this.propPointId, this.min, this.max, this.refreshRate);
+      this.chartClass = new GaugeChart(this.$refs.chartdiv, this.pointId, this.min, this.max, this.refreshRate);
       this.chartClass.showChart();
     }   
   }

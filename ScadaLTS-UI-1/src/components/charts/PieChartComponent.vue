@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Displaying PieChart for DataPoint {{pointName}} with ID: {{propPointId}}</p>
+    <p>{{label}}</p>
     <div
       class="hello"
       v-bind:style="{height: this.height + 'px', width: this.width + 'px'}"
@@ -31,9 +31,6 @@ class PieChart extends ColumnChart {
       categoryName,
       countName
     );
-    // this.createAxisX("CategoryAxis", categoryName);
-    // this.createAxisY();
-    // this.createScrollBarsAndLegend(false, false, false, false);
     this.createExportMenu(true, "Scada_PieChart");
     this.createSeries("Pie", categoryName, countName, categoryName);
   }
@@ -42,7 +39,8 @@ class PieChart extends ColumnChart {
 export default {
   name: "PieChartComponent",
   props: [
-    "propPointId",
+    "pointId",
+    "label",
     "startDate",
     "endDate",
     "sumType",
@@ -71,7 +69,7 @@ export default {
         if (!isNaN(sDate.getDate()) && !isNaN(eDate.getDate())) {
           promises.push(
             this.chartClass.loadData(
-              this.propPointId,
+              this.pointId,
               this.sumType,
               this.sumTimePeriod,
               sDate.getTime(),
@@ -84,7 +82,7 @@ export default {
           );
           promises.push(
             this.chartClass.loadData(
-              this.propPointId,
+              this.pointId,
               this.sumType,
               this.sumTimePeriod
             )
@@ -95,7 +93,7 @@ export default {
         if (!isNaN(sDate.getDate())) {
           promises.push(
             this.chartClass.loadData(
-              this.propPointId,
+              this.pointId,
               this.sumType,
               this.sumTimePeriod,
               sDate.getTime()
@@ -109,7 +107,7 @@ export default {
       } else {
         promises.push(
           this.chartClass.loadData(
-            this.propPointId,
+            this.pointId,
             this.sumType,
             this.sumTimePeriod
           )

@@ -1,11 +1,14 @@
 <template>
   <div>
-    <p>Displaying LineChart for DataPoint {{pointName}} with ID: {{propPointId}}</p>
+    <p>{{label}}</p>
     <div
       class="hello"
       v-bind:style="{height: this.height + 'px', width: this.width + 'px'}"
       ref="chartdiv"
     ></div>
+    <div v-if="errorMessage">
+      <p class="error">{{errorMessage}}</p>
+    </div>
   </div>
 </template>
 <script>
@@ -38,15 +41,7 @@ class LineChart extends BaseChart {
         }
 
         data.values.forEach(e => {
-          if (isNaN(e.value)) {
-            e.value == "true" ? (e.value = 1) : (e.value = 0);
-          }
-          let point = { name: data.name, value: e.value };
-          if (this.pointPastValues.get(e.ts) == undefined) {
-            this.pointPastValues.set(e.ts, [point]);
-          } else {
-            this.pointPastValues.get(e.ts).push(point);
-          }
+          this.addValue(e, data.name, this.pointPastValues);
         });
         resolve("done");
       });
@@ -74,18 +69,21 @@ class LineChart extends BaseChart {
 export default {
   name: "LineChartComponent",
   props: [
-    "propPointId",
+    "pointId",
+    "label",
     "startDate",
     "endDate",
     "live",
     "refreshRate",
     "width",
-    "height"
+    "height",
+    "polylineStep"
   ],
   //TODO: Enable multiple ChartInstances in one page
   data() {
     return {
       pointName: "Name",
+      errorMessage: undefined,
       chartClass: undefined
     };
   },
@@ -98,7 +96,7 @@ export default {
         LineChart.setPolylineStep(Number(this.polylineStep));
       }
       this.chartClass = new LineChart(this.$refs.chartdiv);
-      let points = this.propPointId.split(",");
+      let points = this.pointId.split(",");
       let promises = [];
       for (let i = 0; i < points.length; i++) {
         if (this.startDate !== undefined && this.endDate !== undefined) {
@@ -113,20 +111,12 @@ export default {
               )
             );
           } else {
-            console.warn(
-              "Not valid date pattern. Try with: <... start-date='YYYY/MM/DD'>"
-            );
+            this.errorMessage =
+              "Not valid date pattern. Try with: <... start-date='YYYY/MM/DD'>";
             promises.push(this.chartClass.loadData(points[i]));
           }
         } else if (this.startDate !== undefined && this.endDate === undefined) {
-          let sDate = new Date(this.startDate);
-          if (!isNaN(sDate.getDate())) {
-            promises.push(this.chartClass.loadData(points[i], sDate.getTime()));
-          } else {
-            console.warn(
-              "Not valid date pattern. Try with: <... start-date='YYYY/MM/DD'>"
-            );
-          }
+          promises.push(this.chartClass.loadData(points[i], this.calculateDate(this.startDate)));
         } else {
           promises.push(this.chartClass.loadData(points[i]));
         }
@@ -134,21 +124,54 @@ export default {
       Promise.all(promises).then(response => {
         for (let i = 0; i < response.length; i++) {
           if (response[i] !== "done") {
-            console.error(
-              "Point given with index [" + i + "] has not been loaded!"
-            );
+            this.errorMessage =
+              "Point given with index [" + i + "] has not been loaded!";
           }
         }
         this.chartClass.showChart();
         if (this.live == "true" && this.refreshRate == undefined) {
-          console.log(
-            "Refresh rate for chart has not been set. Add for example: <... refresh-rate='10000'>"
-          );
+          this.errorMessage =
+            "Refresh rate for chart has not been set. Add for example: <... refresh-rate='10000'>";
         }
         if (this.live == "true" && this.refreshRate != undefined) {
           this.chartClass.startLiveUpdate(Number(this.refreshRate));
         }
       });
+    },
+    calculateDate(dateString) {
+      let date = new Date(dateString);
+      if (date == "Invalid Date") {
+        date = dateString.split("-");
+        if (date.length === 2) {
+          let dateNow = new Date();
+          let multiplier = 1;
+          switch (date[1]) {
+            case "hour":
+            case "hours":
+              multiplier = 1000 * 3600;
+              break;
+            case "day":
+            case "days":
+              multiplier = 1000 * 3600 * 24;
+              break;
+            case "week":
+            case "weeks":
+              multiplier = 1000 * 3600 * 24 * 7;
+              break;
+            case "month":
+            case "months":
+              multiplier = 1000 * 3600 * 24 * 31;
+              break;
+          }
+          return dateNow.getTime() - Number(date[0]) * multiplier;
+        } else {
+          this.errorMessage =
+            "Not vaild date. Use for example ['1-day' | '2-months' | '3-days']";
+          return dateNow.getTime() - 3600000;
+        }
+      } else {
+        return date.getTime();
+      }
     }
   }
 };
@@ -157,5 +180,8 @@ export default {
 .hello {
   width: 750px;
   height: 500px;
+}
+.error {
+  color: red;
 }
 </style>
