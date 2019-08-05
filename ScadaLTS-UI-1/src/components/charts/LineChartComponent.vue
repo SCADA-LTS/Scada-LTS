@@ -21,8 +21,12 @@ import BaseChart from "./BaseChart";
 am4core.useTheme(am4themes_animated);
 
 class LineChart extends BaseChart {
-  constructor(chartReference, domain = "http://localhost:8080/ScadaLTS") {
-    super(chartReference, "XYChart", domain);
+  constructor(
+    chartReference,
+    color,
+    domain = "http://localhost:8080/ScadaLTS"
+  ) {
+    super(chartReference, "XYChart", color, domain);
   }
 
   loadData(
@@ -70,6 +74,7 @@ export default {
   name: "LineChartComponent",
   props: [
     "pointId",
+    "color",
     "label",
     "startDate",
     "endDate",
@@ -95,7 +100,7 @@ export default {
       if (Number(this.polylineStep) > 1) {
         LineChart.setPolylineStep(Number(this.polylineStep));
       }
-      this.chartClass = new LineChart(this.$refs.chartdiv);
+      this.chartClass = new LineChart(this.$refs.chartdiv, this.color);
       let points = this.pointId.split(",");
       let promises = [];
       for (let i = 0; i < points.length; i++) {
@@ -116,7 +121,12 @@ export default {
             promises.push(this.chartClass.loadData(points[i]));
           }
         } else if (this.startDate !== undefined && this.endDate === undefined) {
-          promises.push(this.chartClass.loadData(points[i], this.calculateDate(this.startDate)));
+          promises.push(
+            this.chartClass.loadData(
+              points[i],
+              this.calculateDate(this.startDate)
+            )
+          );
         } else {
           promises.push(this.chartClass.loadData(points[i]));
         }

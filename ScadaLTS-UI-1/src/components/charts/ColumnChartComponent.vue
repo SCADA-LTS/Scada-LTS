@@ -21,8 +21,13 @@ import BaseChart from "./BaseChart";
 am4core.useTheme(am4themes_animated);
 
 export class ColumnChart extends BaseChart {
-  constructor(chartReference, chartType="XYChart", domain = "http://localhost:8080/ScadaLTS") {
-    super(chartReference, chartType, domain);
+  constructor(
+    chartReference,
+    color,
+    chartType = "XYChart",
+    domain = "http://localhost:8080/ScadaLTS"
+  ) {
+    super(chartReference, chartType, color, domain);
   }
 
   loadData(
@@ -220,6 +225,7 @@ export default {
   name: "ColumnChartComponent",
   props: [
     "pointId",
+    "color",
     "label",
     "startDate",
     "endDate",
@@ -242,7 +248,7 @@ export default {
   },
   methods: {
     generateChart() {
-      this.chartClass = new ColumnChart(this.$refs.chartdiv);
+      this.chartClass = new ColumnChart(this.$refs.chartdiv, this.color);
       let promises = [];
       if (this.startDate !== undefined && this.endDate !== undefined) {
         let sDate = new Date(this.startDate);
@@ -258,7 +264,8 @@ export default {
             )
           );
         } else {
-          this.errorMessage = "Not vaild date. Use for example ['1-day' | '2-months' | '3-days']";
+          this.errorMessage =
+            "Not vaild date. Use for example ['1-day' | '2-months' | '3-days']";
           promises.push(
             this.chartClass.loadData(
               this.pointId,
@@ -317,7 +324,8 @@ export default {
           }
           return dateNow.getTime() - Number(date[0]) * multiplier;
         } else {
-          this.errorMessage = "Not vaild date. Use for example ['1-day' | '2-months' | '3-days']";
+          this.errorMessage =
+            "Not vaild date. Use for example ['1-day' | '2-months' | '3-days']";
           return dateNow.getTime() - 3600000;
         }
       } else {
@@ -333,6 +341,6 @@ export default {
   height: 500px;
 }
 .error {
-  color:red;
+  color: red;
 }
 </style>

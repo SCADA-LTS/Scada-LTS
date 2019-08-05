@@ -21,8 +21,8 @@ import BaseChart from "./BaseChart";
 am4core.useTheme(am4themes_animated);
 
 class StepLineChart extends BaseChart {
-  constructor(chartReference, domain = "http://localhost:8080/ScadaLTS") {
-    super(chartReference, "XYChart", domain);
+  constructor(chartReference, color, domain = "http://localhost:8080/ScadaLTS") {
+    super(chartReference, "XYChart", color, domain);
   }
 
   loadData(
@@ -70,6 +70,7 @@ export default {
   name: "StepLineChartComponent",
   props: [
     "pointId",
+    "color",
     "label",
     "startDate",
     "endDate",
@@ -95,7 +96,7 @@ export default {
       if (Number(this.polylineStep) > 1) {
         StepLineChart.setPolylineStep(Number(this.polylineStep));
       }
-      this.chartClass = new StepLineChart(this.$refs.chartdiv);
+      this.chartClass = new StepLineChart(this.$refs.chartdiv, this.color);
       let points = this.pointId.split(",");
       let promises = [];
       for (let i = 0; i < points.length; i++) {

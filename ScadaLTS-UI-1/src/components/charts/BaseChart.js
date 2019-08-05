@@ -23,10 +23,10 @@ export default class BaseChart {
      * 
      * @param {any} chartReference Id of DOM element where this char will be initialized
      * @param {String} chartType [ XYChart | PieChart | GaugeChart] available chart types
-     * @param {String} color Hex value of base chart color. 
+     * @param {String} colors Hex value of base chart color. 
      * @param {String} [domain] Protocol, domain and the address of the API interface
      */
-    constructor(chartReference, chartType, color, domain = 'http://localhost:8080/ScadaLTS') {
+    constructor(chartReference, chartType, colors, domain = 'http://localhost:8080/ScadaLTS') {
 
         if (chartType === "XYChart") {
             this.chart = am4core.create(chartReference, am4charts.XYChart)
@@ -38,6 +38,7 @@ export default class BaseChart {
         this.pointPastValues = new Map();
         this.pointCurrentValue = new Map();
         this.liveUpdatePointValues = new Map();
+        this.lastUpdate = 0;
         this.liveUpdateInterval = 5000;
         this.domain = domain;
         let colorPallete = [
@@ -47,8 +48,13 @@ export default class BaseChart {
             am4core.color("#690C24"),
             am4core.color("#B53859"),
         ];
-        if (color !== undefined && color.startsWith("#")) {
-            colorPallete.unshift(am4core.color(color));
+        if (colors !== undefined) {
+            colors = colors.split(",");
+            if (colors.length > 0) {
+                for (let i = colors.length - 1; i >= 0; i--) {
+                    colorPallete.unshift(am4core.color(colors[i].trim()));
+                }
+            }
         }
         this.chart.colors.list = colorPallete;
     }
@@ -71,9 +77,8 @@ export default class BaseChart {
      */
     loadData(pointId, startTimestamp = new Date().getTime() - 3600000, endTimestamp = new Date().getTime()) {
         return new Promise((resolve, reject) => {
-            let api = '/api/point_value/getValuesFromTimePeriod/';
             try {
-                Axios.get(this.domain + api + pointId + '/' + startTimestamp + '/' + endTimestamp, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
+                Axios.get(`${this.domain}/api/point_value/getValuesFromTimePeriod/${pointId}/${startTimestamp}/${endTimestamp}`, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
                     resolve(response.data);
                 }).catch(webError => {
                     reject(webError)
@@ -101,10 +106,8 @@ export default class BaseChart {
      * @deprecated
      */
     loadLiveData() {
-
-        let api = '/api/point_value/getValue/id/';
         for (let [k, v] of this.pointCurrentValue) {
-            Axios.get(this.domain + api + k, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
+            Axios.get(`${this.domain}/api/point_value/getValue/id/${k}`, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
                 if (isNaN(response.data.value)) {
                     response.data.value == "true" ? response.data.value = 1 : response.data.value = 0;
                 }
@@ -126,10 +129,9 @@ export default class BaseChart {
      * @param {Number} pointId ID of data point.
      */
     getPointValue(pointId) {
-        let api = '/api/point_value/getValue/id/';
         return new Promise((resolve, reject) => {
             try {
-                Axios.get(this.domain + api + pointId, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(resp => {
+                Axios.get(`${this.domain}/api/point_value/getValue/id/${pointId}`, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(resp => {
                     resolve(resp.data);
                 }).catch(webError => {
                     reject(webError)
@@ -171,9 +173,11 @@ export default class BaseChart {
         }
         Promise.all(pointData).then(() => {
             let lastData = BaseChart.prepareChartData(this.liveUpdatePointValues);
-            if(lastData.length === 2) {
+            if(lastData[lastData.length-1].date > this.lastUpdate) {
                 this.chart.addData(lastData, 1);
+                this.lastUpdate = lastData[lastData.length-1].date;
                 this.liveUpdatePointValues.clear();
+                lastData.clear();
             }
         });
     }

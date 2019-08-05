@@ -19,19 +19,19 @@ am4core.useTheme(am4themes_animated);
 
 class GaugeChart {
 
-  constructor(chartReference, pointId, min, max, refreshRate, domain = "http://localhost:8080/ScadaLTS") {
+  constructor(chartReference, pointId, min, max, refreshRate, color, domain = "http://localhost:8080/ScadaLTS") {
     this.chart = am4core.create(chartReference, am4charts.GaugeChart);
     this.chart.innerRadius = -25;
     this.pointId = pointId;
     this.domain = domain;
-    this.createAxisX(Number(min), Number(max));
+    this.createAxisX(Number(min), Number(max), color);
     this.hand = this.chart.hands.push(new am4charts.ClockHand());
     this.value = 0;
     this.refreshRate = refreshRate === undefined ? 1000 : Number(refreshRate);
     this.interval = 10000;
   }
 
-  createAxisX(min, max) {
+  createAxisX(min, max, color) {
     let axis = this.chart.xAxes.push(new am4charts.ValueAxis());
     axis.min = min;
     axis.max = max;
@@ -43,7 +43,11 @@ class GaugeChart {
     range0.value = min;
     range0.endValue = max;
     range0.axisFill.fillOpacity = 1;
-    range0.axisFill.fill = am4core.color("#39B54A");
+    if(color !== undefined) {
+      range0.axisFill.fill = am4core.color(color);
+    } else {
+      range0.axisFill.fill = am4core.color("#39B54A");
+    }
     range0.axisFill.zIndex = - 1;
   }
 
@@ -65,6 +69,7 @@ export default {
   name: "GaugeChartComponent",
   props: [
     "pointId",
+    "color",
     "label",
     "min",
     "max",
@@ -84,7 +89,7 @@ export default {
   },
   methods: {
     generateChart() {
-      this.chartClass = new GaugeChart(this.$refs.chartdiv, this.pointId, this.min, this.max, this.refreshRate);
+      this.chartClass = new GaugeChart(this.$refs.chartdiv, this.pointId, this.min, this.max, this.refreshRate, this.color);
       this.chartClass.showChart();
     }   
   }
