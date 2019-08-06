@@ -82,7 +82,10 @@ export default {
     "refreshRate",
     "width",
     "height",
-    "polylineStep"
+    "polylineStep",
+    "rangeValue",
+    "rangeColor",
+    "rangeLabel"
   ],
   //TODO: Enable multiple ChartInstances in one page
   data() {
@@ -139,6 +142,9 @@ export default {
           }
         }
         this.chartClass.showChart();
+        if(this.rangeValue !== undefined) {
+          this.chartClass.addRangeValue(Number(this.rangeValue), this.rangeColor, this.rangeLabel)
+        }
         if (this.live == "true" && this.refreshRate == undefined) {
           this.errorMessage =
             "Refresh rate for chart has not been set. Add for example: <... refresh-rate='10000'>";

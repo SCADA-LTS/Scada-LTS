@@ -9,7 +9,7 @@ import IsAlive from './components/IsAlive'
 import ExportImportPointHierarchy from './components/ExportImportPointHierarchy'
 import SimpleComponentSVG from './components/SimpleComponentSVG'
 import CMP from "./components/CMP";
-
+import JsonChartComponent from './components/charts/JsonChartComponent'
 import StepLineChartComponent from "./components/charts/StepLineChartComponent";
 import LineChartComponent from './components/charts/LineChartComponent'
 import ColumnChartComponent from './components/charts/ColumnChartComponent'
@@ -80,7 +80,8 @@ new Vue({
     "line-chart": LineChartComponent,
     "column-chart": ColumnChartComponent,
     "pie-chart": PieChartComponent,
-    "gauge-chart": GaugeChartComponent
+    "gauge-chart": GaugeChartComponent,
+    "json-custom-chart": JsonChartComponent
   },
 })
 

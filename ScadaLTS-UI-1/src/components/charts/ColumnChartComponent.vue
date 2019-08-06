@@ -234,7 +234,10 @@ export default {
     "sumTimePeriod",
     "refreshRate",
     "width",
-    "height"
+    "height",
+    "rangeValue",
+    "rangeColor",
+    "rangeLabel"
   ],
   data() {
     return {
@@ -295,6 +298,9 @@ export default {
 
       Promise.all(promises).then(response => {
         this.chartClass.showChart();
+        if(this.rangeValue !== undefined) {
+          this.chartClass.addRangeValue(Number(this.rangeValue), this.rangeColor, this.rangeLabel)
+        }
       });
     },
     calculateDate(dateString) {

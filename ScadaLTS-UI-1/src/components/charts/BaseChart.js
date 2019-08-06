@@ -173,9 +173,9 @@ export default class BaseChart {
         }
         Promise.all(pointData).then(() => {
             let lastData = BaseChart.prepareChartData(this.liveUpdatePointValues);
-            if(lastData[lastData.length-1].date > this.lastUpdate) {
+            if (lastData[lastData.length - 1].date > this.lastUpdate) {
                 this.chart.addData(lastData, 1);
-                this.lastUpdate = lastData[lastData.length-1].date;
+                this.lastUpdate = lastData[lastData.length - 1].date;
                 this.liveUpdatePointValues.clear();
                 lastData.clear();
             }
@@ -308,6 +308,30 @@ export default class BaseChart {
         let axis;
         axis = this.chart.yAxes.push(new am4charts.ValueAxis());
         axis.tooltip.disabled = false;
+    }
+
+    /**
+     * Add single line range gudided by label to chart. 
+     * @param value Value of line for yAxis
+     * @param color Color of this line
+     * @param label Label for this line (eg. 'average count')
+     */
+    addRangeValue(value, color, label) {
+        if (color === undefined || color === "") {
+            color = "#FF150A";
+        }
+        if (label === undefined) {
+            label = "";
+        }
+        let range = this.chart.yAxes.getIndex(0).axisRanges.create();
+        range.value = value;
+        range.grid.stroke = am4core.color(color);
+        range.grid.strokeWidth = 2;
+        range.grid.strokeOpacity = 1;
+        range.label.inside = true;
+        range.label.text = label;
+        range.label.fill = range.grid.stroke;
+        range.label.verticalCenter = "bottom";
     }
 
     /**

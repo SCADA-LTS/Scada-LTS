@@ -21,7 +21,11 @@ import BaseChart from "./BaseChart";
 am4core.useTheme(am4themes_animated);
 
 class StepLineChart extends BaseChart {
-  constructor(chartReference, color, domain = "http://localhost:8080/ScadaLTS") {
+  constructor(
+    chartReference,
+    color,
+    domain = "http://localhost:8080/ScadaLTS"
+  ) {
     super(chartReference, "XYChart", color, domain);
   }
 
@@ -78,7 +82,10 @@ export default {
     "refreshRate",
     "width",
     "height",
-    "polylineStep"
+    "polylineStep",
+    "rangeValue",
+    "rangeColor",
+    "rangeLabel"
   ],
   //TODO: Enable multiple ChartInstances in one page
   data() {
@@ -117,7 +124,12 @@ export default {
             promises.push(this.chartClass.loadData(points[i]));
           }
         } else if (this.startDate !== undefined && this.endDate === undefined) {
-          promises.push(this.chartClass.loadData(points[i], this.calculateDate(this.startDate)));
+          promises.push(
+            this.chartClass.loadData(
+              points[i],
+              this.calculateDate(this.startDate)
+            )
+          );
         } else {
           promises.push(this.chartClass.loadData(points[i]));
         }
@@ -130,6 +142,13 @@ export default {
           }
         }
         this.chartClass.showChart();
+        if (this.rangeValue !== undefined) {
+          this.chartClass.addRangeValue(
+            Number(this.rangeValue),
+            this.rangeColor,
+            this.rangeLabel
+          );
+        }
         if (this.live == "true" && this.refreshRate == undefined) {
           this.errorMessage =
             "Refresh rate for chart has not been set. Add for example: <... refresh-rate='10000'>";
