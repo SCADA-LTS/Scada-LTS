@@ -1,10 +1,7 @@
 # [Scada-LTS](http://scada-lts.org)
 
-[![Build Status](https://img.shields.io/travis/grzesiekb/json.svg?style=flat-square)](https://travis-ci.org/sdtabilit/Scada-LTS)
+[![Build Status](https://img.shields.io/travis/grzesiekb/json.svg?style=flat-square)](https://travis-ci.org/SCADA-LTS/Scada-LTS)
 [![GPL-2.0](https://img.shields.io/npm/l/gb-json.svg?style=flat-square)](https://github.com/sdtabilit/Scada-LTS/blob/master-sdtabilit/LICENSE)
-[![](https://images.microbadger.com/badges/version/dockergb/scadalts-dev.svg)](https://microbadger.com/images/dockergb/scadalts-dev "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/image/dockergb/scadalts-dev.svg)](https://microbadger.com/images/dockergb/scadalts-dev "Get your own image badge on microbadger.com")
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/SCADA-LTS/User-Management.svg?columns=all)](https://waffle.io/SCADA-LTS/User-Management)
 
 Scada-LTS is an Open Source, web-based, multi-platform solution for building your own SCADA (Supervisory Control and Data Acquisiton) system.
 
@@ -143,3 +140,14 @@ If you need support for deployment please contact us and find more information o
 ## Copyright and license
 
 Code released under [the GPL license](https://github.com/sdtabilit/Scada-LTS/blob/master-sdtabilit/LICENSE). 
+
+## Support for scada from other projects
+
+![YourKit](https://www.yourkit.com/images/yklogo.png)
+
+The ScadaLTS team uses YourKit JAVA Profiler to improve performance. We'd like to thank them for their amazing tool and recommend them to all .JAVA developers!
+
+YourKit supports open source projects with innovative and intelligent tools
+for monitoring and profiling Java and .NET applications.
+YourKit is the creator of [YourKit Java Profiler](https://www.yourkit.com/java/profiler).
+and [YourKit YouMonitor](https://www.yourkit.com/youmonitor/).
