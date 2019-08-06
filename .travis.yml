@@ -1,5 +1,6 @@
 sudo: required
 before_install:
+- sudo apt-get update
 - sudo apt-get install tomcat7
 before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
