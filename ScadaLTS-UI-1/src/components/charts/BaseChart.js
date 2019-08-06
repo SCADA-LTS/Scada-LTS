@@ -75,7 +75,26 @@ export default class BaseChart {
      * @param {Number} [startTimestamp] Default get values from 1 hour ago
      * @param {Number} [endTimestamp] Default get values till now
      */
-    loadData(pointId, startTimestamp = new Date().getTime() - 3600000, endTimestamp = new Date().getTime()) {
+    loadData(pointId, startTimestamp, endTimestamp) {
+        if(startTimestamp === undefined) {
+            startTimestamp = new Date().getTime() - 3600000;
+            endTimestamp = new Date().getTime();
+        } else if (startTimestamp !== undefined && endTimestamp === undefined) {
+            startTimestamp = BaseChart.convertDate(startTimestamp);
+            endTimestamp = new Date().getTime();
+            if(isNaN(startTimestamp)) {
+                console.warn("Parameter start-date is not valid!\nConnecting to API with default values");
+                startTimestamp = new Date().getTime() - 3600000;
+            }
+        } else if (startTimestamp !== undefined && endTimestamp !== undefined) {
+            startTimestamp = new Date(startTimestamp).getTime();
+            endTimestamp = new Date(endTimestamp).getTime();
+            if(isNaN(startTimestamp) || isNaN(endTimestamp)) {
+                console.warn("Parameter [start-date | end-date] are not valid!\nConnecting to API with default values")
+                startTimestamp = new Date().getTime() - 3600000;
+                endTimestamp = new Date().getTime();
+            }
+        }
         return new Promise((resolve, reject) => {
             try {
                 Axios.get(`${this.domain}/api/point_value/getValuesFromTimePeriod/${pointId}/${startTimestamp}/${endTimestamp}`, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
@@ -412,6 +431,47 @@ export default class BaseChart {
             data.push(JSON.parse(jsonString));
         });
         return data;
+    }
+
+    /**
+     * Util for converting from text time to specific timestamp
+     * 
+     * @param {String} dateText Text based time period (date format or written format)
+     * @returns Calculated timestamp
+     */
+    static convertDate(dateText) {
+        let date = new Date(dateText);
+        if (date == "Invalid Date") {
+            date = dateText.split("-");
+            if (date.length === 2) {
+                let dateNow = new Date();
+                let multiplier = 1;
+                switch (date[1]) {
+                    case "hour":
+                    case "hours":
+                        multiplier = 1000 * 3600;
+                        break;
+                    case "day":
+                    case "days":
+                        multiplier = 1000 * 3600 * 24;
+                        break;
+                    case "week":
+                    case "weeks":
+                        multiplier = 1000 * 3600 * 24 * 7;
+                        break;
+                    case "month":
+                    case "months":
+                        multiplier = 1000 * 3600 * 24 * 31;
+                        break;
+                }
+                return dateNow.getTime() - Number(date[0]) * multiplier;
+            } else {
+                console.warn("Not vaild date. Use for example ['1-day' | '2-months' | '3-days']\nReturning default value!")
+                return dateNow.getTime() - 3600000;
+            }
+        } else {
+            return date.getTime();
+        }
     }
 
 

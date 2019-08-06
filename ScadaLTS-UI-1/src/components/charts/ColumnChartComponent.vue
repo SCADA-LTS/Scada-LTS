@@ -30,13 +30,7 @@ export class ColumnChart extends BaseChart {
     super(chartReference, chartType, color, domain);
   }
 
-  loadData(
-    pointId,
-    sumType,
-    sumTimePeriod,
-    startTimestamp = new Date().getTime() - 3600000,
-    endTimestamp = new Date().getTime()
-  ) {
+  loadData(pointId, sumType, sumTimePeriod, startTimestamp, endTimestamp) {
     return new Promise((resolve, reject) => {
       super.loadData(pointId, startTimestamp, endTimestamp).then(data => {
         if (this.pointCurrentValue.get(pointId) == undefined) {
@@ -229,10 +223,8 @@ export default {
     "label",
     "startDate",
     "endDate",
-    "live",
     "sumType",
     "sumTimePeriod",
-    "refreshRate",
     "width",
     "height",
     "rangeValue",
@@ -241,7 +233,6 @@ export default {
   ],
   data() {
     return {
-      pointName: "Name",
       errorMessage: undefined,
       chartClass: undefined
     };
@@ -252,91 +243,25 @@ export default {
   methods: {
     generateChart() {
       this.chartClass = new ColumnChart(this.$refs.chartdiv, this.color);
-      let promises = [];
-      if (this.startDate !== undefined && this.endDate !== undefined) {
-        let sDate = new Date(this.startDate);
-        let eDate = new Date(this.endDate);
-        if (!isNaN(sDate.getDate()) && !isNaN(eDate.getDate())) {
-          promises.push(
-            this.chartClass.loadData(
-              this.pointId,
-              this.sumType,
-              this.sumTimePeriod,
-              sDate.getTime(),
-              eDate.getTime()
-            )
-          );
-        } else {
-          this.errorMessage =
-            "Not vaild date. Use for example ['1-day' | '2-months' | '3-days']";
-          promises.push(
-            this.chartClass.loadData(
-              this.pointId,
-              this.sumType,
-              this.sumTimePeriod
-            )
-          );
-        }
-      } else if (this.startDate !== undefined && this.endDate === undefined) {
-        promises.push(
-          this.chartClass.loadData(
-            this.pointId,
-            this.sumType,
-            this.sumTimePeriod,
-            this.calculateDate(this.startDate)
-          )
-        );
-      } else {
-        promises.push(
-          this.chartClass.loadData(
-            this.pointId,
-            this.sumType,
-            this.sumTimePeriod
-          )
-        );
-      }
 
-      Promise.all(promises).then(response => {
-        this.chartClass.showChart();
-        if(this.rangeValue !== undefined) {
-          this.chartClass.addRangeValue(Number(this.rangeValue), this.rangeColor, this.rangeLabel)
-        }
-      });
-    },
-    calculateDate(dateString) {
-      let date = new Date(dateString);
-      if (date == "Invalid Date") {
-        date = dateString.split("-");
-        if (date.length === 2) {
-          let dateNow = new Date();
-          let multiplier = 1;
-          switch (date[1]) {
-            case "hour":
-            case "hours":
-              multiplier = 1000 * 3600;
-              break;
-            case "day":
-            case "days":
-              multiplier = 1000 * 3600 * 24;
-              break;
-            case "week":
-            case "weeks":
-              multiplier = 1000 * 3600 * 24 * 7;
-              break;
-            case "month":
-            case "months":
-              multiplier = 1000 * 3600 * 24 * 31;
-              break;
+      this.chartClass
+        .loadData(
+          this.pointId,
+          this.sumType,
+          this.sumTimePeriod,
+          this.startDate,
+          this.endDate
+        )
+        .then(response => {
+          this.chartClass.showChart();
+          if (this.rangeValue !== undefined) {
+            this.chartClass.addRangeValue(
+              Number(this.rangeValue),
+              this.rangeColor,
+              this.rangeLabel
+            );
           }
-          return dateNow.getTime() - Number(date[0]) * multiplier;
-        } else {
-          this.errorMessage =
-            "Not vaild date. Use for example ['1-day' | '2-months' | '3-days']";
-          return dateNow.getTime() - 3600000;
-        }
-      } else {
-        return date.getTime();
-      }
+        });
     }
   }
 };

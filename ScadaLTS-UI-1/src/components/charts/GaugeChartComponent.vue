@@ -77,10 +77,8 @@ export default {
     "width",
     "height"
   ],
-  //TODO: Enable multiple ChartInstances in one page
   data() {
     return {
-      pointName: "Name",
       chartClass: undefined
     };
   },

@@ -29,11 +29,7 @@ class LineChart extends BaseChart {
     super(chartReference, "XYChart", color, domain);
   }
 
-  loadData(
-    pointId,
-    startTimestamp = new Date().getTime() - 3600000,
-    endTimestamp = new Date().getTime()
-  ) {
+  loadData(pointId, startTimestamp, endTimestamp) {
     return new Promise((resolve, reject) => {
       super.loadData(pointId, startTimestamp, endTimestamp).then(data => {
         if (this.pointCurrentValue.get(pointId) == undefined) {
@@ -78,7 +74,6 @@ export default {
     "label",
     "startDate",
     "endDate",
-    "live",
     "refreshRate",
     "width",
     "height",
@@ -87,10 +82,8 @@ export default {
     "rangeColor",
     "rangeLabel"
   ],
-  //TODO: Enable multiple ChartInstances in one page
   data() {
     return {
-      pointName: "Name",
       errorMessage: undefined,
       chartClass: undefined
     };
@@ -107,32 +100,7 @@ export default {
       let points = this.pointId.split(",");
       let promises = [];
       for (let i = 0; i < points.length; i++) {
-        if (this.startDate !== undefined && this.endDate !== undefined) {
-          let sDate = new Date(this.startDate);
-          let eDate = new Date(this.endDate);
-          if (!isNaN(sDate.getDate()) && !isNaN(eDate.getDate())) {
-            promises.push(
-              this.chartClass.loadData(
-                points[i],
-                sDate.getTime(),
-                eDate.getTime()
-              )
-            );
-          } else {
-            this.errorMessage =
-              "Not valid date pattern. Try with: <... start-date='YYYY/MM/DD'>";
-            promises.push(this.chartClass.loadData(points[i]));
-          }
-        } else if (this.startDate !== undefined && this.endDate === undefined) {
-          promises.push(
-            this.chartClass.loadData(
-              points[i],
-              this.calculateDate(this.startDate)
-            )
-          );
-        } else {
-          promises.push(this.chartClass.loadData(points[i]));
-        }
+        promises.push(this.chartClass.loadData(points[i], this.startDate, this.endDate))
       }
       Promise.all(promises).then(response => {
         for (let i = 0; i < response.length; i++) {
@@ -141,53 +109,14 @@ export default {
               "Point given with index [" + i + "] has not been loaded!";
           }
         }
-        this.chartClass.showChart();
+        this.chartClass.showChart(); // Display Chart
         if(this.rangeValue !== undefined) {
           this.chartClass.addRangeValue(Number(this.rangeValue), this.rangeColor, this.rangeLabel)
         }
-        if (this.live == "true" && this.refreshRate == undefined) {
-          this.errorMessage =
-            "Refresh rate for chart has not been set. Add for example: <... refresh-rate='10000'>";
-        }
-        if (this.live == "true" && this.refreshRate != undefined) {
+        if (this.refreshRate != undefined) {
           this.chartClass.startLiveUpdate(Number(this.refreshRate));
         }
       });
-    },
-    calculateDate(dateString) {
-      let date = new Date(dateString);
-      if (date == "Invalid Date") {
-        date = dateString.split("-");
-        if (date.length === 2) {
-          let dateNow = new Date();
-          let multiplier = 1;
-          switch (date[1]) {
-            case "hour":
-            case "hours":
-              multiplier = 1000 * 3600;
-              break;
-            case "day":
-            case "days":
-              multiplier = 1000 * 3600 * 24;
-              break;
-            case "week":
-            case "weeks":
-              multiplier = 1000 * 3600 * 24 * 7;
-              break;
-            case "month":
-            case "months":
-              multiplier = 1000 * 3600 * 24 * 31;
-              break;
-          }
-          return dateNow.getTime() - Number(date[0]) * multiplier;
-        } else {
-          this.errorMessage =
-            "Not vaild date. Use for example ['1-day' | '2-months' | '3-days']";
-          return dateNow.getTime() - 3600000;
-        }
-      } else {
-        return date.getTime();
-      }
     }
   }
 };
