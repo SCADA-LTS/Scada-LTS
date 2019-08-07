@@ -57,6 +57,7 @@ export default class BaseChart {
             }
         }
         this.chart.colors.list = colorPallete;
+        this.yAxesCount = 0;
     }
 
     /**
@@ -76,20 +77,20 @@ export default class BaseChart {
      * @param {Number} [endTimestamp] Default get values till now
      */
     loadData(pointId, startTimestamp, endTimestamp) {
-        if(startTimestamp === undefined) {
+        if (startTimestamp === undefined) {
             startTimestamp = new Date().getTime() - 3600000;
             endTimestamp = new Date().getTime();
         } else if (startTimestamp !== undefined && endTimestamp === undefined) {
             startTimestamp = BaseChart.convertDate(startTimestamp);
             endTimestamp = new Date().getTime();
-            if(isNaN(startTimestamp)) {
+            if (isNaN(startTimestamp)) {
                 console.warn("Parameter start-date is not valid!\nConnecting to API with default values");
                 startTimestamp = new Date().getTime() - 3600000;
             }
         } else if (startTimestamp !== undefined && endTimestamp !== undefined) {
             startTimestamp = new Date(startTimestamp).getTime();
             endTimestamp = new Date(endTimestamp).getTime();
-            if(isNaN(startTimestamp) || isNaN(endTimestamp)) {
+            if (isNaN(startTimestamp) || isNaN(endTimestamp)) {
                 console.warn("Parameter [start-date | end-date] are not valid!\nConnecting to API with default values")
                 startTimestamp = new Date().getTime() - 3600000;
                 endTimestamp = new Date().getTime();
@@ -284,6 +285,8 @@ export default class BaseChart {
             this.chart.scrollbarX.series.push(series);
         }
 
+        return series;
+
     }
 
     /**
@@ -322,11 +325,29 @@ export default class BaseChart {
 
     /**
      * Create Y Value Axis for chart
+     * @param {Map} textLabels Map with key value pair. In keys are values to be converted into label text
+     * @return yAxis definition. 
      */
-    createAxisY() {
+    createAxisY(textLabels) {
         let axis;
         axis = this.chart.yAxes.push(new am4charts.ValueAxis());
         axis.tooltip.disabled = false;
+        axis.renderer.opposite = Boolean(this.yAxesCount % 2);
+
+        //TextRender
+        if (textLabels !== undefined) {
+            if (textLabels.size > 0) {
+                axis.renderer.labels.template.adapter.add("text", function (text) {
+                    if (textLabels.get(text) !== undefined) {
+                        return textLabels.get(text);
+                    } else {
+                        return "";
+                    }
+                })
+            }
+        }
+        this.yAxesCount = this.yAxesCount + 1;
+        return axis;
     }
 
     /**

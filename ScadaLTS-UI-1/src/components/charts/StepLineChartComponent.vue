@@ -36,8 +36,20 @@ class StepLineChart extends BaseChart {
           this.pointCurrentValue.set(pointId, {
             name: data.name,
             suffix: data.textRenderer.suffix,
-            type: data.type
+            type: data.type,
+            labels: new Map()
           });
+        }
+
+        if(data.type === "Multistate") {
+          let customLabels = data.textRenderer.multistateValues;
+          if(data.textRenderer.typeName === "textRendererMultistate" && customLabels !== undefined) {
+            let labelsMap = new Map();
+            for(let i = 0; i < customLabels.length; i++) {
+              labelsMap.set(String(customLabels[i].key), customLabels[i].text)
+            }
+            this.pointCurrentValue.get(pointId).labels = labelsMap;
+          }
         }
 
         data.values.forEach(e => {
@@ -57,12 +69,18 @@ class StepLineChart extends BaseChart {
     this.createScrollBarsAndLegend();
     this.createExportMenu(true, "Scada_StepLineChart");
     for (let [k, v] of this.pointCurrentValue) {
-      this.createSeries(v.name, v.name);
+      let s = this.createSeries(v.name, v.name);
+      if(v.type === "Multistate") {
+        let mAxis = this.createAxisY(v.labels)
+        s.yAxis = mAxis;
+        mAxis.renderer.line.stroke = s.stroke;
+        mAxis.title.text = v.name;
+      }
     }
   }
 
   createSeries(seriesValueY, seriesName) {
-    super.createSeries("StepLine", "date", seriesValueY, seriesName);
+    return super.createSeries("StepLine", "date", seriesValueY, seriesName);
   }
 }
 
