@@ -28,6 +28,7 @@ export class ColumnChart extends BaseChart {
     domain = "http://localhost:8080/ScadaLTS"
   ) {
     super(chartReference, chartType, color, domain);
+    this.isAverage = false;
   }
 
   loadData(pointId, sumType, sumTimePeriod, startTimestamp, endTimestamp) {
@@ -41,177 +42,235 @@ export class ColumnChart extends BaseChart {
           });
         }
         if (data.type === "Alphanumeric") {
-          data.values.forEach(e => {
-            if (this.pointPastValues.get(e.value) == undefined) {
-              this.pointPastValues.set(e.value, 1);
-            } else {
-              this.pointPastValues.set(
-                e.value,
-                this.pointPastValues.get(e.value) + 1
-              );
-            }
-          });
+          this.addAlphanumericValues(data.values);
         }
-
         if (data.type === "Multistate") {
-          let nameMap = new Map();
-          if (data.textRenderer.multistateValues != undefined) {
-            data.textRenderer.multistateValues.forEach(e => {
-              nameMap.set(e.key, e.text);
-            });
-          }
-
-          data.values.forEach(e => {
-            if (data.textRenderer.multistateValues != undefined) {
-              e.value = Number(e.value);
-              if (this.pointPastValues.get(nameMap.get(e.value)) == undefined) {
-                this.pointPastValues.set(nameMap.get(e.value), 1);
-              } else {
-                this.pointPastValues.set(
-                  nameMap.get(e.value),
-                  this.pointPastValues.get(nameMap.get(e.value)) + 1
-                );
-              }
-            } else {
-              if (this.pointPastValues.get(e.value) == undefined) {
-                this.pointPastValues.set(e.value, 1);
-              } else {
-                this.pointPastValues.set(
-                  e.value,
-                  this.pointPastValues.get(e.value) + 1
-                );
-              }
-            }
-          });
+          this.addMultistateValues(
+            data.values,
+            data.textRenderer.multistateValues
+          );
         }
-
         if (data.type === "Numeric") {
           if (sumType !== undefined && sumTimePeriod !== undefined) {
-            this.loadNumericData(data.values, sumType, sumTimePeriod);
+            this.addNumericValue(
+              data.values,
+              data.name,
+              sumType,
+              sumTimePeriod
+            );
+            if (sumType == "avg") {
+              this.isAverage = true;
+            }
           }
         }
-
         resolve("done");
       });
     });
   }
 
-  loadNumericData(dataArray, sumType, period) {
-    let avg = new Map();
-    dataArray.forEach(data => {
-      data.value = Number(data.value);
-      let date = new Date(data.ts);
-      let key = String(date.getFullYear());
-      switch (period) {
-        case "yaer":
+  addNumericValue(values, name, fn, period) {
+    for (let i = 0; i < values.length; i++) {
+      let key = this.groupBy(values[i].ts, period);
+      values[i].value = Number(values[i].value);
+      let lastElement =
+        this.pointPastValues.get(key) !== undefined
+          ? this.pointPastValues.get(key).length - 1
+          : 0;
+      let startPoint;
+      switch (fn) {
+        case "count":
+          startPoint = { name: name, value: 0 };
+          if (this.pointPastValues.get(key) == undefined) {
+            this.pointPastValues.set(key, [startPoint]);
+          } else if (this.pointPastValues.get(key)[lastElement].name == name) {
+            this.pointPastValues.get(key)[lastElement].value =
+              this.pointPastValues.get(key)[lastElement].value + 1;
+          } else {
+            this.pointPastValues.get(key).push(startPoint);
+          }
           break;
-        case "month":
-          key = key + "-" + (date.getMonth() + 1);
+        case "sum":
+          startPoint = { name: name, value: values[i].value };
+          if (this.pointPastValues.get(key) == undefined) {
+            this.pointPastValues.set(key, [startPoint]);
+          } else if (this.pointPastValues.get(key)[lastElement].name == name) {
+            this.pointPastValues.get(key)[lastElement].value += values[i].value;
+          } else {
+            this.pointPastValues.get(key).push(startPoint);
+          }
           break;
-        case "day":
-          key = key + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+        case "min":
+          startPoint = { name: name, value: values[i].value };
+          if (this.pointPastValues.get(key) == undefined) {
+            this.pointPastValues.set(key, [startPoint]);
+          } else if (this.pointPastValues.get(key)[lastElement].name == name) {
+            let oldPointValue = this.pointPastValues.get(key)[lastElement]
+              .value;
+            if (oldPointValue > values[i].value) {
+              this.pointPastValues.get(key)[lastElement].value =
+                values[i].value;
+            }
+          } else {
+            this.pointPastValues.get(key).push(startPoint);
+          }
           break;
-        case "hour":
-          key =
-            key +
-            "-" +
-            (date.getMonth() + 1) +
-            "-" +
-            date.getDate() +
-            "_" +
-            date.getHours() +
-            ":00";
+        case "max":
+          startPoint = { name: name, value: values[i].value };
+          if (this.pointPastValues.get(key) == undefined) {
+            this.pointPastValues.set(key, [startPoint]);
+          } else if (this.pointPastValues.get(key)[lastElement].name == name) {
+            let oldPointValue = this.pointPastValues.get(key)[lastElement]
+              .value;
+            if (oldPointValue < values[i].value) {
+              this.pointPastValues.get(key)[lastElement].value =
+                values[i].value;
+            }
+          } else {
+            this.pointPastValues.get(key).push(startPoint);
+          }
           break;
-        case "minute":
-          key =
-            key +
-            "-" +
-            (date.getMonth() + 1) +
-            "-" +
-            date.getDate() +
-            "_" +
-            date.getHours() +
-            ":" +
-            date.getMinutes();
+        case "avg":
+          startPoint = { name: name, value: values[i].value, count: 0 };
+          if (this.pointPastValues.get(key) == undefined) {
+            this.pointPastValues.set(key, [startPoint]);
+          } else if (this.pointPastValues.get(key)[lastElement].name == name) {
+            this.pointPastValues.get(key)[lastElement].value += values[i].value;
+            this.pointPastValues.get(key)[lastElement].count =
+              this.pointPastValues.get(key)[lastElement].count + 1;
+          } else {
+            this.pointPastValues.get(key).push(startPoint);
+          }
           break;
       }
-      if (sumType === "count") {
-        if (this.pointPastValues.get(key) == undefined) {
-          this.pointPastValues.set(key, 1);
-        } else {
-          this.pointPastValues.set(key, this.pointPastValues.get(key) + 1);
-        }
-      } else if (sumType === "max") {
-        if (this.pointPastValues.get(key) == undefined) {
-          this.pointPastValues.set(key, data.value);
-        } else {
-          if (data.value > this.pointPastValues.get(key)) {
-            this.pointPastValues.set(key, data.value);
-          }
-        }
-      } else if (sumType === "min") {
-        if (this.pointPastValues.get(key) == undefined) {
-          this.pointPastValues.set(key, data.value);
-        } else {
-          if (data.value < this.pointPastValues.get(key)) {
-            this.pointPastValues.set(key, data.value);
-          }
-        }
-      } else if (sumType === "avg") {
-        if (this.pointPastValues.get(key) == undefined) {
-          this.pointPastValues.set(key, data.value);
-          avg.set(key, 1);
-        } else {
-          if (data.value < this.pointPastValues.get(key)) {
-            this.pointPastValues.set(
-              key,
-              this.pointPastValues.get(key) + data.value
-            );
-            avg.set(key, avg.get(key) + 1);
-          }
-        }
-      }
-    });
-    if (sumType === "avg") {
-      let newPointPastValues = new Map();
-      this.pointPastValues.forEach(function(value, key) {
-        newPointPastValues.set(key, value / avg.get(key));
-      });
-      this.pointPastValues = newPointPastValues;
     }
   }
 
-  static prepareChartData(map, categoryName, countName) {
+  addAlphanumericValues(values) {
+    for (let i = 0; i < values.length; i++) {
+      if (this.pointPastValues.get(values[i].value) == undefined) {
+        this.pointPastValues.set(values[i].value, 1);
+      } else {
+        this.pointPastValues.set(
+          values[i].value,
+          this.pointPastValues.get(values[i].value) + 1
+        );
+      }
+    }
+  }
+
+  addMultistateValues(values, labels) {
+    let labelsMap = new Map();
+    if (labels != undefined) {
+      for (let i = 0; i < labels.length; i++) {
+        labelsMap.set(String(labels[i].key), labels[i].text);
+      }
+    }
+
+    for (let i = 0; i < values.length; i++) {
+      if (labels != undefined) {
+        if (
+          this.pointPastValues.get(labelsMap.get(values[i].value)) == undefined
+        ) {
+          this.pointPastValues.set(labelsMap.get(values[i].value), 1);
+        } else {
+          this.pointPastValues.set(
+            labelsMap.get(values[i].value),
+            this.pointPastValues.get(labelsMap.get(values[i].value)) + 1
+          );
+        }
+      } else {
+        if (this.pointPastValues.get(values[i].value) == undefined) {
+          this.pointPastValues.set(values[i].value, 1);
+        } else {
+          this.pointPastValues.set(
+            values[i].value,
+            this.pointPastValues.get(values[i].value) + 1
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * @param {Number} date Date to convert
+   * @param {String} period Type of sum
+   * @return {String} Key for map.
+   */
+  groupBy(date, period) {
+    date = new Date(date);
+    let key = String(date.getFullYear());
+    switch (period) {
+      case "yaer":
+        break;
+      case "month":
+        key = `${key}-${date.getMonth() + 1}`;
+        break;
+      case "day":
+        key = `${key}-${date.getMonth() + 1}-${date.getDate()}`;
+        break;
+      case "hour":
+        key = `${key}-${date.getMonth() +
+          1}-${date.getDate()} ${date.getHours()}:00`;
+        break;
+      case "minute":
+        key = `${key}-${date.getMonth() +
+          1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+        break;
+    }
+    return key;
+  }
+
+  static prepareChartData(map) {
     let data = [];
     map.forEach(function(value, key) {
-      let jsonString =
-        '{"' +
-        categoryName +
-        '":"' +
-        key +
-        '","' +
-        countName +
-        '":' +
-        value +
-        "}";
+      let jsonString = `{ "group":"${key}"`;
+      if (value instanceof Array) {
+        value.forEach(e => {
+          jsonString = `${jsonString}, "${e.name}":${e.value}`;
+        });
+        jsonString += "}";
+      } else {
+        jsonString = `${jsonString}, "value":${value}}`;
+      }
       data.push(JSON.parse(jsonString));
     });
     return data;
   }
 
   setupChart() {
-    let categoryName = "State";
-    let countName = "Count";
-    this.chart.data = ColumnChart.prepareChartData(
-      this.pointPastValues,
-      categoryName,
-      countName
-    );
-    this.createAxisX("CategoryAxis", categoryName);
+    this.countAverage();
+    this.chart.data = ColumnChart.prepareChartData(this.pointPastValues);
+    this.createAxisX("CategoryAxis", "group");
     this.createAxisY();
-    this.createScrollBarsAndLegend(false, false, false, false);
+    this.createScrollBarsAndLegend(false, false, true, false);
     this.createExportMenu(true, "Scada_ColumnChart");
-    this.createSeries("Column", categoryName, countName, categoryName);
+    for (let [k, v] of this.pointCurrentValue) {
+      if (v.type === "Numeric") {
+        this.createSeries("Column", "group", v.name, v.name);
+      } else {
+        this.createSeries("Column", "group", "value", v.name);
+      }
+    }
+  }
+
+  countAverage() {
+    if (this.isAverage) {
+      let newPPV = new Map();
+      this.pointPastValues.forEach(function(points, key) {
+        for (let i = 0; i < points.length; i++) {
+          let point = {
+            name: points[i].name,
+            value: points[i].value / points[i].count
+          };
+          if (newPPV.get(key) === undefined) {
+            newPPV.set(key, [point]);
+          } else {
+            newPPV.get(key).push(point);
+          }
+        }
+      });
+      this.pointPastValues = newPPV;
+    }
   }
 }
 
@@ -243,25 +302,29 @@ export default {
   methods: {
     generateChart() {
       this.chartClass = new ColumnChart(this.$refs.chartdiv, this.color);
-
-      this.chartClass
-        .loadData(
-          this.pointId,
-          this.sumType,
-          this.sumTimePeriod,
-          this.startDate,
-          this.endDate
-        )
-        .then(response => {
-          this.chartClass.showChart();
-          if (this.rangeValue !== undefined) {
-            this.chartClass.addRangeValue(
-              Number(this.rangeValue),
-              this.rangeColor,
-              this.rangeLabel
-            );
-          }
-        });
+      let points = this.pointId.split(",");
+      let promises = [];
+      for (let i = 0; i < points.length; i++) {
+        promises.push(
+          this.chartClass.loadData(
+            points[i],
+            this.sumType,
+            this.sumTimePeriod,
+            this.startDate,
+            this.endDate
+          )
+        );
+      }
+      Promise.all(promises).then(response => {
+        this.chartClass.showChart();
+        if (this.rangeValue !== undefined) {
+          this.chartClass.addRangeValue(
+            Number(this.rangeValue),
+            this.rangeColor,
+            this.rangeLabel
+          );
+        }
+      });
     }
   }
 };

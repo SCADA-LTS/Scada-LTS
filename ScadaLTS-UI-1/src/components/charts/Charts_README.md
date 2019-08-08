@@ -4,7 +4,7 @@ ScadaLTS modern charts components it is a set of new VueJS v2.0 components desig
 
 ## Types of charts:
 - __< line-chart >__ Line Series Chart
-- __< step-line >__ Step Line Series Chart
+- __< step-line-chart >__ Step Line Series Chart
 - __< column-chart >__ Column Based Chart
 - __< pie-chart >__ Pie Chart
 - __< gauge-chart >__ Gauge Chart
@@ -74,13 +74,13 @@ Pretty colorful Modern Charts. But we still have the same size for them... Yes, 
 ***
 ### Chart Size
 ```
-<step-line point-id="[dpID]" width="1080" height="720"/>
+<step-line-chart point-id="[dpID]" width="1080" height="720"/>
 ```
 HD Chart? Why not! Values for attributes are given in Pixels (px). That is useful when we have defined a multiple chart instances on one GraphicalView. We can easily calculate the position of the next chart. 
 
 ### Labels
 ```
-<step-line point-id="[dpID]" label="Mid season temperature"/>
+<step-line-chart point-id="[dpID]" label="Mid season temperature"/>
 ```
 
 That would be enough from the basics... It is time for more complex tasks.
@@ -91,7 +91,7 @@ Column charts are very similar to line series charts but it do not display data 
 
 ### Differences:
 In Column and Pie charts most features presented earlier are present, but few of them are not implemented.
-- (NOT) Multiple Data Points in one chart
+- Multiple Data Points in one chart (__only for Numeric Datapoints__)
 - (NOT) Live-update
 - (NOT in PIE CHART) Level range line
 
@@ -102,7 +102,7 @@ Display statistical data from specific numeric data point.
 ```
 <column-chart point-id="1" start-date="2019/08/1" sum-type="avg" sum-time-period="day"/>
 ```
-This line displays column chart with average value for single day from 1-st of August 2019 till today. Instead of "average" function we can also use __[ "avg" | "sum" | "min" | "max" ]__. For our statistical Graphic View we can also group data by "minute", "hour", "month", and even "year". It is very useful to monitor daily average value of temperature or maximum value of voltage in electric motor single during day. 
+This line displays column chart with average value for single day from 1-st of August 2019 till today. Instead of "average" function we can also use __[ "avg" | "count" | "sum" | "min" | "max" ]__. For our statistical Graphic View we can also group data by "minute", "hour", "month", and even "year". It is very useful to monitor daily average value of temperature or maximum value of voltage in electric motor single during day. 
 
 ## Usage of Gauge chart.
 Gauge chart is useful to display live values of specific datapoint. It can be defined as a component displaying a pressure in container or current voltage of generator. It is live component which send requests to server every refresh-rate time. 

@@ -234,8 +234,9 @@ export default class BaseChart {
      * @param {String} seriesValueX Category name or "date" field in data. 
      * @param {String} seriesValueY Which values disply in series
      * @param {String} seriesName Name of this series. 
+     * @param {string} suffix Additional suffix for series units. [square meteters etc.]
      */
-    createSeries(seriesType, seriesValueX, seriesValueY, seriesName) {
+    createSeries(seriesType, seriesValueX, seriesValueY, seriesName, suffix="") {
         let series;
         if (seriesType === "Column") {
             series = this.chart.series.push(new am4charts.ColumnSeries());
@@ -261,7 +262,10 @@ export default class BaseChart {
         } else {
             series.dataFields.dateX = seriesValueX;
             series.dataFields.valueY = seriesValueY;
-            series.tooltipText = "{name}: [bold]{valueY}[/]";
+            if(suffix.trim().startsWith("[")) {
+                suffix = `[${suffix}]`;
+            }
+            series.tooltipText = "{name}: [bold]{valueY}[/] " + suffix;
             series.tooltip.background.cornerRadius = 20;
             series.tooltip.background.strokeOpacity = 0;
             series.tooltip.pointerOrientation = "vertical";

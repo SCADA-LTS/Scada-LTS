@@ -76,7 +76,7 @@ new Vue({
 new Vue({
   el:'#chart',
   components: {
-    "step-line": StepLineChartComponent,
+    "step-line-chart": StepLineChartComponent,
     "line-chart": LineChartComponent,
     "column-chart": ColumnChartComponent,
     "pie-chart": PieChartComponent,

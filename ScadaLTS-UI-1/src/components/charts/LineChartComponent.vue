@@ -68,7 +68,7 @@ class LineChart extends BaseChart {
     this.createScrollBarsAndLegend();
     this.createExportMenu(true, "Scada_LineChart");
     for (let [k, v] of this.pointCurrentValue) {
-      let s = this.createSeries(v.name, v.name);
+      let s = this.createSeries(v.name, v.name, v.suffix);
       if(v.type === "Multistate") {
         let mAxis = this.createAxisY(v.labels)
         s.yAxis = mAxis;
@@ -78,8 +78,8 @@ class LineChart extends BaseChart {
     }
   }
 
-  createSeries(seriesValueY, seriesName) {
-    return super.createSeries("Line", "date", seriesValueY, seriesName);
+  createSeries(seriesValueY, seriesName, suffix) {
+    return super.createSeries("Line", "date", seriesValueY, seriesName, suffix);
   }
 }
 
