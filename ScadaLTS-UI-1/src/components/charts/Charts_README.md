@@ -8,6 +8,7 @@ ScadaLTS modern charts components it is a set of new VueJS v2.0 components desig
 - __< column-chart >__ Column Based Chart
 - __< pie-chart >__ Pie Chart
 - __< gauge-chart >__ Gauge Chart
+- __< cylinder-gauge-chart >__ Cylinder Gauge Chart
 - __< json-custom-chart >__ Custom Chart (defined by user via JSON)
 
 ## Usage:
@@ -91,7 +92,7 @@ Column charts are very similar to line series charts but it do not display data 
 
 ### Differences:
 In Column and Pie charts most features presented earlier are present, but few of them are not implemented.
-- Multiple Data Points in one chart (__only for Numeric Datapoints__)
+- Multiple Data Points in one chart (__Works only for Numeric Datapoints__)
 - (NOT) Live-update
 - (NOT in PIE CHART) Level range line
 
@@ -113,6 +114,19 @@ Gauge chart is useful to display live values of specific datapoint. It can be de
 ```
 If __"refresh-rate"__ parameter is not set, it sends requests every 1 second. Min and max properties are required to define the range displayed on the gauge chart for specified point. If the point value will be exceeded hand start to show values out of defined range.
 
+## Usage of Cylinder Gauge chart
+Cylinder gauge chart can be used to visualize the occupancy status of a given container (eg. water level in reservoir or fuel level in tank). This chart is updating in real-time or it could just load data once while it is initialized. 
+
+### Example usage:
+```
+<cylinder-gauge-chart point-id="[pointID]" min="0" max="250" />
+```
+Imagine that we have got a container with water in our factory wich can hold 250 liters of water. Now on our graphical view we can observe that cylinder with water level has been created. In tooltip we can see the amount of current water level in our container and also full percentage.\
+This chart could be colorized and changed to live cylinder gauge chart in easy way.
+```
+<cylinder-gauge-chart point-id="[pointID]" min="0" max="250" refresh-rate="10000" color="#E68B0B"/>
+```
+
 ## Usage of Custom JSON Chart.
 
 The most powerful chart, it will do everything YOU define, but it has to be compliant with am4charts interface. It is simple chart generated  by am4core.createFromConfig() method, enhanced with data loader from ScadaLTS. To create this chart you have to define "point-id", "chart-type" and "json-config". You can read [here](https://www.amcharts.com/docs/v4/concepts/json-config/#Structure_of_JSON_config) how to prepare this JSON configuration.
@@ -120,7 +134,7 @@ It is prototype chart which is not fully supported.
 
 
 ## Modern Chart documentation:
-Available properties in one place for all chart types. All charts could be exported to external file in graphical or text way. You can export to *.png, *.jpg, *.csv, *.json files. 
+Available properties in one place for all chart types. Charts _(excluding Gauge Charts)_ could be exported to external file in graphical or text way. You can export to *.png, *.jpg, *.csv, *.json files. 
 
 Properties for all charts:
 - point-id
@@ -137,6 +151,9 @@ Additional properties for Step Line, Line charts
 - range-value
 - range-color
 - range-label
+- show-scrollbar-x
+- show-scrollbar-y
+- show-legned
 
 Additional properties for Column and Pie charts 
 - start-date
@@ -147,7 +164,7 @@ Additional properties for Column and Pie charts
 - range-color (Not in PieChart)
 - range-label (Not in PieChart)
 
-Additional properties for Gauge chart:
+Additional properties for Gauge chart and Cylinder Gauge chart:
 - min
 - max
 - refresh-rate

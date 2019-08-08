@@ -29,6 +29,24 @@ class LineChart extends BaseChart {
     super(chartReference, "XYChart", color, domain);
   }
 
+  displayControls(scrollbarX, scrollbarY, legend) {
+    if (scrollbarX !== undefined && scrollbarX == "true") {
+      this.showScrollbarX = true;
+    } else if (scrollbarX !== undefined && scrollbarX == "false") {
+      this.showScrollbarX = false;
+    }
+    if (scrollbarY !== undefined && scrollbarY == "true") {
+      this.showScrollbarY = true;
+    } else if (scrollbarY !== undefined && scrollbarY == "false") {
+      this.showScrollbarY = false;
+    }
+    if (legend !== undefined && legend == "true") {
+      this.showLegend = true;
+    } else if (legend !== undefined && legend == "false") {
+      this.showLegend = false;
+    } 
+  }
+
   loadData(pointId, startTimestamp, endTimestamp) {
     return new Promise((resolve, reject) => {
       super.loadData(pointId, startTimestamp, endTimestamp).then(data => {
@@ -65,7 +83,7 @@ class LineChart extends BaseChart {
     );
     this.createAxisX("DateAxis", null);
     this.createAxisY();
-    this.createScrollBarsAndLegend();
+    this.createScrollBarsAndLegend(this.showScrollbarX, this.showScrollbarY, this.showLegend);
     this.createExportMenu(true, "Scada_LineChart");
     for (let [k, v] of this.pointCurrentValue) {
       let s = this.createSeries(v.name, v.name, v.suffix);
@@ -97,7 +115,10 @@ export default {
     "polylineStep",
     "rangeValue",
     "rangeColor",
-    "rangeLabel"
+    "rangeLabel",
+    "showScrollbarX",
+    "showScrollbarY",
+    "showLegend",
   ],
   data() {
     return {
@@ -114,6 +135,7 @@ export default {
         LineChart.setPolylineStep(Number(this.polylineStep));
       }
       this.chartClass = new LineChart(this.$refs.chartdiv, this.color);
+      this.chartClass.displayControls(this.showScrollbarX, this.showScrollbarY, this.showLegend);
       let points = this.pointId.split(",");
       let promises = [];
       for (let i = 0; i < points.length; i++) {

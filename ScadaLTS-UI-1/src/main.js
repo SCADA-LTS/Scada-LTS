@@ -15,6 +15,7 @@ import LineChartComponent from './components/charts/LineChartComponent'
 import ColumnChartComponent from './components/charts/ColumnChartComponent'
 import PieChartComponent from './components/charts/PieChartComponent'
 import GaugeChartComponent from './components/charts/GaugeChartComponent'
+import CylinderGaugeComponent from './components/charts/CylinderGaugeComponent'
 import SleepAndReactivationDS from './components/form/SleepAndReactivationDS'
 import router from './router'
 import VJsoneditor from 'vue-jsoneditor';
@@ -81,6 +82,7 @@ new Vue({
     "column-chart": ColumnChartComponent,
     "pie-chart": PieChartComponent,
     "gauge-chart": GaugeChartComponent,
+    "cylinder-gauge-chart": CylinderGaugeComponent,
     "json-custom-chart": JsonChartComponent
   },
 })

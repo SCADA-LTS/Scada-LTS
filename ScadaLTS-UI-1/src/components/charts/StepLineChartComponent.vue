@@ -29,6 +29,24 @@ class StepLineChart extends BaseChart {
     super(chartReference, "XYChart", color, domain);
   }
 
+  displayControls(scrollbarX, scrollbarY, legend) {
+    if (scrollbarX !== undefined && scrollbarX == "true") {
+      this.showScrollbarX = true;
+    } else if (scrollbarX !== undefined && scrollbarX == "false") {
+      this.showScrollbarX = false;
+    }
+    if (scrollbarY !== undefined && scrollbarY == "true") {
+      this.showScrollbarY = true;
+    } else if (scrollbarY !== undefined && scrollbarY == "false") {
+      this.showScrollbarY = false;
+    }
+    if (legend !== undefined && legend == "true") {
+      this.showLegend = true;
+    } else if (legend !== undefined && legend == "false") {
+      this.showLegend = false;
+    }
+  }
+
   loadData(pointId, startTimestamp, endTimestamp) {
     return new Promise((resolve, reject) => {
       super.loadData(pointId, startTimestamp, endTimestamp).then(data => {
@@ -41,12 +59,15 @@ class StepLineChart extends BaseChart {
           });
         }
 
-        if(data.type === "Multistate") {
+        if (data.type === "Multistate") {
           let customLabels = data.textRenderer.multistateValues;
-          if(data.textRenderer.typeName === "textRendererMultistate" && customLabels !== undefined) {
+          if (
+            data.textRenderer.typeName === "textRendererMultistate" &&
+            customLabels !== undefined
+          ) {
             let labelsMap = new Map();
-            for(let i = 0; i < customLabels.length; i++) {
-              labelsMap.set(String(customLabels[i].key), customLabels[i].text)
+            for (let i = 0; i < customLabels.length; i++) {
+              labelsMap.set(String(customLabels[i].key), customLabels[i].text);
             }
             this.pointCurrentValue.get(pointId).labels = labelsMap;
           }
@@ -66,12 +87,16 @@ class StepLineChart extends BaseChart {
     );
     this.createAxisX("DateAxis", null);
     this.createAxisY();
-    this.createScrollBarsAndLegend();
+    this.createScrollBarsAndLegend(
+      this.showScrollbarX,
+      this.showScrollbarY,
+      this.showLegend
+    );
     this.createExportMenu(true, "Scada_StepLineChart");
     for (let [k, v] of this.pointCurrentValue) {
       let s = this.createSeries(v.name, v.name, v.suffix);
-      if(v.type === "Multistate") {
-        let mAxis = this.createAxisY(v.labels)
+      if (v.type === "Multistate") {
+        let mAxis = this.createAxisY(v.labels);
         s.yAxis = mAxis;
         mAxis.renderer.line.stroke = s.stroke;
         mAxis.title.text = v.name;
@@ -80,7 +105,13 @@ class StepLineChart extends BaseChart {
   }
 
   createSeries(seriesValueY, seriesName, suffix) {
-    return super.createSeries("StepLine", "date", seriesValueY, seriesName, suffix);
+    return super.createSeries(
+      "StepLine",
+      "date",
+      seriesValueY,
+      seriesName,
+      suffix
+    );
   }
 }
 
@@ -98,7 +129,10 @@ export default {
     "polylineStep",
     "rangeValue",
     "rangeColor",
-    "rangeLabel"
+    "rangeLabel",
+    "showScrollbarX",
+    "showScrollbarY",
+    "showLegend"
   ],
   data() {
     return {
@@ -115,10 +149,18 @@ export default {
         StepLineChart.setPolylineStep(Number(this.polylineStep));
       }
       this.chartClass = new StepLineChart(this.$refs.chartdiv, this.color);
+      this.chartClass.displayControls(
+        this.showScrollbarX,
+        this.showScrollbarY,
+        this.showLegend
+      );
+
       let points = this.pointId.split(",");
       let promises = [];
       for (let i = 0; i < points.length; i++) {
-        promises.push(this.chartClass.loadData(points[i], this.startDate, this.endDate))
+        promises.push(
+          this.chartClass.loadData(points[i], this.startDate, this.endDate)
+        );
       }
       Promise.all(promises).then(response => {
         for (let i = 0; i < response.length; i++) {
