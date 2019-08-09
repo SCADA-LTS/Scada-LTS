@@ -20,6 +20,7 @@
 <%@page import="com.serotonin.mango.vo.UserComment"%>
 
 <tag:page dwr="DataPointDetailsDwr" js="view" onload="init">
+  <link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
   <script src="resources/libs/amcharts4/core.js"></script>
   <script src="resources/libs/amcharts4/charts.js"></script>
   <script src="resources/libs/amcharts4/themes/animated.js"></script>
@@ -165,14 +166,14 @@
                 jQuery("#config-live-chart").toggle();
                 jQuery("#config-chart").toggle();
                 liveChart = true;
-            } 
+            }
         });
         jQuery('#radio-btn-2').change(function() {
             if(jQuery("#radio-btn-2").is(':checked')) {
                 jQuery("#config-live-chart").toggle();
                 jQuery("#config-chart").toggle();
                 liveChart = false;
-            } 
+            }
         });
       jQuery("#chart-show-button").click(function () {
         initAmChartPoint(pointId);
@@ -312,7 +313,7 @@
                     <tag:img png="icon_ds_edit" title="pointDetails.editDataSource" /></a>
                 </c:if>
               </div>
-      
+
               <div class="dps-detail">
                 <div class="detail-key">
                   <fmt:message key="common.xid" />
@@ -345,7 +346,7 @@
               </div>
               <div id="pointMessages" class="dps-detail-long">
               </div>
-      
+
           </div>
           <div id="dpd-user-notes" class="scada-card">
               <div class="scada-header flex-row-wrap flex-align-center">
@@ -510,6 +511,9 @@
 
           </div>
         </div>
+      </div>
+      <div id="vue-details" style="width: 100%">
+        <chart-component/>
       </div>
       <div id="dpd-chart" class="scada-card">
 
@@ -718,3 +722,4 @@
 
   <%@ include file="/WEB-INF/jsp/include/userComment.jsp" %>
 </tag:page>
+<%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>

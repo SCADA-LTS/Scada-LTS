@@ -1,6 +1,7 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import 'bootstrap/dist/css/bootstrap.min.css'
+import './assets/main.css'
 
 import Vue from 'vue'
 import App from './App'
@@ -16,20 +17,20 @@ import ColumnChartComponent from './components/charts/ColumnChartComponent'
 import PieChartComponent from './components/charts/PieChartComponent'
 import GaugeChartComponent from './components/charts/GaugeChartComponent'
 import CylinderGaugeComponent from './components/charts/CylinderGaugeComponent'
+
+import DataPointDetailsChart from './components/elements/dataPointDetails/DataPointDetailsChart'
+
 import SleepAndReactivationDS from './components/form/SleepAndReactivationDS'
 import router from './router'
 import VJsoneditor from 'vue-jsoneditor';
-import Vuetify from 'vuetify';
-import * as uiv from 'uiv'
-
-import 'bootstrap/dist/css/bootstrap.min.css'
-
-
+import VueCookie from 'vue-cookie';
+import * as uiv from 'uiv';
 
 Vue.config.productionTip = false
 Vue.use(VJsoneditor);
-Vue.use(Vuetify);
+// Vue.use(Vuetify);
 Vue.use(uiv);
+Vue.use(VueCookie);
 
 /*eslint-disable no-new */
 new Vue({
@@ -84,6 +85,13 @@ new Vue({
     "gauge-chart": GaugeChartComponent,
     "cylinder-gauge-chart": CylinderGaugeComponent,
     "json-custom-chart": JsonChartComponent
+  },
+})
+
+new Vue({
+  el: '#vue-details',
+  components: {
+    "chart-component": DataPointDetailsChart
   },
 })
 

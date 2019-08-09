@@ -9,6 +9,9 @@
     <div v-if="errorMessage">
       <p class="error">{{errorMessage}}</p>
     </div>
+    <div v-if="showReload">
+      <button v-on:click="reload()">Reload</button>
+    </div>
   </div>
 </template>
 <script>
@@ -132,7 +135,8 @@ export default {
     "rangeLabel",
     "showScrollbarX",
     "showScrollbarY",
-    "showLegend"
+    "showLegend",
+    "showReload"
   ],
   data() {
     return {
@@ -181,6 +185,9 @@ export default {
           this.chartClass.startLiveUpdate(Number(this.refreshRate));
         }
       });
+    },
+    reload() {
+      this.generateChart();
     }
   }
 };
