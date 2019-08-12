@@ -19,7 +19,7 @@
 --%><%@tag body-content="empty"%><%--
 --%><%@attribute name="view" type="com.serotonin.mango.view.View" required="true" rtexprvalue="true"%><%--
 --%><%@attribute name="emptyMessageKey" required="true"%>
-<div id="chart">
+<div id="graphic-view-components">
 <div id="viewContent">
   <c:choose>
     <c:when test="${empty view}"><fmt:message key="${emptyMessageKey}"/></c:when>

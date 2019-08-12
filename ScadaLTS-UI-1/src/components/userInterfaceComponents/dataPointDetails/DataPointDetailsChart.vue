@@ -160,8 +160,8 @@
 </template>
 <script>
 import Axios from "axios";
-import StepLineChart from "../../charts/StepLineChartComponent";
-import LineChart from "../../charts/LineChartComponent";
+import StepLineChart from "../../graphicViewComponents/charts/StepLineChartComponent";
+import LineChart from "../../graphicViewComponents/charts/LineChartComponent";
 import Datepicker from "vuejs-datepicker";
 import ColorPicker from "vue-color-picker-wheel";
 
@@ -285,7 +285,9 @@ export default {
 .settings-modal-container {
   width: 400px;
   margin: 0 auto;
-  margin-top: 100px;
+  margin-top: 30px;
+  max-height: 700px;
+  overflow-y: auto;
   padding: 20px 30px;
   background-color: #ffffff;
   border-radius: 5px;

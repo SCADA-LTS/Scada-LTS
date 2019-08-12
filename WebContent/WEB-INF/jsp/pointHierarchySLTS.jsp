@@ -416,7 +416,9 @@ thead th {
              			<span class="glyphicon glyphicon-resize-small"></span>
              	</button>
              </div>
-                <div id=export-import-ph></div>
+                <div id="app">
+                <export-import-ph/>
+                </div>
             </div>
 		</div>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">

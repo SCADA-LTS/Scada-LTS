@@ -451,7 +451,7 @@
           </div>
         </div>
       </div>
-      <div id="vue-details" class="scada-card">
+      <div id="vue-ui" class="scada-card">
         <chart-component/>
       </div>
       <div id="dpd-events" class="scada-card">

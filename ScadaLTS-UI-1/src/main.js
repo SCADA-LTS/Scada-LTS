@@ -4,61 +4,34 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './assets/main.css'
 
 import Vue from 'vue'
-import App from './App'
-import Test from './components/Test'
-import IsAlive from './components/IsAlive'
-import ExportImportPointHierarchy from './components/ExportImportPointHierarchy'
-import SimpleComponentSVG from './components/SimpleComponentSVG'
-import CMP from "./components/CMP";
-import JsonChartComponent from './components/charts/JsonChartComponent'
-import StepLineChartComponent from "./components/charts/StepLineChartComponent";
-import LineChartComponent from './components/charts/LineChartComponent'
-import ColumnChartComponent from './components/charts/ColumnChartComponent'
-import PieChartComponent from './components/charts/PieChartComponent'
-import GaugeChartComponent from './components/charts/GaugeChartComponent'
-import CylinderGaugeComponent from './components/charts/CylinderGaugeComponent'
+/* Components for ScadaLTS-UI */
+import DataPointDetailsChart from './components/userInterfaceComponents/dataPointDetails/DataPointDetailsChart'
+import ExportImportPointHierarchy from './components/userInterfaceComponents/pointHierarchy/ExportImportPointHierarchy'
+import SleepAndReactivationDS from './components/userInterfaceComponents/dataSourceEdit/SleepAndReactivationDS'
 
-import DataPointDetailsChart from './components/elements/dataPointDetails/DataPointDetailsChart'
+/* Graphic View custom components */
+import CMP from "./components/graphicViewComponents/CMP";
+import ColumnChartComponent from './components/graphicViewComponents/charts/ColumnChartComponent'
+import CylinderGaugeComponent from './components/graphicViewComponents/charts/CylinderGaugeComponent'
+import GaugeChartComponent from './components/graphicViewComponents/charts/GaugeChartComponent'
+import IsAlive from './components/graphicViewComponents/IsAlive'
+import JsonChartComponent from './components/graphicViewComponents/charts/JsonChartComponent'
+import LineChartComponent from './components/graphicViewComponents/charts/LineChartComponent'
+import PieChartComponent from './components/graphicViewComponents/charts/PieChartComponent'
+import SimpleComponentSVG from './components/graphicViewComponents/SimpleComponentSVG'
+import StepLineChartComponent from "./components/graphicViewComponents/charts/StepLineChartComponent";
 
-import SleepAndReactivationDS from './components/form/SleepAndReactivationDS'
-import router from './router'
+/* Utils import */
 import VJsoneditor from 'vue-jsoneditor';
 import VueCookie from 'vue-cookie';
 import * as uiv from 'uiv';
 
 Vue.config.productionTip = false
 Vue.use(VJsoneditor);
-// Vue.use(Vuetify);
 Vue.use(uiv);
 Vue.use(VueCookie);
 
 /*eslint-disable no-new */
-new Vue({
-  el: '#app1',
-  router,
-  components: { App },
-  template: '<App/>'
-})
-
-new Vue({
-  el: '#test',
-  components: { Test },
-  template: '<Test/>'
-})
-
-new Vue({
-  el: '#app-is-alive',
-  components: {
-    "is-alive": IsAlive
-  },
-})
-
-new Vue({
-  el: '#export-import-ph',
-  components: { ExportImportPointHierarchy },
-  template: '<ExportImportPointHierarchy/>'
-})
-
 new Vue({
    el: '#app',
    components: {
@@ -69,14 +42,7 @@ new Vue({
 })
 
 new Vue({
-  el: '#app-cmp',
-  components: {
-    "cmp": CMP
-  },
-})
-
-new Vue({
-  el:'#chart',
+  el:'#graphic-view-components',
   components: {
     "step-line-chart": StepLineChartComponent,
     "line-chart": LineChartComponent,
@@ -84,23 +50,16 @@ new Vue({
     "pie-chart": PieChartComponent,
     "gauge-chart": GaugeChartComponent,
     "cylinder-gauge-chart": CylinderGaugeComponent,
-    "json-custom-chart": JsonChartComponent
+    "json-custom-chart": JsonChartComponent,
+    "is-alive": IsAlive,
+    "simple-component-svg": SimpleComponentSVG,
+    "cmp": CMP
   },
 })
 
 new Vue({
-  el: '#vue-details',
+  el: '#vue-ui',
   components: {
     "chart-component": DataPointDetailsChart
   },
 })
-
-for (let i=0; i<20; i++) {
-  new Vue({
-    el: `#app-cmp-${i}`,
-    components: {
-      "cmp": CMP
-    },
-  })
-}
-
