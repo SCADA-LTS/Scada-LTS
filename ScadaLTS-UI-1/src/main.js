@@ -41,6 +41,7 @@ new Vue({
    }
 })
 
+/* GraphicView custom components */
 new Vue({
   el:'#graphic-view-components',
   components: {
@@ -57,6 +58,7 @@ new Vue({
   },
 })
 
+/* ScadaLTS UI Vue.js components */
 new Vue({
   el: '#vue-ui',
   components: {
