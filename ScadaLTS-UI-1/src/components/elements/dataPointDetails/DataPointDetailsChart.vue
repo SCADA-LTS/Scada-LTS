@@ -1,23 +1,56 @@
 <template>
   <div class="flex-container">
-    <div class="settings">
-      <button @click="showModal = true">Open settings</button>
+    <div class="settings" v-if="renderChart">
+      <button @click="showModal = true">Chart settings</button>
     </div>
     <div v-if="showModal" class="settings-modal">
       <div class="settings-modal-container">
-        <div>
-          <label for="live-rbtn">Live Chart</label>
-          <input type="radio" class="radio-button" value="live" id="live-rbtn" v-model="chartType" />
-          <label for="static-rbtn">Static Chart</label>
-          <input
-            type="radio"
-            class="radio-button"
-            value="static"
-            id="static-rbtn"
-            v-model="chartType"
-          />
+        <div class="flex-radio">
+          <div class="flex-radio">
+            <label for="static-rbtn">Step Line Chart</label>
+            <input
+              type="radio"
+              class="radio-button"
+              value="stepLine"
+              id="typeStep-rbtn"
+              v-model="chartSettings.lineChart"
+            />
+          </div>
+          <div class="flex-radio">
+            <label for="type-rbtn">Line Chart</label>
+            <input
+              type="radio"
+              class="radio-button"
+              value="line"
+              id="type-rbtn"
+              v-model="chartSettings.lineChart"
+            />
+          </div>
         </div>
-        <div v-if="chartType === 'live'" class="flex-container">
+        <hr />
+        <div class="flex-radio">
+          <div class="flex-radio">
+            <label for="live-rbtn">Live Chart</label>
+            <input
+              type="radio"
+              class="radio-button"
+              value="live"
+              id="live-rbtn"
+              v-model="chartSettings.chartType"
+            />
+          </div>
+          <div class="flex-radio">
+            <label for="static-rbtn">Static Chart</label>
+            <input
+              type="radio"
+              class="radio-button"
+              value="static"
+              id="static-rbtn"
+              v-model="chartSettings.chartType"
+            />
+          </div>
+        </div>
+        <div v-if="chartSettings.chartType === 'live'" class="flex-container">
           <div>
             <label for="live-sd">Start Date</label>
             <input type="text" id="live-sd" v-model="chartSettings.startDate" />
@@ -27,20 +60,25 @@
             <input type="number" id="live-rr" v-model="chartSettings.refreshRate" />
           </div>
         </div>
-        <div v-if="chartType === 'static'" class="flex-container">
+        <div v-if="chartSettings.chartType === 'static'" class="flex-container">
           <div>
             <label for="static-sd">Start Date</label>
-            <input type="text" id="static-sd" v-model="chartSettings.startDate" />
+            <datepicker format="yyyy/MM/dd" :monday-first="true" v-model="chartSettings.startDate"></datepicker>
           </div>
           <div>
             <label for="static-ed">End Date</label>
-            <input type="text" id="static-ed" v-model="chartSettings.endDate" />
+            <datepicker format="yyyy/MM/dd" :monday-first="true" v-model="chartSettings.endDate"></datepicker>
           </div>
         </div>
         <div class="flex-container">
           <div>
             <label for="chart-color">Chart color</label>
-            <input type="text" id="chart-color" v-model="chartSettings.chartColor" />
+            <ColorPicker
+              :width="100"
+              :height="100"
+              startColor="#39B54A"
+              v-model="chartSettings.chartColor"
+            ></ColorPicker>
           </div>
           <div>
             <label for="chart-rv">Range value</label>
@@ -48,7 +86,12 @@
           </div>
           <div v-if="chartSettings.rangeValue">
             <label for="chart-rc">Range color</label>
-            <input type="text" id="chart-rc" v-model="chartSettings.rangeColor" />
+            <ColorPicker
+              :width="100"
+              :height="100"
+              startColor="#ff0000"
+              v-model="chartSettings.rangeColor"
+            ></ColorPicker>
           </div>
           <div v-if="chartSettings.rangeValue">
             <label for="chart-rl">Range label</label>
@@ -67,13 +110,31 @@
             <input type="checkbox" id="chart-sl" v-model="chartSettings.showLegend" />
           </div>
         </div>
-        <div>
+        <div class="settings">
           <button @click="showModal = false">Close</button>
           <button @click="saveSettings()">Save</button>
         </div>
       </div>
     </div>
     <div v-if="renderChart">
+      <line-chart
+        v-bind:point-id="pointId"
+        v-bind:label="chartSettings.chartLabel"
+        v-bind:start-date="chartSettings.startDate"
+        v-bind:end-date="chartSettings.endDate"
+        v-bind:refresh-rate="chartSettings.refreshRate"
+        v-bind:color="chartSettings.chartColor"
+        v-bind:range-value="chartSettings.rangeValue"
+        v-bind:range-color="chartSettings.rangeColor"
+        v-bind:range-label="chartSettings.rangeLabel"
+        v-bind:show-scrollbar-x="chartSettings.showScrollbarX"
+        v-bind:show-scrollbar-y="chartSettings.showScrollbarY"
+        v-bind:show-legend="chartSettings.showLegend"
+        show-reload="true"
+        v-bind:width="width"
+        height="600"
+        v-if="chartSettings.lineChart == 'line'"
+      />
       <step-line-chart
         v-bind:point-id="pointId"
         v-bind:label="chartSettings.chartLabel"
@@ -90,8 +151,10 @@
         show-reload="true"
         v-bind:width="width"
         height="600"
+        v-if="chartSettings.lineChart == 'stepLine'"
       />
     </div>
+
     <!-- <input type="text" id="label" v-model="label" /> -->
   </div>
 </template>
@@ -99,19 +162,21 @@
 import Axios from "axios";
 import StepLineChart from "../../charts/StepLineChartComponent";
 import LineChart from "../../charts/LineChartComponent";
-import { width } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+import Datepicker from "vuejs-datepicker";
+import ColorPicker from "vue-color-picker-wheel";
 
 export default {
   name: "DataPointDetailsChart",
   components: {
     StepLineChart,
-    LineChart
+    LineChart,
+    Datepicker,
+    ColorPicker
   },
   data() {
     return {
       pointId: undefined,
       renderChart: false,
-      chartType: "live",
       showModal: false,
       width: 0,
       chartSettings: {
@@ -125,7 +190,9 @@ export default {
         rangeLabel: undefined,
         showScrollBarX: true,
         showScrollBarY: false,
-        showLegend: true
+        showLegend: true,
+        lineChart: "stepLine",
+        chartType: "live"
       }
     };
   },
@@ -135,14 +202,14 @@ export default {
   },
   mounted() {
     this.pointId = document.getElementById("pointid").innerHTML;
-    // if (
-    //   this.$cookie.get(`Point_${this.pointId}`) !== undefined &&
-    //   this.$cookie.get(`Point_${this.pointId}`) !== ""
-    // ) {
-    //   this.chartSettings = JSON.parse(
-    //     this.$cookie.get(`Point_${this.pointId}`)
-    //   );
-    // }
+    if (
+      this.$cookie.get(`Point_${this.pointId}`) !== null &&
+      this.$cookie.get(`Point_${this.pointId}`) !== ""
+    ) {
+      this.chartSettings = JSON.parse(
+        this.$cookie.get(`Point_${this.pointId}`)
+      );
+    }
     this.getPointType();
   },
   methods: {
@@ -153,32 +220,30 @@ export default {
         credentials: "same-origin"
       }).then(response => {
         if (response.data.type !== "AlphanumericValue") {
-          //   if (this.chartSettings == undefined) {
-          //     this.chartSettings = {
-          //       chartLabel: undefined,
-          //       chartColor: undefined,
-          //       startDate: "1-hour",
-          //       endDate: undefined,
-          //       refreshRate: "2000",
-          //       rangeValue: undefined,
-          //       rangeColor: undefined,
-          //       rangeLabel: undefined,
-          //       showScrollBarX: true,
-          //       showScrollBarY: false,
-          //       showLegend: true
-          //     };
-          //   }
           this.renderChart = true;
         }
       });
     },
     saveSettings() {
-      if (this.chartType == "static") {
+      if (this.chartSettings.chartType == "static") {
         this.chartSettings.refreshRate = undefined;
+        let date = this.chartSettings.startDate;
+        this.chartSettings.startDate =
+          date.getFullYear() +
+          "/" +
+          (date.getMonth() + 1) +
+          "/" +
+          date.getDate();
+        date = this.chartSettings.endDate;
+        this.chartSettings.endDate =
+          date.getFullYear() +
+          "/" +
+          (date.getMonth() + 1) +
+          "/" +
+          date.getDate();
       } else {
         this.chartSettings.endDate = undefined;
       }
-      console.log(this.chartSettings);
       this.showModal = false;
       this.$cookie.set(
         `Point_${this.pointId}`,
@@ -187,7 +252,7 @@ export default {
       );
     },
     handleResize() {
-      this.width = window.innerWidth - 20;
+      this.width = window.innerWidth - 50;
     }
   }
 };
@@ -196,6 +261,16 @@ export default {
 .flex-container {
   display: flex;
   flex-direction: column;
+}
+.settings {
+  display: flex;
+  justify-content: flex-end;
+}
+.flex-radio {
+  display: flex;
+  justify-content: space-between;
+  width: 98%;
+  padding: 0 1%;
 }
 .settings-modal {
   position: fixed;
@@ -223,6 +298,12 @@ export default {
   padding: 10px 0;
   display: flex;
   justify-content: space-between;
+}
+button {
+  color: #333333;
+  border: 1px solid #39b54a;
+  padding: 2px;
+  min-width: 100px;
 }
 </style>
 

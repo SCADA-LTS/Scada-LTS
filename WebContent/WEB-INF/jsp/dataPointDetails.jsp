@@ -21,17 +21,9 @@
 
 <tag:page dwr="DataPointDetailsDwr" js="view" onload="init">
   <link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
-  <script src="resources/libs/amcharts4/core.js"></script>
-  <script src="resources/libs/amcharts4/charts.js"></script>
-  <script src="resources/libs/amcharts4/themes/animated.js"></script>
-  <script src="resources/libs/jquery-ui/jquery-ui.min.js"></script>
-
-  <script src="resources/libs/amcharts4/scada_amcharts.js"></script>
   <script type="text/javascript">
 
     mango.view.initPointDetails();
-
-    const API_NAME = "/ScadaLTS";
 
     function init() {
       getHistoryTableData();
@@ -149,47 +141,6 @@
     }
 
     jQuery(document).ready(function () {
-      var pointId = Number(jQuery("#pointid").text());
-      initAmChartPoint(pointId);
-
-      jQuery( ".calendar" ).datepicker();
-      jQuery( ".radio-button" ).checkboxradio();
-      jQuery("#loadingChartContainer").show();
-      setTimeout(function () {
-        jQuery("#loadingChartContainer").hide();
-        scadaAmChartInit();
-        scadaAmChartLiveUpdatePoints();
-      }, 500);
-
-      jQuery('#radio-btn-1').change(function() {
-            if(jQuery("#radio-btn-1").is(':checked')) {
-                jQuery("#config-live-chart").toggle();
-                jQuery("#config-chart").toggle();
-                liveChart = true;
-            }
-        });
-        jQuery('#radio-btn-2').change(function() {
-            if(jQuery("#radio-btn-2").is(':checked')) {
-                jQuery("#config-live-chart").toggle();
-                jQuery("#config-chart").toggle();
-                liveChart = false;
-            }
-        });
-      jQuery("#chart-show-button").click(function () {
-        initAmChartPoint(pointId);
-        jQuery("#loadingChartContainer").show();
-        setTimeout(function () {
-          jQuery("#loadingChartContainer").hide();
-          scadaAmChartInit();
-          if(liveChart){
-            scadaAmChartLiveUpdatePoints();
-          }
-        }, 500)
-      });
-
-
-
-
       (function ($) {
         loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css", "css");
         loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js", "js");
@@ -205,18 +156,6 @@
         } else {
           userNotes[i].style.display = "block";
         }
-      }
-    }
-
-    function initAmChartPoint(pointId) {
-      scadaAmChartClearChart();
-      let period = new Date().getTime() - scadaAmChartCalculatePeriod();
-      if(liveChart) {
-        scadaAmChartGetDataPointValuesFromTime(pointId, period);
-      } else {
-        let startDate = new Date(jQuery("#start-date")[0].value).getTime();
-        let endDate = new Date(jQuery("#end-date")[0].value).getTime();
-        scadaAmChartGetDataPointValuesFromTime(pointId, startDate, endDate);
       }
     }
 
@@ -512,64 +451,8 @@
           </div>
         </div>
       </div>
-      <div id="vue-details" style="width: 100%">
+      <div id="vue-details" class="scada-card">
         <chart-component/>
-      </div>
-      <div id="dpd-chart" class="scada-card">
-
-        <div class="flex-column">
-            <div class="scada-card flex-row flex-end">
-                <div id="config-live-chart">
-                    <div>
-                        <span><fmt:message key="watchlist.chart.liveLast"/></span>
-                        <div>
-                            <input type="number" id="chartPeriodValue" value="60"/>
-                            <select id="chartPeriodType">
-                                <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <span><fmt:message key="watchlist.chart.liveRefresh"/></span>
-                        <div>
-                            <input type="number" id="refreshPeriodValue" value="10"/>
-                            <select id="refreshPeriodType">
-                                <tag:timePeriodOptions s="true" min="true"/>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div id="config-chart" style="display: none;">
-                    <div>
-                        <span><fmt:message key="watchlist.chart.start"/></span>
-                        <div>
-                            <input type="text" class="calendar" name="date" id="start-date" autocomplete="off">
-                        </div>
-                    </div>
-                    <div>
-                        <span><fmt:message key="watchlist.chart.end"/></span>
-                        <div>
-                            <input type="text" class="calendar" name="date" id="end-date" autocomplete="off">
-                        </div>
-                    </div>
-                </div>
-                <div class="flex-column chart-button-container">
-                    <label for="radio-btn-1"><fmt:message key="watchlist.chart.liveChart"/></label>
-                    <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-1" checked>
-                    <label for="radio-btn-2"><fmt:message key="watchlist.chart.valueChart"/></label>
-                    <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-2">
-                    <button id="chart-show-button" class="ui-button ui-widget ui-corner-all"><fmt:message key="watchlist.chart.launch"/></button>
-                </div>
-            </div>
-            <span class="title-standard scada-card-2" id="chart-title">Chart</span>
-        </div>
-        <div class="flex" style="display:none;" id="loadingChartContainer">
-          <img src="images/hourglass.png" class="loader" />
-        </div>
-        <div id="amChartDiv"></div>
-        <div>
-
-        </div>
       </div>
       <div id="dpd-events" class="scada-card">
         <div class="scada-header flex-row-wrap flex-align-center">
