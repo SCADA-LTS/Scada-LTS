@@ -194,7 +194,7 @@ export default {
 </script>
 <style scoped>
 .hello {
-  width: 750px;
+  min-width: 650px;
   height: 500px;
 }
 .error {

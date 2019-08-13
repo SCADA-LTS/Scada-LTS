@@ -176,6 +176,7 @@ export default {
   data() {
     return {
       pointId: undefined,
+      userName: "test",
       renderChart: false,
       showModal: false,
       width: 0,
@@ -201,13 +202,14 @@ export default {
     this.handleResize();
   },
   mounted() {
+    this.userName = document.getElementsByClassName("userName").item(0).innerText;
     this.pointId = document.getElementById("pointid").innerHTML;
     if (
-      this.$cookie.get(`Point_${this.pointId}`) !== null &&
-      this.$cookie.get(`Point_${this.pointId}`) !== ""
+      this.$cookie.get(`Point_${this.pointId}_${this.userName}`) !== null &&
+      this.$cookie.get(`Point_${this.pointId}_${this.userName}`) !== ""
     ) {
       this.chartSettings = JSON.parse(
-        this.$cookie.get(`Point_${this.pointId}`)
+        this.$cookie.get(`Point_${this.pointId}_${this.userName}`)
       );
     }
     this.getPointType();
@@ -246,7 +248,7 @@ export default {
       }
       this.showModal = false;
       this.$cookie.set(
-        `Point_${this.pointId}`,
+        `Point_${this.pointId}_${this.userName}`,
         JSON.stringify(this.chartSettings),
         7
       );
@@ -287,7 +289,6 @@ export default {
   margin: 0 auto;
   margin-top: 30px;
   max-height: 700px;
-  overflow-y: auto;
   padding: 20px 30px;
   background-color: #ffffff;
   border-radius: 5px;

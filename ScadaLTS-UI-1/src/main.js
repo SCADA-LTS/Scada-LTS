@@ -8,6 +8,7 @@ import Vue from 'vue'
 import DataPointDetailsChart from './components/userInterfaceComponents/dataPointDetails/DataPointDetailsChart'
 import ExportImportPointHierarchy from './components/userInterfaceComponents/pointHierarchy/ExportImportPointHierarchy'
 import SleepAndReactivationDS from './components/userInterfaceComponents/dataSourceEdit/SleepAndReactivationDS'
+import WatchListChartWidget from './components/userInterfaceComponents/watchList/WatchListChartWidget'
 
 /* Graphic View custom components */
 import CMP from "./components/graphicViewComponents/CMP";
@@ -62,6 +63,7 @@ new Vue({
 new Vue({
   el: '#vue-ui',
   components: {
-    "chart-component": DataPointDetailsChart
+    "chart-component": DataPointDetailsChart,
+    "wl-chart": WatchListChartWidget
   },
 })
