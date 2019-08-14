@@ -128,13 +128,7 @@
     </jsp:attribute>
 
     <jsp:body>
-        <!-- amChart Libraries -->
-        <script src="resources/libs/amcharts4/core.js"></script>
-        <script src="resources/libs/amcharts4/charts.js"></script>
-        <script src="resources/libs/amcharts4/themes/animated.js"></script>
-        <script src="resources/libs/jquery-ui/jquery-ui.min.js"></script>
-        <script src="resources/libs/amcharts4/scada_amcharts.js"></script>
-        <!-- amChart Libraries -->
+        <link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
         <script type="text/javascript">
             const API_NAME = "/ScadaLTS";
             dojo.require("dojo.widget.SplitContainer");
@@ -186,33 +180,9 @@
                 var handler = new TreeClickHandler();
                 dojo.event.topic.subscribe("tree/titleClick", handler, 'titleClick');
                 dojo.event.topic.subscribe("tree/expand", handler, 'expand');
-                getChartType();
-                loadChartCookie();
-                setTimeout(function () {
-                    showAmChart()
-                }, 500)
             }
 
-            function loadChartCookie() {
-                let chartSettings = JSON.parse(getCookie("chart_cookie"));
-                $set("refreshPeriodValue", chartSettings.refreshPeriodValue);
-                $set("refreshPeriodType", chartSettings.refreshPeriodType);
-                $set("chartPeriodValue", chartSettings.chartPeriodValue);
-                $set("chartPeriodType", chartSettings.chartPeriodType);
-                $set("start-date", chartSettings.chartStartDate);
-                $set("end-date", chartSettings.chartEndDate);
-                if(chartSettings.liveChart) {
-                    jQuery("#config-live-chart").show();
-                    jQuery("#config-chart").hide();
-                    jQuery("#radio-btn-1").click();
-                    liveChart = true;
-                } else {
-                    jQuery("#radio-btn-2").click();
-                    liveChart = false;
-                }
-                chartZoom = JSON.parse(getCookie("chart_zoom_cookie"));
 
-            }
 
             function getChartType(){
                 WatchListDwr.getChartTypes(function(data) {
@@ -679,29 +649,7 @@
                 }
             }
 
-            function initAmChartPoints() {
-                scadaAmChartClearChart();
-                let pointIds = [];
-                let pointStringIds = $get("chartCB");
-                let period = new Date().getTime() - scadaAmChartCalculatePeriod();
 
-                pointStringIds.forEach(id => {
-                    let data = Number(id);
-                    if (!isNaN(data)) {
-                        pointIds.push(data)
-                    }
-                })
-
-                pointIds.forEach(id => {
-                    if (liveChart) {
-                        scadaAmChartGetDataPointValuesFromTime(id, period);
-                    } else {
-                        let startDate = new Date(jQuery("#start-date")[0].value).getTime();
-                        let endDate = new Date(jQuery("#end-date")[0].value).getTime();
-                        scadaAmChartGetDataPointValuesFromTime(id, startDate, endDate);
-                    }
-                })
-            }
 
             jQuery(document).ready(function () {
 
@@ -711,33 +659,6 @@
                     setCookie("pointlist_width", jQuery("#watch-list-point-list").width());
                 });
 
-                /* initiate components */
-                jQuery(".calendar").datepicker();
-                jQuery(".radio-button").checkboxradio();
-                jQuery('#watch-list-point-list').resizable({
-                    maxWidth: 1200,
-                    minWidth: 200
-                });
-
-                /* components behaviour */
-                jQuery('#radio-btn-1').change(function () {
-                    if (jQuery("#radio-btn-1").is(':checked')) {
-                        jQuery("#config-live-chart").toggle();
-                        jQuery("#config-chart").toggle();
-                        liveChart = true;
-                    }
-                });
-                jQuery('#radio-btn-2').change(function () {
-                    if (jQuery("#radio-btn-2").is(':checked')) {
-                        jQuery("#config-live-chart").toggle();
-                        jQuery("#config-chart").toggle();
-                        liveChart = false;
-                    }
-                });
-                jQuery("#chart-show-button").click(function () {
-                    saveAmChartSettings();
-                    showAmChart();
-                });
                 jQuery("#wlEditDiv").click(function () {
                     jQuery("#watchlist-modal").css('display', 'block')
                 });
@@ -753,42 +674,10 @@
 
             });
 
-            function showAmChart() {
-                initAmChartPoints();
-                    jQuery("#loadingChartContainer").show();
-                    setTimeout(function () {
-                        jQuery("#loadingChartContainer").hide();
-                        jQuery("#chart-title").text("Chart for watchlist: " + $get("newWatchListName"))
-                        scadaAmChartInit(chartZoom.start, chartZoom.end);
-                        chart.scrollbarX.events.on("up", function() {
-                            let chartZoomCookie = {
-                                "start":chart.xAxes.getIndex(0)._adjustedStart,
-                                "end":chart.xAxes.getIndex(0)._adjustedEnd,
-                            }
-                            setCookie("chart_zoom_cookie", JSON.stringify(chartZoomCookie));
-                        })
-                        if (liveChart) {
-                            scadaAmChartLiveUpdatePoints();
-                        }
-                    }, 500)
-            }
 
-            function saveAmChartSettings() {
-                let chartCookie = {
-                    "liveChart": jQuery("#radio-btn-1").is(':checked'),
-                    "refreshPeriodValue": $get("refreshPeriodValue"),
-                    "refreshPeriodType": $get("refreshPeriodType"),
-                    "chartPeriodValue": $get("chartPeriodValue"),
-                    "chartPeriodType":$get("chartPeriodType"),
-                    "chartStartDate":$get("start-date"),
-                    "chartEndDate":$get("end-date")
-                }
-                setCookie("chart_cookie", JSON.stringify(chartCookie));
-            }
         </script>
         <style>
             @import "resources/css/scada_ui.css";
-            @import "resources/libs/jquery-ui/jquery-ui.min.css";
 
             .watch-list-container {
                 display: flex;
@@ -999,67 +888,9 @@
                 </div>
             </div>
         </div>
-        <div class="scada-chart-div-default">
-            <div class="flex-column">
-                <div class="scada-card flex-row flex-end">
-                    <div id="config-live-chart">
-                        <div>
-                            <span>
-                                <fmt:message key="watchlist.chart.liveLast" /></span>
-                            <div>
-                                <input type="number" id="chartPeriodValue" value="60" />
-                                <select id="chartPeriodType">
-                                    <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true" />
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <span>
-                                <fmt:message key="watchlist.chart.liveRefresh" /></span>
-                            <div>
-                                <input type="number" id="refreshPeriodValue" value="10" />
-                                <select id="refreshPeriodType">
-                                    <tag:timePeriodOptions s="true" min="true" />
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="config-chart" style="display: none;">
-                        <div>
-                            <span>
-                                <fmt:message key="watchlist.chart.start" /></span>
-                            <div>
-                                <input type="text" class="calendar" name="date" id="start-date" autocomplete="off">
-                            </div>
-                        </div>
-                        <div>
-                            <span>
-                                <fmt:message key="watchlist.chart.end" /></span>
-                            <div>
-                                <input type="text" class="calendar" name="date" id="end-date" autocomplete="off">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-column chart-button-container">
-                        <label for="radio-btn-1">
-                            <fmt:message key="watchlist.chart.liveChart" /></label>
-                        <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-1" checked>
-                        <label for="radio-btn-2">
-                            <fmt:message key="watchlist.chart.valueChart" /></label>
-                        <input type="radio" class="radio-button" name="radio-btn-1" id="radio-btn-2">
-                        <button id="chart-show-button" class="ui-button ui-widget ui-corner-all">
-                            <fmt:message key="watchlist.chart.launch" /></button>
-                    </div>
-                </div>
-                <span class="title-standard scada-card-2" id="chart-title"></span>
-            </div>
-            <div class="flex" style="display:none;" id="loadingChartContainer">
-                <img src="images/hourglass.png" id="loadingChart" class="loader" />
-            </div>
-            <div id="amChartDiv">
-            </div>
+        <div id="vue-ui">
+            <wl-chart/>
         </div>
-
 
         <table width="100%" style="display: none;">
 
@@ -1101,3 +932,4 @@
         </table>
     </jsp:body>
 </tag:page>
+<%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>

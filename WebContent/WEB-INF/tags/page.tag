@@ -56,7 +56,7 @@
   </script>
   <!-- script type="text/javascript" src="http://o.aolcdn.com/dojo/0.4.2/dojo.js"></script -->
   <script type="text/javascript" src="resources/dojo/dojo.js"></script>
-  <script type="text/javascript" src="resources/jQuery/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="resources/jQuery/jquery-1.10.2.min.js"></script>
   <c:forTokens items="${jqplugins}" var="plugin" delims=", ">
     <script type="text/javascript" src="resources/jQuery/plugins/${plugin}.js"></script>
   </c:forTokens>

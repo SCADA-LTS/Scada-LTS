@@ -16,7 +16,6 @@ import httpClient from "axios";
 import { ColumnChart } from "./ColumnChartComponent.vue";
 
 am4core.useTheme(am4themes_animated);
-console.log(ColumnChart);
 
 class PieChart extends ColumnChart {
   constructor(chartReference, color, domain = "http://localhost:8080/ScadaLTS") {
@@ -24,15 +23,15 @@ class PieChart extends ColumnChart {
   }
 
   setupChart() {
-    let categoryName = "State";
-    let countName = "Count";
-    this.chart.data = PieChart.prepareChartData(
-      this.pointPastValues,
-      categoryName,
-      countName
-    );
+    this.chart.data = PieChart.prepareChartData(this.pointPastValues);
     this.createExportMenu(true, "Scada_PieChart");
-    this.createSeries("Pie", categoryName, countName, categoryName);
+    for (let [k, v] of this.pointCurrentValue) {
+      if (v.type === "Numeric") {
+        this.createSeries("Pie", "group", v.name, v.name);
+      } else {
+        this.createSeries("Pie", "group", "value", v.name);
+      }
+    }
   }
 }
 
@@ -59,6 +58,7 @@ export default {
   },
   methods: {
     generateChart() {
+      console.debug("data");
       this.chartClass = new PieChart(this.$refs.chartdiv, this.color);
 
       this.chartClass
