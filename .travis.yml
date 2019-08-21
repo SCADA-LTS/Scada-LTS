@@ -86,6 +86,6 @@ after_script:
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (export PRE_TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`)
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (export TAG=`sed "s/\//_/g" <<< $PRE_TAG`)
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (export IMAGE_NAME=scadalts/scadalts)
-- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker build -t $IMAGE_NAME:$TAG .)
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG)
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker push $IMAGE_NAME:$TAG)
