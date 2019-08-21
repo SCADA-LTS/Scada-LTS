@@ -441,6 +441,10 @@
 			<test name="com.serotonin.mango.rt.dataSource.snmp.SnmpDataSourceRTTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.mango.service.EventServiceUnitMockitoTest"
+				  haltonfailure="yes">
+			</test>
 		    <!--
 		    <test name="" 
 		    	haltonfailure="yes">

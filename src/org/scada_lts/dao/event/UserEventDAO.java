@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
  */
-public class UserEventDAO implements GenericDaoCR<UserEvent> {
+public class UserEventDAO implements IUserEventDAO {
 	
 	private static final Log LOG = LogFactory.getLog(UserEventDAO.class);
 	
@@ -146,7 +146,8 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 		
 	}
 	
-	public void batchUpdate(final int eventId,	final List<Integer> userIds, final boolean alarm) {
+	@Override
+    public void batchUpdate(final int eventId, final List<Integer> userIds, final boolean alarm) {
 		
 		DAO.getInstance().getJdbcTemp().batchUpdate(USER_EVENT_INSERT, new BatchPreparedStatementSetter() {
 
@@ -165,7 +166,8 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 		  });
 	}
 
-	public void updateAck(long eventId, boolean silenced ) {
+	@Override
+    public void updateAck(long eventId, boolean silenced) {
 		
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("eventId:"+eventId);
@@ -175,7 +177,8 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 		
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Override
+    @Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void delete(int userId) {
 
 		if (LOG.isTraceEnabled()) {
