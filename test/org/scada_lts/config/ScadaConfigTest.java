@@ -234,5 +234,4 @@ public class ScadaConfigTest {
         //then:
         assertTrue(result);
     }
-
 }
