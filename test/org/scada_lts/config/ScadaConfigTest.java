@@ -128,7 +128,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_enableCache_return_true() {
+    public void invoke_getBoolean_for_key_SystemConfigKeys_enableCache_return_true() {
         //when:
         boolean result = config
                 .getBoolean(SystemConfigKeys.ENABLE_CACHE, false);
@@ -137,7 +137,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_httpRetriverDoNotAllowEnableReactivation_return_false() {
+    public void invoke_getBoolean_for_key_SystemConfigKeys_httpRetriverDoNotAllowEnableReactivation_return_false() {
         //when:
         boolean result = config
                 .getBoolean(SystemConfigKeys.HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION, true);
@@ -146,7 +146,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_httpRetriverSleepCheckToReactivationWhenStart_return_true() {
+    public void invoke_getBoolean_for_key_SystemConfigKeys_httpRetriverSleepCheckToReactivationWhenStart_return_true() {
         //when:
         boolean result = config
                 .getBoolean(SystemConfigKeys.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START, false);
@@ -155,7 +155,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_millisSecondsPeriodUpdateEventDetectors_return_1002() {
+    public void invoke_getLong_for_key_SystemConfigKeys_millisSecondsPeriodUpdateEventDetectors_return_1002() {
         //when:
         long result = config
                 .getLong(SystemConfigKeys.MILLIS_SECONDS_PERIOD_UPDATE_EVENT_DETECTORS, -1);
@@ -164,7 +164,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_millisSecondsPeriodUpdatePendingEvents_return_1003() {
+    public void invoke_getLong_for_key_SystemConfigKeys_millisSecondsPeriodUpdatePendingEvents_return_1003() {
         //when:
         long result = config
                 .getLong(SystemConfigKeys.MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS, -1);
@@ -173,7 +173,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_millisSecondsPeriodUpdateUnsilencedAlarmLevel_return_1001() {
+    public void invoke_getLong_for_key_SystemConfigKeys_millisSecondsPeriodUpdateUnsilencedAlarmLevel_return_1001() {
         //when:
         long result = config
                 .getLong(SystemConfigKeys.MILLIS_SECONDS_PERIOD_UPDATE_UNSILENCED_ALARM_LEVEL, -1);
@@ -182,7 +182,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_replaceAlertOnView_return_true() {
+    public void invoke_getBoolean_for_key_SystemConfigKeys_replaceAlertOnView_return_true() {
         //when:
         boolean result = config
                 .getBoolean(SystemConfigKeys.REPLACE_ALERT_ON_VIEW, false);
@@ -191,7 +191,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_startUpdateEventDetectors_return_100002() {
+    public void invoke_getLong_for_key_SystemConfigKeys_startUpdateEventDetectors_return_100002() {
         //when:
         long result = config
                 .getLong(SystemConfigKeys.START_UPDATE_EVENT_DETECTORS, -1);
@@ -200,7 +200,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_startUpdatePendingEvents_return_100003() {
+    public void invoke_getLong_for_key_SystemConfigKeys_startUpdatePendingEvents_return_100003() {
         //when:
         long result = config
                 .getLong(SystemConfigKeys.START_UPDATE_PENDING_EVENTS, -1);
@@ -209,7 +209,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_startUpdateUnsilencedAlaramLevel_return_100001() {
+    public void invoke_getLong_for_key_SystemConfigKeys_startUpdateUnsilencedAlaramLevel_return_100001() {
         //when:
         long result = config
                 .getLong(SystemConfigKeys.START_UPDATE_UNSILENCED_ALARM_LEVEL, -1);
@@ -218,7 +218,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_useAcl_return_false() {
+    public void invoke_getBoolean_for_key_SystemConfigKeys_useAcl_return_false() {
         //when:
         boolean result = config
                 .getBoolean(SystemConfigKeys.USE_ACL, true);
@@ -227,7 +227,7 @@ public class ScadaConfigTest {
     }
 
     @Test
-    public void invoke_getString_for_key_SystemConfigKeys_useCacheDataSourcesPointsWhenTheSystemIsReady_return_true() {
+    public void invoke_getBoolean_for_key_SystemConfigKeys_useCacheDataSourcesPointsWhenTheSystemIsReady_return_true() {
         //when:
         boolean result = config
                 .getBoolean(SystemConfigKeys.USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY, false);
