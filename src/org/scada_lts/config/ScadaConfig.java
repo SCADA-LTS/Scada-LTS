@@ -125,12 +125,6 @@ public class ScadaConfig {
 	
 	private Properties config;
 
-	private ScadaConfig() {
-		config = new Properties();
-		String path = MessageFormat.format("{0}{1}env.properties", _getPathConfigFile(), File.separator);
-        _init(new File(path));
-	}
-
     private ScadaConfig(File fileProperties) {
         _init(fileProperties);
     }
@@ -141,28 +135,18 @@ public class ScadaConfig {
 
 	@Deprecated
 	public static ScadaConfig getInstance() throws IOException {
-		if (instance == null) {
-            instance = new ScadaConfig();
-		}
-		return instance;
+        return getConfig();
 	}
 
-	public static ScadaConfig getConfigFromEnvProperties() {
-		if (instance == null) {
-            instance = new ScadaConfig();
-		}
-		return instance;
+	public static ScadaConfig getConfig() {
+        return _doubleCheckedLocking(_envPropertiesFile());
 	}
 
-    public static ScadaConfig getConfigFromExternalFile(File fileProperties) {
-        if (instance == null) {
-            instance = new ScadaConfig(fileProperties);
-        }
-        return instance;
+	public static ScadaConfig getConfigOnlyTest(File fileProperties) {
+        return _doubleCheckedLocking(fileProperties);
     }
 
-    @Deprecated
-	public static ScadaConfig getInstanceTest(Properties confTest) {
+    public static ScadaConfig getInstanceTest(Properties confTest) {
 		instance = new ScadaConfig(confTest);
 		return instance;
 	}
@@ -170,14 +154,6 @@ public class ScadaConfig {
     public int size() {
         return config.size();
     }
-
-    /**
-	 *  Get configuration
-	 * @return
-	 */
-	public Properties getConfig() {
-		return new Properties(config);
-	}
 	
 	/**
 	 * Get property value
@@ -404,5 +380,20 @@ public class ScadaConfig {
             LOG.error(e);
             return Optional.empty();
         }
+    }
+
+    private static File _envPropertiesFile() {
+        String path = MessageFormat.format("{0}{1}env.properties", _getPathConfigFile(), File.separator);
+        return new File(path);
+    }
+
+    private static ScadaConfig _doubleCheckedLocking(File fileProperties) {
+        if (instance == null) {
+            synchronized (ScadaConfig.class) {
+                if (instance == null)
+                    instance = new ScadaConfig(fileProperties);
+            }
+        }
+        return instance;
     }
 }

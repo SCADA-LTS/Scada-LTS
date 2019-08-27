@@ -42,7 +42,7 @@ public class ScadaConfigTest {
     public static void init() throws Exception {
         DOMConfigurator.configure("WebContent/WEB-INF/classes/log4j.xml");
         String path = MessageFormat.format("WebContent{0}test{0}env-test.properties", File.separator);
-        config = ScadaConfig.getConfigFromExternalFile(new File(path));
+        config = ScadaConfig.getConfigOnlyTest(new File(path));
     }
 
     @Test

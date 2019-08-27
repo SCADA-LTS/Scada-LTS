@@ -613,7 +613,7 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private BackgroundProcessing createBackgroundProcessing() {
-		ScadaConfig config = ScadaConfig.getConfigFromEnvProperties();
+		ScadaConfig config = ScadaConfig.getConfig();
 		int corePoolSize = config.getInt(ThreadPoolConfigKeys.CORE_POOL_SIZE,3);
 		int maximumPoolSize = config.getInt(ThreadPoolConfigKeys.MAXIMUM_POOL_SIZE,100);
 		long keepAliveTime = config.getLong(ThreadPoolConfigKeys.KEEP_ALIVE_TIME,60L);
