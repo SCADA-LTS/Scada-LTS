@@ -34,6 +34,7 @@ import java.util.Properties;
  * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
+ * kamil.jarmusik@gmail.com
  */
 public class ScadaConfig {
 

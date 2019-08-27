@@ -1,5 +1,12 @@
 package org.scada_lts.config;
 
+/**
+ * Enum with chain keys for system Scada-LTS config
+ *
+ * @author kamil.jarmusik@gmail.com
+ *
+ */
+
 public enum SystemConfigKeys implements ScadaConfigKey {
     /**
      * Replace alert enabled (=true) or disabled (=false)

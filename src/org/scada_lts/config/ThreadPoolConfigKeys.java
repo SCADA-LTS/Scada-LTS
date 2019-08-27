@@ -1,5 +1,12 @@
 package org.scada_lts.config;
 
+/**
+ * Enum with chain keys for thread pool config
+ *
+ * @author kamil.jarmusik@gmail.com
+ *
+ */
+
 public enum ThreadPoolConfigKeys implements ScadaConfigKey {
 
     CORE_POOL_SIZE("workers-priority-medium.pool-threads.core-pool-size"),

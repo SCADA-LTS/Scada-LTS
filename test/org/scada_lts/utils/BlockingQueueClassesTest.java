@@ -1,18 +1,18 @@
 package org.scada_lts.utils;
 
-import org.apache.log4j.xml.DOMConfigurator;
-import org.junit.BeforeClass;
 import org.junit.Test;
+
 import java.util.concurrent.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+/**
+ *
+ * @author kamil.jarmusik@gmail.com
+ *
+ */
 
 public class BlockingQueueClassesTest {
-
-    @BeforeClass
-    public static void init() throws Exception {
-        DOMConfigurator.configure("WebContent/WEB-INF/classes/log4j.xml");
-    }
 
     @Test
     public void invoke_newBlockingQueue_for_LINKED_BLOCKING_QUEUE_then_LinkedBlockingQueueClass() {
