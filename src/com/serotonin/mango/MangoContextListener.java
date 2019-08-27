@@ -79,8 +79,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static org.scada_lts.config.ScadaConfig.*;
-
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
 
@@ -615,8 +613,7 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private BackgroundProcessing createBackgroundProcessing() {
-		//String fileProperties = MessageFormat.format("{0}resources{0}pool-threads-config.properties", File.separator);
-		ScadaConfig config = ScadaConfig.instance();
+		ScadaConfig config = ScadaConfig.getEnvPropertiesConfig();
 		int corePoolSize = config.getInt(ThreadPoolConfigKeys.CORE_POOL_SIZE,3);
 		int maximumPoolSize = config.getInt(ThreadPoolConfigKeys.MAXIMUM_POOL_SIZE,100);
 		long keepAliveTime = config.getLong(ThreadPoolConfigKeys.KEEP_ALIVE_TIME,60L);

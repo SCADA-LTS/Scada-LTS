@@ -1,13 +1,19 @@
 package org.scada_lts.utils;
 
+import org.apache.log4j.xml.DOMConfigurator;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
 import static org.scada_lts.utils.BlockingQueuesUtil.*;
 
 public class BlockingQueuesUtilTest {
+
+    @BeforeClass
+    public static void init() throws Exception {
+        DOMConfigurator.configure("WebContent/WEB-INF/classes/log4j.xml");
+    }
 
     @Test
     public void invoke_add_from_BlockingQueue_for_Runnable_then_size_one() {

@@ -26,8 +26,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.Properties;
 
 
@@ -129,8 +129,8 @@ public class ScadaConfig {
 
 	private ScadaConfig() {
 		config = new Properties();
-		try(FileInputStream fis =
-					new FileInputStream(getPathConfigFile() + System.getProperty("file.separator") + "env.properties")) {
+		String path = String.format("{0}{1}env.properties", getPathConfigFile(), File.separator);
+		try(FileInputStream fis = new FileInputStream(path)) {
 			config.load(fis);
 		} catch (IOException e) {
 			LOG.error(e);
@@ -138,16 +138,26 @@ public class ScadaConfig {
 	}
 
 	private ScadaConfig(String pathFile) {
-		config = new Properties();
-		try(InputStream is = ClassLoader
-				.getSystemResourceAsStream(pathFile + "env-test.properties")) {
-			if(is == null)
-				throw new IOException("File not found.");
-			config.load(is);
-		} catch (IOException e) {
-			LOG.error(e);
-		}
+        config = new Properties();
+        String path = MessageFormat.format("{0}env-test.properties", pathFile);
+        LOG.trace(path);
+        try(InputStream is = ClassLoader.getSystemResourceAsStream(path)) {
+        	if(is == null)
+        		throw new IOException("File not found.");
+            config.load(is);
+        } catch (IOException e) {
+            LOG.error(e);
+        }
 	}
+
+    private ScadaConfig(File fileProperties) {
+        config = new Properties();
+        try(FileInputStream fis = new FileInputStream(fileProperties)) {
+            config.load(fis);
+        } catch (IOException e) {
+            LOG.error(e);
+        }
+    }
 
 	private ScadaConfig(Properties confTest) {
 		this.config = confTest;
@@ -161,12 +171,19 @@ public class ScadaConfig {
 		return instance;
 	}
 
-	public static ScadaConfig instance() {
+	public static ScadaConfig getEnvPropertiesConfig() {
 		if (instance == null) {
 			instance = new ScadaConfig();
 		}
 		return instance;
 	}
+
+    public static ScadaConfig getExtConfig(File fileProperties) {
+        if (instance == null) {
+            instance = new ScadaConfig(fileProperties);
+        }
+        return instance;
+    }
 	
 	public static ScadaConfig getInstanceTest(Properties confTest) {
 		instance = new ScadaConfig(confTest);

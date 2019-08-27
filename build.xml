@@ -438,6 +438,7 @@
 		    <test name="org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
 		    	haltonfailure="yes">
 		    </test>
+
 			<test name="com.serotonin.mango.rt.dataSource.snmp.SnmpDataSourceRTTest"
 				  haltonfailure="yes">
 			</test>
@@ -455,6 +456,10 @@
 			</test>
 
 			<test name="org.scada_lts.config.ThreadPoolConfigKeysTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.config.BlockingQueueClassesTest"
 				  haltonfailure="yes">
 			</test>
 		    <!--

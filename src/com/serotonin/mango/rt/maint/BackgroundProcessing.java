@@ -18,17 +18,16 @@
  */
 package com.serotonin.mango.rt.maint;
 
-import java.io.*;
-import java.text.MessageFormat;
-import java.util.Properties;
-import java.util.concurrent.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.util.ILifecycle;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.concurrent.*;
 
 /**
  * A cheesy name for a class, i know, but it pretty much says it like it is.

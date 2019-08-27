@@ -1,11 +1,8 @@
 package org.scada_lts.config;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.io.File;
 import java.text.MessageFormat;
 
@@ -18,15 +15,15 @@ public class ThreadPoolConfigKeysTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        String fileProperties = MessageFormat.format("{0}resources{0}", File.separator);
-        config = ScadaConfig.getInstanceTest(fileProperties);
+        DOMConfigurator.configure("WebContent/WEB-INF/classes/log4j.xml");
+        String filePropertiesPath = MessageFormat.format("{0}resources{0}", File.separator);
+        config = ScadaConfig.getInstanceTest(filePropertiesPath);
     }
 
     @Test
     public void invoke_parseInteger_for_key_corePoolSize_return_3() {
         //when:
-        int corePoolSize = config
-                .getInt(ThreadPoolConfigKeys.CORE_POOL_SIZE, -1);
+        int corePoolSize = config.getInt(ThreadPoolConfigKeys.CORE_POOL_SIZE, -1);
 
         //then:
         assertEquals(3, corePoolSize);

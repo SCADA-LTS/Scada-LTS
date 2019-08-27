@@ -1,13 +1,19 @@
 package org.scada_lts.utils;
 
+import org.apache.log4j.xml.DOMConfigurator;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
 public class TimeUnitUtilTest {
+
+    @BeforeClass
+    public static void init() throws Exception {
+        DOMConfigurator.configure("WebContent/WEB-INF/classes/log4j.xml");
+    }
 
     @Test
     public void invoke_enumValueByName_for_TimeUnitEnum_and_SECONDS_then_TimeUnit_SECONDS() {
