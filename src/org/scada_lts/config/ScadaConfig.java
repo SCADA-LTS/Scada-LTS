@@ -24,7 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -36,68 +38,83 @@ import java.util.Properties;
  * person supporting and coreecting translation Jerzy Piejko
  */
 public class ScadaConfig {
-	
+
 	/**
 	 * Replace alert enabled (=true) or disabled (=false)
 	 */
+	@Deprecated
 	public static final String REPLACE_ALERT_ON_VIEW = "abilit.api.replace.alert.onview";
-	
+
 	/**
 	 * Event cache enabled (=true) or disabled (=false)
 	 */
+	@Deprecated
 	public static final String ENABLE_CACHE = "abilit.cacheEnable";
-	
+
 	/**
 	 * Period update unsilenced alarm level but can be delayed when system heavy loaded.
 	 */
+	@Deprecated
 	public static final String MILLIS_SECONDS_PERIOD_UPDATE_UNSILENCED_ALARM_LEVEL = "abilit.MILLIS_SECONDS_PERIOD_UPDATE_UNSILENCED_ALARM_LEVEL";
-	
+
 	/**
 	 * Start update unsilenced alarm level.
 	 */
+	@Deprecated
 	public static final String START_UPDATE_UNSILENCED_ALARM_LEVEL = "abilit.START_UPDATE_UNSILENCED_ALARM_LEVEL";
-	
+
 	/**
 	 * Period update event detectors but can be delayed when system heavy loaded.
 	 */
+	@Deprecated
 	public static final String MILLIS_SECONDS_PERIOD_UPDATE_EVENT_DETECTORS = "abilit.MILLIS_SECONDS_PERIOD_UPDATE_EVENT_DETECTORS";
-	
+
 	/**
 	 * Start update event detectors.
 	 */
+	@Deprecated
 	public static final String START_UPDATE_EVENT_DETECTORS = "abilit.START_UPDATE_EVENT_DETECTORS";
-	
+
 	/**
 	 * Period update pending events but can be delayed when system heavy loaded.
 	 */
+	@Deprecated
 	public static final String MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS = "abilit.MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS";
-	
+
 	/**
 	 * Start update pending events.
 	 */
+	@Deprecated
 	public static final String START_UPDATE_PENDING_EVENTS = "abilit.START_UPDATE_PENDING_EVENTS";
-	
+
 	/**
 	 * Period update point hierarchy but can be delayed when system heavy loaded. For example cron 0 15 1 ? * *.
 	 */
+	@Deprecated
 	public static final String CRONE_UPDATE_CACHE_POINT_HIERARCHY = "abilit.CRONE_UPDATE_CACHE_POINT_HIERARCHY";
 
 	/**
 	* Period update data sources points. For example cron 0 15 1 ? * * the after start
 	*/
+	@Deprecated
  	public static final String CRONE_UPDATE_CACHE_DATA_SOURCES_POINTS = "abilit.CRONE_UPDATE_DATA_SOURCES_POINTS";
 
 	/**
     * Use Cache data sources points when the system is ready
     */
+	@Deprecated
 	public static final String USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY = "abilit.USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY";
 
+	@Deprecated
 	public static final String USE_ACL = "abilit.USE_ACL";
 
+	@Deprecated
 	public static final String ACL_SERVER = "abilit.ACL_SERVER";
 
+	@Deprecated
 	public static final String HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START = "abilit.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START";
 
+	@Deprecated
 	public static final String HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION = "abilit.HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION";
 
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
@@ -108,9 +125,43 @@ public class ScadaConfig {
 	
 	private static ScadaConfig instance = null;
 	
-	private Properties conf;
-	
+	private Properties config;
+
+	private ScadaConfig() {
+		config = new Properties();
+		try(FileInputStream fis =
+					new FileInputStream(getPathConfigFile() + System.getProperty("file.separator") + "env.properties")) {
+			config.load(fis);
+		} catch (IOException e) {
+			LOG.error(e);
+		}
+	}
+
+	private ScadaConfig(String pathFile) {
+		config = new Properties();
+		try(InputStream is = ClassLoader
+				.getSystemResourceAsStream(pathFile + "env-test.properties")) {
+			if(is == null)
+				throw new IOException("File not found.");
+			config.load(is);
+		} catch (IOException e) {
+			LOG.error(e);
+		}
+	}
+
+	private ScadaConfig(Properties confTest) {
+		this.config = confTest;
+	}
+
+	@Deprecated
 	public static ScadaConfig getInstance() throws IOException {
+		if (instance == null) {
+			instance = new ScadaConfig();
+		}
+		return instance;
+	}
+
+	public static ScadaConfig instance() {
 		if (instance == null) {
 			instance = new ScadaConfig();
 		}
@@ -121,13 +172,18 @@ public class ScadaConfig {
 		instance = new ScadaConfig(confTest);
 		return instance;
 	}
+
+	public static ScadaConfig getInstanceTest(String testPath) {
+		instance = new ScadaConfig(testPath);
+		return instance;
+	}
 	
 	/**
 	 *  Get configuration
 	 * @return
 	 */
-	public Properties getConf() {
-		return conf;
+	public Properties getConfig() {
+		return new Properties(config);
 	}
 	
 	/**
@@ -135,27 +191,33 @@ public class ScadaConfig {
 	 * @param propertyName
 	 * @return
 	 */
+	@Deprecated
 	public String getProperty(String propertyName) {
-		return conf.getProperty(propertyName);
+		return config.getProperty(propertyName);
 	}
-	
+
+	@Deprecated
+	public String getString(String propertyName, String defaultValue) {
+		return _getString(propertyName, defaultValue);
+	}
+
+	public String getString(ScadaConfigKey scadaConfigKey, String defaultValue) {
+		return _getString(scadaConfigKey.getKey(), defaultValue);
+	}
+
 	/**
 	 * Get property value of type boolean with default value
 	 * @param propertyName
-	 * @param defaultValues
+	 * @param defaultValue
 	 * @return
 	 */
-	public Boolean getBoolean(String propertyName, boolean defaultValues) {
-		Boolean result = (Boolean) defaultValues;
-		try {
-			String propertyValue = getProperty(propertyName);
-			result = (Boolean) Boolean.parseBoolean(propertyValue);
-			LOG.trace("propertyName:"+propertyName+" value:"+result);
-		} catch (Exception e) {
-			LOG.trace("propertyName:"+propertyName+" value:"+defaultValues);
-			result = defaultValues;
-		}
-		return result;
+	@Deprecated
+	public boolean getBoolean(String propertyName, boolean defaultValue) {
+		return _getBoolean(propertyName, defaultValue);
+	}
+
+	public boolean getBoolean(ScadaConfigKey scadaConfigKey, boolean defaultValue) {
+		return _getBoolean(scadaConfigKey.getKey(), defaultValue);
 	}
 	
 	/**
@@ -164,17 +226,24 @@ public class ScadaConfig {
 	 * @param defaultValues
 	 * @return
 	 */
-	public Long getLong(String propertyName, int defaultValues) {
-		Long result = new Long(defaultValues);
-		try {
-			String propertyValue = getProperty(propertyName);
-			result = Long.parseLong(propertyValue);
-		} catch (Exception e) {
-			result = new Long(defaultValues);
-		}
-		return result;
+	@Deprecated
+	public long getLong(String propertyName, long defaultValues) {
+		return _getLong(propertyName, defaultValues);
 	}
-	
+
+	public long getLong(ScadaConfigKey scadaConfigKey, long defaultValue) {
+		return _getLong(scadaConfigKey.getKey(), defaultValue);
+	}
+
+	@Deprecated
+	public int getInt(String propertyName, int defaultValue) {
+		return _getInt(propertyName, defaultValue);
+	}
+
+	public int getInt(ScadaConfigKey scadaConfigKey, int defaultValue) {
+		return _getInt(scadaConfigKey.getKey(), defaultValue);
+	}
+
 	public static boolean isExistCustomLogo() {
 		File f = new File(getPathCustomConfig()+FILE_NAME_LOGO);
 		return (f.exists()) && (!f.isDirectory()); 
@@ -213,20 +282,9 @@ public class ScadaConfig {
 			LOG.error(e);
 		}
 	}
-	
-	private ScadaConfig() {
-		try {
-		  conf = new Properties();
-		  FileInputStream fis = null;
-		  fis = new FileInputStream(getPathConfigFile() + System.getProperty("file.separator") + "env.properties");
-		  conf.load(fis);
-		} catch (IOException e) {
-			LOG.error(e);
-		}
-	}
-		
-	private ScadaConfig(Properties confTest) {
-		this.conf = confTest;
+
+	public boolean isEmpty() {
+		return config == null || config.isEmpty();
 	}
 
 	private static String getPathConfigFile() {
@@ -280,9 +338,47 @@ public class ScadaConfig {
 			path = path + "/" + DIR_NAME_CUSTOM_CONFIG + "/";
 		}
 		return path;
-
-		
 	}
 
-	
+	private String _getString(String propertyName, String defaultValue) {
+		try{
+			return config.getProperty(propertyName, defaultValue);
+		} catch (Throwable e) {
+			LOG.error(e);
+			return defaultValue;
+		}
+	}
+
+	private int _getInt(String propertyName, int defaultValue) {
+		try {
+			String propertyValue = _getString(propertyName, String.valueOf(defaultValue));
+			return Integer.parseInt(propertyValue);
+		} catch (NumberFormatException e) {
+			LOG.error(e);
+			return defaultValue;
+		}
+	}
+
+	private long _getLong(String propertyName, long defaultValue) {
+		try {
+			String propertyValue = _getString(propertyName, String.valueOf(defaultValue));
+			return Long.parseLong(propertyValue);
+		} catch (Throwable e) {
+			LOG.error(e);
+			return defaultValue;
+		}
+	}
+
+	private boolean _getBoolean(String propertyName, boolean defaultValue) {
+		try {
+			String propertyValue = _getString(propertyName, String.valueOf(defaultValue));
+			boolean result = Boolean.valueOf(propertyValue);
+			LOG.trace("propertyName:"+propertyName+" value:"+result);
+			return result;
+		} catch (Throwable e) {
+			LOG.trace("propertyName:"+propertyName+" value:"+defaultValue);
+			LOG.error(e);
+			return defaultValue;
+		}
+	}
 }

@@ -134,8 +134,8 @@
 
 	<!-- New ScadaLTS-UI targets -->
 	<target name="update-static-web-dependecy" description="Update static web dependency">
-		<exec dir="WebContent/resources/app" executable="bower">
-			<arg  value="update"/>
+		<exec dir="WebContent/resources/app/" executable="cmd">
+			<arg  value="bower update"/>
 		</exec>
 	</target>
 
@@ -443,6 +443,18 @@
 			</test>
 
 			<test name="org.scada_lts.mango.service.EventServiceUnitMockitoTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.utils.TimeUnitUtilTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.utils.BlockingQueuesUtilTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.config.ThreadPoolConfigKeysTest"
 				  haltonfailure="yes">
 			</test>
 		    <!--
