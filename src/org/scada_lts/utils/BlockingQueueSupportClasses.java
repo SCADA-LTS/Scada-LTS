@@ -7,12 +7,11 @@ import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.stream.Stream;
 
-public enum BlockingQueueClasses {
+public enum BlockingQueueSupportClasses {
 
     LINKED_BLOCKING_DEQUE("java.util.concurrent.LinkedBlockingDeque", LinkedBlockingDeque.class),
     LINKED_BLOCKING_QUEUE("java.util.concurrent.LinkedBlockingQueue", LinkedBlockingQueue.class),
     LINKED_TRANSFER_QUEUE("java.util.concurrent.LinkedTransferQueue", LinkedTransferQueue.class),
-    PRIORITY_BLOCKING_QUEUE("java.util.concurrent.PriorityBlockingQueue", PriorityBlockingQueue.class),
     SYNCHRONOUS_QUEUE("java.util.concurrent.SynchronousQueue", SynchronousQueue.class);
 
     private String className;
@@ -20,7 +19,7 @@ public enum BlockingQueueClasses {
 
     private static final Log log = LogFactory.getLog(BlockingQueuesUtil.class);
 
-    BlockingQueueClasses(String className, Class<? extends BlockingQueue> blockingQueue) {
+    BlockingQueueSupportClasses(String className, Class<? extends BlockingQueue> blockingQueue) {
         this.className = className;
         this.blockingQueue = blockingQueue;
     }
@@ -34,8 +33,8 @@ public enum BlockingQueueClasses {
         }
     }
 
-    public static BlockingQueueClasses of(String className) {
-        return Stream.of(BlockingQueueClasses.values())
+    public static BlockingQueueSupportClasses of(String className) {
+        return Stream.of(BlockingQueueSupportClasses.values())
                 .filter(a -> a.className.equals(className))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);

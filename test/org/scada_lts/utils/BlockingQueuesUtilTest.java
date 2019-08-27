@@ -16,10 +16,69 @@ import static org.scada_lts.utils.BlockingQueuesUtil.newBlockingQueue;
 
 public class BlockingQueuesUtilTest {
 
-    @Test
-    public void invoke_add_from_BlockingQueue_for_Runnable_then_size_one() {
+    @Test(expected = ClassCastException.class)
+    public void invoke_add_from_PRIORITY_BLOCKING_QUEUE_for_Runnable_and_not_Comparable_then_ClassCastException() {
         //given:
-        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueClasses.LINKED_BLOCKING_QUEUE);
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue("java.util.concurrent.PriorityBlockingQueue",
+                new PriorityBlockingQueue<>());
+        //when:
+        blockingQueue.add(() -> {});
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void twice_invoke_add_from_PRIORITY_BLOCKING_QUEUE_for_Runnable_and_not_Comparable_then_ClassCastException() {
+        //given:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue("java.util.concurrent.PriorityBlockingQueue",
+                new PriorityBlockingQueue<>());
+        //when:
+        blockingQueue.add(() -> {});
+        blockingQueue.add(() -> {});
+    }
+
+    @Test
+    public void invoke_newBlockingQueue_from_SYNCHRONOUS_QUEUE_then_size_0() {
+        //when:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.SYNCHRONOUS_QUEUE);
+        //then:
+        assertEquals(0, blockingQueue.size());
+    }
+
+    @Test
+    public void invoke_poll_from_SYNCHRONOUS_QUEUE_for_Runnable_then_size_0() throws InterruptedException {
+        //given:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.SYNCHRONOUS_QUEUE);
+        //when:
+        blockingQueue.poll(1, TimeUnit.SECONDS);
+        //then:
+        assertEquals(0, blockingQueue.size());
+    }
+
+    @Test
+    public void twice_invoke_remove_from_SYNCHRONOUS_QUEUE_for_Runnable_then_size_0() {
+        //given:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.SYNCHRONOUS_QUEUE);
+        //when:
+        blockingQueue.remove((Runnable)() -> {});
+        blockingQueue.remove((Runnable)() -> {});
+        //then:
+        assertEquals(0, blockingQueue.size());
+    }
+
+    @Test
+    public void invoke_remove_from_SYNCHRONOUS_QUEUE_for_Runnable_then_empty() {
+        //given:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.SYNCHRONOUS_QUEUE);
+        Runnable runnable = () -> {};
+        //when:
+        blockingQueue.remove(runnable);
+        //then:
+        assertTrue(blockingQueue.isEmpty());
+    }
+
+    @Test
+    public void invoke_add_from_LINKED_BLOCKING_DEQUE_for_Runnable_then_size_1() {
+        //given:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.LINKED_BLOCKING_DEQUE);
         //when:
         blockingQueue.add(() -> {});
         //then:
@@ -28,9 +87,21 @@ public class BlockingQueuesUtilTest {
     }
 
     @Test
-    public void invoke_remove_from_BlockingQueue_for_Runnable_then_empty() {
+    public void twice_invoke_add_from_LINKED_BLOCKING_DEQUE_for_Runnable_then_size_2() {
         //given:
-        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueClasses.LINKED_BLOCKING_QUEUE);
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.LINKED_BLOCKING_DEQUE);
+        //when:
+        blockingQueue.add(() -> {});
+        blockingQueue.add(() -> {});
+        //then:
+        assertTrue(!blockingQueue.isEmpty());
+        assertEquals(2, blockingQueue.size());
+    }
+
+    @Test
+    public void invoke_remove_from_LINKED_BLOCKING_DEQUE_for_Runnable_then_empty() {
+        //given:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.LINKED_BLOCKING_DEQUE);
         Runnable runnable = () -> {};
         blockingQueue.add(runnable);
         //when:
@@ -40,7 +111,42 @@ public class BlockingQueuesUtilTest {
     }
 
     @Test
-    public void invoke_newBlockingQueue_for_ArrayBlockingQueue_then_LinkedBlockingQueue() {
+    public void invoke_add_from_LINKED_BLOCKING_QUEUE_for_Runnable_then_size_1() {
+        //given:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.LINKED_BLOCKING_QUEUE);
+        //when:
+        blockingQueue.add(() -> {});
+        //then:
+        assertTrue(!blockingQueue.isEmpty());
+        assertEquals(1, blockingQueue.size());
+    }
+
+    @Test
+    public void twice_invoke_add_from_LINKED_BLOCKING_QUEUE_for_Runnable_then_size_2() {
+        //given:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.LINKED_BLOCKING_QUEUE);
+        //when:
+        blockingQueue.add(() -> {});
+        blockingQueue.add(() -> {});
+        //then:
+        assertTrue(!blockingQueue.isEmpty());
+        assertEquals(2, blockingQueue.size());
+    }
+
+    @Test
+    public void invoke_remove_from_LINKED_BLOCKING_QUEUE_for_Runnable_then_empty() {
+        //given:
+        BlockingQueue<Runnable> blockingQueue = newBlockingQueue(BlockingQueueSupportClasses.LINKED_BLOCKING_QUEUE);
+        Runnable runnable = () -> {};
+        blockingQueue.add(runnable);
+        //when:
+        blockingQueue.remove(runnable);
+        //then:
+        assertTrue(blockingQueue.isEmpty());
+    }
+
+    @Test
+    public void invoke_newBlockingQueue_for_not_support_ArrayBlockingQueue_then_LinkedBlockingQueue() {
         //when:
         BlockingQueue<Runnable> blockingQueue = BlockingQueuesUtil
                 .newBlockingQueue("java.util.concurrent.ArrayBlockingQueue",
@@ -80,7 +186,7 @@ public class BlockingQueuesUtilTest {
     }
 
     @Test
-    public void invoke_newBlockingQueue_for_DelayQueue_then_LinkedBlockingQueue() {
+    public void invoke_newBlockingQueue_for_not_support_DelayQueue_then_LinkedBlockingQueue() {
         //when:
         BlockingQueue<Runnable> blockingQueue = BlockingQueuesUtil
                 .newBlockingQueue("java.util.concurrent.DelayQueue",
@@ -90,13 +196,13 @@ public class BlockingQueuesUtilTest {
     }
 
     @Test
-    public void invoke_newBlockingQueue_for_PriorityBlockingQueue_then_PriorityBlockingQueue() {
+    public void invoke_newBlockingQueue_for_not_support_PriorityBlockingQueue_then_PriorityBlockingQueue() {
         //when:
         BlockingQueue<Runnable> blockingQueue = BlockingQueuesUtil
                 .newBlockingQueue("java.util.concurrent.PriorityBlockingQueue",
-                        null);
+                        new LinkedBlockingQueue<>());
         //then:
-        assertEquals(PriorityBlockingQueue.class, blockingQueue.getClass());
+        assertEquals(LinkedBlockingQueue.class, blockingQueue.getClass());
     }
 
     @Test
@@ -104,7 +210,7 @@ public class BlockingQueuesUtilTest {
         //when:
         BlockingQueue<Runnable> blockingQueue = BlockingQueuesUtil
                 .newBlockingQueue("java.util.concurrent.SynchronousQueue",
-                        new LinkedBlockingQueue<>());
+                        null);
         //then:
         assertEquals(SynchronousQueue.class, blockingQueue.getClass());
     }

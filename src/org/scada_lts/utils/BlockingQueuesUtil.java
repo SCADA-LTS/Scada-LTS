@@ -11,7 +11,7 @@ public class BlockingQueuesUtil {
 
     public static BlockingQueue<Runnable> newBlockingQueue(String className, BlockingQueue<Runnable> defaultImpl) {
         try {
-            BlockingQueueClasses blockingQueues = BlockingQueueClasses.of(className);
+            BlockingQueueSupportClasses blockingQueues = BlockingQueueSupportClasses.of(className);
             return blockingQueues.newBlockingQueue().orElse(defaultImpl);
         } catch (Throwable e) {
             log.error(e);
@@ -19,7 +19,7 @@ public class BlockingQueuesUtil {
         }
     }
 
-    public static BlockingQueue<Runnable> newBlockingQueue(BlockingQueueClasses blockingQueues) {
+    public static BlockingQueue<Runnable> newBlockingQueue(BlockingQueueSupportClasses blockingQueues) {
         return blockingQueues.newBlockingQueue().orElse(null);
     }
 }
