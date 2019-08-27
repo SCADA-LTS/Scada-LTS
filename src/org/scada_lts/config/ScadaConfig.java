@@ -21,12 +21,11 @@ import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.Properties;
 
 
@@ -128,37 +127,15 @@ public class ScadaConfig {
 
 	private ScadaConfig() {
 		config = new Properties();
-		String path = String.format("{0}{1}env.properties", getPathConfigFile(), File.separator);
-		try(FileInputStream fis = new FileInputStream(path)) {
-			config.load(fis);
-		} catch (IOException e) {
-			LOG.error(e);
-		}
-	}
-
-	private ScadaConfig(String pathFile) {
-        config = new Properties();
-		String path = String.format("{0}{1}env-test.properties", getPathConfigFile(), File.separator);
-        LOG.trace(path);
-        try(InputStream is = ClassLoader.getSystemResourceAsStream(path)) {
-        	if(is == null)
-        		throw new IOException("File not found.");
-            config.load(is);
-        } catch (IOException e) {
-            LOG.error(e);
-        }
+		String path = MessageFormat.format("{0}{1}env.properties", _getPathConfigFile(), File.separator);
+        _init(new File(path));
 	}
 
     private ScadaConfig(File fileProperties) {
-        config = new Properties();
-        try(FileInputStream fis = new FileInputStream(fileProperties)) {
-            config.load(fis);
-        } catch (IOException e) {
-            LOG.error(e);
-        }
+        _init(fileProperties);
     }
 
-	private ScadaConfig(Properties confTest) {
+    private ScadaConfig(Properties confTest) {
 		this.config = confTest;
 	}
 
@@ -170,31 +147,31 @@ public class ScadaConfig {
 		return instance;
 	}
 
-	public static ScadaConfig getEnvPropertiesConfig() {
+	public static ScadaConfig getConfigFromEnvProperties() {
 		if (instance == null) {
 			instance = new ScadaConfig();
 		}
 		return instance;
 	}
 
-    public static ScadaConfig getExtConfig(File fileProperties) {
+    public static ScadaConfig getConfigFromExternalFile(File fileProperties) {
         if (instance == null) {
             instance = new ScadaConfig(fileProperties);
         }
         return instance;
     }
-	
+
+    @Deprecated
 	public static ScadaConfig getInstanceTest(Properties confTest) {
 		instance = new ScadaConfig(confTest);
 		return instance;
 	}
 
-	public static ScadaConfig getInstanceTest(String testPath) {
-		instance = new ScadaConfig(testPath);
-		return instance;
-	}
-	
-	/**
+    public int size() {
+        return config.size();
+    }
+
+    /**
 	 *  Get configuration
 	 * @return
 	 */
@@ -261,23 +238,23 @@ public class ScadaConfig {
 	}
 
 	public static boolean isExistCustomLogo() {
-		File f = new File(getPathCustomConfig()+FILE_NAME_LOGO);
+		File f = new File(_getPathCustomConfig()+FILE_NAME_LOGO);
 		return (f.exists()) && (!f.isDirectory()); 
 	}
 	
 	public static boolean isExistCustomCSS() {
-		File f = new File(getPathCustomConfig()+FILE_NAME_CUSTOM_CSS);
+		File f = new File(_getPathCustomConfig()+FILE_NAME_CUSTOM_CSS);
 		return (f.exists()) && (!f.isDirectory());
 	}
 	
 	public static boolean isExistCustomEnvProperties() {
-		File f = new File(getPathCustomConfig()+FILE_NAME_PROPERTIES);
+		File f = new File(_getPathCustomConfig()+FILE_NAME_PROPERTIES);
 		return (f.exists()) && (!f.isDirectory());
 	}
 	
 	public static void copyLogo() {
 		try {
-			Files.copy(Paths.get(getPathExistingLogo()), Paths.get(getPathCustomConfig()+FILE_NAME_LOGO));
+			Files.copy(Paths.get(_getPathExistingLogo()), Paths.get(_getPathCustomConfig()+FILE_NAME_LOGO));
 		} catch (IOException e) {
 			LOG.error(e);
 		}
@@ -285,7 +262,7 @@ public class ScadaConfig {
 	
 	public static void copyCSS() {
 		try {
-			Files.copy(Paths.get(getPathExistingCSS()), Paths.get(getPathCustomConfig()+FILE_NAME_CUSTOM_CSS));
+			Files.copy(Paths.get(_getPathExistingCSS()), Paths.get(_getPathCustomConfig()+FILE_NAME_CUSTOM_CSS));
 		} catch (IOException e) {
 			LOG.error(e);
 		}
@@ -293,7 +270,7 @@ public class ScadaConfig {
 	
 	public static void copyConfig() {
 		try {
-			Files.copy(Paths.get(getPathConfigFile() + System.getProperty("file.separator") + "env.properties"), Paths.get(getPathCustomConfig()+FILE_NAME_PROPERTIES));
+			Files.copy(Paths.get(_getPathConfigFile() + System.getProperty("file.separator") + "env.properties"), Paths.get(_getPathCustomConfig()+FILE_NAME_PROPERTIES));
 		} catch (IOException e) {
 			LOG.error(e);
 		}
@@ -303,7 +280,7 @@ public class ScadaConfig {
 		return config == null || config.isEmpty();
 	}
 
-	private static String getPathConfigFile() {
+	private static String _getPathConfigFile() {
 		String fileSeparator = System.getProperty("file.separator");
 		String path = Common.ctx.getServletContext().getRealPath("");
 
@@ -316,7 +293,7 @@ public class ScadaConfig {
 		return path;
 	}
 	
-	private static String getPathExistingLogo() {
+	private static String _getPathExistingLogo() {
 		String fileSeparator = System.getProperty("file.separator");
 		String path = Common.ctx.getServletContext().getRealPath("");
 
@@ -329,7 +306,7 @@ public class ScadaConfig {
 		return path;
 	}
 	
-	private static String getPathExistingCSS() {
+	private static String _getPathExistingCSS() {
 		String fileSeparator = System.getProperty("file.separator");
 		String path = Common.ctx.getServletContext().getRealPath("");
 
@@ -342,7 +319,7 @@ public class ScadaConfig {
 		return path;
 	}
 	
-	private static String getPathCustomConfig() {
+	private static String _getPathCustomConfig() {
 		
 		String fileSeparator = System.getProperty("file.separator");
 		String path = Common.ctx.getServletContext().getRealPath("");
@@ -397,4 +374,37 @@ public class ScadaConfig {
 			return defaultValue;
 		}
 	}
+
+    private void _init(File fileProperties) {
+        config = new Properties();
+        if(fileProperties == null || !fileProperties.exists())
+            return;
+        try(InputStream is = _newInputStream(fileProperties)
+                .orElse(null)) {
+            if(is == null)
+                throw new IOException("File not found.");
+            config.load(is);
+        } catch (IOException e) {
+            LOG.error(e);
+        }
+    }
+
+    private Optional<InputStream> _newInputStream(File fileProperties) {
+        try {
+            return Optional.of(new FileInputStream(fileProperties));
+        } catch (Throwable e) {
+            LOG.error(e);
+            return _getSystemResourceAsStream(fileProperties);
+        }
+    }
+
+    private Optional<InputStream> _getSystemResourceAsStream(File fileProperties) {
+        try {
+            return Optional.ofNullable(ClassLoader
+                    .getSystemResourceAsStream(fileProperties.getPath()));
+        } catch (Throwable e) {
+            LOG.error(e);
+            return Optional.empty();
+        }
+    }
 }

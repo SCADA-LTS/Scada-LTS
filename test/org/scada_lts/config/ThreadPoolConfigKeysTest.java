@@ -3,10 +3,11 @@ package org.scada_lts.config;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import java.io.File;
 import java.text.MessageFormat;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 
 public class ThreadPoolConfigKeysTest {
@@ -16,8 +17,8 @@ public class ThreadPoolConfigKeysTest {
     @BeforeClass
     public static void init() throws Exception {
         DOMConfigurator.configure("WebContent/WEB-INF/classes/log4j.xml");
-        String filePropertiesPath = MessageFormat.format("{0}resources", File.separator);
-        config = ScadaConfig.getInstanceTest(filePropertiesPath);
+        String path = MessageFormat.format("{0}resources{0}env-test.properties", File.separator);
+        config = ScadaConfig.getConfigFromExternalFile(new File(path));
     }
 
     @Test
@@ -67,11 +68,18 @@ public class ThreadPoolConfigKeysTest {
     }
 
     @Test
-    public void invoke_load_for_no_exists_filePropertiesPath_then_return_empty_properties() {
+    public void invoke_getConfigFromExternalFile_for_no_exists_filePropertiesPath_then_return_empty_properties() {
         //when:
-        ScadaConfig properties = ScadaConfig.getInstanceTest("");
-
+        ScadaConfig config = ScadaConfig.getConfigFromExternalFile(new File(""));
         //then:
-        assertTrue(properties.isEmpty());
+        assertEquals(0, config.size());
+    }
+
+    @Test
+    public void invoke_getConfigFromExternalFile_for_null_then_return_empty_properties() {
+        //when:
+        ScadaConfig config = ScadaConfig.getConfigFromExternalFile(null);
+        //then:
+        assertEquals(0, config.size());
     }
 }
