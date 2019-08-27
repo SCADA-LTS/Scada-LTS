@@ -3,6 +3,7 @@ before_install:
 - sudo apt-get update
 - sudo apt-get install tomcat7
 before_script:
+- free -h
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
 - nvm install 8
