@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.MessageFormat;
 import java.util.Properties;
 
 
@@ -139,7 +138,7 @@ public class ScadaConfig {
 
 	private ScadaConfig(String pathFile) {
         config = new Properties();
-        String path = MessageFormat.format("{0}env-test.properties", pathFile);
+		String path = String.format("{0}{1}env-test.properties", getPathConfigFile(), File.separator);
         LOG.trace(path);
         try(InputStream is = ClassLoader.getSystemResourceAsStream(path)) {
         	if(is == null)
