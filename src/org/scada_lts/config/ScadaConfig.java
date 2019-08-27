@@ -142,14 +142,14 @@ public class ScadaConfig {
 	@Deprecated
 	public static ScadaConfig getInstance() throws IOException {
 		if (instance == null) {
-			instance = new ScadaConfig();
+            instance = new ScadaConfig();
 		}
 		return instance;
 	}
 
 	public static ScadaConfig getConfigFromEnvProperties() {
 		if (instance == null) {
-			instance = new ScadaConfig();
+            instance = new ScadaConfig();
 		}
 		return instance;
 	}
@@ -377,8 +377,6 @@ public class ScadaConfig {
 
     private void _init(File fileProperties) {
         config = new Properties();
-        if(fileProperties == null || !fileProperties.exists())
-            return;
         try(InputStream is = _newInputStream(fileProperties)
                 .orElse(null)) {
             if(is == null)
