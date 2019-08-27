@@ -17,7 +17,7 @@ public class ThreadPoolConfigKeysTest {
     @BeforeClass
     public static void init() throws Exception {
         DOMConfigurator.configure("WebContent/WEB-INF/classes/log4j.xml");
-        String path = MessageFormat.format("{0}resources{0}env-test.properties", File.separator);
+        String path = MessageFormat.format("WebContent{0}test{0}env-test.properties", File.separator);
         config = ScadaConfig.getConfigFromExternalFile(new File(path));
     }
 
