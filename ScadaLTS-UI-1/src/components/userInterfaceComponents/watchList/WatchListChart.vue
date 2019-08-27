@@ -181,7 +181,7 @@ export default {
   },
   mounted() {
     // if(this.chartData !== undefined) {
-    console.debug(this.chartdata);
+    // console.debug(this.chartdata);
     this.showChart();
 
     // }

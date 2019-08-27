@@ -19,7 +19,7 @@ am4core.useTheme(am4themes_animated);
 
 class GaugeChart {
 
-  constructor(chartReference, pointId, min, max, refreshRate, color, domain = "http://localhost:8080/ScadaLTS") {
+  constructor(chartReference, pointId, min, max, refreshRate, color, domain = ".") {
     this.chart = am4core.create(chartReference, am4charts.GaugeChart);
     this.chart.innerRadius = -25;
     this.pointId = pointId;

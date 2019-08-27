@@ -21,7 +21,7 @@ export class JsonChart {
     chartReference,
     chartType,
     jsonConfig,
-    domain = "http://localhost:8080/ScadaLTS"
+    domain = "."
   ) {
     if (chartType === "XYChart") {
       chartType = am4charts.XYChart;

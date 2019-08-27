@@ -27,7 +27,7 @@ class LineChart extends BaseChart {
   constructor(
     chartReference,
     color,
-    domain = "http://localhost:8080/ScadaLTS"
+    domain = "."
   ) {
     super(chartReference, "XYChart", color, domain);
   }

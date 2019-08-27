@@ -25,7 +25,7 @@ export class ColumnChart extends BaseChart {
     chartReference,
     color,
     chartType = "XYChart",
-    domain = "http://localhost:8080/ScadaLTS"
+    domain = "."
   ) {
     super(chartReference, chartType, color, domain);
     this.isAverage = false;

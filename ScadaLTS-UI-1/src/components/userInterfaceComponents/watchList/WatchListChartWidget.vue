@@ -127,7 +127,7 @@ export default {
       );
     },
     chartEdited(chart) {
-      console.debug(chart);
+      // console.debug(chart);
       this.charts[chart.id - 1] = chart;
       this.$cookie.set(
         `WatchListChartDashboard_${this.userName}`,
@@ -139,7 +139,7 @@ export default {
       );
     },
     deleted(chart) {
-      console.debug(chart);
+      // console.debug(chart);
 
       this.charts = this.charts.filter(function(element) {
         return element.id != chart.id;

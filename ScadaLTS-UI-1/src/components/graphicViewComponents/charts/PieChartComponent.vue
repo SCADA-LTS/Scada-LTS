@@ -18,7 +18,7 @@ import { ColumnChart } from "./ColumnChartComponent.vue";
 am4core.useTheme(am4themes_animated);
 
 class PieChart extends ColumnChart {
-  constructor(chartReference, color, domain = "http://localhost:8080/ScadaLTS") {
+  constructor(chartReference, color, domain = ".") {
     super(chartReference, color, "PieChart", domain);
   }
 
@@ -58,7 +58,7 @@ export default {
   },
   methods: {
     generateChart() {
-      console.debug("data");
+      // console.debug("data");
       this.chartClass = new PieChart(this.$refs.chartdiv, this.color);
 
       this.chartClass

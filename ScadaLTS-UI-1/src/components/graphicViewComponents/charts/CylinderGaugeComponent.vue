@@ -28,7 +28,7 @@ class CylinderGaugeChart {
     max,
     refreshRate,
     color,
-    domain = "http://localhost:8080/ScadaLTS"
+    domain = "."
   ) {
     this.chart = am4core.create(chartReference, am4charts.XYChart3D);
     this.pointId = pointId;

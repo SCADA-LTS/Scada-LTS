@@ -26,7 +26,7 @@ export default class BaseChart {
      * @param {String} colors Hex value of base chart color. 
      * @param {String} [domain] Protocol, domain and the address of the API interface
      */
-    constructor(chartReference, chartType, colors, domain = 'http://localhost:8080/ScadaLTS') {
+    constructor(chartReference, chartType, colors, domain = '.') {
 
         if (chartType === "XYChart") {
             this.chart = am4core.create(chartReference, am4charts.XYChart)
