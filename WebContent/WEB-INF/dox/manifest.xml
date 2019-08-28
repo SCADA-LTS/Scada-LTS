@@ -380,5 +380,13 @@
    <item id="radiuinoPP">
     <relation id="radiuinoDS"/>
    </item>
+
+   <item id="amqpPP">
+     <relation id="amqpPP"/>
+   </item>
+
+   <item id="amqpDS">
+     <relation id="amqpDS"/>
+   </item>
   
 </doxManifest>
