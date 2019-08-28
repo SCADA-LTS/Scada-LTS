@@ -47,6 +47,9 @@ export default class BaseChart {
             am4core.color("#166921"),
             am4core.color("#690C24"),
             am4core.color("#B53859"),
+            am4core.color("#734FC1"),
+            am4core.color("#824F1B"),
+            am4core.color("#69421B"),
         ];
         if (colors !== undefined) {
             colors = colors.split(",");
@@ -140,7 +143,9 @@ export default class BaseChart {
             })
         }
         this.chart.addData(BaseChart.prepareChartData(BaseChart.sortMapKeys(this.liveUpdatePointValues)))
-        this.liveUpdatePointValues.clear();
+        if(this.liveUpdatePointValues != undefined) {
+            this.liveUpdatePointValues.clear();   
+        }
     }
 
     /**
@@ -197,7 +202,10 @@ export default class BaseChart {
                 this.chart.addData(lastData, 1);
                 this.lastUpdate = lastData[lastData.length - 1].date;
                 this.liveUpdatePointValues.clear();
-                lastData.clear();
+                if(lastData != undefined) {
+                    // console.debug(lastData);
+                    // lastData.clear();
+                }
             }
         });
     }

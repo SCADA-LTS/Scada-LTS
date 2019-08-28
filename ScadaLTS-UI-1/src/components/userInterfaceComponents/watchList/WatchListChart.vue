@@ -53,12 +53,21 @@
         </div>
         <div v-if="chartdata.chartType === 'live'" class="flex-container">
           <div>
-            <label for="live-sd">Start Date</label>
-            <input type="text" id="live-sd" v-model="chartdata.startDate" />
+            <label for="live-sd">Values from last: </label>
+            <input type="number" id="live-sd" v-model="chartdata.startDate" />
+            <select v-model="chartdata.startDateMultiplier">
+              <option v-for="option in timeOptions" v-bind:value="option.value" v-bind:key="option.id">
+                {{option.text}}
+              </option>
+            </select>
           </div>
           <div>
-            <label for="live-rr">Refresh Rate</label>
-            <input type="number" id="live-rr" v-model="chartdata.refreshRate" />
+            <label for="live-rr">Chart performance</label>
+            <select id="live-rr" v-model="chartdata.refreshRate">
+              <option v-for="option in performanceOptions" v-bind:value="option.value" v-bind:key="option.id">
+                {{option.text}}
+              </option>
+            </select>
           </div>
         </div>
         <div v-if="chartdata.chartType === 'static'" class="flex-container">
@@ -131,9 +140,9 @@
         v-bind:show-scrollbar-x="chartdata.showScrollbarX"
         v-bind:show-scrollbar-y="chartdata.showScrollbarY"
         v-bind:show-legend="chartdata.showLegend"
-        show-reload="true"
         height="600"
         v-if="chartdata.lineChart == 'line'"
+        ref="line_child"
       />
       <step-line-chart
         v-bind:point-id="chartdata.pointId"
@@ -148,9 +157,9 @@
         v-bind:show-scrollbar-x="chartdata.showScrollbarX"
         v-bind:show-scrollbar-y="chartdata.showScrollbarY"
         v-bind:show-legend="chartdata.showLegend"
-        show-reload="true"
         height="600"
         v-if="chartdata.lineChart == 'stepLine'"
+        ref="step_line_child"
       />
     </div>
   </div>
@@ -176,12 +185,27 @@ export default {
       pointId: undefined,
       points: [],
       renderChart: true,
-      showModal: false
+      showModal: false,
+      performanceOptions: [
+        {id: 0, text: "Real Time", value: 1000},
+        {id: 1, text: "High resolution", value: 2000},
+        {id: 2, text: "Standard", value: 5000},
+        {id: 3, text: "Faster performance", value: 10000}
+      ],
+      timeOptions: [
+        {id: 0, text: "Hour(s)", value: "hour"},
+        {id: 1, text: "Day(s)", value: "day"},
+        {id: 2, text: "Weak(s)", value: "weak"},
+        {id: 3, text: "Month(s)", value: "month"}
+      ]
     };
   },
   mounted() {
-    // if(this.chartData !== undefined) {
-    // console.debug(this.chartdata);
+    if(this.chartdata.startDate.includes("-")) {
+      let dateTemp = this.chartdata.startDate.split("-");
+      this.chartdata.startDate = dateTemp[0];
+      this.chartdata.startDateMultiplier = dateTemp[1];
+    }
     this.showChart();
 
     // }
@@ -220,9 +244,18 @@ export default {
           date.getDate();
       } else {
         this.chartdata.endDate = undefined;
+        this.chartdata.startDate = `${this.chartdata.startDate}-${this.chartdata.startDateMultiplier}`
+      }
+      if(this.chartdata.chartColor == "#3973b5") {
+        this.chartdata.chartColor = undefined;
       }
       this.showModal = false;
       this.$emit("saved", this.chartdata);
+      if(this.chartdata.lineChart == 'line') {
+        this.$refs.line_child.reload();
+      } else {
+        this.$refs.step_line_child.reload();
+      }
     },
     deleteChart() {
       this.$emit("deleted", this.chartdata)
