@@ -25,3 +25,6 @@ npm run-script build
 
 - [Grzegorz Bylica](https://github.com/grzesiekb)
 - [Radosław Jajko ](https://github.com/radek2s)
+
+#### Created:
+- August 2019 
