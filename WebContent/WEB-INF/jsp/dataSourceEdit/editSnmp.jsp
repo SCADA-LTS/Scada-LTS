@@ -131,7 +131,7 @@
       $set("dataTypeId", locator.dataTypeId);
       $set("binary0Value", locator.binary0Value);
       $set("setType", locator.setType);
-      $set("trapOnly", locator.trapOnly ? "true" : "false");
+      $set("polling", locator.polling);
       dataTypeChanged();
   }
 
@@ -142,7 +142,7 @@
       locator.dataTypeId = $get("dataTypeId");
       locator.binary0Value = $get("binary0Value");
       locator.setType = $get("setType");
-      locator.trapOnly = $get("trapOnly") == "true";
+      locator.polling = $get("polling");
 
       DataSourceEditDwr.saveSnmpPointLocator(currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
   }
@@ -361,9 +361,10 @@
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.polling"/></td>
     <td class="formField">
-      <select id="trapOnly">
-        <option value="false"><fmt:message key="dsEdit.snmp.polling.pollTrap"/></option>
-        <option value="true"><fmt:message key="dsEdit.snmp.polling.trap"/></option>
+      <select id="polling">
+        <option value="<c:out value="<%= SnmpPointLocatorVO.PollingTypes.TRAP %>"/>"><fmt:message key="dsEdit.snmp.polling.trap"/></option>
+        <option value="<c:out value="<%= SnmpPointLocatorVO.PollingTypes.POLL %>"/>"><fmt:message key="dsEdit.snmp.polling.poll"/></option>
+        <option value="<c:out value="<%= SnmpPointLocatorVO.PollingTypes.TRAP_POLL %>"/>"><fmt:message key="dsEdit.snmp.polling.pollTrap"/></option>
       </select>
     </td>
   </tr>
