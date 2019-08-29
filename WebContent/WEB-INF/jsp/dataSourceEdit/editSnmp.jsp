@@ -24,13 +24,6 @@
 
 <script type="text/javascript">
 
-  var trapEnabled;
-  if($get("trapPort") == "0") {
-      trapEnabled = false;
-  } else {
-      trapEnabled = true;
-  }
-
   function versionChange() {
       var version = $get("snmpVersion");
       if (version == <c:out value="<%= SnmpConstants.version3 %>"/>) {
@@ -106,21 +99,33 @@
   function initImpl() {
       versionChange();
       snmpTestButton(false);
+      toggleTrapSetting();
   }
-  
+
+  function toggleTrapSetting() {
+    var checkbox = document.getElementById("trapEnabled");
+    if(checkbox.checked) {
+      show("trapSectionPort")
+      show("trapSectionAddress")
+    } else {
+      hide("trapSectionPort")
+      hide("trapSectionAddress")
+    }
+  }
+
   function saveDataSourceImpl() {
       DataSourceEditDwr.saveSnmpDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
               $get("updatePeriodType"), $get("host"), $get("port"), $get("snmpVersion"), $get("community"),
               $get("securityName"), $get("authProtocol"), $get("authPassphrase"), $get("privProtocol"),
               $get("privPassphrase"), $get("engineId"), $get("contextEngineId"), $get("contextName"), $get("retries"),
-              $get("timeout"), $get("trapPort"), $get("localAddress"), saveDataSourceCB);
+              $get("timeout"), $get("trapEnabled"), $get("trapPort"), $get("localAddress"), saveDataSourceCB);
   }
-  
+
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
       pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.snmp.oid"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.oid; };
   }
-  
+
   function editPointCBImpl(locator) {
       $set("oid", locator.oid);
       $set("dataTypeId", locator.dataTypeId);
@@ -129,34 +134,23 @@
       $set("trapOnly", locator.trapOnly ? "true" : "false");
       dataTypeChanged();
   }
-  
+
   function savePointImpl(locator) {
       delete locator.settable;
-      
+
       locator.oid = $get("oid");
       locator.dataTypeId = $get("dataTypeId");
       locator.binary0Value = $get("binary0Value");
       locator.setType = $get("setType");
       locator.trapOnly = $get("trapOnly") == "true";
-      
+
       DataSourceEditDwr.saveSnmpPointLocator(currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
   }
-  
+
   function dataTypeChanged() {
       display("binary0ValueRow", $get("dataTypeId") == <c:out value="<%= DataTypes.BINARY %>"/>);
   }
 
-  function trapTriggered() {
-      setDisabled($("trapPort"), !trapEnabled);
-      setDisabled($("localAddress"), !trapEnabled);
-
-      if(!trapEnabled) {
-          document.getElementById("trapPort").value = "0";
-      } else {
-          document.getElementById("trapPort").value = "161";
-      }
-      trapEnabled = !trapEnabled;
-  }
 </script>
 
 <c:set var="dsDesc"><fmt:message key="dsEdit.snmp.desc"/></c:set>
@@ -171,17 +165,17 @@
             </sst:select>
           </td>
         </tr>
-        
+
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.host"/></td>
           <td class="formField"><input id="host" type="text" value="${dataSource.host}"/></td>
         </tr>
-        
+
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.port"/></td>
           <td class="formField"><input id="port" type="text" value="${dataSource.port}"/></td>
         </tr>
-        
+
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.version"/></td>
           <td class="formField">
@@ -192,20 +186,20 @@
             </sst:select>
           </td>
         </tr>
-        
+
         <tbody id="version12Fields" style="display:none;">
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.community"/></td>
             <td class="formField"><input id="community" type="text" value="${dataSource.community}"/></td>
           </tr>
         </tbody>
-        
+
         <tbody id="version3Fields" style="display:none;">
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.securityName"/></td>
             <td class="formField"><input id="securityName" type="text" value="${dataSource.securityName}"/></td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.authProtocol"/></td>
             <td class="formField">
@@ -220,12 +214,12 @@
               </sst:select>
             </td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.authPassphrase"/></td>
             <td class="formField"><input id="authPassphrase" type="text" value="${dataSource.authPassphrase}"/></td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.privProtocol"/></td>
             <td class="formField">
@@ -242,49 +236,49 @@
               </sst:select>
             </td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.privPassphrase"/></td>
             <td class="formField"><input id="privPassphrase" type="text" value="${dataSource.privPassphrase}"/></td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.engineId"/></td>
             <td class="formField"><input id="engineId" type="text" value="${dataSource.engineId}"/></td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.contextEngine"/></td>
             <td class="formField"><input id="contextEngineId" type="text" value="${dataSource.contextEngineId}"/></td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.contextName"/></td>
             <td class="formField"><input id="contextName" type="text" value="${dataSource.contextName}"/></td>
           </tr>
         </tbody>
-        
+
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.retries"/></td>
           <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
         </tr>
-        
+
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.timeout"/></td>
           <td class="formField"><input id="timeout" type="text" value="${dataSource.timeout}"/></td>
         </tr>
 
         <tr>
-          <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPortDesc"/></td>
-          <td class="formLabel"><input id="trapTrigger" type="checkbox" checked onclick="trapTriggered();"></td>
+          <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPortEnabled"/></td>
+          <td class="formField"><sst:checkbox id="trapEnabled" selectedValue="${dataSource.trapEnabled}" onclick="toggleTrapSetting()"/></td>
         </tr>
-        
-        <tr>
+
+        <tr id="trapSectionPort">
           <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPort"/></td>
           <td class="formField"><input id="trapPort" type="text" value="${dataSource.trapPort}"/></td>
         </tr>
-        
-        <tr>
+
+        <tr id="trapSectionAddress">
           <td class="formLabel"><fmt:message key="dsEdit.snmp.localAddress"/></td>
           <td class="formField"><input id="localAddress" type="text" value="${dataSource.localAddress}"/></td>
         </tr>

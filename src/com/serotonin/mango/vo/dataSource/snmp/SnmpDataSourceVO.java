@@ -144,6 +144,8 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
     @JsonRemoteProperty
     private int updatePeriods = 5;
     @JsonRemoteProperty
+    private boolean trapEnabled;
+    @JsonRemoteProperty
     private int trapPort = SnmpConstants.DEFAULT_NOTIFICATION_RECEIVER_PORT;
     @JsonRemoteProperty
     private String localAddress;
@@ -276,6 +278,14 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         this.timeout = timeout;
     }
 
+    public boolean isTrapEnabled() {
+        return trapEnabled;
+    }
+
+    public void setTrapEnabled(boolean trapEnabled) {
+        this.trapEnabled = trapEnabled;
+    }
+
     public int getTrapPort() {
         return trapPort;
     }
@@ -303,7 +313,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         if (port <= 0 || port > 65535)
             response.addContextualMessage("port", "validate.invalidValue");
 
-        if (trapPort < 0 || trapPort > 65535)
+        if (trapPort <= 0 || trapPort > 65535)
             response.addContextualMessage("trapPort", "validate.invalidValue");
 
         if (StringUtils.isEmpty(host))
@@ -342,6 +352,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.contextName", contextName);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.retries", retries);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.timeout", timeout);
+        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapEnabled", trapEnabled);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapPort", trapPort);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.localAddress", localAddress);
     }
@@ -367,6 +378,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.contextName", from.contextName, contextName);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.retries", from.retries, retries);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.timeout", from.timeout, timeout);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapEnabled", from.trapEnabled, trapEnabled);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapPort", from.trapPort, trapPort);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.localAddress", from.localAddress, localAddress);
     }
@@ -377,7 +389,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
     // /
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 2;
+    private static final int version = 3;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -397,6 +409,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         out.writeInt(timeout);
         out.writeInt(updatePeriodType);
         out.writeInt(updatePeriods);
+        out.writeBoolean(trapEnabled);
         out.writeInt(trapPort);
         SerializationHelper.writeSafeUTF(out, localAddress);
     }
@@ -442,6 +455,26 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
             timeout = in.readInt();
             updatePeriodType = in.readInt();
             updatePeriods = in.readInt();
+            trapPort = in.readInt();
+            localAddress = SerializationHelper.readSafeUTF(in);
+        } else if (ver == 3) {
+            host = SerializationHelper.readSafeUTF(in);
+            port = in.readInt();
+            snmpVersion = in.readInt();
+            community = SerializationHelper.readSafeUTF(in);
+            engineId = SerializationHelper.readSafeUTF(in);
+            contextEngineId = SerializationHelper.readSafeUTF(in);
+            contextName = SerializationHelper.readSafeUTF(in);
+            securityName = SerializationHelper.readSafeUTF(in);
+            authProtocol = SerializationHelper.readSafeUTF(in);
+            authPassphrase = SerializationHelper.readSafeUTF(in);
+            privProtocol = SerializationHelper.readSafeUTF(in);
+            privPassphrase = SerializationHelper.readSafeUTF(in);
+            retries = in.readInt();
+            timeout = in.readInt();
+            updatePeriodType = in.readInt();
+            updatePeriods = in.readInt();
+            trapEnabled = in.readBoolean();
             trapPort = in.readInt();
             localAddress = SerializationHelper.readSafeUTF(in);
         }

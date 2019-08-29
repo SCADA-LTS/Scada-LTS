@@ -328,6 +328,10 @@ public class SnmpDataSourceRT extends PollingDataSource {
 		return vo.getTrapPort();
 	}
 
+	boolean isTrapEnabled() {
+		return vo.isTrapEnabled();
+	}
+
 	String getLocalAddress() {
 		return vo.getLocalAddress();
 	}
