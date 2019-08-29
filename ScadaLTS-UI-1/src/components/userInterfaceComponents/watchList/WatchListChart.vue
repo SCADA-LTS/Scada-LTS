@@ -1,7 +1,7 @@
 <template>
   <div class="flex-container">
     <div class="settings" v-if="renderChart">
-      <img src="/ScadaLTS/images/cog.png" @click="showModal = true" class="settings-btn">
+      <img src="/ScadaLTS/images/cog.png" @click="showSettings()" class="settings-btn">
       <img src="/ScadaLTS/images/delete.png" @click="deleteChart()" class="settings-btn">
     </div>
     <div v-if="showModal" class="settings-modal">
@@ -14,7 +14,7 @@
               class="radio-button"
               value="stepLine"
               id="typeStep-rbtn"
-              v-model="chartdata.lineChart"
+              v-model="chartSettings.lineChart"
             />
           </div>
           <div class="flex-radio">
@@ -24,7 +24,7 @@
               class="radio-button"
               value="line"
               id="type-rbtn"
-              v-model="chartdata.lineChart"
+              v-model="chartSettings.lineChart"
             />
           </div>
         </div>
@@ -37,7 +37,7 @@
               class="radio-button"
               value="live"
               id="live-rbtn"
-              v-model="chartdata.chartType"
+              v-model="chartSettings.chartType"
             />
           </div>
           <div class="flex-radio">
@@ -47,15 +47,15 @@
               class="radio-button"
               value="static"
               id="static-rbtn"
-              v-model="chartdata.chartType"
+              v-model="chartSettings.chartType"
             />
           </div>
         </div>
-        <div v-if="chartdata.chartType === 'live'" class="flex-container">
+        <div v-if="chartSettings.chartType === 'live'" class="flex-container">
           <div>
             <label for="live-sd">Values from last: </label>
-            <input type="number" id="live-sd" v-model="chartdata.startDate" />
-            <select v-model="chartdata.startDateMultiplier">
+            <input type="number" id="live-sd" v-model="chartSettings.startDate" />
+            <select v-model="chartSettings.startDateMultiplier">
               <option v-for="option in timeOptions" v-bind:value="option.value" v-bind:key="option.id">
                 {{option.text}}
               </option>
@@ -63,21 +63,21 @@
           </div>
           <div>
             <label for="live-rr">Chart performance</label>
-            <select id="live-rr" v-model="chartdata.refreshRate">
+            <select id="live-rr" v-model="chartSettings.refreshRate">
               <option v-for="option in performanceOptions" v-bind:value="option.value" v-bind:key="option.id">
                 {{option.text}}
               </option>
             </select>
           </div>
         </div>
-        <div v-if="chartdata.chartType === 'static'" class="flex-container">
+        <div v-if="chartSettings.chartType === 'static'" class="flex-container">
           <div>
             <label for="static-sd">Start Date</label>
-            <datepicker format="yyyy/MM/dd" :monday-first="true" v-model="chartdata.startDate"></datepicker>
+            <datepicker format="yyyy/MM/dd" :monday-first="true" v-model="chartSettings.startDate"></datepicker>
           </div>
           <div>
             <label for="static-ed">End Date</label>
-            <datepicker format="yyyy/MM/dd" :monday-first="true" v-model="chartdata.endDate"></datepicker>
+            <datepicker format="yyyy/MM/dd" :monday-first="true" v-model="chartSettings.endDate"></datepicker>
           </div>
         </div>
         <div class="flex-container">
@@ -87,41 +87,41 @@
               :width="100"
               :height="100"
               startColor="#39B54A"
-              v-model="chartdata.chartColor"
+              v-model="chartSettings.chartColor"
             ></ColorPicker>
           </div>
           <div>
             <label for="chart-rv">Range value</label>
-            <input type="text" id="chart-rv" v-model="chartdata.rangeValue" />
+            <input type="text" id="chart-rv" v-model="chartSettings.rangeValue" />
           </div>
-          <div v-if="chartdata.rangeValue">
+          <div v-if="chartSettings.rangeValue">
             <label for="chart-rc">Range color</label>
             <ColorPicker
               :width="100"
               :height="100"
               startColor="#ff0000"
-              v-model="chartdata.rangeColor"
+              v-model="chartSettings.rangeColor"
             ></ColorPicker>
           </div>
-          <div v-if="chartdata.rangeValue">
+          <div v-if="chartSettings.rangeValue">
             <label for="chart-rl">Range label</label>
-            <input type="text" id="chart-rl" v-model="chartdata.rangeLabel" />
+            <input type="text" id="chart-rl" v-model="chartSettings.rangeLabel" />
           </div>
-          <div>
+          <!-- <div>
             <label for="chart-ssbx">Show scrollbar on X axis</label>
-            <input type="checkbox" id="chart-ssbx" v-model="chartdata.showScrollbarX" />
+            <input type="checkbox" id="chart-ssbx" v-model="chartSettings.showScrollbarX" />
           </div>
           <div>
             <label for="chart-ssby">Show scrollbar on Y axis</label>
-            <input type="checkbox" id="chart-ssby" v-model="chartdata.showScrollbarY" />
+            <input type="checkbox" id="chart-ssby" v-model="chartSettings.showScrollbarY" />
           </div>
           <div>
             <label for="chart-sl">Show Legend</label>
-            <input type="checkbox" id="chart-sl" v-model="chartdata.showLegend" />
-          </div>
+            <input type="checkbox" id="chart-sl" v-model="chartSettings.showLegend" />
+          </div> -->
         </div>
         <div class="settings">
-          <button @click="showModal = false"  class="modal-settings-btn"><img src="/ScadaLTS/images/cross.png"  class="settings-btn"> Close</button>
+          <button @click="cancelSettings()"  class="modal-settings-btn"><img src="/ScadaLTS/images/cross.png"  class="settings-btn"> Close</button>
           <button @click="saveSettings()"  class="modal-settings-btn"><img src="/ScadaLTS/images/accept.png" class="settings-btn"> Save</button>
         </div>
       </div>
@@ -183,6 +183,7 @@ export default {
   data() {
     return {
       pointId: undefined,
+      chartSettings: undefined,
       points: [],
       renderChart: true,
       showModal: false,
@@ -201,14 +202,7 @@ export default {
     };
   },
   mounted() {
-    if(this.chartdata.startDate.includes("-")) {
-      let dateTemp = this.chartdata.startDate.split("-");
-      this.chartdata.startDate = dateTemp[0];
-      this.chartdata.startDateMultiplier = dateTemp[1];
-    }
     this.showChart();
-
-    // }
   },
   methods: {
     getPointIds() {
@@ -225,37 +219,52 @@ export default {
     showChart() {
       this.renderChart = true;
     },
-    saveSettings() {
-      if (this.chartdata.chartType == "static") {
-        this.chartdata.refreshRate = undefined;
-        let date = this.chartdata.startDate;
-        this.chartdata.startDate =
-          date.getFullYear() +
-          "/" +
-          (date.getMonth() + 1) +
-          "/" +
-          date.getDate();
-        date = this.chartdata.endDate;
-        this.chartdata.endDate =
-          date.getFullYear() +
-          "/" +
-          (date.getMonth() + 1) +
-          "/" +
-          date.getDate();
-      } else {
-        this.chartdata.endDate = undefined;
-        this.chartdata.startDate = `${this.chartdata.startDate}-${this.chartdata.startDateMultiplier}`
+    showSettings() {
+      this.chartSettings = this.chartdata;
+      if (this.chartSettings.startDate.includes("-")) {
+        let tempDate = this.chartSettings.startDate.split("-");
+        this.chartSettings.startDate = tempDate[0];
+        this.chartSettings.startDateMultiplier = tempDate[1];
       }
-      if(this.chartdata.chartColor == "#3973b5") {
+      this.showModal = true;
+      this.renderChart = false;
+    },
+    cancelSettings() {
+      if(this.chartdata.chartColor == "#3973b5" || this.chartdata.chartColor == "#39B54A") {
         this.chartdata.chartColor = undefined;
       }
       this.showModal = false;
-      this.$emit("saved", this.chartdata);
-      if(this.chartdata.lineChart == 'line') {
-        this.$refs.line_child.reload();
+      this.renderChart = true;
+    },
+    saveSettings() {
+      
+      if (this.chartSettings.chartType == "static") {
+        this.chartSettings.refreshRate = undefined;
+        let date = this.chartSettings.startDate;
+        this.chartSettings.startDate =
+          date.getFullYear() +
+          "/" +
+          (date.getMonth() + 1) +
+          "/" +
+          date.getDate();
+        date = this.chartSettings.endDate;
+        this.chartSettings.endDate =
+          date.getFullYear() +
+          "/" +
+          (date.getMonth() + 1) +
+          "/" +
+          date.getDate();
       } else {
-        this.$refs.step_line_child.reload();
+        this.chartSettings.endDate = undefined;
+        this.chartSettings.startDate = `${this.chartdata.startDate}-${this.chartdata.startDateMultiplier}`
       }
+      if(this.chartSettings.chartColor == "#3973b5" || this.chartSettings.chartColor == "#39B54A") {
+        this.chartSettings.chartColor = undefined;
+      }
+      this.chartdata = this.chartSettings;
+      this.showModal = false;
+      this.renderChart = true;
+      this.$emit("saved", this.chartdata);     
     },
     deleteChart() {
       this.$emit("deleted", this.chartdata)

@@ -4,7 +4,7 @@
       <img src="/ScadaLTS/images/eye.png" />
       <p>Layout settings</p>
       <div>
-        <label for="static-rbtn">Horizontal 1xN</label>
+        <label for="static-rbtn">Horizontal</label>
         <input
           type="radio"
           class="radio-button"
@@ -14,7 +14,7 @@
         />
       </div>
       <div>
-        <label for="static-rbtn">Vertical 2xN</label>
+        <label for="static-rbtn">Vertical</label>
         <input
           type="radio"
           class="radio-button"
@@ -22,6 +22,13 @@
           id="layout-vertical-1"
           v-model="layout"
         />
+      </div>
+      <div class="flex-spacer"></div>
+      <div>
+        <button @click="addNewChart()">
+          Add chart
+          <img src="/ScadaLTS/images/add.png" class="settings-btn" />
+        </button>
       </div>
     </div>
     <div class="chart-container" v-bind:class="chartsLayout">
@@ -32,12 +39,6 @@
         @saved="chartEdited(chart)"
         @deleted="deleted(chart)"
       />
-    </div>
-    <div class="chart-add">
-      <button @click="addNewChart()">
-        Add chart
-        <img src="/ScadaLTS/images/add.png" class="settings-btn" />
-      </button>
     </div>
   </div>
 </template>
@@ -164,25 +165,6 @@ export default {
   display: flex;
   margin-bottom: 50px;
 }
-.chart-add {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 300px;
-  padding: 1%;
-  background-color: #39b54a2b;
-  margin: 3% 31%;
-  border: dashed 4px gray;
-  border-radius: 30px;
-  width: auto;
-  box-sizing: border-box;
-}
-.chart-add button {
-  color: #333;
-  border: 1px solid #39b54a;
-  padding: 2px;
-  min-width: 100px;
-}
 .horizontal {
   flex-direction: column;
 }
@@ -198,13 +180,16 @@ export default {
   align-items: center;
 }
 .settings p {
-    margin: 0;
+  margin: 0;
 }
 .settings > * {
-    padding-left: 5px;
+  padding-left: 5px;
 }
 .settings-btn {
   width: 16px;
   height: 16px;
+}
+.flex-spacer {
+  flex-grow: 1;
 }
 </style>
