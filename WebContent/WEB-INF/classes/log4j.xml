@@ -164,8 +164,7 @@
     <category name="org.springframework.web.servlet.FrameworkServlet"><level value="error"/></category>
     <category name="com.serotonin.db.spring.ExtendedJdbcTemplate"><level value="error"/></category>
     <category name="com.serotonin.mango"><level value="info"/></category>
-
-
+	
     <!-- Modbus Logging -->
     <category name="com.serotonin.modbus4j.ip.listener" additivity="false">
         <level value="debug"/>
