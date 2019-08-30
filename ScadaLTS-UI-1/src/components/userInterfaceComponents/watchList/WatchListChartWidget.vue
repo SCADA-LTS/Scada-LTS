@@ -90,12 +90,13 @@ export default {
   methods: {
     addNewChart() {
       let chart = {
-        id: 0,
+        id: this.generateUniqueChartId(),
         pointId: undefined,
         chartLabel: undefined,
         chartColor: undefined,
-        startDate: "1",
-        startDateMultiplier: "hour",
+        startDate: "1-hour",
+        startTime: 1,
+        startTimeMultiplier: "hour",
         endDate: undefined,
         refreshRate: "2000",
         rangeValue: undefined,
@@ -104,9 +105,10 @@ export default {
         showScrollBarX: true,
         showScrollBarY: false,
         showLegend: true,
+        debug: undefined,
         lineChart: "stepLine",
         chartType: "live",
-        id: 0
+        height: 600,
       };
       let points = [];
       let wachList = document.getElementById("watchListTable");
@@ -117,7 +119,6 @@ export default {
         }
       }
       chart.pointId = points.toString();
-      chart.id = this.charts.length;
       this.charts.push(chart);
       this.$cookie.set(
         `WatchListChartDashboard_${this.userName}`,
@@ -155,6 +156,23 @@ export default {
         `WatchListChartDashboardLayout_${this.userName}`,
         this.layout
       );
+    },
+    generateUniqueChartId() {
+      if (this.charts != undefined) {
+        if(this.charts.length != 0) {
+          let max = 0;
+          for(let i = 0; i < this.charts.length; i++) {
+            if(this.charts[i].id > max) {
+              max = this.charts[i].id;
+            }
+          }
+          return max + 1;
+        }
+      }
+      return 0;
+    },
+    debug() {
+      console.debug(this.charts);
     }
   }
 };

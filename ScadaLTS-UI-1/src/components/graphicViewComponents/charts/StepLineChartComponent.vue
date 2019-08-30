@@ -12,6 +12,9 @@
     <div v-if="showReload">
       <button v-on:click="reload()">Reload</button>
     </div>
+    <div v-if="showDebug">
+      <button v-on:click="debug()">Debug</button>
+    </div>
   </div>
 </template>
 <script>
@@ -136,7 +139,8 @@ export default {
     "showScrollbarX",
     "showScrollbarY",
     "showLegend",
-    "showReload"
+    "showReload",
+    "showDebug"
   ],
   data() {
     return {
@@ -188,6 +192,9 @@ export default {
     },
     reload() {
       this.generateChart();
+    },
+    debug() {
+      console.debug(this.chartClass)
     }
   }
 };

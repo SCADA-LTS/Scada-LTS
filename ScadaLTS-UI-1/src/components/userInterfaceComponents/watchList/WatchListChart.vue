@@ -54,8 +54,8 @@
         <div v-if="chartSettings.chartType === 'live'" class="flex-container">
           <div>
             <label for="live-sd">Values from last: </label>
-            <input type="number" id="live-sd" v-model="chartSettings.startDate" />
-            <select v-model="chartSettings.startDateMultiplier">
+            <input type="number" id="live-sd" v-model="chartSettings.startTime" />
+            <select v-model="chartSettings.startTimeMultiplier">
               <option v-for="option in timeOptions" v-bind:value="option.value" v-bind:key="option.id">
                 {{option.text}}
               </option>
@@ -107,6 +107,10 @@
             <label for="chart-rl">Range label</label>
             <input type="text" id="chart-rl" v-model="chartSettings.rangeLabel" />
           </div>
+          <div>
+            <label for="chart-height">Chart heigh</label>
+            <input type="number" id="chart-height" v-model="chartSettings.height" />
+          </div>
           <!-- <div>
             <label for="chart-ssbx">Show scrollbar on X axis</label>
             <input type="checkbox" id="chart-ssbx" v-model="chartSettings.showScrollbarX" />
@@ -140,7 +144,7 @@
         v-bind:show-scrollbar-x="chartdata.showScrollbarX"
         v-bind:show-scrollbar-y="chartdata.showScrollbarY"
         v-bind:show-legend="chartdata.showLegend"
-        height="600"
+        v-bind:height="chartdata.height"
         v-if="chartdata.lineChart == 'line'"
         ref="line_child"
       />
@@ -157,7 +161,8 @@
         v-bind:show-scrollbar-x="chartdata.showScrollbarX"
         v-bind:show-scrollbar-y="chartdata.showScrollbarY"
         v-bind:show-legend="chartdata.showLegend"
-        height="600"
+        v-bind:height="chartdata.height"
+        v-bind:show-debug="chartdata.debug"
         v-if="chartdata.lineChart == 'stepLine'"
         ref="step_line_child"
       />
@@ -221,11 +226,6 @@ export default {
     },
     showSettings() {
       this.chartSettings = this.chartdata;
-      if (this.chartSettings.startDate.includes("-")) {
-        let tempDate = this.chartSettings.startDate.split("-");
-        this.chartSettings.startDate = tempDate[0];
-        this.chartSettings.startDateMultiplier = tempDate[1];
-      }
       this.showModal = true;
       this.renderChart = false;
     },
@@ -256,10 +256,13 @@ export default {
           date.getDate();
       } else {
         this.chartSettings.endDate = undefined;
-        this.chartSettings.startDate = `${this.chartdata.startDate}-${this.chartdata.startDateMultiplier}`
+        this.chartSettings.startDate = `${this.chartdata.startTime}-${this.chartdata.startTimeMultiplier}`
       }
       if(this.chartSettings.chartColor == "#3973b5" || this.chartSettings.chartColor == "#39B54A") {
         this.chartSettings.chartColor = undefined;
+      }
+      if(this.chartSettings.rangeLabel == "DEBUG_CHART") {
+        this.chartSettings.debug = true;
       }
       this.chartdata = this.chartSettings;
       this.showModal = false;
