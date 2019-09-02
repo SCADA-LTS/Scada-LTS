@@ -768,7 +768,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	@MethodFilter
 	public DwrResponseI18n saveSnmpDataSource(String name, String xid,
 			int updatePeriods, int updatePeriodType, String host, int port,
-			int snmpVersion, String community, String securityName,
+			int snmpVersion, String community, String comunityWrite, String securityName,
 			String authProtocol, String authPassphrase, String privProtocol,
 			String privPassphrase, String engineId, String contextEngineId,
 			String contextName, int retries, int timeout, int trapPort,
@@ -784,6 +784,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		ds.setPort(port);
 		ds.setSnmpVersion(snmpVersion);
 		ds.setCommunity(community);
+		ds.setCommunityWrite(comunityWrite);
 		ds.setSecurityName(securityName);
 		ds.setAuthProtocol(authProtocol);
 		ds.setAuthPassphrase(authPassphrase);

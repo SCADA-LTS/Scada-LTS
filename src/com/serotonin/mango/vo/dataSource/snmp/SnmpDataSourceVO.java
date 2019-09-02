@@ -26,6 +26,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.snmp4j.mp.SnmpConstants;
 
 import com.serotonin.json.JsonException;
@@ -120,6 +121,8 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
     private int snmpVersion;
     @JsonRemoteProperty
     private String community;
+    @JsonRemoteProperty
+    private String communityWrite;
     @JsonRemoteProperty
     private String engineId;
     @JsonRemoteProperty
@@ -292,6 +295,13 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         this.localAddress = localAddress;
     }
 
+    public String getCommunityWrite() { return communityWrite; }
+
+    public void setCommunityWrite(String communityWrite) {
+        this.communityWrite = communityWrite;
+    }
+
+
     @Override
     public void validate(DwrResponseI18n response) {
         super.validate(response);
@@ -332,6 +342,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.port", port);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.version", snmpVersion);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.community", community);
+        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.community_write", communityWrite);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.securityName", securityName);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.authProtocol", authProtocol);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.authPassphrase", authPassphrase);
@@ -354,6 +365,8 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.port", from.port, port);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.version", from.snmpVersion, snmpVersion);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.community", from.community, community);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.community_write", from.communityWrite, communityWrite);
+
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.securityName", from.securityName, securityName);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.authProtocol", from.authProtocol, authProtocol);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.authPassphrase", from.authPassphrase,
@@ -399,6 +412,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         out.writeInt(updatePeriods);
         out.writeInt(trapPort);
         SerializationHelper.writeSafeUTF(out, localAddress);
+        SerializationHelper.writeSafeUTF(out,communityWrite);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -445,6 +459,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
             trapPort = in.readInt();
             localAddress = SerializationHelper.readSafeUTF(in);
         }
+        communityWrite = SerializationHelper.readSafeUTF(in);
     }
 
     @Override
