@@ -132,10 +132,10 @@
 	<target name="build-ui" depends="new-ui_win, new-ui_unix">
 	</target>
 
-	<!-- New ScadaLTS-UI targets -->
+	<!-- New ScadaLTS-UI targets  -->
 	<target name="update-static-web-dependecy" description="Update static web dependency">
-		<exec dir="WebContent/resources/app/" executable="cmd">
-			<arg  value="bower update"/>
+		<exec dir="WebContent/resources/app" executable="bower">
+			<arg  value="update"/>
 		</exec>
 	</target>
 

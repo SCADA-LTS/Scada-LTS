@@ -115,7 +115,7 @@
 
   function saveDataSourceImpl() {
       DataSourceEditDwr.saveSnmpDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
-              $get("updatePeriodType"), $get("host"), $get("port"), $get("snmpVersion"), $get("community"),
+              $get("updatePeriodType"), $get("host"), $get("port"), $get("snmpVersion"), $get("community"), $get("community_write"),
               $get("securityName"), $get("authProtocol"), $get("authPassphrase"), $get("privProtocol"),
               $get("privPassphrase"), $get("engineId"), $get("contextEngineId"), $get("contextName"), $get("retries"),
               $get("timeout"), $get("trapEnabled"), $get("trapPort"), $get("localAddress"), saveDataSourceCB);
@@ -191,6 +191,10 @@
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.community"/></td>
             <td class="formField"><input id="community" type="text" value="${dataSource.community}"/></td>
+          </tr>
+          <tr>
+            <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.community_write"/></td>
+            <td class="formField"><input id="community_write" type="text" value="${dataSource.communityWrite}"/></td>
           </tr>
         </tbody>
 

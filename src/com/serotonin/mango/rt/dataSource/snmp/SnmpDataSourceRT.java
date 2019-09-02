@@ -147,6 +147,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	@Override
 	public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime,
 			SetPointSource source) {
+		//Common.ctx.getServletContext().getRealPath(".");
 		PDU request = version.createPDU();
 		SnmpPointLocatorRT locator = dataPoint.getPointLocator();
 		request.add(new VariableBinding(getOid(dataPoint), locator
