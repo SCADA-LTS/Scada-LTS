@@ -60,6 +60,11 @@ public class SnmpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         int OPAQUE = 8;
         int COUNTER_64 = 9;
     }
+    public interface PollingTypes {
+        int TRAP = 0;
+        int POLL = 1;
+        int TRAP_POLL = 2;
+    }
 
     public LocalizableMessage getConfigurationDescription() {
         return new LocalizableMessage("common.default", oid);
@@ -80,8 +85,11 @@ public class SnmpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private String binary0Value = "0";
     @JsonRemoteProperty
     private int setType;
+    @Deprecated
     @JsonRemoteProperty
     private boolean trapOnly;
+    @JsonRemoteProperty
+    private int polling;
 
     public String getOid() {
         return oid;
@@ -115,12 +123,22 @@ public class SnmpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.setType = setType;
     }
 
+    @Deprecated
     public boolean isTrapOnly() {
         return trapOnly;
     }
 
+    @Deprecated
     public void setTrapOnly(boolean trapOnly) {
         this.trapOnly = trapOnly;
+    }
+
+    public int getPolling() {
+        return polling;
+    }
+
+    public void setPolling(int polling) {
+        this.polling = polling;
     }
 
     public void validate(DwrResponseI18n response) {
@@ -146,7 +164,7 @@ public class SnmpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         AuditEventType.addDataTypeMessage(list, "dsEdit.pointDataType", dataTypeId);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.binary0Value", binary0Value);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.setType", setType);
-        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.polling", trapOnly);
+        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.polling", polling);
     }
 
     @Override
@@ -156,7 +174,7 @@ public class SnmpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         AuditEventType.maybeAddDataTypeChangeMessage(list, "dsEdit.pointDataType", from.dataTypeId, dataTypeId);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.binary0Value", from.binary0Value, binary0Value);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.setType", from.setType, setType);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.polling", from.trapOnly, trapOnly);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.polling", from.polling, polling);
     }
 
     //
@@ -165,7 +183,7 @@ public class SnmpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     // /
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 3;
+    private static final int version = 4;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -173,7 +191,7 @@ public class SnmpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         out.writeInt(dataTypeId);
         SerializationHelper.writeSafeUTF(out, binary0Value);
         out.writeInt(setType);
-        out.writeBoolean(trapOnly);
+        out.writeInt(polling);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -200,6 +218,13 @@ public class SnmpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             binary0Value = SerializationHelper.readSafeUTF(in);
             setType = in.readInt();
             trapOnly = in.readBoolean();
+        }
+        else if (ver == 4) {
+            oid = SerializationHelper.readSafeUTF(in);
+            dataTypeId = in.readInt();
+            binary0Value = SerializationHelper.readSafeUTF(in);
+            setType = in.readInt();
+            polling = in.readInt();
         }
     }
 

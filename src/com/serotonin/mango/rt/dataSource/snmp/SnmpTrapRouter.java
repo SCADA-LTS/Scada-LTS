@@ -45,7 +45,7 @@ public class SnmpTrapRouter {
             instance = new SnmpTrapRouter();
         }
 
-        if (ds.getTrapPort() > 0) {
+        if (ds.isTrapEnabled()) {
             instance.addDataSourceImpl(ds);
         }
     }

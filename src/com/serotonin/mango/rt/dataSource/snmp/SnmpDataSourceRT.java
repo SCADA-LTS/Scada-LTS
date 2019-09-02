@@ -207,7 +207,14 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
 		// Add OID to send in the PDU.
 		for (DataPointRT dp : dataPoints) {
-			if (!getLocatorVO(dp).isTrapOnly()) {
+//			if (!getLocatorVO(dp).isTrapOnly()) {
+//				request.add(new VariableBinding(getOid(dp)));
+//				requestPoints.add(dp);
+//			}
+
+			// Set polling for each data point with POLL option
+			if(SnmpPointLocatorVO.PollingTypes.POLL == getLocatorVO(dp).getPolling()
+					|| SnmpPointLocatorVO.PollingTypes.TRAP_POLL == getLocatorVO(dp).getPolling()) {
 				request.add(new VariableBinding(getOid(dp)));
 				requestPoints.add(dp);
 			}
@@ -326,6 +333,10 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
 	int getTrapPort() {
 		return vo.getTrapPort();
+	}
+
+	boolean isTrapEnabled() {
+		return vo.isTrapEnabled();
 	}
 
 	String getLocalAddress() {

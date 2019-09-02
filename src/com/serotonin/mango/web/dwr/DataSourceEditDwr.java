@@ -771,7 +771,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 			int snmpVersion, String community, String securityName,
 			String authProtocol, String authPassphrase, String privProtocol,
 			String privPassphrase, String engineId, String contextEngineId,
-			String contextName, int retries, int timeout, int trapPort,
+			String contextName, int retries, int timeout, boolean trapEnabled, int trapPort,
 			String localAddress) {
 		SnmpDataSourceVO ds = (SnmpDataSourceVO) Common.getUser()
 				.getEditDataSource();
@@ -794,6 +794,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		ds.setContextName(contextName);
 		ds.setRetries(retries);
 		ds.setTimeout(timeout);
+		ds.setTrapEnabled(trapEnabled);
 		ds.setTrapPort(trapPort);
 		ds.setLocalAddress(localAddress);
 
