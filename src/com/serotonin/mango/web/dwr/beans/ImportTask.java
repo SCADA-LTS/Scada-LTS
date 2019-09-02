@@ -21,6 +21,7 @@ package com.serotonin.mango.web.dwr.beans;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import br.org.scadabr.api.exception.DAOException;
@@ -53,6 +54,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.text.PlainRenderer;
 import com.serotonin.mango.vo.DataPointVO;
@@ -388,9 +390,9 @@ public class ImportTask extends ProgressiveTask {
 				user.setUsername(username);
 				user.setPassword(Common.encrypt(username));
 				user.setDataSourcePermissions(new ArrayList<Integer>());
-				user.setDataPointPermissions(new ArrayList<DataPointAccess>());
+				user.setDataPointPermissions(new ArrayList<DataPointAccess>());				
 			}
-
+			user.setTimezone(Timezone.displayTimeZone(userJson.getString("zone")));
 			try {
 				reader.populateObject(user, userJson);
 

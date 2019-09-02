@@ -1,7 +1,9 @@
 sudo: required
 before_install:
+- sudo apt-get update
 - sudo apt-get install tomcat7
 before_script:
+- free -h
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
 - nvm install 8
@@ -16,7 +18,7 @@ before_script:
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 # correct version base on Milestones
-- sed -i 'RELEASE_OR_BUILD_VERs/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
+- sed 's/return scadaProperties.getString("app.version");/return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
 #- cd ./ScadaLTS-UI
@@ -55,21 +57,21 @@ env:
   - secure: "ZXkg2Dm3k8riijlVIZl5za7H07cO0G2Z3ELQxUtpSSasdQy7oIl0uwgNhiy2mKvTCSXl639j8IH9s9cer8TMkBjXr4ML/5OcDzvJWltqvOMNOIPlX3+28echTAm/emIrVuziTn/nhtZ1YcnHdmshmmNYb+7TD1NX2ds8PGII9OuQsU96w46/YPeTsdTs2VYJz/6D8GPTGUWSu3YjABsYobLqUFfV5QgJKe48MVaRxh7S8bRrwODQk5WpSIFnnhBWR5cHGKlrHx3pdnyBuW4ATQTH4BKgx+GMDYFvM2VCwr/bk+yuYE9j/LZJvxcv1E13OvFyvKdkUGcF34W85YOrG4pKzJP2r6S9ouZT1y6a4THBtzwimk9aae7Vauc1BNh4bYnRI/2HLIxAeYcwncc9KolcuYv2WdSyRxNnT24eXidj+nq1qfb82zWWVyj3fuIw76DfguJX2GeTGGGhXwV3HnyJNlxyN8dd7xmosM4cqmlLfk3hVB8NbuD6/5aN++anKZb4NkIGCi/zGjyRfpnbe7rw6bsrk7TqlAf6/gm4/CC1FG09POkmnYWL0DKjAOV2Z/W/1cdiUC9oeBuK1SJWqU/6p/51UJJrtUT13RQWF4kl85DZ1IJzQXAF0p1ROdTlyhKL3wYSOWJWzaaK/DP63G20zDL/FdCNLTLq/uYbazE="
   - secure: "Cjz0OxIlJzAs66SHv9wFCWW4XdOoUv8YnED8mQG1Ds+I7KwoK7UTglsyzMmaOYYtzlDkAmuwn55wV6aS9lEPh5baT97phlDlUqrv6A/g7KBSS2qRfxt4G6zhoIOg8FCto5D6FU3FVKATbjZ9niT+96LOx61mFi5cLL1DpyylRk7EX4TiZGj4324ymZwItC8aRbdTD24+4zpTNI1irMF8c3TAmF+4/rUcYb0RYGKnbxylWjL83rqszICCce/Bg8ObYIv5a7xTUJX8kF/50iEHyOWJzLxo0IURiwuHdU6CyvFcorZJnQF/wTbZsxpDPhJBwgWE9umz1NekIX3/1+6EJ+nzc1W56lX4Atp5wntj9Bft8gngSmbR51dVxL0kbIiYcvfZvTrjQ00qoZbLlk8FWsfEIdVOqq2Dh0psPVOuzMcUQqAf/4jArxVXKnuzu0V8Z0dVq2zgpzW8DwGIGTBwJ8ySBnJRYsL9vkF/exT43mc9omBVJ5Ec1+WzFDjwMW8+VSwERDxF3Zubj8SXL8gSY2J2YmKEBTPY63qrTc5cWDtVjksYGKmTPKzvhfBn8Ykv8qA1SZSpnKS/4/YF7POxhFeJwyNfn5PWqcpe80JtG701gaRqzKFeB6RMr3NIgi6EAuIBxhsKL0ECISXFf3UsdcxU0rZ4yBESsW9x6jcEarI="
 after_script:
-- wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
+- wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.94/bin/apache-tomcat-7.0.94.tar.gz
 - mkdir ./docker/app
-- mv apache-tomcat-7.0.85.tar.gz ./docker/app
-- ls -l ./docker/app/apache-tomcat-7.0.85.tar.gz
+- mv apache-tomcat-7.0.94.tar.gz ./docker/app
+- ls -l ./docker/app/apache-tomcat-7.0.94.tar.gz
 - cd ./docker/app
 - echo `pwd`
 - echo `ls -l`
-- tar -zxvf apache-tomcat-7.0.85.tar.gz
+- tar -zxvf apache-tomcat-7.0.94.tar.gz
 - ls -l
-- mv ./apache-tomcat-7.0.85/* ./
-- rm -rf ./apache-tomcat-7.0.85
-- cp ../../ScadaBR.war ./webapps
-#- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
-#- ls -l ./webapps/ScadaLTS.war
-- ls -l ./webapps/ScadaBR.war
+- mv ./apache-tomcat-7.0.94/* ./
+- rm -rf ./apache-tomcat-7.0.94
+#- cp ../../ScadaBR.war ./webapps
+- cp ../../ScadaLTS.war ./webapps
+- ls -l ./webapps/ScadaLTS.war
+#- ls -l ./webapps/ScadaBR.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
 - ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
@@ -80,10 +82,15 @@ after_script:
 - pwd
 - ls
 - docker version
-- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- export PRE_TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
-- export TAG=`sed "s/\//_/g" <<< $PRE_TAG`
-- export IMAGE_NAME=scadalts/scadalts
-- docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
-- docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
-- docker push $IMAGE_NAME:$TAG
+- echo "$TRAVIS_REPO_SLUG"
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (echo "correction repositry")
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && export PRE_TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- echo $PRE_TAG
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && export TAG=`sed "s/\//_/g" <<< $PRE_TAG`
+- echo $TAG
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && export IMAGE_NAME=scadalts/scadalts
+- echo $IMAGE_NAME
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG)
+- echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker push $IMAGE_NAME:$TAG)

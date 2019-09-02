@@ -38,6 +38,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -160,36 +161,36 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
         }
         else if (scheduleType == TYPE_DAILY) {
             if (returnToNormal)
-                message = new LocalizableMessage("event.schedule.dailyUntil", activeTime(), inactiveTime());
+                message = new LocalizableMessage("event.schedule.dailyUntil", activeTime(), inactiveTime()+" ("+ Timezone.getTimezoneSystem() +")");
             else
-                message = new LocalizableMessage("event.schedule.dailyAt", activeTime());
+                message = new LocalizableMessage("event.schedule.dailyAt", activeTime()+" ("+ Timezone.getTimezoneSystem() +")");
         }
         else if (scheduleType == TYPE_WEEKLY) {
             if (returnToNormal)
                 message = new LocalizableMessage("event.schedule.weeklyUntil", weekday(true), activeTime(),
-                        weekday(false), inactiveTime());
+                        weekday(false), inactiveTime()+" ("+ Timezone.getTimezoneSystem() +")");
             else
-                message = new LocalizableMessage("event.schedule.weeklyAt", weekday(true), activeTime());
+                message = new LocalizableMessage("event.schedule.weeklyAt", weekday(true), activeTime()+" ("+ Timezone.getTimezoneSystem() +")");
         }
         else if (scheduleType == TYPE_MONTHLY) {
             if (returnToNormal)
                 message = new LocalizableMessage("event.schedule.monthlyUntil", monthday(true), activeTime(),
-                        monthday(false), inactiveTime());
+                        monthday(false), inactiveTime()+" ("+ Timezone.getTimezoneSystem() +")");
             else
-                message = new LocalizableMessage("event.schedule.monthlyAt", monthday(true), activeTime());
+                message = new LocalizableMessage("event.schedule.monthlyAt", monthday(true), activeTime()+" ("+ Timezone.getTimezoneSystem() +")");
         }
         else if (scheduleType == TYPE_YEARLY) {
             if (returnToNormal)
                 message = new LocalizableMessage("event.schedule.yearlyUntil", monthday(true), month(true),
-                        activeTime(), monthday(false), month(false), inactiveTime());
+                        activeTime()+" ("+ Timezone.getTimezoneSystem() +")" , monthday(false), month(false), inactiveTime());
             else
-                message = new LocalizableMessage("event.schedule.yearlyAt", monthday(true), month(true), activeTime());
+                message = new LocalizableMessage("event.schedule.yearlyAt", monthday(true), month(true), activeTime()+" ("+ Timezone.getTimezoneSystem() +")");
         }
         else if (scheduleType == TYPE_CRON) {
             if (returnToNormal)
-                message = new LocalizableMessage("event.schedule.cronUntil", activeCron, inactiveCron);
+                message = new LocalizableMessage("event.schedule.cronUntil", activeCron, inactiveCron +" ("+ Timezone.getTimezoneSystem() +")");
             else
-                message = new LocalizableMessage("event.schedule.cronAt", activeCron);
+                message = new LocalizableMessage("event.schedule.cronAt", activeCron +" ("+ Timezone.getTimezoneSystem() +")");
         }
         else
             throw new ShouldNeverHappenException("Unknown schedule type: " + scheduleType);

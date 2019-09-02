@@ -62,9 +62,13 @@ import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
+import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.config.ThreadPoolConfigKeys;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
+import org.scada_lts.utils.BlockingQueuesUtil;
+import org.scada_lts.utils.TimeUnitUtil;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -72,13 +76,8 @@ import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
@@ -431,7 +430,7 @@ public class MangoContextListener implements ServletContextListener {
 		// Except for the BackgroundProcessing process, which is a thread of its
 		// own and manages itself by using
 		// a blocking queue.
-		BackgroundProcessing bp = new BackgroundProcessing();
+		BackgroundProcessing bp = createBackgroundProcessing();
 		bp.initialize();
 		ctx.setAttribute(Common.ContextKeys.BACKGROUND_PROCESSING, bp);
 
@@ -611,5 +610,29 @@ public class MangoContextListener implements ServletContextListener {
 		WorkItemMonitor.start();
 
 		// MemoryCheck.start();
+	}
+
+	private BackgroundProcessing createBackgroundProcessing() {
+		ScadaConfig config = ScadaConfig.getConfig();
+		int corePoolSize = config.getInt(ThreadPoolConfigKeys.CORE_POOL_SIZE,3);
+		int maximumPoolSize = config.getInt(ThreadPoolConfigKeys.MAXIMUM_POOL_SIZE,100);
+		long keepAliveTime = config.getLong(ThreadPoolConfigKeys.KEEP_ALIVE_TIME,60L);
+		TimeUnit timeUnit = TimeUnitUtil
+				.timeUnitByValueName(config
+						.getString(ThreadPoolConfigKeys.TIME_UNIT_ENUM_VALUE,
+										"SECONDS"))
+				.orElse(TimeUnit.SECONDS);
+		BlockingQueue<Runnable> blockingQueue = BlockingQueuesUtil
+				.newBlockingQueue(config
+						.getString(ThreadPoolConfigKeys.BLOCKING_QUEUE_INTERFACE_IMPL,
+								"java.util.concurrent.LinkedBlockingQueue"),
+										new LinkedBlockingQueue<>());
+		return new BackgroundProcessing.Builder()
+				.blockingQueue(blockingQueue)
+				.corePoolSize(corePoolSize)
+				.keepAliveTime(keepAliveTime)
+				.maximumPoolSize(maximumPoolSize)
+				.timeUnit(timeUnit)
+				.build();
 	}
 }

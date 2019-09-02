@@ -110,6 +110,13 @@
                 showUserCB(data.user);
                 hide("usersProfilesListTable");
             }
+			//Timezone
+			var Timezone ,timezoneHtml= "" ;
+			for (r=0; r<data.TimezoneList.length; r++){
+				Timezone = data.TimezoneList[r];
+				timezoneHtml += "<option value='" + Timezone + "'>"+  Timezone  + "</option>";
+			}
+			$("TimezoneList").innerHTML = timezoneHtml;
 
                        var vwhtml = "";
                        views = data.views;
@@ -163,7 +170,14 @@
                                   $("watchlistsList").innerHTML = wlhtml;
         });
     }
-
+    
+ 	// get browser Timezone
+    function browserTimeZone() {
+  	    var offset = new Date().getTimezoneOffset(), o = Math.abs(offset);
+  	    var utc = "UTC"+(offset < 0 ? "+" : "-") + ("00" + Math.floor(o / 60)).slice(-2) + ":" + ("00" + (o % 60)).slice(-2);
+		return "("+utc+") "+ Intl.DateTimeFormat().resolvedOptions().timeZone
+	}
+ 	
     function showUser(userId, hideMsg) {
 
     	if (hideMsg)
@@ -189,7 +203,11 @@
         $set("disabled", user.disabled);
         $set("receiveAlarmEmails", user.receiveAlarmEmails);
         $set("receiveOwnAuditEvents", user.receiveOwnAuditEvents);
-
+		//Timezone
+        UsersDwr.getTimezone(user.id, function(data){ 
+ 			$("TimezoneList").value=data;
+ 		});
+		
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
         	 $set("usersProfilesList", user.userProfile);
         	 //console.log("User profile: " + user.userProfile);
@@ -298,6 +316,14 @@
 		startImageFader($("saveImg"));
     	
 		setUserMessage();
+		
+		/* If Timezone is not selected
+		 * set it with the current local
+		 * machine else leave it be
+		*/
+		if ($get("TimezoneList").length == 0)
+            $set("TimezoneList",browserTimeZone()); 
+		 
         if (adminUser) {
     		startImageFader($("u"+ editingUserId +"Img"));
            // Create the list of allowed data sources and data point permissions.
@@ -350,11 +376,11 @@
 
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
-                    dsPermis, dpPermis, vwPermis, wlPermis, $get("usersProfilesList"), saveUserCB);
+                    dsPermis, dpPermis, vwPermis, wlPermis, $get("usersProfilesList"), $get("TimezoneList"), saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
-                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"), saveUserCB);
+                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"), $get("TimezoneList"), saveUserCB);
      
     }
     
@@ -537,6 +563,10 @@
               <td class="formLabelRequired"><fmt:message key="users.receiveOwnAuditEvents"/></td>
               <td class="formField"><input id="receiveOwnAuditEvents" type="checkbox"/></td>
             </tr>
+            <tr>
+				<td class="formLabel" ><fmt:message key="users.timezone"/></td>
+				<td class="formField"><label id="Timezone"></label><select id="TimezoneList" onchange=""></select></td>
+			</tr>
             <tbody id="usersProfilesListTable" style="display:none;">
             <tr>
               <td class="formLabel"><fmt:message key="userProfiles.selectName"/></td>
