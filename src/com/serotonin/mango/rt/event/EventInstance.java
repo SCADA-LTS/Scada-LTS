@@ -52,9 +52,13 @@ public class EventInstance {
     /**
      * State field. The time that the event became active (i.e. was raised).
      */
-    private final long activeTimestamp;
+    private long activeTimestamp;
 
-    /**
+    public void setActiveTimestamp(long activeTimestamp) {
+		this.activeTimestamp = activeTimestamp;
+	}
+
+	/**
      * Configuration field. Is this type of event capable of returning to normal (true), or is it stateless (false).
      */
     private final boolean rtnApplicable;
@@ -64,7 +68,11 @@ public class EventInstance {
      */
     private long rtnTimestamp;
 
-    /**
+    public void setRtnTimestamp(long rtnTimestamp) {
+		this.rtnTimestamp = rtnTimestamp;
+	}
+
+	/**
      * State field. The action that caused the event to RTN. One of {@link RtnCauses}
      */
     private int rtnCause;
@@ -407,6 +415,27 @@ public class EventInstance {
 			return false;
 		return true;
 	}
-    
-    
+
+    @Override
+    public String toString() {
+        return "EventInstance{" +
+                "id=" + id +
+                ", eventType=" + eventType +
+                ", activeTimestamp=" + activeTimestamp +
+                ", rtnApplicable=" + rtnApplicable +
+                ", rtnTimestamp=" + rtnTimestamp +
+                ", rtnCause=" + rtnCause +
+                ", alarmLevel=" + alarmLevel +
+                ", message=" + message +
+                ", eventComments=" + eventComments +
+                ", handlers=" + handlers +
+                ", acknowledgedTimestamp=" + acknowledgedTimestamp +
+                ", acknowledgedByUserId=" + acknowledgedByUserId +
+                ", acknowledgedByUsername='" + acknowledgedByUsername + '\'' +
+                ", alternateAckSource=" + alternateAckSource +
+                ", userNotified=" + userNotified +
+                ", silenced=" + silenced +
+                ", context=" + context +
+                '}';
+    }
 }

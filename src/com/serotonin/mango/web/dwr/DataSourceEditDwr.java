@@ -118,6 +118,7 @@ import com.serotonin.mango.rt.dataSource.snmp.Version;
 import com.serotonin.mango.rt.dataSource.viconics.ViconicsDataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.IntMessagePair;
+import com.serotonin.mango.util.Timezone;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -372,10 +373,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		});
 		List<EventInstanceBean> beans = new ArrayList<EventInstanceBean>();
 		if (events != null) {
-			for (EventInstance event : events)
+			for (EventInstance event : events) {
+				//Timezone
+				long time = Timezone.getTimezoneUserLong(Common.getUser(),event.getActiveTimestamp());
 				beans.add(new EventInstanceBean(event.isActive(), event
 						.getAlarmLevel(), DateFunctions.getTime(event
 						.getActiveTimestamp()), getMessage(event.getMessage())));
+			}
 		}
 		return beans;
 	}

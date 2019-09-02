@@ -26,7 +26,7 @@
         BrowserDetect.init();
         
         $set("browser", BrowserDetect.browser +" "+ BrowserDetect.version +" <fmt:message key="login.browserOnPlatform"/> "+ BrowserDetect.OS);
-        
+        sessionStorage.setItem("timezoneReminder", "false");
         if (checkCombo(BrowserDetect.browser, BrowserDetect.version, BrowserDetect.OS)) {
             $("browserImg").src = "images/accept.png";
             show("okMsg");

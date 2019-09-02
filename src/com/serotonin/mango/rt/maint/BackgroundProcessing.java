@@ -18,20 +18,16 @@
  */
 package com.serotonin.mango.rt.maint;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.util.ILifecycle;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.concurrent.*;
 
 /**
  * A cheesy name for a class, i know, but it pretty much says it like it is.
@@ -44,10 +40,64 @@ public class BackgroundProcessing implements ILifecycle {
 	public static final String JOB_NAME = BackgroundProcessing.class.getName();
 	public static final String JOB_GROUP = "maintenance";
 
-	final Log log = LogFactory.getLog(BackgroundProcessing.class);
+	private final Log log = LogFactory.getLog(BackgroundProcessing.class);
+
+	private final int corePoolSize;
+	private final int maximumPoolSize;
+	private final long keepAliveTime;
+	private final TimeUnit timeUnit;
+	private final BlockingQueue<Runnable> blockingQueue;
 
 	private ThreadPoolExecutor mediumPriorityService;
 	private ExecutorService lowPriorityService;
+
+	private BackgroundProcessing(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit timeUnit, BlockingQueue<Runnable> blockingQueue) {
+		this.corePoolSize = corePoolSize;
+		this.maximumPoolSize = maximumPoolSize;
+		this.keepAliveTime = keepAliveTime;
+		this.timeUnit = timeUnit;
+		this.blockingQueue = blockingQueue;
+		log.trace(MessageFormat.format("corePoolSize: {0}, maximumPoolSize: {1}, keepAliveTime: {2}, timeUnit: {3}, blockingQueue: {4} ;",
+				corePoolSize, maximumPoolSize, keepAliveTime, timeUnit, blockingQueue));
+	}
+
+	public static class Builder {
+		private int corePoolSize;
+		private int maximumPoolSize;
+		private long keepAliveTime;
+		private TimeUnit timeUnit;
+		private BlockingQueue<Runnable> blockingQueue;
+
+		public Builder corePoolSize(int corePoolSize) {
+			this.corePoolSize = corePoolSize;
+			return this;
+		}
+
+		public Builder maximumPoolSize(int maximumPoolSize) {
+			this.maximumPoolSize = maximumPoolSize;
+			return this;
+		}
+
+		public Builder keepAliveTime(long keepAliveTime) {
+			this.keepAliveTime = keepAliveTime;
+			return this;
+		}
+
+		public Builder timeUnit(TimeUnit timeUnit) {
+			this.timeUnit = timeUnit;
+			return this;
+		}
+
+		public Builder blockingQueue(BlockingQueue<Runnable> blockingQueue) {
+			this.blockingQueue = blockingQueue;
+			return this;
+		}
+
+		public BackgroundProcessing build() {
+			return new BackgroundProcessing(corePoolSize, maximumPoolSize,
+					keepAliveTime, timeUnit, blockingQueue);
+		}
+	}
 
 	public void addWorkItem(final WorkItem item) {
 		Runnable runnable = new Runnable() {
@@ -101,8 +151,8 @@ public class BackgroundProcessing implements ILifecycle {
 	}
 
 	public void initialize() {
-		mediumPriorityService = new ThreadPoolExecutor(3, 100, 60L,
-				TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		mediumPriorityService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize,
+				keepAliveTime, timeUnit, blockingQueue);
 		mediumPriorityService.allowCoreThreadTimeOut(true);
 		lowPriorityService = Executors.newSingleThreadExecutor();
 	}
@@ -152,4 +202,6 @@ public class BackgroundProcessing implements ILifecycle {
 			log.info("", e);
 		}
 	}
+
+
 }
