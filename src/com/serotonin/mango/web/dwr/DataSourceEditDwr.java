@@ -810,7 +810,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 	@MethodFilter
 	public void snmpGetOid(String oid, String host, int port, int snmpVersion,
-			String community, String securityName, String authProtocol,
+			String community, String communityWriter, String securityName, String authProtocol,
 			String authPassphrase, String privProtocol, String privPassphrase,
 			String engineId, String contextEngineId, String contextName,
 			int retries, int timeout) {
@@ -826,7 +826,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 	@MethodFilter
 	public void snmpWalkOid(String oid, String host, int port, int snmpVersion,
-						   String community, String securityName, String authProtocol,
+						   String community, String communityWriter, String securityName, String authProtocol,
 						   String authPassphrase, String privProtocol, String privPassphrase,
 						   String engineId, String contextEngineId, String contextName,
 						   int retries, int timeout) {

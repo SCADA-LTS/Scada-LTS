@@ -26,6 +26,7 @@ import java.util.List;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.ds.snmp.SNMPSet;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
@@ -147,19 +148,35 @@ public class SnmpDataSourceRT extends PollingDataSource {
 	@Override
 	public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime,
 			SetPointSource source) {
-		//Common.ctx.getServletContext().getRealPath(".");
-		PDU request = version.createPDU();
-		SnmpPointLocatorRT locator = dataPoint.getPointLocator();
-		request.add(new VariableBinding(getOid(dataPoint), locator
-				.valueToVariable(valueTime.getValue())));
-		snmpRequests.setRequest(request);
-		PDU response = snmpRequests.getResponseBySet();
 
-		LocalizableMessage message = validatePdu(response);
-		if (message != null)
-			raiseEvent(PDU_EXCEPTION_EVENT, valueTime.getTime(), false, message);
-		else
-			dataPoint.setPointValue(valueTime, source);
+		if (vo.getSnmpVersion()==1 || vo.getSnmpVersion()==2) {
+			try {
+				SnmpPointLocatorRT locator = dataPoint.getPointLocator();
+				VariableBinding vb = new VariableBinding(getOid(dataPoint), locator.valueToVariable(valueTime.getValue()));
+				SNMPSet.Version ver = (vo.getSnmpVersion() == 1) ? SNMPSet.Version.v1 : ((vo.getSnmpVersion() == 2) ? SNMPSet.Version.v2c : SNMPSet.Version.vNone );
+				String community = (!(vo.getCommunityWrite().equals(""))) ? vo.getCommunityWrite() : vo.getCommunity();
+				new SNMPSet().set(vo.getHost(), vo.getPort(), vo.getRetries(),vo.getTimeout(),community, vb, ver);
+				dataPoint.setPointValue(valueTime, source);
+			} catch (Exception e) {
+				log.error(e);
+			}
+		} else {
+
+			//Common.ctx.getServletContext().getRealPath(".");
+			PDU request = version.createPDU();
+			SnmpPointLocatorRT locator = dataPoint.getPointLocator();
+
+			VariableBinding vb = new VariableBinding(getOid(dataPoint), locator.valueToVariable(valueTime.getValue()));
+			request.add(vb);
+			snmpRequests.setRequest(request);
+			PDU response = snmpRequests.getResponseBySet();
+
+			LocalizableMessage message = validatePdu(response);
+			if (message != null)
+				raiseEvent(PDU_EXCEPTION_EVENT, valueTime.getTime(), false, message);
+			else
+				dataPoint.setPointValue(valueTime, source);
+		}
 	}
 	public void setDeviceDidNotRespondDespiteTheCounterOfRetries(boolean deviceDidNotRespondDespiteTheCounterOfRetries) {
 		this.deviceDidNotRespondDespiteTheCounterOfRetries = deviceDidNotRespondDespiteTheCounterOfRetries;

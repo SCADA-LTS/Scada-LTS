@@ -40,7 +40,7 @@
       $set("snmpTestMessage", "<fmt:message key="dsEdit.snmp.gettingValue"/>");
       snmpTestButton(true);
       DataSourceEditDwr.snmpGetOid($get("snmpTestOid"), $get("host"), $get("port"), $get("snmpVersion"),
-              $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
+              $get("community"), $get("community_writer"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
               $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"),
               $get("contextName"), $get("retries"), $get("timeout"), snmpTestCB);
   }
@@ -49,7 +49,7 @@
       $set("snmpTestMessage", "<fmt:message key="dsEdit.snmp.gettingValue"/>");
       snmpWalkButton(true);
       DataSourceEditDwr.snmpWalkOid($get("snmpWalkOid"), $get("host"), $get("port"), $get("snmpVersion"),
-              $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
+              $get("community"),$get("community_writer"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
               $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"),
               $get("contextName"), $get("retries"), $get("timeout"), snmpWalkCB);
   }

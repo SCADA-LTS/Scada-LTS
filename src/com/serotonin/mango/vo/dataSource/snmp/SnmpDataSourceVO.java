@@ -424,8 +424,8 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         out.writeInt(updatePeriods);
         out.writeInt(trapPort);
         SerializationHelper.writeSafeUTF(out, localAddress);
-        SerializationHelper.writeSafeUTF(out,communityWrite);
         out.writeBoolean(trapEnabled);
+        SerializationHelper.writeSafeUTF(out,communityWrite);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
