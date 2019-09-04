@@ -21,6 +21,7 @@
 	rel="stylesheet" type="text/css">
 
 <link href=resources/new-ui/css/app.css rel=stylesheet>
+<link href="resources/new-ui/css/chunk.css" rel="stylesheet" type="text/css">
 
 <script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
 
