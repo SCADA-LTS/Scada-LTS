@@ -7,5 +7,7 @@ module.exports = {
                 changeOrigin: true
             }
         }
-    }
+    },
+    filenameHashing : false,
+    productionSourceMap: false
 }
