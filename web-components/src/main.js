@@ -10,6 +10,8 @@ import GaugeChartComponent from "./components/charts/GaugeChartComponent";
 import PieChartComponent from "./components/charts/PieChartComponent";
 import ColumnChartComponent from "./components/charts/ColumnChartComponent";
 import LineChartComponent from "./components/charts/LineChartComponent";
+import WatchListChart from "./views/WatchListChart";
+import DataPointDetailsChart from "./views/DataPointDetails/DataPointDetailsChart";
 
 Vue.config.productionTip = false
 Vue.use(VueCookie)
@@ -30,5 +32,13 @@ new Vue({
         "gauge-chart": GaugeChartComponent,
         "cylinder-gauge-chart": CylinderGaugeComponent,
         "json-custom-chart": JsonChartComponent
+    }
+});
+
+new Vue({
+    el: "#vue-ui",
+    components: {
+        "wl-chart" : WatchListChart,
+        "chart-component" : DataPointDetailsChart
     }
 })

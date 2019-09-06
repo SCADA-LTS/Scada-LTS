@@ -4,7 +4,7 @@ ScadaLTS modern charts components it is a set of new VueJS v2.0 components desig
 
 ## Types of charts:
 - __< line-chart >__ Line Series Chart
-- __< step-line-chart >__ Step Line Series Chart
+- __< step-line >__ Step Line Series Chart
 - __< column-chart >__ Column Based Chart
 - __< pie-chart >__ Pie Chart
 - __< gauge-chart >__ Gauge Chart
@@ -75,13 +75,13 @@ Pretty colorful Modern Charts. But we still have the same size for them... Yes, 
 ***
 ### Chart Size
 ```
-<step-line-chart point-id="[dpID]" width="1080" height="720"/>
+<step-line point-id="[dpID]" width="1080" height="720"/>
 ```
 HD Chart? Why not! Values for attributes are given in Pixels (px). That is useful when we have defined a multiple chart instances on one GraphicalView. We can easily calculate the position of the next chart. 
 
 ### Labels
 ```
-<step-line-chart point-id="[dpID]" label="Mid season temperature"/>
+<step-line point-id="[dpID]" label="Mid season temperature"/>
 ```
 
 That would be enough from the basics... It is time for more complex tasks.

@@ -4,7 +4,7 @@
             <img src="/ScadaLTS/images/eye.png" />
             <p>Layout settings</p>
             <div>
-                <label for="static-rbtn">Horizontal</label>
+                <label for="layout-horizonal-1">Horizontal</label>
                 <input
                         type="radio"
                         class="radio-button"
@@ -14,7 +14,7 @@
                 />
             </div>
             <div>
-                <label for="static-rbtn">Vertical</label>
+                <label for="layout-vertical-1">Vertical</label>
                 <input
                         type="radio"
                         class="radio-button"
