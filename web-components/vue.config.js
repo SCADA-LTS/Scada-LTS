@@ -9,5 +9,6 @@ module.exports = {
         }
     },
     filenameHashing : false,
-    productionSourceMap: false
+    productionSourceMap: false,
+    runtimeCompiler: true
 }
