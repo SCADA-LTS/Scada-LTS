@@ -1,19 +1,6 @@
 package org.scada_lts.serialization.component;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import br.org.scadabr.view.component.CustomComponent;
-import org.directwebremoting.WebContext;
-import org.directwebremoting.WebContextFactory;
-
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
@@ -22,6 +9,18 @@ import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.web.dwr.BaseDwr;
+import org.directwebremoting.WebContext;
+import org.directwebremoting.WebContextFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @JsonRemoteEntity
 public class AlarmListComponentV1 extends CustomComponent {
@@ -47,8 +46,10 @@ public class AlarmListComponentV1 extends CustomComponent {
         Map<String, Object> model = new HashMap<String, Object>();
         WebContext webContext = WebContextFactory.get();
         HttpServletRequest request = webContext.getHttpServletRequest();
-        List<EventInstance> events = new EventDao().getPendingEvents(Common
-                .getUser().getId());
+        EventDao eventDao = new EventDao();
+        List<EventInstance> events =
+                new CopyOnWriteArrayList<>(eventDao
+                        .getPendingEvents(Common.getUser().getId()));
 
         filter(events, minAlarmLevel);
 
