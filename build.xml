@@ -57,60 +57,66 @@
 
 	<target name="war" description="Bundles the application as a WAR file" depends="clean, build, build-ui">
 
+
 		<delete dir="WebContent/resources/new-ui"></delete>
 		<mkdir dir="WebContent/resources/new-ui"></mkdir>
 		<mkdir dir="WebContent/resources/new-ui/css"></mkdir>
 		<mkdir dir="WebContent/resources/new-ui/js"></mkdir>
 
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css">
-			<fileset dir="ScadaLTS-UI-1/dist/static/css">
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css" taskname="copy app.css">
+			<fileset dir="web-components/dist/css">
 				<include name="*"/>
 			</fileset>
 			<mapper type="glob" from="app.*.css" to="app.css"/>
 		</copy>
 
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css" taskname="copy chunk.css">
+			<fileset dir="web-components/dist/css">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="chunk-*.css" to="chunk.css"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy app.js">
+			<fileset dir="web-components/dist/js">
 				<include name="*"/>
 			</fileset>
 			<mapper type="glob" from="app.*.js" to="app.js"/>
-
 		</copy>
 
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy vendor.js">
+			<fileset dir="web-components/dist/js">
 				<include name="*"/>
 			</fileset>
-			<mapper type="glob" from="vendor.*.js" to="vendor.js"/>
+			<mapper type="glob" from="chunk-vendors.*.js" to="vendor.js"/>
 		</copy>
 
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy chunk.js">
+			<fileset dir="web-components/dist/js">
 				<include name="*"/>
 			</fileset>
-			<mapper type="glob" from="manifest.*.js" to="manifest.js"/>
+			<mapper type="glob" from="chunk-*.js" to="chunk.js"/>
 		</copy>
 
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy canvg.js">
+			<fileset dir="web-components/dist/js">
 				<include name="*"/>
 			</fileset>
-			<mapper type="glob" from="vendor.*.js.map" to="vendor.js.map"/>
+			<mapper type="glob" from="canvg.*.js" to="canvg.js"/>
 		</copy>
 
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy pdfmake.js">
+			<fileset dir="web-components/dist/js">
 				<include name="*"/>
 			</fileset>
-			<mapper type="glob" from="manifest.*.js.map" to="manifest.js.map"/>
+			<mapper type="glob" from="pdfmake.*.js" to="pdfmake.js"/>
 		</copy>
 
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy xlsx.js">
+			<fileset dir="web-components/dist/js">
 				<include name="*"/>
 			</fileset>
-			<mapper type="glob" from="app.*.js.map" to="app.js.map"/>
-
+			<mapper type="glob" from="xlsx.*.js" to="xlsx.js"/>
 		</copy>
 
 
@@ -132,7 +138,7 @@
 	<target name="build-ui" depends="new-ui_win, new-ui_unix">
 	</target>
 
-	<!-- New ScadaLTS-UI targets  -->
+
 	<target name="update-static-web-dependecy" description="Update static web dependency">
 		<exec dir="WebContent/resources/app" executable="bower">
 			<arg  value="update"/>
@@ -149,24 +155,24 @@
 	</target>
 
 	<target name="new-ui-dependency_win" depends="checkOS" if="isWindows">
-		<exec dir="./ScadaLTS-UI-1" executable="cmd">
+		<exec dir="./web-components" executable="cmd">
 			<arg value="npm install"/>
 		</exec>
 	</target>
 	<target name="new-ui_win" depends="new-ui-dependency_win" if="isWindows">
-		<exec dir="./ScadaLTS-UI-1" executable="cmd">
+		<exec dir="./web-components" executable="cmd">
 			<arg value="npm run"/>
 			<arg value="npm build"/>
 		</exec>
 	</target>
 
 	<target name="new-ui-dependency_unix" depends="checkOS" if="isUnix">
-		<exec dir="./ScadaLTS-UI-1" executable="npm">
+		<exec dir="./web-components" executable="npm">
 			<arg value="install"/>
 		</exec>
 	</target>
 	<target name="new-ui_unix" depends="new-ui-dependency_unix" if="isUnix">
-		<exec dir="./ScadaLTS-UI-1" executable="npm">
+		<exec dir="./web-components" executable="npm">
 			<arg value="run"/>
 			<arg value="build"/>
 		</exec>

@@ -19,6 +19,7 @@
 --%><%@tag body-content="empty"%><%--
 --%><%@attribute name="view" type="com.serotonin.mango.view.View" required="true" rtexprvalue="true"%><%--
 --%><%@attribute name="emptyMessageKey" required="true"%>
+<div id="graphicviewchart">
 <div id="viewContent">
   <c:choose>
     <c:when test="${empty view}"><fmt:message key="${emptyMessageKey}"/></c:when>
@@ -136,4 +137,5 @@
       <c:otherwise><tag:pointComponent vc="${vc}"/></c:otherwise>
     </c:choose>
   </c:forEach>
+</div>
 </div>

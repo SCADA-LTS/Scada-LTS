@@ -19,6 +19,7 @@
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="com.serotonin.mango.DataTypes"%>
 <link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
+<link href="resources/new-ui/css/chunk.css" rel="stylesheet" type="text/css">
 <style>
   table {
      border-collapse: separate !important;
