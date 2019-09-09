@@ -2,13 +2,17 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import Test from "./components/Test";
+import Test from "./components/gb/Test";
+import StepLineChartComponent from "./components/charts/StepLineChartComponent";
 
 Vue.config.productionTip = false
 
 new Vue({
   router,
   store,
+  components:{
+    "chart": StepLineChartComponent
+  },
   render: h => h(App)
 }).$mount('#app')
 
