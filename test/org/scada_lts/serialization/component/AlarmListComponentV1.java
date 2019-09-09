@@ -46,10 +46,7 @@ public class AlarmListComponentV1 extends CustomComponent {
         Map<String, Object> model = new HashMap<String, Object>();
         WebContext webContext = WebContextFactory.get();
         HttpServletRequest request = webContext.getHttpServletRequest();
-        EventDao eventDao = new EventDao();
-        List<EventInstance> events =
-                new CopyOnWriteArrayList<>(eventDao
-                        .getPendingEvents(Common.getUser().getId()));
+        List<EventInstance> events = new EventDao().getPendingEvents(Common.getUser().getId());
 
         filter(events, minAlarmLevel);
 
