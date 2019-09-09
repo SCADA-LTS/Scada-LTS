@@ -18,10 +18,29 @@
  */
 package com.serotonin.mango.vo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.json.*;
+import com.serotonin.json.JsonArray;
+import com.serotonin.json.JsonException;
+import com.serotonin.json.JsonObject;
+import com.serotonin.json.JsonReader;
+import com.serotonin.json.JsonRemoteEntity;
+import com.serotonin.json.JsonRemoteProperty;
+import com.serotonin.json.JsonSerializable;
+import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
@@ -42,11 +61,6 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
