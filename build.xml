@@ -57,68 +57,15 @@
 
 	<target name="war" description="Bundles the application as a WAR file" depends="clean, build, build-ui">
 
+		<delete dir="WebContent/resources/new-ui"/>
+		<mkdir dir="WebContent/resources/new-ui"/>
 
-		<delete dir="WebContent/resources/new-ui"></delete>
-		<mkdir dir="WebContent/resources/new-ui"></mkdir>
-		<mkdir dir="WebContent/resources/new-ui/css"></mkdir>
-		<mkdir dir="WebContent/resources/new-ui/js"></mkdir>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css" taskname="copy app.css">
-			<fileset dir="web-components/dist/css">
-				<include name="*"/>
+		<copy includeemptydirs="true" todir="WebContent/resources/new-ui" taskname="Copy VueJS static content to WebContent">
+			<fileset dir="web-components/dist" includes="**">
+				<exclude name="**/*.html"/>
+				<exclude name="**/*.ico"/>
 			</fileset>
-			<mapper type="glob" from="app.*.css" to="app.css"/>
 		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css" taskname="copy chunk.css">
-			<fileset dir="web-components/dist/css">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="chunk-*.css" to="chunk.css"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy app.js">
-			<fileset dir="web-components/dist/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="app.*.js" to="app.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy vendor.js">
-			<fileset dir="web-components/dist/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="chunk-vendors.*.js" to="vendor.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy chunk.js">
-			<fileset dir="web-components/dist/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="chunk-*.js" to="chunk.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy canvg.js">
-			<fileset dir="web-components/dist/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="canvg.*.js" to="canvg.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy pdfmake.js">
-			<fileset dir="web-components/dist/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="pdfmake.*.js" to="pdfmake.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js" taskname="copy xlsx.js">
-			<fileset dir="web-components/dist/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="xlsx.*.js" to="xlsx.js"/>
-		</copy>
-
 
 		<mkdir dir="WebContent/WEB-INF/classes"/>
 		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
@@ -198,14 +145,14 @@
 	</target>
 
 	<target name="clean_and_tomcat_deploy" description="Deploy prepared WAR file from project dir to Tomcat webapps folder">
-		<delete file="${env.CATALINA_HOME}/webapps/${ant.project.name}.war"></delete>
-		<delete dir="${env.CATALINA_HOME}/webapps/${ant.project.name}"></delete>
+		<delete file="${env.CATALINA_HOME}/webapps/${ant.project.name}.war"/>
+		<delete dir="${env.CATALINA_HOME}/webapps/${ant.project.name}"/>
 		<copy file="${ant.project.name}.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
 		</copy>
 	</target>
 
 	<target name="tomcat_clean_static_content" description="Delete static content">
-		<delete dir="${env.CATALINA_HOME}/work/Catalina/localhost"></delete>
+		<delete dir="${env.CATALINA_HOME}/work/Catalina/localhost"/>
 	</target>
 
 	<target name="war_config_test" description="Bundles the application as a WAR file with config test" depends="clean, build, junit">
