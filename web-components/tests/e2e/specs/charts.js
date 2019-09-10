@@ -77,6 +77,28 @@ describe("Test - ScadaLTS Charts", function () {
 
     })
 
+    it("Test - Watch List Point Update", function () {
+
+        cy.visit('http://localhost:8080/ScadaLTS')
+        cy.get("#username").type("admin").should('have.value', 'admin')
+        cy.get("#password").type("admin")
+        cy.contains('Login').click()
+        cy.url().should('include', '/watch_list.shtm')
+
+
+        cy.get('.ptr[src="images/add.png"]').last().click();
+        cy.contains("NumericPoint").parent().within(() => {
+            cy.get('img[src="images/bullet_go.png"]').click();
+        })
+        cy.get("#watchListTable").within(() => {
+            cy.contains("NumericPoint");
+        })
+        cy.contains("Add chart").click()
+        cy.get("circle").should('have.length', 5)
+
+
+    })
+
     it("Delete test DataSource", function () {
 
         cy.visit('http://localhost:8080/ScadaLTS')
