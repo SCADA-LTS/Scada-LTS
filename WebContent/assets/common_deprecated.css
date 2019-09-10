@@ -84,6 +84,7 @@ a.titleLink:hover {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	color: #333333;
 	font-size: 9px;
+	z-index: -1;
 }
 .ptr {
 	cursor: pointer;

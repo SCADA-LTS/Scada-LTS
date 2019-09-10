@@ -26,7 +26,6 @@
             CMP,
             IsAlive,
             Test,
-            StepLineChart
         }
     }
 </script>

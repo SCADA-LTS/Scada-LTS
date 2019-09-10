@@ -1,0 +1,40 @@
+describe("Test - ScadaLTS Login", function () {
+    it("Open page without login", function () {
+        cy.clearCookies()
+        cy.visit('http://localhost:8080/ScadaLTS/watch_list.shtm')
+        cy.url().should('include', '/login.htm')
+    })
+    it("Click login without parameters", function () {
+        cy.visit('http://localhost:8080/ScadaLTS')
+        cy.contains('Login').click()
+        cy.contains("Please enter a username")
+        cy.contains("Please enter a password")
+    })
+    it("Click login without password", function () {
+        cy.visit('http://localhost:8080/ScadaLTS')
+        cy.get("#username").type("wrong").should('have.value', 'wrong')
+        cy.contains('Login').click()
+        cy.contains("Please enter a password")
+    })
+    it("Click login with wrong username", function () {
+        cy.visit('http://localhost:8080/ScadaLTS')
+        cy.get("#username").type("wrong").should('have.value', 'wrong')
+        cy.get("#password").type("admin")
+        cy.contains('Login').click()
+        cy.contains("Cannot find user Id")
+    })
+    it("Click login with wrong password", function () {
+        cy.visit('http://localhost:8080/ScadaLTS')
+        cy.get("#username").type("admin").should('have.value', 'admin')
+        cy.get("#password").type("wrong")
+        cy.contains('Login').click()
+        cy.contains("Invalid login, please try again")
+    })
+    it("Click login with valid credentials", function () {
+        cy.visit('http://localhost:8080/ScadaLTS')
+        cy.get("#username").type("admin").should('have.value', 'admin')
+        cy.get("#password").type("admin")
+        cy.contains('Login').click()
+        cy.url().should('include', '/watch_list.shtm')
+    })
+})
