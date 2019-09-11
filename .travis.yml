@@ -80,7 +80,7 @@ after_script:
 - cat ./conf/context.xml
 - echo "start scadalts for test"
 - echo "create database for run scada (to test) on ci"
-- mysql -u root -proot -e 'CREATE DATABASE scadalts;'
+- mysql -u root -e 'CREATE DATABASE scadalts;'
 - export CATALINA_HOME=`pwd`
 - ./bin/catalina.sh start
 - sleep 30
