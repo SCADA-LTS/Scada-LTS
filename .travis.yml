@@ -80,12 +80,12 @@ after_script:
 - cat ./conf/context.xml
 - echo "start scadalts for test"
 - echo "create database for run scada (to test) on ci"
-- mysql -u root proot -e 'CREATE DATABASE scadalts;'
+- mysql -u root -proot -e 'CREATE DATABASE scadalts;'
 - export CATALINA_HOME=`pwd`
 - ./bin/catalina.sh start
 - sleep 30
-- echo `netstat -ntlp | grep 8080`
-- killall java
+- echo `sudo netstat -ntlp | grep 8080`
+- sudo killall java
 - sleep 10
 - echo "end run scadalts for test"
 - cd ../
