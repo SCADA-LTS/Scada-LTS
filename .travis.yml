@@ -82,7 +82,7 @@ after_script:
 - echo "replace password for run scada (to test) on ci"
 - sed -i '/password="root"/c\password=""' ./conf/context.xml
 - echo "create database for run scada (to test) on ci"
-- mysql -e 'CREATE DATABASE scadalts;'
+- mysql -u root -e 'CREATE DATABASE scadalts;'
 - export CATALINA_HOME=`pwd`
 - ./bin/catalina.sh start
 - sleep 30
