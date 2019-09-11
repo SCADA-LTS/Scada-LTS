@@ -2,9 +2,11 @@ sudo: required
 before_install:
 - sudo apt-get update
 - sudo apt-get install tomcat7
+- sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
+- sudo mysql_upgrade -u root -proot
+- sudo service mysql restart
 before_script:
 - free -h
-- mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
 - nvm install 8
 - nvm use node
