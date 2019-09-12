@@ -2,7 +2,7 @@ sudo: required
 before_install:
 - sudo apt-get update
 - sudo apt-get install tomcat7
-- sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
+#- sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
 before_script:
 - free -h
 - nvm ls
@@ -78,16 +78,16 @@ after_script:
 - ls -l ./lib/mysql-connector-java-5.1.38-bin.jar
 - cp -f ../config/context.xml ./conf/
 - cat ./conf/context.xml
-- echo "start scadalts for test"
-- echo "create database for run scada (to test) on ci"
-- mysql -u root -e 'CREATE DATABASE scadalts;'
-- export CATALINA_HOME=`pwd`
-- ./bin/catalina.sh start
-- sleep 30
-- echo `sudo netstat -ntlp | grep 8080`
-- sudo killall java
-- sleep 10
-- echo "end run scadalts for test"
+#- echo "start scadalts for test"
+#- echo "create database for run scada (to test) on ci"
+#- mysql -u root -e 'CREATE DATABASE scadalts;'
+#- export CATALINA_HOME=`pwd`
+#- ./bin/catalina.sh start
+#- sleep 30
+#- echo `sudo netstat -ntlp | grep 8080`
+#- sudo killall java
+#- sleep 10
+#- echo "end run scadalts for test"
 - cd ../
 - pwd
 - ls
@@ -104,3 +104,11 @@ after_script:
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .)
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG)
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker push $IMAGE_NAME:$TAG)
+- echo "start try test"
+- sleep 30
+- docker run -it -p 8081:8080 scadalts/scadalts:$TAG /root/start.sh
+- sleep 30
+- docker ps -a
+- sleep 30
+- curl -d "username=admin&password=admin&submit=Login" --dump-header headers http://localhost:8081/ScadaBR/login.htm
+- cat headers
