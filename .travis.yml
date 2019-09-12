@@ -109,6 +109,7 @@ after_script:
 - docker run -d -p 8081:8080 scadalts/scadalts:$TAG /root/start.sh
 - sleep 30
 - docker ps -a
+- echo "Space for running tests that click on the docker interface"
 - sleep 30
 - curl -d "username=admin&password=admin&submit=Login" --dump-header headers http://localhost:8081/ScadaBR/login.htm
 - cat headers
