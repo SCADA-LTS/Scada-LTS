@@ -106,9 +106,10 @@ after_script:
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker push $IMAGE_NAME:$TAG)
 - echo "start try test"
 - sleep 30
-- docker run -it -p 8081:8080 scadalts/scadalts:$TAG /root/start.sh
+- docker run -d -p 8081:8080 scadalts/scadalts:$TAG /root/start.sh
 - sleep 30
 - docker ps -a
 - sleep 30
 - curl -d "username=admin&password=admin&submit=Login" --dump-header headers http://localhost:8081/ScadaBR/login.htm
 - cat headers
+- docker kill $(docker ps -q)
