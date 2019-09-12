@@ -2,7 +2,6 @@ sudo: required
 before_install:
 - sudo apt-get update
 - sudo apt-get install tomcat7
-#- sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
 before_script:
 - free -h
 - nvm ls
@@ -11,9 +10,7 @@ before_script:
 - npm -v
 - node -v
 - env
-#- npm install -g @angular/cli@latest
 - npm install -g bower
-#- npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
@@ -21,15 +18,6 @@ before_script:
 - sed 's/return scadaProperties.getString("app.version");/return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
-#- cd ./ScadaLTS-UI
-#- npm install
-#- ls -l ./src/app/media
-#- ng version
-#- ng build
-#- cd ./war
-#- ant war
-#- ant
-#- cd ../..
 - cd ./ScadaLTS-UI-1
 - npm install
 - cd ../WebContent/resources/npm/
@@ -68,26 +56,14 @@ after_script:
 - ls -l
 - mv ./apache-tomcat-7.0.94/* ./
 - rm -rf ./apache-tomcat-7.0.94
-#- cp ../../ScadaBR.war ./webapps
 - cp ../../ScadaLTS.war ./webapps
 - ls -l ./webapps/ScadaLTS.war
-#- ls -l ./webapps/ScadaBR.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
 - ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
 - ls -l ./lib/mysql-connector-java-5.1.38-bin.jar
 - cp -f ../config/context.xml ./conf/
 - cat ./conf/context.xml
-#- echo "start scadalts for test"
-#- echo "create database for run scada (to test) on ci"
-#- mysql -u root -e 'CREATE DATABASE scadalts;'
-#- export CATALINA_HOME=`pwd`
-#- ./bin/catalina.sh start
-#- sleep 30
-#- echo `sudo netstat -ntlp | grep 8080`
-#- sudo killall java
-#- sleep 10
-#- echo "end run scadalts for test"
 - cd ../
 - pwd
 - ls
@@ -106,11 +82,14 @@ after_script:
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker push $IMAGE_NAME:$TAG)
 - echo "start try test"
 - sleep 30
-- docker run -d -p 8081:8080 scadalts/scadalts:$TAG /root/start.sh
+- docker run -d scadalts/scadalts:$TAG /root/start.sh
 - sleep 30
 - docker ps -a
+- sudo netstat -ntlp
+- export IpDocker=`docker inspect -f "{{ .NetworkSettings.IPAddress }}" $(docker ps -aq)`
+- echo $IpDocker
 - echo "Space for running tests that click on the docker interface"
-- sleep 30
-- curl -d "username=admin&password=admin&submit=Login" --dump-header headers http://localhost:8081/ScadaBR/login.htm
+- curl -d "username=admin&password=admin&submit=Login" --dump-header headers http://$IpDocker:8080/ScadaLTS/login.htm
 - cat headers
+- sleep 30
 - docker kill $(docker ps -q)
