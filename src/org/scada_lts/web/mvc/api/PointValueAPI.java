@@ -27,6 +27,7 @@ import org.scada_lts.mango.service.PointValueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -177,6 +178,8 @@ class ValueToJSON implements Serializable {
     private String type;
     private TextRenderer textRenderer;
     private String chartColour;
+    private boolean enabled;
+
 
     void set(PointValueTime pvt, DataPointVO dpvo) {
         setValue(pvt.getValue());
@@ -186,6 +189,7 @@ class ValueToJSON implements Serializable {
         setTextRenderer(dpvo.getTextRenderer());
         setChartColour(dpvo.getChartColour());
         setFormattedValue(textRenderer.getText(pvt, 1) + textRenderer.getMetaText());
+        setEnabled(dpvo.isEnabled());
     }
 
     public String getValue() {
@@ -284,6 +288,14 @@ class ValueToJSON implements Serializable {
      */
     public void setFormattedValue(String formattedValue) {
         this.formattedValue = formattedValue;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
 
