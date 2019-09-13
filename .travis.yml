@@ -4,16 +4,13 @@ before_install:
 - sudo apt-get install tomcat7
 before_script:
 - free -h
-- mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
 - nvm install 8
 - nvm use node
 - npm -v
 - node -v
 - env
-#- npm install -g @angular/cli@latest
 - npm install -g bower
-#- npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
@@ -21,15 +18,6 @@ before_script:
 - sed 's/return scadaProperties.getString("app.version");/return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
-#- cd ./ScadaLTS-UI
-#- npm install
-#- ls -l ./src/app/media
-#- ng version
-#- ng build
-#- cd ./war
-#- ant war
-#- ant
-#- cd ../..
 - cd ./ScadaLTS-UI-1
 - npm install
 - cd ../WebContent/resources/npm/
@@ -68,10 +56,8 @@ after_script:
 - ls -l
 - mv ./apache-tomcat-7.0.94/* ./
 - rm -rf ./apache-tomcat-7.0.94
-#- cp ../../ScadaBR.war ./webapps
 - cp ../../ScadaLTS.war ./webapps
 - ls -l ./webapps/ScadaLTS.war
-#- ls -l ./webapps/ScadaBR.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
 - ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
@@ -94,3 +80,16 @@ after_script:
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .)
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG)
 - echo $TRAVIS_REPO_SLUG | grep "SCADA-LTS" -q && (docker push $IMAGE_NAME:$TAG)
+- echo "start try test"
+- sleep 30
+- docker run -d scadalts/scadalts:$TAG /root/start.sh
+- sleep 30
+- docker ps -a
+- sudo netstat -ntlp
+- export IpDocker=`docker inspect -f "{{ .NetworkSettings.IPAddress }}" $(docker ps -aq)`
+- echo $IpDocker
+- echo "Space for running tests that click on the docker interface"
+- curl -d "username=admin&password=admin&submit=Login" --dump-header headers http://$IpDocker:8080/ScadaLTS/login.htm
+- cat headers
+- sleep 30
+- docker kill $(docker ps -q)
