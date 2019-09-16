@@ -583,7 +583,7 @@ public class MiscDwr extends BaseDwr {
 		HttpSession session = WebContextFactory.get().getSession();
 
 		List<LongPollData> data = (List<LongPollData>) session
-				.getAttribute(LONG_POLL_DATA_KEY);
+					.getAttribute(LONG_POLL_DATA_KEY);
 		if (data == null) {
 			synchronized (session) {
 				data = (List<LongPollData>) session
