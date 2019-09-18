@@ -53,13 +53,14 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.SerializationHelper;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.lang3.StringUtils;
 
 @JsonRemoteEntity
 public class EventHandlerVO implements Serializable,
 		ChangeComparable<EventHandlerVO>, JsonSerializable {
+
 	public static final String XID_PREFIX = "EH_";
 
 	public static final int TYPE_SET_POINT = 1;
@@ -139,8 +140,14 @@ public class EventHandlerVO implements Serializable,
 	private String inactiveProcessCommand;
 
 	// script fields
+	@Deprecated
 	private int activeScriptCommand;
+	@Deprecated
 	private int inactiveScriptCommand;
+
+	// script XID fields
+	private String activeScriptCommandXid;
+	private String inactiveScriptCommandXid;
 
 	public EventHandlerRT createRuntime() {
 		switch (handlerType) {
@@ -372,6 +379,22 @@ public class EventHandlerVO implements Serializable,
 		return "event.audit.eventHandler";
 	}
 
+	public String getActiveScriptCommandXid() {
+		return activeScriptCommandXid;
+	}
+
+	public void setActiveScriptCommandXid(String activeScriptCommandXid) {
+		this.activeScriptCommandXid = activeScriptCommandXid;
+	}
+
+	public String getInactiveScriptCommandXid() {
+		return inactiveScriptCommandXid;
+	}
+
+	public void setInactiveScriptCommandXid(String inactiveScriptCommandXid) {
+		this.inactiveScriptCommandXid = inactiveScriptCommandXid;
+	}
+
 	public void validate(DwrResponseI18n response) {
 		if (handlerType == TYPE_SET_POINT) {
 			DataPointVO dp = new DataPointDao().getDataPoint(targetPointId);
@@ -476,7 +499,7 @@ public class EventHandlerVO implements Serializable,
 					&& StringUtils.isEmpty(inactiveProcessCommand))
 				response.addGenericMessage("eventHandlers.invalidCommands");
 		} else if (handlerType == TYPE_SCRIPT) {
-			if (activeScriptCommand < 1 && inactiveScriptCommand < 1)
+			if (StringUtils.isBlank(activeScriptCommandXid) && StringUtils.isBlank(inactiveScriptCommandXid))
 				response.addGenericMessage("eventHandlers.invalidScripts");
 		}
 	}
@@ -547,6 +570,10 @@ public class EventHandlerVO implements Serializable,
 					"eventHandlers.activeCommand", activeScriptCommand);
 			AuditEventType.addPropertyMessage(list,
 					"eventHandlers.inactiveCommand", inactiveScriptCommand);
+			AuditEventType.addPropertyMessage(list,
+					"eventHandlers.activeCommandXid", activeScriptCommandXid);
+			AuditEventType.addPropertyMessage(list,
+					"eventHandlers.inactiveCommandXid", inactiveScriptCommandXid);
 		}
 	}
 
@@ -626,6 +653,12 @@ public class EventHandlerVO implements Serializable,
 			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"eventHandlers.inactiveCommand",
 					from.inactiveScriptCommand, inactiveScriptCommand);
+			AuditEventType.maybeAddPropertyChangeMessage(list,
+					"eventHandlers.activeCommandXid", from.activeScriptCommandXid,
+					activeScriptCommandXid);
+			AuditEventType.maybeAddPropertyChangeMessage(list,
+					"eventHandlers.inactiveCommandXid",
+					from.inactiveScriptCommandXid, inactiveScriptCommandXid);
 		}
 	}
 
@@ -659,7 +692,7 @@ public class EventHandlerVO implements Serializable,
 	// /
 	//
 	private static final long serialVersionUID = -1;
-	private static final int version = 3;
+	private static final int version = 4;
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(version);
@@ -688,6 +721,8 @@ public class EventHandlerVO implements Serializable,
 		} else if (handlerType == TYPE_SCRIPT) {
 			out.writeInt(activeScriptCommand);
 			out.writeInt(inactiveScriptCommand);
+			SerializationHelper.writeSafeUTF(out, activeScriptCommandXid);
+			SerializationHelper.writeSafeUTF(out, inactiveScriptCommandXid);
 		}
 	}
 
@@ -781,6 +816,38 @@ public class EventHandlerVO implements Serializable,
 				activeScriptCommand = in.readInt();
 				inactiveScriptCommand = in.readInt();
 			}
+		} else if(version == 4) {
+			handlerType = in.readInt();
+			disabled = in.readBoolean();
+			if (handlerType == TYPE_SET_POINT) {
+				targetPointId = in.readInt();
+				activeAction = in.readInt();
+				activeValueToSet = SerializationHelper.readSafeUTF(in);
+				activePointId = in.readInt();
+				inactiveAction = in.readInt();
+				inactiveValueToSet = SerializationHelper.readSafeUTF(in);
+				inactivePointId = in.readInt();
+			} else if (handlerType == TYPE_EMAIL) {
+				activeRecipients = (List<RecipientListEntryBean>) in
+						.readObject();
+				sendEscalation = in.readBoolean();
+				escalationDelayType = in.readInt();
+				escalationDelay = in.readInt();
+				escalationRecipients = (List<RecipientListEntryBean>) in
+						.readObject();
+				sendInactive = in.readBoolean();
+				inactiveOverride = in.readBoolean();
+				inactiveRecipients = (List<RecipientListEntryBean>) in
+						.readObject();
+			} else if (handlerType == TYPE_PROCESS) {
+				activeProcessCommand = SerializationHelper.readSafeUTF(in);
+				inactiveProcessCommand = SerializationHelper.readSafeUTF(in);
+			} else if (handlerType == TYPE_SCRIPT) {
+                activeScriptCommand = in.readInt();
+                inactiveScriptCommand = in.readInt();
+				activeScriptCommandXid = SerializationHelper.readSafeUTF(in);
+				inactiveScriptCommandXid = SerializationHelper.readSafeUTF(in);
+			}
 		}
 	}
 
@@ -834,6 +901,8 @@ public class EventHandlerVO implements Serializable,
 		} else if (handlerType == TYPE_SCRIPT) {
 			map.put("activeScriptCommand", activeScriptCommand);
 			map.put("inactiveScriptCommand", inactiveScriptCommand);
+			map.put("activeScriptCommandXid", activeScriptCommandXid);
+			map.put("inactiveScriptCommandXid", inactiveScriptCommandXid);
 		}
 	}
 
@@ -973,28 +1042,40 @@ public class EventHandlerVO implements Serializable,
 			if (text != null)
 				inactiveProcessCommand = text;
 		} else if (handlerType == TYPE_SCRIPT) {
-			Integer script = json.getInt("activeScriptCommand");
-			if (text != null)
-				activeScriptCommand = script;
+            Integer script = json.getInt("activeScriptCommand");
+            if (script != null)
+                activeScriptCommand = script;
 
-			script = json.getInt("inactiveScriptCommand");
-			if (text != null)
-				inactiveScriptCommand = script;
+            script = json.getInt("inactiveScriptCommand");
+            if (script != null)
+                inactiveScriptCommand = script;
+
+			String scriptXid = json.getString("activeScriptCommandXid");
+			if (scriptXid != null)
+				activeScriptCommandXid = scriptXid;
+
+			scriptXid = json.getString("inactiveScriptCommandXid");
+			if (scriptXid != null)
+				inactiveScriptCommandXid = scriptXid;
 		}
 	}
 
+	@Deprecated
 	public void setActiveScriptCommand(int activeScriptCommand) {
 		this.activeScriptCommand = activeScriptCommand;
 	}
 
+	@Deprecated
 	public int getActiveScriptCommand() {
 		return activeScriptCommand;
 	}
 
+	@Deprecated
 	public void setInactiveScriptCommand(int inactiveScriptCommand) {
 		this.inactiveScriptCommand = inactiveScriptCommand;
 	}
 
+	@Deprecated
 	public int getInactiveScriptCommand() {
 		return inactiveScriptCommand;
 	}

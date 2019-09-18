@@ -293,11 +293,14 @@ public class EventHandlersDwr extends BaseDwr {
 	public DwrResponseI18n saveScriptEventHandler(int eventSourceId,
 			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
 			String alias, boolean disabled, int activeScriptCommand,
-			int inactiveScriptCommand) {
+			int inactiveScriptCommand, String activeScriptCommandXid,
+			String inactiveScriptCommandXid) {
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_SCRIPT);
 		handler.setActiveScriptCommand(activeScriptCommand);
 		handler.setInactiveScriptCommand(inactiveScriptCommand);
+		handler.setActiveScriptCommandXid(activeScriptCommandXid);
+		handler.setInactiveScriptCommandXid(inactiveScriptCommandXid);
 		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler,
 				handlerId, xid, alias, disabled);
 	}
@@ -319,7 +322,12 @@ public class EventHandlersDwr extends BaseDwr {
 		vo.validate(response);
 
 		if (!response.getHasMessages()) {
-			eventDao.saveEventHandler(type, vo);
+			if(vo.getId() == Common.NEW_ID) {
+				vo = eventDao.saveEventHandler(type, vo);
+			} else {
+				eventDao.updateEventHandler(vo);
+			}
+
 			response.addData("handler", vo);
 		}
 

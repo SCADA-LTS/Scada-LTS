@@ -33,18 +33,18 @@
     }
 
 	function getScriptsCB(scripts) {
-		var activeScriptList = $("activeScriptCommand");
-		var inactiveScriptList = $("inactiveScriptCommand");
-        dwr.util.removeAllOptions("activeScriptCommand");
-        dwr.util.removeAllOptions("inactiveScriptCommand");
+		var activeScriptList = $("activeScriptCommandXid");
+		var inactiveScriptList = $("inactiveScriptCommandXid");
+        dwr.util.removeAllOptions("activeScriptCommandXid");
+        dwr.util.removeAllOptions("inactiveScriptCommandXid");
 
-        activeScriptList.options[0] = new Option("", -1);
-        inactiveScriptList.options[0] = new Option("", -1);
+        activeScriptList.options[0] = new Option("", "");
+        inactiveScriptList.options[0] = new Option("", "");
         
         for (var i=0; i<scripts.length; i++) {
             sc = scripts[i];
-            activeScriptList.options[activeScriptList.options.length] = new Option(sc.name, sc.id);
-            inactiveScriptList.options[inactiveScriptList.options.length] = new Option(sc.name, sc.id);
+            activeScriptList.options[activeScriptList.options.length] = new Option(sc.name, sc.xid);
+            inactiveScriptList.options[inactiveScriptList.options.length] = new Option(sc.name, sc.xid);
         }
 	}
     
@@ -286,6 +286,8 @@
             } else if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>) {
                 $set("activeScriptCommand", handler.activeScriptCommand);
                 $set("inactiveScriptCommand", handler.inactiveScriptCommand);
+                $set("activeScriptCommandXid", handler.activeScriptCommandXid);
+                $set("inactiveScriptCommandXid", handler.inactiveScriptCommandXid);
             }
         }
         else {
@@ -308,6 +310,8 @@
             $set("inactiveProcessCommand", "");
             $set("activeScriptCommand", -1);
             $set("inactiveScriptCommand", -1);
+            $set("activeScriptCommandXid", "");
+            $set("inactiveScriptCommandXid", "");
             // Clear the recipient lists.
             emailRecipients.updateRecipientList();
             escalRecipients.updateRecipientList();
@@ -463,7 +467,8 @@
         else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>) {
             EventHandlersDwr.saveScriptEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid,
-                    alias, disabled, $get("activeScriptCommand"), $get("inactiveScriptCommand"), saveEventHandlerCB);
+                    alias, disabled, $get("activeScriptCommand"), $get("inactiveScriptCommand"),
+                    $get("activeScriptCommandXid"), $get("inactiveScriptCommandXid"), saveEventHandlerCB);
         }
     }
     
@@ -714,16 +719,16 @@
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.activeScript"/></td>
               <td class="formField">
-              	<select id="activeScriptCommand"></select>
-                <tag:img png="cog_go" onclick="testScriptCommand('activeScriptCommand')" title="eventHandlers.commandTest.title"/>
+              	<select id="activeScriptCommandXid"></select>
+                <tag:img png="cog_go" onclick="testScriptCommand('activeScriptCommandXid')" title="eventHandlers.commandTest.title"/>
               </td>
             </tr>
             
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveScript"/></td>
               <td class="formField">
-              	<select id="inactiveScriptCommand"></select>
-                <tag:img png="cog_go" onclick="testScriptCommand('inactiveScriptCommand')" title="eventHandlers.commandTest.title"/>
+              	<select id="inactiveScriptCommandXid"></select>
+                <tag:img png="cog_go" onclick="testScriptCommand('inactiveScriptCommandXid')" title="eventHandlers.commandTest.title"/>
               </td>
             </tr>
           </table>
