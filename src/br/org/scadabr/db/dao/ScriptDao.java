@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Deprecated
 public class ScriptDao extends BaseDao {
 	private static final String SCRIPT_SELECT = "select id, xid, name, script, userId, data from scripts ";
 
