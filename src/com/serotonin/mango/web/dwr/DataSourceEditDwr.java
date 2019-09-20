@@ -768,10 +768,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	@MethodFilter
 	public DwrResponseI18n saveSnmpDataSource(String name, String xid,
 			int updatePeriods, int updatePeriodType, String host, int port,
-			int snmpVersion, String community, String securityName,
+			int snmpVersion, String community, String comunityWrite, String securityName,
 			String authProtocol, String authPassphrase, String privProtocol,
 			String privPassphrase, String engineId, String contextEngineId,
-			String contextName, int retries, int timeout, int trapPort,
+			String contextName, int retries, int timeout, boolean trapEnabled, int trapPort,
 			String localAddress) {
 		SnmpDataSourceVO ds = (SnmpDataSourceVO) Common.getUser()
 				.getEditDataSource();
@@ -784,6 +784,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		ds.setPort(port);
 		ds.setSnmpVersion(snmpVersion);
 		ds.setCommunity(community);
+		ds.setCommunityWrite(comunityWrite);
 		ds.setSecurityName(securityName);
 		ds.setAuthProtocol(authProtocol);
 		ds.setAuthPassphrase(authPassphrase);
@@ -794,6 +795,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 		ds.setContextName(contextName);
 		ds.setRetries(retries);
 		ds.setTimeout(timeout);
+		ds.setTrapEnabled(trapEnabled);
 		ds.setTrapPort(trapPort);
 		ds.setLocalAddress(localAddress);
 
@@ -808,7 +810,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 	@MethodFilter
 	public void snmpGetOid(String oid, String host, int port, int snmpVersion,
-			String community, String securityName, String authProtocol,
+			String community, String communityWriter, String securityName, String authProtocol,
 			String authPassphrase, String privProtocol, String privPassphrase,
 			String engineId, String contextEngineId, String contextName,
 			int retries, int timeout) {
@@ -824,7 +826,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 	@MethodFilter
 	public void snmpWalkOid(String oid, String host, int port, int snmpVersion,
-						   String community, String securityName, String authProtocol,
+						   String community, String communityWriter, String securityName, String authProtocol,
 						   String authPassphrase, String privProtocol, String privPassphrase,
 						   String engineId, String contextEngineId, String contextName,
 						   int retries, int timeout) {

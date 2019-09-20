@@ -28,16 +28,17 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.serotonin.mango.rt.event.AlarmLevels;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.cache.UnsilencedAlarmCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
+import org.scada_lts.dao.event.IEventDAO;
+import org.scada_lts.dao.event.IUserEventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.springframework.transaction.annotation.Isolation;
@@ -53,16 +54,22 @@ import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 
 /** 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu,
+ * kamil.jarmusik@gmail.com
  */
 public class EventService implements MangoEvent {
 	
 	private static final Log LOG = LogFactory.getLog(EventService.class);
 	private static final int MAX_PENDING_EVENTS = 100;
 	
-	private EventDAO eventDAO;
-	private UserEventDAO userEventDAO;
-	
+	private IEventDAO eventDAO;
+	private IUserEventDAO userEventDAO;
+
+	public EventService(IEventDAO eventDAO, IUserEventDAO userEventDAO) {
+		this.eventDAO = eventDAO;
+		this.userEventDAO = userEventDAO;
+	}
+
 	public EventService() {
 		eventDAO = new EventDAO();
 		userEventDAO = new UserEventDAO();
@@ -86,16 +93,18 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public void saveEvent(EventInstance event) {
-		
-		if (event.getId() == Common.NEW_ID ) {
-			eventDAO.create(event);
-			//TODO whay not have add to cache?
-		} else {
-			eventDAO.updateEvent(event);
-			updateCache(event);
+		if(isNoneAlarmLevelEvent(event)) {
+			LOG.trace(event);
+			return;
 		}
+		if(isNewId(event.getId())) {
+			eventDAO.create(event);
+			return;
+		}
+		eventDAO.updateEvent(event);
+		updateCache(event);
 	}
-	
+
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange) {
@@ -121,12 +130,14 @@ public class EventService implements MangoEvent {
 	
 	@Override
 	public void insertUserEvents(int eventId, List<Integer> userIds, boolean alarm) {
-		userEventDAO.batchUpdate(eventId, userIds, alarm);
+		if(!isNewId(eventId))
+			userEventDAO.batchUpdate(eventId, userIds, alarm);
 		if (alarm) {
 			for (int userId: userIds) {
 				removeUserIdFromCache(userId);
 			}
 		}
+
 	}
 	
 	@Override
@@ -335,7 +346,8 @@ public class EventService implements MangoEvent {
 		}
 		return silenced;
 	}
-	
+
+	@Override
 	public int getHighestUnsilencedAlarmLevel(int userId) {		
 		int result = -1;
 		try {
@@ -445,6 +457,14 @@ public class EventService implements MangoEvent {
 
 	public static void clearCache() {
 		pendingEventCache.clear();
+	}
+
+	private boolean isNoneAlarmLevelEvent(EventInstance event) {
+		return event.getAlarmLevel() == AlarmLevels.NONE;
+	}
+
+	private boolean isNewId(int id) {
+		return id == Common.NEW_ID;
 	}
 
 }
