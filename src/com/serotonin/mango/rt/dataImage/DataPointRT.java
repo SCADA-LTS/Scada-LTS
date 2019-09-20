@@ -169,8 +169,6 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		else
 			savePointValue(newValue, source, false);
 
-		System.out.println("newValue"+newValue);
-		System.out.println("newValue source"+source);
 	}
 
 	private void savePointValue(PointValueTime newValue, SetPointSource source,
@@ -277,7 +275,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		if (pointValue == null || newValue.getTime() >= pointValue.getTime()) {
 			PointValueTime oldValue = pointValue;
 			pointValue = newValue;
-			fireEvents(oldValue, newValue, true/*source != null*/, false);
+			fireEvents(oldValue, newValue, source != null, false);
 		} else
 			fireEvents(null, newValue, false, true);
 	}

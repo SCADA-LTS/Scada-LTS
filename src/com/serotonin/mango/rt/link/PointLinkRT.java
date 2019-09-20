@@ -41,6 +41,7 @@ import com.serotonin.mango.rt.maint.work.SetPointWorkItem;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.junit.Assert;
 
 /**
  * @author Matthew Lohbihler
@@ -107,12 +108,15 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 
 		// Bail out if already running a point link operation
 		synchronized (ready) {
-			if (!ready)
-				return;
-			else
-				ready = false; // Stop anyone else from using this
-		}
 
+			if(ready.equals(Boolean.FALSE)){
+				LOG.info("PointLinkRT.ready is set to false.Any of scripts (in meaning source-target) will not work.");
+				return;
+			}
+			LOG.info("PointLinkRT.ready is set to true.Scripts (in meaning source-target) will work.");
+		}
+		//that condition is used in junits - in meaning if time is 0 - not execute rest of code
+		Assert.assertTrue(newValue.getTime()!=0);
 		// Propagate the update to the target point. Validate that the target
 		// point is available.
 		DataPointRT targetPoint = Common.ctx.getRuntimeManager().getDataPoint(
@@ -230,6 +234,15 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 				"event.pointLink.recursionFailure"));
 	}
 
+	public Boolean getReady() {
+		return ready;
+	}
+
+	public void setReady(Boolean ready) {
+		this.ready = ready;
+		LOG.info("PointLinkRT.ready is set to "+this.ready);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -239,5 +252,6 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 	@Override
 	public void pointSetComplete() {
 		this.ready = true;
+		LOG.info("PointLinkRT.pointSetComplete. Ready property is set to true ");
 	}
 }
