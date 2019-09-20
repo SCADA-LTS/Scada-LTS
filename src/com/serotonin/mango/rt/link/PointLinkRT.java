@@ -116,64 +116,65 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 			LOG.info("PointLinkRT.ready is set to true.Scripts (in meaning source-target) will work.");
 		}
 		//that condition is used in junits - in meaning if time is 0 - not execute rest of code
-		Assert.assertTrue(newValue.getTime()!=0);
-		// Propagate the update to the target point. Validate that the target
-		// point is available.
-		DataPointRT targetPoint = Common.ctx.getRuntimeManager().getDataPoint(
-				vo.getTargetPointId());
-		if (targetPoint == null) {
-			raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
-					"event.pointLink.targetUnavailable"));
-			return;
-		}
-
-		if (!targetPoint.getPointLocator().isSettable()) {
-			raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
-					"event.pointLink.targetNotSettable"));
-			return;
-		}
-
-		int targetDataType = targetPoint.getVO().getPointLocator()
-				.getDataTypeId();
-
-		if (!StringUtils.isEmpty(vo.getScript())) {
-			ScriptExecutor scriptExecutor = new ScriptExecutor();
-			Map<String, IDataPoint> context = new HashMap<String, IDataPoint>();
-			DataPointRT source = Common.ctx.getRuntimeManager().getDataPoint(
-					vo.getSourcePointId());
-			context.put(CONTEXT_VAR_NAME, source);
-
-			try {
-				PointValueTime pvt = scriptExecutor.execute(vo.getScript(),
-						context, newValue.getTime(), targetDataType,
-						newValue.getTime());
-				if (pvt.getValue() == null) {
-					raiseFailureEvent(
-							newValue.getTime(),
-							new LocalizableMessage("event.pointLink.nullResult"));
-					return;
-				}
-				newValue = pvt;
-			} catch (ScriptException e) {
+		if(newValue.getTime()!=0) {
+			// Propagate the update to the target point. Validate that the target
+			// point is available.
+			DataPointRT targetPoint = Common.ctx.getRuntimeManager().getDataPoint(
+					vo.getTargetPointId());
+			if (targetPoint == null) {
 				raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
-						"common.default", e.getMessage()));
-				return;
-			} catch (ResultTypeException e) {
-				raiseFailureEvent(newValue.getTime(), e.getLocalizableMessage());
+						"event.pointLink.targetUnavailable"));
 				return;
 			}
-		}
 
-		if (DataTypes.getDataType(newValue.getValue()) != targetDataType) {
-			raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
-					"event.pointLink.convertError"));
-			return;
-		}
+			if (!targetPoint.getPointLocator().isSettable()) {
+				raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
+						"event.pointLink.targetNotSettable"));
+				return;
+			}
 
-		// Queue a work item to perform the update.
-		Common.ctx.getBackgroundProcessing().addWorkItem(
-				new SetPointWorkItem(vo.getTargetPointId(), newValue, this));
-		returnToNormal();
+			int targetDataType = targetPoint.getVO().getPointLocator()
+					.getDataTypeId();
+
+			if (!StringUtils.isEmpty(vo.getScript())) {
+				ScriptExecutor scriptExecutor = new ScriptExecutor();
+				Map<String, IDataPoint> context = new HashMap<String, IDataPoint>();
+				DataPointRT source = Common.ctx.getRuntimeManager().getDataPoint(
+						vo.getSourcePointId());
+				context.put(CONTEXT_VAR_NAME, source);
+
+				try {
+					PointValueTime pvt = scriptExecutor.execute(vo.getScript(),
+							context, newValue.getTime(), targetDataType,
+							newValue.getTime());
+					if (pvt.getValue() == null) {
+						raiseFailureEvent(
+								newValue.getTime(),
+								new LocalizableMessage("event.pointLink.nullResult"));
+						return;
+					}
+					newValue = pvt;
+				} catch (ScriptException e) {
+					raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
+							"common.default", e.getMessage()));
+					return;
+				} catch (ResultTypeException e) {
+					raiseFailureEvent(newValue.getTime(), e.getLocalizableMessage());
+					return;
+				}
+			}
+
+			if (DataTypes.getDataType(newValue.getValue()) != targetDataType) {
+				raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
+						"event.pointLink.convertError"));
+				return;
+			}
+
+			// Queue a work item to perform the update.
+			Common.ctx.getBackgroundProcessing().addWorkItem(
+					new SetPointWorkItem(vo.getTargetPointId(), newValue, this));
+			returnToNormal();
+		}
 	}
 
 	//
