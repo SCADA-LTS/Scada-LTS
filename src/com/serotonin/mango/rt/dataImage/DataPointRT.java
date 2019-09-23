@@ -168,6 +168,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 			savePointValue(newValue, source, true);
 		else
 			savePointValue(newValue, source, false);
+
 	}
 
 	private void savePointValue(PointValueTime newValue, SetPointSource source,
