@@ -96,6 +96,10 @@ public class ScadaConfig {
 
 	public static final String ACL_SERVER = "abilit.ACL_SERVER";
 
+	public static final String HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START = "abilit.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START";
+
+	public static final String HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION = "abilit.HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION";
+
 
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
 	private static final String FILE_NAME_LOGO="logo.png";

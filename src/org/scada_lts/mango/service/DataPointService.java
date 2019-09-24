@@ -24,6 +24,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.vo.permission.Permissions;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -152,6 +155,25 @@ public class DataPointService implements MangoDataPoint {
 		
 		dpRT.updatePointValue(pvt);
 		
+	}
+
+	public void saveAPI(User user, String value, String xid) {
+		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
+		Permissions.ensureDataPointSetPermission(user, dpvo);
+		setPointImpl(dpvo, value, user);
+	}
+
+	private void setPointImpl(DataPointVO point, String valueStr, SetPointSource source) {
+		if (point == null)
+			return;
+
+		if (valueStr == null)
+			Common.ctx.getRuntimeManager().relinquish(point.getId());
+		else {
+			// Convert the string value into an object.
+			MangoValue value = MangoValue.stringToValue(valueStr, point.getPointLocator().getDataTypeId());
+			Common.ctx.getRuntimeManager().setDataPointValue(point.getId(), value, source);
+		}
 	}
 
 	private void setRelationalData(List<DataPointVO> dpList) {

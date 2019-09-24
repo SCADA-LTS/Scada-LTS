@@ -168,7 +168,7 @@
           <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
           <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
                 
-          <c:if test="${sessionUser.dataSourcePermission}">
+          <c:if test="${sessionUser.admin}">
             <img src="./images/menu_separator.png" class="separator"/>
             <tag:menuItem href="event_handlers.shtm" png="cog" key="header.eventHandlers"/>
             <tag:menuItem href="data_sources.shtm" png="icon_ds" key="header.dataSources"/>
