@@ -30,7 +30,7 @@ Here is two of the several start options:
 * In the Docker CLI type in: `docker pull scadalts/scadalts` to download repository.
 * Type in: `docker images` to check if repository is created. It should show "scadalts/scadalts" on the list.
 * To run Scada on Docker type in: 
-``docker run -it -e DOCKER_HOST_IP=`docker-machine ip` -p 81:8080 scadalts/scadalts /root/start.sh``.
+``docker run -it -e DOCKER_HOST_IP=`docker-machine ip` -p 81:8080 scadalts/scadalts /root/start.sh``
 * Type in: `Get-NetIPAddress` and find IPAdrress for "DockerNAT" InterfaceAlias (You need a new CLI window to do it).
 * Type in docker IP adrress in the browser with port 81 and `/ScadaLTS/` sufix. Example:
 `http://10.0.75.2:81/ScadaLTS/`
@@ -99,6 +99,10 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 **Arkadiusz Parafiniuk**
 
 * <https://github.com/ArkadiuszParafiniuk>
+
+**Mateusz Hyski**
+
+* <https://github.com/mateuszhyski>
 
 **Konrad Daniek**
 
