@@ -43,7 +43,7 @@ Here is two of the several start options:
 * Install tomcat7: `apt-get install tomcat7`.
 * Install mysql: `apt-get install mysql-server`.
 * Login to mysql: `mysql -u [user] -p`.
-* Create db:`create dababase scadalts;`.
+* Create db:`create database scadalts;`.
 * Copy ScadaBR.war to dir tomacat webapps: `cp ScadaBR.war /var/lib/tomcat7/webapps/`.
     Optionally you can build ScadaBR.war. For this you have instruction how do it in section "Building from sources",which is below.
 * Restart tomcat7 to generate ScadaLTS folder: `/etc/init.d/tomcat7 restart`
