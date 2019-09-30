@@ -25,20 +25,20 @@ public class PointLinkRTTest {
     public void finalized() {
         pointLinkRT = null;
     }
-    private void invodePointChanged(){
+    private void invokePointChanged(){
         pointLinkRT.pointChanged(
                 new PointValueTime("0",new Long(0)),
                 new PointValueTime("0",new Long(0)));
     }
     @Test
     public void setUpReadyFlagResponsibleForExecutePartOfMethodToRunScriptDefinedForPointLinkTest() {
-        invodePointChanged();
+        invokePointChanged();
         Assert.assertEquals(Boolean.TRUE,pointLinkRT.getReady());
     }
     @Test
     public void setDownReadyFlagResponsibleForExecutePartOfMethodToRunScriptDefinedForPointLinkTest() {
         pointLinkRT.setReady(Boolean.FALSE);
-        invodePointChanged();
+        invokePointChanged();
         Assert.assertEquals(Boolean.FALSE,pointLinkRT.getReady());
     }
 }
