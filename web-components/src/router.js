@@ -25,6 +25,11 @@ export default new Router({
       path: '/develop',
       name: 'develop',
       component: () => import('./views/Develop.vue')
+    },
+    {
+      path: '/synoptic',
+      name: 'synoptic',
+      component: () => import(/* webpackChunkName: "synoptic" */ './views/SynopticPanel')
     }
   ]
 })

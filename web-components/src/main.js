@@ -13,9 +13,10 @@ import ColumnChartComponent from "./components/charts/ColumnChartComponent";
 import LineChartComponent from "./components/charts/LineChartComponent";
 import WatchListChart from "./views/WatchListChart";
 import DataPointDetailsChart from "./views/DataPointDetails/DataPointDetailsChart";
-import VectorGraphicEditor from "./components/VectorGraphicEditor";
 import VueDraggableResizable from 'vue-draggable-resizable'
-import CMP from "./components/gb/CMP";
+// import CMP from "./components/gb/CMP";
+
+
 
 
 Vue.config.productionTip = false
@@ -23,6 +24,8 @@ Vue.use(VueCookie)
 Vue.use(svgJS);
 
 import 'vue-draggable-resizable/dist/VueDraggableResizable.css'
+import SynopticPanel from "./views/SynopticPanel";
+import vuetify from './plugins/vuetify';
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -30,6 +33,7 @@ Vue.component('vue-draggable-resizable', VueDraggableResizable)
 new Vue({
     router,
     store,
+    vuetify,
     render: h => h(App)
 }).$mount('#app')
 
@@ -43,8 +47,7 @@ new Vue({
         "gauge-chart": GaugeChartComponent,
         "cylinder-gauge-chart": CylinderGaugeComponent,
         "json-custom-chart": JsonChartComponent,
-        "vg-editor" : VectorGraphicEditor,
-        "cmp" : CMP
+        // "cmp" : CMP
     }
 });
 
@@ -55,3 +58,10 @@ new Vue({
         "chart-component" : DataPointDetailsChart
     }
 })
+
+
+new Vue({
+    vuetify,
+    store,
+    render: h => h(SynopticPanel)
+}).$mount('#synopticPanelContent')

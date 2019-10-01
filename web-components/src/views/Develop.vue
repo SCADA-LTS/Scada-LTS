@@ -1,14 +1,27 @@
 <template>
     <div>
         <p>Testing Vue.js components</p>
-        <h4>Chart</h4>
-        <line-chart-component point-id="1"></line-chart-component>
-        <h4>Test</h4>
-        <Test/>
-        <h4>CMP</h4>
-        <CMP/>
-        <h4>IsAlive</h4>
-        <is-alive/>
+        <h4>Vector Component</h4>
+<!--        <vector-graphic-point-->
+<!--                component-url="roller"-->
+<!--                component-name="roller"-->
+<!--        />-->
+<!--        <vector-graphic-point-->
+<!--                component-url="motor"-->
+<!--                component-name="label"-->
+<!--        />-->
+<!--        <vector-graphic-point-->
+<!--                component-url="motor"-->
+<!--                component-name="label"-->
+<!--        />-->
+<!--        <h4>Chart</h4>-->
+<!--        <line-chart-component point-id="1"></line-chart-component>-->
+<!--        <h4>Test</h4>-->
+<!--        <Test/>-->
+<!--        <h4>CMP</h4>-->
+<!--        <CMP/>-->
+<!--        <h4>IsAlive</h4>-->
+<!--        <is-alive/>-->
     </div>
 </template>
 

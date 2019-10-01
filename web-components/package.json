@@ -6,11 +6,11 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "deploy:win": "xcopy .\\dist C:\\services\\tomcat7.0\\webapps\\ScadaLTS\\resources\\new-ui\\ /E /K /Y"
+    "deploy:win": "xcopy .\\dist C:\\services\\tomcat7.0\\webapps\\ScadaLTS\\resources\\new-ui\\ /E /K /Y",
+    "test:e2e": "vue-cli-service test:e2e",
+    "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
     "ajv": "^6.5.2",
@@ -30,11 +30,12 @@
     "vue-router": "^3.0.3",
     "vue-underscore": "^0.1.4",
     "vuejs-datepicker": "^1.6.2",
-    "vuetify": "^1.0.19",
+    "vuetify": "^2.0.0",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@amcharts/amcharts4": "^4.5.9",
+    "@mdi/font": "^4.4.95",
     "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-e2e-cypress": "^3.11.0",
     "@vue/cli-plugin-eslint": "^3.11.0",
@@ -47,8 +48,11 @@
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.9.0",
+    "sass": "^1.17.4",
     "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.6.10"
+    "vue-cli-plugin-vuetify": "^0.6.3",
+    "vue-template-compiler": "^2.6.10",
+    "vuetify-loader": "^1.2.2"
   },
   "eslintConfig": {
     "root": true,

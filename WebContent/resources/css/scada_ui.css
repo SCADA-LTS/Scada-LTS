@@ -5,6 +5,7 @@
  * @created: 2019
  */
 
+
 .flex {
     display: flex;
 }
@@ -77,6 +78,10 @@
 }
 .loader {
     animation: loading-animation 1s linear infinite;
+}
+
+footer {
+    z-index: -1;
 }
 @keyframes loading-animation {
     form {
