@@ -21,10 +21,6 @@
 		<entry key="app.version" value="${version-major}.${version-minor}.${version-release}"/>
 	</propertyfile>
 
-	<patternset id="src.files">
-		<include name="build.*"/>
-	</patternset>
-
 	<path id="tomcat.ant.classpath">
 		<pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
 	</path>
