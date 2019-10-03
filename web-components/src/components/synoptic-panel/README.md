@@ -13,6 +13,9 @@ This is Beta feature. It is not fully functional but it provides:
 - attaching datapoints to all SLTS_components
 - edition for admin users and read only function for non-admin users
 
+Watch example usage [video on YouTube](https://www.youtube.com/watch?v=vZbv39PADU0). See how to add a new panel, 
+how to manage components data and how it works in this scenario. 
+
 
 ## Getting started:
 There are prepared 3 default components: _fan_, _valve_ and _waterlevel_ components. Each of this components

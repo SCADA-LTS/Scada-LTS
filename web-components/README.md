@@ -1,7 +1,9 @@
 # Web-components (Vue.js components)
-Updating ScadaLTS from old JSP pages to new modern approach with VueJS components.
+Updating ScadaLTS from old JSP pages to new modern approach with VueJS components. 
+You can find this components in WatchList, DataPointDetails, Views and SynopticPanel tabs. 
+Here you can find example how it looks like [in watch list charts](https://www.youtube.com/watch?v=eSUU5gtCHYY). 
 
-More about custom components could be find [here](./src/components/README.md) 
+More about custom components could be find [here](./src/components/README.md). 
 
 Using:
 * Vue.js v2.6

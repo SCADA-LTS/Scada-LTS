@@ -12,6 +12,7 @@ ScadaLTS modern charts components it is a set of new VueJS v2.0 components desig
 - __< json-custom-chart >__ Custom Chart (defined by user via JSON)
 
 ## Usage:
+[Viedo tutorial on YouTube!](https://www.youtube.com/watch?v=eZPkd-kav6U)\
 New charts could be added to ScadaLTS Graphical View by adding a new HTML component with specific content. Each chart has to be initialized by using this listed above Extended HTML Tags. Each of this tag take a specific properties required to set up specific chart. Chart is generated inside this tag which has default size 750x500px.
 ***
 ### Quick start:
