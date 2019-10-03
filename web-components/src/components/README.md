@@ -9,6 +9,7 @@ Open Graphical View page in ScadaLTS. Then create a new view and add new HTML co
 
 # List of components:
 - [Chart components](./charts/README.md)
+- [Synoptic Panel Components](./synoptic-panel/README.md) (only for SLTS Synoptic Panel menu!)
 - Is Alive Component [ \<is-alive/> ]
 - Simple Point Component [ \<simple-component-svg/> ]
 - Advanced Point Component [ \<cmp/> ]
