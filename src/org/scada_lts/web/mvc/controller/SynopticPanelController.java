@@ -15,7 +15,7 @@ import java.util.Map;
 @Controller
 public class SynopticPanelController {
 
-    @RequestMapping(value = "/synopticPanel", method = RequestMethod.GET)
+    @RequestMapping(value = "/synoptic_panel", method = RequestMethod.GET)
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
         User user = Common.getUser(request);
         if (user == null) {
