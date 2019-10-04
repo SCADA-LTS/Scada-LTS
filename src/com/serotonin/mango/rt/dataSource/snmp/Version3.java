@@ -104,7 +104,7 @@ public class Version3 extends Version {
     public void addUser(Snmp snmp) {
         USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(usm);
-        if (engineId != null)
+        if (engineId != null && engineId.length() != 0)
             snmp.setLocalEngine(engineId.getValue(), 0, 0);
         snmp.getUSM().addUser(securityName,
                 new UsmUser(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase));
