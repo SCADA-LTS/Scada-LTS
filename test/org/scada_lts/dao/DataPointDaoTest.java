@@ -69,7 +69,7 @@ public class DataPointDaoTest extends TestDAO {
 		secondDataPoint.setDataSourceXid(SECOND_DATA_SOURCE_XID);
 		secondDataPoint.setDataSourceTypeId(SECOND_DATA_SOURCE_TYPE_ID);
 
-		DataPointDAO dataPointDAO = new DataPointDAO();
+		IDataPointDAO dataPointDAO = new DataPointDAO();
 
 		//Insert
 		int firstId = dataPointDAO.insert(dataPoint);

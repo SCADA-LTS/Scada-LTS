@@ -33,13 +33,8 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.DataPointUserDAO;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.*;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
-import org.scada_lts.dao.PointLinkDAO;
-import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
@@ -74,7 +69,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(DataPointService.class);
 
-	private static final DataPointDAO dataPointDAO = new DataPointDAO();
+	private static final IDataPointDAO dataPointDAO = new DataPointDAO();
 
 	private static final UserCommentDAO userCommentDAO = new UserCommentDAO();
 

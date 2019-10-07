@@ -27,10 +27,7 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.PointEventDetectorDAO;
-import org.scada_lts.dao.TestDAO;
+import org.scada_lts.dao.*;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.dao.model.event.UserEvent;
 import org.scada_lts.mango.adapter.MangoEvent;
@@ -217,7 +214,7 @@ public class EventServiceTest extends TestDAO {
 		dataPoint.setDataSourceXid(DATA_SOURCE_XID);
 		dataPoint.setDataSourceTypeId(DATA_SOURCE_TYPE_ID);
 		
-		DataPointDAO dataPointDAO = new DataPointDAO();
+		IDataPointDAO dataPointDAO = new DataPointDAO();
 		int id = dataPointDAO.insert(dataPoint);
 		dataPoint.setId(id);
 		

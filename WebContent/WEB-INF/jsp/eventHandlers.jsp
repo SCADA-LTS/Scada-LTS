@@ -33,18 +33,19 @@
     }
 
 	function getScriptsCB(scripts) {
-		var activeScriptList = $("activeScriptCommandXid");
-		var inactiveScriptList = $("inactiveScriptCommandXid");
-        dwr.util.removeAllOptions("activeScriptCommandXid");
-        dwr.util.removeAllOptions("inactiveScriptCommandXid");
+		var activeScriptList = $("activeScriptCommand");
+		var inactiveScriptList = $("inactiveScriptCommand");
+        dwr.util.removeAllOptions("activeScriptCommand");
+        dwr.util.removeAllOptions("inactiveScriptCommand");
 
         activeScriptList.options[0] = new Option("", "");
         inactiveScriptList.options[0] = new Option("", "");
-        
+
         for (var i=0; i<scripts.length; i++) {
             sc = scripts[i];
-            activeScriptList.options[activeScriptList.options.length] = new Option(sc.name, sc.xid);
-            inactiveScriptList.options[inactiveScriptList.options.length] = new Option(sc.name, sc.xid);
+            var activeScriptIdentifier = sc.xid ? sc.xid : sc.id;
+            activeScriptList.options[activeScriptList.options.length] = new Option(sc.name, activeScriptIdentifier);
+            inactiveScriptList.options[inactiveScriptList.options.length] = new Option(sc.name, activeScriptIdentifier);
         }
 	}
     
@@ -284,10 +285,19 @@
                 $set("activeProcessCommand", handler.activeProcessCommand);
                 $set("inactiveProcessCommand", handler.inactiveProcessCommand);
             } else if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>) {
-                $set("activeScriptCommand", handler.activeScriptCommand);
-                $set("inactiveScriptCommand", handler.inactiveScriptCommand);
-                $set("activeScriptCommandXid", handler.activeScriptCommandXid);
-                $set("inactiveScriptCommandXid", handler.inactiveScriptCommandXid);
+                var activeScriptCommand = "";
+                var inactiveScriptCommand = "";
+                if(handler.activeScriptCommandXid || handler.inactiveScriptCommandXid) {
+                    activeScriptCommand = handler.activeScriptCommandXid;
+                    inactiveScriptCommand = handler.inactiveScriptCommandXid;
+                } else {
+                    activeScriptCommand = handler.activeScriptCommand;
+                    inactiveScriptCommand = handler.inactiveScriptCommand;
+                }
+                console.log("activeScriptCommand:" + activeScriptCommand);
+                console.log("inactiveScriptCommand:" + inactiveScriptCommand);
+                $set("activeScriptCommand", activeScriptCommand);
+                $set("inactiveScriptCommand", inactiveScriptCommand);
             }
         }
         else {
@@ -308,10 +318,8 @@
             $set("inactiveOverride", false);
             $set("activeProcessCommand", "");
             $set("inactiveProcessCommand", "");
-            $set("activeScriptCommand", -1);
-            $set("inactiveScriptCommand", -1);
-            $set("activeScriptCommandXid", "");
-            $set("inactiveScriptCommandXid", "");
+            $set("activeScriptCommand", "");
+            $set("inactiveScriptCommand", "");
             // Clear the recipient lists.
             emailRecipients.updateRecipientList();
             escalRecipients.updateRecipientList();
@@ -467,8 +475,7 @@
         else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>) {
             EventHandlersDwr.saveScriptEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid,
-                    alias, disabled, $get("activeScriptCommand"), $get("inactiveScriptCommand"),
-                    $get("activeScriptCommandXid"), $get("inactiveScriptCommandXid"), saveEventHandlerCB);
+                    alias, disabled, $get("activeScriptCommand"), $get("inactiveScriptCommand"), saveEventHandlerCB);
         }
     }
     
@@ -719,16 +726,16 @@
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.activeScript"/></td>
               <td class="formField">
-              	<select id="activeScriptCommandXid"></select>
-                <tag:img png="cog_go" onclick="testScriptCommand('activeScriptCommandXid')" title="eventHandlers.commandTest.title"/>
+               <select id="activeScriptCommand"></select>
+               <tag:img png="cog_go" onclick="testScriptCommand('activeScriptCommand')" title="eventHandlers.commandTest.title"/>
               </td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveScript"/></td>
               <td class="formField">
-              	<select id="inactiveScriptCommandXid"></select>
-                <tag:img png="cog_go" onclick="testScriptCommand('inactiveScriptCommandXid')" title="eventHandlers.commandTest.title"/>
+                <select id="inactiveScriptCommand"></select>
+                <tag:img png="cog_go" onclick="testScriptCommand('inactiveScriptCommand')" title="eventHandlers.commandTest.title"/>
               </td>
             </tr>
           </table>

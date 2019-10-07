@@ -31,8 +31,8 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
+import org.scada_lts.dao.batch.Limit;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -276,6 +276,17 @@ public class EventDAO implements IEventDAO {
 				+ COLUMN_NAME_EVENT_HANDLER_DATA+" "
 			+ "from "
 				+ "eventHandlers ";
+
+	private static final String EVENT_HANDLER_SELECT_PAGINATION= ""
+			+"select "
+			+ COLUMN_NAME_EVENT_HANDLER_ID+", "
+			+ COLUMN_NAME_EVENT_HANDLER_XID+", "
+            + COLUMN_NAME_EVENT_HANDLER_TYPE_ID+", "
+            + COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+", "
+            + COLUMN_NAME_EVENT_HANDLER_TYPE_REF2+", "
+			+ COLUMN_NAME_EVENT_HANDLER_DATA+" "
+			+ "from "
+			+ "eventHandlers LIMIT ? OFFSET ? ";
 	
 	private static final String EVENT_HANDLER_FILTER= " "
 			+ COLUMN_NAME_EVENT_HANDLER_TYPE_ID+"=? and "
@@ -389,7 +400,7 @@ public class EventDAO implements IEventDAO {
 	// RowMapper
 	public static class EventRowMapper implements RowMapper<EventInstance> {
 		public EventInstance mapRow(ResultSet rs, int rowNum) throws SQLException {
-			
+
 			EventType type = createEventType(rs, 2);
 			
 			LocalizableMessage message;
@@ -514,6 +525,7 @@ public class EventDAO implements IEventDAO {
 	
 	
 	@Override
+	@Deprecated
 	public List<EventInstance> findAll() {
 		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(BASIC_EVENT_SELECT, new Object[]{ }, new EventRowMapper());
 	}
@@ -904,6 +916,7 @@ public class EventDAO implements IEventDAO {
 	}
 	
 	@Override
+	@Deprecated
     public List<EventHandlerVO> getEventHandlers() {
 		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT, new Object[] {}, new EventHandlerRowMapper());
 	}
@@ -1028,5 +1041,10 @@ public class EventDAO implements IEventDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(EVENT_UPDATE_WHERE_ACK_USER_ID, new Object[]{userId});
+	}
+
+	@Override
+	public List<EventHandlerVO> getEventHandlers(int offset, Limit<Integer> limit) {
+		return DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT_PAGINATION, new Object[] {limit.get(), offset}, new EventHandlerRowMapper());
 	}
 }

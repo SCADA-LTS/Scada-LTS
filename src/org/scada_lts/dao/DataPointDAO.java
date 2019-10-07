@@ -25,8 +25,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.batch.Limit;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -46,7 +48,7 @@ import com.serotonin.mango.vo.DataPointVO;
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 @Repository
-public class DataPointDAO {
+public class DataPointDAO implements IDataPointDAO {
 	
 	private static final Log LOG = LogFactory.getLog(DataPointDAO.class);
 
@@ -110,6 +112,8 @@ public class DataPointDAO {
 
 	// @formatter:on
 
+	private final JdbcTemplate template = DAO.getInstance().getJdbcTemp();
+
 	private class DataPointRowMapper implements RowMapper<DataPointVO> {
 
 		
@@ -129,6 +133,7 @@ public class DataPointDAO {
 		}
 	}
 
+	@Override
 	public DataPointVO getDataPoint(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -136,11 +141,11 @@ public class DataPointDAO {
 		}
 
 		String templateSelectWhereId = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_ID + "=? ";
-
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new DataPointRowMapper());
+		return template.queryForObject(templateSelectWhereId, new Object[] {id}, new DataPointRowMapper());
 		
 	}
 
+	@Override
 	public DataPointVO getDataPoint(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -150,13 +155,15 @@ public class DataPointDAO {
 		String templateSelectWhereXid = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_XID + "=? ";
 
 		try {
-			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
+			return template.queryForObject(templateSelectWhereXid, new Object[] {xid}, new DataPointRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
 		
 	}
 
+	@Override
+	@Deprecated
 	public List<DataPointVO> getDataPoints() {
 
 		if (LOG.isTraceEnabled()) {
@@ -164,12 +171,13 @@ public class DataPointDAO {
 		}
 
 		try {
-			return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT, new DataPointRowMapper());
+			return template.query(DATA_POINT_SELECT, new DataPointRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
 	}
 		
+	@Override
 	public List<DataPointVO> filtered(String filter, Object[] argsFilter, long limit) {
 		String myLimit="";
 		Object[] args;
@@ -180,10 +188,11 @@ public class DataPointDAO {
 			args=argsFilter;
 		}
 	
-		return (List<DataPointVO>) DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT+" where "+ filter + myLimit, args, new DataPointRowMapper());
+		return (List<DataPointVO>) template.query(DATA_POINT_SELECT+" where "+ filter + myLimit, args, new DataPointRowMapper());
 	
 	}
 
+	@Override
 	public List<DataPointVO> getDataPoints(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -192,19 +201,21 @@ public class DataPointDAO {
 
 		String templateSelectWhereId = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_DATA_SOURCE_ID + "=?";
 
-		List<DataPointVO> dataPointList = DAO.getInstance().getJdbcTemp().query(templateSelectWhereId, new Object[] {dataSourceId}, new DataPointRowMapper());
+		List<DataPointVO> dataPointList = template.query(templateSelectWhereId, new Object[] {dataSourceId}, new DataPointRowMapper());
 		return dataPointList;
 	}
 
+	@Override
 	public List<Integer> getDataPointsIds(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataPointIds(int dataSourceId) dataSourceId:" + dataSourceId);
 		}
 
-		return DAO.getInstance().getJdbcTemp().queryForList(DATA_POINT_SELECT_ID, new Object[] {dataSourceId}, Integer.class);
+		return template.queryForList(DATA_POINT_SELECT_ID, new Object[] {dataSourceId}, Integer.class);
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int insert(final DataPointVO dataPoint) {
 
@@ -214,7 +225,7 @@ public class DataPointDAO {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+		template.update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement ps = connection.prepareStatement(DATA_POINT_INSERT, Statement.RETURN_GENERATED_KEYS);
@@ -230,6 +241,7 @@ public class DataPointDAO {
 		return keyHolder.getKey().intValue();
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void update(DataPointVO dataPoint) {
 
@@ -237,13 +249,14 @@ public class DataPointDAO {
 			LOG.trace("update(DataPointVO dataPoint) dataPoint:" + dataPoint);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
+		template.update(DATA_POINT_UPDATE, new Object[] {
 				dataPoint.getXid(),
 				new SerializationData().writeObject(dataPoint),
 				dataPoint.getId()
 		});
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void delete(int id) {
 
@@ -253,9 +266,10 @@ public class DataPointDAO {
 
 		String templateDeleteIn = DATA_POINT_DELETE + "=?";
 
-		DAO.getInstance().getJdbcTemp().update(templateDeleteIn, new Object[] {id});
+		template.update(templateDeleteIn, new Object[] {id});
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void deleteWithIn(String dataPointIdList) {
 
@@ -271,9 +285,10 @@ public class DataPointDAO {
 		}
 		queryBuilder.append(")");
 
-		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+		template.update(queryBuilder.toString(), (Object[]) parameters);
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void deleteEventHandler(String dataPointIdList) {
 
@@ -289,6 +304,17 @@ public class DataPointDAO {
 		}
 		queryBuilder.append(")");
 
-		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+		template.update(queryBuilder.toString(), (Object[]) parameters);
 	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(long offset, Limit<Integer> limit) {
+		return template.query("SELECT * FROM dataPoints WHERE LIMIT ? OFFSET ?", new Object[]{limit.get(), offset}, new DataPointRowMapper());
+	}
+
+	@Override
+	public long getCounts() {
+		return template.queryForObject("SELECT COUNT(*) FROM dataPoints", Long.class);
+	}
+
 }

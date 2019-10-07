@@ -90,7 +90,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		dataPoint.setDataSourceXid(DP_DATA_SOURCE_XID);
 		dataPoint.setDataSourceTypeId(DP_DATA_SOURCE_TYPE_ID);
 
-		DataPointDAO dataPointDAO = new DataPointDAO();
+		IDataPointDAO dataPointDAO = new DataPointDAO();
 
 		//Insert DataPoint
 		int firstDpId = dataPointDAO.insert(dataPoint);

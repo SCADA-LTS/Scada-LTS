@@ -33,6 +33,7 @@ import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 
 //public class DataPointDao extends BaseDao {
+@Deprecated
 public class DataPointDao {
 
     private MangoDataPoint dataPointService = new DataPointService();

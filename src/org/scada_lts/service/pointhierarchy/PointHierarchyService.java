@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
@@ -55,7 +56,7 @@ public class PointHierarchyService {
 	//TODO replace to @Autowire
 	private PointHierarchyXidDAO phDAO = new PointHierarchyXidDAO();
 
-	private DataPointDAO dpDAO = new DataPointDAO();
+	private IDataPointDAO dpDAO = new DataPointDAO();
 	
 	public PointHierarchyService() {
 		//

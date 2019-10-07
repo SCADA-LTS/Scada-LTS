@@ -4,6 +4,7 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import org.scada_lts.dao.GenericDaoCR;
+import org.scada_lts.dao.batch.Limit;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +55,8 @@ public interface IEventDAO extends GenericDaoCR<EventInstance> {
     List<EventHandlerVO> getEventHandlers(int typeId, int ref1, int ref2);
 
     List<EventHandlerVO> getEventHandlers();
+
+    List<EventHandlerVO> getEventHandlers(int offset, Limit<Integer> limit);
 
     EventHandlerVO getEventHandler(int eventHandlerId);
 

@@ -44,6 +44,7 @@ public class DAO {
 	private JdbcTemplate jdbcTemplate;	
 	private static DAO instance;
 	private boolean test =false;
+	private final static Object lock = new Object();
 	
 	private DAO() {
 		try {
@@ -66,7 +67,11 @@ public class DAO {
 
 	public static DAO getInstance() {
 		if (instance == null) {
-			instance = new DAO();
+			synchronized (lock) {
+				if(instance == null) {
+					instance = new DAO();
+				}
+			}
 		} 
 		return instance;
 	}

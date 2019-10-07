@@ -18,8 +18,10 @@
  */
 package com.serotonin.mango.rt.event.type;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -127,9 +129,22 @@ public class DataPointEventType extends EventType {
 	public void jsonSerialize(Map<String, Object> map) {
 		super.jsonSerialize(map);
 		DataPointDao dataPointDao = new DataPointDao();
-		map.put("dataPointXID", dataPointDao.getDataPoint(dataPointId).getXid());
-		map.put("detectorXID",
-				dataPointDao.getDetectorXid(pointEventDetectorId));
+
+		try {
+
+            DataPointVO dataPoint = dataPointDao.getDataPoint(dataPointId);
+            String dataPointXid = dataPoint.getXid();
+            map.put("dataPointXID", dataPointXid);
+
+			String xid = dataPointDao.getDetectorXid(pointEventDetectorId);
+			map.put("detectorXID", xid);
+
+		} catch (Exception e) {
+
+            String message = MessageFormat.format("pointEventDetectorId: {0}, " +
+                    "dataPointId: {1}", pointEventDetectorId, dataPointId);
+            LOG.error(message, e);
+		}
 	}
 
 	@Override

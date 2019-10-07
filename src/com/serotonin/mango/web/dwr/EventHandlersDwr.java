@@ -292,15 +292,12 @@ public class EventHandlersDwr extends BaseDwr {
 
 	public DwrResponseI18n saveScriptEventHandler(int eventSourceId,
 			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
-			String alias, boolean disabled, int activeScriptCommand,
-			int inactiveScriptCommand, String activeScriptCommandXid,
-			String inactiveScriptCommandXid) {
+			String alias, boolean disabled, String activeScriptCommand,
+            String inactiveScriptCommand) {
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_SCRIPT);
-		handler.setActiveScriptCommand(activeScriptCommand);
-		handler.setInactiveScriptCommand(inactiveScriptCommand);
-		handler.setActiveScriptCommandXid(activeScriptCommandXid);
-		handler.setInactiveScriptCommandXid(inactiveScriptCommandXid);
+		handler.setActiveScriptCommandXid(activeScriptCommand);
+		handler.setInactiveScriptCommandXid(inactiveScriptCommand);
 		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler,
 				handlerId, xid, alias, disabled);
 	}

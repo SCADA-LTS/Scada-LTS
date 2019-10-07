@@ -48,6 +48,7 @@ import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.ViewDao;
@@ -120,11 +121,10 @@ public class EmportDwr extends BaseDwr {
 		if (dataSources)
 			data.put(DATA_SOURCES, new DataSourceDao().getDataSources());
 
-		List<DataPointVO> allDataPoints = new DataPointDao().getDataPoints(
-				null, true);
-
-		if (dataPoints)
-			data.put(DATA_POINTS, allDataPoints);
+		if (dataPoints) {
+            List<DataPointVO> allDataPoints = new DataPointDAO().getDataPoints();
+            data.put(DATA_POINTS, allDataPoints);
+        }
 		if (scheduledEvents)
 			data.put(SCHEDULED_EVENTS,
 					new ScheduledEventDao().getScheduledEvents());
@@ -145,10 +145,6 @@ public class EmportDwr extends BaseDwr {
 		if (eventHandlers) {
 			EventDAO eventDAO = new EventDAO();
 			List<EventHandlerVO> handlers = eventDAO.getEventHandlers();
-			//code fixes old bindings between EventHandler and Script by scriptId,
-			//after the first export the structure is repaired binding by XID
-			//for performance reasons, modify the handler list
-			EventHandlersConverter.setXidForHandlers(handlers);
 			data.put(EVENT_HANDLERS, handlers);
 		}
 		if (watchLists) {
@@ -168,6 +164,7 @@ public class EmportDwr extends BaseDwr {
 
 			long antes = System.currentTimeMillis();
 			PointValueDao dao = new PointValueDao();
+            List<DataPointVO> allDataPoints = new DataPointDAO().getDataPoints();
 			for (DataPointVO dataPointVO : allDataPoints) {
 				allWrappedValues.addAll(PointValueJSONWrapper.wrapPointValues(
 						dataPointVO.getXid(), dao.getLatestPointValues(
