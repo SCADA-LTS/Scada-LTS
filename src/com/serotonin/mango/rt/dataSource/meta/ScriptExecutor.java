@@ -123,7 +123,6 @@ public class ScriptExecutor {
 			for (String varName : context.keySet()) {
 				IDataPoint point = context.get(varName);
 				int dt = point.getDataTypeId();
-
 				LOG.debug("Var: "
 						+ varName
 						+ ", value: "
