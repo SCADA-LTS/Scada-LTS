@@ -54,7 +54,7 @@
 	<target name="clean">
 		<delete dir="build/classes"/>
 	</target>
-
+  
 	<!-- Other targets -->
 	<target name="init">
 		<mkdir dir="build/classes"/>
@@ -268,7 +268,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
 	</path>
-
 	<target name="junit">
 		
 		    <junit printsummary="yes" haltonfailure="no">
@@ -325,7 +324,11 @@
 			<test name="com.serotonin.mango.rt.dataSource.snmp.SnmpDataSourceRTTest"
 				  haltonfailure="yes">
 			</test>
-
+          
+			<test name="com.serotonin.mango.rt.link.PointLinkRTTest"
+          haltonfailure="yes">
+      </test>
+          
 			<test name="org.scada_lts.mango.service.EventServiceUnitMockitoTest"
 				  haltonfailure="yes">
 			</test>
