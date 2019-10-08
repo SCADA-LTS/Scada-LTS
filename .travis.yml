@@ -2,6 +2,7 @@ sudo: required
 before_install:
 - sudo apt-get update
 - sudo apt-get install tomcat7
+- sudo apt-get install ant-junit
 before_script:
 - free -h
 - nvm ls

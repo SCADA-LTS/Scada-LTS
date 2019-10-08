@@ -54,6 +54,80 @@
 	<target name="clean">
 		<delete dir="build/classes"/>
 	</target>
+
+	<target name="war" description="Bundles the application as a WAR file" depends="clean, build">
+
+		<!--delete dir="WebContent/resources/new-ui"></delete>
+		<mkdir dir="WebContent/resources/new-ui"></mkdir>
+		<mkdir dir="WebContent/resources/new-ui/css"></mkdir>
+		<mkdir dir="WebContent/resources/new-ui/js"></mkdir>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css">
+			<fileset dir="ScadaLTS-UI-1/dist/static/css">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="app.*.css" to="app.css"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="app.*.js" to="app.js"/>
+
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="vendor.*.js" to="vendor.js"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="manifest.*.js" to="manifest.js"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="vendor.*.js.map" to="vendor.js.map"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="manifest.*.js.map" to="manifest.js.map"/>
+		</copy>
+
+		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
+			<fileset dir="ScadaLTS-UI-1/dist/static/js">
+				<include name="*"/>
+			</fileset>
+			<mapper type="glob" from="app.*.js.map" to="app.js.map"/>
+
+		</copy-->
+
+
+		<mkdir dir="WebContent/WEB-INF/classes"/>
+		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
+			<fileset dir="build/classes">
+				<include name="**/*.class"/>
+			</fileset>
+		</copy>
+
+		<copy file="build.properties" todir="WebContent/WEB-INF/classes"/>
+
+		<war destfile="${ant.project.name}.war"
+			 basedir="WebContent"
+			 needxmlfile="false">
+		</war>
+	</target>
   
 	<!-- Other targets -->
 	<target name="init">
@@ -270,7 +344,7 @@
 	</path>
 	<target name="junit">
 		
-		    <junit printsummary="yes" haltonfailure="no">
+		<junit printsummary="yes" haltonfailure="no">
 		    
 		    <formatter type="plain" usefile="false" />
 
@@ -314,11 +388,11 @@
 		    </test>
 		    -->
 		    <test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
-		    	haltonfailure="yes">
+				  haltonfailure="yes">
 		    </test>	
 		    	
 		    <test name="org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
-		    	haltonfailure="yes">
+				  haltonfailure="yes">
 		    </test>
 
 			<test name="com.serotonin.mango.rt.dataSource.snmp.SnmpDataSourceRTTest"
@@ -326,8 +400,8 @@
 			</test>
           
 			<test name="com.serotonin.mango.rt.link.PointLinkRTTest"
-          haltonfailure="yes">
-      </test>
+				  haltonfailure="yes">
+			</test>
           
 			<test name="org.scada_lts.mango.service.EventServiceUnitMockitoTest"
 				  haltonfailure="yes">
@@ -358,81 +432,7 @@
 		    </test> -->
 		    	
 		    	
-		  </junit>
-	</target>
-
-	<target name="war" description="Bundles the application as a WAR file" depends="clean, build">
-
-		<!--delete dir="WebContent/resources/new-ui"></delete>
-		<mkdir dir="WebContent/resources/new-ui"></mkdir>
-		<mkdir dir="WebContent/resources/new-ui/css"></mkdir>
-		<mkdir dir="WebContent/resources/new-ui/js"></mkdir>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/css">
-			<fileset dir="ScadaLTS-UI-1/dist/static/css">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="app.*.css" to="app.css"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="app.*.js" to="app.js"/>
-
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="vendor.*.js" to="vendor.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="manifest.*.js" to="manifest.js"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="vendor.*.js.map" to="vendor.js.map"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="manifest.*.js.map" to="manifest.js.map"/>
-		</copy>
-
-		<copy includeemptydirs="false" todir="WebContent/resources/new-ui/js">
-			<fileset dir="ScadaLTS-UI-1/dist/static/js">
-				<include name="*"/>
-			</fileset>
-			<mapper type="glob" from="app.*.js.map" to="app.js.map"/>
-
-		</copy-->
-
-
-		<mkdir dir="WebContent/WEB-INF/classes"/>
-		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
-			<fileset dir="build/classes">
-				<include name="**/*.class"/>
-			</fileset>
-		</copy>
-
-		<copy file="build.properties" todir="WebContent/WEB-INF/classes"/>
-
-		<war destfile="${ant.project.name}.war"
-			 basedir="WebContent"
-			 needxmlfile="false">
-		</war>
+		</junit>
 	</target>
 
 	<!-- New ScadaLTS-UI targets -->
