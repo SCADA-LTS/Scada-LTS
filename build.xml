@@ -358,9 +358,9 @@
 		  </junit>
 	</target>
 
-	<!--target name="war" description="Bundles the application as a WAR file" depends="clean, build">
+	<target name="war" description="Bundles the application as a WAR file" depends="clean, build">
 
-		<delete dir="WebContent/resources/new-ui"></delete>
+		<!--delete dir="WebContent/resources/new-ui"></delete>
 		<mkdir dir="WebContent/resources/new-ui"></mkdir>
 		<mkdir dir="WebContent/resources/new-ui/css"></mkdir>
 		<mkdir dir="WebContent/resources/new-ui/js"></mkdir>
@@ -414,7 +414,7 @@
 			</fileset>
 			<mapper type="glob" from="app.*.js.map" to="app.js.map"/>
 
-		</copy>
+		</copy-->
 
 
 		<mkdir dir="WebContent/WEB-INF/classes"/>
@@ -430,7 +430,7 @@
 			 basedir="WebContent"
 			 needxmlfile="false">
 		</war>
-	</target-->
+	</target>
 
 	<!-- New ScadaLTS-UI targets -->
 	<!--target name="update-static-web-dependecy" description="Update static web dependency">
