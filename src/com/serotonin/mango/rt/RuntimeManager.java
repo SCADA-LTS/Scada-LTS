@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -488,6 +489,11 @@ public class RuntimeManager {
 	// Point values
 	public void setDataPointValue(int dataPointId, MangoValue value,
 			SetPointSource source) {
+		if(source instanceof User){
+			setDataPointValue(dataPointId,
+					new PointValueTime(value, System.currentTimeMillis(),((User)source).getUsername()), source);
+		}
+		else
 		setDataPointValue(dataPointId,
 				new PointValueTime(value, System.currentTimeMillis()), source);
 	}
@@ -500,7 +506,9 @@ public class RuntimeManager {
 
 		if (!dataPoint.getPointLocator().isSettable())
 			throw new RTException("Point is not settable");
-
+		if(source == null) {
+			int aa = 0;
+		}
 		// Tell the data source to set the value of the point.
 		DataSourceRT ds = getRunningDataSource(dataPoint.getDataSourceId());
 		// The data source may have been disabled. Just make sure.

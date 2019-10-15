@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.mango.service.PointValueService;
 import org.springframework.dao.ConcurrencyFailureException;
@@ -34,7 +35,7 @@ import com.serotonin.mango.vo.bean.LongPair;
 public class PointValueDao extends BaseDao {
 	
 	private MangoPointValues pointValueService;
-	
+
 	public PointValueDao() {
 		pointValueService = new PointValueService();
 	}
@@ -42,7 +43,17 @@ public class PointValueDao extends BaseDao {
 	public PointValueDao(DataSource dataSource) {
 		pointValueService = new PointValueService();
 	}
+	public String whoChangedValue(String given){
 
+		final String EMPTY_STRING = "";
+
+		List<PointValueAdnnotation>  aa = pointValueService.findAllW();
+		for(PointValueAdnnotation pp:aa){
+			if( pp.getTextPointValueShort().equals(given) )
+				return pp.getChangeOwner();
+		}
+		return EMPTY_STRING;
+	}
 	/**
 	 * Only the PointValueCache should call this method during runtime. Do not
 	 * use.
@@ -56,6 +67,7 @@ public class PointValueDao extends BaseDao {
 		while (true) {
 			try {
 				savedPointValue = pointValueService.getPointValue(id);
+				//savedPointValue.setWhoChangedValue(pointValue.getWhoChangedValue());
 				break;
 			} catch (ConcurrencyFailureException e) {
 				if (retries <= 0)

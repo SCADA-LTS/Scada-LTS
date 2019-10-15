@@ -60,10 +60,27 @@ public class PointValueTime implements Serializable, IValueTime,
 
 	private final MangoValue value;
 	private final long time;
-
+	private String whoChangedValue;
 	public PointValueTime(MangoValue value, long time) {
 		this.value = value;
 		this.time = time;
+	}
+
+	public PointValueTime(MangoValue value, long time, String whoChangedValue) {
+		this.value = value;
+		this.time = time;
+		this.whoChangedValue = whoChangedValue;
+	}
+
+	public String getWhoChangedValue() {
+		if(whoChangedValue==null)
+			return "";
+		else
+			return whoChangedValue;
+	}
+
+	public void setWhoChangedValue(String whoChangedValue) {
+		this.whoChangedValue = whoChangedValue;
 	}
 
 	public PointValueTime(boolean value, long time) {

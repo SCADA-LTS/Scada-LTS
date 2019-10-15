@@ -86,7 +86,12 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	public List<PointValueTime> getLatestPointValues(int limit) {
 		return valueCache.getLatestPointValues(limit);
 	}
-
+	public String VAL(String time_,String a){
+		return valueCache.getValuesFromCacheForHistoryTable__(time_,a);
+	}
+	public boolean getValuesFromCacheForHistoryTable(String tim,String a){
+		return valueCache.getValuesFromCacheForHistoryTable(tim,a);
+	}
 	public PointValueTime getPointValueBefore(long time) {
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
 			if (pvt.getTime() < time)

@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.db.dao.PointValueDao;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.vo.User;
 
 /**
  * This class maintains an ordered list of the most recent values for a data point. It will mirror values in the
@@ -36,6 +38,7 @@ public class PointValueCache {
     private final int dataPointId;
     private final int defaultSize;
     private final PointValueDao dao;
+    private int maxSize = 0;
 
     /**
      * IMPORTANT: The list object should never be written to! The implementation here is for performance. Never call
@@ -52,8 +55,20 @@ public class PointValueCache {
         if (defaultSize > 0)
             refreshCache(defaultSize);
     }
+    public String getValuesFromCacheForHistoryTable__(String givenpointValue){
+        final String EMPTY_STRING="";
+        for(PointValueTime pointValueTime:cache){
+            if(((MangoValue)pointValueTime.getValue()).getStringValue().equals(givenpointValue) ) return pointValueTime.getWhoChangedValue();
+        }
+        return EMPTY_STRING;
+    }
+    public boolean getValuesFromCacheForHistoryTable(String time__,String givenPointValue){
+        for(PointValueTime pointValueTime:cache){
+            if( ((MangoValue)pointValueTime.getValue()).getStringValue().equals(givenPointValue) ) return true;
+        }
+        return false;
+    }
 
-    private int maxSize = 0;
 
     public void savePointValue(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
         if (logValue) {
@@ -61,7 +76,16 @@ public class PointValueCache {
                 dao.savePointValueAsync(dataPointId, pvt, source);
             else
                 pvt = dao.savePointValueSync(dataPointId, pvt, source);
+
         }
+        if(source!=null)
+        {
+            if(source instanceof User)
+            {
+                pvt.setWhoChangedValue(((User)source).getUsername());
+            }
+        }
+
 
         List<PointValueTime> c = cache;
         List<PointValueTime> newCache = new ArrayList<PointValueTime>(c.size() + 1);

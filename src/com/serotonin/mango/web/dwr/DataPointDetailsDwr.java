@@ -28,9 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
-import org.scada_lts.dao.UserDAO;
-import org.scada_lts.dao.model.point.PointValueAdnnotation;
-import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.RuntimeManager;
@@ -38,7 +35,6 @@ import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueFacade;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.view.chart.StatisticsChartRenderer;
 import com.serotonin.mango.vo.DataPointVO;
@@ -99,10 +95,14 @@ public class DataPointDetailsDwr extends BaseDwr {
 			rpvt.setTime(Functions.getTime(pvt));
 
 			if (pvt.isAnnotated()) {
-
 				AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
+				//String who = "";
+				//if(facade.doTheGivenValueIsSameLikeInCache(rpvt.getTime(),rpvt.getValue())){
+				//	who = String.valueOf(facade.whoChangedValue(rpvt.getTime(),rpvt.getValue()));
+				//}
 				if (apvt.getSourceDescriptionArgument() == null) {
-					apvt.setSourceDescriptionArgument("");
+					//apvt.setSourceDescriptionArgument(who);
+					rpvt.setAnnotation(apvt.getSourceDescriptionArgument());
 				} else {
 					rpvt.setAnnotation(apvt.getAnnotation(getResourceBundle()));
 				}

@@ -24,13 +24,34 @@ package org.scada_lts.dao.model.point;
  * 
  */
 public class PointValueAdnnotation {
-	
+	private String changeOwner;
+
+	public String getChangeOwner() {
+		return changeOwner;
+	}
+
+	public void setChangeOwner(String changeOwner) {
+		this.changeOwner = changeOwner;
+	}
 	private long pointValueId;
 	private String textPointValueShort;
 	private String textPointValueLong;
 	private int sourceType;
 	private long sourceId;
-	
+	public String toString(){
+		return new StringBuffer()
+				.append("SourceId")
+				.append("   ")
+				.append(getSourceId())
+				.append("   ")
+				.append("SourceType")
+				.append("   ")
+				.append(getSourceType())
+				.append("   ")
+				.append("getTextPointValueShort")
+				.append("   ")
+				.append(getTextPointValueShort()).toString();
+	}
 	public PointValueAdnnotation() {
 		//
 	}

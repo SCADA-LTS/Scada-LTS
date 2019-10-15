@@ -36,7 +36,14 @@ public class PointValueFacade {
         point = Common.ctx.getRuntimeManager().getDataPoint(dataPointId);
         pointValueDao = new PointValueDao();
     }
+    public String whoChangedValue(String time_,String given){
+        //return point.VAL(time_,given);
+        return pointValueDao.whoChangedValue(given);
+    }
+    public boolean doTheGivenValueIsSameLikeInCache(String tim,String a){
+        return point.getValuesFromCacheForHistoryTable(tim,a);
 
+    }
     public List<PointValueTime> getPointValues(long since) {
         if (point != null)
             return point.getPointValues(since);

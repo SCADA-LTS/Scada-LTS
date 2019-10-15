@@ -75,6 +75,10 @@ import com.serotonin.util.queue.ObjectQueue;
 @Service
 public class PointValueService implements MangoPointValues {
 
+    @Override
+    public List<PointValueAdnnotation> findAllW(){
+        return pointValueAnnotationsDAO.findAllW();
+    }
     private static List<UnsavedPointValue> UNSAVED_POINT_VALUES = new ArrayList<UnsavedPointValue>();
     private static final int POINT_VALUE_INSERT_VALUES_COUNT = 4;
 
@@ -592,6 +596,9 @@ public class PointValueService implements MangoPointValues {
 
     public PointValueTime getPointValue(long id) {
         return PointValueDAO.getInstance().getPointValue(id);
+    }
+    public List<PointValueAdnnotation> getAllPointValueAnnotations(){
+        return  pointValueAnnotationsDAO.findAll();
     }
 
     public void updatePointValueAnnotations(int userId) {

@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
+import org.scada_lts.dao.Test;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.springframework.jdbc.core.RowMapper;
@@ -44,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnotation> {
+public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnotation>, Test<PointValueAdnnotation> {
 	
 	private static final Log LOG = LogFactory.getLog(PointValueAdnnotationsDAO.class);
 	
@@ -67,7 +68,16 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 			+ "from "
 				+"pointValueAnnotations ";
 	
-	
+	private static final String POINT_VALUE_ADNNOTATIONS_SELECT_WITH_OWNER_OF_CHANGE = ""
+			+ "select pv."
+			+COLUMN_NAME_POINT_VALUE_ID + ", pv."
+			+COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", pv."
+			+COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", pv."
+			+COLUMN_NAME_SOURCE_TYPE + ", pv."
+			+COLUMN_NAME_SOURCE_ID + ", us."
+			+"username "
+			+ "from "
+			+"pointValueAnnotations pv, users us where us.id=pv."+COLUMN_NAME_SOURCE_ID+"";
 	private static final String POINT_VALUE_ADNNOTATIONS_INSERT = ""
 			+ "insert pointValueAnnotations  ("
 				+ COLUMN_NAME_POINT_VALUE_ID + "," 
@@ -106,6 +116,20 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 			return pva;
 		}
 	}
+	private class PointValueAdnnotationRowMapperW implements RowMapper<PointValueAdnnotation> {
+
+		public PointValueAdnnotation mapRow(ResultSet rs, int rowNum) throws SQLException {
+			PointValueAdnnotation pva = new PointValueAdnnotation();
+
+			pva.setPointValueId(rs.getLong("pv."+COLUMN_NAME_POINT_VALUE_ID));
+			pva.setTextPointValueShort(rs.getString("pv."+COLUMN_NAME_TEXT_POINT_VALUE_SHORT));
+			pva.setTextPointValueLong(rs.getString("pv."+COLUMN_NAME_TEXT_POINT_VALUE_LONG));
+			pva.setSourceType(rs.getInt("pv."+COLUMN_NAME_SOURCE_TYPE));
+			pva.setSourceId(rs.getLong("pv."+COLUMN_NAME_SOURCE_ID));
+			pva.setChangeOwner(rs.getString("us.username"));
+			return pva;
+		}
+	}
 
 	public static PointValueAdnnotationsDAO getInstance() {
 		if (instance == null) {
@@ -114,7 +138,10 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 		return instance;
 	}
 
-
+	@Override
+	public List<PointValueAdnnotation> findAllW() {
+		return (List<PointValueAdnnotation>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_ADNNOTATIONS_SELECT_WITH_OWNER_OF_CHANGE, new Object[]{ }, new PointValueAdnnotationRowMapperW());
+	}
 	@Override
 	public List<PointValueAdnnotation> findAll() {
 		return (List<PointValueAdnnotation>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_ADNNOTATIONS_SELECT, new Object[]{ }, new PointValueAdnnotationRowMapper());
