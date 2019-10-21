@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.mango.adapter.MangoPointValues;
+import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
 import org.scada_lts.mango.service.PointValueService;
 import org.springframework.dao.ConcurrencyFailureException;
 
@@ -35,25 +36,36 @@ import com.serotonin.mango.vo.bean.LongPair;
 public class PointValueDao extends BaseDao {
 	
 	private MangoPointValues pointValueService;
+	//private MangoPointValuesWithChangeOwner  pointValueServiceWithChangeOwner;
 
 	public PointValueDao() {
-		pointValueService = new PointValueService();
+
+		initializePrivateVariables();
+
 	}
 
 	public PointValueDao(DataSource dataSource) {
-		pointValueService = new PointValueService();
+
+		initializePrivateVariables();
+
 	}
-	public String whoChangedValue(String given){
+	/**
+	 *
+	 * that method will be used to get info about owner of point value change from database
+	 * but here is needed id of pointAnnotattion because in db can be many rows with
+	 * only givenPointValue
+	 *
+	 */
+	/*public String whoChangedValue(String givenPointValue){
 
 		final String EMPTY_STRING = "";
 
-		List<PointValueAdnnotation>  aa = pointValueService.findAllW();
-		for(PointValueAdnnotation pp:aa){
-			if( pp.getTextPointValueShort().equals(given) )
-				return pp.getChangeOwner();
+		for(PointValueAdnnotation pointValueAdnnotation:pointValueServiceWithChangeOwner.findAllWithAdnotationsAboutChangeOwner()){
+			if( pointValueAdnnotation.getTextPointValueShort().equals(givenPointValue) )
+				return pointValueAdnnotation.getChangeOwner();
 		}
 		return EMPTY_STRING;
-	}
+	}*/
 	/**
 	 * Only the PointValueCache should call this method during runtime. Do not
 	 * use.
@@ -67,7 +79,6 @@ public class PointValueDao extends BaseDao {
 		while (true) {
 			try {
 				savedPointValue = pointValueService.getPointValue(id);
-				//savedPointValue.setWhoChangedValue(pointValue.getWhoChangedValue());
 				break;
 			} catch (ConcurrencyFailureException e) {
 				if (retries <= 0)
@@ -174,5 +185,10 @@ public class PointValueDao extends BaseDao {
 	public List<Long> getFiledataIds() {
 		return pointValueService.getFiledataIds();
 	}
-	
+	private void initializePrivateVariables(){
+
+		pointValueService = new PointValueService();
+		//pointValueServiceWithChangeOwner = new PointValueService();
+
+	}
 }

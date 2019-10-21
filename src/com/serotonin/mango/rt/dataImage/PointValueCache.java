@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.User;
 
 /**
@@ -55,22 +54,26 @@ public class PointValueCache {
         if (defaultSize > 0)
             refreshCache(defaultSize);
     }
-    public String getValuesFromCacheForHistoryTable__(String givenpointValue){
+
+    /*
+    those method will proprably used to get information - annotations  - from database but.....
+     */
+    /*public String getValuesFromCacheForHistoryTable__(String givenpointValue){
         final String EMPTY_STRING="";
         for(PointValueTime pointValueTime:cache){
             if(((MangoValue)pointValueTime.getValue()).getStringValue().equals(givenpointValue) ) return pointValueTime.getWhoChangedValue();
         }
         return EMPTY_STRING;
-    }
-    public boolean getValuesFromCacheForHistoryTable(String time__,String givenPointValue){
+    }*/
+    /*public boolean getValuesFromCacheForHistoryTable(String time__,String givenPointValue){
         for(PointValueTime pointValueTime:cache){
             if( ((MangoValue)pointValueTime.getValue()).getStringValue().equals(givenPointValue) ) return true;
         }
         return false;
-    }
+    }*/
 
 
-    public void savePointValue(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
+    public void savePointValueIntoDaoAndCacheUpdate(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
         if (logValue) {
             if (async)
                 dao.savePointValueAsync(dataPointId, pvt, source);
@@ -78,6 +81,12 @@ public class PointValueCache {
                 pvt = dao.savePointValueSync(dataPointId, pvt, source);
 
         }
+        setChangeOwnerIfSourceIsNotEmpty(pvt,source);
+
+        insertPointValueTimeIntoCache(pvt);
+    }
+    private void setChangeOwnerIfSourceIsNotEmpty(PointValueTime pvt, SetPointSource source) {
+
         if(source!=null)
         {
             if(source instanceof User)
@@ -86,7 +95,8 @@ public class PointValueCache {
             }
         }
 
-
+    }
+    private void insertPointValueTimeIntoCache(PointValueTime pvt){
         List<PointValueTime> c = cache;
         List<PointValueTime> newCache = new ArrayList<PointValueTime>(c.size() + 1);
         newCache.addAll(c);

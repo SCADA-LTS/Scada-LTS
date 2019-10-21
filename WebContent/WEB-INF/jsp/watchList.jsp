@@ -329,6 +329,7 @@
 
           if (owner) {
               show("p"+ pointId +"MoveUp");
+              show("p"+ pointId +"pointDetails");
               show("p"+ pointId +"MoveDown");
               show("p"+ pointId +"Delete");
           }
@@ -703,7 +704,7 @@
                   <td style="width:1px; white-space:nowrap;">
                     <input type="checkbox" name="chartCB" id="p_TEMPLATE_ChartCB" value="_TEMPLATE_" checked="checked"
                             title="<fmt:message key="watchlist.consolidatedChart"/>"/>
-                    <tag:img png="icon_comp" title="watchlist.pointDetails"
+                    <tag:img png="icon_comp" id="p_TEMPLATE_pointDetails" title="watchlist.pointDetails"
                             onclick="window.location='data_point_details.shtm?dpid='+ getMangoId(this)"/>
                     <tag:img png="arrow_up_thin" id="p_TEMPLATE_MoveUp" title="watchlist.moveUp" style="display:none;"
                             onclick="moveRowUp('p'+ getMangoId(this));"/><tag:img png="arrow_down_thin"

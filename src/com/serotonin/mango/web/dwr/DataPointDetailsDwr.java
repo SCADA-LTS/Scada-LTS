@@ -96,12 +96,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 
 			if (pvt.isAnnotated()) {
 				AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
-				//String who = "";
-				//if(facade.doTheGivenValueIsSameLikeInCache(rpvt.getTime(),rpvt.getValue())){
-				//	who = String.valueOf(facade.whoChangedValue(rpvt.getTime(),rpvt.getValue()));
-				//}
 				if (apvt.getSourceDescriptionArgument() == null) {
-					//apvt.setSourceDescriptionArgument(who);
 					rpvt.setAnnotation(apvt.getSourceDescriptionArgument());
 				} else {
 					rpvt.setAnnotation(apvt.getAnnotation(getResourceBundle()));

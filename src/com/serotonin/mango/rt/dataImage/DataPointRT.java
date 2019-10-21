@@ -86,12 +86,19 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	public List<PointValueTime> getLatestPointValues(int limit) {
 		return valueCache.getLatestPointValues(limit);
 	}
-	public String VAL(String time_,String a){
-		return valueCache.getValuesFromCacheForHistoryTable__(time_,a);
-	}
-	public boolean getValuesFromCacheForHistoryTable(String tim,String a){
+
+
+	/*
+    those method will proprably used to get information - annotations  - from database but.....
+     */
+	/*public String getValuesFromCacheForHistoryTable__(String time_,String a){
+
+		return valueCache.getValuesFromCacheForHistoryTable__(a);
+
+	}*/
+	/*public boolean getValuesFromCacheForHistoryTable(String tim,String a){
 		return valueCache.getValuesFromCacheForHistoryTable(tim,a);
-	}
+	}*/
 	public PointValueTime getPointValueBefore(long time) {
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
 			if (pvt.getTime() < time)
@@ -273,7 +280,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		}
 
 		if (saveValue)
-			valueCache.savePointValue(newValue, source, logValue, async);
+			valueCache.savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
 
 		// Ignore historical values.
 		if (pointValue == null || newValue.getTime() >= pointValue.getTime()) {
