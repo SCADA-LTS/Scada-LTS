@@ -106,12 +106,12 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 	private void execute(PointValueTime newValue) {
 
 		// Bail out if already running a point link operation
-/*		synchronized (ready) {
+		synchronized (ready) {
 			if (!ready)
 				return;
 			else
 				ready = false; // Stop anyone else from using this
-		}*/
+		}
 
 		// Propagate the update to the target point. Validate that the target
 		// point is available.

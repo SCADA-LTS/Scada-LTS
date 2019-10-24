@@ -36,7 +36,6 @@ import com.serotonin.mango.vo.bean.LongPair;
 public class PointValueDao extends BaseDao {
 	
 	private MangoPointValues pointValueService;
-	//private MangoPointValuesWithChangeOwner  pointValueServiceWithChangeOwner;
 
 	public PointValueDao() {
 
@@ -49,23 +48,6 @@ public class PointValueDao extends BaseDao {
 		initializePrivateVariables();
 
 	}
-	/**
-	 *
-	 * that method will be used to get info about owner of point value change from database
-	 * but here is needed id of pointAnnotattion because in db can be many rows with
-	 * only givenPointValue
-	 *
-	 */
-	/*public String whoChangedValue(String givenPointValue){
-
-		final String EMPTY_STRING = "";
-
-		for(PointValueAdnnotation pointValueAdnnotation:pointValueServiceWithChangeOwner.findAllWithAdnotationsAboutChangeOwner()){
-			if( pointValueAdnnotation.getTextPointValueShort().equals(givenPointValue) )
-				return pointValueAdnnotation.getChangeOwner();
-		}
-		return EMPTY_STRING;
-	}*/
 	/**
 	 * Only the PointValueCache should call this method during runtime. Do not
 	 * use.
@@ -188,7 +170,6 @@ public class PointValueDao extends BaseDao {
 	private void initializePrivateVariables(){
 
 		pointValueService = new PointValueService();
-		//pointValueServiceWithChangeOwner = new PointValueService();
 
 	}
 }

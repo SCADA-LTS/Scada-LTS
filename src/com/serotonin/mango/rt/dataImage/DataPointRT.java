@@ -82,23 +82,25 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		this.pointLocator = pointLocator;
 		valueCache = new PointValueCache(vo.getId(), vo.getDefaultCacheSize());
 	}
+	public DataPointRT(DataPointVO vo) {
+		this.vo = vo;
+		this.pointLocator = null;
+		valueCache = new PointValueCache();
+	}
+	public PointValueCache getPointValueCache(){
+		return this.valueCache;
+	}
 
 	public List<PointValueTime> getLatestPointValues(int limit) {
 		return valueCache.getLatestPointValues(limit);
 	}
+    public List<PointValueTime> getLatestPointValuesUsedForJunitTest(int limit) {
+	    return valueCache.getLatestPointValuesUsedForTest(limit);
+    }
+    public void addCollectionIntoCache(PointValueTime pvt){
+	    valueCache.addPointValueTimeIntoCacheForTest(pvt);
+    }
 
-
-	/*
-    those method will proprably used to get information - annotations  - from database but.....
-     */
-	/*public String getValuesFromCacheForHistoryTable__(String time_,String a){
-
-		return valueCache.getValuesFromCacheForHistoryTable__(a);
-
-	}*/
-	/*public boolean getValuesFromCacheForHistoryTable(String tim,String a){
-		return valueCache.getValuesFromCacheForHistoryTable(tim,a);
-	}*/
 	public PointValueTime getPointValueBefore(long time) {
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
 			if (pvt.getTime() < time)

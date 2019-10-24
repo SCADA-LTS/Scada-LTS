@@ -36,17 +36,6 @@ public class PointValueFacade {
         point = Common.ctx.getRuntimeManager().getDataPoint(dataPointId);
         pointValueDao = new PointValueDao();
     }
-    /*
-    those method will proprably used to get information - annotations  - from database but.....
-    */
-    /*(public String whoChangedValue(String time_,String given){
-        //return point.VAL(time_,given);
-        return pointValueDao.whoChangedValue(given);
-    }*/
-    /*public boolean doTheGivenValueIsSameLikeInCache(String tim,String a){
-        return point.getValuesFromCacheForHistoryTable(tim,a);
-
-    }*/
     public List<PointValueTime> getPointValues(long since) {
         if (point != null)
             return point.getPointValues(since);
@@ -71,7 +60,7 @@ public class PointValueFacade {
         return pointValueDao.getLatestPointValue(dataPointId);
     }
 
-    public List<PointValueTime> getPointValuesBetween(long from, long to) {
+        public List<PointValueTime> getPointValuesBetween(long from, long to) {
         if (point != null)
             return point.getPointValuesBetween(from, to);
         return pointValueDao.getPointValuesBetween(dataPointId, from, to);

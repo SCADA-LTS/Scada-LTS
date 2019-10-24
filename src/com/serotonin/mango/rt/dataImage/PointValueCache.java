@@ -45,7 +45,11 @@ public class PointValueCache {
      * time, always use a local copy of the variable for read purposes.
      */
     private List<PointValueTime> cache = new ArrayList<PointValueTime>();
-
+    public PointValueCache(){
+        this.dataPointId = -1;
+        this.defaultSize = -1;
+        this.dao=null;
+    }
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
@@ -72,7 +76,9 @@ public class PointValueCache {
         return false;
     }*/
 
-
+    public void savePointValueIntoCache(PointValueTime pvt, SetPointSource source, boolean logValue) {
+        setChangeOwnerIfSourceIsNotEmpty(pvt,source);
+    }
     public void savePointValueIntoDaoAndCacheUpdate(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
         if (logValue) {
             if (async)
@@ -98,9 +104,10 @@ public class PointValueCache {
     }
     private void insertPointValueTimeIntoCache(PointValueTime pvt){
         List<PointValueTime> c = cache;
+        //System.out.println("===copy cache ===ddd2"+c);
         List<PointValueTime> newCache = new ArrayList<PointValueTime>(c.size() + 1);
         newCache.addAll(c);
-
+        //System.out.println("new cache ="+newCache);
         // Insert the value in the cache.
         int pos = 0;
         if (newCache.size() == 0)
@@ -115,10 +122,11 @@ public class PointValueCache {
         // Check if we need to clean up the list
         while (newCache.size() > maxSize)
             newCache.remove(newCache.size() - 1);
-        // if (newCache.size() > maxSize - 1)
-        // newCache = new ArrayList<PointValueTime>(newCache.subList(0, maxSize));
-
+         if (newCache.size() > maxSize - 1)
+         newCache = new ArrayList<PointValueTime>(newCache.subList(0, maxSize));
+        //System.out.println("===2222===ddd2"+newCache);
         cache = newCache;
+        //System.out.println("===111111111c===ddd2"+cache);
     }
 
     /**
@@ -139,20 +147,25 @@ public class PointValueCache {
 
         return null;
     }
-
+    public void addPointValueTimeIntoCacheForTest(PointValueTime pvt){
+        cache.add(pvt);
+    }
+    public List<PointValueTime> getLatestPointValuesUsedForTest(int limit){
+        return cache;
+    }
     public List<PointValueTime> getLatestPointValues(int limit) {
         if (maxSize < limit)
             refreshCache(limit);
 
-        List<PointValueTime> c = cache;
-        if (limit == c.size())
-            return c;
+        if (limit == cache.size())
+            return cache;
 
+        List<PointValueTime> c = cache;
         if (limit > c.size())
             limit = c.size();
         return new ArrayList<PointValueTime>(c.subList(0, limit));
     }
-
+    public void setMaxSize(int size){ this.maxSize = size; }
     private void refreshCache(int size) {
         if (size > maxSize) {
             maxSize = size;
