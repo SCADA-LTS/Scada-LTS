@@ -18,7 +18,8 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="com.serotonin.mango.DataTypes"%>
-<link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
+<%@ include file="/WEB-INF/jsp/include/vue/vue-app.css.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-ds.css.jsp"%>
 <style>
   table {
      border-collapse: separate !important;

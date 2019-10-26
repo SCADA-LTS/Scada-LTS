@@ -23,6 +23,8 @@
 	js="view,dygraph-combined,dygraph-extra,dygraphsSplineUtils,dygraphsCharts"
 	css="jQuery/plugins/chosen/chosen,jQuery/plugins/jpicker/css/jPicker-1.1.6.min,jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min" 
 	jqplugins="chosen/chosen.jquery.min,jpicker/jpicker-1.1.6.min,jquery-ui/js/jquery-ui-1.10.3.custom.min" >
+	<link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
+    <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
   <script type="text/javascript">
@@ -641,14 +643,6 @@
   </form>
 </tag:page>
 <script>
-setTimeout(function(){
-    jQuery.getScript('./resources/new-ui/js/manifest.js');
-    setTimeout(function(){
-        jQuery.getScript('./resources/new-ui/js/vendor.js');
-        setTimeout(function(){
-            jQuery.getScript('./resources/new-ui/js/app.js');
-        }, 200);
-    }, 200);
-}, 200);
-
 </script>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
