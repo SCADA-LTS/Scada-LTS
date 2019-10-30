@@ -18,8 +18,9 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="com.serotonin.mango.DataTypes"%>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-app.css.jsp"%>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-ds.css.jsp"%>
+<link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
+<link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
+
 <style>
   table {
      border-collapse: separate !important;
@@ -182,9 +183,7 @@
         <tr>
 
           <td COLSPAN=2>
-            <div id="app">
-                <sleep-reactivation-ds></sleep-reactivation-ds>
-            </div>
+              <div id="sleep-reactivation-ds"/>
           </td>
         </tr>
 
@@ -262,4 +261,5 @@
     </tr>
   </tbody>
 </tag:pointList>
-<%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
