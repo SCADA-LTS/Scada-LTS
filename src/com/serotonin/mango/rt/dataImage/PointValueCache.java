@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.serotonin.mango.db.dao.PointValueDao;
-
 /**
  * This class maintains an ordered list of the most recent values for a data point. It will mirror values in the
  * database, but provide a much faster lookup for a limited number of values.
@@ -36,7 +34,6 @@ import com.serotonin.mango.db.dao.PointValueDao;
 public class PointValueCache {
     private final int dataPointId;
     private final int defaultSize;
-    private final PointValueDao dao;
     private PointValueCacheCooperateWithDao pointValueCacheCooperateWithDao;
 
     /**
@@ -44,61 +41,27 @@ public class PointValueCache {
      * methods like add() or remove() on the cache object. Further, since the cache object can be replaced from time to
      * time, always use a local copy of the variable for read purposes.
      */
-    //private List<PointValueTime> cache = new ArrayList<PointValueTime>();
     private LinkedList<PointValueTime>  cache = new LinkedList<PointValueTime>();
+    private int maxSize = 0;
 
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
         pointValueCacheCooperateWithDao = new PointValueCacheCooperateWithDao(dataPointId);
-        dao = new PointValueDao();
 
         if (defaultSize > 0)
-            refreshCache(defaultSize);
+            refreshCacheDependsOnGivenSize(defaultSize);
     }
-
-    private int maxSize = 0;
 
     public void savePointValue(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
         if (logValue) {
             pointValueCacheCooperateWithDao.savePointValue(pvt,source,async);
         }
-       long timestart = System.nanoTime();
-        /*
-        List<PointValueTime> c = cache;
-        List<PointValueTime> newCache = new ArrayList<PointValueTime>(c.size() + 1);
-        newCache.addAll(c);
-
-         */
         if(cache.size()!=0){
             cache.addFirst(pvt);
         }
         else
             cache.add(pvt);
-        // Insert the value in the cache.
-        /*
-        int pos = 0;
-        if (newCache.size() == 0)
-            newCache.add(pvt);
-        else {
-            while (pos < newCache.size() && newCache.get(pos).getTime() > pvt.getTime())
-                pos++;
-            if (pos < maxSize)
-                newCache.add(pos, pvt);
-        }
-
-         */
-
-        // Check if we need to clean up the list
-        /*while (newCache.size() > maxSize)
-            newCache.remove(newCache.size() - 1);
-*/
-        // if (newCache.size() > maxSize - 1)
-        // newCache = new ArrayList<PointValueTime>(newCache.subList(0, maxSize));
-
-        /*cache = newCache;*/
-        long endTime = System.nanoTime();
-        System.out.println("FINISH: " +(endTime-timestart));
 
     }
 
@@ -107,14 +70,13 @@ public class PointValueCache {
      */
     void logPointValueAsync(PointValueTime pointValue, SetPointSource source) {
         // Save the new value and get a point value time back that has the id and annotations set, as appropriate.
-        dao.savePointValueAsync(dataPointId, pointValue, source);
+        pointValueCacheCooperateWithDao.logPointValueAsync(pointValue,source);
     }
 
     public PointValueTime getLatestPointValue() {
         if (maxSize == 0)
-            refreshCache(1);
+            refreshCacheDependsOnGivenSize(1);
 
-        //List<PointValueTime> c = cache;
         if (cache.size() > 0)
             return cache.get(0);
 
@@ -123,33 +85,27 @@ public class PointValueCache {
 
     public List<PointValueTime> getLatestPointValues(int limit) {
         if (maxSize < limit)
-            refreshCache(limit);
+            refreshCacheDependsOnGivenSize(limit);
 
-        List<PointValueTime> c = cache;
         if (limit == cache.size())
             return cache;
 
         if (limit > cache.size())
             limit = cache.size();
+
         return new ArrayList<PointValueTime>(cache.subList(0,limit));
-        //return new ArrayList<PointValueTime>(c.subList(0, limit));
     }
 
-    private void refreshCache(int size) {
-       /* if (size > maxSize) {
+    private void refreshCacheDependsOnGivenSize(int size) {
+        if (size > maxSize) {
             maxSize = size;
             if (size == 1) {
                 // Performance thingy
-                PointValueTime pvt = dao.getLatestPointValue(dataPointId);
-                if (pvt != null) {
-                    List<PointValueTime> c = new ArrayList<PointValueTime>();
-                    c.add(pvt);
-                    cache = c;
-                }
+                readOnlyOneRowMaxTSAndPutIntoCache();
             }
             else
-                cache = dao.getLatestPointValues(dataPointId, size);
-        }*/
+                getPointValuesAndFillCacheDependingOnRowsLimit(size);
+        }
     }
 
     /**
@@ -160,16 +116,22 @@ public class PointValueCache {
     }
 
     public void reset() {
-        List<PointValueTime> c = cache;
 
         int size = defaultSize;
-        if (c.size() < size)
-            size = c.size();
-
-        List<PointValueTime> nc = new ArrayList<PointValueTime>(size);
-        nc.addAll(c.subList(0, size));
+        if (cache.size() < size)
+            size = cache.size();
 
         maxSize = size;
-        /*cache = c;*/
+    }
+
+    private void readOnlyOneRowMaxTSAndPutIntoCache(){
+        PointValueTime pointValueTime = pointValueCacheCooperateWithDao.getLatestPointValueFromDao();
+        if (pointValueTime != null) {
+            cache.addFirst(pointValueTime);
+        }
+    }
+
+    private void getPointValuesAndFillCacheDependingOnRowsLimit(int size){
+        cache = pointValueCacheCooperateWithDao.getDefinedLimitRowsOfLatestPointValues(size);
     }
 }
