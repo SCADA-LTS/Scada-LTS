@@ -65,6 +65,14 @@ public class PointValueAdnnotation {
 		this.sourceId = sourceId;
 	}
 
+	public String getChangeOwner() {
+		return changeOwner;
+	}
+
+	public void setChangeOwner(String changeOwner) {
+		this.changeOwner = changeOwner;
+	}
+
 	public long getPointValueId() {
 		return pointValueId;
 	}

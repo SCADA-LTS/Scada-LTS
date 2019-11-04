@@ -48,6 +48,8 @@ public class PointValueDao extends BaseDao {
 		initializePrivateVariables();
 
 	}
+
+	 */
 	/**
 	 * Only the PointValueCache should call this method during runtime. Do not
 	 * use.
