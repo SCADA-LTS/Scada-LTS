@@ -42,7 +42,7 @@ public class PointValueCache {
      * time, always use a local copy of the variable for read purposes.
      */
     private LinkedList<PointValueTime>  cache = new LinkedList<PointValueTime>();
-    private int maxSize = 0;
+    private int maxSize = 10;
 
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
@@ -57,7 +57,8 @@ public class PointValueCache {
         if (logValue) {
             pointValueCacheCooperateWithDao.savePointValue(pvt,source,async);
         }
-        if(cache.size()!=0){
+        if(cache.size()==maxSize){
+            cache.removeLast();
             cache.addFirst(pvt);
         }
         else
@@ -101,7 +102,7 @@ public class PointValueCache {
             maxSize = size;
             if (size == 1) {
                 // Performance thingy
-                readOnlyOneRowMaxTSAndPutIntoCache();
+                readOnlyOneRowWithMaxTSAndPutIntoCache();
             }
             else
                 getPointValuesAndFillCacheDependingOnRowsLimit(size);
@@ -124,7 +125,7 @@ public class PointValueCache {
         maxSize = size;
     }
 
-    private void readOnlyOneRowMaxTSAndPutIntoCache(){
+    private void readOnlyOneRowWithMaxTSAndPutIntoCache(){
         PointValueTime pointValueTime = pointValueCacheCooperateWithDao.getLatestPointValueFromDao();
         if (pointValueTime != null) {
             cache.addFirst(pointValueTime);
