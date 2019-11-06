@@ -49,7 +49,7 @@ public class PointValueDao extends BaseDao {
 
 	}
 
-	 */
+
 	/**
 	 * Only the PointValueCache should call this method during runtime. Do not
 	 * use.

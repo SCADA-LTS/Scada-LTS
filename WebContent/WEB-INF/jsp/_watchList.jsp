@@ -288,7 +288,6 @@
           
           if (owner) {
               show("p"+ pointId +"MoveUp");
-              show("p"+ pointId +"ShowDetails");
               show("p"+ pointId +"MoveDown");
               show("p"+ pointId +"Delete");
           }

@@ -104,10 +104,9 @@ public class PointValueCache {
     }
     private void insertPointValueTimeIntoCache(PointValueTime pvt){
         List<PointValueTime> c = cache;
-        //System.out.println("===copy cache ===ddd2"+c);
         List<PointValueTime> newCache = new ArrayList<PointValueTime>(c.size() + 1);
         newCache.addAll(c);
-        //System.out.println("new cache ="+newCache);
+
         // Insert the value in the cache.
         int pos = 0;
         if (newCache.size() == 0)
@@ -122,11 +121,10 @@ public class PointValueCache {
         // Check if we need to clean up the list
         while (newCache.size() > maxSize)
             newCache.remove(newCache.size() - 1);
-         if (newCache.size() > maxSize - 1)
-         newCache = new ArrayList<PointValueTime>(newCache.subList(0, maxSize));
-        //System.out.println("===2222===ddd2"+newCache);
+        // if (newCache.size() > maxSize - 1)
+        // newCache = new ArrayList<PointValueTime>(newCache.subList(0, maxSize));
+
         cache = newCache;
-        //System.out.println("===111111111c===ddd2"+cache);
     }
 
     /**
@@ -157,10 +155,10 @@ public class PointValueCache {
         if (maxSize < limit)
             refreshCache(limit);
 
-        if (limit == cache.size())
-            return cache;
-
         List<PointValueTime> c = cache;
+        if (limit == c.size())
+            return c;
+
         if (limit > c.size())
             limit = c.size();
         return new ArrayList<PointValueTime>(c.subList(0, limit));

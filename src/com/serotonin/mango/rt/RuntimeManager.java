@@ -506,9 +506,7 @@ public class RuntimeManager {
 
 		if (!dataPoint.getPointLocator().isSettable())
 			throw new RTException("Point is not settable");
-		if(source == null) {
-			int aa = 0;
-		}
+
 		// Tell the data source to set the value of the point.
 		DataSourceRT ds = getRunningDataSource(dataPoint.getDataSourceId());
 		// The data source may have been disabled. Just make sure.

@@ -56,9 +56,9 @@ public class PointValueTime implements Serializable, IValueTime,
 	}
 
 	public static MangoValue getValue(PointValueTime pvt) {
-
-		return (pvt == null)?null:pvt.getValue();
-
+		if (pvt == null)
+			return null;
+		return pvt.getValue();
 	}
 
 	public PointValueTime(MangoValue value, long time) {
