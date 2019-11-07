@@ -17,11 +17,12 @@
     "css-loader": "^3.2.0",
     "moment": "^2.22.2",
     "uiv": "^0.27.0",
-    "vue": "^2.6.10",
+    "vue": "2.6.10",
     "vue-jsoneditor": "^1.0.13",
     "vue-loader": "^15.7.1",
     "vue-router": "^3.0.1",
     "vue-underscore": "^0.1.4",
+    "vuejs-logger": "^1.5.3",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

@@ -44,7 +44,7 @@ public class ReactivationManager {
         }
     }
 
-    private void removeInfoAboutJob(String keyNameJob) {
+    protected void removeInfoAboutJob(String keyNameJob) {
 
         Map.Entry<String,Integer> dsInfo = sleepDsIndexJobName.get(keyNameJob);
         sleepDsIndexIdDs.remove(dsInfo.getValue());

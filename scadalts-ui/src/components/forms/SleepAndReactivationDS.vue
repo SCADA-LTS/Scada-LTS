@@ -140,56 +140,63 @@ export default {
   created() {
     // get from variable to communicate between old ui and new
 
-    if (editDSNewUI.reactivation.sleep) {
-      this.reactivation = this.STR_REACTIVATION_TYPE_SLEEP;
-    } else if (editDSNewUI.stop) {
-      this.reactivation = this.STR_REACTIVATION_TYPE_STOP;
-    } else {
-      this.reactivation = this.STR_REACTIVATION_TYPE_NONE;
-    }
-    if (editDSNewUI.reactivation.type == this.INT_REACTIVATION_TYPE_TIME_MIN) {
-      this.reactivationTimeType = this.STR_REACTIVATION_TYPE_TIME_MIN
-    } else if (editDSNewUI.reactivation.type == this.INT_REACTIVATION_TYPE_TIME_HOUR) {
-      this.reactivationTimeType = this.STR_REACTIVATION_TYPE_TIME_HOUR
-    } else if (editDSNewUI.reactivation.type == this.INT_REACTIVATION_TYPE_TIME_DAY) {
-      this.reactivationTimeType = this.STR_REACTIVATION_TYPE_TIME_DAY
-    }
-    this.reactivationTimeValue = editDSNewUI.reactivation.value;
+    if ( editDSNewUI !== undefined) {
+      if (editDSNewUI.reactivation.sleep) {
+        this.reactivation = this.STR_REACTIVATION_TYPE_SLEEP;
+      } else if (editDSNewUI.stop) {
+        this.reactivation = this.STR_REACTIVATION_TYPE_STOP;
+      } else {
+        this.reactivation = this.STR_REACTIVATION_TYPE_NONE;
+      }
+      if (editDSNewUI.reactivation.type == this.INT_REACTIVATION_TYPE_TIME_MIN) {
+        this.reactivationTimeType = this.STR_REACTIVATION_TYPE_TIME_MIN
+      } else if (editDSNewUI.reactivation.type == this.INT_REACTIVATION_TYPE_TIME_HOUR) {
+        this.reactivationTimeType = this.STR_REACTIVATION_TYPE_TIME_HOUR
+      } else if (editDSNewUI.reactivation.type == this.INT_REACTIVATION_TYPE_TIME_DAY) {
+        this.reactivationTimeType = this.STR_REACTIVATION_TYPE_TIME_DAY
+      }
+      this.reactivationTimeValue = editDSNewUI.reactivation.value;
 
-    this.idDs = editDSNewUI.id;
+      this.idDs = editDSNewUI.id;
 
-    setInterval(
-        function() {
-            this.checkWhenNextTryEnableDs();
-        }.bind(this),
-        this.TIME_REFRESH
+      setInterval(
+              function () {
+                this.checkWhenNextTryEnableDs();
+              }.bind(this),
+              this.TIME_REFRESH
       );
-
+    }
   },
   watch: {
     reactivation() {
-      if (this.reactivation == this.STR_REACTIVATION_TYPE_SLEEP) {
-        editDSNewUI.stop = false;
-        editDSNewUI.reactivation.sleep = true;
-      } else if (this.reactivation == this.STR_REACTIVATION_TYPE_STOP) {
-        editDSNewUI.stop = true;
-        editDSNewUI.reactivation.sleep = false;
-      } else {
-        editDSNewUI.stop = false;
-        editDSNewUI.reactivation.sleep = false;
+      if (editDSNewUI !== undefined) {
+        if (this.reactivation == this.STR_REACTIVATION_TYPE_SLEEP) {
+          editDSNewUI.stop = false;
+          editDSNewUI.reactivation.sleep = true;
+        } else if (this.reactivation == this.STR_REACTIVATION_TYPE_STOP) {
+          editDSNewUI.stop = true;
+          editDSNewUI.reactivation.sleep = false;
+        } else {
+          editDSNewUI.stop = false;
+          editDSNewUI.reactivation.sleep = false;
+        }
       }
     },
     reactivationTimeType() {
-      if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_MIN) {
-        editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_MIN
-      } else if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_HOUR) {
-        editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_HOUR;
-      } else if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_DAY) {
-        editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_DAY;
+      if (editDSNewUI !== undefined) {
+        if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_MIN) {
+          editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_MIN
+        } else if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_HOUR) {
+          editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_HOUR;
+        } else if (this.reactivationTimeType == this.STR_REACTIVATION_TYPE_TIME_DAY) {
+          editDSNewUI.reactivation.type = this.INT_REACTIVATION_TYPE_TIME_DAY;
+        }
       }
     },
     reactivationTimeValue() {
-      editDSNewUI.reactivation.value = this.reactivationTimeValue;
+      if (editDSNewUI !== undefined) {
+        editDSNewUI.reactivation.value = this.reactivationTimeValue;
+      }
     }
   },
   filters: {
