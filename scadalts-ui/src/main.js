@@ -3,6 +3,7 @@ import App from './apps/App.vue'
 import router from './router'
 import store from './store'
 import * as uiv from 'uiv'
+import VueLogger from 'vuejs-logger'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Test from './components/Test'
@@ -12,9 +13,23 @@ import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG'
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy'
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS'
 
-Vue.config.productionTip = false
+const isProduction = process.env.NODE_ENV === 'production';
+
+const options = {
+  isEnabled: true,
+  logLevel : isProduction ? 'error' : 'debug',
+  stringifyArguments : false,
+  showLogLevel : true,
+  showMethodName : true,
+  separator: '|',
+  showConsoleColors: true
+};
+
+Vue.use(VueLogger, options);
 
 Vue.use(uiv)
+
+Vue.config.devtools = true
 
 new Vue({
   router,
@@ -34,6 +49,7 @@ if (window.document.getElementById('app-test') != undefined) {
 
 if (window.document.getElementById('app-isalive') != undefined) {
   new Vue({
+    store,
     render: h => h(IsAlive,
       {
         props:
@@ -41,7 +57,7 @@ if (window.document.getElementById('app-isalive') != undefined) {
             plabel: window.document.getElementById('app-isalive').getAttribute('plabel'),
             ptimeWarning: window.document.getElementById('app-isalive').getAttribute('ptime-warning'),
             ptimeError: window.document.getElementById('app-isalive').getAttribute('ptime-error'),
-            timeRefresh: window.document.getElementById('app-isalive').getAttribute('ptime-refresh'),
+            ptimeRefresh: window.document.getElementById('app-isalive').getAttribute('ptime-refresh'),
           }
       })
   }).$mount('#app-isalive')
@@ -64,28 +80,28 @@ for (let i = 0; i < 20; i++) {
   }
 }
 
-if (window.document.getElementById('#simple-component-svg') != undefined) {
+if (window.document.getElementById('simple-component-svg') != undefined) {
   new Vue({
     render: h => h(SimpleComponentSVG, {
       props:
         {
-          pxidPoint: window.document.getElementById('#simple-component-svg').getAttribute('pxidPoint'),
-          ptimeRefresh: window.document.getElementById('#simple-component-svg').getAttribute('ptimeRefresh'),
-          plabel: window.document.getElementById('#simple-component-svg').getAttribute('plabel'),
-          pvalue: window.document.getElementById('#simple-component-svg').getAttribute('pvalue')
+          pxidPoint: window.document.getElementById('simple-component-svg').getAttribute('pxidPoint'),
+          ptimeRefresh: window.document.getElementById('simple-component-svg').getAttribute('ptimeRefresh'),
+          plabel: window.document.getElementById('simple-component-svg').getAttribute('plabel'),
+          pvalue: window.document.getElementById('simple-component-svg').getAttribute('pvalue')
         }
     })
   }).$mount('#simple-component-svg')
 }
 
-new Vue({
-  render: h => h(SleepAndReactivationDS)
-}).$mount('#sleep-reactivation-ds')
+if (window.document.getElementById('sleep-reactivation-ds') != undefined) {
+  new Vue({
+    render: h => h(SleepAndReactivationDS)
+  }).$mount('#sleep-reactivation-ds')
+}
 
-new Vue({
-  render: h => h(ExportImportPointHierarchy)
-}).$mount('#export-import-ph')
-
-new Vue({
-  render: h => h(SleepAndReactivationDS)
-}).$mount('#sleep-reactivation-ds')
+if (window.document.getElementById('export-import-ph') != undefined) {
+  new Vue({
+    render: h => h(ExportImportPointHierarchy)
+  }).$mount('#export-import-ph')
+}
