@@ -17,17 +17,16 @@
  */
 package org.scada_lts.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.UserCommentCache;
 import org.scada_lts.utils.EventTypeUtil;
-import org.springframework.jdbc.core.RowMapper;
+
 
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -121,10 +120,8 @@ public class PendingEventsDAO {
 		
 		try {
 			@SuppressWarnings("unchecked")
-			List<UserCommentCache> listUserComents = DAO.getInstance().getJdbcTemp().query(SQL_USER_COMMENTS, new RowMapper() {
-				@Override
-				public UserCommentCache mapRow(ResultSet rs, int rownumber) throws SQLException {
-					
+			List<UserCommentCache> listUserComents = DAO.getInstance().getJdbcTemp().query(SQL_USER_COMMENTS,
+				(rs, rownumber) -> {
 					UserCommentCache user = new UserCommentCache();
 					user.setUserId(rs.getInt(COLUMN_NAME_COMMENT_USER_ID));
 					user.setUserName(rs.getString(COLUMN_NAME_COMMENT_USER_NAME));
@@ -132,8 +129,7 @@ public class PendingEventsDAO {
 					user.setCommentText(rs.getString(COLUMN_NAME_COMMENT_COMMENT_TEXT));
 					user.setTypeKey(rs.getInt(COLUMN_NAME_COMMENT_TYPE_KEY));
 					return user;
-				}
-			});
+				});
 
 			return listUserComents;
 		} catch (Exception e) {
@@ -142,55 +138,53 @@ public class PendingEventsDAO {
 		return null;
 	}
 	
-	private List<EventInstance> getPendingEvents(int userId, final TreeMap<Integer, List<UserComment>> comments ) {
+	private List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments ) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL PendingEvents userId:"+userId);
 		}
 		
 		try {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
-			List<EventInstance> listEvents = DAO.getInstance().getJdbcTemp().query(SQL_EVENTS,new Integer[]{userId}, new RowMapper() {
-				@Override
-				public EventInstance mapRow(ResultSet rs, int rownumber) throws SQLException {
-					int typeId = rs.getInt(COLUMN_NAME_EVENT_TYPE_ID);
-					int typeRef1 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1);
-					int typeRef2 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2);
-					EventType type = EventTypeUtil.createEventType(typeId, typeRef1, typeRef2);
-					long activeTS = rs.getLong(COLUMN_NAME_EVENT_ACTIVE_TS);
-					Boolean rtnApplicable = DAO.charToBool(rs.getString(COLUMN_NAME_EVENT_RTN_APPLICABLE));
-					int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
-					
-					LocalizableMessage message;
-					try {
-						message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
-					} catch (LocalizableMessageParseException e) {
-						message = new LocalizableMessage("common.default",
-								rs.getString(COLUMN_NAME_EVENT_MESSAGE));
-					}
-					
-					EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, null);
-					
-					event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
-					long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);
-					if (!rs.wasNull())
-						event.returnToNormal(rtnTs, rs.getInt(COLUMN_NAME_EVENT_RTN_COUSE));
-					long ackTs = rs.getLong(COLUMN_NAME_EVENT_ACK_TS);
-					if (!rs.wasNull()) {
-						event.setAcknowledgedTimestamp(ackTs);
-						event.setAcknowledgedByUserId(rs.getInt(COLUMN_NAME_EVENT_ACK_USER_ID));
-						if (!rs.wasNull())
-							event.setAcknowledgedByUsername(rs.getString(COLUMN_NAME_EVENT_USERNAME));
-						event.setAlternateAckSource(rs.getInt(COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE));
-					}
+			List<EventInstance> listEvents = DAO.getInstance().getJdbcTemp().query(SQL_EVENTS,new Integer[]{userId},
+					(rs, rownumber) -> {
+				int typeId = rs.getInt(COLUMN_NAME_EVENT_TYPE_ID);
+				int typeRef1 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1);
+				int typeRef2 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2);
+				EventType type = EventTypeUtil.createEventType(typeId, typeRef1, typeRef2);
+				long activeTS = rs.getLong(COLUMN_NAME_EVENT_ACTIVE_TS);
+				Boolean rtnApplicable = DAO.charToBool(rs.getString(COLUMN_NAME_EVENT_RTN_APPLICABLE));
+				int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
 
-					String silent = rs.getString(COLUMN_NAME_EVENT_SILENCED);
-					event.setSilenced(DAO.charToBool(silent));
-					if (!rs.wasNull())
-						event.setUserNotified(true);
-					
-					attachRelationalInfo(event, comments);
-					return event;
+				LocalizableMessage message;
+				try {
+					message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
+				} catch (LocalizableMessageParseException e) {
+					message = new LocalizableMessage("common.default",
+							rs.getString(COLUMN_NAME_EVENT_MESSAGE));
 				}
+
+				EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, null);
+
+				event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
+				long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);
+				if (!rs.wasNull())
+					event.returnToNormal(rtnTs, rs.getInt(COLUMN_NAME_EVENT_RTN_COUSE));
+				long ackTs = rs.getLong(COLUMN_NAME_EVENT_ACK_TS);
+				if (!rs.wasNull()) {
+					event.setAcknowledgedTimestamp(ackTs);
+					event.setAcknowledgedByUserId(rs.getInt(COLUMN_NAME_EVENT_ACK_USER_ID));
+					if (!rs.wasNull())
+						event.setAcknowledgedByUsername(rs.getString(COLUMN_NAME_EVENT_USERNAME));
+					event.setAlternateAckSource(rs.getInt(COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE));
+				}
+
+				String silent = rs.getString(COLUMN_NAME_EVENT_SILENCED);
+				event.setSilenced(DAO.charToBool(silent));
+				if (!rs.wasNull())
+					event.setUserNotified(true);
+
+				attachRelationalInfo(event, comments);
+				return event;
 			});
 
 			return listEvents;
@@ -201,13 +195,13 @@ public class PendingEventsDAO {
 	}
 	
 
-	protected TreeMap<Integer, List<EventInstance>> getPendingEvents() {
+	protected Map<Integer, List<EventInstance>> getPendingEvents() {
 		
 		List<Integer> users = new UserDAO().getAll();
-		
-		TreeMap<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
-		
-		TreeMap<Integer,List<EventInstance>> treeMap = new TreeMap<Integer,List<EventInstance>>();
+
+		Map<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
+
+		Map<Integer,List<EventInstance>> treeMap = new ConcurrentHashMap<>();
 		for (int userId: users) {
 			List<EventInstance> events = getPendingEvents(userId,comments);
 			treeMap.put(userId, events );
@@ -215,25 +209,23 @@ public class PendingEventsDAO {
 		return treeMap;
 	}
 	
-	private void attachRelationalInfo(EventInstance event, TreeMap<Integer, List<UserComment>> comments){			
+	private void attachRelationalInfo(EventInstance event, Map<Integer, List<UserComment>> comments){
 		event.setEventComments(comments.get(event.getId()));
 	}
 	
-	protected TreeMap<Integer, List<UserComment>> getCacheUserComments(List<UserCommentCache> commentsCache) {
-		
-		TreeMap<Integer, List<UserComment>> mappedUserCommentForEvent = new TreeMap<Integer, List<UserComment>>();
+	protected Map<Integer, List<UserComment>> getCacheUserComments(List<UserCommentCache> commentsCache) {
+
+		ConcurrentHashMap<Integer, List<UserComment>> mappedUserCommentForEvent = new ConcurrentHashMap<>();
 		
 		for (UserCommentCache u: commentsCache) {
 			int key = u.getTypeKey();
-			if (mappedUserCommentForEvent.get(key) == null) {
-				mappedUserCommentForEvent.put(key, new ArrayList<UserComment>());
-			}
+			mappedUserCommentForEvent.putIfAbsent(key, new CopyOnWriteArrayList<>());
 			UserComment uc = new UserComment();
 			uc.setComment(u.getCommentText());
 			uc.setTs(u.getTs());
 			uc.setUserId(u.getUserId());
 			uc.setUsername(u.getUserName());
-			mappedUserCommentForEvent.get(key).add(uc); 
+			mappedUserCommentForEvent.get(key).add(uc);
 		}
 		return mappedUserCommentForEvent;
 	}		

@@ -18,10 +18,10 @@
 package org.scada_lts.cache;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
+import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +47,8 @@ public class PendingEventsCache extends PendingEventsDAO{
 	private static final Log LOG = LogFactory.getLog(PendingEventsCache.class);
 	private static PendingEventsCache instance = null;
 	private int countBuffer;
-	
+	private Map<Integer, List<EventInstance>> mapPendingEvents;
+
 	public static PendingEventsCache getInstance() throws SchedulerException, IOException {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Get PendingEventsCache instance ");
@@ -73,16 +74,16 @@ public class PendingEventsCache extends PendingEventsDAO{
 		
 		if (mapPendingEvents == null) {
 			LOG.error(new Exception("Error cache PendingEvents - null cache"));
-			return new ArrayList<EventInstance>();
+			return Collections.emptyList();
 		}
 		
 		if (mapPendingEvents.isEmpty()) {
-			return new ArrayList<EventInstance>();
+			return Collections.emptyList();
 		}
 		
 		List<EventInstance> listEventInstance = mapPendingEvents.get(userId);
 		if (listEventInstance == null) {
-			return new ArrayList<EventInstance>();
+			return Collections.emptyList();
 		} 
 		return listEventInstance;
 	}
@@ -100,7 +101,7 @@ public class PendingEventsCache extends PendingEventsDAO{
 	 * @see UpdatePendingEvents
 	 * @param mapPendingEvents
 	 */
-	public void setMapPendingEvents(TreeMap<Integer, List<EventInstance>> mapPendingEvents) {
+	public void setMapPendingEvents(Map<Integer, List<EventInstance>> mapPendingEvents) {
 		this.mapPendingEvents = mapPendingEvents;
 	}
 
@@ -112,9 +113,7 @@ public class PendingEventsCache extends PendingEventsDAO{
 		mapPendingEvents = getPendingEvents();
 		cacheInitialize();
 	}
-	
-	private TreeMap<Integer, List<EventInstance>> mapPendingEvents;
-	
+
 	private void cacheInitialize() throws SchedulerException, IOException {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("cacheInitialize");
