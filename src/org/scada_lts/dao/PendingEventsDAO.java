@@ -17,6 +17,8 @@
  */
 package org.scada_lts.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -146,46 +148,7 @@ public class PendingEventsDAO {
 		try {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			List<EventInstance> listEvents = DAO.getInstance().getJdbcTemp().query(SQL_EVENTS,new Integer[]{userId},
-					(rs, rownumber) -> {
-				int typeId = rs.getInt(COLUMN_NAME_EVENT_TYPE_ID);
-				int typeRef1 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1);
-				int typeRef2 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2);
-				EventType type = EventTypeUtil.createEventType(typeId, typeRef1, typeRef2);
-				long activeTS = rs.getLong(COLUMN_NAME_EVENT_ACTIVE_TS);
-				Boolean rtnApplicable = DAO.charToBool(rs.getString(COLUMN_NAME_EVENT_RTN_APPLICABLE));
-				int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
-
-				LocalizableMessage message;
-				try {
-					message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
-				} catch (LocalizableMessageParseException e) {
-					message = new LocalizableMessage("common.default",
-							rs.getString(COLUMN_NAME_EVENT_MESSAGE));
-				}
-
-				EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, null);
-
-				event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
-				long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);
-				if (!rs.wasNull())
-					event.returnToNormal(rtnTs, rs.getInt(COLUMN_NAME_EVENT_RTN_COUSE));
-				long ackTs = rs.getLong(COLUMN_NAME_EVENT_ACK_TS);
-				if (!rs.wasNull()) {
-					event.setAcknowledgedTimestamp(ackTs);
-					event.setAcknowledgedByUserId(rs.getInt(COLUMN_NAME_EVENT_ACK_USER_ID));
-					if (!rs.wasNull())
-						event.setAcknowledgedByUsername(rs.getString(COLUMN_NAME_EVENT_USERNAME));
-					event.setAlternateAckSource(rs.getInt(COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE));
-				}
-
-				String silent = rs.getString(COLUMN_NAME_EVENT_SILENCED);
-				event.setSilenced(DAO.charToBool(silent));
-				if (!rs.wasNull())
-					event.setUserNotified(true);
-
-				attachRelationalInfo(event, comments);
-				return event;
-			});
+					(rs, rownumber) -> mapToEvent(comments, rs));
 
 			return listEvents;
 		} catch (Exception e) {
@@ -193,7 +156,48 @@ public class PendingEventsDAO {
 		}
 		return null;
 	}
-	
+
+	private EventInstance mapToEvent(Map<Integer, List<UserComment>> comments, ResultSet rs) throws SQLException {
+		int typeId = rs.getInt(COLUMN_NAME_EVENT_TYPE_ID);
+		int typeRef1 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1);
+		int typeRef2 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2);
+		EventType type = EventTypeUtil.createEventType(typeId, typeRef1, typeRef2);
+		long activeTS = rs.getLong(COLUMN_NAME_EVENT_ACTIVE_TS);
+		Boolean rtnApplicable = DAO.charToBool(rs.getString(COLUMN_NAME_EVENT_RTN_APPLICABLE));
+		int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
+
+		LocalizableMessage message;
+		try {
+			message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
+		} catch (LocalizableMessageParseException e) {
+			message = new LocalizableMessage("common.default",
+					rs.getString(COLUMN_NAME_EVENT_MESSAGE));
+		}
+
+		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, null);
+
+		event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
+		long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);
+		if (!rs.wasNull())
+			event.returnToNormal(rtnTs, rs.getInt(COLUMN_NAME_EVENT_RTN_COUSE));
+		long ackTs = rs.getLong(COLUMN_NAME_EVENT_ACK_TS);
+		if (!rs.wasNull()) {
+			event.setAcknowledgedTimestamp(ackTs);
+			event.setAcknowledgedByUserId(rs.getInt(COLUMN_NAME_EVENT_ACK_USER_ID));
+			if (!rs.wasNull())
+				event.setAcknowledgedByUsername(rs.getString(COLUMN_NAME_EVENT_USERNAME));
+			event.setAlternateAckSource(rs.getInt(COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE));
+		}
+
+		String silent = rs.getString(COLUMN_NAME_EVENT_SILENCED);
+		event.setSilenced(DAO.charToBool(silent));
+		if (!rs.wasNull())
+			event.setUserNotified(true);
+
+		attachRelationalInfo(event, comments);
+		return event;
+	}
+
 
 	protected Map<Integer, List<EventInstance>> getPendingEvents() {
 		
@@ -201,12 +205,12 @@ public class PendingEventsDAO {
 
 		Map<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
 
-		Map<Integer,List<EventInstance>> treeMap = new ConcurrentHashMap<>();
+		Map<Integer,List<EventInstance>> cacheEvents = new ConcurrentHashMap<>();
 		for (int userId: users) {
 			List<EventInstance> events = getPendingEvents(userId,comments);
-			treeMap.put(userId, events );
+			cacheEvents.put(userId, events );
 		}
-		return treeMap;
+		return cacheEvents;
 	}
 	
 	private void attachRelationalInfo(EventInstance event, Map<Integer, List<UserComment>> comments){
@@ -215,7 +219,7 @@ public class PendingEventsDAO {
 	
 	protected Map<Integer, List<UserComment>> getCacheUserComments(List<UserCommentCache> commentsCache) {
 
-		ConcurrentHashMap<Integer, List<UserComment>> mappedUserCommentForEvent = new ConcurrentHashMap<>();
+		Map<Integer, List<UserComment>> mappedUserCommentForEvent = new ConcurrentHashMap<>();
 		
 		for (UserCommentCache u: commentsCache) {
 			int key = u.getTypeKey();
