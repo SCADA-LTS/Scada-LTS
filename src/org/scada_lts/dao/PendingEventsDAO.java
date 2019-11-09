@@ -1,19 +1,19 @@
 /*
  * (c) 2015 Abil'I.T. http://abilit.eu/
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.scada_lts.dao;
 
@@ -38,14 +38,14 @@ import com.serotonin.web.i18n.LocalizableMessageParseException;
 
 /**
  * DAO for Pending Events.
- * 
+ *
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
 public class PendingEventsDAO {
-	
+
 	private static final Log LOG = LogFactory.getLog(PendingEventsDAO.class);
-	
+
 	private final static String  COLUMN_NAME_EVENT_ID = "id";
 	private final static String  COLUMN_NAME_EVENT_TYPE_ID = "typeId";
 	private final static String  COLUMN_NAME_EVENT_TYPE_REF1 = "typeRef1";
@@ -61,13 +61,13 @@ public class PendingEventsDAO {
 	private final static String  COLUMN_NAME_EVENT_USERNAME = "username";
 	private final static String  COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE = "alternateAckSource";
 	private final static String  COLUMN_NAME_EVENT_SILENCED = "silenced";
-	
+
 	private final static String  COLUMN_NAME_COMMENT_USER_ID = "userId";
 	private final static String  COLUMN_NAME_COMMENT_USER_NAME = "username";
 	private final static String  COLUMN_NAME_COMMENT_TS = "ts";
 	private final static String  COLUMN_NAME_COMMENT_COMMENT_TEXT = "commentText";
 	private final static String  COLUMN_NAME_COMMENT_TYPE_KEY = "typeKey";
-	
+
 	// @formatter:off
 	private static final String SQL_EVENTS = ""
 			+ "select "
@@ -89,15 +89,15 @@ public class PendingEventsDAO {
 			+ "from "
 				+ "events e   "
 				+ "left join users u on e.ackUserId=u.id   "
-				+ "left join userEvents ue on e.id=ue.eventId " 
+				+ "left join userEvents ue on e.id=ue.eventId "
 			+ "where "
 				+ "ue.userId=? and "
 				+ "(e.ackTs is null or e.ackTs = 0) "
 			+ "order by e.activeTs desc "
 			+ "LIMIT 100";
-	
-	
-	private static final String SQL_USER_COMMENTS = "" 
+
+
+	private static final String SQL_USER_COMMENTS = ""
 			+ "select "
 			    + "uc.userId, "
 			    + "u.username, "
@@ -110,16 +110,16 @@ public class PendingEventsDAO {
 			+ "where "
 				+ "uc.commentType= 1 "
 			+ "order by uc.ts";
-	
+
 	// @formatter:on
-	
-	
+
+
 	@SuppressWarnings("rawtypes")
 	protected  List<UserCommentCache> getUserComents() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL UserComents");
 		}
-		
+
 		try {
 			@SuppressWarnings("unchecked")
 			List<UserCommentCache> listUserComents = DAO.getInstance().getJdbcTemp().query(SQL_USER_COMMENTS,
@@ -139,12 +139,12 @@ public class PendingEventsDAO {
 		}
 		return null;
 	}
-	
+
 	private List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments ) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL PendingEvents userId:"+userId);
 		}
-		
+
 		try {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			List<EventInstance> listEvents = DAO.getInstance().getJdbcTemp().query(SQL_EVENTS,new Integer[]{userId},
@@ -200,27 +200,27 @@ public class PendingEventsDAO {
 
 
 	protected Map<Integer, List<EventInstance>> getPendingEvents() {
-		
+
 		List<Integer> users = new UserDAO().getAll();
 
 		Map<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
 
 		Map<Integer,List<EventInstance>> cacheEvents = new ConcurrentHashMap<>();
 		for (int userId: users) {
-			List<EventInstance> events = getPendingEvents(userId,comments);
-			cacheEvents.put(userId, events );
+			List<EventInstance> events = new CopyOnWriteArrayList<>(getPendingEvents(userId, comments));
+			cacheEvents.put(userId, events);
 		}
 		return cacheEvents;
 	}
-	
+
 	private void attachRelationalInfo(EventInstance event, Map<Integer, List<UserComment>> comments){
 		event.setEventComments(comments.get(event.getId()));
 	}
-	
+
 	protected Map<Integer, List<UserComment>> getCacheUserComments(List<UserCommentCache> commentsCache) {
 
 		Map<Integer, List<UserComment>> mappedUserCommentForEvent = new ConcurrentHashMap<>();
-		
+
 		for (UserCommentCache u: commentsCache) {
 			int key = u.getTypeKey();
 			mappedUserCommentForEvent.putIfAbsent(key, new CopyOnWriteArrayList<>());
@@ -232,5 +232,5 @@ public class PendingEventsDAO {
 			mappedUserCommentForEvent.get(key).add(uc);
 		}
 		return mappedUserCommentForEvent;
-	}		
+	}
 }
