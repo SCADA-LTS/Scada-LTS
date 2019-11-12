@@ -6,10 +6,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
+import org.scada_lts.service.MultiChangesHistoryService;
 import org.scada_lts.web.mvc.api.components.cmp.model.SetValuePointDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,21 +28,29 @@ import javax.servlet.http.HttpServletRequest;
 public class ChangeDataAPI {
     private static final Log LOG = LogFactory.getLog(ChangeDataAPI.class);
 
-    private DataPointService dataPointService = new DataPointService();
+    @Autowired
+    private DataPointService dataPointService;
 
     @Resource
     private PointValueService pointValueService;
 
+    @Resource
+    private MultiChangesHistoryService multiChangesHistoryService;
 
-    @RequestMapping(value = "/api/cmp/set", method = RequestMethod.POST)
-    public ResponseEntity<SetValuePointDTO[]> set(@RequestBody SetValuePointDTO[] xIDsValues, HttpServletRequest request) {
-        LOG.info("/api/cmp/set xIDSsValues:" + xIDsValues.toString());
+
+    @RequestMapping(value = "/api/cmp/set/{xIdViewAndIdCmp}/{interpretedState}", method = RequestMethod.POST)
+    public ResponseEntity<SetValuePointDTO[]> set(
+            @RequestBody SetValuePointDTO[] xIDsValues,
+            @PathVariable String xIdViewAndIdCmp,
+            @PathVariable String interpretedState,
+            HttpServletRequest request) {
+
+        LOG.info("/api/cmp/set pxIdViewAndIdCmp:"+xIdViewAndIdCmp+" interpretedState:"+interpretedState+" xIDSsValues:" + xIDsValues.toString());
 
         try {
             User user = Common.getUser(request);
 
             if (user != null) {
-
                 for (SetValuePointDTO sv : xIDsValues) {
                     try {
                         dataPointService.saveAPI(user, sv.getValue(), sv.getXid());
@@ -46,6 +58,14 @@ public class ChangeDataAPI {
                         sv.setError(e.getMessage());
                     }
                 }
+
+                multiChangesHistoryService.addToCmpHistory(
+                        user.getId(),
+                        xIdViewAndIdCmp,
+                        interpretedState,
+                        xIDsValues
+                );
+
 
                 return new ResponseEntity<>(xIDsValues, HttpStatus.OK);
             }
