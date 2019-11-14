@@ -10,6 +10,9 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "ag-grid": "^18.1.2",
+    "ag-grid-community": "^21.2.2",
+    "ag-grid-vue": "^21.2.2",
     "ajv": "^6.5.2",
     "axios": "^0.19.0",
     "bootstrap": "^3.3.7",
@@ -20,6 +23,8 @@
     "vue": "2.6.10",
     "vue-jsoneditor": "^1.0.13",
     "vue-loader": "^15.7.1",
+    "vue-lodash": "^2.0.2",
+    "vue-property-decorator": "^7.3.0",
     "vue-router": "^3.0.1",
     "vue-underscore": "^0.1.4",
     "vuejs-logger": "^1.5.3",

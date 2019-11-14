@@ -27,9 +27,6 @@ const storeIsAlive = {
       state.timeErrorEpoch = t.te
       state.timeRefreshEpoch = t.tr
 
-      console.log(`time err: ${t.te}`)
-      console.log(`set init: war:${state.timeWarningEpoch} err:${state.timeErrorEpoch} ref: ${state.timeRefreshEpoch}`)
-
     },
     CHECK_IS_ALIVE(state, timeFromServer) {
       state.lastTimeCheck = timeFromServer
@@ -43,11 +40,11 @@ const storeIsAlive = {
       return new Promise((resolve) => {
         state.timeServerEpoch = timeFromServer
         state.timeInWebEpoch = Date.now() / 1000
-        console.log(`time in web: ${state.timeInWebEpoch}`)
-        console.log(`time from server: ${state.timeServerEpoch}`)
-        console.log(`difference: ${(state.timeInWebEpoch - state.timeServerEpoch)*1000}`)
-        console.log(`time warning: ${state.timeWarningEpoch}`)
-        console.log(`time err: ${state.timeErrorEpoch}`)
+        // console.log(`time in web: ${state.timeInWebEpoch}`)
+        // console.log(`time from server: ${state.timeServerEpoch}`)
+        // console.log(`difference: ${(state.timeInWebEpoch - state.timeServerEpoch)*1000}`)
+        // console.log(`time warning: ${state.timeWarningEpoch}`)
+        // console.log(`time err: ${state.timeErrorEpoch}`)
 
         state.danger = ((state.timeInWebEpoch - state.timeServerEpoch) * 1000) >= (state.timeErrorEpoch)
         if (state.danger) {
@@ -84,7 +81,6 @@ const storeIsAlive = {
       })
     },
     setInitIsAlive({commit}, t) {
-       console.log(`time: war: ${t.tw} err: ${t.te} ref ${t.tr}`)
        commit('SET_INIT', t)
     }
   },

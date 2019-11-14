@@ -3,10 +3,12 @@
  */
 
 import storeIsAlive from "./storeIsAlive"
+import storeHistoryCMP from './storeHisotryCMP'
 
 const gv = {
   modules: {
-    storeIsAlive
+    storeIsAlive,
+    storeHistoryCMP
   },
   state: {
 

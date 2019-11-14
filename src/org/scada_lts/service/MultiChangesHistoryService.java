@@ -1,12 +1,17 @@
 package org.scada_lts.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jfree.util.Log;
 import org.scada_lts.dao.MultiChangesHistory;
 import org.scada_lts.dao.model.multichangehistory.MultiChangeHistoryValues;
 import org.scada_lts.service.model.MultiChangeHistoryDTO;
 import org.scada_lts.service.model.ValuesMultiChangesHistoryDTO;
+import org.scada_lts.web.mvc.api.components.cmp.model.SetValuePointDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +52,27 @@ public class MultiChangesHistoryService {
         result.add(mch);
         return result;
 
+    }
+
+    public void addToCmpHistory(Integer userId, String xIdViewAndIdCmp, String interpretedState, SetValuePointDTO[] values) {
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        String json;
+        try {
+            json = mapper.writeValueAsString(values);
+        } catch (JsonProcessingException e) {
+            Log.error(e);
+            return;
+        }
+
+        multiChangesHistoryDAO.prcAddCmpHistory(
+               userId,
+               xIdViewAndIdCmp,
+                interpretedState,
+                new Date().getTime() * 1000,
+               json
+        );
     }
 
     private void helpTransform(MultiChangeHistoryDTO mch, MultiChangeHistoryValues mchv) {

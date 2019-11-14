@@ -43,10 +43,11 @@ public class MultiChangeHistoryDAOImp implements MultiChangesHistory {
               "(select xid from dataPoints where id = vmch.dataPointId) as " + COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_XID_POINT + " " +
             "from " +
                 "multi_changes_history mch, " +
-                "values_multi_chcanges_history vmch " +
+                "values_multi_changes_history vmch " +
             "where " +
                 "mch.id = vmch.multiChangesHistoryId " +
-            "order by mch.id;";
+            "order by mch.ts desc;";
+
 	// @formatter:on
     @Override
     public List<MultiChangeHistoryValues> getHistory(String viewAndCmpId) {
@@ -78,4 +79,16 @@ public class MultiChangeHistoryDAOImp implements MultiChangesHistory {
         }
         return null;
     }
+
+    @Override
+    public void prcAddCmpHistory(Integer userId, String xIdViewAndIdCmp, String interpretedState, Long scadaTime, String values) {
+
+        DAO.getInstance().getJdbcTemp().update("call prc_add_cmp_history(?, ?, ?, ?, ?)",
+                userId,
+                xIdViewAndIdCmp,
+                interpretedState,
+                scadaTime,
+                values);
+    }
+
 }

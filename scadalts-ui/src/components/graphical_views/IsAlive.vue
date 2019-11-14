@@ -79,7 +79,6 @@
     },
     created () {
       this.label = this.plabel
-      console.log(`PTIME_REFRESH:${this.ptimeRefresh}`)
       if (this.ptimeUpdate < REFRESH_NO_LESS_THEN_IS_ALIVE) {
         this.timeRefresh = DEFAULT_REFRESH_IS_ALIVE
       } else {
