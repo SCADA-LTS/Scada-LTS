@@ -82,9 +82,9 @@ after_script:
 - docker version
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 # two lines as a Grzesiek requests
-- export TAGISSUE = echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9][0-9]' | head -n1
-- echo TAGISSUE
-- export TAG=if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAGISSUE ; fi
+- export TAGISSUE = `echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9][0-9]' | head -n1`
+- echo $TAGISSUE
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAGISSUE ; fi`
 # end of two lines as a Grzesiek requests
 #- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
 - export IMAGE_NAME=scadalts/scadalts
