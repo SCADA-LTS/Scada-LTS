@@ -18,7 +18,7 @@
 <script>
 
 
-    import CMP from "../../components/graphical_views/CMP"
+    import CMP from "../../components/graphical_views/cmp/CMP"
 
     export default {
         name: 'example-cmp',

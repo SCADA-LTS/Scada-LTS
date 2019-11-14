@@ -8,7 +8,7 @@ Vue.use(Vuex)
 
 const myLoggerForVuexMutation = store => {
   store.subscribe((mutation, state) => {
-    console.log(`vuex state: ${JSON.stringify(state)} type: ${mutation.type} payload: ${mutation.payload}`  )
+    //console.log(`vuex state: ${JSON.stringify(state)} type: ${mutation.type} payload: ${mutation.payload}`  )
   })
 }
 

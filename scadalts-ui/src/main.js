@@ -8,10 +8,11 @@ import VueLogger from 'vuejs-logger'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Test from './components/Test'
 import IsAlive from './components/graphical_views/IsAlive'
-import CMP from './components/graphical_views/CMP'
+import CMP from './components/graphical_views/cmp/CMP'
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG'
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy'
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS'
+import VueLodash from 'vue-lodash'
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -26,6 +27,10 @@ const options = {
 };
 
 Vue.use(VueLogger, options);
+
+const optionsLodash = { name: 'lodash' }
+
+Vue.use(VueLodash, optionsLodash)
 
 Vue.use(uiv)
 
@@ -69,11 +74,13 @@ for (let i = 0; i < 20; i++) {
     new Vue({
       render: h => h(CMP,
         {
+          store,
           props:
             {
               pLabel: window.document.getElementById(cmpId).getAttribute('plabel'),
               pTimeRefresh: window.document.getElementById(cmpId).getAttribute('ptimeRefresh'),
-              pConfig: window.document.getElementById(cmpId).getAttribute('pconfig')
+              pConfig: window.document.getElementById(cmpId).getAttribute('pconfig'),
+              pxIdViewAndIdCmp: window.document.getElementById(cmpId).getAttribute('pxIdViewAndIdCmp')
             }
         })
     }).$mount('#' + cmpId)

@@ -11,4 +11,5 @@ import java.util.List;
 public interface MultiChangesHistory {
 
     List<MultiChangeHistoryValues> getHistory(String viewAndCmpId);
+    void prcAddCmpHistory(Integer userId, String xIdViewAndIdCmp, String interpretedState, Long scadaTime, String values);
 }

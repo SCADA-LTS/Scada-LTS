@@ -40,8 +40,6 @@ public class GetHistoryChangesAPI {
                         multiChangesHistoryService.getHistory(xidViewAndIdCmp)
                 );
 
-
-
                 return new ResponseEntity<>(mchc, HttpStatus.OK);
             }
 

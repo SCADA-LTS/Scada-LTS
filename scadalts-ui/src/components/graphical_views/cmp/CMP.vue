@@ -27,7 +27,6 @@
                   fill="#FFFFFF"/>
               </g>
             </svg>
-
           </btn>
         </div>
 
@@ -68,8 +67,12 @@
             </btn-group>
 
             <hr/>
-            <btn size="xs" type="primary" v-on:click="showFault" class="cmp-small-info" v-bind:class="{cmp_fault: showFaultV }">fault test</btn>
-            <p class="cmp-small-info">v0.0.5 </p>
+            <!--<btn size="xs" type="primary" v-on:click="showFault" class="cmp-small-info" v-bind:class="{cmp_fault: showFaultV }">fault test</btn>-->
+            <p class="cmp-small-info">v0.0.6 </p>
+            <btn size="xs" type="primary" @click="openModalWithHistory=true">History</btn>
+            <modal v-model="openModalWithHistory" title="History" auto-focus>
+                <HistoryCMP v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp" v-model="openModalWithHistory"></HistoryCMP>
+            </modal>
           </section>
         </div>
       </collapse>
@@ -94,6 +97,7 @@
   import httpClient from 'axios'
   import {_} from 'vue-underscore'
   import BtnGroup from 'uiv/src/components/button/BtnGroup'
+  import HistoryCMP from './HistoryCMP'
 
   /**
    *
@@ -131,13 +135,15 @@
       })
     }
 
-    set (newData) {
+    set (newData, xidViewAndIdCmp, interpretedState) {
+      // console.log("interpetedState:"+JSON.stringify(interpretedState))
+      // console.log("interpetedState:"+interpretedState)
       return new Promise((resolve, reject) => {
         try {
           if (newData.length > 0) {
             httpClient({
               method: 'post',
-              url: './api/cmp/set',
+              url: `./api/cmp/set/${xidViewAndIdCmp}/${interpretedState}`,
               headers: {},
               timeout: 5000,
               data: newData
@@ -162,11 +168,13 @@
    */
   export default {
     components: {
-      BtnGroup
+      BtnGroup,
+      HistoryCMP
     },
-    props: ['pConfig', 'pLabel', 'pTimeRefresh'],
+    props: ['pConfig', 'pLabel', 'pTimeRefresh', 'pxIdViewAndIdCmp'],
     data () {
       return {
+        openModalWithHistory:false,
         show: false,
         errors: [],
         newErrors: [],
@@ -185,7 +193,8 @@
         processOfCheckingTheStatus: false,
         counterForAnaliseInOrder: -1,
         showFaultV: false,
-        checkIfThereAreSharesToConfirmValue: true
+        checkIfThereAreSharesToConfirmValue: true,
+        xIdViewAndIdCmp: this.pxIdViewAndIdCmp
       }
     },
     methods: {
@@ -253,7 +262,7 @@
             newData.push(change)
           }
           if (newData.length > 0) {
-            new ApiCMP().set(newData).then(response => {
+            new ApiCMP().set(newData, this.xIdViewAndIdCmp, action).then(response => {
               // rxjs
               let found = _.findWhere(this.controlsLevel0, {name: action})
               if (found.toChange != undefined) {
@@ -311,7 +320,7 @@
             newData.push(change)
           }
           if (newData.length > 0) {
-            new ApiCMP().set(newData).then(response => {
+            new ApiCMP().set(newData, this.xIdViewAndIdCmp, action).then(response => {
               this.show = false
             }).catch(er => {
               this.setErrorAndNotification(er.message)
@@ -360,6 +369,7 @@
       }
     },
     mounted () {
+      console.log(`CMP pxIdViewAndIdCmp:${this.xIdViewAndIdCmp}`)
       this.checkStatus()
     },
     filters: {
