@@ -9,9 +9,7 @@ before_script:
 - npm -v
 - node -v
 - env
-#- npm install -g @angular/cli@latest
 - npm install -g bower
-#- npm install @angular/core@latest
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
@@ -19,16 +17,7 @@ before_script:
 - sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
-#- cd ./ScadaLTS-UI
-#- npm install
-#- ls -l ./src/app/media
-#- ng version
-#- ng build
-#- cd ./war
-#- ant war
-#- ant
-#- cd ../..
-- cd ./ScadaLTS-UI-1
+- cd ./scadalts-ui
 - npm install
 - cd ../WebContent/resources/npm/
 - npm install
@@ -44,6 +33,7 @@ branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
+  - "/^feature_s/#1008_Adding_a_10_last_changes_history_feature_for_the_CMP_component.*$/"
 notifications:
   email: false
 env:
@@ -65,8 +55,6 @@ after_script:
 - mv ./apache-tomcat-7.0.85/* ./
 - rm -rf ./apache-tomcat-7.0.85
 - cp ../../ScadaBR.war ./webapps
-#- cp ../../ScadaLTS-UI/war/ScadaLTS.war ./webapps
-#- ls -l ./webapps/ScadaLTS.war
 - ls -l ./webapps/ScadaBR.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
@@ -79,7 +67,8 @@ after_script:
 - ls
 - docker version
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- export TAGISSUE = `echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9][0-9]' | head -n1`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAGISSUE ; fi`
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
