@@ -23,6 +23,7 @@
     "vue": "2.6.10",
     "vue-jsoneditor": "^1.0.13",
     "vue-loader": "^15.7.1",
+    "vue-lodash": "^2.0.2",
     "vue-property-decorator": "^7.3.0",
     "vue-router": "^3.0.1",
     "vue-underscore": "^0.1.4",

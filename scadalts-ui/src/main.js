@@ -12,6 +12,7 @@ import CMP from './components/graphical_views/cmp/CMP'
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG'
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy'
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS'
+import VueLodash from 'vue-lodash'
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -26,6 +27,10 @@ const options = {
 };
 
 Vue.use(VueLogger, options);
+
+const optionsLodash = { name: 'lodash' }
+
+Vue.use(VueLodash, optionsLodash)
 
 Vue.use(uiv)
 

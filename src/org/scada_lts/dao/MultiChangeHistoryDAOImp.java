@@ -3,8 +3,6 @@ package org.scada_lts.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.multichangehistory.MultiChangeHistoryValues;
-import org.springframework.jdbc.core.SqlParameter;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -48,7 +46,7 @@ public class MultiChangeHistoryDAOImp implements MultiChangesHistory {
                 "values_multi_changes_history vmch " +
             "where " +
                 "mch.id = vmch.multiChangesHistoryId " +
-            "order by mch.id;";
+            "order by mch.ts desc;";
 
 	// @formatter:on
     @Override

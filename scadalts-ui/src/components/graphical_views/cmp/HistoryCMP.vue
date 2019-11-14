@@ -15,7 +15,7 @@
 
   export default {
     name: 'history-cmp',
-    props: [ 'pxIdViewAndIdCmp'],
+    props: ['pxIdViewAndIdCmp', 'value'],
     data () {
       return {
         columnDefs: null,
@@ -26,31 +26,38 @@
     components: {
       AgGridVue
     },
-    mounted() {
-
+    beforeMount () {
       this.columnDefs = [
         {headerName: 'id', field: 'id', width: 50, resizable: true},
         {headerName: 'user', field: 'userName', width: 120, resizable: true},
         {
-          headerName: 'time', field: 'unixTime', width: 200, resizable: true,
+          headerName: 'time', field: 'unixTime', width: 200, resizable: true, sortable: true,
           cellRenderer: (params) => {
-            return moment(params.value).format('Do MMMM YYYY, HH:mm:ss ');
+            return moment(params.value).format('Do MMMM YYYY, HH:mm:ss ')
           }
         },
         {headerName: 'to state', field: 'interpretedState', width: 120, resizable: true},
-        {headerName: 'values', field: 'values', resizable: true,
-        cellRenderer: (params) => {
-          return JSON.stringify(params.value)
-        }}
+        {
+          headerName: 'values', field: 'values', resizable: true,
+          cellRenderer: (params) => {
+            return JSON.stringify(params.value)
+          }
+        }
       ]
-      console.log(`xIdViewAndIdCmp:${this.xIdViewAndIdCmp}`)
-      store.dispatch('getHisotryCMP', this.xIdViewAndIdCmp ).then((ret) => {
-           this.rowData = ret.data.history
-      })
-      // this.$store.dispatch('getHisotryCMP', 1 ).then((ret) => {
-      // this.$store.dispatch('getHisotryCMP', 1 ).then((ret) => {
-      //   this.rowData = ret.data.history
-      // })
+    },
+    mounted () {
+    },
+    watch: {
+      'value': function (val, oldVal) {
+        if (val == true) {
+          store.dispatch('getHisotryCMP', this.xIdViewAndIdCmp).then((ret) => {
+            this.rowData = this._.orderBy(ret.data.history, ['unixTime'], ['desc']);
+          })
+        } else {
+          this.rowData = null
+        }
+
+      }
     }
   }
 </script>

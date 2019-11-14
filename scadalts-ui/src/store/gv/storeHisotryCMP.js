@@ -7,7 +7,7 @@ import axios from 'axios'
 const TIMEOUT_API_HIS_CMP = 5000
 const storeHistoryCMP = {
   state: {
-    msgErr: '',
+    msgErr: ''
   },
   mutations: {
     ERR (state, msgErr) {
@@ -21,6 +21,7 @@ const storeHistoryCMP = {
           resolve(res)
         }).catch((err) => {
           commit('ERR', err)
+          reject()
         })
       })
     },

@@ -71,7 +71,7 @@
             <p class="cmp-small-info">v0.0.6 </p>
             <btn size="xs" type="primary" @click="openModalWithHistory=true">History</btn>
             <modal v-model="openModalWithHistory" title="History" auto-focus>
-                <HistoryCMP v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp"></HistoryCMP>
+                <HistoryCMP v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp" v-model="openModalWithHistory"></HistoryCMP>
             </modal>
           </section>
         </div>
@@ -136,8 +136,8 @@
     }
 
     set (newData, xidViewAndIdCmp, interpretedState) {
-      console.log("interpetedState:"+JSON.stringify(interpretedState))
-      console.log("interpetedState:"+interpretedState)
+      // console.log("interpetedState:"+JSON.stringify(interpretedState))
+      // console.log("interpetedState:"+interpretedState)
       return new Promise((resolve, reject) => {
         try {
           if (newData.length > 0) {

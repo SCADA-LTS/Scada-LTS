@@ -81,7 +81,17 @@ public class V2_0__CMP_history implements SpringJdbcMigration {
                   + "); "
                   + "set v_index = v_index + 1; "
                 + "end while; "
-         + "end; ";
+
+                + "CREATE TEMPORARY TABLE tmp_to_delete "
+                + "select id from multi_changes_history where viewAndComponentIdentification=a_viewAndCmpId order by ts desc limit 10; "
+
+                + "delete from "
+                + "multi_changes_history "
+                + "where id not in (select id from tmp_to_delete); "
+
+                + "DROP TABLE tmp_to_delete; "
+
+        + "end; ";
 
         jdbcTmp.execute(multiChangesHistory);
         jdbcTmp.execute(valuesMultiChangesHistory);
