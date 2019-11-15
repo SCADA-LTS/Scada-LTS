@@ -158,10 +158,14 @@ public class PendingEventsDAO {
 	}
 
 	private EventInstance mapToEvent(Map<Integer, List<UserComment>> comments, ResultSet rs) throws SQLException {
-		int typeId = rs.getInt(COLUMN_NAME_EVENT_TYPE_ID);
-		int typeRef1 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1);
-		int typeRef2 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2);
-		EventType type = EventTypeUtil.createEventType(typeId, typeRef1, typeRef2);
+		
+		EventType type = EventTypeUtil.createEventType(
+			
+			rs.getInt(COLUMN_NAME_EVENT_TYPE_ID), 
+			rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1), 
+			rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2)
+		);
+		
 		long activeTS = rs.getLong(COLUMN_NAME_EVENT_ACTIVE_TS);
 		Boolean rtnApplicable = DAO.charToBool(rs.getString(COLUMN_NAME_EVENT_RTN_APPLICABLE));
 		int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
@@ -170,31 +174,43 @@ public class PendingEventsDAO {
 		try {
 			message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
 		} catch (LocalizableMessageParseException e) {
-			message = new LocalizableMessage("common.default",
-					rs.getString(COLUMN_NAME_EVENT_MESSAGE));
+			message = new LocalizableMessage(
+				"common.default",
+				rs.getString(COLUMN_NAME_EVENT_MESSAGE));
 		}
 
 		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, null);
 
 		event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
 		long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);
+		
 		if (!rs.wasNull())
 			event.returnToNormal(rtnTs, rs.getInt(COLUMN_NAME_EVENT_RTN_COUSE));
+		
 		long ackTs = rs.getLong(COLUMN_NAME_EVENT_ACK_TS);
+		
 		if (!rs.wasNull()) {
+			
 			event.setAcknowledgedTimestamp(ackTs);
 			event.setAcknowledgedByUserId(rs.getInt(COLUMN_NAME_EVENT_ACK_USER_ID));
-			if (!rs.wasNull())
+			
+			if (!rs.wasNull()) {
 				event.setAcknowledgedByUsername(rs.getString(COLUMN_NAME_EVENT_USERNAME));
+			}
+			
 			event.setAlternateAckSource(rs.getInt(COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE));
 		}
 
-		String silent = rs.getString(COLUMN_NAME_EVENT_SILENCED);
-		event.setSilenced(DAO.charToBool(silent));
-		if (!rs.wasNull())
+		event.setSilenced(
+			DAO.charToBool( rs.getString(COLUMN_NAME_EVENT_SILENCED) )
+			);
+		
+		if (!rs.wasNull()) {
 			event.setUserNotified(true);
+		}
 
 		attachRelationalInfo(event, comments);
+		
 		return event;
 	}
 
