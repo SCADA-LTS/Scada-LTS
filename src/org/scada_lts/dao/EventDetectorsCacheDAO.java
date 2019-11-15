@@ -38,7 +38,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  */
 public class EventDetectorsCacheDAO {
 	
-	private static final Log LOG = LogFactory.getLog(EventDetectorsCacheDAO.class);
+	private final static Log LOG = LogFactory.getLog(EventDetectorsCacheDAO.class);
 	private final static String  COLUMN_NAME_ID = "id";
 	private final static String  COLUMN_NAME_XID = "xid";
 	private final static String  COLUMN_NAME_ALIAS = "alias";
@@ -75,7 +75,7 @@ public class EventDetectorsCacheDAO {
 				+ "pointEventDetectors "
 			+ "order by dataPointId";
 	// @formatter:on
-	
+
 	@SuppressWarnings("rawtypes")
 	protected List<PointEventDetectorCache> getAll() {
 		if (LOG.isTraceEnabled()) {
@@ -116,6 +116,14 @@ public class EventDetectorsCacheDAO {
 		return null;
 	}
 	
+	public TreeMap<Integer, List<PointEventDetectorVO>> getMapEventDetectorForGivenEventDetectorsList(
+			final List<PointEventDetectorCache> listEventDetectorCache) {
+		return getMapEventDetectors(listEventDetectorCache);
+	}
+
+	public List<PointEventDetectorCache> getAllPointEventDetectorsByDataPointId(){
+		return getAll();
+	}
 
 	protected TreeMap<Integer, List<PointEventDetectorVO>> getMapEventDetectors(
 			final List<PointEventDetectorCache> listEventDetectorCache) {

@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
+import com.serotonin.mango.rt.CooperationOnDataPointValue;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
@@ -194,9 +195,10 @@ abstract public class BaseDwr {
         if (valueStr == null)
             Common.ctx.getRuntimeManager().relinquish(point.getId());
         else {
-            // Convert the string value into an object.
-            MangoValue value = MangoValue.stringToValue(valueStr, point.getPointLocator().getDataTypeId());
-            Common.ctx.getRuntimeManager().setDataPointValue(point.getId(), value, source);
+            new CooperationOnDataPointValue().setDataPointValue(
+                    point.getId(),
+                    MangoValue.stringToValue(valueStr, point.getPointLocator().getDataTypeId()),
+                    source);
         }
     }
 

@@ -43,6 +43,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.scada_lts.quartz.UpdateEventDetectors;
 
 public class DataPointEditDwr extends BaseDwr {
     private DataPointVO getDataPoint() {
@@ -186,7 +187,9 @@ public class DataPointEditDwr extends BaseDwr {
     public void deleteEventDetector(int pedId) {
         DataPointVO dp = getDataPoint();
         synchronized (dp) {
-            dp.getEventDetectors().remove(getEventDetector(pedId));
+            PointEventDetectorVO eventDetectorVO = getEventDetector(pedId);
+            dp.getEventDetectors().remove( eventDetectorVO );
+            UpdateEventDetectors.removeEventDetectorFromCache(eventDetectorVO,dp);
         }
     }
 

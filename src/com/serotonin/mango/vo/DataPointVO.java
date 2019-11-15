@@ -429,7 +429,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     }
 
     public List<PointEventDetectorVO> getEventDetectors() {
+        if(eventDetectors==null || eventDetectors.size()==0)
+            setEventDetectors(getEventDetectorsFromCache());
         return eventDetectors;
+    }
+    private List<PointEventDetectorVO> getEventDetectorsFromCache(){
+
+        return new BridgeBetweenDataPointVOAndEventDetectroCache().getEventDetectorsFromCache(this);
+
     }
 
     public void setEventDetectors(List<PointEventDetectorVO> eventDetectors) {

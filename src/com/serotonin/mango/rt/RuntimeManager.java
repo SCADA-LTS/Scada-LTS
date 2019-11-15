@@ -354,7 +354,7 @@ public class RuntimeManager {
 				return;
 
 			// Stop the data points.
-			for (DataPointRT p : dataPoints.values()) {
+			for (DataPointRT p : getDataPoints().values()) {
 				if (p.getDataSourceId() == id)
 					stopDataPoint(p.getId());
 			}
@@ -426,7 +426,7 @@ public class RuntimeManager {
 						.getPointLocator().createRuntime());
 
 				// Add/update it in the data image.
-				dataPoints.put(dataPoint.getId(), dataPoint);
+				getDataPoints().put(dataPoint.getId(), dataPoint);
 
 				// Initialize it.
 				dataPoint.initialize();
@@ -441,10 +441,11 @@ public class RuntimeManager {
 	}
 
 	private void stopDataPoint(int dataPointId) {
-		synchronized (dataPoints) {
+		//synchronized (dataPoints) {
+		synchronized (getDataPoints()) {
 			// Remove this point from the data image if it is there. If not,
 			// just quit.
-			DataPointRT p = dataPoints.remove(dataPointId);
+			DataPointRT p = getDataPoints().remove(dataPointId);
 
 			// Remove it from the data source, and terminate it.
 			if (p != null) {
@@ -458,11 +459,11 @@ public class RuntimeManager {
 	}
 
 	public boolean isDataPointRunning(int dataPointId) {
-		return dataPoints.get(dataPointId) != null;
+		return getDataPoints().get(dataPointId) != null;
 	}
 
 	public DataPointRT getDataPoint(int dataPointId) {
-		return dataPoints.get(dataPointId);
+		return getDataPoints().get(dataPointId);
 	}
 
 	public void addDataPointListener(int dataPointId, DataPointListener l) {
@@ -486,55 +487,37 @@ public class RuntimeManager {
 
 	//
 	// Point values
+	/**
+ 	* @deprecated
+ 	* {@see CooperationOnDataPointValue#setDataPointValue(int dataPointId, MangoValue value,
+	 *SetPointSource source)} .
+ 	*
+	 */
+	@Deprecated
 	public void setDataPointValue(int dataPointId, MangoValue value,
 			SetPointSource source) {
-		setDataPointValue(dataPointId,
-				new PointValueTime(value, System.currentTimeMillis()), source);
+
+		new CooperationOnDataPointValue().setDataPointValue(dataPointId,new PointValueTime(value, System.currentTimeMillis()),source);
 	}
 
-	public void setDataPointValue(int dataPointId, PointValueTime valueTime,
-			SetPointSource source) {
-		DataPointRT dataPoint = dataPoints.get(dataPointId);
-		if (dataPoint == null)
-			throw new RTException("Point is not enabled");
+	public  Map<Integer, DataPointRT> getDataPoints() {
+		return dataPoints;
+	}
 
-		if (!dataPoint.getPointLocator().isSettable())
-			throw new RTException("Point is not settable");
-
-		// Tell the data source to set the value of the point.
-		DataSourceRT ds = getRunningDataSource(dataPoint.getDataSourceId());
-		// The data source may have been disabled. Just make sure.
-		if (ds != null)
-			ds.setPointValue(dataPoint, valueTime, source);
+	public DataPointRT getDataPointDependsOnDataPointId(int dataPointId){
+		return getDataPoints().get(dataPointId);
 	}
 
 	public void relinquish(int dataPointId) {
-		DataPointRT dataPoint = dataPoints.get(dataPointId);
-		if (dataPoint == null)
-			throw new RTException("Point is not enabled");
 
-		if (!dataPoint.getPointLocator().isSettable())
-			throw new RTException("Point is not settable");
-		if (!dataPoint.getPointLocator().isRelinquishable())
-			throw new RTException("Point is not relinquishable");
+		new CooperationOnDataPointValue().relinquish(dataPointId);
 
-		// Tell the data source to relinquish value of the point.
-		DataSourceRT ds = getRunningDataSource(dataPoint.getDataSourceId());
-		// The data source may have been disabled. Just make sure.
-		if (ds != null)
-			ds.relinquish(dataPoint);
 	}
 
 	public void forcePointRead(int dataPointId) {
-		DataPointRT dataPoint = dataPoints.get(dataPointId);
-		if (dataPoint == null)
-			throw new RTException("Point is not enabled");
 
-		// Tell the data source to read the point value;
-		DataSourceRT ds = getRunningDataSource(dataPoint.getDataSourceId());
-		if (ds != null)
-			// The data source may have been disabled. Just make sure.
-			ds.forcePointRead(dataPoint);
+		new CooperationOnDataPointValue().forcePointRead(dataPointId);
+
 	}
 
 	public long purgeDataPointValues() {
@@ -542,7 +525,7 @@ public class RuntimeManager {
 		PointValueDao pointValueDao = new PointValueDao();
 		long count = pointValueDao.deleteAllPointData();
 		pointValueDao.compressTables();
-		for (Integer id : dataPoints.keySet())
+		for (Integer id : getDataPoints().keySet())
 			updateDataPointValuesRT(id);
 		return count;
 		//TODO not allow the deletion of data should be switched to a new database
@@ -575,7 +558,7 @@ public class RuntimeManager {
 	}
 
 	private void updateDataPointValuesRT(int dataPointId) {
-		DataPointRT dataPoint = dataPoints.get(dataPointId);
+		DataPointRT dataPoint = getDataPoints().get(dataPointId);
 		if (dataPoint != null)
 			// Enabled. Reset the point's cache.
 			dataPoint.resetValues();

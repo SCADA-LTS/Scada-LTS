@@ -8,6 +8,7 @@ import br.org.scadabr.api.vo.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.Common.TimePeriods;
 import com.serotonin.mango.db.dao.*;
+import com.serotonin.mango.rt.CooperationOnDataPointValue;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -219,20 +220,21 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		}
 		PointHierarchy pH = new DataPointDao().getPointHierarchy();
 
-		int dataPointId = Common.ctx
-				.getDataPointByName(itemValue.getItemName());
-		DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
+		DataPointVO dataPoint = new DataPointDao().getDataPoint(
+				Common.ctx
+						.getDataPointByName(itemValue.getItemName()));
 
-		if (dp != null) {
-			checkValidWriteCommand(dp, itemValue);
-			checkValidWritableDataPoint(dp);
-			MangoValue value = MangoValue.stringToValue(itemValue.getValue()
-					.toString(), dp.getPointLocator().getDataTypeId());
-			Common.ctx.getRuntimeManager().setDataPointValue(dp.getId(), value,
+		if (dataPoint != null) {
+			checkValidWriteCommand(dataPoint, itemValue);
+			checkValidWritableDataPoint(dataPoint);
+			new CooperationOnDataPointValue().setDataPointValue(
+					dataPoint.getId(),
+					MangoValue.stringToValue(itemValue.getValue()
+							.toString(), dataPoint.getPointLocator().getDataTypeId()),
 					null);
 			flag = true;
 			newItemValue.setValue(itemValue.getValue());
-			newItemValue.setItemName(dp.getName());
+			newItemValue.setItemName(dataPoint.getName());
 
 		} else {
 			List<DataPointVO> listDPVO = new DataPointDao().getDataPoints(null,
@@ -246,11 +248,12 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 					checkValidWriteCommand(dataPointVO, itemValue);
 					checkValidWritableDataPoint(dataPointVO);
 
-					MangoValue value = MangoValue.stringToValue(itemValue
-							.getValue().toString(), dataPointVO
-							.getPointLocator().getDataTypeId());
-					Common.ctx.getRuntimeManager().setDataPointValue(
-							dataPointVO.getId(), value, null);
+					new CooperationOnDataPointValue().setDataPointValue(
+							dataPointVO.getId(),
+							MangoValue.stringToValue(itemValue
+									.getValue().toString(), dataPointVO
+									.getPointLocator().getDataTypeId()),
+							null);
 
 					flag = true;
 					newItemValue.setValue(itemValue.getValue());
@@ -361,9 +364,10 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 			checkValidStringWriteCommand(dp, itemValue);
 			checkValidWritableDataPoint(dp);
 
-			MangoValue value = MangoValue.stringToValue(itemValue.getValue(),
-					dp.getPointLocator().getDataTypeId());
-			Common.ctx.getRuntimeManager().setDataPointValue(dp.getId(), value,
+			new CooperationOnDataPointValue().setDataPointValue(
+					dp.getId(),
+					MangoValue.stringToValue(itemValue.getValue(),
+							dp.getPointLocator().getDataTypeId()),
 					null);
 
 			flag = true;
@@ -383,11 +387,12 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 					checkValidStringWriteCommand(dp, itemValue);
 					checkValidWritableDataPoint(dp);
 
-					MangoValue value = MangoValue.stringToValue(itemValue
-							.getValue(), dataPointVO.getPointLocator()
-							.getDataTypeId());
-					Common.ctx.getRuntimeManager().setDataPointValue(
-							dataPointVO.getId(), value, null);
+					new CooperationOnDataPointValue().setDataPointValue(
+							dataPointVO.getId(),
+							MangoValue.stringToValue(itemValue
+									.getValue(), dataPointVO.getPointLocator()
+									.getDataTypeId()),
+							null);
 
 					flag = true;
 					newItemValue.setValue(itemValue.getValue());

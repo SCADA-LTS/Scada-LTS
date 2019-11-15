@@ -15,7 +15,7 @@ public class EventDetectorTemplateVO implements Cloneable, JsonSerializable {
 
 	private String name;
 	private int id;
-	private List<PointEventDetectorVO> pointEventDetectors;
+	private List<PointEventDetectorVO> pointEventDetectorsVO;
 
 	public String getName() {
 		return name;
@@ -45,11 +45,11 @@ public class EventDetectorTemplateVO implements Cloneable, JsonSerializable {
 	}
 
 	public void setEventDetectors(List<PointEventDetectorVO> pointEventDetectors) {
-		this.pointEventDetectors = pointEventDetectors;
+		this.pointEventDetectorsVO = pointEventDetectors;
 	}
 
 	public List<PointEventDetectorVO> getEventDetectors() {
-		return this.pointEventDetectors;
+		return this.pointEventDetectorsVO;
 	}
 
 	public EventDetectorTemplateRT createRuntime() {
@@ -62,7 +62,7 @@ public class EventDetectorTemplateVO implements Cloneable, JsonSerializable {
 		int result = 1;
 		result = prime * result + id;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((pointEventDetectors == null) ? 0 : pointEventDetectors.hashCode());
+		result = prime * result + ((pointEventDetectorsVO == null) ? 0 : pointEventDetectorsVO.hashCode());
 		return result;
 	}
 
@@ -82,10 +82,10 @@ public class EventDetectorTemplateVO implements Cloneable, JsonSerializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (pointEventDetectors == null) {
-			if (other.pointEventDetectors != null)
+		if (pointEventDetectorsVO == null) {
+			if (other.pointEventDetectorsVO != null)
 				return false;
-		} else if (!pointEventDetectors.equals(other.pointEventDetectors))
+		} else if (!pointEventDetectorsVO.equals(other.pointEventDetectorsVO))
 			return false;
 		return true;
 	}

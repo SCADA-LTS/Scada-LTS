@@ -30,8 +30,8 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
+import org.scada_lts.BridgeBetweenEventDetectorCacheAndEventDetectorsCacheDAO;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.EventDetectorsCacheDAO;
 import org.scada_lts.dao.model.PointEventDetectorCache;
 import org.scada_lts.quartz.UpdateEventDetectors;
 
@@ -44,12 +44,14 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class EventDetectorsCache extends EventDetectorsCacheDAO{
-	
+public class EventDetectorsCache {
+
+	private BridgeBetweenEventDetectorCacheAndEventDetectorsCacheDAO bridgeBetweenEventDetectorCacheAndEventDetectorsCacheDAO = new BridgeBetweenEventDetectorCacheAndEventDetectorsCacheDAO();
+
 	public static final Log LOG = LogFactory.getLog(EventDetectorsCache.class);
 	private static EventDetectorsCache instance = null;
-	private int countBuffer;
-	
+	private TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetectors;
+
 	public static EventDetectorsCache getInstance() throws SchedulerException, IOException {
 		if (LOG.isTraceEnabled()) {
 		  LOG.trace("Get EventDetectorsCache instance ");
@@ -59,14 +61,26 @@ public class EventDetectorsCache extends EventDetectorsCacheDAO{
 		}
 		return instance;
 	}
-	
-	public List<PointEventDetectorVO> getEventDetectors(DataPointVO dp) {
-		countBuffer++;
-	
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("getEventDetectors count from buffer:" + countBuffer);
+	public List<PointEventDetectorVO> getEventDetectorsForDataPointVO(DataPointVO dp) {
+		if (mapEventDetectors == null) {
+			LOG.error(new Exception("Cache was null"));
+			return new ArrayList<PointEventDetectorVO>();
 		}
-		
+
+		if (mapEventDetectors.isEmpty()) {
+			return new ArrayList<PointEventDetectorVO>();
+		}
+
+		List<PointEventDetectorVO> listPointEventDetectorVO = mapEventDetectors.get(dp.getId());
+
+		if (listPointEventDetectorVO == null) {
+			return new ArrayList<PointEventDetectorVO>();
+		} else {
+			return listPointEventDetectorVO;
+		}
+	}
+	public List<PointEventDetectorVO> getEventDetectors(DataPointVO dp) {
+
 		if (mapEventDetectors == null) {
 			LOG.error(new Exception("Cache was null"));
 			return new ArrayList<PointEventDetectorVO>();
@@ -90,14 +104,6 @@ public class EventDetectorsCache extends EventDetectorsCacheDAO{
 	}
 	
 	/**
-	 * Method reset counter.
-	 * @see UpdateEventDetectors
-	 */
-	public void resetCountBuffer() {
-		countBuffer = 0;
-	}
-	
-	/**
 	 * Method set ListPointEventDetector
 	 * @see UpdateEventDetectors
 	 * @param mapEventDetectors
@@ -106,44 +112,25 @@ public class EventDetectorsCache extends EventDetectorsCacheDAO{
 		this.mapEventDetectors = mapEventDetectors;
 	}
 
+	public TreeMap<Integer, List<PointEventDetectorVO>> getMapEventDetectors() {
+		return mapEventDetectors;
+	}
+
 	private EventDetectorsCache() throws SchedulerException, IOException {
 		if (LOG.isTraceEnabled()) {
-		  LOG.trace("Create EventDetectorsCache");
+			LOG.trace("create eventdetectorscache");
 		}
-		List<PointEventDetectorCache> listEventDetector = getAll();
-		TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetector = getMapEventDetectors(listEventDetector);
+ 		List<PointEventDetectorCache> listEventDetector = bridgeBetweenEventDetectorCacheAndEventDetectorsCacheDAO.getAllPointEventDetectorsByDataPointId();
+		TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetector = bridgeBetweenEventDetectorCacheAndEventDetectorsCacheDAO.getMapEventDetectorsForGivenEventDetectorsList(listEventDetector);
 		setMapEventDetectorForDataPoint(mapEventDetector);
 		cacheInitialize();
 	}
-	
-	private TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetectors;
 	
 	private void cacheInitialize() throws SchedulerException, IOException {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("cacheInitialize");
 		}
-		JobDetail job = new JobDetail();
-		job.setName("UpdateEventDetectors");
-		job.setJobClass(UpdateEventDetectors.class);
-
-		SimpleTrigger trigger = new SimpleTrigger();
-		Date startTime = new Date(System.currentTimeMillis()
-				+ ScadaConfig.getInstance().getLong(ScadaConfig.START_UPDATE_EVENT_DETECTORS, 10_000_000));
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("Quartz - startTime:" + startTime);
-		}
-		trigger.setStartTime(startTime);
-		trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
-		Long interval = ScadaConfig.getInstance().getLong(ScadaConfig.MILLIS_SECONDS_PERIOD_UPDATE_EVENT_DETECTORS, 5_000_000);
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("Quartz - interval:" + interval);
-		}
-		trigger.setRepeatInterval(interval);
-		trigger.setName("Quartz - trigger-UpdateEventDetectors");
-
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-		scheduler.start();
-		scheduler.scheduleJob(job, trigger);
+		new CacheInitializator();
 	}
 	
 }

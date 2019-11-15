@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.CooperationOnDataPointValue;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 
@@ -68,7 +69,7 @@ public class SetPointWorkItem implements WorkItem {
         sourceIds.add(sourceId);
         threadLocal.set(sourceIds);
         try {
-            Common.ctx.getRuntimeManager().setDataPointValue(targetPointId, pvt, source);
+            new CooperationOnDataPointValue().setDataPointValue(targetPointId,pvt,source);
         }
         finally {
             threadLocal.remove();

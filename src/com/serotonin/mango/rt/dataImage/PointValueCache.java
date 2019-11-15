@@ -34,7 +34,7 @@ import java.util.List;
 public class PointValueCache {
     private final int dataPointId;
     private final int defaultSize;
-    private PointValueCacheCooperateWithDao pointValueCacheCooperateWithDao;
+    private BridgeBetweenPointValueCacheAndPointValueDao bridgeBetweenPointValueCacheAndPointValueDao;
 
     /**
      * IMPORTANT: The list object should never be written to! The implementation here is for performance. Never call
@@ -47,7 +47,7 @@ public class PointValueCache {
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
-        pointValueCacheCooperateWithDao = new PointValueCacheCooperateWithDao(dataPointId);
+        bridgeBetweenPointValueCacheAndPointValueDao = new BridgeBetweenPointValueCacheAndPointValueDao(dataPointId);
 
         if (defaultSize > 0)
             refreshCacheDependsOnGivenSize(defaultSize);
@@ -55,7 +55,7 @@ public class PointValueCache {
 
     public void savePointValue(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
         if (logValue) {
-            pointValueCacheCooperateWithDao.savePointValue(pvt,source,async);
+            bridgeBetweenPointValueCacheAndPointValueDao.savePointValue(pvt,source,async);
         }
         if(cache.size()==maxSize){
             cache.removeLast();
@@ -71,7 +71,7 @@ public class PointValueCache {
      */
     void logPointValueAsync(PointValueTime pointValue, SetPointSource source) {
         // Save the new value and get a point value time back that has the id and annotations set, as appropriate.
-        pointValueCacheCooperateWithDao.logPointValueAsync(pointValue,source);
+        bridgeBetweenPointValueCacheAndPointValueDao.logPointValueAsync(pointValue,source);
     }
 
     public PointValueTime getLatestPointValue() {
@@ -126,13 +126,13 @@ public class PointValueCache {
     }
 
     private void readOnlyOneRowWithMaxTSAndPutIntoCache(){
-        PointValueTime pointValueTime = pointValueCacheCooperateWithDao.getLatestPointValueFromDao();
+        PointValueTime pointValueTime = bridgeBetweenPointValueCacheAndPointValueDao.getLatestPointValueFromDao();
         if (pointValueTime != null) {
             cache.addFirst(pointValueTime);
         }
     }
 
     private void getPointValuesAndFillCacheDependingOnRowsLimit(int size){
-        cache = pointValueCacheCooperateWithDao.getDefinedLimitRowsOfLatestPointValues(size);
+        cache = bridgeBetweenPointValueCacheAndPointValueDao.getDefinedLimitRowsOfLatestPointValues(size);
     }
 }

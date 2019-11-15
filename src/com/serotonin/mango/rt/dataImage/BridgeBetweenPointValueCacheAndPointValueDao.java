@@ -12,12 +12,12 @@ import java.util.LinkedList;
  *
  * @author Maateusz Hyski
  **/
-class PointValueCacheCooperateWithDao {
+class BridgeBetweenPointValueCacheAndPointValueDao {
 
-    private final PointValueDao dao = new PointValueDao();
-    private final int dataPointId;
+    private PointValueDao pointValueDao = new PointValueDao();
+    private int dataPointId;
 
-    PointValueCacheCooperateWithDao(int dataPointId) {
+    BridgeBetweenPointValueCacheAndPointValueDao(int dataPointId) {
         this.dataPointId = dataPointId;
     }
 
@@ -25,9 +25,9 @@ class PointValueCacheCooperateWithDao {
     PointValueTime savePointValue(PointValueTime pointValueTime, SetPointSource source, boolean async) {
 
         if (async)
-            dao.savePointValueAsync(dataPointId, pointValueTime, source);
+            pointValueDao.savePointValueAsync(dataPointId, pointValueTime, source);
         else
-            pointValueTime = dao.savePointValueSync(dataPointId, pointValueTime, source);
+            pointValueTime = pointValueDao.savePointValueSync(dataPointId, pointValueTime, source);
 
 
         return pointValueTime;
@@ -35,16 +35,16 @@ class PointValueCacheCooperateWithDao {
 
     void logPointValueAsync(PointValueTime pointValue, SetPointSource source) {
         // Save the new value and get a point value time back that has the id and annotations set, as appropriate.
-        dao.savePointValueAsync(dataPointId, pointValue, source);
+        pointValueDao.savePointValueAsync(dataPointId, pointValue, source);
     }
 
     PointValueTime getLatestPointValueFromDao() {
-        return dao.getLatestPointValue(dataPointId);
+        return pointValueDao.getLatestPointValue(dataPointId);
     }
 
     LinkedList<PointValueTime> getDefinedLimitRowsOfLatestPointValues(int limit) {
         LinkedList<PointValueTime> pointValueTimes = new LinkedList<PointValueTime>();
-        for(PointValueTime pointValueTime:dao.getLatestPointValues(dataPointId,limit)){
+        for(PointValueTime pointValueTime: pointValueDao.getLatestPointValues(dataPointId,limit)){
             pointValueTimes.addFirst(pointValueTime);
         }
         return pointValueTimes;

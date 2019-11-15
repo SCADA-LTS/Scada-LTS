@@ -18,12 +18,9 @@
 package org.scada_lts.mango.service;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.serotonin.mango.rt.CooperationOnDataPointValue;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -43,6 +40,7 @@ import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.quartz.UpdateEventDetectors;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
@@ -170,9 +168,11 @@ public class DataPointService implements MangoDataPoint {
 		if (valueStr == null)
 			Common.ctx.getRuntimeManager().relinquish(point.getId());
 		else {
-			// Convert the string value into an object.
-			MangoValue value = MangoValue.stringToValue(valueStr, point.getPointLocator().getDataTypeId());
-			Common.ctx.getRuntimeManager().setDataPointValue(point.getId(), value, source);
+			// Convert the string value into an object. - MangoValue.stringToValue(
+			new CooperationOnDataPointValue().setDataPointValue(
+					point.getId(),
+					MangoValue.stringToValue(valueStr, point.getPointLocator().getDataTypeId()),
+					source);
 		}
 	}
 
@@ -209,7 +209,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		dp.setId(dataPointDAO.insert(dp));
-		saveEventDetectors(dp);
+		saveUpdateOrDeleteEventDetectorsIntoDbAndCache(dp);
 	}
 
 	@Override
@@ -220,7 +220,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		updateDataPointShallow(dp);
-		saveEventDetectors(dp);
+		saveUpdateOrDeleteEventDetectorsIntoDbAndCache(dp);
 	}
 
 	@Override
@@ -375,20 +375,33 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
-	private void saveEventDetectors(DataPointVO dataPoint) {
+	private void saveUpdateOrDeleteEventDetectorsIntoDbAndCache(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 
 		for (PointEventDetectorVO pointEventDetector: detectors) {
 			if(!dataPoint.getEventDetectors().contains(pointEventDetector)) {
 				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
+				//delete event detector from map
+				//UpdateEventDetectors.removeEventDetectorFromCache(pointEventDetector,dataPoint);
 			}
 		}
-		
-		for (PointEventDetectorVO pointEventDetector: dataPoint.getEventDetectors()) {
-			try {
-			    pointEventDetectorDAO.insert(pointEventDetector);
-			} catch (DuplicateKeyException e) {
-				pointEventDetectorDAO.update(pointEventDetector);
+		Object o = new Object();
+		synchronized (o) {
+			List<PointEventDetectorVO> pointEventDetectorVOS = new ArrayList<PointEventDetectorVO>();
+			pointEventDetectorVOS =
+					dataPoint.getEventDetectors();
+			Collections.copy(dataPoint.getEventDetectors(),pointEventDetectorVOS);
+			for (PointEventDetectorVO pointEventDetector : pointEventDetectorVOS) {
+				try {
+					pointEventDetectorDAO.insert(pointEventDetector);
+
+					//UpdateEventDetectors.addNewEventDetectorIntoCache(pointEventDetector, dataPoint);
+
+				} catch (DuplicateKeyException e) {
+					pointEventDetectorDAO.update(pointEventDetector);
+
+					//UpdateEventDetectors.updateExistingEventDetectorInCache(pointEventDetector, dataPoint);
+				}
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package br.org.scadabr.rt.scripting.context;
 
+import com.serotonin.mango.rt.CooperationOnDataPointValue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,12 +24,11 @@ public class DPCommandsScriptContextObject extends ScriptContextObject {
 		DataPointVO dataPoint = new DataPointDao().getDataPoint(xid);
 		if (dataPoint != null) {
 			Permissions.ensureDataPointSetPermission(user, dataPoint);
-			RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
 			MangoValue value = MangoValue.stringToValue(stringValue, dataPoint
 					.getPointLocator().getDataTypeId());
 			LOG.debug("Start set point call...");
 			try {
-				runtimeManager.setDataPointValue(dataPoint.getId(), value,
+				new CooperationOnDataPointValue().setDataPointValue(dataPoint.getId(), value,
 						this.user);
 				LOG.debug("Wrote the point!");
 			} catch (Exception e) {

@@ -140,11 +140,11 @@ public class EventDetectorTemplateDAO {
 			LOG.trace("getEventDetectorTemplate(int id) id:"+id);
 		}
 		
-		String templateSelectWhereId = TEMPLATES_SELECT +" where " + COLUMN_NAME_EVENT_DETEC_TEMPL_ID + "=? ";
+		String TEMPLATE_SELECT_WHERE_ID = TEMPLATES_SELECT +" where " + COLUMN_NAME_EVENT_DETEC_TEMPL_ID + "=? ";
 
 		EventDetectorTemplateVO eventDetectorTemplateVO = null;
 		
-		eventDetectorTemplateVO = (EventDetectorTemplateVO) DAO.getInstance().getJdbcTemp().queryForObject( templateSelectWhereId, new Object[] { id },  
+		eventDetectorTemplateVO = (EventDetectorTemplateVO) DAO.getInstance().getJdbcTemp().queryForObject( TEMPLATE_SELECT_WHERE_ID, new Object[] { id },
 			new RowMapper() {
 				@Override
 				public EventDetectorTemplateVO mapRow(ResultSet rs, int rownumber) throws SQLException {
