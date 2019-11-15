@@ -28,7 +28,6 @@
     },
     beforeMount () {
       this.columnDefs = [
-        {headerName: 'id', field: 'id', width: 50, resizable: true},
         {headerName: 'user', field: 'userName', width: 120, resizable: true},
         {
           headerName: 'time', field: 'unixTime', width: 200, resizable: true, sortable: true,
