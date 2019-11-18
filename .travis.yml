@@ -32,8 +32,8 @@ services:
 script: ant war && ant junit
 branches:
   only:
-  - "/^develop.*$/"
-  - "/^master.*$/"
+  - "/^siv/develop.*$/"
+  - "/^siv/master.*$/"
   - "/^feature_s/#1008_Adding_a_10_last_changes_history_feature_for_the_CMP_component.*$/"
 notifications:
   email: false
