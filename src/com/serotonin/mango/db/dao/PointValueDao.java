@@ -22,7 +22,9 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.mango.adapter.MangoPointValues;
+import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
 import org.scada_lts.mango.service.PointValueService;
 import org.springframework.dao.ConcurrencyFailureException;
 
@@ -34,14 +36,19 @@ import com.serotonin.mango.vo.bean.LongPair;
 public class PointValueDao extends BaseDao {
 	
 	private MangoPointValues pointValueService;
-	
+
 	public PointValueDao() {
-		pointValueService = new PointValueService();
+
+		initializePrivateVariables();
+
 	}
 
 	public PointValueDao(DataSource dataSource) {
-		pointValueService = new PointValueService();
+
+		initializePrivateVariables();
+
 	}
+
 
 	/**
 	 * Only the PointValueCache should call this method during runtime. Do not
@@ -162,5 +169,9 @@ public class PointValueDao extends BaseDao {
 	public List<Long> getFiledataIds() {
 		return pointValueService.getFiledataIds();
 	}
-	
+	private void initializePrivateVariables(){
+
+		pointValueService = new PointValueService();
+
+	}
 }
