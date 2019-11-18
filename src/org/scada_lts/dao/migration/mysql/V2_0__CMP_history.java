@@ -95,7 +95,6 @@ public class V2_0__CMP_history implements SpringJdbcMigration {
 
         jdbcTmp.execute(multiChangesHistory);
         jdbcTmp.execute(valuesMultiChangesHistory);
-        jdbcTmp.execute(prcAddCMPHistory);
 
         jdbcTmp.execute(prcAddCMPHistory);
     }
