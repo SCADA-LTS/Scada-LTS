@@ -46,6 +46,7 @@ branches:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^feature/-#1056ConcurrentModificationException_if_you_open_more_than_two_tabs.*$/"
+  - "/^feature/#1009_History_of_pointvalue_No_annotation.*$/"
 notifications:
   email: false
 env:
