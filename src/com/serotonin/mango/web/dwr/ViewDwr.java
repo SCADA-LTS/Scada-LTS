@@ -162,8 +162,8 @@ public class ViewDwr extends BaseDwr {
 	private List<ViewComponentState> getViewPointData(User user, View view, boolean edit) {
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
-		List<ViewComponentState> states = new ArrayList<ViewComponentState>();
-		Map<String, Object> model = new HashMap<String, Object>();
+		List<ViewComponentState> states = new ArrayList<>();
+		Map<String, Object> model = new HashMap<>();
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
 		for (ViewComponent viewComponent : view.getViewComponents()) {
