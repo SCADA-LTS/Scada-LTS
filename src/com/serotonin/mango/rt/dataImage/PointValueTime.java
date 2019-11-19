@@ -43,6 +43,9 @@ import com.serotonin.web.taglib.DateFunctions;
 public class PointValueTime implements Serializable, IValueTime,
 		JsonSerializable {
 	private static final long serialVersionUID = -1;
+	private final MangoValue value;
+	private final long time;
+	private String whoChangedValue;
 
 	public static boolean equalValues(PointValueTime pvt1, PointValueTime pvt2) {
 		if (pvt1 == null && pvt2 == null)
@@ -58,12 +61,25 @@ public class PointValueTime implements Serializable, IValueTime,
 		return pvt.getValue();
 	}
 
-	private final MangoValue value;
-	private final long time;
-
 	public PointValueTime(MangoValue value, long time) {
 		this.value = value;
 		this.time = time;
+	}
+
+	public PointValueTime(MangoValue value, long time, String whoChangedValue) {
+		this.value = value;
+		this.time = time;
+		this.whoChangedValue = whoChangedValue;
+	}
+
+	public String getWhoChangedValue() {
+
+		return (whoChangedValue==null)?"":whoChangedValue;
+
+	}
+
+	public void setWhoChangedValue(String whoChangedValue) {
+		this.whoChangedValue = whoChangedValue;
 	}
 
 	public PointValueTime(boolean value, long time) {

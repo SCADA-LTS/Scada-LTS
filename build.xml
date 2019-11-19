@@ -404,7 +404,14 @@
 		    <test name="org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
 		    	haltonfailure="yes">
 		    </test>
-		    	
+
+			<test name="com.serotonin.mango.rt.dataImage.PointValueCacheTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.rt.dataImage.PointValueFacadeTest"
+				  haltonfailure="yes">
+			</test>
 		    <!--
 		    <test name="" 
 		    	haltonfailure="yes">

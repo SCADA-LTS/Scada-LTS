@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.db.dao.PointValueDao;
+import com.serotonin.mango.vo.User;
 
 /**
  * This class maintains an ordered list of the most recent values for a data point. It will mirror values in the
@@ -36,6 +37,7 @@ public class PointValueCache {
     private final int dataPointId;
     private final int defaultSize;
     private final PointValueDao dao;
+    private int maxSize = 0;
 
     /**
      * IMPORTANT: The list object should never be written to! The implementation here is for performance. Never call
@@ -43,7 +45,11 @@ public class PointValueCache {
      * time, always use a local copy of the variable for read purposes.
      */
     private List<PointValueTime> cache = new ArrayList<PointValueTime>();
-
+    public PointValueCache(){
+        this.dataPointId = -1;
+        this.defaultSize = -1;
+        this.dao=null;
+    }
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
@@ -53,16 +59,50 @@ public class PointValueCache {
             refreshCache(defaultSize);
     }
 
-    private int maxSize = 0;
+    /*
+    those method will proprably used to get information - annotations  - from database but.....
+     */
+    /*public String getValuesFromCacheForHistoryTable__(String givenpointValue){
+        final String EMPTY_STRING="";
+        for(PointValueTime pointValueTime:cache){
+            if(((MangoValue)pointValueTime.getValue()).getStringValue().equals(givenpointValue) ) return pointValueTime.getWhoChangedValue();
+        }
+        return EMPTY_STRING;
+    }*/
+    /*public boolean getValuesFromCacheForHistoryTable(String time__,String givenPointValue){
+        for(PointValueTime pointValueTime:cache){
+            if( ((MangoValue)pointValueTime.getValue()).getStringValue().equals(givenPointValue) ) return true;
+        }
+        return false;
+    }*/
 
-    public void savePointValue(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
+    public void savePointValueIntoCache(PointValueTime pvt, SetPointSource source, boolean logValue) {
+        setChangeOwnerIfSourceIsNotEmpty(pvt,source);
+    }
+    public void savePointValueIntoDaoAndCacheUpdate(PointValueTime pvt, SetPointSource source, boolean logValue, boolean async) {
         if (logValue) {
             if (async)
                 dao.savePointValueAsync(dataPointId, pvt, source);
             else
                 pvt = dao.savePointValueSync(dataPointId, pvt, source);
+
+        }
+        setChangeOwnerIfSourceIsNotEmpty(pvt,source);
+
+        insertPointValueTimeIntoCache(pvt);
+    }
+    private void setChangeOwnerIfSourceIsNotEmpty(PointValueTime pvt, SetPointSource source) {
+
+        if(source!=null)
+        {
+            if(source instanceof User)
+            {
+                pvt.setWhoChangedValue(((User)source).getUsername());
+            }
         }
 
+    }
+    private void insertPointValueTimeIntoCache(PointValueTime pvt){
         List<PointValueTime> c = cache;
         List<PointValueTime> newCache = new ArrayList<PointValueTime>(c.size() + 1);
         newCache.addAll(c);
@@ -105,7 +145,12 @@ public class PointValueCache {
 
         return null;
     }
-
+    public void addPointValueTimeIntoCacheForTest(PointValueTime pvt){
+        cache.add(pvt);
+    }
+    public List<PointValueTime> getLatestPointValuesUsedForTest(int limit){
+        return cache;
+    }
     public List<PointValueTime> getLatestPointValues(int limit) {
         if (maxSize < limit)
             refreshCache(limit);
@@ -118,7 +163,7 @@ public class PointValueCache {
             limit = c.size();
         return new ArrayList<PointValueTime>(c.subList(0, limit));
     }
-
+    public void setMaxSize(int size){ this.maxSize = size; }
     private void refreshCache(int size) {
         if (size > maxSize) {
             maxSize = size;

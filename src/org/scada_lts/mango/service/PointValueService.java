@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.stream.Collectors;
 
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
@@ -47,9 +46,8 @@ import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
+import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
 import org.springframework.dao.ConcurrencyFailureException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -73,7 +71,7 @@ import com.serotonin.util.queue.ObjectQueue;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 @Service
-public class PointValueService implements MangoPointValues {
+public class PointValueService implements MangoPointValues, MangoPointValuesWithChangeOwner {
 
     private static List<UnsavedPointValue> UNSAVED_POINT_VALUES = new ArrayList<UnsavedPointValue>();
     private static final int POINT_VALUE_INSERT_VALUES_COUNT = 4;
@@ -86,6 +84,10 @@ public class PointValueService implements MangoPointValues {
 
     }
 
+    @Override
+    public List<PointValueAdnnotation> findAllWithAdnotationsAboutChangeOwner(){
+        return pointValueAnnotationsDAO.findAllWithAdnotationsAboutChangeOwner();
+    }
     /**
      * Only the PointValueCache should call this method during runtime. Do not
      * use.
@@ -592,6 +594,9 @@ public class PointValueService implements MangoPointValues {
 
     public PointValueTime getPointValue(long id) {
         return PointValueDAO.getInstance().getPointValue(id);
+    }
+    public List<PointValueAdnnotation> getAllPointValueAnnotations(){
+        return  pointValueAnnotationsDAO.findAll();
     }
 
     public void updatePointValueAnnotations(int userId) {
