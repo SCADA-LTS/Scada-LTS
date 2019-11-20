@@ -50,7 +50,7 @@ public class PointValueCache {
         pointValueCacheCooperateWithPointValueDao = new PointValueCacheCooperateWithPointValueDao();
 
         if (defaultSize > 0) {
-            refreshCacheByReadNeededDataFromDbDependsOnSize(defaultSize);
+            refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(defaultSize);
         }
     }
 
@@ -58,20 +58,30 @@ public class PointValueCache {
         return dataPointId;
     }
 
-    public void savePointValue(PointValueTime pointValueTime, SetPointSource source, boolean logValue, boolean async) {
+    public void savePointValueIntoCacheAndIntoDbAsyncOrSyncIflogValue(PointValueTime pointValueTime, SetPointSource source, boolean logValue, boolean async) {
 
         if (logValue) {
-            getPointValueCacheCooperateWithPointValueDao().savePointValue( pointValueTime, source, async, getDataPointId() );
+            getPointValueCacheCooperateWithPointValueDao()
+                    .savePointValueIntoDatabaseAsyncOrSync(
+                            pointValueTime,
+                            source,
+                            async,
+                            getDataPointId()
+                    );
         }
 
+        savePointValueIntoCache( pointValueTime );
+
+    }
+    private void savePointValueIntoCache(PointValueTime pointValueTime) {
+
         if(cache.size()!=0){
+            cache.removeLast();
             cache.addFirst(pointValueTime);
         }
         else {
-            cache.removeLast();
             cache.add(pointValueTime);
         }
-
     }
 
     /**
@@ -84,7 +94,7 @@ public class PointValueCache {
 
     public PointValueTime getLatestPointValue() {
         if (maxSize == 0) {
-            refreshCacheByReadNeededDataFromDbDependsOnSize(1);
+            refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(1);
         }
 
         if (cache.size() > 0) {
@@ -96,7 +106,7 @@ public class PointValueCache {
 
     public List<PointValueTime> getLatestPointValues(int limit) {
         if (maxSize < limit) {
-            refreshCacheByReadNeededDataFromDbDependsOnSize(limit);
+            refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(limit);
         }
 
         if (limit == cache.size()) {
@@ -115,16 +125,16 @@ public class PointValueCache {
 
     }
 
-    private void refreshCacheByReadNeededDataFromDbDependsOnSize(int size) {
-        if (size > maxSize) {
-            maxSize = size;
-            if (size == 1) {
+    private void refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(int limit) {
+        if (limit > maxSize) {
+            maxSize = limit;
+            if (limit == 1) {
                 // Performance thingy
                 readOnlyOneRowWithMaxTSAndPutIntoCache( getDataPointId() );
             }
             else
-                //cache = dao.getLatestPointValues(dataPointId, size);
-                getPointValuesAndFillCacheDependingOnRowsLimit(size);
+                //cache = dao.getLatestPointValues(dataPointId, limit);
+                getPointValuesAndFillCacheDependingOnRowsLimit(limit);
         }
     }
 
