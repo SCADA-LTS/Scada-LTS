@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 24.10.18
+ * @author grzegorz.bylica@abilit.eu on 24.10.18
  */
 public class ReactivationManager {
 
@@ -29,19 +29,26 @@ public class ReactivationManager {
 
     private static final String EVENT_MESSAGE_OF_REACTIVATION = "";
 
-    private ConcurrentHashMap<String, Map.Entry<String, Integer>> sleepDsIndexJobName = new ConcurrentHashMap<String, Map.Entry<String, Integer>>();
-    private ConcurrentHashMap<Integer, Key> sleepDsIndexIdDs = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Map.Entry<String, Integer>> sleepDsIndexJobName = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Key> sleepDsIndexIdDataSource = new ConcurrentHashMap<>();
 
     private static final ReactivationManager instance = new ReactivationManager();
     private Scheduler scheduler;
 
-    public ReactivationManager() {
+    private ReactivationManager() {
         try {
             this.scheduler = new StdSchedulerFactory().getScheduler();
             this.scheduler.start();
         } catch (SchedulerException e) {
             LOG.error(e);
         }
+    }
+
+    protected void removeInfoAboutJob(String keyNameJob) {
+
+        Map.Entry<String,Integer> dsInfo = sleepDsIndexJobName.get(keyNameJob);
+        sleepDsIndexIdDataSource.remove(dsInfo.getValue());
+        sleepDsIndexJobName.remove(keyNameJob);
     }
 
     public static ReactivationManager getInstance() {
@@ -67,7 +74,7 @@ public class ReactivationManager {
 
             AbstractMap.SimpleImmutableEntry dsInfo = new AbstractMap.SimpleImmutableEntry<>(vo.getName(), vo.getId());
             sleepDsIndexJobName.put(job.getKey().getName(), dsInfo);
-            sleepDsIndexIdDs.put(vo.getId(), job.getKey());
+            sleepDsIndexIdDataSource.put(vo.getId(), job.getKey());
 
             SimpleTrigger trigger = new SimpleTrigger();
 
@@ -101,24 +108,19 @@ public class ReactivationManager {
         return sleepDsIndexJobName.get(keyNameJob);
     }
 
-    public void removeInfoAboutJob(String keyNameJob) {
-
-        Map.Entry<String,Integer> dsInfo = sleepDsIndexJobName.get(keyNameJob);
-        sleepDsIndexIdDs.remove(dsInfo.getValue());
-        sleepDsIndexJobName.remove(keyNameJob);
-    }
-
     public long getTimeToNextFire(int idDs) {
 
         int ERROR = -1;
         try {
-            Key key = sleepDsIndexIdDs.get(idDs);
+            Key key = sleepDsIndexIdDataSource.get(idDs);
 
-            Trigger[] trigers = scheduler.getTriggersOfJob(key.getName(), key.getGroup());
-            if ( (trigers != null) && (trigers.length > 0)) {
-                return scheduler.getTriggersOfJob(key.getName(), key.getGroup())[0].getNextFireTime().getTime() - new Date().getTime();
-            } else {
-                return ERROR;
+            if (scheduler.isStarted() && key != null) {
+                Trigger[] trigers = scheduler.getTriggersOfJob(key.getName(), key.getGroup());
+                if ((trigers != null) && (trigers.length > 0)) {
+                    return scheduler.getTriggersOfJob(key.getName(), key.getGroup())[0].getNextFireTime().getTime() - new Date().getTime();
+                } else {
+                    return ERROR;
+                }
             }
         } catch (Exception e) {
             LOG.error(e);
@@ -131,12 +133,14 @@ public class ReactivationManager {
         boolean result = false;
 
         try {
-            Key key = sleepDsIndexIdDs.get(idDs);
-            Trigger[] triggers = scheduler.getTriggersOfJob(key.getName(), key.getGroup());
-            if (triggers.length > 0) {
-                result = true;
-            } else {
-                sleepDsIndexIdDs.remove(idDs);
+            Key key = sleepDsIndexIdDataSource.get(idDs);
+            if (key != null) {
+                Trigger[] triggers = scheduler.getTriggersOfJob(key.getName(), key.getGroup());
+                if (triggers.length > 0) {
+                    result = true;
+                } else {
+                    sleepDsIndexIdDataSource.remove(idDs);
+                }
             }
         } catch (Exception e) {
             LOG.error(e);
@@ -147,7 +151,7 @@ public class ReactivationManager {
     }
 
     public void stopReactivation(int idDs) {
-        Key key = sleepDsIndexIdDs.get(idDs);
+        Key key = sleepDsIndexIdDataSource.get(idDs);
         try {
             if (key != null) {
                 scheduler.deleteJob(key.getName(), key.getGroup());
@@ -162,7 +166,7 @@ public class ReactivationManager {
     }
 
     public void startReactivation(int idDs) {
-        Key key = sleepDsIndexIdDs.get(idDs);
+        Key key = sleepDsIndexIdDataSource.get(idDs);
         try {
             ReactivationConnectHttpRetriever rhr = new ReactivationConnectHttpRetriever();
             DataSourceService dsService = new DataSourceService();
