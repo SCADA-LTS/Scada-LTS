@@ -73,6 +73,7 @@ after_script:
 - export TAGISSUE=`echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9][0-9]' | head -n1`
 - echo $TAGISSUE
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAGISSUE ; fi`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "siv/develop" ]; then echo "siv_dev"; fi`
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
