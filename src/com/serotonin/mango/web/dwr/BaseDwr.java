@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
+import com.serotonin.mango.rt.dataImage.PointValueCache;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
@@ -62,6 +63,7 @@ import com.serotonin.web.content.ContentGenerator;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";
@@ -238,7 +240,14 @@ abstract public class BaseDwr {
 
         return c;
     }
-
+    protected String getOwnerNameOfChangePointValue(String pointvalue){
+        PointValueAdnnotationsDAO p = new PointValueAdnnotationsDAO();
+        //PointValueCache pvc = new PointValueCache();
+        //point
+        UserDao userDao = new UserDao();
+        User a =userDao.getUser(1);
+        return a.getUsername();
+    }
     protected List<DataPointBean> getReadablePoints() {
         User user = Common.getUser();
 
