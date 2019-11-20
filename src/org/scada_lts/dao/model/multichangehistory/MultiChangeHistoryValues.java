@@ -12,7 +12,7 @@ public class MultiChangeHistoryValues {
     private String userName;
     private String viewAndCmpIdentyfication;
     private String interpretedState;
-    private long ts;
+    private long timeStamp;
     private int valueId;
     private String value;
     private int dataPointId;
@@ -60,12 +60,12 @@ public class MultiChangeHistoryValues {
         this.interpretedState = interpretedState;
     }
 
-    public long getTs() {
-        return ts;
+    public long getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setTs(long ts) {
-        this.ts = ts;
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public int getValueId() {
@@ -112,14 +112,14 @@ public class MultiChangeHistoryValues {
                 Objects.equals(userName, that.userName) &&
                 Objects.equals(viewAndCmpIdentyfication, that.viewAndCmpIdentyfication) &&
                 Objects.equals(interpretedState, that.interpretedState) &&
-                Objects.equals(ts, that.ts) &&
+                Objects.equals(timeStamp, that.timeStamp) &&
                 Objects.equals(value, that.value) &&
                 Objects.equals(xidPoint, that.xidPoint);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, userName, viewAndCmpIdentyfication, interpretedState, ts, valueId, value, dataPointId, xidPoint);
+        return Objects.hash(id, userId, userName, viewAndCmpIdentyfication, interpretedState, timeStamp, valueId, value, dataPointId, xidPoint);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class MultiChangeHistoryValues {
                 ", userName='" + userName + '\'' +
                 ", viewAndCmpIdentyfication='" + viewAndCmpIdentyfication + '\'' +
                 ", interpretedState='" + interpretedState + '\'' +
-                ", ts=" + ts +
+                ", ts=" + timeStamp +
                 ", valueId=" + valueId +
                 ", value='" + value + '\'' +
                 ", dataPointId=" + dataPointId +

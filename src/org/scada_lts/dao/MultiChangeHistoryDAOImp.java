@@ -16,17 +16,21 @@ public class MultiChangeHistoryDAOImp implements MultiChangesHistory {
 
     private static final Log LOG = LogFactory.getLog(MultiChangeHistoryDAOImp.class);
 
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_ID = "mch.id";
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_USER_ID = "mch.userId";
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_USER_NAME = "mch.username";
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_AND_CMP_IDENTIFICATION = "mch.viewAndComponentIdentification";
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_INTERPRETED_STATE = "mch.interpretedState";
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_TS = "mch.ts";
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_VALUE_ID = "vmch.valueId";
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_VALUE = "vmch.value";
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_DATA_POINT_ID = "vmch.dataPointId";
-    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_XID_POINT = "xidPoint";
+    /* PREFIX_TABLE_MULTI_CHANGE_HIST */
+    private final static String PREF_T_MCH = "mch";
+    /* PREFIX_TABLE_VALUE_MULTI_CHANGE_HIST */
+    private final static String PREF_T_VMCH = "vmch";
 
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_ID = PREF_T_MCH + ".id";
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_USER_ID = PREF_T_MCH + ".userId";
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_USER_NAME = PREF_T_MCH + ".username";
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_AND_CMP_IDENTIFICATION = PREF_T_MCH + ".viewAndComponentIdentification";
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_INTERPRETED_STATE = PREF_T_MCH + ".interpretedState";
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_TS = PREF_T_MCH + ".ts";
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_VALUE_ID = PREF_T_VMCH + ".valueId";
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_VALUE = PREF_T_VMCH + ".value";
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_DATA_POINT_ID = PREF_T_VMCH + ".dataPointId";
+    private final static String  COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_XID_POINT = "xidPoint";
 
     // @formatter:off
 	private static final String SQL = "" +
@@ -58,19 +62,19 @@ public class MultiChangeHistoryDAOImp implements MultiChangesHistory {
         try {
 
             List<MultiChangeHistoryValues> listUserComents = DAO.getInstance().getJdbcTemp().query(SQL, (ResultSet rs, int rownumber) -> {
-                    MultiChangeHistoryValues mchv = new MultiChangeHistoryValues();
-                    mchv.setId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_ID));
-                    mchv.setUserId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_USER_ID));
-                    mchv.setUserName(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_USER_NAME));
-                    mchv.setViewAndCmpIdentyfication(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_AND_CMP_IDENTIFICATION));
-                    mchv.setInterpretedState(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_INTERPRETED_STATE));
-                    mchv.setTs( rs.getLong(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_TS));
-                    mchv.setValueId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_VALUE_ID));
-                    mchv.setValue(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_VALUE));
-                    mchv.setDataPointId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_DATA_POINT_ID));
-                    mchv.setXidPoint(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_XID_POINT));
+                    MultiChangeHistoryValues multiChangeHistoryValues = new MultiChangeHistoryValues();
+                    multiChangeHistoryValues.setId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_ID));
+                    multiChangeHistoryValues.setUserId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_USER_ID));
+                    multiChangeHistoryValues.setUserName(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_USER_NAME));
+                    multiChangeHistoryValues.setViewAndCmpIdentyfication(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_AND_CMP_IDENTIFICATION));
+                    multiChangeHistoryValues.setInterpretedState(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_INTERPRETED_STATE));
+                    multiChangeHistoryValues.setTimeStamp( rs.getLong(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_TS));
+                    multiChangeHistoryValues.setValueId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_VALUE_ID));
+                    multiChangeHistoryValues.setValue(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_VALUE));
+                    multiChangeHistoryValues.setDataPointId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_DATA_POINT_ID));
+                    multiChangeHistoryValues.setXidPoint(rs.getString(COLUMN_NAME_MULTI_CHANGE_HISTORY_VIEW_XID_POINT));
 
-                    return mchv;
+                    return multiChangeHistoryValues;
             });
 
             return listUserComents;
@@ -81,7 +85,7 @@ public class MultiChangeHistoryDAOImp implements MultiChangesHistory {
     }
 
     @Override
-    public void prcAddCmpHistory(Integer userId, String xIdViewAndIdCmp, String interpretedState, Long scadaTime, String values) {
+    public void addHistoryFromCMPComponent(Integer userId, String xIdViewAndIdCmp, String interpretedState, Long scadaTime, String values) {
 
         DAO.getInstance().getJdbcTemp().update("call prc_add_cmp_history(?, ?, ?, ?, ?)",
                 userId,

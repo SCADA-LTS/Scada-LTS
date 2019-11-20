@@ -28,33 +28,35 @@ public class MultiChangesHistoryService {
 
     public Set<MultiChangeHistoryDTO> getHistory(String idViewAndCmpId) {
 
-        List<MultiChangeHistoryValues> data = multiChangesHistoryDAO.getHistory(idViewAndCmpId);
+        List<MultiChangeHistoryValues> multiChangeHistoryValuesList = multiChangesHistoryDAO.getHistory(idViewAndCmpId);
 
         Set<MultiChangeHistoryDTO> result = new HashSet<>();
-        MultiChangeHistoryDTO mch = new MultiChangeHistoryDTO();
-        for (MultiChangeHistoryValues mchv: data) {
-            if (mch.getId() == MultiChangeHistoryDTO.NEW_ID) {
+        MultiChangeHistoryDTO multiChangeHistoryDTO = new MultiChangeHistoryDTO();
+        if (multiChangeHistoryValuesList != null) {
+            for (MultiChangeHistoryValues item : multiChangeHistoryValuesList) {
+                if (multiChangeHistoryDTO.getId() == MultiChangeHistoryDTO.NEW_ID) {
 
-                helpTransform(mch, mchv);
-            } else if (mchv.getId() == mch.getId()) {
+                    helpTransform(multiChangeHistoryDTO, item);
+                } else if (item.getId() == multiChangeHistoryDTO.getId()) {
 
-                ValuesMultiChangesHistoryDTO vmch = new ValuesMultiChangesHistoryDTO();
-                vmch.setValue(mchv.getValue());
-                vmch.setXidPoint(mchv.getXidPoint());
-                mch.getValues().add(vmch);
-            } else if (mchv.getId() != mch.getId()) {
+                    ValuesMultiChangesHistoryDTO valuesMultiChangesHistoryDTO = new ValuesMultiChangesHistoryDTO();
+                    valuesMultiChangesHistoryDTO.setValue(item.getValue());
+                    valuesMultiChangesHistoryDTO.setXidPoint(item.getXidPoint());
+                    multiChangeHistoryDTO.getValues().add(valuesMultiChangesHistoryDTO);
+                } else if (item.getId() != multiChangeHistoryDTO.getId()) {
 
-                result.add(new MultiChangeHistoryDTO(mch));
-                mch = new MultiChangeHistoryDTO();
-                helpTransform(mch, mchv);
+                    result.add(new MultiChangeHistoryDTO(multiChangeHistoryDTO));
+                    multiChangeHistoryDTO = new MultiChangeHistoryDTO();
+                    helpTransform(multiChangeHistoryDTO, item);
+                }
             }
+            result.add(multiChangeHistoryDTO);
         }
-        result.add(mch);
         return result;
 
     }
 
-    public void addToCmpHistory(Integer userId, String xIdViewAndIdCmp, String interpretedState, SetValuePointDTO[] values) {
+    public void addToCmpHistory(Integer userId, String viewAndCmpId, String interpretedState, SetValuePointDTO[] values) {
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -66,28 +68,28 @@ public class MultiChangesHistoryService {
             return;
         }
 
-        multiChangesHistoryDAO.prcAddCmpHistory(
+        multiChangesHistoryDAO.addHistoryFromCMPComponent(
                userId,
-               xIdViewAndIdCmp,
+                viewAndCmpId,
                 interpretedState,
                 new Date().getTime() * 1000,
                json
         );
     }
 
-    private void helpTransform(MultiChangeHistoryDTO mch, MultiChangeHistoryValues mchv) {
+    private void helpTransform(MultiChangeHistoryDTO multiChangeHistoryDTO, MultiChangeHistoryValues multiChangeHistoryValues) {
 
-        mch.setId(mchv.getId());
-        mch.setUserId(mchv.getUserId());
-        mch.setUserName(mchv.getUserName());
-        mch.setInterpretedState(mchv.getInterpretedState());
-        mch.setUnixTime(mchv.getTs()/1000);
+        multiChangeHistoryDTO.setId(multiChangeHistoryValues.getId());
+        multiChangeHistoryDTO.setUserId(multiChangeHistoryValues.getUserId());
+        multiChangeHistoryDTO.setUserName(multiChangeHistoryValues.getUserName());
+        multiChangeHistoryDTO.setInterpretedState(multiChangeHistoryValues.getInterpretedState());
+        multiChangeHistoryDTO.setUnixTime(multiChangeHistoryValues.getTimeStamp() / 1000);
 
-        ValuesMultiChangesHistoryDTO vmch = new ValuesMultiChangesHistoryDTO();
-        vmch.setValue(mchv.getValue());
-        vmch.setXidPoint(mchv.getXidPoint());
+        ValuesMultiChangesHistoryDTO valuesMultiChangesHistoryDTO = new ValuesMultiChangesHistoryDTO();
+        valuesMultiChangesHistoryDTO.setValue(multiChangeHistoryValues.getValue());
+        valuesMultiChangesHistoryDTO.setXidPoint(multiChangeHistoryValues.getXidPoint());
 
-        mch.getValues().add(vmch);
+        multiChangeHistoryDTO.getValues().add(valuesMultiChangesHistoryDTO);
     }
 
 }

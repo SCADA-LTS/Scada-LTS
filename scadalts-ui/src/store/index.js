@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import ds from "./ds"
-import gv from "./gv"
-import ph from "./ph"
+import dataSource from "./dataSource"
+import graphicView from "./graphicView"
+import pointHierarchy from "./pointHierarchy"
 
 Vue.use(Vuex)
 
@@ -14,9 +14,9 @@ const myLoggerForVuexMutation = store => {
 
 export default new Vuex.Store({
   modules: {
-    ds,
-    gv,
-    ph
+    dataSource,
+    graphicView,
+    pointHierarchy
   },
   state: {
 

@@ -35,12 +35,12 @@ public class GetHistoryChangesAPI {
 
             if (user != null) {
 
-                MultiChangeHistoryComponentDTO mchc = new MultiChangeHistoryComponentDTO(
+                MultiChangeHistoryComponentDTO multiChangeHistoryComponentDTO = new MultiChangeHistoryComponentDTO(
                         xidViewAndIdCmp,
                         multiChangesHistoryService.getHistory(xidViewAndIdCmp)
                 );
 
-                return new ResponseEntity<>(mchc, HttpStatus.OK);
+                return new ResponseEntity<>(multiChangeHistoryComponentDTO, HttpStatus.OK);
             }
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

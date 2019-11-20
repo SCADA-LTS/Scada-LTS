@@ -80,8 +80,8 @@ const storeIsAlive = {
           })
       })
     },
-    setInitIsAlive({commit}, t) {
-       commit('SET_INIT', t)
+    setInitIsAlive({commit}, times) {
+       commit('SET_INIT', times)
     }
   },
   getters: {
