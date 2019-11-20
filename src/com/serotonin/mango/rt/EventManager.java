@@ -294,6 +294,10 @@ public class EventManager implements ILifecycle {
 		resetHighestAlarmLevel(lastAlarmTimestamp, true);
 	}
 
+	public UserDao getUserDao() {
+		return userDao;
+	}
+
 	public void terminate() {
 		// no op
 	}
