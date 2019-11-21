@@ -62,7 +62,7 @@ public class PointValueCache {
 
         if (logValue) {
             getPointValueCacheCooperateWithPointValueDao()
-                    .savePointValueIntoDatabaseAsyncOrSync(
+                    .savePointValue(
                             pointValueTime,
                             source,
                             async,
