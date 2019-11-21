@@ -32,19 +32,11 @@ import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 
-//public class DataPointDao extends BaseDao {
+
 public class DataPointDao {
 
     private MangoDataPoint dataPointService = new DataPointService();
     private static final Log LOG = LogFactory.getLog(DataPointDao.class);
-
-//    public DataPointDao() {
-//        super();
-//    }
-
-//    public DataPointDao(DataSource dataSource) {
-//        super(dataSource);
-//    }
 
     //
     //
@@ -68,35 +60,15 @@ public class DataPointDao {
 		return dataPointService.getExtendedPointName(dataPointId);
     }
 
-//    private static final String DATA_POINT_SELECT = "select dp.id, dp.xid, dp.dataSourceId, dp.data, ds.name, " //
-//            + "ds.xid, ds.dataSourceType " //
-//            + "from dataPoints dp join dataSources ds on ds.id = dp.dataSourceId ";
-
     public List<DataPointVO> getDataPoints(Comparator<DataPointVO> comparator, boolean includeRelationalData) {
-//        List<DataPointVO> dps = query(DATA_POINT_SELECT, new DataPointRowMapper());
-//        if (includeRelationalData)
-//            setRelationalData(dps);
-//        if (comparator != null)
-//            Collections.sort(dps, comparator);
-//        return dps;
 		return dataPointService.getDataPoints(comparator, includeRelationalData);
     }
 
     public List<DataPointVO> getDataPoints(int dataSourceId, Comparator<DataPointVO> comparator) {
-//        List<DataPointVO> dps = query(DATA_POINT_SELECT + " where dp.dataSourceId=?", new Object[] { dataSourceId },
-//                new DataPointRowMapper());
-//        setRelationalData(dps);
-//        if (comparator != null)
-//            Collections.sort(dps, comparator);
-//        return dps;
 		return dataPointService.getDataPoints(dataSourceId, comparator);
     }
 
     public DataPointVO getDataPoint(int id) {
-//        DataPointVO dp = queryForObject(DATA_POINT_SELECT + " where dp.id=?", new Object[] { id },
-//                new DataPointRowMapper(), null);
-//        setRelationalData(dp);
-//        return dp;
     	try {
     		return dataPointService.getDataPoint(id);
     	} catch (EmptyResultDataAccessException e) {
@@ -107,189 +79,31 @@ public class DataPointDao {
     }
 
     public DataPointVO getDataPoint(String xid) {
-//        DataPointVO dp = queryForObject(DATA_POINT_SELECT + " where dp.xid=?", new Object[] { xid },
-//                new DataPointRowMapper(), null);
-//        setRelationalData(dp);
-//        return dp;
 		return dataPointService.getDataPoint(xid);
     }
 
-//    class DataPointRowMapper implements GenericRowMapper<DataPointVO> {
-//        public DataPointVO mapRow(ResultSet rs, int rowNum) throws SQLException {
-//            DataPointVO dp;
-//            try {
-//                if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")){
-//                    dp = (DataPointVO) SerializationHelper.readObject(rs.getBinaryStream(4));
-//                }
-//                else{
-//                    dp = (DataPointVO) SerializationHelper.readObject(rs.getBlob(4).getBinaryStream());
-//                }
-//            }
-//            catch (ShouldNeverHappenException e) {
-//                dp = new DataPointVO();
-//                dp.setName("Point configuration lost. Please recreate.");
-//                dp.defaultTextRenderer();
-//            }
-//            dp.setId(rs.getInt(1));
-//            dp.setXid(rs.getString(2));
-//            dp.setDataSourceId(rs.getInt(3));
-//
-//            // Data source information.
-//            dp.setDataSourceName(rs.getString(5));
-//            dp.setDataSourceXid(rs.getString(6));
-//            dp.setDataSourceTypeId(rs.getInt(7));
-//
-//            // The spinwave changes were not correctly implemented, so we need to handle potential errors here.
-//            if (dp.getPointLocator() == null) {
-//                // Use the data source tpe id to determine what type of locator is needed.
-//                dp.setPointLocator(new DataSourceDao().getDataSource(dp.getDataSourceId()).createPointLocator());
-//            }
-//
-//            return dp;
-//        }
-//    }
-
-//    private void setRelationalData(List<DataPointVO> dps) {
-//        for (DataPointVO dp : dps)
-//            setRelationalData(dp);
-//    }
-
-//    private void setRelationalData(DataPointVO dp) {
-//        if (dp == null)
-//            return;
-//        setEventDetectors(dp);
-//        setPointComments(dp);
-//    }
-
     public void saveDataPoint(final DataPointVO dp) {
-//        getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
-//            @Override
-//            protected void doInTransactionWithoutResult(TransactionStatus status) {
-//                // Decide whether to insert or update.
-//                if (dp.getId() == Common.NEW_ID) {
-//                    insertDataPoint(dp);
-//                    // Reset the point hierarchy so that the new point gets included.
-//                    cachedPointHierarchy = null;
-//                    MangoPointHierarchy.getInst().addDataPoint(dp);
-//                }
-//                else {
-//                    updateDataPoint(dp);
-//                    MangoPointHierarchy.getInst().updateDataPoint(dp);
-//                }
-//            }
-//        });
 		dataPointService.saveDataPoint(dp);
     }
 
     void insertDataPoint(final DataPointVO dp) {
-//        // Create a default text renderer
-//        if (dp.getTextRenderer() == null)
-//            dp.defaultTextRenderer();
-//
-//        // Insert the main data point record.
-//        if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")){
-//            try {
-//                Connection conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
-//                                            Common.getEnvironmentProfile().getString("db.username"),
-//                                            Common.getEnvironmentProfile().getString("db.password"));
-//                PreparedStatement preStmt = conn.prepareStatement("insert into dataPoints (xid, dataSourceId, data) values (?,?,?)");
-//                preStmt.setString(1, dp.getXid());
-//                preStmt.setInt(2, dp.getDataSourceId());
-//                preStmt.setBytes(3, SerializationHelper.writeObjectToArray(dp));
-//                preStmt.executeUpdate();
-//
-//                ResultSet resSEQ = conn.createStatement().executeQuery("SELECT currval('datapoints_id_seq')");
-//                resSEQ.next();
-//                int id = resSEQ.getInt(1);
-//
-//                conn.close();
-//
-//                dp.setId(id);
-//
-//            } catch (SQLException ex) {
-//                ex.printStackTrace();
-//                dp.setId(0);
-//            }
-//        }
-//        else{
-//            dp.setId(doInsert("insert into dataPoints (xid, dataSourceId, data) values (?,?,?)", new Object[] {
-//                    dp.getXid(), dp.getDataSourceId(), SerializationHelper.writeObject(dp) }, new int[] { Types.VARCHAR,
-//                    Types.INTEGER, Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB }));
-//        }
-//        // Save the relational information.
-//        saveEventDetectors(dp);
-//
-//        AuditEventType.raiseAddedEvent(AuditEventType.TYPE_DATA_POINT, dp);
 		dataPointService.insertDataPoint(dp);
     }
 
     void updateDataPoint(final DataPointVO dp) {
-//        DataPointVO old = getDataPoint(dp.getId());
-//
-//        if (old.getPointLocator().getDataTypeId() != dp.getPointLocator().getDataTypeId())
-//            // Delete any point values where data type doesn't match the vo, just in case the data type was changed.
-//            // Only do this if the data type has actually changed because it is just really slow if the database is
-//            // big or busy.
-//        	//TODO is not logic because remove important data
-//            //new PointValueDao().deletePointValuesWithMismatchedType(dp.getId(), dp.getPointLocator().getDataTypeId());
-//
-//        // Save the VO information.
-//        updateDataPointShallow(dp);
-//
-//        AuditEventType.raiseChangedEvent(AuditEventType.TYPE_DATA_POINT, old, dp);
-//
-//        // Save the relational information.
-//        saveEventDetectors(dp);
 		dataPointService.updateDataPoint(dp);
     }
 
     public void updateDataPointShallow(final DataPointVO dp) {
-//        ejt.update("update dataPoints set xid=?, data=? where id=?",
-//                new Object[] { dp.getXid(), SerializationHelper.writeObject(dp), dp.getId() }, new int[] {
-//                        Types.VARCHAR, Common.getEnvironmentProfile().getString("db.type").equals("postgres") ? Types.BINARY: Types.BLOB, Types.INTEGER });
-//
 //        //TODO aktualizacja cacha hierarchii
 		dataPointService.updateDataPointShallow(dp);
     }
 
     public void deleteDataPoints(final int dataSourceId) {
-//        List<DataPointVO> old = getDataPoints(dataSourceId, null);
-//        for (DataPointVO dp : old)
-//            beforePointDelete(dp.getId());
-//
-//        for (DataPointVO dp : old)
-//            deletePointHistory(dp.getId());
-//
-//        getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
-//            @SuppressWarnings("synthetic-access")
-//            @Override
-//            protected void doInTransactionWithoutResult(TransactionStatus status) {
-//                List<Integer> pointIds = queryForList("select id from dataPoints where dataSourceId=?",
-//                        new Object[] { dataSourceId }, Integer.class);
-//                if (pointIds.size() > 0)
-//                    deleteDataPointImpl(createDelimitedList(new HashSet<Integer>(pointIds), ",", null));
-//            }
-//        });
-//
-//        for (DataPointVO dp : old)
-//            AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_DATA_POINT, dp);
 		dataPointService.deleteDataPoints(dataSourceId);
     }
 
     public void deleteDataPoint(final int dataPointId) {
-//        DataPointVO dp = getDataPoint(dataPointId);
-//        if (dp != null) {
-//            beforePointDelete(dataPointId);
-//            deletePointHistory(dataPointId);
-//            getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
-//                @Override
-//                protected void doInTransactionWithoutResult(TransactionStatus status) {
-//                    deleteDataPointImpl(Integer.toString(dataPointId));
-//                }
-//            });
-//
-//            AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_DATA_POINT, dp);
-//        }
 		dataPointService.deleteDataPoint(dataPointId);
     }
 

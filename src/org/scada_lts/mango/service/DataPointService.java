@@ -209,7 +209,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		dp.setId(dataPointDAO.insert(dp));
-		saveEventDetectors(dp);
+		insertDeleteOrUpdateEventDetectorsIntoDb(dp);
 	}
 
 	@Override
@@ -220,7 +220,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		updateDataPointShallow(dp);
-		saveEventDetectors(dp);
+		insertDeleteOrUpdateEventDetectorsIntoDb(dp);
 	}
 
 	@Override
@@ -375,7 +375,7 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
-	private void saveEventDetectors(DataPointVO dataPoint) {
+	private void insertDeleteOrUpdateEventDetectorsIntoDb(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 
 		for (PointEventDetectorVO pointEventDetector: detectors) {
