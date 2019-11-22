@@ -44,6 +44,12 @@ public class PointValueCache {
      */
     private LinkedList<PointValueTime>  cache = new LinkedList<PointValueTime>();
 
+    public PointValueCache(){
+        this.dataPointId = -1;
+        this.defaultSize = -1;
+        pointValueCacheCooperateWithPointValueDao = new PointValueCacheCooperateWithPointValueDao();
+    }
+
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
@@ -53,7 +59,18 @@ public class PointValueCache {
             refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(defaultSize);
         }
     }
+    public List<PointValueTime> getLatestPointValuesUsedForTest(int limit){
+        return cache;
+    }
 
+    /**
+     * "That method is used only for Junit test and shouldn't be used  in normal work  of Scada.
+     *
+     * @param pointValueTime
+     */
+    public void addPointValueTimeIntoCacheForTest(PointValueTime pointValueTime){
+        cache.add(pointValueTime);
+    }
     public int getDataPointId() {
         return dataPointId;
     }

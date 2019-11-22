@@ -10,7 +10,7 @@ class PointValueCacheCooperateWithPointValueDao {
 
     private PointValueDao pointValueDao;
 
-    PointValueTime savePointValue(
+    PointValueTime savePointValueIntoDatabaseAsyncOrSync(
             PointValueTime pointValueTime,
             SetPointSource pointSource,
             boolean async,

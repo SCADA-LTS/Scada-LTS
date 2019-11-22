@@ -82,10 +82,24 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		this.pointLocator = pointLocator;
 		valueCache = new PointValueCache(vo.getId(), vo.getDefaultCacheSize());
 	}
+	public DataPointRT(DataPointVO vo) {
+		this.vo = vo;
+		this.pointLocator = null;
+		valueCache = new PointValueCache();
+	}
+	public PointValueCache getPointValueCache(){
+		return this.valueCache;
+	}
 
 	public List<PointValueTime> getLatestPointValues(int limit) {
 		return valueCache.getLatestPointValues(limit);
 	}
+    public List<PointValueTime> getLatestPointValuesUsedForJunitTest(int limit) {
+	    return valueCache.getLatestPointValuesUsedForTest(limit);
+    }
+    public void addCollectionIntoCache(PointValueTime pvt){
+	    valueCache.addPointValueTimeIntoCacheForTest(pvt);
+    }
 
 	public PointValueTime getPointValueBefore(long time) {
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
@@ -268,7 +282,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		}
 
 		if (saveValue)
-			valueCache.savePointValue(newValue, source, logValue, async);
+			valueCache.savePointValueIntoCacheAndIntoDbAsyncOrSyncIflogValue(newValue, source, logValue, async);
 
 		// Ignore historical values.
 		if (pointValue == null || newValue.getTime() >= pointValue.getTime()) {
