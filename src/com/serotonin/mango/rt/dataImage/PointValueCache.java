@@ -90,11 +90,22 @@ public class PointValueCache {
         savePointValueIntoCache( pointValueTime );
 
     }
+    public void setMaxSize(int newMaxSize) {
+        maxSize = newMaxSize;
+    }
     private void savePointValueIntoCache(PointValueTime pointValueTime) {
 
-        if(cache.size()!=0){
-            cache.removeLast();
-            cache.addFirst(pointValueTime);
+        if(cache.size() != 0){
+
+            if(cache.size() == maxSize) {
+
+                cache.removeLast();
+                cache.addFirst(pointValueTime);
+
+            }
+            else {
+                cache.addFirst(pointValueTime);
+            }
         }
         else {
             cache.add(pointValueTime);
