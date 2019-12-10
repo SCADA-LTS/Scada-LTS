@@ -230,7 +230,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	
 	private static final String EVENT_FILTER_USER = ""
 			+"ue."+COLUMN_NAME_USER_ID+"=? and "
-			+"((e."+COLUMN_NAME_ACT_TS+" is null or e."+COLUMN_NAME_ACT_TS+"=0) "
+			+"(e."+COLUMN_NAME_ACT_TS+" is null or e."+COLUMN_NAME_ACT_TS+"=0) "
 			+"order by e."+COLUMN_NAME_ACT_TS+ " desc";
 	
 	private static final String EVENT_COMMENT_SELECT = ""
