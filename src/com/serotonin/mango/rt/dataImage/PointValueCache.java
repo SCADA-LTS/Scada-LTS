@@ -35,7 +35,7 @@ public class PointValueCache {
     private final int dataPointId;
     private final int defaultSize;
     private int maxSize = 0;
-    private PointValueCacheCooperateWithPointValueDao pointValueCacheCooperateWithPointValueDao;
+    private PointValueProxy pointValueProxy;
 
     /**
      * IMPORTANT: The list object should never be written to! The implementation here is for performance. Never call
@@ -47,13 +47,13 @@ public class PointValueCache {
     public PointValueCache(){
         this.dataPointId = -1;
         this.defaultSize = -1;
-        pointValueCacheCooperateWithPointValueDao = new PointValueCacheCooperateWithPointValueDao();
+        pointValueProxy = new PointValueProxy();
     }
 
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
-        pointValueCacheCooperateWithPointValueDao = new PointValueCacheCooperateWithPointValueDao();
+        pointValueProxy = new PointValueProxy();
 
         if (defaultSize > 0) {
             refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(defaultSize);
@@ -78,7 +78,7 @@ public class PointValueCache {
     public void savePointValueIntoCacheAndIntoDbAsyncOrSyncIflogValue(PointValueTime pointValueTime, SetPointSource source, boolean logValue, boolean async) {
 
         if (logValue) {
-            getPointValueCacheCooperateWithPointValueDao()
+            getPointValueProxy()
                     .savePointValueIntoDatabaseAsyncOrSync(
                             pointValueTime,
                             source,
@@ -117,7 +117,7 @@ public class PointValueCache {
      */
     void logPointValueAsync(PointValueTime pointValue, SetPointSource source) {
         // Save the new value and get a point value time back that has the id and annotations set, as appropriate.
-        getPointValueCacheCooperateWithPointValueDao().logPointValueAsync( pointValue, source, getDataPointId() );
+        getPointValueProxy().logPointValueAsync( pointValue, source, getDataPointId() );
     }
 
     public PointValueTime getLatestPointValue() {
@@ -147,9 +147,9 @@ public class PointValueCache {
         return new ArrayList<PointValueTime>(cache.subList(0, limit));
     }
 
-    public PointValueCacheCooperateWithPointValueDao getPointValueCacheCooperateWithPointValueDao() {
+    public PointValueProxy getPointValueProxy() {
 
-        return pointValueCacheCooperateWithPointValueDao;
+        return pointValueProxy;
 
     }
 
@@ -185,14 +185,14 @@ public class PointValueCache {
 
     private void readOnlyOneRowWithMaxTSAndPutIntoCache(int dataPointId){
 
-        PointValueTime pointValueTime = getPointValueCacheCooperateWithPointValueDao().getLatestPointValueFromDao( dataPointId );
+        PointValueTime pointValueTime = getPointValueProxy().getLatestPointValueFromDao( dataPointId );
 
         if (pointValueTime != null) {
-            cache.addFirst(pointValueTime);
+            savePointValueIntoCache( pointValueTime );
         }
     }
 
     private void getPointValuesAndFillCacheDependingOnRowsLimit(int size){
-        cache = getPointValueCacheCooperateWithPointValueDao().getDefinedLimitRowsOfLatestPointValues( getDataPointId(),size );
+        cache = getPointValueProxy().getDefinedLimitRowsOfLatestPointValues( getDataPointId(),size );
     }
 }

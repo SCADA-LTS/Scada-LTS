@@ -1,12 +1,11 @@
 package com.serotonin.mango.rt.dataImage;
 
 import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.rt.dataImage.exceptions_level.ExceptionsArea;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-class PointValueCacheCooperateWithPointValueDao {
+class PointValueProxy {
 
     private PointValueDao pointValueDao;
 
@@ -51,7 +50,7 @@ class PointValueCacheCooperateWithPointValueDao {
 
         List<PointValueTime> pointValueTimes = getPointValueDao().getLatestPointValues(dataPointId,limit);
 
-        return (new ExceptionsArea().doListIsNull( pointValueTimes ))
+        return (pointValueTimes == null)
                 ?Collections.emptyList()
                 :pointValueTimes;
     }
