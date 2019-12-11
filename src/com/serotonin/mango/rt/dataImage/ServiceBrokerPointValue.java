@@ -1,8 +1,6 @@
 package com.serotonin.mango.rt.dataImage;
 
 import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.rt.dataImage.SetPointSource;
 
 import java.util.Collections;
 import java.util.LinkedList;
