@@ -3,6 +3,7 @@ package com.serotonin.mango.rt.dataImage;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import org.junit.Assert;
 import org.junit.Test;
+import org.scada_lts.cache.PointValueCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class PointValueCacheTest {
 
     private void addNewPointValueTimeIntoCacheAndLocalList(PointValueTime pointValueTime){
 
-        pointValueCache.savePointValueIntoCacheAndIntoDbAsyncOrSyncIflogValue(pointValueTime, null, Boolean.FALSE, Boolean.FALSE);
+        pointValueCache.savePointValueIntoCacheAndIflogValueIntoDbAsyncOrSync(pointValueTime, null, Boolean.FALSE, Boolean.FALSE);
 
         pointValueTimesList.add(pointValueTime);
 

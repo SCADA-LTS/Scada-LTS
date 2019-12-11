@@ -31,6 +31,7 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.PointValueDao;
+import org.scada_lts.cache.PointValueCache;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
@@ -282,7 +283,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		}
 
 		if (saveValue)
-			valueCache.savePointValueIntoCacheAndIntoDbAsyncOrSyncIflogValue(newValue, source, logValue, async);
+			valueCache.savePointValueIntoCacheAndIflogValueIntoDbAsyncOrSync(newValue, source, logValue, async);
 
 		// Ignore historical values.
 		if (pointValue == null || newValue.getTime() >= pointValue.getTime()) {
@@ -366,8 +367,9 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 								+ vo.getIntervalLoggingType());
 
 			if (value != null)
-				valueCache.logPointValueAsync(new PointValueTime(value,
-						fireTime), null);
+				valueCache.savePointValueAsyncToDbByServiceBroker(
+						new PointValueTime(value,fireTime),
+						null);
 		}
 	}
 

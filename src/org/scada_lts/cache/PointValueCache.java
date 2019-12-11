@@ -16,7 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.serotonin.mango.rt.dataImage;
+package org.scada_lts.cache;
+
+import com.serotonin.mango.rt.dataImage.ServiceBrokerPointValue;
+import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataImage.SetPointSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +39,8 @@ public class PointValueCache {
     private final int dataPointId;
     private final int defaultSize;
     private int maxSize = 0;
-    private PointValueProxy pointValueProxy;
+
+    private ServiceBrokerPointValue serviceBrokerPointValue;
 
     /**
      * IMPORTANT: The list object should never be written to! The implementation here is for performance. Never call
@@ -47,39 +52,41 @@ public class PointValueCache {
     public PointValueCache(){
         this.dataPointId = -1;
         this.defaultSize = -1;
-        pointValueProxy = new PointValueProxy();
+        serviceBrokerPointValue = new ServiceBrokerPointValue();
     }
 
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
-        pointValueProxy = new PointValueProxy();
+        serviceBrokerPointValue = new ServiceBrokerPointValue();
 
         if (defaultSize > 0) {
             refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(defaultSize);
         }
     }
     public List<PointValueTime> getLatestPointValuesUsedForTest(int limit){
-        return cache;
+
+        return getCacheContents();
     }
 
     /**
-     * "That method is used only for Junit test and shouldn't be used  in normal work  of Scada.
+     * "That method is used only for Junit test and shouldn't be used  in normal work of Scada.
      *
      * @param pointValueTime
      */
     public void addPointValueTimeIntoCacheForTest(PointValueTime pointValueTime){
-        cache.add(pointValueTime);
+
+        savePointValueInCache(pointValueTime);
     }
     public int getDataPointId() {
         return dataPointId;
     }
 
-    public void savePointValueIntoCacheAndIntoDbAsyncOrSyncIflogValue(PointValueTime pointValueTime, SetPointSource source, boolean logValue, boolean async) {
+    public void savePointValueIntoCacheAndIflogValueIntoDbAsyncOrSync(PointValueTime pointValueTime, SetPointSource source, boolean logValue, boolean async) {
 
         if (logValue) {
-            getPointValueProxy()
-                    .savePointValueIntoDatabaseAsyncOrSync(
+            getServiceBrokerPointValue().savePointValueIntoDatabaseAsyncOrSync(
+
                             pointValueTime,
                             source,
                             async,
@@ -87,13 +94,19 @@ public class PointValueCache {
                     );
         }
 
-        savePointValueIntoCache( pointValueTime );
+        savePointValueInCache( pointValueTime );
 
     }
+
+    /**
+     * "That method is used only for Junit test and shouldn't be used  in normal work of Scada.
+     * @param newMaxSize
+     */
     public void setMaxSize(int newMaxSize) {
+
         maxSize = newMaxSize;
     }
-    private void savePointValueIntoCache(PointValueTime pointValueTime) {
+    private void savePointValueInCache(PointValueTime pointValueTime) {
 
         if(cache.size() != 0){
 
@@ -115,15 +128,14 @@ public class PointValueCache {
     /**
      * Saves the given value to the database without adding it to the cache.
      */
-    void logPointValueAsync(PointValueTime pointValue, SetPointSource source) {
+    public void savePointValueAsyncToDbByServiceBroker(PointValueTime pointValue, SetPointSource source) {
         // Save the new value and get a point value time back that has the id and annotations set, as appropriate.
-        getPointValueProxy().logPointValueAsync( pointValue, source, getDataPointId() );
+        getServiceBrokerPointValue().savePointValueAsyncToDao( pointValue, source, getDataPointId() );
     }
 
     public PointValueTime getLatestPointValue() {
-        if (maxSize == 0) {
-            refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(1);
-        }
+
+        refreshCacheDependsOnGivenLimit( 1 );
 
         if (cache.size() > 0) {
             return cache.get(0);
@@ -132,38 +144,27 @@ public class PointValueCache {
         return null;
     }
 
+
     public List<PointValueTime> getLatestPointValues(int limit) {
         if (maxSize < limit) {
             refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(limit);
         }
 
-        if (limit == cache.size()) {
+        int cacheSize =  cache.size();
+        if (limit == cacheSize) {
             return cache;
         }
 
-        if (limit > cache.size()) {
-            limit = cache.size();
+        if (limit > cacheSize) {
+            limit = cacheSize;
         }
         return new ArrayList<PointValueTime>(cache.subList(0, limit));
     }
 
-    public PointValueProxy getPointValueProxy() {
+    public ServiceBrokerPointValue getServiceBrokerPointValue() {
 
-        return pointValueProxy;
+        return serviceBrokerPointValue;
 
-    }
-
-    private void refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(int limit) {
-        if (limit > maxSize) {
-            maxSize = limit;
-            if (limit == 1) {
-                // Performance thingy
-                readOnlyOneRowWithMaxTSAndPutIntoCache( getDataPointId() );
-            }
-            else
-                //cache = dao.getLatestPointValues(dataPointId, limit);
-                getPointValuesAndFillCacheDependingOnRowsLimit(limit);
-        }
     }
 
     /**
@@ -176,23 +177,38 @@ public class PointValueCache {
     public void reset() {
 
         int size = defaultSize;
+        int cacheSize = getCacheContents().size();
 
-        if (cache.size() < size)
-            size = cache.size();
+        if (cacheSize < size)
+            size = cacheSize;
 
         maxSize = size;
     }
+    private void refreshCacheDependsOnGivenLimit(int givenLimit ) {
+        if (maxSize == 0) {
+            refreshCacheByReadNeededDataFromDbDependsOnGivenLimit( givenLimit );
+        }
+    }
+    private void refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(int limit) {
+        if (limit > maxSize) {
+            maxSize = limit;
+            if (limit == 1) {
+                // Performance thingy
+                readLatestPointValueFromDaoAndPutIntoCache( getDataPointId() );
+            }
+            else {
+                getCacheContents().clear();
+                cache = getServiceBrokerPointValue().getLimitRowsOfLatestPointValuesForGivenDataPointId( getDataPointId(),limit );
+            }
+        }
+    }
+    private void readLatestPointValueFromDaoAndPutIntoCache(int dataPointId){
 
-    private void readOnlyOneRowWithMaxTSAndPutIntoCache(int dataPointId){
-
-        PointValueTime pointValueTime = getPointValueProxy().getLatestPointValueFromDao( dataPointId );
+        PointValueTime pointValueTime = getServiceBrokerPointValue().getLatestPointValueFromDao( dataPointId );
 
         if (pointValueTime != null) {
-            savePointValueIntoCache( pointValueTime );
+            savePointValueInCache( pointValueTime );
         }
     }
 
-    private void getPointValuesAndFillCacheDependingOnRowsLimit(int size){
-        cache = getPointValueProxy().getDefinedLimitRowsOfLatestPointValues( getDataPointId(),size );
-    }
 }
