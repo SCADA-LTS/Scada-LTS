@@ -19,6 +19,7 @@
 package org.scada_lts.cache;
 
 import com.serotonin.mango.rt.dataImage.ServiceBrokerPointValue;
+import com.serotonin.mango.rt.dataImage.ServiceBrokerPointValueImpl;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 
@@ -49,16 +50,14 @@ public class PointValueCache {
      */
     private LinkedList<PointValueTime>  cache = new LinkedList<PointValueTime>();
 
-    public PointValueCache(){
-        this.dataPointId = -1;
-        this.defaultSize = -1;
-        serviceBrokerPointValue = new ServiceBrokerPointValue();
+    public PointValueCache(int newDataPointId, int newDefaultSize){
+        this.dataPointId = newDataPointId;
+        this.defaultSize = newDefaultSize;
     }
 
-    public PointValueCache(int dataPointId, int defaultSize) {
-        this.dataPointId = dataPointId;
-        this.defaultSize = defaultSize;
-        serviceBrokerPointValue = new ServiceBrokerPointValue();
+    public PointValueCache(int dataPointId, int defaultSize, ServiceBrokerPointValue serviceBrokerPointValue) {
+        this(dataPointId,defaultSize);
+        this.serviceBrokerPointValue = serviceBrokerPointValue;
 
         if (defaultSize > 0) {
             refreshCacheByReadNeededDataFromDbDependsOnGivenLimit(defaultSize);

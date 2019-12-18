@@ -18,7 +18,7 @@ public class PointValueCacheTest {
     @Test
     public void checkElasticFunctionalityOfPointValueCacheBoxWithConcreteSizeTest ( ){
 
-        pointValueCache = new PointValueCache();
+        pointValueCache = new PointValueCache(-1,-1);
         pointValueCache.setMaxSize( MAX_SIZE_OF_POINTVALUECACHE );
 
         for(int pointValue = 1;pointValue <4;pointValue++) {
