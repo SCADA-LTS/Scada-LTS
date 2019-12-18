@@ -13,12 +13,12 @@ public class MultiThreadEngine {
 
     private static Logger logger = LoggerFactory.getLogger(MultiThreadEngine.class);
 
-    public static double test(final Executor executor, int concurrency, final List<Runnable> action) throws InterruptedException {
-        final CountDownLatch ready = new CountDownLatch(concurrency);
+    public static double test(final Executor executor, int numberOfLaunches, final List<Runnable> actions) throws InterruptedException {
+        final CountDownLatch ready = new CountDownLatch(numberOfLaunches);
         final CountDownLatch start = new CountDownLatch(1);
-        final CountDownLatch done = new CountDownLatch(concurrency);
-        final Iterator<Runnable> iterator = action.iterator();
-        for (int i = 0; i < concurrency; i++) {
+        final CountDownLatch done = new CountDownLatch(numberOfLaunches);
+        final Iterator<Runnable> iterator = actions.iterator();
+        for (int i = 0; i < numberOfLaunches; i++) {
             executor.execute(() -> {
                 ready.countDown();
                 try {

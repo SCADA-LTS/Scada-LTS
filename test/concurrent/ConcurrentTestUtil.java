@@ -14,27 +14,17 @@ public class ConcurrentTestUtil {
 
     private static Logger logger = LoggerFactory.getLogger(ConcurrentTestUtil.class);
 
-    public static <A, R> void function(int arg, Function<A, R> fun, A key) throws InterruptedException {
-        Executor executor = Executors.newFixedThreadPool(arg);
-        List<Runnable> runs = new ArrayList<>();
-        for (int i = 0; i < arg; i++) {
-            runs.add(() -> {
-                R result = fun.apply(key);
-            });
-        }
-        double time = MultiThreadEngine.test(executor, arg, runs);
+    public static <A, R> void function(int numberOfLaunches, Function<A, R> fun, A key) throws InterruptedException {
+        Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Runnable action = () -> fun.apply(key);
+        double time = MultiThreadEngine.test(executor, numberOfLaunches, action);
         logger.info("time: {}", time);
     }
 
-    public static <T> void consumer(int arg, Consumer<T> fun, T key) throws InterruptedException {
-        Executor executor = Executors.newFixedThreadPool(arg);
-        List<Runnable> runs = new ArrayList<>();
-        for (int i = 0; i < arg; i++) {
-            runs.add(() -> {
-                fun.accept(key);
-            });
-        }
-        double time = MultiThreadEngine.test(executor, arg, runs);
+    public static <T> void consumer(int numberOfLaunches, Consumer<T> fun, T key) throws InterruptedException {
+        Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Runnable action = () -> fun.accept(key);
+        double time = MultiThreadEngine.test(executor, numberOfLaunches, action);
         logger.info("time: {}", time);
     }
 }
