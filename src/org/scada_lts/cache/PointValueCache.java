@@ -18,8 +18,7 @@
  */
 package org.scada_lts.cache;
 
-import com.serotonin.mango.rt.dataImage.ServiceBrokerPointValue;
-import com.serotonin.mango.rt.dataImage.ServiceBrokerPointValueImpl;
+import com.serotonin.mango.servicebroker.ServiceBrokerPointValue;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 
