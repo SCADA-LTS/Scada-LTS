@@ -3,7 +3,7 @@ package com.serotonin.mango.rt.dataImage;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.scadalts.test.concurrent.TestConcurrent;
+import utils.concurrent.TestConcurrent;
 import org.junit.Test;
 import utils.PointValueDaoTestImpl;
 import utils.SetPointSourceTestImpl;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(value = Parameterized.class)
 public class PointValueCacheConcurrentTest {
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters( name = "{index}: args: logValue: {0}, async: {1}, source {2}" )
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
                 {
@@ -58,13 +58,73 @@ public class PointValueCacheConcurrentTest {
         subject = new PointValueCache(dataPointId, sizeExpected, new PointValueDaoTestImpl());
 
         //when:
-        TestConcurrent.consumer(10000, this::savePointValue, pointValueTime);
+        TestConcurrent.consumer(1000, this::savePointValue, pointValueTime);
 
         //and:
         int result = subject.getCacheContents().size();
 
         //then:
         assertEquals(sizeExpected, result);
+    }
+
+    @Test
+    public void test_getLatestPointValues_concurrent() throws InterruptedException {
+
+        //given:
+        PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
+        PointValueTime pointValueTimeSecond = new PointValueTime(MangoValue.stringToValue(String.valueOf(2), 3), 1);
+        PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
+
+        //when:
+        subject = new PointValueCache(dataPointId, 3, new PointValueDaoTestImpl());
+
+        //and:
+        subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
+        subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecond, source, logValue, async);
+        subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLast, source, logValue, async);
+
+        //then:
+        TestConcurrent.function(1000, subject::getLatestPointValues, 33);
+    }
+
+    @Test
+    public void test_getCacheContents_concurrent() throws InterruptedException {
+
+        //given:
+        PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
+        PointValueTime pointValueTimeSecond = new PointValueTime(MangoValue.stringToValue(String.valueOf(2), 3), 1);
+        PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
+
+        //when::
+        subject = new PointValueCache(dataPointId, 3, new PointValueDaoTestImpl());
+
+        //and:
+        subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
+        subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecond, source, logValue, async);
+        subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLast, source, logValue, async);
+
+        //then:
+        TestConcurrent.supplier(1000, subject::getCacheContents);
+    }
+
+    @Test
+    public void test_getLatestPointValue_concurrent() throws InterruptedException {
+
+        //given:
+        PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
+        PointValueTime pointValueTimeSecond = new PointValueTime(MangoValue.stringToValue(String.valueOf(2), 3), 1);
+        PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
+
+        //when:
+        subject = new PointValueCache(dataPointId, 3, new PointValueDaoTestImpl());
+
+        //and:
+        subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
+        subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecond, source, logValue, async);
+        subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLast, source, logValue, async);
+
+        //then:
+        TestConcurrent.supplier(1000, subject::getLatestPointValue);
     }
 
     @Test
@@ -122,4 +182,5 @@ public class PointValueCacheConcurrentTest {
     void savePointValue(PointValueTime pointValueTime) {
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTime, source, logValue, async);
     }
+
 }

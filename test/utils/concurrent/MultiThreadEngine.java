@@ -1,4 +1,4 @@
-package org.scadalts.test.concurrent;
+package utils.concurrent;
 
 
 import org.slf4j.Logger;

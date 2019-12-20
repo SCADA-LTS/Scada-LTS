@@ -3,27 +3,28 @@ package utils;
 import com.serotonin.mango.db.dao.IPointValueDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
-import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.bean.LongPair;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class PointValueDaoTestImpl implements IPointValueDao {
 
-    private Map<Integer, List<PointValueTime>> values = new HashMap<>();
+    private final Map<Integer, Map<Integer, PointValueTime>> values = new HashMap<>();
+
+    private static final AtomicInteger SERIAL = new AtomicInteger();
 
     @Override
     public void savePointValueAsync(int dataPointId, PointValueTime pvt, SetPointSource source) {
-        values.putIfAbsent(dataPointId, new ArrayList<>());
-        values.get(dataPointId).add(pvt);
+        values.putIfAbsent(dataPointId, new HashMap<>());
+        values.get(dataPointId).put(SERIAL.getAndIncrement(), pvt);
     }
 
     @Override
     public PointValueTime savePointValueSync(int dataPointId, PointValueTime pvt, SetPointSource source) {
-        values.putIfAbsent(dataPointId, new ArrayList<>());
-        values.get(dataPointId).add(pvt);
+        values.putIfAbsent(dataPointId, new HashMap<>());
+        values.get(dataPointId).put(SERIAL.getAndIncrement(), pvt);
         return pvt;
     }
 
@@ -31,7 +32,7 @@ public class PointValueDaoTestImpl implements IPointValueDao {
     public PointValueTime getLatestPointValue(int dataPointId) {
         if(!values.containsKey(dataPointId) || values.get(dataPointId).isEmpty())
             return null;
-        return values.get(dataPointId).get(0);
+        return values.get(dataPointId).get(values.get(dataPointId).size() - 1);
     }
 
     @Override
@@ -42,9 +43,21 @@ public class PointValueDaoTestImpl implements IPointValueDao {
             return Collections.emptyList();
         if(values.get(dataPointId).isEmpty())
             return Collections.emptyList();
-        if(values.size() < size)
-            return new ArrayList<>(values.get(dataPointId)).subList(0, values.size() - 1);
-        return new ArrayList<>(values.get(dataPointId)).subList(0, size);
+        int valuesSize = values.get(dataPointId).size();
+        if(valuesSize < size)
+            return getLatestPointValueTimes(dataPointId, valuesSize);
+        return getLatestPointValueTimes(dataPointId, size);
+    }
+
+    private List<PointValueTime> getLatestPointValueTimes(int dataPointId, int valuesSize) {
+        return values.entrySet()
+                .stream()
+                .filter(a -> a.getKey().equals(dataPointId))
+                .flatMap(a -> a.getValue().entrySet().stream())
+                .sorted((a, b) -> b.getKey().compareTo(a.getKey()))
+                .limit(valuesSize)
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
     }
 
     @Override

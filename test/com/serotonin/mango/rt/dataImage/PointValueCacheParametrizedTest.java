@@ -1,27 +1,20 @@
 package com.serotonin.mango.rt.dataImage;
 
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import com.serotonin.mango.rt.link.PointLinkRT;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.link.PointLinkVO;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import utils.PointValueDaoTestImpl;
 import utils.SetPointSourceTestImpl;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
 @RunWith(value = Parameterized.class)
 public class PointValueCacheParametrizedTest {
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters( name = "{index}: args: logValue: {0}, async: {1}, source {2}" )
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
             {
@@ -56,14 +49,14 @@ public class PointValueCacheParametrizedTest {
     public void test_getCacheContents_check_without_saved_point_defaultSize_1() {
 
         //given:
-        int sizeExpected = 0;
+        int expectedSize = 0;
         subject = new PointValueCache(dataPointId, 1, new PointValueDaoTestImpl());
 
         //when:
         int result = subject.getCacheContents().size();
 
         //then:
-        assertEquals(sizeExpected, result);
+        assertEquals(expectedSize, result);
     }
 
     @Test
@@ -76,7 +69,7 @@ public class PointValueCacheParametrizedTest {
         PointValueTime result = subject.getLatestPointValue();
 
         //then:
-        assertEquals(null, result);
+        assertNull(result);
     }
 
 
@@ -126,15 +119,15 @@ public class PointValueCacheParametrizedTest {
     }
 
     @Test
-    public void test_savePointValue_check_keep_limit_if_exceed_defaultSize_1() {
+    public void test_savePointValue_check_keep_max_value_if_exceed_defaultSize_1() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
         PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
 
         //and:
-        int sizeExpected = 1;
-        subject = new PointValueCache(dataPointId, sizeExpected, new PointValueDaoTestImpl());
+        int expectedSize = 1;
+        subject = new PointValueCache(dataPointId, expectedSize, new PointValueDaoTestImpl());
 
         //when:
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
@@ -144,11 +137,11 @@ public class PointValueCacheParametrizedTest {
         int result = subject.getCacheContents().size();
 
         //then:
-        assertEquals(sizeExpected, result);
+        assertEquals(expectedSize, result);
     }
 
     @Test
-    public void test_savePointValue_check_keep_limit_if_exceed_defaultSize_2() {
+    public void test_savePointValue_check_keep_max_value_if_exceed_defaultSize_2() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
@@ -156,8 +149,8 @@ public class PointValueCacheParametrizedTest {
         PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
 
         //and:
-        int sizeExpected = 2;
-        subject = new PointValueCache(dataPointId, sizeExpected, new PointValueDaoTestImpl());
+        int expectedSize = 2;
+        subject = new PointValueCache(dataPointId, expectedSize, new PointValueDaoTestImpl());
 
         //when:
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
@@ -168,7 +161,7 @@ public class PointValueCacheParametrizedTest {
         int result = subject.getCacheContents().size();
 
         //then:
-        assertEquals(sizeExpected, result);
+        assertEquals(expectedSize, result);
     }
 
     @Test
@@ -320,29 +313,29 @@ public class PointValueCacheParametrizedTest {
 
 
     @Test
-    public void test_getLatestPointValues_check_keep_limit_if_exceed_defaultSize_and_limit_1() {
+    public void test_getLatestPointValues_check_keep_max_value_if_exceed_defaultSize_and_limit_1() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
         PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
 
         //and:
-        int sizeExpected = 1;
-        subject = new PointValueCache(dataPointId, sizeExpected, new PointValueDaoTestImpl());
+        int expectedSize = 1;
+        subject = new PointValueCache(dataPointId, expectedSize, new PointValueDaoTestImpl());
 
         //when:
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLast, source, logValue, async);
 
         //and:
-        int result = subject.getLatestPointValues(sizeExpected).size();
+        int result = subject.getLatestPointValues(expectedSize).size();
 
         //then:
-        assertEquals(sizeExpected, result);
+        assertEquals(expectedSize, result);
     }
 
     @Test
-    public void test_getLatestPointValues_check_keep_limit_if_exceed_defaultSize_and_limit_2() {
+    public void test_getLatestPointValues_check_keep_max_value_if_exceed_defaultSize_and_limit_2() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
@@ -350,8 +343,8 @@ public class PointValueCacheParametrizedTest {
         PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
 
         //and:
-        int sizeExpected = 2;
-        subject = new PointValueCache(dataPointId, sizeExpected, new PointValueDaoTestImpl());
+        int expectedSize = 2;
+        subject = new PointValueCache(dataPointId, expectedSize, new PointValueDaoTestImpl());
 
         //when:
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
@@ -359,10 +352,10 @@ public class PointValueCacheParametrizedTest {
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLast, source, logValue, async);
 
         //and:
-        int result = subject.getLatestPointValues(sizeExpected).size();
+        int result = subject.getLatestPointValues(expectedSize).size();
 
         //then:
-        assertEquals(sizeExpected, result);
+        assertEquals(expectedSize, result);
     }
 
     @Test
@@ -462,6 +455,9 @@ public class PointValueCacheParametrizedTest {
 
         //then:
         assertFalse(result.contains(pointValueTimeFirst));
+        assertFalse(result.contains(pointValueTimeSecond));
+        assertTrue(result.contains(pointValueTimeThird));
+        assertTrue(result.contains(pointValueTimeLast));
     }
 
     @Test
@@ -487,6 +483,8 @@ public class PointValueCacheParametrizedTest {
 
         //then:
         assertFalse(result.contains(pointValueTimeFirst));
+        assertTrue(result.contains(pointValueTimeSecond));
+        assertTrue(result.contains(pointValueTimeLast));
     }
 
 
@@ -512,11 +510,13 @@ public class PointValueCacheParametrizedTest {
         List<PointValueTime> result = subject.getLatestPointValues(limit);
 
         //then:
-        assertFalse(result.contains(pointValueTimeFirst));
+        assertEquals(logValue, result.contains(pointValueTimeFirst));
+        assertEquals(logValue, result.contains(pointValueTimeSecond));
+        assertEquals(logValue, result.contains(pointValueTimeLast));
     }
 
     @Test
-    public void test_getLatestPointValues_check_not_keep_first_point_if_not_exceed_defaultSize_less_than_limit_2() {
+    public void test_getLatestPointValues_check_keep_first_point_if_not_exceed_defaultSize_less_than_limit_2() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
@@ -535,7 +535,8 @@ public class PointValueCacheParametrizedTest {
         List<PointValueTime> result = subject.getLatestPointValues(limit);
 
         //then:
-        assertFalse(result.contains(pointValueTimeFirst));
+        assertEquals(logValue, result.contains(pointValueTimeFirst));
+        assertEquals(logValue, result.contains(pointValueTimeLast));
     }
 
     @Test
@@ -657,15 +658,15 @@ public class PointValueCacheParametrizedTest {
     }
 
     @Test
-    public void test_reset_if_savePointValue_check_keep_limit_if_exceed_defaultSize_1() {
+    public void test_reset_if_savePointValue_check_keep_max_value_if_exceed_defaultSize_1() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
         PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
 
         //and:
-        int sizeExpected = 1;
-        subject = new PointValueCache(dataPointId, sizeExpected, new PointValueDaoTestImpl());
+        int expectedSize = 1;
+        subject = new PointValueCache(dataPointId, expectedSize, new PointValueDaoTestImpl());
 
         //when:
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
@@ -681,11 +682,11 @@ public class PointValueCacheParametrizedTest {
         int result = subject.getCacheContents().size();
 
         //then:
-        assertEquals(sizeExpected, result);
+        assertEquals(expectedSize, result);
     }
 
     @Test
-    public void test_reset_if_savePointValue_check_keep_limit_if_exceed_defaultSize_2() {
+    public void test_reset_if_savePointValue_check_keep_max_value_if_exceed_defaultSize_2() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
@@ -693,8 +694,8 @@ public class PointValueCacheParametrizedTest {
         PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
 
         //and:
-        int sizeExpected = 2;
-        subject = new PointValueCache(dataPointId, sizeExpected, new PointValueDaoTestImpl());
+        int expectedSize = 2;
+        subject = new PointValueCache(dataPointId, expectedSize, new PointValueDaoTestImpl());
 
         //when:
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
@@ -708,7 +709,7 @@ public class PointValueCacheParametrizedTest {
         int result = subject.getCacheContents().size();
 
         //then:
-        assertEquals(sizeExpected, result);
+        assertEquals(expectedSize, result);
     }
 
     @Test
@@ -878,15 +879,15 @@ public class PointValueCacheParametrizedTest {
 
 
     @Test
-    public void test_reset_if_getLatestPointValues_check_keep_limit_if_exceed_defaultSize_and_limit_1() {
+    public void test_reset_if_getLatestPointValues_check_keep_max_value_if_exceed_defaultSize_and_limit_1() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
         PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
 
         //and:
-        int sizeExpected = 1;
-        subject = new PointValueCache(dataPointId, sizeExpected, new PointValueDaoTestImpl());
+        int expectedSize = 1;
+        subject = new PointValueCache(dataPointId, expectedSize, new PointValueDaoTestImpl());
 
         //when:
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
@@ -896,14 +897,14 @@ public class PointValueCacheParametrizedTest {
         subject.reset();
 
         //and:
-        int result = subject.getLatestPointValues(sizeExpected).size();
+        int result = subject.getLatestPointValues(expectedSize).size();
 
         //then:
-        assertEquals(sizeExpected, result);
+        assertEquals(expectedSize, result);
     }
 
     @Test
-    public void test_reset_if_getLatestPointValues_check_keep_limit_if_exceed_defaultSize_and_limit_2() {
+    public void test_reset_if_getLatestPointValues_check_keep_max_value_if_exceed_defaultSize_and_limit_2() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
@@ -911,8 +912,8 @@ public class PointValueCacheParametrizedTest {
         PointValueTime pointValueTimeLast = new PointValueTime(MangoValue.stringToValue(String.valueOf(4), 3), 1);
 
         //and:
-        int sizeExpected = 2;
-        subject = new PointValueCache(dataPointId, sizeExpected, new PointValueDaoTestImpl());
+        int expectedSize = 2;
+        subject = new PointValueCache(dataPointId, expectedSize, new PointValueDaoTestImpl());
 
         //when:
         subject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirst, source, logValue, async);
@@ -923,10 +924,10 @@ public class PointValueCacheParametrizedTest {
         subject.reset();
 
         //and:
-        int result = subject.getLatestPointValues(sizeExpected).size();
+        int result = subject.getLatestPointValues(expectedSize).size();
 
         //then:
-        assertEquals(sizeExpected, result);
+        assertEquals(expectedSize, result);
     }
 
     @Test
@@ -1070,7 +1071,7 @@ public class PointValueCacheParametrizedTest {
 
 
     @Test
-    public void test_reset_if_getLatestPointValues_check_not_keep_first_point_if_exceed_defaultSize_less_than_limit_2() {
+    public void test_reset_if_getLatestPointValues_check_keep_first_point_if_exceed_defaultSize_less_than_limit_2() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
@@ -1094,11 +1095,13 @@ public class PointValueCacheParametrizedTest {
         List<PointValueTime> result = subject.getLatestPointValues(limit);
 
         //then:
-        assertFalse(result.contains(pointValueTimeFirst));
+        assertEquals(logValue, result.contains(pointValueTimeLast));
+        assertEquals(logValue, result.contains(pointValueTimeSecond));
+        assertEquals(logValue, result.contains(pointValueTimeFirst));
     }
 
     @Test
-    public void test_reset_if_getLatestPointValues_check_not_keep_first_point_if_not_exceed_defaultSize_less_than_limit_2() {
+    public void test_reset_if_getLatestPointValues_check_keep_first_point_if_not_exceed_defaultSize_less_than_limit_2() {
 
         //given:
         PointValueTime pointValueTimeFirst = new PointValueTime(MangoValue.stringToValue(String.valueOf(1), 3), 1);
@@ -1120,7 +1123,8 @@ public class PointValueCacheParametrizedTest {
         List<PointValueTime> result = subject.getLatestPointValues(limit);
 
         //then:
-        assertFalse(result.contains(pointValueTimeFirst));
+        assertEquals(logValue, result.contains(pointValueTimeFirst));
+        assertEquals(logValue, result.contains(pointValueTimeLast));
     }
 
     @Test
@@ -1524,28 +1528,5 @@ public class PointValueCacheParametrizedTest {
         //then:
         assertEquals(pointValueTimeLast, latestPointValue.get(0));
         assertEquals(pointValueTimeFourth, latestPointValue.get(1));
-    }
-
-
-    @Test
-    public void sourceIsNotEmptyFillNeededPropertyInPointValueTime_Test(){
-        User source = new User();
-        source.setUsername("testName");
-        PointValueTime pvt = savePropertiesAboutOwnerOfPointValueChange(source);
-        Assert.assertEquals("testName",pvt.getWhoChangedValue());
-    }
-
-    @Test
-    public void sourceIsEmptyNotFillNeededPropertyInPointValueTime_Test(){
-        PointLinkRT source = new PointLinkRT(new PointLinkVO());
-        PointValueTime pvt = savePropertiesAboutOwnerOfPointValueChange(source);
-        Assert.assertNotSame("testName",pvt.getWhoChangedValue());
-    }
-
-    private PointValueTime savePropertiesAboutOwnerOfPointValueChange (SetPointSource source ){
-        PointValueTime pvt = new PointValueTime(MangoValue.stringToValue("1",1), 1);
-        PointValueCache pointValueCache = new PointValueCache(1,1, new PointValueDaoTestImpl());
-        pointValueCache.savePointValueIntoDaoAndCacheUpdate(pvt,source,false, false);
-        return pvt;
     }
 }

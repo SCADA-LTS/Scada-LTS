@@ -23,4 +23,9 @@ public class SetPointSourceTestImpl implements SetPointSource {
     public void pointSetComplete() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String toString() {
+        return "{}";
+    }
 }
