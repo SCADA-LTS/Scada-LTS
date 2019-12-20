@@ -33,7 +33,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.bean.LongPair;
 
-public class PointValueDao extends BaseDao {
+public class PointValueDao extends BaseDao implements IPointValueDao {
 	
 	private MangoPointValues pointValueService;
 
@@ -54,8 +54,9 @@ public class PointValueDao extends BaseDao {
 	 * Only the PointValueCache should call this method during runtime. Do not
 	 * use.
 	 */
+	@Override
 	public PointValueTime savePointValueSync(int pointId,
-			PointValueTime pointValue, SetPointSource source) {
+											 PointValueTime pointValue, SetPointSource source) {
 		long id = savePointValueImpl(pointId, pointValue, source, false);
 
 		PointValueTime savedPointValue;
@@ -78,8 +79,9 @@ public class PointValueDao extends BaseDao {
 	 * Only the PointValueCache should call this method during runtime. Do not
 	 * use.
 	 */
+	@Override
 	public void savePointValueAsync(int pointId, PointValueTime pointValue,
-			SetPointSource source) {
+									SetPointSource source) {
 		long id = savePointValueImpl(pointId, pointValue, source, true);
 		if (id != -1)
 			pointValueService.clearUnsavedPointValues();
@@ -90,82 +92,101 @@ public class PointValueDao extends BaseDao {
 		return pointValueService.savePointValueImpl(pointId, pointValue, source, async);
 	}
 
+	@Override
 	public void savePointValue(int pointId, PointValueTime pointValue) {
 		savePointValueImpl(pointId, pointValue, new AnonymousUser(), true);
 	}
         	
+	@Override
 	public List<PointValueTime> getPointValues(int dataPointId, long since) {
 		return pointValueService.getPointValues(dataPointId, since);
 	}
 
+	@Override
 	public List<PointValueTime> getPointValuesBetween(int dataPointId,
-			long from, long to) {
+													  long from, long to) {
 		return pointValueService.getPointValuesBetween(dataPointId, from, to);
 	}
 
+	@Override
 	public List<PointValueTime> getLatestPointValues(int dataPointId, int limit) {
 		return pointValueService.getLatestPointValues(dataPointId, limit);
 	}
 
+	@Override
 	public List<PointValueTime> getLatestPointValues(int dataPointId,
-			int limit, long before) {
+													 int limit, long before) {
 		return pointValueService.getLatestPointValues(dataPointId, limit, before);
 	}
 
+	@Override
 	public PointValueTime getLatestPointValue(int dataPointId) {
 		return pointValueService.getLatestPointValue(dataPointId);
 	}
 
+	@Override
 	public PointValueTime getPointValueBefore(int dataPointId, long time) {
 		return pointValueService.getPointValueBefore(dataPointId, time);
 	}
 
+	@Override
 	public PointValueTime getPointValueAt(int dataPointId, long time) {
 		return pointValueService.getPointValueAt(dataPointId, time);
 	}
 
+	@Override
 	public long deletePointValuesBefore(int dataPointId, long time) {
 		return pointValueService.deletePointValuesBefore(dataPointId, time);
 	}
 
+	@Override
 	public long deletePointValues(int dataPointId) {
 		return pointValueService.deletePointValues(dataPointId);
 	}
 
+	@Override
 	public long deleteAllPointData() {
 		return pointValueService.deleteAllPointValue();
 	}
 
+	@Override
 	public long deletePointValuesWithMismatchedType(int dataPointId,
-			int dataType) {
+													int dataType) {
 		return pointValueService.deletePointValuesWithMismatchedType(dataPointId, dataType);
 	}
 
+	@Override
 	public void compressTables() {
 		//TODO rewrite because not have ejt
 		//Common.ctx.getDatabaseAccess().executeCompress(ejt);
 	}
 
+	@Override
 	public long dateRangeCount(int dataPointId, long from, long to) {
 		return pointValueService.dateRangeCount(dataPointId, from, to);
 	}
 
-	public long getInceptionDate(int dataPointId) {		
+	@Override
+	public long getInceptionDate(int dataPointId) {
 		return pointValueService.getInceptionDate(dataPointId);
 	}
 
+	@Override
 	public long getStartTime(List<Integer> dataPointIds) {
 		return pointValueService.getStartTime(dataPointIds);
 	}
 
+	@Override
 	public long getEndTime(List<Integer> dataPointIds) {
 		return pointValueService.getEndTime(dataPointIds);
 	}
 
+	@Override
 	public LongPair getStartAndEndTime(List<Integer> dataPointIds) {
 		return pointValueService.getStartAndEndTime(dataPointIds);
 	}
 
+	@Override
 	public List<Long> getFiledataIds() {
 		return pointValueService.getFiledataIds();
 	}

@@ -21,6 +21,7 @@ package com.serotonin.mango.rt.dataImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.serotonin.mango.db.dao.IPointValueDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.vo.User;
 
@@ -36,7 +37,7 @@ import com.serotonin.mango.vo.User;
 public class PointValueCache {
     private final int dataPointId;
     private final int defaultSize;
-    private final PointValueDao dao;
+    private final IPointValueDao dao;
     private int maxSize = 0;
 
     /**
@@ -54,6 +55,15 @@ public class PointValueCache {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
         dao = new PointValueDao();
+
+        if (defaultSize > 0)
+            refreshCache(defaultSize);
+    }
+
+    public PointValueCache(int dataPointId, int defaultSize, IPointValueDao dao) {
+        this.dataPointId = dataPointId;
+        this.defaultSize = defaultSize;
+        this.dao = dao;
 
         if (defaultSize > 0)
             refreshCache(defaultSize);
