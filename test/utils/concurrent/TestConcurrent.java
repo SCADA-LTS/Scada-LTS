@@ -1,8 +1,8 @@
 package utils.concurrent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -11,34 +11,40 @@ import java.util.function.Supplier;
 
 public class TestConcurrent {
 
-    private static Logger logger = LoggerFactory.getLogger(TestConcurrent.class);
-
-    public static <A, R> void function(int numberOfLaunches, Function<A, R> fun, A key) throws InterruptedException {
+    public static <A, R> void function(int numberOfLaunches, Function<A, R> fun, A key) {
         Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
         Runnable action = () -> fun.apply(key);
-        double time = MultiThreadEngine.execute(executor, numberOfLaunches, action);
-        logger.info("time: {}", time);
+        MultiThreadEngine.execute(executor, numberOfLaunches, action);
     }
 
-    public static <T> void consumer(int numberOfLaunches, Consumer<T> fun, T key) throws InterruptedException {
+    public static <A, R> List<R> functionWithResult(int numberOfLaunches, Function<A, R> fun, A key) {
+        Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Callable<R> action = () -> fun.apply(key);
+        return MultiThreadEngine.execute(executor, numberOfLaunches, action);
+    }
+
+    public static <A> void consumer(int numberOfLaunches, Consumer<A> fun, A key) {
         Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
         Runnable action = () -> fun.accept(key);
-        double time = MultiThreadEngine.execute(executor, numberOfLaunches, action);
-        logger.info("time: {}", time);
+        MultiThreadEngine.execute(executor, numberOfLaunches, action);
     }
 
-    public static <T> void supplier(int numberOfLaunches, Supplier<T> fun) throws InterruptedException {
+    public static <R> void supplier(int numberOfLaunches, Supplier<R> fun) {
         Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
         Runnable action = fun::get;
-        double time = MultiThreadEngine.execute(executor, numberOfLaunches, action);
-        logger.info("time: {}", time);
+        MultiThreadEngine.execute(executor, numberOfLaunches, action);
     }
 
-    public static void supplierVoid(int numberOfLaunches, SupplierVoid fun) throws InterruptedException {
+    public static <R> List<R> supplierWithResult(int numberOfLaunches, Supplier<R> fun) {
+        Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Callable<R> action = fun::get;
+        return MultiThreadEngine.execute(executor, numberOfLaunches, action);
+    }
+
+    public static void supplierVoid(int numberOfLaunches, SupplierVoid fun) {
         Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
         Runnable action = fun::execute;
-        double time = MultiThreadEngine.execute(executor, numberOfLaunches, action);
-        logger.info("time: {}", time);
+        MultiThreadEngine.execute(executor, numberOfLaunches, action);
     }
 
     @FunctionalInterface

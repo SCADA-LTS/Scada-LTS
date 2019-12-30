@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 
@@ -13,7 +15,7 @@ public class MultiThreadEngine {
 
     private static Logger logger = LoggerFactory.getLogger(MultiThreadEngine.class);
 
-    public static double execute(final Executor executor, int numberOfLaunches, final List<Runnable> actions) throws InterruptedException {
+    public static void execute(final Executor executor, int numberOfLaunches, final List<Runnable> actions) {
         final CountDownLatch ready = new CountDownLatch(numberOfLaunches);
         final CountDownLatch start = new CountDownLatch(1);
         final CountDownLatch done = new CountDownLatch(numberOfLaunches);
@@ -31,14 +33,18 @@ public class MultiThreadEngine {
                 }
             });
         }
-        ready.await();
-        long startNanos = System.nanoTime();
-        start.countDown();
-        done.await();
-        return (System.nanoTime() - startNanos)/1000000000.0;
+        try {
+            ready.await();
+            long startNanos = System.nanoTime();
+            start.countDown();
+            done.await();
+            logger.info("time: {}", (System.nanoTime() - startNanos)/1000000000.0);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+        }
     }
 
-    public static double execute(final Executor executor, int concurrency, final Runnable action) throws InterruptedException {
+    public static void execute(final Executor executor, int concurrency, final Runnable action) {
         final CountDownLatch ready = new CountDownLatch(concurrency);
         final CountDownLatch start = new CountDownLatch(1);
         final CountDownLatch done = new CountDownLatch(concurrency);
@@ -55,10 +61,45 @@ public class MultiThreadEngine {
                 }
             });
         }
-        ready.await();
-        long startNanos = System.nanoTime();
-        start.countDown();
-        done.await();
-        return (System.nanoTime() - startNanos)/1000000000.0;
+        try {
+            ready.await();
+            long startNanos = System.nanoTime();
+            start.countDown();
+            done.await();
+            logger.info("time: {}", (System.nanoTime() - startNanos)/1000000000.0);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+        }
+    }
+
+    public static <R> List<R> execute(final Executor executor, int concurrency, final Callable<R> action) {
+        final CountDownLatch ready = new CountDownLatch(concurrency);
+        final CountDownLatch start = new CountDownLatch(1);
+        final CountDownLatch done = new CountDownLatch(concurrency);
+        final List<R> results = new CopyOnWriteArrayList<>();
+        for (int i = 0; i < concurrency; i++) {
+            executor.execute(() -> {
+                ready.countDown();
+                try {
+                    start.await();
+                    R result = action.call();
+                    results.add(result);
+                } catch (Exception ex) {
+                    logger.error(ex.getMessage(), ex);
+                } finally {
+                    done.countDown();
+                }
+            });
+        }
+        try {
+            ready.await();
+            long startNanos = System.nanoTime();
+            start.countDown();
+            done.await();
+            logger.info("time: ", (System.nanoTime() - startNanos) / 1000000000.0);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+        }
+        return results;
     }
 }
