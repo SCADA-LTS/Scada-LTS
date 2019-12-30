@@ -13,7 +13,6 @@ import utils.concurrent.TestConcurrent;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
@@ -52,7 +51,7 @@ public class SavePointValueMethodConcurrentTest {
 
     }
 
-    private static final int NUMBER_OF_LAUNCHES = 100;
+    private static final int NUMBER_OF_LAUNCHES = 4;
 
     private static PointValueTime pointValueTimeFirstSaved;
     private static PointValueTime pointValueTimeSecondSaved;

@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 public class PointValueCacheGetMethodsConcurrentTest {
 
-    private static final int NUMBER_OF_LAUNCHES = 100;
+    private static final int NUMBER_OF_LAUNCHES = 4;
 
     private static PointValueTime pointValueTimeFirstSaved;
     private static PointValueTime pointValueTimeSecondSaved;

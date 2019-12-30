@@ -405,15 +405,11 @@
 		    	haltonfailure="yes">
 		    </test>
 
-			<test name="com.serotonin.mango.rt.dataImage.PointValueCacheTest"
-				  haltonfailure="yes">
-			</test>
-
 			<test name="com.serotonin.mango.rt.dataImage.PointValueFacadeTest"
 				  haltonfailure="yes">
 			</test>
 
-			<test name="com.serotonin.mango.rt.dataImage.PointValueCacheParametrizedTest"
+			<test name="com.serotonin.mango.rt.dataImage.PointValueCacheTestsSuite"
 				  haltonfailure="yes">
 			</test>
 		    <!--

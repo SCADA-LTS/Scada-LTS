@@ -6,7 +6,6 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         PointValueCacheTest.class,
-        PointValueFacadeTest.class,
         PointValueCacheGetMethodsDatabaseEmptyTest.class,
         PointValueCacheGetMethodsTest.class,
         SavePointValueMethodTest.class
