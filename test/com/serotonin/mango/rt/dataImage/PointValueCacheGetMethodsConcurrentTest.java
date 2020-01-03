@@ -5,19 +5,23 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
-import utils.concurrent.TestConcurrent;
+import utils.concurrent.TestConcurrentUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 public class PointValueCacheGetMethodsConcurrentTest {
 
-    private static final int NUMBER_OF_LAUNCHES = 4;
+    private static final int NUMBER_OF_LAUNCHES_SIMULTANEOUSLY = 4;
 
     private static PointValueTime pointValueTimeFirstSaved;
     private static PointValueTime pointValueTimeSecondSaved;
@@ -60,11 +64,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(limit, points.size());
         }
@@ -79,11 +83,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertTrue(points.contains(pointValueTimeLastSaved));
             assertTrue(points.contains(pointValueTimeFourthSaved));
@@ -100,11 +104,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertFalse(points.contains(pointValueTimeSecondSaved));
             assertFalse(points.contains(pointValueTimeFirstSaved));
@@ -120,11 +124,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(pointValueTimeLastSaved, points.get(0));
             assertEquals(pointValueTimeFourthSaved, points.get(1));
@@ -141,11 +145,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(limit, points.size());
         }
@@ -160,11 +164,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertTrue(points.contains(pointValueTimeLastSaved));
             assertTrue(points.contains(pointValueTimeFourthSaved));
@@ -183,11 +187,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertFalse(points.contains(pointValueTimeFirstSaved));
         }
@@ -202,11 +206,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(pointValueTimeLastSaved, points.get(0));
             assertEquals(pointValueTimeFourthSaved, points.get(1));
@@ -224,11 +228,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(limit, points.size());
         }
@@ -243,11 +247,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertTrue(points.contains(pointValueTimeLastSaved));
             assertTrue(points.contains(pointValueTimeFourthSaved));
@@ -264,11 +268,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertFalse(points.contains(pointValueTimeThirdSaved));
             assertFalse(points.contains(pointValueTimeSecondSaved));
@@ -285,11 +289,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(pointValueTimeLastSaved, points.get(0));
             assertEquals(pointValueTimeFourthSaved, points.get(1));
@@ -306,11 +310,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(limit, points.size());
         }
@@ -325,11 +329,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertTrue(points.contains(pointValueTimeLastSaved));
         }
@@ -345,11 +349,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertFalse(points.contains(pointValueTimeFourthSaved));
             assertFalse(points.contains(pointValueTimeThirdSaved));
@@ -367,11 +371,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<PointValueTime> points = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValue);
+        List<PointValueTime> points = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValue);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, points.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, points.size());
         for (PointValueTime point: points) {
             assertNotNull(point);
             assertEquals(pointValueTimeLastSaved, point);
@@ -387,11 +391,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getCacheContents);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getCacheContents);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(defaultSize, points.size());
         }
@@ -406,11 +410,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getCacheContents);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getCacheContents);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertTrue(points.contains(pointValueTimeLastSaved));
             assertTrue(points.contains(pointValueTimeFourthSaved));
@@ -427,11 +431,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getCacheContents);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getCacheContents);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertFalse(points.contains(pointValueTimeSecondSaved));
             assertFalse(points.contains(pointValueTimeFirstSaved));
@@ -447,11 +451,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        List<List<PointValueTime>> results = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getCacheContents);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getCacheContents);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(pointValueTimeLastSaved, points.get(0));
             assertEquals(pointValueTimeFourthSaved, points.get(1));
@@ -472,11 +476,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(limit, points.size());
         }
@@ -494,11 +498,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertTrue(points.contains(pointValueTimeLastSaved));
             assertTrue(points.contains(pointValueTimeFourthSaved));
@@ -518,11 +522,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertFalse(points.contains(pointValueTimeSecondSaved));
             assertFalse(points.contains(pointValueTimeFirstSaved));
@@ -541,11 +545,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(pointValueTimeLastSaved, points.get(0));
             assertEquals(pointValueTimeFourthSaved, points.get(1));
@@ -565,11 +569,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(limit, points.size());
         }
@@ -587,11 +591,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertTrue(points.contains(pointValueTimeLastSaved));
             assertTrue(points.contains(pointValueTimeFourthSaved));
@@ -613,11 +617,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertFalse(points.contains(pointValueTimeFirstSaved));
         }
@@ -635,11 +639,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(pointValueTimeLastSaved, points.get(0));
             assertEquals(pointValueTimeFourthSaved, points.get(1));
@@ -660,11 +664,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(limit, points.size());
         }
@@ -682,11 +686,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertTrue(points.contains(pointValueTimeLastSaved));
             assertTrue(points.contains(pointValueTimeFourthSaved));
@@ -706,11 +710,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertFalse(points.contains(pointValueTimeThirdSaved));
             assertFalse(points.contains(pointValueTimeSecondSaved));
@@ -730,11 +734,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .functionWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValues, limit);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .functionWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValues, limit);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(pointValueTimeLastSaved, points.get(0));
             assertEquals(pointValueTimeFourthSaved, points.get(1));
@@ -752,11 +756,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<PointValueTime> points = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getLatestPointValue);
+        List<PointValueTime> points = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getLatestPointValue);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, points.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, points.size());
         for (PointValueTime point: points) {
             assertNotNull(point);
             assertEquals(pointValueTimeLastSaved, point);
@@ -774,11 +778,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getCacheContents);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getCacheContents);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(defaultSize, points.size());
         }
@@ -796,11 +800,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getCacheContents);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getCacheContents);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertTrue(points.contains(pointValueTimeLastSaved));
             assertTrue(points.contains(pointValueTimeFourthSaved));
@@ -820,11 +824,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getCacheContents);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getCacheContents);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertFalse(points.contains(pointValueTimeSecondSaved));
             assertFalse(points.contains(pointValueTimeFirstSaved));
@@ -843,11 +847,11 @@ public class PointValueCacheGetMethodsConcurrentTest {
         pointValueCacheSubject.reset();
 
         //and:
-        List<List<PointValueTime>> results = TestConcurrent
-                .supplierWithResult(NUMBER_OF_LAUNCHES, pointValueCacheSubject::getCacheContents);
+        List<List<PointValueTime>> results = TestConcurrentUtil
+                .supplierWithResult(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, pointValueCacheSubject::getCacheContents);
 
         //then:
-        assertEquals(NUMBER_OF_LAUNCHES, results.size());
+        assertEquals(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, results.size());
         for (List<PointValueTime> points: results) {
             assertEquals(pointValueTimeLastSaved, points.get(0));
             assertEquals(pointValueTimeFourthSaved, points.get(1));

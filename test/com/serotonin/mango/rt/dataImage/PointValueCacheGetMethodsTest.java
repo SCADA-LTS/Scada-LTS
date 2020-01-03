@@ -2,18 +2,20 @@ package com.serotonin.mango.rt.dataImage;
 
 import com.serotonin.mango.db.dao.IPointValueDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 

@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class TestConcurrent {
+public class TestConcurrentUtil {
 
     public static <A, R> void function(int numberOfLaunches, Function<A, R> fun, A key) {
         Executor executor = Executors.newFixedThreadPool(numberOfLaunches);

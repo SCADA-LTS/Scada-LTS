@@ -9,14 +9,17 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 import utils.SetPointSourceTestImpl;
-import utils.concurrent.TestConcurrent;
+import utils.concurrent.TestConcurrentUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 @RunWith(value = Parameterized.class)
 public class SavePointValueMethodConcurrentTest {
@@ -51,7 +54,7 @@ public class SavePointValueMethodConcurrentTest {
 
     }
 
-    private static final int NUMBER_OF_LAUNCHES = 4;
+    private static final int NUMBER_OF_LAUNCHES_SIMULTANEOUSLY = 4;
 
     private static PointValueTime pointValueTimeFirstSaved;
     private static PointValueTime pointValueTimeSecondSaved;
@@ -107,7 +110,7 @@ public class SavePointValueMethodConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        TestConcurrent.consumer(NUMBER_OF_LAUNCHES, this::savePointValue, pointValueTimeLastSaved);
+        TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeLastSaved);
 
         //and:
         int size = pointValueCacheSubject.getCacheContents().size();
@@ -125,10 +128,10 @@ public class SavePointValueMethodConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        TestConcurrent.consumer(NUMBER_OF_LAUNCHES, this::savePointValue, pointValueTimeLastSaved);
+        TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeLastSaved);
 
         //then:
-        verify(dao, times(logValue && async ? NUMBER_OF_LAUNCHES : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+        verify(dao, times(logValue && async ? NUMBER_OF_LAUNCHES_SIMULTANEOUSLY : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
     }
 
     @Test
@@ -139,10 +142,10 @@ public class SavePointValueMethodConcurrentTest {
         pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
 
         //when:
-        TestConcurrent.consumer(NUMBER_OF_LAUNCHES, this::savePointValue, pointValueTimeLastSaved);
+        TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeLastSaved);
 
         //then:
-        verify(dao, times(logValue && !async ? NUMBER_OF_LAUNCHES : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+        verify(dao, times(logValue && !async ? NUMBER_OF_LAUNCHES_SIMULTANEOUSLY : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
 
     }
 
