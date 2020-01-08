@@ -412,6 +412,10 @@
 			<test name="com.serotonin.mango.rt.dataImage.PointValueFacadeTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="br.org.scadabr.view.component.AlarmListComponentMockitoTest"
+				  haltonfailure="yes">
+			</test>
 		    <!--
 		    <test name="" 
 		    	haltonfailure="yes">
