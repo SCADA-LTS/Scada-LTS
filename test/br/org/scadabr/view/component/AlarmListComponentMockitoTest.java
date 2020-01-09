@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -66,19 +67,18 @@ public class AlarmListComponentMockitoTest {
         //given:
         subject = new AlarmListComponent();
 
-        ArrayList<EventInstance> eventsOriginal = new ArrayList<>();
-        when(eventDao.getPendingEvents(anyInt())).thenReturn(eventsOriginal);
+        CopyOnWriteArrayList<EventInstance> events = new CopyOnWriteArrayList<>();
+        when(eventDao.getPendingEvents(anyInt())).thenReturn(events);
 
         HashMap<String, Object> model = new HashMap<>();
         whenNew(HashMap.class).withNoArguments().thenReturn(model);
 
         when(BaseDwr.generateContent(any(), any(), eq(model)))
                 .thenAnswer(invocation -> {
-                    Object[] args = invocation.getArguments();
-                    Map<String, Object> model1 = (Map<String, Object>)args[2];
-                    List<String> events = (List<String>)model1.get("events");
-                    eventsOriginal.add(null);
-                    events.size();
+                    Map<String, Object> modelArgs = (Map<String, Object>)invocation.getArguments()[2];
+                    List<String> eventsSubList = (List<String>)modelArgs.get("events");
+                    events.add(null);
+                    eventsSubList.size();
                     return CONTENT_EXPECTED;
                 });
 
