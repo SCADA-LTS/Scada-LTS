@@ -414,16 +414,20 @@ public class RuntimeManager {
 		new DataPointDao().deleteDataPoint(point.getId());
 		Common.ctx.getEventManager().cancelEventsForDataPoint(point.getId());
 	}
+	public void setEventDetectorsToDataPoints() {
+		if( dataPoints != null) {
 
-	private void startDataPoint(DataPointVO vo) {
+		}
+	}
+	private void startDataPoint(DataPointVO dataPointVO) {
 		synchronized (dataPoints) {
-			Assert.isTrue(vo.isEnabled());
+			Assert.isTrue(dataPointVO.isEnabled());
 
 			// Only add the data point if its data source is enabled.
-			DataSourceRT ds = getRunningDataSource(vo.getDataSourceId());
+			DataSourceRT ds = getRunningDataSource(dataPointVO.getDataSourceId());
 			if (ds != null) {
 				// Change the VO into a data point implementation.
-				DataPointRT dataPoint = new DataPointRT(vo, vo
+				DataPointRT dataPoint = new DataPointRT(dataPointVO, dataPointVO
 						.getPointLocator().createRuntime());
 
 				// Add/update it in the data image.
@@ -431,7 +435,7 @@ public class RuntimeManager {
 
 				// Initialize it.
 				dataPoint.initialize();
-				DataPointListener l = getDataPointListeners(vo.getId());
+				DataPointListener l = getDataPointListeners(dataPointVO.getId());
 				if (l != null)
 					l.pointInitialized();
 

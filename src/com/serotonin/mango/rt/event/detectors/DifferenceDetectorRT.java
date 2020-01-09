@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.event.detectors;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import org.scada_lts.cache.PointEventDetectorsCache;
 
 /**
  * @author Matthew Lohbihler
@@ -48,8 +49,10 @@ abstract public class DifferenceDetectorRT extends TimeDelayedEventDetectorRT {
 
     @Override
     public void initializeState() {
-        // Get historical data for the point out of the database.
-        int pointId = vo.njbGetDataPoint().getId();
+        int pointId= ( pointEventDetectorVO.getDataPoint() == null )
+        ? PointEventDetectorsCache.getInstance().getDataPointId( pointEventDetectorVO )
+        : pointEventDetectorVO.getDataPoint().getId();
+
         PointValueTime latest = Common.ctx.getRuntimeManager().getDataPoint(pointId).getPointValue();
         if (latest != null)
             lastChange = latest.getTime();

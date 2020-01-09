@@ -161,7 +161,7 @@ public class DataSourceService implements MangoDataSource {
 			//Copy event detectors
 			for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
 				pointEventDetector.setId(Common.NEW_ID);
-				pointEventDetector.njbSetDataPoint(dataPointCopy);
+				pointEventDetector.setDataPoint(dataPointCopy);
 			}
 			dataPointService.saveDataPoint(dataPointCopy);
 

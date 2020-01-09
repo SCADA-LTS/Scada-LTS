@@ -25,13 +25,13 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 public class MultistateStateDetectorRT extends StateDetectorRT {
     public MultistateStateDetectorRT(PointEventDetectorVO vo) {
-        this.vo = vo;
+        this.pointEventDetectorVO = vo;
     }
 
     @Override
     public LocalizableMessage getMessage() {
-        String name = vo.njbGetDataPoint().getName();
-        String prettyText = vo.njbGetDataPoint().getTextRenderer().getText(vo.getMultistateState(),
+        String name = pointEventDetectorVO.getDataPoint().getName();
+        String prettyText = pointEventDetectorVO.getDataPoint().getTextRenderer().getText(pointEventDetectorVO.getMultistateState(),
                 TextRenderer.HINT_SPECIFIC);
         LocalizableMessage durationDescription = getDurationDescription();
 
@@ -43,6 +43,6 @@ public class MultistateStateDetectorRT extends StateDetectorRT {
     @Override
     protected boolean stateDetected(PointValueTime newValue) {
         int newMultistate = newValue.getIntegerValue();
-        return newMultistate == vo.getMultistateState();
+        return newMultistate == pointEventDetectorVO.getMultistateState();
     }
 }

@@ -219,7 +219,7 @@ public class EBI25InterfaceReader {
         ped.setAlarmLevel(AlarmLevels.URGENT);
 
         dp.getEventDetectors().add(ped);
-        ped.njbSetDataPoint(dp);
+        ped.setDataPoint(dp);
 
         return ped;
     }

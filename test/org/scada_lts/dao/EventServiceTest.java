@@ -220,7 +220,7 @@ public class EventServiceTest extends TestDAO {
 		PointEventDetectorVO pointEventDetector = new PointEventDetectorVO();
 		pointEventDetector.setXid(XID);
 		pointEventDetector.setAlias(ALIAS);
-		pointEventDetector.njbSetDataPoint(dataPoint);
+		pointEventDetector.setDataPoint(dataPoint);
 		pointEventDetector.setDetectorType(DETECTOR_TYPE);
 		pointEventDetector.setAlarmLevel(ALARM_LEVEL);
 		pointEventDetector.setLimit(STATE_LIMIT);

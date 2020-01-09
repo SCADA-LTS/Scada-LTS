@@ -25,7 +25,7 @@ public class EventDetectorTemplateRT {
 		List<PointEventDetectorVO> eventDetectorsCopies = new ArrayList<PointEventDetectorVO>();
 
 		for (PointEventDetectorVO pointEventDetectorVO : eventDetectors) {
-			pointEventDetectorVO.njbSetDataPoint(datapointVO);
+			pointEventDetectorVO.setDataPoint(datapointVO);
 			PointEventDetectorVO copy = pointEventDetectorVO.copy();
 			copy.setId(Common.NEW_ID);
 			eventDetectorsCopies.add(copy);

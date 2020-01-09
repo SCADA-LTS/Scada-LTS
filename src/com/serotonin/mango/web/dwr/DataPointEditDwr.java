@@ -43,6 +43,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.scada_lts.cache.PointEventDetectorsCache;
 
 public class DataPointEditDwr extends BaseDwr {
     private DataPointVO getDataPoint() {
@@ -177,7 +178,8 @@ public class DataPointEditDwr extends BaseDwr {
                     id = d.getId() - 1;
             }
             ped.setId(id);
-            ped.njbSetDataPoint(dp);
+            ped.setDataPoint(dp);
+            //PointEventDetectorsCache.getInstance().addEventDetector(id, ped);
             dp.getEventDetectors().add(ped);
         }
         return ped;
@@ -186,6 +188,7 @@ public class DataPointEditDwr extends BaseDwr {
     public void deleteEventDetector(int pedId) {
         DataPointVO dp = getDataPoint();
         synchronized (dp) {
+            //PointEventDetectorsCache.getInstance().removeEventDetector( dp.getId(), pedId );
             dp.getEventDetectors().remove(getEventDetector(pedId));
         }
     }
@@ -193,118 +196,130 @@ public class DataPointEditDwr extends BaseDwr {
     public void updateHighLimitDetector(int pedId, String xid, String alias, double limit, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setLimit(limit);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     public void updateLowLimitDetector(int pedId, String xid, String alias, double limit, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setLimit(limit);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     public void updateBinaryStateDetector(int pedId, String xid, String alias, boolean state, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setBinaryState(state);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     public void updateMultistateStateDetector(int pedId, String xid, String alias, int state, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setMultistateState(state);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     public void updatePointChangeDetector(int pedId, String xid, String alias, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(xid);
-        ped.setAlias(alias);
-        ped.setAlarmLevel(alarmLevel);
+        if( ped != null) {
+            ped.setXid(xid);
+            ped.setAlias(alias);
+            ped.setAlarmLevel(alarmLevel);
+        }
     }
 
     public void updateStateChangeCountDetector(int pedId, String xid, String alias, int count, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setChangeCount(count);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     public void updateNoChangeDetector(int pedId, String xid, String alias, int duration, int durationType,
             int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     public void updateNoUpdateDetector(int pedId, String xid, String alias, int duration, int durationType,
             int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     public void updateAlphanumericStateDetector(int pedId, String xid, String alias, String state, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setAlphanumericState(state);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     public void updatePositiveCusumDetector(int pedId, String xid, String alias, double limit, double weight,
             int duration, int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setLimit(limit);
         ped.setWeight(weight);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     public void updateNegativeCusumDetector(int pedId, String xid, String alias, double limit, double weight,
             int duration, int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
+        if( ped != null) {
         ped.setXid(xid);
         ped.setAlias(alias);
         ped.setLimit(limit);
         ped.setWeight(weight);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setAlarmLevel(alarmLevel);
+        ped.setAlarmLevel(alarmLevel);}
     }
 
     private PointEventDetectorVO getEventDetector(int pedId) {

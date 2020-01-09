@@ -36,9 +36,9 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class EventDetectorsCacheDAO {
+public class EventDetectorsDAO {
 	
-	private static final Log LOG = LogFactory.getLog(EventDetectorsCacheDAO.class);
+	private static final Log LOG = LogFactory.getLog(EventDetectorsDAO.class);
 	private final static String  COLUMN_NAME_ID = "id";
 	private final static String  COLUMN_NAME_XID = "xid";
 	private final static String  COLUMN_NAME_ALIAS = "alias";
@@ -75,9 +75,9 @@ public class EventDetectorsCacheDAO {
 				+ "pointEventDetectors "
 			+ "order by dataPointId";
 	// @formatter:on
-	
+
 	@SuppressWarnings("rawtypes")
-	protected List<PointEventDetectorCache> getAll() {
+	public List<PointEventDetectorCache> getAllPointEventDetectorcache() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL EventDetectors");
 		}
@@ -100,11 +100,11 @@ public class EventDetectorsCacheDAO {
 					eventDetector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
 					eventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
 					eventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
-					
+
 					PointEventDetectorCache pedc = new PointEventDetectorCache();
 					pedc.setPointEventDetector(eventDetector);
 					pedc.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
-					
+
 					return pedc;
 				}
 			});
@@ -115,22 +115,4 @@ public class EventDetectorsCacheDAO {
 		}
 		return null;
 	}
-	
-
-	protected TreeMap<Integer, List<PointEventDetectorVO>> getMapEventDetectors(
-			final List<PointEventDetectorCache> listEventDetectorCache) {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("getMapEventDetectorForUser");
-		}
-		TreeMap<Integer, List<PointEventDetectorVO>> mappedEventDetectorForUser = new TreeMap<Integer, List<PointEventDetectorVO>>();
-		
-		for (PointEventDetectorCache eventDetector : listEventDetectorCache) {
-		    int key = eventDetector.getDataPointId();
-			if (mappedEventDetectorForUser.get(key) == null) {
-				mappedEventDetectorForUser.put(key, new ArrayList<PointEventDetectorVO>());
-			}
-			mappedEventDetectorForUser.get(key).add(eventDetector.getPointEventDetector());
-		}
-		return mappedEventDetectorForUser;
-	}	
 }

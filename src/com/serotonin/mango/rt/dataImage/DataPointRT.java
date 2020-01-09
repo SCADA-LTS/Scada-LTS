@@ -522,7 +522,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		for (PointEventDetectorVO ped : vo.getEventDetectors()) {
 			if (detectors == null)
 				detectors = new ArrayList<PointEventDetectorRT>();
-
+			ped.setDataPoint(vo);
 			PointEventDetectorRT pedRT = ped.createRuntime();
 			detectors.add(pedRT);
 			rm.addPointEventDetector(pedRT);

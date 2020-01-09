@@ -27,7 +27,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
  */
 public class NoUpdateDetectorRT extends DifferenceDetectorRT {
     public NoUpdateDetectorRT(PointEventDetectorVO vo) {
-        this.vo = vo;
+        this.pointEventDetectorVO = vo;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class NoUpdateDetectorRT extends DifferenceDetectorRT {
 
     @Override
     public LocalizableMessage getMessage() {
-        return new LocalizableMessage("event.detector.noUpdate", vo.njbGetDataPoint().getName(),
+        return new LocalizableMessage("event.detector.noUpdate", pointEventDetectorVO.getDataPoint().getName(),
                 getDurationDescription());
     }
 }

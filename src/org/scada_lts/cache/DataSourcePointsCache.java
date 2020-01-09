@@ -1,6 +1,7 @@
 package org.scada_lts.cache;
 
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.*;
@@ -20,7 +21,7 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 	
 	private static DataSourcePointsCache instance = null;
 	
-	private Map<Long, List<DataPointVO>> dss = new TreeMap<>();
+	private static Map<Long, List<DataPointVO>> dss = new TreeMap<>();
 	
 	private DataSourcePointsCache() {
 		
@@ -74,10 +75,36 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 		List<DataPointVO> dps = new DataPointDAO().getDataPoints();
 		
 		dss = composeCashData(dps);
-		
+		setDataPointsToEventDetectors();
 		cacheEnabled = true;
 	}
-	
+	public void setEventDetectorsToDataPoint(String xid, List<PointEventDetectorVO> pointEventDetectorVOS) {
+
+		for (Map.Entry<Long,  List<DataPointVO>> entry : dss.entrySet()) {
+			for (DataPointVO dp : entry.getValue()) {
+				if(dp.getXid().equals( xid )) {
+					dp.setEventDetectors( pointEventDetectorVOS );
+					for(PointEventDetectorVO pointEventDetectorVO : pointEventDetectorVOS) {
+						PointEventDetectorsCache.getInstance().updateEventDetector(dp.getId(),pointEventDetectorVO);
+					}
+				}
+			}
+
+		}
+	}
+	public void setDataPointsToEventDetectors() {
+
+        for (Map.Entry<Long,  List<DataPointVO>> entry : dss.entrySet()) {
+			for (DataPointVO dp : entry.getValue()) {
+				if( dp.getEventDetectors() != null) {
+					for (PointEventDetectorVO pointEventDetectorVO : dp.getEventDetectors()) {
+						pointEventDetectorVO.setDataPoint(dp);
+					}
+				}
+			}
+
+        }
+    }
 	public Map<Long, List<DataPointVO>> composeCashData(List<DataPointVO> dps) {
 		
 		Map<Long, List<DataPointVO>> dss = new TreeMap<>();

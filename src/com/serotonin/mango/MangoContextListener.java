@@ -59,7 +59,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
 import org.scada_lts.cache.DataSourcePointsCache;
-import org.scada_lts.cache.EventDetectorsCache;
+import org.scada_lts.cache.PointEventDetectorsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -104,6 +104,7 @@ public class MangoContextListener implements ServletContextListener {
 		imageSetInitialize(ctx);
 		databaseInitialize(ctx);
 		dataPointsNameToIdMapping(ctx);
+		//runtimeManagerInitialize(ctx);
 
 		// Check if the known servlet context path has changed.
 		String knownContextPath = SystemSettingsDAO
@@ -120,14 +121,8 @@ public class MangoContextListener implements ServletContextListener {
 
 		utilitiesInitialize(ctx);
 		eventManagerInitialize(ctx);
-		
-		try {
-			EventDetectorsCache.getInstance();
-			log.info("Cache event detectors initialized");
-		} catch (Exception e) {
-			log.error(e);
-		}
-		
+
+
 		try {
 			DataSourcePointsCache.getInstance().cacheInitialize();
 			log.info("Cache data points initialized");
@@ -139,8 +134,14 @@ public class MangoContextListener implements ServletContextListener {
 		} finally {
 			DataSourcePointsCache.getInstance().cacheFinalized();
 		}
-		
-		
+		try {
+			PointEventDetectorsCache.getInstance();
+			log.info("Cache event detectors initialized");
+		} catch (Exception e) {
+			log.error(e);
+		}
+
+
 		reportsInitialize();
 		maintenanceInitialize();
 		
@@ -204,7 +205,19 @@ public class MangoContextListener implements ServletContextListener {
 	private void scriptContextInitialize() {
 		ContextFactory.initGlobal(new SandboxContextFactory());
 	}
+    /*
+	private void setEventDetectorsToDataPoints(ServletContext ctx){
+        List<DataPointVO> datapoints = new DataPointDao().getDataPoints(null,
+                false);
+        RuntimeManager rtm = ctx.getRuntimeManager();
 
+        for (DataPointVO dataPointVO : datapoints) {
+            String completeName = APIUtils.getCompletePath(
+                    dataPointVO.getPointFolderId(), pH)
+                    + dataPointVO.getName();
+            mapping.put(completeName, dataPointVO.getId());
+        }
+    }*/
 	private void dataPointsNameToIdMapping(ServletContext ctx) {
 		PointHierarchy pH = new DataPointDao().getPointHierarchy();
 		List<DataPointVO> datapoints = new DataPointDao().getDataPoints(null,

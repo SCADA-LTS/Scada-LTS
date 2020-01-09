@@ -904,7 +904,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                     ped = new PointEventDetectorVO();
                     ped.setId(Common.NEW_ID);
                     ped.setXid(pedXid);
-                    ped.njbSetDataPoint(this);
+                    ped.setDataPoint(this);
                     eventDetectors.add(ped);
                 }
 

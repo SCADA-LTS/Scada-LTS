@@ -18,21 +18,18 @@
 
 package org.scada_lts.quartz;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
-import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.dao.EventDetectorsCacheDAO;
+import org.scada_lts.cache.PointEventDetectorsCache;
 import org.scada_lts.dao.model.PointEventDetectorCache;
 
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import org.scada_lts.servicebrokers.ServiceBrokerEventDetector;
+import org.scada_lts.servicebrokers.ServiceBrokerEventDetectorImpl;
 
 /**
  * Update data job for event detectors in cache.
@@ -40,20 +37,23 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class UpdateEventDetectors extends EventDetectorsCacheDAO implements StatefulJob {
+public class UpdateEventDetectors implements StatefulJob {
 	
 	private static final Log LOG = LogFactory.getLog(UpdateEventDetectors.class);
-
+	private ServiceBrokerEventDetector serviceBrokerEventDetector = new ServiceBrokerEventDetectorImpl();
+	private static int a=0;
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		LOG.trace("UpdateEventDetectors");
-		List<PointEventDetectorCache> listEventDetector = getAll();
-		TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetector = getMapEventDetectors(listEventDetector);
-		try {
-			EventDetectorsCache.getInstance().setMapEventDetectorForDataPoint(mapEventDetector);
-			EventDetectorsCache.getInstance().resetCountBuffer();
-		} catch (SchedulerException | IOException e) {
-			LOG.error(e);	
+
+		if(UpdateEventDetectors.a==0) {
+			UpdateEventDetectors.a++;
+			List<PointEventDetectorCache> listEventDetector = serviceBrokerEventDetector.getAllEventDetectors();
+			if (listEventDetector != null && !listEventDetector.isEmpty())
+				PointEventDetectorsCache.reFillMapEventDetectors(listEventDetector);
+			else {
+				LOG.info(getClass().getName() + " Event Detectors list is null or empty");
+			}
 		}
 	}
 }

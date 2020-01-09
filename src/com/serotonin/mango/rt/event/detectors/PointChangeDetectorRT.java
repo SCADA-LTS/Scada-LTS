@@ -29,17 +29,17 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
     private MangoValue newValue;
 
     public PointChangeDetectorRT(PointEventDetectorVO vo) {
-        this.vo = vo;
+        this.pointEventDetectorVO = vo;
     }
 
     @Override
     protected LocalizableMessage getMessage() {
-        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
+        return new LocalizableMessage("event.detector.changeCount", pointEventDetectorVO.getDataPoint().getName(),
                 formatValue(oldValue), formatValue(newValue));
     }
 
     private String formatValue(MangoValue value) {
-        return vo.njbGetDataPoint().getTextRenderer().getText(value, TextRenderer.HINT_SPECIFIC);
+        return pointEventDetectorVO.getDataPoint().getTextRenderer().getText(value, TextRenderer.HINT_SPECIFIC);
     }
 
     @Override

@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.event.detectors;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import org.scada_lts.cache.PointEventDetectorsCache;
 
 /**
  * This is a base class for all subclasses that need to schedule timeouts for them to become active.
@@ -69,7 +70,10 @@ abstract public class TimeDelayedEventDetectorRT extends TimeoutDetectorRT {
     }
 
     protected void initializeState() {
-        int pointId = vo.njbGetDataPoint().getId();
+        int pointId = ( pointEventDetectorVO.getDataPoint() == null )
+        ? PointEventDetectorsCache.getInstance().getDataPointId( pointEventDetectorVO )
+        : pointEventDetectorVO.getDataPoint().getId();
+
         PointValueTime latest = Common.ctx.getRuntimeManager().getDataPoint(pointId).getPointValue();
 
         if (latest != null)

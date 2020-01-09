@@ -32,23 +32,23 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 abstract public class PointEventDetectorRT extends SimpleEventDetector implements DataPointListener {
-    protected PointEventDetectorVO vo;
+    protected PointEventDetectorVO pointEventDetectorVO;
 
     protected EventType getEventType() {
-        DataPointEventType et = new DataPointEventType(vo.njbGetDataPoint().getId(), vo.getId());
-        if (!vo.isRtnApplicable())
+        DataPointEventType et = new DataPointEventType(pointEventDetectorVO.getDataPoint().getId(), pointEventDetectorVO.getId());
+        if (!pointEventDetectorVO.isRtnApplicable())
             et.setDuplicateHandling(EventType.DuplicateHandling.ALLOW);
         return et;
     }
 
     protected void raiseEvent(long time, Map<String, Object> context) {
         LocalizableMessage msg;
-        if (!StringUtils.isEmpty(vo.getAlias()))
-            msg = new LocalizableMessage("common.default", vo.getAlias());
+        if (!StringUtils.isEmpty(pointEventDetectorVO.getAlias()))
+            msg = new LocalizableMessage("common.default", pointEventDetectorVO.getAlias());
         else
             msg = getMessage();
 
-        Common.ctx.getEventManager().raiseEvent(getEventType(), time, vo.isRtnApplicable(), vo.getAlarmLevel(), msg,
+        Common.ctx.getEventManager().raiseEvent(getEventType(), time, pointEventDetectorVO.isRtnApplicable(), pointEventDetectorVO.getAlarmLevel(), msg,
                 context);
         fireEventDetectorStateChanged(time);
     }
@@ -60,15 +60,15 @@ abstract public class PointEventDetectorRT extends SimpleEventDetector implement
 
     protected Map<String, Object> createEventContext() {
         Map<String, Object> context = new HashMap<String, Object>();
-        context.put("pointEventDetector", vo);
-        context.put("point", vo.njbGetDataPoint());
+        context.put("pointEventDetector", pointEventDetectorVO);
+        context.put("point", pointEventDetectorVO.getDataPoint());
         return context;
     }
 
     abstract protected LocalizableMessage getMessage();
 
     public String getEventDetectorKey() {
-        return vo.getEventDetectorKey();
+        return pointEventDetectorVO.getEventDetectorKey();
     }
 
     //

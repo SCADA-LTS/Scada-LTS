@@ -25,13 +25,13 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 public class BinaryStateDetectorRT extends StateDetectorRT {
     public BinaryStateDetectorRT(PointEventDetectorVO vo) {
-        this.vo = vo;
+        this.pointEventDetectorVO = vo;
     }
 
     @Override
     public LocalizableMessage getMessage() {
-        String name = vo.njbGetDataPoint().getName();
-        String prettyText = vo.njbGetDataPoint().getTextRenderer().getText(vo.isBinaryState(),
+        String name = pointEventDetectorVO.getDataPoint().getName();
+        String prettyText = pointEventDetectorVO.getDataPoint().getTextRenderer().getText(pointEventDetectorVO.isBinaryState(),
                 TextRenderer.HINT_SPECIFIC);
         LocalizableMessage durationDescription = getDurationDescription();
 
@@ -43,6 +43,6 @@ public class BinaryStateDetectorRT extends StateDetectorRT {
     @Override
     protected boolean stateDetected(PointValueTime newValue) {
         boolean newBinary = newValue.getBooleanValue();
-        return newBinary == vo.isBinaryState();
+        return newBinary == pointEventDetectorVO.isBinaryState();
     }
 }

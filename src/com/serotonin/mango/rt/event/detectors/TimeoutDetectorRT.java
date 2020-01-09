@@ -50,8 +50,8 @@ abstract public class TimeoutDetectorRT extends PointEventDetectorRT implements 
 
     @Override
     public void initialize() {
-        durationMS = Common.getMillis(vo.getDurationType(), vo.getDuration());
-        durationDescription = vo.getDurationDescription();
+        durationMS = Common.getMillis(pointEventDetectorVO.getDurationType(), pointEventDetectorVO.getDuration());
+        durationDescription = pointEventDetectorVO.getDurationDescription();
 
         super.initialize();
     }

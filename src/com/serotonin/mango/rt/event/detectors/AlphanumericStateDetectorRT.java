@@ -29,13 +29,13 @@ import com.serotonin.web.i18n.LocalizableMessage;
  */
 public class AlphanumericStateDetectorRT extends StateDetectorRT {
     public AlphanumericStateDetectorRT(PointEventDetectorVO vo) {
-        this.vo = vo;
+        this.pointEventDetectorVO = vo;
     }
 
     @Override
     public LocalizableMessage getMessage() {
-        String name = vo.njbGetDataPoint().getName();
-        String prettyText = vo.njbGetDataPoint().getTextRenderer().getText(vo.getAlphanumericState(),
+        String name = pointEventDetectorVO.getDataPoint().getName();
+        String prettyText = pointEventDetectorVO.getDataPoint().getTextRenderer().getText(pointEventDetectorVO.getAlphanumericState(),
                 TextRenderer.HINT_SPECIFIC);
         LocalizableMessage durationDescription = getDurationDescription();
 
@@ -47,6 +47,6 @@ public class AlphanumericStateDetectorRT extends StateDetectorRT {
     @Override
     protected boolean stateDetected(PointValueTime newValue) {
         String newAlpha = newValue.getStringValue();
-        return StringUtils.isEqual(newAlpha, vo.getAlphanumericState());
+        return StringUtils.isEqual(newAlpha, pointEventDetectorVO.getAlphanumericState());
     }
 }

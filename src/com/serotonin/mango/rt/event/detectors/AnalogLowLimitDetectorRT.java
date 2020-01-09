@@ -57,14 +57,14 @@ public class AnalogLowLimitDetectorRT extends TimeDelayedEventDetectorRT {
     private boolean eventActive;
 
     public AnalogLowLimitDetectorRT(PointEventDetectorVO vo) {
-        this.vo = vo;
+        this.pointEventDetectorVO = vo;
     }
 
     @Override
     public LocalizableMessage getMessage() {
         LocalizableMessage durationDescription = getDurationDescription();
-        String name = vo.njbGetDataPoint().getName();
-        String prettyLimit = vo.njbGetDataPoint().getTextRenderer().getText(vo.getLimit(), TextRenderer.HINT_SPECIFIC);
+        String name = pointEventDetectorVO.getDataPoint().getName();
+        String prettyLimit = pointEventDetectorVO.getDataPoint().getTextRenderer().getText(pointEventDetectorVO.getLimit(), TextRenderer.HINT_SPECIFIC);
 
         if (durationDescription == null)
             return new LocalizableMessage("event.detector.lowLimit", name, prettyLimit);
@@ -94,7 +94,7 @@ public class AnalogLowLimitDetectorRT extends TimeDelayedEventDetectorRT {
     @Override
     synchronized public void pointChanged(PointValueTime oldValue, PointValueTime newValue) {
         double newDouble = newValue.getDoubleValue();
-        if (newDouble < vo.getLimit()) {
+        if (newDouble < pointEventDetectorVO.getLimit()) {
             if (!lowLimitActive) {
                 lowLimitActiveTime = newValue.getTime();
                 changeLowLimitActive();

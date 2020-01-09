@@ -99,7 +99,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		PointEventDetectorVO pointEventDetector = new PointEventDetectorVO();
 		pointEventDetector.setXid(XID);
 		pointEventDetector.setAlias(ALIAS);
-		pointEventDetector.njbSetDataPoint(dataPoint);
+		pointEventDetector.setDataPoint(dataPoint);
 		pointEventDetector.setDetectorType(DETECTOR_TYPE);
 		pointEventDetector.setAlarmLevel(ALARM_LEVEL);
 		pointEventDetector.setLimit(STATE_LIMIT);
@@ -114,7 +114,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		PointEventDetectorVO secondPointEventDecorator = new PointEventDetectorVO();
 		secondPointEventDecorator.setXid(SECOND_XID);
 		secondPointEventDecorator.setAlias(SECOND_ALIAS);
-		secondPointEventDecorator.njbSetDataPoint(dataPoint);
+		secondPointEventDecorator.setDataPoint(dataPoint);
 		secondPointEventDecorator.setDetectorType(SECOND_DETECTOR_TYPE);
 		secondPointEventDecorator.setAlarmLevel(SECOND_ALARM_LEVEL);
 		secondPointEventDecorator.setLimit(SECOND_STATE_LIMIT);
@@ -139,7 +139,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		updatePointEventDecorator.setId(firstId);
 		updatePointEventDecorator.setXid(UPDATE_XID);
 		updatePointEventDecorator.setAlias(UPDATE_ALIAS);
-		updatePointEventDecorator.njbSetDataPoint(dataPoint);
+		updatePointEventDecorator.setDataPoint(dataPoint);
 		updatePointEventDecorator.setAlarmLevel(UPDATE_ALARM_LEVEL);
 		updatePointEventDecorator.setLimit(UPDATE_STATE_LIMIT);
 		updatePointEventDecorator.setDuration(UPDATE_DURATION);

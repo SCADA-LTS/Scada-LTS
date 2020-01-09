@@ -185,7 +185,7 @@ public class PointEventDetectorDAO {
 			pointEventDetector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
 			pointEventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
 			pointEventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
-			pointEventDetector.njbSetDataPoint(dataPoint);
+			pointEventDetector.setDataPoint(dataPoint);
 			return pointEventDetector;
 		}
 	}
@@ -272,7 +272,7 @@ public class PointEventDetectorDAO {
 				new ArgumentPreparedStatementSetter(new Object[] {
 						pointEventDetector.getXid(),
 						pointEventDetector.getAlias(),
-						pointEventDetector.njbGetDataPoint().getId(),
+						pointEventDetector.getDataPoint().getId(),
 						pointEventDetector.getDetectorType(),
 						pointEventDetector.getAlarmLevel(),
 						pointEventDetector.getLimit(),

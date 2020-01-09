@@ -54,6 +54,7 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.cache.PointEventDetectorsCache;
 
 @JsonRemoteEntity
 public class PointEventDetectorVO extends SimpleEventDetectorVO implements Cloneable, JsonSerializable,
@@ -128,7 +129,12 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
     private double weight;
 
     public EventTypeVO getEventType() {
-        return new EventTypeVO(EventType.EventSources.DATA_POINT, dataPoint.getId(), id, getDescription(), alarmLevel,
+
+        int dataPointId = ( getDataPoint() == null)
+        ? PointEventDetectorsCache.getInstance().getDataPointIdForGivenEventDetectorXid(new StringBuilder().append(getXid()))
+        : getDataPoint().getId();
+
+        return new EventTypeVO(EventType.EventSources.DATA_POINT, dataPointId, id, getDescription(), alarmLevel,
                 getEventDetectorKey());
     }
 
@@ -306,11 +312,11 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
         AuditEventType.maybeAddPropertyChangeMessage(list, "pointEdit.detectors.weight", from.weight, weight);
     }
 
-    public DataPointVO njbGetDataPoint() {
+    public DataPointVO getDataPoint() {
         return dataPoint;
     }
 
-    public void njbSetDataPoint(DataPointVO dataPoint) {
+    public void setDataPoint(DataPointVO dataPoint) {
         this.dataPoint = dataPoint;
     }
 

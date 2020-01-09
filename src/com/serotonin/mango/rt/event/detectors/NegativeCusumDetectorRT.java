@@ -52,13 +52,13 @@ public class NegativeCusumDetectorRT extends TimeDelayedEventDetectorRT {
     private boolean eventActive;
 
     public NegativeCusumDetectorRT(PointEventDetectorVO vo) {
-        this.vo = vo;
+        this.pointEventDetectorVO = vo;
     }
 
     @Override
     public LocalizableMessage getMessage() {
-        String name = vo.njbGetDataPoint().getName();
-        String prettyLimit = vo.njbGetDataPoint().getTextRenderer().getText(vo.getLimit(), TextRenderer.HINT_SPECIFIC);
+        String name = pointEventDetectorVO.getDataPoint().getName();
+        String prettyLimit = pointEventDetectorVO.getDataPoint().getTextRenderer().getText(pointEventDetectorVO.getLimit(), TextRenderer.HINT_SPECIFIC);
         LocalizableMessage durationDescription = getDurationDescription();
         if (durationDescription == null)
             return new LocalizableMessage("event.detector.negCusum", name, prettyLimit);
@@ -89,11 +89,11 @@ public class NegativeCusumDetectorRT extends TimeDelayedEventDetectorRT {
     synchronized public void pointUpdated(PointValueTime newValue) {
         double newDouble = newValue.getDoubleValue();
 
-        cusum += newDouble - vo.getWeight();
+        cusum += newDouble - pointEventDetectorVO.getWeight();
         if (cusum > 0)
             cusum = 0;
 
-        if (cusum < vo.getLimit()) {
+        if (cusum < pointEventDetectorVO.getLimit()) {
             if (!negativeCusumActive) {
                 negativeCusumActiveTime = newValue.getTime();
                 changeNegativeCusumActive();

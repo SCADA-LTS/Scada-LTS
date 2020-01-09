@@ -45,13 +45,13 @@ public class StateChangeCountDetectorRT extends TimeoutDetectorRT {
     private long eventActiveTime;
 
     public StateChangeCountDetectorRT(PointEventDetectorVO vo) {
-        this.vo = vo;
+        this.pointEventDetectorVO = vo;
     }
 
     @Override
     public LocalizableMessage getMessage() {
-        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                vo.getChangeCount(), getDurationDescription());
+        return new LocalizableMessage("event.detector.changeCount", pointEventDetectorVO.getDataPoint().getName(),
+                pointEventDetectorVO.getChangeCount(), getDurationDescription());
     }
 
     public boolean isEventActive() {
@@ -100,7 +100,7 @@ public class StateChangeCountDetectorRT extends TimeoutDetectorRT {
             removeOldPointValues(time);
 
             // Check if we're past the change limit.
-            if (pointValues.size() >= vo.getChangeCount()) {
+            if (pointValues.size() >= pointEventDetectorVO.getChangeCount()) {
                 if (!eventActive) {
                     eventActive = true;
                     eventActiveTime = value.getTime();
@@ -113,7 +113,7 @@ public class StateChangeCountDetectorRT extends TimeoutDetectorRT {
                     unscheduleJob();
 
                 // Schedule a job for the deactivation of this detector.
-                long eventInactiveTime = pointValues.get(pointValues.size() - vo.getChangeCount()).getTime()
+                long eventInactiveTime = pointValues.get(pointValues.size() - pointEventDetectorVO.getChangeCount()).getTime()
                         + getDurationMS();
                 scheduleJob(eventInactiveTime + 1);
             }
@@ -128,7 +128,7 @@ public class StateChangeCountDetectorRT extends TimeoutDetectorRT {
             // inactive. However, it really doesn't hurt to do a bit of cleanup and checking, so what the heck...
             removeOldPointValues(fireTime);
 
-            if (pointValues.size() >= vo.getChangeCount()) {
+            if (pointValues.size() >= pointEventDetectorVO.getChangeCount()) {
                 // Something has gone wrong.
                 StringBuilder sb = new StringBuilder();
                 sb.append("I was supposed to go inactive, but there are still too many state changes in my list: ");
@@ -137,7 +137,7 @@ public class StateChangeCountDetectorRT extends TimeoutDetectorRT {
                 for (PointValueTime pvt : pointValues)
                     sb.append(pvt.getTime()).append(", ");
                 sb.append("], durationMS=").append(getDurationMS());
-                sb.append(", changeCount=").append(vo.getChangeCount());
+                sb.append(", changeCount=").append(pointEventDetectorVO.getChangeCount());
                 log.error(sb.toString(), new Exception());
             }
         }
