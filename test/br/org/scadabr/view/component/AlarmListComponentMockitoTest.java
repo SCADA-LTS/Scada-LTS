@@ -50,8 +50,6 @@ public class AlarmListComponentMockitoTest {
     @Before
     public void setup() throws Exception {
 
-        subject = new AlarmListComponent();
-
         mockStatic(WebContextFactory.class);
         mockStatic(BaseDwr.class);
         mockStatic(Common.class);
@@ -60,6 +58,13 @@ public class AlarmListComponentMockitoTest {
         when(Common.getUser()).thenReturn(user);
 
         whenNew(EventDao.class).withNoArguments().thenReturn(eventDao);
+    }
+
+    @Test
+    public void test_generateContent() throws Exception {
+
+        //given:
+        subject = new AlarmListComponent();
 
         ArrayList<EventInstance> eventsOriginal = new ArrayList<>();
         when(eventDao.getPendingEvents(anyInt())).thenReturn(eventsOriginal);
@@ -76,10 +81,7 @@ public class AlarmListComponentMockitoTest {
                     events.size();
                     return CONTENT_EXPECTED;
                 });
-    }
 
-    @Test
-    public void test_generateContent() {
         //when:
         String result = subject.generateContent();
 
