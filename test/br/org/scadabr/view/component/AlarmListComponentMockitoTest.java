@@ -14,10 +14,7 @@ import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.junit.Assert.assertEquals;
@@ -62,7 +59,7 @@ public class AlarmListComponentMockitoTest {
     }
 
     @Test
-    public void test_generateContent() throws Exception {
+    public void test_generateContent_if_subList_invoke_on_events_getting_eventsSubList_next_modifying_events_and_invoke_size_on_eventsSubList_then_not_throw_ConcurrentModificationException() throws Exception {
 
         //given:
         subject = new AlarmListComponent();
