@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,7 +44,7 @@ public class AlarmListComponent extends CustomComponent {
 
 	@Override
 	public String generateContent() {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
 		List<EventInstance> events = new EventDao().getPendingEvents(Common
@@ -52,9 +53,10 @@ public class AlarmListComponent extends CustomComponent {
 		filter(events, minAlarmLevel);
 
 		int max = events.size() > maxListSize ? maxListSize : events.size();
+		List<EventInstance> eventsSubList = new CopyOnWriteArrayList<>(events).subList(0, max);
 
 		model.put("nome", "marlon");
-		model.put("events", events.subList(0, max));
+		model.put("events", eventsSubList);
 		model.put("width", width > 0 ? width : 500);
 		model.put("hideIdColumn", hideIdColumn);
 		model.put("hideAlarmLevelColumn", hideAlarmLevelColumn);
