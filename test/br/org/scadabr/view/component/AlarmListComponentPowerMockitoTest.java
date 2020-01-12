@@ -31,7 +31,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({BaseDwr.class, WebContextFactory.class, Common.class,
         AlarmListComponent.class})
-public class AlarmListComponentMockitoTest {
+public class AlarmListComponentPowerMockitoTest {
 
     private final static String CONTENT_EXPECTED = "test";
     private AlarmListComponent subject;

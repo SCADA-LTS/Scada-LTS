@@ -413,7 +413,7 @@
 				  haltonfailure="yes">
 			</test>
 
-			<test name="br.org.scadabr.view.component.AlarmListComponentMockitoTest"
+			<test name="br.org.scadabr.view.component.AlarmListComponentPowerMockitoTest"
 				  haltonfailure="yes">
 			</test>
 		    <!--
