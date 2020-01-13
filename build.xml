@@ -293,6 +293,10 @@
 		<mkdir dir="${js-ui.dir}/ds/js"></mkdir>
 		<mkdir dir="${js-ui.dir}/ds/css"></mkdir>
 
+		<mkdir dir="${js-ui.dir}/dist/css"></mkdir>
+		<mkdir dir="${js-ui.dir}/dist/app"></mkdir>
+		<mkdir dir="${js-ui.dir}/dist/js"></mkdir>
+
 		<!-- copy content for app -->
 		<copy includeemptydirs="false" todir="${js-ui.dir}/app/css" taskname="copy app css">
 			<fileset dir="${src-js-ui.dir}/css/">
