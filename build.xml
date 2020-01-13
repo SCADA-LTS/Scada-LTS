@@ -137,8 +137,17 @@
         <pathelement location="WebContent/WEB-INF/lib/xfire-core-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
     	<pathelement location="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
-  		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
-    	<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/javassist-3.21.0-GA.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/mockito-all-1.10.19.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/powermock-api-mockito-1.7.4.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/powermock-api-mockito-common-1.7.4.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/powermock-api-support-1.7.4.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/powermock-core-1.7.4.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/powermock-module-junit4-1.7.4.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/powermock-module-junit4-common-1.7.4.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/powermock-module-junit4-legacy-1.7.4.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/powermock-reflect-1.7.4.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/objenesis-2.4.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>
@@ -191,7 +200,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/bacnet4J.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/alpha24j.jar"/>
-		<pathelement location="lib/mockito-all-1.9.5.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/joda-time-2.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
