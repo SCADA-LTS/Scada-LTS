@@ -148,7 +148,15 @@
     <param name="LocationInfo" value="true"/>
     <appender-ref ref="apilogfile"/>
   </appender>
-  
+
+  <!-- Event Logging -->
+  <appender name="eventlogfile" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/event.log"/>
+    <param name="DatePattern" value="yyyy-MM-dd"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
   
 <!-- Normal Logging -->
   <category name="org.directwebremoting"><level value="warn"/></category>
@@ -157,6 +165,11 @@
   <category name="com.serotonin.db.spring.ExtendedJdbcTemplate"><level value="error"/></category>
   <category name="com.serotonin.mango"><level value="info"/></category>
 
+  <!-- Event Logging -->
+  <category name="org.scada_lts.mango.service.EventService" additivity="false">
+    <level value="trace"/>
+    <appender-ref ref="eventlogfile"/>
+  </category>
 
 <!-- Modbus Logging -->
   <category name="com.serotonin.modbus4j.ip.listener" additivity="false">
@@ -168,7 +181,7 @@
     <level value="debug"/>
     <appender-ref ref="modbusasync"/>
   </category>
-  
+
 <!-- Flyway logging -->
 <category name="com.serotonin.mango.db" additivity="false">
     <level value="info"/>

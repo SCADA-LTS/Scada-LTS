@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.serotonin.mango.rt.event.AlarmLevels;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
@@ -36,7 +37,6 @@ import org.scada_lts.cache.UnsilencedAlarmCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
@@ -62,7 +62,7 @@ public class EventService implements MangoEvent {
 	
 	private EventDAO eventDAO;
 	private UserEventDAO userEventDAO;
-	
+
 	public EventService() {
 		eventDAO = new EventDAO();
 		userEventDAO = new UserEventDAO();
@@ -86,14 +86,16 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public void saveEvent(EventInstance event) {
-		
-		if (event.getId() == Common.NEW_ID ) {
-			eventDAO.create(event);
-			//TODO whay not have add to cache?
-		} else {
-			eventDAO.updateEvent(event);
-			updateCache(event);
+		if(isNoneAlarmLevelEvent(event)) {
+			LOG.trace(event);
+			return;
 		}
+		if(isNewId(event.getId())) {
+			eventDAO.create(event);
+			return;
+		}
+		eventDAO.updateEvent(event);
+		updateCache(event);
 	}
 	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -121,7 +123,8 @@ public class EventService implements MangoEvent {
 	
 	@Override
 	public void insertUserEvents(int eventId, List<Integer> userIds, boolean alarm) {
-		userEventDAO.batchUpdate(eventId, userIds, alarm);
+		if(!isNewId(eventId))
+			userEventDAO.batchUpdate(eventId, userIds, alarm);
 		if (alarm) {
 			for (int userId: userIds) {
 				removeUserIdFromCache(userId);
@@ -445,6 +448,14 @@ public class EventService implements MangoEvent {
 
 	public static void clearCache() {
 		pendingEventCache.clear();
+	}
+
+	private boolean isNoneAlarmLevelEvent(EventInstance event) {
+		return event.getAlarmLevel() == AlarmLevels.NONE;
+	}
+
+	private boolean isNewId(int id) {
+		return id == Common.NEW_ID;
 	}
 
 }
