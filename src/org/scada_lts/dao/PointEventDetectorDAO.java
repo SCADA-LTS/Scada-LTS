@@ -21,10 +21,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.PointEventDetectorCache;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -68,8 +71,27 @@ public class PointEventDetectorDAO {
 	private static final String COLUMN_NAME_EH_EVENT_TYPE_ID = "eventTypeId";
 	private static final String COLUMN_NAME_EH_EVENT_TYPE_REF1 = "eventTypeRef1";
 	private static final String COLUMN_NAME_EH_EVENT_TYPE_REF2 = "eventTypeRef2";
-
 	// @formatter:off
+	private static final String SQL = ""
+			+ "select "
+			+ COLUMN_NAME_ID + ", "
+			+ COLUMN_NAME_XID + ", "
+			+ COLUMN_NAME_ALIAS + ", "
+			+ COLUMN_NAME_DETECTOR_TYPE + ", "
+			+ COLUMN_NAME_ALARM_LEVEL + ", "
+			+ COLUMN_NAME_STATE_LIMIT + ", "
+			+ COLUMN_NAME_DURATION + ", "
+			+ COLUMN_NAME_DURATION_TYPE + ", "
+			+ COLUMN_NAME_BINARY_STATE + ", "
+			+ COLUMN_NAME_MULTISTATE_STATE + ", "
+			+ COLUMN_NAME_CHANGE_COUNT + ", "
+			+ COLUMN_NAME_ALPHANUMERIC_STATE + ", "
+			+ COLUMN_NAME_WEIGHT + ", "
+			+ "dataPointId "
+			+ "from "
+			+ "pointEventDetectors "
+			+ "order by dataPointId";
+
 	private static final String POINT_EVENT_DETECTOR_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -161,6 +183,63 @@ public class PointEventDetectorDAO {
 				+ COLUMN_NAME_EH_EVENT_TYPE_REF2 + "=? ";
 	// @formatter:on
 
+	@SuppressWarnings("rawtypes")
+	public List<PointEventDetectorCache> getAll() {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("SQL EventDetectors");
+		}
+		try {
+			@SuppressWarnings("unchecked")
+			List<PointEventDetectorCache> listPointEventDetectorVO = DAO.getInstance().getJdbcTemp().query(SQL, new RowMapper() {
+				@Override
+				public PointEventDetectorCache mapRow(ResultSet rs, int rownumber) throws SQLException {
+					PointEventDetectorVO eventDetector = new PointEventDetectorVO();
+					eventDetector.setId(rs.getInt(COLUMN_NAME_ID));
+					eventDetector.setXid(rs.getString(COLUMN_NAME_XID));
+					eventDetector.setAlias(rs.getString(COLUMN_NAME_ALIAS));
+					eventDetector.setDetectorType(rs.getInt(COLUMN_NAME_DETECTOR_TYPE));
+					eventDetector.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
+					eventDetector.setLimit(rs.getDouble(COLUMN_NAME_STATE_LIMIT));
+					eventDetector.setDuration(rs.getInt(COLUMN_NAME_DURATION));
+					eventDetector.setDurationType(rs.getInt(COLUMN_NAME_DURATION_TYPE));
+					eventDetector.setBinaryState(rs.getBoolean(COLUMN_NAME_BINARY_STATE));
+					eventDetector.setMultistateState(rs.getInt(COLUMN_NAME_MULTISTATE_STATE));
+					eventDetector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
+					eventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
+					eventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
+
+					PointEventDetectorCache pedc = new PointEventDetectorCache();
+					pedc.setPointEventDetector(eventDetector);
+					pedc.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
+
+					return pedc;
+				}
+			});
+
+			return listPointEventDetectorVO;
+		} catch (Exception e) {
+			LOG.error(e);
+		}
+		return null;
+	}
+
+
+	protected TreeMap<Integer, List<PointEventDetectorVO>> getMapEventDetectors(
+			final List<PointEventDetectorCache> listEventDetectorCache) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getMapEventDetectorForUser");
+		}
+		TreeMap<Integer, List<PointEventDetectorVO>> mappedEventDetectorForUser = new TreeMap<Integer, List<PointEventDetectorVO>>();
+
+		for (PointEventDetectorCache eventDetector : listEventDetectorCache) {
+			int key = eventDetector.getDataPointId();
+			if (mappedEventDetectorForUser.get(key) == null) {
+				mappedEventDetectorForUser.put(key, new ArrayList<PointEventDetectorVO>());
+			}
+			mappedEventDetectorForUser.get(key).add(eventDetector.getPointEventDetector());
+		}
+		return mappedEventDetectorForUser;
+	}
 	private class PointEventDetectorRowMapper implements RowMapper<PointEventDetectorVO> {
 
 		private final DataPointVO dataPoint;
