@@ -25,7 +25,6 @@ import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -33,6 +32,8 @@ import org.scada_lts.dao.EventDetectorsCacheDAO;
 import org.scada_lts.dao.model.PointEventDetectorCache;
 
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
+//ANOTHERTASKimport org.scada_lts.servicebrokers.ServiceBrokerEventDetector;
+//ANOTHERTASKimport org.scada_lts.servicebrokers.ServiceBrokerEventDetectorImpl;
 
 /**
  * Update data job for event detectors in cache.
@@ -43,10 +44,12 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 public class UpdateEventDetectors extends EventDetectorsCacheDAO implements StatefulJob {
 	
 	private static final Log LOG = LogFactory.getLog(UpdateEventDetectors.class);
+	//ANOTHERTASKprivate ServiceBrokerEventDetector serviceBrokerEventDetector = new ServiceBrokerEventDetectorImpl();
 
 	@Override
-	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+	public void execute(JobExecutionContext arg0)  {
 		LOG.trace("UpdateEventDetectors");
+		//ANOTHERTASKList<PointEventDetectorCache> listEventDetector = serviceBrokerEventDetector.getAllEventDetectors();
 		List<PointEventDetectorCache> listEventDetector = getAll();
 		TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetector = getMapEventDetectors(listEventDetector);
 		try {
