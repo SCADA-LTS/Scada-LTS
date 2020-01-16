@@ -11,4 +11,10 @@ public interface ServiceBrokerEventDetector {
     List<PointEventDetectorCache> getAllEventDetectors();
 
     List<PointEventDetectorVO> getEventDetectorsForGivenDataPointId(DataPointVO dataPointId);
+
+    void updateEventDetector(PointEventDetectorVO pointEventDetectorVO);
+
+    int insertEventDetector(PointEventDetectorVO pointEventDetectorVO);
+
+    void deleteEventDetector(DataPointVO dataPointVO, PointEventDetectorVO pointEventDetectorVO);
 }

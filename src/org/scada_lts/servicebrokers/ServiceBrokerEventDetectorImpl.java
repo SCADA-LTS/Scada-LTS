@@ -20,4 +20,19 @@ public class ServiceBrokerEventDetectorImpl implements ServiceBrokerEventDetecto
     public List<PointEventDetectorVO> getEventDetectorsForGivenDataPointId(DataPointVO dataPointId) {
         return pointEventDetectorDAO.getPointEventDetectors( dataPointId );
     }
+
+    @Override
+    public void updateEventDetector(PointEventDetectorVO pointEventDetectorVO) {
+        pointEventDetectorDAO.update( pointEventDetectorVO );
+    }
+
+    @Override
+    public int insertEventDetector(PointEventDetectorVO pointEventDetectorVO) {
+        return pointEventDetectorDAO.insert( pointEventDetectorVO );
+    }
+
+    @Override
+    public void deleteEventDetector(DataPointVO dataPointVO, PointEventDetectorVO pointEventDetectorVO) {
+        pointEventDetectorDAO.delete(dataPointVO.getId(), pointEventDetectorVO.getId());
+    }
 }
