@@ -123,8 +123,9 @@ public class EventService implements MangoEvent {
 	
 	@Override
 	public void insertUserEvents(int eventId, List<Integer> userIds, boolean alarm) {
-		if(!isNewId(eventId))
+		if(!isNewId(eventId)) {
 			userEventDAO.batchUpdate(eventId, userIds, alarm);
+		}
 		if (alarm) {
 			for (int userId: userIds) {
 				removeUserIdFromCache(userId);
