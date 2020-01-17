@@ -1,6 +1,7 @@
 package com.serotonin.mango.rt.dataImage;
 
 import com.serotonin.mango.db.dao.IPointValueDao;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -17,13 +18,13 @@ import static org.mockito.Mockito.when;
 
 public class PointValueCacheGetMethodsDatabaseEmptyTest {
 
-    private static IPointValueDao dao;
-    private static int dataPointId;
+    private static final int dataPointId = 123;
+
+    private IPointValueDao dao;
     private PointValueCache pointValueCacheSubject;
 
-    @BeforeClass
-    public static void setup() {
-        dataPointId = 1;
+    @Before
+    public void setup() {
         dao = Mockito.mock(IPointValueDao.class);
         when(dao.getLatestPointValues(eq(dataPointId), anyInt())).thenReturn(Collections.emptyList());
         when(dao.getLatestPointValue(eq(dataPointId))).thenReturn(null);

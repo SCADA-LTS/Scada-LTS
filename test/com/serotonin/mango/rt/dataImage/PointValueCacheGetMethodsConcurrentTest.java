@@ -2,6 +2,7 @@ package com.serotonin.mango.rt.dataImage;
 
 import com.serotonin.mango.db.dao.IPointValueDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -22,19 +23,19 @@ import static org.mockito.Mockito.when;
 public class PointValueCacheGetMethodsConcurrentTest {
 
     private static final int NUMBER_OF_LAUNCHES_SIMULTANEOUSLY = 4;
+    private static final int dataPointId = 123;
 
-    private static PointValueTime pointValueTimeFirstSaved;
-    private static PointValueTime pointValueTimeSecondSaved;
-    private static PointValueTime pointValueTimeThirdSaved;
-    private static PointValueTime pointValueTimeFourthSaved;
-    private static PointValueTime pointValueTimeLastSaved;
-    private static int dataPointId;
-    private static IPointValueDao dao;
+    private PointValueTime pointValueTimeFirstSaved;
+    private PointValueTime pointValueTimeSecondSaved;
+    private PointValueTime pointValueTimeThirdSaved;
+    private PointValueTime pointValueTimeFourthSaved;
+    private PointValueTime pointValueTimeLastSaved;
 
+    private IPointValueDao dao;
     private PointValueCache pointValueCacheSubject;
 
-    @BeforeClass
-    public static void setupGeneral() {
+    @Before
+    public void setup() {
         pointValueTimeFirstSaved = new PointValueTime(MangoValue.stringToValue("1", 3), System.currentTimeMillis());
         pointValueTimeSecondSaved = new PointValueTime(MangoValue.stringToValue("2", 3), System.currentTimeMillis());
         pointValueTimeThirdSaved = new PointValueTime(MangoValue.stringToValue("3", 3), System.currentTimeMillis());
@@ -43,7 +44,6 @@ public class PointValueCacheGetMethodsConcurrentTest {
         PointValueTime[] databaseContent = {pointValueTimeLastSaved, pointValueTimeFourthSaved,
                 pointValueTimeThirdSaved, pointValueTimeSecondSaved, pointValueTimeFirstSaved};
 
-        dataPointId = 1;
         dao = Mockito.mock(IPointValueDao.class);
 
         List<PointValueTime> points3 = Stream.of(databaseContent).limit(3).collect(Collectors.toList());
