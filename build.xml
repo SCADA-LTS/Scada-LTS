@@ -186,7 +186,6 @@
 		<path refid="Web App Libraries.libraryclasspath"/>
 		<path refid="EAR Libraries.libraryclasspath"/>
 		<path refid="httpcomponents-client-4.5.3"/>
-		<path refid="Test unit and Benchmark"/>
 		<pathelement location="WebContent/WEB-INF/lib/wsdl4j-1.5.1.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/wss4j-1.5.8.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
@@ -233,7 +232,6 @@
 		<echo message="${ant.project.name}: ${ant.file}"/>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
 			<src path="src"/>
-			<src path="test"/>
 			<classpath refid="scadabr-1.1.0-RC.classpath"/>
 		</javac>
 	</target>
@@ -363,9 +361,8 @@
 		    
 		    <formatter type="plain" usefile="false" />
  
-		    <classpath refid="scadabr-1.1.0-RC.classpath">
-		        
-		    </classpath>
+		    <classpath refid="Test unit and Benchmark"/>
+			<classpath refid="scadabr-1.1.0-RC.classpath"/>
 			
 		    <!--
 			<test name="br.org.scadabr.api.AckEventsTest" 
