@@ -235,7 +235,7 @@
 	<target name="build-subprojects"/>
 	<target depends="init" name="build-project">
 		<echo message="${ant.project.name}: ${ant.file}"/>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.src.path}" includeantruntime="false" source="${source}" target="${target}">
 			<src path="src"/>
 			<classpath refid="scadabr-1.1.0-RC.classpath"/>
 		</javac>
