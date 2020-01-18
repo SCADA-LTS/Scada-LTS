@@ -21,6 +21,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static utils.PointValueCacheFactory.newPointValueCacheV2;
 
 @RunWith(value = Parameterized.class)
 public class SavePointValueMethodTest {
@@ -102,7 +103,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -122,7 +123,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -144,7 +145,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -166,7 +167,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -181,11 +182,11 @@ public class SavePointValueMethodTest {
     }
 
     @Test
-    public void test_savePointValue_if_saved_number_points_equals_defaultSize_and_non_async() {
+    public void test_savePointValue_if_saved_number_points_equals_defaultSize_and_sync() {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -204,7 +205,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -226,7 +227,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -250,7 +251,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -273,7 +274,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -297,7 +298,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -316,11 +317,11 @@ public class SavePointValueMethodTest {
     }
 
     @Test
-    public void test_savePointValue_if_saved_number_points_greater_than_defaultSize_and_non_async() {
+    public void test_savePointValue_if_saved_number_points_greater_than_defaultSize_and_sync() {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -343,7 +344,7 @@ public class SavePointValueMethodTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -358,11 +359,11 @@ public class SavePointValueMethodTest {
     }
 
     @Test
-    public void test_savePointValue_if_saved_number_points_less_than_defaultSize_then_keep_last_points() {
+    public void test_savePointValue_if_saved_2_points_less_than_defaultSize_then_keep_last_points() {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -378,11 +379,11 @@ public class SavePointValueMethodTest {
     }
 
     @Test
-    public void test_savePointValue_if_saved_number_points_less_than_defaultSize_then_Last_In_First_Out() {
+    public void test_savePointValue_if_saved_2_points_less_than_defaultSize_then_Last_In_First_Out() {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -398,11 +399,11 @@ public class SavePointValueMethodTest {
     }
 
     @Test
-    public void test_savePointValue_if_saved_number_points_less_than_defaultSize_and_async() {
+    public void test_savePointValue_if_saved_2_points_less_than_defaultSize_and_async() {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
@@ -415,14 +416,505 @@ public class SavePointValueMethodTest {
     }
 
     @Test
-    public void test_savePointValue_if_saved_number_points_less_than_defaultSize_and_non_async() {
+    public void test_savePointValue_if_saved_2_points_less_than_defaultSize_and_sync() {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
 
         //when:
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_less_than_defaultSize_then_cacheSize_1() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        int size = pointValueCacheSubject.getCacheContents().size();
+
+        //then:
+        assertEquals(1, size);
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_less_than_defaultSize_then_keep_last_points() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertTrue(points.contains(pointValueTimeLastSaved));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_less_than_defaultSize_then_Last_In_First_Out() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertEquals(pointValueTimeLastSaved, points.get(0));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_less_than_defaultSize_and_async() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_less_than_defaultSize_and_sync() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_equals_defaultSize_then_cacheSize_1() {
+
+        //given:
+        int defaultSize = 2;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        int size = pointValueCacheSubject.getCacheContents().size();
+
+        //then:
+        assertEquals(1, size);
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_equals_defaultSize_then_keep_last_points() {
+
+        //given:
+        int defaultSize = 2;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertTrue(points.contains(pointValueTimeLastSaved));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_equals_defaultSize_then_Last_In_First_Out() {
+
+        //given:
+        int defaultSize = 2;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertEquals(pointValueTimeLastSaved, points.get(0));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_equals_defaultSize_and_async() {
+
+        //given:
+        int defaultSize = 2;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_equals_defaultSize_and_sync() {
+
+        //given:
+        int defaultSize = 2;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_greater_than_defaultSize_then_cacheSize_1() {
+
+        //given:
+        int defaultSize = 1;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        int size = pointValueCacheSubject.getCacheContents().size();
+
+        //then:
+        assertEquals(1, size);
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_greater_than_defaultSize_then_keep_last_points() {
+
+        //given:
+        int defaultSize = 1;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertTrue(points.contains(pointValueTimeLastSaved));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_greater_than_defaultSize_then_Last_In_First_Out() {
+
+        //given:
+        int defaultSize = 1;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertEquals(pointValueTimeLastSaved, points.get(0));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_greater_than_defaultSize_and_async() {
+
+        //given:
+        int defaultSize = 1;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_2_points_greater_than_defaultSize_and_sync() {
+
+        //given:
+        int defaultSize = 1;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_2_points_reset_saved_point_and_defaultSize_3_then_cacheSize_2() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        int size = pointValueCacheSubject.getCacheContents().size();
+
+        //then:
+        assertEquals(2, size);
+
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_2_points_reset_saved_point_and_defaultSize_3_then_keep_last_points() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertTrue(points.contains(pointValueTimeLastSaved));
+        assertTrue(points.contains(pointValueTimeSecondSaved));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_2_points_reset_saved_point_and_defaultSize_3_then_Last_In_First_Out() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertEquals(pointValueTimeLastSaved, points.get(0));
+        assertEquals(pointValueTimeSecondSaved, points.get(1));
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_2_points_reset_saved_point_and_defaultSize_3_and_async() {
+
+        //given:
+        int defaultSize = 1;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_2_points_reset_saved_point_and_defaultSize_3_and_sync() {
+
+        //given:
+        int defaultSize = 1;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && !async ? 1 : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_point_reset_saved_2_points_and_defaultSize_3_then_cacheSize_1() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        int size = pointValueCacheSubject.getCacheContents().size();
+
+        //then:
+        assertEquals(1, size);
+
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_point_reset_saved_2_points_and_defaultSize_3_then_keep_last_points() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertTrue(points.contains(pointValueTimeLastSaved));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_point_reset_saved_2_points_and_defaultSize_3_then_Last_In_First_Out() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //and:
+        List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
+
+        //then:
+        assertEquals(pointValueTimeLastSaved, points.get(0));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_point_reset_saved_2_points_and_defaultSize_3_and_async() {
+
+        //given:
+        int defaultSize = 1;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
+
+        //then:
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeFirstSaved), eq(source));
+        verify(dao, times(logValue && async ? 1 : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_saved_point_reset_saved_2_points_and_defaultSize_3_and_sync() {
+
+        //given:
+        int defaultSize = 1;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);;
+
+        //when:
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeFirstSaved, source, logValue, async);
+        pointValueCacheSubject.reset();
+        pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeSecondSaved, source, logValue, async);
         pointValueCacheSubject.savePointValueIntoDaoAndCacheUpdate(pointValueTimeLastSaved, source, logValue, async);
 
         //then:

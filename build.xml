@@ -34,6 +34,10 @@
 	<path id="Test unit and Benchmark">
 		<pathelement location="WebContent/WEB-INF/lib/junit-4.12.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.10.19.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/jmh-core-1.22.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/jmh-generator-annprocess-1.22.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/jopt-simple-4.6.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/commons-math3-3.2.jar"/>
 	</path>
 
     <path id="Web App Libraries.libraryclasspath">

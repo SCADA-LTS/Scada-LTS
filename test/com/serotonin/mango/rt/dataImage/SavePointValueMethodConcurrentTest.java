@@ -3,7 +3,6 @@ package com.serotonin.mango.rt.dataImage;
 import com.serotonin.mango.db.dao.IPointValueDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -20,6 +19,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static utils.PointValueCacheFactory.newPointValueCacheV2;
 
 @RunWith(value = Parameterized.class)
 public class SavePointValueMethodConcurrentTest {
@@ -101,7 +101,7 @@ public class SavePointValueMethodConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeLastSaved);
@@ -119,7 +119,7 @@ public class SavePointValueMethodConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeLastSaved);
@@ -129,13 +129,66 @@ public class SavePointValueMethodConcurrentTest {
     }
 
     @Test
-    public void test_savePointValue_if_non_async() {
+    public void test_savePointValue_if_sync() {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
+        TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeLastSaved);
+
+        //then:
+        verify(dao, times(logValue && !async ? NUMBER_OF_LAUNCHES_SIMULTANEOUSLY : 0)).savePointValueSync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_points_then_keep_limit() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
+
+        //when:
+        TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeFirstSaved);
+        pointValueCacheSubject.reset();
+        TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeLastSaved);
+
+        //and:
+        int size = pointValueCacheSubject.getCacheContents().size();
+
+        //then:
+        assertEquals(defaultSize, size);
+
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_points_async() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
+
+        //when:
+        TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeFirstSaved);
+        pointValueCacheSubject.reset();
+        TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeLastSaved);
+
+        //then:
+        verify(dao, times(logValue && async ? NUMBER_OF_LAUNCHES_SIMULTANEOUSLY : 0)).savePointValueAsync(eq(dataPointId), eq(pointValueTimeLastSaved), eq(source));
+    }
+
+    @Test
+    public void test_savePointValue_if_reset_between_saved_points_sync() {
+
+        //given:
+        int defaultSize = 3;
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
+
+        //when:
+        TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeFirstSaved);
+        pointValueCacheSubject.reset();
         TestConcurrentUtil.consumer(NUMBER_OF_LAUNCHES_SIMULTANEOUSLY, this::savePointValue, pointValueTimeLastSaved);
 
         //then:

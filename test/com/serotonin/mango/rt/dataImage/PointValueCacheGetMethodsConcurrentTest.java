@@ -3,7 +3,6 @@ package com.serotonin.mango.rt.dataImage;
 import com.serotonin.mango.db.dao.IPointValueDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import utils.concurrent.TestConcurrentUtil;
@@ -19,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
+import static utils.PointValueCacheFactory.newPointValueCacheV2;
 
 public class PointValueCacheGetMethodsConcurrentTest {
 
@@ -61,7 +61,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 3;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -80,7 +80,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 3;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -101,7 +101,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 3;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -121,7 +121,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 3;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -142,7 +142,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -161,7 +161,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -184,7 +184,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -203,7 +203,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -225,7 +225,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -244,7 +244,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -265,7 +265,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -286,7 +286,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -307,7 +307,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 1;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -326,7 +326,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 1;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -346,7 +346,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 1;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -368,7 +368,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<PointValueTime> points = TestConcurrentUtil
@@ -388,7 +388,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -407,7 +407,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -428,7 +428,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -448,7 +448,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<List<PointValueTime>> results = TestConcurrentUtil
@@ -470,7 +470,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 3;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -492,7 +492,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 3;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -516,7 +516,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 3;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -539,7 +539,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 3;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -563,7 +563,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -585,7 +585,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -611,7 +611,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -633,7 +633,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -658,7 +658,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -680,7 +680,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -704,7 +704,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -728,7 +728,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -750,7 +750,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -772,7 +772,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -794,7 +794,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -818,7 +818,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -841,7 +841,7 @@ public class PointValueCacheGetMethodsConcurrentTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();

@@ -2,7 +2,6 @@ package com.serotonin.mango.rt.dataImage;
 
 import com.serotonin.mango.db.dao.IPointValueDao;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -15,6 +14,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
+import static utils.PointValueCacheFactory.newPointValueCacheV2;
 
 public class PointValueCacheGetMethodsDatabaseEmptyTest {
 
@@ -36,7 +36,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
         //given:
         int limit = 3;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<PointValueTime> points = pointValueCacheSubject.getLatestPointValues(limit);
@@ -51,7 +51,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<PointValueTime> points = pointValueCacheSubject.getLatestPointValues(limit);
@@ -66,7 +66,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<PointValueTime> points = pointValueCacheSubject.getLatestPointValues(limit);
@@ -80,7 +80,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         PointValueTime point = pointValueCacheSubject.getLatestPointValue();
@@ -94,7 +94,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         List<PointValueTime> points = pointValueCacheSubject.getCacheContents();
@@ -109,7 +109,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -128,7 +128,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
         //given:
         int limit = 4;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -146,7 +146,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
         //given:
         int limit = 2;
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -163,7 +163,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
@@ -180,7 +180,7 @@ public class PointValueCacheGetMethodsDatabaseEmptyTest {
 
         //given:
         int defaultSize = 3;
-        pointValueCacheSubject = new PointValueCache(dataPointId, defaultSize, dao);
+        pointValueCacheSubject = newPointValueCacheV2(dataPointId, defaultSize, dao);
 
         //when:
         pointValueCacheSubject.reset();
