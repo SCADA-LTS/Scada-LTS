@@ -26,7 +26,6 @@ public class SavePointValueMethodBenchmark {
     private PointValueTime pointValueTimeFirstSaved;
     private PointValueCache pointValueCacheSubject;
 
-
     @Param({"false"})
     private boolean logValue;
     @Param({"false"})
