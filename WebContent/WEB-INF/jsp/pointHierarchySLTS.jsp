@@ -425,7 +425,7 @@ thead th {
 				<td colspan="2">&nbsp;</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="footer" align="center">&copy;2012-2018 Scada-LTS All rights reserved. <fmt:message
+				<td colspan="2" class="footer" align="center">&copy;2012-2020 Scada-LTS All rights reserved. <fmt:message
 						key="footer.rightsReserved" /></td>
 			</tr>
 		</table>
