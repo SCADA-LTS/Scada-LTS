@@ -40,7 +40,6 @@ import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
-import org.springframework.dao.DuplicateKeyException;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
@@ -202,7 +201,8 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		dp.setId(dataPointDAO.insert(dp));
-		insertDeleteOrUpdateEventDetectorsIntoDb(dp);
+		PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( dp );
+		//insertDeleteOrUpdateEventDetectorsIntoDb(dp);
 	}
 
 	@Override
@@ -213,7 +213,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		updateDataPointShallow(dp);
-		insertDeleteOrUpdateEventDetectorsIntoDb(dp);
+		PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( dp );
 	}
 
 	@Override
@@ -336,6 +336,7 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	private void setEventDetectors(DataPointVO dataPoint) {
+		//get EventDetectors , first, from cache, in other case, from database
 		List<PointEventDetectorVO> pointEventDetectorVOS = getEventDetectors(dataPoint);
 		//DataSourcePointsCache.getInstance().setEventDetectorsToDataPoint( dataPoint.getXid(),pointEventDetectorVOS );
 		dataPoint.setEventDetectors( pointEventDetectorVOS );
@@ -363,73 +364,78 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	private void insertDeleteOrUpdateEventDetectorsIntoDb(DataPointVO dataPoint) {
-		List<PointEventDetectorVO> detectorsFromDataPoint = new ArrayList<PointEventDetectorVO>(dataPoint.getEventDetectors());
-		List<PointEventDetectorVO> detectorsFromCacheOrDB = getEventDetectors(dataPoint);
-		List<PointEventDetectorVO> result = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
-		List<PointEventDetectorVO> newEventDetectors = new ArrayList<PointEventDetectorVO>();
-		List<PointEventDetectorVO> pointEventDetectorVOSDoAktualizacji = new ArrayList<PointEventDetectorVO>();
-		List<PointEventDetectorVO> pointEventDetectorVOSDoUsuniecia = new ArrayList<PointEventDetectorVO>(result );
-		pointEventDetectorVOSDoUsuniecia.removeAll(detectorsFromDataPoint);
-		/*
-		for(PointEventDetectorVO pointEventDetectorVO:result) {
-			if( !detectorsFromCacheOrDB.contains( pointEventDetectorVO ) ){
-				pointEventDetectorVOSDoUsuniecia.add(pointEventDetectorVO);
-			}
-		}
 
-		 */
-		if( pointEventDetectorVOSDoUsuniecia.size() != 0) {
-			for (PointEventDetectorVO eventDetectorVOFromCacheOrD : pointEventDetectorVOSDoUsuniecia) {
-					pointEventDetectorDAO.delete( dataPoint.getId(), eventDetectorVOFromCacheOrD.getId() );
+		PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( dataPoint );
+		/*
+		Object object = new Object();
+		synchronized ( object) {
+			List<PointEventDetectorVO>
+					detectorsFromDataPoint = new ArrayList<PointEventDetectorVO>(dataPoint.getEventDetectors()),
+					detectorsFromCacheOrDB = new ArrayList<PointEventDetectorVO>(getEventDetectors(dataPoint)),
+					result = pointEventDetectorDAO.getPointEventDetectors(dataPoint),
+					pointEventDetectorVOSToInsert = new ArrayList<PointEventDetectorVO>(),
+					pointEventDetectorVOSToUpdate = new ArrayList<PointEventDetectorVO>(),
+					pointEventDetectorVOSTo_Delete = new ArrayList<PointEventDetectorVO>();
+
+			List<Integer>
+					idsPointEventDetectorsExistingInDatabase = new ArrayList<Integer>(),
+					idsPointEventDetectorsExistingInDataPoint = new ArrayList<Integer>();
+
+			for (PointEventDetectorVO pointEventDetectorVO : result) {
+				idsPointEventDetectorsExistingInDatabase.add(pointEventDetectorVO.getId());
+			}
+			for (PointEventDetectorVO pointEventDetectorVO : detectorsFromDataPoint) {
+				idsPointEventDetectorsExistingInDataPoint.add(pointEventDetectorVO.getId());
+			}
+			idsPointEventDetectorsExistingInDatabase.removeAll(idsPointEventDetectorsExistingInDataPoint);
+
+			for (PointEventDetectorVO pointEventDetectorVO : result) {
+				if (idsPointEventDetectorsExistingInDatabase.contains(pointEventDetectorVO.getId())) {
+					pointEventDetectorVOSTo_Delete.add(pointEventDetectorVO);
+				}
+			}
+
+
+			if (pointEventDetectorVOSTo_Delete.size() != 0) {
+				for (PointEventDetectorVO eventDetectorVOFromCacheOrD : pointEventDetectorVOSTo_Delete) {
+					pointEventDetectorDAO.delete(dataPoint.getId(), eventDetectorVOFromCacheOrD.getId());
 					//usuwanie z cache
-					PointEventDetectorsCache.getInstance().removeEventDetector( dataPoint.getId(), eventDetectorVOFromCacheOrD.getId() );
-					detectorsFromDataPoint.remove( pointEventDetectorVOSDoUsuniecia );
-			}
+					PointEventDetectorsCache.getInstance().removeEventDetector(dataPoint.getId(), eventDetectorVOFromCacheOrD.getId());
+					detectorsFromDataPoint.remove(pointEventDetectorVOSTo_Delete);
+				}
 
-		}
-		for(PointEventDetectorVO pointEventDetectorVO :detectorsFromDataPoint) {
-			if(pointEventDetectorVO.getId()==-1 && !newEventDetectors.contains( pointEventDetectorVO)) {
-				int newId=-1;
-				newId = pointEventDetectorDAO.insert( pointEventDetectorVO );
-				pointEventDetectorVO.setId( newId );
-				newEventDetectors.add( pointEventDetectorVO );
-				continue;
 			}
-			for (PointEventDetectorVO eventDetectorVOFromCacheOrD : detectorsFromCacheOrDB) {
+			for (PointEventDetectorVO pointEventDetectorVO : detectorsFromDataPoint) {
+				if (pointEventDetectorVO.getId() == -1 && !pointEventDetectorVOSToInsert.contains(pointEventDetectorVO)) {
+					int newId = -1;
+					newId = pointEventDetectorDAO.insert(pointEventDetectorVO);
+					pointEventDetectorVO.setId(newId);
+					pointEventDetectorVOSToInsert.add(pointEventDetectorVO);
+					continue;
+				}
+				for (PointEventDetectorVO eventDetectorVOFromCacheOrD : detectorsFromCacheOrDB) {
 
-				if ( eventDetectorVOFromCacheOrD.getId() == pointEventDetectorVO.getId()) {
-					//aktualizuj
-					pointEventDetectorDAO.update(pointEventDetectorVO);
-					pointEventDetectorVOSDoAktualizacji.add(pointEventDetectorVO);
+					if (eventDetectorVOFromCacheOrD.getId() == pointEventDetectorVO.getId()) {
+						//aktualizuj
+						pointEventDetectorDAO.update(pointEventDetectorVO);
+						pointEventDetectorVOSToUpdate.add(pointEventDetectorVO);
+					}
+				}
+			}
+			//aktualizacja cache
+			if (pointEventDetectorVOSToUpdate.size() != 0) {
+				for (PointEventDetectorVO pointEventDetectorVO : pointEventDetectorVOSToUpdate) {
+					PointEventDetectorsCache.getInstance().updateEventDetector(dataPoint.getId(), pointEventDetectorVO);
+				}
+			}
+			//dodawanie do cache
+			if (pointEventDetectorVOSToInsert.size() != 0) {
+				for (PointEventDetectorVO pointEventDetectorVO : pointEventDetectorVOSToInsert) {
+					PointEventDetectorsCache.getInstance().addEventDetector(dataPoint.getId(), pointEventDetectorVO);
 				}
 			}
 		}
-		//aktualizacja cache
-		for(PointEventDetectorVO pointEventDetectorVO : pointEventDetectorVOSDoAktualizacji) {
-			PointEventDetectorsCache.getInstance().updateEventDetector(dataPoint.getId(),pointEventDetectorVO);
-		}
-		//dodawanie do cache
-		if(newEventDetectors.size()!=0) {
-			for (PointEventDetectorVO pointEventDetectorVO : newEventDetectors) {
-				PointEventDetectorsCache.getInstance().addEventDetector(dataPoint.getId(), pointEventDetectorVO);
-			}
-		}
-		/*
-			else {
-				if(pointEventDetectorVO.getId()==-1) {
-					int newId=-1;
-					newId = pointEventDetectorDAO.insert( pointEventDetectorVO );
-					pointEventDetectorVO.setId( newId );
-					pointEventDetectorVOSsavetoCacheAfterDatabase.add( pointEventDetectorVO );
-				}
-			}
-		}
-		for(PointEventDetectorVO pointEventDetectorVO : pointEventDetectorVOSsavetoCacheAfterDatabase) {
-			PointEventDetectorsCache.getInstance().addEventDetector(dataPoint.getId(),pointEventDetectorVO);
-		}
-
-		 */
-
+			*/
 		/*
 		for (PointEventDetectorVO pointEventDetector: detectors) {
 			if(!dataPoint.getEventDetectors().contains(pointEventDetector)) {
@@ -449,6 +455,7 @@ public class DataPointService implements MangoDataPoint {
 			}
 		}
 		*/
+
 	}
 
 	private PointEventDetectorVO removeFromList(List<PointEventDetectorVO> list, int id) {

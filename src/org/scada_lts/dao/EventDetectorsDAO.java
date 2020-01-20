@@ -75,7 +75,7 @@ public class EventDetectorsDAO {
 				+ "pointEventDetectors "
 			+ "order by dataPointId";
 	// @formatter:on
-
+/*
 	@SuppressWarnings("rawtypes")
 	public List<PointEventDetectorCache> getAllPointEventDetectorcache() {
 		if (LOG.isTraceEnabled()) {
@@ -114,5 +114,5 @@ public class EventDetectorsDAO {
 			LOG.error(e);
 		}
 		return null;
-	}
+	}*/
 }

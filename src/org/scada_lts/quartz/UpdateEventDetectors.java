@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
 import org.scada_lts.cache.PointEventDetectorsCache;
 import org.scada_lts.dao.model.PointEventDetectorCache;
@@ -41,13 +40,13 @@ public class UpdateEventDetectors implements StatefulJob {
 	
 	private static final Log LOG = LogFactory.getLog(UpdateEventDetectors.class);
 	private ServiceBrokerEventDetector serviceBrokerEventDetector = new ServiceBrokerEventDetectorImpl();
-	private static int a=0;
+	private static int runOnlyOnce =0;
 	@Override
-	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+	public void execute(JobExecutionContext arg0)  {
 		LOG.trace("UpdateEventDetectors");
 
-		if(UpdateEventDetectors.a==0) {
-			UpdateEventDetectors.a++;
+		if(UpdateEventDetectors.runOnlyOnce ==0) {
+			UpdateEventDetectors.runOnlyOnce++;
 			List<PointEventDetectorCache> listEventDetector = serviceBrokerEventDetector.getAllEventDetectors();
 			if (listEventDetector != null && !listEventDetector.isEmpty())
 				PointEventDetectorsCache.reFillMapEventDetectors(listEventDetector);

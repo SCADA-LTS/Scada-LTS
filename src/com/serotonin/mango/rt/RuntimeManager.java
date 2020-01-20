@@ -29,6 +29,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.PointEventDetectorsCache;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -403,7 +404,7 @@ public class RuntimeManager {
 		}
 
 		new DataPointDao().saveDataPoint(point);
-
+		//PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( point );
 		if (point.isEnabled())
 			startDataPoint(point);
 	}

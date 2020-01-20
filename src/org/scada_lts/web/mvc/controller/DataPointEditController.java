@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.PointEventDetectorsCache;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -95,6 +96,7 @@ public class DataPointEditController {
                 throw new ShouldNeverHappenException("dpid or pedid must be provided for this page");
 
             int pedid = Integer.parseInt(pedStr);
+            int dataPointID = PointEventDetectorsCache.getInstance().getDataPointIdForGivenEventDetectorId( Integer.parseInt(pedStr) );
             id = dataPointDao.getDataPointIdFromDetectorId(pedid);
         }
         else
@@ -130,6 +132,7 @@ public class DataPointEditController {
         
         if (errors.isEmpty()) {
         	executeUpdate(request, dataPoint, errors);
+            //PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( dataPoint );
         }
         
         ControllerUtils.addPointListDataToModel(user, dataPoint.getId(), model);
@@ -171,6 +174,7 @@ public class DataPointEditController {
                 throw new ShouldNeverHappenException("Submission task name type not provided");
 
             rtm.saveDataPoint(point);
+            //PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( point );
     	}
     }
     
