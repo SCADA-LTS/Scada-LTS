@@ -31,7 +31,7 @@
 
 	<!-- to option copy file to webapps :) -->
 
-	<path id="test-unit-and-benchmark.classpath">
+	<path id="test-unit.classpath">
 		<pathelement location="WebContent/WEB-INF/lib/junit-4.12.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/javassist-3.21.0-GA.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.10.19.jar"/>
@@ -192,7 +192,7 @@
 		<path refid="Web App Libraries.libraryclasspath"/>
 		<path refid="EAR Libraries.libraryclasspath"/>
 		<path refid="httpcomponents-client-4.5.3"/>
-		<path refid="test-unit-and-benchmark.classpath"/>
+		<path refid="test-unit.classpath"/>
 		<pathelement location="WebContent/WEB-INF/lib/wsdl4j-1.5.1.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/wss4j-1.5.8.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
