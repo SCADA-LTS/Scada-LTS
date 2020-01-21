@@ -424,7 +424,11 @@
 				  haltonfailure="yes">
 			</test>
 
-			<test name="org.scada_lts.mango.service.EventServiceTest"
+			<test name="org.scada_lts.mango.service.SaveEventMethodFromEventServiceTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.mango.service.InsertUserEventsMethodFromEventServiceTest"
 				  haltonfailure="yes">
 			</test>
 		    <!--
