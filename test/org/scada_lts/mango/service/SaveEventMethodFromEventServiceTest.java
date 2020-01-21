@@ -196,7 +196,7 @@ public class SaveEventMethodFromEventServiceTest {
     }
 
     @Test
-    public void test_saveEvent_twice_invoke_with_event_and_alarmLevel_CRITICAL_then_twice_invoke_create_with_eventDAO() {
+    public void test_saveEvent_twice_invoke_with_newEvent_and_alarmLevel_CRITICAL_then_twice_invoke_create_with_eventDAO() {
 
         //given:
         eventServiceSubject = new EventService();
@@ -266,7 +266,7 @@ public class SaveEventMethodFromEventServiceTest {
     }
 
     @Test
-    public void test_saveEvent_twice_invoke_with_event_and_alarmLevel_LIFE_SAFETY_then_twice_invoke_create_with_eventDAO() {
+    public void test_saveEvent_twice_invoke_with_newEvent_and_alarmLevel_LIFE_SAFETY_then_twice_invoke_create_with_eventDAO() {
 
         //given:
         eventServiceSubject = new EventService();
