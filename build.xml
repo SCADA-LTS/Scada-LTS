@@ -34,13 +34,16 @@
 
 	<!-- to option copy file to webapps :) -->
 
-	<path id="test-unit-and-benchmark.classpath">
+    <path id="benchmark.classpath">
+        <pathelement location="WebContent/WEB-INF/lib/jmh-core-1.22.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/jmh-generator-annprocess-1.22.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/jopt-simple-4.6.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/commons-math3-3.2.jar"/>
+    </path>
+
+	<path id="test-unit.classpath">
 		<pathelement location="WebContent/WEB-INF/lib/junit-4.12.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.10.19.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/jmh-core-1.22.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/jmh-generator-annprocess-1.22.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/jopt-simple-4.6.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/commons-math3-3.2.jar"/>
 	</path>
 
     <path id="Web App Libraries.libraryclasspath">
@@ -242,7 +245,8 @@
 		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.test.path}" includeantruntime="false" source="${source}" target="${target}">
 			<src path="test"/>
 			<classpath refid="scadabr-1.1.0-RC.classpath"/>
-			<classpath refid="test-unit-and-benchmark.classpath"/>
+			<classpath refid="test-unit.classpath"/>
+            <classpath refid="benchmark.classpath"/>
 			<classpath location="${build.src.path}" />
 		</javac>
 	</target>
@@ -378,7 +382,7 @@
 
         <formatter type="plain" usefile="false" />
 
-        <classpath refid="test-unit-and-benchmark.classpath"/>
+        <classpath refid="test-unit.classpath"/>
         <classpath refid="scadabr-1.1.0-RC.classpath"/>
         <classpath location="${build.test.path}" />
 

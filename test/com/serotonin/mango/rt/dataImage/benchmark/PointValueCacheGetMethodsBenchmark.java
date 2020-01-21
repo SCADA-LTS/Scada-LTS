@@ -1,6 +1,7 @@
-package com.serotonin.mango.rt.dataImage;
+package com.serotonin.mango.rt.dataImage.benchmark;
 
 import com.serotonin.mango.db.dao.IPointValueDao;
+import com.serotonin.mango.rt.dataImage.PointValueCache;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;

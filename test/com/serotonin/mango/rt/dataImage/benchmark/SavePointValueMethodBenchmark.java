@@ -1,6 +1,8 @@
-package com.serotonin.mango.rt.dataImage;
+package com.serotonin.mango.rt.dataImage.benchmark;
 
 import com.serotonin.mango.db.dao.IPointValueDao;
+import com.serotonin.mango.rt.dataImage.PointValueCache;
+import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import org.openjdk.jmh.annotations.*;
 
