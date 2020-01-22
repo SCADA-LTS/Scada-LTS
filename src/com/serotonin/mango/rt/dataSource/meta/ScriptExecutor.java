@@ -48,6 +48,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.config.ScadaConfig;
 
 /**
  * @author Matthew Lohbihler
@@ -95,9 +96,14 @@ public class ScriptExecutor {
 		 * throw new ScriptException(e); }
 		 */
 
+		Integer jsOptimizationLevel = 0;
+		try {
+			jsOptimizationLevel = ScadaConfig.getInstance().getInt(ScadaConfig.OPTIMIZATION_LEVEL_JS,0);
+		} catch (IOException e) {
+			LOG.error(e);
+		}
 		Context cx = Context.enter();
-		cx.setOptimizationLevel(Common.getEnvironmentProfile().getInt(
-				"js.optimizationlevel", 0));
+		cx.setOptimizationLevel(jsOptimizationLevel);
 
 		Scriptable scope = null;
 		Object result = null;
@@ -149,7 +155,7 @@ public class ScriptExecutor {
 
 			// Create the script.
 			LOG.debug("Script: " + script);
-			if (Common.getEnvironmentProfile().getInt("js.optimizationlevel") == -1) {
+			if (jsOptimizationLevel == -1) {
 				// optimization level -1
 				script = SCRIPT_PREFIX + script + SCRIPT_SUFFIX;
 				try {
