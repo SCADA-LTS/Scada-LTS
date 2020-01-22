@@ -204,7 +204,7 @@ public class ScadaConfig {
 	 * @return
 	 */
 	public Boolean getBoolean(String propertyName, boolean defaultValue) {
-		Boolean result = (Boolean) defaultValue;
+		Boolean result = Boolean.valueOf(defaultValue);
 		try {
 			if (ENABLE_CACHE.equals(propertyName) && cacheEnabled.isPresent()) {
 				return cacheEnabled.get();
@@ -242,7 +242,7 @@ public class ScadaConfig {
 	 * @return
 	 */
 	public Long getLong(String propertyName, int defaultValue) {
-		Long result = new Long(defaultValue);
+		Long result = Long.valueOf(defaultValue);
 		try {
 			if (MILLIS_SECONDS_PERIOD_UPDATE_UNSILENCED_ALARM_LEVEL.equals(propertyName) && millisSecondsPeriodUpdateUnsilencedAlarmLevel.isPresent()) {
 				return millisSecondsPeriodUpdateUnsilencedAlarmLevel.get();
@@ -275,13 +275,13 @@ public class ScadaConfig {
 			}
 		} catch (Exception e) {
 			LOG.trace("propertyName:"+propertyName+" value:"+defaultValue+" e:"+e.getMessage());
-			result = new Long(defaultValue);
+			result = Long.valueOf(defaultValue);
 		}
 		return result;
 	}
 
 	public Integer getInt(String propertyName, int defaultValue) {
-		Integer result = new Integer(defaultValue);
+		Integer result = Integer.valueOf(defaultValue);
 		try {
 			if (OPTIMIZATION_LEVEL_JS.equals(propertyName) && optimizationLevelJs.isPresent()) {
 				return optimizationLevelJs.get();
@@ -293,7 +293,7 @@ public class ScadaConfig {
 			}
 		} catch (Exception e) {
 			LOG.trace("propertyName:"+propertyName+" value:"+defaultValue+" e:"+e.getMessage());
-			result = new Integer(defaultValue);
+			result = Integer.valueOf(defaultValue);
 		}
 		return result;
 	}
