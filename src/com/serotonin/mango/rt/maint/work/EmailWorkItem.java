@@ -105,13 +105,13 @@ public class EmailWorkItem implements WorkItem {
                     to += ", ";
                 to += addr.getAddress();
             }
-            Boolean dontCreateEventForEmailError = false;
+            Boolean doNotCreateEventForEmailError = false;
             try {
-                dontCreateEventForEmailError = ScadaConfig.getInstance().getBoolean(ScadaConfig.DONT_CREATE_EVETS_FOR_EMAIL_ERROR,false);
+                doNotCreateEventForEmailError = ScadaConfig.getInstance().getBoolean(ScadaConfig.DO_NOT_CREATE_EVETS_FOR_EMAIL_ERROR,false);
             } catch (IOException er) {
                 LOG.error(er);
             }
-            if (!dontCreateEventForEmailError) {
+            if (!doNotCreateEventForEmailError) {
                 SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_EMAIL_SEND_FAILURE),
                         System.currentTimeMillis(), false,
                         new LocalizableMessage("event.email.failure", subject, to, e.getMessage()));
