@@ -111,7 +111,7 @@ public class EmailWorkItem implements WorkItem {
             } catch (IOException er) {
                 LOG.error(er);
             }
-            if (!doNotCreateEventForEmailError) {
+            if (doNotCreateEventForEmailError == false) {
                 SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_EMAIL_SEND_FAILURE),
                         System.currentTimeMillis(), false,
                         new LocalizableMessage("event.email.failure", subject, to, e.getMessage()));
