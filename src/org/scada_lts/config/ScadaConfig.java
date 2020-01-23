@@ -136,6 +136,10 @@ public class ScadaConfig {
 
 	private Optional<Integer> optimizationLevelJs = Optional.empty();
 
+	public static final String DONT_CREATE_EVETS_FOR_EMAIL_ERROR = "abilit.DONT_CREATE_EVETS_FOR_EMAIL_ERROR";
+
+	private Optional<Boolean> dontCreateEventsForEmailError = Optional.empty();
+
 
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
 	private static final String FILE_NAME_LOGO="logo.png";
@@ -214,6 +218,8 @@ public class ScadaConfig {
 				return useACL.get();
 			} else if (HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION.equals(propertyName) && httpRetriverDoNotAllowEnableReactivation.isPresent()) {
 				return httpRetriverDoNotAllowEnableReactivation.get();
+			} else if (DONT_CREATE_EVETS_FOR_EMAIL_ERROR.equals(propertyName) && dontCreateEventsForEmailError.isPresent()) {
+				return dontCreateEventsForEmailError.get();
 			} else {
 				String propertyValue = getProperty(propertyName);
 				result = (Boolean) Boolean.parseBoolean(propertyValue);
@@ -226,6 +232,8 @@ public class ScadaConfig {
 					useACL = Optional.of(result);
 				} else if (HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION.equals(propertyName)) {
 					httpRetriverDoNotAllowEnableReactivation = Optional.of(result);
+				} else if (DONT_CREATE_EVETS_FOR_EMAIL_ERROR.equals(propertyName)) {
+					dontCreateEventsForEmailError = Optional.of(result);
 				}
 			}
 		} catch (Exception e) {
