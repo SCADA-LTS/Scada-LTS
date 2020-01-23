@@ -37,6 +37,7 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
+import org.scada_lts.servicebrokers.ServiceBrokerEventDetectorImpl;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -201,8 +202,8 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		dp.setId(dataPointDAO.insert(dp));
+		Map<Integer,List<PointEventDetectorVO>> map = null;
 		PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( dp );
-		//insertDeleteOrUpdateEventDetectorsIntoDb(dp);
 	}
 
 	@Override

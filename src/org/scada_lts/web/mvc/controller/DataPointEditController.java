@@ -103,6 +103,7 @@ public class DataPointEditController {
             id = Integer.parseInt(idStr);
 
         DataPointVO dataPoint = dataPointDao.getDataPoint(id);
+        dataPoint.setEventDetectors(PointEventDetectorsCache.getInstance().getEventDetectorsForDataPointId(dataPoint.getId()));
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());

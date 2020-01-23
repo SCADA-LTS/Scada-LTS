@@ -6,11 +6,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.scada_lts.cache.PointEventDetectorsCache;
 
-@RunWith(JUnit4.class)
+import java.util.List;
+
 public class PointEventDetectorsCacheTest {
 
     private PointEventDetectorsCache pointEventDetectorsCache;
@@ -30,7 +29,7 @@ public class PointEventDetectorsCacheTest {
     public void addNewEventDetectorTest(){
         DataPointVO dataPointVO = createDataPointVO();
 
-        addEventDetector(dataPointVO, createPointEventDetectorVO() );
+        pointEventDetectorsCache.addEventDetector(dataPointVO.getId(), createPointEventDetectorVO());
         Assert.assertEquals(1, pointEventDetectorsCache.getEventDetectors(dataPointVO).size());
     }
     @Test
@@ -39,7 +38,7 @@ public class PointEventDetectorsCacheTest {
         DataPointVO dataPointVO = createDataPointVO();
 
         pointEventDetectorsCache.clearCacheUnderDataPoint( dataPointVO.getId() );
-        addEventDetector( dataPointVO ,createPointEventDetectorVO() );
+        pointEventDetectorsCache.addEventDetector(dataPointVO.getId(), createPointEventDetectorVO());
 
         PointEventDetectorVO pointEventDetectorVO = pointEventDetectorsCache.getEventDetectors( dataPointVO ).get(0);
         pointEventDetectorVO.setAlias("NewAlias");
@@ -52,23 +51,26 @@ public class PointEventDetectorsCacheTest {
     }
     @Test
     public void resertCacheTest() {
-
+        int EMPTY_LIST = 0;
         DataPointVO dataPointVO = createDataPointVO();
-        addEventDetector( dataPointVO, createPointEventDetectorVO() );
+        pointEventDetectorsCache.addEventDetector(dataPointVO.getId(), createPointEventDetectorVO());
+        pointEventDetectorsCache.clearCacheUnderDataPoint( dataPointVO.getId());
+        List<PointEventDetectorVO> pointEventDetectorsCaches = pointEventDetectorsCache.getEventDetectorsForDataPointId( dataPointVO.getId() );
+
+        Assert.assertEquals(EMPTY_LIST, pointEventDetectorsCaches.size() );
     }
     @Test
     public void removeEventDetectorTest(){
-
+        int EMPTY_LIST = 0;
         DataPointVO dataPointVO = createDataPointVO();
 
         pointEventDetectorsCache.clearCacheUnderDataPoint( dataPointVO.getId() );
-        addEventDetector( dataPointVO, createPointEventDetectorVO() );
-
+        pointEventDetectorsCache.addEventDetector(dataPointVO.getId(), createPointEventDetectorVO());
         PointEventDetectorVO pointEventDetectorToRemove = createPointEventDetectorVO();
 
         pointEventDetectorsCache.removeEventDetector( dataPointVO.getId(), pointEventDetectorToRemove);
 
-        Assert.assertEquals(0, pointEventDetectorsCache.getEventDetectors( dataPointVO ).size() );
+        Assert.assertEquals(EMPTY_LIST, pointEventDetectorsCache.getEventDetectors( dataPointVO ).size() );
     }
 
 
@@ -81,9 +83,6 @@ public class PointEventDetectorsCacheTest {
         DataPointVO dataPointVO = new DataPointVO();
         dataPointVO.setId(2);
         return dataPointVO;
-    }
-    private void addEventDetector( DataPointVO dataPointVO, PointEventDetectorVO newPointEventDetectorVO  ){
-        pointEventDetectorsCache.addEventDetector(dataPointVO.getId(), newPointEventDetectorVO);
     }
     private PointEventDetectorVO createPointEventDetectorVO(){
         PointEventDetectorVO pointEventDetectorVO = new PointEventDetectorVO();

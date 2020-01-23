@@ -179,6 +179,7 @@ public class DataPointEditDwr extends BaseDwr {
             }
             ped.setId(id);
             ped.setDataPoint(dp);
+            //PointEventDetectorsCache.getInstance().addNewEventDetector(dp.getId(),ped);
             //PointEventDetectorsCache.getInstance().addEventDetector(id, ped);
             dp.getEventDetectors().add(ped);
         }
@@ -324,7 +325,7 @@ public class DataPointEditDwr extends BaseDwr {
 
     private PointEventDetectorVO getEventDetector(int pedId) {
         DataPointVO dp = getDataPoint();
-        for (PointEventDetectorVO ped : dp.getEventDetectors()) {
+        for (PointEventDetectorVO ped : /*PointEventDetectorsCache.getInstance().getEventDetectorsForDataPointId(dp.getId())*/dp.getEventDetectors()) {
             if (ped.getId() == pedId) {
                 return ped;
             }
