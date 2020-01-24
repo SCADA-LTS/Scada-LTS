@@ -42,6 +42,7 @@ branches:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^feature/#1066_Siv_Develop_Copy_Result_Branche_Of_1048.*$/"
+  - "/^feature/#1096_Merge_1066_To_SivDevelop.*$/"
 notifications:
   email: false
 env:
