@@ -15,7 +15,7 @@ before_script:
 #- npm install @angular/core@latest
 #- chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
-- cp ./SeroUtils/seroUtils.jar ./WebContent/WEB-INF/lib/seroUtils.jar
+#- cp ./SeroUtils/seroUtils.jar ./WebContent/WEB-INF/lib/seroUtils.jar
 #- ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 # correct version base on Milestones
 - sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
