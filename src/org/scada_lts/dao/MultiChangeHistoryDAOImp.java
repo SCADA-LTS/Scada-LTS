@@ -49,19 +49,20 @@ public class MultiChangeHistoryDAOImp implements MultiChangesHistory {
                 "multi_changes_history mch, " +
                 "values_multi_changes_history vmch " +
             "where " +
-                "mch.id = vmch.multiChangesHistoryId " +
+                "(mch.id = vmch.multiChangesHistoryId) and " +
+                "(mch.viewAndComponentIdentification=?) " +
             "order by mch.ts desc;";
 
 	// @formatter:on
     @Override
     public List<MultiChangeHistoryValues> getHistory(String viewAndCmpId) {
         if (LOG.isTraceEnabled()) {
-            LOG.trace("SQL UserComents");
+            LOG.trace("SQL MultiChangeHistoryDAOImp viewAndCmpId:" + viewAndCmpId);
         }
 
         try {
 
-            List<MultiChangeHistoryValues> listUserComents = DAO.getInstance().getJdbcTemp().query(SQL, (ResultSet rs, int rownumber) -> {
+            List<MultiChangeHistoryValues> listUserComents = DAO.getInstance().getJdbcTemp().query(SQL, new String[]{viewAndCmpId.trim()}, (ResultSet rs, int rownumber) -> {
                     MultiChangeHistoryValues multiChangeHistoryValues = new MultiChangeHistoryValues();
                     multiChangeHistoryValues.setId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_ID));
                     multiChangeHistoryValues.setUserId(rs.getInt(COLUMN_NAME_MULTI_CHANGE_HISTORY_USER_ID));
