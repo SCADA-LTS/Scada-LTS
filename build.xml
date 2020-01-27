@@ -7,8 +7,8 @@
 	<property name="source" value="1.8"/>
 
 	<property name="build-project.dir" value="build/"/>
-	<property name="build-project.src.dir" value="${build-project.dir}src/classes/"/>
-	<property name="build-project.test.dir" value="${build-project.dir}test/classes/"/>
+	<property name="build-project.src.dir" value="${build-project.dir}classes/"/>
+	<property name="build-project.test.dir" value="${build-project.dir}test-classes/"/>
 	<property name="build-project.log.dir" value="${build-project.dir}log/"/>
 	<property name="build-project.log.src.name" value="${build-project.log.dir}javac-src.log"/>
 	<property name="build-project.log.test.name" value="${build-project.log.dir}javac-test.log"/>
@@ -219,6 +219,20 @@
 		<mkdir dir="${build-project.src.dir}"/>
 		<mkdir dir="${build-project.test.dir}"/>
 		<mkdir dir="${build-project.log.dir}"/>
+		<copy includeemptydirs="false" todir="${build-project.src.dir}">
+			<fileset dir="src">
+				<exclude name="**/*.launch"/>
+				<exclude name="**/*.xtend"/>
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="${build-project.test.dir}">
+			<fileset dir="test">
+				<exclude name="**/*.launch"/>
+				<exclude name="**/*.xtend"/>
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
 	</target>
 	<target depends="build-subprojects,build-project" name="build"/>
 	<target name="build-subprojects"/>
