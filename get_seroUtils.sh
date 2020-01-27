@@ -7,7 +7,7 @@ function getSeroUtilsFromSourceforge() {
 }
 
 function getSeroUtilsFromGitHub() {
-    curl -LJO https://github.com/SCADA-LTS/SeroUtils/releases/download/1.0.0/seroUtils.jar > 'seroUtils.jar'
+    curl -LJO https://github.com/SCADA-LTS/SeroUtils/releases/download/1.0.0/seroUtils.jar --output 'seroUtils.jar'
     echo $(sha256sum seroUtils.jar | head -c 64)
 }
 
@@ -15,7 +15,7 @@ function getSeroUtilsFromLocal() {
     if [ -e './WebContent/WEB-INF/lib/seroUtils.jar' ] ; then
        echo $(sha256sum './WebContent/WEB-INF/lib/seroUtils.jar' | head -c 64)
     else
-       echo -12312414
+       echo -12312414gt
     fi
 }
 
