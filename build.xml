@@ -6,9 +6,6 @@
 	<property name="target" value="1.8"/>
 	<property name="source" value="1.8"/>
 
-	<property name="build.src.path" value="build/src/classes"/>
-	<property name="build.test.path" value="build/test/classes"/>
-
 	<path id="tomcat.ant.classpath">
 	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
 	</path>
@@ -188,6 +185,7 @@
 		<pathelement location="WebContent/WEB-INF/lib/jna-platform-4.1.0.jar"/>
 	</path>
 	<path id="scadabr-1.1.0-RC.classpath">
+		<pathelement location="build/classes"/>
 		<path refid="Web App Libraries.libraryclasspath"/>
 		<path refid="EAR Libraries.libraryclasspath"/>
 		<path refid="httpcomponents-client-4.5.3"/>
@@ -204,6 +202,8 @@
 		<pathelement location="WebContent/WEB-INF/lib/joda-time-2.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
+		<path refid="test-unit.classpath"/>
+		<path refid="benchmark.classpath"/>
 	</path>
 	<target name="update-static-web-dependecy" description="Update static web dependency">
 	  <exec dir="WebContent/resources/app" executable="bower">
@@ -211,18 +211,15 @@
 	  </exec>
 	</target>
 	<target name="init">
-		<delete dir="${build.src.path}" />
-		<mkdir dir="${build.src.path}"/>
-		<copy includeemptydirs="false" todir="${build.src.path}">
+		<mkdir dir="build/classes"/>
+		<copy includeemptydirs="false" todir="build/classes">
 			<fileset dir="src">
 				<exclude name="**/*.launch"/>
 				<exclude name="**/*.xtend"/>
 				<exclude name="**/*.java"/>
 			</fileset>
 		</copy>
-		<delete dir="${build.test.path}" />
-		<mkdir dir="${build.test.path}"/>
-		<copy includeemptydirs="false" todir="${build.test.path}">
+		<copy includeemptydirs="false" todir="build/classes">
 			<fileset dir="test">
 				<exclude name="**/*.launch"/>
 				<exclude name="**/*.xtend"/>
@@ -238,16 +235,10 @@
 	<target name="build-subprojects"/>
 	<target depends="init" name="build-project">
 		<echo message="${ant.project.name}: ${ant.file}"/>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.src.path}" includeantruntime="false" source="${source}" target="${target}">
+		<javac debug="true" fork="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
 			<src path="src"/>
-			<classpath refid="scadabr-1.1.0-RC.classpath"/>
-		</javac>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.test.path}" includeantruntime="false" source="${source}" target="${target}">
 			<src path="test"/>
 			<classpath refid="scadabr-1.1.0-RC.classpath"/>
-			<classpath refid="test-unit.classpath"/>
-            <classpath refid="benchmark.classpath"/>
-			<classpath location="${build.src.path}" />
 		</javac>
 	</target>
 
@@ -284,7 +275,6 @@
 
 		<property name="js-ui.dir"  value="WebContent/resources/js-ui"/>
 		<property name="src-js-ui.dir" value="scadalts-ui/dist"/>
-		<property name="web.classes.dir"  value="WebContent/WEB-INF/classes"/>
 
 		<delete dir="${js-ui.dir}/app"></delete>
 		<delete dir="${js-ui.dir}/views"></delete>
@@ -357,14 +347,9 @@
 		<!-- font do zrobienia -->
 		<!-- img do zrobienia -->
 
-		<delete dir="${web.classes.dir}/br"></delete>
-		<delete dir="${web.classes.dir}/cc"></delete>
-		<delete dir="${web.classes.dir}/com"></delete>
-		<delete dir="${web.classes.dir}/org"></delete>
-
-		<mkdir dir="${web.classes.dir}"/>
-		<copy includeemptydirs="false" todir="${web.classes.dir}">
-			<fileset dir="${build.src.path}">
+		<mkdir dir="WebContent/WEB-INF/classes"/>
+		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
+			<fileset dir="build/classes">
 				<include name="**/*.class"/>
 			</fileset>
 		</copy>
@@ -384,7 +369,6 @@
 
         <classpath refid="test-unit.classpath"/>
         <classpath refid="scadabr-1.1.0-RC.classpath"/>
-        <classpath location="${build.test.path}" />
 
         <!--classpath location="${build.src.path}" /-->
         <!--
@@ -446,7 +430,7 @@
       </junit>
 	</target>
 	
-	<!--target name="war_config_test" description="Bundles the application as a WAR file with config test" depends="clean, build, junit">
+	<target name="war_config_test" description="Bundles the application as a WAR file with config test" depends="clean, build, junit">
 		<mkdir dir="WebContent/WEB-INF/classes"/>
 		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
 			<fileset dir="build/classes">
@@ -459,6 +443,6 @@
 	           	        basedir="WebContent"
 	           	        needxmlfile="false">
 		</war>
-	</target-->
+	</target>
 	
 </project>
