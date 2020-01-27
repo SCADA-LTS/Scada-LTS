@@ -7,7 +7,7 @@ function deleteIfExists() {
     fi
 }
 
-function moveToWebContentLib() {
+function moveToLib() {
     mv -f $1 ./WebContent/WEB-INF/lib/
 }
 
@@ -49,11 +49,11 @@ function isSeroUtils() {
        true
     elif checkSeroUtils $(getSeroUtilsFromSourceforge) ;then
        printf 'SeroUtils from Sourceforge'
-       moveToWebContentLib seroUtils.jar
+       moveToLib seroUtils.jar
        true
     elif checkSeroUtils $(getSeroUtilsFromGitHub) ;then
        printf 'SeroUtils from GitHub'
-       moveToWebContentLib seroUtils.jar
+       moveToLib seroUtils.jar
        true
     else
        printf 'Correct SeroUtils file is missing'
