@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.serotonin.mango.rt.event.AlarmLevels;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
@@ -88,8 +89,10 @@ public class EventService implements MangoEvent {
 	public void saveEvent(EventInstance event) {
 		
 		if (event.getId() == Common.NEW_ID ) {
-			eventDAO.create(event);
-			//TODO whay not have add to cache?
+			if (! (event.getAlarmLevel() == AlarmLevels.NONE) ) {
+				eventDAO.create(event);
+				//TODO whay not have add to cache?
+			}
 		} else {
 			eventDAO.updateEvent(event);
 			updateCache(event);
