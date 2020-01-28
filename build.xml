@@ -41,6 +41,12 @@
 		</exec>
 	</target>
 
+	<path id="test.unit.classpath" >
+		<pathelement location="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/>
+	</path>
+
 	<!-- to option copy file to webapps :) -->
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
@@ -146,9 +152,6 @@
         <pathelement location="WebContent/WEB-INF/lib/xfire-aegis-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xfire-core-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
-    	<pathelement location="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
-  		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
-    	<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>
@@ -200,7 +203,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/bacnet4J.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/alpha24j.jar"/>
-		<pathelement location="lib/mockito-all-1.9.5.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/joda-time-2.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
@@ -248,6 +250,7 @@
 		<javac debug="true" debuglevel="${debuglevel}" destdir="${build-project.test.dir}" includeantruntime="false" source="${source}" target="${target}">
 			<src path="test"/>
 			<classpath refid="scadabr-1.1.0-RC.classpath"/>
+			<classpath refid="test.unit.classpath"/>
             <classpath location="${build-project.src.dir}" />
 		</javac>
 		<record action="stop" name="${build-project.log.test.name}"/>
@@ -372,6 +375,7 @@
 
 			<classpath refid="scadabr-1.1.0-RC.classpath" />
 			<classpath location="${build-project.test.dir}" />
+			<classpath refid="test.unit.classpath" />
 
 			<!--
 			<test name="br.org.scadabr.api.AckEventsTest"
