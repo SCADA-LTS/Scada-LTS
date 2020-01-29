@@ -38,15 +38,98 @@ import java.util.*;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class PointEventDetectorsCache {
+public class PointEventDetectorsCache{
+
 	public static final Log LOG = LogFactory.getLog(PointEventDetectorsCache.class);
 	private static PointEventDetectorsCache instance ;
-	private ServiceBrokerEventDetector serviceBrokerEventDetector;
+
 	private static Map<Integer, List<PointEventDetectorVO>> mapEventDetectors = new TreeMap<Integer, List<PointEventDetectorVO>>();
+
+	private static final Object object = new Object();
+
+	public PointEventDetectorsCache(Object o) {
+	}
+	private ServiceBrokerEventDetector serviceBrokerEventDetector;
+	private Map<OPERATION,List<PointEventDetectorVO>> map = new HashMap<OPERATION,List<PointEventDetectorVO>>();
 	{
 		serviceBrokerEventDetector = new ServiceBrokerEventDetectorImpl();
 	}
-	private static final Object object = new Object();
+	/**
+	 * Update Event Detectors in database by
+	 * @see org.scada_lts.servicebrokers.ServiceBrokerEventDetector
+	 * ServiceBrokerEventDetector and adds also updated instance of PointEventDetectors into collection
+	 * which will be forwarded to method which update Event Detectors in cache.
+	 * Collection which will forwarder is pointEventDetectorToUpdateInDb
+	 *
+	 * @param fromCacheOrDb
+	 * @param dataPoint
+	 * @param pointEventDetectorToUpdateInDb
+	 */
+	public List<PointEventDetectorVO> updateEventDetectorsByServiceBroker(
+			List<PointEventDetectorVO> fromCacheOrDb,
+			DataPointVO dataPoint,
+			List<PointEventDetectorVO> pointEventDetectorToUpdateInDb) {
+		for (PointEventDetectorVO pointEventDetector: fromCacheOrDb) {
+			for(PointEventDetectorVO pointEventDetectorVOFromDataPoint :dataPoint.getEventDetectors() ){
+				if(pointEventDetectorVOFromDataPoint.getId() == pointEventDetector.getId()) {
+					if (pointEventDetector.getId() > 0) {
+						serviceBrokerEventDetector.updateEventDetectors(pointEventDetector);
+						pointEventDetectorToUpdateInDb.add(pointEventDetector);
+					}
+				}
+			}
+		}
+		return pointEventDetectorToUpdateInDb;
+	}
+
+	/**
+	 * Delete Event Detectors from database and adds also instance of PointEventDetectors into collection which
+	 * will be forwarder to method which remove all those PointEventDetectors from cache.
+	 *
+	 * @param pointEventDetectorToDeleteFromDb
+	 * @param dataPoint
+	 * @param pointEventDetectorsFromDataPoint
+	 */
+	public List<PointEventDetectorVO> deleteEventDetectorsByServiceBroker(
+			List<PointEventDetectorVO> pointEventDetectorToDeleteFromDb,
+			DataPointVO dataPoint,
+			List<PointEventDetectorVO> pointEventDetectorsFromDataPoint) {
+		List<PointEventDetectorVO> pointEventDetectorVOS = new ArrayList<PointEventDetectorVO>();
+		for (PointEventDetectorVO eventDetectorVOFromCacheOrD : pointEventDetectorToDeleteFromDb) {
+			serviceBrokerEventDetector.deleteEventDetector(dataPoint,eventDetectorVOFromCacheOrD);
+			//remove from cache
+			pointEventDetectorVOS.add(eventDetectorVOFromCacheOrD);
+		}
+		return pointEventDetectorVOS;
+	}
+
+	/**
+	 * that method adds also instance of PointEventDetectors into collection which
+	 * will be forwarder to method which put all new PointEventDetectors into cache.
+	 * Collection which will forwarder is pointEventDetectorToInsertToDb.
+	 *
+	 * @param pointEventDetectorsFromDataPoint
+	 * @param pointEventDetectorToInsertToDb
+	 */
+	public List<PointEventDetectorVO>  insertEventDetectorByServiceBroker(
+			List<PointEventDetectorVO> pointEventDetectorsFromDataPoint,
+			List<PointEventDetectorVO> pointEventDetectorToInsertToDb
+	){
+		int idForNewEventDetectorInstanceInCache=-100;
+
+		pointEventDetectorToInsertToDb.clear();
+		for (PointEventDetectorVO pointEventDetectorVO : pointEventDetectorsFromDataPoint) {
+			if (pointEventDetectorVO.getId() < 0 && !pointEventDetectorToInsertToDb.contains(pointEventDetectorVO)) {
+				int newId = (CacheStatus.isEnable)
+						?idForNewEventDetectorInstanceInCache
+						:serviceBrokerEventDetector.insertEventDetector(pointEventDetectorVO);
+				pointEventDetectorVO.setId(newId);
+				pointEventDetectorToInsertToDb.add(pointEventDetectorVO);
+				continue;
+			}
+		}
+		return pointEventDetectorToInsertToDb;
+	}
 
 	public static PointEventDetectorsCache getInstance()  {
 		if (LOG.isTraceEnabled()) {
@@ -58,16 +141,6 @@ public class PointEventDetectorsCache {
 		return instance;
 	}
 
-	/**
-	 * That method allows to change in flow "cache-database" in meaning, bridge or broker
-	 * to use another implementations of databases and so on.
-	 * @param serviceBrokerEventDetector
-	 */
-	public static void changeServiceBroker(ServiceBrokerEventDetector serviceBrokerEventDetector) {
-		PointEventDetectorsCache.getInstance().serviceBrokerEventDetector = serviceBrokerEventDetector;
-	}
-
-	Map<OPERATION,List<PointEventDetectorVO>> map = new HashMap<OPERATION,List<PointEventDetectorVO>>();
 
 	public void insertDeleteOrUpdateEventDetectors(DataPointVO dataPoint) {
 		Object object = new Object();
@@ -89,9 +162,9 @@ public class PointEventDetectorsCache {
 
 			map.put(
 					OPERATION.UPDATE,
-					updateEventDetectorsByServiceBroker(/*fromCacheOrDb*/pointEventDetectorsFromCache,dataPoint,pointEventDetectorToUpdateInDb));
+					updateEventDetectorsByServiceBroker(pointEventDetectorsFromCache,dataPoint,pointEventDetectorToUpdateInDb));
 
-			for (PointEventDetectorVO pointEventDetectorVO : /*fromDatabase*/pointEventDetectorsFromCache) {
+			for (PointEventDetectorVO pointEventDetectorVO : pointEventDetectorsFromCache) {
 				idsPointEventDetectorsExistingInDatabase.add(pointEventDetectorVO.getId());
 			}
 
@@ -100,7 +173,7 @@ public class PointEventDetectorsCache {
 			}
 			idsPointEventDetectorsExistingInDatabase.removeAll(idsPointEventDetectorsExistingInDataPoint);
 
-			for (PointEventDetectorVO pointEventDetectorVO : pointEventDetectorsFromCache/*fromDatabase*/) {
+			for (PointEventDetectorVO pointEventDetectorVO : pointEventDetectorsFromCache) {
 				if (idsPointEventDetectorsExistingInDatabase.contains(pointEventDetectorVO.getId())) {
 					pointEventDetectorToDeleteFromDb.add(pointEventDetectorVO);
 				}
@@ -116,7 +189,6 @@ public class PointEventDetectorsCache {
 					OPERATION.INSERT,
 					insertEventDetectorByServiceBroker(pointEventDetectorsFromDataPoint, pointEventDetectorToInsertToDb));
 
-			//update or insert
 			int dataPointId = dataPoint.getId();
 
 			updateInCacheOrInsertIntoCache(
@@ -130,85 +202,11 @@ public class PointEventDetectorsCache {
 					dataPointId );
 		}
 	}
-	/**
-	 * Update Event Detectors in database by
-	 * @see org.scada_lts.servicebrokers.ServiceBrokerEventDetector
-	 * ServiceBrokerEventDetector and adds also updated instance of PointEventDetectors into collection
-	 * which will be forwarded to method which update Event Detectors in cache.
-	 * Collection which will forwarder is pointEventDetectorToUpdateInDb
-	 *
-	 * @param fromCacheOrDb
-	 * @param dataPoint
-	 * @param pointEventDetectorToUpdateInDb
-	 */
-	private List<PointEventDetectorVO> updateEventDetectorsByServiceBroker(
-			List<PointEventDetectorVO> fromCacheOrDb,
-			DataPointVO dataPoint,
-			List<PointEventDetectorVO> pointEventDetectorToUpdateInDb) {
-		for (PointEventDetectorVO pointEventDetector: fromCacheOrDb) {
-			for(PointEventDetectorVO pointEventDetectorVOFromDataPoint :dataPoint.getEventDetectors() ){
-				if(pointEventDetectorVOFromDataPoint.getId() == pointEventDetector.getId()) {
-					if (pointEventDetector.getId() > 0) {
-						serviceBrokerEventDetector.updateEventDetectors(pointEventDetector);
-						pointEventDetectorToUpdateInDb.add(pointEventDetector);
-					}
-				}
-			}
-		}
-		return pointEventDetectorToUpdateInDb;
-	}
-	/**
-	 * Delete Event Detectors from database and adds also instance of PointEventDetectors into collection which
-	 * will be forwarder to method which remove all those PointEventDetectors from cache.
-	 *
-	 * @param pointEventDetectorToDeleteFromDb
-	 * @param dataPoint
-	 * @param pointEventDetectorsFromDataPoint
-	 */
-	private List<PointEventDetectorVO> deleteEventDetectorsByServiceBroker(
-			List<PointEventDetectorVO> pointEventDetectorToDeleteFromDb,
-			DataPointVO dataPoint,
-			List<PointEventDetectorVO> pointEventDetectorsFromDataPoint) {
-		List<PointEventDetectorVO> pointEventDetectorVOS = new ArrayList<PointEventDetectorVO>();
-		for (PointEventDetectorVO eventDetectorVOFromCacheOrD : pointEventDetectorToDeleteFromDb) {
-			serviceBrokerEventDetector.deleteEventDetector(dataPoint,eventDetectorVOFromCacheOrD);
-			//remove from cache
-			pointEventDetectorVOS.add(eventDetectorVOFromCacheOrD);
-			//removeEventDetectorFromCache(dataPoint.getId(), eventDetectorVOFromCacheOrD.getId());
-		}
-		return pointEventDetectorVOS;
-	}
-	/**
-	 * that method adds also instance of PointEventDetectors into collection which
-	 * will be forwarder to method which put all new PointEventDetectors into cache.
-	 * Collection which will forwarder is pointEventDetectorToInsertToDb.
-	 *
-	 * @param pointEventDetectorsFromDataPoint
-	 * @param pointEventDetectorToInsertToDb
-	 */
-	private List<PointEventDetectorVO>  insertEventDetectorByServiceBroker(
-			List<PointEventDetectorVO> pointEventDetectorsFromDataPoint,
-			List<PointEventDetectorVO> pointEventDetectorToInsertToDb
-	){
-		pointEventDetectorToInsertToDb.clear();
-		for (PointEventDetectorVO pointEventDetectorVO : pointEventDetectorsFromDataPoint) {
-			if (pointEventDetectorVO.getId() < 0 && !pointEventDetectorToInsertToDb.contains(pointEventDetectorVO)) {
-				int newId = serviceBrokerEventDetector.insertEventDetector(pointEventDetectorVO);
-				pointEventDetectorVO.setId(newId);
-				pointEventDetectorToInsertToDb.add(pointEventDetectorVO);
-				continue;
-			}
-		}
-		return pointEventDetectorToInsertToDb;
-	}
 
-	enum OPERATION{
-		UPDATE,
-		INSERT,
-		REMOVE
-	}
 
-	private void updateInCacheOrInsertIntoCache(OPERATION operation, List<PointEventDetectorVO> pointEventDetectorVOS, int dataPointId){
+
+
+	public void updateInCacheOrInsertIntoCache(OPERATION operation, List<PointEventDetectorVO> pointEventDetectorVOS, int dataPointId){
 
 		if (! pointEventDetectorVOS.isEmpty() ) {
 			for (PointEventDetectorVO pointEventDetectorVO : pointEventDetectorVOS) {
@@ -336,6 +334,8 @@ public class PointEventDetectorsCache {
 			}
 		}
 	}
+
+
 	private void justRemove(int dataPointId, PointEventDetectorVO pointEventDetectorVO){
 		for(PointEventDetectorVO pointEventDetectorVO1 : getPointEventDetectorsForGivenDataPointId( dataPointId )) {
 			if( pointEventDetectorVO1.getId() == pointEventDetectorVO.getId()){
@@ -449,20 +449,21 @@ public class PointEventDetectorsCache {
 		return false;
 	}
 
-	public PointEventDetectorsCache(ServiceBrokerEventDetector serviceBrokerEventDetector) {
-		this.serviceBrokerEventDetector = serviceBrokerEventDetector;
-	}
 
 	private PointEventDetectorsCache()  {
 		if (LOG.isTraceEnabled()) {
 		  LOG.trace("Create EventDetectorsCache");
 		}
+
 		boolean junitTest=false;
 		if(junitTest) {
-			List<PointEventDetectorCache> allEventDetectorFromDb = serviceBrokerEventDetector.getAllEventDetectors();
+
+			List<PointEventDetectorCache> allEventDetectorFromDb = new ServiceBrokerEventDetectorImpl().getAllEventDetectors();
 			reFillMapEventDetectors(allEventDetectorFromDb);
 			runJobsInThreads();
 		}
+
+
 	}
 
 	private void runJobsInThreads()  {

@@ -5,7 +5,7 @@
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.8"/>
 	<property name="source" value="1.8"/>
-
+	<property name="env.CATALINA_HOME" value="/home/mhyski/apache-tomcat-7.0.94"/>
    <path id="tomcat.ant.classpath">
 	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
    </path>
@@ -247,7 +247,8 @@
 	</target>
 
 	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-	<target name="war" description="Bundles the application as a WAR file" depends="clean, build, new-ui">
+	<!--target name="war" description="Bundles the application as a WAR file" depends="clean, build, new-ui"-->
+	<target name="war" description="Bundles the application as a WAR file" depends="clean, build">
 
 		<delete dir="WebContent/resources/new-ui"></delete>
 		<mkdir dir="WebContent/resources/new-ui"></mkdir>

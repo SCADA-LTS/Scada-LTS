@@ -23,6 +23,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.jfree.util.Log;
+import org.scada_lts.cache.ComparatorEventDetectorInstanceInCacheOrInDB;
 import org.scada_lts.cache.PointEventDetectorsCache;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
@@ -37,7 +38,6 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
-import org.scada_lts.servicebrokers.ServiceBrokerEventDetectorImpl;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -203,7 +203,7 @@ public class DataPointService implements MangoDataPoint {
 
 		dp.setId(dataPointDAO.insert(dp));
 		Map<Integer,List<PointEventDetectorVO>> map = null;
-		PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( dp );
+		ComparatorEventDetectorInstanceInCacheOrInDB.getInstance().insertDeleteOrUpdateEventDetectors( dp );
 	}
 
 	@Override
@@ -214,7 +214,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		updateDataPointShallow(dp);
-		PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( dp );
+		ComparatorEventDetectorInstanceInCacheOrInDB.getInstance().insertDeleteOrUpdateEventDetectors( dp );
 	}
 
 	@Override
@@ -339,7 +339,6 @@ public class DataPointService implements MangoDataPoint {
 	private void setEventDetectors(DataPointVO dataPoint) {
 		//get EventDetectors , first, from cache, in other case, from database
 		List<PointEventDetectorVO> pointEventDetectorVOS = getEventDetectors(dataPoint);
-		//DataSourcePointsCache.getInstance().setEventDetectorsToDataPoint( dataPoint.getXid(),pointEventDetectorVOS );
 		dataPoint.setEventDetectors( pointEventDetectorVOS );
 	}
 
@@ -366,7 +365,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private void insertDeleteOrUpdateEventDetectorsIntoDb(DataPointVO dataPoint) {
 
-		PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( dataPoint );
+		ComparatorEventDetectorInstanceInCacheOrInDB.getInstance().insertDeleteOrUpdateEventDetectors( dataPoint );
 		/*
 		Object object = new Object();
 		synchronized ( object) {

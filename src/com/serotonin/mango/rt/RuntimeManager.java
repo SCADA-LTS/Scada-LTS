@@ -404,7 +404,6 @@ public class RuntimeManager {
 		}
 
 		new DataPointDao().saveDataPoint(point);
-		//PointEventDetectorsCache.getInstance().insertDeleteOrUpdateEventDetectors( point );
 		if (point.isEnabled())
 			startDataPoint(point);
 	}

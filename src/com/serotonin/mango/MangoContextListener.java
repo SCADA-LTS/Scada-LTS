@@ -104,7 +104,6 @@ public class MangoContextListener implements ServletContextListener {
 		imageSetInitialize(ctx);
 		databaseInitialize(ctx);
 		dataPointsNameToIdMapping(ctx);
-		//runtimeManagerInitialize(ctx);
 
 		// Check if the known servlet context path has changed.
 		String knownContextPath = SystemSettingsDAO
