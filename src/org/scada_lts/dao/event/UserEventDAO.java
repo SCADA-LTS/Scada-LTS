@@ -45,11 +45,11 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 	private static final Log LOG = LogFactory.getLog(UserEventDAO.class);
 	
 	private static final String COLUMN_NAME_SILENCED = "silenced";
-	private static final int 	COLUMN_INDEX_SILENCED = 3;
+	private static final int 	COLUMN_INDEX_SILENCED = 2;
 	private static final String COLUMN_NAME_EVENT_ID = "eventId";
-	private static final int    COLUMN_INDEX_EVENT_ID =  1;
+	private static final int    COLUMN_INDEX_EVENT_ID =  3;
 	private static final String COLUMN_NAME_USER_ID = "userId";
-	private static final int    COLUMN_INDEX_USER_ID = 2;
+	private static final int    COLUMN_INDEX_USER_ID = 1;
 	
 	// @formatter:off
 	
@@ -68,11 +68,12 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 				+COLUMN_NAME_USER_ID+"=?";
 	
 	private static final String USER_EVENT_INSERT="" +
-			"insert userEvents ("
-				+COLUMN_NAME_EVENT_ID+","
-				+COLUMN_NAME_USER_ID+","
-				+COLUMN_NAME_SILENCED+") "
-			+ "values (?,?,?)";
+			"insert into userEvents ("
+			    +COLUMN_NAME_EVENT_ID+","
+			    +COLUMN_NAME_USER_ID+","
+			    +COLUMN_NAME_SILENCED+") "
+			+ "select e.id, ?, ? FROM events e where e.id = ?;";
+
 	
 	private static final String USER_EVENT_ACK ="" +
 			"update "
@@ -133,23 +134,19 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 			LOG.trace(entity);
 		}
 		
-		
-		
-		DAO.getInstance().getJdbcTemp().update(USER_EVENT_INSERT,  new Object[] { 
-			 						entity.getEventId(),
+		DAO.getInstance().getJdbcTemp().update(USER_EVENT_INSERT,  new Object[] {
 			 						entity.getUserId(),
-			 						DAO.boolToChar(entity.isSilenced())
+			 						DAO.boolToChar(entity.isSilenced()),
+									entity.getEventId(),
 			 				});
-			 				
-		
+
 		return new Object[] {entity.getEventId(), entity.getUserId()};
 		
 	}
 	
 	public void batchUpdate(final int eventId,	final List<Integer> userIds, final boolean alarm) {
-		
-		DAO.getInstance().getJdbcTemp().batchUpdate(USER_EVENT_INSERT, new BatchPreparedStatementSetter() {
 
+		DAO.getInstance().getJdbcTemp().batchUpdate(USER_EVENT_INSERT, new BatchPreparedStatementSetter() {
 			@Override
 			public int getBatchSize() {
 				return userIds.size();
@@ -160,8 +157,6 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 				ps.setInt(COLUMN_INDEX_USER_ID, userIds.get(i));
 				ps.setString(COLUMN_INDEX_SILENCED, DAO.boolToChar(!alarm));
 			}
-
-			
 		  });
 	}
 
