@@ -89,7 +89,7 @@ public class EventService implements MangoEvent {
 	public void saveEvent(EventInstance event) {
 		
 		if (event.getId() == Common.NEW_ID ) {
-			if (! (event.getAlarmLevel() == AlarmLevels.NONE) ) {
+			if ( event.getAlarmLevel() != AlarmLevels.NONE ) {
 				eventDAO.create(event);
 				//TODO whay not have add to cache?
 			}
