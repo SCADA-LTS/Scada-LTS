@@ -92,7 +92,8 @@ public class AnnotatedPointValueTime extends PointValueTime {
     }
 
     public String getSourceDescriptionArgument() {
-        if(!sourceDescriptionArgument.equals(getWhoChangedValue()))
+        String EMPTY_STRING = "";
+        if(sourceDescriptionArgument.equals( EMPTY_STRING ) || sourceDescriptionArgument == null )
             setSourceDescriptionArgument(getWhoChangedValue());
         return sourceDescriptionArgument;
     }
