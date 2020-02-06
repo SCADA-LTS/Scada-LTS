@@ -136,7 +136,7 @@ public class PointValueTime implements Serializable, IValueTime,
 
 	@Override
 	public String toString() {
-		return "PointValueTime(" + value + "@" + DateFunctions.getTime(time)
+		return "PointValueTime(" + whoChangedValue+ " -- "+value + "@" + DateFunctions.getTime(time)
 				+ ")";
 	}
 

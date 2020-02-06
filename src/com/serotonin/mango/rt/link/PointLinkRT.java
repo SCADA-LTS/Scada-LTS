@@ -54,6 +54,13 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 	// Added to stop excessive point link calls
 	private volatile Boolean ready;
 
+	//That constructor is only for the junit test.
+	public PointLinkRT(PointLinkVO vo, boolean ready) {
+		this.vo = vo;
+		eventType = null;
+		ready = ready;
+	}
+
 	public PointLinkRT(PointLinkVO vo) {
 		this.vo = vo;
 		eventType = new SystemEventType(

@@ -56,7 +56,12 @@ public class AnnotatedPointValueTime extends PointValueTime {
      * @see SetPointSource
      */
     private String sourceDescriptionArgument;
-
+    public AnnotatedPointValueTime(String valueChanger,MangoValue value, long time, int sourceType, int sourceId) {
+        super(value, time);
+        this.sourceType = sourceType;
+        this.sourceId = sourceId;
+        this.sourceDescriptionArgument = valueChanger;
+    }
     public AnnotatedPointValueTime(MangoValue value, long time, int sourceType, int sourceId) {
         super(value, time);
         this.sourceType = sourceType;
@@ -93,7 +98,7 @@ public class AnnotatedPointValueTime extends PointValueTime {
 
     public String getSourceDescriptionArgument() {
         String EMPTY_STRING = "";
-        if(sourceDescriptionArgument.equals( EMPTY_STRING ) || sourceDescriptionArgument == null )
+        if(sourceDescriptionArgument.equals( EMPTY_STRING ) )
             setSourceDescriptionArgument(getWhoChangedValue());
         return sourceDescriptionArgument;
     }
@@ -107,5 +112,16 @@ public class AnnotatedPointValueTime extends PointValueTime {
         if (sourceDescriptionArgument == null)
             return MessageFormat.format(pattern, I18NUtils.getMessage(bundle, "common.deleted"));
         return MessageFormat.format(pattern, sourceDescriptionArgument);
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append("AnnotatedPointValueTime{")
+                .append("sourceType=").append(getSourceType())
+                .append("sourceId=").append(getSourceId())
+                .append("whoChangedValue=").append(getWhoChangedValue())
+                .append("sourceDescriptionArgument='").append(getSourceDescriptionArgument())
+                .append("}").toString();
     }
 }

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.db.dao.PointValueDao;
+import com.serotonin.mango.rt.link.PointLinkRT;
 import com.serotonin.mango.vo.User;
 
 /**
@@ -50,6 +51,13 @@ public class PointValueCache {
         this.defaultSize = -1;
         this.dao=null;
     }
+
+    public PointValueCache(int defaultSize) {
+        this.defaultSize = defaultSize;
+        this.dataPointId = -1;
+        this.dao=null;
+    }
+
     public PointValueCache(int dataPointId, int defaultSize) {
         this.dataPointId = dataPointId;
         this.defaultSize = defaultSize;
@@ -97,6 +105,7 @@ public class PointValueCache {
         {
             if(source instanceof User)
             {
+
                 pvt.setWhoChangedValue(((User)source).getUsername());
             }
         }
