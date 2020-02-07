@@ -164,6 +164,7 @@
       <td style="cursor:default" >
         <c:if test="${!empty sessionUser}">
           <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
+          <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
           <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
           <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
           <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
