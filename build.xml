@@ -413,9 +413,20 @@
 				  haltonfailure="yes">
 			</test>
 
+			<test name="com.serotonin.mango.web.dwr.DataPointDetailsDwrTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.rt.dataImage.PointValueTimeTest"
+				  haltonfailure="yes">
+			</test>
+
 			<test name="com.serotonin.mango.rt.dataImage.AnnotatedPointValueTimeTest"
 				  haltonfailure="yes">
 			</test>
+
+
+
 		    <!--
 		    <test name="" 
 		    	haltonfailure="yes">

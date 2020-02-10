@@ -1,57 +1,36 @@
 package com.serotonin.mango.rt.dataImage;
 
-import com.serotonin.mango.rt.dataSource.PointLocatorRT;
-import com.serotonin.mango.rt.link.PointLinkRT;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.link.PointLinkVO;
-import com.serotonin.mango.web.dwr.DataPointDetailsDwr;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class AnnotatedPointValueTimeTest {
 
     @Test
-    public void AnnotatedPointValueWithAnnotations_Test(){
-        PointValueCacheTest pointValueCacheTest =new PointValueCacheTest();
-        String FIRST_ANNOTATION = "testName";
-        String SECOND_ANNOTATION = "another user";
+    public void annotaionPartShouldExistInAnnotationPointValueTime_Test(){
 
-        User source = new User();
-        source.setUsername(FIRST_ANNOTATION);
-        PointValueTime pointValueTime = pointValueCacheTest.getSavedPointValueTimeInCache(source);
+        // that AnnotaionPartWhichShouldBeVisibleOnGui will be visible on GUI after text "User:"
+        String AnnotaionPartWhichShouldBeVisibleOnGui = "admin";
 
-        DataPointVO dataPointVO = new DataPointVO();
-        dataPointVO.setId(2);
-        dataPointVO.setDefaultCacheSize(10);
+        AnnotatedPointValueTime annotatedPointValueTime = new AnnotatedPointValueTime(
+                AnnotaionPartWhichShouldBeVisibleOnGui,
+                new PointValueTimeTest().getMangoValueWithBinaryDataType(),
+                0,
+                SetPointSource.Types.USER,
+                SetPointSource.Types.USER);
 
-        DataPointRT dataPointRT = new DataPointRT(dataPointVO, new PointLocatorRT() {
-            @Override
-            public boolean isSettable() {
-                return true;
-            }
-        },4,5);
-        dataPointRT.addCollectionIntoCache(pointValueTime);
+        Assert.assertEquals(AnnotaionPartWhichShouldBeVisibleOnGui, annotatedPointValueTime.getSourceDescriptionArgument());
+    }
+    @Test
+    public void annotaionPartShouldBeAnEmptyInPointValueTime_Test(){
 
+        String EMPTY_STRING = "";
 
-        PointValueFacade pointValueFacade = new PointValueFacade(dataPointVO.getId(),dataPointRT);
-        source.setUsername(SECOND_ANNOTATION);
-        dataPointRT.addCollectionIntoCache( pointValueCacheTest.getSavedPointValueTimeInCache(source) );
+        AnnotatedPointValueTime annotatedPointValueTime = new AnnotatedPointValueTime(
+                new PointValueTimeTest().getMangoValueWithBinaryDataType(),
+                0,
+                SetPointSource.Types.USER,
+                SetPointSource.Types.USER);
 
-        PointLinkVO pointLinkVO = new PointLinkVO();
-        pointLinkVO.setSourcePointId(2);
-        pointLinkVO.setTargetPointId(3);
-        pointLinkVO.setId(1);
-        pointLinkVO.setXid("X_POINT_LINK");
-
-        PointLinkRT pointLinkRT   = new PointLinkRT( pointLinkVO,true);
-        dataPointRT.addCollectionIntoCache( pointValueCacheTest.getSavedPointValueTimeInCache(pointLinkRT) );
-
-
-        DataPointDetailsDwr dataPointDetailsDwr = new DataPointDetailsDwr();
-        boolean doThisAnnotationExist = false;
-        doThisAnnotationExist = dataPointDetailsDwr.doThisAnnotationExist(FIRST_ANNOTATION,pointValueFacade,2);
-        doThisAnnotationExist = dataPointDetailsDwr.doThisAnnotationExist(SECOND_ANNOTATION,pointValueFacade,2);
-        Assert.assertEquals(true, doThisAnnotationExist);
+        Assert.assertEquals(EMPTY_STRING, annotatedPointValueTime.getSourceDescriptionArgument());
     }
 }
