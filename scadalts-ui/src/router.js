@@ -55,6 +55,11 @@ export default new Router({
       path: '/example-cmp',
       name: 'example-cmp',
       component: () => import(/* webpackChunkName: "cmp-component" */ './views/components/ExampleCmp.vue')
+    },
+    {
+      path: '/example-chart-cmp',
+      name: 'example-chart-cmp',
+      component: () => import(/* webpackChunkName: "example-chart-cmp" */ './views/components/ExampleChartCmp.vue')
     }
   ]
 })

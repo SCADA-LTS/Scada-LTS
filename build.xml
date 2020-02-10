@@ -239,7 +239,7 @@
 <!--		</exec>-->
 <!--	</target>-->
 	<target name="new-ui-dependency">
-		<exec dir="./scadalts-ui" executable="npm">
+		<exec dir="./scadalts-ui" executable="npm.cmd">
 			<arg value="install"/>
 		</exec>
 	</target>
@@ -252,7 +252,7 @@
 <!--	</target>-->
 
 	<target name="new-ui" depends="new-ui-dependency">
-		<exec dir="./scadalts-ui" executable="npm">
+		<exec dir="./scadalts-ui" executable="npm.cmd">
 			<arg value="run"/>
 			<arg value="build"/>
 		</exec>
@@ -271,6 +271,8 @@
 		<delete dir="${js-ui.dir}/views"></delete>
 		<delete dir="${js-ui.dir}/pointHierarchy"></delete>
 		<delete dir="${js-ui.dir}/ds"></delete>
+		<delete dir="${js-ui.dir}/modernWatchList"></delete>
+
 
 		<mkdir dir="${js-ui.dir}/app"></mkdir>
 		<mkdir dir="${js-ui.dir}/app/js"></mkdir>
@@ -284,6 +286,9 @@
 		<mkdir dir="${js-ui.dir}/ds"></mkdir>
 		<mkdir dir="${js-ui.dir}/ds/js"></mkdir>
 		<mkdir dir="${js-ui.dir}/ds/css"></mkdir>
+		<mkdir dir="${js-ui.dir}/modernWatchList"></mkdir>
+		<mkdir dir="${js-ui.dir}/modernWatchList/js"></mkdir>
+		<mkdir dir="${js-ui.dir}/modernWatchList/css"></mkdir>
 
 		<!-- copy content for app -->
 		<copy includeemptydirs="false" todir="${js-ui.dir}/app/css" taskname="copy app css">
@@ -332,6 +337,16 @@
 		<copy includeemptydirs="false" todir="${js-ui.dir}/pointHierarchy/js" taskname="copy for ph js">
 			<fileset dir="${src-js-ui.dir}/js/">
 				<include name="ph.js"/>
+			</fileset>
+		</copy>
+
+		<!-- copy content for modern watch list chart -->
+		<copy includeemptydirs="false" todir="${js-ui.dir}/modernWatchList/js" taskname="copy for mwl js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="example-chart-cmp.js"/>
+				<include name="xlsx.js"/>
+				<include name="pdfmake.js"/>
+				<include name="canvg.js"/>
 			</fileset>
 		</copy>
 

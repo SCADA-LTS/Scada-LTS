@@ -51,6 +51,8 @@
   </jsp:attribute>
 
   <jsp:body>
+  <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
+  <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
     <script type="text/javascript">
       dojo.require("dojo.widget.SplitContainer");
       dojo.require("dojo.widget.ContentPane");
@@ -724,6 +726,9 @@
         </div>
       </div>
     </td></tr>
+    <tr><td>
+        <div id="example-chart-cmp"></div>
+    </td></tr>
 
     <tr><td>
       <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden; height: 500px; display: none;">
@@ -755,3 +760,5 @@
     </table>
   </jsp:body>
 </tag:page>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-modern-wl.js.jsp"%>
