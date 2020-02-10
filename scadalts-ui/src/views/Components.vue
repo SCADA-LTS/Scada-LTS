@@ -10,6 +10,7 @@
                     <li class="list-group-item"><router-link to="/example-sleep-and-reactivation-ds">Tests of the SleepAndReactivationDS component</router-link></li>
                     <li class="list-group-item"><router-link to="/example-cmp">Tests of the CMP component</router-link></li>
                     <li class="list-group-item"><router-link to="/example-export-import-point-hierarchy">Tests of the ExportImportPointHierarchy component</router-link></li>
+                    <li class="list-group-item"><router-link to="/example-chart-cmp">Tests of the AmCharts component</router-link></li>
                 </ul>
             </div>
         </div>

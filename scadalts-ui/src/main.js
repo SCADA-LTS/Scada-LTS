@@ -3,6 +3,7 @@ import App from './apps/App.vue'
 import router from './router'
 import store from './store'
 import * as uiv from 'uiv'
+import VueCookie from 'vue-cookie'
 import VueLogger from 'vuejs-logger'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -12,6 +13,8 @@ import CMP from './components/graphical_views/cmp/CMP'
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG'
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy'
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS'
+// import ExampleChartCmp from './views/components/ExampleChartCmp'
+import WatchListChartWidget from './components/watch_list/WatchListChartWidget'
 import VueLodash from 'vue-lodash'
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -33,6 +36,7 @@ const optionsLodash = { name: 'lodash' }
 Vue.use(VueLodash, optionsLodash)
 
 Vue.use(uiv)
+Vue.use(VueCookie)
 
 Vue.config.devtools = true
 
@@ -111,4 +115,10 @@ if (window.document.getElementById('export-import-ph') != undefined) {
   new Vue({
     render: h => h(ExportImportPointHierarchy)
   }).$mount('#export-import-ph')
+}
+
+if (window.document.getElementById('example-chart-cmp') != undefined) {
+  new Vue({
+    render: h => h(WatchListChartWidget)
+  }).$mount('#example-chart-cmp')
 }
