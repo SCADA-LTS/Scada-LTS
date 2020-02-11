@@ -1,5 +1,7 @@
 context('Verify Modern Watch List Page and Modern Charts', () => {
 
+
+
     before(() => {
         cy.clearCookies()
         cy.visit('/login.htm')
@@ -7,6 +9,7 @@ context('Verify Modern Watch List Page and Modern Charts', () => {
         cy.get('input#password').type("admin").should('have.value', 'admin')
         cy.get('.login-button > input').click()
         cy.location('pathname').should('include', 'watch_list')
+        // cy.info('Make sure that you have preapred WatchList with at least one datapoint active')
 
     })
 
@@ -23,6 +26,7 @@ context('Verify Modern Watch List Page and Modern Charts', () => {
     describe("Chart with 1 datapoint", function () {
 
         it('Create chart', function () {
+            cy.get('#watchListSelect').select("Test_WL_1");
             cy.get('.scada-widget .settings').find('button').first().click()
             cy.get('.hello').find('svg')
         })
@@ -76,12 +80,25 @@ context('Verify Modern Watch List Page and Modern Charts', () => {
         it('Delete chart', function () {
             cy.get('.settings-btn[src="/ScadaBR/images/delete.png"]').click()
             cy.get('.chart-container horizontal').should('not.contain', 'svg')
-
-
+        })
+    })
+    describe('Chart with multiple datapoints', function () {
+        it('Create chart with 5 numeric datapoints', function () {
+            cy.get('#watchListSelect').select("Test_WL_5");
+            cy.get('.scada-widget .settings').find('button').first().click()
+            cy.get('.hello').find('svg')
+            cy.get('.settings-btn[src="/ScadaBR/images/delete.png"]').click()
+        })
+        it('Create chart with 10 numeric datapoints', function () {
+            cy.get('#watchListSelect').select("Test_WL_10");
+            cy.get('.scada-widget .settings').find('button').first().click()
+            cy.get('.hello').find('svg')
+            cy.get('.settings-btn[src="/ScadaBR/images/delete.png"]').click()
         })
     })
     describe("Chart memory tests", function () {
         it('Modify chart and save. Validate cookie', function () {
+            cy.get('#watchListSelect').select("Test_WL_1");
             cy.get('.scada-widget .settings').find('button').first().click()
             cy.get('.settings-btn[src="/ScadaBR/images/cog.png"]').click()
             cy.get('#live-sd').type('{backspace}3')
@@ -93,7 +110,28 @@ context('Verify Modern Watch List Page and Modern Charts', () => {
     })
     describe("Additional test - multiple charts", function () {
         it('Create 2 same charts', function () {
+            cy.get('#watchListSelect').select("Test_WL_1");
             cy.get('.scada-widget .settings').find('button').first().click()
+            cy.get('.scada-widget .settings').find('button').first().click()
+            cy.get('.hello').should('have.length', 2)
+            cy.get('.settings-btn[src="/ScadaBR/images/delete.png"]').click({ multiple: true })
+            cy.get('.hello').should('not.exist')
+        })
+        it('Create 2 different charts', function () {
+            cy.get('#watchListSelect').select("Test_WL_5");
+            let pointList = cy.get(".dojoTreeNodeLabelTitle");
+            let count = 5;
+            pointList.get('img[src="images/bullet_go.png"]').each(($el, index, $list) => {
+                if (count > 0) {
+                    cy.wrap($el).click()
+                    count = count - 1
+                }
+            })
+            cy.get('#watchListTable').get('input[type="checkbox"]').click({ multiple: true, force: true });
+            cy.get('#watchListTable').get('input[type="checkbox"]').first().click({force: true});
+            cy.get('.scada-widget .settings').find('button').first().click()
+            cy.get('#watchListTable').get('input[type="checkbox"]').first().click({force: true});
+            cy.get('#watchListTable').get('input[type="checkbox"]').eq(1).click({force: true});
             cy.get('.scada-widget .settings').find('button').first().click()
             cy.get('.hello').should('have.length', 2)
         })
