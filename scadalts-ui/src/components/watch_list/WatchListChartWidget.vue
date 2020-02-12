@@ -97,6 +97,7 @@ export default {
         }
       }
       chart.pointId = points.toString();
+      chart.chartLabel = document.getElementById('newWatchListName').value;
       this.charts.push(chart);
       this.$cookie.set(
         `WatchListChartDashboard_${this.userName}`,

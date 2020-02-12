@@ -5,6 +5,7 @@ target/
 /WebContent/assets/.sass-cache/
 /WebContent/images/oldicons
 /WebContent/resources/app/bower_components/
+/WebContent/resources/js-ui/
 # OS Files #
 .DS_Store
 *.class
