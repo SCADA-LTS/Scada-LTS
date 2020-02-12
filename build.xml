@@ -239,7 +239,7 @@
 <!--		</exec>-->
 <!--	</target>-->
 	<target name="new-ui-dependency">
-		<exec dir="./scadalts-ui" executable="npm.cmd">
+		<exec dir="./scadalts-ui" executable="npm">
 			<arg value="install"/>
 		</exec>
 	</target>
@@ -252,7 +252,7 @@
 <!--	</target>-->
 
 	<target name="new-ui" depends="new-ui-dependency">
-		<exec dir="./scadalts-ui" executable="npm.cmd">
+		<exec dir="./scadalts-ui" executable="npm">
 			<arg value="run"/>
 			<arg value="build"/>
 		</exec>
