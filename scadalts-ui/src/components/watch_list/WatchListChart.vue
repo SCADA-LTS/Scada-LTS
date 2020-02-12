@@ -207,7 +207,6 @@ export default {
         }
       }
       this.chartdata.pointId = this.points.toString();
-      this.chartdata.chartLabel = document.getElementById("newWatchListName").value;
     },
     showChart() {
       this.renderChart = true;
