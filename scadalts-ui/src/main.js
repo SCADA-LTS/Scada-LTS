@@ -126,52 +126,58 @@ if (window.document.getElementById('example-chart-cmp') != undefined) {
   }).$mount('#example-chart-cmp')
 }
 
-if (window.document.getElementById('step-line-chart') != undefined) {
-  new Vue({
-    render: h => h(StepLineChartComponent, {
-      props:
-      {
-        pointId: window.document.getElementById('step-line-chart').getAttribute('point-id'),
-        color: window.document.getElementById('step-line-chart').getAttribute('color'),
-        label: window.document.getElementById('step-line-chart').getAttribute('label'),
-        startDate: window.document.getElementById('step-line-chart').getAttribute('start-date'),
-        endDate: window.document.getElementById('step-line-chart').getAttribute('end-date'),
-        refreshRate: window.document.getElementById('step-line-chart').getAttribute('refresh-rate'),
-        width: window.document.getElementById('step-line-chart').getAttribute('width'),
-        height: window.document.getElementById('step-line-chart').getAttribute('height'),
-        polylineStep: window.document.getElementById('step-line-chart').getAttribute('polyline-step'),
-        rangeValue: window.document.getElementById('step-line-chart').getAttribute('range-value'),
-        rangeColor: window.document.getElementById('step-line-chart').getAttribute('range-color'),
-        rangeLabel: window.document.getElementById('step-line-chart').getAttribute('range-label'),
-        showScrollbarX: window.document.getElementById('step-line-chart').getAttribute('show-scrollbar-x'),
-        showScrollbarY: window.document.getElementById('step-line-chart').getAttribute('show-scrollbar-y'),
-        showLegend: window.document.getElementById('step-line-chart').getAttribute('show-legned'),
-      }
-    })
-  }).$mount('#step-line-chart')
+for (let x = 0; x < 10; x++) {
+  const chartId = `chart-step-line-${x}`
+  if (window.document.getElementById(chartId) != undefined) {
+    new Vue({
+      render: h => h(StepLineChartComponent, {
+        props:
+        {
+          pointId: window.document.getElementById(chartId).getAttribute('point-id'),
+          color: window.document.getElementById(chartId).getAttribute('color'),
+          label: window.document.getElementById(chartId).getAttribute('label'),
+          startDate: window.document.getElementById(chartId).getAttribute('start-date'),
+          endDate: window.document.getElementById(chartId).getAttribute('end-date'),
+          refreshRate: window.document.getElementById(chartId).getAttribute('refresh-rate'),
+          width: window.document.getElementById(chartId).getAttribute('width'),
+          height: window.document.getElementById(chartId).getAttribute('height'),
+          polylineStep: window.document.getElementById(chartId).getAttribute('polyline-step'),
+          rangeValue: window.document.getElementById(chartId).getAttribute('range-value'),
+          rangeColor: window.document.getElementById(chartId).getAttribute('range-color'),
+          rangeLabel: window.document.getElementById(chartId).getAttribute('range-label'),
+          showScrollbarX: window.document.getElementById(chartId).getAttribute('show-scrollbar-x'),
+          showScrollbarY: window.document.getElementById(chartId).getAttribute('show-scrollbar-y'),
+          showLegend: window.document.getElementById(chartId).getAttribute('show-legned'),
+        }
+      })
+    }).$mount(`#${chartId}`)
+  }
 }
 
-if (window.document.getElementById('line-chart') != undefined) {
-  new Vue({
-    render: h => h(LineChartComponent, {
-      props:
-      {
-        pointId:      window.document.getElementById('line-chart').getAttribute('point-id'),
-        color:        window.document.getElementById('line-chart').getAttribute('color'),
-        label:        window.document.getElementById('line-chart').getAttribute('label'),
-        startDate:    window.document.getElementById('line-chart').getAttribute('start-date'),
-        endDate:      window.document.getElementById('line-chart').getAttribute('end-date'),
-        refreshRate:  window.document.getElementById('line-chart').getAttribute('refresh-rate'),
-        width:        window.document.getElementById('line-chart').getAttribute('width'),
-        height:       window.document.getElementById('line-chart').getAttribute('height'),
-        polylineStep: window.document.getElementById('line-chart').getAttribute('polyline-step'),
-        rangeValue:   window.document.getElementById('line-chart').getAttribute('range-value'),
-        rangeColor:   window.document.getElementById('line-chart').getAttribute('range-color'),
-        rangeLabel:   window.document.getElementById('line-chart').getAttribute('range-label'),
-        showScrollbarX: window.document.getElementById('line-chart').getAttribute('show-scrollbar-x'),
-        showScrollbarY: window.document.getElementById('line-chart').getAttribute('show-scrollbar-y'),
-        showLegend:     window.document.getElementById('line-chart').getAttribute('show-legned'),
-      }
-    })
-  }).$mount('#line-chart')
+for (let x = 0; x < 10; x++) {
+  const chartId = `chart-line-${x}`
+  if (window.document.getElementById(chartId) != undefined) {
+    new Vue({
+      render: h => h(LineChartComponent, {
+        props:
+        {
+          pointId: window.document.getElementById(chartId).getAttribute('point-id'),
+          color: window.document.getElementById(chartId).getAttribute('color'),
+          label: window.document.getElementById(chartId).getAttribute('label'),
+          startDate: window.document.getElementById(chartId).getAttribute('start-date'),
+          endDate: window.document.getElementById(chartId).getAttribute('end-date'),
+          refreshRate: window.document.getElementById(chartId).getAttribute('refresh-rate'),
+          width: window.document.getElementById(chartId).getAttribute('width'),
+          height: window.document.getElementById(chartId).getAttribute('height'),
+          polylineStep: window.document.getElementById(chartId).getAttribute('polyline-step'),
+          rangeValue: window.document.getElementById(chartId).getAttribute('range-value'),
+          rangeColor: window.document.getElementById(chartId).getAttribute('range-color'),
+          rangeLabel: window.document.getElementById(chartId).getAttribute('range-label'),
+          showScrollbarX: window.document.getElementById(chartId).getAttribute('show-scrollbar-x'),
+          showScrollbarY: window.document.getElementById(chartId).getAttribute('show-scrollbar-y'),
+          showLegend: window.document.getElementById(chartId).getAttribute('show-legned'),
+        }
+      })
+    }).$mount(`#${chartId}`)
+  }
 }
