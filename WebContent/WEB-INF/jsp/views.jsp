@@ -283,3 +283,4 @@
 </tag:page>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-charts.js.jsp"%>

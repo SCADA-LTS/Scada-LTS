@@ -168,14 +168,14 @@ export default {
           }
         }
         this.chartClass.showChart();
-        if (this.rangeValue !== undefined) {
+        if (this.rangeValue !== undefined && this.rangeValue !== null) {
           this.chartClass.addRangeValue(
             Number(this.rangeValue),
             this.rangeColor,
             this.rangeLabel
           );
         }
-        if (this.refreshRate != undefined) {
+        if (this.refreshRate != undefined && this.refreshRate !== null) {
           this.chartClass.startLiveUpdate(Number(this.refreshRate));
         }
       });

@@ -51,7 +51,7 @@ export default class BaseChart {
             am4core.color("#824F1B"),
             am4core.color("#69421B"),
         ];
-        if (colors !== undefined) {
+        if (colors !== undefined && colors !== null) {
             colors = colors.split(",");
             if (colors.length > 0) {
                 for (let i = colors.length - 1; i >= 0; i--) {
@@ -80,17 +80,17 @@ export default class BaseChart {
      * @param {Number} [endTimestamp] Default get values till now
      */
     loadData(pointId, startTimestamp, endTimestamp) {
-        if (startTimestamp === undefined) {
+        if (startTimestamp === undefined || startTimestamp === null) {
             startTimestamp = new Date().getTime() - 3600000;
             endTimestamp = new Date().getTime();
-        } else if (startTimestamp !== undefined && endTimestamp === undefined) {
+        } else if ((startTimestamp !== undefined && startTimestamp !== null) && (endTimestamp === undefined || endTimestamp === null)) {
             startTimestamp = BaseChart.convertDate(startTimestamp);
             endTimestamp = new Date().getTime();
             if (isNaN(startTimestamp)) {
                 console.warn("Parameter start-date is not valid!\nConnecting to API with default values");
                 startTimestamp = new Date().getTime() - 3600000;
             }
-        } else if (startTimestamp !== undefined && endTimestamp !== undefined) {
+        } else if ((startTimestamp !== undefined && startTimestamp !==null) && (endTimestamp !== undefined && endTimestamp !==null)) {
             startTimestamp = new Date(startTimestamp).getTime();
             endTimestamp = new Date(endTimestamp).getTime();
             if (isNaN(startTimestamp) || isNaN(endTimestamp)) {
@@ -143,8 +143,8 @@ export default class BaseChart {
             })
         }
         this.chart.addData(BaseChart.prepareChartData(BaseChart.sortMapKeys(this.liveUpdatePointValues)))
-        if(this.liveUpdatePointValues != undefined) {
-            this.liveUpdatePointValues.clear();   
+        if (this.liveUpdatePointValues != undefined) {
+            this.liveUpdatePointValues.clear();
         }
     }
 
@@ -202,7 +202,7 @@ export default class BaseChart {
                 this.chart.addData(lastData, 1);
                 this.lastUpdate = lastData[lastData.length - 1].date;
                 this.liveUpdatePointValues.clear();
-                if(lastData != undefined) {
+                if (lastData != undefined) {
                     // console.debug(lastData);
                     // lastData.clear();
                 }
@@ -244,7 +244,7 @@ export default class BaseChart {
      * @param {String} seriesName Name of this series. 
      * @param {string} suffix Additional suffix for series units. [square meteters etc.]
      */
-    createSeries(seriesType, seriesValueX, seriesValueY, seriesName, suffix="") {
+    createSeries(seriesType, seriesValueX, seriesValueY, seriesName, suffix = "") {
         let series;
         if (seriesType === "Column") {
             series = this.chart.series.push(new am4charts.ColumnSeries());
@@ -270,7 +270,7 @@ export default class BaseChart {
         } else {
             series.dataFields.dateX = seriesValueX;
             series.dataFields.valueY = seriesValueY;
-            if(suffix.trim().startsWith("[")) {
+            if (suffix.trim().startsWith("[")) {
                 suffix = `[${suffix}]`;
             }
             series.tooltipText = "{name}: [bold]{valueY}[/] " + suffix;
