@@ -60,6 +60,11 @@ export default new Router({
       path: '/example-chart-cmp',
       name: 'example-chart-cmp',
       component: () => import(/* webpackChunkName: "example-chart-cmp" */ './views/components/ExampleChartCmp.vue')
+    },
+    {
+      path: '/example-step-line-chart-cmp',
+      name: 'example-step-line-chart-cmp',
+      component: () => import(/* webpackChunkName: "step-line-chart-component" */ './views/components/ExampleStepLineChartCmp.vue')
     }
   ]
 })
