@@ -31,8 +31,9 @@ But what if we want to display chart for __multiple data points?__
 ### Multiple points
 Just add next data point after comma in _'point-id'_ property. 
 ```
-<div id="chart-line-0" point-id="[dataPointID],[anotherDataPointID],[andNextDataPointID"]/>
+<div id="chart-step-line-0" point-id="[dataPointID],[anotherDataPointID],[andNextDataPointID"],[fourthDataPointID"]/>
 ```
+![Example Chart](../../assets/doc/watch_list/MWL_4-DataPoints.gif)
 Now we have chart for 3 data points with values from last 1 hour. This components do not have limitations for a count of points displayed on the one chart, but I hope that you have an intuition that 30 point on a single chart is not a wise move.  
 
 Can we display __older values__ than last one hour?
@@ -90,6 +91,7 @@ To generate multiple charts on View page just use unique identifiers.
 
 <div id="chart-step-line-2" point-id="[dpID]" label="Indoor pressure"/>
 ```
+![Multiple Charts](../../assets/doc/watch_list/MWL_CompareCharts.gif)
 
 ## Modern Chart documentation:
 Available properties in one place for all chart types. Charts _(excluding Gauge Charts)_ could be exported to external file in graphical or text way. You can export to *.png, *.jpg, *.csv, *.json files. 
@@ -114,3 +116,8 @@ Properties properties for Step Line, Line charts
 # Author
 
 - [Radosław Jajko](https://github.com/radek2s): __rjajko@softq.pl__
+
+### Notes:
+ More image examples can be find here:
+
+[Watch List Example Images](../../assets/doc/watch_list/)
