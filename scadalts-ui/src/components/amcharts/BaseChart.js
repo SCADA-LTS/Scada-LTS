@@ -79,7 +79,7 @@ export default class BaseChart {
      * @param {Number} [startTimestamp] Default get values from 1 hour ago
      * @param {Number} [endTimestamp] Default get values till now
      */
-    loadData(pointId, startTimestamp, endTimestamp) {
+    loadData(pointId, startTimestamp, endTimestamp, exportId) {
         if (startTimestamp === undefined || startTimestamp === null) {
             startTimestamp = new Date().getTime() - 3600000;
             endTimestamp = new Date().getTime();
@@ -99,9 +99,15 @@ export default class BaseChart {
                 endTimestamp = new Date().getTime();
             }
         }
+        let url;
+        if(exportId) {
+            url = `${this.domain}/api/point_value/getValuesFromTimePeriod/xid/${pointId}/${startTimestamp}/${endTimestamp}`
+        } else {
+            url = `${this.domain}/api/point_value/getValuesFromTimePeriod/${pointId}/${startTimestamp}/${endTimestamp}`
+        }
         return new Promise((resolve, reject) => {
             try {
-                Axios.get(`${this.domain}/api/point_value/getValuesFromTimePeriod/${pointId}/${startTimestamp}/${endTimestamp}`, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
+                Axios.get(url, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
                     resolve(response.data);
                 }).catch(webError => {
                     reject(webError)
@@ -117,10 +123,10 @@ export default class BaseChart {
      * 
      * @param {Number} refreshRate How often send request for a new data.
      */
-    startLiveUpdate(refreshRate) {
+    startLiveUpdate(refreshRate, exportId) {
         this.liveUpdateInterval = setInterval(() => {
             // this.loadLiveData()
-            this.refreshPointValues();
+            this.refreshPointValues(exportId);
         }, refreshRate);
     }
 
@@ -167,6 +173,25 @@ export default class BaseChart {
         })
     }
 
+        /**
+     * Get data point data from REST API.
+     * 
+     * @param {Number} pointXid Export ID of data point.
+     */
+    getPointValueXid(pointXid) {
+        return new Promise((resolve, reject) => {
+            try {
+                Axios.get(`${this.domain}/api/point_value/getValue/${pointXid}`, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(resp => {
+                    resolve(resp.data);
+                }).catch(webError => {
+                    reject(webError)
+                });
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
     /**
      * Stategy how to parse data received from API server. 
      * 
@@ -189,12 +214,19 @@ export default class BaseChart {
     /**
      * For each defined point get current value and update chart when all request has been recived.
      */
-    refreshPointValues() {
+    refreshPointValues(exportId) {
         let pointData = [];
         for (let [k, v] of this.pointCurrentValue) {
-            pointData.push(this.getPointValue(k).then(data => {
-                this.addValue(data, data.name, this.liveUpdatePointValues)
-            }))
+            if(exportId) {
+                pointData.push(this.getPointValueXid(k).then(data => {
+                    this.addValue(data, data.name, this.liveUpdatePointValues)
+                }))
+            } else {
+                pointData.push(this.getPointValue(k).then(data => {
+                    this.addValue(data, data.name, this.liveUpdatePointValues)
+                }))
+            }
+            
         }
         Promise.all(pointData).then(() => {
             let lastData = BaseChart.prepareChartData(this.liveUpdatePointValues);
@@ -252,6 +284,7 @@ export default class BaseChart {
             series = this.chart.series.push(new am4charts.LineSeries());
         } else if (seriesType === "StepLine") {
             series = this.chart.series.push(new am4charts.StepLineSeries());
+            series.startLocation = 0.5;
         } else if (seriesType === "Pie") {
             series = this.chart.series.push(new am4charts.PieSeries());
         }

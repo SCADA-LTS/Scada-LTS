@@ -22,11 +22,7 @@ import httpClient from "axios";
 import BaseChart from "./BaseChart";
 am4core.useTheme(am4themes_animated);
 class LineChart extends BaseChart {
-  constructor(
-    chartReference,
-    color,
-    domain = "."
-  ) {
+  constructor(chartReference, color, domain = ".") {
     super(chartReference, "XYChart", color, domain);
   }
   displayControls(scrollbarX, scrollbarY, legend) {
@@ -44,11 +40,11 @@ class LineChart extends BaseChart {
       this.showLegend = true;
     } else if (legend !== undefined && legend == "false") {
       this.showLegend = false;
-    } 
+    }
   }
-  loadData(pointId, startTimestamp, endTimestamp) {
+  loadData(pointId, startTimestamp, endTimestamp, exportId) {
     return new Promise((resolve, reject) => {
-      super.loadData(pointId, startTimestamp, endTimestamp).then(data => {
+      super.loadData(pointId, startTimestamp, endTimestamp, exportId).then(data => {
         if (this.pointCurrentValue.get(pointId) == undefined) {
           this.pointCurrentValue.set(pointId, {
             name: data.name,
@@ -57,12 +53,15 @@ class LineChart extends BaseChart {
             labels: new Map()
           });
         }
-        if(data.type === "Multistate") {
+        if (data.type === "Multistate") {
           let customLabels = data.textRenderer.multistateValues;
-          if(data.textRenderer.typeName === "textRendererMultistate" && customLabels !== undefined) {
+          if (
+            data.textRenderer.typeName === "textRendererMultistate" &&
+            customLabels !== undefined
+          ) {
             let labelsMap = new Map();
-            for(let i = 0; i < customLabels.length; i++) {
-              labelsMap.set(String(customLabels[i].key), customLabels[i].text)
+            for (let i = 0; i < customLabels.length; i++) {
+              labelsMap.set(String(customLabels[i].key), customLabels[i].text);
             }
             this.pointCurrentValue.get(pointId).labels = labelsMap;
           }
@@ -80,12 +79,16 @@ class LineChart extends BaseChart {
     );
     this.createAxisX("DateAxis", null);
     this.createAxisY();
-    this.createScrollBarsAndLegend(this.showScrollbarX, this.showScrollbarY, this.showLegend);
+    this.createScrollBarsAndLegend(
+      this.showScrollbarX,
+      this.showScrollbarY,
+      this.showLegend
+    );
     this.createExportMenu(true, "Scada_LineChart");
     for (let [k, v] of this.pointCurrentValue) {
       let s = this.createSeries(v.name, v.name, v.suffix);
-      if(v.type === "Multistate") {
-        let mAxis = this.createAxisY(v.labels)
+      if (v.type === "Multistate") {
+        let mAxis = this.createAxisY(v.labels);
         s.yAxis = mAxis;
         mAxis.renderer.line.stroke = s.stroke;
         mAxis.title.text = v.name;
@@ -100,6 +103,7 @@ export default {
   name: "LineChartComponent",
   props: [
     "pointId",
+    "pointXid",
     "color",
     "label",
     "startDate",
@@ -119,7 +123,8 @@ export default {
   data() {
     return {
       errorMessage: undefined,
-      chartClass: undefined
+      chartClass: undefined,
+      isExportId: false
     };
   },
   mounted() {
@@ -131,12 +136,31 @@ export default {
         LineChart.setPolylineStep(Number(this.polylineStep));
       }
       this.chartClass = new LineChart(this.$refs.chartdiv, this.color);
-      this.chartClass.displayControls(this.showScrollbarX, this.showScrollbarY, this.showLegend);
-      let points = this.pointId.split(",");
-      let promises = [];
-      for (let i = 0; i < points.length; i++) {
-        promises.push(this.chartClass.loadData(points[i], this.startDate, this.endDate))
+      this.chartClass.displayControls(
+        this.showScrollbarX,
+        this.showScrollbarY,
+        this.showLegend
+      );
+      if (
+        this.pointXid !== undefined &&
+        this.pointXid !== null &&
+        (this.pointId === null || this.pointId === undefined)
+      ) {
+        this.isExportId = true;
       }
+      let promises = [];
+      let points;
+      if (this.isExportId) {
+        points = this.pointXid.split(",");
+      } else {
+        points = this.pointId.split(",");
+      }
+      for (let i = 0; i < points.length; i++) {
+        promises.push(
+          this.chartClass.loadData(points[i], this.startDate, this.endDate, this.isExportId)
+        );
+      }
+
       Promise.all(promises).then(response => {
         for (let i = 0; i < response.length; i++) {
           if (response[i] !== "done") {
@@ -145,11 +169,18 @@ export default {
           }
         }
         this.chartClass.showChart(); // Display Chart
-        if(this.rangeValue !== undefined) {
-          this.chartClass.addRangeValue(Number(this.rangeValue), this.rangeColor, this.rangeLabel)
+        if (this.rangeValue !== undefined) {
+          this.chartClass.addRangeValue(
+            Number(this.rangeValue),
+            this.rangeColor,
+            this.rangeLabel
+          );
         }
         if (this.refreshRate != undefined) {
-          this.chartClass.startLiveUpdate(Number(this.refreshRate));
+          this.chartClass.startLiveUpdate(
+            Number(this.refreshRate),
+            this.isExportId
+          );
         }
       });
     },

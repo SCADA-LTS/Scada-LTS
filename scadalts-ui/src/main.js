@@ -134,6 +134,7 @@ for (let x = 0; x < 10; x++) {
         props:
         {
           pointId: window.document.getElementById(chartId).getAttribute('point-id'),
+          pointXid: window.document.getElementById(chartId).getAttribute('point-xid'),
           color: window.document.getElementById(chartId).getAttribute('color'),
           label: window.document.getElementById(chartId).getAttribute('label'),
           startDate: window.document.getElementById(chartId).getAttribute('start-date'),
@@ -162,6 +163,7 @@ for (let x = 0; x < 10; x++) {
         props:
         {
           pointId: window.document.getElementById(chartId).getAttribute('point-id'),
+          pointXid: window.document.getElementById(chartId).getAttribute('point-xid'),
           color: window.document.getElementById(chartId).getAttribute('color'),
           label: window.document.getElementById(chartId).getAttribute('label'),
           startDate: window.document.getElementById(chartId).getAttribute('start-date'),
