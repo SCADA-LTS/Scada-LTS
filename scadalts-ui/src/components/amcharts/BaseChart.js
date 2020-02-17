@@ -39,6 +39,7 @@ export default class BaseChart {
         this.pointCurrentValue = new Map();
         this.liveUpdatePointValues = new Map();
         this.lastUpdate = 0;
+        this.lastTimestamp = new Date().getTime();
         this.liveUpdateInterval = 5000;
         this.domain = domain;
         let colorPallete = [
@@ -90,7 +91,7 @@ export default class BaseChart {
                 console.warn("Parameter start-date is not valid!\nConnecting to API with default values");
                 startTimestamp = new Date().getTime() - 3600000;
             }
-        } else if ((startTimestamp !== undefined && startTimestamp !==null) && (endTimestamp !== undefined && endTimestamp !==null)) {
+        } else if ((startTimestamp !== undefined && startTimestamp !== null) && (endTimestamp !== undefined && endTimestamp !== null)) {
             startTimestamp = new Date(startTimestamp).getTime();
             endTimestamp = new Date(endTimestamp).getTime();
             if (isNaN(startTimestamp) || isNaN(endTimestamp)) {
@@ -100,7 +101,7 @@ export default class BaseChart {
             }
         }
         let url;
-        if(exportId) {
+        if (exportId) {
             url = `${this.domain}/api/point_value/getValuesFromTimePeriod/xid/${pointId}/${startTimestamp}/${endTimestamp}`
         } else {
             url = `${this.domain}/api/point_value/getValuesFromTimePeriod/${pointId}/${startTimestamp}/${endTimestamp}`
@@ -173,7 +174,7 @@ export default class BaseChart {
         })
     }
 
-        /**
+    /**
      * Get data point data from REST API.
      * 
      * @param {Number} pointXid Export ID of data point.
@@ -186,6 +187,33 @@ export default class BaseChart {
                 }).catch(webError => {
                     reject(webError)
                 });
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
+    /**
+     * 
+     * @param {String} pointId PointExportID or PointID 
+     * @param {Number} startTimestamp LastUpdateTime
+     * @param {Boolean} exportId Using XID or ID
+     */
+    getPeriodicUpdate(pointId, startTimestamp, exportId) {
+        let endTimestamp = new Date().getTime();
+        let url;
+        if (exportId) {
+            url = `${this.domain}/api/point_value/getValuesFromTimePeriod/xid/${pointId}/${startTimestamp}/${endTimestamp}`
+        } else {
+            url = `${this.domain}/api/point_value/getValuesFromTimePeriod/${pointId}/${startTimestamp}/${endTimestamp}`
+        }
+        return new Promise((resolve, reject) => {
+            try {
+                Axios.get(url, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
+                    resolve(response.data);
+                }).catch(webError => {
+                    reject(webError)
+                })
             } catch (error) {
                 reject(error)
             }
@@ -217,26 +245,26 @@ export default class BaseChart {
     refreshPointValues(exportId) {
         let pointData = [];
         for (let [k, v] of this.pointCurrentValue) {
-            if(exportId) {
-                pointData.push(this.getPointValueXid(k).then(data => {
-                    this.addValue(data, data.name, this.liveUpdatePointValues)
-                }))
-            } else {
-                pointData.push(this.getPointValue(k).then(data => {
-                    this.addValue(data, data.name, this.liveUpdatePointValues)
+            if (exportId) {
+                pointData.push(this.getPeriodicUpdate(k, this.lastTimestamp, exportId).then(data => {
+                    data.values.forEach(e => {
+                        this.addValue(e, data.name, this.liveUpdatePointValues)
+                    })
                 }))
             }
-            
         }
         Promise.all(pointData).then(() => {
             let lastData = BaseChart.prepareChartData(this.liveUpdatePointValues);
-            if (lastData[lastData.length - 1].date > this.lastUpdate) {
-                this.chart.addData(lastData, 1);
-                this.lastUpdate = lastData[lastData.length - 1].date;
-                this.liveUpdatePointValues.clear();
-                if (lastData != undefined) {
-                    // console.debug(lastData);
-                    // lastData.clear();
+            if (lastData.length > 0) {
+                if (lastData[lastData.length - 1].date > this.lastUpdate) {
+                    this.chart.addData(lastData, 1);
+                    this.lastTimestamp = new Date().getTime();
+                    this.lastUpdate = lastData[lastData.length - 1].date;
+                    this.liveUpdatePointValues.clear();
+                    if (lastData != undefined) {
+                        // console.debug(lastData);
+                        // lastData.clear();
+                    }
                 }
             }
         });
