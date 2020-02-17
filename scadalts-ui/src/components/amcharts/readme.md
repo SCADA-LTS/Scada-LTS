@@ -14,6 +14,13 @@ Create simple line chart for specific [ numeric | multistate | binary ] data poi
 ```
 <div id="chart-line-0" point-id="[dataPointID]"/>
 ```
+
+or
+
+```
+<div id="chart-line-0" point-xid="[dataPointExportID]"/>
+```
+
 That's it!\
 It has rendered line chart for specific point from last hour with default parameters. So if you want to monitor the state of the point from last hour it is the simplest way how to do it. This chart could be zoomed in and out using scrollbar at the bottom of the component. Values of data point in time are represented by white dots on the chart.
 
@@ -41,13 +48,13 @@ Can we display __older values__ than last one hour?
 ### Specified time period
 Yes! Just add a new property to our tag.
 ```
-<div id="chart-line-0" point-id="[dataPointID]" refresh-rate="10000" start-date="1-day"/>
+<div id="chart-line-0" point-xid="[dataPointExportID]" refresh-rate="10000" start-date="1-day"/>
 ```
 As you can see it's a piece of cake. Just type inside 'start-date' property, time period from which you want to see the data. You can use a every combination of numbers with specific time period __[ hour(s) | day(s) | weak(s) | month(s) ]__. (eg. '2-days', '1-week', '3-months' etc.) But it is not everything! It is dynamic calculated time from now but we can also use a specific date. If we want see data from beginning of the previous year just type in date _(eg. '2019/02/01' to see data beginning  from 1-st February 2019)_. It could be useful to limit displayed data. 
 
 To display values from specified period just add __'end-date'__ parameter. 
 ```
-<div id="chart-line-0" point-id="[dataPointID]" start-date="2019/02/01" end-date="2019/03/01"/>
+<div id="chart-line-0" point-xid="[dataPointExportID]" start-date="2019/02/01" end-date="2019/03/01"/>
 ```
 And it still works with multiple data points. It's great! Isn't it? \
 But what if I want to add a horizontal line to chart to create for example warning level, which of it is exceeded it could be dangerous? 
@@ -98,6 +105,7 @@ Available properties in one place for all chart types. Charts _(excluding Gauge 
 
 Properties properties for Step Line, Line charts 
 - point-id
+- point-xid
 - label
 - width
 - height
