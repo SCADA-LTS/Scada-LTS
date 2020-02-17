@@ -350,6 +350,14 @@
 			</fileset>
 		</copy>
 
+		<!-- copy content for modern charts -->
+		<copy includeemptydirs="false" todir="${js-ui.dir}/views/js" taskname="copy for charts js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="step-line-chart-component.js"/>
+			</fileset>
+		</copy>
+
+
 		<!-- font do zrobienia -->
 		<!-- img do zrobienia -->
 

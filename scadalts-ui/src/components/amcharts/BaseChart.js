@@ -51,7 +51,7 @@ export default class BaseChart {
             am4core.color("#824F1B"),
             am4core.color("#69421B"),
         ];
-        if (colors !== undefined) {
+        if (colors !== undefined && colors !== null) {
             colors = colors.split(",");
             if (colors.length > 0) {
                 for (let i = colors.length - 1; i >= 0; i--) {
@@ -79,18 +79,18 @@ export default class BaseChart {
      * @param {Number} [startTimestamp] Default get values from 1 hour ago
      * @param {Number} [endTimestamp] Default get values till now
      */
-    loadData(pointId, startTimestamp, endTimestamp) {
-        if (startTimestamp === undefined) {
+    loadData(pointId, startTimestamp, endTimestamp, exportId) {
+        if (startTimestamp === undefined || startTimestamp === null) {
             startTimestamp = new Date().getTime() - 3600000;
             endTimestamp = new Date().getTime();
-        } else if (startTimestamp !== undefined && endTimestamp === undefined) {
+        } else if ((startTimestamp !== undefined && startTimestamp !== null) && (endTimestamp === undefined || endTimestamp === null)) {
             startTimestamp = BaseChart.convertDate(startTimestamp);
             endTimestamp = new Date().getTime();
             if (isNaN(startTimestamp)) {
                 console.warn("Parameter start-date is not valid!\nConnecting to API with default values");
                 startTimestamp = new Date().getTime() - 3600000;
             }
-        } else if (startTimestamp !== undefined && endTimestamp !== undefined) {
+        } else if ((startTimestamp !== undefined && startTimestamp !==null) && (endTimestamp !== undefined && endTimestamp !==null)) {
             startTimestamp = new Date(startTimestamp).getTime();
             endTimestamp = new Date(endTimestamp).getTime();
             if (isNaN(startTimestamp) || isNaN(endTimestamp)) {
@@ -99,9 +99,15 @@ export default class BaseChart {
                 endTimestamp = new Date().getTime();
             }
         }
+        let url;
+        if(exportId) {
+            url = `${this.domain}/api/point_value/getValuesFromTimePeriod/xid/${pointId}/${startTimestamp}/${endTimestamp}`
+        } else {
+            url = `${this.domain}/api/point_value/getValuesFromTimePeriod/${pointId}/${startTimestamp}/${endTimestamp}`
+        }
         return new Promise((resolve, reject) => {
             try {
-                Axios.get(`${this.domain}/api/point_value/getValuesFromTimePeriod/${pointId}/${startTimestamp}/${endTimestamp}`, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
+                Axios.get(url, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(response => {
                     resolve(response.data);
                 }).catch(webError => {
                     reject(webError)
@@ -117,10 +123,10 @@ export default class BaseChart {
      * 
      * @param {Number} refreshRate How often send request for a new data.
      */
-    startLiveUpdate(refreshRate) {
+    startLiveUpdate(refreshRate, exportId) {
         this.liveUpdateInterval = setInterval(() => {
             // this.loadLiveData()
-            this.refreshPointValues();
+            this.refreshPointValues(exportId);
         }, refreshRate);
     }
 
@@ -143,8 +149,8 @@ export default class BaseChart {
             })
         }
         this.chart.addData(BaseChart.prepareChartData(BaseChart.sortMapKeys(this.liveUpdatePointValues)))
-        if(this.liveUpdatePointValues != undefined) {
-            this.liveUpdatePointValues.clear();   
+        if (this.liveUpdatePointValues != undefined) {
+            this.liveUpdatePointValues.clear();
         }
     }
 
@@ -157,6 +163,25 @@ export default class BaseChart {
         return new Promise((resolve, reject) => {
             try {
                 Axios.get(`${this.domain}/api/point_value/getValue/id/${pointId}`, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(resp => {
+                    resolve(resp.data);
+                }).catch(webError => {
+                    reject(webError)
+                });
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
+        /**
+     * Get data point data from REST API.
+     * 
+     * @param {Number} pointXid Export ID of data point.
+     */
+    getPointValueXid(pointXid) {
+        return new Promise((resolve, reject) => {
+            try {
+                Axios.get(`${this.domain}/api/point_value/getValue/${pointXid}`, { timeout: 5000, useCredentails: true, credentials: 'same-origin' }).then(resp => {
                     resolve(resp.data);
                 }).catch(webError => {
                     reject(webError)
@@ -189,12 +214,19 @@ export default class BaseChart {
     /**
      * For each defined point get current value and update chart when all request has been recived.
      */
-    refreshPointValues() {
+    refreshPointValues(exportId) {
         let pointData = [];
         for (let [k, v] of this.pointCurrentValue) {
-            pointData.push(this.getPointValue(k).then(data => {
-                this.addValue(data, data.name, this.liveUpdatePointValues)
-            }))
+            if(exportId) {
+                pointData.push(this.getPointValueXid(k).then(data => {
+                    this.addValue(data, data.name, this.liveUpdatePointValues)
+                }))
+            } else {
+                pointData.push(this.getPointValue(k).then(data => {
+                    this.addValue(data, data.name, this.liveUpdatePointValues)
+                }))
+            }
+            
         }
         Promise.all(pointData).then(() => {
             let lastData = BaseChart.prepareChartData(this.liveUpdatePointValues);
@@ -202,7 +234,7 @@ export default class BaseChart {
                 this.chart.addData(lastData, 1);
                 this.lastUpdate = lastData[lastData.length - 1].date;
                 this.liveUpdatePointValues.clear();
-                if(lastData != undefined) {
+                if (lastData != undefined) {
                     // console.debug(lastData);
                     // lastData.clear();
                 }
@@ -244,7 +276,7 @@ export default class BaseChart {
      * @param {String} seriesName Name of this series. 
      * @param {string} suffix Additional suffix for series units. [square meteters etc.]
      */
-    createSeries(seriesType, seriesValueX, seriesValueY, seriesName, suffix="") {
+    createSeries(seriesType, seriesValueX, seriesValueY, seriesName, suffix = "") {
         let series;
         if (seriesType === "Column") {
             series = this.chart.series.push(new am4charts.ColumnSeries());
@@ -252,6 +284,7 @@ export default class BaseChart {
             series = this.chart.series.push(new am4charts.LineSeries());
         } else if (seriesType === "StepLine") {
             series = this.chart.series.push(new am4charts.StepLineSeries());
+            series.startLocation = 0.5;
         } else if (seriesType === "Pie") {
             series = this.chart.series.push(new am4charts.PieSeries());
         }
@@ -270,7 +303,7 @@ export default class BaseChart {
         } else {
             series.dataFields.dateX = seriesValueX;
             series.dataFields.valueY = seriesValueY;
-            if(suffix.trim().startsWith("[")) {
+            if (suffix.trim().startsWith("[")) {
                 suffix = `[${suffix}]`;
             }
             series.tooltipText = "{name}: [bold]{valueY}[/] " + suffix;
