@@ -316,7 +316,6 @@ export default class BaseChart {
             series.tooltip.label.textValign = "middle";
             series.strokeWidth = 3;
             series.fillOpacity = 0.3;
-            series.tensionX = 0.9;
             series.minBulletDistance = 15;
             let bullet = series.bullets.push(new am4charts.CircleBullet());
             bullet.circle.strokeWidth = 2;
