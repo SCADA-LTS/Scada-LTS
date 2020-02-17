@@ -284,6 +284,7 @@ export default class BaseChart {
             series = this.chart.series.push(new am4charts.LineSeries());
         } else if (seriesType === "StepLine") {
             series = this.chart.series.push(new am4charts.StepLineSeries());
+            series.startLocation = 0.5;
         } else if (seriesType === "Pie") {
             series = this.chart.series.push(new am4charts.PieSeries());
         }
