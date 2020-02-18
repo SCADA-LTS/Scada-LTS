@@ -38,6 +38,7 @@ branches:
   - "/^feature/#1009_History_of_pointvalue_No_annotation.*$/"
   - "/^feature_s/#1094_.*$/"
   - "/^feature_s/#1107_.*$/"
+  - "/^feature/#1130.*$/"
 notifications:
   email: false
 env:
