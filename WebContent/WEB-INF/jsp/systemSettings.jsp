@@ -779,15 +779,6 @@
           </tr>
        </table>
   </div>
-
-  <div class="borderDiv marB marR" style="clear:left;float:left">
-    <table>
-    <tr>
-      <td>ScadaLTS: #Major.#Minor.#Release.#Build </td>
-    </tr>
-    </table>
-  </div>
-
   <div class="" style="float:left; color:white">
   #branchName
   </div>
