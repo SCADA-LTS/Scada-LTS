@@ -92,7 +92,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		for (PointValueTime pvt : rawData) {
 			RenderedPointValueTime rpvt = new RenderedPointValueTime();
 			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
-			rpvt.setTime(Functions.getTime(pvt));
+			rpvt.setTime(formatDateTime(pvt));
 
 			if (pvt.isAnnotated()) {
 				AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
@@ -196,5 +196,9 @@ public class DataPointDetailsDwr extends BaseDwr {
 	private void addAsof(DwrResponseI18n response) {
 		response.addData("asof",
 				new LocalizableMessage("dsDetils.asof", DateFunctions.getFullSecondTime(System.currentTimeMillis())));
+	}
+
+	private static String formatDateTime(PointValueTime pvt) {
+		return (pvt == null) ? null : DateFunctions.getFullSecondTime(pvt.getTime());
 	}
 }
