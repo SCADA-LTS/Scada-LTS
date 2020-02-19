@@ -1,0 +1,137 @@
+<h1>Modern Charts Components
+</h1>
+<h2>February 2020 - Version 1.0.2</h2>
+<p>ScadaLTS modern charts components it is a set of new VueJS v2.0 components designed for GraphicalView in ScadaLTS. It
+    is based on
+    <a href="https://www.amcharts.com/">am4chart</a> library. It generates charts using JavaScript from user-side which
+    is a new approach to charts in Scada (they were generated via server-side scripts and libraries). It is more browser
+    load than it was before, but server application becomes lighter and gains performance.</p>
+<h2>Types of charts:</h2>
+<ul>
+    <li><strong>&lt;line-chart&gt;</strong> Line Series Chart</li>
+    <li><strong>&lt;step-line-chart&gt;</strong> Step Line Series Chart</li>
+</ul>
+<h2>Usage:</h2>
+<p>New charts could be added to ScadaLTS Graphical View by adding a new HTML component with specific content. Each chart
+    has to be
+    initialized by using this listed above Extended HTML Tags. Each of this tag take a specific properties required to
+    set up specific chart.
+    Chart is generated inside this tag which has default size 750x500px.</p>
+<hr>
+<h3></a>Quick start:</h3>
+<p>Create simple line chart for specific [ numeric | multistate | binary ] data point.</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dataPointID]&quot;/&gt;
+</code></pre>
+<p>or</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-xid=&quot;[dataPointExportID]&quot;/&gt;
+</code></pre>
+<p>That’s it!<br>
+    It has rendered line chart for specific point from last hour with default parameters. So if you want to monitor the
+    state of the point from last hour it is the simplest way how to do it. This chart could be zoomed in and out using
+    scrollbar at the bottom of the component. Values of data point in time are represented by white dots on the chart.
+</p>
+<p>But it is still just a chart like this old ones… What
+    if we really want to monitor status of this point <strong>in real-time</strong>? No problem just add next
+    properties.</p>
+<hr>
+<h3></a>Live Data</h3>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dataPointID]&quot; refresh-rate=&quot;10000&quot;/&gt;
+</code></pre>
+<p><strong>Now we’ve got live chart!</strong><br>
+    It is refreshed every 10s (10000 ms) and when a data point will change state to different value this new one will be
+    added to chart and the oldest one will be deleted from out chart. Now we can monitor state of datapoint in real-time
+    with chosen by us refresh rate. For critical data, we can monitor the status of the point with a high frequency of
+    queries to server (more real-time data but more resource consuming) and for non-critical data we can refresh chart
+    after a few seconds.</p>
+<p>But what if we want to display chart for <strong>multiple data points?</strong></p>
+<hr>
+<h3>Multiple points</h3>
+<p>Just add next data point after comma in <em>‘point-id’</em> property.</p>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dataPointID],[anotherDataPointID],[andNextDataPointID&quot;],[fourthDataPointID&quot;]/&gt;
+</code></pre>
+<p><br>
+    Now we have chart for 3 data points with values from last 1 hour. This components do not have limitations for a
+    count of points displayed on the one chart, but I hope that you have an intuition that 30 point on a single chart is
+    not a wise move.</p>
+<p>Can we display <strong>older values</strong> than last one hour?</p>
+<hr>
+<h3>Specified time period</h3>
+<p>Yes! Just add a new property to our tag.</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-xid=&quot;[dataPointExportID]&quot; refresh-rate=&quot;10000&quot; start-date=&quot;1-day&quot;/&gt;
+</code></pre>
+<p>As you can see it’s a piece of cake. Just type inside
+    ‘start-date’ property, time period from which you want to see the data. You can use a every combination of numbers
+    with specific time period <strong>[ hour(s) | day(s) | weak(s) | month(s) ]</strong>. (eg. ‘2-days’, ‘1-week’,
+    ‘3-months’ etc.) But it is not everything! It is dynamic calculated time from now but we can also use a specific
+    date. If we want see data from beginning of the previous year just type in date <em>(eg. ‘2019/02/01’ to see data
+        beginning from 1-st February 2019)</em>. It could be useful to limit displayed data.</p>
+<p>To display values from specified period just add <strong>‘end-date’</strong> parameter.</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-xid=&quot;[dataPointExportID]&quot; start-date=&quot;2019/02/01&quot; end-date=&quot;2019/03/01&quot;/&gt;
+</code></pre>
+<p>And it still works with multiple data points. It’s great! Isn’t it? <br>
+    But what if I want to add a horizontal line to chart to create for example warning level, which of it is exceeded it
+    could be dangerous?</p>
+<hr>
+<h3>Level range line</h3>
+<p>Ok let’s consider this one:</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dataPointID]&quot; range-value=&quot;100&quot; range-color=&quot;#FF0000&quot; range-label=&quot;boiling&quot;/&gt;
+</code></pre>
+<p>Now we have created horizontal line for our chart which
+    indicates boiling level for water. Thanks to that we can quickly observe that temperature of water inside tank is
+    boiling. It is useful even inside ScadaLTS.</p>
+<p>Wait a moment! We decided which color this horizontal line would have. Could we do the same with chart lines?</p>
+<hr>
+<h3>Chart Colors</h3>
+<p>For example we have got 3 sensors. This default green colors are too similar. Can we set up a different color set for our charts. Just add this parameter:</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dpID],[dpID_2],[dpID_3]&quot; color=&quot;#FFFC19, #0971B3, #B31212&quot;/&gt;
+</code></pre>
+<p>Now we have got defined 3 custom colors for our charts.
+    We can give just a one color value and the rest will be retrieved from this default values. What is the most
+    important… <strong>USE HEXADECIMAL COLOR CODE VALUES</strong><br>
+    Pretty colorful Modern Charts. But we still have the same size for them… Yes, yes it also could be changed.</p>
+<hr>
+<h3>Chart Size</h3>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dpID]&quot; width=&quot;1080&quot; height=&quot;720&quot;/&gt;
+</code></pre>
+<p>HD Chart? Why not! Values for attributes are given in Pixels (px). That is useful when we have defined a multiple chart instances on one GraphicalView. We can easily
+    calculate the position of the next chart.</p>
+<h3>Labels</h3>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dpID]&quot; label=&quot;Mid season temperature&quot;/&gt;
+</code></pre>
+<p>That would be enough from the basics… It is time for more complex tasks.</p>
+<hr>
+<h3>Multiple charts</h3>
+<p>To generate multiple charts on View page just use unique identifiers.</p>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dpID]&quot; label=&quot;Outdoor temperature&quot;/&gt;
+
+&lt;div id=&quot;chart-step-line-1&quot; point-id=&quot;[dpID]&quot; label=&quot;Outdoor humidity&quot;/&gt;
+
+&lt;div id=&quot;chart-step-line-2&quot; point-id=&quot;[dpID]&quot; label=&quot;Indoor pressure&quot;/&gt;
+</code></pre>
+<p></p>
+<h2>Modern Chart documentation:</h2>
+<p>Available properties in one place for all chart types. Charts <em>(excluding Gauge Charts)</em> could be exported to external file 
+    in graphical or text way. You can export to *.png, *.jpg, *.csv, *.json files.</p>
+<p>Properties properties for Step Line, Line charts</p>
+<ul>
+    <li>point-id</li>
+    <li>point-xid</li>
+    <li>label</li>
+    <li>width</li>
+    <li>height</li>
+    <li>color</li>
+    <li>start-date</li>
+    <li>end-date</li>
+    <li>refresh-rate</li>
+    <li>polyline-step</li>
+    <li>range-value</li>
+    <li>range-color</li>
+    <li>range-label</li>
+    <li>show-scrollbar-x</li>
+    <li>show-scrollbar-y</li>
+    <li>show-legned</li>
+</ul>
+<h1>Author</h1>
+<ul>
+    <li><a href="https://github.com/radek2s">Radosław Jajko</a>: <strong><a href="mailto:rjajko@softq.pl">rjajko@softq.pl</a></strong></li>
+</ul>

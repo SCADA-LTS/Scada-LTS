@@ -20,9 +20,7 @@ before_script:
 - cd ../../..
 - cd ./scadalts-ui
 - npm install
-- cd ../WebContent/resources/npm/
-- npm install
-- cd ../../..
+- cd ../
 language: java
 jdk:
 - openjdk8
@@ -38,6 +36,7 @@ branches:
   - "/^feature/#1009_History_of_pointvalue_No_annotation.*$/"
   - "/^feature_s/#1094_.*$/"
   - "/^feature_s/#1107_.*$/"
+  - "/^feature_s/#1115.*$/"
   - "/^feature/#1130.*$/"
   - "/^feature_s/#1128_.*$/"
 notifications:
