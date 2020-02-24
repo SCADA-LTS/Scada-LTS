@@ -229,8 +229,11 @@
 
   <item id="graphicalViews">
     <relation id="editingGraphicalViews"/>
+    <relation id="editingModernCharts"/>
     <relation id="watchList"/>
   </item>
+
+  <item id="editingModernCharts"/>
   
   <item id="httpReceiverPP">
     <relation id="httpReceiverDS"/>

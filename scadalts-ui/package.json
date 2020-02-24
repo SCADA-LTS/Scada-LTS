@@ -10,6 +10,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@amcharts/amcharts4": "4.8.9",
     "ag-grid": "18.1.2",
     "ag-grid-community": "21.2.2",
     "ag-grid-vue": "21.2.2",
@@ -21,12 +22,15 @@
     "moment": "2.22.2",
     "uiv": "0.27.0",
     "vue": "2.6.10",
+    "vue-color-picker-wheel": "^0.4.3",
+    "vue-cookie": "^1.1.4",
     "vue-jsoneditor": "1.0.13",
     "vue-loader": "15.7.1",
     "vue-lodash": "2.0.2",
     "vue-property-decorator": "7.3.0",
     "vue-router": "3.0.1",
     "vue-underscore": "0.1.4",
+    "vuejs-datepicker": "^1.6.2",
     "vuejs-logger": "1.5.3",
     "vuex": "3.0.1"
   },
@@ -39,8 +43,10 @@
     "@vue/test-utils": "1.0.0-beta.29",
     "babel-eslint": "10.0.1",
     "chai": "4.1.2",
+    "cypress": "^4.0.1",
     "eslint": "5.16.0",
     "eslint-plugin-vue": "5.0.0",
+    "http-proxy-middleware": "^0.20.0",
     "sass": "1.18.0",
     "sass-loader": "7.1.0",
     "vue-template-compiler": "2.6.10"

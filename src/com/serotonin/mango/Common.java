@@ -91,7 +91,7 @@ public class Common {
 	 * the correct version.
 	 */
 	public static final String getVersion() {
-		return "1.0.0";
+		return "2.1.0";
 	}
 
 	public interface ContextKeys {

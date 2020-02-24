@@ -18,7 +18,7 @@
 --%>
 <html>
 <head>
-  <title>ScadaBR (powered by Mango)</title>
+  <title>Scada-LTS</title>
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="Copyright" content="&copy;�2009-2012 Funda��o Certi, MCA Sistemas, Unis Sistemas, Conetec, Todos os direitos reservados."/>
@@ -30,7 +30,7 @@
 </head>
 <body>
 <script language="JavaScript">window.location="login.htm";</script>
-<%--<a style="font-size: 13px; color: #804000; font-family: Verdana, Arial, Helvetica, sans-serif;" href="login.htm">ScadaBR (powered by Mango)</a>--%>
-<a style="font-size: 13px; color: #414042 font-family: Verdana, Arial, Helvetica, sans-serif;" href="login.htm">ScadaBR (powered by Mango)</a>
+<%--<a style="font-size: 13px; color: #804000; font-family: Verdana, Arial, Helvetica, sans-serif;" href="login.htm">Scada-LTS</a>--%>
+<a style="font-size: 13px; color: #414042 font-family: Verdana, Arial, Helvetica, sans-serif;" href="login.htm">Scada-LTS</a>
 </body>
 </html>

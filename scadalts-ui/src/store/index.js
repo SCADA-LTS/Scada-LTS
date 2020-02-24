@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import dataSource from "./dataSource"
 import graphicView from "./graphicView"
 import pointHierarchy from "./pointHierarchy"
+import amcharts from './amcharts'
 
 Vue.use(Vuex)
 
@@ -16,7 +17,8 @@ export default new Vuex.Store({
   modules: {
     dataSource,
     graphicView,
-    pointHierarchy
+    pointHierarchy,
+    amcharts
   },
   state: {
 
