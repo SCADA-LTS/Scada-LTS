@@ -4,10 +4,7 @@
       <p class="smallTitle">Modern Chart</p>
       <div class="flex-spacer"></div>
       <div>
-        <button @click="addNewChart()">
-          Add chart
-          <img src="/ScadaBR/images/add.png" class="settings-btn" />
-        </button>
+        <btn class="dropdown-toggle" @click="addNewChart()">Add chart <i class="glyphicon glyphicon-plus"></i></btn>
       </div>
     </div>
     <div class="chart-container" v-bind:class="chartsLayout">
@@ -86,7 +83,7 @@ export default {
         debug: undefined,
         lineChart: "stepLine",
         chartType: "live",
-        height: 600
+        height: 350
       };
       let points = [];
       let wachList = document.getElementById("watchListTable");

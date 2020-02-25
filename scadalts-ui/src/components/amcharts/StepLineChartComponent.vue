@@ -215,4 +215,8 @@ export default {
 .error {
   color: red;
 }
+p {
+  text-align: center;
+  padding-top: 10px;
+}
 </style>

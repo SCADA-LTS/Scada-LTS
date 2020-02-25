@@ -195,6 +195,10 @@ export default {
   min-width: 650px;
   height: 500px;
 }
+p {
+  text-align: center;
+  padding-top: 10px;
+}
 .error {
   color: red;
 }
