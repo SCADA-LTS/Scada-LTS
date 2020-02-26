@@ -54,6 +54,20 @@
                   </li>
                 </template>
               </dropdown>
+              <dropdown class="form-group">
+                <div class="input-group">
+                  <div class="input-group-btn">
+                    <btn class="dropdown-toggle">
+                      <i class="glyphicon glyphicon-time"></i>
+                    </btn>
+                  </div>
+                </div>
+                <template slot="dropdown">
+                  <li style="padding: 10px">
+                    <time-picker v-model="startTime" :show-meridian="false" />
+                  </li>
+                </template>
+              </dropdown>
             </div>
             <div class="flex-row flex-align-center">
               <label for="static-ed" class="small-padd">End Date</label>
@@ -70,13 +84,33 @@
                   </li>
                 </template>
               </dropdown>
+              <dropdown class="form-group">
+                <div class="input-group">
+                  <div class="input-group-btn">
+                    <btn class="dropdown-toggle">
+                      <i class="glyphicon glyphicon-time"></i>
+                    </btn>
+                  </div>
+                </div>
+                <template slot="dropdown">
+                  <li style="padding: 10px">
+                    <time-picker v-model="endTime" :show-meridian="false" />
+                  </li>
+                </template>
+              </dropdown>
             </div>
           </div>
         </div>
         <p class="smallTitle chart-title">{{chartSettings.chartLabel}}</p>
-        <btn class="dropdown-toggle" @click="updateSettings()"><i class="glyphicon glyphicon-refresh"></i></btn>
-        <btn class="dropdown-toggle" @click="showSettings()"><i class="glyphicon glyphicon-cog"></i></btn>
-        <btn class="dropdown-toggle" @click="deleteChart()"><i class="glyphicon glyphicon-trash"></i></btn>
+        <btn class="dropdown-toggle" @click="updateSettings()">
+          <i class="glyphicon glyphicon-refresh"></i>
+        </btn>
+        <btn class="dropdown-toggle" @click="showSettings()">
+          <i class="glyphicon glyphicon-cog"></i>
+        </btn>
+        <btn class="dropdown-toggle" @click="deleteChart()">
+          <i class="glyphicon glyphicon-trash"></i>
+        </btn>
       </div>
     </div>
     <section>
@@ -86,12 +120,12 @@
             <btn input-type="radio" input-value="stepLine" v-model="chartSettings.lineChart">Step line chart</btn>
             <btn input-type="radio" input-value="line" v-model="chartSettings.lineChart">Line chart</btn>
           </btn-group>
-          <hr/>
+          <hr />
           <div class="flex-container">
             <label for="chart-label">Chart title</label>
             <input type="text" id="chart-label" v-model="chartSettings.chartLabel" class="form-control" />
           </div>
-          <hr/>
+          <hr />
           <div class="flex-container">
             <label for="chart-color">Chart color</label>
             <ColorPicker
@@ -101,7 +135,7 @@
               v-model="chartSettings.chartColor"
             ></ColorPicker>
           </div>
-          <hr/>
+          <hr />
           <div class="flex-container">
             <div class="flex-container">
               <label for="chart-rv">Range value</label>
@@ -121,7 +155,7 @@
               <input type="text" id="chart-rl" v-model="chartSettings.rangeLabel" class="form-control" />
             </div>
           </div>
-          <hr/>
+          <hr />
           <div class="flex-container">
             <label for="chart-height">Chart heigh</label>
             <input type="number" id="chart-height" v-model="chartSettings.height" class="form-control" />
@@ -205,7 +239,9 @@ export default {
         { id: 1, text: "Day(s)", value: "day" },
         { id: 2, text: "Weak(s)", value: "weak" },
         { id: 3, text: "Month(s)", value: "month" }
-      ]
+      ],
+      startTime: new Date(),
+      endTime: new Date()
     };
   },
   mounted() {
@@ -225,11 +261,10 @@ export default {
       this.chartdata.pointId = this.points.toString();
     },
     callback(msg) {
-      console.debug(msg);
-      if(msg === "ok") {
-        this.updateSettings()
+      if (msg === "ok") {
+        this.updateSettings();
       } else {
-        this.cancelSettings()
+        this.cancelSettings();
       }
     },
     updateSettings() {
@@ -237,6 +272,8 @@ export default {
       this.chartSettings = this.chartdata;
       if (this.chartSettings.chartType == "static") {
         this.chartSettings.refreshRate = undefined;
+        this.chartSettings.startDate = `${this.chartSettings.startDate.substring(0,10)} ${this.startTime.getHours()}:${this.startTime.getMinutes()}`;
+        this.chartSettings.endDate = `${this.chartSettings.endDate.substring(0,10)} ${this.endTime.getHours()}:${this.endTime.getMinutes()}`;
       } else {
         this.chartSettings.endDate = undefined;
         this.chartSettings.startDate = `${this.chartdata.startTime}-${this.chartdata.startTimeMultiplier}`;
@@ -259,8 +296,8 @@ export default {
     },
     showSettings() {
       this.chartSettings = this.chartdata;
-      this.open=true
-      this.renderChart = false; 
+      this.open = true;
+      this.renderChart = false;
     },
     cancelSettings() {
       if (
@@ -333,7 +370,7 @@ export default {
   padding-right: 10px;
 }
 #live-sd {
-  width: 10%
+  width: 10%;
 }
 #live-rrs {
   width: 15%;
