@@ -74,6 +74,14 @@ class StepLineChart extends BaseChart {
               this.pointCurrentValue.get(pointId).labels = labelsMap;
             }
           }
+          if (data.type === "Binary") {
+            if (data.textRenderer.typeName === "textRendererBinary") {
+              let labelsMap = new Map();
+              labelsMap.set("0", data.textRenderer.zeroLabel);
+              labelsMap.set("1", data.textRenderer.oneLabel);
+              this.pointCurrentValue.get(pointId).labels = labelsMap;
+            }
+          }
           data.values.forEach(e => {
             this.addValue(e, data.name, this.pointPastValues);
           });
@@ -100,6 +108,14 @@ class StepLineChart extends BaseChart {
         s.yAxis = mAxis;
         mAxis.renderer.line.stroke = s.stroke;
         mAxis.title.text = v.name;
+      }
+      if (v.type === "Binary") {
+        if (v.labels.size > 0) {
+          let bAxis = this.createAxisY(v.labels);
+          s.yAxis = bAxis;
+          bAxis.renderer.line.stroke = s.stroke;
+          bAxis.title.text = v.name;
+        }
       }
     }
   }
@@ -172,7 +188,12 @@ export default {
       }
       for (let i = 0; i < points.length; i++) {
         promises.push(
-          this.chartClass.loadData(points[i], this.startDate, this.endDate, this.isExportId)
+          this.chartClass.loadData(
+            points[i],
+            this.startDate,
+            this.endDate,
+            this.isExportId
+          )
         );
       }
       Promise.all(promises).then(response => {

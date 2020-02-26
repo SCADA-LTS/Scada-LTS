@@ -40,7 +40,7 @@
           </div>
           <div v-if="chartSettings.chartType === 'static'" class="flex-row">
             <div class="flex-row flex-align-center">
-              <label for="static-sd">Start Date</label>
+              <label for="static-sd" class="small-padd">Start Date</label>
               <dropdown class="form-group">
                 <div class="input-group">
                   <input class="form-control" type="text" v-model="chartSettings.startDate">
@@ -56,7 +56,7 @@
               </dropdown>
             </div>
             <div class="flex-row flex-align-center">
-              <label for="static-ed">End Date</label>
+              <label for="static-ed" class="small-padd">End Date</label>
               <dropdown class="form-group">
                 <div class="input-group">
                   <input class="form-control" type="text" v-model="chartSettings.endDate">
@@ -73,7 +73,7 @@
             </div>
           </div>
         </div>
-        <p class="smallTitle">{{chartSettings.chartLabel}}</p>
+        <p class="smallTitle chart-title">{{chartSettings.chartLabel}}</p>
         <btn class="dropdown-toggle" @click="updateSettings()"><i class="glyphicon glyphicon-refresh"></i></btn>
         <btn class="dropdown-toggle" @click="showSettings()"><i class="glyphicon glyphicon-cog"></i></btn>
         <btn class="dropdown-toggle" @click="deleteChart()"><i class="glyphicon glyphicon-trash"></i></btn>
@@ -132,7 +132,7 @@
     <div v-if="renderChart">
       <line-chart
         v-bind:point-id="chartdata.pointId"
-        v-bind:label="chartdata.chartLabel"
+        v-bind:label="''"
         v-bind:start-date="chartdata.startDate"
         v-bind:end-date="chartdata.endDate"
         v-bind:refresh-rate="chartdata.refreshRate"
@@ -149,7 +149,7 @@
       />
       <step-line-chart
         v-bind:point-id="chartdata.pointId"
-        v-bind:label="chartdata.chartLabel"
+        v-bind:label="''"
         v-bind:start-date="chartdata.startDate"
         v-bind:end-date="chartdata.endDate"
         v-bind:refresh-rate="chartdata.refreshRate"
@@ -322,6 +322,15 @@ export default {
 }
 .flex-content-center {
   justify-content: center;
+}
+.chart-title {
+  flex-grow: 1;
+  text-align: right;
+  padding-right: 15px;
+  margin-bottom: 0px;
+}
+.small-padd {
+  padding-right: 10px;
 }
 #live-sd {
   width: 10%
