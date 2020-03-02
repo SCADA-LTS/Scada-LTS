@@ -22,6 +22,9 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import com.serotonin.mango.Common;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.web.email.MangoEmailContent;
@@ -29,11 +32,16 @@ import com.serotonin.web.email.EmailContent;
 import com.serotonin.web.email.EmailSender;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import java.io.IOException;
+
 /**
  * @author Matthew Lohbihler
  * 
  */
 public class EmailWorkItem implements WorkItem {
+
+    private static final Log LOG = LogFactory.getLog(EmailWorkItem.class);
+
     public int getPriority() {
         return WorkItem.PRIORITY_MEDIUM;
     }
@@ -90,15 +98,24 @@ public class EmailWorkItem implements WorkItem {
             emailSender.send(fromAddress, toAddresses, subject, content);
         }
         catch (Exception e) {
+            LOG.error(e);
             String to = "";
             for (InternetAddress addr : toAddresses) {
                 if (to.length() > 0)
                     to += ", ";
                 to += addr.getAddress();
             }
-            SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_EMAIL_SEND_FAILURE),
-                    System.currentTimeMillis(), false,
-                    new LocalizableMessage("event.email.failure", subject, to, e.getMessage()));
+            Boolean doNotCreateEventForEmailError = false;
+            try {
+                doNotCreateEventForEmailError = ScadaConfig.getInstance().getBoolean(ScadaConfig.DO_NOT_CREATE_EVENTS_FOR_EMAIL_ERROR,false);
+            } catch (IOException er) {
+                LOG.error(er);
+            }
+            if (doNotCreateEventForEmailError == false) {
+                SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_EMAIL_SEND_FAILURE),
+                        System.currentTimeMillis(), false,
+                        new LocalizableMessage("event.email.failure", subject, to, e.getMessage()));
+            }
         }
         finally {
             if (postSendExecution != null) {

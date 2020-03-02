@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.Properties;
 
 
@@ -46,55 +47,98 @@ public class ScadaConfig {
 	 * Event cache enabled (=true) or disabled (=false)
 	 */
 	public static final String ENABLE_CACHE = "abilit.cacheEnable";
+
+	private Optional<Boolean> cacheEnabled = Optional.empty() ;
 	
 	/**
 	 * Period update unsilenced alarm level but can be delayed when system heavy loaded.
 	 */
 	public static final String MILLIS_SECONDS_PERIOD_UPDATE_UNSILENCED_ALARM_LEVEL = "abilit.MILLIS_SECONDS_PERIOD_UPDATE_UNSILENCED_ALARM_LEVEL";
-	
+
+	private Optional<Long> millisSecondsPeriodUpdateUnsilencedAlarmLevel = Optional.empty();
+
 	/**
 	 * Start update unsilenced alarm level.
 	 */
 	public static final String START_UPDATE_UNSILENCED_ALARM_LEVEL = "abilit.START_UPDATE_UNSILENCED_ALARM_LEVEL";
-	
+
+	private Optional<Long> startUpdateUnsilencedAlarmLevel = Optional.empty();
+
 	/**
 	 * Period update event detectors but can be delayed when system heavy loaded.
 	 */
 	public static final String MILLIS_SECONDS_PERIOD_UPDATE_EVENT_DETECTORS = "abilit.MILLIS_SECONDS_PERIOD_UPDATE_EVENT_DETECTORS";
+
+	private Optional<Long> milisSecondsPeriodUpdateEventDetectors = Optional.empty();
 	
 	/**
 	 * Start update event detectors.
 	 */
 	public static final String START_UPDATE_EVENT_DETECTORS = "abilit.START_UPDATE_EVENT_DETECTORS";
+
+	private Optional<Long> startUpdateEventDetectors = Optional.empty();
 	
 	/**
 	 * Period update pending events but can be delayed when system heavy loaded.
 	 */
 	public static final String MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS = "abilit.MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS";
+
+	private Optional<Long> milisSecondsPeriodUpdatePendingEvents = Optional.empty();
+
 	
 	/**
 	 * Start update pending events.
 	 */
 	public static final String START_UPDATE_PENDING_EVENTS = "abilit.START_UPDATE_PENDING_EVENTS";
+
+	private Optional<Long> startUpdatePendingEvents = Optional.empty();
 	
 	/**
 	 * Period update point hierarchy but can be delayed when system heavy loaded. For example cron 0 15 1 ? * *.
 	 */
 	public static final String CRONE_UPDATE_CACHE_POINT_HIERARCHY = "abilit.CRONE_UPDATE_CACHE_POINT_HIERARCHY";
 
+	private Optional<String> croneUpdateCachePointHierarchy = Optional.empty();
+
 	/**
 	* Period update data sources points. For example cron 0 15 1 ? * * the after start
 	*/
  	public static final String CRONE_UPDATE_CACHE_DATA_SOURCES_POINTS = "abilit.CRONE_UPDATE_DATA_SOURCES_POINTS";
+
+ 	private Optional<String> croneUpdateCacheDataSourcePoints = Optional.empty();
 
 	/**
     * Use Cache data sources points when the system is ready
     */
 	public static final String USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY = "abilit.USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY";
 
+	private Optional<Boolean> useCacheDataSourcesPointsWhenTheSystemIsReady = Optional.empty();
+
 	public static final String USE_ACL = "abilit.USE_ACL";
 
+	//TODO unfinished implementation and you have to remove it
+	private Optional<Boolean> useACL = Optional.empty();
+
+	//TODO unfinished implementation and you have to remove it
 	public static final String ACL_SERVER = "abilit.ACL_SERVER";
+
+	private Optional<String> aclServer = Optional.empty();
+
+	//TODO replaced by the extension to the configuration of one of the datasources
+	public static final String HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START = "abilit.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START";
+
+	//TODO replaced by the extension to the configuration of one of the datasources, to see why we use
+	public static final String HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION = "abilit.HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION";
+
+	private Optional<Boolean> httpRetriverDoNotAllowEnableReactivation = Optional.empty();
+
+	public static final String OPTIMIZATION_LEVEL_JS = "js.optimizationlevel";
+
+	private Optional<Integer> optimizationLevelJs = Optional.empty();
+
+	public static final String DO_NOT_CREATE_EVENTS_FOR_EMAIL_ERROR = "abilit.DO_NOT_CREATE_EVENTS_FOR_EMAIL_ERROR";
+
+	private Optional<Boolean> doNotCreateEventsForEmailError = Optional.empty();
 
 
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
@@ -133,24 +177,68 @@ public class ScadaConfig {
 	 * @return
 	 */
 	public String getProperty(String propertyName) {
-		return conf.getProperty(propertyName);
+		String result = "";
+		try {
+			if (CRONE_UPDATE_CACHE_POINT_HIERARCHY.equals(propertyName) && croneUpdateCachePointHierarchy.isPresent()) {
+				return croneUpdateCachePointHierarchy.get();
+			} else if (CRONE_UPDATE_CACHE_DATA_SOURCES_POINTS.equals(propertyName) && croneUpdateCacheDataSourcePoints.isPresent()) {
+				return croneUpdateCacheDataSourcePoints.get();
+			} else if (ACL_SERVER.equals(propertyName) && aclServer.isPresent()) {
+				return aclServer.get();
+			} else {
+				result = conf.getProperty(propertyName);
+				if (CRONE_UPDATE_CACHE_POINT_HIERARCHY.equals(propertyName)) {
+					croneUpdateCachePointHierarchy = Optional.of(result);
+				} else if (CRONE_UPDATE_CACHE_DATA_SOURCES_POINTS.equals(propertyName)) {
+					croneUpdateCacheDataSourcePoints = Optional.of(result);
+				} else if (ACL_SERVER.equals(propertyName)) {
+					aclServer = Optional.of(result);
+				}
+			}
+		} catch (Exception e) {
+			LOG.trace("propertyName:"+propertyName +" e:"+e.getMessage());
+		}
+		return result;
 	}
 	
 	/**
 	 * Get property value of type boolean with default value
 	 * @param propertyName
-	 * @param defaultValues
+	 * @param defaultValue
 	 * @return
 	 */
-	public Boolean getBoolean(String propertyName, boolean defaultValues) {
-		Boolean result = (Boolean) defaultValues;
+	public Boolean getBoolean(String propertyName, boolean defaultValue) {
+		Boolean result = Boolean.valueOf(defaultValue);
 		try {
-			String propertyValue = getProperty(propertyName);
-			result = (Boolean) Boolean.parseBoolean(propertyValue);
-			LOG.trace("propertyName:"+propertyName+" value:"+result);
+			if (ENABLE_CACHE.equals(propertyName) && cacheEnabled.isPresent()) {
+				return cacheEnabled.get();
+			} if (USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY.equals(propertyName) && useCacheDataSourcesPointsWhenTheSystemIsReady.isPresent()) {
+				return useCacheDataSourcesPointsWhenTheSystemIsReady.get();
+			} else if (USE_ACL.equals(propertyName) && useACL.isPresent()) {
+				return useACL.get();
+			} else if (HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION.equals(propertyName) && httpRetriverDoNotAllowEnableReactivation.isPresent()) {
+				return httpRetriverDoNotAllowEnableReactivation.get();
+			} else if (DO_NOT_CREATE_EVENTS_FOR_EMAIL_ERROR.equals(propertyName) && doNotCreateEventsForEmailError.isPresent()) {
+				return doNotCreateEventsForEmailError.get();
+			} else {
+				String propertyValue = getProperty(propertyName);
+				result = (Boolean) Boolean.parseBoolean(propertyValue);
+				LOG.trace("propertyName:" + propertyName + " value:" + result);
+				if (ENABLE_CACHE.equals(propertyName)) {
+					cacheEnabled = Optional.of(result);
+				} else if (USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY.equals(propertyName)) {
+					useCacheDataSourcesPointsWhenTheSystemIsReady = Optional.of(result);
+				} else if (USE_ACL.equals(propertyName)) {
+					useACL = Optional.of(result);
+				} else if (HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION.equals(propertyName)) {
+					httpRetriverDoNotAllowEnableReactivation = Optional.of(result);
+				} else if (DO_NOT_CREATE_EVENTS_FOR_EMAIL_ERROR.equals(propertyName)) {
+					doNotCreateEventsForEmailError = Optional.of(result);
+				}
+			}
 		} catch (Exception e) {
-			LOG.trace("propertyName:"+propertyName+" value:"+defaultValues);
-			result = defaultValues;
+			LOG.trace("propertyName:"+propertyName+" value:"+defaultValue+" e:"+e.getMessage());
+			result = defaultValue;
 		}
 		return result;
 	}
@@ -158,16 +246,62 @@ public class ScadaConfig {
 	/**
 	 * Get property value of type long with default value
 	 * @param propertyName
-	 * @param defaultValues
+	 * @param defaultValue
 	 * @return
 	 */
-	public Long getLong(String propertyName, int defaultValues) {
-		Long result = new Long(defaultValues);
+	public Long getLong(String propertyName, int defaultValue) {
+		Long result = Long.valueOf(defaultValue);
 		try {
-			String propertyValue = getProperty(propertyName);
-			result = Long.parseLong(propertyValue);
+			if (MILLIS_SECONDS_PERIOD_UPDATE_UNSILENCED_ALARM_LEVEL.equals(propertyName) && millisSecondsPeriodUpdateUnsilencedAlarmLevel.isPresent()) {
+				return millisSecondsPeriodUpdateUnsilencedAlarmLevel.get();
+			} else if (START_UPDATE_UNSILENCED_ALARM_LEVEL.equals(propertyName) && startUpdateUnsilencedAlarmLevel.isPresent() ) {
+			    return startUpdateUnsilencedAlarmLevel.get();
+			} else if (MILLIS_SECONDS_PERIOD_UPDATE_EVENT_DETECTORS.equals(propertyName) && milisSecondsPeriodUpdateEventDetectors.isPresent()) {
+				return milisSecondsPeriodUpdateEventDetectors.get();
+			} else if (START_UPDATE_EVENT_DETECTORS.equals(propertyName) && startUpdateEventDetectors.isPresent()) {
+				return startUpdateEventDetectors.get();
+			} else if (MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS.equals(propertyName) && milisSecondsPeriodUpdatePendingEvents.isPresent()) {
+				return milisSecondsPeriodUpdatePendingEvents.get();
+			} else if (START_UPDATE_PENDING_EVENTS.equals(propertyName) && startUpdatePendingEvents.isPresent()) {
+				return startUpdatePendingEvents.get();
+			} else {
+				String propertyValue = getProperty(propertyName);
+				result = Long.parseLong(propertyValue);
+				if(MILLIS_SECONDS_PERIOD_UPDATE_UNSILENCED_ALARM_LEVEL.equals(propertyName)) {
+					millisSecondsPeriodUpdateUnsilencedAlarmLevel = Optional.of(result);
+				} else if (START_UPDATE_UNSILENCED_ALARM_LEVEL.equals(propertyName)) {
+					startUpdateUnsilencedAlarmLevel = Optional.of(result);
+				} else if (MILLIS_SECONDS_PERIOD_UPDATE_EVENT_DETECTORS.equals(propertyName)) {
+					milisSecondsPeriodUpdateEventDetectors = Optional.of(result);
+				} else if (START_UPDATE_EVENT_DETECTORS.equals(propertyName)) {
+					startUpdateEventDetectors = Optional.of(result);
+				} else if (MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS.equals(propertyName) ) {
+					milisSecondsPeriodUpdatePendingEvents = Optional.of(result);
+				} else if (START_UPDATE_PENDING_EVENTS.equals(propertyName) && startUpdatePendingEvents.isPresent()) {
+					startUpdatePendingEvents = Optional.of(result);
+				}
+			}
 		} catch (Exception e) {
-			result = new Long(defaultValues);
+			LOG.trace("propertyName:"+propertyName+" value:"+defaultValue+" e:"+e.getMessage());
+			result = Long.valueOf(defaultValue);
+		}
+		return result;
+	}
+
+	public Integer getInt(String propertyName, int defaultValue) {
+		Integer result = Integer.valueOf(defaultValue);
+		try {
+			if (OPTIMIZATION_LEVEL_JS.equals(propertyName) && optimizationLevelJs.isPresent()) {
+				return optimizationLevelJs.get();
+			}
+			String propertyValue = getProperty(propertyName);
+			result = Integer.parseInt(propertyValue);
+			if (OPTIMIZATION_LEVEL_JS.equals(propertyName)) {
+				optimizationLevelJs = Optional.of(result);
+			}
+		} catch (Exception e) {
+			LOG.trace("propertyName:"+propertyName+" value:"+defaultValue+" e:"+e.getMessage());
+			result = Integer.valueOf(defaultValue);
 		}
 		return result;
 	}
@@ -277,7 +411,6 @@ public class ScadaConfig {
 			path = path + "/" + DIR_NAME_CUSTOM_CONFIG + "/";
 		}
 		return path;
-
 		
 	}
 

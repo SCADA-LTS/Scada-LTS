@@ -28,9 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
-import org.scada_lts.dao.UserDAO;
-import org.scada_lts.dao.model.point.PointValueAdnnotation;
-import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.RuntimeManager;
@@ -38,7 +35,6 @@ import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueFacade;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.view.chart.StatisticsChartRenderer;
 import com.serotonin.mango.vo.DataPointVO;
@@ -96,13 +92,12 @@ public class DataPointDetailsDwr extends BaseDwr {
 		for (PointValueTime pvt : rawData) {
 			RenderedPointValueTime rpvt = new RenderedPointValueTime();
 			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
-			rpvt.setTime(Functions.getTime(pvt));
+			rpvt.setTime(formatDateTime(pvt));
 
 			if (pvt.isAnnotated()) {
-
 				AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
 				if (apvt.getSourceDescriptionArgument() == null) {
-					apvt.setSourceDescriptionArgument("");
+					rpvt.setAnnotation(apvt.getSourceDescriptionArgument());
 				} else {
 					rpvt.setAnnotation(apvt.getAnnotation(getResourceBundle()));
 				}
@@ -201,5 +196,9 @@ public class DataPointDetailsDwr extends BaseDwr {
 	private void addAsof(DwrResponseI18n response) {
 		response.addData("asof",
 				new LocalizableMessage("dsDetils.asof", DateFunctions.getFullSecondTime(System.currentTimeMillis())));
+	}
+
+	private static String formatDateTime(PointValueTime pvt) {
+		return (pvt == null) ? null : DateFunctions.getFullSecondTime(pvt.getTime());
 	}
 }

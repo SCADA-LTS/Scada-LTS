@@ -20,7 +20,8 @@
 	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.css"
 	rel="stylesheet" type="text/css">
 
-<link href=resources/new-ui/css/app.css rel=stylesheet>
+<link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
+<link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
 
 <script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
 
@@ -424,7 +425,7 @@ thead th {
 				<td colspan="2">&nbsp;</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="footer" align="center">&copy;2012-2018 Scada-LTS All rights reserved. <fmt:message
+				<td colspan="2" class="footer" align="center">&copy;2012-2020 Scada-LTS All rights reserved. <fmt:message
 						key="footer.rightsReserved" /></td>
 			</tr>
 		</table>
@@ -439,18 +440,19 @@ thead th {
 <script src="resources/sockjs-0.3.4.js"></script>
 <script src="resources/stomp.js"></script>
 
-<script src="resources/npm/node_modules/axios/dist/axios.min.js"></script>
+<!-- <script src="resources/npm/node_modules/axios/dist/axios.min.js"></script>
 <script src="resources/npm/node_modules/vue/dist/vue.min.js"></script>
-<script src="resources/npm/node_modules/vue-axios/dist/vue-axios.min.js"></script>
-<script src="resources/vue-mixins/shared/mixins-export-import.js"></script>
-<script src="resources/vue-components/export-import/export-import.js"></script>
+<script src="resources/npm/node_modules/vue-axios/dist/vue-axios.min.js"></script>-->
+
+<!--<script src="resources/vue-mixins/shared/mixins-export-import.js"></script>
+<script src="resources/vue-components/export-import/export-import.js"></script>-->
 
 <script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
 <script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
 
-<script src=resources/new-ui/js/manifest.js></script>
-<script src=resources/new-ui/js/vendor.js></script>
-<script src=resources/new-ui/js/app.js></script>
+
+<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
+
 
 
 <script>

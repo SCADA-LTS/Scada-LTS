@@ -24,7 +24,8 @@
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/shortcut.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
-  <link href="resources/new-ui/css/app.css" rel="stylesheet" type="text/css">
+  <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
+  <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
   <link
 	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.css"
 	rel="stylesheet" type="text/css">
@@ -280,4 +281,6 @@
 
 	<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />
 </tag:page>
-<%@ include file="/WEB-INF/jsp/include/tech-vuejs.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-charts.js.jsp"%>

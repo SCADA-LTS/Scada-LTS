@@ -61,6 +61,7 @@ public class AnnotatedPointValueTime extends PointValueTime {
         super(value, time);
         this.sourceType = sourceType;
         this.sourceId = sourceId;
+        this.sourceDescriptionArgument = getWhoChangedValue();
     }
 
     @Override
@@ -91,6 +92,8 @@ public class AnnotatedPointValueTime extends PointValueTime {
     }
 
     public String getSourceDescriptionArgument() {
+        if(!sourceDescriptionArgument.equals(getWhoChangedValue()))
+            setSourceDescriptionArgument(getWhoChangedValue());
         return sourceDescriptionArgument;
     }
 

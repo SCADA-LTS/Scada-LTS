@@ -36,7 +36,7 @@
   <!-- Meta -->
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <meta http-equiv="Content-Style-Type" content="text/css" />  
-  <meta name="Copyright" content="ScadaLTS &copy;2018"/>
+  <meta name="Copyright" content="ScadaLTS &copy;2020"/>
   <meta name="DESCRIPTION" content="ScadaLTS Software"/>
   <meta name="KEYWORDS" content="ScadaLTS Software"/>
   
@@ -164,11 +164,12 @@
       <td style="cursor:default" >
         <c:if test="${!empty sessionUser}">
           <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
+          <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
           <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
           <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
           <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
                 
-          <c:if test="${sessionUser.dataSourcePermission}">
+          <c:if test="${sessionUser.admin}">
             <img src="./images/menu_separator.png" class="separator"/>
             <tag:menuItem href="event_handlers.shtm" png="cog" key="header.eventHandlers"/>
             <tag:menuItem href="data_sources.shtm" png="icon_ds" key="header.dataSources"/>
@@ -237,7 +238,7 @@
   <jsp:doBody/>
 </div>
 <div class="footer" style="text-align:center">
-    <span>&copy;2012-2018 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
+    <span>&copy;2012-2020 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
 </div>
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>
