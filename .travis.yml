@@ -40,6 +40,7 @@ branches:
   - "/^feature_s/#1115.*$/"
   - "/^feature/#1130.*$/"
   - "/^feature_s/#1128_.*$/"
+  - "/^feature/#1134.*$/"
 notifications:
   email: false
 env:
