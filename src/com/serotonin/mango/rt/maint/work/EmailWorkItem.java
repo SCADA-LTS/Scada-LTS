@@ -107,7 +107,7 @@ public class EmailWorkItem implements WorkItem {
             }
             Boolean doNotCreateEventForEmailError = false;
             try {
-                doNotCreateEventForEmailError = ScadaConfig.getInstance().getBoolean(ScadaConfig.DO_NOT_CREATE_EVETS_FOR_EMAIL_ERROR,false);
+                doNotCreateEventForEmailError = ScadaConfig.getInstance().getBoolean(ScadaConfig.DO_NOT_CREATE_EVENTS_FOR_EMAIL_ERROR,false);
             } catch (IOException er) {
                 LOG.error(er);
             }
