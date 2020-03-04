@@ -3,8 +3,8 @@
  */
 const modernWatchList = {
     state: {
-        activeWatchList: undefined,
-        activeUser: undefined,
+        activeWatchList,
+        activeUser,
         chartCounter: 0,
         chartList: [],
     },
