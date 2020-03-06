@@ -384,7 +384,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 					+ typeId);
 		return type;
 	}
-	
 
 	// RowMapper
 	public static class EventRowMapper implements RowMapper<EventInstance> {
@@ -471,8 +470,13 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			return h;
 		}
 	}
-	
-	
+
+
+	@Override
+	public List<EventInstance> findAllWithUserName() {
+		return null;
+	}
+
 	@Override
 	public List<EventInstance> findAll() {
 		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(BASIC_EVENT_SELECT, new Object[]{ }, new EventRowMapper());

@@ -96,7 +96,24 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "from "
 				+ "pointValues pv "
 				+ "left join pointValueAnnotations pva on pv."+COLUMN_NAME_ID+"=pva."+COLUMN_NAME_POINT_VALUE_ID;
-	
+
+	private static final String POINT_VALUE_SELECT_WITH_USERNAME = ""
+			+ "select "
+			+ "pv."+COLUMN_NAME_ID + ","
+			+ "pv."+COLUMN_NAME_DATA_POINT_ID + ", "
+			+ "pv."+COLUMN_NAME_DATA_TYPE + ", "
+			+ "pv."+COLUMN_NAME_POINT_VALUE + ", "
+			+ "pv."+COLUMN_NAME_TIME_STAMP + ", "
+			+ "pva."+COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", "
+			+ "pva."+COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", "
+			+ "pva."+COLUMN_NAME_SOURCE_TYPE + ", "
+			+ "pva."+COLUMN_NAME_SOURCE_ID
+			+ ",us.username "
+			+ "from "
+			+ "pointValues pv "
+			+ "left join pointValueAnnotations pva on pv."+COLUMN_NAME_ID+"=pva."+COLUMN_NAME_POINT_VALUE_ID
+			+ "left join users us on pva.sourceId = us.id";
+
 	private static final String POINT_VALUE_FILTER_BASE_ON_ID = ""
 			+ "pv."+COLUMN_NAME_ID+"=?";
 	
@@ -327,9 +344,14 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		}
 		return instance;
 	}
-	
+	@Override
+	public List<PointValue> findAllWithUserName(){
+		return (List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT_WITH_USERNAME, new Object[]{ }, new PointValueRowMapper());
+	}
 	@Override
 	public List<PointValue> findAll() {
+
+		List<PointValue> tt = (List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT_WITH_USERNAME, new Object[]{ }, new PointValueRowMapper());
 		return (List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT, new Object[]{ }, new PointValueRowMapper());
 	}
 
