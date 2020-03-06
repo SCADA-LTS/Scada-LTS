@@ -277,6 +277,7 @@
 		<mkdir dir="${js-ui.dir}/app"></mkdir>
 		<mkdir dir="${js-ui.dir}/app/js"></mkdir>
 		<mkdir dir="${js-ui.dir}/app/css"></mkdir>
+        <mkdir dir="${js-ui.dir}/app/fonts"></mkdir>
 		<mkdir dir="${js-ui.dir}/views"></mkdir>
 		<mkdir dir="${js-ui.dir}/views/js"></mkdir>
 		<mkdir dir="${js-ui.dir}/views/css"></mkdir>
@@ -304,6 +305,15 @@
 				<include name="chunk-vendors.js"/>
 			</fileset>
 		</copy>
+
+        <copy includeemptydirs="false" todir="${js-ui.dir}/app/fonts" taskname="copy app.js">
+            <fileset dir="${src-js-ui.dir}/fonts/">
+                <include name="glyphicons-halflings-regular.eot"/>
+                <include name="glyphicons-halflings-regular.ttf"/>
+                <include name="glyphicons-halflings-regular.woff"/>
+                <include name="glyphicons-halflings-regular.woff2"/>
+            </fileset>
+        </copy>
 
 		<!-- copy content for views -->
 		<copy includeemptydirs="false" todir="${js-ui.dir}/views/css" taskname="copy for views css">
