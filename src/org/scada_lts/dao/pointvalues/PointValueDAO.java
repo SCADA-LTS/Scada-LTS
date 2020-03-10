@@ -79,6 +79,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	private final static String  COLUMN_NAME_DATA_POINT_ID = "dataPointId";
 	private final static String  COLUMN_NAME_MIN_TIME_STAMP = "minTs";
 	private final static String  COLUMN_NAME_MAX_TIME_STAMP = "maxTs";
+	private final static String  COLUMN_USERNAME_IN_TABLE_USERS = "username";
 	
 	
 	// @formatter:off
@@ -284,6 +285,49 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			return pv; 
 		}
 	}
+	private class PointValueRowMapperWithUserName implements RowMapper<PointValue> {
+		public PointValue mapRow(ResultSet rs, int rowNum) throws SQLException {
+			//TODO rewrite MangoValue
+			MangoValue value = createMangoValue(rs);
+			long time = rs.getLong(COLUMN_NAME_TIME_STAMP);
+
+			PointValue pv = new PointValue();
+			pv.setId(rs.getLong(COLUMN_NAME_ID));
+			pv.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
+			int sourceId = rs.getInt(COLUMN_NAME_SOURCE_ID);
+
+			int sourceType = rs.getInt(COLUMN_NAME_SOURCE_TYPE);
+			int username = -1;
+			String userName = null;
+			try{
+				username =  rs.getInt(COLUMN_USERNAME_IN_TABLE_USERS);
+			}
+			catch (Exception e){
+				userName = rs.getString(COLUMN_USERNAME_IN_TABLE_USERS);
+			}
+
+			if (rs.wasNull()) {
+				PointValueTime pointValueTime;
+				if(userName!= null){
+					pointValueTime = new PointValueTime(value, time,userName);
+				}
+				else
+				if( username!=0){
+					pointValueTime = new PointValueTime(value, time,String.valueOf(username));
+					System.out.println("USERNAME"+username);
+				}
+				else pointValueTime = new PointValueTime(value, time);
+
+				pv.setPointValue(pointValueTime);
+			} else {
+				if(userName!= null){
+					pv.setPointValue(new AnnotatedPointValueTime(value, time, sourceType, sourceId, userName));
+				} else
+				pv.setPointValue(new AnnotatedPointValueTime(value, time, sourceType, sourceId));
+			}
+			return pv;
+		}
+	}
 	
 	private class LongPairRowMapper implements RowMapper<LongPair> {
 		public LongPair mapRow(ResultSet rs, int index) throws SQLException {
@@ -351,7 +395,6 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	@Override
 	public List<PointValue> findAll() {
 
-		List<PointValue> tt = (List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT_WITH_USERNAME, new Object[]{ }, new PointValueRowMapper());
 		return (List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT, new Object[]{ }, new PointValueRowMapper());
 	}
 
@@ -371,6 +414,22 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			//TODO rewrite limit adding in argsFilter
 			myLimit = LIMIT+limit;
 		}
+		List<PointValue> tt=(List<PointValue>) DAO.getInstance().getJdbcTemp().query(
+				"select "
+						+ "pv."+COLUMN_NAME_ID + ","
+						+ "pv."+COLUMN_NAME_DATA_POINT_ID + ", "
+						+ "pv."+COLUMN_NAME_DATA_TYPE + ", "
+						+ "pv."+COLUMN_NAME_POINT_VALUE + ", "
+						+ "pv."+COLUMN_NAME_TIME_STAMP + ", "
+						+ "pva."+COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", "
+						+ "pva."+COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", "
+						+ "pva."+COLUMN_NAME_SOURCE_TYPE + ", "
+						+ "pva."+COLUMN_NAME_SOURCE_ID
+						+ ",us.username "
+						+ "from "
+						+ "pointValues pv "
+						+ "left join pointValueAnnotations pva on pv.id=pva.pointValueId "
+						+ "left join users us on pva.sourceId = us.id " +" where "+ filter + myLimit, argsFilter, new PointValueRowMapperWithUserName());
 		return (List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT+" where "+ filter + myLimit, argsFilter, new PointValueRowMapper());
 	}
 

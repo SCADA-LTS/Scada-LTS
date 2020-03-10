@@ -68,6 +68,13 @@ public class AnnotatedPointValueTime extends PointValueTime {
         this.sourceId = sourceId;
         this.sourceDescriptionArgument = getWhoChangedValue();
     }
+    public AnnotatedPointValueTime(MangoValue value, long time, int sourceType, int sourceId,String sourceDescription) {
+        super(value, time);
+        this.sourceType = sourceType;
+        this.sourceId = sourceId;
+        this.sourceDescriptionArgument = sourceDescription;
+        this.setWhoChangedValue(sourceDescription);
+    }
 
     @Override
     public boolean isAnnotated() {

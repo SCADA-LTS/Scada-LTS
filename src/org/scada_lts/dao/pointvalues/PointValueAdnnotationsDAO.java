@@ -151,7 +151,7 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 
 	@Override
 	public List<PointValueAdnnotation> findAll() {
-		return (List<PointValueAdnnotation>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_ADNNOTATIONS_SELECT, new Object[]{ }, new PointValueAdnnotationRowMapper());
+		return (List<PointValueAdnnotation>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_ADNNOTATIONS_SELECT_WITH_OWNER_OF_CHANGE/*POINT_VALUE_ADNNOTATIONS_SELECT*/, new Object[]{ }, new PointValueAdnnotationRowMapper());
 	}
 
 
