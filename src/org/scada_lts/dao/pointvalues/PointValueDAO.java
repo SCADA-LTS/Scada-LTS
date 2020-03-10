@@ -414,7 +414,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			//TODO rewrite limit adding in argsFilter
 			myLimit = LIMIT+limit;
 		}
-		List<PointValue> tt=(List<PointValue>) DAO.getInstance().getJdbcTemp().query(
+		return (List<PointValue>) DAO.getInstance().getJdbcTemp().query(
 				"select "
 						+ "pv."+COLUMN_NAME_ID + ","
 						+ "pv."+COLUMN_NAME_DATA_POINT_ID + ", "
@@ -430,7 +430,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 						+ "pointValues pv "
 						+ "left join pointValueAnnotations pva on pv.id=pva.pointValueId "
 						+ "left join users us on pva.sourceId = us.id " +" where "+ filter + myLimit, argsFilter, new PointValueRowMapperWithUserName());
-		return (List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT+" where "+ filter + myLimit, argsFilter, new PointValueRowMapper());
+		//return tt;//(List<PointValue>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT+" where "+ filter + myLimit, argsFilter, new PointValueRowMapper());
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
