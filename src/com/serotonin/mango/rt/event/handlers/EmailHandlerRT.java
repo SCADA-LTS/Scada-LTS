@@ -18,11 +18,13 @@
  */
 package com.serotonin.mango.rt.event.handlers;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -146,37 +148,100 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         sendEmail(evt, notificationType, addresses, vo.getAlias());
     }
 
-    private static void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses,
-            String alias) {
-        if (evt.getEventType().isSystemMessage()) {
-            if (((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
-                // Don't send email notifications about email send failures.
-                LOG.info("Not sending email for event raised due to email failure");
-                return;
-            }
-        }
+    private static String getInfoEmail(EventInstance evt, NotificationType notificationType, String alias) {
 
-        ResourceBundle bundle = Common.getBundle();
-
-        // Determine the subject to use.
-        LocalizableMessage subjectMsg;
-        LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
-        if (StringUtils.isEmpty(alias)) {
-            if (evt.getId() == Common.NEW_ID)
-                subjectMsg = new LocalizableMessage("ftl.subject.default", notifTypeMsg);
-            else
-                subjectMsg = new LocalizableMessage("ftl.subject.default.id", notifTypeMsg, evt.getId());
-        }
-        else {
-            if (evt.getId() == Common.NEW_ID)
-                subjectMsg = new LocalizableMessage("ftl.subject.alias", alias, notifTypeMsg);
-            else
-                subjectMsg = new LocalizableMessage("ftl.subject.alias.id", alias, notifTypeMsg, evt.getId());
-        }
-
-        String subject = subjectMsg.getLocalizedMessage(bundle);
-
+        String messageInfoAlias = MessageFormat.format("Alias: {0} \n", alias);
+        String messageInfoEmail = MessageFormat.format("Event: {0} \n", evt.getId());
+        String messageInfoNotyfication = MessageFormat.format("Notyfication: {0} \n", notificationType.getKey());
+        String subject = "";
+        String messageExceptionWhenGetSubjectEmail = "";
         try {
+            LocalizableMessage subjectMsg;
+            LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
+            if (StringUtils.isEmpty(alias)) {
+                if (evt.getId() == Common.NEW_ID)
+                    subjectMsg = new LocalizableMessage("ftl.subject.default", notifTypeMsg);
+                else
+                    subjectMsg = new LocalizableMessage("ftl.subject.default.id", notifTypeMsg, evt.getId());
+            } else {
+                if (evt.getId() == Common.NEW_ID)
+                    subjectMsg = new LocalizableMessage("ftl.subject.alias", alias, notifTypeMsg);
+                else
+                    subjectMsg = new LocalizableMessage("ftl.subject.alias.id", alias, notifTypeMsg, evt.getId());
+            }
+
+            ResourceBundle bundle = Common.getBundle();
+            subject = subjectMsg.getLocalizedMessage(bundle);
+        } catch (Exception e) {
+            messageExceptionWhenGetSubjectEmail =  MessageFormat.format("StackTrace for subjectMsg {0}",e.getStackTrace());
+        }
+
+        String messages = (new StringBuilder())
+                .append(messageInfoEmail)
+                .append(messageInfoNotyfication)
+                .append(messageInfoAlias)
+                .append(subject)
+                .append(messageExceptionWhenGetSubjectEmail).toString();
+
+        return messages;
+    }
+
+    private static String errEmail(EventInstance evt, NotificationType notificationType, String alias, Exception e) {
+        return MessageFormat.format("Info about email: {0}, StackTrace: {1}", new Object[] {getInfoEmail(evt,notificationType,alias), ExceptionUtils.getStackTrace(e)});
+    }
+
+    private static void validateEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses, String alias) throws Exception {
+
+        String messageErrorEventInstance = "Event Instance null \n";
+        String messageErrorNotyficationType = "Notification type is null \n";
+        String messageErrorEmails = "Don't have e-mail \n";
+        String messageErrorAlias = "Don't have alias\n";
+        String messages = "";
+        if (evt == null || evt.getEventType() == null) messages += messageErrorEventInstance;
+        if (notificationType == null) messages += messageErrorNotyficationType;
+        if (addresses == null || addresses.size() == 0) messages += messageErrorEmails;
+        if (alias == null) messages += messageErrorAlias;
+
+        if (messages.length() > 0) {
+            throw new Exception(getInfoEmail(evt, notificationType, alias) + messages );
+        }
+
+    }
+
+    private static void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses,
+                                  String alias) {
+        try {
+
+            validateEmail(evt, notificationType, addresses, alias);
+
+            if (evt.getEventType().isSystemMessage()) {
+                if (((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
+                    // Don't send email notifications about email send failures.
+                    LOG.info("Not sending email for event raised due to email failure");
+                    return;
+                }
+            }
+
+            ResourceBundle bundle = Common.getBundle();
+
+            // Determine the subject to use.
+
+            LocalizableMessage subjectMsg;
+            LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
+            if (StringUtils.isEmpty(alias)) {
+                if (evt.getId() == Common.NEW_ID)
+                    subjectMsg = new LocalizableMessage("ftl.subject.default", notifTypeMsg);
+                else
+                    subjectMsg = new LocalizableMessage("ftl.subject.default.id", notifTypeMsg, evt.getId());
+            } else {
+                if (evt.getId() == Common.NEW_ID)
+                    subjectMsg = new LocalizableMessage("ftl.subject.alias", alias, notifTypeMsg);
+                else
+                    subjectMsg = new LocalizableMessage("ftl.subject.alias.id", alias, notifTypeMsg, evt.getId());
+            }
+
+            String subject = subjectMsg.getLocalizedMessage(bundle);
+
             String[] toAddrs = addresses.toArray(new String[0]);
             UsedImagesDirective inlineImages = new UsedImagesDirective();
 
@@ -194,9 +259,9 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
                 content.addInline(new EmailInline.FileInline(s, Common.ctx.getServletContext().getRealPath(s)));
 
             EmailWorkItem.queueEmail(toAddrs, content);
-        }
-        catch (Exception e) {
-            LOG.error("", e);
+
+        } catch (Exception e) {
+            LOG.error(errEmail(evt,notificationType,alias,e));
         }
     }
 }
