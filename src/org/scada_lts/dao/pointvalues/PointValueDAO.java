@@ -276,7 +276,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			int sourceId = rs.getInt(COLUMN_NAME_SOURCE_ID);
 			
 			int sourceType = rs.getInt(COLUMN_NAME_SOURCE_TYPE);
-			
+
 			if (rs.wasNull()) {
 				pv.setPointValue(new PointValueTime(value, time));
 			} else {
@@ -286,6 +286,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		}
 	}
 	private class PointValueRowMapperWithUserName implements RowMapper<PointValue> {
+
 		public PointValue mapRow(ResultSet rs, int rowNum) throws SQLException {
 			//TODO rewrite MangoValue
 			MangoValue value = createMangoValue(rs);
@@ -306,29 +307,32 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 				userName = rs.getString(COLUMN_NAME_USERNAME_IN_TABLE_USERS);
 			}
 
-			if (rs.wasNull()) {
-				PointValueTime pointValueTime;
-				if(userName!= null){
-					pointValueTime = new PointValueTime(value, time,userName);
-				}
-				else if( username!=0 ){
-					pointValueTime = new PointValueTime(value, time,String.valueOf(username));
-				}
-				else {
-					pointValueTime = new PointValueTime(value, time);
-				}
+			pv.setPointValue( rs.wasNull()
+				? createPointValueTime( userName, value, time, username )
+				: createAnnotatedPointValueTime( value,time, sourceType, sourceId, userName ));
 
-				pv.setPointValue(pointValueTime);
-			} else {
-					pv.setPointValue(
-							( userName!= null )
-							?new AnnotatedPointValueTime(value, time, sourceType, sourceId, userName)
-							:new AnnotatedPointValueTime(value, time, sourceType, sourceId));
-			}
 			return pv;
 		}
+		private AnnotatedPointValueTime createAnnotatedPointValueTime(MangoValue value, long time, int sourceType, int sourceId, String userName){
+			return ( userName!= null )
+					?new AnnotatedPointValueTime(value, time, sourceType, sourceId, userName)
+					:new AnnotatedPointValueTime(value, time, sourceType, sourceId);
+		}
+		private PointValueTime createPointValueTime(String userName, MangoValue value, long time, int username ){
+
+			if(userName!= null){
+				return new PointValueTime(value, time,userName);
+			}
+			else if( username!=0 ){
+				return new PointValueTime(value, time,String.valueOf(username));
+			}
+			else {
+				return new PointValueTime(value, time);
+			}
+
+		}
 	}
-	
+
 	private class LongPairRowMapper implements RowMapper<LongPair> {
 		public LongPair mapRow(ResultSet rs, int index) throws SQLException {
 			long myLongValue = rs.getLong(COLUMN_NAME_MIN_TIME_STAMP);
