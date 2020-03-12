@@ -285,6 +285,14 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			return pv; 
 		}
 	}
+	public PointValue getPointValueRow(ResultSet rs, int rowNum){
+		try {
+			return new PointValueRowMapperWithUserName().mapRow(rs, rowNum);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	private class PointValueRowMapperWithUserName implements RowMapper<PointValue> {
 
 		public PointValue mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -418,7 +426,8 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			//TODO rewrite limit adding in argsFilter
 			myLimit = LIMIT+limit;
 		}
-		return (List<PointValue>) DAO.getInstance().getJdbcTemp().query(
+		List<PointValue> res =
+		 (List<PointValue>) DAO.getInstance().getJdbcTemp().query(
 				"select "
 						+ "pv."+COLUMN_NAME_ID + ","
 						+ "pv."+COLUMN_NAME_DATA_POINT_ID + ", "
@@ -434,6 +443,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 						+ "pointValues pv "
 						+ "left join pointValueAnnotations pva on pv.id=pva.pointValueId "
 						+ "left join users us on pva.sourceId = us.id " +" where "+ filter + myLimit, argsFilter, new PointValueRowMapperWithUserName());
+		return res;
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
