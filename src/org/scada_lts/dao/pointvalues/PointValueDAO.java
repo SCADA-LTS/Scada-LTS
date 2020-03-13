@@ -312,6 +312,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 				username =  rs.getInt(COLUMN_NAME_USERNAME_IN_TABLE_USERS);
 			}
 			catch (Exception e){
+
 				userName = rs.getString(COLUMN_NAME_USERNAME_IN_TABLE_USERS);
 			}
 

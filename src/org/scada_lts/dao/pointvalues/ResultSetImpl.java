@@ -113,7 +113,7 @@ public class ResultSetImpl implements ResultSet {
 
     @Override
     public String getString(String s) throws SQLException {
-        return null;
+        return rowExample.get(s);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class ResultSetImpl implements ResultSet {
 
     @Override
     public int getInt(String s) throws SQLException {
-        return 0;
+        return Integer.parseInt(rowExample.get(s));
     }
 
     @Override

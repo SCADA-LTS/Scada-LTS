@@ -447,7 +447,9 @@
 			<test name="com.serotonin.mango.rt.dataImage.AnnotatedPointValueTimeTest"
 				  haltonfailure="yes">
 			</test>
-
+			<test name="org.scada_lts.dao.PointValueDAOTest"
+				  haltonfailure="yes">
+			</test>
 
 
 		    <!--

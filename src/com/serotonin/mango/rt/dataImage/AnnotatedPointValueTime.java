@@ -125,10 +125,10 @@ public class AnnotatedPointValueTime extends PointValueTime {
     public String toString() {
         return new StringBuilder()
                 .append("AnnotatedPointValueTime{")
-                .append("sourceType=").append(getSourceType())
-                .append("sourceId=").append(getSourceId())
-                .append("whoChangedValue=").append(getWhoChangedValue())
-                .append("sourceDescriptionArgument='").append(getSourceDescriptionArgument())
+                .append(" sourceType= ").append(getSourceType())
+                .append(" sourceId= ").append(getSourceId())
+                .append(" whoChangedValue= ").append(getWhoChangedValue())
+                .append(" sourceDescriptionArgument= ").append(getSourceDescriptionArgument())
                 .append("}").toString();
     }
 }
