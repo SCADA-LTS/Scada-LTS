@@ -69,6 +69,7 @@ public class TestDAO {
 	@Before
 	public void setUp() {
 		try {
+
 			java.util.Date date = new java.util.Date();
 			LOG.info("Set up database for test "+date.getTime());
 			database = database + date.getTime();
@@ -111,7 +112,7 @@ public class TestDAO {
 		} catch (ClassNotFoundException | SQLException | FlywayException  e){
 			e.printStackTrace();
 		}
-	      
+
 	}
 
 	@After

@@ -80,15 +80,50 @@ public class DataPointDetailsDwr extends BaseDwr {
 
 		return state;
 	}
+	public boolean  doThisAnnotationExist(String annotation,PointValueFacade facade,int limit){
+		boolean result=false;
+		List<PointValueTime> pointValueTimes = facade.getLatestPointValues(limit);
+		List<RenderedPointValueTime> renderedData = new ArrayList<RenderedPointValueTime>(pointValueTimes.size());
+		for (PointValueTime pvt : pointValueTimes) {
+			RenderedPointValueTime rpvt = new RenderedPointValueTime();
+			rpvt.setTime(Functions.getTime(pvt));
+			AnnotatedPointValueTime apvt = new AnnotatedPointValueTime(pvt.getWhoChangedValue(),pvt.getValue(),pvt.getTime(), 2,2);
+			apvt.getSourceDescriptionArgument();
+			result = apvt.getSourceDescriptionArgument().equals(annotation);
 
+			if (result )
+				return result;
+		}
+		return result;
+	}
+	private List<RenderedPointValueTime> renderData(List<PointValueTime> rawData, DataPointVO pointVO){
+
+		List<RenderedPointValueTime> renderedData = new ArrayList<RenderedPointValueTime>(rawData.size());
+
+		for (PointValueTime pvt : rawData) {
+			RenderedPointValueTime rpvt = new RenderedPointValueTime();
+			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
+			rpvt.setTime(Functions.getTime(pvt));
+
+			if (pvt.isAnnotated()) {
+				AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
+				rpvt.setAnnotation((apvt.getSourceDescriptionArgument() == null)
+							?apvt.getSourceDescriptionArgument()
+							:apvt.getAnnotation(getResourceBundle()));
+			}
+			renderedData.add(rpvt);
+		}
+
+		return renderedData;
+	}
 	@MethodFilter
 	public DwrResponseI18n getHistoryTableData(int limit) {
 		DataPointVO pointVO = Common.getUser().getEditPoint();
 		PointValueFacade facade = new PointValueFacade(pointVO.getId());
 
 		List<PointValueTime> rawData = facade.getLatestPointValues(limit);
-		List<RenderedPointValueTime> renderedData = new ArrayList<RenderedPointValueTime>(rawData.size());
-
+		List<RenderedPointValueTime> renderedData = renderData(rawData,pointVO);
+		/*
 		for (PointValueTime pvt : rawData) {
 			RenderedPointValueTime rpvt = new RenderedPointValueTime();
 			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
@@ -104,6 +139,8 @@ public class DataPointDetailsDwr extends BaseDwr {
 			}
 			renderedData.add(rpvt);
 		}
+
+		 */
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		response.addData("history", renderedData);
