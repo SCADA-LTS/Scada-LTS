@@ -36,6 +36,7 @@ branches:
   - "/^new[/]master.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
+  - "/^feature/#1148_.*$/"
 notifications:
   email: false
 env:
