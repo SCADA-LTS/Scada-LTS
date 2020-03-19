@@ -82,6 +82,13 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		this.pointLocator = pointLocator;
 		valueCache = new PointValueCache(vo.getId(), vo.getDefaultCacheSize());
 	}
+	public DataPointRT(DataPointVO vo, PointLocatorRT pointLocator,int cacheSize,int maxSize) {
+		this.vo = vo;
+		this.pointLocator = pointLocator;
+		valueCache = new PointValueCache(cacheSize);
+		valueCache.setMaxSize(maxSize);
+	}
+
 	public DataPointRT(DataPointVO vo) {
 		this.vo = vo;
 		this.pointLocator = null;

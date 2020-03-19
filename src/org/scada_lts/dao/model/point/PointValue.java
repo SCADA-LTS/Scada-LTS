@@ -86,4 +86,12 @@ public class PointValue {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "PointValue{" +
+				"id=" + id +
+				", dataPointId=" + dataPointId +
+				", pointValue=" + pointValue +
+				'}';
+	}
 }
