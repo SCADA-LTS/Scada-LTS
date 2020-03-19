@@ -23,7 +23,9 @@ public class PointValueCacheTest {
         PointValueTime pvt = savePropertiesAboutOwnerOfPointValueChange(source);
         Assert.assertNotSame("testName",pvt.getWhoChangedValue());
     }
-
+    public PointValueTime getSavedPointValueTimeInCache (SetPointSource source ){
+        return savePropertiesAboutOwnerOfPointValueChange( source );
+    }
     private PointValueTime savePropertiesAboutOwnerOfPointValueChange (SetPointSource source ){
         PointValueTime pvt = new PointValueTime(MangoValue.stringToValue("1",1), new Long(1));
         PointValueCache pointValueCache = new PointValueCache();

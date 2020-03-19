@@ -73,8 +73,8 @@ public class PointValueTime implements Serializable, IValueTime,
 	}
 
 	public String getWhoChangedValue() {
-
-		return (whoChangedValue==null)?"":whoChangedValue;
+		String EMPTY_STRING = "";
+		return (whoChangedValue==null)?EMPTY_STRING:whoChangedValue;
 
 	}
 
@@ -136,8 +136,14 @@ public class PointValueTime implements Serializable, IValueTime,
 
 	@Override
 	public String toString() {
-		return "PointValueTime(" + value + "@" + DateFunctions.getTime(time)
-				+ ")";
+		return new StringBuilder()
+				.append("PointValueTime(")
+				.append(getWhoChangedValue())
+				.append(" -- ")
+				.append(getValue())
+				.append("@")
+				.append(DateFunctions.getTime(time))
+				.append(")").toString();
 	}
 
 	@Override
