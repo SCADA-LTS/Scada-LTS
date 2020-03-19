@@ -176,7 +176,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
             messageExceptionWhenGetSubjectEmail =  MessageFormat.format("StackTrace for subjectMsg {0}",e.getStackTrace());
         }
 
-        String messages = (new StringBuilder())
+        String messages = new StringBuilder()
                 .append(messageInfoEmail)
                 .append(messageInfoNotyfication)
                 .append(messageInfoAlias)
