@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import dataSource from "./dataSource"
 import graphicView from "./graphicView"
 import pointHierarchy from "./pointHierarchy"
+import modernWatchList from './modernWatchList'
 import amcharts from './amcharts'
 
 Vue.use(Vuex)
@@ -18,7 +19,8 @@ export default new Vuex.Store({
     dataSource,
     graphicView,
     pointHierarchy,
-    amcharts
+    amcharts,
+    modernWatchList
   },
   state: {
 
