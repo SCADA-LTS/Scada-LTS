@@ -461,10 +461,6 @@
 				  haltonfailure="yes">
 			</test>
 
-			<test name="com.serotonin.mango.rt.link.PointLinkRTTest"
-				  haltonfailure="yes">
-			</test>
-
 
 		    <!--
 		    <test name="" 

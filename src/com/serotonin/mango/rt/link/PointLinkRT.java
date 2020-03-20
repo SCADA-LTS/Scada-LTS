@@ -54,12 +54,6 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 	// Added to stop excessive point link calls
 	private volatile Boolean ready;
 
-	//That constructor is only for the junit test.
-	public PointLinkRT(PointLinkVO vo, boolean ready) {
-		this.vo = vo;
-		eventType = null;
-		ready = ready;
-	}
 
 	public PointLinkRT(PointLinkVO vo) {
 		this.vo = vo;
@@ -109,26 +103,17 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 	private void returnToNormal() {
 		SystemEventType.returnToNormal(eventType, System.currentTimeMillis());
 	}
-	public Boolean getReady() {
-		return ready;
-	}
-
-	public void setReady(Boolean ready) {
-		this.ready = ready;
-		LOG.info("PointLinkRT.ready is set to "+this.ready);
-	}
 	private void execute(PointValueTime newValue) {
 
 		// Bail out if already running a point link operation
 		synchronized (ready) {
 			if (ready.equals(Boolean.FALSE)) {
-				LOG.info("PointLinkRT.ready is set to false.Any of scripts (in meaning source-target) will not work.");
+				LOG.debug("PointLinkRT.ready is set to false.Any of scripts (in meaning source-target) will not work.");
 				return;
 			}
-			LOG.info("PointLinkRT.ready is set to true.Scripts (in meaning source-target) will work.");
+			LOG.debug("PointLinkRT.ready is set to true.Scripts (in meaning source-target) will work.");
 		}
-		//that condition is used in junits - in meaning if time is 0 - not execute rest of code
-		if(newValue.getTime() != 0) {
+
 		// Propagate the update to the target point. Validate that the target
 		// point is available.
 		DataPointRT targetPoint = Common.ctx.getRuntimeManager().getDataPoint(
@@ -186,7 +171,6 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 		Common.ctx.getBackgroundProcessing().addWorkItem(
 				new SetPointWorkItem(vo.getTargetPointId(), newValue, this));
 		returnToNormal();
-		}
 	}
 
 	//
