@@ -108,10 +108,10 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 		// Bail out if already running a point link operation
 		synchronized (ready) {
 			if (ready.equals(Boolean.FALSE)) {
-				LOG.debug("PointLinkRT.ready is set to false.Any of scripts (in meaning source-target) will not work.");
+				LOG.trace("PointLinkRT.ready is set to false.Any of scripts (in meaning source-target) will not work.");
 				return;
 			}
-			LOG.debug("PointLinkRT.ready is set to true.Scripts (in meaning source-target) will work.");
+			LOG.trace("PointLinkRT.ready is set to true.Scripts (in meaning source-target) will work.");
 		}
 
 		// Propagate the update to the target point. Validate that the target
@@ -240,6 +240,6 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 	@Override
 	public void pointSetComplete() {
 		this.ready = true;
-		LOG.info("PointLinkRT.pointSetComplete. Ready property is set to true ");
+		LOG.trace("PointLinkRT.pointSetComplete. Ready property is set to true ");
 	}
 }
