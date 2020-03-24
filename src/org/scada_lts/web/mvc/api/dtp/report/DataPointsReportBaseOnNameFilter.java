@@ -75,7 +75,7 @@ public class DataPointsReportBaseOnNameFilter {
                 ObjectMapper mapper = new ObjectMapper();
                 json = mapper.writeValueAsString(result);
 
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+                return new ResponseEntity<String>("{\"data\":"+json+"}", HttpStatus.OK);
             }
 
             return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);

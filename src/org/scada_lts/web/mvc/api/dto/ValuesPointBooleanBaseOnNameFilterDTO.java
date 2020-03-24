@@ -2,6 +2,8 @@ package org.scada_lts.web.mvc.api.dto;
 
 import com.serotonin.bacnet4j.type.constructed.DateTime;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -9,25 +11,28 @@ import java.util.Objects;
  */
 public class ValuesPointBooleanBaseOnNameFilterDTO {
 
-    private long ts;
+    private String tsStr;
     private String name;
-    private Boolean value;
+    private String valueStr;
 
     public ValuesPointBooleanBaseOnNameFilterDTO() {
     }
 
     public ValuesPointBooleanBaseOnNameFilterDTO(long ts, String name, Boolean value) {
-        this.ts = ts;
+        ;
+        SimpleDateFormat DateFor = new SimpleDateFormat("YYYY-MM-dd HH:SS");
+        String stringDate= DateFor.format(new Date(ts));
+        this.tsStr = stringDate;
         this.name = name;
-        this.value = value;
+        this.valueStr = value.toString();
     }
 
-    public long getTs() {
-        return ts;
+    public String getTsStr() {
+        return tsStr;
     }
 
-    public void setTs(long ts) {
-        this.ts = ts;
+    public void setTsStr(String tsStr) {
+        this.tsStr = tsStr;
     }
 
     public String getName() {
@@ -38,12 +43,12 @@ public class ValuesPointBooleanBaseOnNameFilterDTO {
         this.name = name;
     }
 
-    public Boolean getValue() {
-        return value;
+    public String getValueStr() {
+        return valueStr;
     }
 
-    public void setValue(Boolean value) {
-        this.value = value;
+    public void setValueStr(String valueStr) {
+        this.valueStr = valueStr;
     }
 
     @Override
@@ -51,22 +56,22 @@ public class ValuesPointBooleanBaseOnNameFilterDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ValuesPointBooleanBaseOnNameFilterDTO that = (ValuesPointBooleanBaseOnNameFilterDTO) o;
-        return Objects.equals(ts, that.ts) &&
+        return Objects.equals(tsStr, that.tsStr) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(value, that.value);
+                Objects.equals(valueStr, that.valueStr);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ts, name, value);
+        return Objects.hash(tsStr, name, valueStr);
     }
 
     @Override
     public String toString() {
         return "ValuesPointBooleanBaseOnNameFilterDTO{" +
-                "ts=" + ts +
+                "tsStr='" + tsStr + '\'' +
                 ", name='" + name + '\'' +
-                ", value=" + value +
+                ", valueStr='" + valueStr + '\'' +
                 '}';
     }
 }
