@@ -23,21 +23,17 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
+import com.serotonin.mango.rt.dataImage.*;
+import com.serotonin.mango.rt.maint.work.PointLinkSetPointWorkItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.rt.dataImage.DataPointListener;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.IDataPoint;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.meta.ResultTypeException;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
-import com.serotonin.mango.rt.maint.work.SetPointWorkItem;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -45,14 +41,15 @@ import com.serotonin.web.i18n.LocalizableMessage;
 /**
  * @author Matthew Lohbihler
  */
-public class PointLinkRT implements DataPointListener, SetPointSource {
+public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 	public static final String CONTEXT_VAR_NAME = "source";
 	private final PointLinkVO vo;
 	private final SystemEventType eventType;
 	private Log LOG = LogFactory.getLog(PointLinkRT.class);
 
 	// Added to stop excessive point link calls
-	private volatile Boolean ready;
+	private volatile boolean ready;
+	private final Object lock = new Object();
 
 
 	public PointLinkRT(PointLinkVO vo) {
@@ -106,12 +103,11 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 	private void execute(PointValueTime newValue) {
 
 		// Bail out if already running a point link operation
-		synchronized (ready) {
-			if (ready.equals(Boolean.FALSE)) {
-				LOG.trace("PointLinkRT.ready is set to false.Any of scripts (in meaning source-target) will not work.");
+		synchronized (lock) {
+			if (!ready)
 				return;
-			}
-			LOG.trace("PointLinkRT.ready is set to true.Scripts (in meaning source-target) will work.");
+			else
+				ready = false; // Stop anyone else from using this
 		}
 
 		// Propagate the update to the target point. Validate that the target
@@ -169,7 +165,7 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 
 		// Queue a work item to perform the update.
 		Common.ctx.getBackgroundProcessing().addWorkItem(
-				new SetPointWorkItem(vo.getTargetPointId(), newValue, this));
+				new PointLinkSetPointWorkItem(vo.getTargetPointId(), newValue, this));
 		returnToNormal();
 	}
 
@@ -222,7 +218,7 @@ public class PointLinkRT implements DataPointListener, SetPointSource {
 
 	@Override
 	public int getSetPointSourceType() {
-		return SetPointSource.Types.POINT_LINK;
+		return Types.POINT_LINK;
 	}
 
 	@Override
