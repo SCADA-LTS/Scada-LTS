@@ -32,15 +32,8 @@ branches:
   only:
   - "/^siv/develop.*$/"
   - "/^siv/master.*$/"
-  - "/^feature/-#1056ConcurrentModificationException_if_you_open_more_than_two_tabs.*$/"
-  - "/^feature/#1009_History_of_pointvalue_No_annotation.*$/"
-  - "/^feature_s/#1094_.*$/"
-  - "/^feature_s/#1107_.*$/"
+  - "/^feature_s/#1133.*$/"
   - "/^feature/#1112_.*$/"
-  - "/^feature_s/#1115.*$/"
-  - "/^feature/#1130.*$/"
-  - "/^feature_s/#1128_.*$/"
-  - "/^feature/#1134.*$/"
 notifications:
   email: false
 env:
