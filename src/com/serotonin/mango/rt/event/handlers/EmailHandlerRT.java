@@ -186,10 +186,6 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         return messages;
     }
 
-    private static String errEmail(EventInstance evt, NotificationType notificationType, String alias, Exception e) {
-        return MessageFormat.format("Info about email: {0}, StackTrace: {1}", new Object[] {getInfoEmail(evt,notificationType,alias), ExceptionUtils.getStackTrace(e)});
-    }
-
     private static void validateEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses, String alias) throws Exception {
 
         String messageErrorEventInstance = "Event Instance null \n";
@@ -261,7 +257,13 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
             EmailWorkItem.queueEmail(toAddrs, content);
 
         } catch (Exception e) {
-            LOG.error(errEmail(evt,notificationType,alias,e));
+            LOG.error(
+                    MessageFormat.format(
+                            "Info about email: {0}, StackTrace: {1}",
+                            new Object[] {
+                                    getInfoEmail(evt,notificationType,alias),
+                                    ExceptionUtils.getStackTrace(e)}
+            ));
         }
     }
 }
