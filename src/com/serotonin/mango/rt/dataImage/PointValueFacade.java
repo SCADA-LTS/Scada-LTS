@@ -31,6 +31,11 @@ public class PointValueFacade {
     private final DataPointRT point;
     private final PointValueDao pointValueDao;
 
+    public PointValueFacade(int dataPointId,DataPointRT point) {
+        this.dataPointId = dataPointId;
+        pointValueDao = null;
+        this.point = point;
+    }
     public PointValueFacade(int dataPointId) {
         this.dataPointId = dataPointId;
         point = Common.ctx.getRuntimeManager().getDataPoint(dataPointId);

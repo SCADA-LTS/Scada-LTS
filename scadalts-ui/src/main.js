@@ -122,6 +122,7 @@ if (window.document.getElementById('export-import-ph') != undefined) {
 
 if (window.document.getElementById('example-chart-cmp') != undefined) {
   new Vue({
+    store,
     render: h => h(WatchListChartWidget)
   }).$mount('#example-chart-cmp')
 }

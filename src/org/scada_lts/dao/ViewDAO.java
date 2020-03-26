@@ -225,7 +225,10 @@ public class ViewDAO implements GenericDAO<View> {
 			return idName;
 		}
 	}
-
+	@Override
+	public List<View> findAllWithUserName(){
+		return null;
+	}
 	@Override
 	public List<View> findAll() {
 		return (List<View>) DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{}, new ViewRowMapper() );
