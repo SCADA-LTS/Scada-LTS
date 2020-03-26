@@ -2,15 +2,11 @@
   <div class="scada-widget">
     <div class="settings">
       <p class="smallTitle">Modern Chart</p>
-      <div class="flex-spacer"></div>
       <div>
-        <button @click="addNewChart()">
-          Add chart
-          <img src="/ScadaBR/images/add.png" class="settings-btn" />
-        </button>
+        <btn class="dropdown-toggle" @click="addNewChart()">Add chart <i class="glyphicon glyphicon-plus"></i></btn>
       </div>
     </div>
-    <div class="chart-container" v-bind:class="chartsLayout">
+    <div class="chart-container">
       <watch-list-chart
         v-for="chart in charts"
         v-bind:key="chart.id"
@@ -28,47 +24,23 @@ export default {
   components: {
     WatchListChart
   },
-  data() {
-    return {
-      charts: [],
-      layout: "horizontal",
-      userName: "admin"
-    };
-  },
   computed: {
-    chartsLayout: function() {
-      return {
-        horizontal: this.layout == "horizontal",
-        vertical: this.layout == "vertical"
-      };
+    charts() {
+      return this.$store.getters.getCharts;
+    },
+    chartId() {
+      return this.$store.getters.getNextChartId;
     }
   },
   mounted() {
-    this.userName = document
-      .getElementsByClassName("userName")
-      .item(0).innerText;
-    if (
-      this.$cookie.get(`WatchListChartDashboardLayout_${this.userName}`) !==
-        null &&
-      this.$cookie.get(`WatchListChartDashboardLayout_${this.userName}`) !== ""
-    ) {
-      this.layout = this.$cookie.get(
-        `WatchListChartDashboardLayout_${this.userName}`
-      );
-    }
-    if (
-      this.$cookie.get(`WatchListChartDashboard_${this.userName}`) !== null &&
-      this.$cookie.get(`WatchListChartDashboard_${this.userName}`) !== ""
-    ) {
-      this.charts = JSON.parse(
-        this.$cookie.get(`WatchListChartDashboard_${this.userName}`)
-      );
-    }
+    this.$store.commit('loadActiveUser');
+    this.$store.commit('loadCharts');
   },
   methods: {
     addNewChart() {
+      this.$store.commit('incrementChartId');
       let chart = {
-        id: this.generateUniqueChartId(),
+        id: this.chartId,
         pointId: undefined,
         chartLabel: undefined,
         chartColor: undefined,
@@ -86,7 +58,7 @@ export default {
         debug: undefined,
         lineChart: "stepLine",
         chartType: "live",
-        height: 600
+        height: 350
       };
       let points = [];
       let wachList = document.getElementById("watchListTable");
@@ -98,59 +70,14 @@ export default {
       }
       chart.pointId = points.toString();
       chart.chartLabel = document.getElementById('newWatchListName').value;
-      this.charts.push(chart);
-      this.$cookie.set(
-        `WatchListChartDashboard_${this.userName}`,
-        JSON.stringify(this.charts)
-      );
-      this.$cookie.set(
-        `WatchListChartDashboardLayout_${this.userName}`,
-        this.layout
-      );
+      this.$store.commit('addChart', chart);
     },
     chartEdited(chart) {
-      // console.debug(chart);
-      this.charts[chart.id - 1] = chart;
-      this.$cookie.set(
-        `WatchListChartDashboard_${this.userName}`,
-        JSON.stringify(this.charts)
-      );
-      this.$cookie.set(
-        `WatchListChartDashboardLayout_${this.userName}`,
-        this.layout
-      );
+      this.$store.commit('editChart', chart);
     },
     deleted(chart) {
-      // console.debug(chart);
-      this.charts = this.charts.filter(function(element) {
-        return element.id != chart.id;
-      });
-      this.$cookie.set(
-        `WatchListChartDashboard_${this.userName}`,
-        JSON.stringify(this.charts)
-      );
-      this.$cookie.set(
-        `WatchListChartDashboardLayout_${this.userName}`,
-        this.layout
-      );
+      this.$store.commit('deleteChart', chart);
     },
-    generateUniqueChartId() {
-      if (this.charts != undefined) {
-        if (this.charts.length != 0) {
-          let max = 0;
-          for (let i = 0; i < this.charts.length; i++) {
-            if (this.charts[i].id > max) {
-              max = this.charts[i].id;
-            }
-          }
-          return max + 1;
-        }
-      }
-      return 0;
-    },
-    debug() {
-      console.debug(this.charts);
-    }
   }
 };
 </script>
@@ -158,33 +85,15 @@ export default {
 .chart-container {
   width: 100%;
   display: flex;
-  margin-bottom: 50px;
-}
-.horizontal {
   flex-direction: column;
-}
-.vertical {
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-.vertical > * {
-  width: 50%;
+  margin-bottom: 50px;
 }
 .settings {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
 }
 .settings p {
   margin: 0;
-}
-.settings > * {
-  padding-left: 5px;
-}
-.settings-btn {
-  width: 16px;
-  height: 16px;
-}
-.flex-spacer {
-  flex-grow: 1;
 }
 </style>
