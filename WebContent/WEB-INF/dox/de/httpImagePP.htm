@@ -1,0 +1,44 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  The <b>URL</b> is the address of the image to be retrieved. Use the <img src="images/bullet_go.png"/> icon to test 
+  the URL. (Opens in a new window or browser tab.) The <b>Timeout</b> and <b>Retry</b> fields determine how long to 
+  wait for the web server to return the image, and how many times to retry the connection in the event of failures. If 
+  all of the retries are exhausted, a data point exception event is raised.
+</p>
+
+<p>
+  Images can be automatically scaled as required to save memory or file system space. (Images can be scaled up as well,
+  but since this does not increase resolution it is usually not practical to do.) The "percent" scaling type is a 
+  "relative" scaling method that results in an image that is scaled to the <b>Scale percentage</b> size of the original 
+  image. The "box" scaling method is an "absolute" scaling method that scales the original image so that it fits into 
+  the "box" defined by the given <b>Scale width</b> and <b>Scale height</b>.
+</p>
+
+<p>
+  The read limit allows the setting of a maximum response size that may be received. If the size of the image data 
+  exceeds the given value the data will be discarded and a data retrieval event will be raised.
+</p>
+
+<p>
+  If the image source is a web cam, you may enter live feed code into the provided text area. This code will be entered
+  verbatim into a new window or browser tab (surrounded by html and body tags). If the web cam live feed requires the 
+  use of an ActiveX component or Java applet you will need to install such components appropriately within the Mango
+  instance.
+</p>

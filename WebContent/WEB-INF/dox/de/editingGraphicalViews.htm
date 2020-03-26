@@ -1,0 +1,161 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Aper&ccedil;u</h1>
+<p>
+  Tous les attributs d'une vue graphique et de ses points associ&eacute;s sont modifiables dans la page &eacute;dition de la vue graphique. Les vues
+  contiennent une biblioth&egrave;que de <b>composants de vues</b>, qui peuvent &ecirc;tre statiques ou dynamiques bas&eacute;s sur un ou plusieurs points.
+</p>
+
+<h1>Attributs des vues graphiques</h1>
+<p>
+  Toutes les vues sont r&eacute;f&eacute;renc&eacute;es par un nom qui apparait dans la liste d&eacute;roulante. Ce nom devrait &ecirc;tre unique m&ecirc;me si ce n'est pas obligatoire.
+  Une vue peut avoir &eacute;ventuellement une <b>Image de fond</b> sur laquelle seront superpos&eacute;s ses composants.
+  N'importe quel type d'image peut servir d'image de fond, y compris les formats GIF, JPEG, et PNG.
+  L'option <b>Acces anonyme</b> permet aux utilisateurs non identifi&eacute;s d'acc&egrave;der &Oacute; la vue.
+  L'option <b>D&eacute;finir</b> signifie que les utilisateurs anonymes peuvent d&eacute;finir les valeur r&egrave;glables des points de la vue.
+  <b>Lecture</b> signifie que les utilisateurs anonymes peuvent acc&eacute;der &agrave; la vue mais pas modifier les valeurs.
+  <b>Aucun</b> interdit l'acc&egrave;s aux utilisateurs anonymes.
+</p>
+
+<h1>Composants de la vue</h1>
+<p>
+ Des composants peuvent &ecirc;tre ajout&eacute;s &agrave; la vue, s&eacute;lectionnez un composant dans la liste et cliquez sur l'ic&ocirc;ne <img src="images/plugin_add.png"/>.
+ Par d&eacute;faut les nouveaux composant sont plac&eacute;s au centre de la vue, mais peuvent &ecirc;tre d&eacute;plac&eacute;s par un glisser-d&eacute;poser, n'importe ou &agrave; l'int&eacute;rieur des limites de l'arri&egrave;re plan.
+ Notez que les points ajout&eacute;s peuvent se superpos&eacute;s. Lors de l'&eacute;dition de la vue, les composants sont &eacute;crits dans l'ordre dans lequel ils sont d&eacute;finis.
+ En cas de superposition de composants le comportement de ces chevauchements peut en &ecirc;tre affect&eacute;.
+</p>
+
+<h1>Contenu statique</h1>
+<p>
+  S&eacute;lectionnez le composant <b>HTML</b> pour ajouter un contenu statique. Par d&eacute;faut l'ic&ocirc;ne <img src="images/html_add.png"/>
+  repr&eacute;sente le contenu. (Cette ic&ocirc;ne est utilis&eacute;e tant que le contenu n'est pas d&eacute;fini.) Ces composants sont ind&eacute;pendants des valeurs des points,
+  ils apparaissent au chargement de la page et ne changent plus.
+  Glissez l'&eacute;l&eacute;ment &agrave; l'emplacement d&eacute;sir&eacute;. Pour l'&eacute;diter, placez le curseur sur l'&eacute;l&eacute;ment et affichez les contr&ocirc;les d'&eacute;dition. Pour le modifier,
+  cliquez sur l'ic&ocirc;ne <img src="images/pencil.png"/>) et entrez du code html valide. Le contenu sera int&eacute;gralement repris dans la vue,
+  ainsi tout code HTML valide (y compris du code Javascript) peut &ecirc;tre utilis&eacute;. Vous pouvez d&eacute;finir des styles directement ou utiliser des classes de style CSS &agrave; partir 
+  de fichiers r&eacute;f&eacute;renc&eacute;s. Par exemple, pour ajouter un label, les &eacute;l&eacute;ments suivant peuvent &ecirc;tre employ&eacute;s:
+</p>
+<pre>
+  &lt;span style="background-color:yellow;font-size:25px;font-weight:bold;border:2px solid orange;"&gt;My label&lt;/span&gt;
+</pre>
+<p>
+  Ceci affichera : <span style="background-color:yellow;font-size:25px;font-weight:bold;border:2px solid orange;">My label</span>
+</p>
+
+<p>
+  Le contenu statique peut aussi faire r&eacute;f&eacute;rence &agrave; d'autres serveurs. Par exemple, vous pouvez placez une image externe sur vos vues:
+</p>
+<pre>
+  &lt;img src="http://bluebrain.epfl.ch/webdav/site/bluebrain/shared/21june_06_singleNeuron_200.jpg"/&gt;
+</pre>
+<p>
+  Ceci affichera: <img src="http://bluebrain.epfl.ch/webdav/site/bluebrain/shared/21june_06_singleNeuron_200.jpg"/>
+</p>
+
+<h1>Composants de point</h1>
+<p>
+  L'affichage de tous les autres composants de la liste d&eacute;pendent d'un ou plusieurs points. Une fois le composant ajout&eacute; dans la vue, 
+  il est repr&eacute;sent&eacute; par d&eacute;faut par l'ic&ocirc;ne g&eacute;n&eacute;rique (<img src="images/icon_comp.png"/>)jusqu'&agrave; ce que le composant est assez d'informations pour &ecirc;tre 
+  affich&eacute; correctement. Ces informations d&eacute;pendent du type de composant. 
+  En mode &eacute;dition l'affichage de la vue est le m&ecirc;me qu'en mode utilisation. Lors de sa cr&eacute;ation un point est affich&eacute; et mis &agrave; jour  
+  ainsi l'utilisateur sait exactement comment apparaitra le point dans la vue.
+</p>
+
+<h1>traitement des composants du point</h1>
+<p>
+  On peut modifier l'affichage d'un composant en passant la souris sur le composant, cela affichera les commandes d'&eacute;dition.
+  En mode &eacute;dition les contr&ocirc;les affich&eacute;s sont diff&eacute;rents de ceux de la page vue sauf pour le contr&ocirc;le de l'information 
+  (<img src="images/information.png"/>), qui affiche la valeur actuelle du point et l'heure de mise &agrave; jour.
+</p>
+
+<p>
+  Les attributs d'un point de la vue peuvent &ecirc;tre param&egrave;tr&eacute;s en cliquant sur l'ic&ocirc;ne (<img src="images/plugin_edit.png"/>). 
+  Un panneau d'&eacute;dition apparait, qui permet de remplacer les attributs du point dans la vue. Par exemple, on peut changer un point r&egrave;glable en point non r&egrave;glable 
+  dans la vue (l'inverse n'est pas vrai, un point non r&egrave;glable ne peut devenir r&egrave;glable). C'est aussi dans ce panneau que l'on va d&eacute;finir le(s) point(s) &agrave; afficher.
+  Les points propos&eacute;s dans la liste d&eacute;rourantes d&eacute;pendent du type du composant choisi.
+</p>
+
+<p>
+  L'affichage d'un point peut &ecirc;tre chang&eacute; en cliquant sur l'ic&ocirc;ne (<img src="images/graphic.png"/>). Un panneau apparait, 
+  permettant de modifier l'affichage du point. Par exemple, le composant <b>GIF analogique</b> peut &ecirc;tre utilis&eacute; pour visualiser la valeur num&eacute;rique 
+  d'un point. Renseignez les valeurs <b>Min</b> et <b>Max</b>, les images seront uniform&eacute;ment r&eacute;parties sur la plage num&eacute;rique et affich&eacute;es correctement.  
+  Un <b>GIF binaire</b> est disponible uniquement pour les points binaires, et affichera une des deux images disponibles 
+  suivant la valeur actuelle du point. Des gifs anim&eacute;s sont aussi applicables pour repr&eacute;senter l'&eacute;tat de fonctionnement d'un &eacute;quipement
+  (quand il marche ou pas). On peut ajouter un texte &agrave; la repr&eacute;sentation d'un point en cochant l'option <b>Afficher texte</b>. 
+  <b>Simple point</b> Affiche seulement le texte du point. 
+</p>
+
+<p>
+  Le composant <b>GIF dynamique</b> est similaire au GIF analogique dans le sens qu'il peut afficher la valeur num&eacute;rique d'un
+  point, mais au lieu de choisir un ensemble d'images il dessine dynamiquement l'indicateur de la valeur. Par 
+  exemple, le pointeur peut &ecirc;tre dessin&eacute; sur l'image unique d'une montre. Pour ajouter un &eacute;l&eacute;ment dynamique, ajoutez un sous dossier 
+  dans le r&eacute;pertoire "graphics", dans ce nouveau dossier placez vos propres images et un fichier info.txt associ&eacute;. Puis, ajoutez une fonction 
+  dans le fichier "/resources/view.js". Le nom de la fonction doit &ecirc;tre celui du dossier pr&eacute;c&eacute;demment cr&eacute;&eacute;. Consultez par exemple le GIF Dial. 
+  
+</p>
+
+<p>
+  <b>Script serveur</b> est utilis&eacute; pour d&eacute;finir vos propres logiques d'affichage. Le langage de script utilis&eacute; 
+  est JavaScript, aussi connu ECMAScript. (La sp&eacute;cification compl&egrave;te ECMAScript est disponible ici 
+  <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">ici</a>.) Cependant,
+  il n'existe pas d'objets "window" ou "document" disponible puisque le script est interpr&eacute;t&eacute; cot&eacute; serveur et non dans le navigateur.
+ Au lieu de cela, la valeur actuelle du point est disponible &agrave; travers la variable <b>value</b> , et le timestamp de l'&eacute;chantillon 
+  via la variable <b>time</b>. En outre, les variables <b>pointComponent</b> et <b>point</b> sont aussi d&eacute;finies, 
+  avec des valeurs similaires &agrave; "htmlText" et "renderedText". Enfin "events" donne la liste des &eacute;v&egrave;nements actifs actuellement et "hasUnacknowledgdEvent" 
+  est une valeur bool&eacute;enne indiquant si au moins un des &eacute;v&egrave;nements actifs n'est pas acquitt&eacute;.
+   
+  
+</p>
+<p>
+  Toute valeur peut &ecirc;tre renvoy&eacute;e par le script et affich&eacute;e simplement, mais il est plus int&eacute;ressant d'ins&eacute;rer dans le script
+  du code HTML. Par exemple, le script suivant affichera selon le cas un message clignotant lorsque la valeur du point est "1"
+  (interpr&eacute;t&eacute; par "true" par le script):
+</p>
+<pre>
+  if (value)
+      return '&lt;blink&gt;&lt;span style="background-color:orange;font-size:15px;font-weight:bold;"&gt;Warning: point is ON&lt;/span&gt;&lt;/blink&gt;';
+  return "";
+</pre>
+<p>
+  Notez,que sur la page d'&eacute;dition si le script ne renvoit rien l'ic&ocirc;ne <img src='images/logo_icon.gif'/> sera affich&eacute;e  
+  afin d'acc&eacute;der aux contr&ocirc;le du point (survol de la souris sur l'ic&ocirc;ne).
+</p>
+
+<p>
+  Le timestamp de l'&eacute;chantillon est donn&eacute; en millisecondes avec le 1 janvier 1970 comme origine. Il peut &ecirc;tre converti en objet Date ECMA
+  avec le code suivant:
+</p>
+<pre>
+  var d = new Date();
+  d.setTime(time);
+</pre>
+<p>
+  L'objet Date "d" peut &ecirc;tre utilis&eacute; si nec&eacute;ssaire dans la suite du script.
+</p>
+
+<p>
+  Les points de la vue peuvent &ecirc;tre supprim&eacute;s en cliquant sur l'ic&ocirc;ne (<img src="images/plugin_delete.png"/>), en survolant
+  le point avec la souris.
+</p>
+
+<h1>Enregistrer une vue</h1>
+<p>
+  Tous les changements d'une vue sont sauvegard&eacute;s uniquement avec la bouton <b>Enregistrer</b>. En cas de changement erron&eacute;s 
+  sur la vue cliquez sur le bouton <b>Annuler</b>. Pour supprimer une vue cliquez sur le bouton <b>Supprimer</b>.
+</p>

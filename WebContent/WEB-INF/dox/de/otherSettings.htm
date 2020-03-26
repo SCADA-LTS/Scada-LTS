@@ -1,0 +1,53 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  UI performance represents the responsiveness of the user interface. This includes all activities that are managed via
+  the long poll mechanism, such as the maximum alarm level indicator, watchlist updating, event list updates, etc. If
+  the Mango host has a limited-power CPU, you may want to set the UI performance to a lower level to prevent users 
+  browsers from consuming too much of the hosts CPU.
+</p>
+
+<p>
+  If "Send errors to Serotonin" is checked, exceptions that this instance of Mango observes will be sent to Serotonin 
+  Software for review. If you are modifying the Mango source for your own purposes, please set this value to unchecked.
+</p>
+
+<p>
+  Use the "purge events" settings to set the maximum age of an event before it is purged from the database. Purging 
+  permanently deletes the event as well as any user comments associated with it.
+</p>
+
+<p>
+  Use the "purge report instances" settings to set the maximum age of a report instance before it is purged from the 
+  database. Purging permanently deletes the report instance. It is best to set this value as low as possible since 
+  reports can potentially consume a great deal of available storage space. Purging can be prevented by setting the 
+  "prevent purge" attribute on the report instance.
+</p>
+
+<p>
+  Click the <b>Purge all data</b> button to permanently delete all point samples currently in the database. This can be
+  useful for giving a Mango instance a "fresh start", especially if spurious data exists from configuration and set up
+  activities. 
+</p>
+
+<p>
+  User the "Discard point values future dated" settings to set the maximum amount of time into the future for which 
+  data points will accept new values. Any values with timestamps that exceed this value will be discarded, and an error
+  message will be written to the log.
+</p>

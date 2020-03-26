@@ -1,0 +1,38 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  This data source is used to collect generic information from Pachube. Data is organized on Pachube in feeds, which 
+  are collections of data streams. Since a data stream maps to a Mango point, the definition of a Pachube point is made
+  by specifying both a feed and a stream id. This is a polling data source.
+</p>
+
+<h1>Configuration</h1>
+<p>
+  Every data source requires a <b>Name</b>, which can be any description. The <b>Update period</b> determines how often 
+  the HTTP request to Pachube is made. Note that - depending on your account with Pachube - API request restrictions 
+  may apply. See <a href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a>
+  for details.
+</p>
+<p>
+  The <b>API key</b> is needed to access private data. You can find it in the "my settings" area when you log in to 
+  your Pachube account. The <b>Timeout</b> and <b>Retry</b> fields determine how long to wait for the web server to 
+  return the data, and how many times to retry the connection in the event of failures. If all of the retries are 
+  exhausted, a data source exception event is raised.
+</p>

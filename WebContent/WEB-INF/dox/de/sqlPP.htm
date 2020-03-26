@@ -1,0 +1,26 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>The attributes used to configure SQL data source points differ slightly depending upon whether the query is row-based or column-based. In both cases the <b>Data type</b> determines the data type of the ScadaBR data point. Values from the result set are automatically converted to this type. </p>
+
+<p>For row-based queries, the <b>Row identifier</b> is matched against the first column of the result set to find the row or rows that contain values (the second column) for this point. Time overrides are taken from the third column if it exists.</p>
+
+<p>For column-based queries, the <b>Column name</b> corresponds to the column name in the result set from which the point's value is extracted. The <b>Time override column</b> (optional) specifies the column to use as the point's time override. Note that multiple points can use the same time override if appropriate.</p>
+
+<h1>Update statements</h1>
+<p>An <b>Update statement</b> can optionally be defined for a point, which determines how the point's value can be set in the database. This is a standard SQL statement using "update" or "insert". If this statement is not defined the point will be considered non-settable.</p>

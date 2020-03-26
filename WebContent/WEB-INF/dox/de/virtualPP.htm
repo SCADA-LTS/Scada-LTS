@@ -1,0 +1,60 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>Points within a Virtual Data Source generate data without any external influence, either randomly or deterministically. Any supported data type can be created, and a number of options for changing values are available.</p>
+
+<p>
+  Attributes common to all virtual points are:
+</p>
+<ul>
+  <li><b>Name</b>: the name of the point for use as an identifier in lists of points.</li>
+  <li><b>Settable</b>: whether the point can be manually set or not.</li>
+  <li><b>Data type</b>: the data type of the point. See below for details.</li>
+  <li><b>Change type</b>: the algorithm that determines how the point changes. See below for details.</li>
+  <li><b>Start value</b>: the initial state of the point when the data source starts.</li>
+</ul>
+
+<h1>Binary Points</h1>
+<p>Binary points are in only one of two possible states: on or off, true or false, yes or no, etc. Three change types are available:</p>
+<ul>
+  <li><b>Alternate</b>: the point alternates at each run time between its two possible states</li>
+  <li><b>No change</b>: the point does not automatically change (useful for points that are manually settable)</li>
+  <li><b>Random</b>: the point changes state randomly (but will only change at a run time)</li>
+</ul>
+
+<h1>Multistate Points</h1>
+<p>Multistate points are in only one of multiple distinct states, such as on, off, or disabled. For all change types the possible values for the point much be defined using the <b>Values</b> control. Three change types are available:</p>
+<ul>
+  <li><b>Increment</b>: the point passes though each possible state in turn. If <b>Roll</b> is on, the point will return to the beginning once it reaches the last value. If Roll is off, the point will pass through all of the points in reverse before starting over at the beginning.</li>
+  <li><b>No change</b>: the point does not automatically change (useful for points that are manually settable)</li>
+  <li><b>Random</b>: the point changes state randomly (but will only change at a run time)</li>
+</ul>
+
+<h1>Numeric Points</h1>
+<p>Numeric points represent analog values, and can be any real number that can be represented as a 64-bit floating point. Five change types are available:</p>
+<ul>
+  <li><b>Brownian</b>: randomly generated Brownian motion, meaning that the point will change some randomly generated differential from its previous value. Lower and upper bounds for the value can be set with <b>Minimum</b> and <b>Maximum</b> respectively. The <b>Maximum change</b> value determines the maximum random differential that can be generated.</li>
+  <li><b>Increment</b>: the point changes by the <b>Change</b> amount every run time. The Change value may be negative. Lower and upper bounds for the value can be set with <b>Minimum</b> and <b>Maximum</b> respectively. If <b>Roll</b> is on, the point will return to the bound once it exceeds the opposite bound. If Roll is off, the point will use the negative value of Change once it exceeds a bound.</li>
+  <li><b>No change</b>: the point does not automatically change (useful for points that are manually settable)</li>
+  <li><b>Random</b>: the point will randomly assume (uniformly distributed) a value between the minimum and maximum bounds (inclusive).</li>
+  <li><b>Attractor</b>: the point will asymptotically approach the value of another numeric point in the system. The <b>Maximum change</b> value determines how large the jump toward the target value can be. The <b>Volitility</b> value can be used to represent random fluctuations in the point.</li>
+</ul>
+
+<h1>Alphanumeric Points</h1>
+<p>Alphanumeric points represent strings of characters, and thus are not subject to meaningful change via algorithm. As such, the only available change type is <b>No change</b>.</p>
