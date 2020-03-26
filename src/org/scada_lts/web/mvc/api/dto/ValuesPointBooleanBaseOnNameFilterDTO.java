@@ -20,7 +20,7 @@ public class ValuesPointBooleanBaseOnNameFilterDTO {
 
     public ValuesPointBooleanBaseOnNameFilterDTO(long ts, String name, Boolean value) {
         ;
-        SimpleDateFormat DateFor = new SimpleDateFormat("YYYY-MM-dd HH:SS");
+        SimpleDateFormat DateFor = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
         String stringDate= DateFor.format(new Date(ts));
         this.tsStr = stringDate;
         this.name = name;

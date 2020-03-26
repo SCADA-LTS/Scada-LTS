@@ -32,19 +32,21 @@ public class DataPointsReportBaseOnNameFilter {
 
     DataPointService dataPointService = new DataPointService();
 
-    @RequestMapping(value = "/api/dtp/report/get/{partOfNameDS}/{partOfNamePoint}/{startTime}/{endTime}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/dtp/report/get/{partOfNameDS}/{typeDS}/{partOfNamePoint}/{startTime}/{endTime}", method = RequestMethod.GET)
     public ResponseEntity<String> get(
             @PathVariable("partOfNameDS") String partOfNameDS,
+            @PathVariable("typeDS") String typeDS,
             @PathVariable("partOfNamePoint") String partOfNamePoint,
             @PathVariable("startTime") String startTime,
             @PathVariable("endTime") String endTime,
             HttpServletRequest request) {
 
         LOG.info( String.format(
-                "/api/dtp/report/get/ partOfName: %s, " +
-                   "partOfNameDS: %s, " +
+                "/api/dtp/report/get/ partOfNameDS: %s, " +
+                   "typeDS: %s, " +
+                   "partOfNamePoint: %s,  " +
                    "startTime: %s " +
-                   "endTime: %s ", partOfNamePoint, partOfNameDS, startTime, endTime) );
+                   "endTime: %s ", partOfNameDS, typeDS, partOfNameDS, startTime, endTime) );
 
         try {
             // valid data insert
@@ -69,7 +71,7 @@ public class DataPointsReportBaseOnNameFilter {
             if (user != null && user.isAdmin()) {
 
 
-                Map<DataPointVO, List<PointValue>> pointsAndValuesFromRangeTime = dataPointService.getDataPoints(partOfNameDS,partOfNamePoint, startTimeDT, endTimeDT);
+                Map<DataPointVO, List<PointValue>> pointsAndValuesFromRangeTime = dataPointService.getDataPoints(partOfNameDS, typeDS, partOfNamePoint, startTimeDT, endTimeDT);
                 List result = dataPointService.valuesPointBooleanBaseOnNameFilter2DTO(pointsAndValuesFromRangeTime);
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();

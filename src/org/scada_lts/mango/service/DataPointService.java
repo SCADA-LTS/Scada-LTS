@@ -154,13 +154,15 @@ public class DataPointService implements MangoDataPoint {
 		return dpList;
 	}
 
-	public Map<DataPointVO, List<PointValue>> getDataPoints(String partOfNameDS, String partOfNamePoint, Date startTime, Date endTime) {
+	public Map<DataPointVO, List<PointValue>> getDataPoints(String partOfNameDS, String typeDS, String partOfNamePoint, Date startTime, Date endTime) {
 
 		List<DataPointVO> listAllPoints = new LinkedList<>();
 		List<DataSourceVO<?>>  listDs = dataSourceDAO.getDataSourceBaseOfName(partOfNameDS);
 		for (DataSourceVO<?> ds : listDs) {
-			List<DataPointVO> dpList = dataPointDAO.getDataPoints(ds.getId());
-			listAllPoints.addAll(dpList);
+			if (ds.getType().name().equals(typeDS.toUpperCase().trim())) {
+				List<DataPointVO> dpList = dataPointDAO.getDataPoints(ds.getId());
+				listAllPoints.addAll(dpList);
+			}
 		}
 
 		List<DataPointVO> listPointToGetData = new LinkedList<DataPointVO>();
