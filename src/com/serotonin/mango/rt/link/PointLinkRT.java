@@ -23,7 +23,11 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
-import com.serotonin.mango.rt.dataImage.*;
+import com.serotonin.mango.rt.dataImage.DataPointListener;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
+import com.serotonin.mango.rt.dataImage.IDataPoint;
+import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataImage.PointLinkSetPointSource;
 import com.serotonin.mango.rt.maint.work.PointLinkSetPointWorkItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,10 +108,14 @@ public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 
 		// Bail out if already running a point link operation
 		synchronized (lock) {
-			if (!ready)
+			if (!ready) {
+				LOG.trace("PointLinkRT.ready is set to false.Any of scripts (in meaning source-target) will not work.");
 				return;
-			else
+			}
+			else {
+				LOG.trace("PointLinkRT.ready will set to false.Scripts (in meaning source-target) will not work.");
 				ready = false; // Stop anyone else from using this
+			}
 		}
 
 		// Propagate the update to the target point. Validate that the target
