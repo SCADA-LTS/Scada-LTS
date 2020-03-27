@@ -173,7 +173,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
             ResourceBundle bundle = Common.getBundle();
             subject = subjectMsg.getLocalizedMessage(bundle);
         } catch (Exception e) {
-            messageExceptionWhenGetSubjectEmail =  MessageFormat.format("StackTrace for subjectMsg {0}",e.getStackTrace());
+            messageExceptionWhenGetSubjectEmail =  MessageFormat.format("StackTrace for subjectMsg {0}",ExceptionUtils.getStackTrace(e));
         }
 
         String messages = new StringBuilder()
