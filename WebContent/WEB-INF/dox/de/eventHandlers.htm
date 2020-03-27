@@ -1,0 +1,118 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  Event handlers provide user-defined behaviour that is to be performed upon the raising of a particular event. Events 
+  can be raised due to various system conditions (see the Events section on the general help page for more information). 
+  When this happens, associated event handlers are executed.
+</p>
+<p>
+  There are currently three types of event handlers:
+</p>
+<ul>
+  <li><b>Email handlers</b>: send email messages to lists of recipients</li>
+  <li><b>Set point handlers</b>: cause a settable point to be set with a given value</li>
+  <li><b>Process handlers</b>: cause the given O/S process to be executed</li>
+</ul>
+
+<h1>Event types</h1>
+<p>
+  The event types section arranges all available event types in the system in a tree. The Point event detectors branch 
+  contains a list of all points (indicated with <img src="images/icon_comp.png"/>) in the system that have event 
+  detectors. The event detectors are listed under their respective point branches.
+</p>
+<p>
+  Event types for scheduled events, compound event detectors, and system events are listed under their respective 
+  branches. The Data source events branch contains a list of all data sources that can raise events. The events are 
+  listed under their respective data source.
+</p>
+<p>
+  To add a new event handler, click the event type that you wish to handle; the event handler details section will be 
+  displayed. The actual event handler will not be saved until you click the <img src="images/save_add.png"/> icon. To 
+  edit an existing handler, click the handler's name in the list of handlers under the event type's branch.
+</p>
+<p>
+  When you add a new handler, you must select the handler's <b>Type</b>. Once you save a handler, it's type is no 
+  longer editable.
+</p>
+
+<h1>Event alias</h1>
+<p>
+  An arbitrary event alias can be set by which the event handler will be visually identified. This alias is also used
+  as the basis of the subject line for email event handlers.
+</p>
+
+<h1>Editing existing handlers</h1>
+<p>
+  To save changes to a handler, click the <img src="images/save.png"/> icon at the top right of the Event handler 
+  section. To delete a handler, click the <img src="images/delete.png"/> icon.
+</p>
+
+<h1>Editing email handlers</h1>
+<p>
+  Email handlers maintain up to three recipient lists. The first is the list to which a message is sent when the event 
+  is initially raised. The second is an optional list to which to send escalations. The third is an optional list sent
+  when the event become inactive.
+</p>
+<p>
+  To add a mailing list to a recipient list, select it from the <b>Add mailing list</b> drop-down list and click the 
+  <img src="images/add.png"/> icon beside the drop-down. To add a user, select it from the <b>Add user</b> list and 
+  click the <img src="images/add.png"/> icon beside the drop-down. To add a free-form email address, enter the address 
+  in the <b>Add address</b> box and click the <img src="images/add.png"/> icon beside the box. To delete any recipient 
+  from a list, click the <img src="images/bullet_delete.png"/> icon beside the recipient. To test a recipient list, 
+  click the <img src="images/email_go.png"/> icon for the list.
+</p>
+<p>
+  To have escalation emails sent, check the <b>Send escalation</b> box, and enter the <b>Escalation recipients</b>. The 
+  escalation email will only be sent if the associated event has remained active for the <b>Escalate if active for</b> 
+  period.
+</p>
+<p>
+  An event inactive notification can be sent by checking the <b>Send inactive notification</b> box. If checked, the 
+  notification will be sent to all event recipients once the event becomes inactive. Note that, if an escalation email 
+  was not sent, the inactive notification will not be sent to the escalation list. Only those recipients that received 
+  an active notification will receive an inactive notification. This behaviour can be overridden by checking the 
+  <b>Override inactive recipients</b> checkbox, which allows the setting a list of specific inactive recipients. This 
+  can be useful if there are active notification recipients that should not be sent any subsequent emails (like a 
+  ticketing system).
+</p>
+
+<h1>Editing set point handlers</h1>
+<p>
+  When an event is raised, this handler will set the value of a given settable point. The <b>Target</b> is the settable 
+  point that will be set. Optionally, the point may be set with the value which raised the event, but this is only 
+  possible if the event was raised by a "value changed" point event detector, and the data type of the target is the 
+  same as the data type of the source. To have the target be set with the source value, check the <b>Use source 
+  value</b> box. Otherwise, enter the value to which to set the target in the <b>Value to set</b> area.
+</p>
+
+<h1>Editing process handlers</h1>
+<p>
+  This handler will execute a local process, or shell command, optionally when an event is raised or deactivated. 
+  The respective commands can be any shell command appropriate to the host. Commands should be specified as they would
+  be from a terminal command prompt. For very complex commands, you may find it convenient to write a shell script, 
+  and then call the script from ScadaBR.
+</p>
+
+<p>
+  If a process fails to initiate for any reason, a system event will be raised providing the failure description. 
+  Also, processes will be terminated if they run for longer than 15 seconds. Non-empty standard output from the process 
+  will be written to the ScadaBR log at an "information" level. Non-empty error output will be written to the Mango log
+  at an "error" level.
+</p>

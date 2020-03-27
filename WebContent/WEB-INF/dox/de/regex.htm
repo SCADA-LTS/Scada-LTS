@@ -1,0 +1,43 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  Regular Expressions (or RegEx) are a powerful and concise way of parsing textual data. Although their definitions 
+  initially appear arcane, with only a little experience a large number of text parsing problems become easily solvable. 
+  Different implementation of RegEx sometime have slightly differing implementations of its functions. A tutorial on 
+  the Java RegEx implementation can be found 
+  <a href="http://java.sun.com/docs/books/tutorial/essential/regex/" target="_blank">here</a>.
+</p>
+
+<p>
+  Many RegEx patterns used in ScadaBR are similar. Typically the intension is to locate a particular value in some text. 
+  As such, the pattern will consist of prefix and suffix strings that uniquely identify the value, and a group pattern 
+  that extracts the value. For example, the text to parse may look like this:
+</p>
+
+<pre>This is the text to parse with my value of 1234 embedded in the middle,</pre>
+
+<p>If the desired value is the "1234", a RegEx pattern that works may be:</p>
+<pre>my value of (.*?) embedded</pre>
+
+<p>
+  The important point is that the prefix (i.e. "my value of ") and the suffix (" embedded") never change betwen new 
+  instances of the text, and that they uniquely define the location of the desired value. At the extreme, note that the 
+  prefix "f " and suffix " " also work in this case, but are less like to work in larger texts, or if the text changes 
+  significantly.
+</p>

@@ -1,0 +1,45 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  Scheduled events are used to raise events at specified moments in time. The are similar to event detectors (in that 
+  they raise events), but are time-based rather than point-based.
+</p>
+
+<h1>Scheduled events list</h1>
+<p>
+  To add a new scheduled event, click the <img src="images/clock_add.png"/> icon. To edit an existing scheduled event, 
+  click the event's description in the "Scheduled events" list.
+</p>
+
+<h1>Editing scheduled event details</h1>
+<p>
+  The <b>Alias</b> is an optional value that will be used as the description for the event throughout the system if it 
+  is provided. Otherwise, the automatically generated description will be used.
+</p>
+<p>The <b>Alarm level</b> determines whether the scheduled event raises an alarm when active, and if so the severity of the alarm. See the general help page for information on Alarms.</p>
+<p>The <b>Schedule type</b> determines the basis period of the event. These types include hourly, daily, etc. For example, a schedule type of hourly will run once every hour. If a schedule that runs, say, twice a day is needed, it is necessary to define two daily scheduled events, one for each time. It is however possible to define a cron pattern that runs multiple times within a period. (See the "cron pattern" documentation for more information.)</p>
+<p>Selecting <b>Return to normal</b> determines if the alarm raised when the event is active is automatically returned to normal when the event becomes inactive. If Return to normal is selected, it is necessary to define the time at which the event becomes inactive.</p>
+<p>A scheduled event can be <b>Disabled</b> so that it does not run. This can be useful if you do not wish to delete the event, but also do not currently want it enabled.</p>
+
+<h1>Active/Inactive times</h1>
+<p>The fields available for editing active and inactive times depend upon the schedule type chosen. Most fields should require no explanation beyond that they are exclusively based upon the Gregorian calendar. For more information on cron patterns, see the "Cron pattern" documentation.</p>
+<p>Active/inactive times can straddle the given time period. For example, an hourly schedule can become active at 55:00 and inactive at 05:00 (thus active for 10 minutes). Note that it is possible, though not very useful, to define cron patterns that do not neatly activate and inactivate (i.e. they may activate multiple times before inactivating and vice versa).</p>
+
+<p>To save a scheduled event, click the <img src="images/save.png"/> icon at the top right. To delete an existing event, click the <img src="images/delete.png"/> icon.</p>
