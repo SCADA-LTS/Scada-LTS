@@ -34,6 +34,7 @@ branches:
   - "/^siv/master.*$/"
   - "/^feature_s/#1133.*$/"
   - "/^feature/#1112_.*$/"
+  - "/^feature_s/#1142.*$/"
 notifications:
   email: false
 env:
