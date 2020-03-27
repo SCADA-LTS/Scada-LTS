@@ -35,6 +35,7 @@ branches:
   - "/^feature_s/#1133.*$/"
   - "/^feature/#1112_.*$/"
   - "/^feature/#1151_.*$/"
+  - "/^bug_s/#1154_.*$/"
 notifications:
   email: false
 env:
