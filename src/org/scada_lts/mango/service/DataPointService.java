@@ -18,14 +18,18 @@
 package org.scada_lts.mango.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
@@ -34,7 +38,9 @@ import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataPointUserDAO;
+import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.PointLinkDAO;
 import org.scada_lts.dao.UserCommentDAO;
@@ -44,6 +50,7 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
+import org.scada_lts.web.mvc.api.dto.PointValueDTO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -73,6 +80,8 @@ import com.serotonin.util.Tuple;
 public class DataPointService implements MangoDataPoint {
 
 	private static final DataPointDAO dataPointDAO = new DataPointDAO();
+
+	private DataSourceDAO dataSourceDAO = new DataSourceDAO();
 
 	private static final UserCommentDAO userCommentDAO = new UserCommentDAO();
 
@@ -144,7 +153,58 @@ public class DataPointService implements MangoDataPoint {
 		}
 		return dpList;
 	}
-	
+
+	public Map<DataPointVO, List<PointValue>> getDataPoints(String partOfNameDS, String typeDS, String partOfNamePoint, Date startTime, Date endTime) {
+
+		List<DataPointVO> listAllPoints = new LinkedList<>();
+		List<DataSourceVO<?>>  listDs = dataSourceDAO.getDataSourceBaseOfName(partOfNameDS);
+		for (DataSourceVO<?> ds : listDs) {
+			if (ds.getType().name().equals(typeDS.toUpperCase().trim())) {
+				List<DataPointVO> dpList = dataPointDAO.getDataPoints(ds.getId());
+				listAllPoints.addAll(dpList);
+			}
+		}
+
+		List<DataPointVO> listPointToGetData = new LinkedList<DataPointVO>();
+		for (DataPointVO dpVO : listAllPoints) {
+			if (dpVO.getName().contains(partOfNamePoint)) {
+				listPointToGetData.add(dpVO);
+			}
+		}
+		Map<DataPointVO, List<PointValue>> pointsWithListData = new HashMap<>();
+
+		for (DataPointVO dp : listPointToGetData) {
+			List<PointValue> data = pointValueDAO.filtered(
+					" dataPointId = ? and ts > ? and ts < ?",
+					 new Object[]{dp.getId(),
+					 startTime.getTime(),
+					 endTime.getTime()},
+					0 );
+			pointsWithListData.put(dp,data);
+		}
+
+		return pointsWithListData;
+	}
+
+	public List<PointValueDTO> valuesPointBooleanBaseOnNameFilter2DTO(Map<DataPointVO, List<PointValue>> values) {
+		List<PointValueDTO> result = new LinkedList<>();
+		for (Map.Entry<DataPointVO, List<PointValue>> entry : values.entrySet()) {
+			DataPointVO dpVO = entry.getKey();
+
+			List<PointValue> values4DpVO = entry.getValue();
+			for (PointValue pv : values4DpVO) {
+				result.add(new PointValueDTO(
+						pv.getPointValue().getTime(),
+						dpVO.getName(),
+						pv.getPointValue().getValue().toString()
+				));
+			}
+		}
+		return result;
+	}
+
+
+
 	public void save(String value, String xid, int typePointValueOfREST ) {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
 		
