@@ -1,0 +1,37 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>Reports in ScadaBR have two representations: <b>templates</b> which define the content of a report, and <b>instances</b> which are the result of running a report with a given template. Simply: the report engine creates instances from templates. A template has attributes like a name, a list of points that it includes, and the date range of values it extracts. An instance will inherit its name from the template, but have its own attributes such as the time it ran, the run duration, the number of records it includes, and, of course, the data.</p>
+<p>An instance can be considered a snapshot of the data at the time it was run. Instance attributes cannot be changed. Also, the data that the instance reports exists as long as the instance exists. (I.e. it survives the purging of the source data.) For this reason, it is important to purge report instances&mdash;especially large instances&mdash;when they are no longer needed since they can consume large amounts of storage.</p>
+<p>Report templates&mdash;and the instances they create&mdash;belong to the user that created them. They cannot be explicitly shared within the system, but may be shared implicitly. See the "Report templates" documentation for more information.</p>
+
+<h1>Report queue</h1>
+<p>The Report queue lists all of the report instances for the current user. This list does not automatically refresh itself. A manual list refresh can be triggered by clicking the <img src="images/control_play_blue.png"/> icon. Certain events, however, will also trigger a list refresh, such as running a report.</p>
+<p>Report instances in any state will be listed, whether they be completed or still running. The columns of the list will reflect the current state of the instance.</p>
+<p>The columns of the list have the following definitions:</p>
+<ul>
+  <li><b>Report name</b>: the name inherited from the report template. Once the instance is created the report name does not change even if the name of the template is changed.</li>
+  <li><b>Run time start</b>: the time that the report engine began creating the report instance</li>
+  <li><b>Run duration</b>: the amount of time it took to create the instance</li>
+  <li><b>From</b>: the time from which report records were selected (inclusive)</li>
+  <li><b>To</b>: the time until which report records were selected (exclusive)</li>
+  <li><b>Records</b>: the total number of records selected</li>
+</ul>
+<p>The <b>Do not purge</b> checkbox allows users to prevent important report instances from being deleted by the scheduled purge process. (See the "Other settings" documentation for more information on report purging.) This feature should only be used when necessary since report instances can potentially consume large amounts of storage.</p>
+<p>The final column in the table provides controls for managing instances. The <img src="images/bullet_down.png"/> icon initiates the download of a CSV file of the report's data, suitable for loading into spreadsheet software. The <img src="images/icon_chart.png"/> icon opens a new browser window displaying report instance information, data statistics, and an image chart of the report data. Clicking the <img src="images/bullet_delete.png"/> icon deletes the report instance. Note that large report instances may take some time to delete.</p>

@@ -1,0 +1,33 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>The Virtual Data Source is a data source without any connection to an external or physical system. It exists entirely within the system's own memory space. The data it produces is either random, or deterministic depending on how you configure the points.</p>
+
+<p>
+  Virtual data sources can be useful in a number of ways:
+</p>
+<ul>
+  <li>A simple way to validate that your system is working</li>
+  <li>It can create predictable data with which to benchmark your real data</li>
+  <li>You can control equipment in more complex ways. For example, if your home lighting is controlled by the system, you could use a random binary point to turn the lights off and on while you are on vacation, creating the impression that you are still home.</li>
+  <li>Anywhere where deterministic or random data is useful</li>
+</ul>
+
+<p>
+  The data source configuration is simple. It requires only a name, and the period of time between each data update. For example, if you choose "2 minutes", then every two minutes the algorithms that change the virtual point values for that data source will be run.
+</p>

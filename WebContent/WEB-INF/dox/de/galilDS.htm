@@ -1,0 +1,28 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>The Galil data source is used to exchange data with Galil DMC-21x2 equipment accessible over an I/P network. Equipment can be in a local network or intranet, or could also be anywhere in the internet. This is a polling data source.</p>
+
+<h1>Configuration</h1>
+<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Host</b> and <b>Port</b> settings determine how to find the equipment on the network. The host can be a domain name or an IP address. The <b>Timeout</b> and <b>Retries</b> fields determine the system behaviour in the case of a polling failure. The data source waits the given number of timeout milliseconds for a response from the equipment. If it is not received the request will be retried the given number of times. The <b>Update period</b> determines how often the equipment is polled for data. </p>
+<p>Once a connection is established with the equipment, it is kept alive for as long as the equipment allows. Closed connections cause an automatic reopen attempt.</p>
+
+<h1>Command testing</h1>
+<p>Equipment connectivity and state can be tested using the <b>Galil command testing</b> section. This feature opens a new connection over which to send the command, so it will not conflict with any running data source. However, if the equipment only allows a restricted number of simultaneous connections, connectivity could fail.</p>
+<p>The <b>Command</b> value can be any valid command string (excluding the CRLF terminator, and optionally excluding a closing semi-colon). The result of the command will be displayed below the Execute button. If the connection to the equipment failed, the error message will be displayed. The connection will timeout after the given timeout duration if no response is received. If an error response is received (i.e. '?' is received), the message "(error response)" will be displayed.</p>
