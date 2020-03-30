@@ -56,7 +56,7 @@ public class ModbusSerialDataSource extends ModbusDataSource {
 	public void initialize() {
 		SerialParameters params = new SerialParameters();
 		params.setCommPortId(configuration.getCommPortId());
-		params.setPortOwnerName("Mango Modbus Serial Data Source");
+		params.setPortOwnerName("Modbus Serial Data Source");
 		params.setBaudRate(configuration.getBaudRate());
 		params.setFlowControlIn(configuration.getFlowControlIn());
 		params.setFlowControlOut(configuration.getFlowControlOut());

@@ -51,7 +51,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 public class HttpSenderRT extends PublisherRT<HttpPointVO> {
-    public static final String USER_AGENT = "Mango M2M HTTP Sender publisher";
+    public static final String USER_AGENT = "HTTP Sender publisher";
     private static final int MAX_FAILURES = 5;
 
     public static final int SEND_EXCEPTION_EVENT = 11;
