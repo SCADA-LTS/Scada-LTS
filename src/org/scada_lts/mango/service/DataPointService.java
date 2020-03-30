@@ -29,8 +29,8 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
+import org.scada_lts.cache.CacheStatus;
 import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataPointUserDAO;
@@ -356,12 +356,10 @@ public class DataPointService implements MangoDataPoint {
 
 		List<PointEventDetectorVO> result = null;
 		try {
-			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (cacheEnable) {
-				result = EventDetectorsCache.getInstance().getEventDetectors(dataPoint);
-			} else {
-				result = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
-			}
+			result = (CacheStatus.isEnable)
+			? EventDetectorsCache.getInstance().getEventDetectors(dataPoint)
+			: pointEventDetectorDAO.getPointEventDetectors(dataPoint);
+
 		} catch (SchedulerException | IOException e) {
 			EventDetectorsCache.LOG.error(e);
 		}
