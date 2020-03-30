@@ -185,8 +185,6 @@ public class DataSourceDAO {
 			LOG.trace("getDataSources()");
 		}
 
-		Object[] args = new Object[] { String.format("'%%%s%%'",partOfNameDS) };
-
 		List<DataSourceVO<?>> objList = DAO.getInstance().getJdbcTemp().query(
 				DATA_SOURCE_SELECT_WHERE_LIKE_NAME,
 				new Object[]{String.format("%%%s%%",partOfNameDS)},
