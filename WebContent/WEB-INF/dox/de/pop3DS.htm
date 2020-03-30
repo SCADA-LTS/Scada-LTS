@@ -1,0 +1,25 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>This data source is used to collect generic information from emails received at a given POP3 mailbox. The messages in the mailbox can have been received from any source. Using mechanisms similar to an email client, the data source connects to the POP3 mailbox and individually processes the messages found there. Messages are deleted after processing. Regular Expressions are used to extract the desired information. This is a polling data source.</p>
+
+<h1>Configuration</h1>
+<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Inbox check period</b> determines how often the mailbox is checked for messages. The <b>POP3 server</b> is the domain name or IP address of the server that hosts the mailbox. The standard POP3 port 110 is used to connect. The <b>Inbox username</b> and <b>Inbox password</b> must be provided for access.</p>
+
+<p>The <b>Test content</b> area is where sample email content can be put to test a point's RegEx. See the "POP3 point properties" documentation for more information.</p>

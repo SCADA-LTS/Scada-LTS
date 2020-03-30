@@ -1,0 +1,27 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>The NMEA listener data source is used to receive messages from NMEA 0183 compliant equipment. Devices are connected via RS232 or RS485 (requires adapter) ports. This data source receives regular updates from the connected devices; it does not poll.</p>
+
+<h1>Configuration</h1>
+<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Port</b> selection provides a list of all available serial ports on the host hardware. This corresponds to the port into which the NMEA equipment is connected. The <b>Baud rate</b> is the rate at which your equipment can communicate its messages. Typically this value is 4800, but other values are possible. Consult your NMEA documentation for details. Checksum values are validated if they are included in the message. If the checksum validation fails, the message is ignored.</p>
+
+<h1>NMEA message listener</h1>
+<p>Once the NMEA equipment has been connected to the host, a listener can be started that waits for messages to arrive. The arrival rate of messages depends upon the equipment. Messages will be displayed excluding the message "envelop", i.e. the "$" start indicator, the CRLF end indicator, and the "*" and checksum value if it is present.</p>
+<p>Messages that are displayed are suitable for copying and pasting into the <b>Regex test message</b> box for testing against your points' regex.</p>

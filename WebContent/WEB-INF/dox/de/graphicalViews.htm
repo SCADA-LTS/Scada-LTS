@@ -1,0 +1,55 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>A Graphical view is similar to a watch list, but instead provides a graphical representation of selected points. Point values and value times update automatically&mdash;you do not need to refresh the page. (In fact, the system operates more efficiently if you don't.)</p>
+
+<h1>Selecting a graphical view</h1>
+<p>
+  A user may have multiple graphical views, but may only view one at a time. Use the dropdown control to select the 
+  view that you wish to display. To create a new view, click the add icon (<img src="images/icon_view_new.png"/>) in 
+  the top right-hand corner of the watch list section. To edit an existing view, click the edit icon 
+  (<img src="images/icon_view_edit.png"/>). In either case, the <b>Graphical view edit</b> page will be displayed.
+</p>
+
+<p>
+  You may see graphical views in your list that you did not create. If so, these views were "shared" with you by the 
+  person who created them. You will be at least allowed to view them, but you may not be allowed to set values via the
+  view if you were not granted "set" permission. If you no longer wish to have the view in your list, use the delete 
+  icon (<img src="images/icon_view_delete.png"/>) to "unshare" the view. (Unsharing does not delete the view.)
+</p>
+
+<h1>Background images</h1>
+<p>Graphical views may optionally be presented upon background images. Backgrounds can be set in the graphical view editing page.</p>
+
+<h1>Points in graphical views</h1>
+<p>A point can belong to multiple graphical views, so you can create views that are as specific as you require.</p>
+<p>
+  The representation of each point in your view depends upon that point's configuration. Points can be rendered as 
+  simply a current value, or an arbitrary icon set can be used that visually represents the point's value. When the 
+  user rolls over the point with the mouse, a set of controls will be displayed (unless they have been explicitly 
+  suppressed). The actual controls displayed will also depend upon the point's configuration. Hovering over the info 
+  icon (<img src="images/information.png"/>) will display the point's current value and last change time. Points that 
+  are settable (and for which you have permission to set) will show a set icon (<img src="images/icon_edit.png"/>). 
+  Hovering your mouse over this icon will present options for setting the point. Points that are configured for 
+  charting will show a chart icon (<img src="images/icon_chart.png"/>). Hovering over this icon will present the 
+  current chart. Charts are updated automatically, like values and times, so when new data is available the chart will 
+  update itself. If a warning icon (<img src="images/warn.png"/>) is displayed beside a point, it indicates that is 
+  inactive, either because it or its data source are disabled. A wait indicator (<img src="images/hourglass.png"/>) 
+  means that the point currently has no value, and is likely waiting for its value to be received.
+</p>

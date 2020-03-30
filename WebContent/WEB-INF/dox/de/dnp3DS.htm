@@ -1,0 +1,33 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Configuration</h1>
+<p>Every datasource requires one <b>Name</b>, that may contain any
+description.</p>
+<p>The <b>Source Address</b> is the master address, or, the
+datasource's to be registered address and the <b>Slave Address</b> is
+the remote device address to which you wish to communicate.</p>
+<p>The <b>RBE Poll Period</b> corresponds to the time interval upon
+which the system makes requisitions of classes 1, 2 an 3 (events) to the
+slave device. The <b>Static Poll Period</b> corresponds to the time
+interval upon which the system makes requisitions of class 0 to the
+device and is <b>relative to the RBE polling period</b>, so, if RBE
+period = 2s and Static Poll Period = 30,<b> the datasource will
+require class 0 data every 60 seconds to the device.</b></p>
+

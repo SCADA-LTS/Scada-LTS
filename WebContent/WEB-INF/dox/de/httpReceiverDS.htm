@@ -1,0 +1,116 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  The HTTP receiver data source is used to accept data delivered to the system using HTTP GET or POST methods. Data can 
+  be delivered by anything that can act as an HTTP client, the most obvious example of which is a web browser, although 
+  there are many others.
+</p>
+<p>
+  Multiple HTTP receiver data sources can be configured, each of which optionally listens for different data (e.g. 
+  device IDs or source IP addresses).
+</p>
+<p>
+  Data is received at the path <b>httpds</b>. So, if your system is accessible at, for example, 'http://localhost/', 
+  data should be directed to 'http://localhost/httpds'. <a href="httpds?testKey=testValue" target="_blank">Try it 
+  now</a>. This link sends a parameter called 'testKey' with the value 'testValue'. Because there is likely no receiver 
+  listening for this parameter name, you will probably see the message 'Unconsumed key: testKey'. This is normal; the 
+  message is a convenience to indicate to users that data is being sent that is not being used.
+</p>
+
+<h1>Configuration</h1>
+<p>Every data source requires a <b>Name</b>, which can be any description.</p>
+<p>The <b>Remote IP white list</b> is a security feature that instructs the data source to ignore requests with a source IP address that does not match any of the given IP address masks. See below for more information on mask formatting.</p>
+<p>The <b>Device ID white list</b> provides additional security as well as data routing by allowing the specification of the devices for which this data source listens. Device ID matching is not case sensitive. Also, the '*' can be used to end a device ID mask. For example, the mask 'site10*' will match device IDs 'site10', 'SITE10temp', 'site10HUM', etc. The device ID is specified in the HTTP request with the parameter name <b>__device</b> (with two underscores). For information on other request parameters, see the Request parameters below</p>
+<p>'White lists', which are lists of elements to allow, are used because they are inherently more secure than 'black lists', which are lists of elements not to allow. To add a value to a white list, enter it in the appropriate text box and click the accompanying <img src="images/add.png"/> icon. To remove a value, click the <img src="images/bullet_delete.png"/> icon beside the value.</p>
+
+<h1>IP address masks</h1>
+<p>A 'mask' is an IP address that may include wild cards ('*') or number ranges. IP addresses are specified using the IPv4 format, which consists of four dot-separated values each of which is a number between 0 and 255 (e.g. '192.168.0.10'). Each of the four parts of the mask can be either a specific number that must be matched, a '*' indicating that any number is a match, or a number range given as two valid numbers separated with a '-' character. For example, a valid mask is '192.168.10-15.*', which means that the first number must be 192, the second must be 168, the third can be any number between 10 and 15 inclusive, and the fourth can be any number (between 0 and 255). The default mask of '*.*.*.*' means that any IP address is accepted.</p>
+
+<h1>Request parameters</h1>
+<p>
+  Requests are delivered using normal HTTP parameterized request formats. When using the GET method, the format is 
+  'http://&lt;domain name and port&gt;/&lt;optional path&gt;/httpds?param1=value1&amp;param2=value2'. Request sent with the 
+  POST method typically require a specialized client; please refer to the client's documentation if you wish to use 
+  POST.
+</p>
+<p>
+  Point values can be specified in two ways. The first is with the 'pointName=pointValue' format. The second is by 
+  providing the key and value as two separate parameters using the key prefixes '__point' and '__value'. For example, 
+  '__pointFoo=pointName&amp;__valueFoo=pointValue' (collated by matching the 'Foo' that follows the prefix) has the same 
+  effect as 'pointName=pointValue'.
+</p>
+<p>The order in which parameters are provided in the request is not significant.</p>
+<p>The following special parameter keys are recognized. Note that all begin with two underscores. All are optional.</p>
+<p>
+  Timestamps can be represented in multiple ways. If a timestamp is detected (i.e. is not empty), Mango will attempt to 
+  parse it first in the format "yyyyMMddHHmmss", then "yyyy-MM-dd'T'HH:mm:ss'Z'", and finally as a UTC millisecond count
+  since midnight on Jan 1, 1970. (See the "Date/time formats" documentation for more information.)
+</p>
+<ul>
+  <li><b>__device</b> &ndash; the device ID of the sender</li>
+  <li><b>__time</b> &ndash; the time override</li>
+  <li><b>__point</b> &ndash; the prefix which provides an with which an alternate method of providing a point name. The characters following the prefix must match the characters that follow a '__value' parameter prefix. The characters that follow the prefix are used for matching only, and are otherwise insignificant.</li>
+  <li><b>__value</b> &ndash; the prefix which provides the corresponding value for a key given with a '__point' prefix.</li>
+</ul>
+
+<h1>Testing with the HTTP receiver listener</h1>
+<p>You can examine the data that your system is receiving by clicking the 'Listen for HTTP data' button. Note that the current white list configuration parameters will be used to filter requests; to see all incoming data, add the IP address mask '*.*.*.*' and the device ID mask '*'.</p>
+<p>As data is received, its specifics will be displayed in the listener box. The first line of results provides the source IP address (which can thereafter be used in the IP address white list if appropriate). The second line shows the device ID, or '(none)' if the parameter was not present.</p>
+<p>The third line shows the time of the request. The time defaults to the system time, but can be overridden by providing the <b>__time</b> parameter.</p>
+<p>The remaining lines of data specify the individual parameter keys and values that were received, in the format 'key=value'.</p>
+<p>The listener will continue to listen for requests until 'Cancel' is pressed, or the page is unloaded.</p>
+
+<h1>Examples</h1>
+<p>Domain names have been omitted for brevity</p>
+<p>
+  <b>httpds?__device=boilerA&amp;temp=215.5&amp;hum=77.4&amp;state=running</b> <br/>has the same result as<br/> <b>httpds?__device=boilerA&amp;__point1=temp&amp;__value1=215.5&amp;__pointFoo=hum&amp;__valueFoo=77.4&amp;__pointBar=state&amp;__valueBar=running</b>
+</p>
+<p>
+  <b>httpds?presents=true&amp;__time=20071225073000</b>
+</p>
+
+<h1>HTTP Responses</h1>
+<p>
+  Successful requests sent to the receiver will receive a '200 OK' response. Requests that result in errors or warnings 
+  will receive the following potential error or warning messages in the HTTP response content:
+</p>
+<ul>
+  <li>
+    'Time override parse error' indicating that the given time override was not correctly formatted. The request will 
+    have been processed using the system time.
+  </li>
+  <li>
+    'Unconsumed key' indicating that the given parameter key was not used by any HTTP receiver data point.
+  </li>
+  <li>
+    'Value not found for paired point key' indicating that a parameter key specified using the '__point/__value' 
+    mechanism was not matched with a value. The parameter will not have been included in the request processing.
+  </li>
+</ul>
+<p>
+  By default only the above error or warning messages are returned in the HTTP response. If you require additional 
+  content to be returned you can specify static content as the prologue (written before error and warning messages) and
+  epilogue (written after error and warning messages). Use the following insert statements (or analogous update 
+  statements if the keys already exist) to specify your customized content:
+</p>
+<pre>
+  insert into systemSettings (settingName, settingValue) values ('httpdsPrologue', 'my prologue content')
+  insert into systemSettings (settingName, settingValue) values ('httpdsEpilogue', 'my epilogue content')
+</pre>

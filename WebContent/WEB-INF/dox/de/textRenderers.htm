@@ -1,0 +1,57 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Vue d'ensemble</h1>
+
+<p>Le formatage permet de mettre en forme une valeur brute afin de la rendre plus explicite pour l'utilisateur. Les options de format d&eacute;pendent du type de la valeur &agrave; afficher. Ainsi seuls les formats applicables &agrave; la valeur d'un point s'afficheront dans la liste d&eacute;roulante du champ <b>Type</b>.</p>
+
+<h1>Binaire</h1>
+<p>Le type <b>Binaire</b> permet &agrave; l'utilisateur de d&eacute;finir un label pour repr&eacute;senter chacun des deux &eacute;tats binaires(0 et 1). Tous les labels sont autoris&eacute;s. Vous pouvez aussi d&eacute;finir une couleur pour chaque &eacute;tat. Exemples typiques d'&eacute;tiquettes off/on, marche/arr&ecirc;t, ou vrai/faux.</p>
+
+<p>Le format par d&eacute;faut pour une valeur binaire est <b>Simple</b>. Il affiche la valeur brute, 0 ou 1.</p>
+
+<h1>Num&eacute;rique-</h1>
+<p>
+  L'option <b>Analogique</b> permet &agrave; l'utilisateur de d&eacute;finir un <b>Format</b> qui pr&eacute;cisera par exemple le nombre de 
+  d&eacute;cimales &agrave; afficher, et la pr&eacute;sence de s&eacute;parateurs de millier. (Consultez la documentation "Format nombre"). Un 
+  <b>Suffixe</b> peut &eacute;galement &ecirc;tre ajout&eacute; pour afficher les unit&eacute;s de la valeur. Les suffixes peuvent contenir des entit&eacute;s HTML tel que &deg; 
+  (&eacute;crit '&amp;deg;') Pour l'affichage des pages . Consultez le site 
+  <a href="http://www.w3.org/TR/REC-html40/sgml/entities.html" target="_blank">http://www.w3.org/TR/REC-html40/sgml/entities.html</a> 
+ </p>
+
+<p>Le type <b>Simple</b> est le format par d&eacute;faut pour les valeurs num&eacute;riques. Il affiche la valeur sans modification.</p>
+
+<p>Le type <b>Plage</b> permet de d&eacute;finir un format de nombre <b>Format</b> (Consultez la documentation "Format nombre"), et des textes de votre choix pour repr&eacute;senter une valeur selon des plages de valeurs. On peut assigner &agrave; chaque plage une couleur distincte. Le champ format sera appliqu&eacute; si la valeur ne correspond &agrave; aucune plage d&eacute;finie. Par exemple, on peut trier une temp&eacute;rature "froid", "normal" et "chaud", et associer une couleur pour chaque plage.</p>
+
+<p>
+  Le type <b>Temps</b> permet &agrave; l'utilisateur de d&eacute;finir un <b>Format</b> (Consultez la documentation "date/time format").  
+  Un format de date typique serait "JJ,MM,yyyy". Une heure serait "HH:mm:ss". Les formats Date et heures peuvent &ecirc;tre combin&eacute;s si n&eacute;cessaire. 
+  Il est &eacute;galement possible de convertir des temps en millisecondes. Des exposants puissance 10 seront utilis&eacute;es pour ces conversions.
+  Par exemples pour convertir des secondes entrez le param&egrave;tre 3, pour des microsecondes entrez -3. Si la valeur est d&eacute;j&agrave; en millisecondes, entrez 0. Les valeurs de temps sont suppos&eacute;es d&eacute;buter &agrave; 0 
+  le 1 janvier 1970 &agrave; minuit
+</p>
+
+<h1>Multistate</h1>
+
+<p>L'option <b>Simple</b> est le format par d&eacute;faut pour les valeurs multistate. Cela affiche la valeur brute sans changement.</p>
+
+<p>l'option <b>Multistate</b> permet d'associer un texte, arbitrairement choisi, &agrave; la valeur d'un &eacute;tat pour repr&eacute;senter les diff&eacute;rents &eacute;tats du point. Chaque &eacute;tat peut aussi prendre une couleur diff&eacute;rente. Si un &eacute;tat n'a pas de label associ&eacute;, la valeur sera affich&eacute;e. Exemples typiques de labels on/off/d&eacute;sactiv&eacute;, ou off/chaud/froid.</p>
+
+<h1>Alphanumerique</h1>
+
+<p>L'option <b>Simple</b> est le seul format alphanumerique. Les valeurs brutes seront affich&eacute;es, accompagn&eacute;es en option d'un <b>Suffixe</b>.</p>
