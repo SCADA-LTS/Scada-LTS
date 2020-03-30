@@ -192,7 +192,7 @@ public class VersionCheck extends TimerTask {
 		if (responseCode != HttpStatus.SC_OK)
 			throw new HttpException("Invalid response code: " + responseCode);
 
-		Header devHeader = postMethod.getResponseHeader("Scada-LTS-dev");
+		Header devHeader = postMethod.getResponseHeader("Mango-dev");
 		if (devHeader != null) {
 			String devVersion = devHeader.getValue();
 			String stage = devVersion.substring(devVersion.length() - 1);
