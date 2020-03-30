@@ -62,7 +62,7 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
         SerialParameters params = new SerialParameters();
         params.setCommPortId(vo.getCommPortId());
         params.setBaudRate(vo.getBaudRate());
-        params.setPortOwnerName("Mango NMEA Data Source");
+        params.setPortOwnerName("NMEA Data Source");
 
         nmeaReceiver = new NmeaReceiver(this, params);
 

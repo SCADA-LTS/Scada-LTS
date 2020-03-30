@@ -55,7 +55,7 @@ public class MangoGroveLogAppender extends AppenderSkeleton {
 
         HttpClient client = Common.getHttpClient();
         PostMethod method = new PostMethod(Common.getGroveUrl(Common.GroveServlets.MANGO_LOG));
-        method.addParameter("productId", "Mango M2M");
+        method.addParameter("productId", "Scada-LTS");
         method.addParameter("productVersion", Common.getVersion());
         method.addParameter("ts", Long.toString(event.timeStamp));
         method.addParameter("level", event.getLevel().toString());

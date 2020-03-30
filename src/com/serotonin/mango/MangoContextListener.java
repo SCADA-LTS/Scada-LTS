@@ -84,7 +84,7 @@ public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
 
 	public void contextInitialized(ServletContextEvent evt) {
-		log.info("Mango context starting");
+		log.info("Scada-LTS context starting");
 		
 		// Get a handle on the context.
 		ServletContext ctx = evt.getServletContext();
@@ -111,9 +111,9 @@ public class MangoContextListener implements ServletContextListener {
 		if (knownContextPath != null) {
 			String contextPath = ctx.getContextPath();
 			if (!StringUtils.isEqual(knownContextPath, contextPath))
-				log.warn("Mango's known servlet context path has changed from "
+				log.warn("Scada-LTS's known servlet context path has changed from "
 						+ knownContextPath + " to " + contextPath
-						+ ". Are there two instances of Mango running?");
+						+ ". Are there two instances of Scada-LTS running?");
 		}
 		new SystemSettingsDAO().setValue(
 				SystemSettingsDAO.SERVLET_CONTEXT_PATH, ctx.getContextPath());
@@ -153,7 +153,7 @@ public class MangoContextListener implements ServletContextListener {
 				"event.system.startup"));
 
 		
-		log.info("Mango context started");
+		log.info("Scada-LTS context started");
 		try {
 			PointHierarchyCache.getInstance();
 			log.info("Cache point hierarchy initialized");
@@ -171,7 +171,7 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	public void contextDestroyed(ServletContextEvent evt) {
-		log.info("Mango context terminating");
+		log.info("Scada-LTS context terminating");
 
 		if (Common.ctx.getEventManager() != null) {
 			// Notify the event manager of the shutdown.
@@ -195,7 +195,7 @@ public class MangoContextListener implements ServletContextListener {
 
 		Common.ctx = null;
 
-		log.info("Mango context terminated");
+		log.info("Scada-LTS context terminated");
 	}
 	
 	/**
@@ -491,7 +491,7 @@ public class MangoContextListener implements ServletContextListener {
 			sb.append("*********************************************************\r\n");
 			sb.append("*                    NOTE                               *\r\n");
 			sb.append("*********************************************************\r\n");
-			sb.append("* Mango M2M is starting in safe mode. All data sources, *\r\n");
+			sb.append("* Scada-LTS M2M is starting in safe mode. All data sources, *\r\n");
 			sb.append("* point links, scheduled events, compound events, and   *\r\n");
 			sb.append("* publishers will be disabled. To disable safe mode,    *\r\n");
 			sb.append("* change the property in env.properties:                *\r\n");
@@ -605,7 +605,7 @@ public class MangoContextListener implements ServletContextListener {
 		DataPurge.schedule();
 
 		// The version checking job reschedules itself after each execution so
-		// that requests from the various Mango
+		// that requests from the various Scada-LTS
 		// instances even out over time.
 		// VersionCheck.start();
 		WorkItemMonitor.start();

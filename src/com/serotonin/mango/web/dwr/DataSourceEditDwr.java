@@ -655,7 +655,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
 		SerialParameters params = new SerialParameters();
 		params.setCommPortId(commPortId);
-		params.setPortOwnerName("Mango Modbus Serial Data Source Scan");
+		params.setPortOwnerName("Modbus Serial Data Source Scan");
 		params.setBaudRate(baudRate);
 		params.setFlowControlIn(flowControlIn);
 		params.setFlowControlOut(flowControlOut);
