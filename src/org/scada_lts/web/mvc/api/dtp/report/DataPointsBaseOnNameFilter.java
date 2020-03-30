@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 16.03.2020
+ * @author grzegorz.bylica@gmail.com on 16.03.2020
  */
 
 @Controller
-public class DataPointsReportBaseOnNameFilter {
+public class DataPointsBaseOnNameFilter {
 
-    private static final Log LOG = LogFactory.getLog(DataPointsReportBaseOnNameFilter.class);
+    private static final Log LOG = LogFactory.getLog(DataPointsBaseOnNameFilter.class);
 
     DataPointService dataPointService = new DataPointService();
 
@@ -49,6 +49,7 @@ public class DataPointsReportBaseOnNameFilter {
                    "endTime: %s ", partOfNameDS, typeDS, partOfNameDS, startTime, endTime) );
 
         try {
+            // TODO retrieve format dt from config
             // valid data insert
             String pattern = "yyyy-MM-dd";
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);

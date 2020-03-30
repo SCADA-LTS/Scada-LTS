@@ -50,7 +50,7 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
-import org.scada_lts.web.mvc.api.dto.ValuesPointBooleanBaseOnNameFilterDTO;
+import org.scada_lts.web.mvc.api.dto.PointValueDTO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -186,17 +186,17 @@ public class DataPointService implements MangoDataPoint {
 		return pointsWithListData;
 	}
 
-	public List<ValuesPointBooleanBaseOnNameFilterDTO> valuesPointBooleanBaseOnNameFilter2DTO(Map<DataPointVO, List<PointValue>> values) {
-		List<ValuesPointBooleanBaseOnNameFilterDTO> result = new LinkedList<>();
+	public List<PointValueDTO> valuesPointBooleanBaseOnNameFilter2DTO(Map<DataPointVO, List<PointValue>> values) {
+		List<PointValueDTO> result = new LinkedList<>();
 		for (Map.Entry<DataPointVO, List<PointValue>> entry : values.entrySet()) {
 			DataPointVO dpVO = entry.getKey();
 
 			List<PointValue> values4DpVO = entry.getValue();
 			for (PointValue pv : values4DpVO) {
-				result.add(new ValuesPointBooleanBaseOnNameFilterDTO(
+				result.add(new PointValueDTO(
 						pv.getPointValue().getTime(),
 						dpVO.getName(),
-						pv.getPointValue().getBooleanValue()
+						pv.getPointValue().getValue().toString()
 				));
 			}
 		}

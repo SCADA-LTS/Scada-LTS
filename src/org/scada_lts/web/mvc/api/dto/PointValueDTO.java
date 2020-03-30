@@ -1,7 +1,5 @@
 package org.scada_lts.web.mvc.api.dto;
 
-import com.serotonin.bacnet4j.type.constructed.DateTime;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
@@ -9,16 +7,16 @@ import java.util.Objects;
 /**
  * @autor grzegorz.bylica@gmail.com on 23.03.2020
  */
-public class ValuesPointBooleanBaseOnNameFilterDTO {
+public class PointValueDTO {
 
     private String tsStr;
     private String name;
     private String valueStr;
 
-    public ValuesPointBooleanBaseOnNameFilterDTO() {
+    public PointValueDTO() {
     }
 
-    public ValuesPointBooleanBaseOnNameFilterDTO(long ts, String name, Boolean value) {
+    public PointValueDTO(long ts, String name, String value) {
         ;
         SimpleDateFormat DateFor = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
         String stringDate= DateFor.format(new Date(ts));
@@ -55,7 +53,7 @@ public class ValuesPointBooleanBaseOnNameFilterDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ValuesPointBooleanBaseOnNameFilterDTO that = (ValuesPointBooleanBaseOnNameFilterDTO) o;
+        PointValueDTO that = (PointValueDTO) o;
         return Objects.equals(tsStr, that.tsStr) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(valueStr, that.valueStr);
@@ -68,7 +66,7 @@ public class ValuesPointBooleanBaseOnNameFilterDTO {
 
     @Override
     public String toString() {
-        return "ValuesPointBooleanBaseOnNameFilterDTO{" +
+        return "PointValueDTO{" +
                 "tsStr='" + tsStr + '\'' +
                 ", name='" + name + '\'' +
                 ", valueStr='" + valueStr + '\'' +
