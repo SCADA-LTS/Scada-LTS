@@ -123,7 +123,7 @@ public class DataSourceDAO {
 				+ COLUMN_NAME_XID + ", "
 				+ COLUMN_NAME_NAME + ", "
 				+ COLUMN_NAME_DATA + " "
-			+ "from dataSources where name like ";
+			+ "from dataSources where name like ?";
 
 	private static final String DATA_SOURCE_USER_INSERT = ""
 			+ "insert into dataSourceUsers values (?,?) ";
@@ -187,15 +187,9 @@ public class DataSourceDAO {
 
 		Object[] args = new Object[] { String.format("'%%%s%%'",partOfNameDS) };
 
-		// TODO not work correctly ?
-//		List<DataSourceVO<?>> objList = DAO.getInstance().getJdbcTemp().query(
-//				DATA_SOURCE_SELECT_WHERE_LIKE_NAME + " ?",
-//				new Object[]{String.format(" '%%%s%%'",partOfNameDS)},
-//				new DataSourceRowMapper());
-
 		List<DataSourceVO<?>> objList = DAO.getInstance().getJdbcTemp().query(
-				DATA_SOURCE_SELECT_WHERE_LIKE_NAME + String.format(" '%%%s%%'",partOfNameDS),
-				new Object[]{},
+				DATA_SOURCE_SELECT_WHERE_LIKE_NAME,
+				new Object[]{String.format("%%%s%%",partOfNameDS)},
 				new DataSourceRowMapper());
 
 		return objList;
