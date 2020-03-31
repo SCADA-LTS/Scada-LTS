@@ -57,7 +57,11 @@
         pointListColumnFunctions.push(function(p) {
         		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
         });
-
+        pointListColumnHeaders.push("Admin Function");
+        pointListColumnFunctions.push(function(p) {
+            var onclick = "window.open('data_point_edit.shtm?dpid="+p.id+"','_blank')";
+            return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", onclick);
+        });
         var headers = $("pointListHeaders");
         var td;
         for (var i=0; i<pointListColumnHeaders.length; i++) {
