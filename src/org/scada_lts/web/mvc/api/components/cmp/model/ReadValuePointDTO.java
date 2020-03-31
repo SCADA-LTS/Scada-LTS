@@ -8,6 +8,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.modbus4j.code.DataType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -32,7 +33,7 @@ public class ReadValuePointDTO implements Serializable {
 
     public void set(PointValueTime pvt, DataPointVO dpvo) {
         if (pvt == null ||  pvt.getValue() == null) {
-            setValue( MangoValue.stringToValue("0",0));
+            setValue( MangoValue.stringToValue("0", DataType.BINARY));
             setTs(new Date().getTime());
         } else {
             setValue(pvt.getValue());
