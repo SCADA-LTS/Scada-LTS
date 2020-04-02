@@ -214,7 +214,7 @@ public class PachubeDataSourceRT extends PollingDataSource {
         try {
             method = new GetMethod("http://www.pachube.com/api/feeds/" + feedId + ".json");
             method.addRequestHeader(new Header(HEADER_API_KEY, apiKey));
-            method.addRequestHeader("User-Agent", "Mango M2M Pachube data source");
+            method.addRequestHeader("User-Agent", "Scada-LTS M2M Pachube data source");
 
             int responseCode = client.executeMethod(method);
             if (responseCode != HttpStatus.SC_OK)

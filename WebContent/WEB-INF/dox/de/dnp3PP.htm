@@ -1,0 +1,45 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Configuration</h1>
+<p>You can add one single point, defining its index, or <b>Add
+several datapoints</b> defining the minimum and maximum indexes.</p>
+<h1>Commands</h1>
+<p>For points of type OUTPUT you need to define the command
+parameters to be used as default, should they not be specified during
+runtime. For BYNARY OUTPUT type points, the valid commands (that should be executed on the appropriated
+watchlist icon, as well as other datasources) are:</p>
+<p>pon/poff -> pulse on/off</p>
+<p>lon/loff -> latch on/off</p>
+<p>close/trip -> close/trip</p>
+<p>All commands can be followed by two parameters, the command's TIME ON and TIME OFF in milliseconds. For exemple:
+pon,500,200</p>
+<p>It is possible to enter only "1", "0", "true" ou "false".
+In this case, the sent command will be the default command specified to the point.</p>
+<h1>Exemple</h1>
+<p>Binary point registered as CLOSE/TRIP, TIME ON 1000 e TIME OFF
+0</p>
+<p>1 -> the system will send the CLOSE command with TIME ON 1000 and TIME
+OFF 0</p>
+<p>0 -> the system will send the TRIP command with TIME ON 1000 and TIME OFF
+0</p>
+<p>pon -> the system will send the PULSE ON command with TIME ON 1000 and
+TIME OFF 0</p>
+<p>poff,300,0 -> the system will send the PULSE OFF command with TIME ON
+300 and TIME OFF 0</p>

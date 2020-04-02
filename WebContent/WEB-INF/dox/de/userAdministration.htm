@@ -1,0 +1,64 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Vue d'ensemble
+</h1>
+<p>
+  <b>Utilisateurs</b> ce sont les personnes qui utilisent le syst&#232;me. Diff&#233;rent privil&#232;ges peuvent &#234;tre attribu&#233;s aux utilisateurs pour leurs permettre de lire
+     , modifier les donn&#233;es ou g&#232;rer les param&#232;tres du syst&#232;me.
+</p>
+
+<p>
+  Il existe deux niveaux d'utilistateur: Les administrateurs (<img src="images/user_suit.png"/>), et les autres utilisateurs
+  (<img src="images/user_green.png"/>). Les administrateurs ont acc&#232;s &#224; toutes les fonctionnalit&#233;s du syst&#232;me. Les autres ont des acc&#232;s limit&#233;s suivant 
+  leurs configurations.
+</p>
+
+<h1>Edition des utilisateurs</h1>
+<p>
+  Pour ajouter un utilisateur, cliquez sur l'ic&#244;ne <img src="images/user_add.png"/>. L'utilisateur ne sera pas ajout&#233; tant qu'il n'aura pas &#233;t&#233; enregistr&#233; avec succ&#232;s
+  Pour modifier un utilisateur, cliquez sur le nom de l'utilisateur dans la liste "Utilisateurs".
+</p>
+<p>
+  Les mots de passe ne peuvent pas &#234;tre d&#233;chiffr&#233;s une fois enregistr&#233;s; Ils peuvent uniquement &#234;tre r&#233;initialis&#233;s par un nouveau mot de passe.
+</p>
+<p>
+  Un utilisateur d&#233;sactiv&#233;s ne peut pas se connecter. Pour supprimer un utilisateur, cliquez sur l'ic&#244;ne <img src="images/delete.png"/>.
+</p>
+<p>
+  Pour tester l'adresse mail d'un utilisateur, cliquer sur l'ic&#244;ne <img src="images/email_go.png"/>.Un message sera envoy&#233; &#224; l'adresse sp&#233;cifi&#233;e.
+</p>
+<p>
+  Les utilisateurs peuvent recevoir des mails m&#234;me s'ils ne figurent pas dans une liste de destinataires des gestionnaires d'&#233;v&#232;nement. S&#233;lectionnez  le niveau d'alarme <b>Envoi d'alarme par mail</b>  "none" will cause these notifications to be 
+  sent when the event's alarm level is greater than or equal to the user's minimum alarm level, but only when the event 
+  is raised (i.e. no escalation or inactive notifications). Notez que si l'utilisateur est d&#233;j&#224; pr&#233;sent dans le gestionnaire d'&#233;v&#232;nement, il ne recevra pas de mail en double.
+</p>
+
+<h1>Droits utilisateur</h1>
+<p>La case &#224; cocher <b>Administrateur</b> d&#233;termine si l'utilisateur est administrateur.</p>
+<p>
+  Si l'utilisateur n'est pas administrateur, toutes les source de donn&#233;es disponibles seront affich&#233;es. Checking the box next to the 
+  data source name indicates that the user can alter the data source settings, as well as access all data produced by 
+  that data source.
+</p>
+<p>
+  If the data source is not checked, a list of all points within the data source will be displayed. Each point can be 
+  individually set for no access, read access, or&mdash;if the point is settable&mdash;write access. (Having write 
+  access implies have read access.)
+</p>

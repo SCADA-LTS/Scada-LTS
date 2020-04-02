@@ -1,0 +1,30 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>
+  The VMStat data source is used to monitor various performance aspects of a *nix host. When the data source starts a
+  process is initiated that runs the vmstat program, and the output from that process is monitored.
+</p>
+
+<h1>Configuration</h1>
+<p>
+  Every data source requires a <b>Name</b>, which can be any description. The <b>Poll seconds</b> setting determines 
+  how often the vmstat process will report data back to ScadaBR. The <b>Output scale</b> can be set to automatically 
+  adjust byte values to different scales, including bytes, k, KB, m, and MB.
+</p>

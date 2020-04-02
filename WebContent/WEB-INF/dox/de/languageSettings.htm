@@ -1,0 +1,55 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>
+  Use the <b>System language</b> setting to change the language the system will use in cases where the language is
+  otherwise unknown. For example, reports and emails are either not associated with a specific user, or are associated
+  with multiple users. The system language will be used in these situations.
+</p>
+
+<p>
+  Note that ScadaBR uses many toolkits and such that are not i18n, and so you may still receive rare messages that appear
+  in English only.
+</p>
+
+<h1>Creating a new translation</h1>
+<p>
+  ScadaBR is a fully multilingual-capable system. If ScadaBR does not ship with a desired language, it is easy to make a
+  translation file so that at least your instance "speaks" the language you need. To add a language, first edit the 
+  "WEB-INF/classes/i18n.properties" file by adding the information about the language you wish to add. The format for 
+  data is "&lt;language code&gt;=&lt;language name&gt;", where "language code" is the ISO 639-1 code for the language,
+  and "language name" is the name of the language as it is known in its own language. This will add the language to the
+  list of known languages within the system 
+</p>
+
+<p>
+  Now, a list of literal translations must be prepared. Create a new file in the "WEB-INF/classes/" directory called
+  "messages_&lt;language code&gt;.properties". To simplify the process it is helpful to copy the contents of the English
+  literals file, and make translations as necessary.
+</p>
+
+<p>
+  Finally, you should translate the contextual documentation (such as the document that you are viewing right now). To
+  do so, create a new directory under "WEB-INF/dox/" named after the language code, and make a translated version of 
+  all of the documents that are under the English ("en") directory.
+</p>
+
+<p>
+  To ensure that your translation file persists across new versions of ScadaBR, please contribute it back to Serotonin
+  Software where it will be merged into the main source pool.
+</p>

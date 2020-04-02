@@ -48,7 +48,7 @@ public class NmeaUtilListener implements NmeaMessageListener, TestingUtility {
         SerialParameters params = new SerialParameters();
         params.setCommPortId(commPortId);
         params.setBaudRate(baudRate);
-        params.setPortOwnerName("Mango NMEA Test Listener");
+        params.setPortOwnerName("NMEA Test Listener");
 
         nmeaReceiver = new NmeaReceiver(this, params);
 

@@ -1,0 +1,25 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>Publishers can be considered the opposite of data sources. Instead of gathering data into the system, publishers distribute data out. This can be useful when using Mango to gather information from disparate systems in order to modify, cleanse, or otherwise manage it, and then send it in a common format to other systems. In this way, Mango is not only M2M, but M2M2M. Publishers can even be used to send data to other Mango instances, perhaps consolidating data among various field instances into head-office management data. Indeed, instance of Mango can use publishers to control each other in many ways.</p>
+
+<h1>Common publisher configuration</h1>
+<p>Every publisher has a <b>Name</b> which is used to visually identify it in lists. It is recommended that each publisher have a unique name, but is not required. The <b>Enabled</b> checkbox is used to enable or disabled the publisher.</p>
+<p>Publishers use caches to ensure that every point update is delivered to its destination. If the destination for whatever reason does not accept these deliveries for an extended period of time, this cache can become very large. Undelivered point updates are never purged from the cache (except upon the disabling of the publisher), but a <b>Cache warning size</b> can be defined which causes an alarm to be raised whenever this size is exceeded. This alarm returns to normal when the cache size no longer exceeds the warning size, or when the publisher is disabled.</p>
+<p>The <b>Update event</b> value determines whether all point updates are delivered, or only point changes.</p>

@@ -1,0 +1,73 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+<p>The SQL data source is used to retrieve and set values in a SQL database. This is a polling data source that will read values based upon a given update period.</p>
+
+<h1>Connectivity</h1>
+<p>Any database supported by JDBC can be accessed. A specific <a href="http://developers.sun.com/product/jdbc/drivers" target="_blank">JDBC driver</a> is required to connect to any particular database, but such drivers are readily available for most databases including MySQL, MS SQL Server, IBM DB2, Oracle, Sybase, and many others. The driver for MySQL is included with this product. See the documentation for your particular database for information on where to get the appropriate JDBC driver.</p>
+
+<h1>Configuration</h1>
+<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Update period</b> determines how often the database will be read.</p>
+<p>
+  The <b>Driver class name</b> specifies the Java class that implements the JDBC Driver interface within your JDBC 
+  driver. This value can be found in the documentation for your driver. The following is a list of driver class names 
+  for the given database, and is provided as convenience only. Note that connectivity typically requires the 
+  installation of driver software on the ScadaBR server. If you are having problems, please consult the documentation for 
+  your database.
+</p>
+<ul>
+  <li><b>MySQL</b>: com.mysql.jdbc.Driver</li>
+  <li><b>Oracle thin driver</b>: oracle.jdbc.driver.OracleDriver</li>
+</ul>
+<p>The <b>Connection string</b> depends both upon the database you are using and the specifics of its installation. Your JDBC driver documentation will explain how to derive the value for your database. The <b>Username</b> and <b>Password</b> fields provide the necessary credentials for your database to accept connections from this application.</p>
+<p>Your <b>Select statement</b> must be a valid <a href="http://en.wikipedia.org/wiki/SQL" target="_blank">SQL</a> statement. SQL is intended to be a standardized data access language, but different databases often have subtle interpretive differences or provide language extensions, so you should use your database's documentation to help you construct the SQL statement for your purposes.</p>
+
+<p>Use the <b>Row-based query</b> checkbox to determine if the query is row-based or column-based. Because this affects the attributes in the data point configuration, this selection can only be changed when there are no points defined for the data source. See below for more information about row vs. column -based queries.</p>
+
+<h1>Row-based query handling</h1>
+<p>
+  Row-based queries have specific expectations of the structure of the query's result set, but allow large amounts of 
+  similar data to be extracted more easily than with column-based queries. The result set must have the following 
+  structure.
+</p>
+<ul>
+  <li>First column: the row identifier used to matched with data source points. Row identifies are case-insensitive.</li>
+  <li>Second column: the point value</li>
+  <li>Third column (optional): the time override for the point value. If a third column is not included, the time defaults to the poll run time. If included, the field value cannot be null.</li>
+</ul>
+
+<h1>Column-based query handling</h1>
+<p>Column-based queries use the names of the result set columns to locate point values and time overrides. It is important to recognize that that only the <b>first row</b> of the result set is used in a column-based query.</p>
+<p>There may be cases where using a row-based query is desirable, but not possible because the data types are of the values are too disparate. In such cases may be possible to construct the SQL statement to transpose a row-based query into a column-based query. A typical statement for retrieving data in multiple rows may look like this:</p>
+<div><pre style="overflow: auto; width: 95%;">select status from relays
+</pre></div>
+<p>To transpose such a table to retrieve values in a single row, the following could be done (assuming 3 relays):</p>
+<div><pre style="overflow: auto; width: 95%;">select
+  r1.status as r1status,
+  r2.status as r2status,
+  r3.status as r3status
+from relays r1, relays r2, relays r3
+where r1.relayId = 'relay1'
+  and r2.relayId = 'relay2'
+  and r3.relayId = 'relay3'
+</pre></div>
+<p>Please note that the above are simply examples provided for convenience and instruction. Your specific database may require very different solutions.</p>
+
+<h1>Select statement testing</h1>
+<p>The <b>Statement test</b> section may be used to test both your configuration values and your SQL select statement. Clicking the <b>Execute</b> button will cause a connection to be attempted with your database, and if successful, the SQL will be executed. Any errors that occur will be displayed. If the SQL statement runs successfully, the results will be displayed appropriately depending on whether the statement is row- or column-based. Column-based queries will list a line for every column, providing the column name, the column data type (in parentheses, using the JDBC type definition), and the value retrieved. Row-based queries will display the result set in a table with the column names and data types as headers, and a row of data for each row in the result set (up to a maximum of 50 rows).</p>
