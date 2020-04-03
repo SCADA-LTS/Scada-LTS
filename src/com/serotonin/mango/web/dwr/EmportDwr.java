@@ -103,7 +103,19 @@ public class EmportDwr extends BaseDwr {
 				scripts, pointValues, maxPointValues, systemSettings,
 				usersProfiles);
 	}
-
+	public static String exportJSON(String xid){
+		Map<String, Object> data = new LinkedHashMap<String, Object>();
+		DataPointVO dataPoints = new DataPointDao().getDataPointByXid(xid);
+		data.put(DATA_POINTS, dataPoints == null?"In the database there is no data point with given xid "+xid:dataPoints);
+		JsonWriter writer = new JsonWriter();
+		try {
+			return writer.write(data);
+		} catch (JsonException e) {
+			throw new ShouldNeverHappenException(e);
+		} catch (IOException e) {
+			throw new ShouldNeverHappenException(e);
+		}
+	}
 	public static String createExportJSON(int prettyIndent,
 			boolean graphicalViews, boolean eventHandlers, boolean dataSources,
 			boolean dataPoints, boolean scheduledEvents,

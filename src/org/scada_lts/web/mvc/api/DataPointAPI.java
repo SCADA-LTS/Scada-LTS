@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,35 +50,37 @@ public class DataPointAPI {
     DataPointService dataPointService = new DataPointService();
 
     @RequestMapping(value = "/api/datapoint/getConfigurationByXid/{xid}", method = RequestMethod.GET)
-    public ResponseEntity<String> getConfigurationByXid(HttpServletRequest request) {
+    public ResponseEntity<String> getConfigurationByXid(
+            @PathVariable String xid,
+            HttpServletRequest request) {
         LOG.info("/api/datapoint/getAllByXid/{xid}");
 
-        try {
-            User user = Common.getUser(request);
+        if( !xid.isEmpty() || xid != null ) {
+            try {
+                User user = Common.getUser(request);
+                if (user != null) {
 
-            if (user != null) {
+                    String json = null;
+                    if (user.isAdmin()) {
+                        json = EmportDwr.exportJSON(xid);
+                    } else {
+                        return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                    }
 
-                String json = null;
-                if (user.isAdmin()) {
-                    json = EmportDwr.createExportJSON(3, false,
-                            false, false, true, false,
-                            false, false, false, false,
-                            false, false, false, false,
-                            false, false, 2, false,
-                            false);
-                } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<String>(json, HttpStatus.OK);
                 }
 
-                return new ResponseEntity<String>(json,HttpStatus.OK);
+                return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+
+            } catch (Exception e) {
+                LOG.error(e);
+                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
             }
-
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
+        else
+            {
+                return new ResponseEntity<String>("Given xid is empty.",HttpStatus.OK);
+            }
     }
 
     @RequestMapping(value = "/api/datapoint/getAll", method = RequestMethod.GET)
