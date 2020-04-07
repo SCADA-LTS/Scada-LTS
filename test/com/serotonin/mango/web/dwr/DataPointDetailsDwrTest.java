@@ -48,7 +48,7 @@ public class DataPointDetailsDwrTest {
         pointLinkVO.setId(1);
         pointLinkVO.setXid("X_POINT_LINK");
 
-        PointLinkRT pointLinkRT   = new PointLinkRT( pointLinkVO,true);
+        PointLinkRT pointLinkRT   = new PointLinkRT( pointLinkVO);
         dataPointRT.addCollectionIntoCache( pointValueCacheTest.getSavedPointValueTimeInCache(pointLinkRT) );
 
 
