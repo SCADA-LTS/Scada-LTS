@@ -18,8 +18,23 @@
             <a href="#"><i class="fas fa-question-circle"></i><span>About</span></a>
             <a href="#"><i class="fas fa-user-shield"></i><span>Admin</span></a>
         </div>
+        <header>
+            <nav>
+                <ul class="nav-left" id="navigation-left">
+                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="#">Users</a></li>
+                    <li><a href="#">Setings</a></li>
+                </ul>
+                <ul class="nav-right">
+                    <li><a href="#">Messages</a></li>
+                    <li><a href="#">Task</a></li>
+                    <li><a href="#">My Acount</a></li> <!-- logout on popup -->
+                </ul>
+            </nav>
+        </header>
         <router-view/>
     </div>
+
 </template>
 
 <style lang="scss">
@@ -88,6 +103,42 @@
    #check-sidebar {
        display: none;
    }
+
+   nav {
+       position: fixed;
+       width: 100%;
+       height: 45px;
+       background: var(--bg-primary);
+       z-index: -10;
+       color: var(--text-primary);
+   }
+   .nav-left {
+       float:left;
+       margin-left: 310px;
+   }
+   .nav-right {
+       float:right;
+   }
+   header::after {
+       content: '';
+       display: table;
+       clear: both;
+   }
+   nav ul {
+       margin: 0;
+       padding: 0;
+       list-style: none;
+   }
+   nav li {
+       float: left;
+       display: inline-block;
+       margin: 10px 10px 30px;
+   }
+
+   nav a {
+       color: var(--text-primary);
+   }
+
    label #btn-sidebar, label #cancel-sidebar {
        position: absolute;
        cursor: pointer;
@@ -120,6 +171,11 @@
    #check-sidebar:checked ~ .sidebar{
        left:0;
    }
+
+   #check-sidebar:checked ~ .nav-left {
+       margin-left: 90px;
+   }
+
    @media (max-width:860px) {
        .sidebar{
            height: auto;
