@@ -20,11 +20,11 @@
 -- Make sure that everything get created with utf8 as the charset.
 
 
-DROP TRIGGER if exists `filterStorungsAndAlarms`;
+DROP TRIGGER if exists filterStorungsAndAlarms;
 DELIMITER $$
 
 CREATE
-    TRIGGER `filterStorungsAndAlarms` AFTER INSERT
+    TRIGGER filterStorungsAndAlarms AFTER INSERT
     ON pointValues
     FOR EACH ROW BEGIN
 		DECLARE VARIABLE1 VARCHAR(100);
