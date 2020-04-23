@@ -22,6 +22,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
+import org.scada_lts.dao.storungsAndAlarms.DAO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +31,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -77,8 +78,10 @@ public class StorungsAndAlarmsAPI {
 
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
-                    System.out.println("get data from table");
-                    return new ResponseEntity<String>(HttpStatus.OK);
+
+                    JSONObject result = DAO.getInstance().getStorungs(2);
+
+                    return new ResponseEntity<String>( result.toString() , HttpStatus.OK);
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
                 }
