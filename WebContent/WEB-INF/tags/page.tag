@@ -167,6 +167,7 @@
           <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
           <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
           <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
+          <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
           <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
                 
           <c:if test="${sessionUser.admin}">
