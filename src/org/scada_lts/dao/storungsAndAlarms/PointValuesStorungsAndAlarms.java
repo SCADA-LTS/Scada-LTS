@@ -14,6 +14,14 @@ class PointValuesStorungsAndAlarms {
             acknowledgeTime,
             lastpointValue;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getPointId() {
         return pointId;
     }
@@ -78,4 +86,18 @@ class PointValuesStorungsAndAlarms {
         this.lastpointValue = lastpointValue;
     }
 
+    @Override
+    public String toString() {
+        return "PointValuesStorungsAndAlarms{" +
+                "id=" + id +
+                ", pointId='" + pointId + '\'' +
+                ", pointXid='" + pointXid + '\'' +
+                ", pointType='" + pointType + '\'' +
+                ", pointName='" + pointName + '\'' +
+                ", triggerName='" + triggerName + '\'' +
+                ", inactiveTime='" + inactiveTime + '\'' +
+                ", acknowledgeTime='" + acknowledgeTime + '\'' +
+                ", lastpointValue='" + lastpointValue + '\'' +
+                '}';
+    }
 }

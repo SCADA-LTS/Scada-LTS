@@ -11,12 +11,14 @@ class PointValuesStorungsAndAlarmsRowMapper implements RowMapper<PointValuesStor
         public PointValuesStorungsAndAlarms mapRow(ResultSet rs, int rowNum) throws SQLException {
 
                 PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms = new PointValuesStorungsAndAlarms();
-                pointValuesStorungsAndAlarms.setPointId("A");
-                pointValuesStorungsAndAlarms.setPointXid("A");
-                pointValuesStorungsAndAlarms.setAcknowledgeTime("A");
-                pointValuesStorungsAndAlarms.setInactiveTime("A");
-                pointValuesStorungsAndAlarms.setTriggerName("A");
-                pointValuesStorungsAndAlarms.setLastpointValue("A");
+                pointValuesStorungsAndAlarms.setId(rs.getInt("id"));
+                pointValuesStorungsAndAlarms.setPointId(String.valueOf(rs.getString("pointId")));
+                pointValuesStorungsAndAlarms.setPointXid((String.valueOf(rs.getString("pointXid"))));
+                pointValuesStorungsAndAlarms.setPointType(String.valueOf(rs.getString("pointType")));
+                pointValuesStorungsAndAlarms.setTriggerName(String.valueOf(rs.getString("triggerTime")));
+                pointValuesStorungsAndAlarms.setInactiveTime(String.valueOf(rs.getString("inactiveTime")));
+                pointValuesStorungsAndAlarms.setAcknowledgeTime(String.valueOf(rs.getString("acknowledgeTime")));
+                pointValuesStorungsAndAlarms.setLastpointValue(String.valueOf(rs.getString("lastpointValue")));
 
         return pointValuesStorungsAndAlarms;
     }
