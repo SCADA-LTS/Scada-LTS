@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 /**
  * @author  hyski mateusz@gmail.com on 27.04.2020
  */
-public class V2_2_0_AdditionalColumnPlcAlarmLevelInDataPointTable implements SpringJdbcMigration {
+public class V2_2_0__AdditionalColumnPlcAlarmLevelInDataPointTable implements SpringJdbcMigration {
 
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
         final String additionaplcalarmlevelcolumnindatapointstable = ""
