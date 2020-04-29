@@ -51,6 +51,42 @@ public class AlarmsAPI {
         }
         return true;
     }
+    @RequestMapping(value = "/alarms/history/{date_day}/{filter_with_mysqlrlike}", method = RequestMethod.GET)
+    public ResponseEntity<String> getHistoryAlarms(
+            @PathVariable("date_day") String date_day,
+            @PathVariable("filter_with_mysqlrlike") String filter_with_mysqlrlike,
+            HttpServletRequest request
+    )
+    {
+        LOG.info("/alarms/history/{date_day}/{filter_with_mysqlrlike}");
+
+        if ( !validate("date_day",date_day) ){
+            new ResponseEntity<String>("Value date_day is empty", HttpStatus.OK);
+        }
+        if ( !validate("filter_with_mysqlrlike",filter_with_mysqlrlike) ){
+            new ResponseEntity<String>("Value filter_with_mysqlrlike is empty", HttpStatus.OK);
+        }
+
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                JSONObject result=null;
+                    /*
+                    if(sortStatus.equals("0")) {
+                        result = pointValuesStorungsAndAlarms.getStorungs(0);
+                    }
+                    if(sortStatus.equals("1")){
+                        result = pointValuesStorungsAndAlarms.getStorungs(1);
+                    }
+                    */
+                return new ResponseEntity<String>( result.toString() , HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @RequestMapping(value = "/api/acknowledge/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> getAlarms(
             @PathVariable("id") String id,
