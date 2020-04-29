@@ -51,13 +51,13 @@ public class AlarmsAPI {
         }
         return true;
     }
-    @RequestMapping(value = "/api/alarms/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/acknowledge/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> getAlarms(
             @PathVariable("id") String id,
             HttpServletRequest request
     )
     {
-        LOG.info("/api/alarms/{id}");
+        LOG.info("/api/acknowledge/{id}");
         if ( !validate("id",id) ){
             new ResponseEntity<String>("Value id is empty", HttpStatus.OK);
         }
