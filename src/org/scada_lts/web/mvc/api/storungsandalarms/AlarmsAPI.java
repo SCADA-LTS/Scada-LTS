@@ -51,8 +51,8 @@ public class AlarmsAPI {
         }
         return true;
     }
-    @RequestMapping(value = "/api/acknowledge/{id}", method = RequestMethod.GET)
-    public ResponseEntity<String> getAlarms(
+    @RequestMapping(value = "/api/acknowledge/{id}", method = RequestMethod.POST)
+    public ResponseEntity<String> acknowledgeById(
             @PathVariable("id") String id,
             HttpServletRequest request
     )
