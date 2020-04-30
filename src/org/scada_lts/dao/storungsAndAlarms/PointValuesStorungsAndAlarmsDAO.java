@@ -21,7 +21,19 @@ class PointValuesStorungsAndAlarmsDAO {
         }
         return jsonObject.put("1",pointValuesStorungsAndAlarmsAsString);
     }
-
+    public JSONObject getHistoryAlarmsById(int id) throws JSONException{
+        JSONObject jsonObject=null;
+        try {
+            //  pointValuesStorungsAndAlarms = (PointValues_)  DAO.getInstance().getJdbcTemp().queryForObject(SqlCommandGenerator.generateStringBuilderSqlForStorungs(), new PointValuesStorungsAndAlarmsRowMapper());
+            //   } catch (DataAccessException e) {
+            //        e.printStackTrace();
+            //    }
+            jsonObject = new JSONObject().put("test", "test");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
     public JSONObject getAlarms(int id) throws JSONException{
 
         PointValues_ pointValuesStorungsAndAlarms=new PointValues_();

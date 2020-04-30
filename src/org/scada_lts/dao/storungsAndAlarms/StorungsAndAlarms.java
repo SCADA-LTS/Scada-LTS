@@ -42,6 +42,24 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         }
         return jsonArray;
     }
+    public  JSONObject getHistoryAlarmsById(int id){
+        JSONObject jsonObject = null;
+
+        try
+        {
+            jsonObject = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsById(id);
+        }
+        catch (JSONException e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        catch(Exception exception)
+        {
+            LOG.trace(exception.getMessage());
+        }
+
+        return jsonObject;
+    }
     public JSONObject getStorungsTest(int id){
 
         JSONObject jsonObject = null;
