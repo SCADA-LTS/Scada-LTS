@@ -11,7 +11,7 @@ public class V2_2_1__Views_For_PointValueWarningsAndAlarms implements SpringJdbc
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 
         jdbcTmp.execute(""
-                + " create view view1 as"
-                + "  select * from pointValues");
-    }
-}
+        + " create view view1 as"
+        + "  select * from pointValues");
+        }
+        }
