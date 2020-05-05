@@ -7,6 +7,17 @@ import java.util.List;
 
 class PointValuesStorungsAndAlarmsDAO {
 
+    public JSONObject getHistoryAlarmsByDateDayAndFilter(String date_day, String filter_with_mysqlrlike)  throws JSONException,Exception{
+        JSONObject jsonObject=null;
+
+            //  pointValuesStorungsAndAlarms = (PointValues_)  DAO.getInstance().getJdbcTemp().queryForObject(SqlCommandGenerator.generateStringBuilderSqlForStorungs(), new PointValuesStorungsAndAlarmsRowMapper());
+            //   } catch (DataAccessException e) {
+            //        e.printStackTrace();
+            //    }
+        jsonObject = new JSONObject().put("test", "test");
+
+        return jsonObject;
+    }
     public JSONObject getStorungs(int id) throws JSONException,Exception{
 
         JSONObject jsonObject=new JSONObject();

@@ -10,4 +10,6 @@ public interface PointValuesStorungsAndAlarms {
 
     JSONObject getHistoryAlarmsById(int id);
 
+    JSONObject getHistoryAlarmsByDateDayAndFilter( String date_day, String filter_with_mysqlrlike );
+
 }

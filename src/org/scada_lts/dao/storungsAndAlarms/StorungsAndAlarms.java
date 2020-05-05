@@ -60,6 +60,28 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
         return jsonObject;
     }
+
+    @Override
+    public JSONObject getHistoryAlarmsByDateDayAndFilter(String date_day, String filter_with_mysqlrlike) {
+
+        JSONObject jsonObject = null;
+
+        try
+        {
+            jsonObject = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsByDateDayAndFilter(date_day, filter_with_mysqlrlike);
+        }
+        catch (JSONException e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        catch(Exception exception)
+        {
+            LOG.trace(exception.getMessage());
+        }
+
+        return jsonObject;
+    }
+
     public JSONObject getStorungsTest(int id){
 
         JSONObject jsonObject = null;
