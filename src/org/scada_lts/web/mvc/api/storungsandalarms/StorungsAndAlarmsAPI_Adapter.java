@@ -40,9 +40,9 @@ import javax.servlet.http.HttpServletRequest;
  * @author hyski.mateusz@gmail.com
  */
 @Controller
-public class StorungsAndAlarmsAPI {
+public class StorungsAndAlarmsAPI_Adapter {
 
-    private static final Log LOG = LogFactory.getLog(StorungsAndAlarmsAPI.class);
+    private static final Log LOG = LogFactory.getLog(StorungsAndAlarmsAPI_Adapter.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
     private boolean validate(String paramName,String param){
         if( !param.equals("0") || param.equals("1")){
