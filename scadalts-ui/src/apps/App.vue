@@ -7,44 +7,38 @@
         </label>
         <div class="sidebar">
             <logo>Scada-LTS</logo>
-            <a href="#"><i class="fas fa-qrcode"></i><span>Dashbord</span></a>
-            <a href="#"><i class="fas fa-desktop"></i><span>Watch lists</span></a>
-            <a href="#"><i class="fas fa-images"></i><span>Graphical Views</span></a>
-            <a href="#"><i class="fas fa-stream"></i><span>Data Sources</span></a>
-            <a href="#"><i class="fas fa-server"></i><span>Services</span></a> <!-- sms etc..-->
-            <a class="active" href="#"><i class="fas fa-bell"></i><span>Alarms</span></a>
-            <a href="#"><i class="fas fa-calendar"></i><span>Events</span></a>
-            <a href="#"><i class="fas fa-phone"></i><span>Contact</span></a>
-            <a href="#"><i class="fas fa-question-circle"></i><span>About</span></a>
-            <a href="#"><i class="fas fa-user-shield"></i><span>Admin</span></a>
+
+            <a href="#"><span>Dashbord</span></a>
+            <a href="#"><span>Watch lists</span></a>
+            <a href="#"><span>Graphical Views</span></a>
+            <a href="#"><span>Data Sources</span></a>
+            <a href="#"><span>Services</span></a> <!-- sms etc..-->
+            <a class="active" href="#/alarms"><span>Alarms</span></a>
+            <a href="#"><span>Events</span></a>
+            <a href="#"><span>Contact</span></a>
+            <a href="#"><span>About</span></a>
+            <a href="#"><span>Admin</span></a>
         </div>
-        <header>
-            <nav>
-                <ul class="nav-left" id="navigation-left">
-                    <li><a href="#">Dashboard</a></li>
-                    <li><a href="#">Users</a></li>
-                    <li><a href="#">Setings</a></li>
-                </ul>
-                <ul class="nav-right">
-                    <li><a href="#">Messages</a></li>
-                    <li><a href="#">Task</a></li>
-                    <li><a href="#">My Acount</a></li> <!-- logout on popup -->
-                </ul>
-            </nav>
-        </header>
-        <router-view/>
+        <div class="view">
+            <router-view></router-view>
+        </div>
     </div>
 
 </template>
+
+<script>
+
+    export default {
+        name: 'app',
+        components: {
+        }
+    }
+</script>
 
 <style lang="scss">
    /* @import '../../node_modules/ag-grid-community/dist/styles/ag-grid.css';
     @import '../../node_modules/ag-grid-community/dist/styles/ag-theme-balham.css';*/
 
-   @font-face {
-       font-family: OpenSans-Regular;
-       src: url(../assets/fonts/Open_Sans/OpenSans-Regular.ttf);
-   }
    :root {
        font-size: 16px;
        font-family: OpenSans-Regular;
@@ -65,6 +59,7 @@
        text-decoration: none;
    }
    .sidebar{
+       margin-top: -20px;
        position: fixed;
        left: -240px;
        width: 240px;
@@ -104,41 +99,6 @@
        display: none;
    }
 
-   nav {
-       position: fixed;
-       width: 100%;
-       height: 45px;
-       background: var(--bg-primary);
-       z-index: -10;
-       color: var(--text-primary);
-   }
-   .nav-left {
-       float:left;
-       margin-left: 310px;
-   }
-   .nav-right {
-       float:right;
-   }
-   header::after {
-       content: '';
-       display: table;
-       clear: both;
-   }
-   nav ul {
-       margin: 0;
-       padding: 0;
-       list-style: none;
-   }
-   nav li {
-       float: left;
-       display: inline-block;
-       margin: 10px 10px 30px;
-   }
-
-   nav a {
-       color: var(--text-primary);
-   }
-
    label #btn-sidebar, label #cancel-sidebar {
        position: absolute;
        cursor: pointer;
@@ -159,6 +119,7 @@
        visibility: hidden;
    }
    #check-sidebar:checked ~ label #btn-sidebar {
+       margin-top: -5px;
        margin-left: 245px;
        opacity: 0;
        visibility: hidden;
@@ -170,10 +131,6 @@
    }
    #check-sidebar:checked ~ .sidebar{
        left:0;
-   }
-
-   #check-sidebar:checked ~ .nav-left {
-       margin-left: 90px;
    }
 
    @media (max-width:860px) {
@@ -208,7 +165,5 @@
            width: 29px;
        }
    }
-
-
 
 </style>
