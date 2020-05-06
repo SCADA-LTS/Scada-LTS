@@ -16,9 +16,19 @@
             <a class="active" href="#/alarms"><span>Alarms</span></a>
             <a href="#"><span>Events</span></a>
             <a href="#"><span>Contact</span></a>
-            <a href="#"><span>About</span></a>
+            <a href="#/about"><span>About</span></a>
             <a href="#"><span>Admin</span></a>
         </div>
+        <header>
+            <nav>
+                <ul class="nav-left" id="navigation-left">
+                    <li><a href="/ScadaBR/modern_watch_list.shtm">Main menu</a></li>
+                </ul>
+                <ul class="nav-right">
+                    <li><a href="#">My Acount</a></li>
+                </ul>
+            </nav>
+        </header>
         <div class="view">
             <router-view></router-view>
         </div>
@@ -99,10 +109,47 @@
        display: none;
    }
 
+   nav {
+       margin-top: -20px;
+       position: fixed;
+       width: 100%;
+       height: 45px;
+       background: var(--bg-primary);
+       z-index: -1;
+       color: var(--text-primary);
+   }
+   .nav-left {
+       float:left;
+       margin-left: 310px;
+   }
+   .nav-right {
+       float:right;
+   }
+
+   header::after {
+       content: '';
+       display: table;
+       clear: both;
+   }
+   nav ul {
+       margin: 0;
+       padding: 0;
+       list-style: none;
+   }
+   nav li {
+       float: left;
+       display: inline-block;
+       margin: 10px 10px 30px;
+   }
+
+   nav a {
+       color: var(--text-primary);
+   }
+
    label #btn-sidebar, label #cancel-sidebar {
        position: absolute;
        cursor: pointer;
-       background: #262626;
+       background: green;
        height: 45px;
        width: 45px;
        text-align: center;
