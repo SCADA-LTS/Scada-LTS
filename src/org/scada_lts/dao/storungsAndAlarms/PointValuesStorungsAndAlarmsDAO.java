@@ -24,7 +24,6 @@ class PointValuesStorungsAndAlarmsDAO {
 
     public JSONObject getAlarms(int id) throws JSONException{
 
-        PointValues_ pointValuesStorungsAndAlarms=new PointValues_();
         JSONObject jsonObject=null;
         try {
                 String  j="";
