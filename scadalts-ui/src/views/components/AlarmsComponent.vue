@@ -8,7 +8,11 @@
                 <th>Variable name</th>
             </tr>
             <tr v-for="(item, index) in alarms"
-                class="activation activation_alarm inactivation"
+                v-bind:class="{
+                        activation: isActivation( item['activation-time'],item['inactivation-time'],item.level),
+                        activation_alarm: isActivationAlarm(item['activation-time'],item['inactivation-time'],item.level),
+                        inactivation: isInactivation(item['activation-time'],item['inactivation-time'],item.level)
+                    }"
             >
                 <td>
                     <input v-if="item['inactivation-time'].length>0" type="checkbox" name="Activation"
@@ -41,6 +45,28 @@
                     //console.log(JSON.stringify(this.data))
                 })
             },
+            isActivation(activationTime, inactivationTime, level){
+                if (activationTime.length>0 && inactivationTime.length==0 && level == 5) {
+                    return true
+                } else {
+                    return false
+                }
+            },
+            isActivationAlarm(activationTime, inactivationTime, level) {
+                if (activationTime.length>0 && inactivationTime.length==0 && level == 4) {
+                    return true
+                } else {
+                    return false
+                }
+            },
+            isInactivation(activationTime, inactivationTime, level) {
+                if (activationTime.length>0 && inactivationTime.length>0) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+
         },
         created() {
             this.getAlarms();
@@ -70,14 +96,17 @@
     }
 
     .activation_alarm {
+        color: red;
         background: yellow;
     }
 
     .activation {
         color: red;
+        background: white;
     }
 
     .inactivation {
         color: green;
+        background:white;
     }
 </style>
