@@ -17,5 +17,29 @@ public class V2_2_1__Views_For_PointValueWarningsAndAlarms implements SpringJdbc
         jdbcTmp.execute(""
                 + " create view viewAlarms as"
                 + "  select * from pointValues");
+
+        //view for Rest API  -> /api/alarms/live
+
+        //jdbcTmp.execute(""
+        //        + " create view apiAlarmsLive as"
+        //        + "  select id,activationTime as activation-Time, inactivationTime as inactivation-Time,name,level* from pointValues"
+
+
+
+
+        //view for Rest API  -> /api/alarms/history
+
+        //jdbcTmp.execute(""
+        //        + " create view apiAlarmsHistory as"
+        //        + "  select time, name,description* from pointValues"
+
+
+
+
+        //view for Rest API  -> /api/alarms/acknowledge
+
+        //jdbcTmp.execute(""
+        //        + " create view apiAlarmsAcknowledge as"
+        //        + "  select id,request,error* from pointValues"
     }
 }
