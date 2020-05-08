@@ -9,18 +9,21 @@
         <div class="action_bottom">
             <button>Acknowledge Störung/Alarms</button>
         </div>
+
     </div>
 </template>
 
 <script>
 
-    import AlarmsComponent from './components/AlarmsComponent'
+    import AlarmsComponent from "./components/AlarmsComponent"
 
     export default {
         el: '#alarms',
         name: 'alarms',
         components: {
             AlarmsComponent
+        },
+        methods: {
         }
     }
 </script>
