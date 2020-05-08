@@ -7,46 +7,47 @@
                 <th>Inactivation Timestamp</th>
                 <th>Variable name</th>
             </tr>
-            <tr>
-
-            </tr>
-            <tr class="activation">
-                <td></td>
-                <td>2020-03-10 07:13:34</td>
-                <td></td>
-                <td>Be ST ALG_StoAllg1.0 Durchflussmessung Drosselkammer Störung Steuersicherung ausgelöst</td>
-            </tr>
-            <tr class="activation activation_alarm">
-                <td></td>
-                <td>2020-03-10 07:13:24</td>
-                <td></td>
-                <td>Be AL GM01 gas alarm</td>
-            </tr>
-            <tr class="inactivation ">
+            <tr v-for="(item, index) in alarms"
+                class="activation activation_alarm inactivation"
+            >
                 <td>
-                    <input type="checkbox" name="Activation" value="Activation">
+                    <input v-if="item['inactivation-time'].length>0" type="checkbox" name="Activation"
+                           value="Activation" data="{{item.id}}">
                 </td>
-                <td>2020-03-10 05:13:24</td>
-                <td>2020-03-10 06:33:54</td>
-                <td>Se AL GM02 gas alarm</td>
-            </tr>
-            <tr class="inactivation">
-                <td>
-                    <input type="checkbox" name="Activation" value="Activation">
-                </td>
-                <td>2020-02-10 05:13:24</td>
-                <td>2020-03-10 06:30:54</td>
-                <td>Bx AL GM03 gas alarm</td>
+                <td>{{item["activation-time"]}}</td>
+                <td>{{item["inactivation-time"]}}</td>
+                <td>{{item.name}}</td>
             </tr>
         </table>
     </div>
 </template>
 
 <script>
+    import store from "../../store"
+
     export default {
         el: '#alarms_component',
         name: 'alarmsComponent',
-        components: {}
+        components: {},
+        data() {
+            return {
+                alarms: [],
+            }
+        },
+        methods: {
+            getAlarms() {
+                store.dispatch('fakeGetLiveAlarms', {'offset': 0, 'limit': 100}).then((ret) => {
+                    this.alarms = ret
+                    //console.log(JSON.stringify(this.data))
+                })
+            },
+        },
+        created() {
+            this.getAlarms();
+        },
+        mounted() {
+
+        },
     }
 </script>
 
@@ -54,6 +55,7 @@
     data {
         margin: 20px;
     }
+
     table {
         margin: 20px;
         font-family: arial, sans-serif;
