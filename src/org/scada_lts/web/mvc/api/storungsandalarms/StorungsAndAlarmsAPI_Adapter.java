@@ -20,8 +20,6 @@ package org.scada_lts.web.mvc.api.storungsandalarms;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
 import org.scada_lts.dao.storungsAndAlarms.StorungsAndAlarms;
@@ -40,17 +38,10 @@ import javax.servlet.http.HttpServletRequest;
  * @author hyski.mateusz@gmail.com
  */
 @Controller
-public class StorungsAndAlarmsAPI_Adapter {
+public class StorungsAndAlarmsAPI_Adapter extends Validation{
 
-    private static final Log LOG = LogFactory.getLog(StorungsAndAlarmsAPI_Adapter.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
-    private boolean validate(String paramName,String param){
-        if( !param.equals("0") || param.equals("1")){
-            LOG.info(paramName+" is empty."+paramName+" can't be empty");
-            return false;
-        }
-        return true;
-    }
+
     @RequestMapping(value = "/api/alarms/{sortDataActivation}/{sortDataInactivation}/{sortPointName}/{sortStatus}", method = RequestMethod.GET)
     public ResponseEntity<String> getAlarms(
             @PathVariable("sortDataActivation") String sortDataActivation,
@@ -61,17 +52,17 @@ public class StorungsAndAlarmsAPI_Adapter {
     )
     {
         LOG.info("/api/alarms/{sortDataActivation}/{sortDataInactivation}/{sortPointName}/{sortStatus}");
-        if ( !validate("SortDataActivation",sortDataActivation) ){
-            new ResponseEntity<String>("Value SortDataActivation is empty", HttpStatus.OK);
+        if ( !doGivenParameterIsValid("SortDataActivation",sortDataActivation) ){
+            return backResponse(sortDataActivation );
         }
-        if ( !validate("SortDataInactivation",sortDataInactivation) ){
-            new ResponseEntity<String>("Value SortDataInactivation is empty", HttpStatus.OK);
+        if ( !doGivenParameterIsValid("SortDataInactivation",sortDataInactivation) ){
+            return backResponse(sortDataInactivation );
         }
-        if ( !validate("SortPointName",sortPointName) ) {
-            new ResponseEntity<String>("Value SortPointName is empty", HttpStatus.OK);
+        if ( !doGivenParameterIsValid("SortPointName",sortPointName) ) {
+            return backResponse(sortPointName );
         }
-        if ( !validate("SortStatus",sortStatus) ) {
-            new ResponseEntity<String>("Value SortStatus is empty", HttpStatus.OK);
+        if ( !doGivenParameterIsValid("SortStatus",sortStatus) ) {
+            return backResponse(sortStatus );
         }
         try {
                 User user = Common.getUser(request);
