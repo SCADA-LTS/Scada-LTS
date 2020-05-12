@@ -17,7 +17,7 @@ public class V2_2_1_3__View_ApiAlarmsAcknowledge_For_PointValueWarningsAndAlarms
         try {
             jdbcTmp.execute(""
                     + " create view apiAlarmsAcknowledge as"
-                    + "  select id,request,error from plcAlarms");
+                    + "  select id,pointType as 'request',pointType as 'error' from plcAlarms");
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
