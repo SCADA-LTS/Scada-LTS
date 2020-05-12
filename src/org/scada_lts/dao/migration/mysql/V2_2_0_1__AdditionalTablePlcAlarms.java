@@ -12,7 +12,6 @@ public class V2_2_0_1__AdditionalTablePlcAlarms implements SpringJdbcMigration {
 
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 
-
         try {
             jdbcTmp.execute(""
                         + "create table plcAlarms ("
@@ -30,7 +29,6 @@ public class V2_2_0_1__AdditionalTablePlcAlarms implements SpringJdbcMigration {
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
-
 
     }
 }
