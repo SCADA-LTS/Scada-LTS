@@ -16,7 +16,7 @@ public class V2_2_1_1__View_ApiAlarmsLive_For_PointValueWarningsAndAlarms implem
         try {
             jdbcTmp.execute(""
                     + " create view apiAlarmsLive as"
-                    + "  select id,activationTime as 'activation-time',inactivationTime as 'inactivation-time', pointXid as 'name', pointType as 'level' from plcAlarms");
+                    + "  select id,acknowledgeTime as 'activation-time',inactivationTime as 'inactivation-time', pointXid as 'name', pointType as 'level' from plcAlarms");
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
