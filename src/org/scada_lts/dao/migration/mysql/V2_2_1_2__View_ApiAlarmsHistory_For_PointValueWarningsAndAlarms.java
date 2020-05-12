@@ -16,7 +16,7 @@ public class V2_2_1_2__View_ApiAlarmsHistory_For_PointValueWarningsAndAlarms imp
         try {
             jdbcTmp.execute(""
                     + " create view apiAlarmsHistory as"
-                    + "  select inactiveTime as 'time', name, description from plcAlarms");
+                    + "  select inactiveTime as 'time', pointXid as 'name', pointXid as 'description' from plcAlarms");
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
