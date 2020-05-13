@@ -1,7 +1,7 @@
 package org.scada_lts.web.mvc.api.storungsandalarms;
 
 /*
- * (c) 2018 hyski.mateusz@gmail.com
+ * (c) 2020 hyski.mateusz@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
