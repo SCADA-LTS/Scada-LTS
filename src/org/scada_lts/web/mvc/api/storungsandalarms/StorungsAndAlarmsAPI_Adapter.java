@@ -52,17 +52,21 @@ public class StorungsAndAlarmsAPI_Adapter extends Validation{
     )
     {
         LOG.info("/api/alarms/{sortDataActivation}/{sortDataInactivation}/{sortPointName}/{sortStatus}");
-        if ( !doGivenParameterIsValid("SortDataActivation",sortDataActivation) ){
-            return backResponse(sortDataActivation );
+        String value="";
+        if ( (value = doGivenParameterHaveValue0Or1("SortDataActivation",sortDataActivation)) != null ){
+            return backResponseWithValidationError (sortDataActivation,value );
         }
-        if ( !doGivenParameterIsValid("SortDataInactivation",sortDataInactivation) ){
-            return backResponse(sortDataInactivation );
+        value="";
+        if ( (value = doGivenParameterHaveValue0Or1("SortDataInactivation",sortDataInactivation)) != null){
+            return backResponseWithValidationError(sortDataInactivation, value );
         }
-        if ( !doGivenParameterIsValid("SortPointName",sortPointName) ) {
-            return backResponse(sortPointName );
+        value="";
+        if ( (value = doGivenParameterHaveValue0Or1("SortPointName",sortPointName)) != null) {
+            return backResponseWithValidationError(sortPointName, value );
         }
-        if ( !doGivenParameterIsValid("SortStatus",sortStatus) ) {
-            return backResponse(sortStatus );
+        value="";
+        if ( (value = doGivenParameterHaveValue0Or1("SortStatus",sortStatus)) != null) {
+            return backResponseWithValidationError(sortStatus, value );
         }
         try {
                 User user = Common.getUser(request);
