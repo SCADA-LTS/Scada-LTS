@@ -22,7 +22,7 @@ class Validation {
 
     protected boolean doGivenParameterIsValid(String paramName, String param){
         if( !param.equals("0") || param.equals("1")){
-            LOG.info(paramName+" is empty."+paramName+" can't be empty");
+            LOG.info(paramName+" do not contain correct value."+paramName+" should contain value 0 or 1");
             return false;
         }
         return true;
