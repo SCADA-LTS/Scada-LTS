@@ -44,7 +44,6 @@ public class V2_2_1_1__View_ApiAlarmsLive_For_PointValueWarningsAndAlarms implem
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
-        //        + "  select id,activationTime as activation-Time, inactivationTime as inactivation-Time,name,level* from pointValues
 
     }
 }
