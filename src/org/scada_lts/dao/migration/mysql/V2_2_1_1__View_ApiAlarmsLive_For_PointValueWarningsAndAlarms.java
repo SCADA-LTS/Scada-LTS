@@ -28,11 +28,19 @@ public class V2_2_1_1__View_ApiAlarmsLive_For_PointValueWarningsAndAlarms implem
 
 
         //view for Rest API  -> /api/alarms/live
-
         try {
-            jdbcTmp.execute(""
-                    + " create view apiAlarmsLive as"
-                    + "  select id,acknowledgeTime as 'activation-time',inactiveTime as 'inactivation-time', pointXid as 'name', pointType as 'level' from plcAlarms");
+            jdbcTmp.execute(
+                    new CreateView().
+                            CreateViewWithSpecification(
+                                    new StringBuilder("apiAlarmsLive"),
+                                    new String[]{
+                                            "id,",
+                                            "acknowledgeTime as 'activation-time',",
+                                            "inactiveTime as 'inactivation-time',",
+                                            "pointXid as 'name',",
+                                            "pointType as 'level'"},
+                                    new StringBuilder("plcAlarms")
+                                    ));
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
