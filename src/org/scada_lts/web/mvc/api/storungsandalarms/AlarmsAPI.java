@@ -80,34 +80,4 @@ public class AlarmsAPI {
             return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @RequestMapping(value = "/api/acknowledge/{id}", method = RequestMethod.GET)
-    public ResponseEntity<String> getAlarms(
-            @PathVariable("id") String id,
-            HttpServletRequest request
-    )
-    {
-        LOG.info("/api/acknowledge/{id}");
-        if ( !validate("id",id) ){
-            new ResponseEntity<String>("Value id is empty", HttpStatus.OK);
-        }
-        try {
-                User user = Common.getUser(request);
-                if (user != null && user.isAdmin()) {
-                    JSONObject result=null;
-                    /*
-                    if(sortStatus.equals("0")) {
-                        result = pointValuesStorungsAndAlarms.getStorungs(0);
-                    }
-                    if(sortStatus.equals("1")){
-                        result = pointValuesStorungsAndAlarms.getStorungs(1);
-                    }
-                    */
-                    return new ResponseEntity<String>( result.toString() , HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-                }
-        } catch (Exception e) {
-            return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }
