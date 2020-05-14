@@ -40,15 +40,8 @@ import javax.servlet.http.HttpServletRequest;
  * @author hyski.mateusz@gmail.com
  */
 @Controller
-public class StorungsAPI {
+public class StorungsAPI extends Validation{
 
     private static final Log LOG = LogFactory.getLog(StorungsAPI.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
-    private boolean validate(String paramName,String param){
-        if( !param.equals("0") || param.equals("1")){
-            LOG.info(paramName+" is empty."+paramName+" can't be empty");
-            return false;
-        }
-        return true;
-    }
 }
