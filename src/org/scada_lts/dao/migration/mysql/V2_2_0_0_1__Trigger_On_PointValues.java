@@ -38,7 +38,7 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"SET VARIABLE2 = (select xid from dataPoints where id=new.dataPointId); "
                     +"SET VARIABLE2 = (select if(LOCATE('AL',VARIABLE2) <> 0 ,'AL', if(LOCATE('ST',VARIABLE2) <> 0 ,'ST','undefined'))); "
                     +""
-                    +"insert into pointValuesStorungsAndAlarms ("
+                    +"insert into plcAlarms ("
                     +"pointId,"
                     +"pointXid,"
                     +"pointType,"
