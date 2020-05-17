@@ -22,11 +22,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
+import org.springframework.dao.DataAccessException;
 /**
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
  */
+
 public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
     private static final Log LOG = LogFactory.getLog(StorungsAndAlarms.class);
@@ -116,5 +118,20 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         }
 
         return jsonObject;
+    }
+
+    @Override
+    public boolean setAcknowledge(int id) {
+
+        boolean result = false;
+        try
+        {
+            DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id);
+            result = true;
+        }
+        catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
