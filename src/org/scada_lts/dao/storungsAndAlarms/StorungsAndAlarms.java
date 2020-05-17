@@ -100,15 +100,17 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
     }
 
     @Override
-    public void setAcknowledge(int id) {
+    public boolean setAcknowledge(int id) {
 
+        boolean result = false;
         try
         {
             DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id);
+            result = true;
         }
         catch (DataAccessException e) {
             e.printStackTrace();
         }
-
+        return result;
     }
 }

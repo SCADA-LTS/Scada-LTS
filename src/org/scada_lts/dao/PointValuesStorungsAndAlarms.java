@@ -8,6 +8,6 @@ public interface PointValuesStorungsAndAlarms {
 
     JSONObject getAlarms(int id);
 
-    void setAcknowledge( int id);
+    boolean setAcknowledge( int id);
 
 }
