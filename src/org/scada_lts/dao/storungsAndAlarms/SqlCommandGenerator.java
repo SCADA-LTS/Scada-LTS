@@ -1,5 +1,7 @@
 package org.scada_lts.dao.storungsAndAlarms;
 
+import com.sun.org.apache.xpath.internal.operations.String;
+
 class SqlCommandGenerator {
 
     private static StringBuilder stringBuilder;
@@ -23,5 +25,9 @@ class SqlCommandGenerator {
         string+="where id=1;";
 
         return string;
+    }
+    public static java.lang.String setAcknowledge()
+    {
+        return new StringBuilder("update plcAlarms set akcnowledgeTime='1' where id=?").toString();
     }
 }

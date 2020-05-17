@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
+import org.springframework.dao.DataAccessException;
 
 public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
@@ -96,5 +97,18 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         }
 
         return jsonObject;
+    }
+
+    @Override
+    public void setAcknowledge(int id) {
+
+        try
+        {
+            DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id);
+        }
+        catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 }
