@@ -45,4 +45,8 @@ class SqlCommandGenerator {
 
         return string;
     }
+    public static java.lang.String setAcknowledge()
+    {
+        return new StringBuilder("update plcAlarms set acknowledgeTime='1' where id=?").toString();
+    }
 }
