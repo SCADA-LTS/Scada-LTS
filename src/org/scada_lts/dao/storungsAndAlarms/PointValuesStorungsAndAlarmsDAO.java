@@ -28,6 +28,27 @@ import java.util.List;
  */
 class PointValuesStorungsAndAlarmsDAO {
 
+    public JSONObject getHistoryAlarmsByDateDayAndFilterFromOffset(
+            String date_day,
+            String filter_with_mysqlrlike,
+            int offset,
+            int limit)  throws JSONException,Exception
+    {
+        JSONObject jsonObject=null;
+        List<PointValuesStorungsAndAlarms> pointValuesStorungsAndAlarms =  DAO.getInstance().getJdbcTemp().query(
+                SqlCommandGenerator.get(date_day,filter_with_mysqlrlike,offset,limit),
+                new PointValuesStorungsAndAlarmsRowMapper());
+
+        String pointValuesStorungsAndAlarmsAsString="";
+
+        for(PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms1 : pointValuesStorungsAndAlarms){
+            pointValuesStorungsAndAlarmsAsString+=pointValuesStorungsAndAlarms1.toString();
+
+        }
+        jsonObject = new JSONObject().put("result", pointValuesStorungsAndAlarmsAsString);
+
+        return jsonObject;
+    }
     public JSONObject getStorungs(int id) throws JSONException,Exception{
 
         JSONObject jsonObject=new JSONObject();
@@ -42,7 +63,19 @@ class PointValuesStorungsAndAlarmsDAO {
         }
         return jsonObject.put("1",pointValuesStorungsAndAlarmsAsString);
     }
-
+    public JSONObject getHistoryAlarmsById(int id) throws JSONException{
+        JSONObject jsonObject=null;
+        try {
+            //  pointValuesStorungsAndAlarms = (PointValues_)  DAO.getInstance().getJdbcTemp().queryForObject(SqlCommandGenerator.generateStringBuilderSqlForStorungs(), new PointValuesStorungsAndAlarmsRowMapper());
+            //   } catch (DataAccessException e) {
+            //        e.printStackTrace();
+            //    }
+            jsonObject = new JSONObject().put("test", "test");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
     public JSONObject getAlarms(int id) throws JSONException{
 
         JSONObject jsonObject=null;

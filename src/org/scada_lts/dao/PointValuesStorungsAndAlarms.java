@@ -31,4 +31,8 @@ public interface PointValuesStorungsAndAlarms {
 
     JSONObject getAlarms(int id);
 
+    JSONObject getHistoryAlarmsById(int id);
+
+    JSONObject getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit );
+
 }

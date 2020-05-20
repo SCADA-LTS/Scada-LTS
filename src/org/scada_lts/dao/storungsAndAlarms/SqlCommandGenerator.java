@@ -45,4 +45,12 @@ class SqlCommandGenerator {
 
         return string;
     }
+    static String get(
+            String date_day,
+            String filter_with_mysqlrlike,
+            int offset,
+            int limit
+    ){
+        return new StringBuilder("select * from plcAlarms where pointType=1  limit "+limit+" offset "+offset).toString();
+    }
 }
