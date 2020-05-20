@@ -50,14 +50,13 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +") values ("
                     +" (select id from dataPoints where id=new.dataPointId),"
                     +" (select xid from dataPoints where id=new.dataPointId),"
-                    +"'TYP',"
+                    +" (select plcAlarmLevel from dataPoints where id=new.dataPointId),"
                     +" (select xid from dataPoints where id=new.dataPointId),"
-                    +" 'event_name',"
+                    +"  (select from_unixtime(unix_timestamp())),"
                     +" 'inactiveTime',"
                     +" 'acknowledgeTime',"
-                    +" 'lastpointValue'"
+                    +" (select pointValue from pointValues where ts=(select max(ts) from pointValues where dataPointId=new.dataPointId)"
                     +"); "
-                    +"SET VARIABLE2 = (SELECT UNIX_TIMESTAMP(NOW()));"
                     +"end; ");
         } catch (DataAccessException e) {
             e.printStackTrace();
