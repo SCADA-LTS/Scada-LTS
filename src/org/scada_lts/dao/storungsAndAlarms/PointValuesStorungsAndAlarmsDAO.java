@@ -28,14 +28,24 @@ import java.util.List;
  */
 class PointValuesStorungsAndAlarmsDAO {
 
-    public JSONObject getHistoryAlarmsByDateDayAndFilter(String date_day, String filter_with_mysqlrlike)  throws JSONException,Exception{
+    public JSONObject getHistoryAlarmsByDateDayAndFilterFromOffset(
+            String date_day,
+            String filter_with_mysqlrlike,
+            int offset,
+            int limit)  throws JSONException,Exception
+    {
         JSONObject jsonObject=null;
+        List<PointValuesStorungsAndAlarms> pointValuesStorungsAndAlarms =  DAO.getInstance().getJdbcTemp().query(
+                SqlCommandGenerator.get(date_day,filter_with_mysqlrlike,offset,limit),
+                new PointValuesStorungsAndAlarmsRowMapper());
 
-            //  pointValuesStorungsAndAlarms = (PointValues_)  DAO.getInstance().getJdbcTemp().queryForObject(SqlCommandGenerator.generateStringBuilderSqlForStorungs(), new PointValuesStorungsAndAlarmsRowMapper());
-            //   } catch (DataAccessException e) {
-            //        e.printStackTrace();
-            //    }
-        jsonObject = new JSONObject().put("test", "test");
+        String pointValuesStorungsAndAlarmsAsString="";
+
+        for(PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms1 : pointValuesStorungsAndAlarms){
+            pointValuesStorungsAndAlarmsAsString+=pointValuesStorungsAndAlarms1.toString();
+
+        }
+        jsonObject = new JSONObject().put("result", pointValuesStorungsAndAlarmsAsString);
 
         return jsonObject;
     }

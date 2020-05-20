@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author hyski.mateusz@gmail.com
  */
 @Controller
-public class AlarmsAPI {
+public class AlarmsAPI extends Validation{
 
     private static final Log LOG = LogFactory.getLog(AlarmsAPI.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
@@ -81,27 +81,30 @@ public class AlarmsAPI {
             return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @RequestMapping(value = "/alarms/history/{date_day}/{filter_with_mysqlrlike}", method = RequestMethod.GET)
+    @RequestMapping(value = "/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}", method = RequestMethod.GET)
     public ResponseEntity<String> getHistoryAlarms(
             @PathVariable("date_day") String date_day,
             @PathVariable("filter_with_mysqlrlike") String filter_with_mysqlrlike,
+            @PathVariable("offset") String offset,
+            @PathVariable("limit") String limit,
             HttpServletRequest request
     )
     {
-        LOG.info("/alarms/history/{date_day}/{filter_with_mysqlrlike}");
-
-        if ( !validate("date_day",date_day) ){
-            new ResponseEntity<String>("Value date_day is empty", HttpStatus.OK);
+        LOG.info("/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}");
+        String value = "";
+        if ( ( value = doGivenParameterHaveValueFromScopeSince1To23(date_day)) != null ){
+            return new ResponseEntity<String>("Value date_day is not correct."+value, HttpStatus.OK);
         }
         if ( !validate("filter_with_mysqlrlike",filter_with_mysqlrlike) ){
-            new ResponseEntity<String>("Value filter_with_mysqlrlike is empty", HttpStatus.OK);
+            return new ResponseEntity<String>("Value filter_with_mysqlrlike is empty", HttpStatus.OK);
         }
-
+        int offsetParam = Integer.parseInt(offset);
+        int limitParam = Integer.parseInt(limit);
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                JSONObject result=null;
-                result = pointValuesStorungsAndAlarms.getHistoryAlarmsByDateDayAndFilter(date_day, filter_with_mysqlrlike);
+                JSONObject result=new JSONObject();
+                result.put("result", pointValuesStorungsAndAlarms.getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(date_day, filter_with_mysqlrlike, offsetParam, limitParam));
                 return new ResponseEntity<String>( result.toString() , HttpStatus.OK);
             } else {
                 return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
