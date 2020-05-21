@@ -22,6 +22,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
 import org.scada_lts.dao.storungsAndAlarms.StorungsAndAlarms;
@@ -40,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author hyski.mateusz@gmail.com
  */
 @Controller
-public class AlarmsAPI {
+public class AlarmsAPI extends Validation{
 
     private static final Log LOG = LogFactory.getLog(AlarmsAPI.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
@@ -70,6 +71,37 @@ public class AlarmsAPI {
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
                 }
+        } catch (Exception e) {
+            return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @RequestMapping(value = "/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}", method = RequestMethod.GET)
+    public ResponseEntity<String> getHistoryAlarms(
+            @PathVariable("date_day") String date_day,
+            @PathVariable("filter_with_mysqlrlike") String filter_with_mysqlrlike,
+            @PathVariable("offset") String offset,
+            @PathVariable("limit") String limit,
+            HttpServletRequest request
+    )
+    {
+        LOG.info("/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}");
+        String value = "";
+        if ( ( value = doGivenParameterHaveValueFromScopeSince1To23(date_day)) != null ){
+            return new ResponseEntity<String>("Value date_day is not correct."+value, HttpStatus.OK);
+        }
+        if ( !validate("filter_with_mysqlrlike",filter_with_mysqlrlike) ){
+            return new ResponseEntity<String>("Value filter_with_mysqlrlike is empty", HttpStatus.OK);
+        }
+        int offsetParam = Integer.parseInt(offset);
+        int limitParam = Integer.parseInt(limit);
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                JSONArray jsonArrayResult = pointValuesStorungsAndAlarms.getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(date_day, filter_with_mysqlrlike, offsetParam, limitParam);
+                return new ResponseEntity<String>( jsonArrayResult.toString() , HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
         } catch (Exception e) {
             return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

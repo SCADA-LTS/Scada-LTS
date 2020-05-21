@@ -16,6 +16,10 @@ package org.scada_lts.dao.storungsAndAlarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Create by at Mateusz Hyski
  *
@@ -120,5 +124,23 @@ class PointValuesStorungsAndAlarms {
                 ", acknowledgeTime='" + acknowledgeTime + '\'' +
                 ", lastpointValue='" + lastpointValue + '\'' +
                 '}';
+    }
+    public JSONObject toJSONObject() {
+        try {
+            return
+                    new JSONObject()
+                    .put("id",getId())
+                    .put("pointId",getPointId())
+                    .put("pointXid",getPointXid())
+                    .put("pointType",getPointType())
+                    .put("pointName",getPointName())
+                    .put("triggerName",getTriggerName())
+                    .put("inactiveTime",getInactiveTime())
+                    .put("acknowledgeTime",getAcknowledgeTime())
+                    .put("lastpointValue",getLastpointValue());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

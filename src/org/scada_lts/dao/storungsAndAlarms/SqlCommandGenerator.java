@@ -45,8 +45,14 @@ class SqlCommandGenerator {
 
         return string;
     }
-    public static java.lang.String setAcknowledge()
-    {
+    static String getCommandForHistoryAlarmsByDateDayAndFilterFromOffset(
+            String date_day,
+            String filter_with_mysqlrlike,
+            int offset,
+            int limit){
+        return new StringBuilder("select * from plcAlarms where pointType=1  limit "+limit+" offset "+offset).toString();
+    }
+    public static java.lang.String setAcknowledge(){
         return new StringBuilder("update plcAlarms set acknowledgeTime='1' where id=?").toString();
     }
 }
