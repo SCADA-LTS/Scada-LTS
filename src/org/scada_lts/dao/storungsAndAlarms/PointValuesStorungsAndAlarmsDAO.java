@@ -20,6 +20,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.scada_lts.dao.DAO;
+import org.springframework.dao.DataAccessException;
+
 import java.util.List;
 
 /**
@@ -94,6 +96,11 @@ class PointValuesStorungsAndAlarmsDAO {
             e.printStackTrace();
         }
         return jsonObject;
+    }
+    public void setAcknowledge(int id) throws DataAccessException {
+
+        DAO.getInstance().getJdbcTemp().update(SqlCommandGenerator.setAcknowledge(), new Object[] {id});
+
     }
 
 }
