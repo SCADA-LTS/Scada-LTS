@@ -55,7 +55,7 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"  (select from_unixtime(unix_timestamp())),"
                     +" 'inactiveTime',"
                     +" 'acknowledgeTime',"
-                    +" (select pointValue from pointValues where ts=(select max(ts) from pointValues where dataPointId=new.dataPointId)"
+                    +" (select pointValue from pointValues where ts=(select max(ts) from pointValues where dataPointId=new.dataPointId))"
                     +"); "
                     +"end; ");
         } catch (DataAccessException e) {
