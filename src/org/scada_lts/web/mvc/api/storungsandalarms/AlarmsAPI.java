@@ -22,6 +22,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
 import org.scada_lts.dao.storungsAndAlarms.StorungsAndAlarms;
@@ -103,9 +104,8 @@ public class AlarmsAPI extends Validation{
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                JSONObject result=new JSONObject();
-                result.put("result", pointValuesStorungsAndAlarms.getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(date_day, filter_with_mysqlrlike, offsetParam, limitParam));
-                return new ResponseEntity<String>( result.toString() , HttpStatus.OK);
+                JSONArray jsonArrayResult = pointValuesStorungsAndAlarms.getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(date_day, filter_with_mysqlrlike, offsetParam, limitParam);
+                return new ResponseEntity<String>( jsonArrayResult.toString() , HttpStatus.OK);
             } else {
                 return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }

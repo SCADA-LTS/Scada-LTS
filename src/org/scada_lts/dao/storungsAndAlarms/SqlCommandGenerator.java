@@ -45,7 +45,7 @@ class SqlCommandGenerator {
 
         return string;
     }
-    static String get(
+    static String getCommandForHistoryAlarmsByDateDayAndFilterFromOffset(
             String date_day,
             String filter_with_mysqlrlike,
             int offset,

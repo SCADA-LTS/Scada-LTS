@@ -82,13 +82,13 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
     }
 
     @Override
-    public JSONObject getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit) {
+    public JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit) {
 
-        JSONObject jsonObject = null;
+        JSONArray jsonArray = null;
 
         try
         {
-            jsonObject = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsByDateDayAndFilterFromOffset(date_day, filter_with_mysqlrlike,offset,limit);
+            jsonArray = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsByDateDayAndFilterFromOffset(date_day, filter_with_mysqlrlike,offset,limit);
         }
         catch (JSONException e)
         {
@@ -99,7 +99,7 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
             LOG.trace(exception.getMessage());
         }
 
-        return jsonObject;
+        return jsonArray;
     }
 
     public JSONObject getStorungsTest(int id){
