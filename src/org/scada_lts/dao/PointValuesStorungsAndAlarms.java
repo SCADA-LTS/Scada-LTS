@@ -18,6 +18,7 @@ package org.scada_lts.dao;
  *
  */
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -33,6 +34,6 @@ public interface PointValuesStorungsAndAlarms {
 
     JSONObject getHistoryAlarmsById(int id);
 
-    JSONObject getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit );
+    JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit );
 
 }

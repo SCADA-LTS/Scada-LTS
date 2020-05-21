@@ -16,6 +16,7 @@ package org.scada_lts.dao.storungsAndAlarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.scada_lts.dao.DAO;
@@ -28,26 +29,29 @@ import java.util.List;
  */
 class PointValuesStorungsAndAlarmsDAO {
 
-    public JSONObject getHistoryAlarmsByDateDayAndFilterFromOffset(
+    public JSONArray getHistoryAlarmsByDateDayAndFilterFromOffset(
             String date_day,
             String filter_with_mysqlrlike,
             int offset,
             int limit)  throws JSONException,Exception
     {
-        JSONObject jsonObject=null;
+        JSONArray jsonArray=new JSONArray();
         List<PointValuesStorungsAndAlarms> pointValuesStorungsAndAlarms =  DAO.getInstance().getJdbcTemp().query(
-                SqlCommandGenerator.get(date_day,filter_with_mysqlrlike,offset,limit),
+
+                SqlCommandGenerator.getCommandForHistoryAlarmsByDateDayAndFilterFromOffset(
+                        date_day,
+                        filter_with_mysqlrlike,
+                        offset,
+                        limit),
+
                 new PointValuesStorungsAndAlarmsRowMapper());
-
-        String pointValuesStorungsAndAlarmsAsString="";
-
-        for(PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms1 : pointValuesStorungsAndAlarms){
-            pointValuesStorungsAndAlarmsAsString+=pointValuesStorungsAndAlarms1.toString();
-
+        if ( pointValuesStorungsAndAlarms.size() != 0) {
+            for (PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms1 : pointValuesStorungsAndAlarms) {
+                jsonArray.put(pointValuesStorungsAndAlarms1.toJSONObject());
+            }
         }
-        jsonObject = new JSONObject().put("result", pointValuesStorungsAndAlarmsAsString);
 
-        return jsonObject;
+        return jsonArray;
     }
     public JSONObject getStorungs(int id) throws JSONException,Exception{
 
