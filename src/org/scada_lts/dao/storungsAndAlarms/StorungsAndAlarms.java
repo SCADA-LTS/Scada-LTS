@@ -161,17 +161,29 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
     }
 
     @Override
-    public boolean setAcknowledge(int id) {
+    public boolean setAcknowledge(int id,JSONObject jsonObject) {
 
         boolean result = false;
         try
         {
             DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id);
             result = true;
+            jsonObject.put("id",id);
+            jsonObject.put("request","OK");
         }
-        catch (DataAccessException e) {
+        catch (DataAccessException | JSONException e) {
+            jsonObject.put("error", e.printStackTrace());
+        }
+        try {
+            jsonObject.put("error","none");
+        } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return result;
+    }
+
+    public String getExceptionIfAppears(){
+
     }
 }
