@@ -59,8 +59,9 @@ public class AlarmsAPI extends Validation{
     )
     {
         LOG.info("/api/acknowledge/{id}");
-        if ( !validate("id",id) ){
-            new ResponseEntity<String>("Value id is empty", HttpStatus.OK);
+        String value = "";
+        if ( (value = validateDoParamIsIntegerAndBetween0And9999("id",id)) != null) {
+            return new ResponseEntity<String>(value, HttpStatus.OK);
         }
         try {
                 User user = Common.getUser(request);

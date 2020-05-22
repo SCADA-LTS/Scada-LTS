@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 class Validation {
 
     protected static final Log LOG = LogFactory.getLog(Validation.class);
-    private String validateDoParamIsIntegerAndBetween0And9999(String paramName,String param) {
+    protected String validateDoParamIsIntegerAndBetween0And9999(String paramName,String param) {
         if( !param.matches("[^a-z]|[^A-Z]|[0-9]{1,4}")){
             return "Value "+paramName+" is not correct.It should be a number beetwen 0 and 9999.";
         }
