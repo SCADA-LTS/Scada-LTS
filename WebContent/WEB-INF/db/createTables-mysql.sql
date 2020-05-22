@@ -19,6 +19,27 @@
 
 -- Make sure that everything get created with utf8 as the charset.
 alter database default character set utf8;
+/*
+DROP TABLE IF EXISTS pointValuesStorungsAndAlarms;
+*/
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+/*
+CREATE TABLE `pointValuesStorungsAndAlarms` (
+	id mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+	pointId  varchar(45) DEFAULT NULL,
+	pointXid  varchar(45) DEFAULT NULL,
+	pointType  varchar(45) DEFAULT NULL,
+	pointName  varchar(45) DEFAULT NULL,
+	triggerTime  varchar(45) DEFAULT NULL,
+	inactiveTime  varchar(45) DEFAULT NULL,
+	acknowledgeTime  varchar(45) DEFAULT NULL,
+	lastpointValue  varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
+*/
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- System settings

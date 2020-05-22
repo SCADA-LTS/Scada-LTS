@@ -35,6 +35,12 @@ import javax.servlet.http.HttpServletRequest;
 class Validation {
 
     protected static final Log LOG = LogFactory.getLog(Validation.class);
+    private String validateDoParamIsIntegerAndBetween0And9999(String paramName,String param) {
+        if( !param.matches("[^a-z]|[^A-Z]|[0-9]{1,4}")){
+            return "Value "+paramName+" is not correct.It should be a number beetwen 0 and 9999.";
+        }
+        return null;
+    }
     protected String doGivenParameterHaveCorrectDateFormat(String parameter){
         if( parameter.matches("^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$")){
             StringBuilder messagePart= new StringBuilder(parameter+" should contain value in format yyyy-mm-dd");

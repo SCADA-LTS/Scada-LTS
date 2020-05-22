@@ -53,4 +53,7 @@ class SqlCommandGenerator {
     ){
         return new StringBuilder("select * from plcAlarms where pointType=1 and DATE_FORMAT(triggerTime, '%Y-%m-%d')='"+date_day+"'  limit "+limit+" offset "+offset).toString();
     }
+    public static java.lang.String setAcknowledge(){
+        return new StringBuilder("update plcAlarms set acknowledgeTime='1' where id=?").toString();
+    }
 }

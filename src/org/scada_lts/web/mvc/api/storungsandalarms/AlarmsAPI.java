@@ -66,14 +66,7 @@ public class AlarmsAPI extends Validation{
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
                     JSONObject result=null;
-                    /*
-                    if(sortStatus.equals("0")) {
-                        result = pointValuesStorungsAndAlarms.getStorungs(0);
-                    }
-                    if(sortStatus.equals("1")){
-                        result = pointValuesStorungsAndAlarms.getStorungs(1);
-                    }
-                    */
+                    pointValuesStorungsAndAlarms.setAcknowledge(Integer.valueOf(id));
                     return new ResponseEntity<String>( result.toString() , HttpStatus.OK);
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
