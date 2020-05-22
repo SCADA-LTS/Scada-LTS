@@ -93,7 +93,7 @@ public class AlarmsAPI extends Validation{
     {
         LOG.info("/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}");
         String value = "";
-        if ( ( value = doGivenParameterHaveValueFromScopeSince1To23(date_day)) != null ){
+        if ( ( value = doGivenParameterHaveCorrectDateFormat(date_day)) != null ){
             return new ResponseEntity<String>("Value date_day is not correct."+value, HttpStatus.OK);
         }
         if ( !validate("filter_with_mysqlrlike",filter_with_mysqlrlike) ){
