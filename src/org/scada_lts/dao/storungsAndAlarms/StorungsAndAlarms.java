@@ -64,6 +64,46 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         }
         return jsonArray;
     }
+    public  JSONObject getHistoryAlarmsById(int id){
+        JSONObject jsonObject = null;
+
+        try
+        {
+            jsonObject = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsById(id);
+        }
+        catch (JSONException e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        catch(Exception exception)
+        {
+            LOG.trace(exception.getMessage());
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit) {
+
+        JSONArray jsonArray = null;
+
+        try
+        {
+            jsonArray = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsByDateDayAndFilterFromOffset(date_day, filter_with_mysqlrlike,offset,limit);
+        }
+        catch (JSONException e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        catch(Exception exception)
+        {
+            LOG.trace(exception.getMessage());
+        }
+
+        return jsonArray;
+    }
+
     public JSONObject getStorungsTest(int id){
 
         JSONObject jsonObject = null;
