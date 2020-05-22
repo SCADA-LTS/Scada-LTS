@@ -47,6 +47,6 @@ class SqlCommandGenerator {
     }
     public static java.lang.String setAcknowledge()
     {
-        return new StringBuilder("update plcAlarms set acknowledgeTime='1' where id=?").toString();
+        return new StringBuilder("update plcAlarms set acknowledgeTime=(select from_unixtime(unix_timestamp())) where id=?").toString();
     }
 }
