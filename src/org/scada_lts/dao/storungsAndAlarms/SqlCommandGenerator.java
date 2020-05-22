@@ -49,8 +49,9 @@ class SqlCommandGenerator {
             String date_day,
             String filter_with_mysqlrlike,
             int offset,
-            int limit){
-        return new StringBuilder("select * from plcAlarms where pointType=1  limit "+limit+" offset "+offset).toString();
+            int limit
+    ){
+        return new StringBuilder("select * from plcAlarms where pointType=1 and DATE_FORMAT(triggerTime, '%Y-%m-%d')='"+date_day+"'  and pointName RLIKE '"+filter_with_mysqlrlike+"' limit "+limit+" offset "+offset).toString();
     }
     public static java.lang.String setAcknowledge(){
         return new StringBuilder("update plcAlarms set acknowledgeTime='1' where id=?").toString();
