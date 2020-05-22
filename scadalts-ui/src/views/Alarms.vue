@@ -5,6 +5,7 @@
             <input type="checkbox" id="select_all" name="Select_All" value="1">
             <label class="selall" for="select_all">Select All</label><br>
         </div>
+        <Refresh></Refresh>
         <AlarmsComponent></AlarmsComponent>
         <div class="action_bottom">
             <button>Acknowledge Störung/Alarms</button>
@@ -15,13 +16,15 @@
 
 <script>
 
+    import Components from '@min-gb/vuejs-components'
     import AlarmsComponent from "./components/AlarmsComponent"
 
     export default {
         el: '#alarms',
         name: 'alarms',
         components: {
-            AlarmsComponent
+            AlarmsComponent,
+            ...Components
         },
         methods: {
         }
@@ -30,6 +33,8 @@
 
 <style lang="scss" scoped>
 
+
+    @import '../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
 
     .action {
         margin-top: 50px;
