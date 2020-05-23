@@ -239,8 +239,8 @@ public class DataPointDAO {
 		else
 			{
 				return
-						(dataPointName.contains("AL"))
-								? 1 : dataPointName.contains("ST")
+						(dataPointName.contains(" AL "))
+								? 1 : dataPointName.contains(" ST ")
 								? 2 : 3;
 			}
 	}
