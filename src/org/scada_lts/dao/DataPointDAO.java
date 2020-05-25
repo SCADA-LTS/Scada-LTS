@@ -94,6 +94,7 @@ public class DataPointDAO {
 
 	private static final String DATA_POINT_UPDATE = ""
 			+ "update dataPoints set "
+				+ COLUMN_NAME_PLC_ALARM_LEVEL + "=?, "
 				+ COLUMN_NAME_XID + "=?, "
 				+ COLUMN_NAME_DATA + "=? "
 			+ "where "
@@ -253,6 +254,7 @@ public class DataPointDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
+				getPlcAlarmLevelDependsOnPartDataPointName( dataPoint.getName() ),
 				dataPoint.getXid(),
 				new SerializationData().writeObject(dataPoint),
 				dataPoint.getId()
