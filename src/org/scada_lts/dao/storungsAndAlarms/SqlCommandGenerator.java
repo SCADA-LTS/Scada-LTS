@@ -45,9 +45,15 @@ class SqlCommandGenerator {
 
         return string;
     }
-    public static java.lang.String setAcknowledge()
-    {
-        return new StringBuilder("update plcAlarms set acknowledgeTime='1' where id=?").toString();
+    public static java.lang.String setAcknowledge(){
+        return new StringBuilder("update plcAlarms set acknowledgeTime=(select from_unixtime(unix_timestamp())) where id=?").toString();
+    }
+    static String getCommandForHistoryAlarmsByDateDayAndFilterFromOffset(
+            String date_day,
+            String filter_with_mysqlrlike,
+            int offset,
+            int limit){
+        return new StringBuilder("select * from plcAlarms where pointType=1 and DATE_FORMAT(triggerTime, '%Y-%m-%d')='"+date_day+"'  and pointName RLIKE '"+filter_with_mysqlrlike+"' limit "+limit+" offset "+offset).toString();
     }
     static String getliveAlarms(int offset,int limit){
         return new StringBuilder("select * from plcAlarms offset "+offset+" limit "+limit).toString();

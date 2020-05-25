@@ -1,5 +1,4 @@
-package org.scada_lts.dao;
-
+package org.scada_lts.dao.migration.mysql;
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *
@@ -17,27 +16,23 @@ package org.scada_lts.dao;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * Create by at Mateusz Hyski
- *
- * @author hyski.mateusz@gmail.com
+ * @author  hyski mateusz@gmail.com on 27.04.2020
  */
-public interface PointValuesStorungsAndAlarms {
+public class V2_2_1__Views_For_PointValueWarningsAndAlarms implements SpringJdbcMigration {
 
-    JSONArray getLiveAlarms(int offset, int limit);
+    public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 
-    JSONObject getStorungs(int id);
+        jdbcTmp.execute(""
+        + " create view viewStorungs as"
+        + "  select * from pointValues");
 
-    JSONObject getAlarms(int id);
+        jdbcTmp.execute(""
+                + " create view viewAlarms as"
+                + "  select * from pointValues");
 
-    boolean setAcknowledge( int id, JSONObject jsonObject);
-  
-    JSONObject getHistoryAlarmsById(int id);
-
-    JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit );
-
+    }
 }

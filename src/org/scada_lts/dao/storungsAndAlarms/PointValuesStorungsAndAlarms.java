@@ -125,6 +125,7 @@ class PointValuesStorungsAndAlarms {
                 ", lastpointValue='" + lastpointValue + '\'' +
                 '}';
     }
+
     public JSONObject toJSONObjectForLiveAlarms() {
         try {
             return
@@ -135,6 +136,26 @@ class PointValuesStorungsAndAlarms {
                             .put("inactiveTime",getInactiveTime())
                             .put("name",getPointName())
                             .put("level",getPointType());
+          
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public JSONObject toJSONObject() {
+        try {
+            return
+                    new JSONObject()
+                    .put("id",getId())
+                    .put("pointId",getPointId())
+                    .put("pointXid",getPointXid())
+                    .put("pointType",getPointType())
+                    .put("pointName",getPointName())
+                    .put("triggerName",getTriggerName())
+                    .put("inactiveTime",getInactiveTime())
+                    .put("acknowledgeTime",getAcknowledgeTime())
+                    .put("lastpointValue",getLastpointValue());
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -68,6 +68,46 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         }
         return jsonArray;
     }
+    public  JSONObject getHistoryAlarmsById(int id){
+        JSONObject jsonObject = null;
+
+        try
+        {
+            jsonObject = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsById(id);
+        }
+        catch (JSONException e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        catch(Exception exception)
+        {
+            LOG.trace(exception.getMessage());
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit) {
+
+        JSONArray jsonArray = null;
+
+        try
+        {
+            jsonArray = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsByDateDayAndFilterFromOffset(date_day, filter_with_mysqlrlike,offset,limit);
+        }
+        catch (JSONException e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        catch(Exception exception)
+        {
+            LOG.trace(exception.getMessage());
+        }
+
+        return jsonArray;
+    }
+
     public JSONObject getStorungsTest(int id){
 
         JSONObject jsonObject = null;
@@ -146,17 +186,29 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
     }
 
     @Override
-    public boolean setAcknowledge(int id) {
+    public boolean setAcknowledge(int id,JSONObject jsonObject) {
 
         boolean result = false;
         try
         {
             DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id);
             result = true;
+            jsonObject.put("id",id);
+            jsonObject.put("request","OK");
         }
-        catch (DataAccessException e) {
+        catch (DataAccessException | JSONException e) {
+            jsonObject.put("error", e.printStackTrace());
+        }
+        try {
+            jsonObject.put("error","none");
+        } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return result;
+    }
+
+    public String getExceptionIfAppears(){
+
     }
 }
