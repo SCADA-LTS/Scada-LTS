@@ -56,6 +56,6 @@ class SqlCommandGenerator {
         return new StringBuilder("select * from plcAlarms where pointType=1 and DATE_FORMAT(triggerTime, '%Y-%m-%d')='"+date_day+"'  and pointName RLIKE '"+filter_with_mysqlrlike+"' limit "+limit+" offset "+offset).toString();
     }
     static String getliveAlarms(int offset,int limit){
-        return new StringBuilder("select * from plcAlarms offset "+offset+" limit "+limit).toString();
+        return new StringBuilder("select * from plcAlarms  limit "+limit+" offset "+offset).toString();
     }
 }
