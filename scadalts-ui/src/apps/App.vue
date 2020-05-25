@@ -8,12 +8,14 @@
         <div class="sidebar">
             <logo>Scada-LTS</logo>
 
+
             <a href="#"><span>Dashbord</span></a>
             <a href="#"><span>Watch lists</span></a>
             <a href="#"><span>Graphical Views</span></a>
             <a href="#"><span>Data Sources</span></a>
             <a href="#"><span>Services</span></a> <!-- sms etc..-->
-            <a class="active" href="#/alarms"><span>Alarms</span></a>
+            <a href="#/alarms" v-bind:class="{ active: $route.name=='alarms'}"><span>Alarms</span></a>
+            <a href="#/historical-alarms" v-bind:class="{ active: $route.name=='historical-alarms'}"><span>Historical Alarms</span></a>
             <a href="#"><span>Events</span></a>
             <a href="#"><span>Contact</span></a>
             <a href="#/about"><span>About</span></a>
