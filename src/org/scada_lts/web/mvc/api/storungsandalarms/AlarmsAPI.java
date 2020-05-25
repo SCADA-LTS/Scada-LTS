@@ -51,13 +51,35 @@ public class AlarmsAPI {
         }
         return true;
     }
-    @RequestMapping(value = "/api/acknowledge/{id}", method = RequestMethod.POST)
-    public ResponseEntity<String> acknowledgeById(
-            @PathVariable("id") String id,
+
+    /**
+     *
+     * JSONOArray with JSONObjects
+     * [
+     * {
+     *   "id:": 111,
+     *   "activation-time": "2020-03-10 07:13:34",
+     *   "inactivation-time": "",
+     *   "name": "Be ST ALG_StoAllg1.0 Durchflussmessung Drosselkammer Störung Steuersicherung ausgelöst",
+     *   "level": "5",
+     * },{
+     *     ....
+     * }
+     * ]
+     * @param offset
+     * @param limit
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/alarms/live/{offset}/{limit}", method = RequestMethod.POST)
+    public ResponseEntity<String> liveAlarms(
+            @PathVariable("offset") int offset,
+            @PathVariable("limit") int limit,
             HttpServletRequest request
     )
     {
-        LOG.info("/api/acknowledge/{id}");
+
+        LOG.info("/api/alarms/live/{offset}/{limit}");
         if ( !validate("id",id) ){
             new ResponseEntity<String>("Value id is empty", HttpStatus.OK);
         }
@@ -65,7 +87,7 @@ public class AlarmsAPI {
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
                     JSONObject result=null;
-                    pointValuesStorungsAndAlarms.setAcknowledge(Integer.valueOf(id));
+                    //pointValuesStorungsAndAlarms.setAcknowledge(Integer.valueOf(id));
                     return new ResponseEntity<String>( result.toString() , HttpStatus.OK);
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
