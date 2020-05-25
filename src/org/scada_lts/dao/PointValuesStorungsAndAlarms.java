@@ -28,6 +28,8 @@ import org.json.JSONObject;
  */
 public interface PointValuesStorungsAndAlarms {
 
+    JSONArray getLiveAlarms(int offset, int limit);
+
     JSONObject getStorungs(int id);
 
     JSONObject getAlarms(int id);

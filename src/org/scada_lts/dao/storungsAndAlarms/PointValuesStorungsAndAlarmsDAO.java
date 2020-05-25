@@ -31,6 +31,17 @@ import java.util.List;
  */
 class PointValuesStorungsAndAlarmsDAO {
 
+    JSONArray getLiveAlarms(int offset,int limit) throws JSONException,Exception{
+
+        JSONArray jsonArray=new JSONArray();
+        List<PointValuesStorungsAndAlarms> pointValuesStorungsAndAlarms = DAO.getInstance().getJdbcTemp().query(
+                SqlCommandGenerator.getliveAlarms(offset,limit),new PointValuesStorungsAndAlarmsRowMapper());
+
+        for(PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms1 : pointValuesStorungsAndAlarms){
+            jsonArray.put(pointValuesStorungsAndAlarms1.toJSONObjectForLiveAlarms());
+        }
+        return jsonArray;
+    }
     public JSONArray getHistoryAlarmsByDateDayAndFilterFromOffset(
             String date_day,
             String filter_with_mysqlrlike,
