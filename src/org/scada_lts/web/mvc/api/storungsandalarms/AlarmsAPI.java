@@ -22,7 +22,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
+import org.json.JSONArray;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
 import org.scada_lts.dao.storungsAndAlarms.StorungsAndAlarms;
 import org.springframework.http.HttpStatus;
@@ -40,17 +40,10 @@ import javax.servlet.http.HttpServletRequest;
  * @author hyski.mateusz@gmail.com
  */
 @Controller
-public class AlarmsAPI {
+public class AlarmsAPI extends Validation{
 
     private static final Log LOG = LogFactory.getLog(AlarmsAPI.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
-    private boolean validate(String paramName,String param){
-        if( !param.equals("0") || param.equals("1")){
-            LOG.info(paramName+" is empty."+paramName+" can't be empty");
-            return false;
-        }
-        return true;
-    }
 
     /**
      *
@@ -73,22 +66,26 @@ public class AlarmsAPI {
      */
     @RequestMapping(value = "/api/alarms/live/{offset}/{limit}", method = RequestMethod.POST)
     public ResponseEntity<String> liveAlarms(
-            @PathVariable("offset") int offset,
-            @PathVariable("limit") int limit,
+            @PathVariable("offset") String offset,
+            @PathVariable("limit") String limit,
             HttpServletRequest request
     )
     {
 
         LOG.info("/api/alarms/live/{offset}/{limit}");
-        if ( !validate("id",id) ){
-            new ResponseEntity<String>("Value id is empty", HttpStatus.OK);
+        String value = "";
+        if ( (value = validateDoParamIsIntegerAndBetween0And9999("offset",offset)) !=null ){
+            return new ResponseEntity<String>(value, HttpStatus.OK);
+        }
+        value="";
+        if ( (value = validateDoParamIsIntegerAndBetween0And9999("limit",limit)) !=null ){
+            return new ResponseEntity<String>(value, HttpStatus.OK);
         }
         try {
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
-                    JSONObject result=null;
-                    //pointValuesStorungsAndAlarms.setAcknowledge(Integer.valueOf(id));
-                    return new ResponseEntity<String>( result.toString() , HttpStatus.OK);
+                    JSONArray jsonArrayResult =pointValuesStorungsAndAlarms.getLiveAlarms(Integer.parseInt(offset),Integer.parseInt(limit));
+                    return new ResponseEntity<String>( jsonArrayResult.toString() , HttpStatus.OK);
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
                 }

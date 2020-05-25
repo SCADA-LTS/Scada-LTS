@@ -21,8 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
 import org.springframework.dao.DataAccessException;
+
+import java.util.List;
+
 /**
  * Create by at Mateusz Hyski
  *
@@ -84,6 +88,27 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
         return jsonObject;
     }
+
+    @Override
+    public JSONArray getLiveAlarms(int offset, int limit) {
+
+        JSONArray jsonArray=new JSONArray();
+
+        try
+        {
+            jsonArray = DAOs.getPointValuesStorungsAndAlarms().getLiveAlarms(offset,limit);
+        }
+        catch (JSONException e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        catch (Exception e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        return jsonArray;
+    }
+
     public JSONObject getStorungs(int id){
 
         JSONObject jsonObject = null;

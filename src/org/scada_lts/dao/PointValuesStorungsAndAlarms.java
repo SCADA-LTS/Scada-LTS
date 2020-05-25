@@ -18,6 +18,7 @@ package org.scada_lts.dao;
  *
  */
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -26,6 +27,8 @@ import org.json.JSONObject;
  * @author hyski.mateusz@gmail.com
  */
 public interface PointValuesStorungsAndAlarms {
+
+    JSONArray getLiveAlarms(int offset, int limit);
 
     JSONObject getStorungs(int id);
 

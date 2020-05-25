@@ -49,4 +49,7 @@ class SqlCommandGenerator {
     {
         return new StringBuilder("update plcAlarms set acknowledgeTime='1' where id=?").toString();
     }
+    static String getliveAlarms(int offset,int limit){
+        return new StringBuilder("select * from plcAlarms offset "+offset+" limit "+limit).toString();
+    }
 }

@@ -16,6 +16,7 @@ package org.scada_lts.dao.storungsAndAlarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.scada_lts.dao.DAO;
@@ -29,6 +30,18 @@ import java.util.List;
  * @author hyski.mateusz@gmail.com
  */
 class PointValuesStorungsAndAlarmsDAO {
+
+    JSONArray getLiveAlarms(int offset,int limit) throws JSONException,Exception{
+
+        JSONArray jsonArray=new JSONArray();
+        List<PointValuesStorungsAndAlarms> pointValuesStorungsAndAlarms = DAO.getInstance().getJdbcTemp().query(
+                SqlCommandGenerator.getliveAlarms(offset,limit),new PointValuesStorungsAndAlarmsRowMapper());
+
+        for(PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms1 : pointValuesStorungsAndAlarms){
+            jsonArray.put(pointValuesStorungsAndAlarms1.toJSONObjectForLiveAlarms());
+        }
+        return jsonArray;
+    }
 
     public JSONObject getStorungs(int id) throws JSONException,Exception{
 
