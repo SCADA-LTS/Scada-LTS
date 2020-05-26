@@ -18,6 +18,7 @@ package org.scada_lts.dao.migration.mysql;
  */
 
 /**
+ * update   hyski mateusz@gmail.com on 26.05.2020 add VARCHAR Fields enum
  * @author  hyski mateusz@gmail.com on 27.04.2020
  */
 class AlterTable {
@@ -25,7 +26,8 @@ class AlterTable {
     private StringBuilder stringBuilder = new StringBuilder();
     enum
         Fields{
-        TINYINT
+        TINYINT,
+        VARCHAR
     }
     String AlterTableWithSpecification(
             StringBuilder tableName,
