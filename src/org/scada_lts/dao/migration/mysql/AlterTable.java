@@ -30,12 +30,12 @@ class AlterTable {
     String AlterTableWithSpecification(
             StringBuilder tableName,
             StringBuilder columtnName,
-            Enum Fields,int size, boolean isNull
+            Enum Fields,int size, int defaultValue, boolean isNull
     )
     {
         stringBuilder.append( AlterTable(tableName) );
         stringBuilder.append( AddColumn(columtnName) );
-        stringBuilder.append( SpecificationColumn(Fields,size,isNull));
+        stringBuilder.append( SpecificationColumn(Fields,size,defaultValue, isNull));
         return  stringBuilder.append(";").toString();
     }
     private StringBuilder AlterTable(StringBuilder tableName){
@@ -49,15 +49,32 @@ class AlterTable {
         sb.append(" ");
         return sb;
     }
-    private StringBuilder SpecificationColumn(Enum Fields,int size, boolean isNull){
+
+    /**
+     * if defaultValue is greater than 0 or equals 0 then, even if, we put parameter isNull value , isNUll is not necesary
+     *
+     * @param Fields
+     * @param size
+     * @param defaultValue
+     * @param isNull
+     * @return
+     */
+    private StringBuilder SpecificationColumn(Enum Fields,int size, int defaultValue,boolean isNull){
         StringBuilder sb = new StringBuilder(" ");
         sb.append(Fields.toString());
         sb.append("(");
         sb.append(size);
         sb.append(")");
         sb.append(" ");
-        sb.append(isNull?"NULL":"NOT NULL");
-        sb.append(" ");
+        if( defaultValue ==0 || defaultValue > 0){
+            sb.append(" DEFAULT ");
+            sb.append(defaultValue);
+            sb.append(" ");
+        }
+        else {
+            sb.append(isNull ? "NULL" : "NOT NULL");
+            sb.append(" ");
+        }
         return sb;
     }
 
