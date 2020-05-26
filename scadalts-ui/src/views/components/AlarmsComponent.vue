@@ -7,7 +7,7 @@
                 <th>Inactivation Timestamp</th>
                 <th>Variable name</th>
             </tr>
-            <tr v-for="(item, index) in alarms"
+            <tr v-for="(item, index) in alarms" :key="index"
                 v-bind:class="{
                         activation: isActivation( item['activation-time'],item['inactivation-time'],item.level),
                         activation_alarm: isActivationAlarm(item['activation-time'],item['inactivation-time'],item.level),
