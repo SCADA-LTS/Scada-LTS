@@ -34,6 +34,7 @@ public class V2_2_0__AdditionalColumnPlcAlarmLevelInDataPointTable  implements S
                             new StringBuilder("plcAlarmLevel"),
                             AlterTable.Fields.TINYINT,
                             8,
+                            0,
                             true)
                     );
             //this additional column will have defined level of alarm as a 0-8 steps.
