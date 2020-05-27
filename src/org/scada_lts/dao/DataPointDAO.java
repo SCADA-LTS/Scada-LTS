@@ -56,6 +56,7 @@ public class DataPointDAO {
 	private static final String COLUMN_NAME_DATA = "data";
 
 	private static final String COLUMN_NAME_DS_NAME = "name";
+	private static final String COLUMN_NAME_DATAPOINT_NAME = "pointName";
 	private static final String COLUMN_NAME_DS_ID = "id";
 	private static final String COLUMN_NAME_DS_XID = "xid";
 	private static final String COLUMN_NAME_DS_DATA_SOURCE_TYPE = "dataSourceType";
@@ -86,6 +87,7 @@ public class DataPointDAO {
 	private static final String DATA_POINT_INSERT = ""
 			+ "insert into dataPoints ("
 				+ COLUMN_NAME_XID + ", "
+				+ COLUMN_NAME_DATAPOINT_NAME + ", "
 				+ COLUMN_NAME_DATA_SOURCE_ID + ", "
 				+ COLUMN_NAME_DATA + ") "
 			+ "values (?,?,?) ";
@@ -93,6 +95,7 @@ public class DataPointDAO {
 	private static final String DATA_POINT_UPDATE = ""
 			+ "update dataPoints set "
 				+ COLUMN_NAME_XID + "=?, "
+				+ COLUMN_NAME_DATAPOINT_NAME + "=?, "
 				+ COLUMN_NAME_DATA + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
@@ -220,6 +223,7 @@ public class DataPointDAO {
 				PreparedStatement ps = connection.prepareStatement(DATA_POINT_INSERT, Statement.RETURN_GENERATED_KEYS);
 				new ArgumentPreparedStatementSetter(new Object[] {
 						dataPoint.getXid(),
+						dataPoint.getName(),
 						dataPoint.getDataSourceId(),
 						new SerializationData().writeObject(dataPoint)
 				}).setValues(ps);
@@ -239,6 +243,7 @@ public class DataPointDAO {
 
 		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
 				dataPoint.getXid(),
+				dataPoint.getName(),
 				new SerializationData().writeObject(dataPoint),
 				dataPoint.getId()
 		});
