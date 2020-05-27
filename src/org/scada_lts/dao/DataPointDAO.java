@@ -90,7 +90,7 @@ public class DataPointDAO {
 				+ COLUMN_NAME_DATAPOINT_NAME + ", "
 				+ COLUMN_NAME_DATA_SOURCE_ID + ", "
 				+ COLUMN_NAME_DATA + ") "
-			+ "values (?,?,?) ";
+			+ "values (?,?,?,?) ";
 
 	private static final String DATA_POINT_UPDATE = ""
 			+ "update dataPoints set "
