@@ -34,9 +34,9 @@ public class V2_2_0_2__AdditionalColumnPointNameInDataPointsTable implements Spr
                             new StringBuilder("pointName"),
                             AlterTable.Fields.VARCHAR,
                             100,
-                            false)
+                            true)
                     );
-            //this additional column will contain ONLY data point name, just onlly this name.
+            //this additional column will contain ONLY data point name
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
