@@ -16,7 +16,10 @@ package org.scada_lts.dao.migration.mysql;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import com.serotonin.mango.vo.DataPointVO;
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -28,15 +31,32 @@ public class V2_2_0_2__AdditionalColumnPointNameInDataPointsTable implements Spr
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 
         try {
+            //this additional column will contain ONLY data point name which trigger needs
+
             jdbcTmp.execute(
                     new AlterTable().AlterTableWithSpecification(
                             new StringBuilder("dataPoints"),
                             new StringBuilder("pointName"),
                             AlterTable.Fields.VARCHAR,
-                            100,
+                            250,
                             true)
                     );
-            //this additional column will contain ONLY data point name
+
+            //filling pointName column by proper data here because of it must be done from java flow,
+            // on sql flow is not possible because data point name exist in blob column.
+            //so update this column occurs here asap.
+
+            for(DataPointVO dataPointVOS : new DataPointDAO().getDataPoints()){
+                DAO.getInstance().getJdbcTemp().update("update dataPoints set "
+                        + "pointName=? "
+                        + "where "
+                        + "id=? ", new Object[] {
+                        dataPointVOS.getName(),
+                        dataPointVOS.getId()
+                });
+            }
+
+
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
