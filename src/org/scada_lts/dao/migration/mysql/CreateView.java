@@ -48,7 +48,7 @@ class CreateView {
     {
         stringBuilder.append( createView(viewName) );
         stringBuilder.append( AddColumns(columnNames,fromTable) );
-        return  stringBuilder.toString();
+        return  stringBuilder.append(" ").toString();
     }
     private StringBuilder createView(StringBuilder tableName){
         return new StringBuilder("create view ").append(tableName).append(" as ");
