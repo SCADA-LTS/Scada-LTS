@@ -24,6 +24,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
+ * additional column "pointName" in dataPoint table will contain ONLY
+ * data point name which trigger "onlyForStorungsAndAlarmValues" on pointValues table needs
+ *
  * @author  hyski mateusz@gmail.com on 26.05.2020
  */
 public class V2_2_0_2__AdditionalColumnPointNameInDataPointsTable implements SpringJdbcMigration {
@@ -31,8 +34,9 @@ public class V2_2_0_2__AdditionalColumnPointNameInDataPointsTable implements Spr
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 
         try {
-            //this additional column will contain ONLY data point name which trigger needs
 
+
+            //this additional column will contain ONLY data point name which trigger needs
             jdbcTmp.execute(
                     new AlterTable().AlterTableWithSpecification(
                             new StringBuilder("dataPoints"),
@@ -41,11 +45,20 @@ public class V2_2_0_2__AdditionalColumnPointNameInDataPointsTable implements Spr
                             250,
                             true)
                     );
-
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
             //filling pointName column by proper data here because of it must be done from java flow,
             // on sql flow is not possible because data point name exist in blob column.
             //so update this column occurs here asap.
 
+            //We can update of course column/property of datapoint at runtime of scada.
+            //Solution for to do it by gui is implementation in other branche:
+
+            // #1259 Storungs_And_Alarms_Filling_Additional_Column_PointName_During_AddUpdate_DataPoint <- filling
+            // column pointName in dataPoints - by code - java flow/level
+
+        try {
             for(DataPointVO dataPointVOS : new DataPointDAO().getDataPoints()){
                 DAO.getInstance().getJdbcTemp().update("update dataPoints set "
                         + "pointName=? "
@@ -55,8 +68,6 @@ public class V2_2_0_2__AdditionalColumnPointNameInDataPointsTable implements Spr
                         dataPointVOS.getId()
                 });
             }
-
-
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
