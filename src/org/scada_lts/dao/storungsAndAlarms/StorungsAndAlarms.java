@@ -171,8 +171,19 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
             jsonObject.put("id",id);
             jsonObject.put("request","OK");
         }
-        catch (DataAccessException | JSONException e) {
-            jsonObject.put("error", e.printStackTrace());
+        catch (DataAccessException  e) {
+            try {
+                jsonObject.put("error", "Database exception has been occured. ");
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+        }
+        catch(JSONException e) {
+            try {
+                jsonObject.put("error", e.getMessage());
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
         }
         try {
             jsonObject.put("error","none");
@@ -184,6 +195,6 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
     }
 
     public String getExceptionIfAppears(){
-
+        return "";
     }
 }
