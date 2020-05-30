@@ -43,6 +43,7 @@ public class V2_2_0_2__AdditionalColumnPointNameInDataPointsTable implements Spr
                             new StringBuilder("pointName"),
                             AlterTable.Fields.VARCHAR,
                             250,
+                            -1,
                             true)
                     );
         } catch (DataAccessException e) {
