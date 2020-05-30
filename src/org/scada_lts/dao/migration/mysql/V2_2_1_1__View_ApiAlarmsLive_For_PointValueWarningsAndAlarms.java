@@ -37,7 +37,7 @@ public class V2_2_1_1__View_ApiAlarmsLive_For_PointValueWarningsAndAlarms implem
                                             "id,",
                                             "acknowledgeTime as 'activation-time',",
                                             "inactiveTime as 'inactivation-time',",
-                                            "pointXid as 'name',",
+                                            "pointName as 'name',",
                                             "pointType as 'level'"},
                                     new StringBuilder("plcAlarms")
                                     ));
