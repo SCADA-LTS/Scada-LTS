@@ -41,8 +41,17 @@ class Validation {
         }
         return null;
     }
-    protected String doGivenParameterHaveCorrectDateFormat(String parameter){
-        if( parameter.matches("^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$")){
+
+    /**
+     * by meaning ..have correct date format please understand a format date yyyy-mm-dd
+     * if given , in this case parameter do not match with dateFormat a user , who invoked rest service
+     * have an information about not correct format otherwise any error information is not produced here
+     *
+     * @param parameter
+     * @return String or null
+     */
+    String doGivenParameterHaveCorrectDateFormat(String parameter){
+        if( !parameter.matches(RegexSyntax.DATE_FORMAT_YYYYDASHMMDASHDD)){
             StringBuilder messagePart= new StringBuilder(parameter+" should contain value in format yyyy-mm-dd");
             LOG.info(parameter+" do not contain correct value."+messagePart.toString());
             return messagePart.toString();
