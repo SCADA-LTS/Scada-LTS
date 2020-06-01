@@ -58,6 +58,14 @@ class Validation {
         }
         return null;
     }
+    static String doGivenParameterIsNumericFrom0To99999(String parameter){
+        if( !parameter.matches(RegexSyntax.NUMERIC_VALUE_FROM_0_TO_99999)){
+            StringBuilder messagePart= new StringBuilder(parameter+" should contain value from 0 to 9999999");
+            LOG.info(parameter+" do not contain correct value."+messagePart.toString());
+            return messagePart.toString();
+        }
+        return null;
+    }
     protected String doGivenParameterHaveValueFromScopeSince1To23(String parameter){
         String anyAlphanumericChar="[a-z^][^A-Z^]";
         if( parameter.matches(anyAlphanumericChar+"[1-9]{1}") || parameter.matches(anyAlphanumericChar+"[2]{1}[0-3]{1}")){

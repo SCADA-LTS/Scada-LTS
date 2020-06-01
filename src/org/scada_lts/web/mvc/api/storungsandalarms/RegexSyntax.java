@@ -25,4 +25,6 @@ class RegexSyntax {
 
     // YYYY-MM-DD
      static final String DATE_FORMAT_YYYYDASHMMDASHDD = "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$";
+
+     static final String NUMERIC_VALUE_FROM_0_TO_99999 = "[0-9]{1,7}";
 }

@@ -58,8 +58,9 @@ public class AlarmsAPI {
     )
     {
         LOG.info("/api/acknowledge/{id}");
-        if ( !validate("id",id) ){
-            new ResponseEntity<String>("Value id is empty", HttpStatus.OK);
+        String value="";
+        if ( (value = Validation.doGivenParameterIsNumericFrom0To99999(id)) != null ){
+            return new ResponseEntity<String>("Value id is not correct."+value, HttpStatus.OK);
         }
         try {
                 User user = Common.getUser(request);

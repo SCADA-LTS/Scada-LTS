@@ -17,7 +17,7 @@ package org.scada_lts.web.mvc.api.storungsandalarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+/*
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
@@ -33,15 +33,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
-
+*/
 /**
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
  */
+/*
 @Controller
 public class StorungsAPI extends Validation{
 
     private static final Log LOG = LogFactory.getLog(StorungsAPI.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
 }
+
+ */
