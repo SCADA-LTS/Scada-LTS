@@ -45,14 +45,21 @@ public class AlarmsAPI extends Validation{
 
     private static final Log LOG = LogFactory.getLog(AlarmsAPI.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
-    private boolean validate(String paramName,String param){
-        if( !param.equals("0") || param.equals("1")){
-            LOG.info(paramName+" is empty."+paramName+" can't be empty");
-            return false;
-        }
-        return true;
-    }
-    @RequestMapping(value = "/api/acknowledge/{id}", method = RequestMethod.POST)
+  
+    /*
+     * example of result:
+     *
+     * {
+     *  "id": 111,
+     *  "request": "OK",
+     *  "error": "none"
+     * }
+     * @param id
+     * @param request
+     * @return String
+    *
+    */
+    @RequestMapping(value = "/api/alarms/acknowledge/{id}", method = RequestMethod.POST)
     public ResponseEntity<String> acknowledgeById(
             @PathVariable("id") String id,
             HttpServletRequest request
@@ -69,6 +76,55 @@ public class AlarmsAPI extends Validation{
                     JSONObject jsonObject=new JSONObject();
                     pointValuesStorungsAndAlarms.setAcknowledge(Integer.valueOf(id),jsonObject);
                     return new ResponseEntity<String>( jsonObject.toString() , HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                }
+        } catch (Exception e) {
+            return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    /**
+     *
+     * example of result:
+     *
+     * JSONOArray with JSONObjects
+     * [
+     * {
+     *   "id:": 111,
+     *   "activation-time": "2020-03-10 07:13:34",
+     *   "inactivation-time": "",
+     *   "name": "Be ST ALG_StoAllg1.0 Durchflussmessung Drosselkammer Störung Steuersicherung ausgelöst",
+     *   "level": "5",
+     * },{
+     *     ....
+     * }
+     * ]
+     * @param offset
+     * @param limit
+     * @param request
+     * @return String
+     */
+    @RequestMapping(value = "/api/alarms/live/{offset}/{limit}", method = RequestMethod.POST)
+    public ResponseEntity<String> liveAlarms(
+            @PathVariable("offset") String offset,
+            @PathVariable("limit") String limit,
+            HttpServletRequest request
+    )
+    {
+        LOG.info("/api/alarms/live/{offset}/{limit}");
+        String value = "";
+        if ( (value = validateDoParamIsIntegerAndBetween0And9999("offset",offset)) !=null ){
+            return new ResponseEntity<String>(value, HttpStatus.OK);
+        }
+        value="";
+        if ( (value = validateDoParamIsIntegerAndBetween0And9999("limit",limit)) !=null ){
+            return new ResponseEntity<String>(value, HttpStatus.OK);
+        }
+        try {
+                User user = Common.getUser(request);
+                if (user != null && user.isAdmin()) {
+                    JSONArray jsonArrayResult =pointValuesStorungsAndAlarms.getLiveAlarms(Integer.parseInt(offset),Integer.parseInt(limit));
+                    return new ResponseEntity<String>( jsonArrayResult.toString() , HttpStatus.OK);
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
                 }

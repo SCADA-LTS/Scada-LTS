@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 class Validation {
 
     protected static final Log LOG = LogFactory.getLog(Validation.class);
+  
     static String validateDoParamIsIntegerAndBetween0And9999(String paramName,String param) {
         if( !param.matches(RegexSyntax.VALUE_BETWEEN_0_AND_9999)){
             return "Value "+paramName+" is not correct.It should be a number beetwen 0 and 9999.";
