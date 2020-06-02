@@ -45,8 +45,47 @@ public class AlarmsAPI extends Validation{
 
     private static final Log LOG = LogFactory.getLog(AlarmsAPI.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
-
+  
+    /*
+     * example of result:
+     *
+     * {
+     *  "id": 111,
+     *  "request": "OK",
+     *  "error": "none"
+     * }
+     * @param id
+     * @param request
+     * @return String
+    *
+    */
+    @RequestMapping(value = "/api/alarms/acknowledge/{id}", method = RequestMethod.POST)
+    public ResponseEntity<String> acknowledgeById(
+            @PathVariable("id") String id,
+            HttpServletRequest request
+    )
+    {
+        LOG.info("/api/acknowledge/{id}");
+        String value = "";
+        if ( (value = Validation.validateDoParamIsIntegerAndBetween0And9999("id",id)) != null) {
+            return new ResponseEntity<String>(value, HttpStatus.OK);
+        }
+        try {
+                User user = Common.getUser(request);
+                if (user != null && user.isAdmin()) {
+                    JSONObject jsonObject=new JSONObject();
+                    pointValuesStorungsAndAlarms.setAcknowledge(Integer.valueOf(id),jsonObject);
+                    return new ResponseEntity<String>( jsonObject.toString() , HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                }
+        } catch (Exception e) {
+            return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     /**
+     *
+     * example of result:
      *
      * JSONOArray with JSONObjects
      * [
@@ -63,7 +102,7 @@ public class AlarmsAPI extends Validation{
      * @param offset
      * @param limit
      * @param request
-     * @return
+     * @return String
      */
     @RequestMapping(value = "/api/alarms/live/{offset}/{limit}", method = RequestMethod.POST)
     public ResponseEntity<String> liveAlarms(
@@ -72,7 +111,6 @@ public class AlarmsAPI extends Validation{
             HttpServletRequest request
     )
     {
-
         LOG.info("/api/alarms/live/{offset}/{limit}");
         String value = "";
         if ( (value = validateDoParamIsIntegerAndBetween0And9999("offset",offset)) !=null ){
