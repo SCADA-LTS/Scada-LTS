@@ -60,15 +60,15 @@ public class AlarmsAPI extends Validation{
     {
         LOG.info("/api/acknowledge/{id}");
         String value = "";
-        if ( (value = validateDoParamIsIntegerAndBetween0And9999("id",id)) != null) {
+        if ( (value = Validation.validateDoParamIsIntegerAndBetween0And9999("id",id)) != null) {
             return new ResponseEntity<String>(value, HttpStatus.OK);
         }
         try {
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
-                    JSONObject result=new JSONObject();
-                    pointValuesStorungsAndAlarms.setAcknowledge(Integer.valueOf(id),result);
-                    return new ResponseEntity<String>( result.toString() , HttpStatus.OK);
+                    JSONObject jsonObject=new JSONObject();
+                    pointValuesStorungsAndAlarms.setAcknowledge(Integer.valueOf(id),jsonObject);
+                    return new ResponseEntity<String>( jsonObject.toString() , HttpStatus.OK);
                 } else {
                     return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
                 }

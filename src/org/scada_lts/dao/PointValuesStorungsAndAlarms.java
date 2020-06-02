@@ -32,7 +32,7 @@ public interface PointValuesStorungsAndAlarms {
 
     JSONObject getAlarms(int id);
 
-    boolean setAcknowledge( int id, JSONObject jsonObject);
+    JSONObject setAcknowledge( int id, JSONObject jsonObject);
   
     JSONObject getHistoryAlarmsById(int id);
 
