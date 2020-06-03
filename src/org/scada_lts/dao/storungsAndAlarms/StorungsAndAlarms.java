@@ -186,30 +186,42 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
     }
 
     @Override
-    public boolean setAcknowledge(int id,JSONObject jsonObject) {
+    public JSONObject setAcknowledge(int id,JSONObject jsonObject) {
 
+        StringBuilder errorMessage = new StringBuilder("");
         boolean result = false;
         try
         {
-            DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id);
-            result = true;
-            //jsonObject.put("id",id);
-            //jsonObject.put("request","OK");
+            result = (DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id)==1)?true:false;
         }
         catch (DataAccessException e) {
-            try {
-                jsonObject.put("error", "");
-            } catch (JSONException ex) {
-                ex.printStackTrace();
-            }
+            errorMessage.append("Exception on DataBase level.Please debug.");
         }
-        try {
-            jsonObject.put("error","none");
+
+        jsonObject = fillJsonObjectWithInformations(errorMessage, result,id,jsonObject);
+
+        return jsonObject;
+    }
+    private JSONObject fillJsonObjectWithInformations(StringBuilder errorMessage,boolean result, int id, JSONObject jsonObject){
+        try{
+            jsonObject.put("id",id);
+            if(result==false){
+                jsonObject.put("error","Object with id="+id+" do not exist");
+                jsonObject.put("request","FAULT");
+            }
+            else {
+                if( (errorMessage.length()!=0) ){
+                    jsonObject.put("error",errorMessage);
+                    jsonObject.put("request","FAULT");
+                }
+                else {
+                    jsonObject.put("error", "none");
+                    jsonObject.put("request", "OK");
+                }
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        return result;
+        return jsonObject;
     }
-
 }

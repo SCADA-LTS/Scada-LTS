@@ -19,13 +19,7 @@ package org.scada_lts.web.mvc.api.storungsandalarms;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Create by at Mateusz Hyski
@@ -35,8 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 class Validation {
 
     protected static final Log LOG = LogFactory.getLog(Validation.class);
-    protected String validateDoParamIsIntegerAndBetween0And9999(String paramName,String param) {
-        if( !param.matches("[^a-z]|[^A-Z]|[0-9]{1,4}")){
+  
+    static String validateDoParamIsIntegerAndBetween0And9999(String paramName,String param) {
+        if( !param.matches(RegexSyntax.VALUE_BETWEEN_0_AND_9999)){
             return "Value "+paramName+" is not correct.It should be a number beetwen 0 and 9999.";
         }
         return null;

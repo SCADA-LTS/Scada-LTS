@@ -107,9 +107,9 @@ class PointValuesStorungsAndAlarmsDAO {
         }
         return jsonObject;
     }
-    public void setAcknowledge(int id) throws DataAccessException {
+    public int setAcknowledge(int id) throws DataAccessException {
 
-        DAO.getInstance().getJdbcTemp().update(SqlCommandGenerator.setAcknowledge(), new Object[] {id});
+        return DAO.getInstance().getJdbcTemp().update(SqlCommandGenerator.setAcknowledge(), new Object[] {id});
 
     }
 

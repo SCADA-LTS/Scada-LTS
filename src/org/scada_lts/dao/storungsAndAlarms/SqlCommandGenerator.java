@@ -45,7 +45,7 @@ class SqlCommandGenerator {
 
         return string;
     }
-    public static java.lang.String setAcknowledge(){
+    static java.lang.String setAcknowledge(){
         return new StringBuilder("update plcAlarms set acknowledgeTime=(select from_unixtime(unix_timestamp())) where id=?").toString();
     }
     static String getCommandForHistoryAlarmsByDateDayAndFilterFromOffset(
