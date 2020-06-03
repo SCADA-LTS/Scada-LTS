@@ -193,11 +193,15 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         {
             DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id);
             result = true;
-            jsonObject.put("id",id);
-            jsonObject.put("request","OK");
+            //jsonObject.put("id",id);
+            //jsonObject.put("request","OK");
         }
-        catch (DataAccessException | JSONException e) {
-            jsonObject.put("error", e.printStackTrace());
+        catch (DataAccessException e) {
+            try {
+                jsonObject.put("error", "");
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
         }
         try {
             jsonObject.put("error","none");
@@ -208,7 +212,4 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         return result;
     }
 
-    public String getExceptionIfAppears(){
-
-    }
 }
