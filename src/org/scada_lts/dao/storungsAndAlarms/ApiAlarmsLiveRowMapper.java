@@ -34,7 +34,11 @@ class ApiAlarmsLiveRowMapper implements RowMapper<ApiAlarmsLive>{
                 ApiAlarmsLive  apiAlarmsLive = new ApiAlarmsLive();
                 apiAlarmsLive.setId(rs.getInt("id"));
                 apiAlarmsLive.setActivationTime(String.valueOf(rs.getString("activation-time")));
-                apiAlarmsLive.setInactivationTime(String.valueOf(rs.getString("inactivation-time")));
+                apiAlarmsLive.setInactivationTime(
+                        (rs.getString("inactivation-time") == null)
+                        ?""
+                        :rs.getString("inactivation-time")
+                );
                 apiAlarmsLive.setLevel(String.valueOf(rs.getString("level")));
                 apiAlarmsLive.setName(String.valueOf(rs.getString("name")));
 

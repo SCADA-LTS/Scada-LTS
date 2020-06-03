@@ -32,15 +32,13 @@ class PointValuesStorungsAndAlarmsRowMapper implements RowMapper<PointValuesStor
 
                 PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms = new PointValuesStorungsAndAlarms();
                 pointValuesStorungsAndAlarms.setId(rs.getInt("id"));
-                //pointValuesStorungsAndAlarms.setPointId(String.valueOf(rs.getString("pointId")));
-                pointValuesStorungsAndAlarms.setPointId(String.valueOf(rs.getString("activation-time")));
-                pointValuesStorungsAndAlarms.setPointId(String.valueOf(rs.getString("inactivation-time")));
-                //pointValuesStorungsAndAlarms.setPointXid((String.valueOf(rs.getString("pointXid"))));
-                pointValuesStorungsAndAlarms.setPointType(String.valueOf(rs.getString("level")));
-                pointValuesStorungsAndAlarms.setTriggerName(String.valueOf(rs.getString("name")));
-                //pointValuesStorungsAndAlarms.setInactiveTime(String.valueOf(rs.getString("inactiveTime")));
-                //pointValuesStorungsAndAlarms.setAcknowledgeTime(String.valueOf(rs.getString("acknowledgeTime")));
-                //pointValuesStorungsAndAlarms.setLastpointValue(String.valueOf(rs.getString("lastpointValue")));
+                pointValuesStorungsAndAlarms.setPointId(String.valueOf(rs.getString("pointId")));
+                pointValuesStorungsAndAlarms.setPointXid((String.valueOf(rs.getString("pointXid"))));
+                pointValuesStorungsAndAlarms.setPointType(String.valueOf(rs.getString("pointType")));
+                pointValuesStorungsAndAlarms.setTriggerName(String.valueOf(rs.getString("triggerTime")));
+                pointValuesStorungsAndAlarms.setInactiveTime(String.valueOf(rs.getString("inactiveTime")));
+                pointValuesStorungsAndAlarms.setAcknowledgeTime(String.valueOf(rs.getString("acknowledgeTime")));
+                pointValuesStorungsAndAlarms.setLastpointValue(String.valueOf(rs.getString("lastpointValue")));
 
         return pointValuesStorungsAndAlarms;
     }

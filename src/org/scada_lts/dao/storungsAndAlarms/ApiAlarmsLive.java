@@ -19,7 +19,12 @@ package org.scada_lts.dao.storungsAndAlarms;
 import org.json.JSONException;
 import org.json.JSONObject;
 /**
- * Create by at Mateusz Hyski
+ *
+ * class works as a DTO without DTO in end of class name
+ *
+ * That class calls , actually apiAlarmsLevel, same as a defined view in database.
+ * Name of view is defined in flyway part of software -> org.scada_lts.dao.migration.mysql
+ *
  *
  * @author hyski.mateusz@gmail.com
  */
@@ -73,17 +78,23 @@ class ApiAlarmsLive {
         this.name = name;
     }
 
-    public String toJSONObject(){
+    public JSONObject toJSONObject(){
         try {
             return new JSONObject()
                     .put("id", getId())
                     .put("activation-time", getActivationTime())
                     .put("inactivation-time", getInactivationTime())
                     .put("level", getLevel())
-                    .put("name", getName()).toString();
+                    .put("name", getName());
         }
         catch (JSONException e){
-            e.getCause();
+            try {
+                // if exception occurs as a result of invoking rest service , is received also message about exception
+                return new JSONObject().put("error during build JSONObject", e.getMessage());
+            }
+            catch (JSONException exception){
+                e.getMessage();
+            }
         }
         return null;
     }
