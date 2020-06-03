@@ -45,7 +45,7 @@ class SqlCommandGenerator {
 
         return string;
     }
-    public static java.lang.String setAcknowledge(){
+    static java.lang.String setAcknowledge(){
         return new StringBuilder("update plcAlarms set acknowledgeTime=(select from_unixtime(unix_timestamp())) where id=?").toString();
     }
     static String getCommandForHistoryAlarmsByDateDayAndFilterFromOffset(
@@ -54,5 +54,8 @@ class SqlCommandGenerator {
             int offset,
             int limit){
         return new StringBuilder("select * from plcAlarms where pointType=1 and DATE_FORMAT(triggerTime, '%Y-%m-%d')='"+date_day+"'  and pointName RLIKE '"+filter_with_mysqlrlike+"' limit "+limit+" offset "+offset).toString();
+    }
+    static String getliveAlarms(int offset,int limit){
+        return new StringBuilder("select * from plcAlarms  limit "+limit+" offset "+offset).toString();
     }
 }
