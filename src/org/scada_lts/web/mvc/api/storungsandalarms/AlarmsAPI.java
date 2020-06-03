@@ -104,7 +104,7 @@ public class AlarmsAPI extends Validation{
      * @param request
      * @return String
      */
-    @RequestMapping(value = "/api/alarms/live/{offset}/{limit}", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/alarms/live/{offset}/{limit}", method = RequestMethod.GET)
     public ResponseEntity<String> liveAlarms(
             @PathVariable("offset") String offset,
             @PathVariable("limit") String limit,

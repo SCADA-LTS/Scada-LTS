@@ -84,7 +84,7 @@ class ApiAlarmsLive {
                     .put("id", getId())
                     .put("activation-time", getActivationTime())
                     .put("inactivation-time", getInactivationTime())
-                    .put("level", getLevel())
+                    .put("level", String.valueOf( getLevel() ) )
                     .put("name", getName());
         }
         catch (JSONException e){
