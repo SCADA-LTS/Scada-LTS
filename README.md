@@ -2,7 +2,7 @@
 
 [![](https://images.microbadger.com/badges/version/dockergb/scadalts-dev.svg)](https://microbadger.com/images/dockergb/scadalts-dev "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/dockergb/scadalts-dev.svg)](https://microbadger.com/images/dockergb/scadalts-dev "Get your own image badge on microbadger.com")
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/SCADA-LTS/User-Management.svg?columns=all)](https://waffle.io/SCADA-LTS/User-Management)
+
 
 Scada-LTS is an Open Source, web-based, multi-platform solution for building your own SCADA (Supervisory Control and Data Acquisiton) system.
 
