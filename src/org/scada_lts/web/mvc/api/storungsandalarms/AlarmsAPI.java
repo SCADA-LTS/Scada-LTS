@@ -146,9 +146,6 @@ public class AlarmsAPI extends Validation{
         if ( ( value = doGivenParameterHaveCorrectDateFormat(date_day)) != null ){
             return new ResponseEntity<String>("Value date_day is not correct."+value, HttpStatus.OK);
         }
-        if ( !validate("filter_with_mysqlrlike",filter_with_mysqlrlike) ){
-            return new ResponseEntity<String>("Value filter_with_mysqlrlike is empty", HttpStatus.OK);
-        }
         int offsetParam = Integer.parseInt(offset);
         int limitParam = Integer.parseInt(limit);
         try {
