@@ -21,8 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
 import org.springframework.dao.DataAccessException;
+
+import java.util.List;
+
 /**
  * Create by at Mateusz Hyski
  *
@@ -124,6 +128,27 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
         return jsonObject;
     }
+
+    @Override
+    public JSONArray getLiveAlarms(int offset, int limit) {
+
+        JSONArray jsonArray=new JSONArray();
+
+        try
+        {
+            jsonArray = DAOs.getPointValuesStorungsAndAlarms().getLiveAlarms(offset,limit);
+        }
+        catch (JSONException e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        catch (Exception e)
+        {
+            LOG.trace(e.getMessage());
+        }
+        return jsonArray;
+    }
+
     public JSONObject getStorungs(int id){
 
         JSONObject jsonObject = null;
@@ -161,17 +186,42 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
     }
 
     @Override
-    public boolean setAcknowledge(int id) {
+    public JSONObject setAcknowledge(int id,JSONObject jsonObject) {
 
+        StringBuilder errorMessage = new StringBuilder("");
         boolean result = false;
         try
         {
-            DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id);
-            result = true;
+            result = (DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id)==1)?true:false;
         }
         catch (DataAccessException e) {
+            errorMessage.append("Exception on DataBase level.Please debug.");
+        }
+
+        jsonObject = fillJsonObjectWithInformations(errorMessage, result,id,jsonObject);
+
+        return jsonObject;
+    }
+    private JSONObject fillJsonObjectWithInformations(StringBuilder errorMessage,boolean result, int id, JSONObject jsonObject){
+        try{
+            jsonObject.put("id",id);
+            if(result==false){
+                jsonObject.put("error","Object with id="+id+" do not exist");
+                jsonObject.put("request","FAULT");
+            }
+            else {
+                if( (errorMessage.length()!=0) ){
+                    jsonObject.put("error",errorMessage);
+                    jsonObject.put("request","FAULT");
+                }
+                else {
+                    jsonObject.put("error", "none");
+                    jsonObject.put("request", "OK");
+                }
+            }
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-        return result;
+        return jsonObject;
     }
 }

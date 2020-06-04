@@ -19,6 +19,22 @@ package org.scada_lts.dao.migration.mysql;
  */
 
 /**
+ *
+ * to produce this sql statement
+ *
+ * create view exampleView as select columnaName1,ColumnName2 from exampleTable
+ *
+ * using example :
+ *
+ * new CreateView().
+ * CreateViewWithSpecification(
+ *      new StringBuilder("exampleView"),
+ *      new String[]{
+ *          "columnName1",
+ *          "columnName2"},
+*       new StringBuilder("exampleTable")
+ *      );
+ *
  * @author  hyski mateusz@gmail.com on 27.04.2020
  */
 class CreateView {
@@ -32,7 +48,7 @@ class CreateView {
     {
         stringBuilder.append( createView(viewName) );
         stringBuilder.append( AddColumns(columnNames,fromTable) );
-        return  stringBuilder.append(";").toString();
+        return  stringBuilder.append(" ").toString();
     }
     private StringBuilder createView(StringBuilder tableName){
         return new StringBuilder("create view ").append(tableName).append(" as ");
@@ -42,7 +58,7 @@ class CreateView {
         for(int counter=0;counter<columnNames.length;counter++) {
             sb.append(columnNames[counter]);
         }
-        sb.append("from ");
+        sb.append(" from ");
         sb.append(fromTable);
         return sb;
     }

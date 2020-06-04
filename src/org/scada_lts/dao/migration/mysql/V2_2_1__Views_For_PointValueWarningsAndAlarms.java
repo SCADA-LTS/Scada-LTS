@@ -26,13 +26,25 @@ public class V2_2_1__Views_For_PointValueWarningsAndAlarms implements SpringJdbc
 
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 
-        jdbcTmp.execute(""
-        + " create view viewStorungs as"
-        + "  select * from pointValues");
+        jdbcTmp.execute(
+            new CreateView().
+                        CreateViewWithSpecification(
+                        new StringBuilder("viewAllStorungs"),
+                        new String[]{"*"},
+                        new StringBuilder("plcAlarms")
+                        )
 
-        jdbcTmp.execute(""
-                + " create view viewAlarms as"
-                + "  select * from pointValues");
+                        + " where pointType = 2");
+
+        jdbcTmp.execute(
+            new CreateView().
+                        CreateViewWithSpecification(
+                        new StringBuilder("viewAllAlarms"),
+                        new String[]{"*"},
+                        new StringBuilder("plcAlarms")
+                        )
+
+                        + "where pointType = 1");
 
     }
 }

@@ -1,5 +1,4 @@
-package org.scada_lts.dao;
-
+package org.scada_lts.web.mvc.api.storungsandalarms;
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *
@@ -17,27 +16,15 @@ package org.scada_lts.dao;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 /**
  * Create by at Mateusz Hyski
  *
- * @author hyski.mateusz@gmail.com
+ * Contain ONLY regex definitions
+ *
+ *
+ * @author hyski.mateusz@gmail.com 02-06-2020
  */
-public interface PointValuesStorungsAndAlarms {
+class RegexSyntax {
 
-    JSONArray getLiveAlarms(int offset, int limit);
-
-    JSONObject getStorungs(int id);
-
-    JSONObject getAlarms(int id);
-
-    JSONObject setAcknowledge( int id, JSONObject jsonObject);
-  
-    JSONObject getHistoryAlarmsById(int id);
-
-    JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit );
-
+    final static String VALUE_BETWEEN_0_AND_9999 = "[^a-z]|[^A-Z]|[0-9]{1,4}";
 }
