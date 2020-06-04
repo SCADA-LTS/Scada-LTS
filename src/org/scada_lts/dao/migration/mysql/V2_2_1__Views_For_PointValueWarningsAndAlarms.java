@@ -28,7 +28,7 @@ public class V2_2_1__Views_For_PointValueWarningsAndAlarms implements SpringJdbc
 
         jdbcTmp.execute(
             new CreateView().
-                        CreateViewWithSpecification(
+                    createViewWithSpecification(
                         new StringBuilder("viewAllStorungs"),
                         new String[]{"*"},
                         new StringBuilder("plcAlarms")
@@ -38,7 +38,7 @@ public class V2_2_1__Views_For_PointValueWarningsAndAlarms implements SpringJdbc
 
         jdbcTmp.execute(
             new CreateView().
-                        CreateViewWithSpecification(
+                    createViewWithSpecification(
                         new StringBuilder("viewAllAlarms"),
                         new String[]{"*"},
                         new StringBuilder("plcAlarms")

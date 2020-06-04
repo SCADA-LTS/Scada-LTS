@@ -32,7 +32,7 @@ public class V2_2_1_2__View_ApiAlarmsHistory_For_PointValueWarningsAndAlarms imp
         try {
             jdbcTmp.execute(
                     new CreateView().
-                            CreateViewWithSpecification(
+                            createViewWithSpecification(
                                     new StringBuilder("apiAlarmsHistory"),
                                     new String[]{
                                             "inactiveTime as 'time',",

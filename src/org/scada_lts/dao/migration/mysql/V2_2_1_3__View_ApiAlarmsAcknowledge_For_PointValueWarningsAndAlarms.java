@@ -33,7 +33,7 @@ public class V2_2_1_3__View_ApiAlarmsAcknowledge_For_PointValueWarningsAndAlarms
         try {
             jdbcTmp.execute(
                     new CreateView().
-                            CreateViewWithSpecification(
+                            createViewWithSpecification(
                                     new StringBuilder("apiAlarmsAcknowledge"),
                                     new String[]{
                                             "id,",
