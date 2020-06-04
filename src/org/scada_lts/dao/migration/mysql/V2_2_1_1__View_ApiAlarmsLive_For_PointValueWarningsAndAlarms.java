@@ -31,11 +31,11 @@ public class V2_2_1_1__View_ApiAlarmsLive_For_PointValueWarningsAndAlarms implem
         try {
             jdbcTmp.execute(
                     new CreateView().
-                            CreateViewWithSpecification(
+                            createViewWithSpecification(
                                     new StringBuilder("apiAlarmsLive"),
                                     new String[]{
                                             "id,",
-                                            "acknowledgeTime as 'activation-time',",
+                                            "triggerTime as 'activation-time',",
                                             "inactiveTime as 'inactivation-time',",
                                             "pointName as 'name',",
                                             "pointType as 'level'"},

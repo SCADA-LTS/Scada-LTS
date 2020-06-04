@@ -40,7 +40,7 @@ package org.scada_lts.dao.migration.mysql;
 class CreateView {
 
     private StringBuilder stringBuilder = new StringBuilder();
-    String CreateViewWithSpecification(
+    String createViewWithSpecification(
             StringBuilder viewName,
             String[] columnNames,
             StringBuilder fromTable
