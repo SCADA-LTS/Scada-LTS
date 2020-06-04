@@ -52,8 +52,14 @@ class SqlCommandGenerator {
             String date_day,
             String filter_with_mysqlrlike,
             int offset,
-            int limit){
-        return new StringBuilder("select * from plcAlarms where pointType=1 and DATE_FORMAT(triggerTime, '%Y-%m-%d')='"+date_day+"'  and pointName RLIKE '"+filter_with_mysqlrlike+"' limit "+limit+" offset "+offset).toString();
+            int limit
+    ){
+        return new StringBuilder("select * from apiAlarmsHistory where DATE_FORMAT(time, '%Y-%m-%d')='"+date_day+"' "+addRLIKE(filter_with_mysqlrlike)+" limit "+limit+" offset "+offset).toString();
+    }
+    private static String addRLIKE(String filter_with_mysqlrlike){
+        return (filter_with_mysqlrlike.equals("EMPTY"))
+                ?" "
+                :"  and name RLIKE '"+filter_with_mysqlrlike+"' ";
     }
     static String getliveAlarms(int offset,int limit){
         return new StringBuilder("select * from apiAlarmsLive  limit "+limit+" offset "+offset).toString();
