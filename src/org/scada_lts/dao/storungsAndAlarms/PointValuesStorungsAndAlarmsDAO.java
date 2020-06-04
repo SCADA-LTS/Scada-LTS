@@ -38,7 +38,7 @@ class PointValuesStorungsAndAlarmsDAO {
             int limit)  throws JSONException,Exception
     {
         JSONArray jsonArray=new JSONArray();
-        List<PointValuesStorungsAndAlarms> pointValuesStorungsAndAlarms =  DAO.getInstance().getJdbcTemp().query(
+        List<ApiAlarmsHistory> apiAlarmsHistories =  DAO.getInstance().getJdbcTemp().query(
 
                 SqlCommandGenerator.getCommandForHistoryAlarmsByDateDayAndFilterFromOffset(
                         date_day,
@@ -46,11 +46,10 @@ class PointValuesStorungsAndAlarmsDAO {
                         offset,
                         limit),
 
-                new PointValuesStorungsAndAlarmsRowMapper());
-        if ( pointValuesStorungsAndAlarms.size() != 0) {
-            for (PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms1 : pointValuesStorungsAndAlarms) {
-                jsonArray.put(pointValuesStorungsAndAlarms1.toJSONObject());
-            }
+                new ApiAlarmsHistoryRowMapper());
+
+        if ( apiAlarmsHistories.size() != 0) {
+            apiAlarmsHistories.stream().forEach( alarmsHistory -> jsonArray.put(alarmsHistory.toJSONObject()));
         }
 
         return jsonArray;

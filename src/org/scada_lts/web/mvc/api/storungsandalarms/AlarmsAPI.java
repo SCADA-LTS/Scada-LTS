@@ -75,7 +75,7 @@ public class AlarmsAPI extends Validation{
             return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @RequestMapping(value = "/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}", method = RequestMethod.GET)
     public ResponseEntity<String> getHistoryAlarms(
             @PathVariable("date_day") String date_day,
             @PathVariable("filter_with_mysqlrlike") String filter_with_mysqlrlike,
@@ -84,13 +84,10 @@ public class AlarmsAPI extends Validation{
             HttpServletRequest request
     )
     {
-        LOG.info("/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}");
+        LOG.info("/api/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}");
         String value = "";
         if ( ( value = doGivenParameterHaveCorrectDateFormat(date_day)) != null ){
             return new ResponseEntity<String>("Value date_day is not correct."+value, HttpStatus.OK);
-        }
-        if ( !validate("filter_with_mysqlrlike",filter_with_mysqlrlike) ){
-            return new ResponseEntity<String>("Value filter_with_mysqlrlike is empty", HttpStatus.OK);
         }
         int offsetParam = Integer.parseInt(offset);
         int limitParam = Integer.parseInt(limit);
