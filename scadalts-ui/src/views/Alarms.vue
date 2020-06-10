@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="alarms">
 
 <!--        <p>{{$route.name}}</p>-->
         <div class="action">
@@ -36,6 +36,11 @@
 
 
     @import '../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
+
+    .alarms {
+        position: absolute;
+        z-index: -1;
+    }
 
     .action {
         margin-top: 50px;

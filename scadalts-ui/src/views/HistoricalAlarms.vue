@@ -1,8 +1,6 @@
 <template>
-    <div>
-<!--        <p>{{$route.name}}</p>-->
+    <div class="historical-alarms">
         <HistoricalAlarmsComponent></HistoricalAlarmsComponent>
-
     </div>
 </template>
 
@@ -21,6 +19,10 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+    .historical-alarms {
+        position: absolute;
+        z-index: -1;
+    }
 
 </style>

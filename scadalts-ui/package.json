@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@amcharts/amcharts4": "4.8.9",
-    "@min-gb/vuejs-components": "0.0.2",
+    "@min-gb/vuejs-components": "0.0.3",
     "ag-grid": "18.1.2",
     "ag-grid-community": "21.2.2",
     "ag-grid-vue": "21.2.2",
@@ -22,6 +22,7 @@
     "css-loader": "3.2.0",
     "moment": "2.22.2",
     "uiv": "0.27.0",
+    "util": "^0.12.3",
     "vue": "2.6.10",
     "vue-color-picker-wheel": "^0.4.3",
     "vue-cookie": "^1.1.4",

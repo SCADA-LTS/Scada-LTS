@@ -71,8 +71,8 @@
        text-decoration: none;
    }
    .sidebar{
-       margin-top: -20px;
        position: fixed;
+       margin-top: -20px;
        left: -240px;
        width: 240px;
        height: 100%;
