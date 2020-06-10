@@ -1,4 +1,4 @@
-dist: trusty
+dist: bionic
 sudo: required
 before_install:
 - sudo apt-get install tomcat7
@@ -27,6 +27,7 @@ jdk:
 - openjdk8
 services:
 - docker
+- mysql
 script: ant war && ant junit
 branches:
   only:
