@@ -23,29 +23,7 @@ package org.scada_lts.dao.storungsAndAlarms;
  */
 class SqlCommandGenerator {
 
-    private static StringBuilder stringBuilder;
-    private static String string;
-    public static String generateStringBuilderSqlForStorungs(){
-        stringBuilder = new StringBuilder("");
-        stringBuilder.append("select * ");
-        stringBuilder.append("from ");
-        stringBuilder.append("pointValues ");
-        stringBuilder.append("where id=1;");
-
-        return stringBuilder.toString();
-    }
-
-
-    public static String generateStringSqlForStorungs(){
-        string="";
-        string+="select * ";
-        string+="from ";
-        string+="pointValues ";
-        string+="where id=1;";
-
-        return string;
-    }
-    static java.lang.String setAcknowledge(){
+    static String setAcknowledge(){
         return new StringBuilder("update plcAlarms set acknowledgeTime=(select from_unixtime(unix_timestamp())) where id=?").toString();
     }
     static String getCommandForHistoryAlarmsByDateDayAndFilterFromOffset(
@@ -54,6 +32,8 @@ class SqlCommandGenerator {
             int offset,
             int limit
     ){
+        // Please look into org.scada_lts.dao.migration.mysql , if you want to know how look a base of apiAlarmsHistory view sql command
+
         return new StringBuilder("select * from apiAlarmsHistory where DATE_FORMAT(time, '%Y-%m-%d')='"+date_day+"' "+addRLIKE(filter_with_mysqlrlike)+" limit "+limit+" offset "+offset).toString();
     }
     private static String addRLIKE(String filter_with_mysqlrlike){
@@ -62,6 +42,9 @@ class SqlCommandGenerator {
                 :"  and name RLIKE '"+filter_with_mysqlrlike+"' ";
     }
     static String getliveAlarms(int offset,int limit){
+
+        // Please look into org.scada_lts.dao.migration.mysql , if you want to know how look a base of apiAlarmsLive view sql command
+
         return new StringBuilder("select * from apiAlarmsLive  limit "+limit+" offset "+offset).toString();
     }
 }

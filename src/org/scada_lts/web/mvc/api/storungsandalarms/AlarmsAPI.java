@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author hyski.mateusz@gmail.com
  */
 @Controller
-public class AlarmsAPI extends Validation{
+public class AlarmsAPI {
 
     private static final Log LOG = LogFactory.getLog(AlarmsAPI.class);
     private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
@@ -113,11 +113,11 @@ public class AlarmsAPI extends Validation{
     {
         LOG.info("/api/alarms/live/{offset}/{limit}");
         String value = "";
-        if ( (value = validateDoParamIsIntegerAndBetween0And9999("offset",offset)) !=null ){
+        if ( (value = Validation.validateDoParamIsIntegerAndBetween0And9999("offset",offset)) !=null ){
             return new ResponseEntity<String>(value, HttpStatus.OK);
         }
         value="";
-        if ( (value = validateDoParamIsIntegerAndBetween0And9999("limit",limit)) !=null ){
+        if ( (value = Validation.validateDoParamIsIntegerAndBetween0And9999("limit",limit)) !=null ){
             return new ResponseEntity<String>(value, HttpStatus.OK);
         }
         try {
@@ -132,6 +132,27 @@ public class AlarmsAPI extends Validation{
             return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * example of result:
+     *
+     *  [{
+     *      “id”:111,
+     *      *“activation-time”:”2020-03-10 -7:13:34”,
+     *      “inactivation-time:””,
+     *      “name”:”Be ST AL………..”,
+     *      “level”:”5”
+     *   },
+     *   {….},
+     *   {…}
+     *  ]
+     *
+     * @param date_day
+     * @param filter_with_mysqlrlike
+     * @param offset
+     * @param limit
+     * @param request
+     * @return String
+     */
     @RequestMapping(value = "/api/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}", method = RequestMethod.GET)
     public ResponseEntity<String> getHistoryAlarms(
             @PathVariable("date_day") String date_day,
@@ -143,7 +164,7 @@ public class AlarmsAPI extends Validation{
     {
         LOG.info("/api/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}");
         String value = "";
-        if ( ( value = doGivenParameterHaveCorrectDateFormat(date_day)) != null ){
+        if ( ( value = Validation.doGivenParameterHaveCorrectDateFormat(date_day)) != null ){
             return new ResponseEntity<String>("Value date_day is not correct."+value, HttpStatus.OK);
         }
         int offsetParam = Integer.parseInt(offset);

@@ -30,13 +30,7 @@ public interface PointValuesStorungsAndAlarms {
 
     JSONArray getLiveAlarms(int offset, int limit);
 
-    JSONObject getStorungs(int id);
-
-    JSONObject getAlarms(int id);
-
     JSONObject setAcknowledge( int id, JSONObject jsonObject);
-  
-    JSONObject getHistoryAlarmsById(int id);
 
     JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit );
 
