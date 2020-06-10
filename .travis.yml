@@ -1,6 +1,7 @@
 dist: bionic
 sudo: required
 before_install:
+- sudo apt-get install tomcat
 - sudo apt-get install ant-optional
 before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
