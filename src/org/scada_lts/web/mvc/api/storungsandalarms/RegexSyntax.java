@@ -27,4 +27,5 @@ package org.scada_lts.web.mvc.api.storungsandalarms;
 class RegexSyntax {
 
     final static String VALUE_BETWEEN_0_AND_9999 = "[^a-z]|[^A-Z]|[0-9]{1,4}";
+    final static String DATE_FORMAT = "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$";
 }

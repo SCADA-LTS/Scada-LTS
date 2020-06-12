@@ -37,56 +37,6 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
     private static final Log LOG = LogFactory.getLog(StorungsAndAlarms.class);
 
-    private JSONArray getActiveStorugs(){
-        JSONArray jsonArray = new JSONArray();
-        for(int i=0;i <10;i++) {
-            try {
-                jsonArray.put(new JSONObject().put("1", "value1"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return jsonArray;
-    }
-    private JSONArray getActiveAlarms(){
-        JSONArray jsonArray = new JSONArray();
-        for(int i=0;i <100;i++) {
-            try {
-                jsonArray.put(new JSONObject()
-                .put("id",String.valueOf(i))
-                .put("pointId",String.valueOf(i))
-                .put("pointXid","DP_12321")
-                        .put("pointType","ST")
-                        .put("pointName","ST")
-                        .put("triggerTime","ST")
-                        .put("inactiveTime","ST")
-                        .put("acknowledgeTime","ST")
-                        .put("lastpointValue","ST"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return jsonArray;
-    }
-    public  JSONObject getHistoryAlarmsById(int id){
-        JSONObject jsonObject = null;
-
-        try
-        {
-            jsonObject = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsById(id);
-        }
-        catch (JSONException e)
-        {
-            LOG.trace(e.getMessage());
-        }
-        catch(Exception exception)
-        {
-            LOG.trace(exception.getMessage());
-        }
-
-        return jsonObject;
-    }
-
     @Override
     public JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit) {
 
@@ -96,9 +46,8 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         {
             jsonArray = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsByDateDayAndFilterFromOffset(date_day, filter_with_mysqlrlike,offset,limit);
         }
-        catch (JSONException e)
-        {
-            LOG.trace(e.getMessage());
+        catch (DataAccessException dataAccessException){
+            LOG.trace("Exception on DataBase level.Please debug.");
         }
         catch(Exception exception)
         {
@@ -107,28 +56,6 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
         return jsonArray;
     }
-
-    public JSONObject getStorungsTest(int id){
-
-        JSONObject jsonObject = null;
-
-        try
-        {
-            jsonObject = new JSONObject();
-            JSONArray jsonArray = getActiveStorugs();
-            JSONArray jsonArray1 = getActiveAlarms();
-
-            jsonObject.put("ACTIVE_ST",jsonArray);
-            jsonObject.put("ACTIVE_AL",jsonArray1);
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        return jsonObject;
-    }
-
     @Override
     public JSONArray getLiveAlarms(int offset, int limit) {
 
@@ -138,9 +65,8 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         {
             jsonArray = DAOs.getPointValuesStorungsAndAlarms().getLiveAlarms(offset,limit);
         }
-        catch (JSONException e)
-        {
-            LOG.trace(e.getMessage());
+        catch (DataAccessException dataAccessException){
+            LOG.trace("Exception on DataBase level.Please debug.");
         }
         catch (Exception e)
         {
@@ -148,43 +74,6 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         }
         return jsonArray;
     }
-
-    public JSONObject getStorungs(int id){
-
-        JSONObject jsonObject = null;
-
-        try
-        {
-            jsonObject = DAOs.getPointValuesStorungsAndAlarms().getStorungs(id);
-        }
-        catch (JSONException e)
-        {
-            LOG.trace(e.getMessage());
-        }
-        catch(Exception exception)
-        {
-            LOG.trace(exception.getMessage());
-        }
-
-        return jsonObject;
-    }
-
-    @Override
-    public JSONObject getAlarms(int id) {
-        JSONObject jsonObject = null;
-
-        try
-        {
-            jsonObject = DAOs.getPointValuesStorungsAndAlarms().getAlarms(1);
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        return jsonObject;
-    }
-
     @Override
     public JSONObject setAcknowledge(int id,JSONObject jsonObject) {
 
@@ -202,6 +91,18 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
         return jsonObject;
     }
+
+    /**
+     * method use as a helper to build a jsonobject by values when
+     * error occur on DataBase level or another
+     * or if everything is OK
+     *
+     * @param errorMessage
+     * @param result
+     * @param id
+     * @param jsonObject
+     * @return
+     */
     private JSONObject fillJsonObjectWithInformations(StringBuilder errorMessage,boolean result, int id, JSONObject jsonObject){
         try{
             jsonObject.put("id",id);

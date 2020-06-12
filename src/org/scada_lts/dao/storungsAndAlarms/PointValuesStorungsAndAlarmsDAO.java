@@ -31,11 +31,15 @@ import java.util.List;
  */
 class PointValuesStorungsAndAlarmsDAO {
 
-    JSONArray getLiveAlarms(int offset,int limit) throws JSONException,Exception{
+    JSONArray getLiveAlarms(int offset,int limit) throws DataAccessException{
 
         JSONArray jsonArray=new JSONArray();
         List<ApiAlarmsLive> apiAlarmsLives = DAO.getInstance().getJdbcTemp().query(
-                SqlCommandGenerator.getliveAlarms(offset,limit),new ApiAlarmsLiveRowMapper());
+                SqlCommandGenerator.getliveAlarms(
+                        offset,
+                        limit),
+
+                new ApiAlarmsLiveRowMapper());
 
         apiAlarmsLives.stream().forEach( alarmsLive -> jsonArray.put(alarmsLive.toJSONObject()));
 
@@ -45,8 +49,7 @@ class PointValuesStorungsAndAlarmsDAO {
             String date_day,
             String filter_with_mysqlrlike,
             int offset,
-            int limit)  throws JSONException,Exception
-    {
+            int limit) throws DataAccessException {
         JSONArray jsonArray=new JSONArray();
         List<ApiAlarmsHistory> apiAlarmsHistories =  DAO.getInstance().getJdbcTemp().query(
 
@@ -63,48 +66,6 @@ class PointValuesStorungsAndAlarmsDAO {
         }
 
         return jsonArray;
-    }
-    public JSONObject getStorungs(int id) throws JSONException,Exception{
-
-        JSONObject jsonObject=new JSONObject();
-        List<PointValuesStorungsAndAlarms> pointValuesStorungsAndAlarms =  DAO.getInstance().getJdbcTemp().query(
-                        "SELECT * FROM pointValuesStorungsAndAlarms", new PointValuesStorungsAndAlarmsRowMapper());
-
-        String pointValuesStorungsAndAlarmsAsString="";
-
-        for(PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms1 : pointValuesStorungsAndAlarms){
-            pointValuesStorungsAndAlarmsAsString+=pointValuesStorungsAndAlarms1.toString();
-
-        }
-        return jsonObject.put("1",pointValuesStorungsAndAlarmsAsString);
-    }
-    public JSONObject getHistoryAlarmsById(int id) throws JSONException{
-        JSONObject jsonObject=null;
-        try {
-            //  pointValuesStorungsAndAlarms = (PointValues_)  DAO.getInstance().getJdbcTemp().queryForObject(SqlCommandGenerator.generateStringBuilderSqlForStorungs(), new PointValuesStorungsAndAlarmsRowMapper());
-            //   } catch (DataAccessException e) {
-            //        e.printStackTrace();
-            //    }
-            jsonObject = new JSONObject().put("test", "test");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-    public JSONObject getAlarms(int id) throws JSONException{
-
-        JSONObject jsonObject=null;
-        try {
-                String  j="";
-              //  pointValuesStorungsAndAlarms = (PointValues_)  DAO.getInstance().getJdbcTemp().queryForObject(SqlCommandGenerator.generateStringBuilderSqlForStorungs(), new PointValuesStorungsAndAlarmsRowMapper());
-         //   } catch (DataAccessException e) {
-        //        e.printStackTrace();
-        //    }
-            jsonObject = new JSONObject().put("test", "test");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
     }
     public int setAcknowledge(int id) throws DataAccessException {
 
