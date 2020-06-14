@@ -1,6 +1,7 @@
 <template>
-    <div>
+    <div class="alarms">
 
+<!--        <p>{{$route.name}}</p>-->
         <div class="action">
             <input type="checkbox" id="select_all" name="Select_All" value="1">
             <label class="selall" for="select_all">Select All</label><br>
@@ -35,6 +36,11 @@
 
 
     @import '../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
+
+    .alarms {
+        position: absolute;
+        z-index: -1;
+    }
 
     .action {
         margin-top: 50px;

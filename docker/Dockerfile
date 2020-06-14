@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:16.04
 RUN apt-get -y update
 RUN apt-get -y install apt-utils openjdk-8-jdk net-tools vim dos2unix
 ADD mysql /opt/installer

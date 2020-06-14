@@ -2,7 +2,7 @@
  * @author grzegorz.bylica@abilit.eu
  */
 
-import axios from 'axios'
+import axios from "axios"
 
 const TIMEOUT_API_ALARMS = 5000
 const storeAlarms = {
@@ -78,7 +78,9 @@ const storeAlarms = {
                 )}, 500)
             });
         },
+
         fakeGetHistoryAlarms({commit}, {dateDay, filterRLike, offset, limit}) {
+            //console.log(`dataDay:${dateDay} ${typeof dateDay} filterRLike:${filterRLike} ${typeof filterRLike} offset:${offset} ${typeof offset} limit:${limit} ${typeof limit}`)
             return new Promise(function (resolve) {
                 setTimeout(
                     resolve( [{

@@ -1,5 +1,5 @@
 <template>
-    <div class="data">
+    <div class="historical-alarms-components">
         <table>
             <tr>
                 <th></th>
@@ -7,7 +7,7 @@
                 <th>Inactivation Timestamp</th>
                 <th>Variable name</th>
             </tr>
-            <tr v-for="(item, index) in alarms"
+            <tr v-for="(item, index) in alarms" :key="index"
                 v-bind:class="{
                         activation: isActivation( item['activation-time'],item['inactivation-time'],item.level),
                         activation_alarm: isActivationAlarm(item['activation-time'],item['inactivation-time'],item.level),
@@ -23,27 +23,16 @@
                 <td>{{item.name}}</td>
             </tr>
         </table>
-        <Pagination
-                :current-page="currentPage"
-                :page-count="pageCount"
-                :visible-pages-count="8"
-                class=""
-                @nextPage="pageChangeHandle('next')"
-                @previousPage="pageChangeHandle('pref')"
-                @loadPage="pageChangeHandle"
-        ></Pagination>
     </div>
 </template>
 
 <script>
     import store from "../../store"
-    import Pagination from "./base/pagination/Pagination"
 
     export default {
         el: '#alarms_component',
         name: 'alarmsComponent',
         components: {
-            Pagination
         },
         data() {
             return {
@@ -80,16 +69,16 @@
                     return false
                 }
             },
-            pageChangeHandle(pr) {
-                if (pr==='next') {
-                    console.log('pageChangeHandle next')
-                    return
-                } else if (pr==='pref') {
-                    console.log('pageChangeHandle pref')
-                    return
-                }
-                console.log('pageChangeHandle')
-            },
+            // pageChangeHandle(pr) {
+            //     if (pr==='next') {
+            //         console.log('pageChangeHandle next')
+            //         return
+            //     } else if (pr==='pref') {
+            //         console.log('pageChangeHandle pref')
+            //         return
+            //     }
+            //     console.log('pageChangeHandle')
+            // },
         },
         created() {
             this.getAlarms();

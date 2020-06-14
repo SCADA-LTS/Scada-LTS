@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Alarms from './views/Alarms'
 import About from './views/About'
+import HistoricalAlarms from "./views/HistoricalAlarms"
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
       path: '/alarms',
       name: 'alarms',
       component: Alarms
+    },
+    {
+      path: '/historical-alarms',
+      name: 'historical-alarms',
+      component: HistoricalAlarms
     },
     {
       path: '/example-ph',

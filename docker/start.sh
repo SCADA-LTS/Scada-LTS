@@ -8,6 +8,7 @@ sleep 10
 #create database scadalts if not exist
 sleep 10
 mysql -uroot -proot -e "create database if not exists scadalts"
+sleep 10
 cd /opt/scadalts
 ./bin/startup.sh
 sleep 60
