@@ -1,5 +1,7 @@
+dist: xenial
 sudo: required
 before_install:
+- sudo apt-get update
 - sudo apt-get install tomcat7
 - sudo apt-get install ant-optional
 before_script:
@@ -32,8 +34,6 @@ branches:
   only:
   - "/^siv/develop.*$/"
   - "/^siv/master.*$/"
-  - "/^feature_s/#1156.*$/"
-  - "/^feature/#1151.*$/"
 notifications:
   email: false
 env:
