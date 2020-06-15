@@ -1,5 +1,8 @@
 <template>
     <div class="historical-alarms-components">
+        <SimplePanel>
+            To refresh {{toRefresh}}
+        </SimplePanel>
         <table>
             <tr>
                 <th></th>
@@ -23,67 +26,106 @@
                 <td>{{item.name}}</td>
             </tr>
         </table>
+        <SimplePanel>
+
+            <SimplePagination class="min-gb-pagination"
+                              :current-page="currentPage"
+                              :page-count="pageCount"
+                              :visible-pages-count="8"
+                              @nextPage="pageChangeHandle('next')"
+                              @previousPage="pageChangeHandle('pref')"
+                              @loadPage="pageChangeHandle"
+            ></SimplePagination>
+
+        </SimplePanel>
     </div>
 </template>
 
 <script>
     import store from "../../store"
+    import Components from "@min-gb/vuejs-components"
 
     export default {
         el: '#alarms_component',
         name: 'alarmsComponent',
         components: {
+            ...Components,
         },
         data() {
             return {
                 alarms: [],
                 currentPage: 1,
-                pageCount: 10
+                pageCount: 10,
+                toRefresh: 5
             }
         },
         methods: {
-            getAlarms() {
-                store.dispatch('fakeGetLiveAlarms', {'offset': 0, 'limit': 100}).then((ret) => {
+            getAlarms(page) {
+
+                let recordsCount = 20
+                let loffset = String(recordsCount * page)
+                let llimit = String(recordsCount * (page - 1))
+
+                store.dispatch('fakeGetLiveAlarms', {'offset': loffset, 'limit': llimit}).then((ret) => {
                     this.alarms = ret
                     //console.log(JSON.stringify(this.data))
                 })
             },
-            isActivation(activationTime, inactivationTime, level){
-                if (activationTime.length>0 && inactivationTime.length==0 && level == 5) {
+            isActivation(activationTime, inactivationTime, level) {
+                if (activationTime.length > 0 && inactivationTime.length == 0 && level == 5) {
                     return true
                 } else {
                     return false
                 }
             },
             isActivationAlarm(activationTime, inactivationTime, level) {
-                if (activationTime.length>0 && inactivationTime.length==0 && level == 4) {
+                if (activationTime.length > 0 && inactivationTime.length == 0 && level == 4) {
                     return true
                 } else {
                     return false
                 }
             },
             isInactivation(activationTime, inactivationTime, level) {
-                if (activationTime.length>0 && inactivationTime.length>0) {
+                if (activationTime.length > 0 && inactivationTime.length > 0) {
                     return true
                 } else {
                     return false
                 }
             },
-            // pageChangeHandle(pr) {
-            //     if (pr==='next') {
-            //         console.log('pageChangeHandle next')
-            //         return
-            //     } else if (pr==='pref') {
-            //         console.log('pageChangeHandle pref')
-            //         return
-            //     }
-            //     console.log('pageChangeHandle')
-            // },
+            pageChangeHandle(pr) {
+                try {
+                    if (pr === 'next') {
+                        console.log('pageChangeHandle next')
+                        return
+                    } else if (pr === 'pref') {
+                        console.log('pageChangeHandle pref')
+                        return
+                    }
+                    this.currentPage = Number(pr)
+                    this.getAlarms(this.currentPage)
+                } catch (e) {
+                    console.log(`pageCH:${e}`)
+                }
+            },
         },
+
         created() {
             this.getAlarms();
         },
         mounted() {
+
+            setInterval(
+                () => {
+                    if (this.toRefresh == 0 ) {
+                        this.getAlarms(this.currentPage)
+                        this.toRefresh = 5;
+                        console.log('getAlarms')
+                    } else {
+                        this.toRefresh = this.toRefresh - 1;
+                    }
+                },
+                1000
+            )
 
         },
     }
@@ -119,6 +161,6 @@
 
     .inactivation {
         color: green;
-        background:white;
+        background: white;
     }
 </style>
