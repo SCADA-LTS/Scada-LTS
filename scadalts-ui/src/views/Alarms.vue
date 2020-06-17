@@ -6,7 +6,6 @@
             <input type="checkbox" id="select_all" name="Select_All" value="1">
             <label class="selall" for="select_all">Select All</label><br>
         </div>
-        <Refresh></Refresh>
         <AlarmsComponent></AlarmsComponent>
         <div class="action_bottom">
             <button>Acknowledge Störung/Alarms</button>

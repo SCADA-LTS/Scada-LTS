@@ -18,7 +18,7 @@
                     }"
             >
                 <td>
-                    <input v-if="item['inactivation-time'].length>0" type="checkbox" name="Activation"
+                    <input v-if=" item != undefined && item['inactivation-time'] != undefined && item['inactivation-time'].length>0" type="checkbox" name="Activation"
                            value="Activation" data="{{item.id}}">
                 </td>
                 <td>{{item["activation-time"]}}</td>
@@ -66,12 +66,15 @@
                 let loffset = String(recordsCount * page)
                 let llimit = String(recordsCount * (page - 1))
 
-                store.dispatch('fakeGetLiveAlarms', {'offset': loffset, 'limit': llimit}).then((ret) => {
+                //store.dispatch('fakeGetLiveAlarms
+                store.dispatch('getLiveAlarms', {'offset': loffset, 'limit': llimit}).then((ret) => {
                     this.alarms = ret
                     //console.log(JSON.stringify(this.data))
                 })
             },
             isActivation(activationTime, inactivationTime, level) {
+                if (activationTime === undefined || inactivationTime === undefined || level === undefined) return false;
+
                 if (activationTime.length > 0 && inactivationTime.length == 0 && level == 5) {
                     return true
                 } else {
@@ -79,13 +82,18 @@
                 }
             },
             isActivationAlarm(activationTime, inactivationTime, level) {
+                if (activationTime === undefined || inactivationTime === undefined || level === undefined) return false;
+
                 if (activationTime.length > 0 && inactivationTime.length == 0 && level == 4) {
                     return true
                 } else {
                     return false
                 }
+
             },
             isInactivation(activationTime, inactivationTime, level) {
+                if (activationTime === undefined || inactivationTime === undefined || level === undefined) return false;
+
                 if (activationTime.length > 0 && inactivationTime.length > 0) {
                     return true
                 } else {
@@ -110,13 +118,13 @@
         },
 
         created() {
-            this.getAlarms();
+
         },
         mounted() {
-
+            this.getAlarms();
             setInterval(
                 () => {
-                    if (this.toRefresh == 0 ) {
+                    if (this.toRefresh == 0) {
                         this.getAlarms(this.currentPage)
                         this.toRefresh = 5;
                         console.log('getAlarms')
