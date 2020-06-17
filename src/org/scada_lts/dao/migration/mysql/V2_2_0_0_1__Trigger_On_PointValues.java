@@ -29,16 +29,23 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
 
         try {
             jdbcTmp.execute( ""
-                    +"CREATE TRIGGER onlyForStorungsAndAlarmValues AFTER INSERT "
+                    +"CREATE TRIGGER onlyForStorungsAndAlarmValues BEFORE INSERT "
                     +"ON pointValues "
                     +"FOR EACH ROW BEGIN "
                     +"DECLARE PLC_ALARM_LEVEL INT(1); "
                     +"DECLARE LAST_POINT_VALUE INT(1); "
                     +"DECLARE PRESENT_POINT_VALUE INT(1); "
+
+                    // TRIGGER_TIME means, when this trigger has been executed
+
+
+                    +"DECLARE TRIGGER_TIME VARCHAR(20);"
                     +""
                     +" select plcAlarmLevel into PLC_ALARM_LEVEL from dataPoints where id=new.dataPointId;  "
                     +""
                     +" select pointValue into LAST_POINT_VALUE from pointValues where ts=(select max(ts) from pointValues where dataPointId=new.dataPointId); "
+                    +""
+                    +" select from_unixtime(unix_timestamp()) into TRIGGER_TIME; "
                     +""
                     +" IF (PLC_ALARM_LEVEL = 1 OR PLC_ALARM_LEVEl = 2) THEN "
                     + ""
@@ -47,6 +54,7 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"  pointXid,"
                     +"  pointType,"
                     +"  pointName,"
+                    +"  insertTime,"
                     +"  triggerTime,"
                     +"  inactiveTime,"
                     +"  acknowledgeTime,"
@@ -56,20 +64,29 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"  (select xid from dataPoints where id=new.dataPointId),"
                     +"  PLC_ALARM_LEVEL,"
                     +"  (select pointName from dataPoints where id=new.dataPointId),"
-                    +"  (select from_unixtime(unix_timestamp())),"
+                    +"  TRIGGER_TIME,"
                     +"  null,"
                     +"  null,"
+                    +"  (select max(ts) from pointValues where dataPointId=new.dataPointId),"
                     +" LAST_POINT_VALUE"
                     +"); "
                     +""
-                    +" select new.pointValues into PRESENT_POINT_VALUE; "
+                    +" select new.pointValue into PRESENT_POINT_VALUE; "
                     +""
-                    +" IF (PRESENT_POINT_VALUE = 0) THEN "
-                    +" update plcAlarms set inactiveTime=(select from_unixtime(unix_timestamp())) where pointName=(select pointName from dataPoints where id=new.dataPointId); "
+
+                    // point has been changed status from  1 -ACTIVE ALARM / STORUNG to 0 -INACTIVE ALARM / STORUNG
+                    // state 1-0
+
+                    +" IF (LAST_POINT_VALUE = 1 AND PRESENT_POINT_VALUE = 0) THEN "
+                    +" update plcAlarms set inactiveTime=(select from_unixtime(unix_timestamp())) where insertTime=TRIGGER_TIME; "
                     +" END IF;"
+
+                    // point has been changed status from 0 -INACTIVE ALARM / STORUNG  to 1 -ACTIVE ALARM / STORUNG
+                    // state 0-1
+
                     +""
-                    +" IF (PRESENT_POINT_VALUE = 1) THEN "
-                    +" update plcAlarms set triggerTime=(select from_unixtime(unix_timestamp())) where pointName=(select pointName from dataPoints where id=new.dataPointId); "
+                    +" IF (LAST_POINT_VALUE = 0 AND PRESENT_POINT_VALUE = 1) THEN "
+                    +" update plcAlarms set triggerTime=(select from_unixtime(unix_timestamp())) where insertTime=TRIGGER_TIME; "
                     +" END IF;"
                     +""
                     +" END IF;"
