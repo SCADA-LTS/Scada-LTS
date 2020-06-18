@@ -117,6 +117,7 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +""
                     +" END IF;"
                     + ""
+                    +" END IF;"
                     + ""
                     +"end; ");
         } catch (DataAccessException e) {
