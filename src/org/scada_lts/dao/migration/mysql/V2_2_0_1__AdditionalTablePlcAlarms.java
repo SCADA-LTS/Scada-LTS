@@ -36,6 +36,7 @@ public class V2_2_0_1__AdditionalTablePlcAlarms implements SpringJdbcMigration {
                         + "pointXid  varchar(45) default null,"
                         + "pointType  varchar(45) default null,"
                         + "pointName  varchar(45) default null,"
+                        + "insertTime  varchar(45) default null,"
                         + "triggerTime  varchar(45) default null,"
                         + "inactiveTime  varchar(45) default null,"
                         + "acknowledgeTime  varchar(45) default null,"
