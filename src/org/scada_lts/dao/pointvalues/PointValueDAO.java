@@ -23,11 +23,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -450,13 +453,16 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public Object[] create(final PointValue entity) {
-		
+
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
 		}
-		
+
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
+		String pointName = new DataPointDAO().getDataPoint( (int)entity.getDataPointId()).getName();
+		if ( pointName.contains(" AL ") || pointName.contains(" ST ")) {
+			a(String.valueOf(entity.getDataPointId()), entity.getPointValue().getIntegerValue());
+		}
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			 			@Override
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -474,6 +480,29 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		return new Object[] {keyHolder.getKey().longValue()};
 		
 	}
+	private void a(String pointName,int state){
+		if(states.containsKey( pointName)) {
+			if (states.get(pointName)==1){
+				//save state into hoistory log file that
+				LOG.info("Data point "+pointName+" defined as have new state 1 to 0 >  "+state);
+				states.remove(pointName);
+				states.put(pointName,state);
+				return;
+			}
+			if(states.get(pointName)==0){
+				LOG.info("Data point "+pointName+" defined as have new state 0 to 1 >"+state);
+				states.remove(pointName);
+				states.put(pointName,state);
+				return;
+			}
+		}
+		else
+		{
+			//first time this point Name is registering his state as Alarms or Storung
+			states.put(pointName,state);
+		}
+	}
+	private static Map<String,Integer> states = new HashMap<String,Integer>();
 	
 	
 	
