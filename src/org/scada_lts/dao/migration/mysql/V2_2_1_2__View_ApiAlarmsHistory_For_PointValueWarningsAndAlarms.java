@@ -37,7 +37,7 @@ public class V2_2_1_2__View_ApiAlarmsHistory_For_PointValueWarningsAndAlarms imp
                                     new String[]{
                                             "inactiveTime as 'time',",
                                             "pointName as 'name',",
-                                            "pointXid as 'description'"},
+                                            "description as 'description'"},
                                     new StringBuilder("plcAlarms")
                             ));
         } catch (DataAccessException e) {
