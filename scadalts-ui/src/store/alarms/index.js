@@ -19,7 +19,7 @@ const storeAlarms = {
             return new Promise((resolve, reject) => {
                 ///api/alarms/live/{offset}/{limit}
                 axios.get(`./api/alarms/live/${offset}/${limit}`).then(res => {
-                    //console.log(`axios:res:${JSON.stringify(res)}`)
+                    console.log(`axios:res:${JSON.stringify(res)}`)
                     resolve(res.data)
                 }).catch((err) => {
                     commit('ERR', err)

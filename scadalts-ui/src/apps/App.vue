@@ -2,24 +2,15 @@
     <div id="app">
         <input type="checkbox" id="check-sidebar">
         <label for="check-sidebar">
-            <i class="fas fa-bars" id="btn-sidebar"></i>
-            <i class="fas fa-times" id="cancel-sidebar"></i>
+            <i class="fas fa-bars nav-sidebar" id="btn-sidebar"></i>
+            <i class="fas fa-times nav-sidebar" id="cancel-sidebar"></i>
         </label>
         <div class="sidebar">
             <logo>Scada-LTS</logo>
-
-
-            <a href="#"><span>Dashbord</span></a>
-            <a href="#"><span>Watch lists</span></a>
-            <a href="#"><span>Graphical Views</span></a>
-            <a href="#"><span>Data Sources</span></a>
-            <a href="#"><span>Services</span></a> <!-- sms etc..-->
             <a href="#/alarms" v-bind:class="{ active: $route.name=='alarms'}"><span>Alarms</span></a>
             <a href="#/historical-alarms" v-bind:class="{ active: $route.name=='historical-alarms'}"><span>Historical Alarms</span></a>
-            <a href="#"><span>Events</span></a>
-            <a href="#"><span>Contact</span></a>
             <a href="#/about"><span>About</span></a>
-            <a href="#"><span>Admin</span></a>
+            <a href="./watch_list.shtm"><span>Old UI</span></a>
         </div>
         <header>
             <nav>
@@ -110,7 +101,9 @@
    #check-sidebar {
        display: none;
    }
-
+   .nav-sidebar {
+       margin: -9px 30px 10px 30px;
+   }
    nav {
        margin-top: -20px;
        position: fixed;
@@ -152,8 +145,8 @@
        position: absolute;
        cursor: pointer;
        background: green;
-       height: 45px;
-       width: 45px;
+       height: 40px;
+       width: 40px;
        text-align: center;
        line-height: 45px;
        color: white;

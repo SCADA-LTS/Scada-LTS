@@ -2,15 +2,8 @@
     <div class="alarms">
 
 <!--        <p>{{$route.name}}</p>-->
-        <div class="action">
-            <input type="checkbox" id="select_all" name="Select_All" value="1">
-            <label class="selall" for="select_all">Select All</label><br>
-        </div>
-        <AlarmsComponent></AlarmsComponent>
-        <div class="action_bottom">
-            <button>Acknowledge Störung/Alarms</button>
-        </div>
 
+        <AlarmsComponent></AlarmsComponent>
     </div>
 </template>
 
