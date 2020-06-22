@@ -35,11 +35,15 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"DECLARE PLC_ALARM_LEVEL INT(1); "
                     +"DECLARE LAST_POINT_VALUE INT(1); "
                     +"DECLARE PRESENT_POINT_VALUE INT(1); "
+                    +"DECLARE ALARM_IS_GEGANGEN VARCHAR(40) DEFAULT 'Alarm is gegangen'; "
+                    +"DECLARE STORUNG_IS_GEGANGEN VARCHAR(40) DEFAULT 'Storung is gegangen'; "
+                    +"DECLARE ALARM_AUSGELOST VARCHAR(40) DEFAULT 'Alarm ausgelost'; "
+                    +"DECLARE STORUNG_KOMMT VARCHAR(40) DEFAULT 'Storung kommt'; "
 
                     // TRIGGER_TIME means, when this trigger has been executed
 
 
-                    +"DECLARE TRIGGER_TIME VARCHAR(20);"
+                    +"DECLARE TRIGGER_TIME VARCHAR(20); "
                     +""
                     +" select plcAlarmLevel into PLC_ALARM_LEVEL from dataPoints where id=new.dataPointId;  "
                     +""
@@ -58,7 +62,8 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"  triggerTime,"
                     +"  inactiveTime,"
                     +"  acknowledgeTime,"
-                    +"  lastpointValue"
+                    +"  lastpointValue,"
+                    +"  description"
                     +") values ("
                     +"  (select id from dataPoints where id=new.dataPointId),"
                     +"  (select xid from dataPoints where id=new.dataPointId),"
@@ -68,7 +73,8 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"  null,"
                     +"  null,"
                     +"  (select max(ts) from pointValues where dataPointId=new.dataPointId),"
-                    +" LAST_POINT_VALUE"
+                    +" LAST_POINT_VALUE,"
+                    +"  null"
                     +"); "
                     +""
                     +" select new.pointValue into PRESENT_POINT_VALUE; "
@@ -78,7 +84,18 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     // state 1-0
 
                     +" IF (LAST_POINT_VALUE = 1 AND PRESENT_POINT_VALUE = 0) THEN "
-                    +" update plcAlarms set inactiveTime=(select from_unixtime(unix_timestamp())) where insertTime=TRIGGER_TIME; "
+                    +"      update plcAlarms set inactiveTime=(select from_unixtime(unix_timestamp())) where insertTime=TRIGGER_TIME; "
+
+                    // fill specific column with information that an alarm went off-
+                    +"      IF (PLC_ALARM_LEVEL = 1) THEN "
+                    +"          update plcAlarms set description=ALARM_IS_GEGANGEN where insertTime=TRIGGER_TIME; "
+                    +"      END IF;"
+
+                    // fill specific column with information that an storung went off-
+                    +"      IF (PLC_ALARM_LEVEL = 2) THEN "
+                    +"          update plcAlarms set description=STORUNG_IS_GEGANGEN where insertTime=TRIGGER_TIME; "
+                    +"      END IF;"
+
                     +" END IF;"
 
                     // point has been changed status from 0 -INACTIVE ALARM / STORUNG  to 1 -ACTIVE ALARM / STORUNG
@@ -86,11 +103,21 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
 
                     +""
                     +" IF (LAST_POINT_VALUE = 0 AND PRESENT_POINT_VALUE = 1) THEN "
-                    +" update plcAlarms set triggerTime=(select from_unixtime(unix_timestamp())) where insertTime=TRIGGER_TIME; "
-                    +" END IF;"
+                    +"      update plcAlarms set triggerTime=(select from_unixtime(unix_timestamp())) where insertTime=TRIGGER_TIME; "
+
+                    // fill specific column with information that an alarm has come on-
+                    +"      IF (PLC_ALARM_LEVEL = 1) THEN "
+                    +"          update plcAlarms set description=ALARM_AUSGELOST where insertTime=TRIGGER_TIME; "
+                    +"      END IF;"
+
+                    // fill specific column with information that an storung has come on--
+                    +"      IF (PLC_ALARM_LEVEL = 2) THEN "
+                    +"          update plcAlarms set description=STORUNG_KOMMT where insertTime=TRIGGER_TIME; "
+                    +"      END IF;"
                     +""
                     +" END IF;"
                     + ""
+                    +" END IF;"
                     + ""
                     +"end; ");
         } catch (DataAccessException e) {

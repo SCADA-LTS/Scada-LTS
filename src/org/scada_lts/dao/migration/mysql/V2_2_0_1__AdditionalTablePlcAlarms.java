@@ -41,6 +41,7 @@ public class V2_2_0_1__AdditionalTablePlcAlarms implements SpringJdbcMigration {
                         + "inactiveTime  varchar(45) default null,"
                         + "acknowledgeTime  varchar(45) default null,"
                         + "lastpointValue  varchar(45) default null,"
+                        + "description  varchar(45) default null,"
                         + "primary key (id)"
                         + ") ENGINE=InnoDB;");
         } catch (DataAccessException e) {
