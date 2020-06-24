@@ -4,8 +4,8 @@
         <SimplePanel class="panel panel_top">
             To refresh {{toRefresh}}
             <div class="action">
-                <input type="checkbox" id="select_all" name="Select_All" value="1">
-                &nbsp;<label class="selall" for="select_all" v-on:click="toogleSelectAll(this)">Select All</label><br>
+                <input type="checkbox" id="select_all"  v-on:click="toggleSelectAll()" name="Select_All" value="0" ref="selectAll" v-model="sellAll">
+                &nbsp;<label class="selall" for="select_all" v-on:click="toggleSelectAll()">Select All</label><br>
             </div>
         </SimplePanel>
         <table>
@@ -23,7 +23,7 @@
                     }"
             >
                 <td>
-                    <input v-if=" item != undefined && item['inactivation-time'] != undefined && item['inactivation-time'].length>0"
+                    <input v-if=" item != undefined && item['inactivation-time'] != undefined && item['inactivation-time'].trim().length>0"
                            type="checkbox" name="ActivationAction"
                            :value="item.id" v-model="to_acknowledges">
                 </td>
@@ -48,7 +48,7 @@
 
         </SimplePanel>
         <div class="action_bottom">
-            <button onclick="acknowledge">Acknowledge Störung/Alarms</button>
+            <button v-on:click="acknowledge()">Acknowledge Störung/Alarms</button>
         </div>
     </div>
 </template>
@@ -69,7 +69,9 @@
                 currentPage: 1,
                 pageCount: 10,
                 toRefresh: 5,
-                to_acknowledges: []
+                to_acknowledges: [],
+                sellAll: false
+
             }
         },
         methods: {
@@ -86,8 +88,10 @@
                 })
             },
             acknowledge() {
+
                 for (let i = 0; i < this.to_acknowledges.length; i++) {
-                    store.dispatch('setAcknowledge', this.to_acknowledges[i]).then(
+                    const id = this.to_acknowledges[i]
+                    store.dispatch('setAcknowledge', {id}).then(
                         ret => {
                             console.log(`ackn:${ret}`)
                         }
@@ -99,29 +103,37 @@
                 this.getAlarms(this.currentPage)
 
             },
-            toogleSelectAll(source) {
-                 const checkboxes = document.getElementsByName('ActivationAction');
-                    if (checkboxes != null && checkboxes != undefined ) {
-                        for (let i = 0; i < checkboxes.length; i++) {
-                            console.log(`checked:${JSON.stringify(checkboxes[i])}`)
-                            //checkbox.checked = !checkbox.checked;
-                            //console.log(`checkbod:${checkbox}`)
-                        }
+            toggleSelectAll() {
+                const checkboxes = document.getElementsByName('ActivationAction')
+
+                //console.log(`toRemoveCheck:${JSON.stringify(this.sellAll)}`)
+
+                if (this.sellAll) {
+                    this.to_acknowledges = []
+                } else if (checkboxes != null && checkboxes != undefined) {
+                    for (let i = 0; i < checkboxes.length; i++) {
+                        this.to_acknowledges.push(checkboxes[i]._value)
                     }
+                }
+            },
+            checkPrm(activationTime, inactivationTime, level) {
+                if (activationTime === undefined || inactivationTime === undefined || level === undefined) return false;
+                if (activationTime === null || inactivationTime === null || level === null) return false
+                return true
             },
             isActivation(activationTime, inactivationTime, level) {
-                if (activationTime === undefined || inactivationTime === undefined || level === undefined) return false;
+                if (!this.checkPrm(activationTime, inactivationTime, level)) return false
 
-                if (activationTime.length > 0 && inactivationTime.length == 0 && level == 5) {
+                if (activationTime.trim().length > 0 && inactivationTime.trim().length == 0 && level == 2) {
                     return true
                 } else {
                     return false
                 }
             },
             isActivationAlarm(activationTime, inactivationTime, level) {
-                if (activationTime === undefined || inactivationTime === undefined || level === undefined) return false;
+                if (!this.checkPrm(activationTime, inactivationTime, level)) return false
 
-                if (activationTime.length > 0 && inactivationTime.length == 0 && level == 4) {
+                if (activationTime.trim().length > 0 && inactivationTime.trim().length == 0 && level == 1) {
                     return true
                 } else {
                     return false
@@ -129,15 +141,17 @@
 
             },
             isInactivation(activationTime, inactivationTime, level) {
-                if (activationTime === undefined || inactivationTime === undefined || level === undefined) return false;
+                if (!this.checkPrm(activationTime, inactivationTime, level)) return false
 
-                if (activationTime.length > 0 && inactivationTime.length > 0) {
+                if (activationTime.trim().length > 0 && inactivationTime.trim().length > 0) {
                     return true
                 } else {
                     return false
                 }
             },
             pageChangeHandle(pr) {
+                this.to_acknowledges = []
+                this.sellAll = false
                 try {
                     if (pr === 'next') {
                         if (this.currentPage < 9) {
@@ -176,7 +190,7 @@
                 1000
             )
 
-        },
+        }
     }
 </script>
 
@@ -212,16 +226,20 @@
         color: green;
         background: white;
     }
+
     .pagination {
         margin: 0px 0px 0px 10px;
     }
+
     .action_bottom {
         padding-top: 10px;
         margin-left: 20px;
     }
+
     .panel_top {
         margin-top: 45px;
     }
+
     .panel {
         width: 100%;
     }
