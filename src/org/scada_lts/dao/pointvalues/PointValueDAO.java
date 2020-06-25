@@ -459,10 +459,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		String pointName = new DataPointDAO().getDataPoint( (int)entity.getDataPointId()).getName();
-		if ( pointName.contains(" AL ") || pointName.contains(" ST ")) {
-			a(String.valueOf(entity.getDataPointId()), entity.getPointValue().getIntegerValue());
-		}
+		logActivityForSpecificDataPointTypes ((int)entity.getDataPointId());
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			 			@Override
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -480,29 +477,52 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		return new Object[] {keyHolder.getKey().longValue()};
 		
 	}
-	private void a(String pointName,int state){
+
+	/**
+	 * save into historical.log file an activity
+	 * when from data point defined as AL(Alarms) or ST (Storung)
+	 * is receiving a high state or low
+	 *
+	 * @param id
+	 */
+	private void logActivityForSpecificDataPointTypes(int id) {
+		String pointName = new DataPointDAO().getDataPoint(id).getName();
+		if (pointName.contains(" AL ") || pointName.contains(" ST ")) {
+			saveInfoIntoHistoryLog(String.valueOf(id), 1);
+
+		}
+	}
+	private void updateStatePoint(String pointName,int state,int action){
+		switch(action) {
+			case 1:
+				states.remove(pointName);
+				states.put(pointName, state);
+				break;
+			case 2:
+				states.put(pointName, state);
+				break;
+		}
+	}
+	private void saveInfoIntoHistoryLog(String pointName, int state){
 		if(states.containsKey( pointName)) {
 			if (states.get(pointName)==1){
 				//save state into hoistory log file that
-				LOG.info("Data point "+pointName+" defined as have new state 1 to 0 >  "+state);
-				states.remove(pointName);
-				states.put(pointName,state);
-				return;
+				LOG.info(pointName+" >>  "+state);;
+				updateStatePoint(pointName,state,1);
 			}
 			if(states.get(pointName)==0){
-				LOG.info("Data point "+pointName+" defined as have new state 0 to 1 >"+state);
-				states.remove(pointName);
-				states.put(pointName,state);
-				return;
+				LOG.info(pointName+" >>  "+state);
+				updateStatePoint(pointName,state,1);
 			}
 		}
 		else
 		{
 			//first time this point Name is registering his state as Alarms or Storung
-			states.put(pointName,state);
+			updateStatePoint(pointName,state,2);
 		}
+
 	}
-	private static Map<String,Integer> states = new HashMap<String,Integer>();
+	private  Map<String,Integer> states = new HashMap<String,Integer>();
 	
 	
 	
@@ -521,7 +541,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		}
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
+		logActivityForSpecificDataPointTypes(pointId);
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			 			@Override
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException { 
@@ -552,7 +572,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 				}
 			}
 		}
-		
+
 		DAO.getInstance().getJdbcTemp().batchUpdate(POINT_VALUE_INSERT,params);
 
 	}
