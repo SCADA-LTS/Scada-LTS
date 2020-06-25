@@ -40,7 +40,12 @@ public class V2_2_1_3__View_ApiAlarmsAcknowledge_For_PointValueWarningsAndAlarms
                                             "pointType as 'request',",
                                             "pointType as 'error'"},
                                     new StringBuilder("plcAlarms")
-                            ));
+                            )
+
+                    // do not get rows which has been acknowledged
+                    + " where acknowledgeTime <> '' "
+
+            );
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
