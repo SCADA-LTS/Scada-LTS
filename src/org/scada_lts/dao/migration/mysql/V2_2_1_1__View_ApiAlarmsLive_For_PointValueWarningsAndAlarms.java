@@ -43,7 +43,7 @@ public class V2_2_1_1__View_ApiAlarmsLive_For_PointValueWarningsAndAlarms implem
                                     )
 
                     // do not get rows which has been acknowledged
-                    + " where acknowledgeTime = '' "
+                    + " where acknowledgeTime = '' order by triggerTime desc "
 
             );
         } catch (DataAccessException e) {
