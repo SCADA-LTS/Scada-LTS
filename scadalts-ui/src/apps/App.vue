@@ -1,21 +1,21 @@
 <template>
     <div id="app">
-        <input type="checkbox" id="check-sidebar">
-        <label for="check-sidebar">
-            <i class="fas fa-bars nav-sidebar" id="btn-sidebar"></i>
-            <i class="fas fa-times nav-sidebar" id="cancel-sidebar"></i>
+        <input type="checkbox" id="check-sidebar" class="nav-sidebar">
+        <label for="check-sidebar" class="nav-sidebar">
+            <i class="fas fa-bars" id="btn-sidebar"></i>
+            <i class="fas fa-times" id="cancel-sidebar"></i>
         </label>
         <div class="sidebar">
             <logo>Scada-LTS</logo>
             <a href="#/alarms" v-bind:class="{ active: $route.name=='alarms'}"><span>Alarms</span></a>
             <a href="#/historical-alarms" v-bind:class="{ active: $route.name=='historical-alarms'}"><span>Historical Alarms</span></a>
             <a href="#/about"><span>About</span></a>
-            <a href="./watch_list.shtm"><span>Old UI</span></a>
+            <a href="./watch_list.shtm"><span>Watch list</span></a>
         </div>
         <header>
             <nav>
                 <ul class="nav-left" id="navigation-left">
-                    <li><a href="/ScadaBR/modern_watch_list.shtm">Main menu</a></li>
+                    <li><a href="/ScadaBR/watch_list.shtm">Watch List</a></li>
                 </ul>
                 <ul class="nav-right">
                     <li><a href="#">My Acount</a></li>
@@ -62,6 +62,7 @@
        text-decoration: none;
    }
    .sidebar{
+       z-index: 10;
        position: fixed;
        margin-top: -20px;
        left: -240px;
@@ -101,10 +102,8 @@
    #check-sidebar {
        display: none;
    }
-   .nav-sidebar {
-       margin: -9px 30px 10px 30px;
-   }
    nav {
+       z-index: 5 !important;
        margin-top: -20px;
        position: fixed;
        width: 100%;
@@ -115,7 +114,7 @@
    }
    .nav-left {
        float:left;
-       margin-left: 310px;
+       margin-left: 80px;
    }
    .nav-right {
        float:right;
@@ -142,17 +141,18 @@
    }
 
    label #btn-sidebar, label #cancel-sidebar {
+       z-index: 6;
        position: absolute;
        cursor: pointer;
        background: green;
-       height: 40px;
-       width: 40px;
+       height: 37px;
+       width: 37px;
        text-align: center;
        line-height: 45px;
        color: white;
        font-size: 29px;
        border-radius: 5px;
-       margin: 15px 30px;
+       margin: -6px 30px 10px 30px;
        border: 1px solid #262626;
        transition: all .5s ease;
    }
@@ -161,7 +161,6 @@
        visibility: hidden;
    }
    #check-sidebar:checked ~ label #btn-sidebar {
-       margin-top: -5px;
        margin-left: 245px;
        opacity: 0;
        visibility: hidden;
@@ -175,6 +174,9 @@
        left:0;
    }
 
+   #check-sidebar:checked ~ #navigation-left {
+       margin-left: 310px;
+   }
    @media (max-width:860px) {
        .sidebar{
            height: auto;

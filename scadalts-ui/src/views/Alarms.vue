@@ -30,7 +30,7 @@
     @import '../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
 
     .alarms {
-        position: absolute;
+        //position: absolute;
         z-index: -1;
     }
 

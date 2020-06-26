@@ -1,7 +1,7 @@
 <template>
     <div class="historical-alarms-components">
 
-        <SimplePanel class="panel panel_top">
+        <SimplePanel class="panel_top">
             To refresh {{toRefresh}}
             <div class="action">
                 <input type="checkbox" id="select_all"  v-on:click="toggleSelectAll()" name="Select_All" value="0" ref="selectAll" v-model="sellAll">
@@ -33,7 +33,7 @@
             </tr>
         </table>
 
-        <SimplePanel class="panel">
+        <SimplePanel>
 
             <div class="pagination">
                 <SimplePagination
@@ -94,6 +94,7 @@
                     store.dispatch('setAcknowledge', {id}).then(
                         ret => {
                             console.log(`ackn:${ret}`)
+                            this.sellAll = false;
                         }
                     ).catch(err => {
                             console.log(`ackn-err:${err}`)
@@ -203,7 +204,7 @@
         margin: 20px;
         font-family: arial, sans-serif;
         border-collapse: collapse;
-        width: 100%;
+        width: 95%;
     }
 
     td, th {
@@ -238,10 +239,6 @@
 
     .panel_top {
         margin-top: 45px;
-    }
-
-    .panel {
-        width: 100%;
     }
 
 </style>
