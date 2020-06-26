@@ -459,7 +459,6 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		logActivityForSpecificDataPointTypes ((int)entity.getDataPointId());
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			 			@Override
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -477,53 +476,6 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		return new Object[] {keyHolder.getKey().longValue()};
 		
 	}
-
-	/**
-	 * save into historical.log file an activity
-	 * when from data point defined as AL(Alarms) or ST (Storung)
-	 * is receiving a high state or low
-	 *
-	 * @param id
-	 */
-	private void logActivityForSpecificDataPointTypes(int id) {
-		String pointName = new DataPointDAO().getDataPoint(id).getName();
-		if (pointName.contains(" AL ") || pointName.contains(" ST ")) {
-			saveInfoIntoHistoryLog(String.valueOf(id), 1);
-
-		}
-	}
-	private void updateStatePoint(String pointName,int state,int action){
-		switch(action) {
-			case 1:
-				states.remove(pointName);
-				states.put(pointName, state);
-				break;
-			case 2:
-				states.put(pointName, state);
-				break;
-		}
-	}
-	private void saveInfoIntoHistoryLog(String pointName, int state){
-		if(states.containsKey( pointName)) {
-			if (states.get(pointName)==1){
-				//save state into hoistory log file that
-				LOG.info(pointName+" >>  "+state);;
-				updateStatePoint(pointName,state,1);
-			}
-			if(states.get(pointName)==0){
-				LOG.info(pointName+" >>  "+state);
-				updateStatePoint(pointName,state,1);
-			}
-		}
-		else
-		{
-			//first time this point Name is registering his state as Alarms or Storung
-			updateStatePoint(pointName,state,2);
-		}
-
-	}
-	private  Map<String,Integer> states = new HashMap<String,Integer>();
-	
 	
 	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -541,7 +493,6 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		}
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		logActivityForSpecificDataPointTypes(pointId);
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			 			@Override
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException { 

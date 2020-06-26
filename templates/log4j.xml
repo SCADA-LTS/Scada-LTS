@@ -103,7 +103,7 @@
     </layout>
   </appender>
   <appender name="historylog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${catalina.base}/logs/scadaLTSDAO.log"/>
+    <param name="File" value="${catalina.base}/logs/history.log"/>
     <param name="MaxFileSize" value="1000KB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -158,8 +158,8 @@
     <param name="LocationInfo" value="true"/>
     <appender-ref ref="daologfile"/>
   </appender>
-  <appender name="history_" class="org.apache.log4j.AsyncAppender">
-    <param name="LocationInfo" value="true"/>
+  <appender name="history" class="org.apache.log4j.AsyncAppender">
+    <param name="LocationInfo" value="false"/>
     <appender-ref ref="historylog"/>
   </appender>
 
@@ -251,9 +251,9 @@
   <!--     <appender-ref ref="scriptsasync"/> -->
   <!--   </category> -->
  <!-- History log -->
-  <category name="org.scada_lts.dao.pointvalues.PointValueDAO" additivity="false">
+  <category name="org.scada_lts.mango.service.PointValueService" additivity="false">
     <level value="on"/>
-    <appender-ref ref="history_"/>
+    <appender-ref ref="history"/>
   </category>
   <!-- Dao Logging -->
   <category name="com.serotonin.mango.db.dao.DataSourceDao" additivity="false">
