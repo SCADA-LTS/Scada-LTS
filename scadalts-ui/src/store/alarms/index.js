@@ -29,7 +29,9 @@ const storeAlarms = {
         },
         getHistoryAlarms({commit}, {dateDay, filterRLike, offset, limit}) {
             return new Promise((resolve, reject) => {
-                axios.get(`./api/alarms/history/${dateDay}/${filterRLike}/${offset}/${limit}`).then(res => {
+                const execute = `./api/alarms/history/${dateDay}/${filterRLike}/${offset}/${limit}`
+                console.log(execute)
+                axios.get(execute).then(res => {
                     resolve(res.data)
                 }).catch((err) => {
                     commit('ERR', err)

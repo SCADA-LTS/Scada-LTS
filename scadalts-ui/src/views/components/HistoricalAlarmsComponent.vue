@@ -2,13 +2,29 @@
     <div class="historical-alarms-components">
         <SimplePanel>
 
-            <datepicker :value="fdate" :format="formatter" ref="datapicker" style="margin-top:5px; margin-left:5px; position: relative; width: 120px; float:left; line-height: 30px;"></datepicker>
+            <datepicker
+                    :value="fdate"
+                    :format="formatter"
+                    ref="datapicker"
+                    style="margin-top:5px; margin-left:5px; position: relative; width: 120px; float:left; line-height: 30px;"
+                    :readonly="filterOn==false"
+                    v-bind:class="{input_disable:filterOn==true}"
+            ></datepicker>
 
 
-            <input class="min-gb-input" v-model="frlike" placeholder="rLike filter" style="margin-left: 45px">
+            <input
+                    v-model="frlike"
+                    class="min-gb-input"
+                    placeholder="rLike filter"
+                    style="margin-left: 45px"
+                    :readonly="filterOn == false"
+                    v-bind:class="{input_disable:filterOn==true}"
+            >
 
-
-            <button class="min-gb-button" style="margin-top: 4px;">Filter</button>
+            <button
+                    class="min-gb-button"
+                    style="margin-top: 4px;"
+                    v-bind:class="{filter_on:filterOn==true}" v-on:click="onFilter">Filter</button>
 
         </SimplePanel>
         <SimpleTable v-bind:data="historicalAlarms" v-bind:columns="columns"></SimpleTable>
@@ -43,7 +59,7 @@
         },
         data() {
             return {
-                filterOn: 0,
+                filterOn: false,
                 fdate: new Date(),
                 frlike: '',
                 columns: [{name: 'time'},
@@ -51,15 +67,15 @@
                     {name: 'description'}],
                 historicalAlarms: [],
                 currentPage: 1,
-                pageCount: 10
+                pageCount: 10,
+                FORMAT_DT: 'YYYY-MM-DD'
             }
         },
         methods: {
 
             formatter(date) {
-                return moment(date).format('YYYY-MM-DD');
+                return moment(date).format(this.FORMAT_DT);
             },
-
             getHistoricalAlarms(adate, arlike, page) {
 
                 try {
@@ -68,28 +84,35 @@
                     let recordsCount = 20
                     let loffset = String(recordsCount * page)
                     let llimit = String(recordsCount * (page - 1))
-                    let lrlike = ''
+                    let lrlike = '.'
 
-                    if (this.filterOn === 1 ) {
-                        ldate = moment(adate).format('YYYY-MM-dd')
+                    if (adate === undefined || adate === null || adate == 0) {
+                        ldate = moment(this.fdate).format(this.FORMAT_DT)
+                    } else {
+                        ldate = moment(adate).format(this.FORMAT_DT)
                     }
 
-                    if (!(arlike === undefined || arlike === null)) {
-                        lrlike = String(arlike)
+                    if (arlike === undefined || arlike === null || arlike.trim().length==0) {
+                        lrlike = String('.')
                     }
 
-
-                    store.dispatch('fakeGetHistoryAlarms', {
-                        dateDay: ldate,
-                        filterRLike: lrlike,
-                        offset: loffset,
-                        limit: llimit
+                    console.log(`ldata:${ldate}, lrlike:${lrlike}, offset:${loffset}, limit:${llimit}`)
+                    //store.dispatch('fakeGetHistoryAlarms', {
+                    store.dispatch('getHistoryAlarms', {
+                        dateDay: `"${ldate}"`,
+                        filterRLike: `"${lrlike}"`,
+                        offset: `"${loffset}"`,
+                        limit: `"${llimit}"`
                     }).then((ret) => {
                         this.historicalAlarms = ret
 
+                    }).catch( (err) => {
+                        this.historicalAlarms = []
+                        console.log(`getHA:${err}`)
                     })
                 } catch (e) {
-                    console.log(`getHA:${e}`)
+                    this.historicalAlarms = []
+                    console.log(`getHA1:${e}`)
                 }
             },
             pageChangeHandle(pr) {
@@ -108,10 +131,16 @@
                 }
             },
             onFilter() {
-                try {
-                    this.getHistoricalAlarms(this.fdate, this.frlike, this.currentPage)
-                } catch (e) {
-                    console.log(`created:${e}`)
+                if (this.filterOn == true) {
+                    this.filterOn = false
+                } else {
+
+                    try {
+                        this.getHistoricalAlarms(this.fdate, this.frlike, this.currentPage)
+                    } catch (e) {
+                        console.log(`created:${e}`)
+                    }
+                    this.filterOn = true
                 }
             }
         },
@@ -156,5 +185,15 @@
     button:-moz-any {
         padding: 0;
     }
+
+    .filter_on {
+        background-color: yellow;
+    }
+
+    .input_disabled{
+        background-color:#999999 !important;
+    }
+
+
 
 </style>
