@@ -23,11 +23,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -450,13 +453,12 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public Object[] create(final PointValue entity) {
-		
+
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
 		}
-		
+
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			 			@Override
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -476,7 +478,6 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	}
 	
 	
-	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public Object[] create(final int pointId,final int dataType,final double dvalue,final long time) {
 		
@@ -492,7 +493,6 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 		}
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			 			@Override
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException { 
@@ -523,7 +523,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 				}
 			}
 		}
-		
+
 		DAO.getInstance().getJdbcTemp().batchUpdate(POINT_VALUE_INSERT,params);
 
 	}

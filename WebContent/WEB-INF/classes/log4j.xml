@@ -34,6 +34,14 @@
       <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
     </layout>
   </appender>
+
+  <appender name="historyfile" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/history.log"/>
+    <param name="DatePattern" value="yyyy-MM-dd"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
   
   <appender name="modbuslogfile" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${catalina.base}/logs/modbus.log"/>
