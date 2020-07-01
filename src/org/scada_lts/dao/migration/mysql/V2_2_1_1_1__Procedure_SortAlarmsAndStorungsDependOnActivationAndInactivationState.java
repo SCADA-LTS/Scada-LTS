@@ -35,7 +35,10 @@ public class V2_2_1_1_1__Procedure_SortAlarmsAndStorungsDependOnActivationAndIna
 
         try {
             jdbcTmp.execute(""
-                    + "create procedure prc_sort_alarms_and_storungs_depend_on_state() "
+                    + "create procedure prc_sort_alarms_and_storungs_depend_on_state( "
+                    + " in param_limit int(3),"
+                    + " in param_offset int(3)"
+                    + ") "
                     + "begin "
                     + ""
                     + " DROP TEMPORARY TABLE IF EXISTS tmp_sortedAlarmsStorungs;"
@@ -56,9 +59,10 @@ public class V2_2_1_1_1__Procedure_SortAlarmsAndStorungsDependOnActivationAndIna
                     + " primary key (id) "
                     + " );"
                     + ""
-                    // sort Storungs
+                    //first group Storungs
+                    // sort Storungs activatio time -> triggerTime
                     + " insert into tmp_sortedAlarmsStorungs("
-                    + "pointId,pointXid,pointType,pointName,insertTime,"
+                    + " pointId,pointXid,pointType,pointName,insertTime,"
                     + " triggerTime,inactiveTime,acknowledgeTime,lastpointValue,description,state) "
                     + ""
                     + " select pointId,pointXid,pointType,pointName,insertTime,"
@@ -66,7 +70,8 @@ public class V2_2_1_1_1__Procedure_SortAlarmsAndStorungsDependOnActivationAndIna
                     + " from plcAlarms where pointType=2 and inactiveTime='' and acknowledgeTime=''"
                     + " order by triggerTime desc;"
                     + ""
-                    // sort Alarms
+                    //second one group Alarms
+                    // sort Alarms activatio time -> triggerTime
                     + " insert into tmp_sortedAlarmsStorungs(pointId,pointXid,pointType,pointName,insertTime,"
                     + " triggerTime,inactiveTime,acknowledgeTime,lastpointValue,description,state)"
                     + ""
@@ -75,6 +80,7 @@ public class V2_2_1_1_1__Procedure_SortAlarmsAndStorungsDependOnActivationAndIna
                     + " from plcAlarms where pointType=1 and inactiveTime='' and acknowledgeTime=''"
                     + " order by triggerTime desc;"
                     + ""
+                    //third one group -> all Storungs and Alarms with activation and inactivation time
                     // alarms and storungs with both times - activation and inactivation
                     + " insert into tmp_sortedAlarmsStorungs(pointId,pointXid,pointType,pointName,insertTime,"
                     + " triggerTime,inactiveTime,acknowledgeTime,lastpointValue,description,state) "
@@ -84,7 +90,18 @@ public class V2_2_1_1_1__Procedure_SortAlarmsAndStorungsDependOnActivationAndIna
                     + " from plcAlarms where pointType in (1,2) and inactiveTime<>'' and acknowledgeTime=''"
                     + " order by triggerTime asc;"
 
-                    + "select * from tmp_sortedAlarmsStorungs; "
+                    // all rows from plcAlarms for specific groups has been copies into temporary table
+                    // so give it by....
+
+                    + "select "
+                    + " id,"
+                    + " triggerTime as 'activation-time',"
+                    + " inactiveTime as 'inactivation-time',"
+                    + " pointType as 'level',"
+                    + " pointName as 'name' "
+                    + " from "
+                    + " tmp_sortedAlarmsStorungs "
+                    + " limit param_limit offset param_offset; "
 
                     + "DROP TEMPORARY TABLE tmp_sortedAlarmsStorungs; "
 
