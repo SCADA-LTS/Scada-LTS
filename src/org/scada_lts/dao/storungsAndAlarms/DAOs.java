@@ -16,6 +16,8 @@ package org.scada_lts.dao.storungsAndAlarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import org.scada_lts.dao.DataPointDAO;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,14 +28,20 @@ import java.util.Map;
  */
 class DAOs {
     private static PointValuesStorungsAndAlarmsDAO pointValuesStorungsAndAlarmsDAO = new PointValuesStorungsAndAlarmsDAO();
+    private static DataPointDAO dataPointDAO = new DataPointDAO();
     enum DAOInstances{
+        DATAPOINTDAO,
         POINTVALUESSTORUNGSANDALARMS
     }
     private static Map<DAOInstances,Object> daos = new HashMap<>();
     static {
         daos.put(DAOInstances.POINTVALUESSTORUNGSANDALARMS,pointValuesStorungsAndAlarmsDAO);
+        daos.put(DAOInstances.DATAPOINTDAO,dataPointDAO);
     }
     public static PointValuesStorungsAndAlarmsDAO getPointValuesStorungsAndAlarms(){
         return (PointValuesStorungsAndAlarmsDAO) daos.get(DAOInstances.POINTVALUESSTORUNGSANDALARMS);
+    }
+    public static DataPointDAO getDataPointDAO(){
+        return (DataPointDAO) daos.get(DAOInstances.DATAPOINTDAO);
     }
 }

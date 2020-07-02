@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -45,6 +46,7 @@ import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
+import org.scada_lts.dao.storungsAndAlarms.AllDAOsForPublic;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
 import org.springframework.dao.ConcurrencyFailureException;
@@ -303,7 +305,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 else
                     shortString = svalue;
             }
-
+            saveIncomingAlarmsStorungsValues( pointId, dvalue );
             PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id, shortString, longString, sourceType, sourceId);
             PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
 
@@ -311,7 +313,60 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         return id;
     }
+    private boolean saveIncomingAlarmsStorungsValues(int pointId,double dvalue){
+        boolean result  =false;
+        DataPointVO dataPointVO = AllDAOsForPublic.getDataPointDAO().getDataPoint(pointId);
+        if( dataPointVO != null ) {
+            generateMessageForLogDependsOnPointValue(dataPointVO.getName(),String.valueOf(dvalue));
 
+            result=true;
+        }
+        return result;
+    }
+
+    private void generateMessageForLogDependsOnPointValue(String dataPointName, String actualValue ){
+        String info = "";
+        Object object = new Object();
+        synchronized(object) {
+            if (stringStringMap.containsKey(dataPointName)) {
+                if (stringStringMap.get(dataPointName).equals(actualValue)) {
+                    info = dataPointName + " " + messageDependsOnPointNameAndActualValue(dataPointName,actualValue);
+                    stringStringMap.remove(dataPointName);
+                } else {
+                    stringStringMap.remove(dataPointName);
+                    stringStringMap.put(dataPointName, actualValue);
+                    info = dataPointName + " " + messageDependsOnPointNameAndActualValue(dataPointName,actualValue);
+                }
+            } else {
+                stringStringMap.put(dataPointName, actualValue);
+                info = dataPointName + " " + messageDependsOnPointNameAndActualValue(dataPointName,actualValue);
+            }
+        }
+        if (!info.isEmpty()) {
+            LogFactory.getLog(PointValueDAO.class).info(info);
+        }
+    }
+    private String messageDependsOnPointNameAndActualValue(String pointName, String actualValue) {
+        return
+                pointName.contains(" AL ")
+                        ?
+                        actualValue.equals("1.0")
+                                ? "Alarm ausgelost"
+                                : actualValue.equals("0.0")
+                                ? "Alarm is gegangen"
+                                : "blad wartosci punktu"
+                        :pointName.contains(" ST ")
+                        ?
+                        actualValue.equals("1.0")
+                                ? "Storung kommt"
+                                : actualValue.equals("0.0")
+                                ? "Storung is gegangen"
+                                : "Undefined point value. This value should be 0(zsro) or 1(one) "
+                        :"Punkt nie zawiera AL ani ST";
+
+
+    }
+    private static Map<String,String> stringStringMap = new HashMap<String,String>();
     //TODO rewrite
     private List<PointValueTime> getLstPointValueTime(List<PointValue> lstIn) {
         List<PointValueTime> lst = new ArrayList<PointValueTime>();
