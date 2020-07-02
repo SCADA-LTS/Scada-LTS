@@ -45,6 +45,7 @@ public class V2_2_1_1_1__Procedure_SortAlarmsAndStorungsDependOnActivationAndIna
 
                     + "CREATE TEMPORARY TABLE tmp_sortedAlarmsStorungs ( "
                     + " id int(11) AUTO_INCREMENT,"
+                    + " idFromPlcAlarms int(11),"
                     + " pointId  varchar(45) default null,"
                     + " pointXid  varchar(45) default null,"
                     + " pointType  varchar(45) default null,"
@@ -62,30 +63,30 @@ public class V2_2_1_1_1__Procedure_SortAlarmsAndStorungsDependOnActivationAndIna
                     //first group Storungs
                     // sort Storungs activatio time -> triggerTime
                     + " insert into tmp_sortedAlarmsStorungs("
-                    + " pointId,pointXid,pointType,pointName,insertTime,"
+                    + " idFromPlcAlarms,pointId,pointXid,pointType,pointName,insertTime,"
                     + " triggerTime,inactiveTime,acknowledgeTime,lastpointValue,description,state) "
                     + ""
-                    + " select pointId,pointXid,pointType,pointName,insertTime,"
+                    + " select id,pointId,pointXid,pointType,pointName,insertTime,"
                     + " triggerTime,inactiveTime,acknowledgeTime,lastpointValue,description,state "
                     + " from plcAlarms where pointType=2 and inactiveTime='' and acknowledgeTime=''"
                     + " order by triggerTime desc;"
                     + ""
                     //second one group Alarms
                     // sort Alarms activatio time -> triggerTime
-                    + " insert into tmp_sortedAlarmsStorungs(pointId,pointXid,pointType,pointName,insertTime,"
+                    + " insert into tmp_sortedAlarmsStorungs(idFromPlcAlarms,pointId,pointXid,pointType,pointName,insertTime,"
                     + " triggerTime,inactiveTime,acknowledgeTime,lastpointValue,description,state)"
                     + ""
-                    + " select pointId,pointXid,pointType,pointName,insertTime,"
+                    + " select id,pointId,pointXid,pointType,pointName,insertTime,"
                     + " triggerTime,inactiveTime,acknowledgeTime,lastpointValue,description,state "
                     + " from plcAlarms where pointType=1 and inactiveTime='' and acknowledgeTime=''"
                     + " order by triggerTime desc;"
                     + ""
                     //third one group -> all Storungs and Alarms with activation and inactivation time
                     // alarms and storungs with both times - activation and inactivation
-                    + " insert into tmp_sortedAlarmsStorungs(pointId,pointXid,pointType,pointName,insertTime,"
+                    + " insert into tmp_sortedAlarmsStorungs(idFromPlcAlarms,pointId,pointXid,pointType,pointName,insertTime,"
                     + " triggerTime,inactiveTime,acknowledgeTime,lastpointValue,description,state) "
                     + ""
-                    + " select pointId,pointXid,pointType,pointName,insertTime,"
+                    + " select id,pointId,pointXid,pointType,pointName,insertTime,"
                     + " triggerTime,inactiveTime,acknowledgeTime,lastpointValue,description,state "
                     + " from plcAlarms where pointType in (1,2) and inactiveTime<>'' and acknowledgeTime=''"
                     + " order by triggerTime asc;"
@@ -94,7 +95,7 @@ public class V2_2_1_1_1__Procedure_SortAlarmsAndStorungsDependOnActivationAndIna
                     // so give it by....
 
                     + "select "
-                    + " id,"
+                    + " idFromPlcAlarms as 'id',"
                     + " triggerTime as 'activation-time',"
                     + " inactiveTime as 'inactivation-time',"
                     + " pointType as 'level',"
