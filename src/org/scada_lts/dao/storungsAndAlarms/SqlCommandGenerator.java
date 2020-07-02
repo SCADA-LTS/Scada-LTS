@@ -43,8 +43,8 @@ class SqlCommandGenerator {
     }
     static String getliveAlarms(int offset,int limit){
 
-        // Please look into org.scada_lts.dao.migration.mysql , if you want to know how look a base of apiAlarmsLive view sql command
+        // In org.scada_lts.dao.migration.mysql , exist an a body of prc_sort_alarms_and_storungs_depend_on_state
 
-        return new StringBuilder("select * from apiAlarmsLive  limit "+limit+" offset "+offset).toString();
+        return new StringBuilder("call prc_sort_alarms_and_storungs_depend_on_state("+limit+","+offset+")").toString();
     }
 }
