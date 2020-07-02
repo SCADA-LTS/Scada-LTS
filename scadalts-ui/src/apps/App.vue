@@ -2,25 +2,27 @@
     <div id="app">
         <input type="checkbox" id="check-sidebar" class="nav-sidebar">
         <label for="check-sidebar" class="nav-sidebar">
-            <i class="fas fa-bars" id="btn-sidebar"></i>
-            <i class="fas fa-times" id="cancel-sidebar"></i>
+            <i id="btn-sidebar"><font-awesome-icon icon="bars" /></i>
+            <i id="cancel-sidebar"><font-awesome-icon icon="times" /></i>
         </label>
         <div class="sidebar">
             <logo>Scada-LTS</logo>
-            <a href="#/alarms" v-bind:class="{ active: $route.name=='alarms'}"><span>Alarms</span></a>
-            <a href="#/historical-alarms" v-bind:class="{ active: $route.name=='historical-alarms'}"><span>Historical Alarms</span></a>
-            <a href="#/about"><span>About</span></a>
-            <a href="./watch_list.shtm"><span>Watch list</span></a>
+            <a href="#/alarms" v-bind:class="{ active: $route.name=='alarms'}"><i><font-awesome-icon icon="bell" /></i><span>Alarms</span></a>
+            <a href="#/historical-alarms" v-bind:class="{ active: $route.name=='historical-alarms'}"><i><font-awesome-icon icon="file-medical-alt"/></i><span>Historical Alarms</span></a>
+            <a href="#/about"><i><font-awesome-icon icon="info"/></i><span>About</span></a>
+            <a href="./watch_list.shtm"><i><font-awesome-icon icon="list-alt"/></i><span>Watch list</span></a>
         </div>
         <header>
-            <nav>
-                <ul class="nav-left" id="navigation-left">
+            <navnui>
+                <ul class="navnui-left" id="navigation-left">
                     <li><a href="/ScadaBR/watch_list.shtm">Watch List</a></li>
                 </ul>
-                <ul class="nav-right">
+                <ul class="navnui-right">
                     <li><a href="#">My Acount</a></li>
+                    <li style="font-size: 5px">v0.0.1.1</li>
                 </ul>
-            </nav>
+
+            </navnui>
         </header>
         <div class="view">
             <router-view></router-view>
@@ -38,23 +40,14 @@
     }
 </script>
 
-<style lang="scss">
+<style scoped>
    /* @import '../../node_modules/ag-grid-community/dist/styles/ag-grid.css';
     @import '../../node_modules/ag-grid-community/dist/styles/ag-theme-balham.css';*/
+
 
    :root {
        font-size: 16px;
        font-family: OpenSans-Regular;
-       --text-primary: #b6b6b6;
-       --text-secondary: #ececec;
-       --bg-primary: #23232e;
-       --bg-secondary: #141418;
-       /* sidebar */
-       --bg-logo: #1b1b1b;
-       --bg-select-action: #1a75f6;
-       --color-link: white;
-       --color-logo: white;
-       --letter-spacing: 1px;
    }
    * {
        margin: 0;
@@ -68,55 +61,54 @@
        left: -240px;
        width: 240px;
        height: 100%;
-       background: var(--bg-secondary);
+       background-color: #141418;
        transition: all .5s ease;
    }
    .sidebar logo {
        display: block;
-       color: var(--color-logo);
+       color: lightgray;
        font-size: 1.4rem;
        text-align: center;
-       background: var(--bg-logo);
+       background: #1b1b1b;
        user-select: none;
        line-height: 3rem;
    }
    .sidebar a {
        display: block;
-       color: var(--color-link);
+       color: lightgray;
        height: 2.4rem;
        line-height: 2.4rem;
        padding-left: 1.6rem;
        width: 90%;
    }
    .sidebar a:hover, a.active {
-       background: var(--bg-select-action);
+       background: #1a75f6;
    }
    .sidebar a i {
        font-size: 1.2rem;
-       margin-right: 1rem;
+       margin-right: 1.6rem;
    }
    .sidebar a span{
-       letter-spacing: var(--letter-spacing);
+       letter-spacing: 1px;
        text-transform: uppercase;
    }
    #check-sidebar {
        display: none;
    }
-   nav {
-       z-index: 5 !important;
+   navnui {
+       z-index: 5;
        margin-top: -20px;
        position: fixed;
        width: 100%;
-       height: 45px;
-       background: var(--bg-primary);
-       z-index: -1;
-       color: var(--text-primary);
+       height: 42px;
+       background-color: #23232e;
+       color: lightgrey;
    }
-   .nav-left {
+   .navnui-left {
        float:left;
        margin-left: 80px;
    }
-   .nav-right {
+   .navnui-right {
        float:right;
    }
 
@@ -125,37 +117,34 @@
        display: table;
        clear: both;
    }
-   nav ul {
+   navnui ul {
        margin: 0;
        padding: 0;
        list-style: none;
    }
-   nav li {
+   navnui li {
        float: left;
        display: inline-block;
        margin: 10px 10px 30px;
    }
 
-   nav a {
-       color: var(--text-primary);
+   navnui a {
+       color: #b6b6b6;
    }
 
    label #btn-sidebar, label #cancel-sidebar {
        z-index: 6;
        position: absolute;
        cursor: pointer;
-       background: green;
        height: 37px;
        width: 37px;
        text-align: center;
-       line-height: 45px;
        color: white;
-       font-size: 29px;
-       border-radius: 5px;
-       margin: -6px 30px 10px 30px;
-       border: 1px solid #262626;
+       font-size: 24px;
+       margin: -12px 30px 10px 30px;
        transition: all .5s ease;
    }
+
    label #cancel-sidebar {
        opacity:0;
        visibility: hidden;
@@ -189,7 +178,7 @@
        }
        span {
            position: absolute;
-           margin-left: 23px;
+           margin-left: 30px;
            opacity: 0;
            visibility: hidden;
        }
@@ -205,8 +194,11 @@
            visibility: visible;
        }
        .sidebar a.active {
-           background: var(--bg-select-action);
+           background: #1a75f6;
            width: 29px;
+       }
+       .sidebar i {
+           margin-left: -10px;
        }
    }
 
