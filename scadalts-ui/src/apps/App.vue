@@ -9,8 +9,8 @@
             <logo>Scada-LTS</logo>
             <a href="#/alarms" v-bind:class="{ active: $route.name=='alarms'}"><i><font-awesome-icon icon="bell" /></i><span>Alarms</span></a>
             <a href="#/historical-alarms" v-bind:class="{ active: $route.name=='historical-alarms'}"><i><font-awesome-icon icon="file-medical-alt"/></i><span>Historical Alarms</span></a>
-            <a href="#/about"><i><font-awesome-icon icon="info"/></i><span>About</span></a>
-            <a href="./watch_list.shtm"><i><font-awesome-icon icon="list-alt"/></i><span>Watch list</span></a>
+            <a href="#/about" v-bind:class="{ active: $route.name=='about'}"><i><font-awesome-icon icon="info"/></i><span>About</span></a>
+            <a href="./watch_list.shtm" v-bind:class="{ active: $route.name=='watch_list'}"><i><font-awesome-icon icon="list-alt"/></i><span>Watch list</span></a>
         </div>
         <header>
             <navnui>
@@ -82,7 +82,8 @@
        width: 90%;
    }
    .sidebar a:hover, a.active {
-       background: #1a75f6;
+       background: #2e486d;
+       width: 240px;
    }
    .sidebar a i {
        font-size: 1.2rem;
@@ -183,10 +184,10 @@
            visibility: hidden;
        }
        .sidebar a i {
-           margin-left: -10px;
+           margin-left: -15px;
        }
        a:hover{
-           width: 200px;
+           width: 240px;
            background: inherit;
        }
        .sidebar a:hover span {
@@ -194,11 +195,8 @@
            visibility: visible;
        }
        .sidebar a.active {
-           background: #1a75f6;
-           width: 29px;
-       }
-       .sidebar i {
-           margin-left: -10px;
+           background: #2e486d;
+           width: 240px !important;
        }
    }
 
