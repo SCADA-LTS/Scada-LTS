@@ -34,8 +34,6 @@ branches:
   only:
   - "/^siv/develop.*$/"
   - "/^siv/master.*$/"
-  - "/^feature/#1183.*$/"
-  - "/^feature_s/#1165.*$/"
   - "/^f_1165_1183/#1198.*$/"
 notifications:
   email: false
