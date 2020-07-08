@@ -14,7 +14,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.29",
     "@fortawesome/free-solid-svg-icons": "^5.13.1",
     "@fortawesome/vue-fontawesome": "^0.1.10",
-    "@min-gb/vuejs-components": "0.0.6",
+    "@min-gb/vuejs-components": "0.0.7",
     "ag-grid": "18.1.2",
     "ag-grid-community": "21.2.2",
     "ag-grid-vue": "21.2.2",

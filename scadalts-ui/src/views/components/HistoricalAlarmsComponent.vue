@@ -29,18 +29,22 @@
 
         </SimplePanel>
         <SimpleTable v-bind:data="historicalAlarms" v-bind:columns="columns"></SimpleTable>
+
         <SimplePanel>
 
-            <SimplePagination class="min-gb-pagination"
-                              :current-page="currentPage"
-                              :page-count="pageCount"
-                              :visible-pages-count="8"
-                              @nextPage="pageChangeHandle('next')"
-                              @previousPage="pageChangeHandle('pref')"
-                              @loadPage="pageChangeHandle"
-            ></SimplePagination>
+            <div class="pagination">
+                <SimplePagination
+                        :current-page="currentPage"
+                        :page-count="pageCount"
+                        :visible-pages-count="8"
+                        @nextPage="pageChangeHandle('next')"
+                        @previousPage="pageChangeHandle('pref')"
+                        @loadPage="pageChangeHandle"
+                ></SimplePagination>
+            </div>
 
         </SimplePanel>
+
     </div>
 </template>
 
@@ -170,6 +174,7 @@
         margin-top: 40px;
         margin-left: 20px;
     }
+
     input:-moz-read-only { /* For Firefox */
         padding: 0;
         border: 0;
@@ -199,6 +204,10 @@
 
     .input_disabled {
         background-color: #f4f4f4 !important;
+    }
+
+    .pagination {
+        margin: 0px 0px 0px 10px;
     }
 
 
