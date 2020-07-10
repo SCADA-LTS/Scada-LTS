@@ -35,7 +35,7 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"DECLARE PLC_ALARM_LEVEL INT(1); "
                     +"DECLARE LAST_POINT_VALUE INT(1); "
                     +"DECLARE PRESENT_POINT_VALUE INT(1); "
-                    +"DECLARE ALARM_STORUNG_FOR_POINT_WITH_SPECIFIC_NAME_AND_WITH_STATE_HIGH_EXIST_IN_PLCALARM INT(1); "
+                    +"DECLARE ALARM_OR_STORUNG_WITH_HIGH_STATE_EXIST_IN_PLCALARM_FOR_POINT_NAME INT(1); "
                     +"DECLARE actualIdRow INT(10); "
                     +"DECLARE ALARM_IS_GEGANGEN VARCHAR(40) DEFAULT 'Alarm is gegangen'; "
                     +"DECLARE STORUNG_IS_GEGANGEN VARCHAR(40) DEFAULT 'Storung is gegangen'; "
@@ -49,9 +49,7 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +""
                     +" select plcAlarmLevel into PLC_ALARM_LEVEL from dataPoints where id=new.dataPointId;  "
                     +""
-                    +" select count(*) into ALARM_STORUNG_FOR_POINT_WITH_SPECIFIC_NAME_AND_WITH_STATE_HIGH_EXIST_IN_PLCALARM from plcAlarms where pointName=(select pointName from dataPoints where id=new.dataPointId) and state=1; "
-                    +""
-                    +" select from_unixtime(unix_timestamp()) into TRIGGER_TIME; "
+
                     +" select new.pointValue into PRESENT_POINT_VALUE; "
                     +""
 
@@ -60,8 +58,9 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
 
                     +" IF (PLC_ALARM_LEVEL = 1 OR PLC_ALARM_LEVEl = 2) THEN "
                     + ""
+                    +" select count(*) into ALARM_OR_STORUNG_WITH_HIGH_STATE_EXIST_IN_PLCALARM_FOR_POINT_NAME from plcAlarms where pointName=(select pointName from dataPoints where id=new.dataPointId) and state=1; "
 
-                    +" IF (ALARM_STORUNG_FOR_POINT_WITH_SPECIFIC_NAME_AND_WITH_STATE_HIGH_EXIST_IN_PLCALARM=1) THEN"
+                    +" IF (ALARM_OR_STORUNG_WITH_HIGH_STATE_EXIST_IN_PLCALARM_FOR_POINT_NAME=1) THEN"
                     +""
                     + "     select id into actualIdRow from plcAlarms where pointName=(select pointName from dataPoints where id=new.dataPointId) and state=1; "
 
@@ -74,7 +73,7 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"      END IF; "
 
                     //update the state regarding a state which has been changed
-                    +"      update plcAlarms set state=2,inactiveTime=TRIGGER_TIME where id=actualIdRow; "
+                    +"      update plcAlarms set state=2,inactiveTime=substring(from_unixtime(new.ts/1000),1,19) where id=actualIdRow; "
                     +" END IF;"
 
                     +" IF (PRESENT_POINT_VALUE=1) THEN"
@@ -88,6 +87,7 @@ public class V2_2_0_0_1__Trigger_On_PointValues implements SpringJdbcMigration {
                     +"          SET DESCRIPTION_FOR_FIRST_INSERT = STORUNG_KOMMT; "
                     +"      END IF; "
 
+                    +"  select substring(from_unixtime(new.ts/1000),1,19) into TRIGGER_TIME; "
 
                     +"  insert into plcAlarms "
                     +" ("
