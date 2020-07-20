@@ -16,9 +16,8 @@ package org.scada_lts.dao.storungsAndAlarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.scada_lts.dao.DAO;
 import org.springframework.dao.DataAccessException;
 
@@ -31,14 +30,19 @@ import java.util.List;
  */
 class PointValuesStorungsAndAlarmsDAO {
 
-    JSONArray getLiveAlarms(int offset,int limit) throws DataAccessException{
+    private static final String GET_LIVES_SQL = "SELECT " +
+            "`id`," +
+            "`activation-time`," +
+            "`inactivation-time`," +
+            "`level`," +
+            "`name` FROM apiAlarmsLive LIMIT ? OFFSET ?;";
+
+    public JSONArray getLiveAlarms(int offset,int limit) throws DataAccessException{
 
         JSONArray jsonArray=new JSONArray();
-        List<ApiAlarmsLive> apiAlarmsLives = DAO.getInstance().getJdbcTemp().query(
-                SqlCommandGenerator.getliveAlarms(
-                        offset,
-                        limit),
 
+        List<ApiAlarmsLive> apiAlarmsLives = DAO.getInstance().getJdbcTemp().query(
+                GET_LIVES_SQL, new Object[]{limit, offset},
                 new ApiAlarmsLiveRowMapper());
 
         apiAlarmsLives.stream().forEach( alarmsLive -> jsonArray.put(alarmsLive.toJSONObject()));

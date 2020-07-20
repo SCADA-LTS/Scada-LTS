@@ -7,46 +7,32 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
 
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 
-        jdbcTmp.execute(""
-                + "create table plcAlarms ("
-                + "id mediumint(8) unsigned not null auto_increment,"
-                + "pointId  varchar(45) default null,"
-                + "pointXid  varchar(45) default null,"
-                + "pointType  varchar(45) default null,"
-                + "pointName  varchar(45) default null,"
-                + "insertTime  varchar(45) default null,"
-                + "triggerTime  varchar(45) default null,"
-                + "inactiveTime  varchar(45) default null,"
-                + "acknowledgeTime  varchar(45) default null,"
-                + "lastpointValue  varchar(45) default null,"
-                + "description  varchar(45) default null,"
-                + "state int(1) default null,"
-                + "uniquenessToken int default null,"
-                + "primary key (id), UNIQUE(pointId, uniquenessToken)"
-                + ") ENGINE=InnoDB;");
+        jdbcTmp.execute("CREATE TABLE plcAlarms (\n" +
+                "id INT NOT NULL auto_increment,\n" +
+                "dataPointId INT DEFAULT NULL,\n" +
+                "dataPointXid  VARCHAR(50) DEFAULT NULL,\n" +
+                "dataPointType  VARCHAR(45) DEFAULT NULL,\n" +
+                "dataPointName  VARCHAR(45) DEFAULT NULL,\n" +
+                "insertTime  VARCHAR(45) DEFAULT NULL,\n" +
+                "triggerTime  VARCHAR(45) DEFAULT NULL,\n" +
+                "inactiveTime  VARCHAR(45) DEFAULT NULL,\n" +
+                "acknowledgeTime  VARCHAR(45) DEFAULT NULL,\n" +
+                "pointValue  VARCHAR(45) DEFAULT NULL,\n" +
+                "description  VARCHAR(45) DEFAULT NULL,\n" +
+                "uniquenessToken INT DEFAULT NULL,\n" +
+                "PRIMARY KEY (id), UNIQUE(dataPointId, uniquenessToken)) ENGINE=InnoDB;");
 
         addColumnToDataPointsTable(jdbcTmp);
         createViews(jdbcTmp);
         createProcedure(jdbcTmp);
 
         jdbcTmp.execute("DROP TRIGGER IF EXISTS onlyForStorungsAndAlarmValues\n");
-        jdbcTmp.execute("CREATE TRIGGER scadalts.onlyForStorungsAndAlarmValues BEFORE INSERT ON scadalts.pointValues \n" +
+        jdbcTmp.execute("CREATE TRIGGER scadalts.onlyForStorungsAndAlarmValues BEFORE INSERT ON pointValues \n" +
                 "FOR EACH ROW CALL notify(new.dataPointId, new.ts, new.pointValue);");
-
 
     }
 
     private void createProcedure(JdbcTemplate jdbcTmp) throws Exception {
-        jdbcTmp.execute("CREATE PROCEDURE prc_sort_alarms_and_storungs_depend_on_state(in param_limit int, in param_offset int)\n" +
-                "BEGIN \n" +
-                "SELECT \n" +
-                "`id`, \n" +
-                "`activation-time`,\n" +
-                "`inactivation-time`,\n" +
-                "`level`,\n" +
-                "`name`" +
-                "FROM apiAlarmsLive LIMIT param_limit OFFSET param_offset;\n" +
-                "END");
 
         jdbcTmp.execute("CREATE PROCEDURE notify(IN newDataPointId varchar(45), IN newTs varchar(45), IN newPointValue varchar(45))\n" +
                 "BEGIN\n" +
@@ -68,8 +54,8 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "\n" +
                 "\tIF (PLC_ALARM_LEVEL = 1 OR PLC_ALARM_LEVEl = 2) THEN \n" +
                 "    \n" +
-                "    \tSELECT pointValue INTO LAST_POINT_VALUE FROM pointValues WHERE id = (SELECT max(pv.id) FROM pointValues AS pv WHERE pv.dataPointId = newDataPointId);  \n" +
-                "\t\tSELECT id INTO actualIdRow FROM plcAlarms WHERE pointId = newDataPointId AND uniquenessToken = 0;\n" +
+                "    \tSELECT pointValue INTO LAST_POINT_VALUE FROM plcAlarms WHERE id = (SELECT max(pv.id) FROM plcAlarms AS pv WHERE pv.dataPointId = newDataPointId);  \n" +
+                "\t\tSELECT id INTO actualIdRow FROM plcAlarms WHERE dataPointId = newDataPointId AND uniquenessToken = 0;\n" +
                 "        \n" +
                 "\t\tIF (LAST_POINT_VALUE = 1 AND PRESENT_POINT_VALUE = 0 AND actualIdRow IS NOT NULL) THEN\n" +
                 "\n" +
@@ -98,17 +84,16 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "\t\t\tSELECT substring(from_unixtime(newTs/1000),1,19) INTO TRIGGER_TIME;   \n" +
                 "\n" +
                 "\t\t\tINSERT INTO plcAlarms (\n" +
-                "\t\t\t\tpointId, \n" +
-                "\t\t\t\tpointXid, \n" +
-                "\t\t\t\tpointType, \n" +
-                "\t\t\t\tpointName, \n" +
+                "\t\t\t\tdataPointId, \n" +
+                "\t\t\t\tdataPointXid, \n" +
+                "\t\t\t\tdataPointType, \n" +
+                "\t\t\t\tdataPointName, \n" +
                 "\t\t\t\tinsertTime, \n" +
                 "\t\t\t\ttriggerTime, \n" +
                 "\t\t\t\tinactiveTime, \n" +
                 "\t\t\t\tacknowledgeTime, \n" +
-                "\t\t\t\tlastpointValue, \n" +
+                "\t\t\t\tpointValue, \n" +
                 "\t\t\t\tdescription,      \n" +
-                "\t\t\t\tstate,\n" +
                 "\t\t\t\tuniquenessToken\n" +
                 "\t\t\t) \n" +
                 "            VALUES (\n" +
@@ -122,7 +107,6 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "\t\t\t\tEMPTY_STRING,  \n" +
                 "\t\t\t\tPRESENT_POINT_VALUE,  \n" +
                 "\t\t\t\tDESCRIPTION_FOR_FIRST_INSERT, \n" +
-                "\t\t\t\t1,\n" +
                 "\t\t\t\t0\n" +
                 "            ) ON DUPLICATE KEY UPDATE uniquenessToken = 0;\n" +
                 "            \n" +
@@ -160,29 +144,29 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
         jdbcTmp.execute("CREATE VIEW apiAlarmsHistory AS SELECT " +
                 "inactiveTime AS 'time',\n" +
                 "description AS 'description',\n" +
-                "pointName AS 'name' \n" +
+                "dataPointName AS 'name' \n" +
                 "FROM plcalarms;\n");
 
         jdbcTmp.execute("CREATE VIEW apiAlarmsAcknowledge AS SELECT " +
                 "id,\n" +
-                "pointType AS 'request',\n" +
-                "pointType AS 'error' \n" +
+                "dataPointType AS 'request',\n" +
+                "dataPointType AS 'error' \n" +
                 "FROM plcalarms WHERE acknowledgeTime <> '' \n");
 
         jdbcTmp.execute("CREATE VIEW viewAllAlarms AS SELECT " +
                 "* \n" +
-                "FROM plcalarms WHERE pointType = 1;\n");
+                "FROM plcalarms WHERE dataPointType = 1;\n");
 
         jdbcTmp.execute("CREATE VIEW viewAllStorungs AS SELECT " +
                 "* \n" +
-                "FROM plcalarms WHERE pointType = 2;\n");
+                "FROM plcalarms WHERE dataPointType = 2;\n");
 
         jdbcTmp.execute("CREATE VIEW apiAlarmsLive AS SELECT " +
                 "id, \n" +
                 "triggerTime AS 'activation-time',\n" +
                 "inactiveTime AS 'inactivation-time',\n" +
-                "pointType AS 'level',\n" +
-                "pointName AS 'name' \n" +
+                "dataPointType AS 'level',\n" +
+                "dataPointName AS 'name' \n" +
                 "FROM plcalarms WHERE acknowledgeTime='' AND unix_timestamp(inactiveTime) < NOW() - INTERVAL 24 HOUR ORDER BY inactiveTime=' ' DESC, triggerTime DESC, inactiveTime DESC, id DESC;\n");
 
     }
