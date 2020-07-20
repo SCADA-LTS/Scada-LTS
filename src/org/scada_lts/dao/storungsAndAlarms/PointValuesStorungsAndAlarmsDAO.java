@@ -39,7 +39,7 @@ class PointValuesStorungsAndAlarmsDAO {
             "`name` FROM apiAlarmsLive LIMIT ? OFFSET ?;";
 
     private static final String ACKNOWLEDGE_SQL = "UPDATE plcAlarms SET acknowledgeTime=from_unixtime(unix_timestamp()) WHERE id=? AND uniquenessToken <> 0;";
-    private static final String GET_UNIQUENESS_TOKEN = "SELECT uniquenessToken FROM plcAlarms WHERE id = ?; ";
+    private static final String GET_UNIQUENESS_TOKEN_SQL = "SELECT uniquenessToken FROM plcAlarms WHERE id = ?; ";
 
 
     public JSONArray getLiveAlarms(int offset,int limit) throws DataAccessException{
@@ -88,7 +88,7 @@ class PointValuesStorungsAndAlarmsDAO {
     }
 
     private static Optional<Integer> _getUniquenessToken(int id) throws DataAccessException {
-        Integer uniquenessToken = DAO.getInstance().getJdbcTemp().queryForObject(GET_UNIQUENESS_TOKEN, new Object[]{id}, Integer.class);
+        Integer uniquenessToken = DAO.getInstance().getJdbcTemp().queryForObject(GET_UNIQUENESS_TOKEN_SQL, new Object[]{id}, Integer.class);
         return Optional.ofNullable(uniquenessToken);
     }
 
