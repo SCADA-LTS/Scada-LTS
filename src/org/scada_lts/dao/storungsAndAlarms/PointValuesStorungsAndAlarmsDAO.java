@@ -22,6 +22,7 @@ import org.scada_lts.dao.DAO;
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Create by at Mateusz Hyski
@@ -36,6 +37,10 @@ class PointValuesStorungsAndAlarmsDAO {
             "`inactivation-time`," +
             "`level`," +
             "`name` FROM apiAlarmsLive LIMIT ? OFFSET ?;";
+
+    private static final String ACKNOWLEDGE_SQL = "UPDATE plcAlarms SET acknowledgeTime=from_unixtime(unix_timestamp()) WHERE id=? AND uniquenessToken <> 0;";
+    private static final String GET_UNIQUENESS_TOKEN = "SELECT uniquenessToken FROM plcAlarms WHERE id = ?; ";
+
 
     public JSONArray getLiveAlarms(int offset,int limit) throws DataAccessException{
 
@@ -73,8 +78,18 @@ class PointValuesStorungsAndAlarmsDAO {
     }
     public int setAcknowledge(int id) throws DataAccessException {
 
-        return DAO.getInstance().getJdbcTemp().update(SqlCommandGenerator.setAcknowledge(), new Object[] {id});
+        int uniquenessToken = _getUniquenessToken(id).orElse(-1);
+        if(uniquenessToken == -1)
+            return -1;
+        if(uniquenessToken == 0)
+            return 0;
+        return DAO.getInstance().getJdbcTemp().update(ACKNOWLEDGE_SQL, id);
 
+    }
+
+    private static Optional<Integer> _getUniquenessToken(int id) throws DataAccessException {
+        Integer uniquenessToken = DAO.getInstance().getJdbcTemp().queryForObject(GET_UNIQUENESS_TOKEN, new Object[]{id}, Integer.class);
+        return Optional.ofNullable(uniquenessToken);
     }
 
 }
