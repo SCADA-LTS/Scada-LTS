@@ -67,7 +67,7 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "\t\t\t\tUPDATE plcAlarms SET description=STORUNG_IS_GEGANGEN WHERE id=actualIdRow;       \n" +
                 "\t\t\tEND IF;\n" +
                 "\n" +
-                "\t\t\tUPDATE plcAlarms SET uniquenessToken = actualIdRow, inactiveTime = substring(from_unixtime(newTs/1000),1,19) WHERE id = actualIdRow;\n" +
+                "\t\t\tUPDATE plcAlarms SET uniquenessToken = actualIdRow, inactiveTime = substring(from_unixtime(newTs/1000),1,19), pointValue = 0 WHERE id = actualIdRow;\n" +
                 "\n" +
                 "        END IF;\n" +
                 "        \n" +
