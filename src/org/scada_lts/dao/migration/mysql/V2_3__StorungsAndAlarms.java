@@ -12,7 +12,7 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
 
         jdbcTmp.execute("CREATE TABLE plcAlarms (\n" +
                 "id INT NOT NULL auto_increment,\n" +
-                "dataPointId INT DEFAULT NULL,\n" +
+                "dataPointId INT NOT NULL,\n" +
                 "dataPointXid  VARCHAR(50) DEFAULT NULL,\n" +
                 "dataPointType  VARCHAR(45) DEFAULT NULL,\n" +
                 "dataPointName  VARCHAR(45) DEFAULT NULL,\n" +
@@ -23,7 +23,8 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "pointValue  VARCHAR(45) DEFAULT NULL,\n" +
                 "description  VARCHAR(45) DEFAULT NULL,\n" +
                 "uniquenessToken INT DEFAULT NULL,\n" +
-                "PRIMARY KEY (id), UNIQUE(dataPointId, uniquenessToken)) ENGINE=InnoDB;");
+                "PRIMARY KEY (id), FOREIGN KEY (dataPointId) REFERENCES dataPoints(id) ON DELETE CASCADE," +
+                "UNIQUE(dataPointId, uniquenessToken)) ENGINE=InnoDB;");
 
         addAndUpdateColumnInDataPointsTable(jdbcTmp);
         createViews(jdbcTmp);

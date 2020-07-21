@@ -79,25 +79,5 @@ public class ApiAlarmsLive {
     public void setName(String name) {
         this.name = name;
     }
-/*
-    public JSONObject toJSONObject(){
-        try {
-            return new JSONObject()
-                    .put("id", getId())
-                    .put("activation-time", getActivationTime())
-                    .put("inactivation-time", getInactivationTime())
-                    .put("level", String.valueOf( getLevel() ) )
-                    .put("name", getName());
-        }
-        catch (JSONException e){
-            try {
-                // if exception occurs as a result of invoking rest service , is received also message about exception
-                return new JSONObject().put("error during build JSONObject", e.getMessage());
-            }
-            catch (JSONException exception){
-                e.getMessage();
-            }
-        }
-        return null;
-    }*/
+
 }

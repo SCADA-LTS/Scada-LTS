@@ -33,22 +33,4 @@ public class ApiAlarmsHistory {
         this.description = description;
     }
 
-    /*
-    JSONObject toJSONObject(){
-        try{
-            return new JSONObject()
-                    .put("time",getTime())
-                    .put("name",getName())
-                    .put("description",getDescription());
-        }
-        catch(JSONException e){
-            try {
-                return new JSONObject()
-                        .put("error",e.getMessage());
-            } catch (JSONException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return null;
-    }*/
 }
