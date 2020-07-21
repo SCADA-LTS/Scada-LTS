@@ -1,6 +1,9 @@
 package org.scada_lts.dao.migration.mysql;
 
+import com.serotonin.mango.vo.DataPointVO;
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
@@ -22,7 +25,7 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "uniquenessToken INT DEFAULT NULL,\n" +
                 "PRIMARY KEY (id), UNIQUE(dataPointId, uniquenessToken)) ENGINE=InnoDB;");
 
-        addColumnToDataPointsTable(jdbcTmp);
+        addAndUpdateColumnInDataPointsTable(jdbcTmp);
         createViews(jdbcTmp);
         createProcedure(jdbcTmp);
 
@@ -115,7 +118,7 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "END");
     }
 
-    private void addColumnToDataPointsTable(JdbcTemplate jdbcTmp) throws Exception {
+    private void addAndUpdateColumnInDataPointsTable(JdbcTemplate jdbcTmp) throws Exception {
         //this additional column will contain ONLY data point name which trigger needs
         jdbcTmp.execute(
                 new AlterTable().AlterTableWithSpecification(
@@ -127,6 +130,16 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                         true)
         );
 
+        for(DataPointVO dataPointVOS : new DataPointDAO().getDataPoints()){
+            DAO.getInstance().getJdbcTemp().update("update dataPoints set "
+                    + "pointName=? "
+                    + "where "
+                    + "id=? ", new Object[] {
+                    dataPointVOS.getName(),
+                    dataPointVOS.getId()
+            });
+        }
+
         //this additional column will have defined level of alarm as a 0-8 steps.
         jdbcTmp.execute(
                 new AlterTable().AlterTableWithSpecification(
@@ -137,6 +150,14 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                         -1,
                         true)
         );
+
+        for(DataPointVO dataPointVO:new DataPointDAO().getDataPoints()) {
+            jdbcTmp.execute("update dataPoints set plcAlarmLevel="
+                    + (dataPointVO.getName().contains(" AL ")
+                    ? 1 :
+                    dataPointVO.getName().contains(" ST ")
+                            ? 2 : 0) + " where id=" + dataPointVO.getId());
+        }
     }
 
     private void createViews(JdbcTemplate jdbcTmp) throws Exception {
