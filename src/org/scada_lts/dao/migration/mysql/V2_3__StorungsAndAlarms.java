@@ -30,7 +30,7 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
         createProcedure(jdbcTmp);
 
         jdbcTmp.execute("DROP TRIGGER IF EXISTS onlyForStorungsAndAlarmValues\n");
-        jdbcTmp.execute("CREATE TRIGGER scadalts.onlyForStorungsAndAlarmValues BEFORE INSERT ON pointValues \n" +
+        jdbcTmp.execute("CREATE TRIGGER onlyForStorungsAndAlarmValues BEFORE INSERT ON pointValues \n" +
                 "FOR EACH ROW CALL notify(new.dataPointId, new.ts, new.pointValue);");
 
     }
