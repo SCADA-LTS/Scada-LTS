@@ -121,15 +121,7 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
 
     private void addAndUpdateColumnInDataPointsTable(JdbcTemplate jdbcTmp) throws Exception {
         //this additional column will contain ONLY data point name which trigger needs
-        jdbcTmp.execute(
-                new AlterTable().AlterTableWithSpecification(
-                        new StringBuilder("dataPoints"),
-                        new StringBuilder("pointName"),
-                        AlterTable.Fields.VARCHAR,
-                        250,
-                        -1,
-                        true)
-        );
+        jdbcTmp.execute("ALTER TABLE dataPoints ADD pointName VARCHAR(250);");
 
         for(DataPointVO dataPointVOS : new DataPointDAO().getDataPoints()){
             DAO.getInstance().getJdbcTemp().update("update dataPoints set "
@@ -142,15 +134,7 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
         }
 
         //this additional column will have defined level of alarm as a 0-8 steps.
-        jdbcTmp.execute(
-                new AlterTable().AlterTableWithSpecification(
-                        new StringBuilder("dataPoints"),
-                        new StringBuilder("plcAlarmLevel"),
-                        AlterTable.Fields.TINYINT,
-                        8,
-                        -1,
-                        true)
-        );
+        jdbcTmp.execute("ALTER TABLE dataPoints ADD plcAlarmLevel TINYINT(8);");
 
         for(DataPointVO dataPointVO:new DataPointDAO().getDataPoints()) {
             jdbcTmp.execute("update dataPoints set plcAlarmLevel="
@@ -167,21 +151,7 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "inactiveTime AS 'time',\n" +
                 "description AS 'description',\n" +
                 "dataPointName AS 'name' \n" +
-                "FROM plcalarms;\n");
-
-        jdbcTmp.execute("CREATE VIEW apiAlarmsAcknowledge AS SELECT " +
-                "id,\n" +
-                "dataPointType AS 'request',\n" +
-                "dataPointType AS 'error' \n" +
-                "FROM plcalarms WHERE acknowledgeTime <> '' \n");
-
-        jdbcTmp.execute("CREATE VIEW viewAllAlarms AS SELECT " +
-                "* \n" +
-                "FROM plcalarms WHERE dataPointType = 1;\n");
-
-        jdbcTmp.execute("CREATE VIEW viewAllStorungs AS SELECT " +
-                "* \n" +
-                "FROM plcalarms WHERE dataPointType = 2;\n");
+                "FROM plcalarms ORDER BY inactiveTime DESC, id DESC;\n");
 
         jdbcTmp.execute("CREATE VIEW apiAlarmsLive AS SELECT " +
                 "id, \n" +
