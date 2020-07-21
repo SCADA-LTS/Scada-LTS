@@ -20,6 +20,11 @@ package org.scada_lts.dao;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.scada_lts.dao.storungsAndAlarms.AcknowledgeResponse;
+import org.scada_lts.dao.storungsAndAlarms.ApiAlarmsHistory;
+import org.scada_lts.dao.storungsAndAlarms.ApiAlarmsLive;
+
+import java.util.List;
 
 /**
  * Create by at Mateusz Hyski
@@ -28,10 +33,10 @@ import org.json.JSONObject;
  */
 public interface PointValuesStorungsAndAlarms {
 
-    JSONArray getLiveAlarms(int offset, int limit);
+    List<ApiAlarmsLive> getLiveAlarms(int offset, int limit);
 
-    JSONObject setAcknowledge( int id, JSONObject jsonObject);
+    AcknowledgeResponse acknowledge(int id);
 
-    JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit );
+    List<ApiAlarmsHistory> getHistoryAlarmsByDateDayAndFilter(String dayDate, String regexDataPointNameFilter, int offset, int limit );
 
 }

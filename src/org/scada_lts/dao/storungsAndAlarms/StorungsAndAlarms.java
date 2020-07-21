@@ -18,13 +18,11 @@ package org.scada_lts.dao.storungsAndAlarms;
  */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
 import org.springframework.dao.DataAccessException;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,13 +36,10 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
     private static final Log LOG = LogFactory.getLog(StorungsAndAlarms.class);
 
     @Override
-    public JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit) {
-
-        JSONArray jsonArray = null;
-
+    public List<ApiAlarmsHistory> getHistoryAlarmsByDateDayAndFilter(String dayDate, String dataPointNameRegexFilter, int offset, int limit) {
         try
         {
-            jsonArray = DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsByDateDayAndFilterFromOffset(date_day, filter_with_mysqlrlike,offset,limit);
+            return DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsByDateDayAndFilter(dayDate, dataPointNameRegexFilter,offset,limit);
         }
         catch (DataAccessException dataAccessException){
             LOG.trace("Exception on DataBase level.Please debug.");
@@ -54,16 +49,14 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
             LOG.trace(exception.getMessage());
         }
 
-        return jsonArray;
+        return Collections.emptyList();
     }
     @Override
-    public JSONArray getLiveAlarms(int offset, int limit) {
-
-        JSONArray jsonArray=new JSONArray();
+    public List<ApiAlarmsLive> getLiveAlarms(int offset, int limit) {
 
         try
         {
-            jsonArray = DAOs.getPointValuesStorungsAndAlarms().getLiveAlarms(offset,limit);
+            return DAOs.getPointValuesStorungsAndAlarms().getLiveAlarms(offset,limit);
         }
         catch (DataAccessException dataAccessException){
             LOG.trace("Exception on DataBase level.Please debug.");
@@ -72,24 +65,21 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         {
             LOG.trace(e.getMessage());
         }
-        return jsonArray;
+        return Collections.emptyList();
     }
     @Override
-    public JSONObject setAcknowledge(int id,JSONObject jsonObject) {
+    public AcknowledgeResponse acknowledge(int id) {
 
-        StringBuilder errorMessage = new StringBuilder("");
+        String error = "";
         boolean result = false;
         try
         {
             result = (DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id)==1)?true:false;
         }
         catch (DataAccessException e) {
-            errorMessage.append("Exception on DataBase level.Please debug.");
+            error = "Exception on DataBase level.Please debug.";
         }
-
-        jsonObject = fillJsonObjectWithInformations(errorMessage, result,id,jsonObject);
-
-        return jsonObject;
+        return createAcknowledgeResponse(error, result, id);
     }
 
     /**
@@ -100,29 +90,27 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
      * @param errorMessage
      * @param result
      * @param id
-     * @param jsonObject
      * @return
      */
-    private JSONObject fillJsonObjectWithInformations(StringBuilder errorMessage,boolean result, int id, JSONObject jsonObject){
-        try{
-            jsonObject.put("id",id);
-            if(result==false){
-                jsonObject.put("error","Object with id="+id+" do not exist");
-                jsonObject.put("request","FAULT");
+    private AcknowledgeResponse createAcknowledgeResponse(String errorMessage, boolean result, int id) {
+
+        AcknowledgeResponse acknowledgeResponse = new AcknowledgeResponse();
+        acknowledgeResponse.setId(id);
+        if(!result){
+            acknowledgeResponse.setError("Object with id="+id+" do not exist");
+            acknowledgeResponse.setRequest("FAULT");
+        }
+        else {
+            if( (errorMessage.length()!=0) ){
+                acknowledgeResponse.setError(errorMessage);
+                acknowledgeResponse.setRequest("FAULT");
             }
             else {
-                if( (errorMessage.length()!=0) ){
-                    jsonObject.put("error",errorMessage);
-                    jsonObject.put("request","FAULT");
-                }
-                else {
-                    jsonObject.put("error", "none");
-                    jsonObject.put("request", "OK");
-                }
+                acknowledgeResponse.setError("none");
+                acknowledgeResponse.setRequest("OK");
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        return jsonObject;
+
+        return acknowledgeResponse;
     }
 }

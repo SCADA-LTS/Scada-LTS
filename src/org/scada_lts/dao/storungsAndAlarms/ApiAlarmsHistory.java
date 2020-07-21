@@ -3,7 +3,7 @@ package org.scada_lts.dao.storungsAndAlarms;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class ApiAlarmsHistory {
+public class ApiAlarmsHistory {
 
     private String time;
     private String name;
@@ -32,6 +32,8 @@ class ApiAlarmsHistory {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    /*
     JSONObject toJSONObject(){
         try{
             return new JSONObject()
@@ -48,5 +50,5 @@ class ApiAlarmsHistory {
             }
         }
         return null;
-    }
+    }*/
 }

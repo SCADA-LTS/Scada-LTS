@@ -22,25 +22,27 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.scada_lts.dao.PointValuesStorungsAndAlarms;
+import org.scada_lts.dao.storungsAndAlarms.AcknowledgeResponse;
+import org.scada_lts.dao.storungsAndAlarms.ApiAlarmsHistory;
+import org.scada_lts.dao.storungsAndAlarms.ApiAlarmsLive;
 import org.scada_lts.dao.storungsAndAlarms.StorungsAndAlarms;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
  */
-@Controller
+@RestController
 public class AlarmsAPI {
 
     private static final Log LOG = LogFactory.getLog(AlarmsAPI.class);
@@ -60,27 +62,26 @@ public class AlarmsAPI {
     *
     */
     @RequestMapping(value = "/api/alarms/acknowledge/{id}", method = RequestMethod.POST)
-    public ResponseEntity<String> acknowledgeById(
+    public ResponseEntity<?> acknowledgeById(
             @PathVariable("id") String id,
             HttpServletRequest request
     )
     {
-        LOG.info("/api/acknowledge/{id}");
+        LOG.info(request.getRequestURL());
         String value = "";
         if ( (value = Validation.validateDoParamIsIntegerAndBetween0And9999("id",id)) != null) {
-            return new ResponseEntity<String>(value, HttpStatus.OK);
+            return new ResponseEntity<>(value, HttpStatus.OK);
         }
         try {
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
-                    JSONObject jsonObject=new JSONObject();
-                    pointValuesStorungsAndAlarms.setAcknowledge(Integer.valueOf(id),jsonObject);
-                    return new ResponseEntity<String>( jsonObject.toString() , HttpStatus.OK);
+                    AcknowledgeResponse response = pointValuesStorungsAndAlarms.acknowledge(Integer.valueOf(id));
+                    return new ResponseEntity<>(response , HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     /**
@@ -105,31 +106,31 @@ public class AlarmsAPI {
      * @return String
      */
     @RequestMapping(value = "/api/alarms/live/{offset}/{limit}", method = RequestMethod.GET)
-    public ResponseEntity<String> liveAlarms(
+    public ResponseEntity<?> liveAlarms(
             @PathVariable("offset") String offset,
             @PathVariable("limit") String limit,
             HttpServletRequest request
     )
     {
-        LOG.info("/api/alarms/live/{offset}/{limit}");
+        LOG.info(request.getRequestURL());
         String value = "";
         if ( (value = Validation.validateDoParamIsIntegerAndBetween0And9999("offset",offset)) !=null ){
-            return new ResponseEntity<String>(value, HttpStatus.OK);
+            return new ResponseEntity<>(value, HttpStatus.OK);
         }
         value="";
         if ( (value = Validation.validateDoParamIsIntegerAndBetween0And9999("limit",limit)) !=null ){
-            return new ResponseEntity<String>(value, HttpStatus.OK);
+            return new ResponseEntity<>(value, HttpStatus.OK);
         }
         try {
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
-                    JSONArray jsonArrayResult =pointValuesStorungsAndAlarms.getLiveAlarms(Integer.parseInt(offset),Integer.parseInt(limit));
-                    return new ResponseEntity<String>( jsonArrayResult.toString() , HttpStatus.OK);
+                    List<ApiAlarmsLive> jsonArrayResult =pointValuesStorungsAndAlarms.getLiveAlarms(Integer.parseInt(offset),Integer.parseInt(limit));
+                    return new ResponseEntity<>( jsonArrayResult, HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     /**
@@ -146,39 +147,39 @@ public class AlarmsAPI {
      *   {…}
      *  ]
      *
-     * @param date_day
-     * @param filter_with_mysqlrlike
+     * @param dayDate
+     * @param dataPointNameRegexFilter
      * @param offset
      * @param limit
      * @param request
      * @return String
      */
-    @RequestMapping(value = "/api/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}", method = RequestMethod.GET)
-    public ResponseEntity<String> getHistoryAlarms(
-            @PathVariable("date_day") String date_day,
-            @PathVariable("filter_with_mysqlrlike") String filter_with_mysqlrlike,
+    @RequestMapping(value = "/api/alarms/history/{date_day}/{data_point_name_regex_filter}/{offset}/{limit}", method = RequestMethod.GET)
+    public ResponseEntity<?> getHistoryAlarms(
+            @PathVariable("date_day") String dayDate,
+            @PathVariable("data_point_name_regex_filter") String dataPointNameRegexFilter,
             @PathVariable("offset") String offset,
             @PathVariable("limit") String limit,
             HttpServletRequest request
     )
     {
-        LOG.info("/api/alarms/history/{date_day}/{filter_with_mysqlrlike}/{offset}/{limit}");
+        LOG.info(request.getRequestURL());
         String value = "";
-        if ( ( value = Validation.doGivenParameterHaveCorrectDateFormat(date_day)) != null ){
-            return new ResponseEntity<String>("Value date_day is not correct."+value, HttpStatus.OK);
+        if ( ( value = Validation.doGivenParameterHaveCorrectDateFormat(dayDate)) != null ){
+            return new ResponseEntity<>("Value date_day is not correct."+value, HttpStatus.OK);
         }
         int offsetParam = Integer.parseInt(offset);
         int limitParam = Integer.parseInt(limit);
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                JSONArray jsonArrayResult = pointValuesStorungsAndAlarms.getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(date_day, filter_with_mysqlrlike, offsetParam, limitParam);
-                return new ResponseEntity<String>( jsonArrayResult.toString() , HttpStatus.OK);
+                List<ApiAlarmsHistory> jsonArrayResult = pointValuesStorungsAndAlarms.getHistoryAlarmsByDateDayAndFilter(dayDate, dataPointNameRegexFilter, offsetParam, limitParam);
+                return new ResponseEntity<>(jsonArrayResult , HttpStatus.OK);
             } else {
-                return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

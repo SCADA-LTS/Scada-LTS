@@ -16,6 +16,7 @@ package org.scada_lts.dao.storungsAndAlarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.json.JSONException;
 import org.json.JSONObject;
 /**
@@ -28,15 +29,16 @@ import org.json.JSONObject;
  *
  * @author hyski.mateusz@gmail.com
  */
-class ApiAlarmsLive {
+public class ApiAlarmsLive {
 
     private int id;
 
-    private String
-            activationTime,
-            inactivationTime,
-            level,
-            name;
+    @JsonProperty("activation-time")
+    private String activationTime;
+    @JsonProperty("inactivation-time")
+    private String inactivationTime;
+    private String level;
+    private String name;
 
     public int getId() {
         return id;
@@ -77,7 +79,7 @@ class ApiAlarmsLive {
     public void setName(String name) {
         this.name = name;
     }
-
+/*
     public JSONObject toJSONObject(){
         try {
             return new JSONObject()
@@ -97,5 +99,5 @@ class ApiAlarmsLive {
             }
         }
         return null;
-    }
+    }*/
 }

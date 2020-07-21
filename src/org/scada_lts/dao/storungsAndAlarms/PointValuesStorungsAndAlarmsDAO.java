@@ -31,50 +31,26 @@ import java.util.Optional;
  */
 class PointValuesStorungsAndAlarmsDAO {
 
-    private static final String GET_LIVES_SQL = "SELECT " +
-            "`id`," +
-            "`activation-time`," +
-            "`inactivation-time`," +
-            "`level`," +
-            "`name` FROM apiAlarmsLive LIMIT ? OFFSET ?;";
-
-    private static final String ACKNOWLEDGE_SQL = "UPDATE plcAlarms SET acknowledgeTime=from_unixtime(unix_timestamp()) WHERE id=? AND uniquenessToken <> 0;";
+    private static final String GET_LIVES_SQL = "SELECT `id`, `activation-time`, `inactivation-time`, `level`, `name` FROM apiAlarmsLive LIMIT ? OFFSET ?;";
+    private static final String ACKNOWLEDGE_SQL = "UPDATE plcAlarms SET acknowledgeTime=from_unixtime(unix_timestamp()) WHERE id=?;";
     private static final String GET_UNIQUENESS_TOKEN_SQL = "SELECT uniquenessToken FROM plcAlarms WHERE id = ?; ";
+    private static final String GET_HISTORY_SQL = "SELECT name, time, description FROM apiAlarmsHistory WHERE DATE_FORMAT(time, '%Y-%m-%d')=? AND name RLIKE ? LIMIT ? OFFSET ?";
 
-
-    public JSONArray getLiveAlarms(int offset,int limit) throws DataAccessException{
-
-        JSONArray jsonArray=new JSONArray();
-
-        List<ApiAlarmsLive> apiAlarmsLives = DAO.getInstance().getJdbcTemp().query(
+    public List<ApiAlarmsLive> getLiveAlarms(int offset,int limit) throws DataAccessException{
+        return DAO.getInstance().getJdbcTemp().query(
                 GET_LIVES_SQL, new Object[]{limit, offset},
                 new ApiAlarmsLiveRowMapper());
-
-        apiAlarmsLives.stream().forEach( alarmsLive -> jsonArray.put(alarmsLive.toJSONObject()));
-
-        return jsonArray;
     }
-    public JSONArray getHistoryAlarmsByDateDayAndFilterFromOffset(
-            String date_day,
-            String filter_with_mysqlrlike,
+    public List<ApiAlarmsHistory> getHistoryAlarmsByDateDayAndFilter(
+            String dayDate,
+            String dataPointNameFilter,
             int offset,
             int limit) throws DataAccessException {
-        JSONArray jsonArray=new JSONArray();
-        List<ApiAlarmsHistory> apiAlarmsHistories =  DAO.getInstance().getJdbcTemp().query(
 
-                SqlCommandGenerator.getCommandForHistoryAlarmsByDateDayAndFilterFromOffset(
-                        date_day,
-                        filter_with_mysqlrlike,
-                        offset,
-                        limit),
-
+        String regex = dataPointNameFilter == null || "EMPTY".equals(dataPointNameFilter) ? "(.*)" : dataPointNameFilter;
+        return DAO.getInstance().getJdbcTemp().query(
+                GET_HISTORY_SQL, new Object[]{dayDate, regex, limit, offset},
                 new ApiAlarmsHistoryRowMapper());
-
-        if ( apiAlarmsHistories.size() != 0) {
-            apiAlarmsHistories.stream().forEach( alarmsHistory -> jsonArray.put(alarmsHistory.toJSONObject()));
-        }
-
-        return jsonArray;
     }
     public int setAcknowledge(int id) throws DataAccessException {
 
@@ -91,5 +67,4 @@ class PointValuesStorungsAndAlarmsDAO {
         Integer uniquenessToken = DAO.getInstance().getJdbcTemp().queryForObject(GET_UNIQUENESS_TOKEN_SQL, new Object[]{id}, Integer.class);
         return Optional.ofNullable(uniquenessToken);
     }
-
 }
