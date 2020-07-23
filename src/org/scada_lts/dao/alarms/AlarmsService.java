@@ -1,4 +1,5 @@
-package org.scada_lts.web.mvc.api.storungsandalarms;
+package org.scada_lts.dao.alarms;
+
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *
@@ -16,16 +17,24 @@ package org.scada_lts.web.mvc.api.storungsandalarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+import org.scada_lts.dao.alarms.AcknowledgeResponse;
+import org.scada_lts.dao.alarms.ApiAlarmsHistory;
+import org.scada_lts.dao.alarms.ApiAlarmsLive;
+
+import java.util.List;
+
 /**
  * Create by at Mateusz Hyski
  *
- * Contain ONLY regex definitions
- *
- *
- * @author hyski.mateusz@gmail.com 02-06-2020
+ * @author hyski.mateusz@gmail.com
  */
-class RegexSyntax {
+public interface AlarmsService {
 
-    final static String VALUE_BETWEEN_0_AND_9999 = "[^a-z]|[^A-Z]|[0-9]{1,4}";
-    final static String DATE_FORMAT = "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$";
+    List<ApiAlarmsLive> getLiveAlarms(int offset, int limit);
+
+    AcknowledgeResponse acknowledge(int id);
+
+    List<ApiAlarmsHistory> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit );
+
 }

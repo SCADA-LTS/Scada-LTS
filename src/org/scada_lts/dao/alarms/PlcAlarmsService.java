@@ -1,4 +1,4 @@
-package org.scada_lts.dao.storungsAndAlarms;
+package org.scada_lts.dao.alarms;
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *
@@ -18,8 +18,6 @@ package org.scada_lts.dao.storungsAndAlarms;
  */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
-import org.scada_lts.dao.PointValuesStorungsAndAlarms;
 import org.springframework.dao.DataAccessException;
 
 import java.util.Collections;
@@ -30,16 +28,22 @@ import java.util.List;
  *
  * @author hyski.mateusz@gmail.com
  */
+public class PlcAlarmsService implements AlarmsService {
 
-public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
+    private static final Log LOG = LogFactory.getLog(PlcAlarmsService.class);
 
-    private static final Log LOG = LogFactory.getLog(StorungsAndAlarms.class);
+    private final PlcAlarmsDAO plcAlarmsDAO;
+
+    public PlcAlarmsService(PlcAlarmsDAO plcAlarmsDAO) {
+        this.plcAlarmsDAO = plcAlarmsDAO;
+    }
 
     @Override
-    public List<ApiAlarmsHistory> getHistoryAlarmsByDateDayAndFilter(String dayDate, String dataPointNameRegexFilter, int offset, int limit) {
+    public List<ApiAlarmsHistory> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit) {
         try
         {
-            return DAOs.getPointValuesStorungsAndAlarms().getHistoryAlarmsByDateDayAndFilter(dayDate, dataPointNameRegexFilter,offset,limit);
+            String regex = dataPointNameFilter == null || "EMPTY".equals(dataPointNameFilter) ? "(.*)" : dataPointNameFilter;
+            return plcAlarmsDAO.getHistoryAlarms(dayDate, regex, offset, limit);
         }
         catch (DataAccessException dataAccessException){
             LOG.trace("Exception on DataBase level.Please debug.");
@@ -51,12 +55,13 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
         return Collections.emptyList();
     }
+
     @Override
     public List<ApiAlarmsLive> getLiveAlarms(int offset, int limit) {
 
         try
         {
-            return DAOs.getPointValuesStorungsAndAlarms().getLiveAlarms(offset,limit);
+            return plcAlarmsDAO.getLiveAlarms(offset,limit);
         }
         catch (DataAccessException dataAccessException){
             LOG.trace("Exception on DataBase level.Please debug.");
@@ -67,23 +72,26 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
         }
         return Collections.emptyList();
     }
+
     @Override
     public AcknowledgeResponse acknowledge(int id) {
-
-        String error = "";
-        boolean result = false;
         try
         {
-            result = (DAOs.getPointValuesStorungsAndAlarms().setAcknowledge(id)==1)?true:false;
+            int uniquenessToken = plcAlarmsDAO.getUniquenessToken(id).orElse(-1);
+            if(uniquenessToken == -1)
+                return createAcknowledgeResponse("unknow error", false, id);
+            if(uniquenessToken == 0)
+                return createAcknowledgeResponse("Alarm/Storung is active!", false, id);
+            int result = plcAlarmsDAO.setAcknowledgeTime(id);
+            return createAcknowledgeResponse("", result == 1, id);
         }
         catch (DataAccessException e) {
-            error = "Exception on DataBase level.Please debug.";
+            return createAcknowledgeResponse("Exception on DataBase level.Please debug.", false, id);
         }
-        return createAcknowledgeResponse(error, result, id);
     }
 
     /**
-     * method use as a helper to build a jsonobject by values when
+     * method use as a helper to build a AcknowledgeResponse by values when
      * error occur on DataBase level or another
      * or if everything is OK
      *
@@ -96,21 +104,18 @@ public class StorungsAndAlarms implements PointValuesStorungsAndAlarms {
 
         AcknowledgeResponse acknowledgeResponse = new AcknowledgeResponse();
         acknowledgeResponse.setId(id);
-        if(!result){
-            acknowledgeResponse.setError("Object with id="+id+" do not exist");
+
+        if(result) {
+            acknowledgeResponse.setError("none");
+            acknowledgeResponse.setRequest("OK");
+        } else {
+            if (errorMessage.isEmpty()) {
+                acknowledgeResponse.setError("Object with id=" + id + " do not exist");
+            } else {
+                acknowledgeResponse.setError(errorMessage);
+            }
             acknowledgeResponse.setRequest("FAULT");
         }
-        else {
-            if( (errorMessage.length()!=0) ){
-                acknowledgeResponse.setError(errorMessage);
-                acknowledgeResponse.setRequest("FAULT");
-            }
-            else {
-                acknowledgeResponse.setError("none");
-                acknowledgeResponse.setRequest("OK");
-            }
-        }
-
         return acknowledgeResponse;
     }
 }

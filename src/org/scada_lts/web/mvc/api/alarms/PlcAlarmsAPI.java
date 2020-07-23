@@ -1,4 +1,4 @@
-package org.scada_lts.web.mvc.api.storungsandalarms;
+package org.scada_lts.web.mvc.api.alarms;
 
 /*
  * (c) 2018 hyski.mateusz@gmail.com
@@ -22,11 +22,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.PointValuesStorungsAndAlarms;
-import org.scada_lts.dao.storungsAndAlarms.AcknowledgeResponse;
-import org.scada_lts.dao.storungsAndAlarms.ApiAlarmsHistory;
-import org.scada_lts.dao.storungsAndAlarms.ApiAlarmsLive;
-import org.scada_lts.dao.storungsAndAlarms.StorungsAndAlarms;
+import org.scada_lts.dao.alarms.AlarmsService;
+import org.scada_lts.dao.alarms.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,11 +40,11 @@ import java.util.List;
  * @author hyski.mateusz@gmail.com
  */
 @RestController
-public class AlarmsAPI {
+public class PlcAlarmsAPI {
 
-    private static final Log LOG = LogFactory.getLog(AlarmsAPI.class);
-    private static PointValuesStorungsAndAlarms pointValuesStorungsAndAlarms =new StorungsAndAlarms();
-  
+    private static final Log LOG = LogFactory.getLog(PlcAlarmsAPI.class);
+    private AlarmsService alarmsService = new PlcAlarmsService(PlcAlarmsDAO.getInstance());
+
     /*
      * example of result:
      *
@@ -75,7 +72,7 @@ public class AlarmsAPI {
         try {
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
-                    AcknowledgeResponse response = pointValuesStorungsAndAlarms.acknowledge(Integer.valueOf(id));
+                    AcknowledgeResponse response = alarmsService.acknowledge(Integer.valueOf(id));
                     return new ResponseEntity<>(response , HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -124,8 +121,8 @@ public class AlarmsAPI {
         try {
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
-                    List<ApiAlarmsLive> jsonArrayResult =pointValuesStorungsAndAlarms.getLiveAlarms(Integer.parseInt(offset),Integer.parseInt(limit));
-                    return new ResponseEntity<>( jsonArrayResult, HttpStatus.OK);
+                    List<ApiAlarmsLive> result = alarmsService.getLiveAlarms(Integer.parseInt(offset),Integer.parseInt(limit));
+                    return new ResponseEntity<>( result, HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
@@ -173,8 +170,8 @@ public class AlarmsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                List<ApiAlarmsHistory> jsonArrayResult = pointValuesStorungsAndAlarms.getHistoryAlarmsByDateDayAndFilter(dayDate, dataPointNameRegexFilter, offsetParam, limitParam);
-                return new ResponseEntity<>(jsonArrayResult , HttpStatus.OK);
+                List<ApiAlarmsHistory> result = alarmsService.getHistoryAlarms(dayDate, dataPointNameRegexFilter, offsetParam, limitParam);
+                return new ResponseEntity<>(result , HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

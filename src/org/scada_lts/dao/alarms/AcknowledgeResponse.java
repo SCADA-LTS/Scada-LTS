@@ -1,4 +1,4 @@
-package org.scada_lts.dao.storungsAndAlarms;
+package org.scada_lts.dao.alarms;
 
 public class AcknowledgeResponse {
 

@@ -1,7 +1,4 @@
-package org.scada_lts.dao.storungsAndAlarms;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+package org.scada_lts.dao.alarms;
 
 public class ApiAlarmsHistory {
 

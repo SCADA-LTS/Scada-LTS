@@ -1,4 +1,4 @@
-package org.scada_lts.web.mvc.api.storungsandalarms;
+package org.scada_lts.web.mvc.api.alarms;
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *

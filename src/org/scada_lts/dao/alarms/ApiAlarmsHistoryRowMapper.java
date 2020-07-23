@@ -1,4 +1,4 @@
-package org.scada_lts.dao.storungsAndAlarms;
+package org.scada_lts.dao.alarms;
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *
@@ -22,26 +22,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ *
+ *
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
  */
-class ApiAlarmsLiveRowMapper implements RowMapper<ApiAlarmsLive>{
+class ApiAlarmsHistoryRowMapper implements RowMapper<ApiAlarmsHistory>{
 
         @Override
-        public ApiAlarmsLive mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public ApiAlarmsHistory mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-                ApiAlarmsLive  apiAlarmsLive = new ApiAlarmsLive();
-                apiAlarmsLive.setId(rs.getInt("id"));
-                apiAlarmsLive.setActivationTime(String.valueOf(rs.getString("activation-time")));
-                apiAlarmsLive.setInactivationTime(
-                        (rs.getString("inactivation-time") == null)
-                        ?""
-                        :rs.getString("inactivation-time")
-                );
-                apiAlarmsLive.setLevel(String.valueOf(rs.getString("level")));
-                apiAlarmsLive.setName(String.valueOf(rs.getString("name")));
+                ApiAlarmsHistory apiAlarmsHistory = new ApiAlarmsHistory();
+                apiAlarmsHistory.setTime(rs.getString("time"));
+                apiAlarmsHistory.setName(rs.getString("name"));
+                apiAlarmsHistory.setDescription(rs.getString("description"));
 
-        return apiAlarmsLive;
+        return apiAlarmsHistory;
     }
 }

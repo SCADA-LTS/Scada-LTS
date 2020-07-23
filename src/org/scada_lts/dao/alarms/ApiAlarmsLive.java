@@ -1,4 +1,4 @@
-package org.scada_lts.dao.storungsAndAlarms;
+package org.scada_lts.dao.alarms;
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *
@@ -17,8 +17,7 @@ package org.scada_lts.dao.storungsAndAlarms;
  *
  */
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 /**
  *
  * class works as a DTO without DTO in end of class name
