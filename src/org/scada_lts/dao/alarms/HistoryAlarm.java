@@ -1,6 +1,6 @@
 package org.scada_lts.dao.alarms;
 
-public class ApiAlarmsHistory {
+public class HistoryAlarm {
 
     private String time;
     private String name;

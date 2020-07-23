@@ -28,16 +28,16 @@ import java.sql.SQLException;
  *
  * @author hyski.mateusz@gmail.com
  */
-class ApiAlarmsHistoryRowMapper implements RowMapper<ApiAlarmsHistory>{
+class ApiAlarmsHistoryRowMapper implements RowMapper<HistoryAlarm>{
 
         @Override
-        public ApiAlarmsHistory mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public HistoryAlarm mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-                ApiAlarmsHistory apiAlarmsHistory = new ApiAlarmsHistory();
-                apiAlarmsHistory.setTime(rs.getString("time"));
-                apiAlarmsHistory.setName(rs.getString("name"));
-                apiAlarmsHistory.setDescription(rs.getString("description"));
+                HistoryAlarm historyAlarm = new HistoryAlarm();
+                historyAlarm.setTime(rs.getString("time"));
+                historyAlarm.setName(rs.getString("name"));
+                historyAlarm.setDescription(rs.getString("description"));
 
-        return apiAlarmsHistory;
+        return historyAlarm;
     }
 }

@@ -6,7 +6,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
+public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
 
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
 
@@ -30,8 +30,8 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
         createViews(jdbcTmp);
         createProcedure(jdbcTmp);
 
-        jdbcTmp.execute("DROP TRIGGER IF EXISTS onlyForStorungsAndAlarmValues\n");
-        jdbcTmp.execute("CREATE TRIGGER onlyForStorungsAndAlarmValues BEFORE INSERT ON pointValues \n" +
+        jdbcTmp.execute("DROP TRIGGER IF EXISTS notifyFaultsOrAlarms\n");
+        jdbcTmp.execute("CREATE TRIGGER notifyFaultsOrAlarms BEFORE INSERT ON pointValues \n" +
                 "FOR EACH ROW CALL notify(new.dataPointId, new.ts, new.pointValue);");
 
     }
@@ -43,12 +43,11 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "\tDECLARE PLC_ALARM_LEVEL INT(1);\n" +
                 "\tDECLARE LAST_POINT_VALUE INT(1); \n" +
                 "\tDECLARE PRESENT_POINT_VALUE INT(1); \n" +
-                "\tDECLARE ALARM_OR_STORUNG_WITH_HIGH_STATE_EXIST_IN_PLCALARM_FOR_POINT_NAME INT(1); \n" +
                 "\tDECLARE actualIdRow INT(10); \n" +
-                "\tDECLARE ALARM_IS_GEGANGEN VARCHAR(40) DEFAULT 'Alarm ist gegangen'; \n" +
-                "\tDECLARE STORUNG_IS_GEGANGEN VARCHAR(40) DEFAULT 'Storung ist gegangen'; \n" +
-                "\tDECLARE ALARM_AUSGELOST VARCHAR(40) DEFAULT 'Alarm ausgelost'; \n" +
-                "\tDECLARE STORUNG_KOMMT VARCHAR(40) DEFAULT 'Storung kommt'; \n" +
+                "\tDECLARE ALARM_IST_GEGANGEN VARCHAR(40) DEFAULT 'plcalarms.alarm.inactive'; \n" +
+                "\tDECLARE STORUNG_IST_GEGANGEN VARCHAR(40) DEFAULT 'plcalarms.fault.inactive'; \n" +
+                "\tDECLARE ALARM_AUSGELOST VARCHAR(40) DEFAULT 'plcalarms.alarm.active'; \n" +
+                "\tDECLARE STORUNG_KOMMT VARCHAR(40) DEFAULT 'plcalarms.fault.active';  \n" +
                 "\tDECLARE EMPTY_STRING VARCHAR(40) DEFAULT ' '; \n" +
                 "\tDECLARE DESCRIPTION_FOR_FIRST_INSERT VARCHAR(40) DEFAULT ' '; \n" +
                 "\tDECLARE TRIGGER_TIME VARCHAR(20); \n" +
@@ -64,14 +63,14 @@ public class V2_3__StorungsAndAlarms implements SpringJdbcMigration {
                 "\t\tIF (LAST_POINT_VALUE = 1 AND PRESENT_POINT_VALUE = 0 AND actualIdRow IS NOT NULL) THEN\n" +
                 "\n" +
                 "            IF (PLC_ALARM_LEVEL = 1) THEN           \n" +
-                "\t\t\t\tUPDATE plcAlarms SET description=ALARM_IS_GEGANGEN WHERE id=actualIdRow;       \n" +
+                "\t\t\t\tSET DESCRIPTION_FOR_FIRST_INSERT = ALARM_IST_GEGANGEN;      \n" +
                 "\t\t\tEND IF;       \n" +
                 "\n" +
                 "\t\t\tIF (PLC_ALARM_LEVEL = 2) THEN           \n" +
-                "\t\t\t\tUPDATE plcAlarms SET description=STORUNG_IS_GEGANGEN WHERE id=actualIdRow;       \n" +
+                "\t\t\t\tSET DESCRIPTION_FOR_FIRST_INSERT = STORUNG_IST_GEGANGEN;       \n" +
                 "\t\t\tEND IF;\n" +
                 "\n" +
-                "\t\t\tUPDATE plcAlarms SET uniquenessToken = actualIdRow, inactiveTime = substring(from_unixtime(newTs/1000),1,19), pointValue = 0 WHERE id = actualIdRow;\n" +
+                "\t\t\tUPDATE plcAlarms SET description = DESCRIPTION_FOR_FIRST_INSERT, uniquenessToken = actualIdRow, inactiveTime = substring(from_unixtime(newTs/1000),1,19), pointValue = 0 WHERE id = actualIdRow;\n" +
                 "\n" +
                 "        END IF;\n" +
                 "        \n" +

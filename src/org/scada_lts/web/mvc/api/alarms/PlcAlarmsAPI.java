@@ -72,7 +72,7 @@ public class PlcAlarmsAPI {
         try {
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
-                    AcknowledgeResponse response = alarmsService.acknowledge(Integer.valueOf(id));
+                    AcknowledgeAlarm response = alarmsService.acknowledge(Integer.valueOf(id));
                     return new ResponseEntity<>(response , HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -121,7 +121,7 @@ public class PlcAlarmsAPI {
         try {
                 User user = Common.getUser(request);
                 if (user != null && user.isAdmin()) {
-                    List<ApiAlarmsLive> result = alarmsService.getLiveAlarms(Integer.parseInt(offset),Integer.parseInt(limit));
+                    List<LiveAlarm> result = alarmsService.getLiveAlarms(Integer.parseInt(offset),Integer.parseInt(limit));
                     return new ResponseEntity<>( result, HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -170,7 +170,7 @@ public class PlcAlarmsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                List<ApiAlarmsHistory> result = alarmsService.getHistoryAlarms(dayDate, dataPointNameRegexFilter, offsetParam, limitParam);
+                List<HistoryAlarm> result = LangUtil.translate(alarmsService.getHistoryAlarms(dayDate, dataPointNameRegexFilter, offsetParam, limitParam), request.getLocale());
                 return new ResponseEntity<>(result , HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

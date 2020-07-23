@@ -49,11 +49,11 @@ public class PlcAlarmsDAO {
         return instance;
     }
 
-    public List<ApiAlarmsLive> getLiveAlarms(int offset, int limit) throws DataAccessException{
+    public List<LiveAlarm> getLiveAlarms(int offset, int limit) throws DataAccessException{
         return jdbcTemplate.query(GET_LIVES_SQL, new Object[]{limit, offset},
                 new ApiAlarmsLiveRowMapper());
     }
-    public List<ApiAlarmsHistory> getHistoryAlarms(String dayDate, String regex, int offset, int limit) throws DataAccessException {
+    public List<HistoryAlarm> getHistoryAlarms(String dayDate, String regex, int offset, int limit) throws DataAccessException {
         return jdbcTemplate.query(GET_HISTORY_SQL, new Object[]{dayDate, regex, limit, offset},
                 new ApiAlarmsHistoryRowMapper());
     }

@@ -1,6 +1,6 @@
 package org.scada_lts.dao.alarms;
 
-public class AcknowledgeResponse {
+public class AcknowledgeAlarm {
 
     private long id;
     private String request;

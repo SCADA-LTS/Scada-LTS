@@ -39,7 +39,7 @@ public class PlcAlarmsService implements AlarmsService {
     }
 
     @Override
-    public List<ApiAlarmsHistory> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit) {
+    public List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit) {
         try
         {
             String regex = dataPointNameFilter == null || "EMPTY".equals(dataPointNameFilter) ? "(.*)" : dataPointNameFilter;
@@ -57,7 +57,7 @@ public class PlcAlarmsService implements AlarmsService {
     }
 
     @Override
-    public List<ApiAlarmsLive> getLiveAlarms(int offset, int limit) {
+    public List<LiveAlarm> getLiveAlarms(int offset, int limit) {
 
         try
         {
@@ -74,14 +74,14 @@ public class PlcAlarmsService implements AlarmsService {
     }
 
     @Override
-    public AcknowledgeResponse acknowledge(int id) {
+    public AcknowledgeAlarm acknowledge(int id) {
         try
         {
             int uniquenessToken = plcAlarmsDAO.getUniquenessToken(id).orElse(-1);
             if(uniquenessToken == -1)
                 return createAcknowledgeResponse("unknow error", false, id);
             if(uniquenessToken == 0)
-                return createAcknowledgeResponse("Alarm/Storung is active!", false, id);
+                return createAcknowledgeResponse("Alarm or Fault is active!", false, id);
             int result = plcAlarmsDAO.setAcknowledgeTime(id);
             return createAcknowledgeResponse("", result == 1, id);
         }
@@ -91,7 +91,7 @@ public class PlcAlarmsService implements AlarmsService {
     }
 
     /**
-     * method use as a helper to build a AcknowledgeResponse by values when
+     * method use as a helper to build a AlarmAcknowledge by values when
      * error occur on DataBase level or another
      * or if everything is OK
      *
@@ -100,22 +100,22 @@ public class PlcAlarmsService implements AlarmsService {
      * @param id
      * @return
      */
-    private AcknowledgeResponse createAcknowledgeResponse(String errorMessage, boolean result, int id) {
+    private AcknowledgeAlarm createAcknowledgeResponse(String errorMessage, boolean result, int id) {
 
-        AcknowledgeResponse acknowledgeResponse = new AcknowledgeResponse();
-        acknowledgeResponse.setId(id);
+        AcknowledgeAlarm acknowledgeAlarm = new AcknowledgeAlarm();
+        acknowledgeAlarm.setId(id);
 
         if(result) {
-            acknowledgeResponse.setError("none");
-            acknowledgeResponse.setRequest("OK");
+            acknowledgeAlarm.setError("none");
+            acknowledgeAlarm.setRequest("OK");
         } else {
             if (errorMessage.isEmpty()) {
-                acknowledgeResponse.setError("Object with id=" + id + " do not exist");
+                acknowledgeAlarm.setError("Object with id=" + id + " do not exist");
             } else {
-                acknowledgeResponse.setError(errorMessage);
+                acknowledgeAlarm.setError(errorMessage);
             }
-            acknowledgeResponse.setRequest("FAULT");
+            acknowledgeAlarm.setRequest("FAULT");
         }
-        return acknowledgeResponse;
+        return acknowledgeAlarm;
     }
 }

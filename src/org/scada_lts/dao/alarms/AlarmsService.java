@@ -18,10 +18,6 @@ package org.scada_lts.dao.alarms;
  *
  */
 
-import org.scada_lts.dao.alarms.AcknowledgeResponse;
-import org.scada_lts.dao.alarms.ApiAlarmsHistory;
-import org.scada_lts.dao.alarms.ApiAlarmsLive;
-
 import java.util.List;
 
 /**
@@ -31,10 +27,10 @@ import java.util.List;
  */
 public interface AlarmsService {
 
-    List<ApiAlarmsLive> getLiveAlarms(int offset, int limit);
+    List<LiveAlarm> getLiveAlarms(int offset, int limit);
 
-    AcknowledgeResponse acknowledge(int id);
+    AcknowledgeAlarm acknowledge(int id);
 
-    List<ApiAlarmsHistory> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit );
+    List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit );
 
 }
