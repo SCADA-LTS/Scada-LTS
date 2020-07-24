@@ -31,6 +31,6 @@ public interface AlarmsService {
 
     AcknowledgeAlarm acknowledge(int id);
 
-    List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit );
+    List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit);
 
 }

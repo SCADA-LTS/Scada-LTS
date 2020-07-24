@@ -16,6 +16,9 @@ package org.scada_lts.web.mvc.api.alarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+import java.util.regex.Pattern;
+
 /**
  * Create by at Mateusz Hyski
  *
@@ -26,6 +29,7 @@ package org.scada_lts.web.mvc.api.alarms;
  */
 class RegexSyntax {
 
-    final static String VALUE_BETWEEN_0_AND_9999 = "[^a-z]|[^A-Z]|[0-9]{1,4}";
-    final static String DATE_FORMAT = "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$";
+    final static Pattern VALUE_NOT_NUMERIC = Pattern.compile("[^0-9]");
+    final static Pattern VALUE_BETWEEN_0_TO_9999 = Pattern.compile("[0-9]{1,4}");
+    final static Pattern DATE_FORMAT = Pattern.compile("^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$");
 }

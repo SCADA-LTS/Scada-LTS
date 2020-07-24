@@ -61,7 +61,7 @@ public class PlcAlarmsService implements AlarmsService {
 
         try
         {
-            return plcAlarmsDAO.getLiveAlarms(offset,limit);
+            return plcAlarmsDAO.getLiveAlarms(offset, limit);
         }
         catch (DataAccessException dataAccessException){
             LOG.trace("Exception on DataBase level.Please debug.");
@@ -79,7 +79,7 @@ public class PlcAlarmsService implements AlarmsService {
         {
             int uniquenessToken = plcAlarmsDAO.getUniquenessToken(id).orElse(-1);
             if(uniquenessToken == -1)
-                return createAcknowledgeResponse("unknow error", false, id);
+                return createAcknowledgeResponse("Unknow error", false, id);
             if(uniquenessToken == 0)
                 return createAcknowledgeResponse("Alarm or Fault is active!", false, id);
             int result = plcAlarmsDAO.setAcknowledgeTime(id);

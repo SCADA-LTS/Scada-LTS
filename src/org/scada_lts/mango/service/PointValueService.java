@@ -304,7 +304,6 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 else
                     shortString = svalue;
             }
-            saveIncomingAlarmsStorungsValues( pointId, dvalue );
             PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id, shortString, longString, sourceType, sourceId);
             PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
 
@@ -312,60 +311,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         return id;
     }
-    private boolean saveIncomingAlarmsStorungsValues(int pointId,double dvalue){
-        boolean result  =false;
-        DataPointVO dataPointVO = dataPointService.getDataPoint(pointId);
-        if( dataPointVO != null ) {
-            generateMessageForLogDependsOnPointValue(dataPointVO.getName(),String.valueOf(dvalue));
 
-            result=true;
-        }
-        return result;
-    }
-
-    private void generateMessageForLogDependsOnPointValue(String dataPointName, String actualValue ){
-        String info = "";
-        Object object = new Object();
-        synchronized(object) {
-            if (stringStringMap.containsKey(dataPointName)) {
-                if (stringStringMap.get(dataPointName).equals(actualValue)) {
-                    info = dataPointName + " " + messageDependsOnPointNameAndActualValue(dataPointName,actualValue);
-                    stringStringMap.remove(dataPointName);
-                } else {
-                    stringStringMap.remove(dataPointName);
-                    stringStringMap.put(dataPointName, actualValue);
-                    info = dataPointName + " " + messageDependsOnPointNameAndActualValue(dataPointName,actualValue);
-                }
-            } else {
-                stringStringMap.put(dataPointName, actualValue);
-                info = dataPointName + " " + messageDependsOnPointNameAndActualValue(dataPointName,actualValue);
-            }
-        }
-        if (!info.isEmpty()) {
-            LogFactory.getLog(PointValueDAO.class).info(info);
-        }
-    }
-    private String messageDependsOnPointNameAndActualValue(String pointName, String actualValue) {
-        return
-                pointName.contains(" AL ")
-                        ?
-                        actualValue.equals("1.0")
-                                ? "Alarm ausgelost"
-                                : actualValue.equals("0.0")
-                                ? "Alarm is gegangen"
-                                : "blad wartosci punktu"
-                        :pointName.contains(" ST ")
-                        ?
-                        actualValue.equals("1.0")
-                                ? "Storung kommt"
-                                : actualValue.equals("0.0")
-                                ? "Storung is gegangen"
-                                : "Undefined point value. This value should be 0(zsro) or 1(one) "
-                        :"Punkt nie zawiera AL ani ST";
-
-
-    }
-    private static Map<String,String> stringStringMap = new HashMap<String,String>();
     //TODO rewrite
     private List<PointValueTime> getLstPointValueTime(List<PointValue> lstIn) {
         List<PointValueTime> lst = new ArrayList<PointValueTime>();
