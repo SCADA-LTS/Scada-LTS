@@ -31,7 +31,7 @@ import java.util.List;
  *
  */
 
-public class PlcAlarmsService implements AlarmsService {
+class PlcAlarmsService implements AlarmsService {
 
     private static final Log LOG = LogFactory.getLog(PlcAlarmsService.class);
 

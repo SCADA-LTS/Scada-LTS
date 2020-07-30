@@ -35,4 +35,7 @@ public interface AlarmsService {
 
     List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit);
 
+    static AlarmsService plcAlarmsService() {
+        return new PlcAlarmsService(PlcAlarmsDAO.getInstance());
+    }
 }

@@ -50,7 +50,7 @@ public class PlcAlarmsAPI {
     private AlarmsService alarmsService;
 
     public PlcAlarmsAPI() {
-        this.alarmsService = new PlcAlarmsService(PlcAlarmsDAO.getInstance());
+        this.alarmsService = AlarmsService.plcAlarmsService();
     }
 
     public PlcAlarmsAPI(AlarmsService alarmsService) {

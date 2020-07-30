@@ -22,26 +22,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ *
+ *
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
  */
-class ApiAlarmsLiveRowMapper implements RowMapper<LiveAlarm>{
+class HistoryAlarmRowMapper implements RowMapper<HistoryAlarm>{
 
         @Override
-        public LiveAlarm mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public HistoryAlarm mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-                LiveAlarm liveAlarm = new LiveAlarm();
-                liveAlarm.setId(rs.getInt("id"));
-                liveAlarm.setActivationTime(String.valueOf(rs.getString("activation-time")));
-                liveAlarm.setInactivationTime(
-                        (rs.getString("inactivation-time") == null)
-                        ?""
-                        :rs.getString("inactivation-time")
-                );
-                liveAlarm.setLevel(String.valueOf(rs.getString("level")));
-                liveAlarm.setName(String.valueOf(rs.getString("name")));
+                HistoryAlarm historyAlarm = new HistoryAlarm();
+                historyAlarm.setTime(rs.getString("time"));
+                historyAlarm.setName(rs.getString("name"));
+                historyAlarm.setDescription(rs.getString("description"));
 
-        return liveAlarm;
+        return historyAlarm;
     }
 }
