@@ -1,4 +1,4 @@
-package org.scada_lts.dao.storungsAndAlarms;
+package org.scada_lts.dao.alarms;
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *
@@ -16,8 +16,8 @@ package org.scada_lts.dao.storungsAndAlarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  *
  * class works as a DTO without DTO in end of class name
@@ -27,16 +27,20 @@ import org.json.JSONObject;
  *
  *
  * @author hyski.mateusz@gmail.com
+ * @update kamil.jarmusik@gmail.com
+ *
  */
-class ApiAlarmsLive {
+
+public class LiveAlarm {
 
     private int id;
 
-    private String
-            activationTime,
-            inactivationTime,
-            level,
-            name;
+    @JsonProperty("activation-time")
+    private String activationTime;
+    @JsonProperty("inactivation-time")
+    private String inactivationTime;
+    private String level;
+    private String name;
 
     public int getId() {
         return id;
@@ -78,24 +82,4 @@ class ApiAlarmsLive {
         this.name = name;
     }
 
-    public JSONObject toJSONObject(){
-        try {
-            return new JSONObject()
-                    .put("id", getId())
-                    .put("activation-time", getActivationTime())
-                    .put("inactivation-time", getInactivationTime())
-                    .put("level", String.valueOf( getLevel() ) )
-                    .put("name", getName());
-        }
-        catch (JSONException e){
-            try {
-                // if exception occurs as a result of invoking rest service , is received also message about exception
-                return new JSONObject().put("error during build JSONObject", e.getMessage());
-            }
-            catch (JSONException exception){
-                e.getMessage();
-            }
-        }
-        return null;
-    }
 }

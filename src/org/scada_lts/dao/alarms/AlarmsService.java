@@ -1,4 +1,4 @@
-package org.scada_lts.dao;
+package org.scada_lts.dao.alarms;
 
 /*
  * (c) 2020 hyski.mateusz@gmail.com
@@ -18,20 +18,25 @@ package org.scada_lts.dao;
  *
  */
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.List;
 
 /**
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
+ * @update kamil.jarmusik@gmail.com
+ *
  */
-public interface PointValuesStorungsAndAlarms {
 
-    JSONArray getLiveAlarms(int offset, int limit);
+public interface AlarmsService {
 
-    JSONObject setAcknowledge( int id, JSONObject jsonObject);
+    List<LiveAlarm> getLiveAlarms(int offset, int limit);
 
-    JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit );
+    AlarmAcknowledge acknowledge(int id);
 
+    List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit);
+
+    static AlarmsService plcAlarmsService() {
+        return new PlcAlarmsService(AlarmsDAO.getInstance());
+    }
 }
