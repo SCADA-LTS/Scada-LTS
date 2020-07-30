@@ -10,6 +10,12 @@ import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ *
+ * @author kamil.jarmusik@gmail.com
+ *
+ */
+
 public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
 
     public void migrate(JdbcTemplate jdbcTmp) throws Exception {
@@ -35,6 +41,8 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
         //this additional column will have defined level of alarm as a 0-8 steps.
         jdbcTmp.execute("ALTER TABLE dataPoints ADD plcAlarmLevel TINYINT(8);");
 
+        //Unfortunately, it is not possible to omit a class DataPointVO from the scady code,
+        //a serialized object of a given type can only be deserialized for this type.
         List<DataPointVO> dataPoints = jdbcTmp.query("SELECT id, data FROM dataPoints", (resultSet, i) -> {
             try (InputStream inputStream = resultSet.getBinaryStream("data");
                  ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
@@ -56,10 +64,10 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
             String dataPointName = dataPointPart.getName();
             int plcAlarmLevel = 0;
             if(dataPointName.contains(" AL ")) {
-                plcAlarmLevel = 3;
+                plcAlarmLevel = 2;
             }
             if(dataPointName.contains(" ST ")) {
-                plcAlarmLevel = 2;
+                plcAlarmLevel = 1;
             }
             jdbcTmp.update("UPDATE dataPoints SET plcAlarmLevel = ?, pointName = ? WHERE id = ?",
                     plcAlarmLevel, dataPointName, dataPointPart.getId());
@@ -126,18 +134,18 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
                 "\tSELECT plcAlarmLevel INTO PLC_ALARM_LEVEL FROM dataPoints WHERE id = newDataPointId;\n" +
                 "    SELECT newPointValue INTO PRESENT_POINT_VALUE;  \n" +
                 "\n" +
-                "\tIF (PLC_ALARM_LEVEL = 3 OR PLC_ALARM_LEVEl = 2) THEN \n" +
+                "\tIF (PLC_ALARM_LEVEL = 1 OR PLC_ALARM_LEVEl = 2) THEN \n" +
                 "    \n" +
                 "    \tSELECT pointValue INTO LAST_POINT_VALUE FROM plcAlarms WHERE id = (SELECT max(pv.id) FROM plcAlarms AS pv WHERE pv.dataPointId = newDataPointId);  \n" +
                 "\t\tSELECT id INTO ACTUAL_ID_ROW FROM plcAlarms WHERE dataPointId = newDataPointId AND uniquenessToken = 0;\n" +
                 "        \n" +
                 "\t\tIF (LAST_POINT_VALUE = 1 AND PRESENT_POINT_VALUE = 0 AND ACTUAL_ID_ROW IS NOT NULL) THEN\n" +
                 "\n" +
-                "            IF (PLC_ALARM_LEVEL = 3) THEN           \n" +
+                "            IF (PLC_ALARM_LEVEL = 2) THEN           \n" +
                 "\t\t\t\tSET DESCRIPTION_FOR_FIRST_INSERT = ALARM_IST_GEGANGEN;      \n" +
                 "\t\t\tEND IF;       \n" +
                 "\n" +
-                "\t\t\tIF (PLC_ALARM_LEVEL = 2) THEN           \n" +
+                "\t\t\tIF (PLC_ALARM_LEVEL = 1) THEN           \n" +
                 "\t\t\t\tSET DESCRIPTION_FOR_FIRST_INSERT = STORUNG_IST_GEGANGEN;       \n" +
                 "\t\t\tEND IF;\n" +
                 "\n" +
@@ -147,11 +155,11 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
                 "        \n" +
                 "\t\tIF ((LAST_POINT_VALUE IS NULL AND PRESENT_POINT_VALUE = 1) OR (LAST_POINT_VALUE = 0 AND PRESENT_POINT_VALUE = 1 AND ACTUAL_ID_ROW IS NULL)) THEN      \n" +
                 "\n" +
-                "\t\t\tIF (PLC_ALARM_LEVEL = 3) THEN           \n" +
+                "\t\t\tIF (PLC_ALARM_LEVEL = 2) THEN           \n" +
                 "\t\t\t\tSET DESCRIPTION_FOR_FIRST_INSERT = ALARM_AUSGELOST;       \n" +
                 "\t\t\tEND IF;\n" +
                 "\t\t\t\n" +
-                "\t\t\tIF (PLC_ALARM_LEVEL = 2) THEN           \n" +
+                "\t\t\tIF (PLC_ALARM_LEVEL = 1) THEN           \n" +
                 "\t\t\t\tSET DESCRIPTION_FOR_FIRST_INSERT = STORUNG_KOMMT;       \n" +
                 "\t\t\tEND IF;\n" +
                 "\n" +

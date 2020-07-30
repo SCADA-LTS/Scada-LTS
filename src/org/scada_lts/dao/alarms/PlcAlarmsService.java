@@ -35,10 +35,10 @@ class PlcAlarmsService implements AlarmsService {
 
     private static final Log LOG = LogFactory.getLog(PlcAlarmsService.class);
 
-    private final PlcAlarmsDAO plcAlarmsDAO;
+    private final AlarmsDAO alarmsDAO;
 
-    public PlcAlarmsService(PlcAlarmsDAO plcAlarmsDAO) {
-        this.plcAlarmsDAO = plcAlarmsDAO;
+    public PlcAlarmsService(AlarmsDAO alarmsDAO) {
+        this.alarmsDAO = alarmsDAO;
     }
 
     @Override
@@ -46,7 +46,7 @@ class PlcAlarmsService implements AlarmsService {
         try
         {
             String regex = dataPointNameFilter == null || "EMPTY".equals(dataPointNameFilter) ? "(.*)" : dataPointNameFilter;
-            return plcAlarmsDAO.getHistoryAlarms(dayDate, regex, offset, limit);
+            return alarmsDAO.getHistoryAlarms(dayDate, regex, offset, limit);
         }
         catch (DataAccessException dataAccessException){
             LOG.trace("Exception on DataBase level.Please debug.");
@@ -64,7 +64,7 @@ class PlcAlarmsService implements AlarmsService {
 
         try
         {
-            return plcAlarmsDAO.getLiveAlarms(offset, limit);
+            return alarmsDAO.getLiveAlarms(offset, limit);
         }
         catch (DataAccessException dataAccessException){
             LOG.trace("Exception on DataBase level.Please debug.");
@@ -80,12 +80,12 @@ class PlcAlarmsService implements AlarmsService {
     public AlarmAcknowledge acknowledge(int id) {
         try
         {
-            int uniquenessToken = plcAlarmsDAO.getUniquenessToken(id).orElse(-1);
+            int uniquenessToken = alarmsDAO.getUniquenessToken(id).orElse(-1);
             if(uniquenessToken == -1)
                 return createAcknowledgeResponse("Unknow error", false, id);
             if(uniquenessToken == 0)
                 return createAcknowledgeResponse("Alarm or Fault is active!", false, id);
-            int result = plcAlarmsDAO.setAcknowledgeTime(id);
+            int result = alarmsDAO.setAcknowledgeTime(id);
             return createAcknowledgeResponse("", result == 1, id);
         }
         catch (DataAccessException e) {

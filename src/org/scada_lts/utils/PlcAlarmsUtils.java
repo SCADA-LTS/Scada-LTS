@@ -2,6 +2,12 @@ package org.scada_lts.utils;
 
 import com.serotonin.mango.rt.event.AlarmLevels;
 
+/**
+ *
+ * @author kamil.jarmusik@gmail.com
+ *
+ */
+
 public class PlcAlarmsUtils {
 
     public static int getPlcAlarmLevelByDataPointName(String dataPointName) {
@@ -10,8 +16,8 @@ public class PlcAlarmsUtils {
             return AlarmLevels.NONE;
         }
         if(dataPointName.contains(" AL ")) {
-            return AlarmLevels.CRITICAL;
+            return AlarmLevels.URGENT;
         }
-        return dataPointName.contains(" ST ") ? AlarmLevels.URGENT : AlarmLevels.NONE;
+        return dataPointName.contains(" ST ") ? AlarmLevels.INFORMATION : AlarmLevels.NONE;
     }
 }

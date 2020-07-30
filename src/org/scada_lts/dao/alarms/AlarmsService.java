@@ -27,6 +27,7 @@ import java.util.List;
  * @update kamil.jarmusik@gmail.com
  *
  */
+
 public interface AlarmsService {
 
     List<LiveAlarm> getLiveAlarms(int offset, int limit);
@@ -36,6 +37,6 @@ public interface AlarmsService {
     List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit);
 
     static AlarmsService plcAlarmsService() {
-        return new PlcAlarmsService(PlcAlarmsDAO.getInstance());
+        return new PlcAlarmsService(AlarmsDAO.getInstance());
     }
 }
