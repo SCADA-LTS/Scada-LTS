@@ -24,12 +24,14 @@ import java.util.List;
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
+ * @update kamil.jarmusik@gmail.com
+ *
  */
 public interface AlarmsService {
 
     List<LiveAlarm> getLiveAlarms(int offset, int limit);
 
-    AcknowledgeAlarm acknowledge(int id);
+    AlarmAcknowledge acknowledge(int id);
 
     List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit);
 

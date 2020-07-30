@@ -19,27 +19,6 @@
 
 -- Make sure that everything get created with utf8 as the charset.
 alter database default character set utf8;
-/*
-DROP TABLE IF EXISTS pointValuesStorungsAndAlarms;
-*/
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-/*
-CREATE TABLE `pointValuesStorungsAndAlarms` (
-	id mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-	pointId  varchar(45) DEFAULT NULL,
-	pointXid  varchar(45) DEFAULT NULL,
-	pointType  varchar(45) DEFAULT NULL,
-	pointName  varchar(45) DEFAULT NULL,
-	triggerTime  varchar(45) DEFAULT NULL,
-	inactiveTime  varchar(45) DEFAULT NULL,
-	acknowledgeTime  varchar(45) DEFAULT NULL,
-	lastpointValue  varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
-*/
-/*!40101 SET character_set_client = @saved_cs_client */;
-
 
 --
 -- System settings
@@ -649,3 +628,123 @@ create table viewUsersProfiles (
 ) ENGINE=InnoDB;
 alter table viewUsersProfiles add constraint viewUsersProfilesFk1 foreign key (viewId) references mangoViews(id) on delete cascade;
 alter table viewUsersProfiles add constraint viewUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;
+
+ALTER TABLE dataPoints ADD pointName VARCHAR(250);
+ALTER TABLE dataPoints ADD plcAlarmLevel TINYINT(8);
+
+CREATE TABLE plcAlarms (
+  id INT NOT NULL auto_increment,
+  dataPointId INT NOT NULL,
+  dataPointXid  VARCHAR(50) DEFAULT NULL,
+  dataPointType  VARCHAR(45) DEFAULT NULL,
+  dataPointName  VARCHAR(45) DEFAULT NULL,
+  insertTime  VARCHAR(45) DEFAULT NULL,
+  triggerTime  VARCHAR(45) DEFAULT NULL,
+  inactiveTime  VARCHAR(45) DEFAULT NULL,
+  acknowledgeTime  VARCHAR(45) DEFAULT NULL,
+  pointValue  VARCHAR(45) DEFAULT NULL,
+  description  VARCHAR(45) DEFAULT NULL,
+  uniquenessToken INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (dataPointId) REFERENCES dataPoints(id) ON DELETE CASCADE,
+  UNIQUE(dataPointId, uniquenessToken)
+) ENGINE=InnoDB;
+
+CREATE VIEW historyAlarms AS SELECT
+  inactiveTime AS 'time',
+  description AS 'description',
+  dataPointName AS 'name'
+FROM plcAlarms ORDER BY inactiveTime DESC, id DESC;
+
+CREATE VIEW liveAlarms AS SELECT
+  id,
+  triggerTime AS 'activation-time',
+  inactiveTime AS 'inactivation-time',
+  dataPointType AS 'level',
+  dataPointName AS 'name'
+FROM plcAlarms WHERE acknowledgeTime='' AND unix_timestamp(inactiveTime) < NOW() - INTERVAL 24 HOUR ORDER BY inactiveTime=' ' DESC, triggerTime DESC, inactiveTime DESC, id DESC;
+
+DELIMITER $$
+CREATE PROCEDURE `notify`(IN newDataPointId varchar(45), IN newTs varchar(45), IN newPointValue varchar(45))
+BEGIN
+	DECLARE PLC_ALARM_LEVEL INT(1);
+	DECLARE LAST_POINT_VALUE INT(1);
+	DECLARE PRESENT_POINT_VALUE INT(1);
+	DECLARE ACTUAL_ID_ROW INT(10);
+	DECLARE ALARM_IST_GEGANGEN VARCHAR(40) DEFAULT 'plcalarms.alarm.inactive';
+	DECLARE STORUNG_IST_GEGANGEN VARCHAR(40) DEFAULT 'plcalarms.fault.inactive';
+	DECLARE ALARM_AUSGELOST VARCHAR(40) DEFAULT 'plcalarms.alarm.active';
+	DECLARE STORUNG_KOMMT VARCHAR(40) DEFAULT 'plcalarms.fault.active';
+	DECLARE EMPTY_STRING VARCHAR(40) DEFAULT ' ';
+	DECLARE DESCRIPTION_FOR_FIRST_INSERT VARCHAR(40) DEFAULT ' ';
+	DECLARE TRIGGER_TIME VARCHAR(20);
+
+	SELECT plcAlarmLevel INTO PLC_ALARM_LEVEL FROM dataPoints WHERE id = newDataPointId;
+    SELECT newPointValue INTO PRESENT_POINT_VALUE;
+
+	IF (PLC_ALARM_LEVEL = 3 OR PLC_ALARM_LEVEl = 2) THEN
+
+    	SELECT pointValue INTO LAST_POINT_VALUE FROM plcAlarms WHERE id = (SELECT max(pv.id) FROM plcAlarms AS pv WHERE pv.dataPointId = newDataPointId);
+		SELECT id INTO ACTUAL_ID_ROW FROM plcAlarms WHERE dataPointId = newDataPointId AND uniquenessToken = 0;
+
+		IF (LAST_POINT_VALUE = 1 AND PRESENT_POINT_VALUE = 0 AND ACTUAL_ID_ROW IS NOT NULL) THEN
+
+            IF (PLC_ALARM_LEVEL = 3) THEN
+				SET DESCRIPTION_FOR_FIRST_INSERT = ALARM_IST_GEGANGEN;
+			END IF;
+
+			IF (PLC_ALARM_LEVEL = 2) THEN
+				SET DESCRIPTION_FOR_FIRST_INSERT = STORUNG_IST_GEGANGEN;
+			END IF;
+
+			UPDATE plcAlarms SET description = DESCRIPTION_FOR_FIRST_INSERT, uniquenessToken = ACTUAL_ID_ROW, inactiveTime = substring(from_unixtime(newTs/1000),1,19), pointValue = 0 WHERE id = ACTUAL_ID_ROW;
+
+        END IF;
+
+		IF ((LAST_POINT_VALUE IS NULL AND PRESENT_POINT_VALUE = 1) OR (LAST_POINT_VALUE = 0 AND PRESENT_POINT_VALUE = 1 AND ACTUAL_ID_ROW IS NULL)) THEN
+
+			IF (PLC_ALARM_LEVEL = 3) THEN
+				SET DESCRIPTION_FOR_FIRST_INSERT = ALARM_AUSGELOST;
+			END IF;
+
+			IF (PLC_ALARM_LEVEL = 2) THEN
+				SET DESCRIPTION_FOR_FIRST_INSERT = STORUNG_KOMMT;
+			END IF;
+
+			SELECT substring(from_unixtime(newTs/1000),1,19) INTO TRIGGER_TIME;
+
+			INSERT INTO plcAlarms (
+				dataPointId,
+				dataPointXid,
+				dataPointType,
+				dataPointName,
+				insertTime,
+				triggerTime,
+				inactiveTime,
+				acknowledgeTime,
+				pointValue,
+				description,
+				uniquenessToken
+			)
+            VALUES (
+				newDataPointId,
+				(SELECT xid FROM dataPoints WHERE id=newDataPointId),
+				PLC_ALARM_LEVEL,
+				(SELECT pointName FROM dataPoints WHERE id=newDataPointId),
+				TRIGGER_TIME,
+				TRIGGER_TIME,
+				EMPTY_STRING,
+				EMPTY_STRING,
+				PRESENT_POINT_VALUE,
+				DESCRIPTION_FOR_FIRST_INSERT,
+				0
+            ) ON DUPLICATE KEY UPDATE uniquenessToken = 0;
+
+		END IF;
+	END IF;
+END$$
+
+DELIMITER ;
+
+CREATE TRIGGER notifyFaultsOrAlarms BEFORE INSERT ON pointValues
+FOR EACH ROW CALL notify(new.dataPointId, new.ts, new.pointValue);

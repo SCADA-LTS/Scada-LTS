@@ -27,7 +27,10 @@ import java.util.List;
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
+ * @update kamil.jarmusik@gmail.com
+ *
  */
+
 public class PlcAlarmsService implements AlarmsService {
 
     private static final Log LOG = LogFactory.getLog(PlcAlarmsService.class);
@@ -74,7 +77,7 @@ public class PlcAlarmsService implements AlarmsService {
     }
 
     @Override
-    public AcknowledgeAlarm acknowledge(int id) {
+    public AlarmAcknowledge acknowledge(int id) {
         try
         {
             int uniquenessToken = plcAlarmsDAO.getUniquenessToken(id).orElse(-1);
@@ -100,22 +103,7 @@ public class PlcAlarmsService implements AlarmsService {
      * @param id
      * @return
      */
-    private AcknowledgeAlarm createAcknowledgeResponse(String errorMessage, boolean result, int id) {
-
-        AcknowledgeAlarm acknowledgeAlarm = new AcknowledgeAlarm();
-        acknowledgeAlarm.setId(id);
-
-        if(result) {
-            acknowledgeAlarm.setError("none");
-            acknowledgeAlarm.setRequest("OK");
-        } else {
-            if (errorMessage.isEmpty()) {
-                acknowledgeAlarm.setError("Object with id=" + id + " do not exist");
-            } else {
-                acknowledgeAlarm.setError(errorMessage);
-            }
-            acknowledgeAlarm.setRequest("FAULT");
-        }
-        return acknowledgeAlarm;
+    private AlarmAcknowledge createAcknowledgeResponse(String errorMessage, boolean result, int id) {
+        return result ? AlarmAcknowledge.requestOk(id) : AlarmAcknowledge.requestFault(id, errorMessage);
     }
 }

@@ -27,7 +27,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  *
  * @author hyski.mateusz@gmail.com
+ * @update kamil.jarmusik@gmail.com
+ *
  */
+
 public class LiveAlarm {
 
     private int id;

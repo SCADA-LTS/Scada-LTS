@@ -39,14 +39,25 @@ import static org.scada_lts.web.mvc.api.alarms.Validation.validateNumberFormat;
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
+ * @update kamil.jarmusik@gmail.com
+ *
  */
+
 @RestController
 public class PlcAlarmsAPI {
 
     private static final Log LOG = LogFactory.getLog(PlcAlarmsAPI.class);
-    private AlarmsService alarmsService = new PlcAlarmsService(PlcAlarmsDAO.getInstance());
+    private AlarmsService alarmsService;
 
-    /*
+    public PlcAlarmsAPI() {
+        this.alarmsService = new PlcAlarmsService(PlcAlarmsDAO.getInstance());
+    }
+
+    public PlcAlarmsAPI(AlarmsService alarmsService) {
+        this.alarmsService = alarmsService;
+    }
+
+    /**
      * example of result:
      *
      * {
@@ -69,7 +80,7 @@ public class PlcAlarmsAPI {
 
         User user = Common.getUser(request);
         if (user != null && user.isAdmin()) {
-            AcknowledgeAlarm response = alarmsService.acknowledge(id);
+            AlarmAcknowledge response = alarmsService.acknowledge(id);
             return new ResponseEntity<>(response , HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -107,8 +118,7 @@ public class PlcAlarmsAPI {
 
         User user = Common.getUser(request);
         if (user != null && user.isAdmin()) {
-            String value = validateNumberFormat("offset", offset) +
-                    validateBetweenZeroTo9999("limit", limit);
+            String value = validateBetweenZeroTo9999("limit", limit);
             if (!value.isEmpty()) {
                 return new ResponseEntity<>(value, HttpStatus.BAD_REQUEST);
             }

@@ -28,14 +28,17 @@ import java.util.Optional;
  * Create by at Mateusz Hyski
  *
  * @author hyski.mateusz@gmail.com
+ * @update kamil.jarmusik@gmail.com
+ *
  */
 
 public class PlcAlarmsDAO {
 
-    private static final String GET_LIVES_SQL = "SELECT `id`, `activation-time`, `inactivation-time`, `level`, `name` FROM apiAlarmsLive LIMIT ? OFFSET ?;";
-    private static final String SET_ACKNOWLEDGE_TIME_SQL = "UPDATE plcAlarms SET acknowledgeTime=from_unixtime(unix_timestamp()) WHERE id=?;";
-    private static final String GET_UNIQUENESS_TOKEN_SQL = "SELECT uniquenessToken FROM plcAlarms WHERE id = ?; ";
-    private static final String GET_HISTORY_SQL = "SELECT name, time, description FROM apiAlarmsHistory WHERE DATE_FORMAT(time, '%Y-%m-%d')=? AND name RLIKE ? LIMIT ? OFFSET ?";
+
+    private static final String SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET = "SELECT `id`, `activation-time`, `inactivation-time`, `level`, `name` FROM liveAlarms LIMIT ? OFFSET ?;";
+    private static final String UPDATE_PLC_ALARMS_SET_ACKNOWLEDGE_TIME_WHERE_ID = "UPDATE plcAlarms SET acknowledgeTime=from_unixtime(unix_timestamp()) WHERE id=?;";
+    private static final String SELECT_UNIQUENESS_TOKEN_FROM_PLC_ALARMS_WHERE_ID = "SELECT uniquenessToken FROM plcAlarms WHERE id = ?; ";
+    private static final String SELECT_FROM_HISTORY_ALARMS_VIEW_WHERE_TIME_AND_RLIKE_LIMIT_OFFSET = "SELECT name, time, description FROM historyAlarms WHERE DATE_FORMAT(time, '%Y-%m-%d')=? AND name RLIKE ? LIMIT ? OFFSET ?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -50,19 +53,19 @@ public class PlcAlarmsDAO {
     }
 
     public List<LiveAlarm> getLiveAlarms(int offset, int limit) throws DataAccessException{
-        return jdbcTemplate.query(GET_LIVES_SQL, new Object[]{limit, offset},
+        return jdbcTemplate.query(SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET, new Object[]{limit, offset},
                 new ApiAlarmsLiveRowMapper());
     }
     public List<HistoryAlarm> getHistoryAlarms(String dayDate, String regex, int offset, int limit) throws DataAccessException {
-        return jdbcTemplate.query(GET_HISTORY_SQL, new Object[]{dayDate, regex, limit, offset},
+        return jdbcTemplate.query(SELECT_FROM_HISTORY_ALARMS_VIEW_WHERE_TIME_AND_RLIKE_LIMIT_OFFSET, new Object[]{dayDate, regex, limit, offset},
                 new ApiAlarmsHistoryRowMapper());
     }
     public int setAcknowledgeTime(int id) throws DataAccessException {
-        return jdbcTemplate.update(SET_ACKNOWLEDGE_TIME_SQL, id);
+        return jdbcTemplate.update(UPDATE_PLC_ALARMS_SET_ACKNOWLEDGE_TIME_WHERE_ID, id);
     }
 
     public Optional<Integer> getUniquenessToken(int id) throws DataAccessException {
-        Integer uniquenessToken = jdbcTemplate.queryForObject(GET_UNIQUENESS_TOKEN_SQL, new Object[]{id}, Integer.class);
+        Integer uniquenessToken = jdbcTemplate.queryForObject(SELECT_UNIQUENESS_TOKEN_FROM_PLC_ALARMS_WHERE_ID, new Object[]{id}, Integer.class);
         return Optional.ofNullable(uniquenessToken);
     }
 }
