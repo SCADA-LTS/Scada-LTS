@@ -1,7 +1,12 @@
 <template>
     <div class="historical-alarms-components">
-        <SimplePanel>
+
+        <SimplePanel class="panel_top">
             To refresh {{toRefresh}}
+            <div class="action">
+                <input type="checkbox" id="select_all"  v-on:click="toggleSelectAll()" name="Select_All" value="0" ref="selectAll" v-model="sellAll">
+                &nbsp;<label class="selall" for="select_all" v-on:click="toggleSelectAll()">Select All</label><br>
+            </div>
         </SimplePanel>
         <table>
             <tr>
@@ -18,26 +23,33 @@
                     }"
             >
                 <td>
-                    <input v-if="item['inactivation-time'].length>0" type="checkbox" name="Activation"
-                           value="Activation" data="{{item.id}}">
+                    <input v-if=" item != undefined && item['inactivation-time'] != undefined && item['inactivation-time'].trim().length>0"
+                           type="checkbox" name="ActivationAction"
+                           :value="item.id" v-model="to_acknowledges">
                 </td>
                 <td>{{item["activation-time"]}}</td>
                 <td>{{item["inactivation-time"]}}</td>
                 <td>{{item.name}}</td>
             </tr>
         </table>
+
         <SimplePanel>
 
-            <SimplePagination class="min-gb-pagination"
-                              :current-page="currentPage"
-                              :page-count="pageCount"
-                              :visible-pages-count="8"
-                              @nextPage="pageChangeHandle('next')"
-                              @previousPage="pageChangeHandle('pref')"
-                              @loadPage="pageChangeHandle"
-            ></SimplePagination>
+            <div class="pagination">
+                <SimplePagination
+                        :current-page="currentPage"
+                        :page-count="pageCount"
+                        :visible-pages-count="8"
+                        @nextPage="pageChangeHandle('next')"
+                        @previousPage="pageChangeHandle('pref')"
+                        @loadPage="pageChangeHandle"
+                ></SimplePagination>
+            </div>
 
         </SimplePanel>
+        <div class="action_bottom">
+            <button v-on:click="acknowledge()">Acknowledge Störung/Alarms</button>
+        </div>
     </div>
 </template>
 
@@ -56,49 +68,103 @@
                 alarms: [],
                 currentPage: 1,
                 pageCount: 10,
-                toRefresh: 5
+                toRefresh: 5,
+                to_acknowledges: [],
+                sellAll: false
+
             }
         },
         methods: {
             getAlarms(page) {
 
                 let recordsCount = 20
-                let loffset = String(recordsCount * page)
-                let llimit = String(recordsCount * (page - 1))
+                let loffset = String(recordsCount * (page - 1))
+                let llimit = String(recordsCount)
 
-                store.dispatch('fakeGetLiveAlarms', {'offset': loffset, 'limit': llimit}).then((ret) => {
+                //store.dispatch('fakeGetLiveAlarms
+                store.dispatch('getLiveAlarms', {'offset': loffset, 'limit': llimit}).then((ret) => {
                     this.alarms = ret
                     //console.log(JSON.stringify(this.data))
                 })
             },
+            acknowledge() {
+
+                for (let i = 0; i < this.to_acknowledges.length; i++) {
+                    const id = this.to_acknowledges[i]
+                    store.dispatch('setAcknowledge', {id}).then(
+                        ret => {
+                            console.log(`ackn:${ret}`)
+                            this.sellAll = false;
+                        }
+                    ).catch(err => {
+                            console.log(`ackn-err:${err}`)
+                        }
+                    )
+                }
+                this.getAlarms(this.currentPage)
+
+            },
+            toggleSelectAll() {
+                const checkboxes = document.getElementsByName('ActivationAction')
+
+                //console.log(`toRemoveCheck:${JSON.stringify(this.sellAll)}`)
+
+                if (this.sellAll) {
+                    this.to_acknowledges = []
+                } else if (checkboxes != null && checkboxes != undefined) {
+                    for (let i = 0; i < checkboxes.length; i++) {
+                        this.to_acknowledges.push(checkboxes[i]._value)
+                    }
+                }
+            },
+            checkPrm(activationTime, inactivationTime, level) {
+                if (activationTime === undefined || inactivationTime === undefined || level === undefined) return false;
+                if (activationTime === null || inactivationTime === null || level === null) return false
+                return true
+            },
             isActivation(activationTime, inactivationTime, level) {
-                if (activationTime.length > 0 && inactivationTime.length == 0 && level == 5) {
+                if (!this.checkPrm(activationTime, inactivationTime, level)) return false
+
+                if (activationTime.trim().length > 0 && inactivationTime.trim().length == 0 && level == 2) {
                     return true
                 } else {
                     return false
                 }
             },
             isActivationAlarm(activationTime, inactivationTime, level) {
-                if (activationTime.length > 0 && inactivationTime.length == 0 && level == 4) {
+                if (!this.checkPrm(activationTime, inactivationTime, level)) return false
+
+                if (activationTime.trim().length > 0 && inactivationTime.trim().length == 0 && level == 1) {
                     return true
                 } else {
                     return false
                 }
+
             },
             isInactivation(activationTime, inactivationTime, level) {
-                if (activationTime.length > 0 && inactivationTime.length > 0) {
+                if (!this.checkPrm(activationTime, inactivationTime, level)) return false
+
+                if (activationTime.trim().length > 0 && inactivationTime.trim().length > 0) {
                     return true
                 } else {
                     return false
                 }
             },
             pageChangeHandle(pr) {
+                this.to_acknowledges = []
+                this.sellAll = false
                 try {
                     if (pr === 'next') {
-                        console.log('pageChangeHandle next')
+                        if (this.currentPage < 9) {
+                            this.currentPage = Number(this.currentPage + 1)
+                            this.getAlarms(this.currentPage)
+                        }
                         return
                     } else if (pr === 'pref') {
-                        console.log('pageChangeHandle pref')
+                        if (this.currentPage > 1) {
+                            this.currentPage = Number(this.currentPage - 1)
+                            this.getAlarms(this.currentPage)
+                        }
                         return
                     }
                     this.currentPage = Number(pr)
@@ -108,15 +174,13 @@
                 }
             },
         },
-
         created() {
-            this.getAlarms();
+            this.getAlarms(1);
         },
         mounted() {
-
             setInterval(
                 () => {
-                    if (this.toRefresh == 0 ) {
+                    if (this.toRefresh == 0) {
                         this.getAlarms(this.currentPage)
                         this.toRefresh = 5;
                         console.log('getAlarms')
@@ -127,7 +191,7 @@
                 1000
             )
 
-        },
+        }
     }
 </script>
 
@@ -140,7 +204,7 @@
         margin: 20px;
         font-family: arial, sans-serif;
         border-collapse: collapse;
-        width: 100%;
+        width: 95%;
     }
 
     td, th {
@@ -163,4 +227,18 @@
         color: green;
         background: white;
     }
+
+    .pagination {
+        margin: 0px 0px 0px 10px;
+    }
+
+    .action_bottom {
+        padding-top: 10px;
+        margin-left: 20px;
+    }
+
+    .panel_top {
+        margin-top: 45px;
+    }
+
 </style>

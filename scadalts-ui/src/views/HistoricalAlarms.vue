@@ -21,7 +21,6 @@
 
 <style scoped>
     .historical-alarms {
-        position: absolute;
         z-index: -1;
     }
 
