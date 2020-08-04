@@ -633,118 +633,135 @@ ALTER TABLE dataPoints ADD pointName VARCHAR(250);
 ALTER TABLE dataPoints ADD plcAlarmLevel TINYINT(8);
 
 CREATE TABLE plcAlarms (
-  id INT NOT NULL auto_increment,
+  id BIGINT NOT NULL auto_increment,
   dataPointId INT NOT NULL,
   dataPointXid  VARCHAR(50) DEFAULT NULL,
   dataPointType  VARCHAR(45) DEFAULT NULL,
   dataPointName  VARCHAR(45) DEFAULT NULL,
-  insertTime  VARCHAR(45) DEFAULT NULL,
-  triggerTime  VARCHAR(45) DEFAULT NULL,
-  inactiveTime  VARCHAR(45) DEFAULT NULL,
-  acknowledgeTime  VARCHAR(45) DEFAULT NULL,
+  activeTime BIGINT DEFAULT 0,
+  inactiveTime BIGINT DEFAULT 0,
+  acknowledgeTime BIGINT DEFAULT 0,
   pointValue  VARCHAR(45) DEFAULT NULL,
   description  VARCHAR(45) DEFAULT NULL,
-  uniquenessToken INT NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (dataPointId) REFERENCES dataPoints(id) ON DELETE CASCADE,
-  UNIQUE(dataPointId, uniquenessToken)
+  PRIMARY KEY (id), FOREIGN KEY (dataPointId) REFERENCES dataPoints(id) ON DELETE CASCADE,
+  UNIQUE(dataPointId, inactiveTime)
 ) ENGINE=InnoDB;
 
+DELIMITER $$
+CREATE FUNCTION func_fromats_date(ts BIGINT) RETURNS varchar(19) CHARSET utf8
+BEGIN
+    IF(ts = 0) THEN
+        RETURN ' ';
+    END IF;
+
+    IF(ts <> 0) THEN
+        RETURN substring(from_unixtime(ts/1000),1,19);
+    END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+CREATE FUNCTION func_alarms_active_msg_key(plcAlarmLevel INT(1)) RETURNS varchar(40) CHARSET utf8
+BEGIN
+
+	IF (plcAlarmLevel = 2) THEN
+		RETURN 'plcalarms.alarm.active';
+	END IF;
+
+	IF (plcAlarmLevel = 1) THEN
+		RETURN 'plcalarms.fault.active';
+	END IF;
+
+    RETURN '';
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+CREATE FUNCTION func_alarms_inactive_msg_key(plcAlarmLevel INT(1)) RETURNS varchar(40) CHARSET utf8
+BEGIN
+	IF (plcAlarmLevel = 2) THEN
+		RETURN 'plcalarms.alarm.inactive';
+	END IF;
+
+	IF (plcAlarmLevel = 1) THEN
+		RETURN 'plcalarms.fault.inactive';
+	END IF;
+
+    RETURN '';
+END$$
+
+DELIMITER ;
+
 CREATE VIEW historyAlarms AS SELECT
-  inactiveTime AS 'time',
+  func_fromats_date(inactiveTime) AS 'time',
   description AS 'description',
   dataPointName AS 'name'
 FROM plcAlarms ORDER BY inactiveTime DESC, id DESC;
 
 CREATE VIEW liveAlarms AS SELECT
   id,
-  triggerTime AS 'activation-time',
-  inactiveTime AS 'inactivation-time',
+  func_fromats_date(activeTime) AS 'activation-time',
+  func_fromats_date(inactiveTime) AS 'inactivation-time',
   dataPointType AS 'level',
   dataPointName AS 'name'
-FROM plcAlarms WHERE acknowledgeTime='' AND unix_timestamp(inactiveTime) < NOW() - INTERVAL 24 HOUR ORDER BY inactiveTime=' ' DESC, triggerTime DESC, inactiveTime DESC, id DESC;
+FROM plcAlarms WHERE acknowledgeTime = 0
+    AND inactiveTime/1000 < NOW() - INTERVAL 24 HOUR
+ORDER BY inactiveTime = 0 DESC, activeTime DESC, inactiveTime DESC, id DESC;
 
 DELIMITER $$
-CREATE PROCEDURE `notify`(IN newDataPointId varchar(45), IN newTs varchar(45), IN newPointValue varchar(45))
+CREATE PROCEDURE prc_alarms_notify(IN newDataPointId INT, IN newTs BIGINT, IN newPointValue VARCHAR(45))
 BEGIN
 	DECLARE PLC_ALARM_LEVEL INT(1);
-	DECLARE LAST_POINT_VALUE INT(1);
 	DECLARE PRESENT_POINT_VALUE INT(1);
 	DECLARE ACTUAL_ID_ROW INT(10);
-	DECLARE ALARM_IST_GEGANGEN VARCHAR(40) DEFAULT 'plcalarms.alarm.inactive';
-	DECLARE STORUNG_IST_GEGANGEN VARCHAR(40) DEFAULT 'plcalarms.fault.inactive';
-	DECLARE ALARM_AUSGELOST VARCHAR(40) DEFAULT 'plcalarms.alarm.active';
-	DECLARE STORUNG_KOMMT VARCHAR(40) DEFAULT 'plcalarms.fault.active';
-	DECLARE EMPTY_STRING VARCHAR(40) DEFAULT ' ';
-	DECLARE DESCRIPTION_FOR_FIRST_INSERT VARCHAR(40) DEFAULT ' ';
-	DECLARE TRIGGER_TIME VARCHAR(20);
+	DECLARE IS_RISING_SLOPE BOOLEAN DEFAULT FALSE;
+    DECLARE IS_FALLING_SLOPE BOOLEAN DEFAULT FALSE;
 
 	SELECT plcAlarmLevel INTO PLC_ALARM_LEVEL FROM dataPoints WHERE id = newDataPointId;
     SELECT newPointValue INTO PRESENT_POINT_VALUE;
 
-	IF (PLC_ALARM_LEVEL = 3 OR PLC_ALARM_LEVEl = 2) THEN
+	IF (PLC_ALARM_LEVEL = 1 OR PLC_ALARM_LEVEl = 2) THEN
 
-    	SELECT pointValue INTO LAST_POINT_VALUE FROM plcAlarms WHERE id = (SELECT max(pv.id) FROM plcAlarms AS pv WHERE pv.dataPointId = newDataPointId);
-		SELECT id INTO ACTUAL_ID_ROW FROM plcAlarms WHERE dataPointId = newDataPointId AND uniquenessToken = 0;
+		SELECT id INTO ACTUAL_ID_ROW FROM plcAlarms WHERE
+			dataPointId = newDataPointId AND
+            inactiveTime = 0;
 
-		IF (LAST_POINT_VALUE = 1 AND PRESENT_POINT_VALUE = 0 AND ACTUAL_ID_ROW IS NOT NULL) THEN
+		SET IS_RISING_SLOPE = PRESENT_POINT_VALUE = 1 AND ACTUAL_ID_ROW IS NULL;
+        SET IS_FALLING_SLOPE = PRESENT_POINT_VALUE = 0 AND ACTUAL_ID_ROW IS NOT NULL;
 
-            IF (PLC_ALARM_LEVEL = 3) THEN
-				SET DESCRIPTION_FOR_FIRST_INSERT = ALARM_IST_GEGANGEN;
-			END IF;
-
-			IF (PLC_ALARM_LEVEL = 2) THEN
-				SET DESCRIPTION_FOR_FIRST_INSERT = STORUNG_IST_GEGANGEN;
-			END IF;
-
-			UPDATE plcAlarms SET description = DESCRIPTION_FOR_FIRST_INSERT, uniquenessToken = ACTUAL_ID_ROW, inactiveTime = substring(from_unixtime(newTs/1000),1,19), pointValue = 0 WHERE id = ACTUAL_ID_ROW;
-
-        END IF;
-
-		IF ((LAST_POINT_VALUE IS NULL AND PRESENT_POINT_VALUE = 1) OR (LAST_POINT_VALUE = 0 AND PRESENT_POINT_VALUE = 1 AND ACTUAL_ID_ROW IS NULL)) THEN
-
-			IF (PLC_ALARM_LEVEL = 3) THEN
-				SET DESCRIPTION_FOR_FIRST_INSERT = ALARM_AUSGELOST;
-			END IF;
-
-			IF (PLC_ALARM_LEVEL = 2) THEN
-				SET DESCRIPTION_FOR_FIRST_INSERT = STORUNG_KOMMT;
-			END IF;
-
-			SELECT substring(from_unixtime(newTs/1000),1,19) INTO TRIGGER_TIME;
-
+        IF (IS_RISING_SLOPE OR IS_FALLING_SLOPE) THEN
 			INSERT INTO plcAlarms (
-				dataPointId,
-				dataPointXid,
-				dataPointType,
-				dataPointName,
-				insertTime,
-				triggerTime,
-				inactiveTime,
-				acknowledgeTime,
-				pointValue,
-				description,
-				uniquenessToken
-			)
-            VALUES (
-				newDataPointId,
-				(SELECT xid FROM dataPoints WHERE id=newDataPointId),
-				PLC_ALARM_LEVEL,
-				(SELECT pointName FROM dataPoints WHERE id=newDataPointId),
-				TRIGGER_TIME,
-				TRIGGER_TIME,
-				EMPTY_STRING,
-				EMPTY_STRING,
-				PRESENT_POINT_VALUE,
-				DESCRIPTION_FOR_FIRST_INSERT,
-				0
-            ) ON DUPLICATE KEY UPDATE uniquenessToken = 0;
-
+					dataPointId,
+					dataPointXid,
+					dataPointType,
+					dataPointName,
+					activeTime,
+					inactiveTime,
+					acknowledgeTime,
+					pointValue,
+					description
+				)
+				VALUES (
+					newDataPointId,
+					(SELECT xid FROM dataPoints WHERE id = newDataPointId),
+					PLC_ALARM_LEVEL,
+					(SELECT pointName FROM dataPoints WHERE id = newDataPointId),
+					newTs,
+					0,
+					0,
+					1,
+					func_alarms_active_msg_key(PLC_ALARM_LEVEL)
+				) ON DUPLICATE KEY UPDATE
+					description = func_alarms_inactive_msg_key(PLC_ALARM_LEVEL),
+					inactiveTime = newTs,
+					pointValue = 0;
 		END IF;
 	END IF;
 END$$
 
 DELIMITER ;
 
-CREATE TRIGGER notifyFaultsOrAlarms BEFORE INSERT ON pointValues
-FOR EACH ROW CALL notify(new.dataPointId, new.ts, new.pointValue);
+CREATE TRIGGER notifyFaultsOrAlarms AFTER INSERT ON pointValues
+FOR EACH ROW CALL prc_alarms_notify(new.dataPointId, new.ts, new.pointValue);

@@ -43,7 +43,7 @@ class PlcAlarmsDAO implements AlarmsDAO {
     private static final String COLUMN_NAME_LEVEL = "level";
     private static final String COLUMN_NAME_NAME = "name";
     private static final String COLUMN_NAME_TIME = "time";
-    private static final String COLUMN_NAME_UNIQUENESS_TOKEN = "uniquenessToken";
+    private static final String COLUMN_NAME_POINT_VALUE = "pointValue";
     private static final String COLUMN_NAME_DESCRIPTION = "description";
 
     private static final String SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET = ""
@@ -65,15 +65,15 @@ class PlcAlarmsDAO implements AlarmsDAO {
             + "AND "
             + "ha." + COLUMN_NAME_NAME + " RLIKE ? LIMIT ? OFFSET ?;";
 
-    private static final String SELECT_UNIQUENESS_TOKEN_FROM_PLC_ALARMS_WHERE_ID = ""
+    private static final String SELECT_POINT_VALUE_FROM_PLC_ALARMS_WHERE_ID = ""
             + "SELECT "
-            + "pa." + COLUMN_NAME_UNIQUENESS_TOKEN + " "
+            + "pa." + COLUMN_NAME_POINT_VALUE + " "
             + "FROM plcAlarms pa WHERE "
             + "pa." + COLUMN_NAME_ID + " = ?;";
 
     private static final String UPDATE_PLC_ALARMS_SET_ACKNOWLEDGE_TIME_WHERE_ID = ""
             + "UPDATE plcAlarms pa SET "
-            + "pa." + COLUMN_NAME_ACKNOWLEDGE_TIME + " = from_unixtime(unix_timestamp()) "
+            + "pa." + COLUMN_NAME_ACKNOWLEDGE_TIME + " = 1000*UNIX_TIMESTAMP(current_timestamp(3)) "
             + "WHERE "
             + "pa." + COLUMN_NAME_ID + " = ?;";
 
@@ -101,8 +101,8 @@ class PlcAlarmsDAO implements AlarmsDAO {
     }
 
     @Override
-    public Optional<Integer> getUniquenessToken(int id) throws DataAccessException {
-        Integer uniquenessToken = jdbcTemplate.queryForObject(SELECT_UNIQUENESS_TOKEN_FROM_PLC_ALARMS_WHERE_ID,
+    public Optional<Integer> getPointValue(int id) throws DataAccessException {
+        Integer uniquenessToken = jdbcTemplate.queryForObject(SELECT_POINT_VALUE_FROM_PLC_ALARMS_WHERE_ID,
                 new Object[]{id}, Integer.class);
         return Optional.ofNullable(uniquenessToken);
     }
