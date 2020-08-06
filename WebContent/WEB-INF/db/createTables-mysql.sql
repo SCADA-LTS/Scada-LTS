@@ -633,17 +633,17 @@ ALTER TABLE dataPoints ADD pointName VARCHAR(250);
 ALTER TABLE dataPoints ADD plcAlarmLevel TINYINT(8);
 
 CREATE TABLE plcAlarms (
-  id BIGINT NOT NULL auto_increment,
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   dataPointId INT NOT NULL,
-  dataPointXid  VARCHAR(50) DEFAULT NULL,
-  dataPointType  VARCHAR(45) DEFAULT NULL,
-  dataPointName  VARCHAR(45) DEFAULT NULL,
+  dataPointXid VARCHAR(50) DEFAULT NULL,
+  dataPointType VARCHAR(45) DEFAULT NULL,
+  dataPointName VARCHAR(45) DEFAULT NULL,
   activeTime BIGINT DEFAULT 0,
   inactiveTime BIGINT DEFAULT 0,
   acknowledgeTime BIGINT DEFAULT 0,
-  pointValue  VARCHAR(45) DEFAULT NULL,
-  description  VARCHAR(45) DEFAULT NULL,
-  PRIMARY KEY (id), FOREIGN KEY (dataPointId) REFERENCES dataPoints(id) ON DELETE CASCADE,
+  description VARCHAR(45) DEFAULT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (dataPointId) REFERENCES dataPoints(id) ON DELETE CASCADE,
   UNIQUE(dataPointId, inactiveTime)
 ) ENGINE=InnoDB;
 
@@ -707,7 +707,7 @@ CREATE VIEW liveAlarms AS SELECT
   dataPointType AS 'level',
   dataPointName AS 'name'
 FROM plcAlarms WHERE acknowledgeTime = 0
-    AND inactiveTime/1000 < NOW() - INTERVAL 24 HOUR
+  AND (inactiveTime = 0 OR (inactiveTime > UNIX_TIMESTAMP(NOW() - INTERVAL 24 HOUR) * 1000))
 ORDER BY inactiveTime = 0 DESC, activeTime DESC, inactiveTime DESC, id DESC;
 
 DELIMITER $$
@@ -715,7 +715,7 @@ CREATE PROCEDURE prc_alarms_notify(IN newDataPointId INT, IN newTs BIGINT, IN ne
 BEGIN
 	DECLARE PLC_ALARM_LEVEL INT(1);
 	DECLARE PRESENT_POINT_VALUE INT(1);
-	DECLARE ACTUAL_ID_ROW INT(10);
+	DECLARE ACTUAL_ID_ROW INT UNSIGNED;
 	DECLARE IS_RISING_SLOPE BOOLEAN DEFAULT FALSE;
     DECLARE IS_FALLING_SLOPE BOOLEAN DEFAULT FALSE;
 
@@ -740,7 +740,6 @@ BEGIN
 					activeTime,
 					inactiveTime,
 					acknowledgeTime,
-					pointValue,
 					description
 				)
 				VALUES (
@@ -751,12 +750,10 @@ BEGIN
 					newTs,
 					0,
 					0,
-					1,
 					func_alarms_active_msg_key(PLC_ALARM_LEVEL)
 				) ON DUPLICATE KEY UPDATE
 					description = func_alarms_inactive_msg_key(PLC_ALARM_LEVEL),
-					inactiveTime = newTs,
-					pointValue = 0;
+					inactiveTime = newTs;
 		END IF;
 	END IF;
 END$$

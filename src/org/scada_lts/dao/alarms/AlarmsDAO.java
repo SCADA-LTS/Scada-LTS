@@ -19,7 +19,7 @@ public interface AlarmsDAO {
     List<LiveAlarm> getLiveAlarms(int offset, int limit) throws DataAccessException;
     List<HistoryAlarm> getHistoryAlarms(String dayDate, String regex, int offset, int limit) throws DataAccessException;
     int setAcknowledgeTime(int id) throws DataAccessException;
-    Optional<Integer> getPointValue(int id) throws DataAccessException;
+    Optional<Long> getInactiveTimeMs(int id) throws DataAccessException;
 
     static AlarmsDAO getInstance() {
         return new PlcAlarmsDAO(DAO.getInstance().getJdbcTemp());

@@ -37,37 +37,38 @@ import java.util.Optional;
 class PlcAlarmsDAO implements AlarmsDAO {
 
     private static final String COLUMN_NAME_ID = "id";
-    private static final String COLUMN_NAME_ACTIVATION_TIME = "activation-time";
-    private static final String COLUMN_NAME_INACTIVATION_TIME = "inactivation-time";
     private static final String COLUMN_NAME_ACKNOWLEDGE_TIME = "acknowledgeTime";
-    private static final String COLUMN_NAME_LEVEL = "level";
-    private static final String COLUMN_NAME_NAME = "name";
-    private static final String COLUMN_NAME_TIME = "time";
-    private static final String COLUMN_NAME_POINT_VALUE = "pointValue";
-    private static final String COLUMN_NAME_DESCRIPTION = "description";
+    private static final String COLUMN_NAME_INACTIVE_TIME = "inactiveTime";
+
+    private static final String COLUMN_NAME_ACTIVATION_TIME_VIEW = "activation-time";
+    private static final String COLUMN_NAME_INACTIVATION_TIME_VIEW = "inactivation-time";
+    private static final String COLUMN_NAME_DESCRIPTION_VIEW = "description";
+    private static final String COLUMN_NAME_LEVEL_VIEW = "level";
+    private static final String COLUMN_NAME_NAME_VIEW = "name";
+    private static final String COLUMN_NAME_TIME_VIEW = "time";
 
     private static final String SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET = ""
             + "SELECT "
             + "la." + COLUMN_NAME_ID + ", "
-            + "la.`" + COLUMN_NAME_ACTIVATION_TIME + "`, "
-            + "la.`" + COLUMN_NAME_INACTIVATION_TIME + "`, "
-            + "la." + COLUMN_NAME_LEVEL + ", "
-            + "la." + COLUMN_NAME_NAME + " "
+            + "la.`" + COLUMN_NAME_ACTIVATION_TIME_VIEW + "`, "
+            + "la.`" + COLUMN_NAME_INACTIVATION_TIME_VIEW + "`, "
+            + "la." + COLUMN_NAME_LEVEL_VIEW + ", "
+            + "la." + COLUMN_NAME_NAME_VIEW + " "
             + "FROM liveAlarms la LIMIT ? OFFSET ?;";
 
     private static final String SELECT_FROM_HISTORY_ALARMS_VIEW_WHERE_TIME_AND_RLIKE_LIMIT_OFFSET = ""
             + "SELECT "
-            + "ha." + COLUMN_NAME_NAME + ", "
-            + "ha." + COLUMN_NAME_TIME + ", "
-            + "ha." + COLUMN_NAME_DESCRIPTION + " "
+            + "ha." + COLUMN_NAME_NAME_VIEW + ", "
+            + "ha." + COLUMN_NAME_TIME_VIEW + ", "
+            + "ha." + COLUMN_NAME_DESCRIPTION_VIEW + " "
             + "FROM historyAlarms ha WHERE "
-            + "DATE_FORMAT(ha." + COLUMN_NAME_TIME + ", '%Y-%m-%d') = ? "
+            + "DATE_FORMAT(ha." + COLUMN_NAME_TIME_VIEW + ", '%Y-%m-%d') = ? "
             + "AND "
-            + "ha." + COLUMN_NAME_NAME + " RLIKE ? LIMIT ? OFFSET ?;";
+            + "ha." + COLUMN_NAME_NAME_VIEW + " RLIKE ? LIMIT ? OFFSET ?;";
 
-    private static final String SELECT_POINT_VALUE_FROM_PLC_ALARMS_WHERE_ID = ""
+    private static final String SELECT_INACTIVE_TIME_FROM_PLC_ALARMS_WHERE_ID = ""
             + "SELECT "
-            + "pa." + COLUMN_NAME_POINT_VALUE + " "
+            + "pa." + COLUMN_NAME_INACTIVE_TIME + " "
             + "FROM plcAlarms pa WHERE "
             + "pa." + COLUMN_NAME_ID + " = ?;";
 
@@ -101,10 +102,10 @@ class PlcAlarmsDAO implements AlarmsDAO {
     }
 
     @Override
-    public Optional<Integer> getPointValue(int id) throws DataAccessException {
-        Integer uniquenessToken = jdbcTemplate.queryForObject(SELECT_POINT_VALUE_FROM_PLC_ALARMS_WHERE_ID,
-                new Object[]{id}, Integer.class);
-        return Optional.ofNullable(uniquenessToken);
+    public Optional<Long> getInactiveTimeMs(int id) throws DataAccessException {
+        Long inactiveTime = jdbcTemplate.queryForObject(SELECT_INACTIVE_TIME_FROM_PLC_ALARMS_WHERE_ID,
+                new Object[]{id}, Long.class);
+        return Optional.ofNullable(inactiveTime);
     }
 
     private class LiveAlarmRowMapper implements RowMapper<LiveAlarm> {
@@ -113,13 +114,13 @@ class PlcAlarmsDAO implements AlarmsDAO {
         public LiveAlarm mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             LiveAlarm liveAlarm = new LiveAlarm();
-            String inactivationTime = rs.getString(COLUMN_NAME_INACTIVATION_TIME);
+            String inactivationTime = rs.getString(COLUMN_NAME_INACTIVATION_TIME_VIEW);
 
             liveAlarm.setId(rs.getInt(COLUMN_NAME_ID));
-            liveAlarm.setActivationTime(rs.getString(COLUMN_NAME_ACTIVATION_TIME));
+            liveAlarm.setActivationTime(rs.getString(COLUMN_NAME_ACTIVATION_TIME_VIEW));
             liveAlarm.setInactivationTime(inactivationTime == null ? "" : inactivationTime);
-            liveAlarm.setLevel(rs.getString(COLUMN_NAME_LEVEL));
-            liveAlarm.setName(rs.getString(COLUMN_NAME_NAME));
+            liveAlarm.setLevel(rs.getString(COLUMN_NAME_LEVEL_VIEW));
+            liveAlarm.setName(rs.getString(COLUMN_NAME_NAME_VIEW));
 
             return liveAlarm;
         }
@@ -131,9 +132,9 @@ class PlcAlarmsDAO implements AlarmsDAO {
         public HistoryAlarm mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             HistoryAlarm historyAlarm = new HistoryAlarm();
-            historyAlarm.setTime(rs.getString(COLUMN_NAME_TIME));
-            historyAlarm.setName(rs.getString(COLUMN_NAME_NAME));
-            historyAlarm.setDescription(rs.getString(COLUMN_NAME_DESCRIPTION));
+            historyAlarm.setTime(rs.getString(COLUMN_NAME_TIME_VIEW));
+            historyAlarm.setName(rs.getString(COLUMN_NAME_NAME_VIEW));
+            historyAlarm.setDescription(rs.getString(COLUMN_NAME_DESCRIPTION_VIEW));
 
             return historyAlarm;
         }

@@ -23,7 +23,7 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
         try {
             addColumnsToDataPointsTable(jdbcTmp);
             updateDataPointsTable(jdbcTmp);
-            createTable(jdbcTmp);
+            createPlcAlarmsTable(jdbcTmp);
             createFunctions(jdbcTmp);
             createViews(jdbcTmp);
             createProcedure(jdbcTmp);
@@ -80,21 +80,22 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
 
     }
 
-    private void createTable(JdbcTemplate jdbcTmp) throws Exception {
+    private void createPlcAlarmsTable(JdbcTemplate jdbcTmp) throws Exception {
 
         jdbcTmp.execute("CREATE TABLE plcAlarms (\n" +
-                "id BIGINT NOT NULL auto_increment,\n" +
-                "dataPointId INT NOT NULL,\n" +
-                "dataPointXid  VARCHAR(50) DEFAULT NULL,\n" +
-                "dataPointType  VARCHAR(45) DEFAULT NULL,\n" +
-                "dataPointName  VARCHAR(45) DEFAULT NULL,\n" +
-                "activeTime  BIGINT DEFAULT 0,\n" +
-                "inactiveTime  BIGINT DEFAULT 0,\n" +
-                "acknowledgeTime  BIGINT DEFAULT 0,\n" +
-                "pointValue  VARCHAR(45) DEFAULT NULL,\n" +
-                "description  VARCHAR(45) DEFAULT NULL,\n" +
-                "PRIMARY KEY (id), FOREIGN KEY (dataPointId) REFERENCES dataPoints(id) ON DELETE CASCADE," +
-                "UNIQUE(dataPointId, inactiveTime)) ENGINE=InnoDB;");
+                "  id INT UNSIGNED NOT NULL AUTO_INCREMENT,\n" +
+                "  dataPointId INT NOT NULL,\n" +
+                "  dataPointXid VARCHAR(50) DEFAULT NULL,\n" +
+                "  dataPointType VARCHAR(45) DEFAULT NULL,\n" +
+                "  dataPointName VARCHAR(45) DEFAULT NULL,\n" +
+                "  activeTime BIGINT DEFAULT 0,\n" +
+                "  inactiveTime BIGINT DEFAULT 0,\n" +
+                "  acknowledgeTime BIGINT DEFAULT 0,\n" +
+                "  description VARCHAR(45) DEFAULT NULL,\n" +
+                "  PRIMARY KEY (id), \n" +
+                "  FOREIGN KEY (dataPointId) REFERENCES dataPoints(id) ON DELETE CASCADE,\n" +
+                "  UNIQUE(dataPointId, inactiveTime)\n" +
+                ") ENGINE=InnoDB;");
 
     }
 
@@ -148,15 +149,15 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
                 "dataPointName AS 'name' \n" +
                 "FROM plcAlarms ORDER BY inactiveTime DESC, id DESC;\n");
 
-        jdbcTmp.execute("CREATE VIEW liveAlarms AS SELECT " +
-                "id, \n" +
-                "func_fromats_date(activeTime) AS 'activation-time',\n" +
-                "func_fromats_date(inactiveTime) AS 'inactivation-time',\n" +
-                "dataPointType AS 'level',\n" +
-                "dataPointName AS 'name' \n" +
-                "FROM plcAlarms WHERE acknowledgeTime = 0 " +
-                "AND inactiveTime/1000 < NOW() - INTERVAL 24 HOUR " +
-                "ORDER BY inactiveTime = 0 DESC, activeTime DESC, inactiveTime DESC, id DESC;\n");
+        jdbcTmp.execute("CREATE VIEW liveAlarms AS SELECT\n" +
+                "  id,\n" +
+                "  func_fromats_date(activeTime) AS 'activation-time',\n" +
+                "  func_fromats_date(inactiveTime) AS 'inactivation-time',\n" +
+                "  dataPointType AS 'level',\n" +
+                "  dataPointName AS 'name'\n" +
+                "FROM plcAlarms WHERE acknowledgeTime = 0\n" +
+                "  AND (inactiveTime = 0 OR (inactiveTime > UNIX_TIMESTAMP(NOW() - INTERVAL 24 HOUR) * 1000))\n" +
+                "ORDER BY inactiveTime = 0 DESC, activeTime DESC, inactiveTime DESC, id DESC;");
 
     }
 
@@ -165,58 +166,55 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
         jdbcTmp.execute("CREATE PROCEDURE prc_alarms_notify(IN newDataPointId INT, IN newTs BIGINT, IN newPointValue VARCHAR(45))\n" +
                 "BEGIN\n" +
                 "\tDECLARE PLC_ALARM_LEVEL INT(1);\n" +
-                "\tDECLARE PRESENT_POINT_VALUE INT(1); \n" +
-                "\tDECLARE ACTUAL_ID_ROW INT(10); \n" +
+                "\tDECLARE PRESENT_POINT_VALUE INT(1);\n" +
+                "\tDECLARE ACTUAL_ID_ROW INT UNSIGNED;\n" +
                 "\tDECLARE IS_RISING_SLOPE BOOLEAN DEFAULT FALSE;\n" +
                 "    DECLARE IS_FALLING_SLOPE BOOLEAN DEFAULT FALSE;\n" +
                 "\n" +
                 "\tSELECT plcAlarmLevel INTO PLC_ALARM_LEVEL FROM dataPoints WHERE id = newDataPointId;\n" +
-                "    SELECT newPointValue INTO PRESENT_POINT_VALUE;  \n" +
+                "    SELECT newPointValue INTO PRESENT_POINT_VALUE;\n" +
                 "\n" +
-                "\tIF (PLC_ALARM_LEVEL = 1 OR PLC_ALARM_LEVEl = 2) THEN \n" +
-                "                \n" +
-                "\t\tSELECT id INTO ACTUAL_ID_ROW FROM plcAlarms WHERE \n" +
-                "\t\t\tdataPointId = newDataPointId AND \n" +
+                "\tIF (PLC_ALARM_LEVEL = 1 OR PLC_ALARM_LEVEl = 2) THEN\n" +
+                "\n" +
+                "\t\tSELECT id INTO ACTUAL_ID_ROW FROM plcAlarms WHERE\n" +
+                "\t\t\tdataPointId = newDataPointId AND\n" +
                 "            inactiveTime = 0;\n" +
-                "            \n" +
+                "\n" +
                 "\t\tSET IS_RISING_SLOPE = PRESENT_POINT_VALUE = 1 AND ACTUAL_ID_ROW IS NULL;\n" +
                 "        SET IS_FALLING_SLOPE = PRESENT_POINT_VALUE = 0 AND ACTUAL_ID_ROW IS NOT NULL;\n" +
-                "        \n" +
+                "\n" +
                 "        IF (IS_RISING_SLOPE OR IS_FALLING_SLOPE) THEN\n" +
                 "\t\t\tINSERT INTO plcAlarms (\n" +
-                "\t\t\t\t\tdataPointId, \n" +
-                "\t\t\t\t\tdataPointXid, \n" +
-                "\t\t\t\t\tdataPointType, \n" +
-                "\t\t\t\t\tdataPointName, \n" +
+                "\t\t\t\t\tdataPointId,\n" +
+                "\t\t\t\t\tdataPointXid,\n" +
+                "\t\t\t\t\tdataPointType,\n" +
+                "\t\t\t\t\tdataPointName,\n" +
                 "\t\t\t\t\tactiveTime,\n" +
-                "\t\t\t\t\tinactiveTime, \n" +
-                "\t\t\t\t\tacknowledgeTime, \n" +
-                "\t\t\t\t\tpointValue, \n" +
+                "\t\t\t\t\tinactiveTime,\n" +
+                "\t\t\t\t\tacknowledgeTime,\n" +
                 "\t\t\t\t\tdescription\n" +
-                "\t\t\t\t) \n" +
+                "\t\t\t\t)\n" +
                 "\t\t\t\tVALUES (\n" +
-                "\t\t\t\t\tnewDataPointId,  \n" +
-                "\t\t\t\t\t(SELECT xid FROM dataPoints WHERE id = newDataPointId),  \n" +
-                "\t\t\t\t\tPLC_ALARM_LEVEL,  \n" +
-                "\t\t\t\t\t(SELECT pointName FROM dataPoints WHERE id = newDataPointId),  \n" +
-                "\t\t\t\t\tnewTs,  \n" +
-                "\t\t\t\t\t0,  \n" +
-                "\t\t\t\t\t0,  \n" +
-                "\t\t\t\t\t1,\n" +
+                "\t\t\t\t\tnewDataPointId,\n" +
+                "\t\t\t\t\t(SELECT xid FROM dataPoints WHERE id = newDataPointId),\n" +
+                "\t\t\t\t\tPLC_ALARM_LEVEL,\n" +
+                "\t\t\t\t\t(SELECT pointName FROM dataPoints WHERE id = newDataPointId),\n" +
+                "\t\t\t\t\tnewTs,\n" +
+                "\t\t\t\t\t0,\n" +
+                "\t\t\t\t\t0,\n" +
                 "\t\t\t\t\tfunc_alarms_active_msg_key(PLC_ALARM_LEVEL)\n" +
-                "\t\t\t\t) ON DUPLICATE KEY UPDATE \n" +
+                "\t\t\t\t) ON DUPLICATE KEY UPDATE\n" +
                 "\t\t\t\t\tdescription = func_alarms_inactive_msg_key(PLC_ALARM_LEVEL),\n" +
-                "\t\t\t\t\tinactiveTime = newTs, \n" +
-                "\t\t\t\t\tpointValue = 0;\n" +
+                "\t\t\t\t\tinactiveTime = newTs;\n" +
                 "\t\tEND IF;\n" +
-                "\tEND IF;\n" +
+                "\tEND IF;" +
                 "END");
 
     }
 
     private void createTrigger(JdbcTemplate jdbcTmp) throws Exception {
 
-        jdbcTmp.execute("CREATE TRIGGER notifyFaultsOrAlarms AFTER INSERT ON pointValues \n" +
+        jdbcTmp.execute("CREATE TRIGGER tri_notify_faults_or_alarms AFTER INSERT ON pointValues \n" +
                 "FOR EACH ROW CALL prc_alarms_notify(new.dataPointId, new.ts, new.pointValue);");
 
     }

@@ -80,10 +80,10 @@ class PlcAlarmsService implements AlarmsService {
     public AlarmAcknowledge acknowledge(int id) {
         try
         {
-            int pointValue = alarmsDAO.getPointValue(id).orElse(-1);
-            if(pointValue == -1)
+            long inactiveTime = alarmsDAO.getInactiveTimeMs(id).orElse(-1L);
+            if(inactiveTime == -1L)
                 return createAcknowledgeResponse("Unknow error", false, id);
-            if(pointValue == 1)
+            if(inactiveTime == 0L)
                 return createAcknowledgeResponse("Alarm or Fault is active!", false, id);
             int result = alarmsDAO.setAcknowledgeTime(id);
             return createAcknowledgeResponse("", result == 1, id);
