@@ -20,6 +20,14 @@ import VueLodash from 'vue-lodash'
 import StepLineChartComponent from './components/amcharts/StepLineChartComponent'
 import LineChartComponent from './components/amcharts/LineChartComponent'
 
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt} from '@fortawesome/free-solid-svg-icons'
+
+library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
 const isProduction = process.env.NODE_ENV === 'production';
 
 const options = {

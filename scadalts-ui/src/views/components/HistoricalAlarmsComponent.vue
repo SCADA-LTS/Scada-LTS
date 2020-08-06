@@ -2,28 +2,49 @@
     <div class="historical-alarms-components">
         <SimplePanel>
 
-            <datepicker :value="fdate" :format="formatter" ref="datapicker" style="margin-top:5px; margin-left:5px; position: relative; width: 120px; float:left; line-height: 30px;"></datepicker>
+            <datepicker
+                    v-model="fdate"
+                    :format="formatter"
+                    ref="datapicker"
+                    style="margin-top:5px; margin-left:5px; position: relative; width: 120px; float:left; line-height: 30px;"
+                    :disabled="filterOn==true"
+                    v-bind:class="{input_disabled:filterOn==true}"
+            ></datepicker>
 
 
-            <input class="min-gb-input" v-model="frlike" placeholder="rLike filter" style="margin-left: 45px">
+            <input
+                    v-model="frlike"
+                    class="min-gb-input"
+                    placeholder="rLike filter"
+                    style="margin-left: 45px; font-family: arial, sans-serif"
+                    :readonly="filterOn==true"
+                    v-bind:class="{input_disabled:filterOn==true}"
+            >
 
-
-            <button class="min-gb-button" style="margin-top: 4px;">Filter</button>
+            <button
+                    class="min-gb-button"
+                    style="margin-top: 4px;"
+                    v-bind:class="{filter_on:filterOn==true}" v-on:click="onFilter">Filter
+            </button>
 
         </SimplePanel>
         <SimpleTable v-bind:data="historicalAlarms" v-bind:columns="columns"></SimpleTable>
+
         <SimplePanel>
 
-            <SimplePagination class="min-gb-pagination"
-                              :current-page="currentPage"
-                              :page-count="pageCount"
-                              :visible-pages-count="8"
-                              @nextPage="pageChangeHandle('next')"
-                              @previousPage="pageChangeHandle('pref')"
-                              @loadPage="pageChangeHandle"
-            ></SimplePagination>
+            <div class="pagination">
+                <SimplePagination
+                        :current-page="currentPage"
+                        :page-count="pageCount"
+                        :visible-pages-count="8"
+                        @nextPage="pageChangeHandle('next')"
+                        @previousPage="pageChangeHandle('pref')"
+                        @loadPage="pageChangeHandle"
+                ></SimplePagination>
+            </div>
 
         </SimplePanel>
+
     </div>
 </template>
 
@@ -43,7 +64,7 @@
         },
         data() {
             return {
-                filterOn: 0,
+                filterOn: false,
                 fdate: new Date(),
                 frlike: '',
                 columns: [{name: 'time'},
@@ -51,35 +72,49 @@
                     {name: 'description'}],
                 historicalAlarms: [],
                 currentPage: 1,
-                pageCount: 10
+                pageCount: 10,
+                FORMAT_DT: 'YYYY-MM-DD',
+                RLIKE_NULL: 'EMPTY'
+
             }
         },
         methods: {
 
             formatter(date) {
-                return moment(date).format('YYYY-MM-DD');
+                return moment(date).format(this.FORMAT_DT);
             },
-
-            getHistoricalAlarms(adate, arlike, page) {
+            getHistoricalAlarms(adate, arlike, page, afilterOn) {
 
                 try {
 
                     let ldate = '';
                     let recordsCount = 20
-                    let loffset = String(recordsCount * page)
-                    let llimit = String(recordsCount * (page - 1))
-                    let lrlike = ''
+                    let loffset = String(recordsCount * (page - 1))
+                    let llimit = String(recordsCount * page)
+                    let lrlike = this.RLIKE_NULL
 
-                    if (this.filterOn === 1 ) {
-                        ldate = moment(adate).format('YYYY-MM-dd')
+                    console.log(`filterOn: ${this.filterOn} typeof:${typeof (this.filterOn)}`)
+                    console.log(`afilterOn: ${afilterOn} typeof:${typeof (afilterOn)}`)
+
+                    if (afilterOn == false) {
+                        ldate = moment(new Date()).format(this.FORMAT_DT)
+                    } else if (adate === undefined || adate === null || adate == 0) {
+                        ldate = moment(this.fdate).format(this.FORMAT_DT)
+                    } else {
+                        ldate = moment(adate).format(this.FORMAT_DT)
                     }
 
-                    if (!(arlike === undefined || arlike === null)) {
+                    if (afilterOn === false) {
+                        lrlike = String(this.RLIKE_NULL)
+                    } else if (arlike === undefined || arlike === null || arlike.trim().length === 0) {
+                        lrlike = String(this.RLIKE_NULL)
+                    } else {
                         lrlike = String(arlike)
                     }
 
-
-                    store.dispatch('fakeGetHistoryAlarms', {
+                    //console.log(`ldata:${ldate}, lrlike:${lrlike}, offset:${loffset}, limit:${llimit}`)
+                    //store.dispatch('fakeGetHistoryAlarms', {
+                    store.dispatch('getHistoryAlarms', {
                         dateDay: ldate,
                         filterRLike: lrlike,
                         offset: loffset,
@@ -87,9 +122,13 @@
                     }).then((ret) => {
                         this.historicalAlarms = ret
 
+                    }).catch((err) => {
+                        this.historicalAlarms = []
+                        console.log(`getHA:${err}`)
                     })
                 } catch (e) {
-                    console.log(`getHA:${e}`)
+                    this.historicalAlarms = []
+                    console.log(`getHA1:${e}`)
                 }
             },
             pageChangeHandle(pr) {
@@ -108,8 +147,9 @@
                 }
             },
             onFilter() {
+                this.filterOn = !this.filterOn
                 try {
-                    this.getHistoricalAlarms(this.fdate, this.frlike, this.currentPage)
+                    this.getHistoricalAlarms(this.fdate, this.frlike, this.currentPage, this.filterOn)
                 } catch (e) {
                     console.log(`created:${e}`)
                 }
@@ -134,6 +174,7 @@
         margin-top: 40px;
         margin-left: 20px;
     }
+
     input:-moz-read-only { /* For Firefox */
         padding: 0;
         border: 0;
@@ -156,5 +197,18 @@
     button:-moz-any {
         padding: 0;
     }
+
+    .filter_on {
+        background-color: yellow;
+    }
+
+    .input_disabled {
+        background-color: #f4f4f4 !important;
+    }
+
+    .pagination {
+        margin: 0px 0px 0px 10px;
+    }
+
 
 </style>
