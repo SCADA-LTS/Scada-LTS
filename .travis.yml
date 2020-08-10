@@ -33,6 +33,7 @@ branches:
   - "/^siv/develop.*$/"
   - "/^siv/master.*$/"
   - "/^feature/#1111.*$/"
+  - "/^feature/#1108.*$/"
 notifications:
   email: false
 env:

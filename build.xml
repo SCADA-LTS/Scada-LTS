@@ -6,15 +6,26 @@
 	<property name="target" value="1.8"/>
 	<property name="source" value="1.8"/>
 
-   <path id="tomcat.ant.classpath">
-	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
-   </path>
+	<property name="build-project.dir" value="build/"/>
+	<property name="build-project.src.dir" value="${build-project.dir}classes/"/>
+	<property name="build-project.test.dir" value="${build-project.dir}test-classes/"/>
+	<property name="build-project.log.dir" value="${build-project.dir}log/"/>
+	<property name="build-project.log.src.name" value="${build-project.log.dir}javac-src.log"/>
+	<property name="build-project.log.test.name" value="${build-project.log.dir}javac-test.log"/>
 
+	<property name="junit.log.name" value="${build-project.log.dir}junit.log"/>
+	<property name="war.log.name" value="${build-project.log.dir}war.log"/>
+
+	<property name="webapp-resources.dir" value="webapp-resources/"/>
+
+	<path id="tomcat.ant.classpath">
+	   <pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
+	</path>
 
 	<target name="clean_and_tomcat_deploy" description="Deploy prepared WAR file from project dir to Tomcat webapps folder">
 		<delete file="${env.CATALINA_HOME}/webapps/ScadaBR.war"></delete>
 		<delete dir="${env.CATALINA_HOME}/webapps/ScadaBR"></delete>
-		<copy file="ScadaBR.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
+		<copy file="${build-project.dir}ScadaBR.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
 		</copy>
 	</target>
 
@@ -29,9 +40,13 @@
 		</exec>
 	</target>
 
+	<path id="test.unit.classpath" >
+		<pathelement location="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/>
+	</path>
+
 	<!-- to option copy file to webapps :) -->
-
-
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/RXTXcomm.jar"/>
@@ -136,9 +151,6 @@
         <pathelement location="WebContent/WEB-INF/lib/xfire-aegis-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xfire-core-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
-    	<pathelement location="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
-  		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
-    	<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>
@@ -177,7 +189,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/jna-platform-4.1.0.jar"/>
 	</path>
 	<path id="scadabr-1.1.0-RC.classpath">
-		<pathelement location="build/classes"/>
 		<path refid="Web App Libraries.libraryclasspath"/>
 		<path refid="EAR Libraries.libraryclasspath"/>
 		<path refid="httpcomponents-client-4.5.3"/>
@@ -191,7 +202,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/bacnet4J.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/alpha24j.jar"/>
-		<pathelement location="lib/mockito-all-1.9.5.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/joda-time-2.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
@@ -201,16 +211,23 @@
 	    <arg  value="update"/>
 	  </exec>
 	</target>
-	<target name="init">
-		<mkdir dir="build/classes"/>
-		<copy includeemptydirs="false" todir="build/classes">
+	<target name="clean">
+		<delete dir="${build-project.dir}"/>
+	</target>
+	<target depends="clean" name="cleanall"/>
+	<target name="init" depends="cleanall">
+		<mkdir dir="${build-project.dir}"/>
+		<mkdir dir="${build-project.src.dir}"/>
+		<mkdir dir="${build-project.test.dir}"/>
+		<mkdir dir="${build-project.log.dir}"/>
+		<copy includeemptydirs="false" todir="${build-project.src.dir}">
 			<fileset dir="src">
 				<exclude name="**/*.launch"/>
 				<exclude name="**/*.xtend"/>
 				<exclude name="**/*.java"/>
 			</fileset>
 		</copy>
-		<copy includeemptydirs="false" todir="build/classes">
+		<copy includeemptydirs="false" todir="${build-project.test.dir}">
 			<fileset dir="test">
 				<exclude name="**/*.launch"/>
 				<exclude name="**/*.xtend"/>
@@ -218,38 +235,31 @@
 			</fileset>
 		</copy>
 	</target>
-	<target name="clean">
-		<delete dir="build/classes"/>
-	</target>
-	<target depends="clean" name="cleanall"/>
 	<target depends="build-subprojects,build-project" name="build"/>
 	<target name="build-subprojects"/>
 	<target depends="init" name="build-project">
+		<record action="start" name="${build-project.log.src.name}"/>
 		<echo message="${ant.project.name}: ${ant.file}"/>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build-project.src.dir}" includeantruntime="false" source="${source}" target="${target}">
 			<src path="src"/>
-			<src path="test"/>
 			<classpath refid="scadabr-1.1.0-RC.classpath"/>
 		</javac>
+		<record action="stop" name="${build-project.log.src.name}"/>
+		<record action="start" name="${build-project.log.test.name}"/>
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build-project.test.dir}" includeantruntime="false" source="${source}" target="${target}">
+			<src path="test"/>
+			<classpath refid="scadabr-1.1.0-RC.classpath"/>
+			<classpath refid="test.unit.classpath"/>
+            <classpath location="${build-project.src.dir}" />
+		</javac>
+		<record action="stop" name="${build-project.log.test.name}"/>
 	</target>
 
-<!--	<target name="new-ui-dependency">-->
-<!--		<exec dir="./ScadaLTS-UI-1" executable="npm">-->
-<!--			<arg value="install"/>-->
-<!--		</exec>-->
-<!--	</target>-->
 	<target name="new-ui-dependency">
 		<exec dir="./scadalts-ui" executable="npm">
 			<arg value="install"/>
 		</exec>
 	</target>
-
-<!--	<target name="new-ui" depends="new-ui-dependency">-->
-<!--		<exec dir="./ScadaLTS-UI-1" executable="npm">-->
-<!--			<arg value="run"/>-->
-<!--			<arg value="build"/>-->
-<!--		</exec>-->
-<!--	</target>-->
 
 	<target name="new-ui" depends="new-ui-dependency">
 		<exec dir="./scadalts-ui" executable="npm">
@@ -260,12 +270,11 @@
 
 	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
 
-
-
 	<target name="war" description="Bundles the application as a WAR file" depends="clean, build, new-ui">
-
+		<record action="start" name="${war.log.name}"/>
 		<property name="js-ui.dir"  value="WebContent/resources/js-ui"/>
 		<property name="src-js-ui.dir" value="scadalts-ui/dist"/>
+		<property name="web.classes.dir"  value="WebContent/WEB-INF/classes"/>
 
 		<delete dir="${js-ui.dir}/app"></delete>
 		<delete dir="${js-ui.dir}/views"></delete>
@@ -371,72 +380,77 @@
 		<!-- font do zrobienia -->
 		<!-- img do zrobienia -->
 
-		<mkdir dir="WebContent/WEB-INF/classes"/>
-		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
-			<fileset dir="build/classes">
+		<delete dir="${web.classes.dir}"/>
+		<mkdir dir="${web.classes.dir}"/>
+		<copy includeemptydirs="false" todir="${web.classes.dir}">
+			<fileset dir="${build-project.src.dir}">
 				<include name="**/*.class"/>
 			</fileset>
 		</copy>
 
+		<copy includeemptydirs="false" todir="${web.classes.dir}">
+			<fileset dir="${webapp-resources.dir}" />
+		</copy>
 
-		<war destfile="ScadaBR.war"
+		<war destfile="${build-project.dir}ScadaBR.war"
               	        basedir="WebContent"
               	        needxmlfile="false">
 		</war>
+		<record action="stop" name="${war.log.name}"/>
 	</target>
 	
 	<target name="junit">
-		
-		    <junit printsummary="yes" haltonfailure="no">
-		    
-		    <formatter type="plain" usefile="false" />
- 
-		    <classpath refid="scadabr-1.1.0-RC.classpath">
-		        
-		    </classpath>
-			
-		    <!--
-			<test name="br.org.scadabr.api.AckEventsTest" 
+		<record action="start" name="${junit.log.name}"/>
+		<junit printsummary="yes" haltonfailure="no">
+
+			<formatter type="plain" usefile="false" />
+
+			<classpath refid="scadabr-1.1.0-RC.classpath" />
+			<classpath location="${build-project.test.dir}" />
+			<classpath refid="test.unit.classpath" />
+
+			<!--
+			<test name="br.org.scadabr.api.AckEventsTest"
 				haltonfailure="no">
 			</test>
-		    	
-		    <test name="br.org.scadabr.api.ActiveEventsTest" 
-		        haltonfailure="no">
-		    </test>
-		    	
-		    <test name="br.org.scadabr.api.ActiveEventsTest" 
-		        haltonfailure="no">
-		    </test>
-		    -->
-		    <!--
-		    <test name="org.scada_lts.dao.ViewHierarchyDaoTest"
-		    	haltonfailure="no">
-		    </test>
-		    
-		    <test name="org.scada_lts.service.ViewHierarchyServiceTest"
-		        haltonfailure="yes">
-		    </test>
-		    	
-		    <test name="org.scada_lts.service.ViewHierarchyServiceTestOnDB"
-		    	haltonfailure="yes">
-		    </test>
-		    -->
-		    <!--	
-		    <test name="org.scada_lts.service.ViewHierarchyServiceMoveFolderTest"
-		        haltonfailure="yes">
-		    </test>
-		    	
-		    <test name="org.scada_lts.service.ViewHierarchyServiceMoveViewTest"
-		        haltonfailure="yes">
-		    </test>
-		    -->
-		    <test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
-		    	haltonfailure="yes">
-		    </test>	
-		    	
-		    <test name="org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
-		    	haltonfailure="yes">
-		    </test>
+
+			<test name="br.org.scadabr.api.ActiveEventsTest"
+				haltonfailure="no">
+			</test>
+
+			<test name="br.org.scadabr.api.ActiveEventsTest"
+				haltonfailure="no">
+			</test>
+			-->
+			<!--
+			<test name="org.scada_lts.dao.ViewHierarchyDaoTest"
+				haltonfailure="no">
+			</test>
+
+			<test name="org.scada_lts.service.ViewHierarchyServiceTest"
+				haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.service.ViewHierarchyServiceTestOnDB"
+				haltonfailure="yes">
+			</test>
+			-->
+			<!--
+			<test name="org.scada_lts.service.ViewHierarchyServiceMoveFolderTest"
+				haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.service.ViewHierarchyServiceMoveViewTest"
+				haltonfailure="yes">
+			</test>
+			-->
+			<test name="org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
+				haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
+				haltonfailure="yes">
+			</test>
 
 			<test name="com.serotonin.mango.rt.dataImage.PointValueCacheTest"
 				  haltonfailure="yes">
@@ -460,17 +474,10 @@
 			<test name="org.scada_lts.dao.PointValueDAOTest"
 				  haltonfailure="yes">
 			</test>
-
-
-		    <!--
-		    <test name="" 
-		    	haltonfailure="yes">
-		    </test> -->
-		    	
-		    	
-		  </junit>
+		</junit>
+		<record action="stop" name="${junit.log.name}"/>
 	</target>
-	
+
 	<target name="war_config_test" description="Bundles the application as a WAR file with config test" depends="clean, build, junit">
 		<mkdir dir="WebContent/WEB-INF/classes"/>
 		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
@@ -485,5 +492,5 @@
 	           	        needxmlfile="false">
 		</war>
 	</target>
-	
+
 </project>
