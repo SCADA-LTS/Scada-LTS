@@ -1,4 +1,3 @@
-package org.scada_lts.web.mvc.api.alarms;
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *
@@ -16,11 +15,13 @@ package org.scada_lts.web.mvc.api.alarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+package org.scada_lts.web.mvc.api.alarms;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.text.MessageFormat;
-import java.util.regex.Pattern;
 
 /**
  * Create by at Mateusz Hyski

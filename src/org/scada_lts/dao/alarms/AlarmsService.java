@@ -1,7 +1,5 @@
-package org.scada_lts.dao.alarms;
-
 /*
- * (c) 2020 hyski.mateusz@gmail.com
+ * (c) 2020 hyski.mateusz@gmail.com, kamil.jarmusik@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +15,8 @@ package org.scada_lts.dao.alarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+package org.scada_lts.dao.alarms;
 
 import java.util.List;
 

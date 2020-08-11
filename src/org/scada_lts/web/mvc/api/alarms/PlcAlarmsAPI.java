@@ -1,5 +1,3 @@
-package org.scada_lts.web.mvc.api.alarms;
-
 /*
  * (c) 2018 hyski.mateusz@gmail.com
  *
@@ -17,6 +15,7 @@ package org.scada_lts.web.mvc.api.alarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.scada_lts.web.mvc.api.alarms;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;

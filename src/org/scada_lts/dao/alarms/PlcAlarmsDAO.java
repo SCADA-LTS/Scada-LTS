@@ -1,6 +1,5 @@
-package org.scada_lts.dao.alarms;
 /*
- * (c) 2020 hyski.mateusz@gmail.com
+ * (c) 2020 hyski.mateusz@gmail.com, kamil.jarmusik@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +15,8 @@ package org.scada_lts.dao.alarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+package org.scada_lts.dao.alarms;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -85,7 +86,7 @@ class PlcAlarmsDAO implements AlarmsDAO {
     }
 
     @Override
-    public List<LiveAlarm> getLiveAlarms(int offset, int limit) throws DataAccessException{
+    public List<LiveAlarm> getLiveAlarms(int offset, int limit) throws DataAccessException {
         return jdbcTemplate.query(SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET,
                 new Object[]{limit, offset},
                 new LiveAlarmRowMapper());
