@@ -109,7 +109,7 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
                 "  activeTime BIGINT DEFAULT 0,\n" +
                 "  inactiveTime BIGINT DEFAULT 0,\n" +
                 "  acknowledgeTime BIGINT DEFAULT 0,\n" +
-                "  description VARCHAR(45) DEFAULT NULL,\n" +
+                "  level TINYINT(8) DEFAULT NULL,\n" +
                 "  PRIMARY KEY (id), \n" +
                 "  FOREIGN KEY (dataPointId) REFERENCES dataPoints(id) ON DELETE CASCADE,\n" +
                 "  UNIQUE(dataPointId, inactiveTime)\n" +
@@ -129,33 +129,6 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
                 "\t\tRETURN substring(from_unixtime(ts/1000),1,19);\n" +
                 "\tEND IF;\n" +
                 "END");
-
-        jdbcTmp.execute("CREATE FUNCTION func_alarms_inactive_msg_key(plcAlarmLevel INT(1)) RETURNS varchar(40) CHARSET utf8\n" +
-                "BEGIN  \n" +
-                "\tIF (plcAlarmLevel = 2) THEN           \n" +
-                "\t\tRETURN 'plcalarms.alarm.inactive';     \n" +
-                "\tEND IF;       \n" +
-                "\n" +
-                "\tIF (plcAlarmLevel = 1) THEN           \n" +
-                "\t\tRETURN 'plcalarms.fault.inactive';  \n" +
-                "\tEND IF;\n" +
-                "    \n" +
-                "    RETURN '';\n" +
-                "END");
-
-        jdbcTmp.execute("CREATE FUNCTION func_alarms_active_msg_key(plcAlarmLevel INT(1)) RETURNS varchar(40) CHARSET utf8\n" +
-                "BEGIN  \n" +
-                "\n" +
-                "\tIF (plcAlarmLevel = 2) THEN           \n" +
-                "\t\tRETURN 'plcalarms.alarm.active';     \n" +
-                "\tEND IF;       \n" +
-                "\n" +
-                "\tIF (plcAlarmLevel = 1) THEN           \n" +
-                "\t\tRETURN 'plcalarms.fault.active';  \n" +
-                "\tEND IF;\n" +
-                "            \n" +
-                "    RETURN '';\n" +
-                "END");
     }
 
     private static void createViews(JdbcTemplate jdbcTmp) throws Exception {
@@ -163,7 +136,7 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
 
         jdbcTmp.execute("CREATE VIEW historyAlarms AS SELECT " +
                 "func_fromats_date(inactiveTime) AS 'time',\n" +
-                "description AS 'description',\n" +
+                "level,\n" +
                 "dataPointName AS 'name' \n" +
                 "FROM plcAlarms ORDER BY inactiveTime DESC, id DESC;\n");
 
@@ -210,7 +183,7 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
                 "\t\t\t\t\tactiveTime,\n" +
                 "\t\t\t\t\tinactiveTime,\n" +
                 "\t\t\t\t\tacknowledgeTime,\n" +
-                "\t\t\t\t\tdescription\n" +
+                "\t\t\t\t\tlevel\n" +
                 "\t\t\t\t)\n" +
                 "\t\t\t\tVALUES (\n" +
                 "\t\t\t\t\tnewDataPointId,\n" +
@@ -220,9 +193,8 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
                 "\t\t\t\t\tnewTs,\n" +
                 "\t\t\t\t\t0,\n" +
                 "\t\t\t\t\t0,\n" +
-                "\t\t\t\t\tfunc_alarms_active_msg_key(PLC_ALARM_LEVEL)\n" +
+                "\t\t\t\t\tPLC_ALARM_LEVEL\n" +
                 "\t\t\t\t) ON DUPLICATE KEY UPDATE\n" +
-                "\t\t\t\t\tdescription = func_alarms_inactive_msg_key(PLC_ALARM_LEVEL),\n" +
                 "\t\t\t\t\tinactiveTime = newTs;\n" +
                 "\t\tEND IF;\n" +
                 "\tEND IF;" +

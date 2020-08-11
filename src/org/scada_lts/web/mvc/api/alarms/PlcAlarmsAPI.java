@@ -175,8 +175,7 @@ public class PlcAlarmsAPI {
             }
             List<HistoryAlarm> result = alarmsService.getHistoryAlarms(dayDate, dataPointNameFilterRegex,
                     Integer.parseInt(offset), Integer.parseInt(limit));
-            List<HistoryAlarm> resultTranslated = LangUtil.translate(result, request.getLocale());
-            return new ResponseEntity<>(resultTranslated , HttpStatus.OK);
+            return new ResponseEntity<>(result , HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

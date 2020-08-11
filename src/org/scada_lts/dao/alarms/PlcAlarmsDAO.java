@@ -43,7 +43,6 @@ class PlcAlarmsDAO implements AlarmsDAO {
 
     private static final String COLUMN_NAME_ACTIVATION_TIME_VIEW = "activation-time";
     private static final String COLUMN_NAME_INACTIVATION_TIME_VIEW = "inactivation-time";
-    private static final String COLUMN_NAME_DESCRIPTION_VIEW = "description";
     private static final String COLUMN_NAME_LEVEL_VIEW = "level";
     private static final String COLUMN_NAME_NAME_VIEW = "name";
     private static final String COLUMN_NAME_TIME_VIEW = "time";
@@ -61,7 +60,7 @@ class PlcAlarmsDAO implements AlarmsDAO {
             + "SELECT "
             + "ha." + COLUMN_NAME_NAME_VIEW + ", "
             + "ha." + COLUMN_NAME_TIME_VIEW + ", "
-            + "ha." + COLUMN_NAME_DESCRIPTION_VIEW + " "
+            + "ha." + COLUMN_NAME_LEVEL_VIEW + " "
             + "FROM historyAlarms ha WHERE "
             + "DATE_FORMAT(ha." + COLUMN_NAME_TIME_VIEW + ", '%Y-%m-%d') = ? "
             + "AND "
@@ -135,7 +134,8 @@ class PlcAlarmsDAO implements AlarmsDAO {
             HistoryAlarm historyAlarm = new HistoryAlarm();
             historyAlarm.setTime(rs.getString(COLUMN_NAME_TIME_VIEW));
             historyAlarm.setName(rs.getString(COLUMN_NAME_NAME_VIEW));
-            historyAlarm.setDescription(rs.getString(COLUMN_NAME_DESCRIPTION_VIEW));
+            String level = String.valueOf(rs.getLong(COLUMN_NAME_LEVEL_VIEW));
+            historyAlarm.setDescription(level);
 
             return historyAlarm;
         }
