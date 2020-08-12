@@ -52,8 +52,8 @@
     import Components from '@min-gb/vuejs-components'
     import store from '../../store'
     import moment from 'moment'
-    import Datepicker from 'vuejs-datepicker';
-    //import util from 'util'
+    import Datepicker from 'vuejs-datepicker'
+    import i18n from '../../i18n'
 
     export default {
         el: '#historicalAlarms_component',
@@ -112,15 +112,21 @@
                         lrlike = String(arlike)
                     }
 
-                    //console.log(`ldata:${ldate}, lrlike:${lrlike}, offset:${loffset}, limit:${llimit}`)
-                    //store.dispatch('fakeGetHistoryAlarms', {
                     store.dispatch('getHistoryAlarms', {
                         dateDay: ldate,
                         filterRLike: lrlike,
                         offset: loffset,
                         limit: llimit
                     }).then((ret) => {
-                        this.historicalAlarms = ret
+                        ret.find(r=>{
+                          if(r.description == 2) {
+                             r.description = i18n.t('plcalarms.active')
+                          } else if (r.description == 1) {
+                             r.description = i18n.t('plcalarms.inactive')
+                          }
+                        })
+
+                        this.historicalAlarms = ret;
 
                     }).catch((err) => {
                         this.historicalAlarms = []
@@ -212,3 +218,5 @@
 
 
 </style>
+
+

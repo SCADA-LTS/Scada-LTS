@@ -1,3 +1,5 @@
 {
-  "message": "hello i18n !!"
+  "plcalarms.inactive":"inactive",
+  "plcalarms.active":"active",
+  "about": "This is an about page (i18n test) locales"
 }
