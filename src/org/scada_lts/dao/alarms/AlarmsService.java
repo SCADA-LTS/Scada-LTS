@@ -1,6 +1,5 @@
-package org.scada_lts.web.mvc.api.storungsandalarms;
 /*
- * (c) 2020 hyski.mateusz@gmail.com
+ * (c) 2020 hyski.mateusz@gmail.com, kamil.jarmusik@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +15,28 @@ package org.scada_lts.web.mvc.api.storungsandalarms;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+package org.scada_lts.dao.alarms;
+
+import java.util.List;
+
 /**
  * Create by at Mateusz Hyski
  *
- * Contain ONLY regex definitions
+ * @author hyski.mateusz@gmail.com
+ * @update kamil.jarmusik@gmail.com
  *
- *
- * @author hyski.mateusz@gmail.com 02-06-2020
  */
-class RegexSyntax {
 
-    final static String VALUE_BETWEEN_0_AND_9999 = "[^a-z]|[^A-Z]|[0-9]{1,4}";
-    final static String DATE_FORMAT = "^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$";
+public interface AlarmsService {
+
+    List<LiveAlarm> getLiveAlarms(int offset, int limit);
+
+    AlarmAcknowledge acknowledge(int id);
+
+    List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit);
+
+    static AlarmsService plcAlarmsService() {
+        return new PlcAlarmsService(AlarmsDAO.getInstance());
+    }
 }

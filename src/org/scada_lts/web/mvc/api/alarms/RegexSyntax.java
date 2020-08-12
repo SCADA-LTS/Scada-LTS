@@ -1,5 +1,3 @@
-package org.scada_lts.dao;
-
 /*
  * (c) 2020 hyski.mateusz@gmail.com
  *
@@ -18,20 +16,21 @@ package org.scada_lts.dao;
  *
  */
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+package org.scada_lts.web.mvc.api.alarms;
+
+import java.util.regex.Pattern;
 
 /**
  * Create by at Mateusz Hyski
  *
- * @author hyski.mateusz@gmail.com
+ * Contain ONLY regex definitions
+ *
+ *
+ * @author hyski.mateusz@gmail.com 02-06-2020
  */
-public interface PointValuesStorungsAndAlarms {
+class RegexSyntax {
 
-    JSONArray getLiveAlarms(int offset, int limit);
-
-    JSONObject setAcknowledge( int id, JSONObject jsonObject);
-
-    JSONArray getHistoryAlarmsByDateDayAndFilterOnlySinceOffsetAndLimit(String date_day, String filter_with_mysqlrlike, int offset, int limit );
-
+    final static Pattern VALUE_NOT_NUMERIC = Pattern.compile("[^0-9]");
+    final static Pattern VALUE_BETWEEN_0_TO_9999 = Pattern.compile("[0-9]{1,4}");
+    final static Pattern DATE_FORMAT = Pattern.compile("^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$");
 }
