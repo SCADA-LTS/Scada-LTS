@@ -18,12 +18,14 @@
 
 package org.scada_lts.dao.alarms;
 
-import org.springframework.dao.DataAccessException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,15 +39,17 @@ import java.util.Optional;
 
 class PlcAlarmsDAO implements AlarmsDAO {
 
+    private static final Log LOG = LogFactory.getLog(PlcAlarmsDAO.class);
+
     private static final String COLUMN_NAME_ID = "id";
     private static final String COLUMN_NAME_ACKNOWLEDGE_TIME = "acknowledgeTime";
     private static final String COLUMN_NAME_INACTIVE_TIME = "inactiveTime";
+    private static final String COLUMN_NAME_ACTIVE_TIME = "activeTime";
 
     private static final String COLUMN_NAME_ACTIVATION_TIME_VIEW = "activation-time";
     private static final String COLUMN_NAME_INACTIVATION_TIME_VIEW = "inactivation-time";
     private static final String COLUMN_NAME_LEVEL_VIEW = "level";
     private static final String COLUMN_NAME_NAME_VIEW = "name";
-    private static final String COLUMN_NAME_TIME_VIEW = "time";
 
     private static final String SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET = ""
             + "SELECT "
@@ -59,10 +63,12 @@ class PlcAlarmsDAO implements AlarmsDAO {
     private static final String SELECT_FROM_HISTORY_ALARMS_VIEW_WHERE_TIME_AND_RLIKE_LIMIT_OFFSET = ""
             + "SELECT "
             + "ha." + COLUMN_NAME_NAME_VIEW + ", "
-            + "ha." + COLUMN_NAME_TIME_VIEW + ", "
+            + "ha." + COLUMN_NAME_ACTIVE_TIME + ", "
+            + "ha." + COLUMN_NAME_INACTIVE_TIME + ", "
+            + "ha." + COLUMN_NAME_ACKNOWLEDGE_TIME + ", "
             + "ha." + COLUMN_NAME_LEVEL_VIEW + " "
             + "FROM historyAlarms ha WHERE "
-            + "DATE_FORMAT(ha." + COLUMN_NAME_TIME_VIEW + ", '%Y-%m-%d') = ? "
+            + "DATE_FORMAT(ha." + COLUMN_NAME_INACTIVE_TIME + ", '%Y-%m-%d') = ? "
             + "AND "
             + "ha." + COLUMN_NAME_NAME_VIEW + " RLIKE ? LIMIT ? OFFSET ?;";
 
@@ -85,27 +91,51 @@ class PlcAlarmsDAO implements AlarmsDAO {
     }
 
     @Override
-    public List<LiveAlarm> getLiveAlarms(int offset, int limit) throws DataAccessException {
-        return jdbcTemplate.query(SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET,
-                new Object[]{limit, offset},
-                new LiveAlarmRowMapper());
+    public List<LiveAlarm> getLiveAlarms(int offset, int limit) {
+        try {
+            return jdbcTemplate.query(SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET,
+                    new Object[]{limit, offset},
+                    new LiveAlarmRowMapper());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
     }
     @Override
-    public List<HistoryAlarm> getHistoryAlarms(String dayDate, String regex, int offset, int limit) throws DataAccessException {
-        return jdbcTemplate.query(SELECT_FROM_HISTORY_ALARMS_VIEW_WHERE_TIME_AND_RLIKE_LIMIT_OFFSET,
-                new Object[]{dayDate, regex, limit, offset},
-                new HistoryAlarmRowMapper());
+    public List<HistoryAlarm> getHistoryAlarms(String dayDate, String regex, int offset, int limit) {
+        try {
+            return jdbcTemplate.query(SELECT_FROM_HISTORY_ALARMS_VIEW_WHERE_TIME_AND_RLIKE_LIMIT_OFFSET,
+                    new Object[]{dayDate, regex, limit, offset},
+                    new HistoryAlarmRowMapper());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
     }
     @Override
-    public int setAcknowledgeTime(int id) throws DataAccessException {
-        return jdbcTemplate.update(UPDATE_PLC_ALARMS_SET_ACKNOWLEDGE_TIME_WHERE_ID, id);
+    public boolean setAcknowledgeTime(int id) {
+        try {
+            int numberUpdateRows = jdbcTemplate.update(UPDATE_PLC_ALARMS_SET_ACKNOWLEDGE_TIME_WHERE_ID, id);
+            if(numberUpdateRows > 1) {
+                throw new IllegalStateException("Update more than 1 row plcAlarms for id: " + id);
+            }
+            return true;
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return false;
+        }
     }
 
     @Override
-    public Optional<Long> getInactiveTimeMs(int id) throws DataAccessException {
-        Long inactiveTime = jdbcTemplate.queryForObject(SELECT_INACTIVE_TIME_FROM_PLC_ALARMS_WHERE_ID,
-                new Object[]{id}, Long.class);
-        return Optional.ofNullable(inactiveTime);
+    public Optional<Long> getInactiveTimeMs(int id) {
+        try {
+            Long inactiveTime = jdbcTemplate.queryForObject(SELECT_INACTIVE_TIME_FROM_PLC_ALARMS_WHERE_ID,
+                    new Object[]{id}, Long.class);
+            return Optional.ofNullable(inactiveTime);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
     }
 
     private class LiveAlarmRowMapper implements RowMapper<LiveAlarm> {
@@ -132,10 +162,11 @@ class PlcAlarmsDAO implements AlarmsDAO {
         public HistoryAlarm mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             HistoryAlarm historyAlarm = new HistoryAlarm();
-            historyAlarm.setTime(rs.getString(COLUMN_NAME_TIME_VIEW));
+            historyAlarm.setActiveTime(rs.getString(COLUMN_NAME_ACTIVE_TIME));
+            historyAlarm.setInactiveTime(rs.getString(COLUMN_NAME_INACTIVE_TIME));
+            historyAlarm.setAcknowledgeTime(rs.getString(COLUMN_NAME_ACKNOWLEDGE_TIME));
             historyAlarm.setName(rs.getString(COLUMN_NAME_NAME_VIEW));
-            String level = String.valueOf(rs.getLong(COLUMN_NAME_LEVEL_VIEW));
-            historyAlarm.setDescription(level);
+            historyAlarm.setLevel(rs.getInt(COLUMN_NAME_LEVEL_VIEW));
 
             return historyAlarm;
         }

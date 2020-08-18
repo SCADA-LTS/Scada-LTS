@@ -135,10 +135,12 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
 
 
         jdbcTmp.execute("CREATE VIEW historyAlarms AS SELECT " +
-                "func_fromats_date(inactiveTime) AS 'time',\n" +
+                "func_fromats_date(activeTime) AS 'activeTime',\n" +
+                "func_fromats_date(inactiveTime) AS 'inactiveTime',\n" +
+                "func_fromats_date(acknowledgeTime) AS 'acknowledgeTime',\n" +
                 "level,\n" +
                 "dataPointName AS 'name' \n" +
-                "FROM plcAlarms ORDER BY inactiveTime DESC, id DESC;\n");
+                "FROM plcAlarms ORDER BY inactiveTime = 0 DESC, inactiveTime DESC, id DESC;\n");
 
         jdbcTmp.execute("CREATE VIEW liveAlarms AS SELECT\n" +
                 "  id,\n" +

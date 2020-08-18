@@ -28,16 +28,34 @@ package org.scada_lts.dao.alarms;
 
 public class HistoryAlarm {
 
-    private String time;
+    private String activeTime;
+    private String inactiveTime;
+    private String acknowledgeTime;
     private String name;
-    private String description;
+    private int level;
 
-    public String getTime() {
-        return time;
+    public String getActiveTime() {
+        return activeTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setActiveTime(String activeTime) {
+        this.activeTime = activeTime;
+    }
+
+    public String getInactiveTime() {
+        return inactiveTime;
+    }
+
+    public void setInactiveTime(String inactiveTime) {
+        this.inactiveTime = inactiveTime;
+    }
+
+    public String getAcknowledgeTime() {
+        return acknowledgeTime;
+    }
+
+    public void setAcknowledgeTime(String acknowledgeTime) {
+        this.acknowledgeTime = acknowledgeTime;
     }
 
     public String getName() {
@@ -48,12 +66,11 @@ public class HistoryAlarm {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public int getLevel() {
+        return level;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setLevel(int level) {
+        this.level = level;
     }
-
 }
