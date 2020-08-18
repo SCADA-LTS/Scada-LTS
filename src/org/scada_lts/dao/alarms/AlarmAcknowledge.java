@@ -45,7 +45,7 @@ public class AlarmAcknowledge {
 
 
     public static AlarmAcknowledge requestFault(long id, String error) {
-        return new AlarmAcknowledge(id, "FAULT", error == null || error.isEmpty() ? "Object with id=" + id + " do not exist" : error);
+        return new AlarmAcknowledge(id, "FAULT", error);
     }
 
     public long getId() {

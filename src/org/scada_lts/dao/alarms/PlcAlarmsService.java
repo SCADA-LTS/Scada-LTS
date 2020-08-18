@@ -18,11 +18,6 @@
 
 package org.scada_lts.dao.alarms;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.dao.DataAccessException;
-
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,8 +30,6 @@ import java.util.List;
 
 class PlcAlarmsService implements AlarmsService {
 
-    private static final Log LOG = LogFactory.getLog(PlcAlarmsService.class);
-
     private final AlarmsDAO alarmsDAO;
 
     public PlcAlarmsService(AlarmsDAO alarmsDAO) {
@@ -45,54 +38,24 @@ class PlcAlarmsService implements AlarmsService {
 
     @Override
     public List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit) {
-        try
-        {
-            String regex = dataPointNameFilter == null || "EMPTY".equals(dataPointNameFilter) ? "(.*)" : dataPointNameFilter;
-            return alarmsDAO.getHistoryAlarms(dayDate, regex, offset, limit);
-        }
-        catch (DataAccessException dataAccessException){
-            LOG.trace("Exception on DataBase level.Please debug.");
-        }
-        catch(Exception exception)
-        {
-            LOG.trace(exception.getMessage());
-        }
-
-        return Collections.emptyList();
+        String regex = dataPointNameFilter == null || "EMPTY".equals(dataPointNameFilter) ? "(.*)" : dataPointNameFilter;
+        return alarmsDAO.getHistoryAlarms(dayDate, regex, offset, limit);
     }
 
     @Override
     public List<LiveAlarm> getLiveAlarms(int offset, int limit) {
-
-        try
-        {
-            return alarmsDAO.getLiveAlarms(offset, limit);
-        }
-        catch (DataAccessException dataAccessException){
-            LOG.trace("Exception on DataBase level.Please debug.");
-        }
-        catch (Exception e)
-        {
-            LOG.trace(e.getMessage());
-        }
-        return Collections.emptyList();
+        return alarmsDAO.getLiveAlarms(offset, limit);
     }
 
     @Override
     public AlarmAcknowledge acknowledge(int id) {
-        try
-        {
-            long inactiveTime = alarmsDAO.getInactiveTimeMs(id).orElse(-1L);
-            if(inactiveTime == -1L)
-                return createAcknowledgeResponse("Unknow error", false, id);
-            if(inactiveTime == 0L)
-                return createAcknowledgeResponse("Alarm or Fault is active!", false, id);
-            int result = alarmsDAO.setAcknowledgeTime(id);
-            return createAcknowledgeResponse("", result == 1, id);
-        }
-        catch (DataAccessException e) {
-            return createAcknowledgeResponse("Exception on DataBase level.Please debug.", false, id);
-        }
+        long inactiveTime = alarmsDAO.getInactiveTimeMs(id).orElse(-1L);
+        if(inactiveTime == -1L)
+            return createAcknowledgeResponse("Unknow error.", false, id);
+        if(inactiveTime == 0L)
+            return createAcknowledgeResponse("Alarm or Fault is active!", false, id);
+        boolean result = alarmsDAO.setAcknowledgeTime(id);
+        return createAcknowledgeResponse("", result, id);
     }
 
     /**
