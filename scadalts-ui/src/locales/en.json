@@ -1,5 +1,7 @@
 {
-  "plcalarms.inactive":"inactive",
-  "plcalarms.active":"active",
+  "plcalarms.fault.inactive":"Fault has gone",
+  "plcalarms.fault.active":"Fault comes",
+  "plcalarms.alarm.inactive":"Alarm is gone",
+  "plcalarms.alarm.active":"Alarm triggered",
   "about": "This is an about page (i18n test) locales"
 }
