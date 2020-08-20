@@ -25,7 +25,7 @@
 	<target name="clean_and_tomcat_deploy" description="Deploy prepared WAR file from project dir to Tomcat webapps folder">
 		<delete file="${env.CATALINA_HOME}/webapps/ScadaBR.war"></delete>
 		<delete dir="${env.CATALINA_HOME}/webapps/ScadaBR"></delete>
-		<copy file="${build-project.dir}ScadaBR.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
+		<copy file="ScadaBR.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true">
 		</copy>
 	</target>
 
@@ -393,7 +393,7 @@
 			<fileset dir="${webapp-resources.dir}" />
 		</copy>
 
-		<war destfile="${build-project.dir}ScadaBR.war"
+		<war destfile="ScadaBR.war"
               	        basedir="WebContent"
               	        needxmlfile="false">
 		</war>
