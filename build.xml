@@ -189,6 +189,7 @@
 		<pathelement location="WebContent/WEB-INF/lib/jna-platform-4.1.0.jar"/>
 	</path>
 	<path id="scadabr-1.1.0-RC.classpath">
+		<pathelement location="build/classes"/>
 		<path refid="Web App Libraries.libraryclasspath"/>
 		<path refid="EAR Libraries.libraryclasspath"/>
 		<path refid="httpcomponents-client-4.5.3"/>
