@@ -54,7 +54,7 @@ after_script:
 - ls -l
 - mv ./apache-tomcat-7.0.85/* ./
 - rm -rf ./apache-tomcat-7.0.85
-- cp ../../ScadaBR.war ./webapps
+- cp ../../../ScadaBR.war ./webapps
 - ls -l ./webapps/ScadaBR.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
