@@ -11,7 +11,6 @@
           v-bind:class="{input_disabled:filterOn==true}"
       ></datepicker>
 
-
       <input
           v-model="frlike"
           class="min-gb-input"
@@ -118,23 +117,55 @@ export default {
           offset: loffset,
           limit: llimit
         }).then((ret) => {
+
+          //{"activeTime":"2020-08-21 17:38:17","inactiveTime":" ","acknowledgeTime":" ","name":"test AL test","level":2}
+          //transform to {time: "",utc:"", type:"aT", name:"",description:""}
+          console.log(ret)
+          let toRet = [];
           ret.find(r => {
-            if (r.description.includes('2')) {
-              if (r.description.includes('active')) {
-                r.description = i18n.t('plcalarms.alarm.active')
+            if (r.acknowledgeTime != undefined && r.acknowledgeTime.trim() != "" && r.acknowledgeTime.length > 0) {
+              let toAdd = {}
+              toAdd.time = r.acknowledgeTime
+              toAdd.utc = new Date(r.time)
+              if (r.level === 2) {
+                toAdd.description = i18n.t('plcalarms.alarm.acknowledge')
               } else {
-                r.description = i18n.t('plcalarms.alarm.inactive')
+                toAdd.description = i18n.t('plcalarms.fault.acknowledge')
               }
-            } else if (r.description.include('1')) {
-              if (r.description.include('active')) {
-                r.description = i18n.t('plcalarms.fault.active')
+              toRet.push(toAdd)
+            }
+            if (r.inactiveTime != undefined && r.inactiveTime.trim() != "" && r.inactiveTime.length > 0) {
+                let toAdd = {}
+                toAdd.time = r.inactiveTime
+                toAdd.utc = new Date(r.time)
+                if (r.level === 2) {
+                  toAdd.description = i18n.t('plcalarms.alarm.inactive')
+                } else {
+                  toAdd.description = i18n.t('plcalarms.fault.inactive')
+                }
+                toRet.push(toAdd)
+            }
+            if (r.activeTime != undefined && r.activeTime.trim() != "" && r.activeTime.length > 0) {
+              let toAdd = {}
+              toAdd.time = r.activeTime
+              toAdd.utc = new Date(r.time)
+              if (r.level === 2) {
+                toAdd.description = i18n.t('plcalarms.alarm.active')
               } else {
-                r.description = i18n.t('plcalarms.fault.inactive')
+                toAdd.description = i18n.t('plcalarms.fault.active')
               }
+              toRet.push(toAdd)
             }
           })
 
-          this.historicalAlarms = ret;
+          console.log(toRet)
+
+          //sorting time
+
+          toRet.sort((a, b) => a.utc - b.utc);
+
+          console.log(ret)
+          this.historicalAlarms = toRet;
 
         }).catch((err) => {
           this.historicalAlarms = []
