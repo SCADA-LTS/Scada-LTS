@@ -245,13 +245,11 @@ export default class BaseChart {
     refreshPointValues(exportId) {
         let pointData = [];
         for (let [k, v] of this.pointCurrentValue) {
-            if (exportId) {
-                pointData.push(this.getPeriodicUpdate(k, this.lastTimestamp, exportId).then(data => {
-                    data.values.forEach(e => {
-                        this.addValue(e, data.name, this.liveUpdatePointValues)
-                    })
-                }))
-            }
+            pointData.push(this.getPeriodicUpdate(k, this.lastTimestamp, exportId).then(data => {
+                data.values.forEach(e => {
+                    this.addValue(e, data.name, this.liveUpdatePointValues)
+                })
+            }))
         }
         Promise.all(pointData).then(() => {
             let lastData = BaseChart.prepareChartData(this.liveUpdatePointValues);
