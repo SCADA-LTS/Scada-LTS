@@ -65,6 +65,8 @@
         },
         data() {
             return {
+                LEVEL_FAULT: 1,
+                LEVEL_ALARM: 2,
                 alarms: [],
                 currentPage: 1,
                 pageCount: 10,
@@ -125,7 +127,7 @@
             isActivation(activationTime, inactivationTime, level) {
                 if (!this.checkPrm(activationTime, inactivationTime, level)) return false
 
-                if (activationTime.trim().length > 0 && inactivationTime.trim().length == 0 && level == 2) {
+                if (activationTime.trim().length > 0 && inactivationTime.trim().length == 0 && level == this.LEVEL_FAULT) {
                     return true
                 } else {
                     return false
@@ -134,7 +136,7 @@
             isActivationAlarm(activationTime, inactivationTime, level) {
                 if (!this.checkPrm(activationTime, inactivationTime, level)) return false
 
-                if (activationTime.trim().length > 0 && inactivationTime.trim().length == 0 && level == 1) {
+                if (activationTime.trim().length > 0 && inactivationTime.trim().length == 0 && level == this.LEVEL_ALARM) {
                     return true
                 } else {
                     return false
