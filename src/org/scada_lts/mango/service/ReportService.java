@@ -98,6 +98,10 @@ public class ReportService implements MangoReport {
 
 	@Override
 	public void saveReport(ReportVO report) {
+		if(report.getDateRangeType() == ReportVO.DATE_RANGE_TYPE_RELATIVE) {
+			report.setFromNone(false);
+			report.setToNone(false);
+		}
 		if (report.getId() == Common.NEW_ID) {
 			report.setId(reportDAO.insert(report));
 		} else {
