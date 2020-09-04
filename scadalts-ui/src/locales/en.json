@@ -1,0 +1,9 @@
+{
+  "plcalarms.fault.inactive":"Fault has gone",
+  "plcalarms.fault.active":"Fault comes",
+  "plcalarms.fault.acknowledge": "Fault acknowledge",
+  "plcalarms.alarm.inactive":"Alarm is gone",
+  "plcalarms.alarm.active":"Alarm triggered",
+  "plcalarms.alarm.acknowledge": "Alarm acknowledge",
+  "about": "This is an about page (i18n test) locales"
+}
