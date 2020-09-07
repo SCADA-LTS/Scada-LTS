@@ -1,16 +1,16 @@
 <template>
     <div class="historical-alarms-components">
 
-        <SimplePanel class="panel_top">
+        <SimplePanel v-if="showMainToolbar=='true'" class="panel_top">
             To refresh {{toRefresh}}
             <div class="action">
-                <input type="checkbox" id="select_all"  v-on:click="toggleSelectAll()" name="Select_All" value="0" ref="selectAll" v-model="sellAll">
+                <input v-if="showSelectToAcknowledge=='true'" type="checkbox" id="select_all"  v-on:click="toggleSelectAll()" name="Select_All" value="0" ref="selectAll" v-model="sellAll">
                 &nbsp;<label class="selall" for="select_all" v-on:click="toggleSelectAll()">Select All</label><br>
             </div>
         </SimplePanel>
         <table>
             <tr>
-                <th></th>
+                <th v-if="showSelectToAcknowledge=='true'"></th>
                 <th>Activation Timestamp</th>
                 <th>Inactivation Timestamp</th>
                 <th>Variable name</th>
@@ -22,7 +22,7 @@
                         inactivation: isInactivation(item['activation-time'],item['inactivation-time'],item.level)
                     }"
             >
-                <td>
+                <td v-if="showSelectToAcknowledge=='true'">
                     <input v-if=" item != undefined && item['inactivation-time'] != undefined && item['inactivation-time'].trim().length>0"
                            type="checkbox" name="ActivationAction"
                            :value="item.id" v-model="to_acknowledges">
@@ -33,7 +33,7 @@
             </tr>
         </table>
 
-        <SimplePanel>
+        <SimplePanel v-if="showPagination=='true'">
 
             <div class="pagination">
                 <SimplePagination
@@ -47,7 +47,8 @@
             </div>
 
         </SimplePanel>
-        <div class="action_bottom">
+
+        <div v-if="showAcknowledgeBtn=='true'" class="action_bottom" >
             <button v-on:click="acknowledge()">Acknowledge Störung/Alarms</button>
         </div>
     </div>
@@ -63,6 +64,7 @@
         components: {
             ...Components,
         },
+      props: ['pShowAcknowledgeBtn', 'pShowMainToolbar', 'pShowSelectToAcknowledge', 'pShowPagination', 'pMaximumNumbersOfRows'],
         data() {
             return {
                 LEVEL_FAULT: 1,
@@ -72,21 +74,35 @@
                 pageCount: 10,
                 toRefresh: 5,
                 to_acknowledges: [],
-                sellAll: false
-
+                sellAll: false,
+                showAcknowledgeBtn: this.pShowAcknowledgeBtn,
+                showMainToolbar: this.pShowMainToolbar,
+                showSelectToAcknowledge: this.pShowSelectToAcknowledge,
+                showPagination: this.pShowPagination,
+                maximumNumbersOfRows: this.pMaximumNumbersOfRows,
+                hidePagination: false
             }
         },
         methods: {
             getAlarms(page) {
 
-                let recordsCount = 20
+                let recordsCount = this.maximumNumbersOfRows
                 let loffset = String(recordsCount * (page - 1))
                 let llimit = String(recordsCount)
 
                 //store.dispatch('fakeGetLiveAlarms
                 store.dispatch('getLiveAlarms', {'offset': loffset, 'limit': llimit}).then((ret) => {
                     this.alarms = ret
-                    //console.log(JSON.stringify(this.data))
+                  if (this.alarms.length >= this.maximumNumbersOfRows || page > 1) {
+                    if (this.showPagination=='false') {
+                      this.hidePagination = true
+                    }
+                    this.showPagination = 'true'
+                  } else {
+                    if (this.hidePagination == true) {
+                      this.showPagination = 'false'
+                    }
+                  }
                 })
             },
             acknowledge() {
@@ -108,8 +124,6 @@
             },
             toggleSelectAll() {
                 const checkboxes = document.getElementsByName('ActivationAction')
-
-                //console.log(`toRemoveCheck:${JSON.stringify(this.sellAll)}`)
 
                 if (this.sellAll) {
                     this.to_acknowledges = []
@@ -177,7 +191,23 @@
             },
         },
         created() {
-            this.getAlarms(1);
+          if (this.showAcknowledgeBtn === undefined) {
+             this.showAcknowledgeBtn = 'true'
+          }
+
+          if (this.showMainToolbar === undefined) {
+            this.showMainToolbar = 'true'
+          }
+          if (this.showSelectToAcknowledge === undefined) {
+            this.showSelectToAcknowledge = 'true'
+          }
+          if (this.showPagination === undefined) {
+            this.showPagination = 'true'
+          }
+          if (this.maximumNumbersOfRows == undefined) {
+            this.maximumNumbersOfRows = 20
+          }
+          this.getAlarms(1);
         },
         mounted() {
             setInterval(
