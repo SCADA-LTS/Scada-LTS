@@ -283,10 +283,10 @@ public class ReportService implements MangoReport {
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				if (reportInstance.isFromInception()) {
-					reportInstance.setReportStartTime(rs.getLong("min(rd.ts)"));
+					reportInstance.setReportStartTime(rs.getLong(ReportInstanceDataDAO.COLUMN_NAME_D_TS_MIN));
 				}
 				if (reportInstance.isToNow()) {
-					reportInstance.setReportEndTime(rs.getLong("max(rd.ts)"));
+					reportInstance.setReportEndTime(rs.getLong(ReportInstanceDataDAO.COLUMN_NAME_D_TS_MAX));
 				}
 			}
 		});

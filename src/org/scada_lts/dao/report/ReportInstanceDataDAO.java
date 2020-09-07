@@ -53,6 +53,8 @@ public class ReportInstanceDataDAO {
 
 	public static final String COLUMN_NAME_D_POINT_VALUE = "pointValue";
 	public static final String COLUMN_NAME_D_TS = "ts";
+	public static final String COLUMN_NAME_D_TS_MIN = "min(" + "rd." + COLUMN_NAME_D_TS + ")";
+	public static final String COLUMN_NAME_D_TS_MAX = "max(" + "rd." + COLUMN_NAME_D_TS + ")";
 	public static final String COLUMN_NAME_D_POINT_VALUE_ID = "pointValueId";
 	public static final String COLUMN_NAME_D_REPORT_INSTANCE_POINT_ID = "reportInstancePointId";
 
@@ -106,10 +108,9 @@ public class ReportInstanceDataDAO {
 				+ "rd." + COLUMN_NAME_D_TS + " ";
 
 	public static final String REPORT_INSTANCE_POINT_SELECT_MIN_MAX = ""
-			+ "select min("
-				+ "rd." + COLUMN_NAME_D_TS + "), "
-			+ "max("
-				+ "rd." + COLUMN_NAME_D_TS + ") "
+			+ "select "
+			+ COLUMN_NAME_D_TS_MIN + ", "
+			+ COLUMN_NAME_D_TS_MAX + " "
 			+ "from reportInstancePoints rp "
 			+ "join reportInstanceData rd "
 			+ "on "
