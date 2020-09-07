@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.PlcAlarmsUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -39,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
+
 
 /**
  * DAO for DataPoint
@@ -230,25 +232,13 @@ public class DataPointDAO {
 						dataPoint.getName(),
 						dataPoint.getDataSourceId(),
 						new SerializationData().writeObject(dataPoint),
-						getPlcAlarmLevelDependsOnPartDataPointName(dataPoint.getName())
+						PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName())
 				}).setValues(ps);
 				return ps;
 			}
 		}, keyHolder);
 
 		return keyHolder.getKey().intValue();
-	}
-	private int getPlcAlarmLevelDependsOnPartDataPointName(String dataPointName){
-		if( dataPointName.isEmpty() || dataPointName == null) {
-			return 0;
-		}
-		else
-			{
-				return
-						(dataPointName.contains(" AL "))
-								? 1 : dataPointName.contains(" ST ")
-								? 2 : 3;
-			}
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -259,7 +249,7 @@ public class DataPointDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
-				getPlcAlarmLevelDependsOnPartDataPointName( dataPoint.getName() ),
+				PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()),
 				dataPoint.getXid(),
 				dataPoint.getName(),
 				new SerializationData().writeObject(dataPoint),
