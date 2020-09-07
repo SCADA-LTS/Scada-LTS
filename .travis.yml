@@ -70,6 +70,9 @@ after_script:
 - docker version
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - export TAGISSUE=`echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9][0-9]' | head -n1`
+- export TAGOLDISSUE=`echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9]' | head -n1`
+- echo $TAGISSUE
+- export $TAGISSUE=`if [ "$TAGISSUE" == "" ]; then echo $TAGOLDISSUE; else echo $TAGISSUE ; fi`
 - echo $TAGISSUE
 - export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "siv/develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
 - echo $TAG_DEV_OR_ISSUE
