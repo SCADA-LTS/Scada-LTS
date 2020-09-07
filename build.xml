@@ -233,23 +233,11 @@
 		</javac>
 	</target>
 
-<!--	<target name="new-ui-dependency">-->
-<!--		<exec dir="./ScadaLTS-UI-1" executable="npm">-->
-<!--			<arg value="install"/>-->
-<!--		</exec>-->
-<!--	</target>-->
 	<target name="new-ui-dependency">
 		<exec dir="./scadalts-ui" executable="npm">
 			<arg value="install"/>
 		</exec>
 	</target>
-
-<!--	<target name="new-ui" depends="new-ui-dependency">-->
-<!--		<exec dir="./ScadaLTS-UI-1" executable="npm">-->
-<!--			<arg value="run"/>-->
-<!--			<arg value="build"/>-->
-<!--		</exec>-->
-<!--	</target>-->
 
 	<target name="new-ui" depends="new-ui-dependency">
 		<exec dir="./scadalts-ui" executable="npm">
@@ -367,6 +355,11 @@
 			</fileset>
 		</copy>
 
+		<copy includeemptydirs="false" todir="${js-ui.dir}/views/js" taskname="copy for live-alarms js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="live-alarms-component.js"/>
+			</fileset>
+		</copy>
 
 		<!-- font do zrobienia -->
 		<!-- img do zrobienia -->
