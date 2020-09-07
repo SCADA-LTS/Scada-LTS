@@ -109,9 +109,9 @@ public class ReportInstanceDataDAO {
 
 	public static final String REPORT_INSTANCE_POINT_SELECT_MIN_MAX = ""
 			+ "select min("
-				+ "rd." + COLUMN_NAME_D_TS + ") as tsMin, "
+				+ "rd." + COLUMN_NAME_D_TS + ") as " + COLUMN_NAME_D_TS_MIN + ", "
 			+ "max("
-				+ "rd." + COLUMN_NAME_D_TS + ") as tsMax "
+				+ "rd." + COLUMN_NAME_D_TS + ") as " + COLUMN_NAME_D_TS_MAX + " "
 			+ "from reportInstancePoints rp "
 			+ "join reportInstanceData rd "
 			+ "on "
