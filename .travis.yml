@@ -38,6 +38,7 @@ branches:
   - "/^f_1165_1183/#1198.*$/"
   - "/^feature_r23/#1349.*$/"
   - "/^feature_r23/#1355.*$/"
+  - "/^feature_r23/#1172.*$/"
 notifications:
   email: false
 env:
