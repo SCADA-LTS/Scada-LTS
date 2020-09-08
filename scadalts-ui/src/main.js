@@ -13,7 +13,6 @@ import CMP from './components/graphical_views/cmp/CMP'
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG'
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy'
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS'
-// import ExampleChartCmp from './views/components/ExampleChartCmp'
 import WatchListChartWidget from './components/watch_list/WatchListChartWidget'
 import VueLodash from 'vue-lodash'
 
@@ -24,6 +23,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt} from '@fortawesome/free-solid-svg-icons'
 import i18n from './i18n'
+import LiveAlarms from './components/graphical_views/AlarmsComponent'
 
 library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt)
 
@@ -194,3 +194,24 @@ for (let x = 0; x < 10; x++) {
     }).$mount(`#${chartId}`)
   }
 }
+
+if (window.document.getElementById('live-alarms') != undefined) {
+
+  console.log(`test+ ${window.document.getElementById('live-alarms').getAttribute('show-acknowledge-btn')}`)
+
+  new Vue({
+    store,
+    render: h => h(LiveAlarms, {
+      props:
+          {
+            pShowAcknowledgeBtn: window.document.getElementById('live-alarms').getAttribute('show-acknowledge-btn'),
+            pShowMainToolbar: window.document.getElementById('live-alarms').getAttribute('show-main-toolbar'),
+            pShowSelectToAcknowledge: window.document.getElementById('live-alarms').getAttribute('show-select-to-acknowledge'),
+            pShowPagination: window.document.getElementById('live-alarms').getAttribute('show-pagination'),
+            pMaximumNumbersOfRows: window.document.getElementById('live-alarms').getAttribute('max-number-of-rows')
+          }
+    })
+  }).$mount('#live-alarms')
+
+}
+
