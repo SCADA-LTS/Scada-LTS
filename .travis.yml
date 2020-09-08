@@ -32,13 +32,10 @@ services:
 script: ant war && ant junit
 branches:
   only:
-  - "/^siv/develop.*$/"
-  - "/^siv/master.*$/"
-  - "/^feature/#1342.*$/"
-  - "/^f_1165_1183/#1198.*$/"
-  - "/^feature_r23/#274.*$/"
-  - "/^feature_r23/#1349.*$/"
-  - "/^feature_rs23/#1359.*$/"
+  - "/^release_23.*$/"
+  - "/^develop.*$/"
+  - "/^master.*$/"
+  - "/^feature/#1370.*$/"
 notifications:
   email: false
 env:
@@ -77,9 +74,10 @@ after_script:
 - echo $TAGISSUE
 - export TAGISSUE=`if [ "$TAGISSUE" == "" ]; then echo $TAGOLDISSUE; else echo $TAGISSUE ; fi`
 - echo $TAGISSUE
-- export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "siv/develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
+- export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
 - echo $TAG_DEV_OR_ISSUE
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE ; fi`
+- echo $TAG
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
