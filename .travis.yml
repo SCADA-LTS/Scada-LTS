@@ -77,9 +77,9 @@ after_script:
 - echo $TAGISSUE
 - export TAGISSUE=`if [ "$TAGISSUE" == "" ]; then echo $TAGOLDISSUE; else echo $TAGISSUE ; fi`
 - echo $TAGISSUE
-- export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "siv/develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
+- export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
 - echo $TAG_DEV_OR_ISSUE
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE ; fi`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "release_23" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE ; fi`
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
