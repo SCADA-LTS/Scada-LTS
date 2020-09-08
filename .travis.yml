@@ -40,6 +40,8 @@ branches:
   - "/^feature_r23/#1355.*$/"
   - "/^feature_r23/#1172.*$/"
   - "/^feature_r23/#1108.*$/"
+  - "/^release_23.*$/"
+  - "/^feature/#1370.*$/"
 notifications:
   email: false
 env:
@@ -74,10 +76,14 @@ after_script:
 - docker version
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - export TAGISSUE=`echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9][0-9]' | head -n1`
+- export TAGOLDISSUE=`echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9]' | head -n1`
 - echo $TAGISSUE
-- export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "siv/develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
+- export TAGISSUE=`if [ "$TAGISSUE" == "" ]; then echo $TAGOLDISSUE; else echo $TAGISSUE ; fi`
+- echo $TAGISSUE
+- export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
 - echo $TAG_DEV_OR_ISSUE
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE ; fi`
+- echo $TAG
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG

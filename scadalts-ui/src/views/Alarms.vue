@@ -10,7 +10,7 @@
 <script>
 
     import Components from '@min-gb/vuejs-components'
-    import AlarmsComponent from "./components/AlarmsComponent"
+    import AlarmsComponent from "../components/graphical_views/AlarmsComponent"
 
     export default {
         el: '#alarms',

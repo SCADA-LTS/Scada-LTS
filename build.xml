@@ -398,6 +398,11 @@
 			</fileset>
 		</copy>
 
+		<copy includeemptydirs="false" todir="${js-ui.dir}/views/js" taskname="copy for live-alarms js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="live-alarms-component.js"/>
+			</fileset>
+		</copy>
 
 		<!-- font do zrobienia -->
 		<!-- img do zrobienia -->
