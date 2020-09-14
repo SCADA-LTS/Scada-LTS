@@ -19,7 +19,12 @@
 package org.scada_lts.dao.migration.mysql;
 
 import com.serotonin.mango.vo.DataPointVO;
-import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
+import org.scada_lts.dao.DAO;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
@@ -30,70 +35,68 @@ import java.util.Objects;
 
 /**
  *
- * @author kamil.jarmusik@gmail.com
+ * @author kamil.jarmusik@gmail.com, grzegorz.bylica@gmail.com
  *
  */
 
-public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
+public class V2_3__FaultsAndAlarms extends BaseJavaMigration {
 
-    public void migrate(JdbcTemplate jdbcTmp) throws Exception {
+    private static final Log LOG = LogFactory.getLog(V2_3__FaultsAndAlarms.class);
 
-        try {
-            addColumnsToDataPointsTable(jdbcTmp);
-            updateDataPointsTable(jdbcTmp);
-            createPlcAlarmsTable(jdbcTmp);
-            createFunctions(jdbcTmp);
-            createViews(jdbcTmp);
-            createProcedure(jdbcTmp);
-            createTrigger(jdbcTmp);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
+    @Override
+    public void migrate(Context context) throws Exception {
+
+        final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
+
+        addColumnsToDataPointsTable(jdbcTmp);
+        updateDataPointsTable(jdbcTmp);
+        createPlcAlarmsTable(jdbcTmp);
+        createFunctions(jdbcTmp);
+        createViews(jdbcTmp);
+        createProcedure(jdbcTmp);
+        createTrigger(jdbcTmp);
 
     }
 
     private void addColumnsToDataPointsTable(JdbcTemplate jdbcTmp) throws Exception {
-
-        //this additional column will contain ONLY data point name which trigger needs
-        jdbcTmp.execute("ALTER TABLE dataPoints ADD pointName VARCHAR(250);");
-
-        //this additional column will have defined level of alarm as a 0-8 steps.
-        jdbcTmp.execute("ALTER TABLE dataPoints ADD plcAlarmLevel TINYINT(8);");
-
+        jdbcTmp.execute("ALTER TABLE dataPoints ADD pointName VARCHAR(250) COMMENT 'copy point name from data';");
+        jdbcTmp.execute("ALTER TABLE dataPoints ADD plcAlarmLevel TINYINT(8) COMMENT '1 - FAULT, 2 - ALARM';");
     }
 
     private void updateDataPointsTable(JdbcTemplate jdbcTmp) throws Exception {
 
-        //Using DataPointVO forces deserialization
-        List<DataPointVO> dataPoints = jdbcTmp.query("SELECT id, data FROM dataPoints", (resultSet, i) -> {
-            try (InputStream inputStream = resultSet.getBinaryStream("data");
-                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
-                DataPointVO dataPointVO = (DataPointVO) objectInputStream.readObject();
-                dataPointVO.setId(resultSet.getInt("id"));
-                return dataPointVO;
-            } catch (IOException | ClassNotFoundException ex) {
-                ex.printStackTrace();
-                return null;
-            }
-        });
+        try {
+            List<DataPointVO> dataPoints = jdbcTmp.query("SELECT id, data FROM dataPoints", (resultSet, i) -> {
+                try (InputStream inputStream = resultSet.getBinaryStream("data");
+                     ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
+                    DataPointVO dataPointVO = (DataPointVO) objectInputStream.readObject();
+                    dataPointVO.setId(resultSet.getInt("id"));
+                    return dataPointVO;
+                } catch (IOException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                    return null;
+                }
+            });
 
-        boolean isNull = dataPoints.stream().anyMatch(Objects::isNull);
-        if(isNull) {
-            throw new IllegalStateException("DataPointVO is null!");
-        }
+            boolean isNull = dataPoints.stream().anyMatch(Objects::isNull);
+            if (isNull) {
+                throw new IllegalStateException("DataPointVO is null!");
+            }
 
-        for(DataPointVO dataPointPart: dataPoints) {
-            String dataPointName = dataPointPart.getName();
-            int plcAlarmLevel = 0;
-            if(dataPointName.contains(" AL ")) {
-                plcAlarmLevel = 2;
+            for (DataPointVO dataPointPart : dataPoints) {
+                String dataPointName = dataPointPart.getName();
+                int plcAlarmLevel = 0;
+                if (dataPointName.contains(" AL ")) {
+                    plcAlarmLevel = 2;
+                }
+                if (dataPointName.contains(" ST ")) {
+                    plcAlarmLevel = 1;
+                }
+                jdbcTmp.update("UPDATE dataPoints SET plcAlarmLevel = ?, pointName = ? WHERE id = ?",
+                        plcAlarmLevel, dataPointName, dataPointPart.getId());
             }
-            if(dataPointName.contains(" ST ")) {
-                plcAlarmLevel = 1;
-            }
-            jdbcTmp.update("UPDATE dataPoints SET plcAlarmLevel = ?, pointName = ? WHERE id = ?",
-                    plcAlarmLevel, dataPointName, dataPointPart.getId());
+        } catch (EmptyResultDataAccessException empty) {
+            LOG.warn(empty);
         }
 
     }
@@ -131,7 +134,7 @@ public class V2_3__FaultsAndAlarms implements SpringJdbcMigration {
                 "END");
     }
 
-    private static void createViews(JdbcTemplate jdbcTmp) throws Exception {
+    private void createViews(JdbcTemplate jdbcTmp) throws Exception {
 
 
         jdbcTmp.execute("CREATE VIEW historyAlarms AS SELECT " +
