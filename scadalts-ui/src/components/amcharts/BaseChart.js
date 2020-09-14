@@ -22,19 +22,31 @@ export default class BaseChart {
     /**
      * 
      * @param {any} chartReference Id of DOM element where this char will be initialized
-     * @param {String} chartType [ XYChart | PieChart | GaugeChart] available chart types
+     * @param {String} chartType [ XYChart | PieChart | GaugeChart | JsonChart] available chart types
      * @param {String} colors Hex value of base chart color. 
      * @param {String} [domain] Protocol, domain and the address of the API interface
+     * @param {Object} [jsonConfig] Json Chart configuration
+     * @param {String} [jsonChart] [ XYChart | PieChart | GaugeChart] available chart types
      */
-    constructor(chartReference, chartType, colors, domain = '.') {
-
+    constructor(chartReference, chartType, colors, domain = '.', jsonConfig = undefined, jsonChart = undefined) {
+        console.log(jsonConfig);
         if (chartType === "XYChart") {
             this.chart = am4core.create(chartReference, am4charts.XYChart)
         } else if (chartType === "PieChart") {
             this.chart = am4core.create(chartReference, am4charts.PieChart);
         } else if (chartType === "GaugeChart") {
             this.chart = am4core.create(chartReference, am4charts.GaugeChart);
+        } else if (chartType === "JsonChart") {
+            if (jsonChart === "XYChart") {
+                this.chart = am4core.createFromConfig(jsonConfig, chartReference, am4charts.XYChart);
+            } else if (jsonChart === "PieChart") {
+                this.chart = am4core.createFromConfig(jsonConfig, chartReference, am4charts.PieChart);
+            } else if (jsonChart === "GaugeChart") {
+                this.chart = am4core.createFromConfig(jsonConfig, chartReference, am4charts.GaugeChart);
+            }
         }
+        console.log(jsonConfig);
+        console.log(this.chart);
         this.pointPastValues = new Map();
         this.pointCurrentValue = new Map();
         this.liveUpdatePointValues = new Map();
@@ -42,25 +54,27 @@ export default class BaseChart {
         this.lastTimestamp = new Date().getTime();
         this.liveUpdateInterval = 5000;
         this.domain = domain;
-        let colorPallete = [
-            am4core.color("#39B54A"),
-            am4core.color("#69FF7D"),
-            am4core.color("#166921"),
-            am4core.color("#690C24"),
-            am4core.color("#B53859"),
-            am4core.color("#734FC1"),
-            am4core.color("#824F1B"),
-            am4core.color("#69421B"),
-        ];
-        if (colors !== undefined && colors !== null) {
-            colors = colors.split(",");
-            if (colors.length > 0) {
-                for (let i = colors.length - 1; i >= 0; i--) {
-                    colorPallete.unshift(am4core.color(colors[i].trim()));
+        if(jsonConfig != undefined) {
+            let colorPallete = [
+                am4core.color("#39B54A"),
+                am4core.color("#69FF7D"),
+                am4core.color("#166921"),
+                am4core.color("#690C24"),
+                am4core.color("#B53859"),
+                am4core.color("#734FC1"),
+                am4core.color("#824F1B"),
+                am4core.color("#69421B"),
+            ];
+            if (colors !== undefined && colors !== null) {
+                colors = colors.split(",");
+                if (colors.length > 0) {
+                    for (let i = colors.length - 1; i >= 0; i--) {
+                        colorPallete.unshift(am4core.color(colors[i].trim()));
+                    }
                 }
             }
+            this.chart.colors.list = colorPallete;
         }
-        this.chart.colors.list = colorPallete;
         this.yAxesCount = 0;
     }
 

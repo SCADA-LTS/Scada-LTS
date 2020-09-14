@@ -23,6 +23,7 @@ const modernWatchList = {
         },
         addChart(state, chart) {
             state.chartList.push(chart);
+            state.chartList = state.chartList.filter(e => e.id == chart.id);
             this.commit('saveCharts');
         },
         editChart(state, chart) {

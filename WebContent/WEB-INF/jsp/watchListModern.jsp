@@ -222,8 +222,15 @@
           var icons = getElementsByMangoName($("treeDiv"), "pointTreeIcon");
           for (var i=0; i<icons.length; i++)
               icons[i].src = iconSrc;
+
+          window.dispatchEvent(new CustomEvent("watchListChanged", {
+            detail: { wlName: select.options[select.selectedIndex].text }
+          }));
       }
 
+      //window.addEventListener("watchListChanged", function(event) {
+      //  alert(event.detail.wlName);
+      //});
 
       function showWatchListEdit() {
           openLayer("wlEdit");
@@ -267,6 +274,7 @@
       }
 
       function deleteWatchList() {
+          localStorage.removeItem("MWL_" + $("watchListSelect"));
           var wlselect = $("watchListSelect");
           var deleteId = $get(wlselect);
           wlselect.options[wlselect.selectedIndex] = null;

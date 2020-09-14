@@ -1,3 +1,5 @@
+import 'bootstrap/dist/css/bootstrap.min.css'
+
 import Vue from 'vue'
 import App from './apps/App.vue'
 import router from './router'
@@ -6,7 +8,6 @@ import * as uiv from 'uiv'
 import VueCookie from 'vue-cookie'
 import VueLogger from 'vuejs-logger'
 
-import 'bootstrap/dist/css/bootstrap.min.css'
 import Test from './components/Test'
 import IsAlive from './components/graphical_views/IsAlive'
 import CMP from './components/graphical_views/cmp/CMP'
@@ -20,6 +21,9 @@ import VueLodash from 'vue-lodash'
 import StepLineChartComponent from './components/amcharts/StepLineChartComponent'
 import LineChartComponent from './components/amcharts/LineChartComponent'
 
+import Verte from 'verte';
+import 'verte/dist/verte.css';
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt} from '@fortawesome/free-solid-svg-icons'
@@ -28,6 +32,7 @@ import i18n from './i18n'
 library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component(Verte.name, Verte);
 
 const isProduction = process.env.NODE_ENV === 'production';
 

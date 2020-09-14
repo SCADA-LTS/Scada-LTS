@@ -2,83 +2,66 @@
   <div class="scada-widget">
     <div class="settings">
       <p class="smallTitle">Modern Chart</p>
-      <div>
-        <btn class="dropdown-toggle" @click="addNewChart()">Add chart <i class="glyphicon glyphicon-plus"></i></btn>
-      </div>
     </div>
     <div class="chart-container">
-      <watch-list-chart
-        v-for="chart in charts"
-        v-bind:key="chart.id"
-        v-bind:chartdata="chart"
-        @saved="chartEdited(chart)"
-        @deleted="deleted(chart)"
+      <json-chart
+        v-if="visible"
+        ref="jsonChart"
+        v-bind:point-id="pointId"
+        v-bind:watchlist-name="watchlistName"
       />
     </div>
   </div>
 </template>
 <script>
-import WatchListChart from "./WatchListChart";
+import JsonChart from "../amcharts/JsonChartComponent";
 export default {
   name: "WatchListChartWidget",
   components: {
-    WatchListChart
+    JsonChart,
   },
-  computed: {
-    charts() {
-      return this.$store.getters.getCharts;
-    },
-    chartId() {
-      return this.$store.getters.getNextChartId;
-    }
+  data() {
+    return {
+      pointId: [],
+      watchlistName: undefined,
+      visible: false,
+    };
   },
   mounted() {
-    this.$store.commit('loadActiveUser');
-    this.$store.commit('loadCharts');
+    this.$nextTick(function () {
+      window.addEventListener("watchListChanged", this.watchListChanged);
+    });
   },
   methods: {
+    watchListChanged(event) {
+      this.addNewChart();
+    },
     addNewChart() {
-      this.$store.commit('incrementChartId');
-      let chart = {
-        id: this.chartId,
-        pointId: undefined,
-        chartLabel: undefined,
-        chartColor: undefined,
-        startDate: "1-hour",
-        startTime: 1,
-        startTimeMultiplier: "hour",
-        endDate: undefined,
-        refreshRate: "2000",
-        rangeValue: undefined,
-        rangeColor: undefined,
-        rangeLabel: undefined,
-        showScrollBarX: true,
-        showScrollBarY: false,
-        showLegend: true,
-        debug: undefined,
-        lineChart: "stepLine",
-        chartType: "live",
-        height: 350
-      };
+      this.visible = false;
       let points = [];
-      let wachList = document.getElementById("watchListTable");
-      for (let i = 0; i < wachList.childElementCount; i++) {
-        let point = wachList.children.item(i).id;
+      let watchList = document.getElementById("watchListTable");
+      this.watchlistName = document.getElementById("newWatchListName").value;
+      for (let i = 0; i < watchList.childElementCount; i++) {
+        let point = watchList.children.item(i).id;
         if (document.getElementById(`${point}ChartCB`).checked) {
           points.push(point.slice(1));
         }
       }
-      chart.pointId = points.toString();
-      chart.chartLabel = document.getElementById('newWatchListName').value;
-      this.$store.commit('addChart', chart);
+      this.pointId = points.toString();
+      this.visible = true;
+      try {
+        this.$refs.jsonChart.reset().then(() => {
+          this.$refs.pointId = this.pointId;
+          this.$refs.jsonChart.reload();
+        });
+      } catch (e) {
+        console.error(e);
+      }
     },
-    chartEdited(chart) {
-      this.$store.commit('editChart', chart);
-    },
-    deleted(chart) {
-      this.$store.commit('deleteChart', chart);
-    },
-  }
+  },
+  beforeDestroy() {
+    window.removeEventListener("watchListChanged", this.watchListChanged);
+  },
 };
 </script>
 <style scoped>
