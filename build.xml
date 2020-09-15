@@ -61,7 +61,7 @@
         <pathelement location="WebContent/WEB-INF/lib/ezmorph-1.0.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/fhz4j-core-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/freemarker.jar"/>
-    	<pathelement location="WebContent/WEB-INF/lib/flyway-core-4.0.3.jar"/>
+    	<pathelement location="WebContent/WEB-INF/lib/flyway-core-6.5.5.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/iec101.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/j-interop-2.06.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/j-interopdeps-1.4.jar"/>
