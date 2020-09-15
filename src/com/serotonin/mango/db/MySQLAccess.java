@@ -24,7 +24,6 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.Flyway;
-import org.scada_lts.dao.migration.CorrectMigration2_2;
 import org.springframework.dao.DataAccessException;
 
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
@@ -95,8 +94,7 @@ public class MySQLAccess extends BasePooledAccess {
          }
          return false;
          */
-        
-        //TODO enable flayway
+
         
     	boolean shemaExist = true;
     	boolean baseLineNotExist = false;
@@ -116,11 +114,6 @@ public class MySQLAccess extends BasePooledAccess {
         	baseLineNotExist = true;
         	LOG.info("BaseLineNotExist:"+baseLineNotExist);
         }
-
-        if (shemaExist && !baseLineNotExist) {
-            CorrectMigration2_2.correct();
-        }
-
 
         try {
             Flyway flyway = null;
