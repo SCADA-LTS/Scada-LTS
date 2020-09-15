@@ -4,7 +4,7 @@
       <p class="smallTitle">Modern Chart</p>
     </div>
     <div class="chart-container">
-      <json-chart
+      <watch-list-json-chart
         v-if="visible"
         ref="jsonChart"
         v-bind:point-id="pointId"
@@ -14,11 +14,11 @@
   </div>
 </template>
 <script>
-import JsonChart from "../amcharts/JsonChartComponent";
+import WatchListJsonChart from "./WatchListJsonChart";
 export default {
   name: "WatchListChartWidget",
   components: {
-    JsonChart,
+    WatchListJsonChart,
   },
   data() {
     return {
