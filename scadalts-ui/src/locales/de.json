@@ -1,0 +1,9 @@
+{
+  "plcalarms.fault.inactive":"Störung ist gegangen",
+  "plcalarms.fault.active":"Störung kommt",
+  "plcalarms.fault.acknowledge": "Fault acknowledge",
+  "plcalarms.alarm.inactive":"Alarm ist gegangen",
+  "plcalarms.alarm.active":"Alarm ausgelöst",
+  "plcalarms.alarm.acknowledge": "Alarm acknowledge",
+  "about": "Dies ist eine Über-Seite (i18n test) locales"
+}

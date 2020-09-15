@@ -102,6 +102,14 @@
       <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
     </layout>
   </appender>
+  <appender name="historylog" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/history.log"/>
+    <param name="MaxFileSize" value="1000KB"/>
+    <param name="MaxBackupIndex" value="10"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
 
   <!-- <appender name="parseBinaryValue" class="org.apache.log4j.RollingFileAppender">
        <param name="File" value="${catalina.base}/logs/parseBinaryValue.log"/>
@@ -149,6 +157,10 @@
   <appender name="daoasync" class="org.apache.log4j.AsyncAppender">
     <param name="LocationInfo" value="true"/>
     <appender-ref ref="daologfile"/>
+  </appender>
+  <appender name="history" class="org.apache.log4j.AsyncAppender">
+    <param name="LocationInfo" value="false"/>
+    <appender-ref ref="historylog"/>
   </appender>
 
   <appender name="apiasync" class="org.apache.log4j.AsyncAppender">
@@ -238,7 +250,11 @@
   <!--     <level value="debug"/> -->
   <!--     <appender-ref ref="scriptsasync"/> -->
   <!--   </category> -->
-
+ <!-- History log -->
+  <category name="org.scada_lts.mango.service.PointValueService" additivity="false">
+    <level value="on"/>
+    <appender-ref ref="history"/>
+  </category>
   <!-- Dao Logging -->
   <category name="com.serotonin.mango.db.dao.DataSourceDao" additivity="false">
     <level value="off"/>
@@ -277,7 +293,7 @@
 
   <!-- Root Log -->
   <root>
-    <level value="off"/>
+    <level value="on"/>
     <appender-ref ref="async"/>
     <appender-ref ref="stdout"/>
   </root>

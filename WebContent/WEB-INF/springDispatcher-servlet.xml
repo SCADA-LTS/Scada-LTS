@@ -37,6 +37,7 @@
         <prop key="/emport.shtm">emportController</prop>
         <prop key="/event_handlers.shtm">eventHandlersController</prop>
         <prop key="/events.shtm">eventsController</prop>
+        <prop key="/app.shtm">appController</prop>
         <prop key="/help.shtm">helpController</prop>
         <prop key="/logout.htm">logoutController</prop>
         <prop key="/mailing_lists.shtm">mailingListsController</prop>
@@ -105,6 +106,10 @@
   
   <bean id="eventsController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName"><value>events</value></property>
+  </bean>
+
+  <bean id="appController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName"><value>app</value></property>
   </bean>
   
   <bean id="helpController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">

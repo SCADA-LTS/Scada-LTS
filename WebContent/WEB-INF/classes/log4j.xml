@@ -34,6 +34,14 @@
       <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
     </layout>
   </appender>
+
+  <appender name="historyfile" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="${catalina.base}/logs/history.log"/>
+    <param name="DatePattern" value="yyyy-MM-dd"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %d{ISO8601} (%C.%M:%L) - %m %n"/>
+    </layout>
+  </appender>
   
   <appender name="modbuslogfile" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${catalina.base}/logs/modbus.log"/>
@@ -157,7 +165,6 @@
   <category name="com.serotonin.db.spring.ExtendedJdbcTemplate"><level value="error"/></category>
   <category name="com.serotonin.mango"><level value="info"/></category>
 
-
 <!-- Modbus Logging -->
   <category name="com.serotonin.modbus4j.ip.listener" additivity="false">
     <level value="debug"/>
@@ -228,6 +235,12 @@
   <category name="org.scada_lts.dao" additivity="false">
     <level value="trace"/>
     <appender-ref ref="scadadaoasync"/>
+  </category>
+
+  <category name="org.scada_lts.dao.alarms.PlcAlarmsDAO" additivity="false">
+    <level value="trace"/>
+    <appender-ref ref="scadadaoasync"/>
+    <appender-ref ref="stdout"/>
   </category>
 
 <!-- Root Log -->

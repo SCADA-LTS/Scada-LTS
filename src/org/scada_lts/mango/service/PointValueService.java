@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -303,7 +304,6 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 else
                     shortString = svalue;
             }
-
             PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id, shortString, longString, sourceType, sourceId);
             PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
 

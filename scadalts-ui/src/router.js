@@ -1,30 +1,34 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
+import Alarms from './views/Alarms'
+import About from './views/About'
+import HistoricalAlarms from "./views/HistoricalAlarms"
 
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Alarms
     },
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      component: About
     },
     {
-      path: '/components',
-      name: 'components',
-      component: () => import(/* webpackChunkName: "components" */ './views/Components.vue')
+      path: '/alarms',
+      name: 'alarms',
+      component: Alarms
+    },
+    {
+      path: '/historical-alarms',
+      name: 'historical-alarms',
+      component: HistoricalAlarms
     },
     {
       path: '/example-ph',
@@ -65,6 +69,11 @@ export default new Router({
       path: '/example-step-line-chart-cmp',
       name: 'example-step-line-chart-cmp',
       component: () => import(/* webpackChunkName: "step-line-chart-component" */ './views/components/ExampleStepLineChartCmp.vue')
-    }
+    },
+    {
+      path: '/example-live-alarms',
+      name: 'example-live-alarms',
+      component: () => import(/* webpackChunkName: "live-alarms-component" */ './views/components/ExampleLiveAlarms.vue')
+    },
   ]
 })
