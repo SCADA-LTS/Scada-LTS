@@ -104,10 +104,13 @@ public class TestDAO {
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 			DAO.getInstance().setJdbcTemp(jdbcTemplate);
 			DAO.getInstance().setTest(true);
-					
-			Flyway flyway = new Flyway();
-			flyway.setLocations("org.scada_lts.dao.migration.mysql");
-			flyway.setDataSource(DAO.getInstance().getJdbcTemp().getDataSource());
+
+			Flyway flyway = Flyway.configure()
+					.baselineOnMigrate(true)
+					.dataSource(DAO.getInstance().getJdbcTemp().getDataSource())
+					.locations("org.scada_lts.dao.migration.mysql")
+					.table("schema_version")
+					.load();
 	        flyway.migrate();
 		} catch (ClassNotFoundException | SQLException | FlywayException  e){
 			e.printStackTrace();
