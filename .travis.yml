@@ -35,7 +35,7 @@ branches:
   - "/^release_23.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^feature/#1370.*$/"
+  - "/^feature_r23/#1351.*$/"
 notifications:
   email: false
 env:
