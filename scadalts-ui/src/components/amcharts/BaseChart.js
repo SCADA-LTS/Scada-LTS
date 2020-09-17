@@ -29,7 +29,6 @@ export default class BaseChart {
      * @param {String} [jsonChart] [ XYChart | PieChart | GaugeChart] available chart types
      */
     constructor(chartReference, chartType, colors, domain = '.', jsonConfig = undefined, jsonChart = undefined) {
-        console.log(jsonConfig);
         if (chartType === "XYChart") {
             this.chart = am4core.create(chartReference, am4charts.XYChart)
         } else if (chartType === "PieChart") {
@@ -45,8 +44,6 @@ export default class BaseChart {
                 this.chart = am4core.createFromConfig(jsonConfig, chartReference, am4charts.GaugeChart);
             }
         }
-        console.log(jsonConfig);
-        console.log(this.chart);
         this.pointPastValues = new Map();
         this.pointCurrentValue = new Map();
         this.liveUpdatePointValues = new Map();

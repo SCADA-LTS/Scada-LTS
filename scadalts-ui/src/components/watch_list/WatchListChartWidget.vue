@@ -34,6 +34,7 @@ export default {
   },
   methods: {
     watchListChanged(event) {
+      // this.$refs.initializeDataPoints()
       this.addNewChart();
     },
     addNewChart() {

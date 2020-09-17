@@ -274,9 +274,9 @@
       }
 
       function deleteWatchList() {
-          localStorage.removeItem("MWL_" + $("watchListSelect"));
           var wlselect = $("watchListSelect");
           var deleteId = $get(wlselect);
+	  localStorage.removeItem("MWL_" + wlselect.options[wlselect.selectedIndex].innerText);
           wlselect.options[wlselect.selectedIndex] = null;
 
           watchListChanged();

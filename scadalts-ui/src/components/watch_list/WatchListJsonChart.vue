@@ -7,27 +7,27 @@
             class="col-xs-4"
             input-type="radio"
             input-value="live"
-            v-model="chartSettings.chartType"
-          >Live chart</btn>
+            v-model="chartProperties.chartType"
+          >Live</btn>
           <btn
             class="col-xs-4"
             input-type="radio"
             input-value="static"
-            v-model="chartSettings.chartType"
-          >Static chart</btn>
+            v-model="chartProperties.chartType"
+          >Static</btn>
           <btn
             class="col-xs-4"
             input-type="radio"
             input-value="compare"
-            v-model="chartSettings.chartType"
-          >Compare chart</btn>
+            v-model="chartProperties.chartType"
+          >Compare</btn>
         </btn-group>
-        <div v-if="chartSettings.chartType === 'live'" class="col-xs-7">
+        <div v-if="chartProperties.chartType === 'live'" class="col-xs-8">
           <div class="col-xs-3">
             <input
               type="number"
               id="live-sd"
-              v-model="chartSettings.startTime"
+              v-model="chartProperties.startTime"
               placeholder="Values from last..."
               class="form-control"
               min="1"
@@ -35,7 +35,7 @@
             />
           </div>
           <div class="col-xs-3">
-            <select v-model="chartSettings.startTimeMultiplier" class="form-control" id="live-rrs">
+            <select v-model="chartProperties.startTimeMultiplier" class="form-control" id="live-rrs">
               <option
                 v-for="option in timeOptions"
                 v-bind:value="option.value"
@@ -44,7 +44,7 @@
             </select>
           </div>
           <div class="col-xs-6">
-            <select id="live-rr" v-model="chartSettings.refreshRate" class="form-control">
+            <select id="live-rr" v-model="chartProperties.refreshRate" class="form-control">
               <option
                 v-for="option in performanceOptions"
                 v-bind:value="option.value"
@@ -53,12 +53,12 @@
             </select>
           </div>
         </div>
-        <div v-if="chartSettings.chartType === 'static'" class="flex-row col-xs-7">
+        <div v-if="chartProperties.chartType === 'static'" class="col-xs-8">
           <div class="flex-row flex-align-center col-xs-6">
             <label for="static-sd" class="small-padd">Start Date</label>
             <dropdown class="form-group">
               <div class="input-group">
-                <input class="form-control" type="text" v-model="chartSettings.startDate" />
+                <input class="form-control" type="text" v-model="chartProperties.startDate" />
                 <div class="input-group-btn">
                   <btn class="dropdown-toggle">
                     <i class="glyphicon glyphicon-calendar"></i>
@@ -68,7 +68,7 @@
               <template slot="dropdown">
                 <li>
                   <datepicker
-                    v-model="chartSettings.startDate"
+                    v-model="chartProperties.startDate"
                     format="yyyy/MM/dd"
                     :inline="true"
                     :monday-first="true"
@@ -95,7 +95,7 @@
             <label for="static-ed" class="small-padd">End Date</label>
             <dropdown class="form-group">
               <div class="input-group">
-                <input class="form-control" type="text" v-model="chartSettings.endDate" />
+                <input class="form-control" type="text" v-model="chartProperties.endDate" />
                 <div class="input-group-btn">
                   <btn class="dropdown-toggle">
                     <i class="glyphicon glyphicon-calendar"></i>
@@ -105,7 +105,7 @@
               <template slot="dropdown">
                 <li>
                   <datepicker
-                    v-model="chartSettings.endDate"
+                    v-model="chartProperties.endDate"
                     format="yyyy MM dd"
                     :inline="true"
                     :monday-first="true"
@@ -129,23 +129,23 @@
             </dropdown>
           </div>
         </div>
-        <div v-if="chartSettings.chartType === 'compare'" class="col-xs-7">
+        <div v-if="chartProperties.chartType === 'compare'" class="col-xs-8">
           <div class="container-fluid">
             <div class="row">
               <div class="col-xs-6">
-                <select id="comp-el-1" v-model="compareElement1" class="form-control col-xs-6">
+                <select id="comp-el-1" v-model="chartProperties.compareDataPoint[0]" class="form-control col-xs-6">
                   <option
-                    v-for="p in pointData"
+                    v-for="p in datapointList"
                     v-bind:value="p"
                     v-bind:key="p.id"
                   >{{p.name}}: {{p.xid}}</option>
                 </select>
               </div>
-              <div v-if="compareElement1" class="col-xs-6">
+              <div v-if="chartProperties.compareDataPoint[0]" class="col-xs-6">
                 <!-- <label for="comp-el-1-sd" class="small-padd">Start Date</label> -->
                 <dropdown class="form-group col-xs-5">
                   <div class="input-group">
-                    <input class="form-control" type="text" v-model="compareElement1.startDate" />
+                    <input class="form-control" type="text" v-model="chartProperties.compareDataPoint[0].startDate" />
                     <div class="input-group-btn">
                       <btn class="dropdown-toggle">
                         <i class="glyphicon glyphicon-calendar"></i>
@@ -155,7 +155,7 @@
                   <template slot="dropdown">
                     <li>
                       <datepicker
-                        v-model="compareElement1.startDate"
+                        v-model="chartProperties.compareDataPoint[0].startDate"
                         :format="formatDate"
                         :inline="true"
                         :monday-first="true"
@@ -173,14 +173,14 @@
                   </div>
                   <template slot="dropdown">
                     <li style="padding: 10px">
-                      <time-picker v-model="compareElement1.startTime" :show-meridian="false" />
+                      <time-picker v-model="chartProperties.compareDataPoint[0].startTime" :show-meridian="false" />
                     </li>
                   </template>
                 </dropdown>
                 <!-- <label for="comp-el-1-sd" class="small-padd">End Date</label> -->
                 <dropdown class="form-group col-xs-5">
                   <div class="input-group">
-                    <input class="form-control" type="text" v-model="compareElement1.endDate" />
+                    <input class="form-control" type="text" v-model="chartProperties.compareDataPoint[0].endDate" />
                     <div class="input-group-btn">
                       <btn class="dropdown-toggle">
                         <i class="glyphicon glyphicon-calendar"></i>
@@ -190,7 +190,7 @@
                   <template slot="dropdown">
                     <li>
                       <datepicker
-                        v-model="compareElement1.endDate"
+                        v-model="chartProperties.compareDataPoint[0].endDate"
                         :format="formatDate"
                         :inline="true"
                         :monday-first="true"
@@ -208,7 +208,7 @@
                   </div>
                   <template slot="dropdown">
                     <li style="padding: 10px">
-                      <time-picker v-model="compareElement1.endTime" :show-meridian="false" />
+                      <time-picker v-model="chartProperties.compareDataPoint[0].endTime" :show-meridian="false" />
                     </li>
                   </template>
                 </dropdown>
@@ -218,7 +218,7 @@
               <div class="col-xs-6">
                 <select id="comp-el-2" v-model="compareElement2" class="form-control">
                   <option
-                    v-for="p in pointData"
+                    v-for="p in datapointList"
                     v-bind:value="p"
                     v-bind:key="p.id"
                   >{{p.name}}: {{p.xid}}</option>
@@ -299,17 +299,20 @@
             </div>
           </div>
         </div>
-        <btn class="dropdown-toggle col-xs-1" @click="updateSettings()" id="updateSettingsBtn">
-          <i class="glyphicon glyphicon-refresh"></i>
-        </btn>
-        <tooltip text="Apply changes to the Chart" target="#updateSettingsBtn" />
-        <btn class="dropdown-toggle col-xs-1" @click="showSettings()" id="showSettingsBtn">
-          <i class="glyphicon glyphicon-cog"></i>
-        </btn>
-        <tooltip text="More settings" target="#showSettingsBtn" />
+        <div class="col-xs-1">
+          <btn class="dropdown-toggle" @click="updateSettings()" id="updateSettingsBtn">
+            <i class="glyphicon glyphicon-refresh"></i>
+          </btn>
+          <tooltip text="Apply changes to the Chart" target="#updateSettingsBtn" />
+
+          <btn class="dropdown-toggle" @click="showSettings()" id="showSettingsBtn">
+            <i class="glyphicon glyphicon-cog"></i>
+          </btn>
+          <tooltip text="More settings" target="#showSettingsBtn" />
+        </div>        
       </div>
-      <div class="modal-container" v-if="modalSettings">
-        <h2>{{watchlistName}} - Data Points settings:</h2>
+      <div class="row" v-if="settingsVisible">
+        <h2>Data Points settings - {{watchlistName}}:</h2>
         <div class="container">
           <div class="col-xs-12 justify-content-md-center">
             <tabs justified>
@@ -340,8 +343,8 @@
                 <div class="col-xs-12">
                   <p class="col-xs-6">Y-Axis:</p>
                   <btn-group class="col-xs-6">
-                    <btn class="col-xs-3" input-type="radio" input-value="v1" v-model="s.yAxis">1</btn>
-                    <btn class="col-xs-3" input-type="radio" input-value="v2" v-model="s.yAxis">2</btn>
+                    <btn class="col-xs-3" input-type="radio" input-value="valueAxis1" v-model="s.yAxis">1</btn>
+                    <btn class="col-xs-3" input-type="radio" input-value="valueAxis2" v-model="s.yAxis">2</btn>
                     <btn
                       class="col-xs-3"
                       input-type="radio"
@@ -359,11 +362,11 @@
                 <div class="col-xs-12">
                   <p class="col-xs-6">X-Axis:</p>
                   <div class="col-xs-3">
-                    <input class="form-control" v-model="s.dataFields.dateX">
+                    <input class="form-control" v-model="s.dataFields.dateX" />
                   </div>
                   <btn-group class="col-xs-3">
-                    <btn class="col-xs-6" input-type="radio" input-value="d1" v-model="s.xAxis">1</btn>
-                    <btn class="col-xs-6" input-type="radio" input-value="d2" v-model="s.xAxis">2</btn>
+                    <btn class="col-xs-6" input-type="radio" input-value="dateAxis1" v-model="s.xAxis">1</btn>
+                    <btn class="col-xs-6" input-type="radio" input-value="dateAxis2" v-model="s.xAxis">2</btn>
                   </btn-group>
                 </div>
                 <div class="col-xs-12">
@@ -387,7 +390,7 @@
                 <div class="col-xs-12">
                   <p class="col-xs-6">Stroke tension:</p>
                   <div class="col-xs-6">
-                    <input class="form-control" type="number" min="0" max="1" v-model="s.tensionX" />
+                    <input class="form-control" type="number" :min="0" :max="1" v-model="s.tensionX" />
                   </div>
                 </div>
                 <div class="col-xs-12">
@@ -408,8 +411,8 @@
                     <input
                       class="form-control"
                       type="number"
-                      min="0"
-                      max="1"
+                      :min="0"
+                      :max="1"
                       v-model="s.fillOpacity"
                     />
                   </div>
@@ -470,12 +473,11 @@ import verte from "verte";
 import httpClient from "axios";
 import Axios from "axios";
 import BaseChart from "../amcharts/BaseChart";
+import i18n from '../../i18n'
 am4core.useTheme(am4themes_animated);
 
 class JsonChart extends BaseChart {
   constructor(chartReference, color, domain = ".", jsonConfig) {
-    console.log("Constructor");
-    console.log(jsonConfig);
     super(chartReference, "JsonChart", color, ".", jsonConfig, "XYChart");
   }
 
@@ -528,13 +530,12 @@ class JsonChart extends BaseChart {
     if (chartType === "compare") {
       this.chart.data = this.prepareCompareChartData(
         BaseChart.sortMapKeys(this.pointPastValues)
-      )
+      );
     } else {
       this.chart.data = BaseChart.prepareChartData(
         BaseChart.sortMapKeys(this.pointPastValues)
       );
     }
-    console.log(this.chart.data)
   }
   prepareCompareChartData(map) {
     let data = []; //date|date2:<time>, <datapointName>:<datapointValue>
@@ -552,10 +553,7 @@ class JsonChart extends BaseChart {
         }
         data.push(JSON.parse(jsonString));
       });
-      
-      
     });
-    console.log(data)
     return data;
   }
 }
@@ -567,13 +565,12 @@ export default {
   props: [
     "pointId",
     "watchlistName",
-    "color",
+
     "startDate",
     "endDate",
     "refreshRate",
     "width",
     "height",
-    "polylineStep",
     "rangeValue",
     "rangeColor",
     "rangeLabel",
@@ -582,13 +579,14 @@ export default {
   ],
   data() {
     return {
-      chartSettings: {
-        chartType: "live",
-        refreshRate: 10000,
-        startDate: undefined,
-        endDate: undefined,
-      },
-      modalSettings: false,
+      settingsVisible: false,
+      // chartProperties: {
+      //   chartType: "live",
+      //   refreshRate: 10000,
+      //   startDate: undefined,
+      //   endDate: undefined,
+      //   compareDataPoint: [null, null]
+      // },
       errorMessage: undefined,
       chartClass: undefined,
       performanceOptions: [
@@ -603,20 +601,9 @@ export default {
         { id: 2, text: "Weak(s)", value: "weak" },
         { id: 3, text: "Month(s)", value: "month" },
       ],
-      colors: [
-        "#39B54A",
-        "#69FF7D",
-        "#166921",
-        "#690C24",
-        "#B53859",
-        "#734FC1",
-      ],
-      currentColor: 1,
       startTime: new Date(),
       endTime: new Date(),
-      isExportId: false,
       series: [],
-      pointData: [],
       compareElement1: undefined,
       compareElement2: undefined,
       dualAxis: false,
@@ -624,150 +611,65 @@ export default {
   },
   mounted() {
     this.initializeDataPoints();
-    this.generateChart();
+    this.prepareChart();
+  },
+  computed: {
+    chartConfiguration() { return this.$store.state.modernWatchList.chartConfiguration },
+    chartProperties() { return this.$store.state.modernWatchList.chartProperties },
+    datapointList() { return this.$store.state.modernWatchList.datapointList },
+    isChartLoaded() { return this.$store.state.modernWatchList.isChartLoaded },
   },
   methods: {
     showSettings() {
-      this.modalSettings = !this.modalSettings;
+      this.settingsVisible = !this.settingsVisible;
+      this.series = this.chartConfiguration.series;
     },
     cancelSettings() {
-      console.log("canceled");
-      this.modalSettings = false;
+      this.settingsVisible = false;
     },
     saveSettings() {
-      console.log("saved");
-      this.saveChart();
-      this.modalSettings = false;
+      // this.saveChart();
+      console.log("savesettings")
+      console.log(this.series)
+      this.$store.commit('chartConfigurationSeriesUpdate', this.series)
+      this.$store.commit('chartSaveConfiguration', this.watchlistName);
+      this.settingsVisible = false;
       this.updateSettings();
-    },
-    getDataPointData(pointId) {
-      try {
-        Axios.get(`./api/point_value/getValue/id/${pointId}`, {
-          timeout: 5000,
-          useCredentails: true,
-          credentials: "same-origin",
-        }).then((resp) => {
-          let point = {
-            id: pointId,
-            xid: resp.data.xid,
-            name: resp.data.name,
-            type: resp.data.type,
-            startDate: null,
-            endDate: null,
-            startTime: new Date(),
-            endTime: new Date(),
-          };
-          this.pointData.push(point);
-        });
-      } catch (error) {
-        console.error(error);
-      }
     },
     initializeDataPoints() {
       let points = this.pointId.split(",");
       for (let i = 0; i < points.length; i++) {
-        this.getDataPointData(points[i]);
+        this.$store.dispatch('getDatapointInfo', points[i]);
       }
     },
     updateSettings() {
-      if (this.chartSettings.chartType == "static") {
-        this.chartSettings.refreshRate = undefined;
-        let sdString = this.formatDate(new Date(this.chartSettings.startDate));
-        let edString = this.formatDate(new Date(this.chartSettings.endDate));
-        this.chartSettings.startDate = `${sdString} ${this.startTime.getHours()}:${this.startTime.getMinutes()}`;
-        this.chartSettings.endDate = `${edString} ${this.endTime.getHours()}:${this.endTime.getMinutes()}`;
-      } else if (this.chartSettings.chartType == "live") {
-        this.chartSettings.endDate = undefined;
-        this.chartSettings.startDate = `${this.chartSettings.startTime}-${this.chartSettings.startTimeMultiplier}`;
+      if (this.chartProperties.chartType == "static") {
+        this.chartProperties.refreshRate = undefined;
+        let sdString = this.formatDate(new Date(this.chartProperties.startDate));
+        let edString = this.formatDate(new Date(this.chartProperties.endDate));
+        this.chartProperties.startDate = `${sdString} ${this.startTime.getHours()}:${this.startTime.getMinutes()}`;
+        this.chartProperties.endDate = `${edString} ${this.endTime.getHours()}:${this.endTime.getMinutes()}`;
+      } else if (this.chartProperties.chartType == "live") {
+        this.chartProperties.endDate = undefined;
+        this.chartProperties.startDate = `${this.chartProperties.startTime}-${this.chartProperties.startTimeMultiplier}`;
       } else {
-        this.chartSettings.endDate = undefined;
-        this.chartSettings.startDate = undefined;
-        this.chartSettings.refreshRate = undefined;
+        this.chartProperties.endDate = undefined;
+        this.chartProperties.startDate = undefined;
+        this.chartProperties.refreshRate = undefined;
       }
-      this.applySettings(this.chartSettings);
-      console.log(this.chartSettings);
+      this.applySettings(this.chartProperties);
     },
     applySettings(chartData) {
-      this.saveChart();
+      // this.saveChart();
+      this.$store.commit('chartPropertiesUpdate', chartData)
+      // this.$store.commit('chartSaveConfiguration');
       this.startDate = chartData.startDate;
       this.endDate = chartData.endDate;
       this.refreshRate = chartData.refreshRate;
       this.chartClass.chart.dispose();
-      this.generateChart();
+      this.prepareChart();
     },
-    initializePoints(pointId) {
-      this.series = [];
-      return new Promise((resolve, reject) => {
-        try {
-          Axios.get(`./api/point_value/getValue/id/${pointId}`, {
-            timeout: 5000,
-            useCredentails: true,
-            credentials: "same-origin",
-          })
-            .then((resp) => {
-              let series = {
-                id: `s${pointId}`,
-                type: undefined,
-                stroke: this.colors[this.currentColor % 6],
-                fill: this.colors[this.currentColor % 6],
-                strokeWidth: 3,
-                name: resp.data.name,
-                xAxis: "d1",
-                yAxis: undefined,
-                dataFields: {
-                  dateX: "date",
-                  valueY: resp.data.name,
-                },
-                minBulletDistance: 15,
-                tooltipText:
-                  "{name}: [bold]{valueY}[/] " + resp.data.textRenderer.suffix,
-                tooltip: {
-                  pointerOrientation: "vertical",
-                  background: {
-                    fill: "#F00",
-                    cornerRadius: 20,
-                    strokeOpacity: 0,
-                  },
-                  label: {
-                    minWidth: 40,
-                    minHeight: 40,
-                    textAlign: "middle",
-                    textValign: "middle",
-                  },
-                },
-                tensionX: 1,
-                startLocation: 0.5,
-                fillOpacity: 0,
-              };
-              series.tooltip.fill = series.stroke;
-              series.fill = series.stroke;
-              this.currentColor = this.currentColor + 1;
-              if (resp.data.type == "NumericValue") {
-                series.yAxis = "v1";
-                series.type = "LineSeries";
-              } else if (resp.data.type == "BinaryValue") {
-                series.yAxis = "binAxis";
-                series.type = "StepLineSeries";
-              }
-              console.log(this.series);
-              console.log(this.chartSettings);
-              if (this.chartSettings.chartType == "compare" && !this.dualAxis) {
-                this.dualAxis = !this.dualAxis;
-                series.xAxis = "d2";
-                series.dataFields.dateX = "date2";
-              }
-              this.series.push(series);
-              resolve("done");
-            })
-            .catch((webError) => {
-              reject(webError);
-            });
-        } catch (error) {
-          reject(error);
-        }
-      });
-    },
-    initializeChart(jsonConfig) {
+    generateChart(jsonConfig) {
       this.chartClass = new JsonChart(
         this.$refs.chartdiv,
         this.color,
@@ -776,20 +678,20 @@ export default {
       );
 
       let promises = [];
-      if (this.chartSettings.chartType === "compare") {
+      if (this.chartProperties.chartType === "compare") {
         let ce1sdString = this.formatDate(
-          new Date(this.compareElement1.startDate)
+          new Date(this.chartProperties.compareDataPoint[0].startDate)
         );
         let ce1edString = this.formatDate(
-          new Date(this.compareElement1.endDate)
+          new Date(this.chartProperties.compareDataPoint[0].endDate)
         );
-        this.compareElement1.startDate = `${ce1sdString} ${this.compareElement1.startTime.getHours()}:${this.compareElement1.startTime.getMinutes()}`;
-        this.compareElement1.endDate = `${ce1edString} ${this.compareElement1.endTime.getHours()}:${this.compareElement1.endTime.getMinutes()}`;
+        this.chartProperties.compareDataPoint[0].startDate = `${ce1sdString} ${this.chartProperties.compareDataPoint[0].startTime.getHours()}:${this.chartProperties.compareDataPoint[0].startTime.getMinutes()}`;
+        this.chartProperties.compareDataPoint[0].endDate = `${ce1edString} ${this.chartProperties.compareDataPoint[0].endTime.getHours()}:${this.chartProperties.compareDataPoint[0].endTime.getMinutes()}`;
         promises.push(
           this.chartClass.loadData(
-            this.compareElement1.id,
-            this.compareElement1.startDate,
-            this.compareElement1.endDate,
+            this.chartProperties.compareDataPoint[0].id,
+            this.chartProperties.compareDataPoint[0].startDate,
+            this.chartProperties.compareDataPoint[0].endDate,
             false
           )
         );
@@ -811,7 +713,6 @@ export default {
         );
       } else {
         let points = this.pointId.split(",");
-        console.log(points);
         for (let i = 0; i < points.length; i++) {
           promises.push(
             this.chartClass.loadData(
@@ -832,7 +733,7 @@ export default {
           }
         }
 
-        this.chartClass.setupChart(this.chartSettings.chartType); // Display Chart
+        this.chartClass.setupChart(this.chartProperties.chartType); // Display Chart
         //   if (this.rangeValue !== undefined) {
         //     this.chartClass.addRangeValue(
         //       Number(this.rangeValue),
@@ -840,113 +741,44 @@ export default {
         //       this.rangeLabel
         //     );
         //   }
-        this.saveChart();
+        // this.$store.commit('chartSaveConfiguration');
+        // this.saveChart();
         if (this.refreshRate != undefined) {
           this.chartClass.startLiveUpdate(
             Number(this.refreshRate),
-            this.isExportId
+            false
           );
         }
       });
     },
-    generateChart() {
-      if (Number(this.polylineStep) > 1) {
-        LineChart.setPolylineStep(Number(this.polylineStep));
-      }
-
-      let jsonConfig = {
-        legend: {},
-        cursor: {},
-        scrollbarX: {
-          type: "Scrollbar",
-        },
-        xAxes: [
-          {
-            id: "d1",
-            type: "DateAxis",
-            dataFields: {
-              value: "date",
-            },
-          },
-          {
-            id: "d2",
-            type: "DateAxis",
-            dataFields: {
-              value: "date2",
-            },
-          },
-        ],
-        yAxes: [
-          {
-            id: "v1",
-            type: "ValueAxis",
-            dataFields: {
-              value: "01",
-            },
-          },
-          {
-            id: "v2",
-            type: "ValueAxis",
-            syncWithAxis: "v1",
-            dataFields: {
-              value: "01",
-            },
-          },
-          {
-            id: "logAxis",
-            type: "ValueAxis",
-            logarithmic: true,
-            dataFields: {
-              value: "01",
-            },
-          },
-          {
-            id: "binAxis",
-            type: "ValueAxis",
-            dataFields: {
-              value: "01",
-            },
-            syncWithAxis: "v1",
-            renderer: {
-              opposite: true,
-            },
-          },
-        ],
-        series: undefined,
-      };
-
-      if (this.loadChart()) {
-        console.debug("Chart Loaded");
-        jsonConfig.series = this.series;
-        jsonConfig = JSON.stringify(jsonConfig);
-        jsonConfig = JSON.parse(jsonConfig);
-        console.log(jsonConfig);
-        this.initializeChart(jsonConfig);
+    prepareChart() {
+      this.$store.commit('chartLoadConfiguration', this.watchlistName)
+      if(this.isChartLoaded) {
+        console.warn("Chart Loaded");
+        this.chartProperties = this.chartProperties;
+        this.generateChart(this.chartConfiguration);
       } else {
-        console.debug("Chart Initialized");
-        let initializePointsPromises = [];
-        if (this.chartType === "compare") {
-          initializePointsPromises.push(
-            this.initializePoints(this.compareElement1.id)
-          );
-          initializePointsPromises.push(
-            this.initializePoints(this.compareElement2.id)
-          );
+        let initPromises = [];
+        if(this.chartType === "compare") {
+          // Generate series for both DataPoints //
+          // initializePointsPromises.push(
+          //   this.initializePoints(this.compareElement1.id)
+          // );
+          // initializePointsPromises.push(
+          //   this.initializePoints(this.compareElement2.id)
+          // );
         } else {
+          // Generate series for each DataPoint //
           let pointId = this.pointId.split(",");
           for (let i = 0; i < pointId.length; i++) {
-            initializePointsPromises.push(this.initializePoints(pointId[i]));
+            initPromises.push(this.$store.dispatch('chartInitDatapointSeries', pointId[i]));
           }
         }
-        Promise.all(initializePointsPromises).then((resp) => {
-          let seriesString = JSON.stringify(this.series);
-          jsonConfig.series = this.series;
-
-          jsonConfig = JSON.stringify(jsonConfig);
-          jsonConfig = JSON.parse(jsonConfig);
-          console.log(jsonConfig);
-          this.initializeChart(jsonConfig);
-        });
+        Promise.all(initPromises).then((r) => {
+          this.generateChart(this.chartConfiguration);
+        }).catch((e)=> {
+          console.error(e)
+        })
       }
     },
     reset() {
@@ -961,34 +793,30 @@ export default {
       });
     },
     reload() {
-      this.generateChart();
+      this.prepareChart();
     },
-    loadChart() {
-      let loadData = JSON.parse(
-        localStorage.getItem(`MWL_${this.watchlistName}`)
-      );
-      if (loadData !== null) {
-        this.series = loadData.series;
-        this.chartSettings = loadData.chartSettings;
-        return true;
-      } else {
-        return false;
-      }
-    },
-    saveChart() {
-      console.log(JSON.parse(JSON.stringify(this.series)));
-      console.log(this.chartSettings);
-      console.log(JSON.stringify(this.series));
-      console.log(JSON.stringify(this.chartSettings));
-      let saveData = {
-        chartSettings: this.chartSettings,
-        series: JSON.parse(JSON.stringify(this.series)),
-      };
-      localStorage.setItem(
-        `MWL_${this.watchlistName}`,
-        JSON.stringify(saveData)
-      );
-    },
+    // loadChart() {
+    //   let loadData = JSON.parse(
+    //     localStorage.getItem(`MWL_${this.watchlistName}`)
+    //   );
+    //   if (loadData !== null) {
+    //     this.series = loadData.series;
+    //     this.chartProperties = loadData.chartProperties;
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // },
+    // saveChart() {
+    //   let saveData = {
+    //     chartProperties: this.chartProperties,
+    //     series: JSON.parse(JSON.stringify(this.series)),
+    //   };
+    //   localStorage.setItem(
+    //     `MWL_${this.watchlistName}`,
+    //     JSON.stringify(saveData)
+    //   );
+    // },
     clearChart() {
       localStorage.removeItem(`MWL_${this.watchlistName}`);
       this.$notify("Chart settings has been cleared from the memory!");
