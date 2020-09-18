@@ -70,7 +70,7 @@ after_script:
 - echo $TRAVIS_BRANCH
 - export TAGISSUE=`echo $TRAVIS_BRANCH | egrep -o '#[0-9]+' | head -n1 | sed -n 's/^#//p'`
 - echo $TAGISSUE
-- export TAGISSUE=`if [ "$TAGISSUE" == "" ]; then echo "no_issue_number"; else echo $TAGISSUE ; fi`
+- export TAGISSUE=`if [ "$TAGISSUE" == "" ]; then echo "no_issue_number2"; else echo $TAGISSUE ; fi`
 - echo $TAGISSUE
 - export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
 - echo $TAG_DEV_OR_ISSUE
@@ -80,5 +80,3 @@ after_script:
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
 - docker push $IMAGE_NAME:$TAG
-
-
