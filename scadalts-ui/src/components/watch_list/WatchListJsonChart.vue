@@ -7,22 +7,28 @@
             class="col-xs-4"
             input-type="radio"
             input-value="live"
-            v-model="chartProperties.chartType"
+            v-model="chartProperties.type"
+            id="live-btn-1"
           >Live</btn>
+          <tooltip text="Display chart with live update for each Data Point" target="#live-btn-1" />
           <btn
             class="col-xs-4"
             input-type="radio"
             input-value="static"
-            v-model="chartProperties.chartType"
+            v-model="chartProperties.type"
+            id="static-btn-1"
           >Static</btn>
+          <tooltip text="Display static chart from a specific time period." target="#static-btn-1" />
           <btn
             class="col-xs-4"
             input-type="radio"
             input-value="compare"
-            v-model="chartProperties.chartType"
+            v-model="chartProperties.type"
+            id="compare-btn-1"
           >Compare</btn>
+          <tooltip text="Compare two Data Points charts on the same chart." target="#compare-btn-1" />
         </btn-group>
-        <div v-if="chartProperties.chartType === 'live'" class="col-xs-8">
+        <div v-if="chartProperties.type === 'live'" class="col-xs-8">
           <div class="col-xs-3">
             <input
               type="number"
@@ -35,7 +41,11 @@
             />
           </div>
           <div class="col-xs-3">
-            <select v-model="chartProperties.startTimeMultiplier" class="form-control" id="live-rrs">
+            <select
+              v-model="chartProperties.startTimeMultiplier"
+              class="form-control"
+              id="live-rrs"
+            >
               <option
                 v-for="option in timeOptions"
                 v-bind:value="option.value"
@@ -53,7 +63,7 @@
             </select>
           </div>
         </div>
-        <div v-if="chartProperties.chartType === 'static'" class="col-xs-8">
+        <div v-if="chartProperties.type === 'static'" class="col-xs-8">
           <div class="flex-row flex-align-center col-xs-6">
             <label for="static-sd" class="small-padd">Start Date</label>
             <dropdown class="form-group">
@@ -129,11 +139,15 @@
             </dropdown>
           </div>
         </div>
-        <div v-if="chartProperties.chartType === 'compare'" class="col-xs-8">
+        <div v-if="chartProperties.type === 'compare'" class="col-xs-8">
           <div class="container-fluid">
             <div class="row">
               <div class="col-xs-6">
-                <select id="comp-el-1" v-model="chartProperties.compareDataPoint[0]" class="form-control col-xs-6">
+                <select
+                  id="comp-el-1"
+                  v-model="chartProperties.compareDataPoint[0]"
+                  class="form-control col-xs-6"
+                >
                   <option
                     v-for="p in datapointList"
                     v-bind:value="p"
@@ -141,160 +155,197 @@
                   >{{p.name}}: {{p.xid}}</option>
                 </select>
               </div>
-              <div v-if="chartProperties.compareDataPoint[0]" class="col-xs-6">
-                <!-- <label for="comp-el-1-sd" class="small-padd">Start Date</label> -->
-                <dropdown class="form-group col-xs-5">
-                  <div class="input-group">
-                    <input class="form-control" type="text" v-model="chartProperties.compareDataPoint[0].startDate" />
-                    <div class="input-group-btn">
-                      <btn class="dropdown-toggle">
-                        <i class="glyphicon glyphicon-calendar"></i>
-                      </btn>
-                    </div>
-                  </div>
-                  <template slot="dropdown">
-                    <li>
-                      <datepicker
+              <div v-if="chartProperties.compareDataPoint[0]" class="row col-xs-6">
+                <div class="col-xs-6 row">
+                  <dropdown class="form-group col-xs-11">
+                    <div class="input-group">
+                      <input
+                        class="form-control"
+                        type="text"
                         v-model="chartProperties.compareDataPoint[0].startDate"
-                        :format="formatDate"
-                        :inline="true"
-                        :monday-first="true"
                       />
-                    </li>
-                  </template>
-                </dropdown>
-                <dropdown class="col-xs-1 form-group">
-                  <div class="input-group">
-                    <div class="input-group-btn">
-                      <btn class="dropdown-toggle">
-                        <i class="glyphicon glyphicon-time"></i>
-                      </btn>
+                      <div class="input-group-btn">
+                        <btn class="dropdown-toggle">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                        </btn>
+                      </div>
                     </div>
-                  </div>
-                  <template slot="dropdown">
-                    <li style="padding: 10px">
-                      <time-picker v-model="chartProperties.compareDataPoint[0].startTime" :show-meridian="false" />
-                    </li>
-                  </template>
-                </dropdown>
-                <!-- <label for="comp-el-1-sd" class="small-padd">End Date</label> -->
-                <dropdown class="form-group col-xs-5">
-                  <div class="input-group">
-                    <input class="form-control" type="text" v-model="chartProperties.compareDataPoint[0].endDate" />
-                    <div class="input-group-btn">
-                      <btn class="dropdown-toggle">
-                        <i class="glyphicon glyphicon-calendar"></i>
-                      </btn>
+                    <template slot="dropdown">
+                      <li>
+                        <datepicker
+                          v-model="chartProperties.compareDataPoint[0].startDate"
+                          :format="formatDate"
+                          :inline="true"
+                          :monday-first="true"
+                        />
+                      </li>
+                    </template>
+                  </dropdown>
+                  <dropdown class="form-group row">
+                    <div class="input-group">
+                      <div class="input-group-btn">
+                        <btn class="dropdown-toggle">
+                          <i class="glyphicon glyphicon-time"></i>
+                        </btn>
+                      </div>
                     </div>
-                  </div>
-                  <template slot="dropdown">
-                    <li>
-                      <datepicker
+                    <template slot="dropdown">
+                      <li style="padding: 10px">
+                        <time-picker
+                          v-model="chartProperties.compareDataPoint[0].startTime"
+                          :show-meridian="false"
+                        />
+                      </li>
+                    </template>
+                  </dropdown>
+                </div>
+                <div class="col-xs-6">
+                  <dropdown class="form-group col-xs-11">
+                    <div class="input-group">
+                      <input
+                        class="form-control"
+                        type="text"
                         v-model="chartProperties.compareDataPoint[0].endDate"
-                        :format="formatDate"
-                        :inline="true"
-                        :monday-first="true"
                       />
-                    </li>
-                  </template>
-                </dropdown>
-                <dropdown class="col-xs-1 form-group">
-                  <div class="input-group">
-                    <div class="input-group-btn">
-                      <btn class="dropdown-toggle">
-                        <i class="glyphicon glyphicon-time"></i>
-                      </btn>
+                      <div class="input-group-btn">
+                        <btn class="dropdown-toggle">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                        </btn>
+                      </div>
                     </div>
-                  </div>
-                  <template slot="dropdown">
-                    <li style="padding: 10px">
-                      <time-picker v-model="chartProperties.compareDataPoint[0].endTime" :show-meridian="false" />
-                    </li>
-                  </template>
-                </dropdown>
+                    <template slot="dropdown">
+                      <li>
+                        <datepicker
+                          v-model="chartProperties.compareDataPoint[0].endDate"
+                          :format="formatDate"
+                          :inline="true"
+                          :monday-first="true"
+                        />
+                      </li>
+                    </template>
+                  </dropdown>
+                  <dropdown class="form-group row">
+                    <div class="input-group">
+                      <div class="input-group-btn">
+                        <btn class="dropdown-toggle">
+                          <i class="glyphicon glyphicon-time"></i>
+                        </btn>
+                      </div>
+                    </div>
+                    <template slot="dropdown">
+                      <li style="padding: 10px">
+                        <time-picker
+                          v-model="chartProperties.compareDataPoint[0].endTime"
+                          :show-meridian="false"
+                        />
+                      </li>
+                    </template>
+                  </dropdown>
+                </div>
               </div>
             </div>
             <div class="row">
               <div class="col-xs-6">
-                <select id="comp-el-2" v-model="compareElement2" class="form-control">
+                <select
+                  id="comp-el-2"
+                  v-model="chartProperties.compareDataPoint[1]"
+                  class="form-control"
+                >
                   <option
                     v-for="p in datapointList"
                     v-bind:value="p"
                     v-bind:key="p.id"
                   >{{p.name}}: {{p.xid}}</option>
                 </select>
+                <tooltip text="Remember to assign this datapoint to 2nd X-Axis in 'More Settings' menu!" target="#comp-el-2" />
               </div>
-              <div v-if="compareElement2" class="col-xs-6">
-                <!-- <label for="comp-el-1-sd" class="small-padd">Start Date</label> -->
-                <dropdown class="form-group col-xs-5">
-                  <div class="input-group">
-                    <input class="form-control" type="text" v-model="compareElement2.startDate" />
-                    <div class="input-group-btn">
-                      <btn class="dropdown-toggle">
-                        <i class="glyphicon glyphicon-calendar"></i>
-                      </btn>
-                    </div>
-                  </div>
-                  <template slot="dropdown">
-                    <li>
-                      <datepicker
-                        v-model="compareElement2.startDate"
-                        @selected="formatDate"
-                        :inline="true"
-                        :monday-first="true"
+              <div v-if="chartProperties.compareDataPoint[1]" class="col-xs-6">
+                <div class="col-xs-6 row">
+                  <dropdown class="form-group col-xs-11">
+                    <div class="input-group">
+                      <input
+                        class="form-control"
+                        type="text"
+                        v-model="chartProperties.compareDataPoint[1].startDate"
                       />
-                    </li>
-                  </template>
-                </dropdown>
-                <dropdown class="col-xs-1 form-group">
-                  <div class="input-group">
-                    <div class="input-group-btn">
-                      <btn class="dropdown-toggle">
-                        <i class="glyphicon glyphicon-time"></i>
-                      </btn>
+                      <div class="input-group-btn">
+                        <btn class="dropdown-toggle">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                        </btn>
+                      </div>
                     </div>
-                  </div>
-                  <template slot="dropdown">
-                    <li style="padding: 10px">
-                      <time-picker v-model="compareElement2.startTime" :show-meridian="false" />
-                    </li>
-                  </template>
-                </dropdown>
-                <!-- <label for="comp-el-1-sd" class="small-padd">End Date</label> -->
-                <dropdown class="form-group col-xs-5">
-                  <div class="input-group">
-                    <input class="form-control" type="text" v-model="compareElement2.endDate" />
-                    <div class="input-group-btn">
-                      <btn class="dropdown-toggle">
-                        <i class="glyphicon glyphicon-calendar"></i>
-                      </btn>
+                    <template slot="dropdown">
+                      <li>
+                        <datepicker
+                          v-model="chartProperties.compareDataPoint[1].startDate"
+                          @selected="formatDate"
+                          :inline="true"
+                          :monday-first="true"
+                        />
+                      </li>
+                    </template>
+                  </dropdown>
+                  <dropdown class="form-group row">
+                    <div class="input-group">
+                      <div class="input-group-btn">
+                        <btn class="dropdown-toggle">
+                          <i class="glyphicon glyphicon-time"></i>
+                        </btn>
+                      </div>
                     </div>
-                  </div>
-                  <template slot="dropdown">
-                    <li>
-                      <datepicker
-                        v-model="compareElement2.endDate"
-                        @selected="formatDate"
-                        :inline="true"
-                        :monday-first="true"
+                    <template slot="dropdown">
+                      <li style="padding: 10px">
+                        <time-picker
+                          v-model="chartProperties.compareDataPoint[1].startTime"
+                          :show-meridian="false"
+                        />
+                      </li>
+                    </template>
+                  </dropdown>
+                </div>
+                <div class="col-xs-6">
+                  <dropdown class="form-group col-xs-11">
+                    <div class="input-group">
+                      <input
+                        class="form-control"
+                        type="text"
+                        v-model="chartProperties.compareDataPoint[1].endDate"
                       />
-                    </li>
-                  </template>
-                </dropdown>
-                <dropdown class="col-xs-1 form-group">
-                  <div class="input-group">
-                    <div class="input-group-btn">
-                      <btn class="dropdown-toggle">
-                        <i class="glyphicon glyphicon-time"></i>
-                      </btn>
+                      <div class="input-group-btn">
+                        <btn class="dropdown-toggle">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                        </btn>
+                      </div>
                     </div>
-                  </div>
-                  <template slot="dropdown">
-                    <li style="padding: 10px">
-                      <time-picker v-model="compareElement2.endTime" :show-meridian="false" />
-                    </li>
-                  </template>
-                </dropdown>
+                    <template slot="dropdown">
+                      <li>
+                        <datepicker
+                          v-model="chartProperties.compareDataPoint[1].endDate"
+                          @selected="formatDate"
+                          :inline="true"
+                          :monday-first="true"
+                        />
+                      </li>
+                    </template>
+                  </dropdown>
+                  <dropdown class="form-group row">
+                    <div class="input-group">
+                      <div class="input-group-btn">
+                        <btn class="dropdown-toggle">
+                          <i class="glyphicon glyphicon-time"></i>
+                        </btn>
+                      </div>
+                    </div>
+                    <template slot="dropdown">
+                      <li style="padding: 10px">
+                        <time-picker
+                          v-model="chartProperties.compareDataPoint[1].endTime"
+                          :show-meridian="false"
+                        />
+                      </li>
+                    </template>
+                  </dropdown>
+                </div>
               </div>
             </div>
           </div>
@@ -309,7 +360,7 @@
             <i class="glyphicon glyphicon-cog"></i>
           </btn>
           <tooltip text="More settings" target="#showSettingsBtn" />
-        </div>        
+        </div>
       </div>
       <div class="row" v-if="settingsVisible">
         <h2>Data Points settings - {{watchlistName}}:</h2>
@@ -343,8 +394,18 @@
                 <div class="col-xs-12">
                   <p class="col-xs-6">Y-Axis:</p>
                   <btn-group class="col-xs-6">
-                    <btn class="col-xs-3" input-type="radio" input-value="valueAxis1" v-model="s.yAxis">1</btn>
-                    <btn class="col-xs-3" input-type="radio" input-value="valueAxis2" v-model="s.yAxis">2</btn>
+                    <btn
+                      class="col-xs-3"
+                      input-type="radio"
+                      input-value="valueAxis1"
+                      v-model="s.yAxis"
+                    >1</btn>
+                    <btn
+                      class="col-xs-3"
+                      input-type="radio"
+                      input-value="valueAxis2"
+                      v-model="s.yAxis"
+                    >2</btn>
                     <btn
                       class="col-xs-3"
                       input-type="radio"
@@ -361,12 +422,19 @@
                 </div>
                 <div class="col-xs-12">
                   <p class="col-xs-6">X-Axis:</p>
-                  <div class="col-xs-3">
-                    <input class="form-control" v-model="s.dataFields.dateX" />
-                  </div>
-                  <btn-group class="col-xs-3">
-                    <btn class="col-xs-6" input-type="radio" input-value="dateAxis1" v-model="s.xAxis">1</btn>
-                    <btn class="col-xs-6" input-type="radio" input-value="dateAxis2" v-model="s.xAxis">2</btn>
+                  <btn-group class="col-xs-6">
+                    <btn
+                      class="col-xs-6"
+                      input-type="radio"
+                      input-value="dateAxis1"
+                      v-model="s.xAxis"
+                    >1</btn>
+                    <btn
+                      class="col-xs-6"
+                      input-type="radio"
+                      input-value="dateAxis2"
+                      v-model="s.xAxis"
+                    >2</btn>
                   </btn-group>
                 </div>
                 <div class="col-xs-12">
@@ -390,7 +458,13 @@
                 <div class="col-xs-12">
                   <p class="col-xs-6">Stroke tension:</p>
                   <div class="col-xs-6">
-                    <input class="form-control" type="number" :min="0" :max="1" v-model="s.tensionX" />
+                    <input
+                      class="form-control"
+                      type="number"
+                      :min="0"
+                      :max="1"
+                      v-model="s.tensionX"
+                    />
                   </div>
                 </div>
                 <div class="col-xs-12">
@@ -436,10 +510,11 @@
               <tooltip text="Apply settings" target="#saveSettingsBtn" />
             </div>
             <div class="col-xs-4">
-              <btn size="sm" class="dropdown-toggle col-xs-12" @click="cancelSettings()">
+              <btn size="sm" class="dropdown-toggle col-xs-12" @click="cancelSettings()" id="cancelBtn">
                 <i class="glyphicon glyphicon-remove"></i>
               </btn>
             </div>
+            <tooltip text="Close settings without save." target="#cancelBtn" />
             <div class="col-xs-4">
               <btn
                 size="sm"
@@ -473,7 +548,7 @@ import verte from "verte";
 import httpClient from "axios";
 import Axios from "axios";
 import BaseChart from "../amcharts/BaseChart";
-import i18n from '../../i18n'
+import i18n from "../../i18n";
 am4core.useTheme(am4themes_animated);
 
 class JsonChart extends BaseChart {
@@ -565,12 +640,6 @@ export default {
   props: [
     "pointId",
     "watchlistName",
-
-    "startDate",
-    "endDate",
-    "refreshRate",
-    "width",
-    "height",
     "rangeValue",
     "rangeColor",
     "rangeLabel",
@@ -580,13 +649,6 @@ export default {
   data() {
     return {
       settingsVisible: false,
-      // chartProperties: {
-      //   chartType: "live",
-      //   refreshRate: 10000,
-      //   startDate: undefined,
-      //   endDate: undefined,
-      //   compareDataPoint: [null, null]
-      // },
       errorMessage: undefined,
       chartClass: undefined,
       performanceOptions: [
@@ -604,8 +666,6 @@ export default {
       startTime: new Date(),
       endTime: new Date(),
       series: [],
-      compareElement1: undefined,
-      compareElement2: undefined,
       dualAxis: false,
     };
   },
@@ -614,42 +674,67 @@ export default {
     this.prepareChart();
   },
   computed: {
-    chartConfiguration() { return this.$store.state.modernWatchList.chartConfiguration },
-    chartProperties() { return this.$store.state.modernWatchList.chartProperties },
-    datapointList() { return this.$store.state.modernWatchList.datapointList },
-    isChartLoaded() { return this.$store.state.modernWatchList.isChartLoaded },
+    chartConfiguration() {
+      return this.$store.state.modernWatchList.chartConfiguration;
+    },
+    chartSeriesConfiguration() {
+      return this.$store.state.modernWatchList.chartSeriesConfiguration;
+    },
+    chartProperties() {
+      return this.$store.state.modernWatchList.chartProperties;
+    },
+    datapointList() {
+      return this.$store.state.modernWatchList.datapointList;
+    },
+    isChartLoaded() {
+      return this.$store.state.modernWatchList.isChartLoaded;
+    },
   },
   methods: {
     showSettings() {
       this.settingsVisible = !this.settingsVisible;
-      this.series = this.chartConfiguration.series;
+      this.series = this.chartSeriesConfiguration;
     },
     cancelSettings() {
       this.settingsVisible = false;
     },
     saveSettings() {
-      // this.saveChart();
-      console.log("savesettings")
-      console.log(this.series)
-      this.$store.commit('chartConfigurationSeriesUpdate', this.series)
-      this.$store.commit('chartSaveConfiguration', this.watchlistName);
+      this.series.forEach((e) => {
+        if (this.chartProperties.type == "compare") {
+          if (e.xAxis == "dateAxis1") {
+            e.dataFields.dateX = "date";
+          } else if (e.xAxis == "dateAxis2") {
+            e.dataFields.dateX = "date2";
+          }
+        } else {
+          e.xAxis = "dateAxis1";
+          e.dataFields.dateX = "date";
+        }
+      });
+      this.$store.commit("chartConfigurationSeriesUpdate", this.series);
       this.settingsVisible = false;
       this.updateSettings();
     },
     initializeDataPoints() {
       let points = this.pointId.split(",");
       for (let i = 0; i < points.length; i++) {
-        this.$store.dispatch('getDatapointInfo', points[i]);
+        this.$store.dispatch("getDatapointInfo", points[i]);
       }
     },
     updateSettings() {
-      if (this.chartProperties.chartType == "static") {
+      if (this.chartProperties.type == "static") {
         this.chartProperties.refreshRate = undefined;
-        let sdString = this.formatDate(new Date(this.chartProperties.startDate));
-        let edString = this.formatDate(new Date(this.chartProperties.endDate));
-        this.chartProperties.startDate = `${sdString} ${this.startTime.getHours()}:${this.startTime.getMinutes()}`;
-        this.chartProperties.endDate = `${edString} ${this.endTime.getHours()}:${this.endTime.getMinutes()}`;
-      } else if (this.chartProperties.chartType == "live") {
+        this.chartProperties.startDate = this.convertDate(
+          this.chartProperties.startDate,
+          this.startTime
+        );
+        this.chartProperties.endDate = this.convertDate(
+          this.chartProperties.endDate,
+          this.endTime
+        );
+        this.chartProperties.startTime = this.startTime;
+        this.chartProperties.endTime = this.endTime;
+      } else if (this.chartProperties.type == "live") {
         this.chartProperties.endDate = undefined;
         this.chartProperties.startDate = `${this.chartProperties.startTime}-${this.chartProperties.startTimeMultiplier}`;
       } else {
@@ -660,65 +745,36 @@ export default {
       this.applySettings(this.chartProperties);
     },
     applySettings(chartData) {
-      // this.saveChart();
-      this.$store.commit('chartPropertiesUpdate', chartData)
-      // this.$store.commit('chartSaveConfiguration');
-      this.startDate = chartData.startDate;
-      this.endDate = chartData.endDate;
-      this.refreshRate = chartData.refreshRate;
-      this.chartClass.chart.dispose();
-      this.prepareChart();
+      this.$store.commit("chartPropertiesUpdate", chartData);
+      this.$store.commit("chartSaveConfiguration", this.watchlistName);
+      this.chartReload();
     },
     generateChart(jsonConfig) {
       this.chartClass = new JsonChart(
         this.$refs.chartdiv,
-        this.color,
+        null,
         ".",
         jsonConfig
       );
 
       let promises = [];
-      if (this.chartProperties.chartType === "compare") {
-        let ce1sdString = this.formatDate(
-          new Date(this.chartProperties.compareDataPoint[0].startDate)
-        );
-        let ce1edString = this.formatDate(
-          new Date(this.chartProperties.compareDataPoint[0].endDate)
-        );
-        this.chartProperties.compareDataPoint[0].startDate = `${ce1sdString} ${this.chartProperties.compareDataPoint[0].startTime.getHours()}:${this.chartProperties.compareDataPoint[0].startTime.getMinutes()}`;
-        this.chartProperties.compareDataPoint[0].endDate = `${ce1edString} ${this.chartProperties.compareDataPoint[0].endTime.getHours()}:${this.chartProperties.compareDataPoint[0].endTime.getMinutes()}`;
-        promises.push(
-          this.chartClass.loadData(
-            this.chartProperties.compareDataPoint[0].id,
-            this.chartProperties.compareDataPoint[0].startDate,
-            this.chartProperties.compareDataPoint[0].endDate,
-            false
-          )
-        );
-        let ce2sdString = this.formatDate(
-          new Date(this.compareElement2.startDate)
-        );
-        let ce2edString = this.formatDate(
-          new Date(this.compareElement2.endDate)
-        );
-        this.compareElement2.startDate = `${ce2sdString} ${this.compareElement2.startTime.getHours()}:${this.compareElement2.startTime.getMinutes()}`;
-        this.compareElement2.endDate = `${ce2edString} ${this.compareElement2.endTime.getHours()}:${this.compareElement2.endTime.getMinutes()}`;
-        promises.push(
-          this.chartClass.loadData(
-            this.compareElement2.id,
-            this.compareElement2.startDate,
-            this.compareElement2.endDate,
-            false
-          )
-        );
+
+      if (this.chartProperties.type === "compare") {
+        this.chartProperties.compareDataPoint.forEach((e) => {
+          e.startDate = this.convertDate(e.startDate, e.startTime);
+          e.endDate = this.convertDate(e.endDate, e.endTime);
+          promises.push(
+            this.chartClass.loadData(e.id, e.startDate, e.endDate, false)
+          );
+        });
       } else {
         let points = this.pointId.split(",");
         for (let i = 0; i < points.length; i++) {
           promises.push(
             this.chartClass.loadData(
               points[i],
-              this.startDate,
-              this.endDate,
+              this.chartProperties.startDate,
+              this.chartProperties.endDate,
               false
             )
           );
@@ -733,52 +789,48 @@ export default {
           }
         }
 
-        this.chartClass.setupChart(this.chartProperties.chartType); // Display Chart
-        //   if (this.rangeValue !== undefined) {
-        //     this.chartClass.addRangeValue(
-        //       Number(this.rangeValue),
-        //       this.rangeColor,
-        //       this.rangeLabel
-        //     );
-        //   }
-        // this.$store.commit('chartSaveConfiguration');
-        // this.saveChart();
-        if (this.refreshRate != undefined) {
+        this.chartShow();
+
+        if (this.chartProperties.refreshRate != undefined) {
           this.chartClass.startLiveUpdate(
-            Number(this.refreshRate),
+            Number(this.chartProperties.refreshRate),
             false
           );
         }
       });
     },
+
     prepareChart() {
-      this.$store.commit('chartLoadConfiguration', this.watchlistName)
-      if(this.isChartLoaded) {
-        console.warn("Chart Loaded");
-        this.chartProperties = this.chartProperties;
+      this.$store.commit("chartLoadConfiguration", this.watchlistName);
+      if (this.isChartLoaded) {
+        this.series = this.chartSeriesConfiguration;
+        this.validateDate();
         this.generateChart(this.chartConfiguration);
       } else {
         let initPromises = [];
-        if(this.chartType === "compare") {
-          // Generate series for both DataPoints //
-          // initializePointsPromises.push(
-          //   this.initializePoints(this.compareElement1.id)
-          // );
-          // initializePointsPromises.push(
-          //   this.initializePoints(this.compareElement2.id)
-          // );
+        if (this.type === "compare") {
+          this.chartProperties.compareDataPoint.forEach((e) => {
+            initPromises.push(
+              this.$store.dispatch("chartInitDatapointSeries", e.id)
+            );
+          });
         } else {
           // Generate series for each DataPoint //
           let pointId = this.pointId.split(",");
           for (let i = 0; i < pointId.length; i++) {
-            initPromises.push(this.$store.dispatch('chartInitDatapointSeries', pointId[i]));
+            initPromises.push(
+              this.$store.dispatch("chartInitDatapointSeries", pointId[i])
+            );
           }
         }
-        Promise.all(initPromises).then((r) => {
-          this.generateChart(this.chartConfiguration);
-        }).catch((e)=> {
-          console.error(e)
-        })
+        Promise.all(initPromises)
+          .then((r) => {
+            this.$store.commit("chartConfigurationSeriesApply");
+            this.generateChart(this.chartConfiguration);
+          })
+          .catch((e) => {
+            console.error(e);
+          });
       }
     },
     reset() {
@@ -795,31 +847,37 @@ export default {
     reload() {
       this.prepareChart();
     },
-    // loadChart() {
-    //   let loadData = JSON.parse(
-    //     localStorage.getItem(`MWL_${this.watchlistName}`)
-    //   );
-    //   if (loadData !== null) {
-    //     this.series = loadData.series;
-    //     this.chartProperties = loadData.chartProperties;
-    //     return true;
-    //   } else {
-    //     return false;
-    //   }
-    // },
-    // saveChart() {
-    //   let saveData = {
-    //     chartProperties: this.chartProperties,
-    //     series: JSON.parse(JSON.stringify(this.series)),
-    //   };
-    //   localStorage.setItem(
-    //     `MWL_${this.watchlistName}`,
-    //     JSON.stringify(saveData)
-    //   );
-    // },
     clearChart() {
       localStorage.removeItem(`MWL_${this.watchlistName}`);
       this.$notify("Chart settings has been cleared from the memory!");
+    },
+    chartShow() {
+      this.chartClass.setupChart(this.chartProperties.type);
+    },
+    chartDispose() {
+      this.chartClass.chart.dispose();
+    },
+    chartReload() {
+      if (this.chartClass !== null) {
+        this.chartDispose();
+      }
+      this.$store.commit("datapointsReset");
+      this.$store.commit("chartConfigurationSeriesReset");
+      this.$store.commit("chartConfigurationReset");
+      this.initializeDataPoints();
+      this.prepareChart();
+    },
+    convertDate(date, time) {
+      if (!(time instanceof Date)) {
+        if (time === undefined || time === null) {
+          time = new Date();
+        } else {
+          time = new Date(time);
+        }
+      }
+      let dateString = this.formatDate(new Date(date));
+      let timeString = `${time.getHours()}:${time.getMinutes()}`;
+      return `${dateString} ${timeString}`;
     },
     formatDate(date) {
       return (
@@ -830,9 +888,23 @@ export default {
         ("0" + date.getUTCDate()).slice(-2)
       );
     },
+    validateDate() {
+      let st = new Date(this.chartProperties.startTime);
+      let et = new Date(this.chartProperties.endTime);
+      if (st instanceof Date) {
+        this.startTime = st;
+      } else {
+        this.startTime = new Date();
+      }
+      if (et instanceof Date) {
+        this.endTime = et;
+      } else {
+        this.endTime = new Date();
+      }
+    },
   },
   beforeDestroy() {
-    this.chartClass.chart.dispose();
+    this.chartDispose();
   },
 };
 </script>

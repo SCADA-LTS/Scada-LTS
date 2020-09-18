@@ -53,7 +53,7 @@ export default {
       try {
         this.$refs.jsonChart.reset().then(() => {
           this.$refs.pointId = this.pointId;
-          this.$refs.jsonChart.reload();
+          this.$refs.jsonChart.chartReload();
         });
       } catch (e) {
         console.error(e);
