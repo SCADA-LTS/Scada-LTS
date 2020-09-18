@@ -13,8 +13,6 @@ before_script:
 - node -v
 - env
 - npm install -g bower
-- chmod +x ./get_seroUtils.sh
-- "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 # correct version base on Milestones
 - sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
@@ -32,8 +30,8 @@ services:
 script: ant war && ant junit
 branches:
   only:
-  - "/^siv/develop.*$/"
-  - "/^siv/master.*$/"
+  - "/^develop.*$/"
+  - "/^master.*$/"
 notifications:
   email: false
 env:
@@ -74,7 +72,7 @@ after_script:
 - echo $TAGISSUE
 - export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
 - echo $TAG_DEV_OR_ISSUE
-- export TAG=`if [ "$TRAVIS_BRANCH" == "release_23" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE ; fi`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE ; fi`
 - echo $TAG
 - export IMAGE_NAME=scadalts/scadalts
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
