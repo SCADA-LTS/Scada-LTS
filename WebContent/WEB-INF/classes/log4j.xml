@@ -177,18 +177,21 @@
   </category>
   
 <!-- Flyway logging -->
-<category name="com.serotonin.mango.db" additivity="false">
+  <category name="com.serotonin.mango.db" additivity="false">
     <level value="info"/>
     <appender-ref ref="flywayasync"/>
-</category>
-
-
-<!--   
-  <category name="com.serotonin.mango.rt.dataSource.modbus"  additivity="false">
-    <level value="debug"/>
-    <appender-ref ref="modbusasync"/>
   </category>
- -->
+  <category name="org.scada_lts.dao.migration.mysql" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="flywayasync"/>
+  </category>
+
+  <!--
+    <category name="com.serotonin.mango.rt.dataSource.modbus"  additivity="false">
+      <level value="debug"/>
+      <appender-ref ref="modbusasync"/>
+    </category>
+   -->
 <!-- Script Logging -->
 
 <!--   <category name="br.org.scadabr.rt.scripting" additivity="false"> -->
