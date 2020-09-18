@@ -1,15 +1,20 @@
 package org.scada_lts.dao.migration.mysql;
 
-import net.sf.json.JSON;
-import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
+import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * @author  grzegorz.bylica@abilit.eu on 15.10.2019
  */
-public class V2_0__CMP_history implements SpringJdbcMigration {
+public class V2_0__CMP_history extends BaseJavaMigration {
 
-    public void migrate(JdbcTemplate jdbcTmp) throws Exception {
+    @Override
+    public void migrate(Context context) throws Exception {
+
+        final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
+
         final String multiChangesHistory = ""
                 + "create table multi_changes_history ("
                 + "id int(11) not null auto_increment,"                  // id
