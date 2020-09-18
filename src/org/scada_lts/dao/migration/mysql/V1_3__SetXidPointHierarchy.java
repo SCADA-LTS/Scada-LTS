@@ -17,7 +17,9 @@
  */
 package org.scada_lts.dao.migration.mysql;
 
-import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
+import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
@@ -25,10 +27,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
  *
  * @author grzegorz.bylica@gmail.com
  */
-public class V1_3__SetXidPointHierarchy implements SpringJdbcMigration {
+public class V1_3__SetXidPointHierarchy extends BaseJavaMigration {
 
-    @Override
-    public void migrate(JdbcTemplate jdbcTmp) throws Exception {
+    public void migrate(Context context) throws Exception {
+
+        final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
 
         // alter table pointHierarchy drop column `xid`
         final String addXidInPointHierarchy =
