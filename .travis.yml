@@ -30,7 +30,6 @@ services:
 script: ant war && ant junit
 branches:
   only:
-  - "/^release_23.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
 notifications:
