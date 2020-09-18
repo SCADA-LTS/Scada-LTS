@@ -80,3 +80,5 @@ after_script:
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
 - docker push $IMAGE_NAME:$TAG
+
+
