@@ -86,6 +86,13 @@ const modernWatchList = {
                 },
             }],
             series: [],
+            exporting: {
+                menu: {
+                    align: "right",
+                    verticalAlign: "top"
+                },
+                filePrefix: "Scada_Chart_" + String(new Date().getTime())
+            },
         },
         chartSeriesTemplate: {
             id: undefined,
@@ -124,7 +131,6 @@ const modernWatchList = {
                 circle: {
                     radius: 0,
                     strokeWidth: 2,
-                    fill: "#F00",
                 }
 
             }]
@@ -205,6 +211,13 @@ const modernWatchList = {
                     },
                 }],
                 series: [],
+                exporting: {
+                    menu: {
+                        align: "right",
+                        verticalAlign: "top"
+                    },
+                    filePrefix: "Scada_Chart_" + String(new Date().getTime())
+                },
             }
         },
         chartConfigurationSeriesPush(state, series) {
@@ -412,7 +425,6 @@ const modernWatchList = {
                     series.id = `s${pointId}`;
                     series.stroke = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
                     series.fill = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
-                    series.bullets[0].circle.fill = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
                     series.tooltipText = "{name}: [bold]{valueY}[/] " + resp.data.textRenderer.suffix;
                     series.name = resp.data.name;
                     series.dataFields.valueY = resp.data.name;
