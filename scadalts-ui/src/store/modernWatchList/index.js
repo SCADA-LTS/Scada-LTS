@@ -34,12 +34,24 @@ const modernWatchList = {
                 type: "DateAxis",
                 dataFields: {
                     value: "date",
+                },
+                dateFormats: {
+                    second: "HH:mm:ss",
+                    minute: "HH:mm:ss",
+                    hour: "HH:mm",
+                    day: "MMM dd",
                 }
             }, {
                 id: "dateAxis2",
                 type: "DateAxis",
                 dataFields: {
                     value: "date2",
+                },
+                dateFormats: {
+                    second: "HH:mm:ss",
+                    minute: "HH:mm:ss",
+                    hour: "HH:mm",
+                    day: "MMM dd",
                 }
             }],
             yAxes: [{
@@ -106,7 +118,16 @@ const modernWatchList = {
                     textAlign: "middle",
                     textValign: "middle",
                 }
-            }
+            },
+            bullets: [{
+                type: "CircleBullet",
+                circle: {
+                    radius: 0,
+                    strokeWidth: 2,
+                    fill: "#F00",
+                }
+
+            }]
         },
         chartSeriesConfiguration: [],
         datapointList: [],
@@ -132,12 +153,24 @@ const modernWatchList = {
                     type: "DateAxis",
                     dataFields: {
                         value: "date",
+                    },
+                    dateFormats: {
+                        second: "HH:mm:ss",
+                        minute: "HH:mm:ss",
+                        hour: "HH:mm",
+                        day: "MMM dd",
                     }
                 }, {
                     id: "dateAxis2",
                     type: "DateAxis",
                     dataFields: {
                         value: "date2",
+                    },
+                    dateFormats: {
+                        second: "HH:mm:ss",
+                        minute: "HH:mm:ss",
+                        hour: "HH:mm",
+                        day: "MMM dd",
                     }
                 }],
                 yAxes: [{
@@ -379,6 +412,7 @@ const modernWatchList = {
                     series.id = `s${pointId}`;
                     series.stroke = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
                     series.fill = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
+                    series.bullets[0].circle.fill = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
                     series.tooltipText = "{name}: [bold]{valueY}[/] " + resp.data.textRenderer.suffix;
                     series.name = resp.data.name;
                     series.dataFields.valueY = resp.data.name;

@@ -468,7 +468,7 @@
                   </div>
                 </div>
                 <div class="col-xs-12">
-                  <p class="col-xs-6">Fill color::</p>
+                  <p class="col-xs-6">Fill color:</p>
                   <div class="col-xs-6">
                     <verte
                       picker="square"
@@ -490,6 +490,23 @@
                       v-model="s.fillOpacity"
                     />
                   </div>
+                </div>
+                <div class="col-xs-12">
+                  <p class="col-xs-6">Bullets:</p>
+                  <btn-group class="col-xs-6">
+                    <btn
+                      class="col-xs-6"
+                      input-type="radio"
+                      :input-value="5"
+                      v-model="s.bullets[0].circle.radius"
+                    >Show</btn>
+                    <btn
+                      class="col-xs-6"
+                      input-type="radio"
+                      :input-value="0"
+                      v-model="s.bullets[0].circle.radius"
+                    >Hide</btn>
+                  </btn-group>
                 </div>
               </tab>
             </tabs>
