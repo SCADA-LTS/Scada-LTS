@@ -246,7 +246,7 @@ public class SystemSettingsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                String json = "{\"databaseType\":\"" + systemSettingsService.getDatabaseType() + "\"";
+                String json = "{\"databaseType\":\"" + systemSettingsService.getDatabaseType() + "\"}";
                 return new ResponseEntity<>(json, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
