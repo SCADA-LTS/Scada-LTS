@@ -44,7 +44,7 @@
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.event.title") }}</h2>
         <div class="col-xs-1" v-if="activeTimeoutEvent">
-          <btn block size="lg" type="link">
+          <btn size="lg" type="link">
             <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
@@ -102,7 +102,7 @@
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.audit.title") }}</h2>
         <div class="col-xs-1" v-if="activeTimeoutAudit">
-          <btn block size="lg" type="link">
+          <btn size="lg" type="link">
             <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
@@ -163,7 +163,7 @@
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.http.title") }}</h2>
         <div class="col-xs-1" v-if="activeTimeoutHttp">
-          <btn block size="lg" type="link">
+          <btn size="lg" type="link">
             <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
@@ -235,12 +235,20 @@
             <p>{{ $t("systemsettings.http.proxy.password") }}</p>
           </div>
           <div class="col-xs-6">
-            <input
-              class="form-control"
-              type="text"
-              v-model="httpSettings.password"
-              @change="saveHttpSettings()"
-            />
+            <div class="col-xs-2">
+              <btn @click="togglePassword('httpPasswordInput')">
+                <i class="glyphicon glyphicon-eye-open"></i>
+              </btn>
+            </div>
+            <div class="col-xs-10">
+              <input
+                id="httpPasswordInput"
+                class="form-control"
+                type="password"
+                v-model="httpSettings.password"
+                @change="saveHttpSettings()"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -249,7 +257,7 @@
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.database.title") }}</h2>
         <div class="col-xs-1">
-          <btn block size="lg" type="link" @click="getDatabaseSize()">
+          <btn size="lg" type="link" @click="getDatabaseSize()">
             <i class="glyphicon glyphicon-refresh"></i>
           </btn>
         </div>
@@ -339,7 +347,7 @@
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.email.title") }}</h2>
         <div class="col-xs-1" v-if="activeTimeoutEmail">
-          <btn block size="lg" type="link">
+          <btn size="lg" type="link">
             <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
@@ -403,7 +411,11 @@
             <p>{{ $t("systemsettings.email.contenttype") }}</p>
           </div>
           <div class="col-xs-6">
-            <select class="form-control" v-model="emailSettings.contentType" @input="saveEmailSettings()">
+            <select
+              class="form-control"
+              v-model="emailSettings.contentType"
+              @input="saveEmailSettings()"
+            >
               <option v-bind:value="0">
                 {{ $t("systemsettings.email.contenttype.htmltext") }}
               </option>
@@ -455,12 +467,20 @@
               <p>{{ $t("systemsettings.email.auth.password") }}Password</p>
             </div>
             <div class="col-xs-6">
-              <input
-                class="form-control"
-                type="text"
-                v-model="emailSettings.password"
-                @change="saveEmailSettings()"
-              />
+              <div class="col-xs-2">
+                <btn @click="togglePassword('emailPasswordInput')">
+                  <i class="glyphicon glyphicon-eye-open"></i>
+                </btn>
+              </div>
+              <div class="col-xs-10">
+                <input
+                  id="emailPasswordInput"
+                  class="form-control"
+                  type="password"
+                  v-model="emailSettings.password"
+                  @change="saveEmailSettings()"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -490,12 +510,12 @@
       <div class="row align-items-center">
         <h2 class="col-xs-10">{{ $t("systemsettings.misc.title") }}</h2>
         <div class="col-xs-1">
-          <btn block size="lg" type="link" @click="purgeData()">
+          <btn size="lg" type="link" @click="purgeData()">
             <i class="glyphicon glyphicon-trash"></i>
           </btn>
         </div>
         <div class="col-xs-1" v-if="activeTimeoutMisc">
-          <btn block size="lg" type="link">
+          <btn size="lg" type="link">
             <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
@@ -744,6 +764,14 @@ export default {
         type,
         content,
       });
+    },
+    togglePassword(elementId) {
+      let x = document.getElementById(elementId);
+      if (x.type === "password") {
+        x.type = "text";
+      } else {
+        x.type = "password";
+      }
     },
   },
   computed: {
