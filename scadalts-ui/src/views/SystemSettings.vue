@@ -1,13 +1,13 @@
 <template>
   <div class="container-fluid">
     <div class="row justify-content-center">
-      <h1 class="col-xs-12">System Settings</h1>
+      <h1 class="col-xs-12">{{ $t('systemsettings.title') }}</h1>
     </div>
     <div v-if="systemInfoSettings" class="container-md">
-      <h2>System Information</h2>
+      <h2>{{ $t('systemsettings.info.title') }}</h2>
       <div class="col-md-6">
         <div class="col-xs-6">
-          <p>Scada-LTS instance description</p>
+          <p>{{ $t('systemsettings.info.instance') }}</p>
         </div>
         <div class="col-xs-6">
           <input
@@ -19,7 +19,7 @@
       </div>
       <div class="col-md-6">
         <div class="col-xs-6">
-          <p>System language</p>
+          <p>{{ $t('systemsettings.info.language') }}</p>
         </div>
         <div class="col-xs-6">
           <select class="form-control" v-model="systemInfoSettings.language">
@@ -34,7 +34,7 @@
     </div>
     <div v-if="systemEventTypes" class="col-md-6">
       <div class="row align-items-center">
-        <h2 class="col-xs-11">System event alarm levels</h2>
+        <h2 class="col-xs-11">{{ $t('systemsettings.event.title') }}</h2>
         <div class="col-xs-1">
           <btn block size="lg" type="link" @click="saveSystemEventAlarms()">
             <i class="glyphicon glyphicon-save"></i>
@@ -42,360 +42,40 @@
         </div>
       </div>
       <div>
-        <div class="row">
+        <div class="row" v-for="event in systemEventTypes" v-bind:key="event.i1">
           <div class="col-xs-6">
-            <p>System startup</p>
+            <p>{{$t(event.translation)}}</p>
           </div>
           <div class="col-xs-5">
-            <select class="form-control" v-model="systemEventTypes[0].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
+            <select class="form-control" v-model="event.i2">
+              <option v-bind:value="0">{{$t("alarmlevels.none")}}</option>
+              <option v-bind:value="1">{{$t("alarmlevels.information")}}</option>
+              <option v-bind:value="2">{{$t("alarmlevels.urgent")}}</option>
+              <option v-bind:value="3">{{$t("alarmlevels.critical")}}</option>
+              <option v-bind:value="4">{{$t("alarmlevels.lifesafety")}}</option>
             </select>
           </div>
           <div class="col-xs-1">
             <img
-              v-if="systemEventTypes[0].i2 === 1"
+              v-if="event.i2 === 1"
               src="images/flag_blue.png"
               title="Information"
               alt="Information"
             />
             <img
-              v-if="systemEventTypes[0].i2 === 2"
+              v-if="event.i2 === 2"
               src="images/flag_yellow.png"
               title="Urgent"
               alt="Urgent"
             />
             <img
-              v-if="systemEventTypes[0].i2 === 3"
+              v-if="event.i2 === 3"
               src="images/flag_orange.png"
               title="Critical"
               alt="Critical"
             />
             <img
-              v-if="systemEventTypes[0].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>System shutdown</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="systemEventTypes[1].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="systemEventTypes[1].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="systemEventTypes[1].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="systemEventTypes[1].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="systemEventTypes[1].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Maximum alarm level changed</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="systemEventTypes[2].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="systemEventTypes[2].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="systemEventTypes[2].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="systemEventTypes[2].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="systemEventTypes[2].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>User login</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="systemEventTypes[3].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="systemEventTypes[3].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="systemEventTypes[3].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="systemEventTypes[3].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="systemEventTypes[3].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Compound detector failure</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="systemEventTypes[4].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="systemEventTypes[4].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="systemEventTypes[4].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="systemEventTypes[4].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="systemEventTypes[4].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Set point event handler failure</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="systemEventTypes[5].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="systemEventTypes[5].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="systemEventTypes[5].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="systemEventTypes[5].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="systemEventTypes[5].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Email send failure</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="systemEventTypes[6].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="systemEventTypes[6].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="systemEventTypes[6].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="systemEventTypes[6].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="systemEventTypes[6].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Point link failure</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="systemEventTypes[7].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="systemEventTypes[7].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="systemEventTypes[7].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="systemEventTypes[7].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="systemEventTypes[7].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Process event handler failure</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="systemEventTypes[8].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="systemEventTypes[8].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="systemEventTypes[8].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="systemEventTypes[8].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="systemEventTypes[8].i2 === 4"
+              v-if="event.i2 === 4"
               src="images/flag_red.png"
               title="Life Safety"
               alt="Life Safety"
@@ -406,7 +86,7 @@
     </div>
     <div v-if="auditEventTypes" class="col-md-6">
       <div class="row align-items-center">
-        <h2 class="col-xs-11">Audit event alarm levels</h2>
+        <h2 class="col-xs-11">{{ $t('systemsettings.audit.title') }}</h2>
         <div class="col-xs-1">
           <btn block size="lg" type="link" @click="saveAuditEventAlarms()">
             <i class="glyphicon glyphicon-save"></i>
@@ -415,320 +95,40 @@
       </div>
 
       <div>
-        <div class="row">
+        <div class="row" v-for="event in auditEventTypes" v-bind:key="event.i1">
           <div class="col-xs-6">
-            <p>Data source</p>
+            <p>{{$t(event.translation)}}</p>
           </div>
           <div class="col-xs-5">
-            <select class="form-control" v-model="auditEventTypes[0].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
+            <select class="form-control" v-model="event.i2">
+              <option v-bind:value="0">{{$t("alarmlevels.none")}}</option>
+              <option v-bind:value="1">{{$t("alarmlevels.information")}}</option>
+              <option v-bind:value="2">{{$t("alarmlevels.urgent")}}</option>
+              <option v-bind:value="3">{{$t("alarmlevels.critical")}}</option>
+              <option v-bind:value="4">{{$t("alarmlevels.lifesafety")}}</option>
             </select>
           </div>
           <div class="col-xs-1">
             <img
-              v-if="auditEventTypes[0].i2 === 1"
+              v-if="event.i2 === 1"
               src="images/flag_blue.png"
               title="Information"
               alt="Information"
             />
             <img
-              v-if="auditEventTypes[0].i2 === 2"
+              v-if="event.i2 === 2"
               src="images/flag_yellow.png"
               title="Urgent"
               alt="Urgent"
             />
             <img
-              v-if="auditEventTypes[0].i2 === 3"
+              v-if="event.i2 === 3"
               src="images/flag_orange.png"
               title="Critical"
               alt="Critical"
             />
             <img
-              v-if="auditEventTypes[0].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Data point</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="auditEventTypes[1].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="auditEventTypes[1].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="auditEventTypes[1].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="auditEventTypes[1].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="auditEventTypes[1].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Point event detector</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="auditEventTypes[2].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="auditEventTypes[2].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="auditEventTypes[2].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="auditEventTypes[2].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="auditEventTypes[2].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Compound event detector</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="auditEventTypes[3].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="auditEventTypes[3].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="auditEventTypes[3].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="auditEventTypes[3].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="auditEventTypes[3].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Scheduled event</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="auditEventTypes[4].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="auditEventTypes[4].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="auditEventTypes[4].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="auditEventTypes[4].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="auditEventTypes[4].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Event handler</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="auditEventTypes[5].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="auditEventTypes[5].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="auditEventTypes[5].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="auditEventTypes[5].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="auditEventTypes[5].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Point link</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="auditEventTypes[6].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="auditEventTypes[6].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="auditEventTypes[6].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="auditEventTypes[6].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="auditEventTypes[6].i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Maintenance event</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="auditEventTypes[7].i2">
-              <option v-bind:value="0">None</option>
-              <option v-bind:value="1">Information</option>
-              <option v-bind:value="2">Urgent</option>
-              <option v-bind:value="3">Critical</option>
-              <option v-bind:value="4">Life safety</option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="auditEventTypes[7].i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="auditEventTypes[7].i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="auditEventTypes[7].i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="auditEventTypes[7].i2 === 4"
+              v-if="event.i2 === 4"
               src="images/flag_red.png"
               title="Life Safety"
               alt="Life Safety"
@@ -739,7 +139,7 @@
     </div>
     <div v-if="httpSettings" class="col-md-6">
       <div class="row align-items-center">
-        <h2 class="col-xs-11">Http Settings</h2>
+        <h2 class="col-xs-11">{{ $t('systemsettings.http.title') }}</h2>
         <div class="col-xs-1">
           <btn block size="lg" type="link" @click="saveHttpSettings()">
             <i class="glyphicon glyphicon-save"></i>
@@ -755,14 +155,14 @@
                 :input-value="true"
                 class="col-xs-6"
                 v-model="httpSettings.useProxy"
-                >Enable proxy</btn
+                >{{ $t('systemsettings.http.proxy.enable') }}</btn
               >
               <btn
                 input-type="radio"
                 :input-value="false"
                 class="col-xs-6"
                 v-model="httpSettings.useProxy"
-                >Disable proxy</btn
+                >{{ $t('systemsettings.http.proxy.disable') }}</btn
               >
             </btn-group>
           </div>
@@ -771,7 +171,7 @@
       <div v-if="httpSettings.useProxy">
         <div class="row">
           <div class="col-xs-6">
-            <p>Proxy host</p>
+            <p>{{ $t('systemsettings.http.proxy.host') }}</p>
           </div>
           <div class="col-xs-6">
             <input
@@ -783,7 +183,7 @@
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <p>Proxy port</p>
+            <p>{{ $t('systemsettings.http.proxy.port') }}</p>
           </div>
           <div class="col-xs-6">
             <input
@@ -795,7 +195,7 @@
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <p>Proxy username</p>
+            <p>{{ $t('systemsettings.http.proxy.username') }}</p>
           </div>
           <div class="col-xs-6">
             <input
@@ -807,7 +207,7 @@
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <p>Proxy password</p>
+            <p>{{ $t('systemsettings.http.proxy.password') }}</p>
           </div>
           <div class="col-xs-6">
             <input
@@ -821,7 +221,7 @@
     </div>
     <div v-if="emailSettings" class="col-md-6">
       <div class="row align-items-center">
-        <h2 class="col-xs-11">Email Settings</h2>
+        <h2 class="col-xs-11">{{$t('systemsettings.email.title')}}</h2>
         <div class="col-xs-1">
           <btn block size="lg" type="link" @click="saveEmailSettings()">
             <i class="glyphicon glyphicon-save"></i>
@@ -832,7 +232,7 @@
       <div>
         <div class="row">
           <div class="col-xs-6">
-            <p>SMTP host</p>
+            <p>{{$t('systemsettings.email.smtp.host')}}</p>
           </div>
           <div class="col-xs-6">
             <input
@@ -844,7 +244,7 @@
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <p>SMTP port</p>
+            <p>{{$t('systemsettings.email.smtp.port')}}</p>
           </div>
           <div class="col-xs-6">
             <input
@@ -856,7 +256,7 @@
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <p>From address</p>
+            <p>{{$t('systemsettings.email.address')}}</p>
           </div>
           <div class="col-xs-6">
             <input
@@ -868,7 +268,7 @@
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <p>From name</p>
+            <p>{{$t('systemsettings.email.from')}}</p>
           </div>
           <div class="col-xs-6">
             <input
@@ -876,6 +276,18 @@
               type="text"
               v-model="emailSettings.name"
             />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6">
+            <p>{{$t('systemsettings.email.contenttype')}}</p>
+          </div>
+          <div class="col-xs-6">
+            <select class="form-control" v-model="emailSettings.contentType">
+              <option v-bind:value="0">{{$t('systemsettings.email.contenttype.htmltext')}}</option>
+              <option v-bind:value="1">{{$t('systemsettings.email.contenttype.html')}}</option>
+              <option v-bind:value="2">{{$t('systemsettings.email.contenttype.text')}}</option>
+            </select>
           </div>
         </div>
         <div class="row no-gutters">
@@ -886,14 +298,14 @@
                 :input-value="true"
                 v-model="emailSettings.auth"
                 class="col-xs-6"
-                >Use authorization</btn
+                >{{$t('systemsettings.email.auth.enable')}}</btn
               >
               <btn
                 input-type="radio"
                 :input-value="false"
                 v-model="emailSettings.auth"
                 class="col-xs-6"
-                >Disable authorization</btn
+                >{{$t('systemsettings.email.auth.disable')}}</btn
               >
             </btn-group>
           </div>
@@ -901,7 +313,7 @@
         <div v-if="emailSettings.auth">
           <div class="row">
             <div class="col-xs-6">
-              <p>Username</p>
+              <p>{{$t('systemsettings.email.auth.username')}}Username</p>
             </div>
             <div class="col-xs-6">
               <input
@@ -913,7 +325,7 @@
           </div>
           <div class="row">
             <div class="col-xs-6">
-              <p>Password</p>
+              <p>{{$t('systemsettings.email.auth.password')}}Password</p>
             </div>
             <div class="col-xs-6">
               <input
@@ -932,35 +344,24 @@
                 :input-value="true"
                 v-model="emailSettings.tls"
                 class="col-xs-6"
-                >Enable TLS</btn
+                >{{$t('systemsettings.email.tls.enable')}}Enable TLS</btn
               >
               <btn
                 input-type="radio"
                 :input-value="false"
                 v-model="emailSettings.tls"
                 class="col-xs-6"
-                >Disable TLS</btn
+                >{{$t('systemsettings.email.tls.disable')}}Disable TLS</btn
               >
             </btn-group>
           </div>
         </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>Content type</p>
-          </div>
-          <div class="col-xs-6">
-            <select class="form-control" v-model="emailSettings.contentType">
-              <option v-bind:value="0">HTML and text</option>
-              <option v-bind:value="1">HTML only</option>
-              <option v-bind:value="2">Text only</option>
-            </select>
-          </div>
-        </div>
+        
       </div>
     </div>
     <div v-if="miscSettings" class="col-md-6">
       <div class="row align-items-center">
-        <h2 class="col-xs-11">Other Settings</h2>
+        <h2 class="col-xs-11">{{$t('systemsettings.misc.title')}}</h2>
         <div class="col-xs-1">
           <btn block size="lg" type="link" @click="saveMiscSettings()">
             <i class="glyphicon glyphicon-save"></i>
@@ -970,19 +371,19 @@
       <div>
         <div class="row">
           <div class="col-xs-6">
-            <p>UI performance</p>
+            <p>{{$t('systemsettings.misc.performance')}}</p>
           </div>
           <div class="col-xs-6">
             <select class="form-control" v-model="miscSettings.uiPerformance">
-              <option v-bind:value="2000">High</option>
-              <option v-bind:value="5000">Medium</option>
-              <option v-bind:value="10000">Low</option>
+              <option v-bind:value="2000">{{$t('systemsettings.misc.performance.high')}}</option>
+              <option v-bind:value="5000">{{$t('systemsettings.misc.performance.medium')}}</option>
+              <option v-bind:value="10000">{{$t('systemsettings.misc.performance.low')}}</option>
             </select>
           </div>
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <p>Purge events older than</p>
+            <p>{{$t('systemsettings.misc.purge.events')}}</p>
           </div>
           <div class="col-xs-3">
             <input
@@ -996,16 +397,16 @@
               class="form-control"
               v-model="miscSettings.eventPurgePeriodType"
             >
-              <option v-bind:value="4">day(s)</option>
-              <option v-bind:value="5">week(s)</option>
-              <option v-bind:value="6">month(s)</option>
-              <option v-bind:value="7">year(s)</option>
+              <option v-bind:value="4">{{$t('timeperiod.days')}}</option>
+              <option v-bind:value="5">{{$t('timeperiod.weeks')}}</option>
+              <option v-bind:value="6">{{$t('timeperiod.months')}}</option>
+              <option v-bind:value="7">{{$t('timeperiod.years')}}</option>
             </select>
           </div>
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <p>Purge report instances older than</p>
+            <p>{{$t('systemsettings.misc.purge.reports')}}</p>
           </div>
           <div class="col-xs-3">
             <input
@@ -1019,16 +420,16 @@
               class="form-control"
               v-model="miscSettings.reportPurgePeriodType"
             >
-              <option v-bind:value="4">day(s)</option>
-              <option v-bind:value="5">week(s)</option>
-              <option v-bind:value="6">month(s)</option>
-              <option v-bind:value="7">year(s)</option>
+              <option v-bind:value="4">{{$t('timeperiod.days')}}</option>
+              <option v-bind:value="5">{{$t('timeperiod.weeks')}}</option>
+              <option v-bind:value="6">{{$t('timeperiod.months')}}</option>
+              <option v-bind:value="7">{{$t('timeperiod.years')}}</option>
             </select>
           </div>
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <p>Discard point values future dated more than</p>
+            <p>{{$t('systemsettings.misc.purge.future')}}</p>
           </div>
           <div class="col-xs-3">
             <input
@@ -1042,10 +443,8 @@
               class="form-control"
               v-model="miscSettings.futureDateLimitPeriodType"
             >
-              <option v-bind:value="4">day(s)</option>
-              <option v-bind:value="5">week(s)</option>
-              <option v-bind:value="6">month(s)</option>
-              <option v-bind:value="7">year(s)</option>
+              <option v-bind:value="2">{{$t('timeperiod.minutes')}}</option>
+              <option v-bind:value="3">{{$t('timeperiod.hours')}}</option>
             </select>
           </div>
         </div>
@@ -1143,6 +542,7 @@ export default {
     },
     systemEventTypes() {
       return this.$store.state.systemSettings.systemEventTypes;
+      //      3) Add notifications when something went wrong
     },
   },
 };

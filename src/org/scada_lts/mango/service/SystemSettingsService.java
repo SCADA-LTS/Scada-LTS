@@ -8,10 +8,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.IntegerPair;
 import org.scada_lts.dao.SystemSettingsDAO;
-import org.scada_lts.web.mvc.api.json.JsonSettingsEmail;
-import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
-import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
-import org.scada_lts.web.mvc.api.json.JsonSettingsSystemInfo;
+import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -114,38 +111,40 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
     }
 
-    public List<IntegerPair> getAuditEventAlarmLevels() {
+    public List<JsonSettingsEventLevels> getAuditEventAlarmLevels() {
         List<EventTypeVO> auditTypeVoList = AuditEventType.getAuditEventTypes();
-        List<IntegerPair> json =  new ArrayList<IntegerPair>();
+        List<JsonSettingsEventLevels> json =  new ArrayList<JsonSettingsEventLevels>();
         for (EventTypeVO eventTypeVO : auditTypeVoList) {
-            IntegerPair ip = new IntegerPair();
+            JsonSettingsEventLevels ip = new JsonSettingsEventLevels();
             ip.setI1(eventTypeVO.getTypeRef1());
             ip.setI2(eventTypeVO.getAlarmLevel());
+            ip.setTranslation(eventTypeVO.getDescription().getKey());
             json.add(ip);
         }
         return json;
     }
 
-    public void saveAuditEventAlarmLevels(List<IntegerPair> eventAlarmLevels) {
-        for (IntegerPair eventAlarmLevel : eventAlarmLevels) {
+    public void saveAuditEventAlarmLevels(List<JsonSettingsEventLevels> eventAlarmLevels) {
+        for (JsonSettingsEventLevels eventAlarmLevel : eventAlarmLevels) {
             AuditEventType.setEventTypeAlarmLevel(eventAlarmLevel.getI1(), eventAlarmLevel.getI2());
         }
     }
 
-    public List<IntegerPair> getSystemEventAlarmLevels() {
+    public List<JsonSettingsEventLevels> getSystemEventAlarmLevels() {
         List<EventTypeVO> eventTypeVoList = SystemEventType.getSystemEventTypes();
-        List<IntegerPair> json =  new ArrayList<IntegerPair>();
+        List<JsonSettingsEventLevels> json =  new ArrayList<JsonSettingsEventLevels>();
         for (EventTypeVO eventTypeVO : eventTypeVoList) {
-            IntegerPair ip = new IntegerPair();
+            JsonSettingsEventLevels ip = new JsonSettingsEventLevels();
             ip.setI1(eventTypeVO.getTypeRef1());
             ip.setI2(eventTypeVO.getAlarmLevel());
+            ip.setTranslation(eventTypeVO.getDescription().getKey());
             json.add(ip);
         }
         return json;
     }
 
-    public void saveSystemEventAlarmLevels(List<IntegerPair> eventAlarmLevels) {
-        for (IntegerPair eventAlarmLevel : eventAlarmLevels) {
+    public void saveSystemEventAlarmLevels(List<JsonSettingsEventLevels> eventAlarmLevels) {
+        for (JsonSettingsEventLevels eventAlarmLevel : eventAlarmLevels) {
             SystemEventType.setEventTypeAlarmLevel(eventAlarmLevel.getI1(), eventAlarmLevel.getI2());
         }
     }

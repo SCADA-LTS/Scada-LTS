@@ -8,10 +8,7 @@ import com.serotonin.mango.web.dwr.beans.IntegerPair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.web.mvc.api.json.JsonSettingsEmail;
-import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
-import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
-import org.scada_lts.web.mvc.api.json.JsonSettingsSystemInfo;
+import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -167,7 +164,7 @@ public class SystemSettingsAPI {
      * @return Response with HTTP status
      */
     @PostMapping(value = "/saveAuditEventAlarmLevels", consumes = "application/json")
-    public ResponseEntity<String> saveAuditEventAlarmLevels(HttpServletRequest request, @RequestBody List<IntegerPair> eventAlarmLevels) {
+    public ResponseEntity<String> saveAuditEventAlarmLevels(HttpServletRequest request, @RequestBody List<JsonSettingsEventLevels> eventAlarmLevels) {
         LOG.info("/api/systemSettings/saveAuditEventAlarmLevels");
         try {
             User user = Common.getUser(request);
@@ -192,7 +189,7 @@ public class SystemSettingsAPI {
      * @return Response with HTTP status
      */
     @PostMapping(value = "/saveSystemEventAlarmLevels", consumes = "application/json")
-    public ResponseEntity<String> saveSystemEventAlarmLevels(HttpServletRequest request, @RequestBody List<IntegerPair> eventSystemLevels) {
+    public ResponseEntity<String> saveSystemEventAlarmLevels(HttpServletRequest request, @RequestBody List<JsonSettingsEventLevels> eventSystemLevels) {
         LOG.info("/api/systemSettings/saveSystemEventAlarmLevels");
         try {
             User user = Common.getUser(request);

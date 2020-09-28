@@ -5,5 +5,6 @@
   "plcalarms.alarm.inactive":"Alarm ist gegangen",
   "plcalarms.alarm.active":"Alarm ausgelöst",
   "plcalarms.alarm.acknowledge": "Alarm acknowledge",
-  "about": "Dies ist eine Über-Seite (i18n test) locales"
+  "about": "Dies ist eine Über-Seite (i18n test) locales",
+  "systemsettings.title": "Systemeinstellungen"
 }
