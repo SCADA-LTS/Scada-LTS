@@ -5,12 +5,7 @@
     </div>
     <div v-if="systemInfoSettings" class="container-md">
       <div class="row align-items-center">
-        <h2 class="col-xs-11">{{ $t("systemsettings.info.title") }}</h2>
-        <div class="col-xs-1">
-          <btn block size="lg" type="link" @click="saveSystemInfoSettings()">
-            <i class="glyphicon glyphicon-floppy-disk"></i>
-          </btn>
-        </div>
+        <h2 class="col-xs-12">{{ $t("systemsettings.info.title") }}</h2>
       </div>
 
       <div class="col-md-6">
@@ -22,6 +17,7 @@
             class="form-control"
             type="text"
             v-model="systemInfoSettings.instanceDescription"
+            @change="saveSystemInfoSettings()"
           />
         </div>
       </div>
@@ -30,7 +26,11 @@
           <p>{{ $t("systemsettings.info.language") }}</p>
         </div>
         <div class="col-xs-6">
-          <select class="form-control" v-model="systemInfoSettings.language">
+          <select
+            class="form-control"
+            v-model="systemInfoSettings.language"
+            @input="saveSystemInfoSettings()"
+          >
             <option value="de">Deutsch</option>
             <option value="en">English</option>
             <option value="ru">Руссиан</option>
@@ -43,69 +43,67 @@
     <div v-if="systemEventTypes" class="col-md-6">
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.event.title") }}</h2>
-        <div class="col-xs-1">
-          <btn block size="lg" type="link" @click="saveSystemEventAlarms()">
-            <i class="glyphicon glyphicon-floppy-disk"></i>
+        <div class="col-xs-1" v-if="activeTimeoutEvent">
+          <btn block size="lg" type="link">
+            <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
       </div>
-      <div>
-        <div
-          class="row"
-          v-for="event in systemEventTypes"
-          v-bind:key="event.i1"
-        >
-          <div class="col-xs-6">
-            <p>{{ $t(event.translation) }}</p>
-          </div>
-          <div class="col-xs-5">
-            <select class="form-control" v-model="event.i2">
-              <option v-bind:value="0">{{ $t("alarmlevels.none") }}</option>
-              <option v-bind:value="1">
-                {{ $t("alarmlevels.information") }}
-              </option>
-              <option v-bind:value="2">{{ $t("alarmlevels.urgent") }}</option>
-              <option v-bind:value="3">{{ $t("alarmlevels.critical") }}</option>
-              <option v-bind:value="4">
-                {{ $t("alarmlevels.lifesafety") }}
-              </option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="event.i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="event.i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="event.i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="event.i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
+      <div class="row" v-for="event in systemEventTypes" v-bind:key="event.i1">
+        <div class="col-xs-6">
+          <p>{{ $t(event.translation) }}</p>
+        </div>
+        <div class="col-xs-5">
+          <select
+            class="form-control"
+            v-model="event.i2"
+            @input="saveSystemEventAlarms()"
+          >
+            <option v-bind:value="0">{{ $t("alarmlevels.none") }}</option>
+            <option v-bind:value="1">
+              {{ $t("alarmlevels.information") }}
+            </option>
+            <option v-bind:value="2">{{ $t("alarmlevels.urgent") }}</option>
+            <option v-bind:value="3">{{ $t("alarmlevels.critical") }}</option>
+            <option v-bind:value="4">
+              {{ $t("alarmlevels.lifesafety") }}
+            </option>
+          </select>
+        </div>
+        <div class="col-xs-1">
+          <img
+            v-if="event.i2 === 1"
+            src="images/flag_blue.png"
+            title="Information"
+            alt="Information"
+          />
+          <img
+            v-if="event.i2 === 2"
+            src="images/flag_yellow.png"
+            title="Urgent"
+            alt="Urgent"
+          />
+          <img
+            v-if="event.i2 === 3"
+            src="images/flag_orange.png"
+            title="Critical"
+            alt="Critical"
+          />
+          <img
+            v-if="event.i2 === 4"
+            src="images/flag_red.png"
+            title="Life Safety"
+            alt="Life Safety"
+          />
         </div>
       </div>
     </div>
     <div v-if="auditEventTypes" class="col-md-6">
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.audit.title") }}</h2>
-        <div class="col-xs-1">
-          <btn block size="lg" type="link" @click="saveAuditEventAlarms()">
-            <i class="glyphicon glyphicon-floppy-disk"></i>
+        <div class="col-xs-1" v-if="activeTimeoutAudit">
+          <btn block size="lg" type="link">
+            <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
       </div>
@@ -116,7 +114,11 @@
             <p>{{ $t(event.translation) }}</p>
           </div>
           <div class="col-xs-5">
-            <select class="form-control" v-model="event.i2">
+            <select
+              class="form-control"
+              v-model="event.i2"
+              @input="saveAuditEventAlarms()"
+            >
               <option v-bind:value="0">{{ $t("alarmlevels.none") }}</option>
               <option v-bind:value="1">
                 {{ $t("alarmlevels.information") }}
@@ -160,16 +162,16 @@
     <div v-if="httpSettings" class="col-md-6">
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.http.title") }}</h2>
-        <div class="col-xs-1">
-          <btn block size="lg" type="link" @click="saveHttpSettings()">
-            <i class="glyphicon glyphicon-floppy-disk"></i>
+        <div class="col-xs-1" v-if="activeTimeoutHttp">
+          <btn block size="lg" type="link">
+            <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
       </div>
       <div>
         <div class="row no-gutters">
           <div class="col-xs-12 no-gutters">
-            <btn-group class="col-xs-12 no-gutters">
+            <btn-group class="col-xs-12 no-gutters" @click="saveHttpSettings()">
               <btn
                 input-type="radio"
                 :input-value="true"
@@ -198,6 +200,7 @@
               class="form-control"
               type="text"
               v-model="httpSettings.host"
+              @change="saveHttpSettings()"
             />
           </div>
         </div>
@@ -210,6 +213,7 @@
               class="form-control"
               type="number"
               v-model="httpSettings.port"
+              @change="saveHttpSettings()"
             />
           </div>
         </div>
@@ -222,6 +226,7 @@
               class="form-control"
               type="text"
               v-model="httpSettings.username"
+              @change="saveHttpSettings()"
             />
           </div>
         </div>
@@ -234,6 +239,7 @@
               class="form-control"
               type="text"
               v-model="httpSettings.password"
+              @change="saveHttpSettings()"
             />
           </div>
         </div>
@@ -332,9 +338,9 @@
     <div v-if="emailSettings" class="col-md-6">
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.email.title") }}</h2>
-        <div class="col-xs-1">
-          <btn block size="lg" type="link" @click="saveEmailSettings()">
-            <i class="glyphicon glyphicon-floppy-disk"></i>
+        <div class="col-xs-1" v-if="activeTimeoutEmail">
+          <btn block size="lg" type="link">
+            <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
       </div>
@@ -349,6 +355,7 @@
               class="form-control"
               type="text"
               v-model="emailSettings.host"
+              @change="saveEmailSettings()"
             />
           </div>
         </div>
@@ -361,6 +368,7 @@
               class="form-control"
               type="number"
               v-model="emailSettings.port"
+              @change="saveEmailSettings()"
             />
           </div>
         </div>
@@ -373,6 +381,7 @@
               class="form-control"
               type="text"
               v-model="emailSettings.from"
+              @change="saveEmailSettings()"
             />
           </div>
         </div>
@@ -385,6 +394,7 @@
               class="form-control"
               type="text"
               v-model="emailSettings.name"
+              @change="saveEmailSettings()"
             />
           </div>
         </div>
@@ -393,7 +403,7 @@
             <p>{{ $t("systemsettings.email.contenttype") }}</p>
           </div>
           <div class="col-xs-6">
-            <select class="form-control" v-model="emailSettings.contentType">
+            <select class="form-control" v-model="emailSettings.contentType" @input="saveEmailSettings()">
               <option v-bind:value="0">
                 {{ $t("systemsettings.email.contenttype.htmltext") }}
               </option>
@@ -408,7 +418,7 @@
         </div>
         <div class="row no-gutters">
           <div class="col-xs-12">
-            <btn-group class="col-xs-12">
+            <btn-group class="col-xs-12" @click="saveEmailSettings()">
               <btn
                 input-type="radio"
                 :input-value="true"
@@ -436,6 +446,7 @@
                 class="form-control"
                 type="text"
                 v-model="emailSettings.username"
+                @change="saveEmailSettings()"
               />
             </div>
           </div>
@@ -448,13 +459,14 @@
                 class="form-control"
                 type="text"
                 v-model="emailSettings.password"
+                @change="saveEmailSettings()"
               />
             </div>
           </div>
         </div>
         <div class="row no-gutters">
           <div class="col-xs-12">
-            <btn-group class="col-xs-12">
+            <btn-group class="col-xs-12" @click="saveEmailSettings()">
               <btn
                 input-type="radio"
                 :input-value="true"
@@ -478,13 +490,13 @@
       <div class="row align-items-center">
         <h2 class="col-xs-10">{{ $t("systemsettings.misc.title") }}</h2>
         <div class="col-xs-1">
-          <btn block size="lg" type="link" @click="saveMiscSettings()">
-            <i class="glyphicon glyphicon-floppy-disk"></i>
-          </btn>
-        </div>
-        <div class="col-xs-1">
           <btn block size="lg" type="link" @click="purgeData()">
             <i class="glyphicon glyphicon-trash"></i>
+          </btn>
+        </div>
+        <div class="col-xs-1" v-if="activeTimeoutMisc">
+          <btn block size="lg" type="link">
+            <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
       </div>
@@ -494,7 +506,11 @@
             <p>{{ $t("systemsettings.misc.performance") }}</p>
           </div>
           <div class="col-xs-6">
-            <select class="form-control" v-model="miscSettings.uiPerformance">
+            <select
+              class="form-control"
+              v-model="miscSettings.uiPerformance"
+              @input="saveMiscSettings()"
+            >
               <option v-bind:value="2000">
                 {{ $t("systemsettings.misc.performance.high") }}
               </option>
@@ -516,12 +532,14 @@
               class="form-control"
               type="number"
               v-model="miscSettings.eventPurgePeriods"
+              @change="saveMiscSettings()"
             />
           </div>
           <div class="col-xs-3">
             <select
               class="form-control"
               v-model="miscSettings.eventPurgePeriodType"
+              @input="saveMiscSettings()"
             >
               <option v-bind:value="4">{{ $t("timeperiod.days") }}</option>
               <option v-bind:value="5">{{ $t("timeperiod.weeks") }}</option>
@@ -539,12 +557,14 @@
               class="form-control"
               type="number"
               v-model="miscSettings.reportPurgePeriods"
+              @change="saveMiscSettings()"
             />
           </div>
           <div class="col-xs-3">
             <select
               class="form-control"
               v-model="miscSettings.reportPurgePeriodType"
+              @input="saveMiscSettings()"
             >
               <option v-bind:value="4">{{ $t("timeperiod.days") }}</option>
               <option v-bind:value="5">{{ $t("timeperiod.weeks") }}</option>
@@ -562,12 +582,14 @@
               class="form-control"
               type="number"
               v-model="miscSettings.futureDateLimitPeriods"
+              @change="saveMiscSettings()"
             />
           </div>
           <div class="col-xs-3">
             <select
               class="form-control"
               v-model="miscSettings.futureDateLimitPeriodType"
+              @input="saveMiscSettings()"
             >
               <option v-bind:value="2">{{ $t("timeperiod.minutes") }}</option>
               <option v-bind:value="3">{{ $t("timeperiod.hours") }}</option>
@@ -584,6 +606,17 @@ import store from "../store";
 export default {
   el: "#systemsettings",
   name: "systemsettings",
+  data() {
+    return {
+      activeTimeoutAudit: undefined,
+      activeTimeoutEvent: undefined,
+      activeTimeoutMisc: undefined,
+      activeTimeoutEmail: undefined,
+      activeTimeoutHttp: undefined,
+      TIMEOUT_DELAY_SHORT: 3000,
+      TIMEOUT_DELAY_LONG: 5000,
+    };
+  },
   mounted() {
     store.dispatch("getAllSettings");
     this.getDatabaseSize();
@@ -616,55 +649,85 @@ export default {
       });
     },
     saveEmailSettings() {
-      this.$store.dispatch("saveEmailSettings").then((resp) => {
-        if (resp) {
-          this.generateNotification("success", "Email Settings saved!");
-        } else {
-          this.generateNotification("danger", "Something went wrong!");
-        }
-      });
+      if (this.activeTimeoutEmail != undefined) {
+        clearTimeout(this.activeTimeoutEmail);
+      }
+      this.activeTimeoutEmail = setTimeout(() => {
+        this.$store.dispatch("saveEmailSettings").then((resp) => {
+          if (resp) {
+            this.generateNotification("success", "Email Settings saved!");
+          } else {
+            this.generateNotification("danger", "Something went wrong!");
+          }
+        });
+        this.activeTimeoutEmail = null;
+      }, this.TIMEOUT_DELAY_LONG);
     },
     saveHttpSettings() {
-      this.$store.dispatch("saveHttpSettings").then((resp) => {
-        if (resp) {
-          this.generateNotification("success", "Http Settings saved!");
-        } else {
-          this.generateNotification("danger", "Something went wrong!");
-        }
-      });
+      if (this.activeTimeoutHttp != undefined) {
+        clearTimeout(this.activeTimeoutHttp);
+      }
+      this.activeTimeoutHttp = setTimeout(() => {
+        this.$store.dispatch("saveHttpSettings").then((resp) => {
+          if (resp) {
+            this.generateNotification("success", "Http Settings saved!");
+          } else {
+            this.generateNotification("danger", "Something went wrong!");
+          }
+        });
+        this.activeTimeoutHttp = null;
+      }, this.TIMEOUT_DELAY_LONG);
     },
     saveMiscSettings() {
-      this.$store.dispatch("saveMiscSettings").then((resp) => {
-        if (resp) {
-          this.generateNotification("success", "Other Settings saved!");
-        } else {
-          this.generateNotification("danger", "Something went wrong!");
-        }
-      });
+      if (this.activeTimeoutMisc != undefined) {
+        clearTimeout(this.activeTimeoutMisc);
+      }
+      this.activeTimeoutMisc = setTimeout(() => {
+        this.$store.dispatch("saveMiscSettings").then((resp) => {
+          if (resp) {
+            this.generateNotification("success", "Other Settings saved!");
+          } else {
+            this.generateNotification("danger", "Something went wrong!");
+          }
+        });
+        this.activeTimeoutMisc = null;
+      }, this.TIMEOUT_DELAY_SHORT);
     },
     saveSystemEventAlarms() {
-      this.$store.dispatch("saveSystemEventTypes").then((resp) => {
-        if (resp) {
-          this.generateNotification(
-            "success",
-            "System Event Types Settings saved!"
-          );
-        } else {
-          this.generateNotification("danger", "Something went wrong!");
-        }
-      });
+      if (this.activeTimeoutEvent != undefined) {
+        clearTimeout(this.activeTimeoutEvent);
+      }
+      this.activeTimeoutEvent = setTimeout(() => {
+        this.$store.dispatch("saveSystemEventTypes").then((resp) => {
+          if (resp) {
+            this.generateNotification(
+              "success",
+              "System Event Types Settings saved!"
+            );
+          } else {
+            this.generateNotification("danger", "Something went wrong!");
+          }
+        });
+        this.activeTimeoutEvent = null;
+      }, this.TIMEOUT_DELAY_SHORT);
     },
     saveAuditEventAlarms() {
-      this.$store.dispatch("saveAuditEventTypes").then((resp) => {
-        if (resp) {
-          this.generateNotification(
-            "success",
-            "Audit Event Types Settings saved!"
-          );
-        } else {
-          this.generateNotification("danger", "Something went wrong!");
-        }
-      });
+      if (this.activeTimeoutAudit != undefined) {
+        clearTimeout(this.activeTimeoutAudit);
+      }
+      this.activeTimeoutAudit = setTimeout(() => {
+        this.$store.dispatch("saveAuditEventTypes").then((resp) => {
+          if (resp) {
+            this.generateNotification(
+              "success",
+              "Audit Event Types Settings saved!"
+            );
+          } else {
+            this.generateNotification("danger", "Something went wrong!");
+          }
+        });
+        this.activeTimeoutAudit = null;
+      }, this.TIMEOUT_DELAY_SHORT);
     },
     saveDatabase(databaseType) {
       this.$store.dispatch("saveDatabaseType", databaseType).then((resp) => {
@@ -712,5 +775,20 @@ export default {
   },
 };
 </script>
-<style lang="sass" scoped>
+<style scoped>
+.saving {
+  animation: fadeinfadeout 2s;
+  animation-iteration-count: infinite;
+}
+@keyframes fadeinfadeout {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 </style>
