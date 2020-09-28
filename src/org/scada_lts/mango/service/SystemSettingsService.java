@@ -2,15 +2,22 @@ package org.scada_lts.mango.service;
 
 import br.org.scadabr.db.configuration.ConfigurationDB;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.rt.maint.DataPurge;
+import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.IntegerPair;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.serorepl.utils.DirectoryInfo;
+import org.scada_lts.serorepl.utils.DirectoryUtils;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -177,6 +184,51 @@ public class SystemSettingsService {
         } else {
             ConfigurationDB.useDerbyDB();
         }
+    }
+
+    public Map<String, Object> getDatabaseSize() {
+        Map<String, Object> data = new HashMap<>();
+
+        File dataDirecotry = Common.ctx.getDatabaseAccess().getDataDirectory();
+        long dbSize = 0;
+        if (dataDirecotry != null) {
+            DirectoryInfo dbInfo = DirectoryUtils.getDirectorySize(dataDirecotry);
+            dbSize = dbInfo.getSize();
+            data.put("databaseSize", com.serotonin.util.DirectoryUtils.bytesDescription(dbSize));
+        } else {
+            data.put("databaseSize", "common.unknown");
+        }
+
+        DirectoryInfo fileDatainfo = DirectoryUtils.getDirectorySize(new File(Common.getFiledataPath()));
+        long filedataSize = fileDatainfo.getSize();
+        data.put("filedataCount", fileDatainfo.getCount());
+        data.put("filedataSize", com.serotonin.util.DirectoryUtils.bytesDescription(filedataSize));
+        data.put("totalSize", com.serotonin.util.DirectoryUtils.bytesDescription(dbSize + filedataSize));
+
+        if(getDatabaseType().equalsIgnoreCase("mysql")) {
+            double size = systemSettingsDAO.getDataBaseSize();
+            data.put("databaseSize", size + "MB");
+            data.put("filedataCount", 0);
+            data.put("filedataSize", 0);
+            data.put("totalSize", size + "MB");
+        }
+
+        List<PointHistoryCount> counts = new DataPointDao().getTopPointHistoryCounts();
+        int sum = 0;
+        for (PointHistoryCount c : counts) {
+            sum += c.getCount();
+        }
+
+        data.put("historyCount", sum);
+        data.put("topPoints", counts);
+        data.put("eventCount", new EventDao().getEventCount());
+
+        return data;
+    }
+
+    public void purgeData() {
+        DataPurge dataPurge = new DataPurge();
+        dataPurge.execute(System.currentTimeMillis());
     }
 
 }

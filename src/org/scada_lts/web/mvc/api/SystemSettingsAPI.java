@@ -270,4 +270,45 @@ public class SystemSettingsAPI {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping(value = "/getDatabaseSize", produces = "application/json")
+    public ResponseEntity<String> getDatabaseSize(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/getDatabaseSize");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    String json = mapper.writeValueAsString(systemSettingsService.getDatabaseSize());
+                    return new ResponseEntity<>(json, HttpStatus.OK);
+                } catch (JsonProcessingException e) {
+                    LOG.error(e);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/purgeData", produces = "application/json")
+    public ResponseEntity<String> purgeData(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/purgeData");
+        LOG.warn("Purging data!");
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                systemSettingsService.purgeData();
+                return new ResponseEntity<>("{\"status\": \"done\"}", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
