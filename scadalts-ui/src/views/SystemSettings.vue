@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <div class="row justify-content-center">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-center">
       <h1 class="col-xs-12">{{ $t("systemsettings.title") }}</h1>
     </div>
     <div v-if="systemInfoSettings" class="container-md">
@@ -40,65 +40,7 @@
         </div>
       </div>
     </div>
-    <div v-if="systemEventTypes" class="col-md-6">
-      <div class="row align-items-center">
-        <h2 class="col-xs-11">{{ $t("systemsettings.event.title") }}</h2>
-        <div class="col-xs-1" v-if="activeTimeoutEvent">
-          <btn size="lg" type="link">
-            <i class="glyphicon glyphicon-floppy-disk saving"></i>
-          </btn>
-        </div>
-      </div>
-      <div class="row" v-for="event in systemEventTypes" v-bind:key="event.i1">
-        <div class="col-xs-6">
-          <p>{{ $t(event.translation) }}</p>
-        </div>
-        <div class="col-xs-5">
-          <select
-            class="form-control"
-            v-model="event.i2"
-            @input="saveSystemEventAlarms()"
-          >
-            <option v-bind:value="0">{{ $t("alarmlevels.none") }}</option>
-            <option v-bind:value="1">
-              {{ $t("alarmlevels.information") }}
-            </option>
-            <option v-bind:value="2">{{ $t("alarmlevels.urgent") }}</option>
-            <option v-bind:value="3">{{ $t("alarmlevels.critical") }}</option>
-            <option v-bind:value="4">
-              {{ $t("alarmlevels.lifesafety") }}
-            </option>
-          </select>
-        </div>
-        <div class="col-xs-1">
-          <img
-            v-if="event.i2 === 1"
-            src="images/flag_blue.png"
-            title="Information"
-            alt="Information"
-          />
-          <img
-            v-if="event.i2 === 2"
-            src="images/flag_yellow.png"
-            title="Urgent"
-            alt="Urgent"
-          />
-          <img
-            v-if="event.i2 === 3"
-            src="images/flag_orange.png"
-            title="Critical"
-            alt="Critical"
-          />
-          <img
-            v-if="event.i2 === 4"
-            src="images/flag_red.png"
-            title="Life Safety"
-            alt="Life Safety"
-          />
-        </div>
-      </div>
-    </div>
-    <div v-if="auditEventTypes" class="col-md-6">
+    <div v-if="auditEventTypes" class="col-md-6 col-lg-4">
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.audit.title") }}</h2>
         <div class="col-xs-1" v-if="activeTimeoutAudit">
@@ -159,97 +101,65 @@
         </div>
       </div>
     </div>
-    <div v-if="httpSettings" class="col-md-6">
+    <div v-if="systemEventTypes" class="col-md-6 col-lg-4">
       <div class="row align-items-center">
-        <h2 class="col-xs-11">{{ $t("systemsettings.http.title") }}</h2>
-        <div class="col-xs-1">
-          <btn size="lg" type="link" @click="saveHttpSettings()">
-            <i class="glyphicon glyphicon-floppy-disk"></i>
+        <h2 class="col-xs-11">{{ $t("systemsettings.event.title") }}</h2>
+        <div class="col-xs-1" v-if="activeTimeoutEvent">
+          <btn size="lg" type="link">
+            <i class="glyphicon glyphicon-floppy-disk saving"></i>
           </btn>
         </div>
       </div>
-      <div>
-        <div class="row no-gutters">
-          <div class="col-xs-12 no-gutters">
-            <btn-group class="col-xs-12 no-gutters">
-              <btn
-                input-type="radio"
-                :input-value="true"
-                class="col-xs-6"
-                v-model="httpSettings.useProxy"
-                >{{ $t("systemsettings.http.proxy.enable") }}</btn
-              >
-              <btn
-                input-type="radio"
-                :input-value="false"
-                class="col-xs-6"
-                v-model="httpSettings.useProxy"
-                >{{ $t("systemsettings.http.proxy.disable") }}</btn
-              >
-            </btn-group>
-          </div>
+      <div class="row" v-for="event in systemEventTypes" v-bind:key="event.i1">
+        <div class="col-xs-6">
+          <p>{{ $t(event.translation) }}</p>
         </div>
-      </div>
-      <div v-if="httpSettings.useProxy">
-        <div class="row">
-          <div class="col-xs-6">
-            <p>{{ $t("systemsettings.http.proxy.host") }}</p>
-          </div>
-          <div class="col-xs-6">
-            <input
-              class="form-control"
-              type="text"
-              v-model="httpSettings.host"
-            />
-          </div>
+        <div class="col-xs-5">
+          <select
+            class="form-control"
+            v-model="event.i2"
+            @input="saveSystemEventAlarms()"
+          >
+            <option v-bind:value="0">{{ $t("alarmlevels.none") }}</option>
+            <option v-bind:value="1">
+              {{ $t("alarmlevels.information") }}
+            </option>
+            <option v-bind:value="2">{{ $t("alarmlevels.urgent") }}</option>
+            <option v-bind:value="3">{{ $t("alarmlevels.critical") }}</option>
+            <option v-bind:value="4">
+              {{ $t("alarmlevels.lifesafety") }}
+            </option>
+          </select>
         </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>{{ $t("systemsettings.http.proxy.port") }}</p>
-          </div>
-          <div class="col-xs-6">
-            <input
-              class="form-control"
-              type="number"
-              v-model="httpSettings.port"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>{{ $t("systemsettings.http.proxy.username") }}</p>
-          </div>
-          <div class="col-xs-6">
-            <input
-              class="form-control"
-              type="text"
-              v-model="httpSettings.username"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>{{ $t("systemsettings.http.proxy.password") }}</p>
-          </div>
-          <div class="col-xs-6">
-            <div class="col-xs-2">
-              <btn @click="togglePassword('httpPasswordInput')">
-                <i class="glyphicon glyphicon-eye-open"></i>
-              </btn>
-            </div>
-            <div class="col-xs-10">
-              <input
-                id="httpPasswordInput"
-                class="form-control"
-                type="password"
-                v-model="httpSettings.password"
-              />
-            </div>
-          </div>
+        <div class="col-xs-1">
+          <img
+            v-if="event.i2 === 1"
+            src="images/flag_blue.png"
+            title="Information"
+            alt="Information"
+          />
+          <img
+            v-if="event.i2 === 2"
+            src="images/flag_yellow.png"
+            title="Urgent"
+            alt="Urgent"
+          />
+          <img
+            v-if="event.i2 === 3"
+            src="images/flag_orange.png"
+            title="Critical"
+            alt="Critical"
+          />
+          <img
+            v-if="event.i2 === 4"
+            src="images/flag_red.png"
+            title="Life Safety"
+            alt="Life Safety"
+          />
         </div>
       </div>
     </div>
-    <div v-if="databaseType" class="col-md-6">
+    <div v-if="databaseType" class="col-md-6 col-lg-4">
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.database.title") }}</h2>
         <div class="col-xs-1">
@@ -339,7 +249,97 @@
         </div>
       </div>
     </div>
-    <div v-if="emailSettings" class="col-md-6">
+    <div v-if="httpSettings" class="col-md-6 col-lg-4">
+      <div class="row align-items-center">
+        <h2 class="col-xs-11">{{ $t("systemsettings.http.title") }}</h2>
+        <div class="col-xs-1">
+          <btn size="lg" type="link" @click="saveHttpSettings()">
+            <i class="glyphicon glyphicon-floppy-disk"></i>
+          </btn>
+        </div>
+      </div>
+      <div>
+        <div class="row no-gutters">
+          <div class="col-xs-12 no-gutters">
+            <btn-group class="col-xs-12 no-gutters">
+              <btn
+                input-type="radio"
+                :input-value="true"
+                class="col-xs-6"
+                v-model="httpSettings.useProxy"
+                >{{ $t("systemsettings.http.proxy.enable") }}</btn
+              >
+              <btn
+                input-type="radio"
+                :input-value="false"
+                class="col-xs-6"
+                v-model="httpSettings.useProxy"
+                >{{ $t("systemsettings.http.proxy.disable") }}</btn
+              >
+            </btn-group>
+          </div>
+        </div>
+      </div>
+      <div v-if="httpSettings.useProxy">
+        <div class="row">
+          <div class="col-xs-6">
+            <p>{{ $t("systemsettings.http.proxy.host") }}</p>
+          </div>
+          <div class="col-xs-6">
+            <input
+              class="form-control"
+              type="text"
+              v-model="httpSettings.host"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6">
+            <p>{{ $t("systemsettings.http.proxy.port") }}</p>
+          </div>
+          <div class="col-xs-6">
+            <input
+              class="form-control"
+              type="number"
+              v-model="httpSettings.port"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6">
+            <p>{{ $t("systemsettings.http.proxy.username") }}</p>
+          </div>
+          <div class="col-xs-6">
+            <input
+              class="form-control"
+              type="text"
+              v-model="httpSettings.username"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6">
+            <p>{{ $t("systemsettings.http.proxy.password") }}</p>
+          </div>
+          <div class="col-xs-6">
+            <div class="col-xs-2">
+              <btn @click="togglePassword('httpPasswordInput')">
+                <i class="glyphicon glyphicon-eye-open"></i>
+              </btn>
+            </div>
+            <div class="col-xs-10">
+              <input
+                id="httpPasswordInput"
+                class="form-control"
+                type="password"
+                v-model="httpSettings.password"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="emailSettings" class="col-md-6 col-lg-4">
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.email.title") }}</h2>
         <div class="col-xs-1">
@@ -495,7 +495,7 @@
         </div>
       </div>
     </div>
-    <div v-if="miscSettings" class="col-md-6">
+    <div v-if="miscSettings" class="col-md-6 col-lg-4">
       <div class="row align-items-center">
         <h2 class="col-xs-10">{{ $t("systemsettings.misc.title") }}</h2>
         <div class="col-xs-1">
