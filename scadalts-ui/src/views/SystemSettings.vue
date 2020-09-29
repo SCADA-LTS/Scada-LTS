@@ -33,9 +33,9 @@
           >
             <option value="de">Deutsch</option>
             <option value="en">English</option>
-            <option value="ru">Руссиан</option>
+            <!-- <option value="ru">Руссиан</option>
             <option value="fi">Suomi</option>
-            <option value="pl">Polski</option>
+            <option value="pl">Polski</option> -->
           </select>
         </div>
       </div>
@@ -162,16 +162,16 @@
     <div v-if="httpSettings" class="col-md-6">
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.http.title") }}</h2>
-        <div class="col-xs-1" v-if="activeTimeoutHttp">
-          <btn size="lg" type="link">
-            <i class="glyphicon glyphicon-floppy-disk saving"></i>
+        <div class="col-xs-1">
+          <btn size="lg" type="link" @click="saveHttpSettings()">
+            <i class="glyphicon glyphicon-floppy-disk"></i>
           </btn>
         </div>
       </div>
       <div>
         <div class="row no-gutters">
           <div class="col-xs-12 no-gutters">
-            <btn-group class="col-xs-12 no-gutters" @click="saveHttpSettings()">
+            <btn-group class="col-xs-12 no-gutters">
               <btn
                 input-type="radio"
                 :input-value="true"
@@ -200,7 +200,6 @@
               class="form-control"
               type="text"
               v-model="httpSettings.host"
-              @change="saveHttpSettings()"
             />
           </div>
         </div>
@@ -213,7 +212,6 @@
               class="form-control"
               type="number"
               v-model="httpSettings.port"
-              @change="saveHttpSettings()"
             />
           </div>
         </div>
@@ -226,7 +224,6 @@
               class="form-control"
               type="text"
               v-model="httpSettings.username"
-              @change="saveHttpSettings()"
             />
           </div>
         </div>
@@ -246,7 +243,6 @@
                 class="form-control"
                 type="password"
                 v-model="httpSettings.password"
-                @change="saveHttpSettings()"
               />
             </div>
           </div>
@@ -346,9 +342,9 @@
     <div v-if="emailSettings" class="col-md-6">
       <div class="row align-items-center">
         <h2 class="col-xs-11">{{ $t("systemsettings.email.title") }}</h2>
-        <div class="col-xs-1" v-if="activeTimeoutEmail">
-          <btn size="lg" type="link">
-            <i class="glyphicon glyphicon-floppy-disk saving"></i>
+        <div class="col-xs-1">
+          <btn size="lg" type="link" @click="saveEmailSettings()">
+            <i class="glyphicon glyphicon-floppy-disk"></i>
           </btn>
         </div>
       </div>
@@ -363,7 +359,6 @@
               class="form-control"
               type="text"
               v-model="emailSettings.host"
-              @change="saveEmailSettings()"
             />
           </div>
         </div>
@@ -376,7 +371,6 @@
               class="form-control"
               type="number"
               v-model="emailSettings.port"
-              @change="saveEmailSettings()"
             />
           </div>
         </div>
@@ -389,7 +383,6 @@
               class="form-control"
               type="text"
               v-model="emailSettings.from"
-              @change="saveEmailSettings()"
             />
           </div>
         </div>
@@ -402,7 +395,6 @@
               class="form-control"
               type="text"
               v-model="emailSettings.name"
-              @change="saveEmailSettings()"
             />
           </div>
         </div>
@@ -414,7 +406,6 @@
             <select
               class="form-control"
               v-model="emailSettings.contentType"
-              @input="saveEmailSettings()"
             >
               <option v-bind:value="0">
                 {{ $t("systemsettings.email.contenttype.htmltext") }}
@@ -430,7 +421,7 @@
         </div>
         <div class="row no-gutters">
           <div class="col-xs-12">
-            <btn-group class="col-xs-12" @click="saveEmailSettings()">
+            <btn-group class="col-xs-12">
               <btn
                 input-type="radio"
                 :input-value="true"
@@ -451,20 +442,19 @@
         <div v-if="emailSettings.auth">
           <div class="row">
             <div class="col-xs-6">
-              <p>{{ $t("systemsettings.email.auth.username") }}Username</p>
+              <p>{{ $t("systemsettings.email.auth.username") }}</p>
             </div>
             <div class="col-xs-6">
               <input
                 class="form-control"
                 type="text"
                 v-model="emailSettings.username"
-                @change="saveEmailSettings()"
               />
             </div>
           </div>
           <div class="row">
             <div class="col-xs-6">
-              <p>{{ $t("systemsettings.email.auth.password") }}Password</p>
+              <p>{{ $t("systemsettings.email.auth.password") }}</p>
             </div>
             <div class="col-xs-6">
               <div class="col-xs-2">
@@ -478,7 +468,6 @@
                   class="form-control"
                   type="password"
                   v-model="emailSettings.password"
-                  @change="saveEmailSettings()"
                 />
               </div>
             </div>
@@ -486,7 +475,7 @@
         </div>
         <div class="row no-gutters">
           <div class="col-xs-12">
-            <btn-group class="col-xs-12" @click="saveEmailSettings()">
+            <btn-group class="col-xs-12">
               <btn
                 input-type="radio"
                 :input-value="true"
@@ -622,6 +611,7 @@
 </template>
 <script>
 import store from "../store";
+import i18n from "../i18n";
 
 export default {
   el: "#systemsettings",
@@ -631,10 +621,7 @@ export default {
       activeTimeoutAudit: undefined,
       activeTimeoutEvent: undefined,
       activeTimeoutMisc: undefined,
-      activeTimeoutEmail: undefined,
-      activeTimeoutHttp: undefined,
-      TIMEOUT_DELAY_SHORT: 3000,
-      TIMEOUT_DELAY_LONG: 5000,
+      TIMEOUT_DELAY_SHORT: 1500,
     };
   },
   mounted() {
@@ -647,14 +634,13 @@ export default {
     },
     purgeData() {
       this.$confirm({
-        title: "Purge data?",
-        content:
-          "This operation will pernamently delete datapoint history content. Continue?",
+        title: i18n.t('systemsettings.alert.purgedata.title'),
+        content: i18n.t('systemsettings.alert.purgedata'),
       }).then(() => {
         store.dispatch("purgeData").then((resp) => {
           if (resp === true) {
             this.getDatabaseSize();
-            this.generateNotification("success", "Successfully cleared data!");
+            this.generateNotification("success", i18n.t('systemsettings.notification.purgedata'));
           }
         });
       });
@@ -662,41 +648,30 @@ export default {
     saveSystemInfoSettings() {
       this.$store.dispatch("saveSystemInfoSettings").then((resp) => {
         if (resp) {
-          this.generateNotification("success", "System Info Settings saved!");
+          i18n.locale = this.systemInfoSettings.language;
+          this.generateNotification("success", i18n.t('systemsettings.notification.save.systeminfo'));
         } else {
-          this.generateNotification("danger", "Something went wrong!");
+          this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
         }
       });
     },
     saveEmailSettings() {
-      if (this.activeTimeoutEmail != undefined) {
-        clearTimeout(this.activeTimeoutEmail);
-      }
-      this.activeTimeoutEmail = setTimeout(() => {
-        this.$store.dispatch("saveEmailSettings").then((resp) => {
-          if (resp) {
-            this.generateNotification("success", "Email Settings saved!");
-          } else {
-            this.generateNotification("danger", "Something went wrong!");
-          }
-        });
-        this.activeTimeoutEmail = null;
-      }, this.TIMEOUT_DELAY_LONG);
+      this.$store.dispatch("saveEmailSettings").then((resp) => {
+        if (resp) {
+          this.generateNotification("success", i18n.t('systemsettings.notification.save.email'));
+        } else {
+          this.generateNotification("danger",i18n.t('systemsettings.notification.fail'));
+        }
+      });
     },
     saveHttpSettings() {
-      if (this.activeTimeoutHttp != undefined) {
-        clearTimeout(this.activeTimeoutHttp);
-      }
-      this.activeTimeoutHttp = setTimeout(() => {
-        this.$store.dispatch("saveHttpSettings").then((resp) => {
-          if (resp) {
-            this.generateNotification("success", "Http Settings saved!");
-          } else {
-            this.generateNotification("danger", "Something went wrong!");
-          }
-        });
-        this.activeTimeoutHttp = null;
-      }, this.TIMEOUT_DELAY_LONG);
+      this.$store.dispatch("saveHttpSettings").then((resp) => {
+        if (resp) {
+          this.generateNotification("success", i18n.t('systemsettings.notification.save.http'));
+        } else {
+          this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
+        }
+      });
     },
     saveMiscSettings() {
       if (this.activeTimeoutMisc != undefined) {
@@ -705,9 +680,9 @@ export default {
       this.activeTimeoutMisc = setTimeout(() => {
         this.$store.dispatch("saveMiscSettings").then((resp) => {
           if (resp) {
-            this.generateNotification("success", "Other Settings saved!");
+            this.generateNotification("success", i18n.t('systemsettings.notification.save.misc'));
           } else {
-            this.generateNotification("danger", "Something went wrong!");
+            this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
           }
         });
         this.activeTimeoutMisc = null;
@@ -722,10 +697,10 @@ export default {
           if (resp) {
             this.generateNotification(
               "success",
-              "System Event Types Settings saved!"
+              i18n.t('systemsettings.notification.save.systemevent')
             );
           } else {
-            this.generateNotification("danger", "Something went wrong!");
+            this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
           }
         });
         this.activeTimeoutEvent = null;
@@ -740,10 +715,10 @@ export default {
           if (resp) {
             this.generateNotification(
               "success",
-              "Audit Event Types Settings saved!"
+              i18n.t('systemsettings.notification.save.auditevent')
             );
           } else {
-            this.generateNotification("danger", "Something went wrong!");
+            this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
           }
         });
         this.activeTimeoutAudit = null;
@@ -752,9 +727,9 @@ export default {
     saveDatabase(databaseType) {
       this.$store.dispatch("saveDatabaseType", databaseType).then((resp) => {
         if (resp) {
-          this.generateNotification("success", "Database changed!");
+          this.generateNotification("success", i18n.t('systemsettings.notification.save.database'));
         } else {
-          this.generateNotification("danger", "Something went wrong!");
+          this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
         }
       });
     },
