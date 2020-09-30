@@ -21,6 +21,11 @@ before_script:
 - cd ./scadalts-ui
 - npm install
 - cd ../
+- echo $TRAVIS_BRANCH
+- echo $TRAVIS_BUILD_ID
+- echo $TRAVIS_BUILD_NUMBER
+- echo $TRAVIS_PULL_REQUEST_BRANCH
+- echo $TRAVIS_JOB_NUMBER
 language: java
 jdk:
 - openjdk8
@@ -32,6 +37,7 @@ branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
+  - "/^feature/#1394.*$/"
 notifications:
   email: false
 env:
