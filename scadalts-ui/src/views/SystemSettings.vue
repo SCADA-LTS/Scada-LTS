@@ -9,34 +9,37 @@
       </div>
       <div class="col-md-6">
         <div class="col-xs-6">
-          <p>{{$t("systemsettings.info.uiversion")}}</p>
+          <p>{{ $t("systemsettings.info.milestone") }}</p>
         </div>
         <div class="col-xs-6">
-          <p>{{$store.getters.appVersion}}</p>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="col-xs-6">
-          <p>{{$t("systemsettings.info.tag")}}</p>
-        </div>
-        <div class="col-xs-6">
-          <p>{{$store.getters.appTag}}</p>
+          <p>
+            {{ $store.getters.appMilestone }} build
+            {{ $store.getters.appBuild }}
+          </p>
         </div>
       </div>
       <div class="col-md-6">
         <div class="col-xs-6">
-          <p>{{$t("systemsettings.info.milestone")}}</p>
+          <p>{{ $t("systemsettings.info.uiversion") }}</p>
         </div>
         <div class="col-xs-6">
-          <p>{{$store.getters.appMilestone}} build: {{$store.getters.appBuild}}</p>
+          <p>{{ $store.getters.appVersion }}</p>
         </div>
       </div>
       <div class="col-md-6">
         <div class="col-xs-6">
-          <p>{{$t("systemsettings.info.branch")}}</p>
+          <p>{{ $t("systemsettings.info.tag") }}</p>
         </div>
         <div class="col-xs-6">
-          <p>{{$store.getters.appBranch}}</p>
+          <p>{{ $store.getters.appTag }}</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="col-xs-6">
+          <p>{{ $t("systemsettings.info.branch") }}</p>
+        </div>
+        <div class="col-xs-6">
+          <p>{{ $store.getters.appBranch }}</p>
         </div>
       </div>
       <div class="col-md-6">
@@ -434,10 +437,7 @@
             <p>{{ $t("systemsettings.email.contenttype") }}</p>
           </div>
           <div class="col-xs-6">
-            <select
-              class="form-control"
-              v-model="emailSettings.contentType"
-            >
+            <select class="form-control" v-model="emailSettings.contentType">
               <option v-bind:value="0">
                 {{ $t("systemsettings.email.contenttype.htmltext") }}
               </option>
@@ -665,13 +665,16 @@ export default {
     },
     purgeData() {
       this.$confirm({
-        title: i18n.t('systemsettings.alert.purgedata.title'),
-        content: i18n.t('systemsettings.alert.purgedata'),
+        title: i18n.t("systemsettings.alert.purgedata.title"),
+        content: i18n.t("systemsettings.alert.purgedata"),
       }).then(() => {
         store.dispatch("purgeData").then((resp) => {
           if (resp === true) {
             this.getDatabaseSize();
-            this.generateNotification("success", i18n.t('systemsettings.notification.purgedata'));
+            this.generateNotification(
+              "success",
+              i18n.t("systemsettings.notification.purgedata")
+            );
           }
         });
       });
@@ -680,27 +683,45 @@ export default {
       this.$store.dispatch("saveSystemInfoSettings").then((resp) => {
         if (resp) {
           i18n.locale = this.systemInfoSettings.language;
-          this.generateNotification("success", i18n.t('systemsettings.notification.save.systeminfo'));
+          this.generateNotification(
+            "success",
+            i18n.t("systemsettings.notification.save.systeminfo")
+          );
         } else {
-          this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
+          this.generateNotification(
+            "danger",
+            i18n.t("systemsettings.notification.fail")
+          );
         }
       });
     },
     saveEmailSettings() {
       this.$store.dispatch("saveEmailSettings").then((resp) => {
         if (resp) {
-          this.generateNotification("success", i18n.t('systemsettings.notification.save.email'));
+          this.generateNotification(
+            "success",
+            i18n.t("systemsettings.notification.save.email")
+          );
         } else {
-          this.generateNotification("danger",i18n.t('systemsettings.notification.fail'));
+          this.generateNotification(
+            "danger",
+            i18n.t("systemsettings.notification.fail")
+          );
         }
       });
     },
     saveHttpSettings() {
       this.$store.dispatch("saveHttpSettings").then((resp) => {
         if (resp) {
-          this.generateNotification("success", i18n.t('systemsettings.notification.save.http'));
+          this.generateNotification(
+            "success",
+            i18n.t("systemsettings.notification.save.http")
+          );
         } else {
-          this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
+          this.generateNotification(
+            "danger",
+            i18n.t("systemsettings.notification.fail")
+          );
         }
       });
     },
@@ -711,9 +732,15 @@ export default {
       this.activeTimeoutMisc = setTimeout(() => {
         this.$store.dispatch("saveMiscSettings").then((resp) => {
           if (resp) {
-            this.generateNotification("success", i18n.t('systemsettings.notification.save.misc'));
+            this.generateNotification(
+              "success",
+              i18n.t("systemsettings.notification.save.misc")
+            );
           } else {
-            this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
+            this.generateNotification(
+              "danger",
+              i18n.t("systemsettings.notification.fail")
+            );
           }
         });
         this.activeTimeoutMisc = null;
@@ -728,10 +755,13 @@ export default {
           if (resp) {
             this.generateNotification(
               "success",
-              i18n.t('systemsettings.notification.save.systemevent')
+              i18n.t("systemsettings.notification.save.systemevent")
             );
           } else {
-            this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
+            this.generateNotification(
+              "danger",
+              i18n.t("systemsettings.notification.fail")
+            );
           }
         });
         this.activeTimeoutEvent = null;
@@ -746,10 +776,13 @@ export default {
           if (resp) {
             this.generateNotification(
               "success",
-              i18n.t('systemsettings.notification.save.auditevent')
+              i18n.t("systemsettings.notification.save.auditevent")
             );
           } else {
-            this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
+            this.generateNotification(
+              "danger",
+              i18n.t("systemsettings.notification.fail")
+            );
           }
         });
         this.activeTimeoutAudit = null;
@@ -758,9 +791,15 @@ export default {
     saveDatabase(databaseType) {
       this.$store.dispatch("saveDatabaseType", databaseType).then((resp) => {
         if (resp) {
-          this.generateNotification("success", i18n.t('systemsettings.notification.save.database'));
+          this.generateNotification(
+            "success",
+            i18n.t("systemsettings.notification.save.database")
+          );
         } else {
-          this.generateNotification("danger", i18n.t('systemsettings.notification.fail'));
+          this.generateNotification(
+            "danger",
+            i18n.t("systemsettings.notification.fail")
+          );
         }
       });
     },
