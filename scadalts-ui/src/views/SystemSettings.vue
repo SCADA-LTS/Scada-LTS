@@ -7,7 +7,22 @@
       <div class="row align-items-center">
         <h2 class="col-xs-12">{{ $t("systemsettings.info.title") }}</h2>
       </div>
-
+      <div class="col-md-6">
+        <div class="col-xs-6">
+          <p>{{$t("systemsettings.info.uiversion")}}</p>
+        </div>
+        <div class="col-xs-6">
+          <p>{{$store.getters.appVersion}}</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="col-xs-6">
+          <p>{{$t("systemsettings.info.tag")}}</p>
+        </div>
+        <div class="col-xs-6">
+          <p>{{$store.getters.appTag}}</p>
+        </div>
+      </div>
       <div class="col-md-6">
         <div class="col-xs-6">
           <p>{{ $t("systemsettings.info.instance") }}</p>

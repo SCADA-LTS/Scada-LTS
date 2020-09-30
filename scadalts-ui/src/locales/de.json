@@ -8,6 +8,8 @@
   "about": "Dies ist eine Über-Seite (i18n test) locales",
   "systemsettings.title": "Systemeinstellungen",
   "systemsettings.info.title": "System Konfiguration",
+  "systemsettings.info.uiversion" : "Version der Benutzeroberfläche",
+  "systemsettings.info.tag" : "Scada-LTS-Veröffentlichung",
   "systemsettings.info.instance": "Instance description",
   "systemsettings.info.language": "Sprache",
   "systemsettings.event.title": "Alarmprioritäten des Systems",

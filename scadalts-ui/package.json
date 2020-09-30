@@ -1,6 +1,7 @@
 {
   "name": "scadalts-ui",
   "version": "0.1.0",
+  "tag": "2.3.2",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port 3000",
@@ -8,7 +9,8 @@
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
-    "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
+    "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
+    "version-update": "node get-latest-tag"
   },
   "dependencies": {
     "@amcharts/amcharts4": "4.8.9",

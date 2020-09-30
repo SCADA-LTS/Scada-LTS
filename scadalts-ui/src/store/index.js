@@ -27,13 +27,22 @@ export default new Vuex.Store({
     systemSettings
   },
   state: {
-
+    packageVersion: process.env.PACKAGE_VERSION || '0',
+    packageTag: process.env.PACKAGE_TAG || '0'
   },
   mutations: {
 
   },
   actions: {
 
+  },
+  getters: {
+    appVersion: (state) => {
+      return state.packageVersion
+    },
+    appTag: (state) => {
+      return state.packageTag
+    }
   },
   plugins: [
     myLoggerForVuexMutation

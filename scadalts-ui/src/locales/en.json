@@ -10,6 +10,8 @@
   "about": "This is an about page (i18n test) locales",
   "systemsettings.title": "System settings",
   "systemsettings.info.title": "System Information",
+  "systemsettings.info.uiversion" : "User Interface version",
+  "systemsettings.info.tag" : "Scada-LTS release",
   "systemsettings.info.instance": "Instance description",
   "systemsettings.info.language": "System language",
   "systemsettings.event.title": "System event alarm levels",
