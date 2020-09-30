@@ -25,6 +25,22 @@
       </div>
       <div class="col-md-6">
         <div class="col-xs-6">
+          <p>{{$t("systemsettings.info.milestone")}}</p>
+        </div>
+        <div class="col-xs-6">
+          <p>{{$store.getters.appMilestone}} build: {{$store.getters.appBuild}}</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="col-xs-6">
+          <p>{{$t("systemsettings.info.branch")}}</p>
+        </div>
+        <div class="col-xs-6">
+          <p>{{$store.getters.appBranch}}</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="col-xs-6">
           <p>{{ $t("systemsettings.info.instance") }}</p>
         </div>
         <div class="col-xs-6">

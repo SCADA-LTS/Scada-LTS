@@ -16,9 +16,18 @@ const https = require("https");
 const pkgJsonPath = require.main.paths[0].split('node_modules')[0] + 'package.json';
 const json = require(pkgJsonPath);
 
-//------- DEFAULT TAG VERSION --------------//
-var tag = '0.1.0'
-//--------DEFAULT TAG VERSION -------------//
+// ----- PACKAGE.JSON VARIABLES ----- //
+var tag = '0.1.0';
+var milestone = '2.0.0';
+var build = "0";
+var branch = "local"
+// ----- ---------------------- ----- //
+
+if(process.argv.length === 5) {
+    milestone = process.argv[2];
+    build = process.argv[3];
+    branch = process.argv[4]
+}
 
 if (!json.hasOwnProperty('scripts')) {
   json.scripts = {};
@@ -39,6 +48,12 @@ var request = https.request(options, function (res) {
         let webJson = JSON.parse(data);
         tag = webJson.tag_name.replace(/[^\d.-]/g, '');;
         json.tag = tag;
+        json.milestone = milestone;
+        json.build = build;
+        json.branch = branch;
+        console.log(json.tag)
+        console.log(`${json.milestone}.${json.build}`)
+        console.log(json.branch)
         saveFile(pkgJsonPath, JSON.stringify(json, null, 2));
     });
 });
@@ -46,7 +61,3 @@ request.on('error', function (e) {
     console.log(e.message);
 });
 request.end();
-
-
-
-

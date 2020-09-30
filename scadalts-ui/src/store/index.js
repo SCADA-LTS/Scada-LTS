@@ -28,7 +28,10 @@ export default new Vuex.Store({
   },
   state: {
     packageVersion: process.env.PACKAGE_VERSION || '0',
-    packageTag: process.env.PACKAGE_TAG || '0'
+    packageTag: process.env.PACKAGE_TAG || '0',
+    scadaLtsMilestone: process.env.SCADA_LTS_MILESTONE || '0',
+    scadaLtsBuild: process.env.SCADA_LTS_BUILD || '0',
+    scadaLtsBranch: process.env.SCADA_LTS_BRANCH || 'local',
   },
   mutations: {
 
@@ -42,6 +45,15 @@ export default new Vuex.Store({
     },
     appTag: (state) => {
       return state.packageTag
+    },
+    appMilestone: (state) => {
+      return state.scadaLtsMilestone
+    },
+    appBuild: (state) => {
+      return state.scadaLtsBuild
+    },
+    appBranch: (state) => {
+      return state.scadaLtsBranch
     }
   },
   plugins: [
