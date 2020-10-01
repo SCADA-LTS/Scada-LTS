@@ -84,6 +84,8 @@ public class Common {
 
 	private static String environmentProfileName = "env";
 
+	private static Long startupTime = null;
+
 	/*
 	 * Updating the Mango version: - Create a DBUpdate subclass for the old
 	 * version number. This may not do anything in particular to the schema, but
@@ -92,6 +94,15 @@ public class Common {
 	 */
 	public static final String getVersion() {
 		return "2.1.0";
+	}
+
+	public static final Long getStartupTime() {
+		if (startupTime != null) {
+			return startupTime;
+		} else {
+			startupTime = System.currentTimeMillis();
+			return startupTime;
+		}
 	}
 
 	public interface ContextKeys {

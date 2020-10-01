@@ -231,4 +231,8 @@ public class SystemSettingsService {
         dataPurge.execute(System.currentTimeMillis());
     }
 
+    public long getStartupTime() {
+        return Common.getStartupTime();
+    }
+
 }

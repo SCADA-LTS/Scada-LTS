@@ -311,4 +311,21 @@ public class SystemSettingsAPI {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping(value = "/getStartupTime", produces = "application/json")
+    public ResponseEntity<String> getStartupTime(HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                return  new ResponseEntity<>(
+                        "{\"startupTime\": \""+systemSettingsService.getStartupTime()+"\"}",
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
