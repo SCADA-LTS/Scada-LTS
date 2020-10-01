@@ -621,6 +621,16 @@
             </btn-group>
           </div>
         </div>
+        <div class="row" v-if="schemaVersion">
+          <div class="col-xs-8">
+            <p>{{ $t("systemsettings.database.schemaVersion") }}</p>
+          </div>
+          <div class="col-xs-4">
+            <p>
+              {{ schemaVersion }}
+            </p>
+          </div>
+        </div>
         <div class="row">
           <div class="col-xs-8">
             <p>{{ $t("systemsettings.database.size") }}</p>
@@ -712,12 +722,13 @@ export default {
   },
   mounted() {
     store.dispatch("getAllSettings");
-    this.getDatabaseSize();
+    this.initDatabaseSection();
     this.loadClock();
   },
   methods: {
-    getDatabaseSize() {
+    initDatabaseSection() {
       store.dispatch("getDatabaseSize");
+      store.dispatch("getSchemaVersion");
     },
     purgeData() {
       this.$confirm({
@@ -928,6 +939,9 @@ export default {
     },
     systemStartupTime() {
       return this.$store.state.systemSettings.systemStartupTime;
+    },
+    schemaVersion() {
+      return this.$store.state.systemSettings.schemaVersion;
     },
   },
 };

@@ -235,4 +235,8 @@ public class SystemSettingsService {
         return Common.getStartupTime();
     }
 
+    public String getSchemaVersion() {
+        return systemSettingsDAO.getDatabaseSchemaVersion(SystemSettingsDAO.DATABASE_INFO_SCHEMA_VERSION, "1");
+    }
+
 }

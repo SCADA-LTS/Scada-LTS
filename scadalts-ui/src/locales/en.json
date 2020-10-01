@@ -37,6 +37,7 @@
   "systemsettings.database.histroy" : "History count",
   "systemsettings.database.top" : "Top points",
   "systemsettings.database.event" : "Event count",
+  "systemsettings.database.schemaVersion" : "Database schema version",
   "systemsettings.email.title": "Email Settings",
   "systemsettings.email.smtp.host": "SMTP host",
   "systemsettings.email.smtp.port": "SMTP port",

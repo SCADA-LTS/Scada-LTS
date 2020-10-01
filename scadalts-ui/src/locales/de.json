@@ -35,6 +35,7 @@
   "systemsettings.database.histroy" : "Gespeicherte Zeitstempel",
   "systemsettings.database.top" : "Meistgesehene Datenpunkte",
   "systemsettings.database.event" : "Gespeicherte Ereignisse",
+  "systemsettings.database.schemaVersion" : "Datenbankschema-Version",
   "systemsettings.email.title": "Email",
   "systemsettings.email.smtp.host": "SMTP host",
   "systemsettings.email.smtp.port": "SMTP port",

@@ -3,8 +3,7 @@
  * 
  */
 
-import axios from "axios"
-import { resolve } from "core-js/fn/promise";
+import axios from "axios";
 
 const storeSystemSettings = {
     state: {
@@ -18,6 +17,7 @@ const storeSystemSettings = {
         httpSettings: undefined,
         miscSettings: undefined,
         systemStartupTime: undefined,
+        schemaVersion: undefined
     },
     mutations: {
         setDatabaseType(state, databaseType) {
@@ -46,6 +46,9 @@ const storeSystemSettings = {
         },
         setSystemStartupTime(state, startupTime) {
             state.systemStartupTime = new Date(Number(startupTime));
+        },
+        setSchemaVersion(state, schemaVersion) {
+            state.schemaVersion = schemaVersion;
         }
     },
     actions: {
@@ -67,6 +70,19 @@ const storeSystemSettings = {
                 }).catch(err => {
                     reject()
                 })
+            })
+        },
+        getSchemaVersion(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getSchemaVersion`,
+                    { timeout: 5000, useCredentials: true, credentials: 'same-origin' }).then(response => {
+                        if (response.status == 200) {
+                            context.commit('setSchemaVersion', response.data.schemaVersion);
+                        }
+                        resolve(true)
+                    }).catch(err => {
+                        reject(err)
+                    })
             })
         },
         getSystemStartupTime(context) {

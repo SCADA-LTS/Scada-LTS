@@ -328,4 +328,21 @@ public class SystemSettingsAPI {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping(value = "/getSchemaVersion", produces = "application/json")
+    public ResponseEntity<String> getSchemaVersion(HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                return  new ResponseEntity<>(
+                        "{\"schemaVersion\": \""+systemSettingsService.getSchemaVersion()+"\"}",
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
