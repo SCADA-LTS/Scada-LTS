@@ -224,7 +224,9 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "from "
 				+ "pointValues "
 			+ "where "
-				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+"<?";
+				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+"<? "
+			    + "and id not in (select max(id) from pointValues where "
+		        + COLUMN_NAME_DATA_POINT_ID+"=?) ";
 	
 	public static final String POINT_VALUE_DELETE_BASE_ON_POINT_ID = ""
 			+"delete "
@@ -620,7 +622,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
     }
     
     public long deletePointValuesBefore(int dataPointId, long time) {
-    	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BEFORE, new Object[] {dataPointId, time});
+    	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BEFORE, new Object[] {dataPointId, time, dataPointId});
     }
     
     public long deletePointValue(int dataPointId) {
