@@ -156,6 +156,21 @@ public class SystemSettingsAPI {
         }
     }
 
+    @GetMapping(value = "/getAuditEventAlarmLevels", produces = "application/json")
+    public ResponseEntity<List<JsonSettingsEventLevels>> getAuditEventAlarmLevels(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/getAuditEventAlarmLevels");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                return  new ResponseEntity<>(systemSettingsService.getAuditEventAlarmLevels(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     /**
      *
      * @param request - request with user data
@@ -176,6 +191,21 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/getSystemEventAlarmLevels", produces = "application/json")
+    public ResponseEntity<List<JsonSettingsEventLevels>> getSystemEventAlarmLevels(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/getSystemEventAlarmLevels");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                return  new ResponseEntity<>(systemSettingsService.getSystemEventAlarmLevels(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
