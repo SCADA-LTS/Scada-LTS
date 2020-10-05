@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <div class="col-md-9 mainbar">
+    <div class="col-md-9 mainbar" v-if="isUserRoleAdmin">
       <h1 class="col-xs-12">
         {{ $t("systemsettings.title") }}
         <btn
@@ -522,7 +522,7 @@
         </collapse>
       </div>
     </div>
-    <div class="col-md-3 sidebar">
+    <div class="col-md-3 sidebar" v-if="isUserRoleAdmin">
       <div v-if="systemInfoSettings" class="col-xs-12">
         <div class="row">
           <h2 class="col-xs-12">
@@ -873,6 +873,9 @@
         <btn type="primary" @click="saveAllSettings()">{{ $t("systemsettings.label.saveall") }}</btn>
       </div>
     </modal>
+    <div class="col-md-12"  v-if="!isUserRoleAdmin">
+      <p class="alert">Not allowed to see that page</p>
+    </div>
   </div>
 </template>
 <script>
@@ -950,6 +953,7 @@ export default {
   },
   data() {
     return {
+      isUserRoleAdmin: false,
       systemRunningTime: undefined,
       openModal: false,
       showScadaConfig: false,
@@ -966,6 +970,9 @@ export default {
     };
   },
   mounted() {
+    if(!this.isUserRoleAdmin) {
+      this.getUserRole()
+    }
     store.dispatch("getAllSettings").then(() => {
       this.emailSettings = JSON.parse(JSON.stringify(this.storeEmailSettings));
       this.httpSettings = JSON.parse(JSON.stringify(this.storeHttpSettings));
@@ -981,6 +988,9 @@ export default {
     this.loadClock();
   },
   methods: {
+    async getUserRole() {
+      this.isUserRoleAdmin = await store.dispatch("getUserRole")
+    },
     initDatabaseSection() {
       store.dispatch("getDatabaseSize");
       store.dispatch("getSchemaVersion");
@@ -1338,6 +1348,11 @@ export default {
 .floated-right {
   float: right;
   margin-top: 8px;
+}
+.alert {
+  text-align: center;
+  font-size: 2em;
+  padding-top: 50px;
 }
 @keyframes fadeinfadeout {
   0% {

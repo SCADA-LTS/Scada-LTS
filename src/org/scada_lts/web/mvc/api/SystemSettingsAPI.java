@@ -39,7 +39,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getSettings");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 ObjectMapper mapper = new ObjectMapper();
                 try {
                     String json = mapper.writeValueAsString(systemSettingsService.getSettings());
@@ -62,7 +62,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getEmail");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 return new ResponseEntity<>(systemSettingsService.getEmailSettings(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -78,7 +78,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/saveEmail");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 systemSettingsService.saveEmailSettings(jsonSettingsEmail);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
@@ -95,7 +95,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getHttp");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 return new ResponseEntity<>(systemSettingsService.getHttpSettings(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -111,7 +111,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/saveHttp");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 systemSettingsService.saveHttpSettings(jsonSettingsHttp);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
@@ -128,7 +128,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getMisc");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 return new ResponseEntity<>(systemSettingsService.getMiscSettings(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -144,7 +144,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/saveMisc");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 systemSettingsService.saveMiscSettings(jsonSettingsMisc);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
@@ -161,7 +161,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getAuditEventAlarmLevels");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 return  new ResponseEntity<>(systemSettingsService.getAuditEventAlarmLevels(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -183,7 +183,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/saveAuditEventAlarmLevels");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 systemSettingsService.saveAuditEventAlarmLevels(eventAlarmLevels);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
@@ -200,7 +200,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getSystemEventAlarmLevels");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 return  new ResponseEntity<>(systemSettingsService.getSystemEventAlarmLevels(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -223,7 +223,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/saveSystemEventAlarmLevels");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 systemSettingsService.saveSystemEventAlarmLevels(eventSystemLevels);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
@@ -239,7 +239,7 @@ public class SystemSettingsAPI {
     public ResponseEntity<JsonSettingsSystemInfo> getSystemInfo (HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 return new ResponseEntity<>(systemSettingsService.getSystemInfoSettings(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -255,7 +255,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/saveSystemInfo");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 systemSettingsService.saveSystemInfoSettings(jsonSettingsSystemInfo);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
@@ -272,7 +272,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getDatabaseType");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 String json = "{\"databaseType\":\"" + systemSettingsService.getDatabaseType() + "\"}";
                 return new ResponseEntity<>(json, HttpStatus.OK);
             } else {
@@ -289,7 +289,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/saveDatabaseType");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 systemSettingsService.setDatabaseType(databaseType);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
@@ -306,7 +306,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getDatabaseSize");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 ObjectMapper mapper = new ObjectMapper();
                 try {
                     String json = mapper.writeValueAsString(systemSettingsService.getDatabaseSize());
@@ -330,7 +330,7 @@ public class SystemSettingsAPI {
         LOG.warn("Purging data!");
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 systemSettingsService.purgeData();
                 return new ResponseEntity<>("{\"status\": \"done\"}", HttpStatus.OK);
             } else {
@@ -346,7 +346,7 @@ public class SystemSettingsAPI {
     public ResponseEntity<String> getStartupTime(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 return  new ResponseEntity<>(
                         "{\"startupTime\": \""+systemSettingsService.getStartupTime()+"\"}",
                         HttpStatus.OK);
@@ -363,7 +363,7 @@ public class SystemSettingsAPI {
     public ResponseEntity<String> getSchemaVersion(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 return  new ResponseEntity<>(
                         "{\"schemaVersion\": \""+systemSettingsService.getSchemaVersion()+"\"}",
                         HttpStatus.OK);
@@ -381,7 +381,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getScadaConfig");
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 return new ResponseEntity<>(systemSettingsService.getScadaConfig(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

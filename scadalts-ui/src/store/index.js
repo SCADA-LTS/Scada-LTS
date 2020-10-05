@@ -7,6 +7,7 @@ import modernWatchList from './modernWatchList'
 import amcharts from './amcharts'
 import alarms from './alarms'
 import systemSettings from './systemSettings'
+import axios from "axios";
 
 Vue.use(Vuex)
 
@@ -37,6 +38,17 @@ export default new Vuex.Store({
 
   },
   actions: {
+    getUserRole() {
+      return new Promise((resolve, reject) => {
+        axios.get("./api/auth/isRoleAdmin", 
+        {timeout: 5000, useCredentials: true, credentials: 'same-origin'}).then(resp => {
+          resolve(resp.data);
+        }).catch(error => {
+          console.error(error);
+          reject(error);
+        })
+      })
+    }
 
   },
   getters: {
