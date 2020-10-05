@@ -399,7 +399,7 @@
             <btn size="lg" type="link" @click="purgeData()" id="btn-purge-data">
               <i class="glyphicon glyphicon-trash"></i>
             </btn>
-            <tooltip v-bind:text="$t('systemsettings.tooltip.purgedata')" target="btn-purge-data"/>
+            <tooltip :text="$t('systemsettings.tooltip.purgedata')" target="#btn-purge-data"/>
           </div>
           
         </div>
@@ -500,6 +500,26 @@
             </div>
           </div>
         </div>
+      </div>
+      <div v-if="scadaConfig" class="col-md-6">
+        <div class="row align-items-center">
+          <h2 class="col-xs-12" id="title-scada-config">{{ $t("systemsettings.scadaconf.title") }}</h2>
+          <tooltip :text="$t('systemsettings.tooltip.scadaconf')" target="#title-scada-config"/>
+          <btn v-if="!showScadaConfig" type="link" class="col-xs-12" block @click="showScadaConfig = true"><i class="glyphicon glyphicon-menu-down"></i></btn>
+          <btn v-if="showScadaConfig" type="link" class="col-xs-12" block @click="showScadaConfig = false"><i class="glyphicon glyphicon-menu-up"></i></btn>
+        </div>
+        <collapse v-model="showScadaConfig">
+
+          <div class="row" v-for="key in Object.keys(scadaConfig)" v-bind:key="key">
+            <div class="col-xs-8">
+              <p>{{ $t(`systemsettings.scadaconf.${key}`) }}</p>
+            </div>
+            <div class="col-xs-4">
+              <p>{{ scadaConfig[key] | convert }}</p>
+            </div>
+          </div>
+
+        </collapse>
       </div>
     </div>
     <div class="col-md-3 sidebar">
@@ -635,7 +655,7 @@
                 >{{ $t("systemsettings.database.derby") }}</btn
               >
             </btn-group>
-            <tooltip v-bind:text="$t('systemsettings.tooltip.derbydatabase')" target="btn-db-derby"/>
+            <tooltip :text="$t('systemsettings.tooltip.derbydatabase')" target="#btn-db-derby"/>
           </div>
         </div>
         <div class="row" v-if="schemaVersion">
@@ -932,6 +952,7 @@ export default {
     return {
       systemRunningTime: undefined,
       openModal: false,
+      showScadaConfig: false,
       emailSettings: undefined,
       isEmailSettingsEdited: false,
       httpSettings: undefined,
@@ -1277,7 +1298,6 @@ export default {
     },
     storeSystemEventTypes() {
       return this.$store.state.systemSettings.systemEventTypes;
-      //      3) Add notifications when something went wrong
     },
     systemStartupTime() {
       return this.$store.state.systemSettings.systemStartupTime;
@@ -1285,6 +1305,9 @@ export default {
     schemaVersion() {
       return this.$store.state.systemSettings.schemaVersion;
     },
+    scadaConfig() {
+      return this.$store.state.systemSettings.scadaConfig;
+    }
   },
 };
 </script>

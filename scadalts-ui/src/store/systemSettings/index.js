@@ -17,7 +17,8 @@ const storeSystemSettings = {
         httpSettings: undefined,
         miscSettings: undefined,
         systemStartupTime: undefined,
-        schemaVersion: undefined
+        schemaVersion: undefined,
+        scadaConfig: undefined
     },
     mutations: {
         setDatabaseType(state, databaseType) {
@@ -49,6 +50,9 @@ const storeSystemSettings = {
         },
         setSchemaVersion(state, schemaVersion) {
             state.schemaVersion = schemaVersion;
+        },
+        setScadaConfig(state, scadaConfig) {
+            state.scadaConfig = scadaConfig;
         }
     },
     actions: {
@@ -110,6 +114,7 @@ const storeSystemSettings = {
                             context.commit('setEmailSettings', response.data.emailSettings);
                             context.commit('setHttpSettings', response.data.httpSettings);
                             context.commit('setMiscSettings', response.data.miscSettings);
+                            context.commit('setScadaConfig', response.data.scadaConfig);
                         }
                         resolve(true)
                     }).catch(err => {

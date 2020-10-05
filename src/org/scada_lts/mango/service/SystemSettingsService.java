@@ -9,8 +9,7 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
-import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.dwr.beans.IntegerPair;
+import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
@@ -18,6 +17,7 @@ import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +25,7 @@ import java.util.Map;
 
 /**
  * Based on the WatchListService created by Grzegorz Bylica
+ *
  * @author Radoslaw Jajko
  */
 @Service
@@ -46,6 +47,7 @@ public class SystemSettingsService {
         settings.put("systemEventTypes", this.getSystemEventAlarmLevels());
         settings.put("auditEventTypes", this.getAuditEventAlarmLevels());
         settings.put("databaseType", this.getDatabaseType());
+        settings.put("scadaConfig", this.getScadaConfig());
 
         return settings;
     }
@@ -107,7 +109,7 @@ public class SystemSettingsService {
         return json;
     }
 
-    public  void saveMiscSettings(JsonSettingsMisc json) {
+    public void saveMiscSettings(JsonSettingsMisc json) {
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING, json.isGroveLogging());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE, json.getEventPurgePeriodType());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS, json.getEventPurgePeriods());
@@ -120,7 +122,7 @@ public class SystemSettingsService {
 
     public List<JsonSettingsEventLevels> getAuditEventAlarmLevels() {
         List<EventTypeVO> auditTypeVoList = AuditEventType.getAuditEventTypes();
-        List<JsonSettingsEventLevels> json =  new ArrayList<JsonSettingsEventLevels>();
+        List<JsonSettingsEventLevels> json = new ArrayList<JsonSettingsEventLevels>();
         for (EventTypeVO eventTypeVO : auditTypeVoList) {
             JsonSettingsEventLevels ip = new JsonSettingsEventLevels();
             ip.setI1(eventTypeVO.getTypeRef1());
@@ -139,7 +141,7 @@ public class SystemSettingsService {
 
     public List<JsonSettingsEventLevels> getSystemEventAlarmLevels() {
         List<EventTypeVO> eventTypeVoList = SystemEventType.getSystemEventTypes();
-        List<JsonSettingsEventLevels> json =  new ArrayList<JsonSettingsEventLevels>();
+        List<JsonSettingsEventLevels> json = new ArrayList<JsonSettingsEventLevels>();
         for (EventTypeVO eventTypeVO : eventTypeVoList) {
             JsonSettingsEventLevels ip = new JsonSettingsEventLevels();
             ip.setI1(eventTypeVO.getTypeRef1());
@@ -205,7 +207,7 @@ public class SystemSettingsService {
         data.put("filedataSize", com.serotonin.util.DirectoryUtils.bytesDescription(filedataSize));
         data.put("totalSize", com.serotonin.util.DirectoryUtils.bytesDescription(dbSize + filedataSize));
 
-        if(getDatabaseType().equalsIgnoreCase("mysql")) {
+        if (getDatabaseType().equalsIgnoreCase("mysql")) {
             double size = systemSettingsDAO.getDataBaseSize();
             data.put("databaseSize", size + "MB");
             data.put("filedataCount", 0);
@@ -237,6 +239,42 @@ public class SystemSettingsService {
 
     public String getSchemaVersion() {
         return systemSettingsDAO.getDatabaseSchemaVersion(SystemSettingsDAO.DATABASE_INFO_SCHEMA_VERSION, "1");
+    }
+
+    public JsonSettingsScadaConfig getScadaConfig() {
+        try {
+            JsonSettingsScadaConfig json = new JsonSettingsScadaConfig();
+
+            json.setApiReplaceAlertOnView(ScadaConfig.getInstance().getBoolean(ScadaConfig.REPLACE_ALERT_ON_VIEW, true));
+
+            json.setCacheEnable(ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, true));
+            json.setStartUpdateUnsilencedAlarmLevel(ScadaConfig.getInstance().getInt(ScadaConfig.START_UPDATE_UNSILENCED_ALARM_LEVEL, 100000));
+            json.setStartUpdateEventDetectors(ScadaConfig.getInstance().getInt(ScadaConfig.START_UPDATE_EVENT_DETECTORS, 100000));
+            json.setStartUpdatePendingEvents(ScadaConfig.getInstance().getInt(ScadaConfig.START_UPDATE_PENDING_EVENTS, 100000));
+            json.setMillisSecondsPeriodUpdateUnsilencedAlarmLevel(ScadaConfig.getInstance().getInt(ScadaConfig.MILLIS_SECONDS_PERIOD_UPDATE_UNSILENCED_ALARM_LEVEL, 1000));
+            json.setMillisSecondsPeriodUpdateEventDetectors(ScadaConfig.getInstance().getInt(ScadaConfig.MILLIS_SECONDS_PERIOD_UPDATE_EVENT_DETECTORS, 1000));
+            json.setMillisSecondsPeriodUpdatePendingEvents(ScadaConfig.getInstance().getInt(ScadaConfig.MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS, 1000));
+            json.setCroneUpdateCachePointHierarchy(ScadaConfig.getInstance().getProperty(ScadaConfig.CRONE_UPDATE_CACHE_POINT_HIERARCHY));
+
+            json.setCroneUpdateDataSourcesPoints(ScadaConfig.getInstance().getProperty(ScadaConfig.CRONE_UPDATE_CACHE_DATA_SOURCES_POINTS));
+            json.setUseCacheDataSourcePointsWhenSystemIsReady(ScadaConfig.getInstance().getBoolean(ScadaConfig.USE_CACHE_DATA_SOURCES_POINTS_WHEN_THE_SYSTEM_IS_READY, true));
+
+            json.setUseAcl(ScadaConfig.getInstance().getBoolean(ScadaConfig.ACL_SERVER, false));
+            json.setAclServer(ScadaConfig.getInstance().getProperty(ScadaConfig.ACL_SERVER));
+
+            json.setDoNotCreateEventsForEmailError(ScadaConfig.getInstance().getBoolean(ScadaConfig.DO_NOT_CREATE_EVENTS_FOR_EMAIL_ERROR, true));
+
+            json.setHttpRetriverSleepCheckToReactivationWhenStart(ScadaConfig.getInstance().getBoolean(ScadaConfig.HTTP_RETRIVER_SLEEP_CHECK_TO_REACTIVATION_WHEN_START, false));
+            json.setHttpRetriverDoNotAllowEnableReactivation(ScadaConfig.getInstance().getBoolean(ScadaConfig.HTTP_RETRIVER_DO_NOT_ALLOW_ENABLE_REACTIVATION, false));
+
+            return json;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+
     }
 
 }
