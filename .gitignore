@@ -3,8 +3,11 @@
 /bin/
 target/
 /WebContent/assets/.sass-cache/
-/WebContent/images/oldicons
-/WebContent/resources/app/bower_components/
+###########################
+#   Static web content    #
+###########################
+/WebContent/resources/node_modules/
+/WebContent/resources/package-lock.json
 /WebContent/resources/js-ui/
 # OS Files #
 .DS_Store
