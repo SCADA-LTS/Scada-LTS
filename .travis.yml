@@ -32,18 +32,18 @@ services:
 script: ant war && ant junit
 branches:
   only:
-  - "/^release_23.*$/"
+  - "/^test-2.3.3.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^feature/#1370.*$/"
+  - "/^f_test_233/#1402.*$/"
 notifications:
   email: false
 env:
   matrix:
   - CATALINA_HOME=/usr/share/tomcat7
   global:
-  - secure: "ZXkg2Dm3k8riijlVIZl5za7H07cO0G2Z3ELQxUtpSSasdQy7oIl0uwgNhiy2mKvTCSXl639j8IH9s9cer8TMkBjXr4ML/5OcDzvJWltqvOMNOIPlX3+28echTAm/emIrVuziTn/nhtZ1YcnHdmshmmNYb+7TD1NX2ds8PGII9OuQsU96w46/YPeTsdTs2VYJz/6D8GPTGUWSu3YjABsYobLqUFfV5QgJKe48MVaRxh7S8bRrwODQk5WpSIFnnhBWR5cHGKlrHx3pdnyBuW4ATQTH4BKgx+GMDYFvM2VCwr/bk+yuYE9j/LZJvxcv1E13OvFyvKdkUGcF34W85YOrG4pKzJP2r6S9ouZT1y6a4THBtzwimk9aae7Vauc1BNh4bYnRI/2HLIxAeYcwncc9KolcuYv2WdSyRxNnT24eXidj+nq1qfb82zWWVyj3fuIw76DfguJX2GeTGGGhXwV3HnyJNlxyN8dd7xmosM4cqmlLfk3hVB8NbuD6/5aN++anKZb4NkIGCi/zGjyRfpnbe7rw6bsrk7TqlAf6/gm4/CC1FG09POkmnYWL0DKjAOV2Z/W/1cdiUC9oeBuK1SJWqU/6p/51UJJrtUT13RQWF4kl85DZ1IJzQXAF0p1ROdTlyhKL3wYSOWJWzaaK/DP63G20zDL/FdCNLTLq/uYbazE="
-  - secure: "Cjz0OxIlJzAs66SHv9wFCWW4XdOoUv8YnED8mQG1Ds+I7KwoK7UTglsyzMmaOYYtzlDkAmuwn55wV6aS9lEPh5baT97phlDlUqrv6A/g7KBSS2qRfxt4G6zhoIOg8FCto5D6FU3FVKATbjZ9niT+96LOx61mFi5cLL1DpyylRk7EX4TiZGj4324ymZwItC8aRbdTD24+4zpTNI1irMF8c3TAmF+4/rUcYb0RYGKnbxylWjL83rqszICCce/Bg8ObYIv5a7xTUJX8kF/50iEHyOWJzLxo0IURiwuHdU6CyvFcorZJnQF/wTbZsxpDPhJBwgWE9umz1NekIX3/1+6EJ+nzc1W56lX4Atp5wntj9Bft8gngSmbR51dVxL0kbIiYcvfZvTrjQ00qoZbLlk8FWsfEIdVOqq2Dh0psPVOuzMcUQqAf/4jArxVXKnuzu0V8Z0dVq2zgpzW8DwGIGTBwJ8ySBnJRYsL9vkF/exT43mc9omBVJ5Ec1+WzFDjwMW8+VSwERDxF3Zubj8SXL8gSY2J2YmKEBTPY63qrTc5cWDtVjksYGKmTPKzvhfBn8Ykv8qA1SZSpnKS/4/YF7POxhFeJwyNfn5PWqcpe80JtG701gaRqzKFeB6RMr3NIgi6EAuIBxhsKL0ECISXFf3UsdcxU0rZ4yBESsW9x6jcEarI="
+  - secure: "cR5pnB4aaHD7lrnGi8NMbLYbpirlandMFAXlrmK5Uc4YPph8xKtjq96TzpaEXStuVz5yZfGiIdeQuRzRD+SdowY09zasxe/DIgBbQZZ0uFbbmOZM0A5ukD8yxOgb2fFp3c5alD9IydgtK101A67x+w9wFzyU969DIFVk/dxRBuylTFk27R3KET1OIU4++wPL37AJ29tJ6S8UynMndiq75m6FbPU5W238JbEuJXXjMVdUTN074qFCXAgk+9NNz8tkPsObtzG/agx9dYJ2euxYQ1t4utcInI9AIYV9PZAec2NFuw4o5DBQCZl6fr+Mt4UrkKcoPoDQYp7RsIIoTmync4re5K1z1DhFujbGYO73CELs+0/LpND11J+IZy06yWJWMfM+x2T3fMtUaMUJ7yNv4trULOyS56TrnzxYea/EoWMLysZgu2thKEO4kud1U/9qI1oyYLdtiBcDerFBweLN1ylcPyOsqWnODtNT/0lz9NMv776VKB1raTdwnJvGONxL1VyG8rTcEJdP9pO3A75J5n02ZgKyZyLQ7IEyNg1vWRIDEfwGNa2aIY7wjk1Gmta7Q2UVCSmpSTnLo/FZ9Cyu0f5B7+T/4J2eA3dgQtsWpZR8GCFkB+Ijf/wOqlvbQrkTDbwZ/xgyIh5UrQV4oQCOoX1x0mi4s/rJuOSP4mGNwus="
+  - secure: "frO0+SDBJx5QTLzVY1rhDrsh+9pM+0C7JfVrE97Up2zu6q0zAXcu9GfTMKJsmUS0aUZ7znyEiN9J2m18eDj7l4CQBAE+J38+IQ0qyVYYhDiKGYhCPydUVQAKxGLOqFyZ/5u3btI/u3NFXjz4M+fWVnqz+FcIJGsybnHMcTl4P5K2KPgqpMaijVhNmttaIhIIU15oPAto+8SU4BiLPyBVrW5gKe+rmjdrbDaOr7cSDv0S+zgIwyr+iUC2SbDtEfkNww+fW73lsqhx5MZD4QiY5pC12j1i6iiXo1uKCRqvsWihUiK5zwZGRHxQxqEcYA6yqFS1EtmqhYCN8QJHOxGaQE5Y+nx7Nq5Zo8gu6OvHWXVieD70g5z0ShzjoXSSDebjFE0zRTTd9zHYwa5W4uK7ppLCzs+lJmUdUS1e/Bvq37yAG77dwVj1HryWMwO9anUn3bwgxvXZQSF1z0EJJvAZZkFohx+jYaU7DGI4IxVmy2NHehER18VVczSks9DA+nFbr11Gq773RpfL4I3X9BP6XIZHhP/5V4bVsdZ5dZZweDxOD+xS0oUO1skrA7H7PeOUsQH9DnKqwqoLbHV1ERBsgiWeOz7q3p/Imde7Vu+ZkR8JdeKpQKtwbUEJkCg1UKvu+0nBwsGwSShjCDLfaQY77uLIrvcQyI2fTmhxsS3BKYw="
 after_script:
 - wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
 - mkdir ./docker/app
