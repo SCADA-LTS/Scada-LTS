@@ -113,6 +113,11 @@
 		<pathelement location="WebContent/WEB-INF/lib/log4j-core-2.13.3.jar.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/log4j-api-2.13.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/log4j-1.2-api-2.13.3.jar"/>
+		<!-- To make Log4j2 faster use make all loggers Asynchronous -->
+		<pathelement location="WebContent/WEB-INF/lib/disruptor-3.4.2.jar"/>
+		<!-- disruptor is required for that purpose. Set system property: -->
+		<!-- -Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector -->
+     	<!-- to make all loggers asynchronous https://logging.apache.org/log4j/2.x/manual/async.html -->
         <pathelement location="WebContent/WEB-INF/lib/mail.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-core-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-master-0.1.4-SNAPSHOT.jar"/>

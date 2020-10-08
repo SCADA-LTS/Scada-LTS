@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--  Set system property: -->
+<!-- -Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector -->
+<!-- to make all loggers asynchronous https://logging.apache.org/log4j/2.x/manual/async.html -->
 <Configuration>
 
     <Appenders>
