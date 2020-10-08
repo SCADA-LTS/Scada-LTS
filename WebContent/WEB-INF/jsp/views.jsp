@@ -27,7 +27,7 @@
   <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
   <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
   <link
-	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.css"
+	href="resources/node_modules/sweetalert2/dist/sweetalert2.min.css"
 	rel="stylesheet" type="text/css">
     <style>
     	 table {
@@ -42,7 +42,7 @@
              background-color: #DCDCDC;
          }
     </style>
-    <script type="text/javascript" src="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.js"></script>
+    <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 
 	<script type="text/javascript">
 	
