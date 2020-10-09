@@ -16,7 +16,6 @@ before_script:
 - chmod +x ./get_seroUtils.sh
 - "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
-# correct version base on Milestones
 - sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./WebContent/resources/app; bower update;
 - cd ../../..
@@ -32,18 +31,18 @@ services:
 script: ant war && ant junit
 branches:
   only:
-  - "/^release_23.*$/"
+  - "/^test-2.3.3.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^feature/#1370.*$/"
+  - "/^f_test_233/#1402.*$/"
 notifications:
   email: false
 env:
   matrix:
   - CATALINA_HOME=/usr/share/tomcat7
   global:
-  - secure: "ZXkg2Dm3k8riijlVIZl5za7H07cO0G2Z3ELQxUtpSSasdQy7oIl0uwgNhiy2mKvTCSXl639j8IH9s9cer8TMkBjXr4ML/5OcDzvJWltqvOMNOIPlX3+28echTAm/emIrVuziTn/nhtZ1YcnHdmshmmNYb+7TD1NX2ds8PGII9OuQsU96w46/YPeTsdTs2VYJz/6D8GPTGUWSu3YjABsYobLqUFfV5QgJKe48MVaRxh7S8bRrwODQk5WpSIFnnhBWR5cHGKlrHx3pdnyBuW4ATQTH4BKgx+GMDYFvM2VCwr/bk+yuYE9j/LZJvxcv1E13OvFyvKdkUGcF34W85YOrG4pKzJP2r6S9ouZT1y6a4THBtzwimk9aae7Vauc1BNh4bYnRI/2HLIxAeYcwncc9KolcuYv2WdSyRxNnT24eXidj+nq1qfb82zWWVyj3fuIw76DfguJX2GeTGGGhXwV3HnyJNlxyN8dd7xmosM4cqmlLfk3hVB8NbuD6/5aN++anKZb4NkIGCi/zGjyRfpnbe7rw6bsrk7TqlAf6/gm4/CC1FG09POkmnYWL0DKjAOV2Z/W/1cdiUC9oeBuK1SJWqU/6p/51UJJrtUT13RQWF4kl85DZ1IJzQXAF0p1ROdTlyhKL3wYSOWJWzaaK/DP63G20zDL/FdCNLTLq/uYbazE="
-  - secure: "Cjz0OxIlJzAs66SHv9wFCWW4XdOoUv8YnED8mQG1Ds+I7KwoK7UTglsyzMmaOYYtzlDkAmuwn55wV6aS9lEPh5baT97phlDlUqrv6A/g7KBSS2qRfxt4G6zhoIOg8FCto5D6FU3FVKATbjZ9niT+96LOx61mFi5cLL1DpyylRk7EX4TiZGj4324ymZwItC8aRbdTD24+4zpTNI1irMF8c3TAmF+4/rUcYb0RYGKnbxylWjL83rqszICCce/Bg8ObYIv5a7xTUJX8kF/50iEHyOWJzLxo0IURiwuHdU6CyvFcorZJnQF/wTbZsxpDPhJBwgWE9umz1NekIX3/1+6EJ+nzc1W56lX4Atp5wntj9Bft8gngSmbR51dVxL0kbIiYcvfZvTrjQ00qoZbLlk8FWsfEIdVOqq2Dh0psPVOuzMcUQqAf/4jArxVXKnuzu0V8Z0dVq2zgpzW8DwGIGTBwJ8ySBnJRYsL9vkF/exT43mc9omBVJ5Ec1+WzFDjwMW8+VSwERDxF3Zubj8SXL8gSY2J2YmKEBTPY63qrTc5cWDtVjksYGKmTPKzvhfBn8Ykv8qA1SZSpnKS/4/YF7POxhFeJwyNfn5PWqcpe80JtG701gaRqzKFeB6RMr3NIgi6EAuIBxhsKL0ECISXFf3UsdcxU0rZ4yBESsW9x6jcEarI="
+  - secure: AbO3W1BC2fYChnu4FoTzRRwQIsheniFkk+POQZTcii9opX+EuiA2c/0B9Ny6g8NQ1tSzYpk9Wss/hQUXU1SKsnKlnLf4/0GiUuSrqNEbKvibi+HIr9qDL2CXonF2EI7ouQwIM2Gsu3GaOGvidC3d6bYXKeRUyV6a/IehaKjEWIIiOUV6WldQQCF71DMdQnMGS2sOr4lt29EyDz7j4c+Kj35T0BnzPnKf/80gXULK4MrE1kY8JJNJS6dJmJ4W4qN1eHwV6cYOvChv8ZQspcgYBZvCAy6aENOalCzIfX+gbi+osu0MIDnfTf65w+UdEAqz9u54Bzx17WId80wXlXlsHtHAec/k7EpfHtQwND2Patzst4g6wWsq9w8pp9cQKcLK8UIxPj4wIn2DKzv7ynB/MkTx3SQ3qlYA2mlF3bMF6ihw89Fmxg+BSn8NFqZw3vr9fRsaRletZoIzZOzRynAbDw64VlipuVWbymXdROsmwcFttlvMZ9y0QmnCJozOHuA/hvjaG87Mkf5u42KrrlKoDiQYNlAIGKEmB8p7pnhBvmmoMSVkWn63kT6ChBnn5D+1ZkGY6/b5TxXonwjH2wmtGxlLUAuqhb/3694VvhX6Pb/NRKOxycYoIZzNduRU766hq/jP6UQIXKnIetoNEnvdt8i/3iLV10B+Koe4i1bwn3o=
+  - secure: X4bCPtp1dJ205oAnaOM3fjTqGJo3kKoG36yUeReSOwVTq0fpcHsfITm5ovErsvUIInWmi1S9mvEDdDmZpIbAzG3yRr7TMs/o2GlbAe4orKoYUB3kKJj6Civ2cK3Hy4P3Ntt7GJEOMYpvx5uq0bgqtYTdkBky//7lDYeg0Wou1+d+WxLSGew45+DDcdoISMMk6ZYq2TswYP+oPx3Nra+PFNy1N3ymbhR+a+AehD7/787GMd6Ee8FKJFH2nsJuJYvUuGrBCq7jwv+bH97+pXukaroRoqj5sIPbGn2CqOsS1yyaOiXHb95737SnObCzYM69Rw3TFTSM85lUCJ4b56gXJzajoNpVs8SQtMqiv9L/C3znTlODWFbhGOIqR637H2Q+YNXacfXmIZilNjU9snXJuC2Fcotsyri7lBTWLo4IdMFkecJsFqIc5bAJqtgAu/RAb5HV8SkTYyMWTaXFezmrRwolbiMROOyzTqaJpgjRHjG8oji/6taD8ratDdPL+9FWpvR1koa1Xybh3245CL8vx8Kd5cQFRo09aGy1qUohY4umPggBTCv2O0SambKIArIrJTnrJYt+PfRz0N9nsf9/E+SZBcuMHgHhcL+bFl9oc5CqTt7rqhSFiSg7l4FU/0Fm7FdxaHMV27tgkGn+EbXcMK6mfve+sJGPKSEA9GRsynM=
 after_script:
 - wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
 - mkdir ./docker/app
@@ -72,13 +71,15 @@ after_script:
 - export TAGISSUE=`echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9][0-9]' | head -n1`
 - export TAGOLDISSUE=`echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9]' | head -n1`
 - echo $TAGISSUE
-- export TAGISSUE=`if [ "$TAGISSUE" == "" ]; then echo $TAGOLDISSUE; else echo $TAGISSUE ; fi`
+- export TAGISSUE=`if [ "$TAGISSUE" == "" ]; then echo $TAGOLDISSUE; else echo $TAGISSUE;
+  fi`
 - echo $TAGISSUE
-- export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "develop" ]; then echo "siv_dev"; else echo $TAGISSUE ; fi`
+- export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "develop" ]; then echo "siv_dev";
+  else echo $TAGISSUE ; fi`
 - echo $TAG_DEV_OR_ISSUE
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE ; fi`
-- echo $TAG
-- export IMAGE_NAME=scadalts/scadalts
-- docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
-- docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
-- docker push $IMAGE_NAME:$TAG
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE;
+  fi`
+- echo $MY_IMG_NAME; echo $TAG; echo $TRAVIS_COMMIT
+- docker build -t $MY_IMG_NAME:$TRAVIS_COMMIT .
+- docker tag $MY_IMG_NAME:$TRAVIS_COMMIT $MY_IMG_NAME:$TAG
+- docker push $MY_IMG_NAME:$TAG
