@@ -43,7 +43,6 @@ env:
   global:
   - secure: cR5pnB4aaHD7lrnGi8NMbLYbpirlandMFAXlrmK5Uc4YPph8xKtjq96TzpaEXStuVz5yZfGiIdeQuRzRD+SdowY09zasxe/DIgBbQZZ0uFbbmOZM0A5ukD8yxOgb2fFp3c5alD9IydgtK101A67x+w9wFzyU969DIFVk/dxRBuylTFk27R3KET1OIU4++wPL37AJ29tJ6S8UynMndiq75m6FbPU5W238JbEuJXXjMVdUTN074qFCXAgk+9NNz8tkPsObtzG/agx9dYJ2euxYQ1t4utcInI9AIYV9PZAec2NFuw4o5DBQCZl6fr+Mt4UrkKcoPoDQYp7RsIIoTmync4re5K1z1DhFujbGYO73CELs+0/LpND11J+IZy06yWJWMfM+x2T3fMtUaMUJ7yNv4trULOyS56TrnzxYea/EoWMLysZgu2thKEO4kud1U/9qI1oyYLdtiBcDerFBweLN1ylcPyOsqWnODtNT/0lz9NMv776VKB1raTdwnJvGONxL1VyG8rTcEJdP9pO3A75J5n02ZgKyZyLQ7IEyNg1vWRIDEfwGNa2aIY7wjk1Gmta7Q2UVCSmpSTnLo/FZ9Cyu0f5B7+T/4J2eA3dgQtsWpZR8GCFkB+Ijf/wOqlvbQrkTDbwZ/xgyIh5UrQV4oQCOoX1x0mi4s/rJuOSP4mGNwus=
   - secure: frO0+SDBJx5QTLzVY1rhDrsh+9pM+0C7JfVrE97Up2zu6q0zAXcu9GfTMKJsmUS0aUZ7znyEiN9J2m18eDj7l4CQBAE+J38+IQ0qyVYYhDiKGYhCPydUVQAKxGLOqFyZ/5u3btI/u3NFXjz4M+fWVnqz+FcIJGsybnHMcTl4P5K2KPgqpMaijVhNmttaIhIIU15oPAto+8SU4BiLPyBVrW5gKe+rmjdrbDaOr7cSDv0S+zgIwyr+iUC2SbDtEfkNww+fW73lsqhx5MZD4QiY5pC12j1i6iiXo1uKCRqvsWihUiK5zwZGRHxQxqEcYA6yqFS1EtmqhYCN8QJHOxGaQE5Y+nx7Nq5Zo8gu6OvHWXVieD70g5z0ShzjoXSSDebjFE0zRTTd9zHYwa5W4uK7ppLCzs+lJmUdUS1e/Bvq37yAG77dwVj1HryWMwO9anUn3bwgxvXZQSF1z0EJJvAZZkFohx+jYaU7DGI4IxVmy2NHehER18VVczSks9DA+nFbr11Gq773RpfL4I3X9BP6XIZHhP/5V4bVsdZ5dZZweDxOD+xS0oUO1skrA7H7PeOUsQH9DnKqwqoLbHV1ERBsgiWeOz7q3p/Imde7Vu+ZkR8JdeKpQKtwbUEJkCg1UKvu+0nBwsGwSShjCDLfaQY77uLIrvcQyI2fTmhxsS3BKYw=
-  - secure: OqSB4sTUAUCUHEtzwxDK+kZM07ae8jxuWzUcylDT/yRjh4tGErr9gnlrnTNuq8yylChcM94QiuzKb7UYrzELennK7AhmB8OQHmHk40uR9jyF/HpyOKlw8EB9zh5BuN1mMLN0HAg/ESWeVDpI2RcT/Chl9RIomqqzoJ/a6Z/kNrPDoPOW+A2cTYetptWBpINTEWExnlyGZ0MYF9PoWLnkeOKeAayidB5BqSbQZnqJelz2f/R1WEw3w9hCg1d6MLiF475HLuZgf6XUa+CIoeOqvHeeqvoB6JKOHx7iMiiae0feZaT3KZMnUZyVeFOI9DaFBw8tNUqwK4WThHLuzDu2EuP8UIbuCDOzjYztKgk9G3hsLzHeXMCz/hvvoCxtskIljnpCkELeaZUhJ9+V04LKfM6g8XhQMVWu/HyTrGiLvSdX8CN0tfwZceJUlR4Zir+EfJE7yXYdlxDx60Z2ut2BUdcH2rJoMztXLl0EOLJzWzveveDjbN+HXVjYfL2d6e5yk4g8gNhmo4SI6mNseS4Sm9Hdw+YjARqlXGJyR/UWV3bRXL2cyDskPm/6dQJFzLoWCZPKZv4YfUq0IzjtLe5U3qq/DJdyvCoEHubxXOsDNySKAXKEcmy5vxzc3SNP0yHwmvinioIBXNeJI4N3U2zV+5LTt8r7TkumYoUHB6/rJ5g=
 after_script:
 - wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
 - mkdir ./docker/app
@@ -80,7 +79,7 @@ after_script:
 - echo $TAG_DEV_OR_ISSUE
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE
   ; fi`
-- echo $TAG
+- echo $IMAGE_NAME; echo $TAG; echo $TRAVIS_COMMIT
 - docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
 - docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
 - docker push $IMAGE_NAME:$TAG
