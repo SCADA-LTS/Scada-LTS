@@ -79,7 +79,7 @@ after_script:
 - echo $TAG_DEV_OR_ISSUE
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE
   ; fi`
-- echo $IMAGE_NAME; echo $TAG; echo $TRAVIS_COMMIT
-- docker build -t $IMAGE_NAME:$TRAVIS_COMMIT .
-- docker tag $IMAGE_NAME:$TRAVIS_COMMIT $IMAGE_NAME:$TAG
-- docker push $IMAGE_NAME:$TAG
+- echo $MY_IMG_NAME; echo $TAG; echo $TRAVIS_COMMIT
+- docker build -t $MY_IMG_NAME:$TRAVIS_COMMIT .
+- docker tag $MY_IMG_NAME:$TRAVIS_COMMIT $MY_IMG_NAME:$TAG
+- docker push $MY_IMG_NAME:$TAG
