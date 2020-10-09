@@ -140,13 +140,13 @@
           </div>
         </div>
         <div v-if="chartProperties.type === 'compare'" class="col-xs-8">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-xs-6">
+          <div>
+            <div>
+              <div class="col-xs-3">
                 <select
                   id="comp-el-1"
                   v-model="chartProperties.compareDataPoint[0]"
-                  class="form-control col-xs-6"
+                  class="form-control"
                 >
                   <option
                     v-for="p in datapointList"
@@ -154,9 +154,14 @@
                     v-bind:key="p.id"
                   >{{p.name}}: {{p.xid}}</option>
                 </select>
+                <tooltip text="Select first datapoint to compare and assign this to 1-st x-axis." target="#comp-el-1" />
               </div>
-              <div v-if="chartProperties.compareDataPoint[0]" class="row col-xs-6">
-                <div class="col-xs-6 row">
+              <div v-if="chartProperties.compareDataPoint[0]" class="col-xs-9">
+                <div class="col-xs-2" v-if="chartProperties.compareDataPoint[0]">
+                  {{chartProperties.compareDataPoint[0].name}}<br/>
+                  XID:{{chartProperties.compareDataPoint[0].xid}}
+                </div>
+                <div class="col-xs-5 row">
                   <dropdown class="form-group col-xs-11">
                     <div class="input-group">
                       <input
@@ -199,7 +204,7 @@
                     </template>
                   </dropdown>
                 </div>
-                <div class="col-xs-6">
+                <div class="col-xs-5">
                   <dropdown class="form-group col-xs-11">
                     <div class="input-group">
                       <input
@@ -244,8 +249,8 @@
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-xs-6">
+            <div>
+              <div class="col-xs-3">
                 <select
                   id="comp-el-2"
                   v-model="chartProperties.compareDataPoint[1]"
@@ -259,8 +264,12 @@
                 </select>
                 <tooltip text="Remember to assign this datapoint to 2nd X-Axis in 'More Settings' menu!" target="#comp-el-2" />
               </div>
-              <div v-if="chartProperties.compareDataPoint[1]" class="col-xs-6">
-                <div class="col-xs-6 row">
+              <div v-if="chartProperties.compareDataPoint[1]" class="col-xs-9">
+                <div class="col-xs-2" v-if="chartProperties.compareDataPoint[1]">
+                  {{chartProperties.compareDataPoint[1].name}}<br />
+                  XID:{{chartProperties.compareDataPoint[1].xid}}
+                </div>
+                <div class="col-xs-5 row">
                   <dropdown class="form-group col-xs-11">
                     <div class="input-group">
                       <input
@@ -303,7 +312,7 @@
                     </template>
                   </dropdown>
                 </div>
-                <div class="col-xs-6">
+                <div class="col-xs-5">
                   <dropdown class="form-group col-xs-11">
                     <div class="input-group">
                       <input
