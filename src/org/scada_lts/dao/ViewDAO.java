@@ -64,6 +64,7 @@ public class ViewDAO implements GenericDAO<View> {
 	private static final String COLUMN_NAME_ANONYMOUS_ACCESS = "anonymousAccess";
 	private static final String COLUMN_NAME_WIDTH = "width";
 	private static final String COLUMN_NAME_HEIGHT = "height";
+	private static final String COLUMN_NAME_MODIFICATION_TIME = "modification_time";
 	 
 	//mangoViewUsers
 	private static final String COLUMN_NAME_MVU_USER_ID = "userid";
@@ -89,7 +90,8 @@ public class ViewDAO implements GenericDAO<View> {
 				+ COLUMN_NAME_USER_ID+", "
 				+ COLUMN_NAME_ANONYMOUS_ACCESS+", "
 				+ COLUMN_NAME_WIDTH+", "
-				+ COLUMN_NAME_HEIGHT+" "
+				+ COLUMN_NAME_HEIGHT+", "
+				+ COLUMN_NAME_MODIFICATION_TIME+" "
 			+ "from "
 				+ "mangoViews";
 	
@@ -201,6 +203,7 @@ public class ViewDAO implements GenericDAO<View> {
 			v.setAnonymousAccess(rs.getInt(COLUMN_NAME_ANONYMOUS_ACCESS));
 			v.setHeight(rs.getInt(COLUMN_NAME_HEIGHT));
 			v.setWidth(rs.getInt(COLUMN_NAME_WIDTH));
+			v.setModificationTime(rs.getTimestamp(COLUMN_NAME_MODIFICATION_TIME).getTime());
 			
 			return v;
 		}
