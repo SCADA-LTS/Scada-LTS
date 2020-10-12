@@ -129,10 +129,12 @@ public class ViewAPI {
                 class ViewJSON implements Serializable {
                     private long id;
                     private String xid;
+                    private long mtime;
 
-                    ViewJSON(long id, String xid) {
+                    ViewJSON(long id, String xid, long mtime) {
                         this.setId(id);
                         this.setXid(xid);
+                        this.setMtime(mtime);
                     }
 
                     public long getId() {
@@ -150,6 +152,14 @@ public class ViewAPI {
                     public void setXid(String xid) {
                         this.xid = xid;
                     }
+
+                    public long getMtime() {
+                        return mtime;
+                    }
+
+                    public void setMtime(long mtime) {
+                        this.mtime = mtime;
+                    }
                 }
 
                 View view = new View();
@@ -160,7 +170,7 @@ public class ViewAPI {
                 }
 
 
-                ViewJSON viewJSON = new ViewJSON(view.getId(), view.getXid());
+                ViewJSON viewJSON = new ViewJSON(view.getId(), view.getXid(), view.getModificationTime());
 
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();

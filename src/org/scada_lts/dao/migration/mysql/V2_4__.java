@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 /**
  * @autor grzegorz.bylica@gmail.com on 12.10.2020
  */
-public class V2_4 extends BaseJavaMigration {
+public class V2_4__ extends BaseJavaMigration {
 
     @Override
     public void migrate(Context context) throws Exception {
