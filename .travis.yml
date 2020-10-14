@@ -7,7 +7,7 @@ before_install:
 before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
-- nvm install 8
+- nvm install 12
 - nvm use node
 - npm -v
 - node -v
@@ -31,7 +31,7 @@ branches:
   - "/^test-2.3.3.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^feature/#1412.*$/"
+  - "/^feature/#1414.*$/"
 notifications:
   email: false
 env:
