@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-import Vue from 'vue'
+import Vue, { createApp, h } from 'vue';
 import App from './apps/App.vue'
 import router from './router'
 import store from './store'
@@ -57,27 +57,24 @@ Vue.use(VueCookie)
 
 Vue.config.devtools = true
 
-new Vue({
-  router,
-  store,
+createApp({
   i18n,
-  render: h => h(App)
-}).$mount('#app')
+  render: () => h(App)
+}).use(router).use(store).mount('#app')
 
 if (window.document.getElementById('app-test') != undefined) {
-  new Vue({
-    render: h => h(Test,
+  createApp({
+    render: () => h(Test,
       {
         props:
           { plabel: window.document.getElementById('app-test').getAttribute('plabel') }
       })
-  }).$mount('#app-test')
+  }).mount('#app-test')
 }
 
 if (window.document.getElementById('app-isalive') != undefined) {
-  new Vue({
-    store,
-    render: h => h(IsAlive,
+  createApp({
+    render: () => h(IsAlive,
       {
         props:
         {
@@ -87,14 +84,14 @@ if (window.document.getElementById('app-isalive') != undefined) {
           ptimeRefresh: window.document.getElementById('app-isalive').getAttribute('ptime-refresh'),
         }
       })
-  }).$mount('#app-isalive')
+  }).use(store).mount('#app-isalive')
 }
 
 for (let i = 0; i < 20; i++) {
   const cmpId = `app-cmp-${i}`
   if (window.document.getElementById(cmpId) != undefined) {
-    new Vue({
-      render: h => h(CMP,
+    createApp({
+      render: () => h(CMP,
         {
           store,
           props:
@@ -105,13 +102,13 @@ for (let i = 0; i < 20; i++) {
             pxIdViewAndIdCmp: window.document.getElementById(cmpId).getAttribute('pxIdViewAndIdCmp')
           }
         })
-    }).$mount('#' + cmpId)
+    }).mount('#' + cmpId)
   }
 }
 
 if (window.document.getElementById('simple-component-svg') != undefined) {
-  new Vue({
-    render: h => h(SimpleComponentSVG, {
+  createApp({
+    render: () => h(SimpleComponentSVG, {
       props:
       {
         pxidPoint: window.document.getElementById('simple-component-svg').getAttribute('pxidPoint'),
@@ -120,33 +117,26 @@ if (window.document.getElementById('simple-component-svg') != undefined) {
         pvalue: window.document.getElementById('simple-component-svg').getAttribute('pvalue')
       }
     })
-  }).$mount('#simple-component-svg')
+  }).mount('#simple-component-svg')
 }
 
 if (window.document.getElementById('sleep-reactivation-ds') != undefined) {
-  new Vue({
-    render: h => h(SleepAndReactivationDS)
-  }).$mount('#sleep-reactivation-ds')
+  createApp(SleepAndReactivationDS).mount('#sleep-reactivation-ds')
 }
 
 if (window.document.getElementById('export-import-ph') != undefined) {
-  new Vue({
-    render: h => h(ExportImportPointHierarchy)
-  }).$mount('#export-import-ph')
+  createApp(ExportImportPointHierarchy).mount('#export-import-ph')
 }
 
 if (window.document.getElementById('example-chart-cmp') != undefined) {
-  new Vue({
-    store,
-    render: h => h(WatchListChartWidget)
-  }).$mount('#example-chart-cmp')
+  createApp(WatchListChartWidget).use(store).mount('#example-chart-cmp')
 }
 
 for (let x = 0; x < 10; x++) {
   const chartId = `chart-step-line-${x}`
   if (window.document.getElementById(chartId) != undefined) {
-    new Vue({
-      render: h => h(StepLineChartComponent, {
+    createApp({
+      render: () => h(StepLineChartComponent, {
         props:
         {
           pointId: window.document.getElementById(chartId).getAttribute('point-id'),
@@ -167,15 +157,15 @@ for (let x = 0; x < 10; x++) {
           showLegend: window.document.getElementById(chartId).getAttribute('show-legned'),
         }
       })
-    }).$mount(`#${chartId}`)
+    }).mount(`#${chartId}`)
   }
 }
 
 for (let x = 0; x < 10; x++) {
   const chartId = `chart-line-${x}`
   if (window.document.getElementById(chartId) != undefined) {
-    new Vue({
-      render: h => h(LineChartComponent, {
+    createApp({
+      render: () => h(LineChartComponent, {
         props:
         {
           pointId: window.document.getElementById(chartId).getAttribute('point-id'),
@@ -196,7 +186,7 @@ for (let x = 0; x < 10; x++) {
           showLegend: window.document.getElementById(chartId).getAttribute('show-legned'),
         }
       })
-    }).$mount(`#${chartId}`)
+    }).mount(`#${chartId}`)
   }
 }
 
@@ -204,9 +194,8 @@ if (window.document.getElementById('live-alarms') != undefined) {
 
   console.log(`test+ ${window.document.getElementById('live-alarms').getAttribute('show-acknowledge-btn')}`)
 
-  new Vue({
-    store,
-    render: h => h(LiveAlarms, {
+  createApp({
+    render: () => h(LiveAlarms, {
       props:
           {
             pShowAcknowledgeBtn: window.document.getElementById('live-alarms').getAttribute('show-acknowledge-btn'),
@@ -216,7 +205,7 @@ if (window.document.getElementById('live-alarms') != undefined) {
             pMaximumNumbersOfRows: window.document.getElementById('live-alarms').getAttribute('max-number-of-rows')
           }
     })
-  }).$mount('#live-alarms')
+  }).use(store).mount('#live-alarms')
 
 }
 
