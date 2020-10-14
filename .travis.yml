@@ -21,7 +21,7 @@ before_script:
 - cd ../
 language: java
 jdk:
-- openjdk8
+- openjdk11
 services:
 - docker
 - mysql
@@ -31,7 +31,7 @@ branches:
   - "/^test-2.3.3.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^f_test_233/#1402.*$/"
+  - "/^feature/#1412.*$/"
 notifications:
   email: false
 env:
