@@ -141,7 +141,13 @@
       </div>
       <div v-if="emailSettings" class="col-md-6">
         <div class="row align-items-center">
-          <h2 class="col-xs-12">{{ $t("systemsettings.email.title") }}<span v-if="isEmailSettingsEdited">*</span></h2>
+          <h2 class="col-xs-11">{{ $t("systemsettings.email.title") }}<span v-if="isEmailSettingsEdited">*</span></h2>
+          <div class="col-xs-1">
+            <btn size="lg" type="link" @click="sendTestEmail()" id="btn-test-email">
+              <i class="glyphicon glyphicon-send"></i>
+            </btn>
+            <tooltip :text="$t('systemsettings.tooltip.sendtestemail')" target="#btn-test-email"/>
+          </div>
         </div>
 
         <div>
@@ -1064,6 +1070,25 @@ export default {
             i18n.t("systemsettings.notification.fail")
           );
         });
+    },
+    sendTestEmail() {
+      this.$store
+        .dispatch("sendTestEmail")
+        .then((resp) => {
+          if (resp) {
+            this.generateNotification(
+              "success",
+              `${i18n.t("systemsettings.notification.send.email")} ${resp.recipient}`
+            );
+          }
+        })
+        .catch(() => {
+          this.generateNotification(
+            "danger",
+            i18n.t("systemsettings.notification.fail")
+          );
+        });
+
     },
     editHttpWatch() {
       this.isHttpSettingsEdited = !this.configurationEqual(

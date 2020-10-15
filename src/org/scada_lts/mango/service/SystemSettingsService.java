@@ -7,8 +7,13 @@ import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
+import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
+import com.serotonin.mango.web.email.MangoEmailContent;
+import com.serotonin.web.i18n.I18NUtils;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
@@ -18,10 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Based on the WatchListService created by Grzegorz Bylica
@@ -226,6 +228,18 @@ public class SystemSettingsService {
         data.put("eventCount", new EventDao().getEventCount());
 
         return data;
+    }
+
+    public String sendTestEmail(User user) throws Exception {
+
+        ResourceBundle bundle = Common.getBundle();
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("message", new LocalizableMessage("systemSettings.testEmail"));
+        MangoEmailContent cnt = new MangoEmailContent(
+                "testEmail", model, bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
+        EmailWorkItem.queueEmail(user.getEmail(), cnt);
+
+        return "{\"recipient\":\""+user.getEmail()+ "\"}";
     }
 
     public void purgeData() {

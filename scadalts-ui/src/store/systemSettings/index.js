@@ -205,6 +205,20 @@ const storeSystemSettings = {
                     })
             })
         },
+        sendTestEmail(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/sendTestEmail`,
+                    { timeout: 5000, useCredentials: true, credentials: 'same-origin' }).then(response => {
+                        if (response.status == 200) {
+                            resolve(response.data)
+                        } else {
+                            reject(false)
+                        }
+                    }).catch(err => {
+                        reject(err)
+                    })
+            })
+        },
         purgeData(context) {
             return new Promise((resolve, reject) => {
                 axios.get(`${context.state.systemSettingsApiUrl}/purgeData`,

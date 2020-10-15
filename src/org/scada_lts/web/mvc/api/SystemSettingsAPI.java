@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.web.dwr.beans.IntegerPair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
@@ -90,6 +89,27 @@ public class SystemSettingsAPI {
         }
     }
 
+    @GetMapping(value = "/sendTestEmail", produces = "application/json")
+    public ResponseEntity<String> sendTestEmail(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/sendTestEmail");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                try {
+                    String response = systemSettingsService.sendTestEmail(user);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } catch (Exception e) {
+                    LOG.error(e);
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping(value = "/getHttp", produces = "application/json")
     public ResponseEntity<JsonSettingsHttp> getHttp(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getHttp");
@@ -124,7 +144,7 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getMisc", produces = "application/json")
-    public ResponseEntity<JsonSettingsMisc> getMisc(HttpServletRequest request){
+    public ResponseEntity<JsonSettingsMisc> getMisc(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getMisc");
         try {
             User user = Common.getUser(request);
@@ -162,7 +182,7 @@ public class SystemSettingsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return  new ResponseEntity<>(systemSettingsService.getAuditEventAlarmLevels(), HttpStatus.OK);
+                return new ResponseEntity<>(systemSettingsService.getAuditEventAlarmLevels(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -172,10 +192,9 @@ public class SystemSettingsAPI {
     }
 
     /**
-     *
-     * @param request - request with user data
+     * @param request          - request with user data
      * @param eventAlarmLevels - Audit Events with ID from 1 to 8 (AuditEventType)
-     *                           with alarm levels from 0 to 4 (AlarmLevels)
+     *                         with alarm levels from 0 to 4 (AlarmLevels)
      * @return Response with HTTP status
      */
     @PostMapping(value = "/saveAuditEventAlarmLevels", consumes = "application/json")
@@ -201,7 +220,7 @@ public class SystemSettingsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return  new ResponseEntity<>(systemSettingsService.getSystemEventAlarmLevels(), HttpStatus.OK);
+                return new ResponseEntity<>(systemSettingsService.getSystemEventAlarmLevels(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -211,11 +230,10 @@ public class SystemSettingsAPI {
     }
 
     /**
-     *
-     * @param request - request with user data
+     * @param request           - request with user data
      * @param eventSystemLevels - Audit Events with ID from 1 to 10 (SystemEventType)
-     *                            Exclude ID=5 it does not exist.
-     *                            With alarm levels from 0 to 4 (AlarmLevels)
+     *                          Exclude ID=5 it does not exist.
+     *                          With alarm levels from 0 to 4 (AlarmLevels)
      * @return Response with HTTP status
      */
     @PostMapping(value = "/saveSystemEventAlarmLevels", consumes = "application/json")
@@ -236,7 +254,7 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getSystemInfo", produces = "application/json")
-    public ResponseEntity<JsonSettingsSystemInfo> getSystemInfo (HttpServletRequest request) {
+    public ResponseEntity<JsonSettingsSystemInfo> getSystemInfo(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
@@ -251,7 +269,7 @@ public class SystemSettingsAPI {
     }
 
     @PostMapping(value = "/saveSystemInfo", consumes = "application/json")
-    public ResponseEntity<String> saveSystemInfo (HttpServletRequest request, @RequestBody JsonSettingsSystemInfo jsonSettingsSystemInfo) {
+    public ResponseEntity<String> saveSystemInfo(HttpServletRequest request, @RequestBody JsonSettingsSystemInfo jsonSettingsSystemInfo) {
         LOG.info("/api/systemSettings/saveSystemInfo");
         try {
             User user = Common.getUser(request);
@@ -330,7 +348,7 @@ public class SystemSettingsAPI {
         LOG.warn("Purging data!");
         try {
             User user = Common.getUser(request);
-            if(user != null && user.isAdmin()) {
+            if (user != null && user.isAdmin()) {
                 systemSettingsService.purgeData();
                 return new ResponseEntity<>("{\"status\": \"done\"}", HttpStatus.OK);
             } else {
@@ -346,9 +364,9 @@ public class SystemSettingsAPI {
     public ResponseEntity<String> getStartupTime(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if(user != null && user.isAdmin()) {
-                return  new ResponseEntity<>(
-                        "{\"startupTime\": \""+systemSettingsService.getStartupTime()+"\"}",
+            if (user != null && user.isAdmin()) {
+                return new ResponseEntity<>(
+                        "{\"startupTime\": \"" + systemSettingsService.getStartupTime() + "\"}",
                         HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -363,9 +381,9 @@ public class SystemSettingsAPI {
     public ResponseEntity<String> getSchemaVersion(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if(user != null && user.isAdmin()) {
-                return  new ResponseEntity<>(
-                        "{\"schemaVersion\": \""+systemSettingsService.getSchemaVersion()+"\"}",
+            if (user != null && user.isAdmin()) {
+                return new ResponseEntity<>(
+                        "{\"schemaVersion\": \"" + systemSettingsService.getSchemaVersion() + "\"}",
                         HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -381,7 +399,7 @@ public class SystemSettingsAPI {
         LOG.info("/api/systemSettings/getScadaConfig");
         try {
             User user = Common.getUser(request);
-            if(user != null && user.isAdmin()) {
+            if (user != null && user.isAdmin()) {
                 return new ResponseEntity<>(systemSettingsService.getScadaConfig(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
