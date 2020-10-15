@@ -1,6 +1,6 @@
 {
   "name": "scadalts-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port 3000",
@@ -12,26 +12,26 @@
   },
   "dependencies": {
     "@amcharts/amcharts4": "4.8.9",
-    "@fortawesome/fontawesome-svg-core": "^1.2.29",
-    "@fortawesome/free-solid-svg-icons": "^5.13.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/vue-fontawesome": "^0.1.10",
     "@min-gb/vuejs-components": "0.0.7",
     "ag-grid": "18.1.2",
     "ag-grid-community": "21.2.2",
     "ag-grid-vue": "21.2.2",
     "ajv": "6.5.2",
-    "axios": "0.19.0",
+    "axios": "0.20.0",
     "bootstrap": "3.4.1",
-    "core-js": "2.6.5",
+    "core-js": "^3.6.5",
     "css-loader": "3.2.0",
     "moment": "2.22.2",
     "uiv": "^0.27.0",
     "util": "^0.12.3",
     "verte": "0.0.12",
-    "vue": "^3.0.0-beta.1",
+    "vue": "^3.0.0",
     "vue-color-picker-wheel": "^0.4.3",
     "vue-cookie": "^1.1.4",
-    "vue-i18n": "^8.17.3",
+    "vue-i18n": "^8.22.0",
     "vue-jsoneditor": "1.0.13",
     "vue-loader": "15.7.1",
     "vue-lodash": "2.0.2",
@@ -44,22 +44,40 @@
   },
   "devDependencies": {
     "@intlify/vue-i18n-loader": "^1.0.0",
-    "@vue/cli-plugin-babel": "3.11.0",
-    "@vue/cli-plugin-e2e-cypress": "3.11.0",
-    "@vue/cli-plugin-eslint": "3.11.0",
-    "@vue/cli-plugin-unit-mocha": "3.11.0",
-    "@vue/cli-service": "^4.3.1",
-    "@vue/compiler-sfc": "^3.0.0-beta.1",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-e2e-cypress": "4.5.0",
+    "@vue/cli-plugin-eslint": "4.5.0",
+    "@vue/cli-plugin-unit-mocha": "4.5.0",
+    "@vue/cli-service": "^4.5.7",
+    "@vue/compiler-sfc": "^3.0.0",
     "@vue/test-utils": "^2.0.0-alpha.1",
-    "babel-eslint": "10.0.1",
+    "babel-eslint": "^10.1.0",
     "chai": "4.1.2",
     "cypress": "^4.0.1",
-    "eslint": "5.16.0",
-    "eslint-plugin-vue": "^7.0.0-alpha.0",
+    "eslint": "6.7.2",
+    "eslint-plugin-vue": "^7.0.0-0",
     "http-proxy-middleware": "^0.20.0",
-    "sass": "1.18.0",
-    "sass-loader": "7.1.0",
-    "vue-cli-plugin-i18n": "^1.0.1",
-    "vue-cli-plugin-vue-next": "~0.1.4"
-  }
+    "sass": "1.27.0",
+    "sass-loader": "10.0.3",
+    "vue-cli-plugin-i18n": "^1.0.1"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }
