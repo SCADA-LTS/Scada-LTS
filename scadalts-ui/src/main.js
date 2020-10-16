@@ -21,11 +21,11 @@ import LineChartComponent from './components/amcharts/LineChartComponent'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import {faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt} from '@fortawesome/free-solid-svg-icons'
+import {faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt, faCogs} from '@fortawesome/free-solid-svg-icons'
 import i18n from './i18n'
 import LiveAlarms from './components/graphical_views/AlarmsComponent'
 
-library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt)
+library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt, faCogs)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
