@@ -32,7 +32,7 @@ branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^feature/#1162.*$/"
+  - "/^feature/#1404.*$/"
 notifications:
   email: false
 env:
