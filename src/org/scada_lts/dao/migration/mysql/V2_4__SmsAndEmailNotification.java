@@ -20,62 +20,88 @@ public class V2_4__SmsAndEmailNotification extends BaseJavaMigration {
 
         final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
 
-        createCalendarTable(jdbcTmp);
         createRangesTable(jdbcTmp);
         createNotificationsTable(jdbcTmp);
-        createSchedulerTable(jdbcTmp);
+        createSchedulersTable(jdbcTmp);
+        createSchedulersDefPointsTable(jdbcTmp);
+        createSchedulersUsersTable(jdbcTmp);
+        createSchedulersView(jdbcTmp);
 
-    }
-
-    private void createCalendarTable(JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute(""
-                + "CREATE TABLE calendar ("
-                + "id INT(11) NOT NULL AUTO_INCREMENT,"
-                + "hour INT(10),"
-                + "day INT(10),"
-                + "month INT(10),"
-                + "year INT(10),"
-                + "PRIMARY KEY (id)"
-                + ");"
-        );
     }
 
     private void createRangesTable(JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute(""
-                + "CREATE TABLE ranges ("
-                + "id INT(11) NOT NULL AUTO_INCREMENT,"
-                + "days_of_weeks VARCHAR(45),"
-                + "calendar_id_start INT(10),"
-                + "calendar_id_stop INT(10),"
-                + "PRIMARY KEY (id),"
-                + "FOREIGN KEY (calendar_id_start) REFERENCES calendar(id),"
-                + "FOREIGN KEY (calendar_id_stop) REFERENCES calendar(id)"
-                + ");"
+        jdbcTemplate.execute("" +
+                "CREATE TABLE ranges (" +
+                "id INT(11) NOT NULL AUTO_INCREMENT," +
+                "hour_start INT(10)," +
+                "hour_stop INT(10)," +
+                "description VARCHAR(45)," +
+                "PRIMARY KEY (id)" +
+                ");"
         );
     }
 
     private void createNotificationsTable(JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute(""
-                + "CREATE TABLE notifications ("
-                + "id INT(11) NOT NULL AUTO_INCREMENT,"
-                + "per_mail INT(10),"
-                + "per_sms INT(10),"
-                + "mtime TIMESTAMP(6),"
-                + "PRIMARY KEY (id)"
-                + ");"
+        jdbcTemplate.execute("" +
+                "CREATE TABLE notifications (" +
+                "id INT(11) NOT NULL AUTO_INCREMENT," +
+                "per_mail INT(10)," +
+                "per_sms INT(10)," +
+                "mtime TIMESTAMP(6)," +
+                "PRIMARY KEY (id)" +
+                ");"
         );
     }
 
-    private void createSchedulerTable(JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute(""
-                + "CREATE TABLE scheduler ("
-                + "id INT(11) NOT NULL AUTO_INCREMENT,"
-                + "ranges_id INT(10),"
-                + "notifications_id INT(10),"
-                + "PRIMARY KEY (id),"
-                + "FOREIGN KEY (ranges_id) REFERENCES ranges(id),"
-                + "FOREIGN KEY (notifications_id) REFERENCES notifications(id)"
-                + ");"
+    private void createSchedulersTable(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("" +
+                "CREATE TABLE schedulers (" +
+                "id INT(11) NOT NULL AUTO_INCREMENT," +
+                "ranges_id INT(10)," +
+                "notifications_id INT(10)," +
+                "PRIMARY KEY (id)," +
+                "FOREIGN KEY (ranges_id) REFERENCES ranges(id)," +
+                "FOREIGN KEY (notifications_id) REFERENCES notifications(id)" +
+                ");"
         );
     }
+
+    private void createSchedulersDefPointsTable(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("" +
+                "CREATE TABLE schedulers_defpoints (" +
+                "dataPoints_id INT(11)," +
+                "schedulers_id INT(11)" +
+                ");"
+        );
+    }
+
+    private void createSchedulersUsersTable(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("" +
+                "CREATE TABLE schedulers_users (" +
+                "id INT(11) NOT NULL AUTO_INCREMENT," +
+                "user_id INT(11)," +
+                "scheduler_id INT(11)," +
+                "PRIMARY KEY (id)," +
+                "FOREIGN KEY (user_id) REFERENCES users(id)" +
+                ");"
+        );
+    }
+
+    private void createSchedulersView(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("" +
+                "CREATE VIEW schedulers_view AS " +
+                "SELECT " +
+                "s.id, " +
+                "n.per_mail, " +
+                "n.per_sms, " +
+                "n.mtime, " +
+                "r.hour_start, " +
+                "r.hour_stop, " +
+                "r.description " +
+                "FROM ((schedulers AS s " +
+                "INNER JOIN notifications AS n ON s.notifications_id=n.id) " +
+                "INNER JOIN ranges AS r ON s.ranges_id=r.id);"
+        );
+    }
+
 }
