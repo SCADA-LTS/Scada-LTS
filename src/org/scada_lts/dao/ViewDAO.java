@@ -124,7 +124,8 @@ public class ViewDAO implements GenericDAO<View> {
 				+ COLUMN_NAME_ANONYMOUS_ACCESS+"=?, "
 				+ COLUMN_NAME_DATA+"=?, "
 				+ COLUMN_NAME_HEIGHT+"=?, "
-				+ COLUMN_NAME_WIDTH+"=? "
+				+ COLUMN_NAME_WIDTH+"=?, "
+			    + COLUMN_NAME_MODIFICATION_TIME+"=CURRENT_TIMESTAMP "
 			+ "where "
 				+ COLUMN_NAME_ID+"=?";
 	
