@@ -7,7 +7,7 @@ before_install:
 before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
-- nvm install 8
+- nvm install 12
 - nvm use node
 - npm -v
 - node -v
@@ -21,7 +21,7 @@ before_script:
 - cd ../
 language: java
 jdk:
-- openjdk8
+- openjdk11
 services:
 - docker
 - mysql
@@ -32,6 +32,7 @@ branches:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^feature/#1406.*$/"
+  - "/^feature/#1414.*$/"
 notifications:
   email: false
 env:
