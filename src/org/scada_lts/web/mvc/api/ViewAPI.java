@@ -17,7 +17,6 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
@@ -27,13 +26,10 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.view.ViewDTO;
 import org.scada_lts.dao.model.view.ViewDTOValidator;
 import org.scada_lts.mango.service.ViewService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.AbstractErrors;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -107,6 +103,64 @@ public class ViewAPI {
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
                 json = mapper.writeValueAsString(lst);
+
+                return new ResponseEntity<String>(json, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/api/view/getModificationTime/{id}", method = RequestMethod.GET)
+    public ResponseEntity<String> getModificationTime(@PathVariable("id") Integer id, HttpServletRequest request) {
+        LOG.info("/api/view/getModificationTime/{id} id:"+id);
+
+        try {
+            User user = Common.getUser(request);
+
+            if (user != null) {
+                class ViewJSON implements Serializable {
+                    private long id;
+                    private long mtime;
+
+                    ViewJSON(long id, long mtime) {
+                        this.setId(id);
+                        this.setMtime(mtime);
+                    }
+
+                    public long getId() {
+                        return id;
+                    }
+
+                    public void setId(long id) {
+                        this.id = id;
+                    }
+
+                    public long getMtime() {
+                        return mtime;
+                    }
+
+                    public void setMtime(long mtime) {
+                        this.mtime = mtime;
+                    }
+                }
+
+                View view = new View();
+                if (user.isAdmin()) {
+                    view = viewService.getView(id);
+                } else {
+                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                }
+
+
+                ViewJSON viewJSON = new ViewJSON(view.getId(), view.getModificationTime());
+
+                String json = null;
+                ObjectMapper mapper = new ObjectMapper();
+                json = mapper.writeValueAsString(viewJSON);
 
                 return new ResponseEntity<String>(json, HttpStatus.OK);
             }
