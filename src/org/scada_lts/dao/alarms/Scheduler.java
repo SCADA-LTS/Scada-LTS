@@ -1,26 +1,26 @@
 package org.scada_lts.dao.alarms;
 
-import java.util.Date;
+import java.io.Serializable;
 
-public class Scheduler {
+public class Scheduler implements Serializable {
 
     private Long id;
-    private int per_mail;
-    private int per_sms;
-    private int hour_start;
-    private int hour_stop;
+    private boolean perMail;
+    private boolean perSms;
+    private int hourStart;
+    private int hourStop;
     private String description;
     private String mtime;
 
     public Scheduler() {
     }
 
-    public Scheduler(Long id, int per_mail, int per_sms, int hour_start, int hour_stop, String description, String mtime) {
+    public Scheduler(Long id, boolean per_mail, boolean per_sms, int hour_start, int hour_stop, String description, String mtime) {
         this.id = id;
-        this.per_mail = per_mail;
-        this.per_sms = per_sms;
-        this.hour_start = hour_start;
-        this.hour_stop = hour_stop;
+        this.perMail = per_mail;
+        this.perSms = per_sms;
+        this.hourStart = hour_start;
+        this.hourStop = hour_stop;
         this.description = description;
         this.mtime = mtime;
     }
@@ -33,36 +33,36 @@ public class Scheduler {
         this.id = id;
     }
 
-    public int getPer_mail() {
-        return per_mail;
+    public boolean getPerMail() {
+        return perMail;
     }
 
-    public void setPer_mail(int per_mail) {
-        this.per_mail = per_mail;
+    public void setPerMail(boolean per_mail) {
+        this.perMail = per_mail;
     }
 
-    public int getPer_sms() {
-        return per_sms;
+    public boolean getPerSms() {
+        return perSms;
     }
 
-    public void setPer_sms(int per_sms) {
-        this.per_sms = per_sms;
+    public void setPerSms(boolean per_sms) {
+        this.perSms = per_sms;
     }
 
-    public int getHour_start() {
-        return hour_start;
+    public int getHourStart() {
+        return hourStart;
     }
 
-    public void setHour_start(int hour_start) {
-        this.hour_start = hour_start;
+    public void setHourStart(int hour_start) {
+        this.hourStart = hour_start;
     }
 
-    public int getHour_stop() {
-        return hour_stop;
+    public int getHourStop() {
+        return hourStop;
     }
 
-    public void setHour_stop(int hour_stop) {
-        this.hour_stop = hour_stop;
+    public void setHourStop(int hour_stop) {
+        this.hourStop = hour_stop;
     }
 
     public String getDescription() {
@@ -81,3 +81,4 @@ public class Scheduler {
         this.mtime = mtime;
     }
 }
+

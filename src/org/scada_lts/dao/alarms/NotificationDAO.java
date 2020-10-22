@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class NotificationDAO {
     private static final String COLUMN_NAME_DATAPOINTS_ID = "dataPoints_id";
     private static final String COLUMN_NAME_USERS_ID = "users_id";
 
-    private static final String SELECT_FROM_SCHEDULERS_VIEW_WHERE_ID = "" +
+    private static final String SELECT_FROM_SCHEDULERS_VIEW = "" +
             "SELECT " +
             COLUMN_NAME_ID + ", " +
             COLUMN_NAME_PER_MAIL + ", " +
@@ -53,8 +52,11 @@ public class NotificationDAO {
             COLUMN_NAME_HOUR_START + ", " +
             COLUMN_NAME_HOUR_STOP + ", " +
             COLUMN_NAME_DESCRIPTION + " " +
-            "FROM " + VIEW_NAME_SCHEDULERS +
-            "WHERE " + COLUMN_NAME_ID + "=?" +
+            "FROM " + VIEW_NAME_SCHEDULERS;
+
+    private static final String SELECT_FROM_SCHEDULERS_VIEW_WHERE_ID = "" +
+            SELECT_FROM_SCHEDULERS_VIEW +
+            " WHERE " + COLUMN_NAME_ID + "=?" +
             ";";
 
     private static final String INSERT_INTO_SCHEDULERS = "" +
@@ -63,14 +65,27 @@ public class NotificationDAO {
             COLUMN_NAME_NOTIFICATIONS_ID + ") " +
             "VALUES (?,?);";
 
+    private static final String UPDATE_SCHEDULER = "" +
+            "UPDATE " + TABLE_NAME_SCHEDULERS + " SET " +
+            COLUMN_NAME_RANGES_ID + "=?, " +
+            COLUMN_NAME_NOTIFICATIONS_ID + "=? " +
+            "WHERE " + COLUMN_NAME_ID + "=?;";
+
+    private static final String DELETE_SCHEDULER = "" +
+            "DELETE FROM " + TABLE_NAME_SCHEDULERS +
+            " WHERE " + COLUMN_NAME_ID + "=?;";
+
     private static final String SELECT_FROM_RANGES = "" +
             "SELECT " +
             COLUMN_NAME_ID + ", " +
             COLUMN_NAME_HOUR_START + ", " +
             COLUMN_NAME_HOUR_STOP + ", " +
             COLUMN_NAME_DESCRIPTION + " " +
-            "FROM " + TABLE_NAME_RANGES +
-            ";";
+            "FROM " + TABLE_NAME_RANGES;
+
+    private static final String SELECT_FROM_RANGES_WHERE_ID = "" +
+            SELECT_FROM_RANGES +
+            " WHERE " + COLUMN_NAME_ID + "=?;";
 
     private static final String INSERT_INTO_RANGES = "" +
             "INSERT INTO " + TABLE_NAME_RANGES + " (" +
@@ -79,14 +94,29 @@ public class NotificationDAO {
             COLUMN_NAME_DESCRIPTION + ") " +
             "VALUES (?,?,?);";
 
+    private static final String UPDATE_RANGE = "" +
+            "UPDATE " + TABLE_NAME_RANGES + " SET " +
+            COLUMN_NAME_HOUR_START + "=?, " +
+            COLUMN_NAME_HOUR_STOP + "=?, " +
+            COLUMN_NAME_DESCRIPTION + "=? " +
+            "WHERE " + COLUMN_NAME_ID + "=?";
+
+    private static final String DELETE_RANGE = "" +
+            "DELETE FROM " + TABLE_NAME_RANGES +
+            " WHERE " + COLUMN_NAME_ID + "=?;";
+
+
     private static final String SELECT_FROM_NOTIFICATIONS = "" +
             "SELECT " +
             COLUMN_NAME_ID + ", " +
             COLUMN_NAME_PER_MAIL + ", " +
             COLUMN_NAME_PER_SMS + ", " +
             COLUMN_NAME_MTIME + " " +
-            "FROM " + TABLE_NAME_NOTIFICATIONS +
-            ";";
+            "FROM " + TABLE_NAME_NOTIFICATIONS;
+
+    private static final String SELECT_FROM_NOTIFICATIONS_WHERE_ID = "" +
+            SELECT_FROM_NOTIFICATIONS +
+            " WHERE " + COLUMN_NAME_ID + "=?";
 
     private static final String INSERT_INTO_NOTIFICATIONS = "" +
             "INSERT INTO " + TABLE_NAME_NOTIFICATIONS + " (" +
@@ -95,9 +125,22 @@ public class NotificationDAO {
             COLUMN_NAME_MTIME + ") " +
             "VALUES (?,?,?);";
 
+    private static final String UPDATE_NOTIFICATION = "" +
+            "UPDATE " + TABLE_NAME_NOTIFICATIONS + " SET " +
+            COLUMN_NAME_PER_MAIL + "=?, " +
+            COLUMN_NAME_PER_SMS + "=?, " +
+            COLUMN_NAME_MTIME + "=? " +
+            "WHERE " + COLUMN_NAME_ID + "=?";
+
     private static final String INSERT_INTO_SCHEDULERS_DEFPOINTS = "" +
             "INSERT INTO " + TABLE_NAME_SCHEDULERS_DEFPOINTS + " (" +
             COLUMN_NAME_DATAPOINTS_ID + ", " +
+            COLUMN_NAME_SCHEDULERS_ID + ") " +
+            "VALUES (?,?)";
+
+    private static final String INSERT_INTO_SCHEDULERS_USERS = "" +
+            "INSERT INTO " + TABLE_NAME_SCHEDULERS_USERS + " (" +
+            COLUMN_NAME_USERS_ID + ", " +
             COLUMN_NAME_SCHEDULERS_ID + ") " +
             "VALUES (?,?)";
 
@@ -110,12 +153,59 @@ public class NotificationDAO {
             COLUMN_NAME_HOUR_START + ", " +
             COLUMN_NAME_HOUR_STOP + ", " +
             COLUMN_NAME_DESCRIPTION + " " +
-//            COLUMN_NAME_DATAPOINTS_ID + " " +
             "FROM " + VIEW_NAME_SCHEDULERS + " AS s " +
             "INNER JOIN " + TABLE_NAME_SCHEDULERS_DEFPOINTS + " AS d " +
             "ON s." + COLUMN_NAME_ID + "=d." + COLUMN_NAME_SCHEDULERS_ID +
             " WHERE d." + COLUMN_NAME_DATAPOINTS_ID + "=?";
 
+    private static final String SELECT_SCHEDULERS_WHERE_USER_ID = "" +
+            "SELECT " +
+            COLUMN_NAME_ID + ", " +
+            COLUMN_NAME_PER_MAIL + ", " +
+            COLUMN_NAME_PER_SMS + ", " +
+            COLUMN_NAME_MTIME + ", " +
+            COLUMN_NAME_HOUR_START + ", " +
+            COLUMN_NAME_HOUR_STOP + ", " +
+            COLUMN_NAME_DESCRIPTION + " " +
+            "FROM " + VIEW_NAME_SCHEDULERS + " AS s " +
+            "INNER JOIN " + TABLE_NAME_SCHEDULERS_USERS + " AS u " +
+            "ON s." + COLUMN_NAME_ID + "=u." + COLUMN_NAME_SCHEDULERS_ID +
+            " WHERE u." +COLUMN_NAME_USERS_ID + "=?";
+
+    private static final String SELECT_SCHEDULERS_UD_WHERE_USER_ID = "" +
+            "SELECT " +
+            "s." + COLUMN_NAME_ID + ", " +
+            COLUMN_NAME_PER_MAIL + ", " +
+            COLUMN_NAME_PER_SMS + ", " +
+            COLUMN_NAME_MTIME + ", " +
+            COLUMN_NAME_HOUR_START + ", " +
+            COLUMN_NAME_HOUR_STOP + ", " +
+            COLUMN_NAME_DESCRIPTION + ", " +
+            COLUMN_NAME_DATAPOINTS_ID + ", " +
+            "us.email, us.phone " +
+            "FROM ((" + VIEW_NAME_SCHEDULERS + " AS s " +
+            "INNER JOIN " + TABLE_NAME_SCHEDULERS_USERS + " AS u " +
+            "ON s." + COLUMN_NAME_ID + "=u." + COLUMN_NAME_SCHEDULERS_ID + ") " +
+            "INNER JOIN " + TABLE_NAME_SCHEDULERS_DEFPOINTS + " AS d " +
+            "ON s." + COLUMN_NAME_ID + "=d." +COLUMN_NAME_SCHEDULERS_ID + ") " +
+            "INNER JOIN users AS us ON u." + COLUMN_NAME_USERS_ID + "=us.id " +
+            "WHERE u." +COLUMN_NAME_USERS_ID + "=?";
+
+    private static final String SELECT_NOTIFICATION_BY_SCHEDULERID = "" +
+            "SELECT " +
+            "n." + COLUMN_NAME_ID + ", " +
+            COLUMN_NAME_PER_MAIL + ", " +
+            COLUMN_NAME_PER_SMS + ", " +
+            COLUMN_NAME_MTIME + " " +
+            " FROM " + TABLE_NAME_NOTIFICATIONS + " AS n " +
+            "INNER JOIN " + TABLE_NAME_SCHEDULERS + " AS s " +
+            "ON n." +COLUMN_NAME_ID + "=s." + COLUMN_NAME_NOTIFICATIONS_ID +
+            " WHERE s." + COLUMN_NAME_ID + "=?";
+
+    private static final String ACKNOWLEDGE_NOTIFICATION = "" +
+            "UPDATE " + TABLE_NAME_NOTIFICATIONS + " SET " +
+            COLUMN_NAME_MTIME + "=NOW() " +
+            "WHERE " + COLUMN_NAME_ID + "=?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -123,11 +213,9 @@ public class NotificationDAO {
         jdbcTemplate = DAO.getInstance().getJdbcTemp();
     }
 
-    public List<Scheduler> getSchedulerById(Long id) {
+    public List<Scheduler> getAllSchedulers() {
         try {
-            LOG.info(SELECT_FROM_SCHEDULERS_VIEW_WHERE_ID);
-            return jdbcTemplate.query(SELECT_FROM_SCHEDULERS_VIEW_WHERE_ID,
-                    new Object[]{id},
+            return jdbcTemplate.query(SELECT_FROM_SCHEDULERS_VIEW,
                     new SchedulerRowMapper() {
                     });
         } catch (Exception ex) {
@@ -136,14 +224,25 @@ public class NotificationDAO {
         }
     }
 
+    public Scheduler getSchedulerById(Long id) {
+        try {
+            return jdbcTemplate.queryForObject(SELECT_FROM_SCHEDULERS_VIEW_WHERE_ID,
+                    new Object[] {id},
+                    new SchedulerRowMapper());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return null;
+        }
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    public Long createScheduler(final Long rangeId, final Long notificationId) {
+    public Scheduler createScheduler(Long rangeId, Long notificationId) {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(INSERT_INTO_NOTIFICATIONS, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = connection.prepareStatement(INSERT_INTO_SCHEDULERS, Statement.RETURN_GENERATED_KEYS);
                 new ArgumentPreparedStatementSetter(new Object[] {
                         rangeId,
                         notificationId
@@ -151,7 +250,32 @@ public class NotificationDAO {
                 return ps;
             }
         }, keyHolder);
-        return keyHolder.getKey().longValue();
+        return getSchedulerById(keyHolder.getKey().longValue());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    public Scheduler updateScheduler(Long schedulerId, Long rangeId, Long notificationId) {
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(UPDATE_SCHEDULER, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[]{
+                        rangeId,
+                        notificationId,
+                        schedulerId
+                }).setValues(ps);
+                return ps;
+            }
+        });
+        return getSchedulerById(schedulerId);
+    }
+
+    public void deleteScheduler(Long schedulerId) {
+        try {
+            jdbcTemplate.update(DELETE_SCHEDULER, schedulerId);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
     }
 
     public List<Range> getAllRanges() {
@@ -164,8 +288,20 @@ public class NotificationDAO {
         }
     }
 
+    public Range getRangeById(Long rangeId) {
+        try {
+            return jdbcTemplate.queryForObject(SELECT_FROM_RANGES_WHERE_ID,
+                    new Object[]{rangeId},
+                    new RangeRowMapper() {
+                    });
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return null;
+        }
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    public Range insertRange(final Range range) {
+    public Range insertRange(Range range) {
         if(LOG.isTraceEnabled()) {
             LOG.trace(range);
         }
@@ -187,6 +323,32 @@ public class NotificationDAO {
         return range;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    public Range updateRange(Range range) {
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(UPDATE_RANGE, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[]{
+                        range.getHourStart(),
+                        range.getHourStop(),
+                        range.getDescription(),
+                        range.getId()
+                }).setValues(ps);
+                return ps;
+            }
+        });
+        return getRangeById(range.getId());
+    }
+
+    public void deleteRange(Long rangeId) {
+        try {
+            jdbcTemplate.update(DELETE_RANGE, rangeId);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
+    }
+
     public List<Notification> getAllNotifications() {
         try {
             return jdbcTemplate.query(SELECT_FROM_NOTIFICATIONS,
@@ -197,8 +359,43 @@ public class NotificationDAO {
         }
     }
 
+    public Notification getNotificationById(Long notificationId) {
+        try {
+            return jdbcTemplate.queryForObject(SELECT_FROM_NOTIFICATIONS_WHERE_ID,
+                    new Object[]{notificationId},
+                    new NotificationRowMapper() { });
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return null;
+        }
+    }
+
+    public Notification getNotificationBySchedulerId(Long schedulerId) {
+        try {
+            return jdbcTemplate.queryForObject(SELECT_NOTIFICATION_BY_SCHEDULERID,
+                    new Object[]{schedulerId},
+                    new NotificationRowMapper() { });
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return null;
+        }
+    }
+
+    public void acknowledgeNotification(Long notificationId) {
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(ACKNOWLEDGE_NOTIFICATION, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[]{
+                        notificationId
+                }).setValues(ps);
+                return ps;
+            }
+        });
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    public Notification insertNotification(final Notification notification) {
+    public Notification insertNotification(Notification notification) {
         if(LOG.isTraceEnabled()) {
             LOG.trace(notification);
         }
@@ -221,18 +418,21 @@ public class NotificationDAO {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    public void bindSchedulerWithDataPoint(final Long schedulerId, final Long dataPointId) {
+    public Notification updateNotification(Notification notification) {
         jdbcTemplate.update(new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(INSERT_INTO_SCHEDULERS_DEFPOINTS, Statement.RETURN_GENERATED_KEYS);
-                new ArgumentPreparedStatementSetter(new Object[] {
-                        dataPointId,
-                        schedulerId
+                PreparedStatement ps = connection.prepareStatement(UPDATE_NOTIFICATION, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[]{
+                        notification.isPerEmail() ? 1 : 0,
+                        notification.isPerSms() ? 1 : 0,
+                        notification.getMtime(),
+                        notification.getId()
                 }).setValues(ps);
                 return ps;
             }
         });
+        return getNotificationById(notification.getId());
     }
 
     public List<Scheduler> getDataPointSchedulers(Long dataPointId) {
@@ -247,6 +447,57 @@ public class NotificationDAO {
         }
     }
 
+    /**
+     * Return all SchedulersUD defined for this specific user
+     * with bounded data points by them ID.
+     *
+     * SchedulersUD is extended Scheduler class containing User email and phone number.
+     *
+     * @param userId - user ID number to check
+     * @return List<SchedulerUserData>
+     */
+    public List<SchedulerUserData> getAllSchedulersForUser(Long userId) {
+        try {
+            return jdbcTemplate.query(SELECT_SCHEDULERS_UD_WHERE_USER_ID,
+                    new Object[]{userId},
+                    new SchedulerUDRowMapper() {
+                    });
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return null;
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    public void bindSchedulerWithDataPoint(Long schedulerId, Long dataPointId) {
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(INSERT_INTO_SCHEDULERS_DEFPOINTS, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[] {
+                        dataPointId,
+                        schedulerId
+                }).setValues(ps);
+                return ps;
+            }
+        });
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    public void bindSchedulerWithUser(Long schedulerId, Long userId) {
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(INSERT_INTO_SCHEDULERS_USERS, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[] {
+                        userId,
+                        schedulerId
+                }).setValues(ps);
+                return ps;
+            }
+        });
+    }
+
     /* -------- RowMappers -------- */
 
     private class SchedulerRowMapper implements RowMapper<Scheduler> {
@@ -255,12 +506,31 @@ public class NotificationDAO {
         public Scheduler mapRow(ResultSet resultSet, int i) throws SQLException {
             Scheduler scheduler = new Scheduler();
             scheduler.setId(resultSet.getLong(COLUMN_NAME_ID));
-            scheduler.setPer_mail(resultSet.getInt(COLUMN_NAME_PER_MAIL));
-            scheduler.setPer_sms(resultSet.getInt(COLUMN_NAME_PER_SMS));
+            scheduler.setPerMail(resultSet.getInt(COLUMN_NAME_PER_MAIL) == 1);
+            scheduler.setPerSms(resultSet.getInt(COLUMN_NAME_PER_SMS) == 1);
             scheduler.setMtime(resultSet.getString(COLUMN_NAME_MTIME));
-            scheduler.setHour_start(resultSet.getInt(COLUMN_NAME_HOUR_START));
-            scheduler.setHour_stop(resultSet.getInt(COLUMN_NAME_HOUR_STOP));
+            scheduler.setHourStart(resultSet.getInt(COLUMN_NAME_HOUR_START));
+            scheduler.setHourStop(resultSet.getInt(COLUMN_NAME_HOUR_STOP));
             scheduler.setDescription(resultSet.getString(COLUMN_NAME_DESCRIPTION));
+            return scheduler;
+        }
+    }
+
+    private class SchedulerUDRowMapper implements RowMapper<SchedulerUserData> {
+
+        @Override
+        public SchedulerUserData mapRow(ResultSet resultSet, int i) throws SQLException {
+            SchedulerUserData scheduler = new SchedulerUserData();
+            scheduler.setId(resultSet.getLong(COLUMN_NAME_ID));
+            scheduler.setPerMail(resultSet.getInt(COLUMN_NAME_PER_MAIL) == 1);
+            scheduler.setPerSms(resultSet.getInt(COLUMN_NAME_PER_SMS) == 1);
+            scheduler.setMtime(resultSet.getString(COLUMN_NAME_MTIME));
+            scheduler.setHourStart(resultSet.getInt(COLUMN_NAME_HOUR_START));
+            scheduler.setHourStop(resultSet.getInt(COLUMN_NAME_HOUR_STOP));
+            scheduler.setDescription(resultSet.getString(COLUMN_NAME_DESCRIPTION));
+            scheduler.setDataPointId(resultSet.getLong(COLUMN_NAME_DATAPOINTS_ID));
+            scheduler.setUserEmail(resultSet.getString("email"));
+            scheduler.setUserPhone(resultSet.getString("phone"));
             return scheduler;
         }
     }

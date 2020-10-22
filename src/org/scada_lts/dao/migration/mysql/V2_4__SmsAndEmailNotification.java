@@ -79,10 +79,10 @@ public class V2_4__SmsAndEmailNotification extends BaseJavaMigration {
         jdbcTemplate.execute("" +
                 "CREATE TABLE schedulers_users (" +
                 "id INT(11) NOT NULL AUTO_INCREMENT," +
-                "user_id INT(11)," +
-                "scheduler_id INT(11)," +
+                "users_id INT(11)," +
+                "schedulers_id INT(11)," +
                 "PRIMARY KEY (id)," +
-                "FOREIGN KEY (user_id) REFERENCES users(id)" +
+                "FOREIGN KEY (users_id) REFERENCES users(id)" +
                 ");"
         );
     }
