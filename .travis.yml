@@ -31,7 +31,7 @@ branches:
   - "/^test-2.3.3.*$/"
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^f_test_233/#1402.*$/"
+  - "/^feature/#1406.*$/"
 notifications:
   email: false
 env:
