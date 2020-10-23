@@ -25,7 +25,10 @@ public class V2_4__SmsAndEmailNotification extends BaseJavaMigration {
         createSchedulersTable(jdbcTmp);
         createSchedulersDefPointsTable(jdbcTmp);
         createSchedulersUsersTable(jdbcTmp);
+        createSchedulerMailingListTable(jdbcTmp);
         createSchedulersView(jdbcTmp);
+
+        alterMailingListTable(jdbcTmp);
 
     }
 
@@ -85,6 +88,21 @@ public class V2_4__SmsAndEmailNotification extends BaseJavaMigration {
                 "FOREIGN KEY (users_id) REFERENCES users(id)" +
                 ");"
         );
+    }
+
+    private void createSchedulerMailingListTable(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("" +
+                "CREATE TABLE schedulers_mailing_list (" +
+                "mailing_list_id INT (11), " +
+                "schedulers_id INT (11)," +
+                "FOREIGN KEY (mailing_list_id) REFERENCES mailingLists(id)," +
+                "FOREIGN KEY (schedulers_id) REFERENCES schedulers(id));");
+    }
+
+    private void alterMailingListTable(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("" +
+                "ALTER TABLE mailingListMembers " +
+                "ADD phone VARCHAR(20)");
     }
 
     private void createSchedulersView(JdbcTemplate jdbcTemplate) {
