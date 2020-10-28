@@ -1,5 +1,6 @@
 package org.scada_lts.web.mvc.api.alarms;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/api/alarms/notification")
@@ -48,6 +50,27 @@ public class NotificationAPI {
             if (user != null) {
                 Scheduler result = notificationService.getSchedulerById(id);
                 return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/getScheduler/id/{id}")
+    public ResponseEntity<String> getSchedulerById(@PathVariable("id") Long id, HttpServletRequest request) {
+        LOG.info("/api/alarms/notification/getScheduler/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Long> map = notificationService.getSchedulerRawData(id);
+                System.out.println(map.get("id"));
+                String json = mapper.writeValueAsString(map);
+
+                return new ResponseEntity<>(json, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

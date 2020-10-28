@@ -3,6 +3,7 @@ package org.scada_lts.dao.alarms;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NotificationService {
@@ -25,6 +26,10 @@ public class NotificationService {
 
     public Scheduler getSchedulerById(Long id) {
         return notificationDAO.getSchedulerById(id);
+    }
+
+    public Map<String, Long> getSchedulerRawData(Long id) {
+        return notificationDAO.getSchedulerRawData(id);
     }
 
     public Scheduler createScheduler(Long rangeId, Long notificationId) {

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Alarms from './views/Alarms'
 import About from './views/About'
 import HistoricalAlarms from "./views/HistoricalAlarms"
+import PlcNotifications from '@/views/PlcNotifications'
 
 Vue.use(Router)
 
@@ -29,6 +30,11 @@ export default new Router({
       path: '/historical-alarms',
       name: 'historical-alarms',
       component: HistoricalAlarms
+    },
+    {
+      path: '/plc-notifications',
+      name: 'plc-notifications',
+      component: PlcNotifications
     },
     {
       path: '/example-ph',

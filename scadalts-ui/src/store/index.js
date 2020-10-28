@@ -6,6 +6,7 @@ import pointHierarchy from "./pointHierarchy"
 import modernWatchList from './modernWatchList'
 import amcharts from './amcharts'
 import alarms from './alarms'
+import plcNotifications from './alarms/notification'
 
 Vue.use(Vuex)
 
@@ -22,7 +23,8 @@ export default new Vuex.Store({
     pointHierarchy,
     amcharts,
     modernWatchList,
-    alarms
+    alarms,
+    plcNotifications
   },
   state: {
 

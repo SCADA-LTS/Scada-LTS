@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NotificationDAO {
 
@@ -58,6 +60,14 @@ public class NotificationDAO {
             SELECT_FROM_SCHEDULERS_VIEW +
             " WHERE " + COLUMN_NAME_ID + "=?" +
             ";";
+
+    private static final String SELECT_FROM_SCHEDULERS_TAB_WHERE_ID = "" +
+            "SELECT " +
+            COLUMN_NAME_ID + ", " +
+            COLUMN_NAME_RANGES_ID + ", " +
+            COLUMN_NAME_NOTIFICATIONS_ID +
+            " FROM " + TABLE_NAME_SCHEDULERS +
+            " WHERE " + COLUMN_NAME_ID + "=?";
 
     private static final String INSERT_INTO_SCHEDULERS = "" +
             "INSERT INTO " + TABLE_NAME_SCHEDULERS + " (" +
@@ -234,6 +244,18 @@ public class NotificationDAO {
             return null;
         }
     }
+
+    public Map<String, Long> getSchedulerRawData(Long id) {
+        try {
+            return jdbcTemplate.queryForObject(SELECT_FROM_SCHEDULERS_TAB_WHERE_ID,
+                    new Object[] {id},
+                    new SchedulerRawRowMapper());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return null;
+        }
+    }
+
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     public Scheduler createScheduler(Long rangeId, Long notificationId) {
@@ -513,6 +535,19 @@ public class NotificationDAO {
             scheduler.setHourStop(resultSet.getInt(COLUMN_NAME_HOUR_STOP));
             scheduler.setDescription(resultSet.getString(COLUMN_NAME_DESCRIPTION));
             return scheduler;
+        }
+    }
+
+    private class SchedulerRawRowMapper implements RowMapper<Map<String, Long>> {
+
+        @Override
+        public Map<String, Long> mapRow(ResultSet resultSet, int i) throws SQLException {
+            Map<String, Long> result = new HashMap<>();
+            result.put(COLUMN_NAME_ID, resultSet.getLong(COLUMN_NAME_ID));
+            result.put(COLUMN_NAME_RANGES_ID, resultSet.getLong(COLUMN_NAME_RANGES_ID));
+            result.put(COLUMN_NAME_NOTIFICATIONS_ID, resultSet.getLong(COLUMN_NAME_NOTIFICATIONS_ID));
+            System.out.println(result.toString());
+            return result;
         }
     }
 
