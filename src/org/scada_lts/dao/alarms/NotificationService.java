@@ -76,12 +76,24 @@ public class NotificationService {
         return notificationDAO.updateNotification(notification);
     }
 
+    public void deleteNotification(Long notificationId) {
+        notificationDAO.deleteNotification(notificationId);
+    }
+
     public List<Scheduler> getDataPointSchedulers(Long dataPointId) {
         return notificationDAO.getDataPointSchedulers(dataPointId);
     }
 
     public List<SchedulerUserData> getAllSchedulerUserData(Long userId) {
         return notificationDAO.getAllSchedulersForUser(userId);
+    }
+
+    public List<Long> getDataPointIdsByScheduler(Long schedulerId) {
+        return notificationDAO.getDataPointsBySchedulerId(schedulerId);
+    }
+
+    public List<Long> getUserIdsByScheduler(Long schedulerId) {
+        return notificationDAO.getUsersBySchedulerId(schedulerId);
     }
 
     /* --- --- --- --- --- --- --- --- --- */

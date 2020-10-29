@@ -26,7 +26,6 @@ const storePlcNotifications = {
         getDataPointList() {
             return new Promise((resolve, reject) => {
                 axios.get(`./api/datapoint/getAll`).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -36,7 +35,6 @@ const storePlcNotifications = {
         getUserList() {
             return new Promise((resolve, reject) => {
                 axios.get(`./api/user/getAll`).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -46,7 +44,6 @@ const storePlcNotifications = {
         getRangeList() {
             return new Promise((resolve, reject) => {
                 axios.get(`./api/alarms/notification/getAllRanges`).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -56,7 +53,6 @@ const storePlcNotifications = {
         getSchedulersList() {
             return new Promise((resolve, reject) => {
                 axios.get(`./api/alarms/notification/getAllSchedulers`).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -66,7 +62,24 @@ const storePlcNotifications = {
         getSchedulerRaw({commit}, schedulerId) {
             return new Promise((resolve, reject) => {
                 axios.get(`./api/alarms/notification/getScheduler/id/${schedulerId}`).then(response => {
-                    console.log(response);
+                    resolve(response.data);
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        },
+        getSchedulerDpIds({commit}, schedulerId) {
+            return new Promise((resolve, reject) => {
+                axios.get(`./api/alarms/notification/getScheduler/id/${schedulerId}/dp`).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        },
+        getSchedulerUserIds({commit}, schedulerId) {
+            return new Promise((resolve, reject) => {
+                axios.get(`./api/alarms/notification/getScheduler/id/${schedulerId}/users`).then(response => {
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -76,7 +89,6 @@ const storePlcNotifications = {
         getSchedulersByUser({commit}, userId) {
             return new Promise((resolve, reject) => {
                 axios.get(`./api/alarms/notification/getSchedulers/user/${userId}`).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -86,7 +98,6 @@ const storePlcNotifications = {
         getSchedulersByDataPoint({commit}, datapointId) {
             return new Promise((resolve, reject) => {
                 axios.get(`./api/alarms/notification/getSchedulers/dataPoint/${datapointId}`).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -94,15 +105,53 @@ const storePlcNotifications = {
             });
         },
         postSchedulerWithNotification({commit}, datapointData) {
-            let notification = {
+            let now = new Date();
+            let date = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+            let time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+            let notificationData = {
                 id: null,
-                perEmail: datapointData.mail,
-                perSms: datapointData.sms,
-                mtime: "2020-10-22 00:00:00"
+                perEmail: !!datapointData.mail,
+                perSms: !!datapointData.sms,
+                mtime: `${date} ${time}`
             }
             return new Promise((resolve, reject) => {
-                axios.post(`./api/alarms/notification/setSchedulerWithNotification/${datapointData.range}/${datapointData.user}/${datapointData.id}`, notification).then(response => {
-                    console.log(response);
+                axios.post(`./api/alarms/notification/setSchedulerWithNotification/${datapointData.range}/${datapointData.user}/${datapointData.id}`, notificationData).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        },
+        updateScheduler({commit}, scheduler) {
+            return new Promise((resolve, reject) => {
+                axios.put(`./api/alarms/notification/updateScheduler/${scheduler.id}/${scheduler.ranges_id}/${scheduler.notifications_id}`).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        },
+        bindSchedulerWithUser({commit}, payload) {
+            return new Promise((resolve, reject) => {
+                axios.get(`./api/alarms/notification/bindScheduler/${payload.sid}/user/${payload.uid}`).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        },
+        bindSchedulerWithDataPoint({commit}, payload) {
+            return new Promise((resolve, reject) => {
+                axios.get(`./api/alarms/notification/bindScheduler/${payload.sid}/dp/${payload.dpid}`).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        },
+        deleteScheduler({commit}, scheduler) {
+            return new Promise((resolve, reject) => {
+                axios.delete(`./api/alarms/notification/deleteScheduler/${scheduler.id}`).then(response => {
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -112,7 +161,6 @@ const storePlcNotifications = {
         postRange({commit}, range) {
             return new Promise((resolve, reject) => {
                 axios.post(`./api/alarms/notification/setRange`, range).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -122,7 +170,6 @@ const storePlcNotifications = {
         updateRange({commit}, range) {
             return new Promise((resolve, reject) => {
                 axios.put(`./api/alarms/notification/updateRange`, range).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -132,7 +179,6 @@ const storePlcNotifications = {
         deleteRange({commit}, range) {
             return new Promise((resolve, reject) => {
                 axios.delete(`./api/alarms/notification/deleteRange/${range.id}`).then(response => {
-                    console.log(response);
                     resolve(response.status);
                 }).catch(error => {
                     reject(error);
@@ -142,7 +188,6 @@ const storePlcNotifications = {
         getNotificationList() {
             return new Promise((resolve, reject) => {
                 axios.get(`./api/alarms/notification/getAllNotifications`).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
@@ -152,13 +197,21 @@ const storePlcNotifications = {
         updateNotification({commit}, notification) {
             return new Promise((resolve, reject) => {
                 axios.put(`./api/alarms/notification/updateNotification`, notification).then(response => {
-                    console.log(response);
                     resolve(response.data);
                 }).catch(error => {
                     reject(error);
                 });
             });
         },
+        deleteNotification({commit}, notification) {
+            return new Promise((resolve, reject) => {
+                axios.delete(`./api/alarms/notification/deleteNotification/${notification.id}`).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        }
 
     },
     getters: {

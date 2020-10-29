@@ -80,6 +80,44 @@ public class NotificationAPI {
         }
     }
 
+    @GetMapping(value = "/getScheduler/id/{id}/users")
+    public ResponseEntity<String> getUserIdsBySchedulerId(@PathVariable("id") Long id, HttpServletRequest request) {
+        LOG.info("/api/alarms/notification/getScheduler/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                List<Long> result = notificationService.getUserIdsByScheduler(id);
+                String json = mapper.writeValueAsString(result);
+                return new ResponseEntity<>(json, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @GetMapping(value = "/getScheduler/id/{id}/dp")
+    public ResponseEntity<String> getDataPointIdsBySchedulerId(@PathVariable("id") Long id, HttpServletRequest request) {
+        LOG.info("/api/alarms/notification/getScheduler/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                List<Long> result = notificationService.getDataPointIdsByScheduler(id);
+                String json = mapper.writeValueAsString(result);
+                return new ResponseEntity<>(json, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping(value = "/setScheduler/{rangeId}/{notificationId}")
     public ResponseEntity<Scheduler> createScheduler(
             @PathVariable("rangeId") Long rangeId,
@@ -264,6 +302,23 @@ public class NotificationAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 notificationService.updateNotification(notification);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping(value = "/deleteNotification/{id}")
+    public ResponseEntity<?> deleteNotification(@PathVariable("id") Long id, HttpServletRequest request) {
+        LOG.info("/api/alarms/notification/deleteNotification/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                notificationService.deleteNotification(id);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

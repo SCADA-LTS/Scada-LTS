@@ -142,6 +142,10 @@ public class NotificationDAO {
             COLUMN_NAME_MTIME + "=? " +
             "WHERE " + COLUMN_NAME_ID + "=?";
 
+    private static final String DELETE_NOTIFICATION = "" +
+            "DELETE FROM " + TABLE_NAME_NOTIFICATIONS +
+            " WHERE " + COLUMN_NAME_ID + "=?";
+
     private static final String INSERT_INTO_SCHEDULERS_DEFPOINTS = "" +
             "INSERT INTO " + TABLE_NAME_SCHEDULERS_DEFPOINTS + " (" +
             COLUMN_NAME_DATAPOINTS_ID + ", " +
@@ -167,6 +171,12 @@ public class NotificationDAO {
             "INNER JOIN " + TABLE_NAME_SCHEDULERS_DEFPOINTS + " AS d " +
             "ON s." + COLUMN_NAME_ID + "=d." + COLUMN_NAME_SCHEDULERS_ID +
             " WHERE d." + COLUMN_NAME_DATAPOINTS_ID + "=?";
+
+    private static final String SELECT_FROM_DEFPOINTS_BY_SCHEDULER_ID = "" +
+            "SELECT " +
+            COLUMN_NAME_DATAPOINTS_ID + " " +
+            "FROM " + TABLE_NAME_SCHEDULERS_DEFPOINTS +
+            " WHERE " + COLUMN_NAME_SCHEDULERS_ID + "=?";
 
     private static final String SELECT_SCHEDULERS_WHERE_USER_ID = "" +
             "SELECT " +
@@ -200,6 +210,12 @@ public class NotificationDAO {
             "ON s." + COLUMN_NAME_ID + "=d." +COLUMN_NAME_SCHEDULERS_ID + ") " +
             "INNER JOIN users AS us ON u." + COLUMN_NAME_USERS_ID + "=us.id " +
             "WHERE u." +COLUMN_NAME_USERS_ID + "=?";
+
+    private static final String SELECT_FROM_USERS_BY_SCHEDULER = "" +
+            "SELECT " +
+            COLUMN_NAME_USERS_ID + " " +
+            "FROM " + TABLE_NAME_SCHEDULERS_USERS +
+            " WHERE " + COLUMN_NAME_SCHEDULERS_ID + "=?";
 
     private static final String SELECT_NOTIFICATION_BY_SCHEDULERID = "" +
             "SELECT " +
@@ -457,11 +473,43 @@ public class NotificationDAO {
         return getNotificationById(notification.getId());
     }
 
+    public void deleteNotification(Long notificationId) {
+        try {
+            jdbcTemplate.update(DELETE_NOTIFICATION, notificationId);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
+    }
+
     public List<Scheduler> getDataPointSchedulers(Long dataPointId) {
         try {
             return jdbcTemplate.query(SELECT_SCHEDULER_FROM_DEFPOINTS_BY_DATAPOINT_ID,
                     new Object[]{dataPointId},
                     new SchedulerRowMapper() {
+                    });
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Long> getDataPointsBySchedulerId(Long schedulerId) {
+        try {
+            return jdbcTemplate.query(SELECT_FROM_DEFPOINTS_BY_SCHEDULER_ID,
+                    new Object[]{schedulerId},
+                    new SingleLongRowMapper() {
+                    });
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Long> getUsersBySchedulerId(Long schedulerId) {
+        try {
+            return jdbcTemplate.query(SELECT_FROM_USERS_BY_SCHEDULER,
+                    new Object[]{schedulerId},
+                    new SingleLongRowMapper() {
                     });
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -548,6 +596,14 @@ public class NotificationDAO {
             result.put(COLUMN_NAME_NOTIFICATIONS_ID, resultSet.getLong(COLUMN_NAME_NOTIFICATIONS_ID));
             System.out.println(result.toString());
             return result;
+        }
+    }
+
+    private class SingleLongRowMapper implements RowMapper<Long> {
+
+        @Override
+        public Long mapRow(ResultSet resultSet, int i) throws SQLException {
+            return resultSet.getLong(1);
         }
     }
 
