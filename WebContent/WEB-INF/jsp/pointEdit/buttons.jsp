@@ -37,7 +37,7 @@
       </c:choose>
       
       <input type="button" value="<fmt:message key="common.cancel"/>"
-              onclick="window.location='data_point_details.shtm?dpid=${form.id}';"/>
+              onclick="window.location='data_source_edit.shtm?dsid=${dataSource.id}&pid=${form.id}';"/>
     </td>
     <td></td>
   </tr>

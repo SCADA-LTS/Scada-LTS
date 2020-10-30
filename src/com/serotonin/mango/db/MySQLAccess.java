@@ -24,7 +24,6 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.FlywayException;
 import org.springframework.dao.DataAccessException;
 
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
@@ -95,8 +94,7 @@ public class MySQLAccess extends BasePooledAccess {
          }
          return false;
          */
-        
-        //TODO enable flayway
+
         
     	boolean shemaExist = true;
     	boolean baseLineNotExist = false;
@@ -116,33 +114,50 @@ public class MySQLAccess extends BasePooledAccess {
         	baseLineNotExist = true;
         	LOG.info("BaseLineNotExist:"+baseLineNotExist);
         }
-        
+
         try {
-	        Flyway flyway = new Flyway();
-			flyway.setLocations("org.scada_lts.dao.migration.mysql");
-			flyway.setDataSource(getDataSource());
-			
-	        if (shemaExist) {
-	        	// old shema without flayway
-	        	if (baseLineNotExist) {
-	        		flyway.setBaselineOnMigrate(true);
-	    			flyway.baseline();
-	    			flyway.migrate();
-	    		}
-	        } else {
-	        	//shema not exist
-	        	if (baseLineNotExist) {
-	    			//flyway.baseline();
-	    			flyway.migrate();		
-	    		}
-	        }
-	        
-	        flyway.migrate();
-	        
-        } catch (FlywayException fe) {
-        	LOG.error(fe);
+            Flyway flyway = null;
+
+            if (shemaExist) {
+                // old shema without flayway
+                if (baseLineNotExist) {
+                    flyway = Flyway.configure()
+                            .baselineOnMigrate(true)
+                            .dataSource(getDataSource())
+                            .locations("org.scada_lts.dao.migration.mysql")
+                            .table("schema_version")
+                            .load();
+
+                    flyway.baseline();
+                    flyway.migrate();
+                }
+            } else {
+                //shema not exist
+                if (baseLineNotExist) {
+                    flyway = Flyway.configure()
+                            .baselineOnMigrate(true)
+                            .dataSource(getDataSource())
+                            .locations("org.scada_lts.dao.migration.mysql")
+                            .table("schema_version")
+                            .load();
+                    //flayway.baseline();
+                    flyway.migrate();
+                }
+            }
+            if (flyway == null) {
+                flyway = Flyway.configure()
+                        .dataSource(getDataSource())
+                        .locations("org.scada_lts.dao.migration.mysql")
+                        .table("schema_version")
+                        .load();
+            }
+            //flyway.repair();
+            flyway.migrate();
+        } catch (Exception e) {
+            LOG.error(e);
+            //Need stop scada
         }
-          
+
         return false; 
     }
 
