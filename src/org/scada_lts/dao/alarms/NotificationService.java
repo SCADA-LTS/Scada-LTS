@@ -3,6 +3,7 @@ package org.scada_lts.dao.alarms;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NotificationService {
@@ -109,6 +110,23 @@ public class NotificationService {
     public void acknowledgeNotification(Long schedulerId) {
         Notification notification = notificationDAO.getNotificationBySchedulerId(schedulerId);
         notificationDAO.acknowledgeNotification(notification.getId());
+    }
+
+    public List<MailingListPlcNotification> getMailingListPlcNotification(Long mailingListId) {
+        return notificationDAO.getMailingListPlcNotifications(mailingListId);
+    }
+
+    public MailingListPlcNotification createMailingListPlcNotification(MailingListPlcNotification mlpn) {
+        notificationDAO.insertMLPlcNotification(mlpn);
+        return mlpn;
+    }
+
+    public void updateMailingListPlcNotification(MailingListPlcNotification mlpn) {
+        notificationDAO.updateMLPlcNotification(mlpn);
+    }
+
+    public List<Map<String, String>> getMailingListRecipients(Long mailingListId) {
+        return notificationDAO.getMailingListRecipients(mailingListId);
     }
 
 

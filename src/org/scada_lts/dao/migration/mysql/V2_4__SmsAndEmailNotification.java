@@ -27,6 +27,7 @@ public class V2_4__SmsAndEmailNotification extends BaseJavaMigration {
         createSchedulersUsersTable(jdbcTmp);
         createSchedulerMailingListTable(jdbcTmp);
         createSchedulersView(jdbcTmp);
+        createMailingListPlcNotification(jdbcTmp);
 
         alterMailingListTable(jdbcTmp);
 
@@ -120,6 +121,18 @@ public class V2_4__SmsAndEmailNotification extends BaseJavaMigration {
                 "INNER JOIN notifications AS n ON s.notifications_id=n.id) " +
                 "INNER JOIN ranges AS r ON s.ranges_id=r.id);"
         );
+    }
+
+    private void createMailingListPlcNotification(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("" +
+                "CREATE TABLE mailingListPlcNotification (" +
+                "mailing_list_id INT (11), " +
+                "datapoint_id INT (11), " +
+                "per_sms INT(10), " +
+                "per_email INT(10), " +
+                "PRIMARY KEY (mailing_list_id, datapoint_id), " +
+                "FOREIGN KEY (mailing_list_id) REFERENCES mailingLists(id), " +
+                "FOREIGN KEY (datapoint_id) REFERENCES dataPoints(id));");
     }
 
 }

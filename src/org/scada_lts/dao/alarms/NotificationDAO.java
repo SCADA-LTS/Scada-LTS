@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NotificationDAO {
 
@@ -27,6 +29,7 @@ public class NotificationDAO {
     private static final String TABLE_NAME_NOTIFICATIONS = "notifications";
     private static final String TABLE_NAME_SCHEDULERS_DEFPOINTS = "schedulers_defpoints";
     private static final String TABLE_NAME_SCHEDULERS_USERS = "schedulers_users";
+    private static final String TABLE_NAME_ML_PLC_NOTIFICATION = "mailingListPlcNotification";
 
     private static final String VIEW_NAME_SCHEDULERS = "schedulers_view";
 
@@ -41,6 +44,9 @@ public class NotificationDAO {
     private static final String COLUMN_NAME_NOTIFICATIONS_ID = "notifications_id";
     private static final String COLUMN_NAME_SCHEDULERS_ID = "schedulers_id";
     private static final String COLUMN_NAME_DATAPOINTS_ID = "dataPoints_id";
+    private static final String COLUMN_NAME_MAILING_LIST_ID = "mailing_list_id";
+    private static final String COLUMN_NAME_DATAPOINT_ID = "datapoint_id";
+    private static final String COLUMN_NAME_PER_EMAIL = "per_email";
     private static final String COLUMN_NAME_USERS_ID = "users_id";
 
     private static final String SELECT_FROM_SCHEDULERS_VIEW = "" +
@@ -206,6 +212,36 @@ public class NotificationDAO {
             "UPDATE " + TABLE_NAME_NOTIFICATIONS + " SET " +
             COLUMN_NAME_MTIME + "=NOW() " +
             "WHERE " + COLUMN_NAME_ID + "=?";
+
+    private static final String SELECT_MLPLCNOTIF_WHERE_MLID = "" +
+            "SELECT " +
+            COLUMN_NAME_MAILING_LIST_ID + ", " +
+            COLUMN_NAME_DATAPOINT_ID + ", " +
+            COLUMN_NAME_PER_SMS + ", " +
+            COLUMN_NAME_PER_EMAIL + " " +
+            "FROM  " + TABLE_NAME_ML_PLC_NOTIFICATION +
+            " WHERE "+ COLUMN_NAME_MAILING_LIST_ID +"=?";
+
+    private static final String INSERT_INTO_ML_PLC_NOTIFICATION = "" +
+            "INSERT INTO " + TABLE_NAME_ML_PLC_NOTIFICATION + " (" +
+            COLUMN_NAME_MAILING_LIST_ID + ", " +
+            COLUMN_NAME_DATAPOINT_ID + ", " +
+            COLUMN_NAME_PER_SMS + ", " +
+            COLUMN_NAME_PER_EMAIL + ") " +
+            "VALUES (?,?,?,?);";
+
+    private static final String UPDATE_ML_PLC_NOTIFICATION= "" +
+            "UPDATE " + TABLE_NAME_ML_PLC_NOTIFICATION + " SET " +
+            COLUMN_NAME_PER_SMS + "=?, " +
+            COLUMN_NAME_PER_EMAIL + "=? " +
+            "WHERE " + COLUMN_NAME_MAILING_LIST_ID + "=? " +
+            "AND " + COLUMN_NAME_DATAPOINT_ID + "=?";
+
+    private static final String SELECT_RECIPIENTS_WHERE_MLID = "" +
+            "SELECT ml.mailingListId, ml.address, ml.phone, u.email, u.phone AS user_phone " +
+            "FROM mailingListMembers AS ml " +
+            "LEFT JOIN users AS u " +
+            "ON ml.userId=u.id WHERE mailingListId=?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -447,6 +483,70 @@ public class NotificationDAO {
         }
     }
 
+    public List<MailingListPlcNotification> getMailingListPlcNotifications(Long mailingListId) {
+        try {
+            return jdbcTemplate.query(SELECT_MLPLCNOTIF_WHERE_MLID,
+                    new Object[]{mailingListId},
+                    new MailingListPlcNotificationRowMapper() {
+                    });
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    public MailingListPlcNotification insertMLPlcNotification(MailingListPlcNotification notification) {
+        if(LOG.isTraceEnabled()) {
+            LOG.trace(notification);
+        }
+
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(INSERT_INTO_ML_PLC_NOTIFICATION, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[] {
+                        notification.getMailingListId(),
+                        notification.getDataPointId(),
+                        notification.isPerSms() ? 1 : 0,
+                        notification.isPerEmail() ? 1 : 0
+                }).setValues(ps);
+                return ps;
+            }
+        });
+        return notification;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    public MailingListPlcNotification updateMLPlcNotification(MailingListPlcNotification notification) {
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(UPDATE_ML_PLC_NOTIFICATION, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[]{
+                        notification.isPerSms() ? 1 : 0,
+                        notification.isPerEmail() ? 1 : 0,
+                        notification.getMailingListId(),
+                        notification.getDataPointId()
+                }).setValues(ps);
+                return ps;
+            }
+        });
+        return notification;
+    }
+
+    public List<Map<String, String>> getMailingListRecipients(Long mailingListId) {
+        try {
+            return jdbcTemplate.query(SELECT_RECIPIENTS_WHERE_MLID,
+                    new Object[]{mailingListId},
+                    new RecipientRowMapper() {
+                    });
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
+    }
+
     /**
      * Return all SchedulersUD defined for this specific user
      * with bounded data points by them ID.
@@ -499,6 +599,48 @@ public class NotificationDAO {
     }
 
     /* -------- RowMappers -------- */
+
+    private class MailingListPlcNotificationRowMapper implements RowMapper<MailingListPlcNotification> {
+
+        @Override
+        public MailingListPlcNotification mapRow(ResultSet resultSet, int i) throws SQLException {
+            MailingListPlcNotification result = new MailingListPlcNotification();
+            result.setMailingListId(resultSet.getLong(COLUMN_NAME_MAILING_LIST_ID));
+            result.setDataPointId(resultSet.getLong(COLUMN_NAME_DATAPOINT_ID));
+            result.setPerSms(resultSet.getInt(COLUMN_NAME_PER_SMS) == 1);
+            result.setPerEmail(resultSet.getInt(COLUMN_NAME_PER_EMAIL) == 1);
+            return result;
+        }
+    }
+
+    private class RecipientRowMapper implements RowMapper<Map<String, String>> {
+
+        @Override
+        public Map<String, String> mapRow(ResultSet resultSet, int i) throws SQLException {
+            Map result = new HashMap();
+            String address = resultSet.getString("address");
+            String phone = resultSet.getString("phone");
+            String uAddress = resultSet.getString("email");
+            String uPhone = resultSet.getString("user_phone");
+
+            if (address != null && !address.isEmpty()) {
+                result.put("address", address);
+            } else if (uAddress != null && !uAddress.isEmpty()){
+                result.put("address", uAddress);
+            } else {
+                result.put("address", "");
+            }
+
+            if (phone != null && !phone.isEmpty()) {
+                result.put("phone", phone);
+            } else if (uPhone != null && !uPhone.isEmpty()) {
+                result.put("phone", uPhone);
+            } else {
+                result.put("phone", "");
+            }
+            return result;
+        }
+    }
 
     private class SchedulerRowMapper implements RowMapper<Scheduler> {
 

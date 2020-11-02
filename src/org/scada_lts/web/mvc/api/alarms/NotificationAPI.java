@@ -1,5 +1,6 @@
 package org.scada_lts.web.mvc.api.alarms;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/api/alarms/notification")
@@ -355,6 +358,83 @@ public class NotificationAPI {
             if (user != null) {
                 notificationService.createSchedulerWithUserAndDatapoint(notification, rangeId, userId, dataPointId);
                 return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/getMailingList/{id}")
+    public ResponseEntity<List<MailingListPlcNotification>> getMailingListPlcNotification(@PathVariable("id") Long id, HttpServletRequest request) {
+        LOG.info("/api/alarms/notification/getMailingList/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                List<MailingListPlcNotification> result = notificationService.getMailingListPlcNotification(id);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(value = "/setMailingList", consumes = "application/json")
+    public ResponseEntity<MailingListPlcNotification> setMailingListPlcNotification(HttpServletRequest request, @RequestBody MailingListPlcNotification notification) {
+        LOG.info("/api/alarms/notification/setMailingList");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                MailingListPlcNotification result = notificationService.createMailingListPlcNotification(notification);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping(value = "/updateMailingList", consumes = "application/json")
+    public ResponseEntity<MailingListPlcNotification> updateMailingListPlcNotification(HttpServletRequest request, @RequestBody MailingListPlcNotification notification) {
+        LOG.info("/api/alarms/notification/updateMailingList");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                notificationService.updateMailingListPlcNotification(notification);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/getMailingListRecipients/{id}")
+    public ResponseEntity<String> getMailingListRecipients(@PathVariable("id") Long id, HttpServletRequest request) {
+        LOG.info("/api/alarms/notification/getMailingListRecipients/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                String json;
+                ObjectMapper mapper = new ObjectMapper();
+                List<MailingListPlcNotification> dataPointsConfig = notificationService.getMailingListPlcNotification(id);
+                List<Map<String, String>> mailingListRecipients = notificationService.getMailingListRecipients(id);
+                Map<String, Object> map = new HashMap<>();
+                map.put("mailingListId", id);
+                map.put("dataPointsConfig", dataPointsConfig);
+                map.put("mailingListRecipients", mailingListRecipients);
+                json = mapper.writeValueAsString(map);
+
+                return new ResponseEntity<>(json, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
