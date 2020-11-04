@@ -12,6 +12,8 @@ before_script:
 - npm -v
 - node -v
 - env
+- chmod +x ./get_seroUtils.sh
+- "./get_seroUtils.sh"
 - npm install -g bower
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 # correct version base on Milestones
