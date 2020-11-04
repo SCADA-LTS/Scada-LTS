@@ -248,8 +248,7 @@ public class SystemSettingsService {
     }
 
     public long getStartupTime() {
-        return System.currentTimeMillis();
-//        return Common.getStartupTime();
+        return Common.getStartupTime();
     }
 
     public String getSchemaVersion() {
