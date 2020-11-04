@@ -84,7 +84,7 @@ public class Common {
 
 	private static String environmentProfileName = "env";
 
-	private static Long startupTime = null;
+//	private static Long startupTime = null;
 
 	/*
 	 * Updating the Mango version: - Create a DBUpdate subclass for the old
@@ -96,14 +96,14 @@ public class Common {
 		return "2.1.0";
 	}
 
-	public static final Long getStartupTime() {
-		if (startupTime != null) {
-			return startupTime;
-		} else {
-			startupTime = System.currentTimeMillis();
-			return startupTime;
-		}
-	}
+//	public static final Long getStartupTime() {
+//		if (startupTime != null) {
+//			return startupTime;
+//		} else {
+//			startupTime = System.currentTimeMillis();
+//			return startupTime;
+//		}
+//	}
 
 	public interface ContextKeys {
 		String DATABASE_ACCESS = "DATABASE_ACCESS";
