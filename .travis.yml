@@ -12,11 +12,14 @@ before_script:
 - npm -v
 - node -v
 - env
+- chmod +x ./get_seroUtils.sh
+- "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 # correct version base on Milestones
 - sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./scadalts-ui
 - npm install
+- npm run-script build-config -- $SCADA_LTS_MILESTONE $TRAVIS_BUILD_NUMBER $TRAVIS_BRANCH
 - cd ../
 language: java
 jdk:
@@ -29,7 +32,7 @@ branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^feature/#1404.*$/"
+  - "/^release/2.4.0.*$/"
 notifications:
   email: false
 env:
