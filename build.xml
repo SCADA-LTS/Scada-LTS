@@ -231,11 +231,7 @@
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
 	</path>
-	<target name="update-static-web-dependecy" description="Update static web dependency">
-	  <exec dir="WebContent/resources/app" executable="bower">
-	    <arg  value="update"/>
-	  </exec>
-	</target>
+
 	<target name="init" depends="clean">
 		<mkdir dir="${build-project.dir}"/>
 		<mkdir dir="${build-project.src.dir}"/>
@@ -279,13 +275,20 @@
 		<record action="stop" name="${build-project.log.test.name}"/>
 	</target>
 
+	<!-- Instead of bower package manager -->
+	<target name="static-web-dependency" description="Download web resources from the NPM, required for PointHierarchySLTS">
+		<exec dir="./WebContent/resources" executable="npm">
+			<arg value="install"/>
+		</exec>
+	</target>
+
 	<target name="new-ui-dependency">
 		<exec dir="./scadalts-ui" executable="npm">
 			<arg value="install"/>
 		</exec>
 	</target>
 
-	<target name="new-ui" depends="new-ui-dependency">
+	<target name="new-ui" depends="new-ui-dependency, static-web-dependency">
 		<exec dir="./scadalts-ui" executable="npm">
 			<arg value="run"/>
 			<arg value="build"/>

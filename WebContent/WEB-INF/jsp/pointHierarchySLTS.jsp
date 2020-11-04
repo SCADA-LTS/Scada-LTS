@@ -7,26 +7,26 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 <link
-	href="resources/app/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	href="resources/node_modules/bootstrap/dist/css/bootstrap.min.css"
 	rel="stylesheet" type="text/css">
 <link
-	href="resources/app/bower_components/fancytree/dist/skin-bootstrap/ui.fancytree.min.css"
+	href="resources/node_modules/jquery.fancytree/dist/skin-bootstrap/ui.fancytree.min.css"
 	rel="stylesheet" type="text/css">
 <link
-	href="resources/app/bower_components/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css"
+	href="resources/node_modules/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css"
 	rel="stylesheet" type="text/css">
 
 <link
-	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.css"
+	href="resources/node_modules/sweetalert2/dist/sweetalert2.css"
 	rel="stylesheet" type="text/css">
 
 <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
 <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
 
-<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
+<script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
 
 <link
-	href="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
+	href="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
     rel="stylesheet" type="text/css">
 
 
@@ -34,7 +34,7 @@
 
 /* correcting jsoneditor */
 button.jsoneditor-compact {
-  background-images: url("../resources/npm/node_modules/vue-jsoneditor/dist/docs/img/jsoneditor-icons.bfab7b1.svg");
+  background-images: url("../resources/node_modules/vue-jsoneditor/dist/docs/img/jsoneditor-icons.bfab7b1.svg");
 }
 /* Reduce bootstrap's default 'panel' padding: */
 div#tree {
@@ -75,8 +75,8 @@ div#tree {
 	display: block;
 	float: left;
 	background: #2fb34a;
-	margin: 0 5px;
-	height: 37px;
+    margin: 5px 6px;
+    height: 16px;
 	width: 1px;
 }
 
@@ -101,9 +101,11 @@ div#tree {
 
 .nav-pills>li>a {
 	line-height: 1px;
-	margin-right: 2px;
-	padding-left: 12px;
-	padding-right: 12px;
+	margin-right: 1px;
+	padding: 4px;
+}
+.nav-pills>li>a>img {
+    max-width: 16px;
 }
 
 table {
@@ -168,110 +170,110 @@ thead th {
 							<li role="presentation"><a href="watch_list.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 								title='<fmt:message key="menu.watchlists.tooltip"/>'><img
-									src="resources/app/menu_icons/eye.png"></a></li>
+									src="images/eye.png"></a></li>
 							<li role="presentation"><a href="views.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 								title='<fmt:message key="menu.graphicalviews.tooltip"/>'><img
-									src="resources/app/menu_icons/icon_view.png"></a></li>
+									src="images/icon_view.png"></a></li>
 							<li role="presentation"><a href="events.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 								title='<fmt:message key="menu.alarms.tooltip"/>'><img
-									src="resources/app/menu_icons/flag_white.png"></a></li>
+									src="images/flag_white.png"></a></li>
 							<li role="presentation"><a href="reports.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 								title='<fmt:message key="menu.reports.tooltip"/>'><img
-									src="resources/app/menu_icons/report.png"></a></li>
+									src="images/report.png"></a></li>
 
 							<c:if test="${sessionUser.dataSourcePermission}">
 								<span class="btn-separator"></span>
 								<li role="presentation"><a href="event_handlers.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.event_handlers.tooltip"/>'><img
-										src="resources/app/menu_icons/cog.png" /></a></li>
+										src="images/cog.png" /></a></li>
 								<li role="presentation"><a href="data_sources.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.data_source.tooltip"/>'><img
-										src="resources/app/menu_icons/icon_ds.png" /></a></li>
+										src="images/icon_ds.png" /></a></li>
 								<li role="presentation"><a href="scheduled_events.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.scheduled_events.tooltip"/>'><img
-										src="resources/app/menu_icons/clock.png" /></a></li>
+										src="images/clock.png" /></a></li>
 								<li role="presentation"><a href="compound_events.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.compound_event_detectors.tooltip"/>'><img
-										src="resources/app/menu_icons/multi_bell.png" /></a></li>
+										src="images/multi_bell.png" /></a></li>
 								<li role="presentation"><a href="point_links.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.point_links.tooltip"/>'><img
-										src="resources/app/menu_icons/link.png" /></a></li>
+										src="images/link.png" /></a></li>
 								<li role="presentation"><a href="scripting.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.scripting.tooltip"/>'><img
-										src="resources/app/menu_icons/script_gear.png" /></a></li>
+										src="images/script_gear.png" /></a></li>
 								<span class="btn-separator"></span>
 							</c:if>
 
 							<li role="presentation"><a href="users.shtm"
 								data-toggle="tooltip" data-placement="top"
 								title='<fmt:message key="menu.users.tooltip"/>'><img
-									src="resources/app/menu_icons/user.png" /></a></li>
+									src="images/user.png" /></a></li>
 							<c:if test="${sessionUser.admin}">
 								<li role="presentation"><a href="usersProfiles.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.users_profiles.tooltip"/>'><img
-										src="resources/app/menu_icons/user_ds.png" /></a></li>
+										src="images/user_ds.png" /></a></li>
 								<li role="presentation" class="active"><a
 									href="pointHierarchySLTS" class='btn btn-xs'
 									data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.point_hierarchy.tooltip"/>'><img
-										src="resources/app/menu_icons/folder_brick.png" /></a></li>
+										src="images/folder_brick.png" /></a></li>
 								<li role="presentation"><a href="mailing_lists.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.mailing_lists.tooltip"/>'><img
-										src="resources/app/menu_icons/book.png" /></a></li>
+										src="images/book.png" /></a></li>
 								<li role="presentation"><a href="publishers.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.publishers.tooltip"/>'><img
-										src="resources/app/menu_icons/transmit.png" /></a></li>
+										src="images/transmit.png" /></a></li>
 								<li role="presentation"><a href="maintenance_events.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.maintenance_events.tooltip"/>'><img
-										src="resources/app/menu_icons/hammer.png" /></a></li>
+										src="images/hammer.png" /></a></li>
 								<li role="presentation"><a href="system_settings.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.system_setings.tooltip"/>'><img
-										src="resources/app/menu_icons/application_form.png" /></a></li>
+										src="images/application_form.png" /></a></li>
 								<li role="presentation"><a href="emport.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.import_export.tooltip"/>'><img
-										src="resources/app/menu_icons/script_code.png" /></a></li>
+										src="images/script_code.png" /></a></li>
 								<li role="presentation"><a href="sql.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 									title='<fmt:message key="menu.sql.tooltip"/>'><img
-										src="resources/app/menu_icons/script.png" /></a></li>
+										src="images/script.png" /></a></li>
 								<span class="btn-separator"></span>
 							</c:if>
 
 							<li role="presentation"><a href="logout.htm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 								title='<fmt:message key="menu.logout.tooltip"/>'><img
-									src="resources/app/menu_icons/control_stop_blue.png"></a></li>
+									src="images/control_stop_blue.png"></a></li>
 							<li role="presentation"><a href="help.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 								title='<fmt:message key="menu.help.tooltip"/>'><img
-									src="resources/app/menu_icons/help.png"></a></li>
+									src="images/help.png"></a></li>
 						</c:if>
 						<c:if test="${empty sessionUser}">
 							<li role="presentation"><a href="login.htm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
 								title='<fmt:message key="menu.login.tooltip"/>'><img
-									src="resources/app/menu_icons/control_play_blue.png"></a></li>
+									src="images/control_play_blue.png"></a></li>
 						</c:if>
 						<div class="btn-group pull-right menu">
 							<button class="btn dropdown-toggle btn-xs" data-toggle="dropdown"
 								data-toggle="tooltip" data-placement="top"
 								title='<fmt:message key="menu.change_language.tooltip"/>'>
-								<img src="resources/app/menu_icons/world.png" alt=""> <span
+								<img src="images/world.png" alt=""> <span
 									class="caret" />
 							</button>
 							<ul class="dropdown-menu dropdown-menu-right">
@@ -285,7 +287,7 @@ thead th {
 								<li><a onclick="setLocale('zh')">中文</a></li>
 								<li><a onclick="setLocale('nl')">Nederlands</a></li>
 								<li><a onclick="setLocale('es')">Español</a></li>
-								<li><a onclisk="setLocale('pl')">Polski</a></li>
+								<li><a onclick="setLocale('pl')">Polski</a></li>
 							</ul>
 						</div>
 						<div class="btn-group pull-right menu">
@@ -432,23 +434,23 @@ thead th {
 	</div>
 </body>
 
-<script src="resources/app/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="resources/app/bower_components/jquery-ui/jquery-ui.min.js"></script>
-<script	src="resources/app/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script	src="resources/app/bower_components/fancytree/dist/jquery.fancytree-all.min.js"></script>
-<script	src="resources/app/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
+<script src="resources/node_modules/jquery/dist/jquery.min.js"></script>
+<script src="resources/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
+<script	src="resources/node_modules/jquery.fancytree/dist/jquery.fancytree-all.min.js"></script>
+<script	src="resources/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script	src="resources/node_modules/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
+<script src="resources/node_modules/stompjs/lib/stomp.js"></script>
 <script src="resources/sockjs-0.3.4.js"></script>
-<script src="resources/stomp.js"></script>
 
-<!-- <script src="resources/npm/node_modules/axios/dist/axios.min.js"></script>
-<script src="resources/npm/node_modules/vue/dist/vue.min.js"></script>
-<script src="resources/npm/node_modules/vue-axios/dist/vue-axios.min.js"></script>-->
+<!-- <script src="resources/node_modules/axios/dist/axios.min.js"></script>
+<script src="resources/node_modules/vue/dist/vue.min.js"></script>
+<script src="resources/node_modules/vue-axios/dist/vue-axios.min.js"></script>-->
 
 <!--<script src="resources/vue-mixins/shared/mixins-export-import.js"></script>
 <script src="resources/vue-components/export-import/export-import.js"></script>-->
 
-<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
-<script src="resources/npm/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
+<script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
+<script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
 
 
 <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>

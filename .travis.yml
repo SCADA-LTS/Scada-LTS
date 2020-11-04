@@ -12,12 +12,9 @@ before_script:
 - npm -v
 - node -v
 - env
-- npm install -g bower
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 # correct version base on Milestones
 - sed -i '94s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
-- cd ./WebContent/resources/app; bower update;
-- cd ../../..
 - cd ./scadalts-ui
 - npm install
 - cd ../
