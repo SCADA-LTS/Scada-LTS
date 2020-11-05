@@ -18,35 +18,41 @@ const json = require(pkgJsonPath);
 
 // ----- PACKAGE.JSON VARIABLES ----- //
 var tag = '0.1.0';
-var milestone = '2.0.0';
+var milestone = '2.4.0';
 var build = "0";
 var branch = "local"
 // ----- ---------------------- ----- //
 
-if(process.argv.length === 5) {
+if (process.argv.length === 5) {
     milestone = process.argv[2];
     build = process.argv[3];
     branch = process.argv[4]
 }
 
 if (!json.hasOwnProperty('scripts')) {
-  json.scripts = {};
+    json.scripts = {};
 }
 
 var options = {
-    host: 'api.github.com', 
+    host: 'api.github.com',
     path: '/repos/SCADA-LTS/Scada-LTS/releases/latest',
     headers: { 'User-Agent': 'Mozilla/5.0' }
 }
 
 var request = https.request(options, function (res) {
     var data = '';
-    res.on('data', function(chunk) {
+    res.on('data', function (chunk) {
         data += chunk;
     });
-    res.on('end', function() {
+    res.on('end', function () {
         let webJson = JSON.parse(data);
-        tag = webJson.tag_name.replace(/[^\d.-]/g, '');;
+        if (!!webJson) {
+            tag = webJson.tag_name.replace(/[^\d.-]/g, '');;
+        } else {
+            console.warn("WARNING!:\tFailed to fetch build version data!\n\t\tScada-LTS version may not be displayed properly!")
+            console.log(webJson)
+            console.log("DEBUG: Response data from request:\n",data)
+        }
         json.tag = tag;
         json.milestone = milestone;
         json.build = build;
