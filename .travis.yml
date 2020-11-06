@@ -74,8 +74,8 @@ after_script:
 - export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "develop" ]; then echo "siv_dev";
   else echo $TAGISSUE ; fi`
 - echo $TAG_DEV_OR_ISSUE
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE;
-  fi`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TAG_DEV_OR_ISSUE;  fi`
+- export TAG=`if [ "$TAG" == "" ]; then echo "release"; else echo $TAG;  fi`
 - echo $MY_IMG_NAME; echo $TAG; echo $TRAVIS_COMMIT
 - docker build -t $MY_IMG_NAME:$TRAVIS_COMMIT .
 - docker tag $MY_IMG_NAME:$TRAVIS_COMMIT $MY_IMG_NAME:$TAG
