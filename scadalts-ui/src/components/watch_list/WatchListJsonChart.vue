@@ -692,6 +692,8 @@ export default {
         { id: 1, text: "Update every 2 seconds", value: 2000 },
         { id: 2, text: "Update every 5 seconds", value: 5000 },
         { id: 3, text: "Update every 10 seconds", value: 10000 },
+        { id: 4, text: "Update every 30 seconds", value: 30000 },
+        { id: 5, text: "Update every 60 seconds", value: 60000 },
       ],
       timeOptions: [
         { id: 0, text: "Hour(s)", value: "hour" },
