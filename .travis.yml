@@ -12,8 +12,6 @@ before_script:
 - npm -v
 - node -v
 - env
-- chmod +x ./get_seroUtils.sh
-- "./get_seroUtils.sh"
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./scadalts-ui
