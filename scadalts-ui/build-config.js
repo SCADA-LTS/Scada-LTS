@@ -47,7 +47,9 @@ var request = https.request(options, function (res) {
     res.on('end', function () {
         let webJson = JSON.parse(data);
         if (!!webJson) {
-            tag = webJson.tag_name.replace(/[^\d.-]/g, '');;
+            if(!!webJson.tag_name) {
+                tag = webJson.tag_name.replace(/[^\d.-]/g, '');
+            }
         } else {
             console.warn("WARNING!:\tFailed to fetch build version data!\n\t\tScada-LTS version may not be displayed properly!")
             console.log(webJson)
