@@ -231,7 +231,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
 	</path>
-
 	<target name="init" depends="clean">
 		<mkdir dir="${build-project.dir}"/>
 		<mkdir dir="${build-project.src.dir}"/>
