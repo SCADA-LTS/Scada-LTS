@@ -106,6 +106,7 @@
   "systemsettings.tooltip.sendtestemail": "Senden Sie eine Testnachricht mit der zuletzt gespeicherten Konfiguration an Ihre eigene E-Mail-Adresse.",
   "systemsettings.label.save": "Speichern",
   "systemsettings.label.saveall": "Alle Änderungen speichern",
+  "systemsettings.label.restoreall": "Alles wiederherstellen",
   "systemsettings.label.restore": "Wiederherstellen",
   "systemsettings.label.summary": "Zusammenfassung",
   "event.system.startup":"Mango gestartet",

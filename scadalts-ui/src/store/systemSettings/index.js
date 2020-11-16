@@ -8,6 +8,7 @@ import axios from "axios";
 const storeSystemSettings = {
     state: {
         systemSettingsApiUrl: './api/systemSettings',
+        requestOptions: { timeout: 5000, useCredentials: true, credentials: 'same-origin' },
         databaseType: undefined,
         databaseInfo: undefined,
         systemEventTypes: undefined,
@@ -56,13 +57,17 @@ const storeSystemSettings = {
         }
     },
     actions: {
-        getDatabaseType() {
+        getDatabaseType(context) {
             return new Promise((resolve, reject) => {
-                axios.get(`${this.systemSettingsApiUrl}/getDatabaseType`).then(response => {
-                    console.debug(response)
-                    resolve(response.data)
+                axios.get(`${context.state.systemSettingsApiUrl}/getDatabaseType`, context.state.requestOptions).then(response => {
+                    if (response.status == 200) {
+                        context.commit("setDatabaseType", response.data)
+                        resolve(response.data)
+                    }
+                    reject(false)
                 }).catch(err => {
-                    reject()
+                    console.error(err)
+                    reject(false)
                 })
             })
         },
@@ -87,6 +92,20 @@ const storeSystemSettings = {
                     }).catch(err => {
                         reject(err)
                     })
+            })
+        },
+        getSystemInfoSettings(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getSystemInfo`, context.state.requestOptions).then(response => {
+                    if (response.status == 200) {
+                        context.commit('setSystemInfoSettings', response.data)
+                        resolve(response.data)
+                    }
+                    reject(false)
+                }).catch(err => {
+                    console.error(err);
+                    reject(false)
+                })
             })
         },
         getSystemStartupTime(context) {
@@ -120,6 +139,90 @@ const storeSystemSettings = {
                     }).catch(err => {
                         reject(err)
                     })
+            })
+        },
+        getAuditEventTypes(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getAuditEventAlarmLevels`, context.state.requestOptions).then(response => {
+                    if (response.status == 200) {
+                        context.commit('setAuditEventTypes', response.data)
+                        resolve(response.data)
+                    }
+                    reject(false)
+                }).catch(err => {
+                    console.error(err);
+                    reject(false)
+                })
+            })
+        },
+        getSystemEventTypes(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getSystemEventAlarmLevels`, context.state.requestOptions).then(response => {
+                    if (response.status == 200) {
+                        context.commit('setSystemEventTypes', response.data)
+                        resolve(response.data)
+                    }
+                    reject(false)
+                }).catch(err => {
+                    console.error(err);
+                    reject(false)
+                })
+            })
+        },
+        getEmailSettings(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getEmail`, context.state.requestOptions).then(response => {
+                    if (response.status == 200) {
+                        context.commit('setEmailSettings', response.data)
+                        resolve(response.data)
+                    }
+                    reject(false)
+                }).catch(err => {
+                    console.error(err);
+                    reject(false)
+                })
+            })
+        },
+        getHttpSettings(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getHttp`, context.state.requestOptions).then(response => {
+                    if (response.status == 200) {
+                        context.commit('setHttpSettings', response.data)
+                        resolve(response.data)
+                    }
+                    reject(false)
+                }).catch(err => {
+                    console.error(err);
+                    reject(false)
+                })
+            })
+        },
+        getMiscSettings(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getMisc`, context.state.requestOptions).then(response => {
+                    if (response.status == 200) {
+                        context.commit('setMiscSettings', response.data)
+                        resolve(response.data)
+                    }
+                    reject(false)
+                }).catch(err => {
+                    console.error(err);
+                    reject(false)
+                })
+            })
+        },
+        getScadaConfiguration(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getScadaConfig`, context.state.requestOptions).then(response => {
+                    if (response.status == 200) {
+                        context.commit('setScadaConfig', response.data)
+                        resolve(response.data)
+                    }
+                    reject(false)
+                }).catch(err => {
+                    console.error(err);
+                    reject(false)
+                })
             })
         },
         getDatabaseSize(context) {
@@ -246,7 +349,22 @@ const storeSystemSettings = {
                         reject(err)
                     })
             })
-        }
+        },
+        configurationEqual(ctx, objects) {
+            return new Promise((resolve, reject) => {
+                const keys1 = Object.keys(objects.object1);
+                const keys2 = Object.keys(objects.object2);
+                if (keys1.length !== keys2.length) {
+                    resolve(false)
+                }
+                for (let key of keys1) {
+                    if (objects.object1[key] !== objects.object2[key]) {
+                        resolve(false)
+                    }
+                }
+                resolve(true)
+            })
+        },
     },
     getters: {
 
