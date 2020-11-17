@@ -34,9 +34,12 @@
 	</target>
 
 	<target name="run" depends="tomcat_clean_static_content">
-		<exec executable="cmd">
+		<exec executable="cmd" osfamily="windows">
 			<arg value="/c"/>
 			<arg value="%CATALINA_HOME%\bin\startup.bat"/>
+		</exec>
+		<exec executable="${env.CATALINA_HOME}/bin/catalina.sh" osfamily="unix">
+			<arg value="run"/>
 		</exec>
 	</target>
 
