@@ -23,6 +23,19 @@ const storePlcNotifications = {
         }
     },
     actions: {
+        getPointHierarchy(context, key) {
+            return new Promise((resolve, reject) => {
+                axios.get(`.//pointHierarchy/${key}`).then(response => {
+                    if (response.status == 200) {
+                        resolve(response.data)
+                    }
+                    reject(false);
+                }).catch(error => {
+                    console.log(error)
+                    reject(false);
+                })
+            })
+        },
         getDataPointList() {
             return new Promise((resolve, reject) => {
                 axios.get(`./api/datapoint/getAll`).then(response => {
@@ -103,6 +116,20 @@ const storePlcNotifications = {
                     reject(error);
                 });
             });
+        },
+        createScheduler({commit}, object) {
+            return new Promise((resolve, reject) => {
+                axios.post(`./api/alarms/notification/setScheduler/${object.rangeId}/${object.notificationId}`).then(response => {
+                    if(response.status == 201) {
+                        resolve(response.data);
+                    }
+                    reject(false);
+                }).catch(error => {
+                    console.error(error);
+                    reject(false);
+                })
+            })
+
         },
         postSchedulerWithNotification({commit}, datapointData) {
             let now = new Date();
@@ -193,6 +220,15 @@ const storePlcNotifications = {
                     reject(error);
                 });
             });
+        },
+        createNotification({commit}, notification) {
+            return new Promise((resolve, reject) => {
+                axios.post(`./api/alarms/notification/setNotification`, notification).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    reject(error)
+                })
+            })
         },
         updateNotification({commit}, notification) {
             return new Promise((resolve, reject) => {

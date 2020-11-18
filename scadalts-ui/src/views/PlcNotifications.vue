@@ -1,88 +1,158 @@
 <template>
   <div class="container-fluid">
     <h1>{{ $t("plcnotifications.title") }}</h1>
+
     <tabs @change="onChange" justified>
       <tab :title="$t('plcnotifications.tab.schedulers')">
         <div class="col-xs-12">
-          <h3>{{ $t("plcnotifications.tab.create") }}</h3>
+          <div class="col-md-4">
+            <div class="col-xs-12">
+              <h3>{{ $t("plcnotifications.tab.create") }}</h3>
+            </div>
+
+            <div class="col-xs-12">
+              <div class="col-xs-6">
+                <p>Select TimeRange</p>
+              </div>
+              <div class="col-xs-6">
+                <select v-model="newScheduler.range" class="col-xs-12">
+                  <option v-for="r in rangeList" :key="r.id" :value="r.id">
+                    {{ r.hourStart }}-{{ r.hourStop }} {{ r.description }} | 
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-xs-12">
+              <div class="col-xs-6">
+                <p>Select Notification scheme</p>
+              </div>
+              <div class="col-xs-6">
+                <select
+                  class="col-xs-12"
+                  v-model="newScheduler.notification"
+                  @change="notificationChange"
+                >
+                  <option v-for="n in notificationList" :key="n.id" :value="n">
+                    #{{n.id}}, Modified: {{ n.mtime }}
+                  </option>
+                  <option :value="newNotification">Create new</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-xs-12">
+              <div class="col-xs-6">
+                <p>Email</p>
+              </div>
+              <div class="col-xs-6">
+                <input
+                  type="checkbox"
+                  v-model="newScheduler.notification.perEmail"
+                  :disabled="notificationDisabled"
+                />
+              </div>
+            </div>
+            <div class="col-xs-12">
+              <div class="col-xs-6">
+                <p>Sms</p>
+              </div>
+              <div class="col-xs-6">
+                <input
+                  type="checkbox"
+                  v-model="newScheduler.notification.perSms"
+                  :disabled="notificationDisabled"
+                />
+              </div>
+            </div>
+            <div class="col-xs-12">
+              <button @click="saveNewScheduler()" class="col-xs-12">
+                Save my data
+              </button>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="col-xs-12">
+              <h3>{{ $t("plcnotifications.tab.scheduler.list") }}</h3>
+            </div>
+            <div class="col-xs-12 table-header">
+              <p class="col-xs-1">{{ $t("plcnotifications.table.id") }}</p>
+              <p class="col-xs-2">
+                {{ $t("plcnotifications.table.hour.start") }}
+              </p>
+              <p class="col-xs-2">
+                {{ $t("plcnotifications.table.hour.stop") }}
+              </p>
+              <p class="col-xs-2">
+                {{ $t("plcnotifications.table.description") }}
+              </p>
+              <p class="col-xs-1">{{ $t("plcnotifications.table.mail") }}</p>
+              <p class="col-xs-1">{{ $t("plcnotifications.table.sms") }}</p>
+              <p class="col-xs-2">{{ $t("plcnotifications.table.mtime") }}</p>
+              <p class="col-xs-1">
+                {{ $t("plcnotifications.table.operations") }}
+              </p>
+            </div>
+            <div class="col-xs-12 constraint-height">
+              <div v-for="s in schedulerList" :key="s.id" class="col-xs-12">
+                <p class="col-xs-1">{{ s.id }}</p>
+                <p class="col-xs-2">{{ s.hourStart }}</p>
+                <p class="col-xs-2">{{ s.hourStop }}</p>
+                <p class="col-xs-2">{{ s.description }}</p>
+                <input
+                  class="col-xs-1"
+                  type="checkbox"
+                  v-model="s.perMail"
+                  disabled
+                />
+                <input
+                  class="col-xs-1"
+                  type="checkbox"
+                  v-model="s.perSms"
+                  disabled
+                />
+                <p class="col-xs-2">{{ s.mtime }}</p>
+                <button class="col-xs-1" @click="toggleSchedulerModal(s.id)">
+                  {{ $t("plcnotifications.buttons.more") }}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="col-xs-12 table-header">
-          <p class="col-xs-5">{{ $t("plcnotifications.table.datapoint") }}</p>
-          <p class="col-xs-2">{{ $t("plcnotifications.table.bind.user") }}</p>
-          <p class="col-xs-2">{{ $t("plcnotifications.table.bind.range") }}</p>
-          <p class="col-xs-1">{{ $t("plcnotifications.table.mail") }}</p>
-          <p class="col-xs-1">{{ $t("plcnotifications.table.sms") }}</p>
-          <p class="col-xs-1">{{ $t("plcnotifications.table.operations") }}</p>
-        </div>
-        <div class="col-xs-12">
-          <select class="col-xs-5" v-model="selectedNewSchedulerDpId">
-            <option v-for="dp in datapointList" :key="dp.id" :value="dp">
-              {{ dp.id }} | {{ dp.name }} | {{ dp.xid }}
-            </option>
-          </select>
-          <select v-model="selectedNewSchedulerDpId.user" class="col-xs-2">
-            <option v-for="u in userList" :key="u.id" :value="u.id">
-              {{ u.name }}
-            </option>
-          </select>
-          <select v-model="selectedNewSchedulerDpId.range" class="col-xs-2">
-            <option v-for="r in rangeList" :key="r.id" :value="r.id">
-              {{ r.description }} | {{ r.hourStart }}-{{ r.hourStop }}
-            </option>
-          </select>
-          <input
-            type="checkbox"
-            class="col-xs-1"
-            v-model="selectedNewSchedulerDpId.mail"
-          />
-          <input
-            type="checkbox"
-            class="col-xs-1"
-            v-model="selectedNewSchedulerDpId.sms"
-          />
-          <button
-            @click="savePlcNotification(selectedNewSchedulerDpId)"
-            class="col-xs-1"
+
+        <div class="col-xs-12" v-if="pointHierarchy">
+          <div class="col-xs-12">
+            <h3>PointHierarchy notification configuration</h3>
+          </div>
+          <div class="col-xs-12">
+            <div class="inline right">
+              <div class="col-xs-12 table-header">
+                <p class="col-xs-3">Active Scheduler</p>
+                <p class="col-xs-2">Mail</p>
+                <p class="col-xs-2">SMS</p>
+                <p class="col-xs-4">TimeRange</p>
+              </div>
+            </div>
+
+          </div>
+          <ph-item
+            v-for="node in pointHierarchy"
+            :item="node"
+            :schedulers="schedulerList"
+            :key="node"
           >
-            {{ $t("plcnotifications.buttons.save") }}
-          </button>
-        </div>
-        <div class="col-xs-12">
-          <h3>{{ $t("plcnotifications.tab.scheduler.list") }}</h3>
-        </div>
-        <div class="col-xs-12 table-header">
-          <p class="col-xs-1">{{ $t("plcnotifications.table.id") }}</p>
-          <p class="col-xs-2">{{ $t("plcnotifications.table.hour.start") }}</p>
-          <p class="col-xs-2">{{ $t("plcnotifications.table.hour.stop") }}</p>
-          <p class="col-xs-2">{{ $t("plcnotifications.table.description") }}</p>
-          <p class="col-xs-1">{{ $t("plcnotifications.table.mail") }}</p>
-          <p class="col-xs-1">{{ $t("plcnotifications.table.sms") }}</p>
-          <p class="col-xs-2">{{ $t("plcnotifications.table.mtime") }}</p>
-          <p class="col-xs-1">{{ $t("plcnotifications.table.operations") }}</p>
-        </div>
-        <div v-for="s in schedulerList" :key="s.id" class="col-xs-12">
-          <p class="col-xs-1">{{ s.id }}</p>
-          <p class="col-xs-2">{{ s.hourStart }}</p>
-          <p class="col-xs-2">{{ s.hourStop }}</p>
-          <p class="col-xs-2">{{ s.description }}</p>
-          <input
-            class="col-xs-1"
-            type="checkbox"
-            v-model="s.perMail"
-            disabled
-          />
-          <input class="col-xs-1" type="checkbox" v-model="s.perSms" disabled />
-          <p class="col-xs-2">{{ s.mtime }}</p>
-          <button class="col-xs-1" @click="toggleSchedulerModal(s.id)">
-            {{ $t("plcnotifications.buttons.more") }}
-          </button>
+          </ph-item>
         </div>
       </tab>
-      <tab :title="$t('plcnotifications.tab.user')">
+      <!-- <tab :title="$t('plcnotifications.tab.user')">
         <div class="col-xs-12">
-          <p class="col-xs-9 text-right">{{$t("plcnotifications.tab.user.description")}}</p>
+          <p class="col-xs-9 text-right">
+            {{ $t("plcnotifications.tab.user.description") }}
+          </p>
           <div class="col-xs-3">
-            <select class="form-control" v-model="selectedUser" @change="getSchedulersByUser()">
+            <select
+              class="form-control"
+              v-model="selectedUser"
+              @change="getSchedulersByUser()"
+            >
               <option v-for="u in userList" :key="u.id" :value="u.id">
                 {{ u.name }}
               </option>
@@ -118,12 +188,18 @@
           <p class="col-xs-2">{{ s.userEmail }}</p>
           <p class="col-xs-1">{{ s.userPhone }}</p>
         </div>
-      </tab>
-      <tab :title="$t('plcnotifications.tab.datapoint')">
+      </tab> -->
+      <!-- <tab :title="$t('plcnotifications.tab.datapoint')">
         <div class="col-xs-12">
-          <p class="col-xs-9 text-right">{{$t("plcnotifications.tab.datapoint.description")}}</p>
+          <p class="col-xs-9 text-right">
+            {{ $t("plcnotifications.tab.datapoint.description") }}
+          </p>
           <div class="col-xs-3">
-            <select class="form-control" v-model="selectedDatapoint" @change="getSchedulersByDataPoint()">
+            <select
+              class="form-control"
+              v-model="selectedDatapoint"
+              @change="getSchedulersByDataPoint()"
+            >
               <option v-for="dp in datapointList" :key="dp.id" :value="dp.id">
                 {{ dp.name }} - {{ dp.xid }}
               </option>
@@ -154,7 +230,7 @@
           <p class="col-xs-3">{{ s.description }}</p>
           <p class="col-xs-4">{{ s.mtime }}</p>
         </div>
-      </tab>
+      </tab> -->
       <tab :title="$t('plcnotifications.tab.ranges')">
         <div class="col-xs-12 table-header">
           <p class="col-xs-1">{{ $t("plcnotifications.table.id") }}</p>
@@ -291,9 +367,7 @@
             </select>
           </div>
           <div class="col-xs-4">
-            <btn block @click="bindSchedulerWithUser()">
-              Bind with User
-            </btn>
+            <btn block @click="bindSchedulerWithUser()"> Bind with User </btn>
           </div>
         </div>
       </div>
@@ -304,10 +378,15 @@
 <script>
 import store from "../store";
 import i18n from "../i18n";
+import { keys } from "@amcharts/amcharts4/.internal/core/utils/Object";
+import PointHierarchyItem from "../components/plcnotifications/PointHierarchyItem";
 
 export default {
   el: "#plcnotifications",
   name: "#plcnotifications",
+  components: {
+    "ph-item": PointHierarchyItem,
+  },
   data() {
     return {
       datapointList: [],
@@ -330,6 +409,23 @@ export default {
       notificationList: [],
       selectedDatapoint: 1,
       selectedUser: 1,
+      pointHierarchy: null,
+      newScheduler: {
+        range: undefined,
+        notification: {
+          id: -1,
+          perEmail: false,
+          perSms: false,
+          mtime: "",
+        },
+      },
+      newNotification: {
+        id: -1,
+        perEmail: false,
+        perSms: false,
+        mtime: "",
+      },
+      notificationDisabled: false,
     };
   },
   computed: {},
@@ -337,7 +433,7 @@ export default {
     this.initData();
   },
   methods: {
-    initData() {
+    async initData() {
       store.dispatch("getDataPointList").then((r) => {
         this.datapointList = r;
       });
@@ -349,6 +445,12 @@ export default {
       });
       this.getNotificationList();
       this.getSchedulerList();
+      this.pointHierarchy = await this.fetchPointHierarchyData(0);
+    },
+    async fetchPointHierarchyData(key) {
+      let x = await store.dispatch("getPointHierarchy", key);
+      console.debug(x);
+      return x;
     },
     savePlcNotification(dp) {
       this.$store.dispatch("postSchedulerWithNotification", dp).then((r) => {
@@ -356,16 +458,45 @@ export default {
       });
     },
     onChange(index) {
-      if (index === 4) {
+      if (index === 2) {
         this.getNotificationList();
-      } else if (index === 2) {
-        this.getSchedulersByDataPoint();
-      } else if (index === 1) {
-        this.getSchedulersByUser();
+      // } else if (index === 1) {
+      //   this.getSchedulersByDataPoint();
+      // } else if (index === 1) {
+      //   this.getSchedulersByUser();
       } else if (index === 0) {
         this.getSchedulerList();
       }
     },
+    notificationChange() {
+      this.notificationDisabled = this.newScheduler.notification.id >= 0;
+    },
+    async saveNewScheduler() {
+      if (this.newScheduler.notification.id < 0) {
+        await this.createNotification();
+      }
+
+      this.$store
+        .dispatch("createScheduler", {
+          rangeId: this.newScheduler.range,
+          notificationId: this.newScheduler.notification.id,
+        })
+        .then((result) => {
+          this.schedulerList.push(result);
+        });
+    },
+
+    async createNotification() {
+      let now = new Date();
+      let date = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+      let time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+      this.newScheduler.notification.mtime = `${date} ${time}`;
+      this.newScheduler.notification = await this.$store.dispatch(
+        "createNotification",
+        this.newScheduler.notification
+      );
+    },
+
     toggleSchedulerModal(id) {
       this.schedulerModalVisible = !this.schedulerModalVisible;
       if (this.schedulerModalVisible && id != null && id != undefined) {
@@ -431,13 +562,13 @@ export default {
     },
     deleteRange(range) {
       this.$confirm({
-        title: 'Delete Range',
-        content: `Do you want to delete range #${range.id}? This operation will not be reversable.`
+        title: "Delete Range",
+        content: `Do you want to delete range #${range.id}? This operation will not be reversable.`,
       }).then(() => {
         this.$store.dispatch("deleteRange", range).then((r) => {
-        this.rangeList = this.rangeList.filter((r) => r.id !== range.id);
+          this.rangeList = this.rangeList.filter((r) => r.id !== range.id);
+        });
       });
-      })
     },
     getNotificationList() {
       this.$store.dispatch("getNotificationList").then((r) => {
@@ -449,12 +580,15 @@ export default {
     },
     deleteNotif(notification) {
       this.$confirm({
-        title: 'Delete Notification',
-        content: `Do you realy want to delete notification #${notification.id}? This operation will not be reversable.`
+        title: "Delete Notification",
+        content: `Do you realy want to delete notification #${notification.id}? This operation will not be reversable.`,
       }).then(() => {
-        this.$store.dispatch("deleteNotification", notification)
-        .then(() => { this.notificationList = this.notificationList.filter(n => n.id !== notification.id);});
-      })  
+        this.$store.dispatch("deleteNotification", notification).then(() => {
+          this.notificationList = this.notificationList.filter(
+            (n) => n.id !== notification.id
+          );
+        });
+      });
     },
     bindSchedulerWithDP() {
       this.$store
@@ -478,20 +612,19 @@ export default {
     },
     deleteScheduler() {
       this.$confirm({
-        title: 'Delete Scheduler',
-        content: `Do you realy want to delete this Scheduler?`
+        title: "Delete Scheduler",
+        content: `Do you realy want to delete this Scheduler?`,
       }).then(() => {
         this.$store
-        .dispatch("deleteScheduler", this.selectedScheduler)
-        .then(() => {
-          this.schedulerList = this.schedulerList.filter(
-            (s) => s.id !== this.selectedScheduler.id
-          );
-          this.schedulerModalVisible = false;
-        });
-      })
-      
-    }
+          .dispatch("deleteScheduler", this.selectedScheduler)
+          .then(() => {
+            this.schedulerList = this.schedulerList.filter(
+              (s) => s.id !== this.selectedScheduler.id
+            );
+            this.schedulerModalVisible = false;
+          });
+      });
+    },
   },
 };
 </script>
@@ -509,5 +642,9 @@ export default {
 .text-right {
   text-align: right;
   margin: 7px 0;
+}
+.constraint-height {
+  max-height: 100px;
+  overflow-y: auto;
 }
 </style>
