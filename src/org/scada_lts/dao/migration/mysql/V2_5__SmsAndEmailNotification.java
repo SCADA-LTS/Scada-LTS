@@ -11,9 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @author rjajko@softq.pl
  */
 
-public class V2_4__SmsAndEmailNotification extends BaseJavaMigration {
+public class V2_5__SmsAndEmailNotification extends BaseJavaMigration {
 
-    private static final Log LOG = LogFactory.getLog(V2_4__SmsAndEmailNotification.class);
+    private static final Log LOG = LogFactory.getLog(V2_5__SmsAndEmailNotification.class);
 
     @Override
     public void migrate(Context context) throws Exception {
@@ -26,6 +26,14 @@ public class V2_4__SmsAndEmailNotification extends BaseJavaMigration {
         createSchedulersDefPointsTable(jdbcTmp);
         createSchedulersUsersTable(jdbcTmp);
         createSchedulersView(jdbcTmp);
+
+        String sql = "" +
+                "ALTER TABLE mangoViews" +
+                " ADD modification_time TIMESTAMP" +
+                " DEFAULT CURRENT_TIMESTAMP" +
+                " ON UPDATE CURRENT_TIMESTAMP;";
+
+        jdbcTmp.execute(sql);
 
     }
 

@@ -372,7 +372,17 @@
         </div>
       </div>
       <div class="row" v-if="settingsVisible">
-        <h2>Data Points settings - {{watchlistName}}:</h2>
+        <div class="col-xs-12">
+          <h2 class="col-xs-6">Data Points settings - {{watchlistName}}:</h2>
+          <btn-group class="col-xs-3">
+            <btn class="col-xs-6" input-type="radio" :input-value="true" v-model="chartGroupData" id="aggr-btn-1">Aggregate data</btn>
+            <btn class="col-xs-6" input-type="radio" :input-value="false" v-model="chartGroupData">All data</btn>
+            <tooltip text="(Default Aggregation ON) - Improve performacne of the chart data reducing number of data displayed on the chart" target="#aggr-btn-1" />
+          </btn-group>
+          <div class="col-xs-3">
+            <input class="form-control" v-model="chartGroupCount" type="number"/>
+          </div>
+        </div>
         <div class="container">
           <div class="col-xs-12 justify-content-md-center">
             <tabs justified>
@@ -682,6 +692,8 @@ export default {
         { id: 1, text: "Update every 2 seconds", value: 2000 },
         { id: 2, text: "Update every 5 seconds", value: 5000 },
         { id: 3, text: "Update every 10 seconds", value: 10000 },
+        { id: 4, text: "Update every 30 seconds", value: 30000 },
+        { id: 5, text: "Update every 60 seconds", value: 60000 },
       ],
       timeOptions: [
         { id: 0, text: "Hour(s)", value: "hour" },
@@ -693,9 +705,12 @@ export default {
       endTime: new Date(),
       series: [],
       dualAxis: false,
+      chartGroupData: undefined,
+      chartGroupCount: undefined,
     };
   },
   mounted() {
+    this.initChartGroup();
     this.initializeDataPoints();
     this.prepareChart();
   },
@@ -741,6 +756,11 @@ export default {
       this.settingsVisible = false;
       this.updateSettings();
     },
+    initChartGroup() {
+      this.$store.commit("loadChartGroupSettings");
+      this.chartGroupData = this.$store.state.modernWatchList.chartGroupData;
+      this.chartGroupCount = this.$store.state.modernWatchList.chartGroupCount;
+    },
     initializeDataPoints() {
       let points = this.pointId.split(",");
       for (let i = 0; i < points.length; i++) {
@@ -771,6 +791,8 @@ export default {
       this.applySettings(this.chartProperties);
     },
     applySettings(chartData) {
+      this.$store.commit("setChartGroupSettings", {chartGroupData: this.chartGroupData, chartGroupCount: this.chartGroupCount});
+      this.$store.commit("saveChartGroupSettings");
       this.$store.commit("chartPropertiesUpdate", chartData);
       this.$store.commit("chartSaveConfiguration", this.watchlistName);
       this.chartReload();
