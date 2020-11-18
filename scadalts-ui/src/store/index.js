@@ -8,7 +8,6 @@ import amcharts from './amcharts'
 import alarms from './alarms'
 import systemSettings from './systemSettings'
 import axios from "axios";
-import plcNotifications from './alarms/notification'
 
 Vue.use(Vuex)
 
@@ -26,8 +25,7 @@ export default new Vuex.Store({
     amcharts,
     modernWatchList,
     alarms,
-    systemSettings,
-    plcNotifications
+    systemSettings
   },
   state: {
     packageVersion: process.env.PACKAGE_VERSION || '0',

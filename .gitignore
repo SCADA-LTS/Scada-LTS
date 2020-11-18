@@ -103,7 +103,6 @@ scadabr-1.1.0-RC_.iml
 ###########################
 catalina-jrebel.bat
 scadabr-1.1.0-RC.iml
-
 # Ignore Gradle project-specific cache directory
 .gradle
 gradle/
