@@ -144,6 +144,7 @@ const modernWatchList = {
         chartSeriesConfiguration: [],
         datapointList: [],
         isChartLoaded: false,
+        initialized: true,
         isDualAxis: false,
     },
     mutations: {
@@ -301,6 +302,13 @@ const modernWatchList = {
             console.debug("Vuex::Mutation::chartConfigurationSeriesReset");
             state.chartSeriesConfiguration = [];
         },
+        chartInitializationMemory(state, watchlistName) {
+            console.debug("Vuex::Mustation::chartInitializationMemory")
+            state.initialized = !!localStorage.getItem(`MWL_${watchlistName}_Init`)
+            console.debug(watchlistName)
+            console.debug(localStorage.getItem(`MWL_${watchlistName}_Init`));
+            console.debug(state.initialized);
+        },
         /**
          * Chart Save Configuration
          * 
@@ -318,6 +326,7 @@ const modernWatchList = {
                 "chartProperties": state.chartProperties,
                 "chartConfigurationSeries": state.chartSeriesConfiguration,
             };
+            localStorage.setItem(`MWL_${watchlistName}_Init`, "true");
             localStorage.setItem(`MWL_${watchlistName}`, JSON.stringify(savedObject))
         },
         /**
