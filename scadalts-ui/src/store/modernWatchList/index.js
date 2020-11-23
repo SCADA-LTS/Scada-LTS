@@ -305,9 +305,6 @@ const modernWatchList = {
         chartInitializationMemory(state, watchlistName) {
             console.debug("Vuex::Mustation::chartInitializationMemory")
             state.initialized = !!localStorage.getItem(`MWL_${watchlistName}_Init`)
-            console.debug(watchlistName)
-            console.debug(localStorage.getItem(`MWL_${watchlistName}_Init`));
-            console.debug(state.initialized);
         },
         /**
          * Chart Save Configuration
@@ -474,7 +471,11 @@ const modernWatchList = {
                     series.id = `s${pointId}`;
                     series.stroke = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
                     series.fill = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
-                    series.tooltipText = "{name}: [bold]{valueY}[/] " + resp.data.textRenderer.suffix;
+                    if(resp.data.type == "MultistateValue") {
+                        series.tooltipText = "{name}: [bold]{valueY}[/]";
+                    } else {
+                        series.tooltipText = "{name}: [bold]{valueY}[/] " + resp.data.textRenderer.suffix;
+                    }                    
                     series.name = resp.data.name;
                     series.dataFields.valueY = resp.data.name;
                     context.commit('chartColorIncrement');

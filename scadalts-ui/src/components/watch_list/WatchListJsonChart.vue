@@ -953,7 +953,6 @@ export default {
           }
         }
 
-        console.debug(this.chartInitialized)
         if (this.chartInitialized) {
           this.chartShow();
 
