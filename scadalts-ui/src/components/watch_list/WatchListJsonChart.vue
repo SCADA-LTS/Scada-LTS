@@ -9,24 +9,36 @@
             input-value="live"
             v-model="chartProperties.type"
             id="live-btn-1"
-          >Live</btn>
-          <tooltip text="Display chart with live update for each Data Point" target="#live-btn-1" />
+            >Live</btn
+          >
+          <tooltip
+            text="Display chart with live update for each Data Point"
+            target="#live-btn-1"
+          />
           <btn
             class="col-xs-4"
             input-type="radio"
             input-value="static"
             v-model="chartProperties.type"
             id="static-btn-1"
-          >Static</btn>
-          <tooltip text="Display static chart from a specific time period." target="#static-btn-1" />
+            >Static</btn
+          >
+          <tooltip
+            text="Display static chart from a specific time period."
+            target="#static-btn-1"
+          />
           <btn
             class="col-xs-4"
             input-type="radio"
             input-value="compare"
             v-model="chartProperties.type"
             id="compare-btn-1"
-          >Compare</btn>
-          <tooltip text="Compare two Data Points charts on the same chart." target="#compare-btn-1" />
+            >Compare</btn
+          >
+          <tooltip
+            text="Compare two Data Points charts on the same chart."
+            target="#compare-btn-1"
+          />
         </btn-group>
         <div v-if="chartProperties.type === 'live'" class="col-xs-8">
           <div class="col-xs-3">
@@ -50,16 +62,24 @@
                 v-for="option in timeOptions"
                 v-bind:value="option.value"
                 v-bind:key="option.id"
-              >{{option.text}}</option>
+              >
+                {{ option.text }}
+              </option>
             </select>
           </div>
           <div class="col-xs-6">
-            <select id="live-rr" v-model="chartProperties.refreshRate" class="form-control">
+            <select
+              id="live-rr"
+              v-model="chartProperties.refreshRate"
+              class="form-control"
+            >
               <option
                 v-for="option in performanceOptions"
                 v-bind:value="option.value"
                 v-bind:key="option.id"
-              >{{option.text}}</option>
+              >
+                {{ option.text }}
+              </option>
             </select>
           </div>
         </div>
@@ -68,7 +88,11 @@
             <label for="static-sd" class="small-padd">Start Date</label>
             <dropdown class="form-group">
               <div class="input-group">
-                <input class="form-control" type="text" v-model="chartProperties.startDate" />
+                <input
+                  class="form-control"
+                  type="text"
+                  v-model="chartProperties.startDate"
+                />
                 <div class="input-group-btn">
                   <btn class="dropdown-toggle">
                     <i class="glyphicon glyphicon-calendar"></i>
@@ -105,7 +129,11 @@
             <label for="static-ed" class="small-padd">End Date</label>
             <dropdown class="form-group">
               <div class="input-group">
-                <input class="form-control" type="text" v-model="chartProperties.endDate" />
+                <input
+                  class="form-control"
+                  type="text"
+                  v-model="chartProperties.endDate"
+                />
                 <div class="input-group-btn">
                   <btn class="dropdown-toggle">
                     <i class="glyphicon glyphicon-calendar"></i>
@@ -152,14 +180,22 @@
                     v-for="p in datapointList"
                     v-bind:value="p"
                     v-bind:key="p.id"
-                  >{{p.name}}: {{p.xid}}</option>
+                  >
+                    {{ p.name }}: {{ p.xid }}
+                  </option>
                 </select>
-                <tooltip text="Select first datapoint to compare and assign this to 1-st x-axis." target="#comp-el-1" />
+                <tooltip
+                  text="Select first datapoint to compare and assign this to 1-st x-axis."
+                  target="#comp-el-1"
+                />
               </div>
               <div v-if="chartProperties.compareDataPoint[0]" class="col-xs-9">
-                <div class="col-xs-2" v-if="chartProperties.compareDataPoint[0]">
-                  {{chartProperties.compareDataPoint[0].name}}<br/>
-                  XID:{{chartProperties.compareDataPoint[0].xid}}
+                <div
+                  class="col-xs-2"
+                  v-if="chartProperties.compareDataPoint[0]"
+                >
+                  {{ chartProperties.compareDataPoint[0].name }}<br />
+                  XID:{{ chartProperties.compareDataPoint[0].xid }}
                 </div>
                 <div class="col-xs-5 row">
                   <dropdown class="form-group col-xs-11">
@@ -178,7 +214,9 @@
                     <template slot="dropdown">
                       <li>
                         <datepicker
-                          v-model="chartProperties.compareDataPoint[0].startDate"
+                          v-model="
+                            chartProperties.compareDataPoint[0].startDate
+                          "
                           :format="formatDate"
                           :inline="true"
                           :monday-first="true"
@@ -197,7 +235,9 @@
                     <template slot="dropdown">
                       <li style="padding: 10px">
                         <time-picker
-                          v-model="chartProperties.compareDataPoint[0].startTime"
+                          v-model="
+                            chartProperties.compareDataPoint[0].startTime
+                          "
                           :show-meridian="false"
                         />
                       </li>
@@ -260,14 +300,22 @@
                     v-for="p in datapointList"
                     v-bind:value="p"
                     v-bind:key="p.id"
-                  >{{p.name}}: {{p.xid}}</option>
+                  >
+                    {{ p.name }}: {{ p.xid }}
+                  </option>
                 </select>
-                <tooltip text="Remember to assign this datapoint to 2nd X-Axis in 'More Settings' menu!" target="#comp-el-2" />
+                <tooltip
+                  text="Remember to assign this datapoint to 2nd X-Axis in 'More Settings' menu!"
+                  target="#comp-el-2"
+                />
               </div>
               <div v-if="chartProperties.compareDataPoint[1]" class="col-xs-9">
-                <div class="col-xs-2" v-if="chartProperties.compareDataPoint[1]">
-                  {{chartProperties.compareDataPoint[1].name}}<br />
-                  XID:{{chartProperties.compareDataPoint[1].xid}}
+                <div
+                  class="col-xs-2"
+                  v-if="chartProperties.compareDataPoint[1]"
+                >
+                  {{ chartProperties.compareDataPoint[1].name }}<br />
+                  XID:{{ chartProperties.compareDataPoint[1].xid }}
                 </div>
                 <div class="col-xs-5 row">
                   <dropdown class="form-group col-xs-11">
@@ -286,7 +334,9 @@
                     <template slot="dropdown">
                       <li>
                         <datepicker
-                          v-model="chartProperties.compareDataPoint[1].startDate"
+                          v-model="
+                            chartProperties.compareDataPoint[1].startDate
+                          "
                           @selected="formatDate"
                           :inline="true"
                           :monday-first="true"
@@ -305,7 +355,9 @@
                     <template slot="dropdown">
                       <li style="padding: 10px">
                         <time-picker
-                          v-model="chartProperties.compareDataPoint[1].startTime"
+                          v-model="
+                            chartProperties.compareDataPoint[1].startTime
+                          "
                           :show-meridian="false"
                         />
                       </li>
@@ -360,12 +412,23 @@
           </div>
         </div>
         <div class="col-xs-1">
-          <btn class="dropdown-toggle" @click="updateSettings()" id="updateSettingsBtn">
+          <btn
+            class="dropdown-toggle"
+            @click="updateSettings()"
+            id="updateSettingsBtn"
+          >
             <i class="glyphicon glyphicon-refresh"></i>
           </btn>
-          <tooltip text="Apply changes to the Chart" target="#updateSettingsBtn" />
+          <tooltip
+            text="Apply changes to the Chart"
+            target="#updateSettingsBtn"
+          />
 
-          <btn class="dropdown-toggle" @click="showSettings()" id="showSettingsBtn">
+          <btn
+            class="dropdown-toggle"
+            @click="showSettings()"
+            id="showSettingsBtn"
+          >
             <i class="glyphicon glyphicon-cog"></i>
           </btn>
           <tooltip text="More settings" target="#showSettingsBtn" />
@@ -373,14 +436,34 @@
       </div>
       <div class="row" v-if="settingsVisible">
         <div class="col-xs-12">
-          <h2 class="col-xs-6">Data Points settings - {{watchlistName}}:</h2>
+          <h2 class="col-xs-6">Data Points settings - {{ watchlistName }}:</h2>
           <btn-group class="col-xs-3">
-            <btn class="col-xs-6" input-type="radio" :input-value="true" v-model="chartGroupData" id="aggr-btn-1">Aggregate data</btn>
-            <btn class="col-xs-6" input-type="radio" :input-value="false" v-model="chartGroupData">All data</btn>
-            <tooltip text="(Default Aggregation ON) - Improve performacne of the chart data reducing number of data displayed on the chart" target="#aggr-btn-1" />
+            <btn
+              class="col-xs-6"
+              input-type="radio"
+              :input-value="true"
+              v-model="chartGroupData"
+              id="aggr-btn-1"
+              >Aggregate data</btn
+            >
+            <btn
+              class="col-xs-6"
+              input-type="radio"
+              :input-value="false"
+              v-model="chartGroupData"
+              >All data</btn
+            >
+            <tooltip
+              text="(Default Aggregation ON) - Improve performacne of the chart data reducing number of data displayed on the chart"
+              target="#aggr-btn-1"
+            />
           </btn-group>
           <div class="col-xs-3">
-            <input class="form-control" v-model="chartGroupCount" type="number"/>
+            <input
+              class="form-control"
+              v-model="chartGroupCount"
+              type="number"
+            />
           </div>
         </div>
         <div class="container">
@@ -401,13 +484,15 @@
                       input-type="radio"
                       input-value="LineSeries"
                       v-model="s.type"
-                    >Line Series</btn>
+                      >Line Series</btn
+                    >
                     <btn
                       class="col-xs-6"
                       input-type="radio"
                       input-value="StepLineSeries"
                       v-model="s.type"
-                    >Step Line Series</btn>
+                      >Step Line Series</btn
+                    >
                   </btn-group>
                 </div>
                 <div class="col-xs-12">
@@ -418,25 +503,29 @@
                       input-type="radio"
                       input-value="valueAxis1"
                       v-model="s.yAxis"
-                    >1</btn>
+                      >1</btn
+                    >
                     <btn
                       class="col-xs-3"
                       input-type="radio"
                       input-value="valueAxis2"
                       v-model="s.yAxis"
-                    >2</btn>
+                      >2</btn
+                    >
                     <btn
                       class="col-xs-3"
                       input-type="radio"
                       input-value="logAxis"
                       v-model="s.yAxis"
-                    >Logarithmic</btn>
+                      >Logarithmic</btn
+                    >
                     <btn
                       class="col-xs-3"
                       input-type="radio"
                       input-value="binAxis"
                       v-model="s.yAxis"
-                    >Binary</btn>
+                      >Binary</btn
+                    >
                   </btn-group>
                 </div>
                 <div class="col-xs-12">
@@ -447,13 +536,15 @@
                       input-type="radio"
                       input-value="dateAxis1"
                       v-model="s.xAxis"
-                    >1</btn>
+                      >1</btn
+                    >
                     <btn
                       class="col-xs-6"
                       input-type="radio"
                       input-value="dateAxis2"
                       v-model="s.xAxis"
-                    >2</btn>
+                      >2</btn
+                    >
                   </btn-group>
                 </div>
                 <div class="col-xs-12">
@@ -471,7 +562,11 @@
                 <div class="col-xs-12">
                   <p class="col-xs-6">Stroke width:</p>
                   <div class="col-xs-6">
-                    <input class="form-control" type="number" v-model="s.strokeWidth" />
+                    <input
+                      class="form-control"
+                      type="number"
+                      v-model="s.strokeWidth"
+                    />
                   </div>
                 </div>
                 <div class="col-xs-12">
@@ -518,13 +613,15 @@
                       input-type="radio"
                       :input-value="5"
                       v-model="s.bullets[0].circle.radius"
-                    >Show</btn>
+                      >Show</btn
+                    >
                     <btn
                       class="col-xs-6"
                       input-type="radio"
                       :input-value="0"
                       v-model="s.bullets[0].circle.radius"
-                    >Hide</btn>
+                      >Hide</btn
+                    >
                   </btn-group>
                 </div>
               </tab>
@@ -546,7 +643,12 @@
               <tooltip text="Apply settings" target="#saveSettingsBtn" />
             </div>
             <div class="col-xs-4">
-              <btn size="sm" class="dropdown-toggle col-xs-12" @click="cancelSettings()" id="cancelBtn">
+              <btn
+                size="sm"
+                class="dropdown-toggle col-xs-12"
+                @click="cancelSettings()"
+                id="cancelBtn"
+              >
                 <i class="glyphicon glyphicon-remove"></i>
               </btn>
             </div>
@@ -560,15 +662,22 @@
               >
                 <i class="glyphicon glyphicon-erase"></i>
               </btn>
-              <tooltip text="Reset chart settings to default" target="#clearChartBtn" />
+              <tooltip
+                text="Reset chart settings to default"
+                target="#clearChartBtn"
+              />
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="hello" v-bind:style="{height: 600 + 'px', width: this.width + 'px'}" ref="chartdiv"></div>
+    <div
+      class="hello"
+      v-bind:style="{ height: 600 + 'px', width: this.width + 'px' }"
+      ref="chartdiv"
+    ></div>
     <div v-if="errorMessage">
-      <p class="error">{{errorMessage}}</p>
+      <p class="error">{{ errorMessage }}</p>
     </div>
     <div v-if="showReload">
       <button v-on:click="reload()">Reload</button>
@@ -698,7 +807,7 @@ export default {
       timeOptions: [
         { id: 0, text: "Hour(s)", value: "hour" },
         { id: 1, text: "Day(s)", value: "day" },
-        { id: 2, text: "Weak(s)", value: "weak" },
+        { id: 2, text: "Week(s)", value: "week" },
         { id: 3, text: "Month(s)", value: "month" },
       ],
       startTime: new Date(),
@@ -710,6 +819,7 @@ export default {
     };
   },
   mounted() {
+    this.$store.commit("chartInitializationMemory", this.watchlistName);
     this.initChartGroup();
     this.initializeDataPoints();
     this.prepareChart();
@@ -730,6 +840,9 @@ export default {
     isChartLoaded() {
       return this.$store.state.modernWatchList.isChartLoaded;
     },
+    chartInitialized() {
+      return this.$store.state.modernWatchList.initialized;
+    }
   },
   methods: {
     showSettings() {
@@ -791,7 +904,10 @@ export default {
       this.applySettings(this.chartProperties);
     },
     applySettings(chartData) {
-      this.$store.commit("setChartGroupSettings", {chartGroupData: this.chartGroupData, chartGroupCount: this.chartGroupCount});
+      this.$store.commit("setChartGroupSettings", {
+        chartGroupData: this.chartGroupData,
+        chartGroupCount: this.chartGroupCount,
+      });
       this.$store.commit("saveChartGroupSettings");
       this.$store.commit("chartPropertiesUpdate", chartData);
       this.$store.commit("chartSaveConfiguration", this.watchlistName);
@@ -837,13 +953,15 @@ export default {
           }
         }
 
-        this.chartShow();
+        if (this.chartInitialized) {
+          this.chartShow();
 
-        if (this.chartProperties.refreshRate != undefined) {
-          this.chartClass.startLiveUpdate(
-            Number(this.chartProperties.refreshRate),
-            false
-          );
+          if (this.chartProperties.refreshRate != undefined) {
+            this.chartClass.startLiveUpdate(
+              Number(this.chartProperties.refreshRate),
+              false
+            );
+          }
         }
       });
     },
@@ -909,6 +1027,7 @@ export default {
       if (this.chartClass !== null) {
         this.chartDispose();
       }
+      this.$store.commit("chartInitializationMemory", this.watchlistName);
       this.$store.commit("datapointsReset");
       this.$store.commit("chartConfigurationSeriesReset");
       this.$store.commit("chartConfigurationReset");

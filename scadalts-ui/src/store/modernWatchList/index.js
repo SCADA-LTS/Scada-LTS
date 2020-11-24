@@ -144,6 +144,7 @@ const modernWatchList = {
         chartSeriesConfiguration: [],
         datapointList: [],
         isChartLoaded: false,
+        initialized: true,
         isDualAxis: false,
     },
     mutations: {
@@ -301,6 +302,10 @@ const modernWatchList = {
             console.debug("Vuex::Mutation::chartConfigurationSeriesReset");
             state.chartSeriesConfiguration = [];
         },
+        chartInitializationMemory(state, watchlistName) {
+            console.debug("Vuex::Mustation::chartInitializationMemory")
+            state.initialized = !!localStorage.getItem(`MWL_${watchlistName}_Init`)
+        },
         /**
          * Chart Save Configuration
          * 
@@ -318,6 +323,7 @@ const modernWatchList = {
                 "chartProperties": state.chartProperties,
                 "chartConfigurationSeries": state.chartSeriesConfiguration,
             };
+            localStorage.setItem(`MWL_${watchlistName}_Init`, "true");
             localStorage.setItem(`MWL_${watchlistName}`, JSON.stringify(savedObject))
         },
         /**
@@ -465,7 +471,11 @@ const modernWatchList = {
                     series.id = `s${pointId}`;
                     series.stroke = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
                     series.fill = context.state.chartDefaultColors[context.state.chartActiveColor % 6];
-                    series.tooltipText = "{name}: [bold]{valueY}[/] " + resp.data.textRenderer.suffix;
+                    if(resp.data.type == "MultistateValue") {
+                        series.tooltipText = "{name}: [bold]{valueY}[/]";
+                    } else {
+                        series.tooltipText = "{name}: [bold]{valueY}[/] " + resp.data.textRenderer.suffix;
+                    }                    
                     series.name = resp.data.name;
                     series.dataFields.valueY = resp.data.name;
                     context.commit('chartColorIncrement');

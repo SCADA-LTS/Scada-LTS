@@ -110,7 +110,7 @@
   "systemsettings.label.summary": "Zusammenfassung",
   "event.system.startup":"Mango gestartet",
   "event.system.shutdown":"Mango beendet",
-  "event.system.maxAlarmChanged":"Höchste Alarm Priorit t hat sich geändert",
+  "event.system.maxAlarmChanged":"Höchste Alarm Priorit hat sich geändert",
   "event.system.userLogin":"Benutzer angemeldet",
   "event.system.compound":"Fehler bei der Ereignisverknüpfung",
   "event.system.setPoint":"Fehler beim Setzen eines Datenpunktes",
