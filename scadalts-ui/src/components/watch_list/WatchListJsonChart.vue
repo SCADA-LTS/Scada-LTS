@@ -807,7 +807,7 @@ export default {
       timeOptions: [
         { id: 0, text: "Hour(s)", value: "hour" },
         { id: 1, text: "Day(s)", value: "day" },
-        { id: 2, text: "Weak(s)", value: "weak" },
+        { id: 2, text: "Week(s)", value: "week" },
         { id: 3, text: "Month(s)", value: "month" },
       ],
       startTime: new Date(),
