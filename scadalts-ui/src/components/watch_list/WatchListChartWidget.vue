@@ -34,7 +34,6 @@ export default {
   },
   methods: {
     watchListChanged(event) {
-      // this.$refs.initializeDataPoints()
       this.addNewChart();
     },
     addNewChart() {
@@ -53,7 +52,7 @@ export default {
       try {
         this.$refs.jsonChart.reset().then(() => {
           this.$refs.pointId = this.pointId;
-          this.$refs.jsonChart.chartReload();
+          this.$refs.jsonChart.init();
         });
       } catch (e) {
         console.error(e);
