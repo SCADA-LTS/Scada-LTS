@@ -1,28 +1,51 @@
 # Modern Watch List View
 Created by _Radek Jajko_ [rjajko@softq.pl](mail:rjajko@softq.pl)  
-version 2.0.0
+Updated for Scada-LTS version 2.4.0.
 
-Modern Wach list is a new View for ScadaLTS prepared next to old classic WatchList page. It base on WachList 
-data and genereate a Modern Charts using AmChart4 library.
+Modern Wach list is a new View for ScadaLTS working next to the classic WatchList page. 
+It base on WachList data and genereate a Modern Charts using AmChart4 library. Modern Watch List Chart is a new vue.js component that works only on watchlist page. You can find settings button to modify chart behaviour and apperance. 
 
-Modern Watch List Chart is a new vue.js component that works only on watchlist page. You can find settings button to modify chart behaviour and apperance. 
+## Functionality:
+This widget can display following charts.
+### Live chart
+Render real-time data based on the selected WatchList.
 
-## Example usage:
-It is as simple as user expect. Just add data to watch list then set a name to that watch list. Setup your chart settings from choosing one type [Live, Static, Compare] and configure required fields.
+Select time range to be displayed on the chart from last hour or even from the whole month!
+Remember only about huge amount of data - the more data to rednder the more performance it requires. When a new data has been saved to datapoint user will be able to see that value after a few seconds on the chart. 
 
-### Live data
-While setting up the Live Chart specify the time period since data should be displayed and refresh rate.
-### Static data
-Choose speific date range to be displayed on the chart. 
-### Compare data
-Choose two datapoints and assign to them specific time ranges.
-Then open more settings and asign second datapoint to second X-axis.
+### Static chart
+Display data from specific WatchList time range.
 
-## Configure
-When you click on "more option (cog)" button you will see more options to be defined like chart colour or fill opacity. You can change the display name of the datapoint. There is also a button to change from LineSeries data to StepLineSeries. What is more you can customize the specific series color and fill completly including stroke tension (to be more curved). 
+Usefull function when user define mulitpe watch lists with monthly summarization. User easly select specific range using intuitive datepicker component.
+
+### Compare chart __*(NEW!)*__
+Compare two specific datapoints on one chart.
+
+Using that mode user will be able to select datapoint values from specific time period and
+then compare this points to another datapoint from different time range. Time range is selected by datepicker component as it was in Static Chart. 
+
+**CONFIGURATION**  
+To configure "Compare Chart" correctly you must change the X-Axis of the 2-nd datapoint to 2-nd axis and make sure that Aggregation function is disabled (_"All Data" button selected_).
+
+**TROUBLESHOOTING**  
+When changing from different chart types (eg. from "Compare" to "Static") remember to change
+all datapoint series X-Axis to 1-st Axis. In case of blank chart in this Compare mode make sure that aggegation is disabled or try to assign the X-Axes again. 
+
+## Chart series configuration:
+Since Scada-LTS version 2.4.0 ModernWatchList Chart has seperate configuration for each datapoint series. Each one can be configured individually. Example configurable elements are descripted below:
+
+- __Name__ - Display name of that series (it do not change the DP name it is only a label)
+- __Series Type__ - _Line_ or _Step Line_ series line type.
+- __Y-Axis__ - Type of Y-Axis (eg. Logarithmic, Binary...).
+- __X-Axis__ - Required when comparing two datapoints
+- __Stroke color__ - Color of the series line.
+- __Stroke width__ - Width of the series line.
+- __Stroke tension__ - "Smooth" of the line (values from 0-1)
+- __Fill color__ - Color below the series line.
+- __Fill opacity__ - Opacity for color below the series line.
+- __Bullets__ - Display or Hide
 
 ## Version change
-
 ### v2.0.0
 - Rewritten from strach vue.js component dedicated for WatchList instead of embedding default "Scada-LTS modern chart component".
 - Improved performance due to aggregation function
@@ -32,3 +55,6 @@ When you click on "more option (cog)" button you will see more options to be def
 - Reloading chart while changing the active watchlist.
 ### v1.0.0
 - Created Modern Watch List Chart component. 
+
+## Notice
+This is completly independed component. If you want to create a ModernChart on View page see [ModerChart Documentation](../amcharts/readme.md)

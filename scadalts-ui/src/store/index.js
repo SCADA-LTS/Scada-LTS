@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import dataSource from "./dataSource"
 import graphicView from "./graphicView"
 import pointHierarchy from "./pointHierarchy"
-import modernWatchList from './modernWatchList'
 import amcharts from './amcharts'
 import alarms from './alarms'
 import systemSettings from './systemSettings'
@@ -12,9 +11,7 @@ import axios from "axios";
 Vue.use(Vuex)
 
 const myLoggerForVuexMutation = store => {
-  store.subscribe((mutation, state) => {
-    //console.log(`vuex state: ${JSON.stringify(state)} type: ${mutation.type} payload: ${mutation.payload}`  )
-  })
+  store.subscribe((mutation, state) => { })
 }
 
 export default new Vuex.Store({
@@ -23,7 +20,6 @@ export default new Vuex.Store({
     graphicView,
     pointHierarchy,
     amcharts,
-    modernWatchList,
     alarms,
     systemSettings
   },
@@ -40,7 +36,7 @@ export default new Vuex.Store({
   actions: {
     getUserRole() {
       return new Promise((resolve, reject) => {
-        axios.get("./api/auth/isRoleAdmin", 
+        axios.get("./api/auth/isRoleAdmin",
         {timeout: 5000, useCredentials: true, credentials: 'same-origin'}).then(resp => {
           resolve(resp.data);
         }).catch(error => {

@@ -107,6 +107,8 @@ scadabr-1.1.0-RC.iml
 .gradle
 gradle/
 # Ignore Gradle build output directory
+WebContent/resources/node_modules/
+WebContent/resources/package-lock.json
 build
 databases
 build.gradle
