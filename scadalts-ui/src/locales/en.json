@@ -150,6 +150,7 @@
   "systemsettings.tooltip.scadaconf": "Scada-LTS configuration loaded from 'env.properties' file. Modify file and restart application server to apply changes",
   "systemsettings.label.save": "Save",
   "systemsettings.label.saveall": "Save all changes",
+  "systemsettings.label.restoreall": "Restore All",
   "systemsettings.label.restore": "Restore",
   "systemsettings.label.summary": "Summary",
   "event.system.startup":"System startup",
