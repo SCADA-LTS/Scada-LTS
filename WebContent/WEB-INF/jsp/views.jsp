@@ -281,11 +281,9 @@
 
 	<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />
 
-	<div
-	    id='refresh-view'
-	    ptimeToCheckRefresh=7000
-	    pviewId=${currentView.id}>
-	</div>
+    <span>
+	    <div id='refresh-view' ptimeToCheckRefresh=7000 pviewId=${currentView.id}> </div>
+	</span>
 
 </tag:page>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
