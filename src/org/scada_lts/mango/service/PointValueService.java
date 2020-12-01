@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -388,8 +387,8 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         }
     }
 
-    public long deletePointValuesBefore(int dataPointId, long time) {
-        return PointValueDAO.getInstance().deletePointValuesBefore(dataPointId, time);
+    public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
+        return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLast(dataPointId, time);
     }
 
     @Override

@@ -3,8 +3,11 @@
 /bin/
 target/
 /WebContent/assets/.sass-cache/
-/WebContent/images/oldicons
-/WebContent/resources/app/bower_components/
+###########################
+#   Static web content    #
+###########################
+/WebContent/resources/node_modules/
+/WebContent/resources/package-lock.json
 /WebContent/resources/js-ui/
 # OS Files #
 .DS_Store
@@ -100,3 +103,18 @@ scadabr-1.1.0-RC_.iml
 ###########################
 catalina-jrebel.bat
 scadabr-1.1.0-RC.iml
+# Ignore Gradle project-specific cache directory
+.gradle
+gradle/
+# Ignore Gradle build output directory
+WebContent/resources/node_modules/
+WebContent/resources/package-lock.json
+build
+databases
+build.gradle
+docker-compose.yml
+Dockerfile
+gradlew
+gradlew.bat
+settings.gradle
+scadalts-ui/build.gradle

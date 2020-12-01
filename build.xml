@@ -110,7 +110,14 @@
         <pathelement location="WebContent/WEB-INF/lib/jstl-api-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl-impl-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/log4j-1.2.17.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-core-2.13.3.jar.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-api-2.13.3.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-1.2-api-2.13.3.jar"/>
+		<!-- To make Log4j2 faster use make all loggers Asynchronous -->
+		<pathelement location="WebContent/WEB-INF/lib/disruptor-3.4.2.jar"/>
+		<!-- disruptor is required for that purpose. Set system property: -->
+		<!-- -Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector -->
+     	<!-- to make all loggers asynchronous https://logging.apache.org/log4j/2.x/manual/async.html -->
         <pathelement location="WebContent/WEB-INF/lib/mail.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-core-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-master-0.1.4-SNAPSHOT.jar"/>
@@ -224,11 +231,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
 	</path>
-	<target name="update-static-web-dependecy" description="Update static web dependency">
-	  <exec dir="WebContent/resources/app" executable="bower">
-	    <arg  value="update"/>
-	  </exec>
-	</target>
 	<target name="init" depends="clean">
 		<mkdir dir="${build-project.dir}"/>
 		<mkdir dir="${build-project.src.dir}"/>
@@ -272,13 +274,20 @@
 		<record action="stop" name="${build-project.log.test.name}"/>
 	</target>
 
+	<!-- Instead of bower package manager -->
+	<target name="static-web-dependency" description="Download web resources from the NPM, required for PointHierarchySLTS">
+		<exec dir="./WebContent/resources" executable="npm">
+			<arg value="install"/>
+		</exec>
+	</target>
+
 	<target name="new-ui-dependency">
 		<exec dir="./scadalts-ui" executable="npm">
 			<arg value="install"/>
 		</exec>
 	</target>
 
-	<target name="new-ui" depends="new-ui-dependency">
+	<target name="new-ui" depends="new-ui-dependency, static-web-dependency">
 		<exec dir="./scadalts-ui" executable="npm">
 			<arg value="run"/>
 			<arg value="build"/>

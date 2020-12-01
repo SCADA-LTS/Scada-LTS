@@ -1,3 +1,5 @@
+import 'bootstrap/dist/css/bootstrap.min.css'
+
 import Vue from 'vue'
 import App from './apps/App.vue'
 import router from './router'
@@ -6,7 +8,6 @@ import * as uiv from 'uiv'
 import VueCookie from 'vue-cookie'
 import VueLogger from 'vuejs-logger'
 
-import 'bootstrap/dist/css/bootstrap.min.css'
 import Test from './components/Test'
 import IsAlive from './components/graphical_views/IsAlive'
 import CMP from './components/graphical_views/cmp/CMP'
@@ -19,15 +20,20 @@ import VueLodash from 'vue-lodash'
 import StepLineChartComponent from './components/amcharts/StepLineChartComponent'
 import LineChartComponent from './components/amcharts/LineChartComponent'
 
+import Verte from 'verte';
+import 'verte/dist/verte.css';
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import {faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt} from '@fortawesome/free-solid-svg-icons'
+import {faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt, faCogs} from '@fortawesome/free-solid-svg-icons'
 import i18n from './i18n'
 import LiveAlarms from './components/graphical_views/AlarmsComponent'
+import RefreshView from "@/components/graphical_views/RefreshView"
 
-library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt)
+library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt, faCogs)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component(Verte.name, Verte);
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -133,6 +139,7 @@ if (window.document.getElementById('export-import-ph') != undefined) {
 if (window.document.getElementById('example-chart-cmp') != undefined) {
   new Vue({
     store,
+    i18n,
     render: h => h(WatchListChartWidget)
   }).$mount('#example-chart-cmp')
 }
@@ -193,6 +200,18 @@ for (let x = 0; x < 10; x++) {
       })
     }).$mount(`#${chartId}`)
   }
+}
+
+if (window.document.getElementById('refresh-view') != undefined) {
+  new Vue({
+    store,
+    render: h => h(RefreshView, {
+      props: {
+        ptimeToCheckRefresh: window.document.getElementById('refresh-view').getAttribute('ptimeToCheckRefresh'),
+        pviewId: window.document.getElementById('refresh-view').getAttribute('pviewId')
+      }
+    })
+  }).$mount('#refresh-view')
 }
 
 if (window.document.getElementById('live-alarms') != undefined) {
