@@ -6,6 +6,7 @@ import pointHierarchy from "./pointHierarchy"
 import amcharts from './amcharts'
 import alarms from './alarms'
 import systemSettings from './systemSettings'
+import plcNotifications from './alarms/notification'
 import axios from "axios";
 
 Vue.use(Vuex)
@@ -21,7 +22,8 @@ export default new Vuex.Store({
     pointHierarchy,
     amcharts,
     alarms,
-    systemSettings
+    systemSettings,
+    plcNotifications
   },
   state: {
     packageVersion: process.env.PACKAGE_VERSION || '0',

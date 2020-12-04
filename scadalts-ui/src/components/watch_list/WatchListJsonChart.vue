@@ -175,7 +175,7 @@ export default {
       console.debug("WLJCH::initChartSeries::Initializing chart series...");
       return new Promise((resolve) => {
         let pointPromises = [];
-        
+
         if(this.chartProperties.type == "compare") {
           this.chartProperties.comparePoints.forEach(p => {
             pointPromises.push(this.initChartSeriesPoint(p.pointId))
@@ -186,7 +186,7 @@ export default {
             pointPromises.push(this.initChartSeriesPoint(id));
           });
         }
-        
+
         Promise.all(pointPromises).then(() => {
           console.debug("WLJCH::initChartSeries::Series loaded!");
           this.chartConfiguration.series = this.copyObject(this.chartSeries);
