@@ -27,14 +27,6 @@ public class V2_5__SmsAndEmailNotification extends BaseJavaMigration {
         createSchedulersUsersTable(jdbcTmp);
         createSchedulersView(jdbcTmp);
 
-        String sql = "" +
-                "ALTER TABLE mangoViews" +
-                " ADD modification_time TIMESTAMP" +
-                " DEFAULT CURRENT_TIMESTAMP" +
-                " ON UPDATE CURRENT_TIMESTAMP;";
-
-        jdbcTmp.execute(sql);
-
     }
 
     private void createRangesTable(JdbcTemplate jdbcTemplate) {

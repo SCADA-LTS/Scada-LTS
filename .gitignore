@@ -109,6 +109,7 @@ gradle/
 # Ignore Gradle build output directory
 WebContent/resources/node_modules/
 WebContent/resources/package-lock.json
+WebContent/resources/images/
 build
 databases
 build.gradle

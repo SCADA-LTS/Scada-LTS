@@ -4,7 +4,6 @@ import Alarms from './views/Alarms'
 import About from './views/About'
 import HistoricalAlarms from "./views/HistoricalAlarms"
 import SystemSettings from "./views/SystemSettings"
-import SystemSettings from "./views/SystemSettings"
 import PlcNotifications from './views/PlcNotifications'
 
 
