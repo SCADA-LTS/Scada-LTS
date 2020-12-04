@@ -1,0 +1,117 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:8080/ScadaBR/api'
+    description: 'Scada development Server'
+    variables: {}
+info:
+  version: 2.4.0
+  title: Scada-LTS API
+  description: 'Scada-LTS OpenAPI Specification. All provided REST methods. Complete documentation can be found on the Confluence. https://scada-lts.atlassian.net/wiki/spaces/APIDOC/pages/178716812/REST+API+Documentation'
+  termsOfService: ''
+  contact: {}
+  license:
+    name: 'GPL-2.0'
+paths:
+  /auth/{username}/{password}:
+    get:
+      tags:
+        - AuthenticationAPI
+      summary: 'Authenticate to the Scada-LTS'
+      description: 'Login user to the ScadaLTS'
+      operationId: 'loginUser'
+      parameters:
+      - name: "username"
+        in: 'path'
+        required: true
+        schema: 
+          type: 'string'
+      - name: 'password'
+        in: 'path'
+        required: true
+        schema: 
+          type: 'string'
+      responses:
+        '200':
+          description: 'Logged successful'
+          headers: {}
+  /auth/logout/{username}:
+    get:
+      tags:
+        - AuthenticationAPI
+      summary: 'Logout from Scada-LTS'
+      description: 'Logout user from Scada-LTS'
+      operationId: 'logoutUser'
+      parameters:
+      - name: 'username'
+        in: 'path'
+        required: true
+        schema:
+          type: 'string'
+      responses:
+        '200':
+          description: 'Logged out succesful'
+          headers: {}
+  /auth/isLogged/{username}:
+    get:
+      tags:
+        - AuthenticationAPI
+      summary: 'Check if user is logged in'
+      description: 'Check if user is logged in'
+      operationId: 'http://localhost:8080/ScadaBR/api/auth/isLogged/admin'
+      parameters: 
+      - name: 'username'
+        in: 'path'
+        required: true
+        schema:
+          type: 'string'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  /auth/isRoleAdmin:
+    get:
+      tags:
+        - AuthenticationAPI
+      summary: 'Check if user has admin rights'
+      description: 'Check if user has admin rights'
+      operationId: 'isRoleAdmin'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  /auth/isRoleUser:
+    get:
+      tags:
+        - AuthenticationAPI
+      summary: 'Check if user has no admin rights'
+      description: 'Check if user has no admin rights'
+      operationId: 'isRoleUser'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+
+components:
+  parameters:
+    Authorization:
+      name: Authorization
+      in: header
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: Basic YWRtaW46YWRtaW4=
+      description: ''
+    Content-Type:
+      name: Content-Type
+      in: header
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: application/json
+security: []
+tags: []
+externalDocs:
+  url: ''
+  description: ''
