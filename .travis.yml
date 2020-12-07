@@ -24,12 +24,13 @@ jdk:
 services:
 - docker
 - mysql
-script: ant war
+script: ant war && ant junit
 branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^release/2.4.0.*$/"
+  - "/^feature/#1454.*$/"
 notifications:
   email: false
 env:

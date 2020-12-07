@@ -23,11 +23,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -69,7 +69,8 @@ public class ScriptTestUtils {
         Common.ctx = contextWrapper;
         when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
         when(contextWrapper.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getRealPath(anyString())).thenReturn("test/scriptFunctions.js");
+        when(servletContext.getRealPath(contains("scriptFunctions"))).thenReturn("test/scriptFunctions.js");
+        when(servletContext.getRealPath(eq(""))).thenReturn("test/");
 
         PointValueDao pointValueDao = mock(PointValueDao.class);
         whenNew(PointValueDao.class)
@@ -97,7 +98,7 @@ public class ScriptTestUtils {
         mockStatic(Common.class);
         when(Common.getUser()).thenReturn(user);
 
-        PropertiesUtils propertiesUtils = new PropertiesUtils("env");
+        PropertiesUtils propertiesUtils = new PropertiesUtils("WEB-INF/classes/env");
         when(Common.getEnvironmentProfile()).thenReturn(propertiesUtils);
 
         mockStatic(Permissions.class);
