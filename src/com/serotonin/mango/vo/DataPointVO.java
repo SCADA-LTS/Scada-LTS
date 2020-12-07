@@ -43,6 +43,7 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.IOException;
@@ -165,7 +166,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
 
     public DataPointVO(){
         id = Common.NEW_ID;
-        loggingType = LoggingTypes.ON_CHANGE;
+        loggingType = SystemSettingsDAO
+                .getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE);
         intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
         intervalLoggingPeriod = 15;
         intervalLoggingType = IntervalLoggingTypes.INSTANT;

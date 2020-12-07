@@ -126,6 +126,9 @@ public class SystemSettingsDAO {
 	private static final String DELETE_DATA_POINTS = "delete from dataPoints";
 	private static final String DELETE_DATA_SOURCES = "delete from dataSources";
 
+	// Logging
+	public static final String DEFAULT_LOGGING_TYPE = "defaultLoggingType";
+
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
 			+ "select "
