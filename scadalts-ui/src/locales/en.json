@@ -132,6 +132,8 @@
   "systemsettings.scadaconf.doNotCreateEventsForEmailError": "Do not create Events for email error",
   "systemsettings.scadaconf.httpRetriverSleepCheckToReactivationWhenStart": "HTTP Retriver - sleep check to reactivation when start",
   "systemsettings.scadaconf.httpRetriverDoNotAllowEnableReactivation": "HTTP Retriver - do not allow to enable reactivation",
+  "systemsettings.loggingtype.title": "Default Data Point logging type",
+  "systemsettings.loggingtype.value": "Logging type:",
   "systemsettings.notification.fail": "Something went wrong!",
   "systemsettings.notification.purgedata": "Successfully cleared data!",
   "systemsettings.notification.send.email": "Email has been sent to ",
@@ -142,6 +144,7 @@
   "systemsettings.notification.save.systemevent": "System Event Types settings saved!",
   "systemsettings.notification.save.auditevent": "Audit Event Types settings saved!",
   "systemsettings.notification.save.database": "Database changed!",
+  "systemsettings.notification.save.logging": "Default logging type saved!",
   "systemsettings.alert.purgedata.title": "Purge data?",
   "systemsettings.alert.purgedata": "This operation will permanently delete datapoint history content. Continue?",
   "systemsettings.tooltip.derbydatabase": "Derby database is unavailable in this ScadaLTS version!",
@@ -181,5 +184,10 @@
   "timeperiod.days": "day(s)",
   "timeperiod.weeks": "week(s)",
   "timeperiod.months": "month(s)",
-  "timeperiod.years": "year(s)"
+  "timeperiod.years": "year(s)",
+  "pointEdit.logging.type.change": "When point value changes",
+  "pointEdit.logging.type.all": "All data",
+  "pointEdit.logging.type.never": "Do not log",
+  "pointEdit.logging.type.interval": "Interval",
+  "pointEdit.logging.type.tsChange": "When point timestamp changes"
 }

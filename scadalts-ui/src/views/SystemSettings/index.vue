@@ -17,6 +17,7 @@
       <EmailSettingsComponent ref="emailSettingsComponent" @changed="componentChanged"></EmailSettingsComponent>
       <HttpSettingsComponent ref="httpSettingsComponent" @changed="componentChanged"></HttpSettingsComponent>
       <MiscSettingsComponent ref="miscSettingsComponent" @changed="componentChanged"></MiscSettingsComponent>
+      <DefaultLoggingTypeSettingsComponent ref="defaultLoggingTypeSettingsComponent" @changed="componentChanged"></DefaultLoggingTypeSettingsComponent>
       <!-- 'Configuration' components are not changable instead of 'Settings' components -->
       <ScadaConfigurationComponent></ScadaConfigurationComponent>
     </div>
@@ -274,6 +275,7 @@ import SystemEventTypesComponent from "./SystemEventTypesComponent";
 import EmailSettingsComponent from "./EmailSettingsComponent";
 import HttpSettingsComponent from "./HttpSettingsComponent";
 import MiscSettingsComponent from "./MiscSettingsComponent";
+import DefaultLoggingTypeSettingsComponent from "./DefaultLoggTypeComponent";
 import ScadaConfigurationComponent from "./ScadaConfigurationComponent";
 import { keys } from "@amcharts/amcharts4/.internal/core/utils/Object";
 
@@ -287,6 +289,7 @@ export default {
     EmailSettingsComponent,
     HttpSettingsComponent,
     MiscSettingsComponent,
+    DefaultLoggingTypeSettingsComponent,
     ScadaConfigurationComponent
   },
   filters: {
