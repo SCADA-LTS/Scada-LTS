@@ -41,6 +41,7 @@ import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +57,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 /** 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class EventService implements MangoEvent {
 	
 	private static final Log LOG = LogFactory.getLog(EventService.class);
