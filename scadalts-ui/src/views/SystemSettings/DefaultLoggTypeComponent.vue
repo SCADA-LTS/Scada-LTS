@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-6">
+  <div class="col-md-6" id="default-logging-type-setting">
     <div class="row align-items-center">
       <h2 class="col-xs-12">
         {{ $t("systemsettings.loggingtype.title")

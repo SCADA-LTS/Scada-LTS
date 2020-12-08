@@ -1,10 +1,11 @@
-
-import i18n from '@/i18n'
-
+/**
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ */
 import Vuex from 'vuex'
+import { expect } from 'chai'
 import { createLocalVue, mount } from '@vue/test-utils'
 import DefaultLoggingTypeSettingsComponent from '@/views/SystemSettings/DefaultLoggTypeComponent'
-import { expect } from 'chai'
+import i18n from '@/i18n'
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -39,7 +40,6 @@ const modules = {
     systemSettings
 }
 
-
 const store = new Vuex.Store({modules})
 
 
@@ -63,14 +63,30 @@ describe('SystemSettings - LoggingType Settings Tests', () => {
         expect(wrapper.findAll('option').at(2).html()).to.contain("Do not log")
     })
 
-    it('Test value chagne', async () => {
+    it('Test value saving', async () => {
         wrapper.vm.defaultLoggingType = 5;
         wrapper.vm.saveData();
         wrapper.vm.$nextTick(() => {
             expect(wrapper.vm.defaultLoggingType).to.equal(5);
             expect(wrapper.vm.defaultLoggingTypeStore).to.equal(5);
         })
-        
+    })
+
+    it('Test changing and emitting the settings', async () => {
+        wrapper.vm.defaultLoggingType = 2;
+        await wrapper.vm.watchLoggingTypeChange();
+        expect(wrapper.vm.isDefaultLoggingTypeEdited).to.be.true;
+        await wrapper.vm.$nextTick();
+        expect(wrapper.emitted().changed[0][0].component).to.equal("defaultLoggingTypeSettingsComponent");
+        expect(wrapper.emitted().changed[0][0].changed).to.be.true;
+    })
+
+    it('Test changing and restoring data', async() => {
+        wrapper.vm.defaultLoggingType = 1;
+        await wrapper.vm.watchLoggingTypeChange();
+        expect(wrapper.vm.isDefaultLoggingTypeEdited).to.be.true;
+        await wrapper.vm.restoreData();
+        expect(wrapper.vm.defaultLoggingType).to.equal(3);
     })
 
 })
