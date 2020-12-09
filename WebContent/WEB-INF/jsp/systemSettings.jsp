@@ -25,6 +25,9 @@
 
 
 <tag:page dwr="SystemSettingsDwr" onload="init">
+<link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
+<link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
+
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
     var auditEventAlarmLevels = new Array();
@@ -405,57 +408,6 @@
         });
 
     }
-
-    function getSMSDomain() {
-
-            var pathArray = location.href.split( '/' );
-            var protocol = pathArray[0];
-            var host = pathArray[2];
-            var appScada = pathArray[3];
-            var myLocation;
-            if (!myLocation) {
-         	   myLocation = protocol + "//" + host + "/" + appScada + "/";
-            }
-
-            jQuery.ajax({
-                type: 'GET',
-                dataType: 'text',
-                url:myLocation+"/api/systemSettings/getSMSDomain",
-                success: function(msg){
-                    console.log("DUPA"+msg)
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert("Problem when get sms domain:"+errorThrown.message);
-                }
-            });
-
-    }
-
-    function setSMSDomain(domain) {
-
-                var pathArray = location.href.split( '/' );
-                var protocol = pathArray[0];
-                var host = pathArray[2];
-                var appScada = pathArray[3];
-                var myLocation;
-                if (!myLocation) {
-             	   myLocation = protocol + "//" + host + "/" + appScada + "/";
-                }
-
-                jQuery.ajax({
-                    type: 'POST',
-                    dataType: 'text',
-                    url:myLocation+"/api/systemSettings/saveSMSDomain/"+domain,
-                    success: function(msg){
-                        console.log("DUPA1"+msg)
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown) {
-                        alert("Problem when save sms domain:"+errorThrown.message);
-                    }
-                });
-
-        }
-    
     
     
   </script>
@@ -829,9 +781,17 @@
           </tr>
        </table>
   </div>
+
+  <div class="borderDiv marB marR" style="float:left">
+        <div id="sms-domain"></div>
+        <div id="app-test"></div>
+    </div>
+
   <div class="" style="float:left; color:white">
   #branchName
   </div>
   
   
 </tag:page>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
