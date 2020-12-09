@@ -7,11 +7,10 @@ const milestone = packageJson.milestone || 0
 const build = packageJson.build || 0
 const branch = packageJson.branch || 'local'
 module.exports = {
-  filenameHashing: false,
-
-  configureWebpack: {
-    devtool: 'source-map',
-    plugins: [
+  "filenameHashing": false,
+  "configureWebpack": {
+    "devtool": "source-map",
+    "plugins": [
       new webpack.DefinePlugin({
         'process.env': {
           PACKAGE_VERSION: '"' + version + '"',
@@ -23,13 +22,15 @@ module.exports = {
       })
     ]
   },
-
-  pluginOptions: {
-    i18n: {
-      locale: 'en',
-      fallbackLocale: 'en',
-      localeDir: 'locales',
-      enableInSFC: true
+  "pluginOptions": {
+    "i18n": {
+      "locale": "en",
+      "fallbackLocale": "en",
+      "localeDir": "locales",
+      "enableInSFC": true
     }
-  }
+  },
+  "transpileDependencies": [
+    "vuetify"
+  ]
 }
