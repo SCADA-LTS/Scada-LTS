@@ -340,7 +340,7 @@ paths:
     delete:
       tags:
         - EventHandler API
-      summary: 'Delete Event Handler by Exprot ID'
+      summary: 'Delete Event Handler by Export ID'
       description: 'Delete Event Handler'
       operationId: 'eventHandlerDeleteEventHandler'
       parameters:
@@ -351,7 +351,7 @@ paths:
             type: string
       responses:
         '200':
-          description: 'Delete succesful'
+          description: 'Delete successful'
   /eventHandler/delete/id/{id}:
     delete:
       tags:
@@ -367,7 +367,158 @@ paths:
             type: number
       responses:
         '200':
-          description: 'Delete succesful'
+          description: 'Delete successful'
+
+  /eventDetector/getAll/{datapointXid}:
+    get:
+      tags:
+        - EventDetector API
+      summary: 'Get all Event Detectors for given DataPoint by its Export ID'
+      description: 'Get all Event Detectors for given DataPoint by its Export ID'
+      operationId: 'eventDetectorGetEventDetectorsByXid'
+      parameters:
+        - name: 'datapointXid'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PointEventDetectorVO'
+          headers: { }
+
+  /eventDetector/getAll/id/{datapointId}:
+    get:
+      tags:
+        - EventDetector API
+      summary: 'Get all Event Detectors for given DataPoint by its ID'
+      description: 'Get all Event Detectors for given DataPoint by its ID'
+      operationId: 'eventDetectorGetEventDetectorsById'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PointEventDetectorVO'
+          headers: { }
+
+  /eventDetector/set/binary/state/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type State for Binary Point'
+      operationId: 'eventDetectorSetBinaryStateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Binary State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                binaryState:
+                  type: boolean
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/update/binary/state/{datapointId}/{id}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update an existing Event Detector of given ID for Binary Point'
+      operationId: 'eventDetectorUpdateBinaryStateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Binary State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                binaryState:
+                  type: boolean
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/delete/{datapointId}/{id}:
+    delete:
+      tags:
+        - EventDetector API
+      summary: 'Delete Event Detector for given Point by ID'
+      description: 'Delete Event Detector'
+      operationId: 'eventDetectorDeleteEventHandlerById'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      responses:
+        '200':
+          description: 'Delete successful'
 components:
   schemas:
       EventHandlerVO:
@@ -445,6 +596,98 @@ components:
                     type: array 
                     items:
                       type: string
+      PointEventDetectorVO:
+        type: object
+        properties:
+          id:
+            type: number
+          xid:
+            type: string
+          alias:
+            type: string
+          detectorType:
+            type: number
+          alarmLevel:
+            type: number
+          limit:
+            type: number
+          duration:
+            type: number
+          durationType:
+            type: number
+          binaryState:
+            type: boolean
+          multistateState:
+            type: number
+          changeCount:
+            type: number
+          alphanumericState:
+            type: number
+          weight:
+            type: number
+          description:
+            type: object
+            properties:
+              key:
+                type: string
+              args:
+                type: array
+                items:
+                  type: string
+          eventType:
+            type: object
+            properties:
+              typeId:
+                type: number
+              typeRef1:
+                type: number
+              typeRef2:
+                type: number
+              description:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  args:
+                    type: array
+                    items:
+                      type: string
+              handlers:
+                type: object
+              alarmLevel:
+                type: number
+              eventDetectorKey:
+                type: string
+          rtnApplicable:
+            type: boolean
+          eventDetectorKey:
+            type: string
+          def:
+            type: object
+            properties:
+              id:
+                type: number
+              name:
+                type: string
+              exportName:
+                type: string
+              nameKey:
+                type: string
+              supportedDataTypes:
+                type: array
+                items:
+                  type: number
+          typeKey:
+            type: string
+          durationDescription:
+            type: object
+            properties:
+              key:
+                type: string
+              args:
+                type: array
+                items:
+                  type: object
   parameters:
     Authorization:
       name: Authorization
