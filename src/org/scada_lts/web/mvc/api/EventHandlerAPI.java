@@ -1,5 +1,7 @@
 package org.scada_lts.web.mvc.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.EventHandlerVO;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping(path = "/api/eventHandler")
@@ -109,5 +113,75 @@ public class EventHandlerAPI {
     public ResponseEntity<EventHandlerVO> createEventHandlerTypeScript(@PathVariable("typeId") int typeId, @PathVariable("typeRef1") int typeRef1, @PathVariable("typeRef2") int typeRef2, @RequestBody EventHandlerScriptDTO handler, HttpServletRequest request) {
         return createEventHandler(typeId, typeRef1, typeRef2, handler.createEventHandlerVO(), request);
     }
+
+    @PutMapping(value = "/update/{typeId}/{typeRef1}/{typeRef2}", consumes = "application/json")
+    public ResponseEntity<EventHandlerVO> updateEventHandler(@PathVariable("typeId") int typeId, @PathVariable("typeRef1") int typeRef1, @PathVariable("typeRef2") int typeRef2, @RequestBody EventHandlerVO handler, HttpServletRequest request) {
+        LOG.info("/api/eventHandler/update/...");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                EventTypeVO typeVO = new EventTypeVO(typeId, typeRef1, typeRef2);
+                return new ResponseEntity<>(eventHandlerService.saveEventHandler(typeVO, handler), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping(value = "/delete/{xid}", produces = "application/json")
+    public ResponseEntity<String> deleteEventHandlerByXid(@PathVariable("xid") String xid, HttpServletRequest request) {
+        LOG.info("/api/eventHandler/delete/" + xid);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                eventHandlerService.deleteEventHandler(xid);
+                Map<String, String> response = new HashMap<>();
+                response.put("status", "deleted");
+                ObjectMapper m = new ObjectMapper();
+                try {
+                    String json = m.writeValueAsString(response);
+                    return new ResponseEntity<>(json, HttpStatus.OK);
+                } catch (JsonProcessingException e) {
+                    LOG.error(e);
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping(value = "/delete/id/{id}", produces = "application/json")
+    public ResponseEntity<String> deleteEventHandlerById(@PathVariable("id") int id, HttpServletRequest request) {
+        LOG.info("/api/eventHandler/delete/id/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                eventHandlerService.deleteEventHandler(id);
+                Map<String, String> response = new HashMap<>();
+                response.put("status", "deleted");
+                ObjectMapper m = new ObjectMapper();
+                try {
+                    String json = m.writeValueAsString(response);
+                    return new ResponseEntity<>(json, HttpStatus.OK);
+                } catch (JsonProcessingException e) {
+                    LOG.error(e);
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 }

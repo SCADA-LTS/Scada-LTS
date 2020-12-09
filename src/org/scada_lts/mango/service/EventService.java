@@ -328,6 +328,12 @@ public class EventService implements MangoEvent {
 		
 		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER,	handler);
 	}
+
+	public void deleteEventHandler(final String handlerXid) {
+		EventHandlerVO handler = getEventHandler(handlerXid);
+		eventDAO.delete(handler.getId());
+		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
+	}
 	
 	@Override
 	public boolean toggleSilence(int eventId, int userId) {		
