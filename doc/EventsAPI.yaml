@@ -519,6 +519,70 @@ paths:
       responses:
         '200':
           description: 'Delete successful'
+
+  /mailingList/getAll:
+    get:
+      tags:
+        - MailingList API
+      summary: 'Get all MailingLists'
+      description: 'Get all MailingLists'
+      operationId: 'mailingListGetMailingLists'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+          headers: { }
+  /mailingList/get/id/{id}:
+    get:
+      tags:
+        - MailingList API
+      summary: 'Get MailingList by ID'
+      description: 'Get MailingList by ID'
+      operationId: 'mailingListGetMailingListsById'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+          headers: { }
+  /mailingList/get/{xid}:
+    get:
+      tags:
+        - MailingList API
+      summary: 'Get MailingList by Export ID'
+      description: 'Get MailingList by Export ID'
+      operationId: 'mailingListGetMailingListsByXid'
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+          headers: { }
 components:
   schemas:
       EventHandlerVO:
@@ -688,6 +752,27 @@ components:
                 type: array
                 items:
                   type: object
+      MailingList:
+        type: object
+        properties:
+          id:
+            type: number
+          xid:
+            type: string
+          entries:
+            type: array
+            items:
+              type: object
+          inactiveIntervals:
+            type: array
+            items:
+              type: object
+          recipientType:
+            type: number
+          referenceId:
+            type: number
+          referenceAddress:
+            type: string
   parameters:
     Authorization:
       name: Authorization
