@@ -1,19 +1,16 @@
 <template>
-  <div class="container move-top format_font">
-    <div class="panel panel-default col-ld-4, col-md-4, col-sm-6">
       <div class="panel-body">
         <div>
           <input type="url" name="url" id="url"
             placeholder="example.com"
-            pattern=".*" size="70"
+            pattern=".*" size="30"
             required
             v-model="url">
         </div>
         <div>
             <btn size="xs" type="success" v-on:click="save()">Save</btn>
         </div>
-    </div>
-  </div>
+      </div>
 </template>
 
 <script>
@@ -41,7 +38,7 @@ export default {
     },
     load() {
       const api= `./api/systemSettings/getSMSDomain`;
-      axios.post(api).then(response => {
+      axios.get(api).then(response => {
           this.url = response.data
       }).catch(error => {
         console.error(error);
