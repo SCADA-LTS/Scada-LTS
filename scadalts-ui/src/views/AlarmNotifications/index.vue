@@ -15,6 +15,7 @@
           @change="changeMailingList"
           v-model="activeMailingList"
           :items="mailingLists"
+          item-value="id"
           item-text="name"
           label="Select mailing list"
           solo dense></v-select>
@@ -25,10 +26,14 @@
     
     <v-treeview dense :items="items" activatable :load-children="fetchUsers">
       <template v-slot:append="{ item, open }">
-        <div class="d-flex" v-if="!item.children">
+        <v-row align="center" class="d-flex" v-if="!item.children">
+          <input type="text" v-model="eventDetectorId"/>
+          <v-btn elevation="2" fab x-small dark color="primary" @click="send(item)">
+            <v-icon>mdi-content-save</v-icon>
+          </v-btn>
           <v-checkbox :value="open"></v-checkbox>
           <v-checkbox></v-checkbox>
-        </div>
+        </v-row>
       </template>
     </v-treeview>
   </div>
@@ -40,6 +45,7 @@ export default {
   data() {
     return {
       items: [ ],
+      eventDetectorId: 5,
       activeMailingList: undefined,
       mailingLists: undefined,
     };
@@ -75,6 +81,15 @@ export default {
     changeMailingList(item) {
       console.log("MailingListChanged!");
       console.log(item);
+    },
+
+    send(item) {
+      let payload = {
+        datapointId: item.id,
+        eventDetectorId: this.eventDetectorId,
+        mailingListId: this.activeMailingList
+      }
+      this.$store.dispatch("createEmailEventHandler", payload);
     }
 
 
