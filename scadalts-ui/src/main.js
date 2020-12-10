@@ -29,6 +29,7 @@ import {faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt, 
 import i18n from './i18n'
 import LiveAlarms from './components/graphical_views/AlarmsComponent'
 import RefreshView from "@/components/graphical_views/RefreshView"
+import SMSDomain from "@/components/forms/SMSDomain"
 
 library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt, faCogs)
 
@@ -129,6 +130,13 @@ if (window.document.getElementById('sleep-reactivation-ds') != undefined) {
     render: h => h(SleepAndReactivationDS)
   }).$mount('#sleep-reactivation-ds')
 }
+
+if (window.document.getElementById('sms-domain') != undefined) {
+  new Vue({
+    render: h => h(SMSDomain)
+  }).$mount('#sms-domain')
+}
+
 
 if (window.document.getElementById('export-import-ph') != undefined) {
   new Vue({
