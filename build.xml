@@ -43,6 +43,19 @@
 		</exec>
 	</target>
 
+	<target name="run_debug" depends="tomcat_clean_static_content">
+		<exec executable="cmd" osfamily="windows">
+			<arg value="/c"/>
+			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
+			<arg value="jpda"/>
+			<arg value="start"/>
+		</exec>
+		<exec executable="${env.CATALINA_HOME}/bin/catalina.sh" osfamily="unix">
+			<arg value="jpda"/>
+			<arg value="start"/>
+		</exec>
+	</target>
+
 	<!-- to option copy file to webapps :) -->
 
 	<path id="benchmark.classpath">
