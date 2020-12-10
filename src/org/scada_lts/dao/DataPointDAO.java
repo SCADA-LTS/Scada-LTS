@@ -81,6 +81,16 @@ public class DataPointDAO {
 				+ "ds." + COLUMN_NAME_DS_ID + "="
 				+ "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
 
+	private static final String DATA_POINT_SELECT_PLC = "" +
+			"SELECT " +
+			"dp." + COLUMN_NAME_ID + ", " +
+			"dp." + COLUMN_NAME_XID + ", " +
+			"dp." + COLUMN_NAME_DATA_SOURCE_ID + ", " +
+			"dp." + COLUMN_NAME_DATA + ", " +
+			"dp." + COLUMN_NAME_DATAPOINT_NAME + ", " +
+			"dp." + COLUMN_NAME_PLC_ALARM_LEVEL + " " +
+			"FROM dataPoints dp ";
+
 	private static final String DATA_POINT_SELECT_ID = ""
 			+ "select DISTINCT "
 				+ COLUMN_NAME_ID + " "
@@ -134,6 +144,23 @@ public class DataPointDAO {
 			dataPoint.setDataSourceName(resultSet.getString(COLUMN_NAME_DS_NAME));
 			dataPoint.setDataSourceTypeId(resultSet.getInt(COLUMN_NAME_DS_DATA_SOURCE_TYPE));
 			
+			return dataPoint;
+		}
+	}
+
+	private class DataPointSimpleRowMapper implements RowMapper<DataPointVO> {
+
+
+		@Override
+		public DataPointVO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+
+			DataPointVO dataPoint = (DataPointVO) new SerializationData().readObject(resultSet.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+
+			dataPoint.setId(resultSet.getInt(COLUMN_NAME_ID));
+			dataPoint.setXid(resultSet.getString(COLUMN_NAME_XID));
+			dataPoint.setDataSourceId(resultSet.getInt(COLUMN_NAME_DATA_SOURCE_ID));
+			dataPoint.setName(resultSet.getString(COLUMN_NAME_DATAPOINT_NAME));
+
 			return dataPoint;
 		}
 	}
@@ -203,6 +230,14 @@ public class DataPointDAO {
 
 		List<DataPointVO> dataPointList = DAO.getInstance().getJdbcTemp().query(templateSelectWhereId, new Object[] {dataSourceId}, new DataPointRowMapper());
 		return dataPointList;
+	}
+
+	public List<DataPointVO> getPlcDataPoints(int dataSourceId) {
+
+		String templateSelectPlcWhereId = DATA_POINT_SELECT_PLC + " where (dp." + COLUMN_NAME_DATA_SOURCE_ID + "=? AND dp.plcAlarmLevel>0)";
+		List<DataPointVO> dataPointList = DAO.getInstance().getJdbcTemp().query(templateSelectPlcWhereId, new Object[] {dataSourceId}, new DataPointSimpleRowMapper());
+		return dataPointList;
+
 	}
 
 	public List<Integer> getDataPointsIds(int dataSourceId) {

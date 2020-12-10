@@ -190,6 +190,11 @@ public class DataPointService implements MangoDataPoint {
 		return pointsWithListData;
 	}
 
+	public List<DataPointVO> getPlcDataPoints(int dataSourceId) {
+		List<DataPointVO> datapointList = dataPointDAO.getPlcDataPoints(dataSourceId);
+		return datapointList;
+	}
+
 	public List<PointValueDTO> valuesPointBooleanBaseOnNameFilter2DTO(Map<DataPointVO, List<PointValue>> values) {
 		List<PointValueDTO> result = new LinkedList<>();
 		for (Map.Entry<DataPointVO, List<PointValue>> entry : values.entrySet()) {

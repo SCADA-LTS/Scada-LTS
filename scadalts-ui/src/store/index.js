@@ -5,6 +5,7 @@ import graphicView from "./graphicView"
 import pointHierarchy from "./pointHierarchy"
 import amcharts from './amcharts'
 import alarms from './alarms'
+import storeAlarmsNotifications from './alarms/notifications'
 import systemSettings from './systemSettings'
 import axios from "axios";
 
@@ -21,6 +22,7 @@ export default new Vuex.Store({
     pointHierarchy,
     amcharts,
     alarms,
+    storeAlarmsNotifications,
     systemSettings
   },
   state: {

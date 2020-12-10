@@ -14,6 +14,12 @@
           </v-list-item-icon>
           <v-list-item-title>Historical Alarms</v-list-item-title>
         </v-list-item>
+        <v-list-item link href="#/alarm-notifications">
+          <v-list-item-icon>
+            <v-icon>mdi-alert-decagram</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Alarms Notifications</v-list-item-title>
+        </v-list-item>
         <v-list-item link href="#/system-settings">
           <v-list-item-icon>
             <v-icon>mdi-tune</v-icon>
