@@ -23,14 +23,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -218,13 +215,21 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"=? "
 			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
-	
+
+	public static final String POINT_VALUE_ID_OF_LAST_VALUE = ""
+			+ "select"
+			+ " max(id) "
+			+ "from pointValues "
+			+ "where "
+			+ COLUMN_NAME_DATA_POINT_ID+"=?";
+
 	public static final String POINT_VALUE_DELETE_BEFORE = ""
 			+"delete "
 			+ "from "
 				+ "pointValues "
 			+ "where "
-				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+"<?";
+				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+"<? "
+			    + "and id not in (?) ";
 	
 	public static final String POINT_VALUE_DELETE_BASE_ON_POINT_ID = ""
 			+"delete "
@@ -619,8 +624,9 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
         return value;
     }
     
-    public long deletePointValuesBefore(int dataPointId, long time) {
-    	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BEFORE, new Object[] {dataPointId, time});
+    public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
+		Long lastId = DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_ID_OF_LAST_VALUE, new Object[] { dataPointId }, Long.class );
+    	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BEFORE, new Object[] {dataPointId, time, lastId});
     }
     
     public long deletePointValue(int dataPointId) {

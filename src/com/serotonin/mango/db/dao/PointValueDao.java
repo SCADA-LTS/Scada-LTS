@@ -22,9 +22,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.mango.adapter.MangoPointValues;
-import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
 import org.scada_lts.mango.service.PointValueService;
 import org.springframework.dao.ConcurrencyFailureException;
 
@@ -125,7 +123,7 @@ public class PointValueDao extends BaseDao {
 	}
 
 	public long deletePointValuesBefore(int dataPointId, long time) {
-		return pointValueService.deletePointValuesBefore(dataPointId, time);
+		return pointValueService.deletePointValuesBeforeWithOutLast(dataPointId, time);
 	}
 
 	public long deletePointValues(int dataPointId) {
