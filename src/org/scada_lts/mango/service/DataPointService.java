@@ -415,7 +415,7 @@ public class DataPointService implements MangoDataPoint {
 		dataPoint.setEventDetectors(getEventDetectors(dataPoint));
 	}
 
-	private List<PointEventDetectorVO> getEventDetectors(DataPointVO dataPoint) {
+	public List<PointEventDetectorVO> getEventDetectors(DataPointVO dataPoint) {
 
 		EventDetectorsCache.LOG.trace("getEventDetectors() dpId:" + dataPoint.getId());
 		long startTime = 0;
@@ -444,7 +444,7 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
-	private void saveEventDetectors(DataPointVO dataPoint) {
+	public void saveEventDetectors(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 
 		for (PointEventDetectorVO pointEventDetector: detectors) {
@@ -460,6 +460,10 @@ public class DataPointService implements MangoDataPoint {
 				pointEventDetectorDAO.update(pointEventDetector);
 			}
 		}
+	}
+
+	public void deleteEventDetector(DataPointVO dataPoint, int id){
+		pointEventDetectorDAO.delete(dataPoint.getId(), id);
 	}
 
 	private PointEventDetectorVO removeFromList(List<PointEventDetectorVO> list, int id) {
