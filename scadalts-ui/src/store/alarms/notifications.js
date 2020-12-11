@@ -3,10 +3,14 @@ import Axios from "axios"
 const storeAlarmsNotifications = {
     state: {
         apiUrl: './api',
+        eventHandlers: [],
 
     },
 
     mutations: {
+        SET_EVENT_HANDLERS(state, eventHandlers) {
+            state.eventHandlers = eventHandlers;
+        }
 
     },
 
@@ -25,6 +29,23 @@ const storeAlarmsNotifications = {
                 })
             })
         },
+
+        getPlcEventHandlers(context) {
+            return new Promise((resolve, reject) => {
+                Axios.get(`${context.state.apiUrl}/eventHandler/getAllPlc`).then(response => {
+                    if(response.status === 200) {
+                        context.commit("SET_EVENT_HANDLERS", response.data);
+                        resolve(response.data) 
+                    } else {
+                        reject(false)
+                    }
+                }).catch(error => {
+                    console.error(error)
+                    reject(false)
+                })
+            })
+        },
+
 
         getAllMailingLists(context) {
             return new Promise((resolve, reject) => {
