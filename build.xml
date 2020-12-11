@@ -36,9 +36,11 @@
 	<target name="run" depends="tomcat_clean_static_content">
 		<exec executable="cmd" osfamily="windows">
 			<arg value="/c"/>
-			<arg value="%CATALINA_HOME%\bin\startup.bat"/>
+			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
+			<arg value="run"/>
 		</exec>
-		<exec executable="${env.CATALINA_HOME}/bin/catalina.sh" osfamily="unix">
+		<exec executable="bash" osfamily="unix">
+			<arg value="${env.CATALINA_HOME}/bin/catalina.sh"/>
 			<arg value="run"/>
 		</exec>
 	</target>
@@ -48,11 +50,12 @@
 			<arg value="/c"/>
 			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
 			<arg value="jpda"/>
-			<arg value="start"/>
+			<arg value="run"/>
 		</exec>
-		<exec executable="${env.CATALINA_HOME}/bin/catalina.sh" osfamily="unix">
+		<exec executable="bash" osfamily="unix">
+			<arg value="${env.CATALINA_HOME}/bin/catalina.sh"/>
 			<arg value="jpda"/>
-			<arg value="start"/>
+			<arg value="run"/>
 		</exec>
 	</target>
 
