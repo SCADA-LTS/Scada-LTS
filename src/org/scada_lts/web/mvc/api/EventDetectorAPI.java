@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,11 +72,37 @@ public class EventDetectorAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
+                class PointEventDetectorJSON implements Serializable {
+                    private int id;
+                    private String xid;
+                    private String alias;
+
+                    PointEventDetectorJSON(int id, String xid, String alias) {
+                        this.setId(id);
+                        this.setXid(xid);
+                        this.setAlias(alias);
+                    }
+
+                    public int getId() { return id; }
+                    public void setId(int id) { this.id = id; }
+                    public String getAlias() { return alias; }
+                    public void setAlias(String alias) { this.alias = alias; }
+                    public String getXid() { return xid; }
+                    public void setXid(String xid) {
+                        this.xid = xid;
+                    }
+                }
+
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
                 PointEventDetectorVO pointEventDetectorVO = eventDetectorBinaryStateDTO.createPointEventDetectorVO(dataPointVO);
                 dataPointVO.getEventDetectors().add(pointEventDetectorVO);
                 dataPointService.saveEventDetectors(dataPointVO);
-                return new ResponseEntity<>(HttpStatus.OK);
+                int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), datapointId);
+                PointEventDetectorJSON pointEventDetectorJSON = new PointEventDetectorJSON(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
+                String json = null;
+                ObjectMapper mapper = new ObjectMapper();
+                json = mapper.writeValueAsString(pointEventDetectorJSON);
+                return new ResponseEntity<>(json, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

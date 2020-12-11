@@ -31,6 +31,23 @@ paths:
                 items:
                   $ref: '#/components/schemas/EventHandlerVO'
           headers: {}
+  /eventHandler/getAllPlc:
+    get:
+      tags:
+        - EventHandler API
+      summary: 'Get all Event Handlers for PLC alarms'
+      description: 'This EventHandlers contain eventTypeId, EventTyepReference and mailing list recipients'
+      operationId: 'eventHandlerGetAllPlc'
+      responses:
+        '200':
+          description: 'Fetch successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventHandlerPlcDTO'
+          headers: {}
   /eventHandler/get/{xid}:
     get:
       tags:
@@ -585,194 +602,220 @@ paths:
           headers: { }
 components:
   schemas:
-      EventHandlerVO:
-        type: object
-        properties:
-            id: 
+    EventHandlerPlcDTO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        eventTypeId:
+          type: number
+        eventTypeRef1:
+          type: number
+        eventTypeRef2:
+          type: number
+        recipients:
+          type: array
+          items:
+            type: object
+            properties:
+              recipientType:
+                type: number
+              referenceId:
+                type: number
+              referenceAddress:
+                type: string
+    EventHandlerVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        handlerType:
+          type: number
+        disabled:
+          type: boolean
+        targetPointId:
+          type: number
+        activeAction:
+          type: number
+        activeValueToSet:
+          type: string
+        activePointId:
+          type:  number
+        inactiveAction:
+          type: number
+        inactiveValueToSet:
+          type: string
+        inactivePointId:
+          type: number
+        activeRecipients:
+          type: array
+          items:
+            type: object
+            properties:
+              recipientType:
+                type: number
+              referenceId:
+                type: number
+              referenceAddress:
+                type: string
+        sendEscalation:
+          type: boolean
+        escalationDelayType:
+          type: number
+        escalationDelay:
+          type: number
+        escalationRecipients:
+          type: array
+          items:
+            type: string
+        sendInactive:
+          type: boolean
+        inactiveOverride:
+          type: boolean
+        inactiveRecipients:
+          type: array
+          items:
+            type: string
+        activeProcessCommand:
+          type: string
+        inactiveProcessCommand:
+          type: string
+        activeScriptCommand:
+          type: number
+        inactiveScriptCommand:
+          type: number
+        typeKey:
+          type: string
+        message:
+          type: object
+          properties:
+            key:
+              type: string
+            args:
+              type: array
+              items:
+                type: string
+    PointEventDetectorVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        detectorType:
+          type: number
+        alarmLevel:
+          type: number
+        limit:
+          type: number
+        duration:
+          type: number
+        durationType:
+          type: number
+        binaryState:
+          type: boolean
+        multistateState:
+          type: number
+        changeCount:
+          type: number
+        alphanumericState:
+          type: number
+        weight:
+          type: number
+        description:
+          type: object
+          properties:
+            key:
+              type: string
+            args:
+              type: array
+              items:
+                type: string
+        eventType:
+          type: object
+          properties:
+            typeId:
               type: number
-            xid: 
-              type: string
-            alias: 
-              type: string
-            handlerType: 
-                type: number
-            disabled: 
-                type: boolean
-            targetPointId:
-                type: number
-            activeAction: 
-                type: number
-            activeValueToSet: 
-                type: string
-            activePointId:
-                type:  number
-            inactiveAction: 
-                type: number
-            inactiveValueToSet: 
-                type: string
-            inactivePointId: 
-                type: number
-            activeRecipients: 
-                type: array
-                items: 
-                  type: object
-                  properties:
-                    recipientType:
-                      type: number
-                    referenceId: 
-                      type: number
-                    referenceAddress: 
-                      type: string
-            sendEscalation: 
-                type: boolean
-            escalationDelayType: 
-                type: number
-            escalationDelay: 
-                type: number
-            escalationRecipients: 
-                type: array
-                items:
-                  type: string
-            sendInactive: 
-                type: boolean
-            inactiveOverride: 
-                type: boolean
-            inactiveRecipients: 
-                type: array
-                items:
-                  type: string
-            activeProcessCommand: 
-                type: string
-            inactiveProcessCommand: 
-                type: string
-            activeScriptCommand: 
-                type: number
-            inactiveScriptCommand:
-                type: number 
-            typeKey: 
-                type: string
-            message: 
-                type: object
-                properties:
-                  key: 
-                    type: string
-                  args: 
-                    type: array 
-                    items:
-                      type: string
-      PointEventDetectorVO:
-        type: object
-        properties:
-          id:
-            type: number
-          xid:
-            type: string
-          alias:
-            type: string
-          detectorType:
-            type: number
-          alarmLevel:
-            type: number
-          limit:
-            type: number
-          duration:
-            type: number
-          durationType:
-            type: number
-          binaryState:
-            type: boolean
-          multistateState:
-            type: number
-          changeCount:
-            type: number
-          alphanumericState:
-            type: number
-          weight:
-            type: number
-          description:
-            type: object
-            properties:
-              key:
-                type: string
-              args:
-                type: array
-                items:
-                  type: string
-          eventType:
-            type: object
-            properties:
-              typeId:
-                type: number
-              typeRef1:
-                type: number
-              typeRef2:
-                type: number
-              description:
-                type: object
-                properties:
-                  key:
-                    type: string
-                  args:
-                    type: array
-                    items:
-                      type: string
-              handlers:
-                type: object
-              alarmLevel:
-                type: number
-              eventDetectorKey:
-                type: string
-          rtnApplicable:
-            type: boolean
-          eventDetectorKey:
-            type: string
-          def:
-            type: object
-            properties:
-              id:
-                type: number
-              name:
-                type: string
-              exportName:
-                type: string
-              nameKey:
-                type: string
-              supportedDataTypes:
-                type: array
-                items:
-                  type: number
-          typeKey:
-            type: string
-          durationDescription:
-            type: object
-            properties:
-              key:
-                type: string
-              args:
-                type: array
-                items:
-                  type: object
-      MailingList:
-        type: object
-        properties:
-          id:
-            type: number
-          xid:
-            type: string
-          entries:
-            type: array
-            items:
+            typeRef1:
+              type: number
+            typeRef2:
+              type: number
+            description:
               type: object
-          inactiveIntervals:
-            type: array
-            items:
+              properties:
+                key:
+                  type: string
+                args:
+                  type: array
+                  items:
+                    type: string
+            handlers:
               type: object
-          recipientType:
-            type: number
-          referenceId:
-            type: number
-          referenceAddress:
-            type: string
+            alarmLevel:
+              type: number
+            eventDetectorKey:
+              type: string
+        rtnApplicable:
+          type: boolean
+        eventDetectorKey:
+          type: string
+        def:
+          type: object
+          properties:
+            id:
+              type: number
+            name:
+              type: string
+            exportName:
+              type: string
+            nameKey:
+              type: string
+            supportedDataTypes:
+              type: array
+              items:
+                type: number
+        typeKey:
+          type: string
+        durationDescription:
+          type: object
+          properties:
+            key:
+              type: string
+            args:
+              type: array
+              items:
+                type: object
+    MailingList:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        entries:
+          type: array
+          items:
+            type: object
+        inactiveIntervals:
+          type: array
+          items:
+            type: object
+        recipientType:
+          type: number
+        referenceId:
+          type: number
+        referenceAddress:
+          type: string
   parameters:
     Authorization:
       name: Authorization
