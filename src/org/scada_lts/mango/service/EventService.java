@@ -41,6 +41,7 @@ import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -289,6 +290,8 @@ public class EventService implements MangoEvent {
 	public List<EventHandlerVO> getEventHandlers() {
 		return eventDAO.getEventHandlers();
 	}
+
+	public List<EventHandlerPlcDTO> getPlcEventHandlers() { return eventDAO.getPlcEventHandlers(); }
 	
 	@Override
 	public EventHandlerVO getEventHandler(int eventHandlerId) {

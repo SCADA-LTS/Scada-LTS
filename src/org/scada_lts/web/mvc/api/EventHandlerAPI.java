@@ -46,6 +46,22 @@ public class EventHandlerAPI {
         }
     }
 
+    @GetMapping(value = "/getAllPlc", produces = "application/json")
+    public ResponseEntity<List<EventHandlerPlcDTO>> getAllRawEventHandlers(HttpServletRequest request) {
+        LOG.info("/api/eventHandler/getAllPlc");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                return new ResponseEntity<>(eventHandlerService.getPlcEventHandlers(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping(value = "/get/{xid}", produces = "application/json")
     public ResponseEntity<EventHandlerVO> getEventHandlerByXid(@PathVariable("xid") String xid, HttpServletRequest request) {
         LOG.info("/api/eventHandler/get/" + xid);

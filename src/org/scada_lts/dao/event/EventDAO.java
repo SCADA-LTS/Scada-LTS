@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
+import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -276,6 +277,18 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ COLUMN_NAME_EVENT_HANDLER_DATA+" "
 			+ "from "
 				+ "eventHandlers ";
+
+	private static final String EVENT_HANDLER_SELECT_PLC= "" +
+			"SELECT " +
+			COLUMN_NAME_EVENT_HANDLER_ID+", " +
+			COLUMN_NAME_EVENT_HANDLER_XID+", " +
+			COLUMN_NAME_EVENT_HANDLER_ALIAS+", " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_ID+", " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+", " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_REF2+", " +
+			COLUMN_NAME_EVENT_HANDLER_DATA+" " +
+			"FROM " +
+			"eventHandlers ";
 	
 	private static final String EVENT_HANDLER_FILTER= " "
 			+ COLUMN_NAME_EVENT_HANDLER_TYPE_ID+"=? and "
@@ -470,6 +483,26 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			return h;
 		}
 	}
+
+	private class PlcEventHandlerRowMapper implements RowMapper<EventHandlerPlcDTO> {
+		public EventHandlerPlcDTO mapRow(ResultSet rs, int rowNum)	throws SQLException {
+			EventHandlerVO h;
+			EventHandlerPlcDTO result = new EventHandlerPlcDTO();
+
+			h = (EventHandlerVO) new SerializationData().readObject(rs.getBlob(7).getBinaryStream());
+			result.setId(rs.getInt(1));
+			result.setXid(rs.getString(2));
+			result.setAlias(rs.getString(3));
+			result.setEventTypeId(rs.getInt(4));
+			result.setEventTypeRef1(rs.getInt(5));
+			result.setEventTypeRef2(rs.getInt(6));
+			result.setRecipients(h.getActiveRecipients());
+
+			return result;
+		}
+	}
+
+
 
 
 	@Override
@@ -854,6 +887,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	
 	public List<EventHandlerVO> getEventHandlers() {
 		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT, new Object[] {}, new EventHandlerRowMapper());
+	}
+
+	public List<EventHandlerPlcDTO> getPlcEventHandlers() {
+		return (List<EventHandlerPlcDTO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT_PLC, new Object[] {}, new PlcEventHandlerRowMapper());
 	}
 	
 	public EventHandlerVO getEventHandler(int eventHandlerId) {
